@@ -60,7 +60,7 @@ int bcast__arrival_scatter(void *buf, int count,
   /* message too small */
   if (count < size) {
     XBT_WARN("MPI_bcast_arrival_scatter use default MPI_bcast.");
-    Colls::bcast(buf, count, datatype, root, comm);
+    colls::bcast(buf, count, datatype, root, comm);
     return MPI_SUCCESS;
   }
 

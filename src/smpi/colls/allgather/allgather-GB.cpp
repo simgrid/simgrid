@@ -16,9 +16,8 @@ int allgather__GB(const void *send_buff, int send_count,
 {
   int num_procs;
   num_procs = comm->size();
-  Colls::gather(send_buff, send_count, send_type, recv_buff, recv_count, recv_type,
-             0, comm);
-  Colls::bcast(recv_buff, (recv_count * num_procs), recv_type, 0, comm);
+  colls::gather(send_buff, send_count, send_type, recv_buff, recv_count, recv_type, 0, comm);
+  colls::bcast(recv_buff, (recv_count * num_procs), recv_type, 0, comm);
 
   return MPI_SUCCESS;
 }

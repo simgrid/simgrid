@@ -78,7 +78,7 @@ int alltoallv__bruck(const void *sendbuf, const int *sendcounts, const int *send
         count++;
       }
       /* Wait for them all. */
-      // Colls::startall(count, requests);
+      // colls::startall(count, requests);
       XBT_DEBUG("<%d> wait for %d requests", rank, count);
       Request::waitall(count, requests, MPI_STATUSES_IGNORE);
       delete[] requests;

@@ -330,8 +330,8 @@ static void smpi_init_options(){
   // return if already called
   if (smpi_cpu_threshold > -1)
     return;
-  simgrid::smpi::Colls::set_collectives();
-  simgrid::smpi::Colls::smpi_coll_cleanup_callback = nullptr;
+  simgrid::smpi::colls::set_collectives();
+  simgrid::smpi::colls::smpi_coll_cleanup_callback = nullptr;
   smpi_cpu_threshold                               = simgrid::config::get_value<double>("smpi/cpu-threshold");
   if (smpi_cpu_threshold < 0)
     smpi_cpu_threshold = DBL_MAX;
@@ -718,8 +718,8 @@ void SMPI_finalize()
   smpi_shared_destroy();
   smpi_deployment_cleanup_instances();
 
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback != nullptr)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback();
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback != nullptr)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback();
 
   MPI_COMM_WORLD = MPI_COMM_NULL;
 

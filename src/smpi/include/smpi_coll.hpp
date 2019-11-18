@@ -14,12 +14,10 @@
 /** @brief MPI collective description */
 
 #define COLL_DEFS(cat, ret, args, args2)                                                                               \
-  static void _XBT_CONCAT(set_, cat)(const std::string& name);                                                         \
-  static s_mpi_coll_description_t _XBT_CONCAT3(mpi_coll_, cat, _description)[];                                        \
-  static int(*cat) args;
+  void _XBT_CONCAT(set_, cat)(const std::string& name);                                                                \
+  extern int(*cat) args;
 
-#define COLL_SIG(cat, ret, args, args2)\
-    static int cat args;
+#define COLL_SIG(cat, ret, args, args2) int cat args;
 
 #define COLL_DESCRIPTION(cat, ret, args, name)                                                                         \
   {                                                                                                                    \
@@ -85,80 +83,77 @@ struct s_mpi_coll_description_t {
   void *coll;
 };
 
-class Colls{
-public:
-  static XBT_PUBLIC void coll_help(const char* category, s_mpi_coll_description_t* table);
-  static XBT_PUBLIC int find_coll_description(s_mpi_coll_description_t* table, const std::string& name,
-                                              const char* desc);
-  static void set_collectives();
+namespace colls {
+XBT_PUBLIC void coll_help(const char* category, s_mpi_coll_description_t* table);
+XBT_PUBLIC int find_coll_description(s_mpi_coll_description_t* table, const std::string& name, const char* desc);
+void set_collectives();
+XBT_PUBLIC s_mpi_coll_description_t* get_smpi_coll_description(const char* name, int rank);
 
-  // for each collective type, create the set_* prototype, the description array and the function pointer
-//  static void set_gather(const std::string& name);
-//  static s_mpi_coll_description_t mpi_coll_gather_description[];
-//  static int(*gather)(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type,
+// for each collective type, create the set_* prototype, the description array and the function pointer
+//  void set_gather(const std::string& name);
+//  extern int(*gather)(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count,
+//  MPI_Datatype recv_type,
 //                      int root, MPI_Comm comm);
-  COLL_APPLY(COLL_DEFS, COLL_GATHER_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_ALLGATHER_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_ALLGATHERV_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_REDUCE_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_ALLREDUCE_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_REDUCE_SCATTER_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_SCATTER_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_BARRIER_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_BCAST_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_ALLTOALL_SIG, "")
-  COLL_APPLY(COLL_DEFS, COLL_ALLTOALLV_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_GATHER_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_ALLGATHER_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_ALLGATHERV_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_REDUCE_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_ALLREDUCE_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_REDUCE_SCATTER_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_SCATTER_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_BARRIER_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_BCAST_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_ALLTOALL_SIG, "")
+COLL_APPLY(COLL_DEFS, COLL_ALLTOALLV_SIG, "")
 
-  // These fairly unused collectives only have one implementation in SMPI
-  static int gatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts, const int* displs,
-                     MPI_Datatype recvtype, int root, MPI_Comm comm);
-  static int scatterv(const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount,
-                      MPI_Datatype recvtype, int root, MPI_Comm comm);
-  static int scan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-  static int exscan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-  static int alltoallw
-         (const void* sendbuf, const int* sendcounts, const int* senddisps, const MPI_Datatype* sendtypes, void* recvbuf, const int* recvcounts,
-          const int* recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm);
+// These fairly unused collectives only have one implementation in SMPI
+int gatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts,
+            const int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm);
+int scatterv(const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype, void* recvbuf,
+             int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
+int scan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+int exscan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+int alltoallw(const void* sendbuf, const int* sendcounts, const int* senddisps, const MPI_Datatype* sendtypes,
+              void* recvbuf, const int* recvcounts, const int* recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm);
 
-  //async collectives
-  static int ibarrier(MPI_Comm comm, MPI_Request* request, int external=1);
-  static int ibcast(void *buf, int count, MPI_Datatype datatype, 
-                   int root, MPI_Comm comm, MPI_Request* request, int external=1);
-  static int igather (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
-                                      MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int igatherv (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                       const int* recvcounts, const int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int iallgather (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                         int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int iallgatherv (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                          const int* recvcounts, const int* displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int iscatter (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                       int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int iscatterv (const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype,
-                                        void* recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int ireduce
-         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int iallreduce
-         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int iscan
-         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int iexscan
-         (const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int ireduce_scatter
-         (const void* sendbuf, void* recvbuf, const int* recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int ireduce_scatter_block
-         (const void* sendbuf, void* recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int ialltoall (const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf,
-                                        int recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int ialltoallv
-         (const void* sendbuf, const int* sendcounts, const int* senddisps, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts,
-          const int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request, int external=1);
-  static int ialltoallw
-         (const void* sendbuf, const int* sendcounts, const int* senddisps, const MPI_Datatype* sendtypes, void* recvbuf, const int* recvcounts,
-          const int* recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request *request, int external=1);
+// async collectives
+int ibarrier(MPI_Comm comm, MPI_Request* request, int external = 1);
+int ibcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request* request,
+           int external = 1);
+int igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+            MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request, int external = 1);
+int igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts,
+             const int* displs, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request, int external = 1);
+int iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+               MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request, int external = 1);
+int iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts,
+                const int* displs, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request, int external = 1);
+int iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+             MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request, int external = 1);
+int iscatterv(const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype, void* recvbuf,
+              int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request, int external = 1);
+int ireduce(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm,
+            MPI_Request* request, int external = 1);
+int iallreduce(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm,
+               MPI_Request* request, int external = 1);
+int iscan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm,
+          MPI_Request* request, int external = 1);
+int iexscan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm,
+            MPI_Request* request, int external = 1);
+int ireduce_scatter(const void* sendbuf, void* recvbuf, const int* recvcounts, MPI_Datatype datatype, MPI_Op op,
+                    MPI_Comm comm, MPI_Request* request, int external = 1);
+int ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op,
+                          MPI_Comm comm, MPI_Request* request, int external = 1);
+int ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+              MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request, int external = 1);
+int ialltoallv(const void* sendbuf, const int* sendcounts, const int* senddisps, MPI_Datatype sendtype, void* recvbuf,
+               const int* recvcounts, const int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request,
+               int external = 1);
+int ialltoallw(const void* sendbuf, const int* sendcounts, const int* senddisps, const MPI_Datatype* sendtypes,
+               void* recvbuf, const int* recvcounts, const int* recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm,
+               MPI_Request* request, int external = 1);
 
-
-  static void (*smpi_coll_cleanup_callback)();
+extern void (*smpi_coll_cleanup_callback)();
 };
 
 /*************

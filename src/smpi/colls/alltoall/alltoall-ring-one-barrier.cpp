@@ -49,7 +49,7 @@ alltoall__ring_one_barrier(const void *send_buff, int send_count,
   send_chunk *= send_count;
   recv_chunk *= recv_count;
 
-  Colls::barrier(comm);
+  colls::barrier(comm);
   for (i = 0; i < num_procs; i++) {
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;

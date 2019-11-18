@@ -67,7 +67,7 @@ int allreduce__rab1(const void *sbuff, void *rbuff,
     }
 
     memcpy(tmp_buf, recv + recv_idx * extent, recv_cnt * extent);
-    Colls::allgather(tmp_buf, recv_cnt, dtype, recv, recv_cnt, dtype, comm);
+    colls::allgather(tmp_buf, recv_cnt, dtype, recv, recv_cnt, dtype, comm);
 
     memcpy(rbuff, recv, count * extent);
     smpi_free_tmp_buffer(recv);
@@ -101,7 +101,7 @@ int allreduce__rab1(const void *sbuff, void *rbuff,
     }
 
     memcpy(tmp_buf, (char *) rbuff + recv_idx * extent, recv_cnt * extent);
-    Colls::allgather(tmp_buf, recv_cnt, dtype, rbuff, recv_cnt, dtype, comm);
+    colls::allgather(tmp_buf, recv_cnt, dtype, rbuff, recv_cnt, dtype, comm);
     smpi_free_tmp_buffer(tmp_buf);
   }
 

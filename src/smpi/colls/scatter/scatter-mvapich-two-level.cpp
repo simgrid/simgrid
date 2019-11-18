@@ -160,7 +160,7 @@ int scatter__mvapich2_two_level_direct(const void *sendbuf,
                   sendcnts[i] = node_sizes[i] * nbytes;
                 }
               }
-              Colls::scatterv(leader_scatter_buf, sendcnts, displs, MPI_BYTE, tmp_buf, nbytes * local_size, MPI_BYTE,
+              colls::scatterv(leader_scatter_buf, sendcnts, displs, MPI_BYTE, tmp_buf, nbytes * local_size, MPI_BYTE,
                               leader_root, leader_comm);
             } else {
               if (leader_comm_rank == leader_root) {
@@ -174,7 +174,7 @@ int scatter__mvapich2_two_level_direct(const void *sendbuf,
                   sendcnts[i] = node_sizes[i] * sendcnt;
                 }
               }
-              Colls::scatterv(sendbuf, sendcnts, displs, sendtype, tmp_buf, nbytes * local_size, MPI_BYTE, leader_root,
+              colls::scatterv(sendbuf, sendcnts, displs, sendtype, tmp_buf, nbytes * local_size, MPI_BYTE, leader_root,
                               leader_comm);
             }
             if (leader_comm_rank == leader_root) {
@@ -336,7 +336,7 @@ int scatter__mvapich2_two_level_binomial(const void *sendbuf,
                   sendcnts[i] = node_sizes[i] * nbytes;
                 }
               }
-              Colls::scatterv(leader_scatter_buf, sendcnts, displs, MPI_BYTE, tmp_buf, nbytes * local_size, MPI_BYTE,
+              colls::scatterv(leader_scatter_buf, sendcnts, displs, MPI_BYTE, tmp_buf, nbytes * local_size, MPI_BYTE,
                               leader_root, leader_comm);
             } else {
               if (leader_comm_rank == leader_root) {
@@ -350,7 +350,7 @@ int scatter__mvapich2_two_level_binomial(const void *sendbuf,
                   sendcnts[i] = node_sizes[i] * sendcnt;
                 }
               }
-              Colls::scatterv(sendbuf, sendcnts, displs, sendtype, tmp_buf, nbytes * local_size, MPI_BYTE, leader_root,
+              colls::scatterv(sendbuf, sendcnts, displs, sendtype, tmp_buf, nbytes * local_size, MPI_BYTE, leader_root,
                               leader_comm);
             }
             if (leader_comm_rank == leader_root) {

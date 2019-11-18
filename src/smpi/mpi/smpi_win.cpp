@@ -46,12 +46,12 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   comm->add_rma_win(this);
   comm->ref();
 
-  Colls::allgather(&(connected_wins_[rank_]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win),
-                         MPI_BYTE, comm);
+  colls::allgather(&(connected_wins_[rank_]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win), MPI_BYTE,
+                   comm);
 
-  Colls::bcast(&(bar_), sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
+  colls::bcast(&(bar_), sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
 
-  Colls::barrier(comm);
+  colls::barrier(comm);
 }
 
 Win::~Win(){
@@ -72,7 +72,7 @@ Win::~Win(){
 
   comm_->remove_rma_win(this);
 
-  Colls::barrier(comm_);
+  colls::barrier(comm_);
   Comm::unref(comm_);
   
   if (rank_ == 0)

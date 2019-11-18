@@ -52,7 +52,7 @@ int alltoallv__pair_mpi_barrier(const void *send_buff, const int *send_counts, c
 
   for (i = 0; i < num_procs; i++) {
     src = dst = rank ^ i;
-    Colls::barrier(comm);
+    colls::barrier(comm);
     Request::sendrecv(send_ptr + send_disps[dst] * send_chunk, send_counts[dst], send_type, dst,
                  tag, recv_ptr + recv_disps[src] * recv_chunk, recv_counts[src], recv_type,
                  src, tag, comm, &s);

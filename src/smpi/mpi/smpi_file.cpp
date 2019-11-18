@@ -39,8 +39,8 @@ namespace smpi{
     }else{
       win_=new Win(list_, 0, 1, MPI_INFO_NULL, comm_);
     }
-    simgrid::smpi::Colls::bcast(&shared_file_pointer_, 1, MPI_AINT, 0, comm);
-    simgrid::smpi::Colls::bcast(&shared_mutex_, 1, MPI_AINT, 0, comm);
+    simgrid::smpi::colls::bcast(&shared_file_pointer_, 1, MPI_AINT, 0, comm);
+    simgrid::smpi::colls::bcast(&shared_mutex_, 1, MPI_AINT, 0, comm);
     if(comm_->rank() != 0)
       intrusive_ptr_add_ref(&*shared_mutex_);
   }
@@ -157,7 +157,7 @@ namespace smpi{
     }
 
     MPI_Offset result;
-    simgrid::smpi::Colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
+    simgrid::smpi::colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
     fh->seek(result, MPI_SEEK_SET);
     int ret = fh->op_all<simgrid::smpi::File::read>(buf, count, datatype, status);
     if(fh->comm_->rank()==fh->comm_->size()-1){
@@ -166,7 +166,7 @@ namespace smpi{
       fh->shared_mutex_->unlock();
     }
     char c;
-    simgrid::smpi::Colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size()-1, fh->comm_);
+    simgrid::smpi::colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size() - 1, fh->comm_);
     return ret;
   }
 
@@ -205,7 +205,7 @@ namespace smpi{
       val=count*datatype->size();
     }
     MPI_Offset result;
-    simgrid::smpi::Colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
+    simgrid::smpi::colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
     fh->seek(result, MPI_SEEK_SET);
     int ret = fh->op_all<simgrid::smpi::File::write>(const_cast<void*>(buf), count, datatype, status);
     if(fh->comm_->rank()==fh->comm_->size()-1){
@@ -214,7 +214,7 @@ namespace smpi{
       fh->shared_mutex_->unlock();
     }
     char c;
-    simgrid::smpi::Colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size()-1, fh->comm_);
+    simgrid::smpi::colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size() - 1, fh->comm_);
     return ret;
   }
 
@@ -228,7 +228,7 @@ namespace smpi{
 
   int File::sync(){
     //no idea
-    return simgrid::smpi::Colls::barrier(comm_);
+    return simgrid::smpi::colls::barrier(comm_);
   }
 
   MPI_Info File::info(){

@@ -54,7 +54,7 @@ alltoall__ring_mpi_barrier(const void *send_buff, int send_count,
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;
 
-    Colls::barrier(comm);
+    colls::barrier(comm);
     Request::sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst,
                  tag, recv_ptr + src * recv_chunk, recv_count, recv_type,
                  src, tag, comm, &s);

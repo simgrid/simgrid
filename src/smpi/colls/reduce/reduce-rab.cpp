@@ -65,7 +65,7 @@
 
    Exa.: size=13 ==> n=3, r=5  (i.e. size == 13 == 2**n+r ==  2**3 + 5)
 
-   The algorithm needs for the execution of one Colls::reduce
+   The algorithm needs for the execution of one colls::reduce
 
    - for r==0
      exec_time = n*(L1+L2)     + buf_lng * (1-1/2**n) * (T1 + T2 + O/d)
@@ -207,7 +207,7 @@ Step 5.n)
      7: { [(a+b)+(c+d)] + [(e+f)+(g+h)] } + { [(i+j)+k] + [l+m] } for H
 
 
-For Colls::allreduce:
+For colls::allreduce:
 ------------------
 
 Step 6.1)
@@ -249,7 +249,7 @@ Step 7)
      on all nodes 0..12
 
 
-For Colls::reduce:
+For colls::reduce:
 ---------------
 
 Step 6.0)
@@ -942,9 +942,9 @@ static int MPI_I_anyReduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Da
   } /* new_prot */
   /*otherwise:*/
   if (is_all)
-   return( Colls::allreduce(Sendbuf, Recvbuf, count, mpi_datatype, mpi_op, comm) );
+    return (colls::allreduce(Sendbuf, Recvbuf, count, mpi_datatype, mpi_op, comm));
   else
-   return( Colls::reduce(Sendbuf,Recvbuf, count,mpi_datatype,mpi_op, root, comm) );
+    return (colls::reduce(Sendbuf, Recvbuf, count, mpi_datatype, mpi_op, root, comm));
 }
 #endif /*REDUCE_LIMITS*/
 

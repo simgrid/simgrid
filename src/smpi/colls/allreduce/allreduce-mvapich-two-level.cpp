@@ -62,7 +62,7 @@ static  int MPIR_Allreduce_reduce_p2p_MV2(const void *sendbuf,
     MPI_Datatype datatype,
     MPI_Op op, MPI_Comm  comm)
 {
-  Colls::reduce(sendbuf,recvbuf,count,datatype,op,0,comm);
+  colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
   return MPI_SUCCESS;
 }
 
@@ -72,7 +72,7 @@ static  int MPIR_Allreduce_reduce_shmem_MV2(const void *sendbuf,
     MPI_Datatype datatype,
     MPI_Op op, MPI_Comm  comm)
 {
-  Colls::reduce(sendbuf,recvbuf,count,datatype,op,0,comm);
+  colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
   return MPI_SUCCESS;
 }
 
@@ -166,7 +166,7 @@ int allreduce__mvapich2_two_level(const void *sendbuf,
 
     /* Broadcasting the mesage from leader to the rest */
     /* Note: shared memory broadcast could improve the performance */
-    mpi_errno = Colls::bcast(recvbuf, count, datatype, 0, shmem_comm);
+    mpi_errno = colls::bcast(recvbuf, count, datatype, 0, shmem_comm);
 
     return (mpi_errno);
 

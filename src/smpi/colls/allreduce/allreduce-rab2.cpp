@@ -47,7 +47,7 @@ int allreduce__rab2(const void *sbuff, void *rbuff,
 
     memcpy(send, sbuff, s_extent * count);
 
-    Colls::alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
+    colls::alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
 
     memcpy(tmp, recv, nbytes);
 
@@ -55,7 +55,7 @@ int allreduce__rab2(const void *sbuff, void *rbuff,
       if (op != MPI_OP_NULL)
         op->apply(recv + s_offset, tmp, &send_size, dtype);
 
-    Colls::allgather(tmp, send_size, dtype, recv, send_size, dtype, comm);
+    colls::allgather(tmp, send_size, dtype, recv, send_size, dtype, comm);
     memcpy(rbuff, recv, count * s_extent);
 
     smpi_free_tmp_buffer(recv);
@@ -69,7 +69,7 @@ int allreduce__rab2(const void *sbuff, void *rbuff,
 
     unsigned char* recv = smpi_get_tmp_recvbuffer(s_extent * send_size * nprocs);
 
-    Colls::alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
+    colls::alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
 
     memcpy((char *) rbuff + r_offset, recv, nbytes);
 
@@ -77,8 +77,7 @@ int allreduce__rab2(const void *sbuff, void *rbuff,
       if (op != MPI_OP_NULL)
         op->apply(recv + s_offset, static_cast<char*>(rbuff) + r_offset, &send_size, dtype);
 
-    Colls::allgather((char *) rbuff + r_offset, send_size, dtype, rbuff, send_size,
-                  dtype, comm);
+    colls::allgather((char*)rbuff + r_offset, send_size, dtype, rbuff, send_size, dtype, comm);
     smpi_free_tmp_buffer(recv);
   }
 

@@ -64,10 +64,10 @@ int PMPI_Win_allocate_shared( MPI_Aint size, int disp_unit, MPI_Info info, MPI_C
        if(ptr==nullptr)
          return MPI_ERR_NO_MEM;
     }
-    
-    simgrid::smpi::Colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);
-    simgrid::smpi::Colls::barrier(comm);
-    
+
+    simgrid::smpi::colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);
+    simgrid::smpi::colls::barrier(comm);
+
     *static_cast<void**>(base) = (char*)ptr+rank*size;
     *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,rank==0);
     retval = MPI_SUCCESS;

@@ -53,8 +53,8 @@ static void init_mv2_alltoall_tables_stampede()
   int agg_table_sum                      = 0;
   mv2_alltoall_tuning_table** table_ptrs = NULL;
   mv2_alltoall_num_ppn_conf              = 3;
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
   mv2_alltoall_thresholds_table                      = new mv2_alltoall_tuning_table*[mv2_alltoall_num_ppn_conf];
   table_ptrs                                         = new mv2_alltoall_tuning_table*[mv2_alltoall_num_ppn_conf];
   mv2_size_alltoall_tuning_table                     = new int[mv2_alltoall_num_ppn_conf];
@@ -367,8 +367,8 @@ static void init_mv2_allgather_tables_stampede()
 {
   int agg_table_sum = 0;
 
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
   mv2_allgather_num_ppn_conf                         = 3;
   mv2_allgather_thresholds_table                     = new mv2_allgather_tuning_table*[mv2_allgather_num_ppn_conf];
   mv2_allgather_tuning_table** table_ptrs            = new mv2_allgather_tuning_table*[mv2_allgather_num_ppn_conf];
@@ -590,8 +590,8 @@ MV2_Gather_function_ptr MV2_Gather_intra_node_function   = NULL;
 static void init_mv2_gather_tables_stampede()
 {
 
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
   mv2_size_gather_tuning_table                       = 7;
   mv2_gather_thresholds_table                               = new mv2_gather_tuning_table[mv2_size_gather_tuning_table];
   mv2_gather_tuning_table mv2_tmp_gather_thresholds_table[] = {
@@ -674,8 +674,8 @@ mv2_allgatherv_tuning_table* mv2_allgatherv_thresholds_table = NULL;
 
 static void init_mv2_allgatherv_tables_stampede()
 {
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
   mv2_size_allgatherv_tuning_table                   = 6;
   mv2_allgatherv_thresholds_table = new mv2_allgatherv_tuning_table[mv2_size_allgatherv_tuning_table];
   mv2_allgatherv_tuning_table mv2_tmp_allgatherv_thresholds_table[] = {
@@ -769,14 +769,14 @@ static int MPIR_Allreduce_mcst_reduce_redscat_gather_MV2(const void* sendbuf, vo
 static int MPIR_Allreduce_reduce_p2p_MV2(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                                          MPI_Comm comm)
 {
-  simgrid::smpi::Colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
+  simgrid::smpi::colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
   return MPI_SUCCESS;
 }
 
 static int MPIR_Allreduce_reduce_shmem_MV2(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                                            MPI_Comm comm)
 {
-  simgrid::smpi::Colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
+  simgrid::smpi::colls::reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
   return MPI_SUCCESS;
 }
 
@@ -786,8 +786,8 @@ static int MPIR_Allreduce_reduce_shmem_MV2(const void* sendbuf, void* recvbuf, i
 
 static void init_mv2_allreduce_tables_stampede()
 {
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
   mv2_size_allreduce_tuning_table                    = 8;
   mv2_allreduce_thresholds_table                     = new mv2_allreduce_tuning_table[mv2_size_allreduce_tuning_table];
   mv2_allreduce_tuning_table mv2_tmp_allreduce_thresholds_table[] = {
@@ -970,8 +970,8 @@ int mv2_intra_node_knomial_factor     = 4;
 static void init_mv2_bcast_tables_stampede()
 {
   // Stampede,
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
   mv2_size_bcast_tuning_table                        = 8;
   mv2_bcast_thresholds_table                         = new mv2_bcast_tuning_table[mv2_size_bcast_tuning_table];
 
@@ -1185,8 +1185,8 @@ int (*MV2_Reduce_intra_function)(const void* sendbuf, void* recvbuf, int count, 
 
 static void init_mv2_reduce_tables_stampede()
 {
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
   /*Stampede*/
   mv2_size_reduce_tuning_table = 8;
   mv2_reduce_thresholds_table                               = new mv2_reduce_tuning_table[mv2_size_reduce_tuning_table];
@@ -1409,8 +1409,8 @@ static int MPIR_Reduce_Scatter_Basic_MV2(const void* sendbuf, void* recvbuf, con
 
 static void init_mv2_reduce_scatter_tables_stampede()
 {
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
   mv2_size_red_scat_tuning_table                     = 6;
   mv2_red_scat_thresholds_table                      = new mv2_red_scat_tuning_table[mv2_size_red_scat_tuning_table];
   mv2_red_scat_tuning_table mv2_tmp_red_scat_thresholds_table[] = {
@@ -1510,8 +1510,8 @@ int MPIR_Scatter_mcst_wrap_MV2(const void* sendbuf, int sendcnt, MPI_Datatype se
 
 static void init_mv2_scatter_tables_stampede()
 {
-  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback == NULL)
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
+  if (simgrid::smpi::colls::smpi_coll_cleanup_callback == NULL)
+    simgrid::smpi::colls::smpi_coll_cleanup_callback = &smpi_coll_cleanup_mvapich2;
 
   int agg_table_sum = 0;
   mv2_scatter_num_ppn_conf              = 3;

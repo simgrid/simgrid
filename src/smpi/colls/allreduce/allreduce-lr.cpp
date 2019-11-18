@@ -97,9 +97,7 @@ int allreduce__lr(const void *sbuf, void *rbuf, int rcount,
   /* when communication size is not divisible by number of process:
      call the native implementation for the remain chunk at the end of the operation */
   if (remainder_flag) {
-    return Colls::allreduce((char *) sbuf + remainder_offset,
-                         (char *) rbuf + remainder_offset, remainder, dtype, op,
-                         comm);
+    return colls::allreduce((char*)sbuf + remainder_offset, (char*)rbuf + remainder_offset, remainder, dtype, op, comm);
   }
 
   return 0;

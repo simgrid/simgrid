@@ -74,8 +74,8 @@ class File{
     MPI_Offset max_offset = (min_offset + count * datatype->size());//cheating, as we don't care about exact data location, we can skip extent
     MPI_Offset* min_offsets = new MPI_Offset[size];
     MPI_Offset* max_offsets = new MPI_Offset[size];
-    simgrid::smpi::Colls::allgather(&min_offset, 1, MPI_OFFSET, min_offsets, 1, MPI_OFFSET, comm_);
-    simgrid::smpi::Colls::allgather(&max_offset, 1, MPI_OFFSET, max_offsets, 1, MPI_OFFSET, comm_);
+    simgrid::smpi::colls::allgather(&min_offset, 1, MPI_OFFSET, min_offsets, 1, MPI_OFFSET, comm_);
+    simgrid::smpi::colls::allgather(&max_offset, 1, MPI_OFFSET, max_offsets, 1, MPI_OFFSET, comm_);
     MPI_Offset min=min_offset;
     MPI_Offset max=max_offset;
     MPI_Offset tot= 0;
@@ -171,15 +171,15 @@ class File{
       seek(min_offset, MPI_SEEK_SET);
       T(this,sendbuf,totreads/datatype->size(),datatype, status);
     }
-    simgrid::smpi::Colls::alltoall(send_sizes, 1, MPI_INT, recv_sizes, 1, MPI_INT, comm_);
+    simgrid::smpi::colls::alltoall(send_sizes, 1, MPI_INT, recv_sizes, 1, MPI_INT, comm_);
     int total_recv=0;
     for(int i=0;i<size;i++){
       recv_disps[i]=total_recv;
       total_recv+=recv_sizes[i];
     }
     //Set buf value to avoid copying dumb data
-    simgrid::smpi::Colls::alltoallv(sendbuf, send_sizes, send_disps, MPI_BYTE,
-                              buf, recv_sizes, recv_disps, MPI_BYTE, comm_);
+    simgrid::smpi::colls::alltoallv(sendbuf, send_sizes, send_disps, MPI_BYTE, buf, recv_sizes, recv_disps, MPI_BYTE,
+                                    comm_);
     status->count=count * datatype->size();
     smpi_free_tmp_buffer(sendbuf);
     delete[] send_sizes;

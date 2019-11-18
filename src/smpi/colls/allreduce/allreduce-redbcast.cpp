@@ -11,8 +11,8 @@ int allreduce__redbcast(const void *buf, void *buf2, int count,
                         MPI_Datatype datatype, MPI_Op op,
                         MPI_Comm comm)
 {
-  Colls::reduce(buf, buf2, count, datatype, op, 0, comm);
-  Colls::bcast(buf2, count, datatype, 0, comm);
+  colls::reduce(buf, buf2, count, datatype, op, 0, comm);
+  colls::bcast(buf2, count, datatype, 0, comm);
   return MPI_SUCCESS;
 }
 }

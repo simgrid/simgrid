@@ -167,8 +167,7 @@ int bcast__NTSB(void *buf, int count, MPI_Datatype datatype,
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
     XBT_WARN("MPI_bcast_NTSB use default MPI_bcast.");
-    Colls::bcast((char *) buf + (pipe_length * increment), remainder, datatype,
-              root, comm);
+    colls::bcast((char*)buf + (pipe_length * increment), remainder, datatype, root, comm);
   }
 
   return MPI_SUCCESS;

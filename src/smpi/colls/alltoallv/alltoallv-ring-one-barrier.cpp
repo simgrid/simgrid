@@ -45,7 +45,7 @@ int alltoallv__ring_one_barrier(const void *send_buff, const int *send_counts, c
   send_chunk = send_type->get_extent();
   recv_chunk = recv_type->get_extent();
 
-  Colls::barrier(comm);
+  colls::barrier(comm);
   for (i = 0; i < num_procs; i++) {
     src = (rank - i + num_procs) % num_procs;
     dst = (rank + i) % num_procs;

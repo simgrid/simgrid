@@ -577,7 +577,7 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
 void BarrierAction::kernel(simgrid::xbt::ReplayAction&)
 {
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("barrier"));
-  Colls::barrier(MPI_COMM_WORLD);
+  colls::barrier(MPI_COMM_WORLD);
   TRACE_smpi_comm_out(my_proc_id);
 }
 
@@ -587,7 +587,7 @@ void BcastAction::kernel(simgrid::xbt::ReplayAction&)
       new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
         -1.0, args.size, -1, Datatype::encode(args.datatype1), ""));
 
-  Colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
+  colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
 }
@@ -599,8 +599,9 @@ void ReduceAction::kernel(simgrid::xbt::ReplayAction&)
         args.comp_size, args.comm_size, -1,
         Datatype::encode(args.datatype1), ""));
 
-  Colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
-      recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL, args.root, MPI_COMM_WORLD);
+  colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
+                recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
+                args.root, MPI_COMM_WORLD);
   private_execute_flops(args.comp_size);
 
   TRACE_smpi_comm_out(my_proc_id);
@@ -611,8 +612,9 @@ void AllReduceAction::kernel(simgrid::xbt::ReplayAction&)
   TRACE_smpi_comm_in(my_proc_id, "action_allreduce", new simgrid::instr::CollTIData("allreduce", -1, args.comp_size, args.comm_size, -1,
         Datatype::encode(args.datatype1), ""));
 
-  Colls::allreduce(send_buffer(args.comm_size * args.datatype1->size()),
-      recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
+  colls::allreduce(send_buffer(args.comm_size * args.datatype1->size()),
+                   recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
+                   MPI_COMM_WORLD);
   private_execute_flops(args.comp_size);
 
   TRACE_smpi_comm_out(my_proc_id);
@@ -625,9 +627,9 @@ void AllToAllAction::kernel(simgrid::xbt::ReplayAction&)
         Datatype::encode(args.datatype1),
         Datatype::encode(args.datatype2)));
 
-  Colls::alltoall(send_buffer(args.send_size * args.comm_size * args.datatype1->size()), args.send_size,
-      args.datatype1, recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()),
-      args.recv_size, args.datatype2, MPI_COMM_WORLD);
+  colls::alltoall(send_buffer(args.send_size * args.comm_size * args.datatype1->size()), args.send_size, args.datatype1,
+                  recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()), args.recv_size, args.datatype2,
+                  MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
 }
@@ -639,12 +641,14 @@ void GatherAction::kernel(simgrid::xbt::ReplayAction&)
 
   if (name == "gather") {
     int rank = MPI_COMM_WORLD->rank();
-    Colls::gather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
-        (rank == args.root) ? recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()) : nullptr, args.recv_size, args.datatype2, args.root, MPI_COMM_WORLD);
+    colls::gather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
+                  (rank == args.root) ? recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()) : nullptr,
+                  args.recv_size, args.datatype2, args.root, MPI_COMM_WORLD);
   }
   else
-    Colls::allgather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
-        recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2, MPI_COMM_WORLD);
+    colls::allgather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
+                     recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2,
+                     MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
 }
@@ -658,14 +662,14 @@ void GatherVAction::kernel(simgrid::xbt::ReplayAction&)
         Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
   if (name == "gatherv") {
-    Colls::gatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
-        (rank == args.root) ? recv_buffer(args.recv_size_sum * args.datatype2->size()) : nullptr,
-        args.recvcounts->data(), args.disps.data(), args.datatype2, args.root, MPI_COMM_WORLD);
+    colls::gatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
+                   (rank == args.root) ? recv_buffer(args.recv_size_sum * args.datatype2->size()) : nullptr,
+                   args.recvcounts->data(), args.disps.data(), args.datatype2, args.root, MPI_COMM_WORLD);
   }
   else {
-    Colls::allgatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
-        recv_buffer(args.recv_size_sum * args.datatype2->size()), args.recvcounts->data(),
-        args.disps.data(), args.datatype2, MPI_COMM_WORLD);
+    colls::allgatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
+                      recv_buffer(args.recv_size_sum * args.datatype2->size()), args.recvcounts->data(),
+                      args.disps.data(), args.datatype2, MPI_COMM_WORLD);
   }
 
   TRACE_smpi_comm_out(my_proc_id);
@@ -678,8 +682,9 @@ void ScatterAction::kernel(simgrid::xbt::ReplayAction&)
         Datatype::encode(args.datatype1),
         Datatype::encode(args.datatype2)));
 
-  Colls::scatter(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
-      (rank == args.root) ? recv_buffer(args.recv_size * args.datatype2->size()) : nullptr, args.recv_size, args.datatype2, args.root, MPI_COMM_WORLD);
+  colls::scatter(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
+                 (rank == args.root) ? recv_buffer(args.recv_size * args.datatype2->size()) : nullptr, args.recv_size,
+                 args.datatype2, args.root, MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
 }
@@ -691,10 +696,10 @@ void ScatterVAction::kernel(simgrid::xbt::ReplayAction&)
         nullptr, Datatype::encode(args.datatype1),
         Datatype::encode(args.datatype2)));
 
-  Colls::scatterv((rank == args.root) ? send_buffer(args.send_size_sum * args.datatype1->size()) : nullptr,
-      args.sendcounts->data(), args.disps.data(), args.datatype1,
-      recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2, args.root,
-      MPI_COMM_WORLD);
+  colls::scatterv((rank == args.root) ? send_buffer(args.send_size_sum * args.datatype1->size()) : nullptr,
+                  args.sendcounts->data(), args.disps.data(), args.datatype1,
+                  recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2, args.root,
+                  MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
 }
@@ -706,9 +711,9 @@ void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction&)
         std::to_string(args.comp_size), /* ugly hack to print comp_size */
         Datatype::encode(args.datatype1)));
 
-  Colls::reduce_scatter(send_buffer(args.recv_size_sum * args.datatype1->size()),
-      recv_buffer(args.recv_size_sum * args.datatype1->size()), args.recvcounts->data(),
-      args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
+  colls::reduce_scatter(send_buffer(args.recv_size_sum * args.datatype1->size()),
+                        recv_buffer(args.recv_size_sum * args.datatype1->size()), args.recvcounts->data(),
+                        args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
 
   private_execute_flops(args.comp_size);
   TRACE_smpi_comm_out(my_proc_id);
@@ -721,8 +726,9 @@ void AllToAllVAction::kernel(simgrid::xbt::ReplayAction&)
         "alltoallv", -1, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
         Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
-  Colls::alltoallv(send_buffer(args.send_buf_size * args.datatype1->size()), args.sendcounts->data(), args.senddisps.data(), args.datatype1,
-      recv_buffer(args.recv_buf_size * args.datatype2->size()), args.recvcounts->data(), args.recvdisps.data(), args.datatype2, MPI_COMM_WORLD);
+  colls::alltoallv(send_buffer(args.send_buf_size * args.datatype1->size()), args.sendcounts->data(),
+                   args.senddisps.data(), args.datatype1, recv_buffer(args.recv_buf_size * args.datatype2->size()),
+                   args.recvcounts->data(), args.recvdisps.data(), args.datatype2, MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
 }

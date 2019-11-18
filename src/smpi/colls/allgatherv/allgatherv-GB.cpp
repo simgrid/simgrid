@@ -15,7 +15,7 @@ int allgatherv__GB(const void *send_buff, int send_count,
                    const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type,
                    MPI_Comm comm)
 {
-  Colls::gatherv(send_buff, send_count, send_type, recv_buff, recv_counts, recv_disps, recv_type, 0, comm);
+  colls::gatherv(send_buff, send_count, send_type, recv_buff, recv_counts, recv_disps, recv_type, 0, comm);
   int num_procs, i, current, max = 0;
   num_procs = comm->size();
   for (i = 0; i < num_procs; i++) {
@@ -23,7 +23,7 @@ int allgatherv__GB(const void *send_buff, int send_count,
     if (current > max)
       max = current;
   }
-  Colls::bcast(recv_buff, max, recv_type, 0, comm);
+  colls::bcast(recv_buff, max, recv_type, 0, comm);
 
   return MPI_SUCCESS;
 }

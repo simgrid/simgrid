@@ -318,7 +318,7 @@ int gather__mvapich2_two_level(const void *sendbuf,
               recvcnts[i] = node_sizes[i] * recvcnt;
             }
           }
-          Colls::gatherv(tmp_buf, local_size * nbytes, MPI_BYTE, recvbuf, recvcnts, displs, recvtype, leader_root,
+          colls::gatherv(tmp_buf, local_size * nbytes, MPI_BYTE, recvbuf, recvcnts, displs, recvtype, leader_root,
                          leader_comm);
         } else {
           /* The root of the gather operation is not the node leader.
@@ -333,7 +333,7 @@ int gather__mvapich2_two_level(const void *sendbuf,
               recvcnts[i] = node_sizes[i] * nbytes;
             }
           }
-          Colls::gatherv(tmp_buf, local_size * nbytes, MPI_BYTE, leader_gather_buf, recvcnts, displs, MPI_BYTE,
+          colls::gatherv(tmp_buf, local_size * nbytes, MPI_BYTE, leader_gather_buf, recvcnts, displs, MPI_BYTE,
                          leader_root, leader_comm);
         }
         if (leader_comm_rank == leader_root) {
