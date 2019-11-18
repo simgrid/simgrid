@@ -6,6 +6,9 @@ S4U:
 - Actor: Merge signals on_migration_start/end into on_host_change
 - Actor: Rename migrate() into set_host()
 
+XML:
+- Parse errors now raise a simgrid::ParseError that you may want to catch.
+
 Kernel:
 - In simgrid::kernel::resource::Model, the methods next_occuring_event*() have
   been renamed to fix a spelling error. As usual, the previous definitions are

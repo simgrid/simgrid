@@ -2,4 +2,4 @@
 $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/flatifier ../platforms/bogus_disk_attachment.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > [  0.000000] [0:maestro@] Parse error at ../platforms/bogus_disk_attachment.xml:19: Unable to attach storage cdisk: host plouf does not exist.
-> [  0.000000] [0:maestro@] Exiting now
+> [  0.000000] [0:maestro@] Exiting now.

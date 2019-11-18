@@ -14,8 +14,8 @@ XBT_PUBLIC void sg_platf_exit();
 
 XBT_PUBLIC void surf_parse_open(const std::string& file);
 XBT_PUBLIC void surf_parse_close();
-XBT_PUBLIC void surf_parse_assert(bool cond, const std::string& msg);
-XBT_ATTRIB_NORETURN XBT_PUBLIC void surf_parse_error(const std::string& msg);
+XBT_PUBLIC void surf_parse_assert(bool cond, std::string&& msg);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void surf_parse_error(std::string&& msg);
 XBT_PUBLIC void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre,
                                            const std::string& post);
 

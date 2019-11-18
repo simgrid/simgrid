@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
@@ -33,19 +34,15 @@ std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary
 /*
  * Helping functions
  */
-void surf_parse_assert(bool cond, const std::string& msg)
+void surf_parse_assert(bool cond, std::string&& msg)
 {
   if (not cond)
-    surf_parse_error(msg);
+    surf_parse_error(std::move(msg));
 }
 
-void surf_parse_error(const std::string& msg)
+void surf_parse_error(std::string&& msg)
 {
-  int lineno = surf_parse_lineno;
-  cleanup();
-  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename.c_str(), lineno, msg.c_str());
-  surf_exit();
-  xbt_die("Exiting now");
+  throw simgrid::ParseError(surf_parse_lineno, surf_parsed_filename, std::move(msg));
 }
 
 void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre, const std::string& post)
@@ -76,7 +73,7 @@ void surf_parse_assert_netpoint(const std::string& hostname, const std::string& 
       break;
     }
   }
-  surf_parse_error(msg);
+  surf_parse_error(std::move(msg));
 }
 
 double surf_parse_get_double(const std::string& s)

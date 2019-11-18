@@ -84,8 +84,7 @@ static std::terminate_handler previous_terminate_handler = nullptr;
 
 static void handler()
 {
-  // Avoid doing crazy things if we get an uncaught exception inside
-  // an uncaught exception
+  // Avoid doing crazy things if we get an uncaught exception inside an uncaught exception
   static std::atomic_flag lock = ATOMIC_FLAG_INIT;
   if (lock.test_and_set()) {
     XBT_ERROR("Handling an exception raised an exception. Bailing out.");
@@ -99,6 +98,13 @@ static void handler()
     std::rethrow_exception(e);
   }
 
+  // Parse error are handled differently, as the call stack does not matter, only the file location
+  catch (simgrid::ParseError& e) {
+    XBT_ERROR("%s", e.what());
+    XBT_ERROR("Exiting now.");
+    std::abort();
+  }
+
   // We manage C++ exception ourselves
   catch (std::exception& e) {
     log_exception(xbt_log_priority_critical, "Uncaught exception", e);
@@ -108,8 +114,7 @@ static void handler()
 
   catch (const simgrid::ForcefulKillException&) {
     XBT_ERROR("Received a ForcefulKillException at the top-level exception handler. Maybe a Java->C++ call that is not "
-              "protected "
-              "in a try/catch?");
+              "protected in a try/catch?");
     show_backtrace(bt);
   }
 
@@ -124,6 +129,7 @@ static void handler()
       std::abort();
     }
   }
+  XBT_INFO("BAM");
 }
 
 void install_exception_handler()
