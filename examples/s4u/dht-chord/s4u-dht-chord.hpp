@@ -6,8 +6,8 @@
 #ifndef S4U_CHORD_HPP
 #define S4U_CHORD_HPP
 #include "simgrid/s4u.hpp"
-#include <random>
 #include <string>
+#include <xbt/random.hpp>
 #include <xbt/str.h>
 
 constexpr double MAX_SIMULATION_TIME              = 1000;
@@ -20,8 +20,6 @@ constexpr double SLEEP_DELAY                      = 4.9999;
 extern int nb_bits;
 extern int nb_keys;
 extern int timeout;
-
-extern std::mt19937 generator;
 
 /* Types of tasks exchanged between nodes. */
 enum e_message_type_t {

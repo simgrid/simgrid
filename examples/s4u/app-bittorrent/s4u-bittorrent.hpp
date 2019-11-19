@@ -7,8 +7,8 @@
 #ifndef BITTORRENT_BITTORRENT_HPP_
 #define BITTORRENT_BITTORRENT_HPP_
 
-#include <random>
 #include <simgrid/s4u.hpp>
+#include <xbt/random.hpp>
 
 constexpr char TRACKER_MAILBOX[] = "tracker_mailbox";
 /** Max number of peers sent by the tracker to clients */
@@ -76,7 +76,5 @@ public:
   Message(e_message_type type, int peer_id, simgrid::s4u::Mailbox* return_mailbox, int piece)
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox), piece(piece){};
 };
-
-extern std::default_random_engine generator;
 
 #endif /* BITTORRENT_BITTORRENT_HPP_ */

@@ -283,6 +283,7 @@ set(XBT_SRC
   src/xbt/memory_map.hpp
   src/xbt/OsSemaphore.hpp
   src/xbt/parmap.cpp
+  src/xbt/random.cpp
   src/xbt/snprintf.c
   src/xbt/string.cpp
   src/xbt/xbt_log_appender_file.cpp
@@ -774,6 +775,7 @@ set(headers_to_install
   include/xbt/module.h
   include/xbt/parmap.h
   include/xbt/range.hpp
+  include/xbt/random.hpp
   include/xbt/replay.hpp
   include/xbt/signal.hpp
   include/xbt/str.h
