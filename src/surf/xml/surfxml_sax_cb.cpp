@@ -40,6 +40,10 @@ void surf_parse_assert(bool cond, std::string&& msg)
     surf_parse_error(std::move(msg));
 }
 
+void surf_parse_error(const char* msg) {
+  throw simgrid::ParseError(surf_parse_lineno, surf_parsed_filename, std::string(msg));
+}
+
 void surf_parse_error(std::string&& msg)
 {
   throw simgrid::ParseError(surf_parse_lineno, surf_parsed_filename, std::move(msg));

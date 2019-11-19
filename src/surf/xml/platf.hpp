@@ -6,7 +6,9 @@
 #ifndef SURF_SURFXML_PARSE_HPP
 #define SURF_SURFXML_PARSE_HPP
 
+#include <xbt/base.h>
 #include <xbt/signal.hpp>
+#include <vector>
 
 /* Module management functions */
 XBT_PUBLIC void sg_platf_init();
@@ -15,6 +17,9 @@ XBT_PUBLIC void sg_platf_exit();
 XBT_PUBLIC void surf_parse_open(const std::string& file);
 XBT_PUBLIC void surf_parse_close();
 XBT_PUBLIC void surf_parse_assert(bool cond, std::string&& msg);
+SG_BEGIN_DECL
+XBT_ATTRIB_NORETURN XBT_PUBLIC void surf_parse_error(const char* msg);
+SG_END_DECL
 XBT_ATTRIB_NORETURN XBT_PUBLIC void surf_parse_error(std::string&& msg);
 XBT_PUBLIC void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre,
                                            const std::string& post);

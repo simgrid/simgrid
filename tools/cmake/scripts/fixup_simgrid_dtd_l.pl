@@ -10,8 +10,14 @@ while (<>) {
 
     # Accept the alternative DTD location
     if (/DOCTYPE.*simgrid.org.simgrid.dtd/)  {
-	print ' "<!DOCTYPE"{S}"platform"{S}SYSTEM{S}("\'http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\'"|"\\"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\\""){s}">" SET(ROOT_surfxml_platform);'."\n"; 
+	print ' "<!DOCTYPE"{S}"platform"{S}SYSTEM{S}("\'http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\'"|"\\"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\\""){s}">" SET(ROOT_surfxml_platform);'."\n";
     }
+
+    # Completely rewrite the error handling mechanism to use exceptions instead of printing to stderr
+    if (/fprintf.stderr, .*? flexml_err_msg.;/) {
+	print('    surf_parse_error(flexml_err_msg);'."\n");
+	next;
+    }	
     
     # Actually outputs the resulting line
     print;
