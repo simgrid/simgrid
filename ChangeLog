@@ -18,6 +18,7 @@ Kernel:
 
 XBT:
 - Remove unused parameter 'free_ctn' for xbt_dict_set() and xbt_dict_set_ext().
+- New module: random, providing classical random numbers generators.
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - GH#31: [MC] please provide an option to make MPI_Send asynchronous
