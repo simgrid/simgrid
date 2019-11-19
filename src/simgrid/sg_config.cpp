@@ -392,6 +392,10 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::declare_flag<double>("smpi/shared-malloc-blocksize",
                                         "Size of the bogus file which will be created for global shared allocations",
                                         1UL << 20);
+  simgrid::config::declare_flag<double>("smpi/auto-shared-malloc-thresh",
+                                        "Threshold size for the automatic sharing of memory",
+                                        0);
+
   simgrid::config::declare_flag<std::string>("smpi/shared-malloc-hugepage",
                                              "Path to a mounted hugetlbfs, to use huge pages with shared malloc.", "");
 

@@ -342,6 +342,14 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   return mem;
 }
 
+
+void *smpi_shared_malloc_intercept(size_t size, const char *file, int line) {
+  if( simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh") == 0 || size < simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh"))
+    return ::operator new(size);
+  else
+    return smpi_shared_malloc(size, file, line);
+}
+
 void *smpi_shared_malloc(size_t size, const char *file, int line) {
   if (size > 0 && smpi_cfg_shared_malloc == SharedMallocType::LOCAL) {
     return smpi_shared_malloc_local(size, file, line);
@@ -427,7 +435,10 @@ void smpi_shared_free(void *ptr)
     snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
     if (meta == allocs_metadata.end()) {
-      XBT_WARN("Cannot free: %p was not shared-allocated by SMPI - maybe its size was 0?", ptr);
+      if (simgrid::config::get_value<double>("smpi/auto_shared_malloc_thresh") > 0)//this free belongs to a malloc under the threshold.
+        ::operator delete(ptr);
+      else
+        XBT_WARN("Cannot free: %p was not shared-allocated by SMPI - maybe its size was 0?", ptr);
       return;
     }
     shared_data_t* data = &meta->second.data->second;

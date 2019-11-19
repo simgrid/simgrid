@@ -34,6 +34,8 @@ int smpi_getopt_long(int argc, char* const* argv, const char* options, const str
                      int* opt_index);
 int smpi_getopt(int argc, char* const* argv, const char* options);
 
+void* smpi_shared_malloc_intercept(size_t size, const char* file, int line);
+void smpi_shared_free(void* data);
 #ifdef __cplusplus
 } // extern "C"
 #endif

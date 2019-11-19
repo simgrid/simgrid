@@ -6,6 +6,7 @@
 #ifndef SAMPI_H_
 #define SAMPI_H_
 
+#define SAMPI_OVERRIDEN_MALLOC
 #include <stdlib.h>
 #include <smpi/smpi.h>
 
@@ -14,6 +15,8 @@
   type _XBT_CONCAT(AP, name) args;
 
 #ifndef HAVE_SMPI
+#undef malloc
+#undef free
 // Internally disable these overrides (HAVE_SMPI is only defined when building the library)
 #define malloc(nbytes) _sampi_malloc(nbytes)
 #define calloc(n_elm, elm_size) _sampi_calloc((n_elm), (elm_size))

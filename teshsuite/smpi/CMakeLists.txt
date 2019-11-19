@@ -17,7 +17,7 @@ if(enable_smpi)
   endforeach()
 
   if(NOT WIN32)
-    foreach(x macro-shared macro-partial-shared macro-partial-shared-communication )
+    foreach(x macro-shared auto-shared macro-partial-shared macro-partial-shared-communication )
       add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
       target_link_libraries(${x}  simgrid)
       set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -38,7 +38,7 @@ endif()
 foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast
     coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
     type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization
-    macro-shared macro-partial-shared macro-partial-shared-communication
+    macro-shared auto-shared macro-partial-shared macro-partial-shared-communication
     io-simple io-simple-at io-all io-all-at io-shared io-ordered)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
@@ -62,6 +62,7 @@ set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
 if(enable_smpi)
   if(NOT WIN32)
     ADD_TESH_FACTORIES(tesh-smpi-macro-shared "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-shared macro-shared.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-auto-shared "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/auto-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/auto-shared auto-shared.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared macro-partial-shared.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared-communication "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared-communication --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared-communication macro-partial-shared-communication.tesh)
   endif()
