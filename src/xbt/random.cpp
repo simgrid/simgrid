@@ -39,24 +39,12 @@ int uniform_int(int min, int max)
 
 int xbt_uniform_int(int min, int max)
 {
-  unsigned long gmin   = mt19937_gen.min();
-  unsigned long gmax   = mt19937_gen.max();
-  unsigned long grange = gmax - gmin + 1;
   unsigned long range  = max - min + 1;
+  xbt_assert(range > 0, "Overflow in the uniform integer distribution, please use a smaller range.");
   xbt_assert(
       min <= max,
       "The maximum value for the uniform integer distribution must be greater than or equal to the minimum value");
-  xbt_assert(range <= grange, "The current implementation of the uniform integer distribution does not allow range to "
-                              "be higher than mt19937's range");
-  unsigned long mult       = grange / range;
-  unsigned long maxallowed = gmin + (mult + 1) * range - 1;
-  while (true) {
-    unsigned long value = mt19937_gen();
-    if (value > maxallowed) {
-    } else {
-      return value % range + min;
-    }
-  }
+  return min + (int)(range * xbt_uniform_real(0, 1));
 }
 
 double uniform_real(double min, double max)
