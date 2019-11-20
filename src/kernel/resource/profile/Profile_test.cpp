@@ -9,10 +9,12 @@
 #include "src/kernel/resource/profile/DatedValue.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
+#include "src/kernel/resource/profile/StochasticDatedValue.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include "xbt/log.h"
 #include "xbt/misc.h"
+#include "xbt/random.hpp"
 
 #include <cmath>
 
@@ -61,6 +63,14 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
   }
   tmgr_finalize();
   return res;
+}
+
+static std::vector<simgrid::kernel::profile::StochasticDatedValue> trace2selist(const char* str)
+{
+  simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
+  std::vector<simgrid::kernel::profile::StochasticDatedValue> stocevlist = trace->stochastic_event_list;
+  tmgr_finalize();
+  return stocevlist;
 }
 
 TEST_CASE("kernel::profile: Resource profiles, defining the external load", "kernel::profile")
@@ -140,6 +150,75 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
     want.push_back(simgrid::kernel::profile::DatedValue(10, 1));
     want.push_back(simgrid::kernel::profile::DatedValue(15, 2));
     want.push_back(simgrid::kernel::profile::DatedValue(20, 1));
+
+    REQUIRE(want == got);
+  }
+
+  SECTION("One stochastic event (parsing)")
+  {
+    std::vector<simgrid::kernel::profile::StochasticDatedValue> got = trace2selist("STOCHASTIC\n"
+                                                                                   "DET 0 UNIF 10 20");
+
+    std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
+    want.push_back(simgrid::kernel::profile::StochasticDatedValue(0, -1)); // The initial fake event
+    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {0},
+                                                                  simgrid::kernel::profile::Dist_Unif, {10, 20}));
+
+    REQUIRE(want == got);
+  }
+
+  SECTION("Several stochastic events (all possible parsing forms)")
+  {
+    std::vector<simgrid::kernel::profile::StochasticDatedValue> got = trace2selist("STOCHASTIC\n"
+                                                                                   "DET 0 DET 4\n"
+                                                                                   "NORMAL 25 10 DET 3\n"
+                                                                                   "UNIF 10 20 NORMAL 25 10\n"
+                                                                                   "DET 5 UNIF 5 25");
+
+    std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
+    want.push_back(simgrid::kernel::profile::StochasticDatedValue(0, -1));
+    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {0},
+                                                                  simgrid::kernel::profile::Dist_Det, {4}));
+    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Norm, {25, 10},
+                                                                  simgrid::kernel::profile::Dist_Det, {3}));
+    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Unif, {10, 20},
+                                                                  simgrid::kernel::profile::Dist_Norm, {25, 10}));
+    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {5},
+                                                                  simgrid::kernel::profile::Dist_Unif, {5, 25}));
+
+    REQUIRE(want == got);
+  }
+
+  SECTION("Two stochastic events (drawing each distribution)")
+  {
+    simgrid::xbt::random::set_mersenne_seed(12345);
+    std::vector<simgrid::kernel::profile::DatedValue> got = trace2vector("STOCHASTIC\n"
+                                                                         "DET 0 UNIF 10 20\n"
+                                                                         "EXP 0.05 NORMAL 15 5");
+
+    std::vector<simgrid::kernel::profile::DatedValue> want;
+    // The following values were drawn using the XBT_RNG_xbt method /outside/ the testcase.
+    want.push_back(simgrid::kernel::profile::DatedValue(0, 19.29616086867082813683));
+    want.push_back(simgrid::kernel::profile::DatedValue(2.32719992449416279712, 20.16807234800742065772));
+
+    REQUIRE(want == got);
+  }
+
+  SECTION("Two stochastic events, with a loop")
+  {
+    simgrid::xbt::random::set_mersenne_seed(12345);
+    std::vector<simgrid::kernel::profile::DatedValue> got = trace2vector("STOCHASTIC LOOP\n"
+                                                                         "DET 0 UNIF 10 20\n"
+                                                                         "EXP 0.05 NORMAL 15 5\n"
+                                                                         "UNIF 1 2 DET 0");
+
+    // In this case, the main use of the last stochastic event is to set when the first event takes place.
+
+    std::vector<simgrid::kernel::profile::DatedValue> want;
+    want.push_back(simgrid::kernel::profile::DatedValue(0, 19.29616086867082813683));
+    want.push_back(simgrid::kernel::profile::DatedValue(2.32719992449416279712, 20.16807234800742065772));
+    want.push_back(simgrid::kernel::profile::DatedValue(3.51111873684917075167, 0));
+    want.push_back(simgrid::kernel::profile::DatedValue(3.51111873684917075167, 10.39759496468994726115));
 
     REQUIRE(want == got);
   }
