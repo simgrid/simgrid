@@ -105,6 +105,7 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
   boost::split(list, input, boost::is_any_of("\n\r"));
   for (auto val : list) {
     simgrid::kernel::profile::DatedValue event;
+    simgrid::kernel::profile::StochasticDatedValue stochevent;
     linecount++;
     boost::trim(val);
     if (val[0] == '#' || val[0] == '\0' || val[0] == '%') // pass comments
