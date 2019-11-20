@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
-#include "src/statmc/rng.hpp"
 #include "xbt.h"
 #include "xbt/random.hpp"
 #include <math.h>
