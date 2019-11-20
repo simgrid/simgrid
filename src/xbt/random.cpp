@@ -40,11 +40,12 @@ int uniform_int(int min, int max)
 int xbt_uniform_int(int min, int max)
 {
   unsigned long range  = max - min + 1;
+  unsigned long value  = mt19937_gen();
   xbt_assert(range > 0, "Overflow in the uniform integer distribution, please use a smaller range.");
   xbt_assert(
       min <= max,
       "The maximum value for the uniform integer distribution must be greater than or equal to the minimum value");
-  return min + (int)(range * xbt_uniform_real(0, 1));
+  return value % range + min;
 }
 
 double uniform_real(double min, double max)
