@@ -17,23 +17,16 @@
   void _XBT_CONCAT(set_, cat)(const std::string& name);                                                                \
   extern int(*cat) args;
 
-#define COLL_SIG(cat, ret, args, args2) int cat args;
-
 #define COLL_DESCRIPTION(cat, ret, args, name)                                                                         \
   {                                                                                                                    \
     _XBT_STRINGIFY(name)                                                                                               \
     , _XBT_STRINGIFY(cat) " " _XBT_STRINGIFY(name) " collective", (void*)_XBT_CONCAT3(cat, __, name)        \
   }
 
-#define COLL_PROTO(cat, ret, args, name)                                                                               \
-  ret _XBT_CONCAT3(cat, __, name) args;
-
 #define COLL_UNPAREN(...)  __VA_ARGS__
 
 #define COLL_APPLY(action, sig, name) action(sig, name)
 #define COLL_COMMA ,
-#define COLL_NOsep
-#define COLL_NOTHING(...)
 
 #define COLL_GATHER_SIG gather, int, \
                       (const void *send_buff, int send_count, MPI_Datatype send_type, \
@@ -89,7 +82,7 @@ XBT_PUBLIC int find_coll_description(s_mpi_coll_description_t* table, const std:
 void set_collectives();
 XBT_PUBLIC s_mpi_coll_description_t* get_smpi_coll_description(const char* name, int rank);
 
-// for each collective type, create the set_* prototype, the description array and the function pointer
+// for each collective type, create the set_* prototype and the function pointer
 //  void set_gather(const std::string& name);
 //  extern int(*gather)(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count,
 //                      MPI_Datatype recv_type, int root, MPI_Comm comm);
