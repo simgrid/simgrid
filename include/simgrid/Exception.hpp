@@ -158,21 +158,13 @@ public:
   }
 };
 
-class XBT_PUBLIC ParseError : public Exception, public std::invalid_argument {
-  int line_;
-  std::string file_;
-  std::string msg_;
-  char* rendered_what = nullptr;
-
+/** Exception raised when something is going wrong during the parsing of XML files */
+class ParseError : public Exception {
 public:
-  ParseError(int line, std::string& file, std::string&& msg)
-      : Exception(XBT_THROW_POINT, std::move(msg)), std::invalid_argument(msg), line_(line), file_(file), msg_(msg)
+  ParseError(const std::string& file, int line, const std::string& msg)
+      : Exception(XBT_THROW_POINT, xbt::string_printf("Parse error at %s:%d: %s", file.c_str(), line, msg.c_str()))
   {
-    rendered_what = bprintf("Parse error at %s:%d: %s", file_.c_str(), line_, msg_.c_str());
   }
-  ~ParseError() { free(rendered_what); }
-
-  const char* what() const noexcept override { return rendered_what; }
 };
 
 class XBT_PUBLIC ForcefulKillException {
