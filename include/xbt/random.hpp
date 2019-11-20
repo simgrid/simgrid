@@ -11,10 +11,18 @@
 namespace simgrid {
 namespace xbt {
 namespace random {
+enum xbt_random_method { XBT_RNG_xbt, XBT_RNG_std };
+
+void use_xbt();
+void use_std();
 int uniform_int(int, int);
+int xbt_uniform_int(int, int);
 double uniform_real(double, double);
+double xbt_uniform_real(double, double);
 double exponential(double);
+double xbt_exponential(double);
 double normal(double, double);
+double xbt_normal(double, double);
 void set_mersenne_seed(int);
 } // namespace random
 } // namespace xbt
