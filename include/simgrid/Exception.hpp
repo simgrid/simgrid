@@ -64,6 +64,12 @@ public:
   ~ImpossibleError();
 };
 
+class XBT_PUBLIC InitializationError : public std::logic_error {
+public:
+  explicit InitializationError(const std::string& arg) : std::logic_error(arg) {}
+  ~InitializationError();
+};
+
 class XBT_PUBLIC UnimplementedError : public std::logic_error {
 public:
   explicit UnimplementedError(const std::string& arg) : std::logic_error(arg) {}
