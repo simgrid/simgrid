@@ -6,24 +6,18 @@
 #ifndef SIMGRID_XBT_RANDOM_HPP
 #define SIMGRID_XBT_RANDOM_HPP
 
-#include <random>
-
 namespace simgrid {
 namespace xbt {
 namespace random {
-enum xbt_random_method { XBT_RNG_xbt, XBT_RNG_std };
 
-void use_xbt();
-void use_std();
-int uniform_int(int, int);
-int xbt_uniform_int(int, int);
-double uniform_real(double, double);
-double xbt_uniform_real(double, double);
-double exponential(double);
-double xbt_exponential(double);
-double normal(double, double);
-double xbt_normal(double, double);
+void set_implem_xbt();
+void set_implem_std();
 void set_mersenne_seed(int);
+
+int uniform_int(int, int);
+double uniform_real(double, double);
+double exponential(double);
+double normal(double, double);
 } // namespace random
 } // namespace xbt
 } // namespace simgrid
