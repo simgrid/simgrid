@@ -8,6 +8,7 @@
 
 #include <simgrid/forward.h>
 #include <smpi/forward.hpp>
+#include <smpi/smpi_helpers_internal.h>
 #include <xbt/function_types.h>
 
 #include <stddef.h>
