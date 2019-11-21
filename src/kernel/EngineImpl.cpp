@@ -12,9 +12,7 @@
 #include "src/simix/smx_private.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
-
-extern int surf_parse_lineno;
+#include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 
 namespace simgrid {
 namespace kernel {

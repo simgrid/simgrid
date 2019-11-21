@@ -15,8 +15,6 @@
 #define COLL_DEFS(cat, ret, args, args2)                                                                               \
   extern int(*cat) args;
 
-#define COLL_SIG(cat, ret, args, args2) int cat args;
-
 #define COLL_UNPAREN(...)  __VA_ARGS__
 #define COLL_APPLY(action, sig, name) action(sig, name)
 
@@ -73,7 +71,7 @@ void set_bcast(const std::string& name);
 void set_alltoall(const std::string& name);
 void set_alltoallv(const std::string& name);
 
-// for each collective type, create the set_* prototype, the description array and the function pointer
+// for each collective type, create the function pointer
 //  extern int(*gather)(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count,
 //                      MPI_Datatype recv_type, int root, MPI_Comm comm);
 COLL_APPLY(COLL_DEFS, COLL_GATHER_SIG, "")
