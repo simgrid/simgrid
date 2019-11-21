@@ -435,10 +435,7 @@ void smpi_shared_free(void *ptr)
     snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
     if (meta == allocs_metadata.end()) {
-      if (simgrid::config::get_value<double>("smpi/auto_shared_malloc_thresh") > 0)//this free belongs to a malloc under the threshold.
-        ::operator delete(ptr);
-      else
-        XBT_WARN("Cannot free: %p was not shared-allocated by SMPI - maybe its size was 0?", ptr);
+      ::operator delete(ptr);
       return;
     }
     shared_data_t* data = &meta->second.data->second;
@@ -459,11 +456,17 @@ void smpi_shared_free(void *ptr)
     auto meta = allocs_metadata.find(ptr);
     if (meta != allocs_metadata.end()){
       meta->second.data->second.count--;
-      if(meta->second.data->second.count==0)
+      if(meta->second.data->second.count==0){
         delete meta->second.data;
+        allocs_metadata.erase(ptr);
+      }
+      XBT_DEBUG("Shared free - Global - of %p", ptr);
+      munmap(ptr, meta->second.size);
+    }else{
+      ::operator delete(ptr);
+      return;
     }
-    XBT_DEBUG("Shared free - Global - of %p", ptr);
-    munmap(ptr, meta->second.size);
+
   } else {
     XBT_DEBUG("Classic deallocation of %p", ptr);
     ::operator delete(ptr);
