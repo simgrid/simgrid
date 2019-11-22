@@ -34,19 +34,15 @@ std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary
 /*
  * Helping functions
  */
-void surf_parse_assert(bool cond, std::string&& msg)
+void surf_parse_assert(bool cond, const std::string& msg)
 {
   if (not cond)
-    surf_parse_error(std::move(msg));
+    surf_parse_error(msg);
 }
 
-void surf_parse_error(const char* msg) {
-  throw simgrid::ParseError(surf_parse_lineno, surf_parsed_filename, std::string(msg));
-}
-
-void surf_parse_error(std::string&& msg)
+void surf_parse_error(const std::string& msg)
 {
-  throw simgrid::ParseError(surf_parse_lineno, surf_parsed_filename, std::move(msg));
+  throw simgrid::ParseError(surf_parsed_filename, surf_parse_lineno, msg);
 }
 
 void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre, const std::string& post)

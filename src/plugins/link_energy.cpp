@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/surf/network_interface.hpp"
@@ -229,7 +230,7 @@ void sg_link_energy_plugin_init()
 double sg_link_get_consumed_energy(sg_link_t link)
 {
   if (not LinkEnergy::EXTENSION_ID.valid())
-    throw std::logic_error("The Energy plugin is not active. Please call sg_link_energy_plugin_init() before calling "
-                           "sg_link_get_consumed_energy().");
+    throw simgrid::xbt::InitializationError("The Energy plugin is not active. Please call sg_link_energy_plugin_init() "
+                                            "before calling sg_link_get_consumed_energy().");
   return link->extension<LinkEnergy>()->get_consumed_energy();
 }

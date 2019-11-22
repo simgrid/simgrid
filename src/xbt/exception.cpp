@@ -27,8 +27,9 @@ void _xbt_throw(char* message, int value, const char* file, int line, const char
 namespace simgrid {
 namespace xbt {
 
-ImpossibleError::~ImpossibleError()       = default;
-UnimplementedError::~UnimplementedError() = default;
+ImpossibleError::~ImpossibleError()         = default;
+InitializationError::~InitializationError() = default;
+UnimplementedError::~UnimplementedError()   = default;
 
 void log_exception(e_xbt_log_priority_t prio, const char* context, std::exception const& exception)
 {

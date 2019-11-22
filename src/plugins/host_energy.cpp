@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
@@ -584,8 +585,8 @@ void sg_host_energy_update_all()
 static void ensure_plugin_inited()
 {
   if (not HostEnergy::EXTENSION_ID.valid())
-    throw std::logic_error("The Energy plugin is not active. Please call sg_host_energy_plugin_init() before calling "
-                           "any function related to that plugin.");
+    throw simgrid::xbt::InitializationError("The Energy plugin is not active. Please call sg_host_energy_plugin_init() "
+                                            "before calling any function related to that plugin.");
 }
 
 /** @ingroup plugin_host_energy
