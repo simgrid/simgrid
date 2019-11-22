@@ -9,7 +9,7 @@
 #include <random>
 #include <cmath>
 
-#define EpsilonApprox(a) Catch::Matchers::WithinAbs(a, 100 * std::numeric_limits<double>::epsilon())
+#define EpsilonApprox(a) Catch::Matchers::WithinAbs((a), 100 * std::numeric_limits<double>::epsilon())
 
 TEST_CASE("xbt::random: Random Number Generation")
 {
