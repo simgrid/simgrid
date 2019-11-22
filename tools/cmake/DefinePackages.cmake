@@ -157,6 +157,14 @@ set(SMPI_SRC
   src/smpi/bindings/smpi_f77_comm.cpp
   src/smpi/bindings/smpi_f77_request.cpp
   src/smpi/bindings/smpi_f77_type.cpp
+  src/smpi/colls/smpi_coll.cpp
+  src/smpi/colls/smpi_nbc_impl.cpp
+  src/smpi/colls/smpi_automatic_selector.cpp
+  src/smpi/colls/smpi_default_selector.cpp
+  src/smpi/colls/smpi_mpich_selector.cpp
+  src/smpi/colls/smpi_intel_mpi_selector.cpp
+  src/smpi/colls/smpi_openmpi_selector.cpp
+  src/smpi/colls/smpi_mvapich2_selector.cpp
   src/smpi/colls/allgather/allgather-2dmesh.cpp
   src/smpi/colls/allgather/allgather-3dmesh.cpp
   src/smpi/colls/allgather/allgather-GB.cpp
@@ -256,14 +264,6 @@ set(SMPI_SRC
   src/smpi/colls/reduce/reduce-rab.cpp
   src/smpi/colls/scatter/scatter-ompi.cpp
   src/smpi/colls/scatter/scatter-mvapich-two-level.cpp
-  src/smpi/colls/smpi_nbc_impl.cpp
-  src/smpi/colls/smpi_automatic_selector.cpp
-  src/smpi/colls/smpi_default_selector.cpp
-  src/smpi/colls/smpi_mpich_selector.cpp
-  src/smpi/colls/smpi_intel_mpi_selector.cpp
-  src/smpi/colls/smpi_openmpi_selector.cpp
-  src/smpi/colls/smpi_mvapich2_selector.cpp
-  src/smpi/colls/smpi_coll.cpp
   )
 
 set(XBT_SRC
