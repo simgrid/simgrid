@@ -27,7 +27,7 @@ static void watcher()
              link1->get_latency() * 1000, link2->get_bandwidth() / 1000, link2->get_latency() * 1000);
     simgrid::s4u::this_actor::sleep_for(1);
   }
-};
+}
 
 int main(int argc, char* argv[])
 {

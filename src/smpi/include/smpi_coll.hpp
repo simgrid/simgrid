@@ -138,7 +138,7 @@ int ialltoallw(const void* sendbuf, const int* sendcounts, const int* senddisps,
                MPI_Request* request, int external = 1);
 
 extern void (*smpi_coll_cleanup_callback)();
-};
+}
 
 /***********************************************
  * Prototypes of each and every implementation *

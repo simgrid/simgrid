@@ -43,7 +43,7 @@ using simgrid::s4u::Mailbox;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
-PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>);
+PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>)
 
 namespace {
 

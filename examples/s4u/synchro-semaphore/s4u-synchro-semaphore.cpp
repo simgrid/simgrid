@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 const char* buffer;                                                        /* Where the data is exchanged */
 simgrid::s4u::SemaphorePtr sem_empty = simgrid::s4u::Semaphore::create(1); /* indicates whether the buffer is empty */
 simgrid::s4u::SemaphorePtr sem_full  = simgrid::s4u::Semaphore::create(0); /* indicates whether the buffer is full */
-;
+
 
 static void producer(std::vector<std::string>* args)
 {

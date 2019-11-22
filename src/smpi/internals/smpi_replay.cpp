@@ -563,8 +563,7 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
         sender_receiver.push_back({req->src(), req->dst()});
       }
     }
-    MPI_Status status[count_requests];
-    Request::waitall(count_requests, &(reqs.data())[0], status);
+    Request::waitall(count_requests, &(reqs.data())[0], MPI_STATUSES_IGNORE);
     req_storage.get_store().clear();
 
     for (auto& pair : sender_receiver) {
@@ -807,15 +806,15 @@ void smpi_replay_main(int rank, const char* trace_filename)
   unsigned int count_requests = storage[simgrid::s4u::this_actor::get_pid()].size();
   XBT_DEBUG("There are %ud elements in reqq[*]", count_requests);
   if (count_requests > 0) {
-    MPI_Request requests[count_requests];
-    MPI_Status status[count_requests];
+    MPI_Request* requests= new MPI_Request[count_requests];
     unsigned int i=0;
 
     for (auto const& pair : storage[simgrid::s4u::this_actor::get_pid()].get_store()) {
       requests[i] = pair.second;
       i++;
     }
-    simgrid::smpi::Request::waitall(count_requests, requests, status);
+    simgrid::smpi::Request::waitall(count_requests, requests, MPI_STATUSES_IGNORE);
+    delete[] requests;
   }
   active_processes--;
 

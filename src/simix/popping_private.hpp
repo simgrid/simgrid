@@ -93,20 +93,20 @@ template <typename T> struct marshal_t {
   inline T unmarshal_raw(type<T>, u_smx_scalar const& simcall)                                                         \
   { /* Exactly same as unmarshal. It differs only for intrusive_ptr */ return simcall.field; }
 
-SIMIX_MARSHAL(bool, b);
-SIMIX_MARSHAL(char, c);
-SIMIX_MARSHAL(short, s);
-SIMIX_MARSHAL(int, i);
-SIMIX_MARSHAL(long, l);
-SIMIX_MARSHAL(unsigned char, uc);
-SIMIX_MARSHAL(unsigned short, us);
-SIMIX_MARSHAL(unsigned int, ui);
-SIMIX_MARSHAL(unsigned long, ul);
-SIMIX_MARSHAL(unsigned long long, ull);
-SIMIX_MARSHAL(long long, ll);
-SIMIX_MARSHAL(float, d);
-SIMIX_MARSHAL(double, d);
-SIMIX_MARSHAL(FPtr, fp);
+SIMIX_MARSHAL(bool, b)
+SIMIX_MARSHAL(char, c)
+SIMIX_MARSHAL(short, s)
+SIMIX_MARSHAL(int, i)
+SIMIX_MARSHAL(long, l)
+SIMIX_MARSHAL(unsigned char, uc)
+SIMIX_MARSHAL(unsigned short, us)
+SIMIX_MARSHAL(unsigned int, ui)
+SIMIX_MARSHAL(unsigned long, ul)
+SIMIX_MARSHAL(unsigned long long, ull)
+SIMIX_MARSHAL(long long, ll)
+SIMIX_MARSHAL(float, d)
+SIMIX_MARSHAL(double, d)
+SIMIX_MARSHAL(FPtr, fp)
 
 inline void unmarshal(type<void>, u_smx_scalar const& simcall)
 {

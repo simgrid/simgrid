@@ -41,7 +41,7 @@ Coords::Coords(NetPoint* netpoint, const std::string& coordStr)
   netpoint->extension_set<Coords>(this);
   XBT_DEBUG("Coords of %s %p: %s", netpoint->get_cname(), netpoint, coordStr.c_str());
 }
-}; // namespace vivaldi
+} // namespace vivaldi
 
 static inline double euclidean_dist_comp(int index, std::vector<double>* src, std::vector<double>* dst)
 {
