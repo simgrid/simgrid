@@ -167,10 +167,8 @@ int Topo_Cart::rank(const int* coords, int* rank) {
   return MPI_SUCCESS;
 }
 
-int Topo_Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) {
-
-  int* position = new int[ndims_];
-
+int Topo_Cart::shift(int direction, int disp, int* rank_source, int* rank_dest)
+{
   if(ndims_ == 0) {
     return MPI_ERR_ARG;
   }
@@ -178,6 +176,7 @@ int Topo_Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) 
     return MPI_ERR_DIMS;
   }
 
+  int* position = new int[ndims_];
   this->coords(getComm()->rank(), ndims_, position);
   position[direction] += disp;
 
