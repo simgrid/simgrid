@@ -351,10 +351,13 @@ void *smpi_shared_malloc_intercept(size_t size, const char *file, int line) {
 }
 
 void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line){
-  if( simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh") == 0 || elem_size*num_elm < simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh"))
-    return ::operator new(elem_size*num_elm);
-  else
+  if( simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh") == 0 || elem_size*num_elm < simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh")){
+    void* ptr = ::operator new(elem_size*num_elm);
+    memset(ptr, 0, elem_size*num_elm);
+    return ptr;
+  } else
     return smpi_shared_malloc(elem_size*num_elm, file, line);
+
 }
 
 void *smpi_shared_malloc(size_t size, const char *file, int line) {
