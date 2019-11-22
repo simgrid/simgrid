@@ -16,6 +16,7 @@
 
 #ifndef HAVE_SMPI
 #undef malloc
+#undef calloc
 #undef free
 // Internally disable these overrides (HAVE_SMPI is only defined when building the library)
 #define malloc(nbytes) _sampi_malloc(nbytes)

@@ -34,6 +34,7 @@
 #define getopt_long_only(x, y, z, a, b) smpi_getopt_long_only((x), (y), (z), (a), (b))
 #ifndef SAMPI_OVERRIDEN_MALLOC
 #define malloc(x) smpi_shared_malloc_intercept(x, __FILE__, __LINE__)
+#define calloc(x,y) smpi_shared_calloc_intercept(x,y, __FILE__, __LINE__)
 #define free(x) smpi_shared_free(x)
 #endif
 #endif
