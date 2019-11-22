@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   //Let's Allocate a memory buffer
-  uint64_t* buf = malloc(sizeof(uint64_t));
+  uint64_t* buf = calloc(1, sizeof(uint64_t));
   //one writes data in it
   if(rank==0){
     *buf=size;
