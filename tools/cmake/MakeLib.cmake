@@ -60,7 +60,7 @@ if (HAVE_BOOST_ADDR2LINE_BACKTRACE)
 endif()
 
 if(CMAKE_USE_PTHREADS_INIT)
-  set(SIMGRID_DEP "${SIMGRID_DEP} ${CMAKE_THREAD_LIBS_INIT}")
+  target_link_libraries(simgrid ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 if(SIMGRID_HAVE_LUA)

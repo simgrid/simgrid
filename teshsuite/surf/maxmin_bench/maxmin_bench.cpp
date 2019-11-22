@@ -37,9 +37,9 @@ static unsigned int int_random(int max)
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
                  float rate_no_limit, int max_share, int mode)
 {
-  simgrid::kernel::lmm::Constraint* cnst[nb_cnst];
-  simgrid::kernel::lmm::Variable* var[nb_var];
-  int used[nb_cnst];
+  simgrid::kernel::lmm::Constraint** cnst = new simgrid::kernel::lmm::Constraint*[nb_cnst];
+  simgrid::kernel::lmm::Variable** var = new simgrid::kernel::lmm::Variable*[nb_var];
+  int* used = new int[nb_cnst];
 
   /* We cannot activate the selective update as we pass nullptr as an Action when creating the variables */
   simgrid::kernel::lmm::System* Sys = new simgrid::kernel::lmm::System(false);
@@ -105,6 +105,9 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   for (int i = 0; i < nb_var; i++)
     Sys->variable_free(var[i]);
   delete Sys;
+  delete[] cnst;
+  delete[] var;
+  delete[] used;
 }
 
 unsigned int TestClasses [][4]=

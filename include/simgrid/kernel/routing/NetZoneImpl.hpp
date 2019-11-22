@@ -148,6 +148,6 @@ private:
 };
 } // namespace routing
 } // namespace kernel
-}; // namespace simgrid
+} // namespace simgrid
 
 #endif /* SIMGRID_ROUTING_NETZONEIMPL_HPP */

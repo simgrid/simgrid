@@ -24,7 +24,7 @@ PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, e_event
     stream_ << eventType_ << " " << timestamp_ << " " << type_->get_id() << " " << container_->get_id();
   }
   insert_into_buffer();
-};
+}
 
 void PajeEvent::print()
 {

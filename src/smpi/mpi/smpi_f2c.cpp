@@ -32,11 +32,11 @@ void F2C::set_f2c_lookup(std::unordered_map<std::string, F2C*>* map)
 
 void F2C::f2c_id_increment(){
   f2c_id_++;
-};
+}
 
 int F2C::f2c_id(){
   return f2c_id_;
-};
+}
 
 char* F2C::get_my_key(char* key) {
   std::snprintf(key, KEY_SIZE, "%d", my_f2c_id_);

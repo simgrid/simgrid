@@ -13,7 +13,7 @@ namespace simgrid {
 namespace instr {
 
 EntityValue::EntityValue(const std::string& name, const std::string& color, Type* father)
-    : id_(instr_new_paje_id()), name_(name), color_(color), father_(father){};
+    : id_(instr_new_paje_id()), name_(name), color_(color), father_(father){}
 
 void EntityValue::print()
 {

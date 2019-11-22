@@ -54,7 +54,7 @@ static void receiver(std::vector<std::string> args)
     void* res = mailbox->get();
     xbt_free(res);
   } else {
-    void* data[flow_amount];
+    void** data= new void*[flow_amount];
 
     // Start all comms in parallel, and wait for their completion in one shot
     std::vector<simgrid::s4u::CommPtr> comms;
@@ -64,6 +64,7 @@ static void receiver(std::vector<std::string> args)
     simgrid::s4u::Comm::wait_all(&comms);
     for (int i = 0; i < flow_amount; i++)
       xbt_free(data[i]);
+    delete[] data;
   }
   XBT_INFO("receiver done.");
 }

@@ -2290,17 +2290,17 @@ intel_tuning_table_element intel_alltoallv_table[] =
                          _functions_table)[_XBT_CONCAT3(intel_, cat, _table)[i].elems[j].elems[k].algo - 1] args2);    \
   }
 
-COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLGATHERV_SIG, (send_buff, send_count, send_type, recv_buff, recv_count, recv_disps, recv_type, comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLREDUCE_SIG, (sbuf, rbuf, rcount, dtype, op, comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_GATHER_SIG, (send_buff, send_count, send_type, recv_buff, recv_count, recv_type, root, comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLGATHER_SIG, (send_buff,send_count,send_type,recv_buff,recv_count,recv_type,comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLTOALL_SIG,(send_buff, send_count, send_type, recv_buff, recv_count, recv_type,comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLTOALLV_SIG, (send_buff, send_counts, send_disps, send_type, recv_buff, recv_counts, recv_disps, recv_type, comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_BCAST_SIG , (buf, count, datatype, root, comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_REDUCE_SIG,(buf,rbuf, count, datatype, op, root, comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_REDUCE_SCATTER_SIG ,(sbuf,rbuf, rcounts,dtype,op,comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_SCATTER_SIG ,(sendbuf, sendcount, sendtype,recvbuf, recvcount, recvtype,root, comm));
-COLL_APPLY(IMPI_COLL_SELECT, COLL_BARRIER_SIG,(comm));
+COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLGATHERV_SIG, (send_buff, send_count, send_type, recv_buff, recv_count, recv_disps, recv_type, comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLREDUCE_SIG, (sbuf, rbuf, rcount, dtype, op, comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_GATHER_SIG, (send_buff, send_count, send_type, recv_buff, recv_count, recv_type, root, comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLGATHER_SIG, (send_buff,send_count,send_type,recv_buff,recv_count,recv_type,comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLTOALL_SIG,(send_buff, send_count, send_type, recv_buff, recv_count, recv_type,comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_ALLTOALLV_SIG, (send_buff, send_counts, send_disps, send_type, recv_buff, recv_counts, recv_disps, recv_type, comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_BCAST_SIG , (buf, count, datatype, root, comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_REDUCE_SIG,(buf,rbuf, count, datatype, op, root, comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_REDUCE_SCATTER_SIG ,(sbuf,rbuf, rcounts,dtype,op,comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_SCATTER_SIG ,(sendbuf, sendcount, sendtype,recvbuf, recvcount, recvtype,root, comm))
+COLL_APPLY(IMPI_COLL_SELECT, COLL_BARRIER_SIG,(comm))
 
 }
 }

@@ -206,9 +206,9 @@ xbt_automaton_state_t xbt_automaton_get_current_state(xbt_automaton_t a){
   return a->current_state;
 }
 
-static int call_simple_function(void* function)
+static int call_simple_function(int function(void) )
 {
-  return ((int (*)(void)) function)();
+  return function();
 }
 
 xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id,
@@ -216,8 +216,8 @@ xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_
 {
   xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
-  prop_symb->callback                            = &call_simple_function;
-  prop_symb->data = fct;
+  prop_symb->callback                            = ((int (*)(void *))&call_simple_function);
+  prop_symb->data = (void*)&fct;
   prop_symb->free_function = NULL;
   xbt_dynar_push(a->propositional_symbols, &prop_symb);
   return prop_symb;

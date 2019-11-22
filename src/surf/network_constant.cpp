@@ -87,7 +87,7 @@ NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, doubl
   latency_ = latency;
   if (latency_ <= 0.0)
     NetworkConstantAction::set_state(Action::State::FINISHED);
-};
+}
 
 NetworkConstantAction::~NetworkConstantAction() = default;
 

@@ -26,7 +26,7 @@ simgrid::xbt::Extension<Disk, FileSystemDiskExt> FileSystemDiskExt::EXTENSION_ID
 simgrid::xbt::Extension<Storage, FileSystemStorageExt> FileSystemStorageExt::EXTENSION_ID;
 simgrid::xbt::Extension<Host, FileDescriptorHostExt> FileDescriptorHostExt::EXTENSION_ID;
 
-File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
+File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::current(), userdata){}
 
 File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpath_(fullpath)
 {

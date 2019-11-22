@@ -1,6 +1,5 @@
-/*High level handling of collective algorithms*/
-/* Copyright (c) 2009-2019. The SimGrid Team.
- * All rights reserved.                                                     */
+/* High level handling of collective algorithms */
+/* Copyright (c) 2009-2019. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,68 +13,43 @@
 /** @brief MPI collective description */
 
 #define COLL_DEFS(cat, ret, args, args2)                                                                               \
-  void _XBT_CONCAT(set_, cat)(const std::string& name);                                                                \
   extern int(*cat) args;
 
 #define COLL_SIG(cat, ret, args, args2) int cat args;
 
-#define COLL_DESCRIPTION(cat, ret, args, name)                                                                         \
-  {                                                                                                                    \
-    _XBT_STRINGIFY(name)                                                                                               \
-    , _XBT_STRINGIFY(cat) " " _XBT_STRINGIFY(name) " collective", (void*)_XBT_CONCAT3(cat, __, name)        \
-  }
-
-#define COLL_PROTO(cat, ret, args, name)                                                                               \
-  ret _XBT_CONCAT3(cat, __, name) args;
-
 #define COLL_UNPAREN(...)  __VA_ARGS__
-
 #define COLL_APPLY(action, sig, name) action(sig, name)
-#define COLL_COMMA ,
-#define COLL_NOsep
-#define COLL_NOTHING(...)
 
-#define COLL_GATHER_SIG gather, int, \
-                      (const void *send_buff, int send_count, MPI_Datatype send_type, \
-                       void *recv_buff, int recv_count, MPI_Datatype recv_type, \
-                           int root, MPI_Comm comm)
-#define COLL_ALLGATHER_SIG allgather, int, \
-                      (const void *send_buff, int send_count, MPI_Datatype send_type, \
-                       void *recv_buff, int recv_count, MPI_Datatype recv_type, \
-                           MPI_Comm comm)
-#define COLL_ALLGATHERV_SIG allgatherv, int, \
-                      (const void *send_buff, int send_count, MPI_Datatype send_type, \
-                       void *recv_buff, const int *recv_count, const int *recv_disps, \
-               MPI_Datatype recv_type, MPI_Comm comm)
-#define COLL_ALLTOALL_SIG alltoall, int, \
-                     (const void *send_buff, int send_count, MPI_Datatype send_type, \
-                      void *recv_buff, int recv_count, MPI_Datatype recv_type, \
-                          MPI_Comm comm)
-#define COLL_ALLTOALLV_SIG alltoallv, int, \
-                     (const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, \
-                      void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, \
-                          MPI_Comm comm)
-#define COLL_BCAST_SIG bcast, int, \
-                  (void *buf, int count, MPI_Datatype datatype, \
-                   int root, MPI_Comm comm)
-#define COLL_REDUCE_SIG reduce, int, \
-                   (const void *buf, void *rbuf, int count, MPI_Datatype datatype, \
-                        MPI_Op op, int root, MPI_Comm comm)
-#define COLL_ALLREDUCE_SIG allreduce, int, \
-                      (const void *sbuf, void *rbuf, int rcount, \
-                           MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
-#define COLL_REDUCE_SCATTER_SIG reduce_scatter, int, \
-                      (const void *sbuf, void *rbuf, const int *rcounts,\
-                    MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm)
-#define COLL_SCATTER_SIG scatter, int, \
-                (const void *sendbuf, int sendcount, MPI_Datatype sendtype,\
-                void *recvbuf, int recvcount, MPI_Datatype recvtype,\
-                int root, MPI_Comm comm)
-#define COLL_BARRIER_SIG barrier, int, \
-                (MPI_Comm comm)
+#define COLL_GATHER_SIG gather, int,                                                                                   \
+    (const void *send_buff, int send_count, MPI_Datatype send_type,                                                    \
+           void *recv_buff, int recv_count, MPI_Datatype recv_type,  int root, MPI_Comm comm)
+#define COLL_ALLGATHER_SIG allgather, int,                                                                             \
+    (const void *send_buff, int send_count, MPI_Datatype send_type,                                                    \
+            void *recv_buff, int recv_count, MPI_Datatype recv_type,  MPI_Comm comm)
+#define COLL_ALLGATHERV_SIG allgatherv, int,                                                                           \
+    (const void *send_buff, int send_count, MPI_Datatype send_type,                                                    \
+           void *recv_buff, const int *recv_count, const int *recv_disps,  MPI_Datatype recv_type, MPI_Comm comm)
+#define COLL_ALLTOALL_SIG alltoall, int,                                                                               \
+    (const void *send_buff, int send_count, MPI_Datatype send_type,                                                    \
+           void *recv_buff, int recv_count, MPI_Datatype recv_type,  MPI_Comm comm)
+#define COLL_ALLTOALLV_SIG alltoallv, int,                                                                             \
+    (const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type,                     \
+           void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm)
+#define COLL_BCAST_SIG bcast, int,                                                                                     \
+    (void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
+#define COLL_REDUCE_SIG reduce, int,                                                                                   \
+    (const void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+#define COLL_ALLREDUCE_SIG allreduce, int,                                                                             \
+    (const void *sbuf, void *rbuf, int rcount,  MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
+#define COLL_REDUCE_SCATTER_SIG reduce_scatter, int,                                                                   \
+    (const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm)
+#define COLL_SCATTER_SIG scatter, int,                                                                                 \
+    (const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+#define COLL_BARRIER_SIG barrier, int,                                                                                 \
+    (MPI_Comm comm)
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 
 struct s_mpi_coll_description_t {
   std::string name;
@@ -89,8 +63,19 @@ XBT_PUBLIC int find_coll_description(s_mpi_coll_description_t* table, const std:
 void set_collectives();
 XBT_PUBLIC s_mpi_coll_description_t* get_smpi_coll_description(const char* name, int rank);
 
+void set_gather(const std::string& name);
+void set_allgather(const std::string& name);
+void set_allgatherv(const std::string& name);
+void set_reduce(const std::string& name);
+void set_allreduce(const std::string& name);
+void set_reduce_scatter(const std::string& name);
+void set_scatter(const std::string& name);
+void set_barrier(const std::string& name);
+void set_bcast(const std::string& name);
+void set_alltoall(const std::string& name);
+void set_alltoallv(const std::string& name);
+
 // for each collective type, create the set_* prototype, the description array and the function pointer
-//  void set_gather(const std::string& name);
 //  extern int(*gather)(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count,
 //                      MPI_Datatype recv_type, int root, MPI_Comm comm);
 COLL_APPLY(COLL_DEFS, COLL_GATHER_SIG, "")
@@ -153,11 +138,11 @@ int ialltoallw(const void* sendbuf, const int* sendcounts, const int* senddisps,
                MPI_Request* request, int external = 1);
 
 extern void (*smpi_coll_cleanup_callback)();
-};
+}
 
-/*************
- * GATHER *
- *************/
+/***********************************************
+ * Prototypes of each and every implementation *
+ ***********************************************/
 
 int gather__default(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, int root, MPI_Comm comm);
 int gather__ompi(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, int root, MPI_Comm comm);
@@ -170,21 +155,6 @@ int gather__mvapich2_two_level(const void *send_buff, int send_count, MPI_Dataty
 int gather__impi(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, int root, MPI_Comm comm);
 int gather__automatic(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, int root, MPI_Comm comm);
 
-#define COLL_GATHERS(action, COLL_sep) \
-COLL_APPLY(action, COLL_GATHER_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, ompi_basic_linear) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, ompi_binomial) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, ompi_linear_sync) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, mvapich2) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, mvapich2_two_level) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, impi) COLL_sep \
-COLL_APPLY(action, COLL_GATHER_SIG, automatic)
-
-/*************
- * ALLGATHER *
- *************/
 int allgather__default(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int allgather__2dmesh(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int allgather__3dmesh(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
@@ -208,49 +178,6 @@ int allgather__mpich(const void *send_buff, int send_count, MPI_Datatype send_ty
 int allgather__impi(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int allgather__automatic(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 
-#define COLL_ALLGATHERS(action, COLL_sep) \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, 2dmesh) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, 3dmesh) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, bruck) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, GB) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, loosely_lr) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, NTSLR) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, NTSLR_NB) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, pair) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, rdb) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, rhv) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, ring) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, SMP_NTS) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, smp_simple) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, spreading_simple) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, ompi_neighborexchange) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, mvapich2) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, mvapich2_smp) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, impi) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHER_SIG, automatic)
-
-/**************
- * ALLGATHERV *
- **************/
-
-#define COLL_ALLGATHERVS(action, COLL_sep) \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, GB) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, pair) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, ring) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi_neighborexchange) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, ompi_bruck) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich_rdb) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, mpich_ring) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, mvapich2) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, impi) COLL_sep \
-COLL_APPLY(action, COLL_ALLGATHERV_SIG, automatic)
-
 int allgatherv__default(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, const int *recv_count, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int allgatherv__GB(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, const int *recv_count, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int allgatherv__pair(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, const int *recv_count, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
@@ -264,34 +191,6 @@ int allgatherv__mpich_ring(const void *send_buff, int send_count, MPI_Datatype s
 int allgatherv__mvapich2(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, const int *recv_count, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int allgatherv__impi(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, const int *recv_count, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int allgatherv__automatic(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, const int *recv_count, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
-
-/*************
- * ALLREDUCE *
- *************/
-
-#define COLL_ALLREDUCES(action, COLL_sep) \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, lr) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab1) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab2) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab_rdb) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, rdb) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_binomial) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_binomial_pipeline) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rdb) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag_lr) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, smp_rsag_rab) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, redbcast) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, ompi_ring_segmented) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, mvapich2) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, mvapich2_rs) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, mvapich2_two_level) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, impi) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, rab) COLL_sep \
-COLL_APPLY(action, COLL_ALLREDUCE_SIG, automatic)
 
 int allreduce__default(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int allreduce__lr(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
@@ -316,33 +215,6 @@ int allreduce__impi(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype
 int allreduce__rab(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int allreduce__automatic(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 
-/************
- * ALLTOALL *
- ************/
-
-#define COLL_ALLTOALLS(action, COLL_sep) \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, 2dmesh) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, 3dmesh) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, basic_linear) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, bruck) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, pair) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_rma) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_light_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_mpi_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, pair_one_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, rdb) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, ring) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_light_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_mpi_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, ring_one_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, mvapich2) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, mvapich2_scatter_dest) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, impi) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALL_SIG, automatic)
-
 int alltoall__default(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoall__2dmesh(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoall__3dmesh(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
@@ -365,28 +237,6 @@ int alltoall__mpich(const void *send_buff, int send_count, MPI_Datatype send_typ
 int alltoall__impi(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoall__automatic(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 
-/*************
- * ALLTOALLV *
- *************/
-
-#define COLL_ALLTOALLVS(action, COLL_sep) \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, bruck) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_light_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_mpi_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_one_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_light_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_mpi_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_one_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ompi_basic_linear) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, mvapich2) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, impi) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, automatic)
-
 int alltoallv__default(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoallv__bruck(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoallv__pair(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
@@ -403,37 +253,6 @@ int alltoallv__ompi_basic_linear(const void *send_buff, const int *send_counts, 
 int alltoallv__mvapich2(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoallv__impi(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoallv__automatic(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
-
-/*********
- * BCAST *
- *********/
-
-#define COLL_BCASTS(action, COLL_sep) \
-COLL_APPLY(action, COLL_BCAST_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, arrival_pattern_aware) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, arrival_pattern_aware_wait) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, arrival_scatter) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, binomial_tree) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, flattree) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, flattree_pipeline) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, NTSB) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, NTSL) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, NTSL_Isend) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, scatter_LR_allgather) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, scatter_rdb_allgather) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, SMP_binary) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, SMP_binomial) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, SMP_linear) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, ompi_split_bintree) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, ompi_pipeline) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, mvapich2)   COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, mvapich2_inter_node)   COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, mvapich2_intra_node)   COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, mvapich2_knomial_intra_node)   COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, impi)   COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, automatic)
 
 int bcast__default(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int bcast__arrival_pattern_aware(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
@@ -461,32 +280,6 @@ int bcast__mvapich2_knomial_intra_node(void *buf, int count, MPI_Datatype dataty
 int bcast__impi(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int bcast__automatic(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 
-/**********
- * REDUCE *
- **********/
-
-#define COLL_REDUCES(action, COLL_sep) \
-COLL_APPLY(action, COLL_REDUCE_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, arrival_pattern_aware) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, binomial) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, flat_tree) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, NTSL) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, scatter_gather) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, ompi_chain) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, ompi_pipeline) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, ompi_basic_linear) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, ompi_in_order_binary) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binary) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, ompi_binomial) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, mvapich2) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, mvapich2_knomial) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, mvapich2_two_level) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, impi) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, rab) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SIG, automatic)
-
 int reduce__default(const void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
 int reduce__arrival_pattern_aware(const void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
 int reduce__binomial(const void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
@@ -508,23 +301,6 @@ int reduce__impi(const void *buf, void *rbuf, int count, MPI_Datatype datatype, 
 int reduce__rab(const void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
 int reduce__automatic(const void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
 
-/*************
- * REDUCE_SCATTER *
- *************/
-
-#define COLL_REDUCE_SCATTERS(action, COLL_sep) \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi_basic_recursivehalving) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, ompi_ring)  COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_pair) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_rdb) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mpich_noncomm) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, mvapich2) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, impi) COLL_sep \
-COLL_APPLY(action, COLL_REDUCE_SCATTER_SIG, automatic)
-
 int reduce_scatter__default(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__ompi(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__ompi_basic_recursivehalving(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
@@ -537,22 +313,6 @@ int reduce_scatter__mvapich2(const void *sbuf, void *rbuf, const int *rcounts, M
 int reduce_scatter__impi(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__automatic(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 
-/*************
- * SCATTER *
- *************/
-
-#define COLL_SCATTERS(action, COLL_sep) \
-COLL_APPLY(action, COLL_SCATTER_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, ompi_basic_linear) COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, ompi_binomial)  COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, mpich)   COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, mvapich2)   COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, mvapich2_two_level_binomial)   COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, mvapich2_two_level_direct)   COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, impi)   COLL_sep \
-COLL_APPLY(action, COLL_SCATTER_SIG, automatic)
-
 int scatter__default(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
 int scatter__ompi(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
 int scatter__ompi_basic_linear(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
@@ -563,26 +323,6 @@ int scatter__mvapich2_two_level_binomial(const void *sendbuf, int sendcount, MPI
 int scatter__mvapich2_two_level_direct(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
 int scatter__impi (const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
 int scatter__automatic (const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm);
-
-/*************
- * BARRIER *
- *************/
-
-#define COLL_BARRIERS(action, COLL_sep) \
-COLL_APPLY(action, COLL_BARRIER_SIG, default) COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, ompi) COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, ompi_basic_linear) COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, ompi_two_procs)  COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, ompi_tree)  COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, ompi_bruck)  COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, ompi_recursivedoubling) COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, ompi_doublering) COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, mpich_smp)   COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, mpich)   COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, mvapich2_pair)   COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, mvapich2)   COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, impi)   COLL_sep \
-COLL_APPLY(action, COLL_BARRIER_SIG, automatic)
 
 int barrier__default(MPI_Comm comm);
 int barrier__ompi(MPI_Comm comm);
