@@ -15,14 +15,12 @@
   {                                                                                                                    \
     double time1, time2, time_min = DBL_MAX;                                                                           \
     int min_coll = -1, global_coll = -1;                                                                               \
-    int i = 0;                                                                                                         \
     double buf_in, buf_out, max_min = DBL_MAX;                                                                         \
-    auto desc = simgrid::smpi::colls::get_smpi_coll_description(_XBT_STRINGIFY(cat), i);                               \
-    while (not desc->name.empty()) {                                                                                   \
-      if (desc->name == "automatic")                                                                                   \
-        goto next_iteration;                                                                                           \
-      if (desc->name == "default")                                                                                     \
-        goto next_iteration;                                                                                           \
+    auto descriptions = simgrid::smpi::colls::get_smpi_coll_descriptions(_XBT_STRINGIFY(cat));                         \
+    for (unsigned long i = 0; i < descriptions->size(); i++) {                                                         \
+      auto desc = &descriptions->at(i);                                                                                \
+      if (desc->name == "automatic" || desc->name == "default")                                                        \
+        continue;                                                                                                      \
       barrier__default(comm);                                                                                          \
       if (TRACE_is_enabled()) {                                                                                        \
         simgrid::instr::EventType* type =                                                                              \
@@ -53,19 +51,14 @@
           global_coll = i;                                                                                             \
         }                                                                                                              \
       }                                                                                                                \
-    next_iteration:                                                                                                    \
-      i++;                                                                                                             \
-      desc = simgrid::smpi::colls::get_smpi_coll_description(_XBT_STRINGIFY(cat), i);                                  \
     }                                                                                                                  \
     if (comm->rank() == 0) {                                                                                           \
       XBT_WARN("For rank 0, the quickest was %s : %f , but global was %s : %f at max",                                 \
-               simgrid::smpi::colls::get_smpi_coll_description(_XBT_STRINGIFY(cat), min_coll)->name.c_str(), time_min, \
-               simgrid::smpi::colls::get_smpi_coll_description(_XBT_STRINGIFY(cat), global_coll)->name.c_str(),        \
+               descriptions->at(min_coll).name.c_str(), time_min, descriptions->at(global_coll).name.c_str(),          \
                max_min);                                                                                               \
     } else                                                                                                             \
       XBT_WARN("The quickest " _XBT_STRINGIFY(cat) " was %s on rank %d and took %f",                                   \
-               simgrid::smpi::colls::get_smpi_coll_description(_XBT_STRINGIFY(cat), min_coll)->name.c_str(),           \
-               comm->rank(), time_min);                                                                                \
+               descriptions->at(min_coll).name.c_str(), comm->rank(), time_min);                                       \
     return (min_coll != -1) ? MPI_SUCCESS : MPI_ERR_INTERN;                                                            \
   }
 

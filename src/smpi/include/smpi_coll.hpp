@@ -58,10 +58,8 @@ struct s_mpi_coll_description_t {
 };
 
 namespace colls {
-XBT_PUBLIC void coll_help(const char* category, s_mpi_coll_description_t* table);
-XBT_PUBLIC int find_coll_description(s_mpi_coll_description_t* table, const std::string& name, const char* desc);
 void set_collectives();
-XBT_PUBLIC s_mpi_coll_description_t* get_smpi_coll_description(const char* name, int rank);
+XBT_PUBLIC std::vector<s_mpi_coll_description_t>* get_smpi_coll_descriptions(const std::string& name);
 
 void set_gather(const std::string& name);
 void set_allgather(const std::string& name);
