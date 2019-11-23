@@ -9,17 +9,17 @@
 #include <random>
 #include <cmath>
 
-#define EPSILON (100*std::numeric_limits<double>::epsilon())
+#define EpsilonApprox(a) Catch::Matchers::WithinAbs(a, 100 * std::numeric_limits<double>::epsilon())
 
 TEST_CASE("xbt::random: Random Number Generation")
 {
   SECTION("Using XBT_RNG_xbt")
   {
     simgrid::xbt::random::set_mersenne_seed(12345);
-    REQUIRE(simgrid::xbt::random::exponential(25) == Approx(0.00291934351538427348).epsilon(EPSILON));
+    REQUIRE_THAT(simgrid::xbt::random::exponential(25), EpsilonApprox(0.00291934351538427348));
     REQUIRE(simgrid::xbt::random::uniform_int(1, 6) == 4);
-    REQUIRE(simgrid::xbt::random::uniform_real(0, 1) == Approx(0.31637556043369124970).epsilon(EPSILON));
-    REQUIRE(simgrid::xbt::random::normal(0, 2) == Approx(1.62746784745133976635).epsilon(EPSILON));
+    REQUIRE_THAT(simgrid::xbt::random::uniform_real(0, 1), EpsilonApprox(0.31637556043369124970));
+    REQUIRE_THAT(simgrid::xbt::random::normal(0, 2), EpsilonApprox(1.62746784745133976635));
   }
 
   SECTION("Using XBT_RNG_std")
@@ -35,9 +35,9 @@ TEST_CASE("xbt::random: Random Number Generation")
     std::uniform_real_distribution<> distC(0, 1);
     std::normal_distribution<> distD(0, 2);
 
-    REQUIRE(simgrid::xbt::random::exponential(25) == Approx(distA(gen)).epsilon(EPSILON));
+    REQUIRE_THAT(simgrid::xbt::random::exponential(25), EpsilonApprox(distA(gen)));
     REQUIRE(simgrid::xbt::random::uniform_int(1, 6) == distB(gen));
-    REQUIRE(simgrid::xbt::random::uniform_real(0, 1) == Approx(distC(gen)).epsilon(EPSILON));
-    REQUIRE(simgrid::xbt::random::normal(0, 2) == Approx(distD(gen)).epsilon(EPSILON));
+    REQUIRE_THAT(simgrid::xbt::random::uniform_real(0, 1), EpsilonApprox(distC(gen)));
+    REQUIRE_THAT(simgrid::xbt::random::normal(0, 2), EpsilonApprox(distD(gen)));
   }
 }
