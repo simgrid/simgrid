@@ -236,9 +236,10 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>> smpi_coll_descripti
 // Needed by the automatic selector weird implementation
 std::vector<s_mpi_coll_description_t>* colls::get_smpi_coll_descriptions(const std::string& name)
 {
-  if (smpi_coll_descriptions.find(name) == smpi_coll_descriptions.end())
+  auto iter = smpi_coll_descriptions.find(name);
+  if (iter == smpi_coll_descriptions.end())
     xbt_die("No collective named %s. This is a bug.", name.c_str());
-  return &smpi_coll_descriptions[name];
+  return &iter->second;
 }
 
 static s_mpi_coll_description_t* find_coll_description(const std::string& collective, const std::string& algo)
