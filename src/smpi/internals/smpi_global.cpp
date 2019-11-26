@@ -159,6 +159,17 @@ static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks,
     xbt_assert(block.first <= block.second && block.second <= buff_size, "Oops, bug in shared malloc.");
 }
 
+static void smpi_cleanup_comm_after_copy(simgrid::kernel::activity::CommImpl* comm, void* buff){
+  if (comm->detached()) {
+    // if this is a detached send, the source buffer was duplicated by SMPI
+    // sender to make the original buffer available to the application ASAP
+    xbt_free(buff);
+    //It seems that the request is used after the call there this should be free somewhere else but where???
+    //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
+    comm->src_buff_ = nullptr;
+  }
+}
+
 void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
   size_t src_offset                     = 0;
@@ -167,16 +178,24 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   std::vector<std::pair<size_t, size_t>> dst_private_blocks;
   XBT_DEBUG("Copy the data over");
   if(smpi_is_shared(buff, src_private_blocks, &src_offset)) {
-    XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
     src_private_blocks = shift_and_frame_private_blocks(src_private_blocks, src_offset, buff_size);
+    if (src_private_blocks.size()==1 && (src_private_blocks[0].second - src_private_blocks[0].first)==buff_size){//simple shared malloc ... return.
+      XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
+      smpi_cleanup_comm_after_copy(comm, buff);
+      return;
+    }
   }
   else {
     src_private_blocks.clear();
     src_private_blocks.push_back(std::make_pair(0, buff_size));
   }
   if (smpi_is_shared((char*)comm->dst_buff_, dst_private_blocks, &dst_offset)) {
-    XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff_);
     dst_private_blocks = shift_and_frame_private_blocks(dst_private_blocks, dst_offset, buff_size);
+    if (src_private_blocks.size()==1 && (src_private_blocks[0].second - src_private_blocks[0].first)==buff_size){//simple shared malloc ... return.
+      XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff_);
+      smpi_cleanup_comm_after_copy(comm, buff);
+      return;
+    }
   }
   else {
     dst_private_blocks.clear();
@@ -205,14 +224,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff, comm->dst_buff_);
   memcpy_private(comm->dst_buff_, tmpbuff, private_blocks);
 
-  if (comm->detached()) {
-    // if this is a detached send, the source buffer was duplicated by SMPI
-    // sender to make the original buffer available to the application ASAP
-    xbt_free(buff);
-    //It seems that the request is used after the call there this should be free somewhere else but where???
-    //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
-    comm->src_buff_ = nullptr;
-  }
+  smpi_cleanup_comm_after_copy(comm,buff);
   if (tmpbuff != buff)
     xbt_free(tmpbuff);
 }
