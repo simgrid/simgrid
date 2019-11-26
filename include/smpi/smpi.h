@@ -1061,7 +1061,7 @@ SG_END_DECL
 
 /* C++ declarations for shared_malloc */
 #ifdef __cplusplus
-XBT_PUBLIC int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>>& private_blocks, size_t* offset);
+XBT_PUBLIC int smpi_is_shared(const void* ptr, std::vector<std::pair<size_t, size_t>>& private_blocks, size_t* offset);
 
 std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std::vector<std::pair<size_t, size_t>>& vec,
                                                                       size_t offset, size_t buff_size);

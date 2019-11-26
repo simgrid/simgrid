@@ -279,6 +279,19 @@ int Datatype::copy(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
   /* First check if we really have something to do */
+  size_t offset = 0;
+  std::vector<std::pair<size_t, size_t>> private_blocks;
+  if(smpi_is_shared(sendbuf,private_blocks,&offset)
+       && (private_blocks.size()==1
+       && (private_blocks[0].second - private_blocks[0].first)==(unsigned long)(sendcount * sendtype->get_extent()))){
+    return 0;
+  }
+  if(smpi_is_shared(recvbuf,private_blocks,&offset)
+       && (private_blocks.size()==1
+       && (private_blocks[0].second - private_blocks[0].first)==(unsigned long)(recvcount * recvtype->get_extent()))){
+    return 0;
+  }
+
   if (recvcount > 0 && recvbuf != sendbuf) {
     sendcount *= sendtype->size();
     recvcount *= recvtype->size();

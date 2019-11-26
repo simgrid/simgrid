@@ -91,7 +91,7 @@ struct shared_metadata_t {
   shared_data_key_type* data;
 };
 
-std::map<void*, shared_metadata_t> allocs_metadata;
+std::map<const void*, shared_metadata_t> allocs_metadata;
 std::map<std::string, void*> calls;
 
 #ifndef WIN32
@@ -372,7 +372,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line) {
   return ::operator new(size);
 }
 
-int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset){
+int smpi_is_shared(const void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset){
   private_blocks.clear(); // being paranoid
   if (allocs_metadata.empty())
     return 0;

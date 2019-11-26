@@ -19,6 +19,15 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
     return (errcode);                                                                                                  \
   }
 
+  static const void* smpi_get_in_place_buf(const void* inplacebuf, const void* otherbuf,std::unique_ptr<unsigned char[]>& tmp_sendbuf, int count, MPI_Datatype datatype){
+  if (inplacebuf == MPI_IN_PLACE) {
+      tmp_sendbuf.reset(new unsigned char[count * datatype->get_extent()]);
+      simgrid::smpi::Datatype::copy(otherbuf, count, datatype, tmp_sendbuf.get(), count, datatype);
+    return tmp_sendbuf.get();
+  }else{
+    return inplacebuf;
+  }
+}
 /* PMPI User level calls */
 
 int PMPI_Barrier(MPI_Comm comm)
@@ -373,7 +382,7 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
              "Iscatterv: the recvtype cannot be NULL when not receiving in place");
   CHECK_ARGS(request == nullptr, MPI_ERR_ARG, "Iscatterv: param 10 request cannot be NULL");
   CHECK_ARGS(recvbuf != MPI_IN_PLACE && recvcount < 0, MPI_ERR_COUNT,
-             "Iscatterv: When not receiving in place, the recvcound cannot be negative");
+             "Iscatterv: When not receiving in place, the recvcount cannot be negative");
   CHECK_ARGS(root < 0, MPI_ERR_ROOT, "Iscatterv: root cannot be negative");
   CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT, "Iscatterv: root (=%d) is larger than communicator size (=%d)", root,
              comm->size());
@@ -492,13 +501,9 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
     return MPI_ERR_ARG;
 
   smpi_bench_end();
-  const void* real_sendbuf = sendbuf;
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
-  if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendbuf.reset(new unsigned char[count * datatype->get_extent()]);
-    simgrid::smpi::Datatype::copy(recvbuf, count, datatype, tmp_sendbuf.get(), count, datatype);
-    real_sendbuf = tmp_sendbuf.get();
-  }
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
+
   int rank = simgrid::s4u::this_actor::get_pid();
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Allreduce" : "PMPI_Iallreduce",
@@ -538,12 +543,9 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 
   smpi_bench_end();
   int rank         = simgrid::s4u::this_actor::get_pid();
-  const void* real_sendbuf = sendbuf;
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
-  if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendbuf.reset(new unsigned char[count * datatype->size()]);
-    real_sendbuf = memcpy(tmp_sendbuf.get(), recvbuf, count * datatype->size());
-  }
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);;
+
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan",
                      new simgrid::instr::Pt2PtTIData(request == MPI_REQUEST_IGNORED ? "scan" : "iscan", -1,
                                                      datatype->is_replayable() ? count : count * datatype->size(),
@@ -581,12 +583,8 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
 
   smpi_bench_end();
   int rank         = simgrid::s4u::this_actor::get_pid();
-  const void* real_sendbuf = sendbuf;
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
-  if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendbuf.reset(new unsigned char[count * datatype->size()]);
-    real_sendbuf = memcpy(tmp_sendbuf.get(), recvbuf, count * datatype->size());
-  }
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);;
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan",
                      new simgrid::instr::Pt2PtTIData(request == MPI_REQUEST_IGNORED ? "exscan" : "iexscan", -1,
@@ -639,13 +637,8 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
     trace_recvcounts->push_back(recvcounts[i] * dt_send_size);
     totalcount += recvcounts[i];
   }
-
-  const void* real_sendbuf = sendbuf;
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
-  if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendbuf.reset(new unsigned char[totalcount * datatype->size()]);
-    real_sendbuf = memcpy(tmp_sendbuf.get(), recvbuf, totalcount * datatype->size());
-  }
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, totalcount, datatype);;
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter",
                      new simgrid::instr::VarCollTIData(
@@ -688,13 +681,8 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   int rank                           = simgrid::s4u::this_actor::get_pid();
   int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
   std::vector<int>* trace_recvcounts = new std::vector<int>(recvcount * dt_send_size); // copy data to avoid bad free
-
-  const void* real_sendbuf = sendbuf;
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
-  if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendbuf.reset(new unsigned char[recvcount * count * datatype->size()]);
-    real_sendbuf = memcpy(tmp_sendbuf.get(), recvbuf, recvcount * count * datatype->size());
-  }
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, recvcount * count, datatype);
 
   TRACE_smpi_comm_in(
       rank, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block" : "PMPI_Ireduce_scatter_block",
@@ -736,16 +724,13 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
 
   smpi_bench_end();
   int rank                 = simgrid::s4u::this_actor::get_pid();
-  const void* real_sendbuf = sendbuf;
   int real_sendcount         = sendcount;
   MPI_Datatype real_sendtype = sendtype;
+  
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, recvcount * comm->size(), recvtype);
+
   if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendbuf.reset(new unsigned char[recvcount * comm->size() * recvtype->size()]);
-    // memcpy(??,nullptr,0) is actually undefined behavior, even if harmless.
-    if (recvbuf != nullptr)
-      memcpy(tmp_sendbuf.get(), recvbuf, recvcount * comm->size() * recvtype->size());
-    real_sendbuf = tmp_sendbuf.get();
     real_sendcount = recvcount;
     real_sendtype  = recvtype;
   }
@@ -804,7 +789,6 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   std::vector<int>* trace_recvcounts = new std::vector<int>;
   int dt_size_recv                   = recvtype->size();
 
-  const void* real_sendbuf   = sendbuf;
   const int* real_sendcounts = sendcounts;
   const int* real_senddisps  = senddisps;
   MPI_Datatype real_sendtype = sendtype;
@@ -819,9 +803,8 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
   std::unique_ptr<int[]> tmp_sendcounts;
   std::unique_ptr<int[]> tmp_senddisps;
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
   if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendbuf.reset(new unsigned char[maxsize]);
-    real_sendbuf = memcpy(tmp_sendbuf.get(), recvbuf, maxsize);
     tmp_sendcounts.reset(new int[size]);
     std::copy(recvcounts, recvcounts + size, tmp_sendcounts.get());
     real_sendcounts = tmp_sendcounts.get();
@@ -890,7 +873,6 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   std::vector<int>* trace_sendcounts = new std::vector<int>;
   std::vector<int>* trace_recvcounts = new std::vector<int>;
 
-  const void* real_sendbuf           = sendbuf;
   const int* real_sendcounts         = sendcounts;
   const int* real_senddisps          = senddisps;
   const MPI_Datatype* real_sendtypes = sendtypes;
@@ -911,9 +893,8 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   std::unique_ptr<int[]> tmp_sendcounts;
   std::unique_ptr<int[]> tmp_senddisps;
   std::unique_ptr<MPI_Datatype[]> tmp_sendtypes;
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
   if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendbuf.reset(new unsigned char[maxsize]);
-    real_sendbuf = memcpy(tmp_sendbuf.get(), recvbuf, maxsize);
     tmp_sendcounts.reset(new int[size]);
     std::copy(recvcounts, recvcounts + size, tmp_sendcounts.get());
     real_sendcounts = tmp_sendcounts.get();
