@@ -60,7 +60,7 @@ public:
   s4u::NetZone* get_iface() { return &piface_; }
 
   /** @brief Make a host within that NetZone */
-  simgrid::s4u::Host* create_host(const char* name, const std::vector<double>& speed_per_pstate, int core_count,
+  simgrid::s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate, int core_count,
                                   const std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
   virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,

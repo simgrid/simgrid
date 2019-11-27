@@ -193,7 +193,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id.c_str(), cluster->speeds.front());
 
     simgrid::kernel::routing::HostCreationArgs host;
-    host.id = host_id.c_str();
+    host.id = host_id;
     if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
       host.properties = new std::unordered_map<std::string, std::string>;
 
@@ -316,7 +316,7 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
     simgrid::kernel::routing::HostCreationArgs host;
     host.pstate           = 0;
     host.core_amount      = 1;
-    host.id               = hostname.c_str();
+    host.id               = hostname;
     host.speed_per_pstate.push_back(cabinet->speed);
     sg_platf_new_host(&host);
 
@@ -501,7 +501,7 @@ void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
 
   std::vector<double> speed_per_pstate;
   speed_per_pstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = as->create_host(peer->id.c_str(), speed_per_pstate, 1, nullptr);
+  simgrid::s4u::Host* host = as->create_host(peer->id, speed_per_pstate, 1, nullptr);
 
   as->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
 

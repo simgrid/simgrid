@@ -799,6 +799,8 @@ include teshsuite/simix/generic-simcalls/generic-simcalls.cpp
 include teshsuite/simix/generic-simcalls/generic-simcalls.tesh
 include teshsuite/simix/stack-overflow/stack-overflow.cpp
 include teshsuite/simix/stack-overflow/stack-overflow.tesh
+include teshsuite/smpi/auto-shared/auto-shared.c
+include teshsuite/smpi/auto-shared/auto-shared.tesh
 include teshsuite/smpi/bug-17132/bug-17132.c
 include teshsuite/smpi/bug-17132/bug-17132.tesh
 include teshsuite/smpi/coll-allgather/coll-allgather.c

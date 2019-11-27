@@ -32,8 +32,9 @@ namespace routing {
  * used, instead of malloced structures.
  */
 
-struct HostCreationArgs {
-  const char* id = nullptr;
+class HostCreationArgs {
+public:
+  std::string id;
   std::vector<double> speed_per_pstate;
   int pstate               = 0;
   int core_amount          = 0;
