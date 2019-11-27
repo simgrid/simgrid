@@ -120,7 +120,7 @@ void parse_platform_file(const std::string& file)
     surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"LINK_AVAIL\">: Trace ")+elm.first+" undefined.");
     auto profile = traces_set_list.at(elm.first);
 
-    auto link = simgrid::s4u::Link::by_name(elm.second);
+    auto link = simgrid::s4u::Link::by_name_or_null(elm.second);
     surf_parse_assert(link, std::string("<trace_connect kind=\"LINK_AVAIL\">: Link ") + elm.second + " undefined.");
     link->set_state_profile(profile);
   }
@@ -129,7 +129,7 @@ void parse_platform_file(const std::string& file)
     surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"BANDWIDTH\">: Trace ")+elm.first+" undefined.");
     auto profile = traces_set_list.at(elm.first);
 
-    auto link                             = simgrid::s4u::Link::by_name(elm.second);
+    auto link = simgrid::s4u::Link::by_name_or_null(elm.second);
     surf_parse_assert(link, std::string("<trace_connect kind=\"BANDWIDTH\">: Link ") + elm.second + " undefined.");
     link->set_bandwidth_profile(profile);
   }
@@ -138,7 +138,7 @@ void parse_platform_file(const std::string& file)
     surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"LATENCY\">: Trace ")+elm.first+" undefined.");
     auto profile = traces_set_list.at(elm.first);
 
-    auto link    = simgrid::s4u::Link::by_name(elm.second);
+    auto link = simgrid::s4u::Link::by_name_or_null(elm.second);
     surf_parse_assert(link, std::string("<trace_connect kind=\"LATENCY\">: Link ") + elm.second + " undefined.");
     link->set_latency_profile(profile);
   }
