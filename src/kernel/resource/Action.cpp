@@ -240,6 +240,6 @@ Action* ActionHeap::pop()
   return action;
 }
 
-} // namespace surf
+} // namespace resource
 } // namespace kernel
 } // namespace simgrid
