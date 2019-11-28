@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMIX_MUTEXIMPL_HPP
-#define SIMIX_MUTEXIMPL_HPP
+#ifndef SIMGRID_KERNEL_ACTIVITY_MUTEX_HPP
+#define SIMGRID_KERNEL_ACTIVITY_MUTEX_HPP
 
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"

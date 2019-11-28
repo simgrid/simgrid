@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_SIMIX_SWAPPED_CONTEXT_HPP
-#define SIMGRID_SIMIX_SWAPPED_CONTEXT_HPP
+#ifndef SIMGRID_KERNEL_CONTEXT_SWAPPED_CONTEXT_HPP
+#define SIMGRID_KERNEL_CONTEXT_SWAPPED_CONTEXT_HPP
 
 #include "src/kernel/context/Context.hpp"
 

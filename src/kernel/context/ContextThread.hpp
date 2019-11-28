@@ -5,8 +5,8 @@
 
 /* \file ThreadContext.hpp Context switching with native threads */
 
-#ifndef SIMGRID_SIMIX_THREAD_CONTEXT_HPP
-#define SIMGRID_SIMIX_THREAD_CONTEXT_HPP
+#ifndef SIMGRID_KERNEL_CONTEXT_THREAD_CONTEXT_HPP
+#define SIMGRID_KERNEL_CONTEXT_THREAD_CONTEXT_HPP
 
 #include "simgrid/simix.hpp"
 #include "src/kernel/context/Context.hpp"

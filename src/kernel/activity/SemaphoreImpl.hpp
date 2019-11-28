@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_KERNEL_ACTIVITY_SEMAPHOREIMPL_HPP_
-#define SIMGRID_KERNEL_ACTIVITY_SEMAPHOREIMPL_HPP_
+#ifndef SIMGRID_KERNEL_ACTIVITY_SEMAPHORE_HPP
+#define SIMGRID_KERNEL_ACTIVITY_SEMAPHORE_HPP
 
 #include <atomic>
 #include <boost/intrusive/list.hpp>

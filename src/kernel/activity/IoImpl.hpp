@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMIX_SYNCHRO_IO_HPP
-#define SIMIX_SYNCHRO_IO_HPP
+#ifndef SIMGRID_KERNEL_ACTIVITY_IO_HPP
+#define SIMGRID_KERNEL_ACTIVITY_IO_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "surf/surf.hpp"
