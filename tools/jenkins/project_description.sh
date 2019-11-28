@@ -33,7 +33,7 @@ get_ns3(){
 get_python(){
   found=$(grep -c "Compile Python bindings .....: ON" ./consoleText)
   if [ $found != 0 ]; then
-    echo "✔"
+    grep -m 1 "Found PythonInterp" ./consoleText| sed "s/.*-- Found PythonInterp.*found suitable version \"\([a-zA-Z0-9\.]*\)\",.*/\1/g"
   else
     echo ""
   fi
