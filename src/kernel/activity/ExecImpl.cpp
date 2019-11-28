@@ -26,19 +26,20 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::acti
 
   /* set surf's synchro */
   if (MC_is_active() || MC_record_replay_is_active()) {
-    synchro->state_ = SIMIX_DONE;
+    synchro->state_ = simgrid::kernel::activity::State::DONE;
     synchro->finish();
     return;
   }
 
   /* If the synchro is already finished then perform the error handling */
-  if (synchro->state_ != SIMIX_RUNNING)
+  if (synchro->state_ != simgrid::kernel::activity::State::RUNNING)
     synchro->finish();
 }
 
 void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro)
 {
-  bool res = (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING);
+  bool res = (synchro->state_ != simgrid::kernel::activity::State::WAITING &&
+              synchro->state_ != simgrid::kernel::activity::State::RUNNING);
   if (res) {
     synchro->simcalls_.push_back(simcall);
     synchro->finish();
@@ -73,7 +74,8 @@ void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kerne
     exec->simcalls_.push_back(simcall);
 
     /* see if the synchro is already finished */
-    if (exec->state_ != SIMIX_WAITING && exec->state_ != SIMIX_RUNNING) {
+    if (exec->state_ != simgrid::kernel::activity::State::WAITING &&
+        exec->state_ != simgrid::kernel::activity::State::RUNNING) {
       exec->finish();
       break;
     }
@@ -137,7 +139,7 @@ ExecImpl& ExecImpl::set_bytes_amounts(const std::vector<double>& bytes_amounts)
 
 ExecImpl* ExecImpl::start()
 {
-  state_ = SIMIX_RUNNING;
+  state_ = State::RUNNING;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (hosts_.size() == 1) {
       surf_action_ = hosts_.front()->pimpl_cpu->execution_start(flops_amounts_.front());
@@ -184,14 +186,14 @@ void ExecImpl::post()
   if (hosts_.size() == 1 && not hosts_.front()->is_on()) { /* FIXME: handle resource failure for parallel tasks too */
     /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
-    state_ = SIMIX_FAILED;
+    state_ = State::FAILED;
   } else if (surf_action_ && surf_action_->get_state() == resource::Action::State::FAILED) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
-    state_ = SIMIX_CANCELED;
+    state_ = State::CANCELED;
   } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED) {
-    state_ = SIMIX_TIMEOUT;
+    state_ = State::TIMEOUT;
   } else {
-    state_ = SIMIX_DONE;
+    state_ = State::DONE;
   }
 
   clean_action();
@@ -243,12 +245,12 @@ void ExecImpl::finish()
 
     switch (state_) {
 
-      case SIMIX_DONE:
+      case State::DONE:
         /* do nothing, synchro done */
         XBT_DEBUG("ExecImpl::finish(): execution successful");
         break;
 
-      case SIMIX_FAILED:
+      case State::FAILED:
         XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
         simcall->issuer_->context_->iwannadie = true;
         if (simcall->issuer_->get_host()->is_on())
@@ -257,13 +259,13 @@ void ExecImpl::finish()
         /* else, the actor will be killed with no possibility to survive */
         break;
 
-      case SIMIX_CANCELED:
+      case State::CANCELED:
         XBT_DEBUG("ExecImpl::finish(): execution canceled");
         simcall->issuer_->exception_ =
             std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
-      case SIMIX_TIMEOUT:
+      case State::TIMEOUT:
         XBT_DEBUG("ExecImpl::finish(): execution timeouted");
         simcall->issuer_->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;

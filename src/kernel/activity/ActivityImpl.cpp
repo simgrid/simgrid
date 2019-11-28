@@ -60,7 +60,7 @@ void ActivityImpl::cancel()
   XBT_VERB("Activity %p is canceled", this);
   if (surf_action_ != nullptr)
     surf_action_->cancel();
-  state_ = SIMIX_CANCELED;
+  state_ = State::CANCELED;
 }
 
 // boost::intrusive_ptr<Activity> support:

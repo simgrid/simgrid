@@ -130,15 +130,14 @@ void HostLoad::update()
     auto current_iter                      = iter;
     ++iter;
 
-    if (action != nullptr && action->get_finish_time() != now && activity->state_ == e_smx_state_t::SIMIX_RUNNING) {
+    if (action != nullptr && action->get_finish_time() != now && activity->state_ == kernel::activity::State::RUNNING) {
       if (remaining_cost_after_last_update == activity_uninitialized_remaining_cost) {
         remaining_cost_after_last_update = action->get_cost();
       }
       double computed_flops_since_last_update = remaining_cost_after_last_update - /*remaining now*/activity->get_remaining();
       computed_flops_                        += computed_flops_since_last_update;
       remaining_cost_after_last_update        = activity->get_remaining();
-    }
-    else if (activity->state_ == e_smx_state_t::SIMIX_DONE) {
+    } else if (activity->state_ == kernel::activity::State::DONE) {
       computed_flops_ += remaining_cost_after_last_update;
       current_activities.erase(current_iter);
     }

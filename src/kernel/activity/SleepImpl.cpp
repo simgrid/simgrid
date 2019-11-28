@@ -42,11 +42,11 @@ void SleepImpl::post()
 {
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
     if (host_ && not host_->is_on())
-      state_ = SIMIX_SRC_HOST_FAILURE;
+      state_ = State::SRC_HOST_FAILURE;
     else
-      state_ = SIMIX_CANCELED;
+      state_ = State::CANCELED;
   } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
-    state_ = SIMIX_DONE;
+    state_ = State::DONE;
   }
   /* Answer all simcalls associated with the synchro */
   finish();

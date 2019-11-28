@@ -98,6 +98,7 @@ typedef boost::intrusive_ptr<ActorImpl> ActorImplPtr;
 
 namespace activity {
   class ActivityImpl;
+  enum class State;
   typedef boost::intrusive_ptr<ActivityImpl> ActivityImplPtr;
   XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
@@ -198,7 +199,7 @@ typedef simgrid::kernel::activity::ConditionVariableImpl* smx_cond_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::SemaphoreImpl* smx_sem_t;
-
+typedef simgrid::kernel::activity::State e_smx_state_t;
 #else
 
 typedef struct s4u_Actor s4u_Actor;
@@ -214,6 +215,7 @@ typedef struct s4u_Storage s4u_Storage;
 typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
 typedef struct kernel_Activity* smx_activity_t;
+typedef enum kernel_activity_state e_smx_state_t;
 
 typedef struct s_smx_timer* smx_timer_t;
 typedef struct s_smx_actor* smx_actor_t;

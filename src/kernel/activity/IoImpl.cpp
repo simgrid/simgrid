@@ -22,10 +22,10 @@ void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::I
   synchro->register_simcall(simcall);
 
   if (MC_is_active() || MC_record_replay_is_active())
-    synchro->state_ = SIMIX_DONE;
+    synchro->state_ = simgrid::kernel::activity::State::DONE;
 
   /* If the synchro is already finished then perform the error handling */
-  if (synchro->state_ != SIMIX_RUNNING)
+  if (synchro->state_ != simgrid::kernel::activity::State::RUNNING)
     synchro->finish();
 }
 
@@ -59,7 +59,7 @@ IoImpl& IoImpl::set_storage(resource::StorageImpl* storage)
 
 IoImpl* IoImpl::start()
 {
-  state_       = SIMIX_RUNNING;
+  state_ = State::RUNNING;
   if (storage_)
     surf_action_ = storage_->io_start(size_, type_);
   else
@@ -77,11 +77,11 @@ void IoImpl::post()
   performed_ioops_ = surf_action_->get_cost();
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
     if ((storage_ && not storage_->is_on()) || (disk_ && not disk_->is_on()))
-      state_ = SIMIX_FAILED;
+      state_ = State::FAILED;
     else
-      state_ = SIMIX_CANCELED;
+      state_ = State::CANCELED;
   } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
-    state_ = SIMIX_DONE;
+    state_ = State::DONE;
   }
   on_completion(*this);
 
@@ -95,15 +95,15 @@ void IoImpl::finish()
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
     switch (state_) {
-      case SIMIX_DONE:
+      case State::DONE:
         /* do nothing, synchro done */
         break;
-      case SIMIX_FAILED:
+      case State::FAILED:
         simcall->issuer_->context_->iwannadie = true;
         simcall->issuer_->exception_ =
             std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
         break;
-      case SIMIX_CANCELED:
+      case State::CANCELED:
         simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
         break;
       default:

@@ -57,9 +57,9 @@ void RawImpl::cancel()
 void RawImpl::post()
 {
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
-    state_ = SIMIX_FAILED;
+    state_ = State::FAILED;
   } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
-    state_ = SIMIX_SRC_TIMEOUT;
+    state_ = State::SRC_TIMEOUT;
   }
   finish();
 }
@@ -69,11 +69,11 @@ void RawImpl::finish()
   smx_simcall_t simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  if (state_ == SIMIX_FAILED) {
+  if (state_ == State::FAILED) {
     XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
     simcall->issuer_->context_->iwannadie = true;
     simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-  } else if (state_ != SIMIX_SRC_TIMEOUT) {
+  } else if (state_ != State::SRC_TIMEOUT) {
     xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
   }
 

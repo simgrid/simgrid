@@ -57,7 +57,7 @@ void simcall_process_suspend(smx_actor_t process) // XBT_DEPRECATED_v328
 e_smx_state_t simcall_process_sleep(double duration) // XBT_DEPRECATED_v329
 {
   SIMIX_process_self()->sleep(duration);
-  return SIMIX_DONE;
+  return simgrid::kernel::activity::State::DONE;
 }
 
 /**

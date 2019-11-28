@@ -19,13 +19,27 @@
 namespace simgrid {
 namespace kernel {
 namespace activity {
+enum class State {
+  WAITING = 0,
+  READY,
+  RUNNING,
+  DONE,
+  CANCELED,
+  FAILED,
+  SRC_HOST_FAILURE,
+  DST_HOST_FAILURE,
+  TIMEOUT,
+  SRC_TIMEOUT,
+  DST_TIMEOUT,
+  LINK_FAILURE
+};
 
 class XBT_PUBLIC ActivityImpl {
   std::atomic_int_fast32_t refcount_{0};
 public:
   virtual ~ActivityImpl();
   ActivityImpl() = default;
-  e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
+  State state_   = State::WAITING;      /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
 

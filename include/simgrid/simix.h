@@ -17,35 +17,6 @@
 #include <vector>
 #endif
 
-/* ******************************** Host ************************************ */
-/** @brief Host datatype
-    @ingroup simix_host_management
-
-    A <em>location</em> (or <em>host</em>) is any possible place where
-    a process may run. Thus it is represented as a <em>physical
-    resource with computing capabilities</em>, some <em>mailboxes</em>
-    to enable running process to communicate with remote ones, and
-    some <em>private data</em> that can be only accessed by local
-    process.
-
-    @see m_host_management
-  @{ */
-typedef enum {
-  SIMIX_WAITING,
-  SIMIX_READY,
-  SIMIX_RUNNING,
-  SIMIX_DONE,
-  SIMIX_CANCELED,
-  SIMIX_FAILED,
-  SIMIX_SRC_HOST_FAILURE,
-  SIMIX_DST_HOST_FAILURE,
-  SIMIX_TIMEOUT,
-  SIMIX_SRC_TIMEOUT,
-  SIMIX_DST_TIMEOUT,
-  SIMIX_LINK_FAILURE
-} e_smx_state_t;
-/** @} */
-
 /******************************* Networking ***********************************/
 extern unsigned smx_context_stack_size;
 extern unsigned smx_context_guard_size;
