@@ -43,7 +43,8 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
       newSize *= dims[i];
     }
     if(rank >= newSize) {
-      *comm_cart = MPI_COMM_NULL;
+      if(comm_cart != nullptr)
+        *comm_cart = MPI_COMM_NULL;
       return;
     }
     oldGroup = comm_old->group();
@@ -64,16 +65,19 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
       position_[i] = rank / nranks;
       rank = rank % nranks;
     }
-
-    *comm_cart = new  Comm(newGroup, this);
+    if(comm_cart != nullptr)
+      *comm_cart = new  Comm(newGroup, this);
   } else {
-    if (rank == 0) {
-      *comm_cart = new  Comm(new  Group(MPI_COMM_SELF->group()), this);
-    } else {
-      *comm_cart = MPI_COMM_NULL;
+    if(comm_cart != nullptr){
+      if (rank == 0) {
+        *comm_cart = new  Comm(new  Group(MPI_COMM_SELF->group()), this);
+      } else {
+        *comm_cart = MPI_COMM_NULL;
+      }
     }
   }
-  setComm(*comm_cart);
+  if(comm_cart != nullptr)
+    setComm(*comm_cart);
 }
 
 Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
@@ -104,7 +108,22 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
       }
     }
   }
-  Topo_Cart* res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, newcomm);
+
+  //split into several communicators
+  int color = 0;
+  for (int i = 0; i < oldNDims; i++) {
+    if (not remain_dims[i]) {
+      color = (color * dims_[i] + position_[i]);
+    }
+  }
+  Topo_Cart* res;
+  if (newNDims == 0){
+    res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, newcomm);
+  } else {
+    *newcomm = getComm()->split(color, getComm()->rank());
+    res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, nullptr);
+    res->setComm(*newcomm);
+  }
   delete[] newDims;
   delete[] newPeriodic;
   return res;
