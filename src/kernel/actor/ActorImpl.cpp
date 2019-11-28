@@ -389,7 +389,7 @@ void ActorImpl::resume()
 activity::ActivityImplPtr ActorImpl::join(ActorImpl* actor, double timeout)
 {
   activity::ActivityImplPtr sleep = this->sleep(timeout);
-  SIMIX_process_on_exit(actor, [sleep](bool) {
+  actor->on_exit->emplace_back([sleep](bool) {
     if (sleep->surf_action_)
       sleep->surf_action_->finish(resource::Action::State::FINISHED);
   });
@@ -579,7 +579,8 @@ smx_actor_t SIMIX_process_from_PID(aid_t PID)
   return item->second;
 }
 
-void SIMIX_process_on_exit(smx_actor_t actor, const std::function<void(bool /*failed*/)>& fun)
+void SIMIX_process_on_exit(smx_actor_t actor,
+                           const std::function<void(bool /*failed*/)>& fun) // XBT_ATTRIB_DEPRECATED_v329
 {
   xbt_assert(actor, "current process not found: are you in maestro context ?");
   actor->on_exit->emplace_back(fun);

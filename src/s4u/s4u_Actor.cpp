@@ -123,7 +123,7 @@ void Actor::set_auto_restart(bool autorestart)
 
 void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
 {
-  kernel::actor::simcall([this, &fun] { SIMIX_process_on_exit(pimpl_, fun); });
+  kernel::actor::simcall([this, &fun] { pimpl_->on_exit->emplace_back(fun); });
 }
 
 void Actor::set_host(Host* new_host)

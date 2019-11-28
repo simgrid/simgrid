@@ -90,7 +90,8 @@ XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") XBT_PUBLIC v
 SG_END_DECL
 
 #ifdef __cplusplus
-XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, const std::function<void(bool /*failed*/)>& fun);
+XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") XBT_PUBLIC
+    void SIMIX_process_on_exit(smx_actor_t process, const std::function<void(bool /*failed*/)>& fun);
 #endif
 
 /****************************** Communication *********************************/
