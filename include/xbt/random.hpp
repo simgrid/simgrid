@@ -10,14 +10,46 @@ namespace simgrid {
 namespace xbt {
 namespace random {
 
+/**
+ * @brief Tells xbt/random to use the ad-hoc distribution implementation.
+ */
 void set_implem_xbt();
+/**
+ * @brief Tells xbt/random to use the standard library distribution implementation.
+ */
 void set_implem_std();
+/**
+ * @brief Sets the seed of the Mersenne-Twister RNG
+ */
 void set_mersenne_seed(int);
 
-int uniform_int(int, int);
-double uniform_real(double, double);
-double exponential(double);
-double normal(double, double);
+/**
+ * @brief Draws an integer number uniformly between min and max included
+ *
+ * @param min Minimum value
+ * @param max Maximum value
+ */
+int uniform_int(int min, int max);
+/**
+ * @brief Draws a real number uniformly between min and max included
+ *
+ * @param min Minimum value
+ * @param max Maximum value
+ */
+double uniform_real(double min, double max);
+/**
+ * @brief Draws a real number according to the given exponential distribution
+ *
+ * @param lambda Parameter of the exponential law
+ */
+double exponential(double lambda);
+/**
+ * @brief Draws a real number according to the given normal distribution
+ *
+ * @param mean Mean of the normal distribution
+ * @param sd Standard deviation of the normal distribution
+ */
+double normal(double mean, double sd);
 } // namespace random
 } // namespace xbt
 } // namespace simgrid
