@@ -168,7 +168,7 @@ endif()
 mark_as_advanced(GCCLIBATOMIC_LIBRARY)
 
 if(enable_model-checking AND (NOT LINKER_VERSION VERSION_LESS "2.30"))
-    set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,-znoseparate-code")
+    set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,-znorelro -Wl,-znoseparate-code")
 endif()
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})
