@@ -544,7 +544,7 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   smpi_bench_end();
   int rank         = simgrid::s4u::this_actor::get_pid();
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
-  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);;
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan",
                      new simgrid::instr::Pt2PtTIData(request == MPI_REQUEST_IGNORED ? "scan" : "iscan", -1,
@@ -584,7 +584,7 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   smpi_bench_end();
   int rank         = simgrid::s4u::this_actor::get_pid();
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
-  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);;
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan",
                      new simgrid::instr::Pt2PtTIData(request == MPI_REQUEST_IGNORED ? "exscan" : "iexscan", -1,
@@ -638,7 +638,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
     totalcount += recvcounts[i];
   }
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
-  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, totalcount, datatype);;
+  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, totalcount, datatype);
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter",
                      new simgrid::instr::VarCollTIData(

@@ -113,7 +113,7 @@ int main(int argc, char **argv)
     }
     /* Test Iallreduce */
     if (sol != out)
-        errs++;;
+        errs++;
 
     /* Test new communicator */
     errs += MTestTestComm(newcomm);
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
     }
     /* Test Iallreduce */
     if (sol != out)
-        errs++;;
+        errs++;
 
     /* Test new communicator */
     errs += MTestTestComm(newcomm);
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 
 
     if (sol != out)
-        errs++;;
+        errs++;
     /* Test new inter communicator */
     errs += MTestTestComm(newcomm);
     MPI_Comm_free(&newcomm);
@@ -167,7 +167,7 @@ int main(int argc, char **argv)
     }
     /* Test Iallreduce resutls for split-communicator */
     if (sol != out)
-        errs++;;
+        errs++;
     /* Test new inter-communicator */
 
     errs += MTestTestComm(newcomm);
@@ -190,7 +190,7 @@ int main(int argc, char **argv)
 
 
     if (sol != out)
-        errs++;;
+        errs++;
     /* Test new communicator */
     errs += MTestTestComm(newcomm);
     MPI_Comm_free(&newcomm);
