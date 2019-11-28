@@ -72,7 +72,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libm",
     "libomp",
     "libpapi",
-    "libpcre2-8",
+    "libpcre2",
     "libpfm",
     "libpgmath",
     "libpthread",
