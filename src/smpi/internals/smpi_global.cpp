@@ -180,7 +180,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   if(smpi_is_shared(buff, src_private_blocks, &src_offset)) {
     src_private_blocks = shift_and_frame_private_blocks(src_private_blocks, src_offset, buff_size);
     if (src_private_blocks.size()==1 && (src_private_blocks[0].second - src_private_blocks[0].first)==buff_size){//simple shared malloc ... return.
-      XBT_DEBUG("Sender %p is shared. Let's ignore it.", buff);
+      XBT_VERB("Sender is shared. Let's ignore it.");
       smpi_cleanup_comm_after_copy(comm, buff);
       return;
     }
@@ -192,7 +192,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   if (smpi_is_shared((char*)comm->dst_buff_, dst_private_blocks, &dst_offset)) {
     dst_private_blocks = shift_and_frame_private_blocks(dst_private_blocks, dst_offset, buff_size);
     if (src_private_blocks.size()==1 && (src_private_blocks[0].second - src_private_blocks[0].first)==buff_size){//simple shared malloc ... return.
-      XBT_DEBUG("Receiver %p is shared. Let's ignore it.", (char*)comm->dst_buff_);
+      XBT_VERB("Receiver is shared. Let's ignore it.");
       smpi_cleanup_comm_after_copy(comm, buff);
       return;
     }

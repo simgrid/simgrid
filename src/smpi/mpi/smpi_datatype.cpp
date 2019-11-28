@@ -284,11 +284,13 @@ int Datatype::copy(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
   if(smpi_is_shared(sendbuf,private_blocks,&offset)
        && (private_blocks.size()==1
        && (private_blocks[0].second - private_blocks[0].first)==(unsigned long)(sendcount * sendtype->get_extent()))){
+    XBT_VERB("sendbuf is shared. Ignoring copies");
     return 0;
   }
   if(smpi_is_shared(recvbuf,private_blocks,&offset)
        && (private_blocks.size()==1
        && (private_blocks[0].second - private_blocks[0].first)==(unsigned long)(recvcount * recvtype->get_extent()))){
+    XBT_VERB("recvbuf is shared. Ignoring copies");
     return 0;
   }
 

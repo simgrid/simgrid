@@ -1,0 +1,35 @@
+p Test cart_sub
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/topo-cart-sub -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
+> [rank 2] -> Fafard
+> [rank 3] -> Ginette
+> rank 0: Alive 
+> rank 1: Alive 
+> rank 2: Alive 
+> rank 3: Alive 
+> process:(0,0) 
+> -------------------
+> 0 0 0 
+> 0 0 0 
+> 0 0 0 
+> -------------------
+> process:(1,0) 
+> -------------------
+> 2 0 0 
+> 0 2 0 
+> 0 0 2 
+> -------------------
+> process:(0,1) 
+> -------------------
+> 0 0 0 
+> 0 0 0 
+> 0 0 0 
+> -------------------
+> process:(1,1) 
+> -------------------
+> 2 0 0 
+> 0 2 0 
+> 0 0 2 
+> -------------------
+
