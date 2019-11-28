@@ -75,7 +75,7 @@ Host* Host::by_name_or_null(const std::string& name)
 
 Host* Host::current()
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   if (self == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
   return self->get_host();
@@ -96,7 +96,7 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    kernel::actor::ActorImpl* self = SIMIX_process_self();
+    kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
     kernel::actor::simcall([this, self] {
       for (VirtualMachine* const& vm : vm::VirtualMachineImpl::allVms_)
         if (vm->get_pm() == this) {
@@ -654,13 +654,13 @@ void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 
 sg_host_t sg_host_self()
 {
-  return SIMIX_is_maestro() ? nullptr : SIMIX_process_self()->get_host();
+  return SIMIX_is_maestro() ? nullptr : simgrid::kernel::actor::ActorImpl::self()->get_host();
 }
 
 /* needs to be public and without simcall for exceptions and logging events */
 const char* sg_host_self_get_name()
 {
-  return SIMIX_is_maestro() ? "" : SIMIX_process_self()->get_host()->get_cname();
+  return SIMIX_is_maestro() ? "" : simgrid::kernel::actor::ActorImpl::self()->get_host()->get_cname();
 }
 
 double sg_host_load(sg_host_t host)

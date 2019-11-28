@@ -32,9 +32,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX
  */
 smx_actor_t SIMIX_process_self()
 {
-  simgrid::kernel::context::Context* self_context = simgrid::kernel::context::Context::self();
-
-  return (self_context != nullptr) ? self_context->get_actor() : nullptr;
+  return simgrid::kernel::actor::ActorImpl::self();
 }
 
 namespace simgrid {
@@ -45,6 +43,13 @@ static unsigned long maxpid = 0;
 int get_maxpid()
 {
   return maxpid;
+}
+
+ActorImpl* ActorImpl::self()
+{
+  context::Context* self_context = context::Context::self();
+
+  return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }
 
 ActorImpl::ActorImpl(simgrid::xbt::string name, s4u::Host* host) : host_(host), name_(std::move(name)), piface_(this)
@@ -496,7 +501,7 @@ ActorImplPtr ActorImpl::create(const std::string& name, const simix::ActorCode& 
   if (parent_actor != nullptr)
     actor = parent_actor->init(xbt::string(name), host);
   else
-    actor = SIMIX_process_self()->init(xbt::string(name), host);
+    actor = self()->init(xbt::string(name), host);
 
   /* actor data */
   actor->set_user_data(data);
@@ -537,7 +542,7 @@ int SIMIX_process_count() // XBT_ATTRIB_DEPRECATED_v329
 // XBT_DEPRECATED_v329
 void* SIMIX_process_self_get_data()
 {
-  smx_actor_t self = SIMIX_process_self();
+  smx_actor_t self = simgrid::kernel::actor::ActorImpl::self();
 
   if (self == nullptr) {
     return nullptr;
@@ -548,14 +553,14 @@ void* SIMIX_process_self_get_data()
 // XBT_DEPRECATED_v329
 void SIMIX_process_self_set_data(void* data)
 {
-  SIMIX_process_self()->set_user_data(data);
+  simgrid::kernel::actor::ActorImpl::self()->set_user_data(data);
 }
 
 /* needs to be public and without simcall because it is called
    by exceptions and logging events */
 const char* SIMIX_process_self_get_name()
 {
-  return SIMIX_is_maestro() ? "maestro" : SIMIX_process_self()->get_cname();
+  return SIMIX_is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }
 
 /**
@@ -604,7 +609,7 @@ void SIMIX_process_on_exit(smx_actor_t actor,
 smx_actor_t simcall_process_create(const std::string& name, const simgrid::simix::ActorCode& code, void* data,
                                    sg_host_t host, std::unordered_map<std::string, std::string>* properties)
 {
-  smx_actor_t self = SIMIX_process_self();
+  smx_actor_t self = simgrid::kernel::actor::ActorImpl::self();
   return simgrid::kernel::actor::simcall([&name, &code, data, host, properties, self] {
     return simgrid::kernel::actor::ActorImpl::create(name, code, data, host, properties, self).get();
   });

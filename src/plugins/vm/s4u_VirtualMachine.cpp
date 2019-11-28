@@ -60,21 +60,21 @@ void VirtualMachine::start()
 {
   on_start(*this);
 
-  simgrid::kernel::actor::simcall([this]() {
-    simgrid::vm::VmHostExt::ensureVmExtInstalled();
+  kernel::actor::simcall([this]() {
+    vm::VmHostExt::ensureVmExtInstalled();
 
-    simgrid::s4u::Host* pm = this->pimpl_vm_->get_physical_host();
-    if (pm->extension<simgrid::vm::VmHostExt>() == nullptr)
-      pm->extension_set(new simgrid::vm::VmHostExt());
+    Host* pm = this->pimpl_vm_->get_physical_host();
+    if (pm->extension<vm::VmHostExt>() == nullptr)
+      pm->extension_set(new vm::VmHostExt());
 
-    long pm_ramsize   = pm->extension<simgrid::vm::VmHostExt>()->ramsize;
-    int pm_overcommit = pm->extension<simgrid::vm::VmHostExt>()->overcommit;
+    long pm_ramsize   = pm->extension<vm::VmHostExt>()->ramsize;
+    int pm_overcommit = pm->extension<vm::VmHostExt>()->overcommit;
     long vm_ramsize   = this->get_ramsize();
 
     if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
       long total_ramsize_of_vms = 0;
-      for (simgrid::s4u::VirtualMachine* const& ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
+      for (VirtualMachine* const& ws_vm : vm::VirtualMachineImpl::allVms_)
         if (pm == ws_vm->get_pm())
           total_ramsize_of_vms += ws_vm->get_ramsize();
 
@@ -96,8 +96,8 @@ void VirtualMachine::start()
 void VirtualMachine::suspend()
 {
   on_suspend(*this);
-  smx_actor_t issuer = SIMIX_process_self();
-  simgrid::kernel::actor::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
 }
 
 void VirtualMachine::resume()
@@ -108,8 +108,8 @@ void VirtualMachine::resume()
 
 void VirtualMachine::shutdown()
 {
-  smx_actor_t issuer = SIMIX_process_self();
-  simgrid::kernel::actor::simcall([this, issuer]() { pimpl_vm_->shutdown(issuer); });
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::simcall([this, issuer]() { pimpl_vm_->shutdown(issuer); });
   on_shutdown(*this);
 }
 
@@ -129,12 +129,12 @@ simgrid::s4u::Host* VirtualMachine::get_pm()
 
 void VirtualMachine::set_pm(simgrid::s4u::Host* pm)
 {
-  simgrid::kernel::actor::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
+  kernel::actor::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
 }
 
 VirtualMachine::state VirtualMachine::get_state()
 {
-  return simgrid::kernel::actor::simcall([this]() { return pimpl_vm_->get_state(); });
+  return kernel::actor::simcall([this]() { return pimpl_vm_->get_state(); });
 }
 
 size_t VirtualMachine::get_ramsize()
@@ -174,7 +174,7 @@ void VirtualMachine::set_ramsize(size_t ramsize)
  */
 void VirtualMachine::set_bound(double bound)
 {
-  simgrid::kernel::actor::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
+  kernel::actor::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
 }
 
 } // namespace simgrid

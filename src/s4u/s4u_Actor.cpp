@@ -46,7 +46,7 @@ Actor* Actor::self()
 
 ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host] { return self->init(name, host).get(); });
   return actor->iface();
@@ -60,7 +60,7 @@ ActorPtr Actor::start(const std::function<void()>& code)
 
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::function<void()>& code)
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host, &code] { return self->init(name, host)->start(code); });
 
@@ -96,7 +96,7 @@ void Actor::join()
 
 void Actor::join(double timeout)
 {
-  kernel::actor::ActorImpl* issuer = SIMIX_process_self();
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* target = pimpl_;
   kernel::actor::simcall_blocking<void>([issuer, target, timeout] {
     if (target->finished_) {
@@ -202,7 +202,7 @@ aid_t Actor::get_ppid() const
 
 void Actor::suspend()
 {
-  kernel::actor::ActorImpl* issuer = SIMIX_process_self();
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* target = pimpl_;
   s4u::Actor::on_suspend(*this);
   kernel::actor::simcall_blocking<void>([issuer, target]() {
@@ -238,7 +238,7 @@ double Actor::get_kill_time()
 
 void Actor::kill()
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::simcall([this, self] { self->kill(pimpl_); });
 }
 
@@ -255,7 +255,7 @@ ActorPtr Actor::by_pid(aid_t pid)
 
 void Actor::kill_all()
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::simcall([self] { self->kill_all(); });
 }
 
@@ -303,7 +303,7 @@ void sleep_for(double duration)
   xbt_assert(std::isfinite(duration), "duration is not finite!");
 
   if (duration > 0) {
-    kernel::actor::ActorImpl* issuer = SIMIX_process_self();
+    kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
     Actor::on_sleep(*issuer->ciface());
 
     kernel::actor::simcall_blocking<void>([issuer, duration]() {
@@ -394,52 +394,52 @@ ExecPtr exec_async(double flops)
 
 aid_t get_pid()
 {
-  return SIMIX_process_self()->get_pid();
+  return simgrid::kernel::actor::ActorImpl::self()->get_pid();
 }
 
 aid_t get_ppid()
 {
-  return SIMIX_process_self()->get_ppid();
+  return simgrid::kernel::actor::ActorImpl::self()->get_ppid();
 }
 
 std::string get_name()
 {
-  return SIMIX_process_self()->get_name();
+  return simgrid::kernel::actor::ActorImpl::self()->get_name();
 }
 
 const char* get_cname()
 {
-  return SIMIX_process_self()->get_cname();
+  return simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }
 
 Host* get_host()
 {
-  return SIMIX_process_self()->get_host();
+  return simgrid::kernel::actor::ActorImpl::self()->get_host();
 }
 
 void suspend()
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
   s4u::Actor::on_suspend(*self->ciface());
   kernel::actor::simcall_blocking<void>([self] { self->suspend(); });
 }
 
 void resume()
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
   kernel::actor::simcall([self] { self->resume(); });
   Actor::on_resume(*self->ciface());
 }
 
 void exit()
 {
-  kernel::actor::ActorImpl* self = SIMIX_process_self();
+  kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
   simgrid::kernel::actor::simcall([self] { self->exit(); });
 }
 
 void on_exit(const std::function<void(bool)>& fun)
 {
-  SIMIX_process_self()->iface()->on_exit(fun);
+  simgrid::kernel::actor::ActorImpl::self()->iface()->on_exit(fun);
 }
 
 /** @brief Moves the current actor to another host
@@ -448,7 +448,7 @@ void on_exit(const std::function<void(bool)>& fun)
  */
 void set_host(Host* new_host)
 {
-  SIMIX_process_self()->iface()->set_host(new_host);
+  simgrid::kernel::actor::ActorImpl::self()->iface()->set_host(new_host);
 }
 void migrate(Host* new_host) // deprecated
 {

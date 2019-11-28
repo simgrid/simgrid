@@ -46,7 +46,7 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
 
 void simcall_process_join(smx_actor_t process, double timeout) // XBT_DEPRECATED_v328
 {
-  SIMIX_process_self()->join(process, timeout);
+  simgrid::kernel::actor::ActorImpl::self()->join(process, timeout);
 }
 
 void simcall_process_suspend(smx_actor_t process) // XBT_DEPRECATED_v328
@@ -56,7 +56,7 @@ void simcall_process_suspend(smx_actor_t process) // XBT_DEPRECATED_v328
 
 e_smx_state_t simcall_process_sleep(double duration) // XBT_DEPRECATED_v329
 {
-  SIMIX_process_self()->sleep(duration);
+  simgrid::kernel::actor::ActorImpl::self()->sleep(duration);
   return simgrid::kernel::activity::State::DONE;
 }
 
@@ -309,13 +309,13 @@ e_smx_state_t simcall_io_wait(const smx_activity_t& io)
 
 void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t)
 {
-  SIMIX_process_self()->simcall.inspector_ = t;
+  simgrid::kernel::actor::ActorImpl::self()->simcall.inspector_ = t;
   simcall_BODY_run_kernel(&code);
 }
 
 void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallInspector* t = nullptr)
 {
-  SIMIX_process_self()->simcall.inspector_ = t;
+  simgrid::kernel::actor::ActorImpl::self()->simcall.inspector_ = t;
   simcall_BODY_run_blocking(&code);
 }
 

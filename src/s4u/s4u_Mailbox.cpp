@@ -77,7 +77,7 @@ ActorPtr Mailbox::get_receiver()
 CommPtr Mailbox::put_init()
 {
   CommPtr res   = CommPtr(new s4u::Comm());
-  res->sender_  = SIMIX_process_self();
+  res->sender_  = kernel::actor::ActorImpl::self();
   res->mailbox_ = this;
   return res;
 }
@@ -121,7 +121,7 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes, double timeou
 s4u::CommPtr Mailbox::get_init()
 {
   CommPtr res    = CommPtr(new s4u::Comm());
-  res->receiver_ = SIMIX_process_self();
+  res->receiver_ = kernel::actor::ActorImpl::self();
   res->mailbox_  = this;
   return res;
 }

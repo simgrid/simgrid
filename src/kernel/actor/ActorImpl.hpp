@@ -35,6 +35,7 @@ public:
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();
 
+  static ActorImpl* self();
   double get_kill_time();
   void set_kill_time(double kill_time);
   boost::intrusive::list_member_hook<> host_actor_list_hook;   /* simgrid::simix::Host::process_list */
