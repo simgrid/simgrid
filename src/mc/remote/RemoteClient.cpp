@@ -86,7 +86,30 @@ static const std::vector<std::string> filtered_libraries = {
     "libunwind-ptrace",
     "libunwind-x86",
     "libunwind-x86_64",
-    "libz"};
+    "libz",
+    "libkrb5support", /*odd behaviour on fedora rawhide ... remove these when fixed*/
+    "libkeyutils",
+    "libunistring",
+    "libbrotlidec",
+    "liblber",
+    "libldap",
+    "libcom_err",
+    "libk5crypto",
+    "libkrb5",
+    "libgssapi_krb5",
+    "libssl",
+    "libpsl",
+    "libssh",
+    "libidn2",
+    "libnghttp2",
+    "libcurl",
+    "libdebuginfod",
+    "libbrotlicommon",
+    "libsasl2",
+    "libresolv",
+    "libcrypt",
+    "libselinux"
+};
 
 static bool is_simgrid_lib(const std::string& libname)
 {
