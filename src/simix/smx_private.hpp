@@ -30,6 +30,7 @@ public:
    */
   void empty_trash();
   void run_all_actors();
+  void wake_all_waiting_actors();
 
   smx_context_factory_t context_factory = nullptr;
   std::vector<kernel::actor::ActorImpl*> actors_to_run;

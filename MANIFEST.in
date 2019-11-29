@@ -1639,6 +1639,8 @@ include teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong.c
 include teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong.tesh
 include teshsuite/smpi/timers/timers.c
 include teshsuite/smpi/timers/timers.tesh
+include teshsuite/smpi/topo-cart-sub/topo-cart-sub.c
+include teshsuite/smpi/topo-cart-sub/topo-cart-sub.tesh
 include teshsuite/smpi/type-hvector/type-hvector.c
 include teshsuite/smpi/type-hvector/type-hvector.tesh
 include teshsuite/smpi/type-indexed/type-indexed.c

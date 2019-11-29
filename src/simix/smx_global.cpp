@@ -197,6 +197,29 @@ void Global::run_all_actors()
   actors_to_run.clear();
 }
 
+/** Wake up all actors waiting for a Surf action to finish */
+void Global::wake_all_waiting_actors()
+{
+  for (auto const& model : all_existing_models) {
+    kernel::resource::Action* action;
+
+    XBT_DEBUG("Handling the failed actions (if any)");
+    while ((action = model->extract_failed_action())) {
+      XBT_DEBUG("   Handling Action %p", action);
+      if (action->get_activity() != nullptr)
+        kernel::activity::ActivityImplPtr(action->get_activity())->post();
+    }
+    XBT_DEBUG("Handling the terminated actions (if any)");
+    while ((action = model->extract_done_action())) {
+      XBT_DEBUG("   Handling Action %p", action);
+      if (action->get_activity() == nullptr)
+        XBT_DEBUG("probably vcpu's action %p, skip", action);
+      else
+        kernel::activity::ActivityImplPtr(action->get_activity())->post();
+    }
+  }
+}
+
 config::Flag<double> cfg_breakpoint{
     "debug/breakpoint", {"simix/breakpoint"}, "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 } // namespace simix
@@ -336,29 +359,6 @@ double SIMIX_get_clock()
   }
 }
 
-/** Wake up all processes waiting for a Surf action to finish */
-static void SIMIX_wake_processes()
-{
-  for (auto const& model : all_existing_models) {
-    simgrid::kernel::resource::Action* action;
-
-    XBT_DEBUG("Handling the failed actions (if any)");
-    while ((action = model->extract_failed_action())) {
-      XBT_DEBUG("   Handling Action %p",action);
-      if (action->get_activity() != nullptr)
-        simgrid::kernel::activity::ActivityImplPtr(action->get_activity())->post();
-    }
-    XBT_DEBUG("Handling the terminated actions (if any)");
-    while ((action = model->extract_done_action())) {
-      XBT_DEBUG("   Handling Action %p",action);
-      if (action->get_activity() == nullptr)
-        XBT_DEBUG("probably vcpu's action %p, skip", action);
-      else
-        simgrid::kernel::activity::ActivityImplPtr(action->get_activity())->post();
-    }
-  }
-}
-
 /** Handle any pending timer. Returns if something was actually run. */
 static bool SIMIX_execute_timers()
 {
@@ -417,22 +417,22 @@ void SIMIX_run()
        *   Short proof: only maestro adds stuff to the actors_to_run array, so the execution order of user contexts do
        *   not impact its order.
        *
-       *   Long proof: processes remain sorted through an arbitrary (implicit, complex but fixed) order in all cases.
+       *   Long proof: actors remain sorted through an arbitrary (implicit, complex but fixed) order in all cases.
        *
-       *   - if there is no kill during the simulation, processes remain sorted according by their PID.
+       *   - if there is no kill during the simulation, actors remain sorted according by their PID.
        *     Rationale: This can be proved inductively.
        *        Assume that actors_to_run is sorted at a beginning of one round (it is at round 0: the deployment file
        *        is parsed linearly).
        *        Let's show that it is still so at the end of this round.
-       *        - if a process is added when being created, that's from maestro. It can be either at startup
+       *        - if an actor is added when being created, that's from maestro. It can be either at startup
        *          time (and then in PID order), or in response to a process_create simcall. Since simcalls are handled
        *          in arbitrary order (inductive hypothesis), we are fine.
-       *        - If a process is added because it's getting killed, its subsequent actions shouldn't matter
-       *        - If a process gets added to actors_to_run because one of their blocking action constituting the meat
+       *        - If an actor is added because it's getting killed, its subsequent actions shouldn't matter
+       *        - If an actor gets added to actors_to_run because one of their blocking action constituting the meat
        *          of a simcall terminates, we're still good. Proof:
-       *          - You are added from ActorImpl::simcall_answer() only. When this function is called depends on the resource
-       *            kind (network, cpu, disk, whatever), but the same arguments hold. Let's take communications as an
-       *            example.
+       *          - You are added from ActorImpl::simcall_answer() only. When this function is called depends on the
+       *            resource kind (network, cpu, disk, whatever), but the same arguments hold. Let's take communications
+       *            as an example.
        *          - For communications, this function is called from SIMIX_comm_finish().
        *            This function itself don't mess with the order since simcalls are handled in FIFO order.
        *            The function is called:
@@ -446,21 +446,21 @@ void SIMIX_run()
        *              This order is also fixed because it depends of the order in which the surf actions were
        *              added to the system, and only maestro can add stuff this way, through simcalls.
        *              We thus use the inductive hypothesis once again to conclude that the order in which synchros are
-       *              poped out of the set does not depend on the user code's execution order.
+       *              popped out of the set does not depend on the user code's execution order.
        *            - because the communication terminated. In this case, synchros are served in the order given by
        *                       set = model->states.done_action_set;
        *                       while ((synchro = extract(set)))
        *                          SIMIX_simcall_post((smx_synchro_t) synchro->data);
        *              and the argument is very similar to the previous one.
-       *            So, in any case, the orders of calls to SIMIX_comm_finish() do not depend on the order in which user
-       *            processes are executed.
-       *          So, in any cases, the orders of processes within actors_to_run do not depend on the order in which
-       *          user processes were executed previously.
+       *            So, in any case, the orders of calls to CommImpl::finish() do not depend on the order in which user
+       *            actors are executed.
+       *          So, in any cases, the orders of actors within actors_to_run do not depend on the order in which
+       *          user actors were executed previously.
        *     So, if there is no killing in the simulation, the simulation reproducibility is not jeopardized.
-       *   - If there is some process killings, the order is changed by this decision that comes from user-land
+       *   - If there is some actor killings, the order is changed by this decision that comes from user-land
        *     But this decision may not have been motivated by a situation that were different because the simulation is
        *     not reproducible.
-       *     So, even the order change induced by the process killing is perfectly reproducible.
+       *     So, even the order change induced by the actor killing is perfectly reproducible.
        *
        *   So science works, bitches [http://xkcd.com/54/].
        *
@@ -478,7 +478,7 @@ void SIMIX_run()
 
       simix_global->execute_tasks();
       do {
-        SIMIX_wake_processes();
+        simix_global->wake_all_waiting_actors();
       } while (simix_global->execute_tasks());
 
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
@@ -506,7 +506,7 @@ void SIMIX_run()
       again = SIMIX_execute_timers();
       if (simix_global->execute_tasks())
         again = true;
-      SIMIX_wake_processes();
+      simix_global->wake_all_waiting_actors();
     } while (again);
 
     /* Clean actors to destroy */
