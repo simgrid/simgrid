@@ -531,6 +531,14 @@ public:
   resource::Action::ModifiedSet* modified_set_ = nullptr;
 
 private:
+
+  typedef std::vector<int> dyn_light_t;
+
+  //Data used  in lmm::solve
+  ConstraintLight* cnst_light_tab;
+  unsigned int cnst_light_max_size;
+  dyn_light_t saturated_constraints;
+
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */
   unsigned visited_counter_ = 1; /* used by System::update_modified_set() and System::remove_all_modified_set() to
                                   * cleverly (un-)flag the constraints (more details in these functions) */

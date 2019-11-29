@@ -137,7 +137,8 @@ void System::var_free(Variable* var)
   XBT_OUT();
 }
 
-System::System(bool selective_update) : selective_update_active(selective_update)
+System::System(bool selective_update) : cnst_light_tab(NULL),cnst_light_max_size(0),
+   selective_update_active(selective_update)
 {
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
 
@@ -158,6 +159,9 @@ System::~System()
   }
   while ((cnst = extract_constraint()))
     cnst_free(cnst);
+
+  if(cnst_light_tab)
+    delete[] cnst_light_tab;
 
   xbt_mallocator_free(variable_mallocator_);
   delete modified_set_;
@@ -504,18 +508,14 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
   double min_usage = -1;
   double min_bound = -1;
 
-  XBT_DEBUG("Active constraints : %zu", cnst_list.size());
-  /* Init: Only modified code portions: reset the value of active variables */
-  for (Constraint const& cnst : cnst_list) {
-    for (Element const& elem : cnst.enabled_element_set_) {
-      xbt_assert(elem.variable->sharing_penalty_ > 0.0);
-      elem.variable->value_ = 0.0;
-    }
+  if(cnst_list.size()>cnst_light_max_size){
+    cnst_light_max_size=cnst_list.size()*2;
+    if(cnst_light_tab)
+      delete [] cnst_light_tab;
+    cnst_light_tab=new ConstraintLight[cnst_light_max_size]();
   }
 
-  ConstraintLight* cnst_light_tab = new ConstraintLight[cnst_list.size()]();
   int cnst_light_num              = 0;
-  dyn_light_t saturated_constraints;
 
   for (Constraint& cnst : cnst_list) {
     /* INIT: Collect constraints that actually need to be saturated (i.e remaining  and usage are strictly positive)
@@ -526,6 +526,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
     cnst.usage_ = 0;
     for (Element& elem : cnst.enabled_element_set_) {
       xbt_assert(elem.variable->sharing_penalty_ > 0);
+      elem.variable->value_ = 0.0;
       if (elem.consumption_weight > 0) {
         if (cnst.sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE)
           cnst.usage_ += elem.consumption_weight / elem.variable->sharing_penalty_;
@@ -554,10 +555,31 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
     }
   }
 
+#if MAXMIN_PROF==CSV_PROF
+  start_init2 = high_resolution_clock::now();//FABIENDBG
+#endif
+
   saturated_variable_set_update(cnst_light_tab, saturated_constraints, this);
+  
+
+#if MAXMIN_PROF==CSV_PROF
+  high_resolution_clock::time_point start_main = high_resolution_clock::now();//FABIENDBG
+  int NVars=saturated_variable_set.size();//FABIENDBG
+  float init_duration1=duration_cast<duration<float> >(start_init2 - start_init).count();//FABIENDBG
+  float init_duration2=duration_cast<duration<float> >(start_main - start_init2).count();//FABIENDBG
+  float loop_duration;//FABIENDBG
+  float loop_max=0;//FABIENDBG
+  float loop_min=1E9;//FABIENDBG
+  float loop_avg=0;//FABIENDBG
+  float loop_std=0;//FABIENDBG
+  int loop_count=0;//FABIENDBG
+  high_resolution_clock::time_point start_loop,end_loop;//FABIENDBG
+#endif
 
   /* Saturated variables update */
   do {
+    high_resolution_clock::time_point start_loop = high_resolution_clock::now();//FABIENDBG
+
     /* Fix the variables that have to be */
     auto& var_list = saturated_variable_set;
     for (Variable const& var : var_list) {
@@ -689,7 +711,6 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
 
   check_concurrency();
 
-  delete[] cnst_light_tab;
 }
 
 /** @brief Attribute the value bound to var->bound.
