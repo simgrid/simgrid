@@ -52,7 +52,7 @@ public:
   xbt_dynar_t actors_vector      = xbt_dynar_new(sizeof(kernel::actor::ActorImpl*), nullptr);
   xbt_dynar_t dead_actors_vector = xbt_dynar_new(sizeof(kernel::actor::ActorImpl*), nullptr);
 #endif
-  kernel::actor::ActorImpl* maestro_process = nullptr;
+  kernel::actor::ActorImpl* maestro_ = nullptr;
 
   // Maps function names to actor code:
   std::unordered_map<std::string, simix::ActorCodeFactory> registered_functions;

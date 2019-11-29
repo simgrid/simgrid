@@ -158,7 +158,7 @@ void ThreadContext::suspend()
 void ThreadContext::attach_start()
 {
   // We're breaking the layers here by depending on the upper layer:
-  ThreadContext* maestro = static_cast<ThreadContext*>(simix_global->maestro_process->context_.get());
+  ThreadContext* maestro = static_cast<ThreadContext*>(simix_global->maestro_->context_.get());
   maestro->begin_.release();
   xbt_assert(not this->is_maestro());
   this->start();
@@ -169,7 +169,7 @@ void ThreadContext::attach_stop()
   xbt_assert(not this->is_maestro());
   this->yield();
 
-  ThreadContext* maestro = static_cast<ThreadContext*>(simix_global->maestro_process->context_.get());
+  ThreadContext* maestro = static_cast<ThreadContext*>(simix_global->maestro_->context_.get());
   maestro->end_.acquire();
 
   Context::set_current(nullptr);

@@ -60,7 +60,7 @@ ActorImpl::ActorImpl(simgrid::xbt::string name, s4u::Host* host) : host_(host), 
 
 ActorImpl::~ActorImpl()
 {
-  if (simix_global != nullptr && this != simix_global->maestro_process) {
+  if (simix_global != nullptr && this != simix_global->maestro_) {
     if (context_.get() != nullptr) /* the actor was not start()ed yet. This happens if its host was initially off */
       context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
     simgrid::kernel::actor::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
@@ -162,7 +162,7 @@ void ActorImpl::cleanup()
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
 
-  if (this == simix_global->maestro_process) /* Do not cleanup maestro */
+  if (this == simix_global->maestro_) /* Do not cleanup maestro */
     return;
 
   XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro.get());
@@ -227,7 +227,7 @@ void ActorImpl::exit()
 
 void ActorImpl::kill(ActorImpl* actor)
 {
-  xbt_assert(actor != simix_global->maestro_process, "Killing maestro is a rather bad idea");
+  xbt_assert(actor != simix_global->maestro_, "Killing maestro is a rather bad idea");
   if (actor->finished_) {
     XBT_DEBUG("Ignoring request to kill actor %s@%s that is already dead", actor->get_cname(),
               actor->host_->get_cname());
@@ -331,7 +331,7 @@ void ActorImpl::undaemonize()
 
 s4u::Actor* ActorImpl::restart()
 {
-  xbt_assert(this != simix_global->maestro_process, "Restarting maestro is not supported");
+  xbt_assert(this != simix_global->maestro_, "Restarting maestro is not supported");
 
   XBT_DEBUG("Restarting actor %s on %s", get_cname(), host_->get_cname());
 
@@ -434,7 +434,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
 void ActorImpl::simcall_answer()
 {
-  if (this != simix_global->maestro_process){
+  if (this != simix_global->maestro_) {
     XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall.call_), (int)simcall.call_,
               get_cname(), this);
     simcall.call_ = SIMCALL_NONE;
@@ -527,7 +527,7 @@ void create_maestro(const std::function<void()>& code)
   }
 
   maestro->simcall.issuer_      = maestro;
-  simix_global->maestro_process = maestro;
+  simix_global->maestro_        = maestro;
 }
 
 } // namespace actor
