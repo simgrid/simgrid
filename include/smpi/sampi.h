@@ -6,7 +6,7 @@
 #ifndef SAMPI_H_
 #define SAMPI_H_
 
-#define SAMPI_OVERRIDEN_MALLOC
+#define SMPI_NO_OVERRIDE_MALLOC
 #include <stdlib.h>
 #include <smpi/smpi.h>
 

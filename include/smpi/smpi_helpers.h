@@ -32,7 +32,7 @@
 #define getopt(x, y, z) smpi_getopt((x), (y), (z))
 #define getopt_long(x, y, z, a, b) smpi_getopt_long((x), (y), (z), (a), (b))
 #define getopt_long_only(x, y, z, a, b) smpi_getopt_long_only((x), (y), (z), (a), (b))
-#ifndef SAMPI_OVERRIDEN_MALLOC
+#ifndef SMPI_NO_OVERRIDE_MALLOC
 #define malloc(x) smpi_shared_malloc_intercept(x, __FILE__, __LINE__)
 #define calloc(x,y) smpi_shared_calloc_intercept(x,y, __FILE__, __LINE__)
 #define free(x) smpi_shared_free(x)
