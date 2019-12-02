@@ -533,10 +533,9 @@ public:
 private:
 
   typedef std::vector<int> dyn_light_t;
-
-  //Data used  in lmm::solve
-  ConstraintLight* cnst_light_tab;
-  unsigned int cnst_light_max_size;
+  
+  //Data used in lmm::solve
+  std::vector<ConstraintLight> cnst_light_vec;
   dyn_light_t saturated_constraints;
 
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */
