@@ -505,17 +505,9 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
   double min_bound = -1;
 
   XBT_DEBUG("Active constraints : %zu", cnst_list.size());
-  /* Init: Only modified code portions: reset the value of active variables */
-  for (Constraint const& cnst : cnst_list) {
-    for (Element const& elem : cnst.enabled_element_set_) {
-      xbt_assert(elem.variable->sharing_penalty_ > 0.0);
-      elem.variable->value_ = 0.0;
-    }
-  }
-
-  ConstraintLight* cnst_light_tab = new ConstraintLight[cnst_list.size()]();
+  cnst_light_vec.reserve(cnst_list.size());
+  ConstraintLight* cnst_light_tab = cnst_light_vec.data();
   int cnst_light_num              = 0;
-  dyn_light_t saturated_constraints;
 
   for (Constraint& cnst : cnst_list) {
     /* INIT: Collect constraints that actually need to be saturated (i.e remaining  and usage are strictly positive)
@@ -525,7 +517,8 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
       continue;
     cnst.usage_ = 0;
     for (Element& elem : cnst.enabled_element_set_) {
-      xbt_assert(elem.variable->sharing_penalty_ > 0);
+      xbt_assert(elem.variable->sharing_penalty_ > 0.0);
+      elem.variable->value_ = 0.0;
       if (elem.consumption_weight > 0) {
         if (cnst.sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE)
           cnst.usage_ += elem.consumption_weight / elem.variable->sharing_penalty_;
@@ -689,7 +682,6 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
 
   check_concurrency();
 
-  delete[] cnst_light_tab;
 }
 
 /** @brief Attribute the value bound to var->bound.
