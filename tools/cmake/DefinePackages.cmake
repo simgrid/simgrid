@@ -790,8 +790,8 @@ set(headers_to_install
   )
 set(source_of_generated_headers
   include/simgrid/config.h.in
+  include/simgrid/version.h.in
   src/internal_config.h.in
-  src/simgrid/version.h.in
   include/smpi/mpif.h.in)
 
 ### depend of some variables setted upper

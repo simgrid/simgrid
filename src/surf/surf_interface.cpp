@@ -9,7 +9,6 @@
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/simgrid/version.h"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "src/xbt_modinter.h" /* whether initialization was already done */

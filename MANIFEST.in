@@ -1978,6 +1978,7 @@ include include/simgrid/simix.hpp
 include include/simgrid/simix/blocking_simcall.hpp
 include include/simgrid/smpi/replay.hpp
 include include/simgrid/storage.h
+include include/simgrid/version.h.in
 include include/simgrid/vm.h
 include include/simgrid/zone.h
 include include/smpi/forward.hpp
@@ -2310,7 +2311,6 @@ include src/simgrid/Exception.cpp
 include src/simgrid/sg_config.cpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
-include src/simgrid/version.h.in
 include src/simix/libsmx.cpp
 include src/simix/popping.cpp
 include src/simix/popping_accessors.hpp

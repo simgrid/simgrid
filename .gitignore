@@ -45,9 +45,9 @@ src/*_unit.c
 ### Generated files
 _*.c
 include/simgrid/config.h
+include/simgrid/version.h
 include/smpi/smpif.h
 src/internal_config.h
-src/simgrid/version.h
 testprog
 ### Cmake files
 CPackConfig.cmake
