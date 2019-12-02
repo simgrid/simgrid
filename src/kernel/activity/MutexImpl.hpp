@@ -51,7 +51,7 @@ public:
 
   s4u::Mutex& mutex() { return piface_; }
 };
-}
-}
-}
-#endif /* SIMIX_MUTEXIMPL_HPP */
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
+#endif

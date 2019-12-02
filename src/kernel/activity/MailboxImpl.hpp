@@ -57,4 +57,4 @@ public:
 
 XBT_PRIVATE void SIMIX_mailbox_exit();
 
-#endif /* SIMIX_MAILBOXIMPL_H */
+#endif

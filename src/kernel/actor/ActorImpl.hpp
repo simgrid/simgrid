@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMIX_ACTORIMPL_H
-#define SIMIX_ACTORIMPL_H
+#ifndef SIMGRID_KERNEL_ACTOR_ACTORIMPL_HPP
+#define SIMGRID_KERNEL_ACTOR_ACTORIMPL_HPP
 
 #include "simgrid/s4u/Actor.hpp"
 #include "src/simix/popping_private.hpp"

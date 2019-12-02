@@ -49,7 +49,7 @@ public:
   void post() override;
   void finish() override;
 
-  CommImpl::Type type_;        /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
+  CommImpl::Type type_; /* Type of the communication (SEND or RECEIVE) */
 
 #if SIMGRID_HAVE_MC
   MailboxImpl* mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
