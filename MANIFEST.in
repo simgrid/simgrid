@@ -2308,6 +2308,7 @@ include src/simdag/sd_task.cpp
 include src/simdag/simdag_private.hpp
 include src/simgrid/Exception.cpp
 include src/simgrid/sg_config.cpp
+include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
 include src/simgrid/version.h.in
 include src/simix/libsmx.cpp
