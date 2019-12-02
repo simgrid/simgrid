@@ -6,6 +6,7 @@
 #include "include/xbt/config.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/version.h"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.hpp"
 #include "xbt/virtu.h" /* xbt_cmdline */

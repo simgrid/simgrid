@@ -8,6 +8,7 @@
 
 #include <simgrid/host.h>
 #include <simgrid/link.h>
+#include <simgrid/version.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 

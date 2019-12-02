@@ -17,6 +17,7 @@
 #include <simgrid/plugins/live_migration.h>
 #include <simgrid/semaphore.h>
 #include <simgrid/storage.h>
+#include <simgrid/version.h>
 #include <simgrid/vm.h>
 #include <simgrid/zone.h>
 #include <xbt.h>

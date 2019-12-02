@@ -7,6 +7,7 @@
 
 #include "simgrid/sg_config.hpp"
 #include "simgrid/instr.h"
+#include "simgrid/version.h"
 #include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/lmm/maxmin.hpp"

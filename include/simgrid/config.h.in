@@ -9,28 +9,6 @@
 #define SIMGRID_PUBLIC_CONFIG_H
 #include <xbt/base.h>
 
-/** Define the version numbers of the used header files.
-  See sg_version_get() to retrieve the version of the dynamic library. */
-#define SIMGRID_VERSION_MAJOR @SIMGRID_VERSION_MAJOR@
-#define SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@
-#define SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
-#define SIMGRID_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
-
-SG_BEGIN_DECL
-/** Retrieves the version numbers of the used dynamic library (so, DLL or dynlib), while
-    SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */
-XBT_PUBLIC void sg_version_get(int* major, int* minor, int* patch);
-
-/** Display the version information and some additional blurb. */
-XBT_PUBLIC void sg_version();
-SG_END_DECL
-
-
-/* Version as a single integer. v3.4 is 30400, v3.16.2 is 31602, v42 will be 420000, and so on. */
-#define SIMGRID_VERSION (100UL * (100UL * (SIMGRID_VERSION_MAJOR) + (SIMGRID_VERSION_MINOR)) + (SIMGRID_VERSION_PATCH))
-
-#define SIMGRID_VERSION_STRING "@SIMGRID_VERSION_STRING@"
-
 /* Was Jedule compiled in?  */
 #cmakedefine01 SIMGRID_HAVE_JEDULE
 /* Was the Lua support compiled in? */
