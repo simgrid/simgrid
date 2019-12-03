@@ -80,6 +80,8 @@ elif [ -f /usr/bin/sw_vers ]; then
 elif [ -f /bin/freebsd-version ]; then
     os=$(uname -s)
     ver=$(freebsd-version -u)
+elif [ -f /etc/version ]; then
+    read -r os ver < /etc/release
 elif [ -f /etc/os-release ]; then
     # freedesktop.org and systemd, put last as usually missing useful info
     . /etc/os-release
