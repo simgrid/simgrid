@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   int rank;
   int msg = 99;
   MPI_Status status;
-  int* test = (int*)aligned_alloc(8, 32);
+  int* test = (int*)malloc(8);
 
   int err = MPI_Init(&argc, &argv); /* Initialize MPI */
 
