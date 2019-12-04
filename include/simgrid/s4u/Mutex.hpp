@@ -20,7 +20,7 @@ namespace s4u {
  * or <a href="http://pubs.opengroup.org/onlinepubs/007908775/xsh/pthread_mutex_lock.html">pthread_mutex_t</a>,
  * because it would block the whole simulation.
  * Instead, you should use the present class, that is a drop-in replacement of
- * <a href="http://en.cppreference.com/w/cpp/thread/mutex>std::mutex</a>.
+ * <a href="http://en.cppreference.com/w/cpp/thread/mutex">std::mutex</a>.
  *
  * As for any S4U object, Mutexes are using the @ref s4u_raii "RAII idiom" for memory management.
  * Use create() to get a simgrid::s4u::MutexPtr to a newly created mutex and only manipulate simgrid::s4u::MutexPtr.
