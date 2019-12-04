@@ -344,14 +344,14 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
 
 
 void *smpi_shared_malloc_intercept(size_t size, const char *file, int line) {
-  if( simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh") == 0 || size < simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh"))
+  if( smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh())
     return ::operator new(size);
   else
     return smpi_shared_malloc(size, file, line);
 }
 
 void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line){
-  if( simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh") == 0 || elem_size*num_elm < simgrid::config::get_value<double>("smpi/auto-shared-malloc-thresh")){
+  if( smpi_cfg_auto_shared_malloc_thresh() == 0 || elem_size*num_elm < smpi_cfg_auto_shared_malloc_thresh()){
     void* ptr = ::operator new(elem_size*num_elm);
     memset(ptr, 0, elem_size*num_elm);
     return ptr;
@@ -361,9 +361,9 @@ void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char*
 }
 
 void *smpi_shared_malloc(size_t size, const char *file, int line) {
-  if (size > 0 && smpi_cfg_shared_malloc == SharedMallocType::LOCAL) {
+  if (size > 0 && smpi_cfg_shared_malloc() == SharedMallocType::LOCAL) {
     return smpi_shared_malloc_local(size, file, line);
-  } else if (smpi_cfg_shared_malloc == SharedMallocType::GLOBAL) {
+  } else if (smpi_cfg_shared_malloc() == SharedMallocType::GLOBAL) {
     int nb_shared_blocks = 1;
     size_t shared_block_offsets[2] = {0, size};
     return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
@@ -376,7 +376,7 @@ int smpi_is_shared(const void* ptr, std::vector<std::pair<size_t, size_t>> &priv
   private_blocks.clear(); // being paranoid
   if (allocs_metadata.empty())
     return 0;
-  if (smpi_cfg_shared_malloc == SharedMallocType::LOCAL || smpi_cfg_shared_malloc == SharedMallocType::GLOBAL) {
+  if (smpi_cfg_shared_malloc() == SharedMallocType::LOCAL || smpi_cfg_shared_malloc() == SharedMallocType::GLOBAL) {
     auto low = allocs_metadata.lower_bound(ptr);
     if (low != allocs_metadata.end() && low->first == ptr) {
       private_blocks = low->second.private_blocks;
@@ -440,7 +440,7 @@ std::vector<std::pair<size_t, size_t>> merge_private_blocks(const std::vector<st
 
 void smpi_shared_free(void *ptr)
 {
-  if (smpi_cfg_shared_malloc == SharedMallocType::LOCAL) {
+  if (smpi_cfg_shared_malloc() == SharedMallocType::LOCAL) {
     char loc[PTR_STRLEN];
     snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
@@ -462,7 +462,7 @@ void smpi_shared_free(void *ptr)
       XBT_DEBUG("Shared free - Local - no removal - of %p, count = %d", ptr, data->count);
     }
 
-  } else if (smpi_cfg_shared_malloc == SharedMallocType::GLOBAL) {
+  } else if (smpi_cfg_shared_malloc() == SharedMallocType::GLOBAL) {
     auto meta = allocs_metadata.find(ptr);
     if (meta != allocs_metadata.end()){
       meta->second.data->second.count--;

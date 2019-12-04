@@ -15,9 +15,8 @@
 #include "xbt/config.hpp"
 
 #include <algorithm>
-#include <boost/algorithm/string.hpp> /* trim_right / trim_left */
+#include <boost/algorithm/string.hpp> /* split */
 #include <boost/tokenizer.hpp>
-#include <cfloat> /* DBL_MAX */
 #include <cinttypes>
 #include <cstdint> /* intmax_t */
 #include <dlfcn.h>
@@ -39,18 +38,6 @@
 
 #if not defined(__APPLE__) && not defined(__HAIKU__)
 #include <link.h>
-#endif
-
-#if defined(__APPLE__)
-# include <AvailabilityMacros.h>
-# ifndef MAC_OS_X_VERSION_10_12
-#   define MAC_OS_X_VERSION_10_12 101200
-# endif
-constexpr bool HAVE_WORKING_MMAP = (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12);
-#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__sun) || defined(__HAIKU__)
-constexpr bool HAVE_WORKING_MMAP = false;
-#else
-constexpr bool HAVE_WORKING_MMAP = true;
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
@@ -206,7 +193,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
   check_blocks(private_blocks, buff_size);
   void* tmpbuff=buff;
-  if ((smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) &&
+  if ((smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) &&
       (static_cast<char*>(buff) >= smpi_data_exe_start) &&
       (static_cast<char*>(buff) < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
@@ -215,7 +202,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
     memcpy_private(tmpbuff, buff, private_blocks);
   }
 
-  if ((smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) &&
+  if ((smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) &&
       ((char*)comm->dst_buff_ >= smpi_data_exe_start) &&
       ((char*)comm->dst_buff_ < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
@@ -234,39 +221,6 @@ void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::CommImpl*, v
   /* nothing done in this version */
 }
 
-static void smpi_check_options()
-{
-#if SIMGRID_HAVE_MC
-  if (MC_is_active()) {
-    if (_sg_mc_buffering == "zero")
-      simgrid::config::set_value<int>("smpi/send-is-detached-thresh", 0);
-    else if (_sg_mc_buffering == "infty")
-      simgrid::config::set_value<int>("smpi/send-is-detached-thresh", INT_MAX);
-    else
-      THROW_IMPOSSIBLE;
-  }
-#endif
-
-  xbt_assert(simgrid::config::get_value<int>("smpi/async-small-thresh") <=
-                 simgrid::config::get_value<int>("smpi/send-is-detached-thresh"),
-             "smpi/async-small-thresh (=%d) should be smaller or equal to smpi/send-is-detached-thresh (=%d)",
-             simgrid::config::get_value<int>("smpi/async-small-thresh"),
-             simgrid::config::get_value<int>("smpi/send-is-detached-thresh"));
-
-  if (simgrid::config::is_default("smpi/host-speed") && not MC_is_active()) {
-    XBT_INFO("You did not set the power of the host running the simulation.  "
-             "The timings will certainly not be accurate.  "
-             "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value.  "
-             "Check "
-             "https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more "
-             "information.");
-  }
-
-  xbt_assert(simgrid::config::get_value<double>("smpi/cpu-threshold") >= 0,
-             "The 'smpi/cpu-threshold' option cannot have negative values [anymore]. If you want to discard "
-             "the simulation of any computation, please use 'smpi/simulate-computation:no' instead.");
-}
-
 int smpi_enabled() {
   return MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED;
 }
@@ -278,14 +232,14 @@ static void smpi_init_papi()
   // the configuration as given by the user (counter data as a pair of (counter_name, counter_counter))
   // and the (computed) event_set.
 
-  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
+  if (not smpi_cfg_papi_events_file().empty()) {
     if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
       XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
                 " Expected version is %u", PAPI_VER_CURRENT);
 
     typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
     boost::char_separator<char> separator_units(";");
-    std::string str = simgrid::config::get_value<std::string>("smpi/papi-events");
+    std::string str = smpi_cfg_papi_events_file();
     Tokenizer tokens(str, separator_units);
 
     // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
@@ -338,50 +292,7 @@ static void smpi_init_papi()
 #endif
 }
 
-static void smpi_init_options(){
-  // return if already called
-  if (smpi_cpu_threshold > -1)
-    return;
-  simgrid::smpi::colls::set_collectives();
-  simgrid::smpi::colls::smpi_coll_cleanup_callback = nullptr;
-  smpi_cpu_threshold                               = simgrid::config::get_value<double>("smpi/cpu-threshold");
-  if (smpi_cpu_threshold < 0)
-    smpi_cpu_threshold = DBL_MAX;
 
-  smpi_host_speed                   = simgrid::config::get_value<double>("smpi/host-speed");
-  std::string smpi_privatize_option = simgrid::config::get_value<std::string>("smpi/privatization");
-  if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
-    smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
-  else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
-    smpi_privatize_global_variables = SmpiPrivStrategies::DEFAULT;
-  else if (smpi_privatize_option == "mmap")
-    smpi_privatize_global_variables = SmpiPrivStrategies::MMAP;
-  else if (smpi_privatize_option == "dlopen")
-    smpi_privatize_global_variables = SmpiPrivStrategies::DLOPEN;
-  else
-    xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option.c_str());
-
-  if (not SMPI_switch_data_segment) {
-    XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
-    smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
-  }
-  if (not HAVE_WORKING_MMAP && smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
-    XBT_INFO("mmap privatization is broken on this platform, switching to dlopen privatization instead.");
-    smpi_privatize_global_variables = SmpiPrivStrategies::DLOPEN;
-  }
-
-  std::string val = simgrid::config::get_value<std::string>("smpi/shared-malloc");
-  if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
-    smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
-  } else if (val == "local") {
-    smpi_cfg_shared_malloc = SharedMallocType::LOCAL;
-  } else if ((val == "no") || (val == "0") || (val == "off")) {
-    smpi_cfg_shared_malloc = SharedMallocType::NONE;
-  } else {
-    xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
-            val.c_str());
-  }
-}
 
 typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
 typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
@@ -600,7 +511,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
 
 static void smpi_init_privatization_no_dlopen(const std::string& executable)
 {
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP)
     smpi_prepare_global_memory_segment();
 
   // Load the dynamic library and resolve the entry point:
@@ -610,7 +521,7 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable)
   smpi_entry_point_type entry_point = smpi_resolve_function(handle);
   xbt_assert(entry_point, "main not found in %s", executable.c_str());
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP)
     smpi_backup_global_memory_segment();
 
   // Execute the same entry point for each simulated process:
@@ -627,23 +538,27 @@ int smpi_main(const char* executable, int argc, char* argv[])
      * configuration tools */
     return 0;
   }
-
+  
+  SMPI_switch_data_segment = &smpi_switch_data_segment;
+  smpi_init_options();
   TRACE_global_init();
   SIMIX_global_init(&argc, argv);
 
   auto engine              = simgrid::s4u::Engine::get_instance();
-  SMPI_switch_data_segment = &smpi_switch_data_segment;
+
   sg_storage_file_system_init();
   // parse the platform file: get the host list
   engine->load_platform(argv[1]);
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
-  smpi_init_options();
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::DLOPEN)
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::DLOPEN)
     smpi_init_privatization_dlopen(executable);
   else
     smpi_init_privatization_no_dlopen(executable);
 
+  simgrid::smpi::colls::set_collectives();
+  simgrid::smpi::colls::smpi_coll_cleanup_callback = nullptr;
+  
   SMPI_init();
 
   /* This is a ... heavy way to count the MPI ranks */
@@ -687,6 +602,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
 
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
+  smpi_init_options();
   simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
     if (not actor.is_daemon())
       actor.extension_set<simgrid::smpi::ActorExt>(new simgrid::smpi::ActorExt(&actor));
@@ -696,29 +612,9 @@ void SMPI_init(){
   for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts())
     host->extension_set(new simgrid::smpi::Host(host));
 
-  smpi_init_options();
   if (not MC_is_active()) {
     global_timer = xbt_os_timer_new();
     xbt_os_walltimer_start(global_timer);
-  }
-
-  std::string filename = simgrid::config::get_value<std::string>("smpi/comp-adjustment-file");
-  if (not filename.empty()) {
-    std::ifstream fstream(filename);
-    xbt_assert(fstream.is_open(), "Could not open file %s. Does it exist?", filename.c_str());
-
-    std::string line;
-    typedef boost::tokenizer<boost::escaped_list_separator<char>> Tokenizer;
-    std::getline(fstream, line); // Skip the header line
-    while (std::getline(fstream, line)) {
-      Tokenizer tok(line);
-      Tokenizer::iterator it  = tok.begin();
-      Tokenizer::iterator end = std::next(tok.begin());
-
-      std::string location = *it;
-      boost::trim(location);
-      location2speedup.insert(std::pair<std::string, double>(location, std::stod(*end)));
-    }
   }
   smpi_init_papi();
   smpi_check_options();
@@ -739,7 +635,7 @@ void SMPI_finalize()
     xbt_os_timer_free(global_timer);
   }
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP)
     smpi_destroy_global_memory_segments();
   if (simgrid::smpi::F2C::lookup() != nullptr)
     simgrid::smpi::F2C::delete_lookup();

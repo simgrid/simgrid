@@ -93,14 +93,29 @@ XBT_PRIVATE int smpi_enabled();
 XBT_PRIVATE double smpi_mpi_wtime();
 XBT_PRIVATE void smpi_mpi_init();
 
+enum class SharedMallocType { NONE, LOCAL, GLOBAL };
+enum class SmpiPrivStrategies { NONE = 0, MMAP = 1, DLOPEN = 2, DEFAULT = DLOPEN };
+
+XBT_PRIVATE void smpi_init_options();
+XBT_PRIVATE void smpi_check_options();
+XBT_PRIVATE double smpi_cfg_host_speed();
+XBT_PRIVATE bool smpi_cfg_simulate_computation();
+XBT_PRIVATE SharedMallocType smpi_cfg_shared_malloc();
+XBT_PRIVATE double smpi_cfg_cpu_thresh();
+XBT_PRIVATE SmpiPrivStrategies smpi_cfg_privatization();
+XBT_PRIVATE int smpi_cfg_async_small_thresh();
+XBT_PRIVATE int smpi_cfg_detached_send_thresh();
+XBT_PRIVATE bool smpi_cfg_grow_injected_times();
+XBT_PRIVATE double smpi_cfg_iprobe_cpu_usage();
+XBT_PRIVATE bool smpi_cfg_trace_call_location();
+XBT_PRIVATE bool smpi_cfg_trace_call_use_absolute_path();
+XBT_PRIVATE std::string smpi_cfg_comp_adjustment_file();
+XBT_PRIVATE std::string smpi_cfg_papi_events_file();
+XBT_PRIVATE double smpi_cfg_auto_shared_malloc_thresh();
+
 // utilities
-extern XBT_PRIVATE double smpi_cpu_threshold;
-extern XBT_PRIVATE double smpi_host_speed;
 extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
 extern XBT_PRIVATE int smpi_data_exe_size;    // size of the data+bss segment of the executable
-
-enum class SharedMallocType { NONE, LOCAL, GLOBAL };
-extern XBT_PRIVATE SharedMallocType smpi_cfg_shared_malloc; // Whether to activate shared malloc
 
 XBT_PRIVATE void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor);
 
@@ -479,10 +494,6 @@ extern std::unordered_map<std::string, double> location2speedup;
 
 /** @brief Returns the last call location (filename, linenumber). Process-specific. */
 XBT_PUBLIC smpi_trace_call_location_t* smpi_trace_get_call_location();
-
-enum class SmpiPrivStrategies { NONE = 0, MMAP = 1, DLOPEN = 2, DEFAULT = DLOPEN };
-
-extern XBT_PRIVATE SmpiPrivStrategies smpi_privatize_global_variables;
 
 XBT_PRIVATE void private_execute_flops(double flops);
 

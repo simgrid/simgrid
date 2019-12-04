@@ -275,7 +275,7 @@ int Datatype::copy(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
 // FIXME Handle the case of a partial shared malloc.
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
   /* First check if we really have something to do */

@@ -33,10 +33,6 @@ static simgrid::config::Flag<double>
                      "Minimum time to inject inside a call to MPI_Wtime(), gettimeofday() and clock_gettime()",
                      1e-8 /* Documented to be 10 ns */);
 
-double smpi_cpu_threshold = -1;
-double smpi_host_speed;
-
-SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
 // Private execute_flops used by smpi_execute and smpi_execute_benched
@@ -62,9 +58,9 @@ void smpi_execute_flops(double flops) {
 
 void smpi_execute(double duration)
 {
-  if (duration >= smpi_cpu_threshold) {
+  if (duration >= smpi_cfg_cpu_thresh()) {
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
-    double flops = duration * smpi_host_speed;
+    double flops = duration * smpi_cfg_host_speed();
     int rank     = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_computing_in(rank, flops);
 
@@ -74,7 +70,7 @@ void smpi_execute(double duration)
 
   } else {
     XBT_DEBUG("Real computation took %g while option smpi/cpu-threshold is set to %g => ignore it", duration,
-              smpi_cpu_threshold);
+              smpi_cfg_cpu_thresh());
   }
 }
 
@@ -88,7 +84,7 @@ void smpi_execute_benched(double duration)
 
 void smpi_bench_begin()
 {
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
 
@@ -96,7 +92,7 @@ void smpi_bench_begin()
     return;
 
 #if HAVE_PAPI
-  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
+  if (not smpi_cfg_papi_events_file().empty()) {
     int event_set = smpi_process()->papi_event_set();
     // PAPI_start sets everything to 0! See man(3) PAPI_start
     if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_start(event_set) != PAPI_OK) {
@@ -111,7 +107,7 @@ void smpi_bench_begin()
 
 double smpi_adjust_comp_speed(){
   double speedup=1;
-  if (simgrid::config::get_value<std::string>("smpi/comp-adjustment-file")[0] != '\0') {
+  if (smpi_cfg_comp_adjustment_file()[0] != '\0') {
 
     smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
     std::string key                                            = loc->get_composed_key();
@@ -136,7 +132,7 @@ void smpi_bench_end()
    * An MPI function has been called and now is the right time to update
    * our PAPI counters for this process.
    */
-  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
+  if (not smpi_cfg_papi_events_file().empty()) {
     papi_counter_t& counter_data        = smpi_process()->papi_counters();
     int event_set                       = smpi_process()->papi_event_set();
     std::vector<long long> event_values = std::vector<long long>(counter_data.size());
@@ -161,12 +157,12 @@ void smpi_bench_end()
 
   // Maybe we need to artificially speed up or slow down our computation based on our statistical analysis.
   // Simulate the benchmarked computation unless disabled via command-line argument
-  if (simgrid::config::get_value<bool>("smpi/simulate-computation")) {
+  if (smpi_cfg_simulate_computation()) {
     smpi_execute(xbt_os_timer_elapsed(timer)/smpi_adjust_comp_speed());
   }
 
 #if HAVE_PAPI
-  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty() && TRACE_smpi_is_enabled()) {
+  if (not smpi_cfg_papi_events_file().empty() && TRACE_smpi_is_enabled()) {
     container_t container =
         simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid()));
     papi_counter_t& counter_data = smpi_process()->papi_counters();
@@ -471,7 +467,7 @@ void smpi_trace_set_call_location(const char* file, const int line)
 
   loc->previous_filename   = loc->filename;
   loc->previous_linenumber = loc->linenumber;
-  if(not simgrid::config::get_value<bool>("smpi/trace-call-use-absolute-path"))
+  if(not smpi_cfg_trace_call_use_absolute_path())
     loc->filename = simgrid::xbt::Path(file).get_base_name();
   else
     loc->filename = file;

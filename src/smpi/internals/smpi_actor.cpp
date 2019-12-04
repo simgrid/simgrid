@@ -36,7 +36,7 @@ ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
     MC_ignore_heap(timer_, xbt_os_timer_size());
 
 #if HAVE_PAPI
-  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
+  if (not smpi_cfg_papi_events_file().empty()) {
     // TODO: Implement host/process/thread based counters. This implementation
     // just always takes the values passed via "default", like this:
     // "default:COUNTER1:COUNTER2:COUNTER3;".
@@ -221,7 +221,7 @@ void ActorExt::init()
   if (ext->initialized())
     return;
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     /* Now using the segment index of this process  */
     ext->set_privatized_region(smpi_init_global_memory_segment_process());
     /* Done at the process's creation */

@@ -72,7 +72,7 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
   } else  if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
 #if HAVE_SMPI
-    if (smpi_enabled() && smpi_privatize_global_variables == SmpiPrivStrategies::NONE) {
+    if (smpi_enabled() && smpi_cfg_privatization() == SmpiPrivStrategies::NONE) {
 #if HAVE_PRIVATIZATION
       fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatization:yes.\n");
 #else
