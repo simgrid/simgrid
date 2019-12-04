@@ -2454,6 +2454,7 @@ include src/smpi/include/private.hpp
 include src/smpi/include/smpi_actor.hpp
 include src/smpi/include/smpi_coll.hpp
 include src/smpi/include/smpi_comm.hpp
+include src/smpi/include/smpi_config.hpp
 include src/smpi/include/smpi_datatype.hpp
 include src/smpi/include/smpi_datatype_derived.hpp
 include src/smpi/include/smpi_errhandler.hpp
@@ -2472,6 +2473,7 @@ include src/smpi/include/smpi_win.hpp
 include src/smpi/internals/instr_smpi.cpp
 include src/smpi/internals/smpi_actor.cpp
 include src/smpi/internals/smpi_bench.cpp
+include src/smpi/internals/smpi_config.cpp
 include src/smpi/internals/smpi_deployment.cpp
 include src/smpi/internals/smpi_global.cpp
 include src/smpi/internals/smpi_host.cpp
