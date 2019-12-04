@@ -1,4 +1,4 @@
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 2 -platform ../../../examples/platforms/small_platform.xml -hostfile ../hostfile ${bindir:=.}/gh-139 --cfg=smpi/simulate-computation:no --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 2 -platform ../../../examples/platforms/small_platform.xml -hostfile ../hostfile ${bindir:=.}/gh-139 --cfg=smpi/simulate-computation:no --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 0.000000] [smpi_test/INFO] I'm 0/2
 > [Jupiter:1:(2) 0.000000] [smpi_test/INFO] I'm 1/2
 > [Tremblay:wait send:(3) 0.000000] [smpi_test/INFO] new thread has parameter rank 0 and global variable rank 0

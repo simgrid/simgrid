@@ -4,7 +4,7 @@
 
 p Test instrumentation of SMPI
 
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=tracing/smpi/computing:yes --cfg=smpi/simulate-computation:no --cfg=tracing/smpi/sleeping:yes  -np 3 ${bindir:=.}/smpi_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=tracing/smpi/computing:yes --cfg=smpi/simulate-computation:no --cfg=tracing/smpi/sleeping:yes  -np 3 ${bindir:=.}/smpi_trace --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
 ! output sort 19
 $ tail -n +3 ${bindir:=.}/smpi_trace.trace
@@ -1344,10 +1344,10 @@ $ tail -n +3 ${bindir:=.}/smpi_trace.trace
 > 7 11.906032 1 3
 $ rm -f ${bindir:=.}/smpi_trace.trace
 
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-resource -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=smpi/host-speed:1 -np 3 ${bindir:=.}/smpi_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-resource -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=smpi/host-speed:1 -np 3 ${bindir:=.}/smpi_trace --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
 $ rm -f ${bindir:=.}/smpi_trace.trace
 
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace --cfg=tracing/smpi/display-sizes:yes --cfg=tracing/smpi/computing:yes --cfg=tracing/smpi/internals:yes -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=smpi/host-speed:1 -np 3 ${bindir:=.}/smpi_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace --cfg=tracing/smpi/display-sizes:yes --cfg=tracing/smpi/computing:yes --cfg=tracing/smpi/internals:yes -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=smpi/host-speed:1 -np 3 ${bindir:=.}/smpi_trace --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
 $ rm -f ${bindir:=.}/smpi_trace.trace

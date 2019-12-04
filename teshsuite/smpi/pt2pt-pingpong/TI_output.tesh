@@ -4,7 +4,7 @@ $ rm -rf ./out_in_ti.txt_files
 p Test output of time independent tracing
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted)
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 >
 >
 >
@@ -34,7 +34,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -no-privatize -replay ./out_in_ti.txt --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -no-privatize -replay ./out_in_ti.txt --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -95,7 +95,7 @@ $ rm out_in_ti.txt
 p Same test, but only using one output file for all processes
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted)
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 >
 >
 >
@@ -125,7 +125,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -no-privatize -replay ./out_in_ti.txt --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -no-privatize -replay ./out_in_ti.txt --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
