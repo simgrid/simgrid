@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <mpi.h>
-#include <stdlib.h>
 
 static void test_opts(int* argc, char **argv[]){
   int found = 0;
@@ -31,8 +30,6 @@ int main(int argc, char *argv[])
   int rank;
   int msg = 99;
   MPI_Status status;
-  int* test = (int*)malloc(8);
-
   int err = MPI_Init(&argc, &argv); /* Initialize MPI */
 
   /* test getopt function */
@@ -75,7 +72,6 @@ int main(int argc, char *argv[])
       MPI_Send(&msg, 1, MPI_INT, src, tag2, MPI_COMM_WORLD);
     }
   }
-  free(test);
   MPI_Finalize();
   return 0;
 }
