@@ -6,6 +6,7 @@
 #include "include/xbt/config.hpp"
 #include "private.hpp"
 #include "smpi_coll.hpp"
+#include "smpi_config.hpp"
 #include "src/simix/smx_private.hpp"
 #include <cfloat> /* DBL_MAX */
 #include <boost/algorithm/string.hpp> /* trim */

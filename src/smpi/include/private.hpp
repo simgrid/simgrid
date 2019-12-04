@@ -96,8 +96,6 @@ XBT_PRIVATE void smpi_mpi_init();
 enum class SharedMallocType { NONE, LOCAL, GLOBAL };
 enum class SmpiPrivStrategies { NONE = 0, MMAP = 1, DLOPEN = 2, DEFAULT = DLOPEN };
 
-XBT_PRIVATE void smpi_init_options();
-XBT_PRIVATE void smpi_check_options();
 XBT_PRIVATE double smpi_cfg_host_speed();
 XBT_PRIVATE bool smpi_cfg_simulate_computation();
 XBT_PRIVATE SharedMallocType smpi_cfg_shared_malloc();

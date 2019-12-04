@@ -6,6 +6,7 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/smpi/include/smpi_config.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_state.hpp"
 #include "xbt/log.h"
@@ -52,6 +53,7 @@ static void setup_child_environment(int socket)
 Session::Session(const std::function<void()>& code)
 {
 #if HAVE_SMPI
+  smpi_init_options();//only performed once
   xbt_assert(smpi_cfg_privatization() != SmpiPrivStrategies::MMAP,
              "Please use the dlopen privatization schema when model-checking SMPI code");
 #endif

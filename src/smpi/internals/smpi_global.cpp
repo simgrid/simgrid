@@ -9,6 +9,7 @@
 #include "smpi_coll.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_host.hpp"
+#include "smpi_config.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
