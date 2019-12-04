@@ -52,7 +52,7 @@ static void setup_child_environment(int socket)
 Session::Session(const std::function<void()>& code)
 {
 #if HAVE_SMPI
-  xbt_assert(smpi_privatize_global_variables != SmpiPrivStrategies::MMAP,
+  xbt_assert(smpi_cfg_privatization() != SmpiPrivStrategies::MMAP,
              "Please use the dlopen privatization schema when model-checking SMPI code");
 #endif
 

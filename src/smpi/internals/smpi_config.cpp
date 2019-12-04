@@ -11,6 +11,9 @@
 #include <boost/algorithm/string.hpp> /* trim */
 #include <boost/tokenizer.hpp>
 
+#if SIMGRID_HAVE_MC
+#include "src/mc/mc_config.hpp"
+#endif
 
 #if defined(__APPLE__)
 # include <AvailabilityMacros.h>

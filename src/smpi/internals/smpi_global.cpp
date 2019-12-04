@@ -24,10 +24,6 @@
 #include <fstream>
 #include <sys/stat.h>
 
-#if SIMGRID_HAVE_MC
-#include "src/mc/mc_config.hpp"
-#endif
-
 #if SG_HAVE_SENDFILE
 #include <sys/sendfile.h>
 #endif
