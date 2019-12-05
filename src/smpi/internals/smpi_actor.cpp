@@ -55,6 +55,8 @@ ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
 
 ActorExt::~ActorExt()
 {
+  if (info_env_ != MPI_INFO_NULL)
+    simgrid::smpi::Info::unref(info_env_);
   if (comm_self_ != MPI_COMM_NULL)
     simgrid::smpi::Comm::destroy(comm_self_);
   if (comm_intra_ != MPI_COMM_NULL)
