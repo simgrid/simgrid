@@ -66,6 +66,7 @@ double noise(double *list, int count)
     if (retval < 0)
         retval = -retval;
 
+    free(margin);
     return retval;
 }
 

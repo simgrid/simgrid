@@ -463,6 +463,9 @@ void mpi_file_write_(int* fh, void* buf, int* count, int* datatype, MPI_Status* 
 void smpi_init_fortran_types();
 } // extern "C"
 
+XBT_PRIVATE int smpi_temp_shm_get();
+XBT_PRIVATE void* smpi_temp_shm_mmap(int fd, size_t size);
+
 struct s_smpi_privatization_region_t {
   void* address;
   int file_descriptor;

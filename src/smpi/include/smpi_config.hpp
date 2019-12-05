@@ -6,7 +6,9 @@
 #ifndef SMPI_CONFIG_HPP
 #define SMPI_CONFIG_HPP
 
+#include "src/internal_config.h" // HAVE_PAPI
 #include <xbt/config.hpp>
+
 XBT_PUBLIC void smpi_init_options();
 XBT_PRIVATE void smpi_check_options();
 /********************************** Configuration of SMPI **************************************/
