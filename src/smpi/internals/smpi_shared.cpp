@@ -107,33 +107,11 @@ void smpi_shared_destroy()
   calls.clear();
 }
 
-static size_t shm_size(int fd) {
-  struct stat st;
-
-  if(fstat(fd, &st) < 0) {
-    xbt_die("Could not stat fd %d: %s", fd, strerror(errno));
-  }
-  return static_cast<size_t>(st.st_size);
-}
-
 #ifndef WIN32
-static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
+static void* shm_map(int fd, size_t size, shared_data_key_type* data)
+{
+  void* mem = smpi_temp_shm_mmap(fd, size);
   shared_metadata_t meta;
-
-  if(size > shm_size(fd) && (ftruncate(fd, static_cast<off_t>(size)) < 0)) {
-    xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
-  }
-
-  void* mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-  if(mem == MAP_FAILED) {
-    xbt_die("Failed to map fd %d with size %zu: %s\n"
-            "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
-            "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
-            "Please see "
-            "https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization for more "
-            "information.",
-            fd, size, strerror(errno));
-  }
   meta.size = size;
   meta.data = data;
   meta.allocated_ptr   = mem;
@@ -151,28 +129,15 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
   auto data = res.first;
   if (res.second) {
     // The new element was inserted.
-    // Generate a shared memory name from the address of the shared_data:
-    char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on macOS (shm_open raises ENAMETOOLONG otherwise)
-    snprintf(shmname, 31, "/shmalloc%p", &*data);
-    int fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-    if (fd < 0) {
-      if (errno == EEXIST)
-        xbt_die("Please cleanup /dev/shm/%s", shmname);
-      else
-        xbt_die("An unhandled error occurred while opening %s. shm_open: %s", shmname, strerror(errno));
-    }
-    data->second.fd = fd;
+    int fd             = smpi_temp_shm_get();
+    data->second.fd    = fd;
     data->second.count = 1;
     mem = shm_map(fd, size, &*data);
-    if (shm_unlink(shmname) < 0) {
-      XBT_WARN("Could not early unlink %s. shm_unlink: %s", shmname, strerror(errno));
-    }
-    XBT_DEBUG("Mapping %s at %p through %d", shmname, mem, fd);
   } else {
     mem = shm_map(data->second.fd, size, &*data);
     data->second.count++;
   }
-  XBT_DEBUG("Shared malloc %zu in %p (metadata at %p)", size, mem, &*data);
+  XBT_DEBUG("Shared malloc %zu in %p through %d (metadata at %p)", size, mem, data->second.fd, &*data);
   return mem;
 }
 

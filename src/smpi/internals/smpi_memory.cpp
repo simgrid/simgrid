@@ -110,6 +110,71 @@ static void* asan_safe_memcpy(void* dest, void* src, size_t n)
 #define asan_safe_memcpy(dest, src, n) memcpy((dest), (src), (n))
 #endif
 
+/**
+ * @brief Uses shm_open to get a temporary shm, and returns its file descriptor.
+ */
+int smpi_temp_shm_get()
+{
+  constexpr unsigned VAL_MASK = 0xffffffffUL;
+  static unsigned prev_val    = VAL_MASK;
+  char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on macOS (shm_open raises ENAMETOOLONG otherwise)
+  int fd;
+
+  for (unsigned i = (prev_val + 1) & VAL_MASK; i != prev_val; i = (i + 1) & VAL_MASK) {
+    snprintf(shmname, sizeof(shmname), "/smpi-buffer-%016x", i);
+    fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+    if (fd != -1 || errno != EEXIST) {
+      prev_val = i;
+      break;
+    }
+  }
+  if (fd < 0) {
+    if (errno == EMFILE) {
+      xbt_die("Impossible to create temporary file for memory mapping: %s\n\
+The shm_open() system call failed with the EMFILE error code (too many files). \n\n\
+This means that you reached the system limits concerning the amount of files per process. \
+This is not a surprise if you are trying to virtualize many processes on top of SMPI. \
+Don't panic -- you should simply increase your system limits and try again. \n\n\
+First, check what your limits are:\n\
+  cat /proc/sys/fs/file-max # Gives you the system-wide limit\n\
+  ulimit -Hn                # Gives you the per process hard limit\n\
+  ulimit -Sn                # Gives you the per process soft limit\n\
+  cat /proc/self/limits     # Displays any per-process limitation (including the one given above)\n\n\
+If one of these values is less than the amount of MPI processes that you try to run, then you got the explanation of this error. \
+Ask the Internet about tutorials on how to increase the files limit such as: https://rtcamp.com/tutorials/linux/increase-open-files-limit/",
+              strerror(errno));
+    }
+    xbt_die("Impossible to create temporary file for memory mapping. shm_open: %s", strerror(errno));
+  }
+  XBT_DEBUG("Got temporary shm %s (fd = %d)", shmname, fd);
+  if (shm_unlink(shmname) < 0)
+    XBT_WARN("Could not early unlink %s. shm_unlink: %s", shmname, strerror(errno));
+  return fd;
+}
+
+/**
+ * @brief Mmap a region of size bytes from temporary shm with file descriptor fd.
+ */
+void* smpi_temp_shm_mmap(int fd, size_t size)
+{
+  struct stat st;
+  if (fstat(fd, &st) != 0)
+    xbt_die("Could not stat fd %d: %s", fd, strerror(errno));
+  if (static_cast<off_t>(size) > st.st_size && ftruncate(fd, static_cast<off_t>(size)) != 0)
+    xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
+  void* mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  if (mem == MAP_FAILED) {
+    xbt_die("Failed to map fd %d with size %zu: %s\n"
+            "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
+            "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+            "Please see "
+            "https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization for more "
+            "information.",
+            fd, size, strerror(errno));
+  }
+  return mem;
+}
+
 /** Map a given SMPI privatization segment (make a SMPI process active)
  *
  *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
@@ -166,52 +231,10 @@ void smpi_backup_global_memory_segment()
 // Initializes the memory mapping for a single process and returns the privatization region
 smpi_privatization_region_t smpi_init_global_memory_segment_process()
 {
-  int file_descriptor;
-  void* address = nullptr;
-  char path[24];
-  int status;
+  int file_descriptor = smpi_temp_shm_get();
 
-  constexpr unsigned VAL_MASK = 0xffffffU;
-  static unsigned prev_val    = VAL_MASK;
-  for (unsigned i = (prev_val + 1) & VAL_MASK; i != prev_val; i = (i + 1) & VAL_MASK) {
-    snprintf(path, sizeof(path), "/smpi-buffer-%06x", i);
-    file_descriptor = shm_open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-    if (file_descriptor != -1 || errno != EEXIST) {
-      prev_val = i;
-      break;
-    }
-  }
-  if (file_descriptor < 0) {
-    if (errno == EMFILE) {
-      xbt_die("Impossible to create temporary file for memory mapping: %s\n\
-The open() system call failed with the EMFILE error code (too many files). \n\n\
-This means that you reached the system limits concerning the amount of files per process. \
-This is not a surprise if you are trying to virtualize many processes on top of SMPI. \
-Don't panic -- you should simply increase your system limits and try again. \n\n\
-First, check what your limits are:\n\
-  cat /proc/sys/fs/file-max # Gives you the system-wide limit\n\
-  ulimit -Hn                # Gives you the per process hard limit\n\
-  ulimit -Sn                # Gives you the per process soft limit\n\
-  cat /proc/self/limits     # Displays any per-process limitation (including the one given above)\n\n\
-If one of these values is less than the amount of MPI processes that you try to run, then you got the explanation of this error. \
-Ask the Internet about tutorials on how to increase the files limit such as: https://rtcamp.com/tutorials/linux/increase-open-files-limit/",
-              strerror(errno));
-    }
-    xbt_die("Impossible to create temporary file for memory mapping: %s", strerror(errno));
-  }
-
-  status = ftruncate(file_descriptor, smpi_data_exe_size);
-  if (status)
-    xbt_die("Impossible to set the size of the temporary file for memory mapping");
-
-  /* Ask for a free region */
-  address = mmap(nullptr, smpi_data_exe_size, PROT_RW, MAP_SHARED, file_descriptor, 0);
-  if (address == MAP_FAILED)
-    xbt_die("Couldn't find a free region for memory mapping");
-
-  status = shm_unlink(path);
-  if (status)
-    xbt_die("Impossible to unlink temporary file for memory mapping");
+  // ask for a free region
+  void* address = smpi_temp_shm_mmap(file_descriptor, smpi_data_exe_size);
 
   // initialize the values
   asan_safe_memcpy(address, smpi_data_exe_copy, smpi_data_exe_size);
