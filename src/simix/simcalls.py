@@ -87,7 +87,7 @@ class Simcall(object):
     def accessors(self):
         res = []
         res.append('')
-        regex = re.compile(r"^boost::intrusive_ptr<(.*?)>(.*)$")  #  to compute the raw type
+        regex = re.compile(r"^boost::intrusive_ptr<(.*?)>(.*)$")  # to compute the raw type
         # Arguments getter/setters
         for i in range(len(self.args)):
             arg = self.args[i]

@@ -81,7 +81,7 @@ list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
-if [ "x$VERBOSE" = x1 -o "x$show" = x1 ] ; then
+if [ "x$VERBOSE" = x1 -o "x$show" = x1 ] ; then
   echo "$@"
   [ "x$show" = x1 ] && exit 0
 fi

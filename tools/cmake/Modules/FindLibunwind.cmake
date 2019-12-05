@@ -26,11 +26,11 @@ endif()
 #    - Calls include_directories() on where libunwind.h lives
 #    - Calls link_directories() on where the libs live
 
-# Of course also need the core lib
+# Of course also need the core lib
 set(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} "unwind")
 
 message(STATUS "Looking for libunwind:")
-# Let's assume we have it, and invalidate if parts are missing
+# Let's assume we have it, and invalidate if parts are missing
 SET(HAVE_LIBUNWIND 1)
 
 #

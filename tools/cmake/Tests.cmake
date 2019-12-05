@@ -65,7 +65,7 @@ MACRO(ADD_TESH_FACTORIES NAME FACTORIES)
     LIST(REMOVE_AT ARGR 0)
   ENDFOREACH()
   FOREACH(FACTORY ${FACTORIES})
-    if ((${FACTORY} STREQUAL "thread" ) OR # Always available, thanks to C++11 threads
+    if ((${FACTORY} STREQUAL "thread" ) OR # Always available, thanks to C++11 threads
         (${FACTORY} STREQUAL "boost" AND HAVE_BOOST_CONTEXTS) OR
         (${FACTORY} STREQUAL "raw" AND HAVE_RAW_CONTEXTS) OR
         (${FACTORY} STREQUAL "ucontext" AND HAVE_UCONTEXT_CONTEXTS))
@@ -81,7 +81,7 @@ MACRO(SET_TESH_PROPERTIES NAME FACTORIES)
     LIST(REMOVE_AT ARGR 0)
   ENDFOREACH()
   FOREACH(FACTORY ${FACTORIES})
-    if ((${FACTORY} STREQUAL "thread" ) OR # Always available, thanks to C++11 threads
+    if ((${FACTORY} STREQUAL "thread" ) OR # Always available, thanks to C++11 threads
         (${FACTORY} STREQUAL "boost" AND HAVE_BOOST_CONTEXTS) OR
         (${FACTORY} STREQUAL "raw" AND HAVE_RAW_CONTEXTS) OR
         (${FACTORY} STREQUAL "ucontext" AND HAVE_UCONTEXT_CONTEXTS))

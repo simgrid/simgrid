@@ -3,18 +3,18 @@
 # Simplistic script to rebuild our documentation with sphinx-build
 
 # Python needs to find simgrid on my machine, but not ctest -- sorry for the hack
-if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
+if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
 
 set -e
 
-if [ "x$1" != 'xdoxy' -a -e build/xml ] ; then
+if [ "x$1" != 'xdoxy' -a -e build/xml ] ; then
   echo "Doxygen not rerun: 'doxy' was not provided as an argument"
 else
   rm -rf build/xml source/api/
   cd source; doxygen; cd ..
 fi
 
-if [ "x$1" != 'xjava' -a -e source/java ] ; then
+if [ "x$1" != 'xjava' -a -e source/java ] ; then
   echo "javasphinx not rerun: 'java' was not provided as an argument"
 else
   rm -rf source/java
@@ -54,7 +54,7 @@ do
 done
 
 set +e # Don't fail
-if [ -e /usr/bin/linkchecker ] ; then
+if [ -e /usr/bin/linkchecker ] ; then
     linkchecker --no-status -o csv --ignore-url='.*\.css$' --ignore-url=build/html/_modules  --ignore-url=public/java/org build/html \
      | grep -v '^#' \
      | grep -v 'urlname;parentname;baseref;result;warningstring'
