@@ -59,8 +59,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_shared, smpi, "Logging specific to SMPI (shared memory macros)");
 
-#define PTR_STRLEN (2 + 2 * sizeof(void*) + 1)
-
 namespace{
 /** Some location in the source code
  *
@@ -120,7 +118,6 @@ static size_t shm_size(int fd) {
 
 #ifndef WIN32
 static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
-  char loc[PTR_STRLEN];
   shared_metadata_t meta;
 
   if(size > shm_size(fd) && (ftruncate(fd, static_cast<off_t>(size)) < 0)) {
@@ -137,7 +134,6 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
             "information.",
             fd, size, strerror(errno));
   }
-  snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;
   meta.data = data;
   meta.allocated_ptr   = mem;
@@ -441,8 +437,6 @@ std::vector<std::pair<size_t, size_t>> merge_private_blocks(const std::vector<st
 void smpi_shared_free(void *ptr)
 {
   if (smpi_cfg_shared_malloc() == SharedMallocType::LOCAL) {
-    char loc[PTR_STRLEN];
-    snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
     if (meta == allocs_metadata.end()) {
       ::operator delete(ptr);
