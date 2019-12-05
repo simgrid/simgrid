@@ -22,22 +22,16 @@ int alltoallv__ompi_basic_linear(const void *sbuf, const int *scounts, const int
                                  MPI_Datatype rdtype,
                                  MPI_Comm comm)
 {
-  int i, size, rank;
-  char *psnd, *prcv;
-  int nreqs;
-  ptrdiff_t sext, rext;
-  MPI_Request* preq;
-  size               = comm->size();
-  rank               = comm->rank();
-  MPI_Request* ireqs = new MPI_Request[size * 2];
+  int size = comm->size();
+  int rank = comm->rank();
   XBT_DEBUG("coll:tuned:alltoallv_intra_basic_linear rank %d", rank);
 
-  sext = sdtype->get_extent();
-  rext = rdtype->get_extent();
+  ptrdiff_t sext = sdtype->get_extent();
+  ptrdiff_t rext = rdtype->get_extent();
 
   /* Simple optimization - handle send to self first */
-  psnd = ((char*)sbuf) + (sdisps[rank] * sext);
-  prcv = ((char*)rbuf) + (rdisps[rank] * rext);
+  char* psnd = ((char*)sbuf) + (sdisps[rank] * sext);
+  char* prcv = ((char*)rbuf) + (rdisps[rank] * rext);
   if (0 != scounts[rank]) {
     Datatype::copy(psnd, scounts[rank], sdtype, prcv, rcounts[rank], rdtype);
   }
@@ -48,11 +42,12 @@ int alltoallv__ompi_basic_linear(const void *sbuf, const int *scounts, const int
   }
 
   /* Now, initiate all send/recv to/from others. */
-  nreqs = 0;
-  preq  = ireqs;
+  MPI_Request* ireqs = new MPI_Request[size * 2];
+  int nreqs          = 0;
+  MPI_Request* preq  = ireqs;
 
   /* Post all receives first */
-  for (i = 0; i < size; ++i) {
+  for (int i = 0; i < size; ++i) {
     if (i == rank) {
       continue;
     }
@@ -65,7 +60,7 @@ int alltoallv__ompi_basic_linear(const void *sbuf, const int *scounts, const int
   }
 
   /* Now post all sends */
-  for (i = 0; i < size; ++i) {
+  for (int i = 0; i < size; ++i) {
     if (i == rank) {
       continue;
     }
@@ -88,7 +83,7 @@ int alltoallv__ompi_basic_linear(const void *sbuf, const int *scounts, const int
   Request::waitall(nreqs, ireqs, MPI_STATUSES_IGNORE);
 
   /* Free the requests. */
-  for (i = 0; i < nreqs; ++i) {
+  for (int i = 0; i < nreqs; ++i) {
     if (ireqs[i] != MPI_REQUEST_NULL)
       Request::unref(&ireqs[i]);
   }
