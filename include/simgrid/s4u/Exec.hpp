@@ -39,9 +39,9 @@ public:
   static xbt::signal<void(Actor const&, Exec const&)> on_start;
   static xbt::signal<void(Actor const&, Exec const&)> on_completion;
 
-  virtual Exec* start() override          = 0;
-  virtual double get_remaining_ratio()    = 0;
-  virtual ExecPtr set_host(Host* host)    = 0;
+  Exec* start() override               = 0;
+  virtual double get_remaining_ratio() = 0;
+  virtual ExecPtr set_host(Host* host) = 0;
 
   Exec* wait() override;
   Exec* wait_for(double timeout) override;
