@@ -70,6 +70,8 @@ int main(int argc, char *argv[])
             printf(" No Errors\n");
     }
 
+    free(sbuf);
+    free(rbuf);
     MPI_Finalize();
 
     return 0;
