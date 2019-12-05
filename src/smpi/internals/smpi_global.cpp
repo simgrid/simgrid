@@ -277,7 +277,7 @@ static void smpi_init_papi()
 
         counters2values.push_back(
             // We cannot just pass *events_it, as this is of type const basic_string
-            std::make_pair<std::string, long long>(std::string(*events_it), 0));
+            std::make_pair(std::string(*events_it), 0LL));
       }
 
       std::string unit_name    = *(event_tokens.begin());
