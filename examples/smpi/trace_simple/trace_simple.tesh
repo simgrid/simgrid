@@ -3,19 +3,19 @@
 # Go for the first test
 
 p SMPI test
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}/smpi_trace_simple --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}/smpi_trace_simple --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
 p Another SMPI test, with only -trace
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}/smpi_trace_simple --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}/smpi_trace_simple --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
 p Testing without trace parameters
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}//smpi_trace_simple --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}//smpi_trace_simple --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
 p Testing grouped tracing
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}/smpi_trace_simple --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}/smpi_trace_simple --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
 
 p Testing with parameters but without activating them with the safe switch (-trace)
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-resource -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}/smpi_trace_simple --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-resource -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ${bindir:=.}/smpi_trace_simple --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
 $ rm -f smpi_trace.trace

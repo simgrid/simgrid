@@ -1,6 +1,6 @@
 p Test indexed
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/type-indexed -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/type-indexed -q --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > buffer[0] = 0

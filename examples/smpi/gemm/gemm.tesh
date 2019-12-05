@@ -4,13 +4,13 @@
 
 p Test instrumentation of SMPI
 
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1 -np 8 ${bindir:=.}/smpi_gemm 1000 native
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1 -np 8 ${bindir:=.}/smpi_gemm 1000 native
 > You requested to use 8 ranks, but there is only 5 processes in your hostfile...
 > Matrix Size : 1000x1000
 > Native mode
 > Performance= 227.39 GFlop/s, Time= 8.795 sec, Size= 2000000000 Ops
 
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1 -np 8 ${bindir:=.}/smpi_gemm 1000 sampling
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1 -np 8 ${bindir:=.}/smpi_gemm 1000 sampling
 > You requested to use 8 ranks, but there is only 5 processes in your hostfile...
 > Matrix Size : 1000x1000
 > Sampling mode

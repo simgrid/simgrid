@@ -1,4 +1,4 @@
 p Test privatization
 ! timeout 5
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 32 ${bindir:=.}/privatization -s -long --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/privatization:${privatization:=1} --log=simix_context.thres:error --log=xbt_memory_map.thres:critical
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 32 ${bindir:=.}/privatization -s -long --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/privatization:${privatization:=1} --log=simix_context.thres:error --log=xbt_memory_map.thres:critical
 > You requested to use 32 ranks, but there is only 5 processes in your hostfile...

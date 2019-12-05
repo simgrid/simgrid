@@ -1,7 +1,7 @@
 ! expect return 1
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile_empty  -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile_empty  -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_config.thres:warning
 > [smpirun] ** error: the hostfile '../hostfile_empty' is empty. Aborting.
 
 ! expect return 1
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile hostfile-does-not-exist.txt -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile hostfile-does-not-exist.txt -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_config.thres:warning
 > [smpirun] ** error: the file 'hostfile-does-not-exist.txt' does not exist. Aborting.

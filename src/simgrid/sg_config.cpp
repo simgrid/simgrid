@@ -13,6 +13,7 @@
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/smpi/include/smpi_config.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 #include "xbt/config.hpp"
@@ -366,111 +367,6 @@ void sg_config_init(int *argc, char **argv)
                                              "contention (default value based on Stampede cluster profiling)",
                                              "0.965;0.925;1.35");
   simgrid::config::alias("smpi/IB-penalty-factors", {"smpi/IB_penalty_factors"});
-
-#if HAVE_SMPI
-  simgrid::config::declare_flag<double>("smpi/host-speed", "Speed of the host running the simulation (in flop/s). "
-                                                           "Used to bench the operations.",
-                                        20000.0, [](const double& val) {
-      xbt_assert(val > 0.0, "Invalid value (%f) for 'smpi/host-speed': it must be positive.", val);
-    });
-  simgrid::config::alias("smpi/host-speed", {"smpi/running_power", "smpi/running-power"});
-
-  simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.",
-                                      false);
-
-  simgrid::config::declare_flag<bool>("smpi/display-timing", "Whether we should display the timing after simulation.",
-                                      false);
-  simgrid::config::alias("smpi/display-timing", {"smpi/display_timing"});
-
-  simgrid::config::declare_flag<bool>(
-      "smpi/simulate-computation", "Whether the computational part of the simulated application should be simulated.",
-      true);
-  simgrid::config::alias("smpi/simulate-computation", {"smpi/simulate_computation"});
-
-  simgrid::config::declare_flag<std::string>(
-      "smpi/shared-malloc", "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.", "global");
-  simgrid::config::alias("smpi/shared-malloc", {"smpi/use_shared_malloc", "smpi/use-shared-malloc"});
-  simgrid::config::declare_flag<double>("smpi/shared-malloc-blocksize",
-                                        "Size of the bogus file which will be created for global shared allocations",
-                                        1UL << 20);
-  simgrid::config::declare_flag<double>("smpi/auto-shared-malloc-thresh",
-                                        "Threshold size for the automatic sharing of memory",
-                                        0);
-
-  simgrid::config::declare_flag<std::string>("smpi/shared-malloc-hugepage",
-                                             "Path to a mounted hugetlbfs, to use huge pages with shared malloc.", "");
-
-  simgrid::config::declare_flag<double>(
-      "smpi/cpu-threshold", "Minimal computation time (in seconds) not discarded, or -1 for infinity.", 1e-6);
-  simgrid::config::alias("smpi/cpu-threshold", {"smpi/cpu_threshold"});
-
-  simgrid::config::declare_flag<int>(
-      "smpi/async-small-thresh",
-      "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver", 0);
-  simgrid::config::alias("smpi/async-small-thresh", {"smpi/async_small_thres", "smpi/async_small_thresh"});
-
-  simgrid::config::declare_flag<bool>("smpi/trace-call-location",
-                                      "Should filename and linenumber of MPI calls be traced?", false);
-  simgrid::config::declare_flag<bool>("smpi/trace-call-use-absolute-path",
-                                      "Should filenames for trace-call tracing be absolute or not?", false);
-  simgrid::config::declare_flag<int>(
-      "smpi/send-is-detached-thresh",
-      "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend", 65536);
-  simgrid::config::alias("smpi/send-is-detached-thresh",
-                         {"smpi/send_is_detached_thres", "smpi/send_is_detached_thresh"});
-
-  const char* default_privatization = std::getenv("SMPI_PRIVATIZATION");
-  if (default_privatization == nullptr)
-    default_privatization = "no";
-
-  simgrid::config::declare_flag<std::string>(
-      "smpi/privatization", "How we should privatize global variable at runtime (no, yes, mmap, dlopen).",
-      default_privatization);
-  simgrid::config::alias("smpi/privatization", {"smpi/privatize_global_variables", "smpi/privatize-global-variables"});
-
-  simgrid::config::declare_flag<std::string>(
-      "smpi/privatize-libs", "Add libraries (; separated) to privatize (libgfortran for example). You need to provide the full names of the files (libgfortran.so.4), or its full path", "");
-
-  simgrid::config::declare_flag<bool>("smpi/grow-injected-times",
-                                      "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to "
-                                      "allow faster simulation. This can make simulation less precise, though.",
-                                      true);
-
-#if HAVE_PAPI
-  simgrid::config::declare_flag<std::string>("smpi/papi-events",
-                                             "This switch enables tracking the specified counters with PAPI", "");
-#endif
-  simgrid::config::declare_flag<std::string>("smpi/comp-adjustment-file",
-                                             "A file containing speedups or slowdowns for some parts of the code.", "");
-  simgrid::config::declare_flag<std::string>(
-      "smpi/os", "Small messages timings (MPI_Send minimum time for small messages)", "0:0:0:0:0");
-  simgrid::config::declare_flag<std::string>(
-      "smpi/ois", "Small messages timings (MPI_Isend minimum time for small messages)", "0:0:0:0:0");
-  simgrid::config::declare_flag<std::string>(
-      "smpi/or", "Small messages timings (MPI_Recv minimum time for small messages)", "0:0:0:0:0");
-
-  simgrid::config::declare_flag<double>("smpi/iprobe-cpu-usage",
-                                        "Maximum usage of CPUs by MPI_Iprobe() calls. We've observed that MPI_Iprobes "
-                                        "consume significantly less power than the maximum of a specific application. "
-                                        "This value is then (Iprobe_Usage/Max_Application_Usage).",
-                                        1.0);
-
-  simgrid::config::declare_flag<std::string>("smpi/coll-selector", "Which collective selector to use", "default");
-  simgrid::config::alias("smpi/coll-selector", {"smpi/coll_selector"});
-  simgrid::config::declare_flag<std::string>("smpi/gather", "Which collective to use for gather", "");
-  simgrid::config::declare_flag<std::string>("smpi/allgather", "Which collective to use for allgather", "");
-  simgrid::config::declare_flag<std::string>("smpi/barrier", "Which collective to use for barrier", "");
-  simgrid::config::declare_flag<std::string>("smpi/reduce_scatter", "Which collective to use for reduce_scatter", "");
-  simgrid::config::alias("smpi/reduce_scatter", {"smpi/reduce-scatter"});
-  simgrid::config::declare_flag<std::string>("smpi/scatter", "Which collective to use for scatter", "");
-  simgrid::config::declare_flag<std::string>("smpi/allgatherv", "Which collective to use for allgatherv", "");
-  simgrid::config::declare_flag<std::string>("smpi/allreduce", "Which collective to use for allreduce", "");
-  simgrid::config::declare_flag<std::string>("smpi/alltoall", "Which collective to use for alltoall", "");
-  simgrid::config::declare_flag<std::string>("smpi/alltoallv", "Which collective to use for alltoallv", "");
-  simgrid::config::declare_flag<std::string>("smpi/bcast", "Which collective to use for bcast", "");
-  simgrid::config::declare_flag<std::string>("smpi/reduce", "Which collective to use for reduce", "");
-#endif // HAVE_SMPI
-
   /* Others */
 
   simgrid::config::declare_flag<bool>(

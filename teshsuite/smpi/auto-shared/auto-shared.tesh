@@ -1,7 +1,7 @@
 p Test compute
 ! output sort
 ! timeout 5
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/auto-shared --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/auto-shared-malloc-thresh:8
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/auto-shared --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/auto-shared-malloc-thresh:8
 > [0] After change, the value in the shared buffer is: 16053117601147974045
 > [0] The value in the shared buffer is: 4
 > [1] After change, the value in the shared buffer is: 16053117601147974045
@@ -14,7 +14,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform 
 
 ! output sort
 ! timeout 5
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/auto-shared --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/shared-malloc:local --cfg=smpi/auto-shared-malloc-thresh:8
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/auto-shared --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/shared-malloc:local --cfg=smpi/auto-shared-malloc-thresh:8
 > [0] After change, the value in the shared buffer is: 16053117601147974045
 > [0] The value in the shared buffer is: 4
 > [1] After change, the value in the shared buffer is: 16053117601147974045

@@ -66,7 +66,7 @@ void Comm::destroy(Comm* comm)
 }
 
 int Comm::dup(MPI_Comm* newcomm){
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(s4u::Actor::self());
   }
@@ -380,7 +380,7 @@ void Comm::init_smp(){
     smpi_process()->set_replaying(false);
   }
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(s4u::Actor::self());
   }
@@ -395,7 +395,7 @@ void Comm::init_smp(){
 
   allgather__ring(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(s4u::Actor::self());
   }
@@ -468,7 +468,7 @@ void Comm::init_smp(){
   }
   bcast__scatter_LR_allgather(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
+  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(s4u::Actor::self());
   }

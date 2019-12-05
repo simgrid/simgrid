@@ -100,6 +100,7 @@ set(SMPI_SRC
   src/smpi/internals/smpi_replay.cpp
   src/smpi/internals/smpi_actor.cpp
   src/smpi/internals/smpi_utils.cpp
+  src/smpi/internals/smpi_config.cpp
   src/smpi/mpi/smpi_comm.cpp
   src/smpi/mpi/smpi_datatype.cpp
   src/smpi/mpi/smpi_datatype_derived.cpp
@@ -117,6 +118,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_actor.hpp
   src/smpi/include/smpi_coll.hpp
   src/smpi/include/smpi_comm.hpp
+  src/smpi/include/smpi_config.hpp
   src/smpi/include/smpi_datatype_derived.hpp
   src/smpi/include/smpi_datatype.hpp
   src/smpi/include/smpi_errhandler.hpp

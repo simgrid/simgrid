@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
   int rank;
   int msg = 99;
   MPI_Status status;
-
   int err = MPI_Init(&argc, &argv); /* Initialize MPI */
 
   /* test getopt function */

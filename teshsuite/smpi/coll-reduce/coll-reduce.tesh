@@ -2,7 +2,7 @@
 ! output sort
 
 p Test allreduce
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-reduce --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-reduce --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > [0] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
 > [0] second sndbuf=[0 ]
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ]

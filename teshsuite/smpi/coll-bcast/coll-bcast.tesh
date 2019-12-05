@@ -1,7 +1,7 @@
 p Test Broadcast with more processes than hosts
 ! output sort
 
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-bcast --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-bcast --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay
 > [rank 2] -> Tremblay

@@ -47,11 +47,6 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
         *comm_cart = MPI_COMM_NULL;
       return;
     }
-    oldGroup = comm_old->group();
-    newGroup = new  Group(newSize);
-    for (int i = 0 ; i < newSize ; i++) {
-      newGroup->set_mapping(oldGroup->actor(i), i);
-    }
 
     nnodes_ = newSize;
 
@@ -65,8 +60,15 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
       position_[i] = rank / nranks;
       rank = rank % nranks;
     }
-    if(comm_cart != nullptr)
+    
+    if(comm_cart != nullptr){
+      oldGroup = comm_old->group();
+      newGroup = new  Group(newSize);
+      for (int i = 0 ; i < newSize ; i++) {
+        newGroup->set_mapping(oldGroup->actor(i), i);
+      }
       *comm_cart = new  Comm(newGroup, this);
+    }
   } else {
     if(comm_cart != nullptr){
       if (rank == 0) {

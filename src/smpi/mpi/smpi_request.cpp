@@ -376,15 +376,13 @@ void Request::start()
 
     simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
 
-    int async_small_thresh = simgrid::config::get_value<int>("smpi/async-small-thresh");
-
     simgrid::s4u::MutexPtr mut = process->mailboxes_mutex();
-    if (async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)
+    if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
       mut->lock();
 
-    if (async_small_thresh == 0 && (flags_ & MPI_REQ_RMA) == 0) {
+    if (smpi_cfg_async_small_thresh() == 0 && (flags_ & MPI_REQ_RMA) == 0) {
       mailbox = process->mailbox();
-    } else if (((flags_ & MPI_REQ_RMA) != 0) || static_cast<int>(size_) < async_small_thresh) {
+    } else if (((flags_ & MPI_REQ_RMA) != 0) || static_cast<int>(size_) < smpi_cfg_async_small_thresh()) {
       //We have to check both mailboxes (because SSEND messages are sent to the large mbox).
       //begin with the more appropriate one : the small one.
       mailbox = process->mailbox_small();
@@ -423,7 +421,7 @@ void Request::start()
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this, -1.0);
     XBT_DEBUG("recv simcall posted");
 
-    if (async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)
+    if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
       mut->unlock();
   } else { /* the RECV flag was not set, so this is a send */
     simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
@@ -437,7 +435,7 @@ void Request::start()
     void* buf = buf_;
     if ((flags_ & MPI_REQ_SSEND) == 0 &&
         ((flags_ & MPI_REQ_RMA) != 0 || (flags_ & MPI_REQ_BSEND) != 0 ||
-         static_cast<int>(size_) < simgrid::config::get_value<int>("smpi/send-is-detached-thresh"))) {
+         static_cast<int>(size_) < smpi_cfg_detached_send_thresh())) {
       void *oldbuf = nullptr;
       detached_    = true;
       XBT_DEBUG("Send request %p is detached", this);
@@ -445,7 +443,7 @@ void Request::start()
       if (not(old_type_->flags() & DT_FLAG_DERIVED)) {
         oldbuf = buf_;
         if (not process->replaying() && oldbuf != nullptr && size_ != 0) {
-          if ((smpi_privatize_global_variables != SmpiPrivStrategies::NONE) &&
+          if ((smpi_cfg_privatization() != SmpiPrivStrategies::NONE) &&
               (static_cast<char*>(buf_) >= smpi_data_exe_start) &&
               (static_cast<char*>(buf_) < smpi_data_exe_start + smpi_data_exe_size)) {
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
@@ -474,16 +472,14 @@ void Request::start()
       XBT_DEBUG("sending size of %zu : sleep %f ", size_, sleeptime);
     }
 
-    int async_small_thresh = simgrid::config::get_value<int>("smpi/async-small-thresh");
-
     simgrid::s4u::MutexPtr mut = process->mailboxes_mutex();
 
-    if (async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)
+    if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
       mut->lock();
 
-    if (not(async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)) {
+    if (not(smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)) {
       mailbox = process->mailbox();
-    } else if (((flags_ & MPI_REQ_RMA) != 0) || static_cast<int>(size_) < async_small_thresh) { // eager mode
+    } else if (((flags_ & MPI_REQ_RMA) != 0) || static_cast<int>(size_) < smpi_cfg_async_small_thresh()) { // eager mode
       mailbox = process->mailbox();
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %s?", mailbox->get_cname());
       smx_activity_t action = mailbox->iprobe(1, &match_send, static_cast<void*>(this));
@@ -526,7 +522,7 @@ void Request::start()
           smpi_process()->get_tracing_category());
     }
 
-    if (async_small_thresh != 0 || ((flags_ & MPI_REQ_RMA) != 0))
+    if (smpi_cfg_async_small_thresh() != 0 || ((flags_ & MPI_REQ_RMA) != 0))
       mut->unlock();
   }
 }
@@ -605,7 +601,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
       nsleeps=1;//reset the number of sleeps we will do next time
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_PERSISTENT) == 0)
         *request = MPI_REQUEST_NULL;
-    } else if (simgrid::config::get_value<bool>("smpi/grow-injected-times")) {
+    } else if (smpi_cfg_grow_injected_times()) {
       nsleeps++;
     }
   }
@@ -763,7 +759,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   // This can speed up the execution of certain applications by an order of magnitude, such as HPL
   static int nsleeps = 1;
   double speed        = s4u::this_actor::get_host()->get_speed();
-  double maxrate      = simgrid::config::get_value<double>("smpi/iprobe-cpu-usage");
+  double maxrate      = smpi_cfg_iprobe_cpu_usage();
   MPI_Request request = new Request(nullptr, 0, MPI_CHAR,
                                     source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
                                     simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV);
@@ -786,7 +782,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   request->print_request("New iprobe");
   // We have to test both mailboxes as we don't know if we will receive one or another
-  if (simgrid::config::get_value<int>("smpi/async-small-thresh") > 0) {
+  if (smpi_cfg_async_small_thresh() > 0) {
     mailbox = smpi_process()->mailbox_small();
     XBT_DEBUG("Trying to probe the perm recv mailbox");
     request->action_ = mailbox->iprobe(0, &match_recv, static_cast<void*>(request));
@@ -812,7 +808,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   }
   else {
     *flag = 0;
-    if (simgrid::config::get_value<bool>("smpi/grow-injected-times"))
+    if (smpi_cfg_grow_injected_times())
       nsleeps++;
   }
   unref(&request);
@@ -851,7 +847,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       if (((req->flags_ & MPI_REQ_ACCUMULATE) != 0) ||
           (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
 
-        if (not smpi_process()->replaying() && smpi_privatize_global_variables != SmpiPrivStrategies::NONE &&
+        if (not smpi_process()->replaying() && smpi_cfg_privatization() != SmpiPrivStrategies::NONE &&
             static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
             static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
           XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
