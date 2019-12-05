@@ -47,7 +47,9 @@ int main(int argc, char** argv)
   // value to the model-checked:
   char** argv_copy = argvdup(argc, argv);
   xbt_log_init(&argc, argv);
+#ifdef HAVE_SMPI
   smpi_init_options();//only performed once
+#endif
   sg_config_init(&argc, argv);
   simgrid::mc::session = new simgrid::mc::Session([argv_copy] { execvp(argv_copy[1], argv_copy + 1); });
   delete[] argv_copy;
