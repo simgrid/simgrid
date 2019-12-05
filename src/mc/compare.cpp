@@ -660,6 +660,8 @@ static bool heap_area_differ_with_type(simgrid::mc::StateComparator& state, cons
     case DW_TAG_class_type:
       if (type->full_type)
         type = type->full_type;
+      if (type->byte_size == 0)
+        return false;
       if (area_size != -1 && type->byte_size != area_size) {
         if (area_size <= type->byte_size || area_size % type->byte_size != 0)
           return false;
