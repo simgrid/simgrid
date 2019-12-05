@@ -115,6 +115,9 @@ int main(int argc, char** argv)
     printf("\n");
   }
   printf("-------------------\n");
+
+  MPI_Comm_free(&lineComm);
+  MPI_Comm_free(&gridComm);
   free(A);
   MPI_Barrier(MPI_COMM_WORLD);
   MPI_Finalize();
