@@ -19,6 +19,14 @@ static int getfactors(int num, int *nfators, int **factors);
 namespace simgrid{
 namespace smpi{
 
+void Topo::setComm(MPI_Comm comm)
+{
+  xbt_assert(not comm_);
+  comm_ = comm;
+  if (comm_)
+    comm_->topo_ = this;
+}
+
 /*******************************************************************************
  * Cartesian topologies
  ******************************************************************************/

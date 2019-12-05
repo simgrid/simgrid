@@ -15,12 +15,12 @@ namespace simgrid{
 namespace smpi{
 
 class Topo {
-  MPI_Comm comm_;
+  MPI_Comm comm_ = MPI_COMM_NULL;
 
 public:
   virtual ~Topo() = default;
   MPI_Comm getComm() const { return comm_; }
-  void setComm(MPI_Comm comm) { comm_ = comm; }
+  void setComm(MPI_Comm comm);
 };
 
 class Topo_Cart: public Topo {

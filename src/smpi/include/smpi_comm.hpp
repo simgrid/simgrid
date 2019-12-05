@@ -17,6 +17,7 @@ namespace simgrid{
 namespace smpi{
 
 class Comm : public F2C, public Keyval{
+  friend Topo;
   MPI_Group group_;
   SMPI_Topo_type topoType_;
   MPI_Topology topo_; // to be replaced by an union

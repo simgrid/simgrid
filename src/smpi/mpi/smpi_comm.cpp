@@ -61,7 +61,6 @@ void Comm::destroy(Comm* comm)
     Comm::destroy(smpi_process()->comm_world());
     return;
   }
-  delete comm->topo_; // there's no use count on topos
   Comm::unref(comm);
 }
 
@@ -334,6 +333,7 @@ void Comm::unref(Comm* comm){
   if(comm->refcount_==0){
     comm->cleanup_smp();
     comm->cleanup_attr<Comm>();
+    delete comm->topo_; // there's no use count on topos
     delete comm;
   }
 }
