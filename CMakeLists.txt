@@ -593,6 +593,7 @@ endif()
 set(generated_headers_to_install
   ${CMAKE_CURRENT_BINARY_DIR}/include/smpi/mpif.h
   ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/version.h
   )
 
 set(generated_headers  ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h )
