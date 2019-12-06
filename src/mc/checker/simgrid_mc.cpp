@@ -11,6 +11,10 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 
+#if HAVE_SMPI
+#include "smpi/smpi.h"
+#endif
+
 #include <cstring>
 #include <memory>
 #include <unistd.h>
