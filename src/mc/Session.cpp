@@ -6,7 +6,9 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/smpi/include/smpi_config.hpp"
+#if HAVE_SMPI
+#include "smpi/smpi.h"
+#endif
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_state.hpp"
 #include "xbt/log.h"
