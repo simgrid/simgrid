@@ -670,7 +670,7 @@ SimGrid (3.18) Released December 24 2017
  - #230: segfaults when exit() without run()
  - #225: s4u::Actor::kill() doesn not really kill victims in a join()
  - #223: MSG_task_get_flops_amount() not working with parallel tasks
- - #222: Actor::kill() doesn't really kill and segfaults
+ - #222: Actor::kill() doesn't really kill and segfaults
  - #221: odd LMM warning when killing an actor
  - #120: Memory leak when the processes are forcefully killed
 

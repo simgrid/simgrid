@@ -232,9 +232,9 @@ class Conservative : public Governor {
 
 public:
   explicit Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
-  virtual std::string get_name() const override { return "Conservative"; }
+  std::string get_name() const override { return "Conservative"; }
 
-  virtual void update() override
+  void update() override
   {
     double load = get_host()->get_core_count() * sg_host_get_avg_load(get_host());
     int pstate  = get_host()->get_pstate();
@@ -314,7 +314,7 @@ public:
         });
   }
 
-  virtual std::string get_name() const override { return "Adagio"; }
+  std::string get_name() const override { return "Adagio"; }
 
   void pre_task()
   {
@@ -355,7 +355,7 @@ public:
     task_id++;
   }
 
-  virtual void update() override {}
+  void update() override {}
 };
 #endif
 } // namespace dvfs

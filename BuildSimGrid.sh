@@ -5,7 +5,7 @@
 #
 # Copyright (c) 2017-2019 The SimGrid Team. Licence: LGPL of WDFPL, as you want.
 
-if [ ! -e Makefile ] ; then
+if [ ! -e Makefile ] ; then
   if [ -e build/default/Makefile ] ; then
     cd build/default
   else

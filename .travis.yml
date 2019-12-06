@@ -1,4 +1,4 @@
-# NS3 is disabled because the version in ubuntu precise does not lead
+# NS3 is disabled because the version in ubuntu precise does not lead
 # to the same timings (precision error?)
 # Reenable with 
 #   cmake -Denable_ns3

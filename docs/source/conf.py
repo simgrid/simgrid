@@ -15,7 +15,7 @@
 import os
 import subprocess
 
-# Search for our extensions too
+# Search for our extensions too
 import sys
 sys.path.append(os.path.abspath('_ext'))
 

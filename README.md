@@ -19,7 +19,7 @@ Documentation: [online](https://simgrid.org/doc/latest/Installing_SimGrid.html#i
 [local copy](docs/source/Installing_SimGrid.rst). TL;DR:
 ```
 cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
-# Check the full list of options with `cmake -LH`
+# Check the full list of options with `cmake -LH`
 make
 make install
 ```

@@ -1,5 +1,5 @@
 
-# Regular examples: with only one source and tested with all factories
+# Regular examples: with only one source and tested with all factories
 ######################################################################
 
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
@@ -32,7 +32,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 endforeach()
 
 
-# Model-checking examples: with only one source and tested with all factories but thread
+# Model-checking examples: with only one source and tested with all factories but thread
 ######################################################################
 
 foreach (example mc-failing-assert)
