@@ -200,4 +200,3 @@ for obj in sorted(doxy_funs):
 for obj in doxy_vars:
     for meth in sorted(doxy_vars[obj]):
         print(".. autodoxyvar:: {}::{}".format(obj, meth))
-

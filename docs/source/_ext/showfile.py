@@ -161,4 +161,3 @@ def setup(app):
 
     app.connect('builder-inited', add_assets)
     app.connect('build-finished', copy_assets)
-
