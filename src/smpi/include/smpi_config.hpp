@@ -9,7 +9,6 @@
 #include "src/internal_config.h" // HAVE_PAPI
 #include <xbt/config.hpp>
 
-XBT_PUBLIC void smpi_init_options();
 XBT_PRIVATE void smpi_check_options();
 /********************************** Configuration of SMPI **************************************/
 extern XBT_PRIVATE simgrid::config::Flag<double> _smpi_cfg_host_speed;
