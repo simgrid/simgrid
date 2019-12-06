@@ -25,10 +25,11 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Comm.hpp>
-#include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
+#include <simgrid/version.h>
 
 #include <memory>
 #include <string>
