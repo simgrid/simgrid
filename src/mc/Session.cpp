@@ -6,6 +6,7 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/internal_config.h" // HAVE_SMPI
 #if HAVE_SMPI
 #include "smpi/smpi.h"
 #endif

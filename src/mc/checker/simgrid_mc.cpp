@@ -9,6 +9,7 @@
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
+#include "src/internal_config.h"
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"
