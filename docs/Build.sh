@@ -7,14 +7,14 @@ if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
 
 set -e
 
-if [ "x$1" != 'xdoxy' -a -e build/xml ] ; then
+if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
   echo "Doxygen not rerun: 'doxy' was not provided as an argument"
 else
   rm -rf build/xml source/api/
   cd source; doxygen; cd ..
 fi
 
-if [ "x$1" != 'xjava' -a -e source/java ] ; then
+if [ "x$1" != 'xjava' ] && [ -e source/java ] ; then
   echo "javasphinx not rerun: 'java' was not provided as an argument"
 else
   rm -rf source/java
@@ -23,7 +23,7 @@ else
   rm -f source/java/org/simgrid/msg/package-index.rst # api_generated/source_java_org_simgrid_msg_package-index.rst
   for f in source/java/org/simgrid/msg/* ; do
     # Add the package name to the page titles
-    (echo -n "class org.simgrid.msg."; cat $f )>tmp
+    (printf "class org.simgrid.msg."; cat $f )>tmp
     mv tmp $f
     sed -i 's/==/========================/' $f # That's the right length knowing that I add 'class org.simgrid.msg.'
   done

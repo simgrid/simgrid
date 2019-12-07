@@ -18,7 +18,7 @@ fi
 target=tests
 
 install_path=$(sed -n 's/^CMAKE_INSTALL_PREFIX:PATH=//p' CMakeCache.txt)
-if [ -e ${install_path} -a -d ${install_path} -a -x ${install_path} -a -w ${install_path} ] ; then
+if [ -e ${install_path} ] && [ -d ${install_path} ] && [ -x ${install_path} ] && [ -w ${install_path} ] ; then
   target=install
 fi
 

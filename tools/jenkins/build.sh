@@ -14,7 +14,7 @@ echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
 rm -rf /var/tmp/simgrid-java*
 rm -rf /tmp/jvm-*
-find /builds/workspace/SimGrid/ -name "hs_err_pid*.log" | xargs rm -f
+find /builds/workspace/SimGrid/ -name "hs_err_pid*.log" -exec rm -f {} +
 ls /tmp
 df -h
 echo "XXXX Let's go"
@@ -191,7 +191,7 @@ else
   MAY_DISABLE_SOURCE_CHANGE="-DCMAKE_DISABLE_SOURCE_CHANGES=ON"
 fi
 
-if [ "$os" = "NixOS" -a "$(gcc -dumpversion)" = "7.4.0" ]; then
+if [ "$os" = "NixOS" ] && [ "$(gcc -dumpversion)" = "7.4.0" ]; then
     echo "Temporary disable LTO, believed to be broken on this system."
     MAY_DISABLE_LTO=-Denable_lto=OFF
 else

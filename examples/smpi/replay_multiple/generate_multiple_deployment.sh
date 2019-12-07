@@ -124,7 +124,7 @@ DESCRIPTIONFILE=$(echo $PROC_ARGS|cut -d' ' -f1)
 
 if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
     IFS_OLD=$IFS
-    IFS=$'\n'
+    IFS=$(printf '\n_'); IFS=${IFS%_} # protect trailing \n
     set -f
     NUMPROCS=0
     while IFS= read -r line; do
@@ -149,7 +149,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
             SEQ1=$( ${HAVE_SEQ} 0 $(( NUMPROCSMINE - 1 )) )
         else
             cnt=0
-            while (( cnt < NUMPROCSMINE )) ; do
+            while [ $(( cnt < NUMPROCSMINE )) -ne 0 ]; do
                 SEQ1="$SEQ1 $cnt"
                 cnt=$((cnt + 1))
             done
@@ -186,7 +186,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
         done
         # return IFS back to newline for "for" loop
         IFS_OLD=$IFS
-        IFS=$'\n'
+        IFS=$(printf '\n_'); IFS=${IFS%_} # protect trailing \n
     done < ${DESCRIPTIONFILE}
 
     # return delimiter to previous value

@@ -7,7 +7,7 @@ wget https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis-Valgrind/label=simg
 
 #find string containing errors and leaked size for valgrind run
 wget https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis-Valgrind/label=simgrid-debian8-64-dynamic-analysis/lastCompletedBuild/
-VALGRIND_RES=$(grep href\=\"valgrindResult\" ./index.html | sed -e "s/.*\"valgrindResult\">\(.*lost\)<\/a.*/\1/g")
+VALGRIND_RES=$(grep href=\"valgrindResult\" ./index.html | sed -e "s/.*\"valgrindResult\">\(.*lost\)<\/a.*/\1/g")
 rm index.html
 
 #set html description and write it in a file

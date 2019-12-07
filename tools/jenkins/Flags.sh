@@ -2,14 +2,6 @@
 
 set -e
 
-if [ $# -lt 4 ]
-  then
-    echo "Needs 4 arguments : JAVA MC SMPI DEBUG"
-    exit -1
-fi
-
-
-
 die() {
     echo "$@"
     exit 1
@@ -33,6 +25,8 @@ onoff() {
     echo OFF
   fi
 }
+
+[ $# -eq 4 ] || die "Needs 4 arguments : JAVA MC SMPI DEBUG"
 
 ### Cleanup previous runs
 
