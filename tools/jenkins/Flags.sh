@@ -7,16 +7,6 @@ die() {
     exit 1
 }
 
-do_cleanup() {
-  for d in "$WORKSPACE/build"
-  do
-    if [ -d "$d" ]
-    then
-      rm -rf "$d" || die "Could not remote $d"
-    fi
-  done
-}
-
 # Get an ON/OFF string from a command:
 onoff() {
   if "$@" > /dev/null ; then
@@ -33,12 +23,18 @@ onoff() {
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
-do_cleanup
+do_cleanup() {
+  for d
+  do
+    if [ -d "$d" ]
+    then
+      rm -rf "$d" || die "Could not remove $d"
+    fi
+    mkdir "$d" || die "Could not create $d"
+  done
+}
 
-for d in "$WORKSPACE/build"
-do
-  mkdir "$d" || die "Could not create $d"
-done
+do_cleanup "$WORKSPACE/build"
 
 NUMPROC="$(nproc)" || NUMPROC=1
 

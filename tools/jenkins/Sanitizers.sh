@@ -7,16 +7,6 @@ die() {
     exit 1
 }
 
-do_cleanup() {
-  for d in "$WORKSPACE/build"
-  do
-    if [ -d "$d" ]
-    then
-      rm -rf "$d" || die "Could not remote $d"
-    fi
-  done
-}
-
 if [ -z "$1" ]
   then
     echo "No Sanitizer type selected - run Address"
@@ -46,27 +36,37 @@ fi
 
 ### Check the node installation
 
-for pkg in xsltproc
-do
-   if command -v $pkg
-   then
-      echo "$pkg is installed. Good."
-   else
-      die "please install $pkg before proceeding"
-   fi
-done
+pkg_check() {
+  for pkg
+  do
+    if command -v $pkg
+    then
+       echo "$pkg is installed. Good."
+    else
+       die "please install $pkg before proceeding"
+    fi
+  done
+}
+
+pkg_check xsltproc
 
 ### Cleanup previous runs
 
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
-do_cleanup
+do_cleanup() {
+  for d
+  do
+    if [ -d "$d" ]
+    then
+      rm -rf "$d" || die "Could not remove $d"
+    fi
+    mkdir "$d" || die "Could not create $d"
+  done
+}
 
-for d in "$WORKSPACE/build"
-do
-  mkdir "$d" || die "Could not create $d"
-done
+do_cleanup "$WORKSPACE/build"
 
 NUMPROC="$(nproc)" || NUMPROC=1
 

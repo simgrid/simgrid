@@ -9,39 +9,39 @@ die() {
     exit 1
 }
 
-do_cleanup() {
-  for d in "$BUILDFOLDER"
+### Check the node installation
+
+pkg_check() {
+  for pkg
   do
-    if [ -d "$d" ]
+    if command -v $pkg
     then
-      rm -rf "$d" || die "Could not remote $d"
+       echo "$pkg is installed. Good."
+    else
+       die "please install $pkg before proceeding"
     fi
   done
 }
 
-### Check the node installation
-
-for pkg in xsltproc gcovr ant cover2cover.py
-do
-   if command -v $pkg
-   then
-      echo "$pkg is installed. Good."
-   else
-      die "please install $pkg before proceeding"
-   fi
-done
+pkg_check xsltproc gcovr ant cover2cover.py
 
 ### Cleanup previous runs
 
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
-do_cleanup
+do_cleanup() {
+  for d
+  do
+    if [ -d "$d" ]
+    then
+      rm -rf "$d" || die "Could not remove $d"
+    fi
+    mkdir "$d" || die "Could not create $d"
+  done
+}
 
-for d in "$BUILDFOLDER"
-do
-  mkdir "$d" || die "Could not create $d"
-done
+do_cleanup "$BUILDFOLDER"
 
 NUMPROC="$(nproc)" || NUMPROC=1
 

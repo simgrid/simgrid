@@ -7,40 +7,40 @@ die() {
     exit 1
 }
 
-do_cleanup() {
-  for d in "$WORKSPACE/build" "$WORKSPACE/memcheck"
-  do
-    if [ -d "$d" ]
-    then
-      rm -rf "$d" || die "Could not remote $d"
-    fi
-  done
-  find $WORKSPACE -name "memcheck_test_*.memcheck" -exec rm {} \;
-}
-
 ### Check the node installation
 
-for pkg in valgrind pcregrep
-do
-   if command -v $pkg
-   then
-      echo "$pkg is installed. Good."
-   else
-      die "please install $pkg before proceeding"
-   fi
-done
+pkg_check() {
+  for pkg
+  do
+    if command -v $pkg
+    then
+       echo "$pkg is installed. Good."
+    else
+       die "please install $pkg before proceeding"
+    fi
+  done
+}
+
+pkg_check valgrind pcregrep
 
 ### Cleanup previous runs
 
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
-do_cleanup
+do_cleanup() {
+  for d
+  do
+    if [ -d "$d" ]
+    then
+      rm -rf "$d" || die "Could not remove $d"
+    fi
+    mkdir "$d" || die "Could not create $d"
+  done
+  find $WORKSPACE -name "memcheck_test_*.memcheck" -exec rm {} \;
+}
 
-for d in "$WORKSPACE/build" "$WORKSPACE/memcheck"
-do
-  mkdir "$d" || die "Could not create $d"
-done
+do_cleanup "$WORKSPACE/build" "$WORKSPACE/memcheck"
 
 NUMPROC="$(nproc)" || NUMPROC=1
 
