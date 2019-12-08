@@ -303,25 +303,26 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   return mem;
 }
 
-
-void *smpi_shared_malloc_intercept(size_t size, const char *file, int line) {
+void* smpi_shared_malloc_intercept(size_t size, const char* file, int line)
+{
   if( smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh())
     return ::operator new(size);
   else
     return smpi_shared_malloc(size, file, line);
 }
 
-void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line){
+void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line)
+{
   if( smpi_cfg_auto_shared_malloc_thresh() == 0 || elem_size*num_elm < smpi_cfg_auto_shared_malloc_thresh()){
     void* ptr = ::operator new(elem_size*num_elm);
     memset(ptr, 0, elem_size*num_elm);
     return ptr;
   } else
     return smpi_shared_malloc(elem_size*num_elm, file, line);
-
 }
 
-void *smpi_shared_malloc(size_t size, const char *file, int line) {
+void* smpi_shared_malloc(size_t size, const char* file, int line)
+{
   if (size > 0 && smpi_cfg_shared_malloc() == SharedMallocType::LOCAL) {
     return smpi_shared_malloc_local(size, file, line);
   } else if (smpi_cfg_shared_malloc() == SharedMallocType::GLOBAL) {

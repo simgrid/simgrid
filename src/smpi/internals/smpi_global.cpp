@@ -252,17 +252,14 @@ static void smpi_init_papi()
       }
 
       // NOTE: We cannot use a map here, as we must obey the order of the counters
-      // This is important for PAPI: We need to map the values of counters back
-      // to the event_names (so, when PAPI_read() has finished)!
+      // This is important for PAPI: We need to map the values of counters back to the event_names (so, when PAPI_read()
+      // has finished)!
       papi_counter_t counters2values;
 
-      // Iterate over all counters that were specified for this specific
-      // unit.
-      // Note that we need to remove the name of the unit
-      // (that could also be the "default" value), which always comes first.
-      // Hence, we start at ++(events.begin())!
+      // Iterate over all counters that were specified for this specific unit.
+      // Note that we need to remove the name of the unit (that could also be the "default" value), which always comes
+      // first. Hence, we start at ++(events.begin())!
       for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); ++events_it) {
-
         int event_code   = PAPI_NULL;
         char* event_name = const_cast<char*>((*events_it).c_str());
         if (PAPI_event_name_to_code(event_name, &event_code) != PAPI_OK) {
@@ -576,7 +573,6 @@ int smpi_main(const char* executable, int argc, char* argv[])
   if (MC_is_active()) {
     MC_run();
   } else {
-
     SIMIX_run();
 
     xbt_os_walltimer_stop(global_timer);

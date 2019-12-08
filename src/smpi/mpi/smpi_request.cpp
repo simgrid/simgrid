@@ -168,11 +168,9 @@ void Request::print_request(const char *message)
        message, this, buf_, size_, src_, dst_, tag_, flags_);
 }
 
-
 /* factories, to hide the internal flags from the caller */
 MPI_Request Request::bsend_init(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
-
   return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::get_pid(),
                      comm->group()->actor(dst)->get_pid(), tag, comm,
                      MPI_REQ_PERSISTENT | MPI_REQ_SEND | MPI_REQ_PREPARED | MPI_REQ_BSEND);
@@ -180,7 +178,6 @@ MPI_Request Request::bsend_init(const void *buf, int count, MPI_Datatype datatyp
 
 MPI_Request Request::send_init(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
-
   return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::get_pid(),
                      comm->group()->actor(dst)->get_pid(), tag, comm,
                      MPI_REQ_PERSISTENT | MPI_REQ_SEND | MPI_REQ_PREPARED);
@@ -846,7 +843,6 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       // FIXME Handle the case of a partial shared malloc.
       if (((req->flags_ & MPI_REQ_ACCUMULATE) != 0) ||
           (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
-
         if (not smpi_process()->replaying() && smpi_cfg_privatization() != SmpiPrivStrategies::NONE &&
             static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
             static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
@@ -1108,7 +1104,8 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   return count;
 }
 
-MPI_Request Request::f2c(int id) {
+MPI_Request Request::f2c(int id)
+{
   char key[KEY_SIZE];
   if(id==MPI_FORTRAN_REQUEST_NULL)
     return static_cast<MPI_Request>(MPI_REQUEST_NULL);
@@ -1123,7 +1120,8 @@ void Request::free_f(int id)
   }
 }
 
-int Request::get_status(MPI_Request req, int* flag, MPI_Status * status){
+int Request::get_status(MPI_Request req, int* flag, MPI_Status* status)
+{
   *flag=0;
 
   if(req != MPI_REQUEST_NULL && req->action_ != nullptr) {
@@ -1150,8 +1148,9 @@ int Request::get_status(MPI_Request req, int* flag, MPI_Status * status){
   return MPI_SUCCESS;
 }
 
-int Request::grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
-
+int Request::grequest_start(MPI_Grequest_query_function* query_fn, MPI_Grequest_free_function* free_fn,
+                            MPI_Grequest_cancel_function* cancel_fn, void* extra_state, MPI_Request* request)
+{
   *request = new Request();
   (*request)->flags_ |= MPI_REQ_GENERALIZED;
   (*request)->flags_ |= MPI_REQ_PERSISTENT;
@@ -1166,7 +1165,8 @@ int Request::grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest
   return MPI_SUCCESS;
 }
 
-int Request::grequest_complete( MPI_Request request){
+int Request::grequest_complete(MPI_Request request)
+{
   if ((!(request->flags_ & MPI_REQ_GENERALIZED)) || request->generalized_funcs->mutex==NULL) 
     return MPI_ERR_REQUEST;
   request->generalized_funcs->mutex->lock();

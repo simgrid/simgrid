@@ -669,7 +669,6 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
     }
 
     saturated_variable_set_update(cnst_light_tab, saturated_constraints, this);
-
   } while (cnst_light_num > 0);
 
   modified_ = false;
@@ -681,7 +680,6 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
   }
 
   check_concurrency();
-
 }
 
 /** @brief Attribute the value bound to var->bound.
@@ -806,7 +804,6 @@ void System::on_disabled_var(Constraint* cnstr)
 
   // Cannot use foreach loop, because System::enable_var() will modify disabled_element_set.. within the loop
   while (numelem-- && elem) {
-
     Element* nextelem;
     if (elem->disabled_element_set_hook.is_linked()) {
       auto iter = std::next(cnstr->disabled_element_set_.iterator_to(*elem));
@@ -957,6 +954,7 @@ int Constraint::get_variable_amount() const
   return std::count_if(std::begin(enabled_element_set_), std::end(enabled_element_set_),
                        [](const Element& elem) { return elem.consumption_weight > 0; });
 }
-}
-}
-}
+
+} // namespace lmm
+} // namespace kernel
+} // namespace simgrid

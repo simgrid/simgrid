@@ -121,7 +121,6 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(
   simgrid::kernel::activity::CommImplPtr other_comm;
   // communication already done, get it inside the list of completed comms
   if (mbox->permanent_receiver_ != nullptr && not mbox->done_comm_queue_.empty()) {
-
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     // find a match in the list of already received comms
     other_comm = mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::SEND, match_fun, data,
@@ -430,7 +429,6 @@ CommImpl* CommImpl::start()
 {
   /* If both the sender and the receiver are already there, start the communication */
   if (state_ == State::READY) {
-
     s4u::Host* sender   = src_actor_->get_host();
     s4u::Host* receiver = dst_actor_->get_host();
 
@@ -611,7 +609,6 @@ void CommImpl::finish()
       simcall->issuer_->context_->iwannadie = true;
     } else {
       switch (state_) {
-
         case State::DONE:
           XBT_DEBUG("Communication %p complete!", this);
           copy_data();

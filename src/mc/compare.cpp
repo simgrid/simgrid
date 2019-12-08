@@ -243,7 +243,6 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, const simgr
       snapshot2.read<malloc_info*>(RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address));
 
   while (i1 < state.heaplimit) {
-
     const malloc_info* heapinfo1 =
         (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info));
     const malloc_info* heapinfo2 =
@@ -258,8 +257,7 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, const simgr
 
     void* addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
 
-    if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {       /* Large block */
-
+    if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) { /* Large block */
       if (is_stack(addr_block1)) {
         for (size_t k = 0; k < heapinfo1->busy_block.size; k++)
           state.equals_to_<1>(i1 + k, 0) = HeapArea(i1, -1);
@@ -291,7 +289,6 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, const simgr
       }
 
       while (i2 < state.heaplimit && not equal) {
-
         void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
 
         if (i2 == i1) {
@@ -353,7 +350,6 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, const simgr
         }
 
         while (i2 < state.heaplimit && not equal) {
-
           const malloc_info* heapinfo2b =
               (const malloc_info*)heap_region2->read(&heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info));
 
@@ -371,7 +367,6 @@ static bool mmalloc_heap_differ(simgrid::mc::StateComparator& state, const simgr
           xbt_assert(heapinfo2b->type >= 0, "Unkown mmalloc block type: %d", heapinfo2b->type);
 
           for (size_t j2 = 0; j2 < (size_t)(BLOCKSIZE >> heapinfo2b->type); j2++) {
-
             if (i2 == i1 && j2 == j1)
               continue;
 
@@ -467,7 +462,6 @@ static bool heap_area_differ_without_type(simgrid::mc::StateComparator& state, c
   simgrid::mc::Region* heap_region2  = MC_get_heap_region(snapshot2);
 
   for (int i = 0; i < size; ) {
-
     if (check_ignore > 0) {
       ssize_t ignore1 = heap_comparison_ignore_size(state.processStates[0].to_ignore, (const char*)real_area1 + i);
       if (ignore1 != -1) {
@@ -486,7 +480,6 @@ static bool heap_area_differ_without_type(simgrid::mc::StateComparator& state, c
 
     if (MC_snapshot_region_memcmp((const char*)real_area1 + i, heap_region1, (const char*)real_area2 + i, heap_region2,
                                   1) != 0) {
-
       int pointer_align = (i / sizeof(void *)) * sizeof(void *);
       const void* addr_pointed1 = snapshot1.read(remote((void* const*)((const char*)real_area1 + pointer_align)));
       const void* addr_pointed2 = snapshot2.read(remote((void* const*)((const char*)real_area2 + pointer_align)));
@@ -705,13 +698,11 @@ static bool heap_area_differ_with_type(simgrid::mc::StateComparator& state, cons
 static simgrid::mc::Type* get_offset_type(void* real_base_address, simgrid::mc::Type* type, int offset, int area_size,
                                           const simgrid::mc::Snapshot& snapshot)
 {
-
   // Beginning of the block, the inferred variable type if the type of the block:
   if (offset == 0)
     return type;
 
   switch (type->type) {
-
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
     if (type->full_type)
@@ -739,7 +730,6 @@ static simgrid::mc::Type* get_offset_type(void* real_base_address, simgrid::mc::
   default:
     /* FIXME: other cases ? */
     return nullptr;
-
   }
 }
 
@@ -828,7 +818,6 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
       type_size = -1;
     else
       type_size = type->byte_size;
-
   }
 
   simgrid::mc::Region* heap_region1 = MC_get_heap_region(snapshot1);
@@ -897,7 +886,6 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
       check_ignore = heapinfo1->busy_block.ignore;
 
   } else if ((heapinfo1->type > 0) && (heapinfo2->type > 0)) {      /* Fragmented block */
-
     // Fragment number:
     ssize_t frag1 = ((uintptr_t)(ADDR2UINT(area1) % (BLOCKSIZE))) >> heapinfo1->type;
     ssize_t frag2 = ((uintptr_t)(ADDR2UINT(area2) % (BLOCKSIZE))) >> heapinfo2->type;
@@ -955,7 +943,6 @@ static bool heap_area_differ(simgrid::mc::StateComparator& state, const void* ar
     }
     // Type inference from the block type.
     else if (state.types_<1>(block1, frag1) != nullptr || state.types_<2>(block2, frag2) != nullptr) {
-
       offset1 = (char*)area1 - (char*)real_addr_frag1;
       offset2 = (char*)area2 - (char*)real_addr_frag2;
 
@@ -1136,7 +1123,6 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
           return areas_differ_with_type(state, addr_pointed1, snapshot1, region1, addr_pointed2, snapshot2, region2,
                                         type->subtype, pointer_level);
       } else {
-
         // TODO, We do not handle very well the case where
         // it belongs to a different (non-heap) region from the current one.
 
@@ -1174,7 +1160,6 @@ static bool global_variables_differ(simgrid::mc::StateComparator& state, simgrid
   const std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
   for (simgrid::mc::Variable const& current_var : variables) {
-
     // If the variable is not in this object, skip it:
     // We do not expect to find a pointer to something which is not reachable
     // by the global variables.

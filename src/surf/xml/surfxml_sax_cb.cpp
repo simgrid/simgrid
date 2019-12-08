@@ -247,7 +247,6 @@ double surf_parse_get_speed(const char* string, const char* entity_kind, const s
 
 static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, const std::string& id)
 {
-
   std::vector<double> speed_per_pstate;
 
   if (strchr(speeds, ',') == nullptr){

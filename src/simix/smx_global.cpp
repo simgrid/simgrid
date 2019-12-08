@@ -514,11 +514,9 @@ void SIMIX_run()
 
     XBT_DEBUG("### time %f, #processes %zu, #to_run %zu", time, simix_global->process_list.size(),
               simix_global->actors_to_run.size());
-
   } while (time > -1.0 || not simix_global->actors_to_run.empty());
 
   if (not simix_global->process_list.empty()) {
-
     if (simix_global->process_list.size() <= simix_global->daemons.size()) {
       XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
                    "once the simulation is over. Please fix your on_exit() functions.");
@@ -565,7 +563,6 @@ void SIMIX_display_process_status()
     simgrid::kernel::actor::ActorImpl* actor = kv.second;
 
     if (actor->waiting_synchro) {
-
       const char* synchro_description = "unknown";
       // we don't care about the Activity type to get its name, use RawImpl
       const char* name =

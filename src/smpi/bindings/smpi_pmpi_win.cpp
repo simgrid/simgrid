@@ -775,7 +775,7 @@ int PMPI_Win_flush_local_all(MPI_Win win){
 
 int PMPI_Win_shared_query (MPI_Win win, int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
 {
-  if (win==MPI_WIN_NULL)
+  if (win == MPI_WIN_NULL)
     return MPI_ERR_TYPE;
   else
     return win->shared_query(rank, size, disp_unit, baseptr);
@@ -785,29 +785,28 @@ int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
 {
   static MPI_Aint size;
   static MPI_Aint disp_unit;
-  if (win==MPI_WIN_NULL)
+  if (win == MPI_WIN_NULL)
     return MPI_ERR_TYPE;
   else{
-  switch (keyval) {
-    case MPI_WIN_BASE :
-      *static_cast<void**>(attribute_val)  = win->base();
-      *flag = 1;
-      return MPI_SUCCESS;
-    case MPI_WIN_SIZE :
-      size = win->size();
-      *static_cast<MPI_Aint**>(attribute_val)  = &size;
-      *flag = 1;
-      return MPI_SUCCESS;
-    case MPI_WIN_DISP_UNIT :
-      disp_unit=win->disp_unit();
-      *static_cast<MPI_Aint**>(attribute_val)  = &disp_unit;
-      *flag = 1;
-      return MPI_SUCCESS;
-    default:
-      return win->attr_get<simgrid::smpi::Win>(keyval, attribute_val, flag);
+    switch (keyval) {
+      case MPI_WIN_BASE:
+        *static_cast<void**>(attribute_val) = win->base();
+        *flag                               = 1;
+        return MPI_SUCCESS;
+      case MPI_WIN_SIZE:
+        size                                    = win->size();
+        *static_cast<MPI_Aint**>(attribute_val) = &size;
+        *flag                                   = 1;
+        return MPI_SUCCESS;
+      case MPI_WIN_DISP_UNIT:
+        disp_unit                               = win->disp_unit();
+        *static_cast<MPI_Aint**>(attribute_val) = &disp_unit;
+        *flag                                   = 1;
+        return MPI_SUCCESS;
+      default:
+        return win->attr_get<simgrid::smpi::Win>(keyval, attribute_val, flag);
+    }
   }
-}
-
 }
 
 int PMPI_Win_set_attr (MPI_Win win, int type_keyval, void *attribute_val)
