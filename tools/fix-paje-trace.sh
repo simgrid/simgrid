@@ -13,24 +13,22 @@ fi
 
 TRACE=$1
 echo "input: $TRACE"
-OUTPUT=$( echo $TRACE | cut -d\. -f1 ).fix.trace
+OUTPUT=${TRACE%.*}.fix.trace
 
-grep ^% < $TRACE > header
-DEFEVENTS=$(grep Define < header | awk '{ print $3 }')
+grep ^% -- "$TRACE" > header
+DEFEVENTS=( $(awk '/Define/ { print $3 }' header) )
 
-GREP=""
-GREP2=""
-for i in $DEFEVENTS
+GREP=()
+for i in "${DEFEVENTS[@]}"
 do
-  GREP="/^$i /d; $GREP"
-  GREP2="-e '^$i ' $GREP2"
+  GREP+=( -e "^$i " )
 done
-GREP="/^%\ /d; /^%	/d; /^%E/d; $GREP"
+GREP2=( -e $'^%[ \tE]' "${GREP[@]}" )
 
-grep $GREP2 < $TRACE > types
-/bin/sed -e "$GREP" $TRACE > events
+grep "${GREP[@]}" -- "$TRACE" > types
+grep -v "${GREP2[@]}" -- "$TRACE" > events
 sort -n -k 2 -s < events > events.sorted
-cat header types events.sorted > $OUTPUT
-rm types events events.sorted header
+cat header types events.sorted > "$OUTPUT"
+rm -f types events events.sorted header
 
 echo "output: $OUTPUT"
