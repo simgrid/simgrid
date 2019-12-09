@@ -19,6 +19,32 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
     return (errcode);                                                                                                  \
   }
 
+#define CHECK_COMM(num)\
+  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,\
+             "%s: param %d communicator cannot be MPI_COMM_NULL", __func__, num);
+#define CHECK_REQUEST(num)\
+  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,\
+             "%s: param %d request cannot be NULL",__func__, num);
+#define CHECK_BUFFER(num,buf,count)\
+  CHECK_ARGS(buf == nullptr && count > 0, MPI_ERR_BUFFER,\
+             "%s: param %d %s cannot be NULL if %s > 0",__func__, num, #buf, #count);
+#define CHECK_COUNT(num,count)\
+  CHECK_ARGS(count < 0, MPI_ERR_COUNT,\
+             "%s: param %d %s cannot be negative", __func__, num, #count);
+#define CHECK_TYPE(num, datatype)\
+  CHECK_ARGS((datatype == MPI_DATATYPE_NULL|| not datatype->is_valid()), MPI_ERR_TYPE,\
+             "%s: param %d %s cannot be MPI_DATATYPE_NULL or invalid", __func__, num, #datatype);
+#define CHECK_OP(num)\
+  CHECK_ARGS(op == MPI_OP_NULL, MPI_ERR_OP,\
+             "%s: param %d op cannot be MPI_OP_NULL or invalid", __func__, num);
+#define CHECK_ROOT(num)\
+  CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,\
+             "%s: param %d root (=%d) cannot be negative or larger than communicator size (=%d)", __func__, num, root,\
+             comm->size());
+#define CHECK_NULL(num,err,buf)\
+  CHECK_ARGS(buf == nullptr, err,\
+             "%s: param %d %s cannot be NULL", __func__, num, #buf);
+
   static const void* smpi_get_in_place_buf(const void* inplacebuf, const void* otherbuf,std::unique_ptr<unsigned char[]>& tmp_sendbuf, int count, MPI_Datatype datatype){
   if (inplacebuf == MPI_IN_PLACE) {
       tmp_sendbuf.reset(new unsigned char[count * datatype->get_extent()]);
@@ -37,10 +63,8 @@ int PMPI_Barrier(MPI_Comm comm)
 
 int PMPI_Ibarrier(MPI_Comm comm, MPI_Request *request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_COMM(1)
+  CHECK_REQUEST(2)
 
   smpi_bench_end();
   int rank = simgrid::s4u::this_actor::get_pid();
@@ -66,18 +90,12 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
 int PMPI_Ibcast(void *buf, int count, MPI_Datatype datatype, 
                    int root, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (buf == nullptr && count > 0)
-    return MPI_ERR_BUFFER;
-  if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid())
-    return MPI_ERR_TYPE;
-  if (count < 0)
-    return MPI_ERR_COUNT;
-  if (root < 0 || root >= comm->size())
-    return MPI_ERR_ROOT;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_COMM(5)
+  CHECK_BUFFER(1, buf, count)
+  CHECK_COUNT(2, count)
+  CHECK_TYPE(3, datatype)
+  CHECK_ROOT(4)
+  CHECK_REQUEST(6)
 
   smpi_bench_end();
   int rank = simgrid::s4u::this_actor::get_pid();
@@ -108,19 +126,19 @@ int PMPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,void *
 int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                  MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if ((sendbuf == nullptr && sendcount > 0) || ((comm->rank() == root) && recvbuf == nullptr && recvcount > 0))
-    return MPI_ERR_BUFFER;
-  if (((sendbuf != MPI_IN_PLACE && sendcount > 0) && (sendtype == MPI_DATATYPE_NULL)) ||
-      ((comm->rank() == root) && (recvtype == MPI_DATATYPE_NULL)))
-    return MPI_ERR_TYPE;
-  if (((sendbuf != MPI_IN_PLACE) && (sendcount < 0)) || ((comm->rank() == root) && (recvcount < 0)))
-    return MPI_ERR_COUNT;
-  if (root < 0 || root >= comm->size())
-    return MPI_ERR_ROOT;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_COMM(8)
+  if(sendbuf != MPI_IN_PLACE){
+    CHECK_BUFFER(1,sendbuf, sendcount)
+    CHECK_COUNT(2, sendcount)
+    CHECK_TYPE(3, sendtype)
+  }
+  if(comm->rank() == root){
+    CHECK_TYPE(6, recvtype)
+    CHECK_COUNT(5, recvcount)
+    CHECK_BUFFER(4, recvbuf, recvcount)
+  }
+  CHECK_ROOT(7)
+  CHECK_REQUEST(9)
 
   smpi_bench_end();
   const void* real_sendbuf   = sendbuf;
@@ -157,25 +175,25 @@ int PMPI_Gatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void
 int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts, const int* displs,
                   MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if ((sendbuf == nullptr && sendcount > 0) || ((comm->rank() == root) && recvbuf == nullptr))
-    return MPI_ERR_BUFFER;
-  if (((sendbuf != MPI_IN_PLACE) && (sendtype == MPI_DATATYPE_NULL)) ||
-      ((comm->rank() == root) && (recvtype == MPI_DATATYPE_NULL)))
-    return MPI_ERR_TYPE;
-  if ((sendbuf != MPI_IN_PLACE) && (sendcount < 0))
-    return MPI_ERR_COUNT;
-  if ((comm->rank() == root) && (recvcounts == nullptr || displs == nullptr))
-    return MPI_ERR_ARG;
-  if (root < 0 || root >= comm->size())
-    return MPI_ERR_ROOT;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_COMM(9)
+  CHECK_BUFFER(1, sendbuf, sendcount)
+  if(sendbuf != MPI_IN_PLACE){
+    CHECK_TYPE(3, sendtype)
+    CHECK_COUNT(2, sendcount)
+  }
+  if(comm->rank() == root){
+    CHECK_TYPE(6, recvtype)
+    CHECK_NULL(5, MPI_ERR_COUNT, recvcounts)
+    CHECK_NULL(6, MPI_ERR_ARG, displs)
+  }
+  CHECK_ROOT(8)
+  CHECK_REQUEST(10)
 
-  for (int i = 0; i < comm->size(); i++) {
-    if ((comm->rank() == root) && (recvcounts[i] < 0))
-      return MPI_ERR_COUNT;
+  if (comm->rank() == root){
+    for (int i = 0; i < comm->size(); i++) {
+      CHECK_COUNT(5, recvcounts[i])
+      CHECK_BUFFER(4,recvbuf,recvcounts[i])
+    }
   }
 
   smpi_bench_end();
@@ -222,22 +240,16 @@ int PMPI_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                     MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
-             "(I)Allgather: the communicator cannot be MPI_COMM_NULL");
-  CHECK_ARGS(recvbuf == nullptr && recvcount > 0, MPI_ERR_BUFFER,
-             "(I)Allgather: param 4 recvbuf cannot be NULL");
-  CHECK_ARGS(sendbuf == nullptr && sendcount > 0, MPI_ERR_BUFFER,
-             "(I)Allgather: param 1 sendbuf cannot be NULL when sendcount > 0");
-  CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
-             "(I)Allgather: param 3 sendtype cannot be MPI_DATATYPE_NULL when sendbuff is not MPI_IN_PLACE");
-  CHECK_ARGS(recvtype == MPI_DATATYPE_NULL, MPI_ERR_TYPE,
-             "(I)Allgather: param 6 recvtype cannot be MPI_DATATYPE_NULL");
-  CHECK_ARGS(recvcount < 0, MPI_ERR_COUNT,
-             "(I)Allgather: param 5 recvcount cannot be negative");
-  CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendcount < 0), MPI_ERR_COUNT,
-             "(I)Allgather: param 2 sendcount cannot be negative when sendbuf is not MPI_IN_PLACE");
-  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
-             "Iallgather: param 8 request cannot be NULL");
+  CHECK_COMM(7)
+  CHECK_BUFFER(1, sendbuf, sendcount)
+  CHECK_BUFFER(4, recvbuf, recvcount)
+  if(sendbuf != MPI_IN_PLACE){
+    CHECK_COUNT(2, sendcount)
+    CHECK_TYPE(3, sendtype)
+  }
+  CHECK_TYPE(6, recvtype)
+  CHECK_COUNT(5, recvcount)
+  CHECK_REQUEST(8)
 
   smpi_bench_end();
   if (sendbuf == MPI_IN_PLACE) {
@@ -271,28 +283,19 @@ int PMPI_Allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts, const int* displs,
                      MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
-             "(I)Allgatherv: the communicator cannot be MPI_COMM_NULL");
-  CHECK_ARGS(sendbuf == nullptr && sendcount > 0, MPI_ERR_BUFFER,
-             "(I)Allgatherv: param 1 sendbuf cannot be NULL when sendcount > 0");
-  CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
-             "(I)Allgatherv: param 3 sendtype cannot be MPI_DATATYPE_NULL when sendbuff is not MPI_IN_PLACE");
-  CHECK_ARGS(recvtype == MPI_DATATYPE_NULL, MPI_ERR_TYPE,
-             "(I)Allgatherv: param 7 recvtype cannot be MPI_DATATYPE_NULL");
-  CHECK_ARGS(recvcounts == nullptr, MPI_ERR_COUNT,
-             "(I)Allgatherv: param 5 recvcounts cannot be null");
-  CHECK_ARGS(displs == nullptr, MPI_ERR_ARG,
-             "(I)Allgatherv: param 6 displs cannot be null");
-  CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendcount < 0), MPI_ERR_COUNT,
-             "(I)Allgatherv: param 2 sendcount cannot be negative when sendbuf is not MPI_IN_PLACE");
-  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
-             "Iallgatherv: param 9 request cannot be NULL");
-
+  CHECK_COMM(8)
+  CHECK_BUFFER(1, sendbuf, sendcount)
+  if(sendbuf != MPI_IN_PLACE)
+    CHECK_TYPE(3, sendtype)
+  CHECK_TYPE(6, recvtype)
+  CHECK_NULL(5, MPI_ERR_COUNT, recvcounts)
+  CHECK_NULL(6, MPI_ERR_ARG, displs)
+  if(sendbuf != MPI_IN_PLACE)
+    CHECK_COUNT(2, sendcount)
+  CHECK_REQUEST(9)
   for (int i = 0; i < comm->size(); i++) {
-    if (recvcounts[i] < 0)
-      return MPI_ERR_COUNT;
-    else if (recvcounts[i] > 0 && recvbuf == nullptr)
-      return MPI_ERR_BUFFER;
+    CHECK_COUNT(5, recvcounts[i])
+    CHECK_BUFFER(4, recvbuf, recvcounts[i])
   }
 
   smpi_bench_end();
@@ -334,27 +337,19 @@ int PMPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                   MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
-             "(I)Scatter: the communicator cannot be MPI_COMM_NULL");
-  CHECK_ARGS(recvbuf == nullptr && recvcount > 0, MPI_ERR_BUFFER,
-             "(I)Scatter: param 4 recvbuf cannot be NULL");
-  CHECK_ARGS(((sendbuf == recvbuf) || ((comm->rank() == root) && sendcount > 0 && (sendbuf == nullptr))), MPI_ERR_BUFFER,
-             "(I)Scatter: param 1 sendbuf cannot be NULL when sendcount > 0");
-  CHECK_ARGS(((comm->rank() == root) && (sendtype == MPI_DATATYPE_NULL || not sendtype->is_valid())), MPI_ERR_TYPE,
-             "(I)Scatter: param 3 sendtype cannot be MPI_DATATYPE_NULL or invalid on root");
-  CHECK_ARGS(((recvbuf != MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL || not recvtype->is_valid())), MPI_ERR_TYPE,
-             "(I)Scatter: param 6 recvtype cannot be MPI_DATATYPE_NULL or invalid when recvbuf is not MPI_IN_PLACE");
-  CHECK_ARGS(((comm->rank() == root) && (sendcount < 0)), MPI_ERR_COUNT,
-             "(I)Scatter: param 2 sendcount cannot be negative");
-  CHECK_ARGS(((recvbuf != MPI_IN_PLACE) && (recvcount < 0)), MPI_ERR_COUNT,
-             "(I)Scatter: param 5 recvcount cannot be negative");
-  CHECK_ARGS(root < 0, MPI_ERR_ROOT,
-             "(I)Scatter: root cannot be negative");
-  CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT,
-             "(I)Scatter: root (=%d) is larger than communicator size (=%d)", root,
-             comm->size());
-  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
-             "Iscatter: param 9 request cannot be NULL");
+  CHECK_COMM(8)
+  if(comm->rank() == root){
+    CHECK_BUFFER(1, sendbuf, sendcount)
+    CHECK_COUNT(2, sendcount)
+    CHECK_TYPE(3, sendtype)
+  }
+  if(recvbuf != MPI_IN_PLACE){
+    CHECK_BUFFER(4, recvbuf, recvcount)
+    CHECK_COUNT(5, recvcount)
+    CHECK_TYPE(6, recvtype)
+  }
+  CHECK_ROOT(8)
+  CHECK_REQUEST(9)
 
   smpi_bench_end();
   if (recvbuf == MPI_IN_PLACE) {
@@ -387,34 +382,26 @@ int PMPI_Scatterv(const void *sendbuf, const int *sendcounts, const int *displs,
 int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                    MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
-             "(I)Scatterv: the communicator cannot be MPI_COMM_NULL");
-  CHECK_ARGS((comm->rank() == root) && (sendcounts == nullptr), MPI_ERR_ARG,
-             "(I)Scatterv: param 2 sendcounts cannot be NULL on the root rank");
-  CHECK_ARGS((comm->rank() == root) && (displs == nullptr), MPI_ERR_ARG,
-             "(I)Scatterv: param 3 displs cannot be NULL on the root rank");
-  CHECK_ARGS((comm->rank() == root) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
-             "(I)Scatterv: The sendtype cannot be NULL on the root rank");
-  CHECK_ARGS((recvbuf != MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
-             "(I)Scatterv: the recvtype cannot be NULL when not receiving in place");
-  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
-             "Iscatterv: param 10 request cannot be NULL");
-  CHECK_ARGS(recvbuf != MPI_IN_PLACE && recvcount < 0, MPI_ERR_COUNT,
-             "(I)Scatterv: When not receiving in place, the recvcount cannot be negative");
-  CHECK_ARGS(root < 0, MPI_ERR_ROOT,
-             "(I)Scatterv: root cannot be negative");
-  CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT,
-             "(I)Scatterv: root (=%d) is larger than communicator size (=%d)", root,
-             comm->size());
-
+  CHECK_COMM(9)
+  if(recvbuf != MPI_IN_PLACE){
+    CHECK_BUFFER(4, recvbuf, recvcount)
+    CHECK_COUNT(5, recvcount)
+    CHECK_TYPE(7, recvtype)
+  }
+  CHECK_ROOT(9)
+  CHECK_REQUEST(10)
   if (comm->rank() == root) {
+    CHECK_NULL(2, MPI_ERR_COUNT, sendcounts)
+    CHECK_NULL(3, MPI_ERR_ARG, displs)
+    CHECK_TYPE(4, sendtype)
+    for (int i = 0; i < comm->size(); i++){
+      CHECK_BUFFER(1, sendbuf, sendcounts[i])
+      CHECK_COUNT(2, sendcounts[i])
+    }
     if (recvbuf == MPI_IN_PLACE) {
       recvtype  = sendtype;
       recvcount = sendcounts[comm->rank()];
     }
-    for (int i = 0; i < comm->size(); i++)
-      CHECK_ARGS(sendcounts[i] < 0, MPI_ERR_COUNT, "Iscatterv: sendcounts[%d]=%d but this cannot be negative", i,
-                 sendcounts[i]);
   }
 
   smpi_bench_end();
@@ -453,25 +440,15 @@ int PMPI_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype data
 
 int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request* request)
 {
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
-             "(I)Reduce: the communicator cannot be MPI_COMM_NULL");
-  CHECK_ARGS(((comm->rank() == root) && recvbuf == nullptr), MPI_ERR_BUFFER,
-             "(I)Reduce: param 2 recvbuf cannot be NULL");
-  CHECK_ARGS((sendbuf == nullptr && count > 0), MPI_ERR_BUFFER,
-             "(I)Reduce: param 1 sendbuf cannot be NULL when count > 0");
-  CHECK_ARGS((datatype == MPI_DATATYPE_NULL || not datatype->is_valid()), MPI_ERR_TYPE,
-             "(I)Reduce: param 4 datatype cannot be MPI_DATATYPE_NULL or invalid");
-  CHECK_ARGS(count < 0, MPI_ERR_COUNT,
-             "(I)Reduce: param 3 count cannot be negative");
-  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
-             "Ireduce: param 8 request cannot be NULL");
-  CHECK_ARGS(op == MPI_OP_NULL, MPI_ERR_OP,
-             "(I)Reduce: param 5 op cannot be MPI_OP_NULL");
-  CHECK_ARGS(root < 0, MPI_ERR_ROOT,
-             "(I)Reduce: root cannot be negative");
-  CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT,
-             "(I)Reduce: root (=%d) is larger than communicator size (=%d)", root,
-             comm->size());
+  CHECK_COMM(7)
+  CHECK_BUFFER(1, sendbuf, count)
+  if(comm->rank() == root)
+    CHECK_BUFFER(5, recvbuf, count)
+  CHECK_TYPE(4, datatype)
+  CHECK_COUNT(3, count)
+  CHECK_OP(5)
+  CHECK_ROOT(7)
+  CHECK_REQUEST(8)
 
   smpi_bench_end();
   int rank = simgrid::s4u::this_actor::get_pid();
@@ -492,12 +469,11 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
 
 int PMPI_Reduce_local(const void* inbuf, void* inoutbuf, int count, MPI_Datatype datatype, MPI_Op op)
 {
-  if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid())
-    return MPI_ERR_TYPE;
-  if (op == MPI_OP_NULL)
-    return MPI_ERR_OP;
-  if (count < 0)
-    return MPI_ERR_COUNT;
+  CHECK_BUFFER(1, inbuf, count)
+  CHECK_BUFFER(2, inoutbuf, count)
+  CHECK_TYPE(4, datatype)
+  CHECK_COUNT(3, count)
+  CHECK_OP(5)
 
   smpi_bench_end();
   op->apply(inbuf, inoutbuf, &count, datatype);
@@ -512,18 +488,14 @@ int PMPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
 
 int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if ((sendbuf == nullptr && count > 0) || (recvbuf == nullptr))
-    return MPI_ERR_BUFFER;
-  if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid())
-    return MPI_ERR_TYPE;
-  if (count < 0)
-    return MPI_ERR_COUNT;
-  if (op == MPI_OP_NULL)
-    return MPI_ERR_OP;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+
+  CHECK_COMM(6)
+  CHECK_BUFFER(1, sendbuf, count)
+  CHECK_BUFFER(2, recvbuf, count)
+  CHECK_TYPE(4, datatype)
+  CHECK_COUNT(3, count)
+  CHECK_REQUEST(7)
+  CHECK_OP(5)
 
   smpi_bench_end();
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
@@ -553,18 +525,13 @@ int PMPI_Scan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dataty
 
 int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid())
-    return MPI_ERR_TYPE;
-  if (op == MPI_OP_NULL)
-    return MPI_ERR_OP;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
-  if (count < 0)
-    return MPI_ERR_COUNT;
-  if (sendbuf == nullptr || recvbuf == nullptr)
-    return MPI_ERR_BUFFER;
+  CHECK_COMM(6)
+  CHECK_BUFFER(1,sendbuf,count)
+  CHECK_BUFFER(2,recvbuf,count)
+  CHECK_TYPE(4, datatype)
+  CHECK_COUNT(3, count)
+  CHECK_REQUEST(7)
+  CHECK_OP(5)
 
   smpi_bench_end();
   int rank         = simgrid::s4u::this_actor::get_pid();
@@ -593,18 +560,13 @@ int PMPI_Exscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype data
 }
 
 int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request* request){
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (not datatype->is_valid())
-    return MPI_ERR_TYPE;
-  if (op == MPI_OP_NULL)
-    return MPI_ERR_OP;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
-  if (count < 0)
-    return MPI_ERR_COUNT;
-  if (sendbuf == nullptr || recvbuf == nullptr)
-    return MPI_ERR_BUFFER;
+  CHECK_COMM(6)
+  CHECK_BUFFER(1, sendbuf, count)
+  CHECK_BUFFER(2, recvbuf, count)
+  CHECK_TYPE(4, datatype)
+  CHECK_COUNT(3, count)
+  CHECK_REQUEST(7)
+  CHECK_OP(5)
 
   smpi_bench_end();
   int rank         = simgrid::s4u::this_actor::get_pid();
@@ -634,22 +596,15 @@ int PMPI_Reduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcount
 
 int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if ((sendbuf == nullptr) || (recvbuf == nullptr))
-    return MPI_ERR_BUFFER;
-  if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid())
-    return MPI_ERR_TYPE;
-  if (op == MPI_OP_NULL)
-    return MPI_ERR_OP;
-  if (recvcounts == nullptr)
-    return MPI_ERR_ARG;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
-
-  for (int i = 0; i < comm->size(); i++) { // copy data to avoid bad free
-    if (recvcounts[i] < 0)
-      return MPI_ERR_COUNT;
+  CHECK_COMM(6)
+  CHECK_TYPE(4, datatype)
+  CHECK_NULL(3, MPI_ERR_COUNT, recvcounts)
+  CHECK_REQUEST(7)
+  CHECK_OP(5)
+  for (int i = 0; i < comm->size(); i++) {
+    CHECK_COUNT(3, recvcounts[i])
+    CHECK_BUFFER(1, sendbuf, recvcounts[i])
+    CHECK_BUFFER(2, recvbuf, recvcounts[i])
   }
 
   smpi_bench_end();
@@ -689,16 +644,13 @@ int PMPI_Reduce_scatter_block(const void *sendbuf, void *recvbuf, int recvcount,
 int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op,
                                MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (not datatype->is_valid())
-    return MPI_ERR_TYPE;
-  if (op == MPI_OP_NULL)
-    return MPI_ERR_OP;
-  if (recvcount < 0)
-    return MPI_ERR_ARG;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_COMM(6)
+  CHECK_BUFFER(1, sendbuf, recvcount)
+  CHECK_BUFFER(2, recvbuf, recvcount)
+  CHECK_TYPE(4, datatype)
+  CHECK_COUNT(3, recvcount)
+  CHECK_REQUEST(7)
+  CHECK_OP(5)
 
   smpi_bench_end();
   int count = comm->size();
@@ -736,16 +688,17 @@ int PMPI_Alltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
 int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                    MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if ((sendbuf == nullptr && sendcount > 0) || (recvbuf == nullptr && recvcount > 0))
-    return MPI_ERR_BUFFER;
-  if ((sendbuf != MPI_IN_PLACE && sendtype == MPI_DATATYPE_NULL) || recvtype == MPI_DATATYPE_NULL)
-    return MPI_ERR_TYPE;
-  if ((sendbuf != MPI_IN_PLACE && sendcount < 0) || recvcount < 0)
-    return MPI_ERR_COUNT;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_COMM(7)
+  CHECK_BUFFER(1, sendbuf, sendcount)
+  CHECK_BUFFER(4, recvbuf, recvcount)
+  if(sendbuf != MPI_IN_PLACE)
+    CHECK_TYPE(3, sendtype)
+  CHECK_TYPE(6, recvtype)
+  CHECK_COUNT(5, recvcount)
+  if(sendbuf != MPI_IN_PLACE)
+    CHECK_COUNT(2, sendcount)
+  CHECK_COUNT(5, recvcount)
+  CHECK_REQUEST(8)
 
   smpi_bench_end();
   int rank                 = simgrid::s4u::this_actor::get_pid();
@@ -779,32 +732,35 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   return retval;
 }
 
-int PMPI_Alltoallv(const void* sendbuf, const int* sendcounts, const int* senddisps, MPI_Datatype sendtype, void* recvbuf,
-                   const int* recvcounts, const int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
+int PMPI_Alltoallv(const void* sendbuf, const int* sendcounts, const int* senddispls, MPI_Datatype sendtype, void* recvbuf,
+                   const int* recvcounts, const int* recvdispls, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  return PMPI_Ialltoallv(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype, comm, MPI_REQUEST_IGNORED);
+  return PMPI_Ialltoallv(sendbuf, sendcounts, senddispls, sendtype, recvbuf, recvcounts, recvdispls, recvtype, comm, MPI_REQUEST_IGNORED);
 }
 
-int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* senddisps, MPI_Datatype sendtype, void* recvbuf,
-                    const int* recvcounts, const int* recvdisps, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
+int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* senddispls, MPI_Datatype sendtype, void* recvbuf,
+                    const int* recvcounts, const int* recvdispls, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (sendbuf == nullptr || recvbuf == nullptr)
-    return MPI_ERR_BUFFER;
-  if ((sendbuf != MPI_IN_PLACE && sendtype == MPI_DATATYPE_NULL) || recvtype == MPI_DATATYPE_NULL)
-    return MPI_ERR_TYPE;
-  if ((sendbuf != MPI_IN_PLACE && (sendcounts == nullptr || senddisps == nullptr)) || recvcounts == nullptr ||
-      recvdisps == nullptr)
-    return MPI_ERR_ARG;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_COMM(9)
+  if(sendbuf != MPI_IN_PLACE){
+    CHECK_NULL(2, MPI_ERR_COUNT, sendcounts)
+    CHECK_NULL(3, MPI_ERR_ARG, senddispls)
+    CHECK_TYPE(4, sendtype)
+  }
+  CHECK_TYPE(8, recvtype)
+  CHECK_NULL(6, MPI_ERR_COUNT, recvcounts)
+  CHECK_NULL(7, MPI_ERR_ARG, recvdispls)
+  CHECK_REQUEST(10)
 
   int rank = simgrid::s4u::this_actor::get_pid();
   int size = comm->size();
   for (int i = 0; i < size; i++) {
-    if (recvcounts[i] < 0 || (sendbuf != MPI_IN_PLACE && sendcounts[i] < 0))
-      return MPI_ERR_COUNT;
+    if(sendbuf != MPI_IN_PLACE){
+      CHECK_BUFFER(1, sendbuf, sendcounts[i])
+      CHECK_COUNT(2, sendcounts[i])
+    }
+    CHECK_BUFFER(5, recvbuf, recvcounts[i])
+    CHECK_COUNT(6, recvcounts[i])
   }
 
   smpi_bench_end();
@@ -815,27 +771,27 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   int dt_size_recv                   = recvtype->size();
 
   const int* real_sendcounts = sendcounts;
-  const int* real_senddisps  = senddisps;
+  const int* real_senddispls  = senddispls;
   MPI_Datatype real_sendtype = sendtype;
   int maxsize              = 0;
   for (int i = 0; i < size; i++) { // copy data to avoid bad free
     recv_size += recvcounts[i] * dt_size_recv;
     trace_recvcounts->push_back(recvcounts[i] * dt_size_recv);
-    if (((recvdisps[i] + recvcounts[i]) * dt_size_recv) > maxsize)
-      maxsize = (recvdisps[i] + recvcounts[i]) * dt_size_recv;
+    if (((recvdispls[i] + recvcounts[i]) * dt_size_recv) > maxsize)
+      maxsize = (recvdispls[i] + recvcounts[i]) * dt_size_recv;
   }
 
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
   std::unique_ptr<int[]> tmp_sendcounts;
-  std::unique_ptr<int[]> tmp_senddisps;
+  std::unique_ptr<int[]> tmp_senddispls;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
   if (sendbuf == MPI_IN_PLACE) {
     tmp_sendcounts.reset(new int[size]);
     std::copy(recvcounts, recvcounts + size, tmp_sendcounts.get());
     real_sendcounts = tmp_sendcounts.get();
-    tmp_senddisps.reset(new int[size]);
-    std::copy(recvdisps, recvdisps + size, tmp_senddisps.get());
-    real_senddisps = tmp_senddisps.get();
+    tmp_senddispls.reset(new int[size]);
+    std::copy(recvdispls, recvdispls + size, tmp_senddispls.get());
+    real_senddispls = tmp_senddispls.get();
     real_sendtype  = recvtype;
   }
 
@@ -854,52 +810,58 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
 
   int retval;
   if (request == MPI_REQUEST_IGNORED)
-    retval = simgrid::smpi::colls::alltoallv(real_sendbuf, real_sendcounts, real_senddisps, real_sendtype, recvbuf,
-                                             recvcounts, recvdisps, recvtype, comm);
+    retval = simgrid::smpi::colls::alltoallv(real_sendbuf, real_sendcounts, real_senddispls, real_sendtype, recvbuf,
+                                             recvcounts, recvdispls, recvtype, comm);
   else
-    retval = simgrid::smpi::colls::ialltoallv(real_sendbuf, real_sendcounts, real_senddisps, real_sendtype, recvbuf,
-                                              recvcounts, recvdisps, recvtype, comm, request);
+    retval = simgrid::smpi::colls::ialltoallv(real_sendbuf, real_sendcounts, real_senddispls, real_sendtype, recvbuf,
+                                              recvcounts, recvdispls, recvtype, comm, request);
 
   TRACE_smpi_comm_out(rank);
   smpi_bench_begin();
   return retval;
 }
 
-int PMPI_Alltoallw(const void* sendbuf, const int* sendcounts, const int* senddisps, const MPI_Datatype* sendtypes, void* recvbuf,
-                   const int* recvcounts, const int* recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm)
+int PMPI_Alltoallw(const void* sendbuf, const int* sendcounts, const int* senddispls, const MPI_Datatype* sendtypes, void* recvbuf,
+                   const int* recvcounts, const int* recvdispls, const MPI_Datatype* recvtypes, MPI_Comm comm)
 {
-  return PMPI_Ialltoallw(sendbuf, sendcounts, senddisps, sendtypes, recvbuf, recvcounts, recvdisps, recvtypes, comm, MPI_REQUEST_IGNORED);
+  return PMPI_Ialltoallw(sendbuf, sendcounts, senddispls, sendtypes, recvbuf, recvcounts, recvdispls, recvtypes, comm, MPI_REQUEST_IGNORED);
 }
 
-int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* senddisps, const MPI_Datatype* sendtypes, void* recvbuf,
-                    const int* recvcounts, const int* recvdisps, const MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request* request)
+int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* senddispls, const MPI_Datatype* sendtypes, void* recvbuf,
+                    const int* recvcounts, const int* recvdispls, const MPI_Datatype* recvtypes, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (sendbuf == nullptr || recvbuf == nullptr)
-    return MPI_ERR_BUFFER;
-  if ((sendbuf != MPI_IN_PLACE && sendtypes == nullptr) || recvtypes == nullptr)
-    return MPI_ERR_TYPE;
-  if ((sendbuf != MPI_IN_PLACE && (sendcounts == nullptr || senddisps == nullptr)) || recvcounts == nullptr ||
-      recvdisps == nullptr)
-    return MPI_ERR_ARG;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
-
-  smpi_bench_end();
+  CHECK_COMM(9)
+  if(sendbuf != MPI_IN_PLACE){
+    CHECK_NULL(2, MPI_ERR_COUNT, sendcounts)
+    CHECK_NULL(3, MPI_ERR_ARG, senddispls)
+    CHECK_NULL(4, MPI_ERR_TYPE, sendtypes)
+  }
+  CHECK_NULL(6, MPI_ERR_COUNT, recvcounts)
+  CHECK_NULL(7, MPI_ERR_ARG, recvdispls)
+  CHECK_NULL(8, MPI_ERR_TYPE, recvtypes)
+  CHECK_REQUEST(10)
   int rank = simgrid::s4u::this_actor::get_pid();
   int size = comm->size();
   for (int i = 0; i < size; i++) {
-    if (recvcounts[i] < 0 || (sendbuf != MPI_IN_PLACE && sendcounts[i] < 0))
-      return MPI_ERR_COUNT;
+    if(sendbuf != MPI_IN_PLACE){
+      CHECK_BUFFER(1, sendbuf, sendcounts[i])
+      CHECK_COUNT(2, sendcounts[i])
+      CHECK_TYPE(4, sendtypes[i])
+    }
+    CHECK_BUFFER(5, recvbuf, recvcounts[i])
+    CHECK_COUNT(6, recvcounts[i])
+    CHECK_TYPE(8, recvtypes[i])
   }
+
+  smpi_bench_end();
+
   int send_size                      = 0;
   int recv_size                      = 0;
   std::vector<int>* trace_sendcounts = new std::vector<int>;
   std::vector<int>* trace_recvcounts = new std::vector<int>;
 
   const int* real_sendcounts         = sendcounts;
-  const int* real_senddisps          = senddisps;
+  const int* real_senddispls          = senddispls;
   const MPI_Datatype* real_sendtypes = sendtypes;
   unsigned long maxsize      = 0;
   for (int i = 0; i < size; i++) { // copy data to avoid bad free
@@ -910,22 +872,22 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
     }
     recv_size += recvcounts[i] * recvtypes[i]->size();
     trace_recvcounts->push_back(recvcounts[i] * recvtypes[i]->size());
-    if ((recvdisps[i] + (recvcounts[i] * recvtypes[i]->size())) > maxsize)
-      maxsize = recvdisps[i] + (recvcounts[i] * recvtypes[i]->size());
+    if ((recvdispls[i] + (recvcounts[i] * recvtypes[i]->size())) > maxsize)
+      maxsize = recvdispls[i] + (recvcounts[i] * recvtypes[i]->size());
   }
 
   std::unique_ptr<unsigned char[]> tmp_sendbuf;
   std::unique_ptr<int[]> tmp_sendcounts;
-  std::unique_ptr<int[]> tmp_senddisps;
+  std::unique_ptr<int[]> tmp_senddispls;
   std::unique_ptr<MPI_Datatype[]> tmp_sendtypes;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
   if (sendbuf == MPI_IN_PLACE) {
     tmp_sendcounts.reset(new int[size]);
     std::copy(recvcounts, recvcounts + size, tmp_sendcounts.get());
     real_sendcounts = tmp_sendcounts.get();
-    tmp_senddisps.reset(new int[size]);
-    std::copy(recvdisps, recvdisps + size, tmp_senddisps.get());
-    real_senddisps = tmp_senddisps.get();
+    tmp_senddispls.reset(new int[size]);
+    std::copy(recvdispls, recvdispls + size, tmp_senddispls.get());
+    real_senddispls = tmp_senddispls.get();
     tmp_sendtypes.reset(new MPI_Datatype[size]);
     std::copy(recvtypes, recvtypes + size, tmp_sendtypes.get());
     real_sendtypes = tmp_sendtypes.get();
@@ -944,11 +906,11 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
 
   int retval;
   if (request == MPI_REQUEST_IGNORED)
-    retval = simgrid::smpi::colls::alltoallw(real_sendbuf, real_sendcounts, real_senddisps, real_sendtypes, recvbuf,
-                                             recvcounts, recvdisps, recvtypes, comm);
+    retval = simgrid::smpi::colls::alltoallw(real_sendbuf, real_sendcounts, real_senddispls, real_sendtypes, recvbuf,
+                                             recvcounts, recvdispls, recvtypes, comm);
   else
-    retval = simgrid::smpi::colls::ialltoallw(real_sendbuf, real_sendcounts, real_senddisps, real_sendtypes, recvbuf,
-                                              recvcounts, recvdisps, recvtypes, comm, request);
+    retval = simgrid::smpi::colls::ialltoallw(real_sendbuf, real_sendcounts, real_senddispls, real_sendtypes, recvbuf,
+                                              recvcounts, recvdispls, recvtypes, comm, request);
 
   TRACE_smpi_comm_out(rank);
   smpi_bench_begin();

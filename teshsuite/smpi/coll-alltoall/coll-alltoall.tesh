@@ -2,7 +2,7 @@
 ! output sort
 
 p Test all to all
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir:=.}/../hostfile_coll -platform ${platfdir}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir:=.}/../hostfile_coll -platform ${platfdir}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay
 > [rank 2] -> Tremblay

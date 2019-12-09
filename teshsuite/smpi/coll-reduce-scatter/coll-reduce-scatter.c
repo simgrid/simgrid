@@ -46,8 +46,8 @@ int main( int argc, char **argv )
   if(retval!=MPI_ERR_BUFFER)
     printf("MPI_Reduce_scatter did not return MPI_ERR_BUFFER for empty recvbuf\n");
   retval = MPI_Reduce_scatter(sendbuf, recvbuf, NULL, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  if(retval!=MPI_ERR_ARG)
-    printf("MPI_Reduce_scatter did not return MPI_ERR_ARG for NULL recvcounts\n");
+  if(retval!=MPI_ERR_COUNT)
+    printf("MPI_Reduce_scatter did not return MPI_ERR_COUNT for NULL recvcounts\n");
   retval = MPI_Reduce_scatter(sendbuf, recvbuf, recvcounts, MPI_DATATYPE_NULL, MPI_SUM, MPI_COMM_WORLD);
   if(retval!=MPI_ERR_TYPE)
     printf("MPI_Reduce_scatter did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL type\n");

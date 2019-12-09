@@ -70,7 +70,7 @@ int PMPI_File_close(MPI_File *fh){
   }
 
 int PMPI_File_seek(MPI_File fh, MPI_Offset offset, int whence){
-  CHECK_FILE(fh);
+  CHECK_FILE(fh)
   smpi_bench_end();
   int ret = fh->seek(offset,whence);
   smpi_bench_begin();

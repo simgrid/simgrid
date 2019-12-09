@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     printf("MPI_Allreduce did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL type\n");
   status = MPI_Allreduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_OP_NULL, MPI_COMM_WORLD);
   if(status!=MPI_ERR_OP)
-    printf("MPI_Allreduce did not return MPI_ERR_COMM for MPI_OP_NULL op\n");
+    printf("MPI_Allreduce did not return MPI_ERR_OP for MPI_OP_NULL op\n");
   status = MPI_Allreduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, MPI_COMM_NULL);
   if(status!=MPI_ERR_COMM)
     printf("MPI_Allreduce did not return MPI_ERR_COMM for MPI_COMM_NULL comm\n");

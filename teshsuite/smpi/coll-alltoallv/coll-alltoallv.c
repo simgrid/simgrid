@@ -101,20 +101,23 @@ int main(int argc, char **argv)
   if(status!=MPI_ERR_BUFFER)
     printf("MPI_Alltoallv did not return MPI_ERR_BUFFER for empty sendbuf\n");
   status = MPI_Alltoallv(sbuf, NULL, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
-  if(status!=MPI_ERR_ARG)
-    printf("MPI_Alltoallv did not return MPI_ERR_ARG for NULL sendcounts\n");
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Alltoallv did not return MPI_ERR_COUNT for NULL sendcounts\n");
   status = MPI_Alltoallv(sbuf, sendcounts, NULL, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
   if(status!=MPI_ERR_ARG)
     printf("MPI_Alltoallv did not return MPI_ERR_ARG for NULL senddispl\n");
   status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_DATATYPE_NULL, rbuf, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
   if(status!=MPI_ERR_TYPE)
     printf("MPI_Alltoallv did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL sendtype\n");
-  status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, NULL, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  if (rank == 0)//if total recvcounts == 0 the call is not illegal, so be sure to fail for rank 0 to avoid deadlocks
+    status = MPI_Alltoallv(NULL, sendcounts, sdispls, MPI_INT, NULL, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
+  else
+    status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, NULL, recvcounts, rdispls, MPI_INT, MPI_COMM_WORLD);
   if(status!=MPI_ERR_BUFFER)
     printf("MPI_Alltoallv did not return MPI_ERR_BUFFER for empty recvbuf\n");
   status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, NULL, rdispls, MPI_INT, MPI_COMM_WORLD);
-  if(status!=MPI_ERR_ARG)
-    printf("MPI_Alltoallv did not return MPI_ERR_ARG for NULL recvcounts\n");
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Alltoallv did not return MPI_ERR_COUNT for NULL recvcounts\n");
   status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, NULL, MPI_INT, MPI_COMM_WORLD);
   if(status!=MPI_ERR_ARG)
     printf("MPI_Alltoallv did not return MPI_ERR_ARG for NULL recvdispl\n");
