@@ -494,7 +494,6 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* /*info*/, Dwarf
   for (res = dwarf_child(die, &child); res == 0; res = dwarf_siblingof(&child, &child)) {
     int tag = dwarf_tag(&child);
     if (tag == DW_TAG_member || tag == DW_TAG_inheritance) {
-
       // Skip declarations:
       if (MC_dwarf_attr_flag(&child, DW_AT_declaration, false))
         continue;
@@ -802,8 +801,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     Dwarf_Addr high_pc;
 
     switch (simgrid::dwarf::classify_form(dwarf_whatform(&attr))) {
-
-        // DW_AT_high_pc if an offset from the low_pc:
+      // DW_AT_high_pc if an offset from the low_pc:
       case simgrid::dwarf::FormClass::Constant:
 
         xbt_assert(dwarf_formsdata(&attr, &offset) == 0, "Could not read constant");
@@ -867,8 +865,7 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die*
   int tag                        = dwarf_tag(die);
   simgrid::dwarf::TagClass klass = simgrid::dwarf::classify_tag(tag);
   switch (klass) {
-
-      // Type:
+    // Type:
     case simgrid::dwarf::TagClass::Type:
       MC_dwarf_handle_type_die(info, die, unit, frame, ns);
       break;
@@ -1139,7 +1136,6 @@ static void MC_post_process_variables(simgrid::mc::ObjectInformation* info)
 
 static void mc_post_process_scope(simgrid::mc::ObjectInformation* info, simgrid::mc::Frame* scope)
 {
-
   if (scope->tag == DW_TAG_inlined_subroutine) {
     // Attach correct namespaced name in inlined subroutine:
     auto i = info->subprograms.find(scope->abstract_origin_id);
@@ -1216,7 +1212,6 @@ std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(std::vec
 void postProcessObjectInformation(simgrid::mc::RemoteClient* process, simgrid::mc::ObjectInformation* info)
 {
   for (auto& t : info->types) {
-
     simgrid::mc::Type* type    = &(t.second);
     simgrid::mc::Type* subtype = type;
     while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type ||

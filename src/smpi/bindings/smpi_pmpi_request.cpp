@@ -203,7 +203,6 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
 
     TRACE_smpi_comm_in(my_proc_id, __func__,
@@ -500,7 +499,6 @@ int PMPI_Ibsend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
 
 int PMPI_Bsend_init(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request)
 {
-
   int retval = 0;
 
   smpi_bench_end();
@@ -641,7 +639,6 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
       simgrid::smpi::Datatype::copy(recvbuf, count, datatype, buf, count, datatype);
     }
     xbt_free(recvbuf);
-
   }
   return retval;
 }

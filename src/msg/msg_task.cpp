@@ -683,8 +683,8 @@ msg_error_t MSG_task_cancel(msg_task_t task)
  *
  * It works for either parallel or sequential tasks.
  */
-double MSG_task_get_remaining_work_ratio(msg_task_t task) {
-
+double MSG_task_get_remaining_work_ratio(msg_task_t task)
+{
   xbt_assert((task != nullptr), "Cannot get information from a nullptr task");
   if (task->compute) {
     // Task in progress

@@ -63,7 +63,6 @@ static std::string simgrid_version = get_simgrid_version();
 
 PYBIND11_MODULE(simgrid, m)
 {
-
   m.doc() = "SimGrid userspace API";
 
   m.attr("simgrid_version") = simgrid_version;
@@ -234,12 +233,9 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
                                             "An actor is an independent stream of execution in your distributed "
                                             "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
-
       .def("create",
            [](py::str name, py::object host, py::object fun, py::args args) {
-
              return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args]() {
-
                try {
                  fun(*args);
                } catch (py::error_already_set& ex) {

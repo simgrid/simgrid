@@ -160,7 +160,8 @@ Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), size_(datatyp
   }
 }
 
-Datatype::~Datatype(){
+Datatype::~Datatype()
+{
   xbt_assert(refcount_ >= 0);
 
   if(flags_ & DT_FLAG_PREDEFINED)
@@ -177,8 +178,8 @@ Datatype::~Datatype(){
   xbt_free(name_);
 }
 
-void Datatype::ref(){
-
+void Datatype::ref()
+{
   refcount_++;
 
 #if SIMGRID_HAVE_MC
@@ -270,10 +271,10 @@ int Datatype::unpack(const void* inbuf, int insize, int* position, void* outbuf,
   return MPI_SUCCESS;
 }
 
-int Datatype::copy(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                       void *recvbuf, int recvcount, MPI_Datatype recvtype){
-
-// FIXME Handle the case of a partial shared malloc.
+int Datatype::copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+                   MPI_Datatype recvtype)
+{
+  // FIXME Handle the case of a partial shared malloc.
 
   if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
@@ -306,8 +307,7 @@ int Datatype::copy(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
       recvtype->unserialize(sendbuf, recvbuf, count / recvtype->size(), MPI_REPLACE);
     } else if (not(recvtype->flags() & DT_FLAG_DERIVED)) {
       sendtype->serialize(sendbuf, recvbuf, count / sendtype->size());
-    }else{
-
+    } else {
       void * buf_tmp = xbt_malloc(count);
 
       sendtype->serialize( sendbuf, buf_tmp,count/sendtype->size());
@@ -583,11 +583,9 @@ int Datatype::create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
   return MPI_SUCCESS;
 }
 
-Datatype* Datatype::f2c(int id){
+Datatype* Datatype::f2c(int id)
+{
   return static_cast<Datatype*>(F2C::f2c(id));
 }
-
-
-}
-}
-
+} // namespace smpi
+} // namespace simgrid

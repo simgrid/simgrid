@@ -125,7 +125,24 @@ public:
 };
 
 class HostEnergy {
+  simgrid::s4u::Host* host_ = nullptr;
+  /*< List of (idle_power, epsilon_power, max_power) tuple corresponding to each cpu pstate */
+  std::vector<PowerRange> power_range_watts_list_;
+
+  /* We need to keep track of what pstate has been used, as we will sometimes be notified only *after* a pstate has been
+   * used (but we need to update the energy consumption with the old pstate!)
+   */
+  int pstate_           = 0;
+  const int pstate_off_ = -1;
+
+  /* Only used to split total energy into unused/used hosts.
+   * If you want to get this info for something else, rather use the host_load plugin
+   */
+  bool host_was_used_ = false;
+
+  void init_watts_range_list();
   friend void ::on_simulation_end(); // For access to host_was_used_
+
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> EXTENSION_ID;
 
@@ -141,23 +158,6 @@ public:
   double get_power_range_slope_at(int pstate);
   void update();
 
-private:
-  void init_watts_range_list();
-  simgrid::s4u::Host* host_ = nullptr;
-  /*< List of (idle_power, epsilon_power, max_power) tuple corresponding to each cpu pstate */
-  std::vector<PowerRange> power_range_watts_list_;
-
-  /* We need to keep track of what pstate has been used, as we will sometimes be notified only *after* a pstate has been
-   * used (but we need to update the energy consumption with the old pstate!)
-   */
-  int pstate_           = 0;
-  const int pstate_off_ = -1;
-
-  /* Only used to split total energy into unused/used hosts.
-   * If you want to get this info for something else, rather use the host_load plugin
-   */
-  bool host_was_used_  = false;
-public:
   double watts_off_    = 0.0; /*< Consumption when the machine is turned off (shutdown) */
   double total_energy_ = 0.0; /*< Total energy consumed by the host */
   double last_updated_;       /*< Timestamp of the last energy update event*/
@@ -472,7 +472,6 @@ static void on_action_state_change(simgrid::kernel::resource::CpuAction const& a
   for (simgrid::kernel::resource::Cpu* const& cpu : action.cpus()) {
     simgrid::s4u::Host* host = cpu->get_host();
     if (host != nullptr) {
-
       // If it's a VM, take the corresponding PM
       simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
       if (vm) // If it's a VM, take the corresponding PM
@@ -516,7 +515,6 @@ static void on_simulation_end()
   double used_hosts_energy = 0.0; // Energy consumed by hosts that computed something
   for (size_t i = 0; i < hosts.size(); i++) {
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(hosts[i]) == nullptr) { // Ignore virtual machines
-
       double energy      = hosts[i]->extension<HostEnergy>()->get_consumed_energy();
       total_energy += energy;
       if (hosts[i]->extension<HostEnergy>()->host_was_used_)

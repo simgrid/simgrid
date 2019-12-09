@@ -239,8 +239,7 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
     recv_win->requests_->push_back(rreq);
     rreq->start();
     recv_win->mut_->unlock();
-
-  }else{
+  } else {
     XBT_DEBUG("Entering MPI_Put from myself to myself, rank %d", target_rank);
     Datatype::copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
     if(request!=nullptr)
@@ -300,16 +299,13 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
       requests_->push_back(rreq);
       mut_->unlock();
     }
-
-  }else{
+  } else {
     Datatype::copy(send_addr, target_count, target_datatype, origin_addr, origin_count, origin_datatype);
     if(request!=nullptr)
       *request=MPI_REQUEST_NULL;
   }
-
   return MPI_SUCCESS;
 }
-
 
 int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request)
@@ -402,7 +398,6 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
     Request::wait(&req, MPI_STATUS_IGNORE);
   send_win->atomic_mut_->unlock();
   return MPI_SUCCESS;
-
 }
 
 int Win::compare_and_swap(const void *origin_addr, void *compare_addr,
@@ -739,15 +734,16 @@ int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
   return MPI_SUCCESS;
 }
 
-MPI_Errhandler Win::errhandler(){
+MPI_Errhandler Win::errhandler()
+{
   return errhandler_;
 }
 
-void Win::set_errhandler(MPI_Errhandler errhandler){
-  errhandler_=errhandler;
-  if(errhandler_!= MPI_ERRHANDLER_NULL)
+void Win::set_errhandler(MPI_Errhandler errhandler)
+{
+  errhandler_ = errhandler;
+  if (errhandler_ != MPI_ERRHANDLER_NULL)
     errhandler->ref();
 }
-
-}
-}
+} // namespace smpi
+} // namespace simgrid

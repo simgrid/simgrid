@@ -1,5 +1,5 @@
 # Path to the pip requirements file
 requirements_file: docs/requirements.txt
-   
+
 # Don't build any extra formats
 formats: []
