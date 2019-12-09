@@ -5,6 +5,7 @@ SimGrid (3.24.1) NOT RELEASED YET (v3.25 expected December 22. 2029, 04:19 UTC)
 S4U:
 - Actor: Merge signals on_migration_start/end into on_host_change
 - Actor: Rename migrate() into set_host()
+- Disk: Allow users to get the read and write nominal bandwidth values
 
 XML:
 - Parse errors now raise a simgrid::ParseError that you may want to catch.
