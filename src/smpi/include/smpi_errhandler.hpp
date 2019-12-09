@@ -30,9 +30,7 @@ class Errhandler: public F2C {
   void call(MPI_File file, int errorcode);
   static void unref(Errhandler* errhandler);
   static Errhandler* f2c(int id);
-
 };
-  
 }
 }
 

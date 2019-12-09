@@ -81,7 +81,6 @@ int PMPI_Group_compare(MPI_Group group1, MPI_Group group2, int *result)
 
 int PMPI_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group * newgroup)
 {
-
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     return MPI_ERR_GROUP;
   } else if (newgroup == nullptr) {
@@ -93,7 +92,6 @@ int PMPI_Group_union(MPI_Group group1, MPI_Group group2, MPI_Group * newgroup)
 
 int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2, MPI_Group * newgroup)
 {
-
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
     return MPI_ERR_GROUP;
   } else if (newgroup == nullptr) {

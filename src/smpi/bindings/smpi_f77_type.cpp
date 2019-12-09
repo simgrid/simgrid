@@ -70,7 +70,6 @@ void mpi_type_set_attr_ (int* type, int* type_keyval, int *attribute_val, int* i
 }
 
 void mpi_type_delete_attr_ (int* type, int* type_keyval, int* ierr){
-
  *ierr = MPI_Type_delete_attr ( simgrid::smpi::Datatype::f2c(*type),  *type_keyval);
 }
 
@@ -90,7 +89,6 @@ void mpi_type_get_extent_ (int* datatype, MPI_Aint * lb, MPI_Aint * extent, int*
 }
 
 void mpi_type_get_true_extent_ (int* datatype, MPI_Aint * lb, MPI_Aint * extent, int* ierr){
-
  *ierr = MPI_Type_get_true_extent(simgrid::smpi::Datatype::f2c(*datatype), lb, extent);
 }
 
@@ -290,6 +288,4 @@ void mpi_type_match_size_ (int* typeclass,int* size,int* datatype, int* ierr){
     *datatype = tmp->c2f();
   }
 }
-
-
 }

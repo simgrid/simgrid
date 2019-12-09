@@ -75,7 +75,6 @@ int PMPI_File_seek(MPI_File fh, MPI_Offset offset, int whence){
   int ret = fh->seek(offset,whence);
   smpi_bench_begin();
   return ret;
-
 }
 
 int PMPI_File_seek_shared(MPI_File fh, MPI_Offset offset, int whence){
@@ -84,7 +83,6 @@ int PMPI_File_seek_shared(MPI_File fh, MPI_Offset offset, int whence){
   int ret = fh->seek_shared(offset,whence);
   smpi_bench_begin();
   return ret;
-
 }
 
 int PMPI_File_get_position(MPI_File fh, MPI_Offset* offset){

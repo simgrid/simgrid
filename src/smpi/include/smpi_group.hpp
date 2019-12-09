@@ -25,6 +25,7 @@ class Group : public F2C{
   std::vector<int> index_to_rank_map_;
 
   int refcount_ = 1; /* refcount_: start > 0 so that this group never gets freed */
+
 public:
   Group() = default;
   explicit Group(int size) : size_(size), rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}

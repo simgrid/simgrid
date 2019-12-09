@@ -137,7 +137,6 @@ void sg_load_balancer_plugin_init()
   if (!done) {
     done = true;
     simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Actor const& actor, simgrid::s4u::Exec const& exec) {
-
       simgrid::smpi::plugin::lb.record_actor_computation(actor, exec.get_cost());
     });
 

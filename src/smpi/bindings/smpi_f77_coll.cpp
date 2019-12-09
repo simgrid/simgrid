@@ -105,7 +105,6 @@ void mpi_alltoallv_(void* sendbuf, int* sendcounts, int* senddisps, int* sendtyp
 }
 
 void mpi_reduce_local_ (void *inbuf, void *inoutbuf, int* count, int* datatype, int* op, int* ierr){
-
  *ierr = MPI_Reduce_local(inbuf, inoutbuf, *count, simgrid::smpi::Datatype::f2c(*datatype), simgrid::smpi::Op::f2c(*op));
 }
 

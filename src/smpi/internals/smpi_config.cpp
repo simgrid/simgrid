@@ -246,7 +246,6 @@ void smpi_init_options(){
   simgrid::config::alias("smpi/privatization", {"smpi/privatize_global_variables", "smpi/privatize-global-variables"});
   simgrid::config::alias("smpi/reduce_scatter", {"smpi/reduce-scatter"});
   _smpi_options_initialized=true;
-
 }
 
 void smpi_check_options()

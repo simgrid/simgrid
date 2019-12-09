@@ -45,6 +45,7 @@ class ActorExt {
   int papi_event_set_;
   papi_counter_t papi_counter_data_;
 #endif
+
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Actor, ActorExt> EXTENSION_ID;
 

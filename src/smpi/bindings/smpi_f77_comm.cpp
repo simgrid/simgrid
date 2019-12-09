@@ -29,7 +29,6 @@ void mpi_comm_dup_(int* comm, int* newcomm, int* ierr) {
 
 void mpi_comm_create_(int* comm, int* group, int* newcomm, int* ierr) {
   MPI_Comm tmp;
-
   *ierr = MPI_Comm_create(simgrid::smpi::Comm::f2c(*comm),simgrid::smpi::Group::f2c(*group), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newcomm = tmp->add_f();
@@ -56,7 +55,6 @@ void mpi_comm_split_(int* comm, int* color, int* key, int* comm_out, int* ierr) 
 
 void mpi_comm_group_(int* comm, int* group_out,  int* ierr) {
   MPI_Group tmp;
-
   *ierr = MPI_Comm_group(simgrid::smpi::Comm::f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *group_out = tmp->c2f();
@@ -85,7 +83,6 @@ void mpi_comm_set_attr_ (int* comm, int* comm_keyval, int *attribute_val, int* i
 }
 
 void mpi_comm_delete_attr_ (int* comm, int* comm_keyval, int* ierr){
-
  *ierr = MPI_Comm_delete_attr (simgrid::smpi::Comm::f2c(*comm),  *comm_keyval);
 }
 
@@ -106,7 +103,6 @@ void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr){
 }
 
 void mpi_comm_compare_ (int* comm1, int* comm2, int *result, int* ierr){
-
  *ierr = MPI_Comm_compare(simgrid::smpi::Comm::f2c(*comm1), simgrid::smpi::Comm::f2c(*comm2), result);
 }
 

@@ -488,7 +488,6 @@ int PMPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
 
 int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
 {
-
   CHECK_COMM(6)
   CHECK_BUFFER(1, sendbuf, count)
   CHECK_BUFFER(2, recvbuf, count)

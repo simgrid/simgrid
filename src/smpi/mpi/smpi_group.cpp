@@ -219,7 +219,6 @@ int Group::excl(int n, const int *ranks, MPI_Group * newgroup){
   }
   delete[] to_exclude;
   return MPI_SUCCESS;
-
 }
 
 static bool is_rank_in_range(int rank, int first, int last)
