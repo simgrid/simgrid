@@ -222,17 +222,22 @@ int PMPI_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                     MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM, "Iallgather: the communicator cannot be MPI_COMM_NULL");
-  CHECK_ARGS(recvbuf == nullptr && recvcount > 0, MPI_ERR_BUFFER, "Iallgather: param 4 recvbuf cannot be NULL");
+  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
+             "(I)Allgather: the communicator cannot be MPI_COMM_NULL");
+  CHECK_ARGS(recvbuf == nullptr && recvcount > 0, MPI_ERR_BUFFER,
+             "(I)Allgather: param 4 recvbuf cannot be NULL");
   CHECK_ARGS(sendbuf == nullptr && sendcount > 0, MPI_ERR_BUFFER,
-             "Iallgather: param 1 sendbuf cannot be NULL when sendcound > 0");
+             "(I)Allgather: param 1 sendbuf cannot be NULL when sendcount > 0");
   CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
-             "Iallgather: param 3 sendtype cannot be MPI_DATATYPE_NULL when sendbuff is not MPI_IN_PLACE");
-  CHECK_ARGS(recvtype == MPI_DATATYPE_NULL, MPI_ERR_TYPE, "Iallgather: param 6 recvtype cannot be MPI_DATATYPE_NULL");
-  CHECK_ARGS(recvcount < 0, MPI_ERR_COUNT, "Iallgather: param 5 recvcount cannot be negative");
+             "(I)Allgather: param 3 sendtype cannot be MPI_DATATYPE_NULL when sendbuff is not MPI_IN_PLACE");
+  CHECK_ARGS(recvtype == MPI_DATATYPE_NULL, MPI_ERR_TYPE,
+             "(I)Allgather: param 6 recvtype cannot be MPI_DATATYPE_NULL");
+  CHECK_ARGS(recvcount < 0, MPI_ERR_COUNT,
+             "(I)Allgather: param 5 recvcount cannot be negative");
   CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendcount < 0), MPI_ERR_COUNT,
-             "Iallgather: param 2 sendcount cannot be negative when sendbuf is not MPI_IN_PLACE");
-  CHECK_ARGS(request == nullptr, MPI_ERR_ARG, "Iallgather: param 8 request cannot be NULL");
+             "(I)Allgather: param 2 sendcount cannot be negative when sendbuf is not MPI_IN_PLACE");
+  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
+             "Iallgather: param 8 request cannot be NULL");
 
   smpi_bench_end();
   if (sendbuf == MPI_IN_PLACE) {
@@ -266,18 +271,22 @@ int PMPI_Allgatherv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, const int* recvcounts, const int* displs,
                      MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (sendbuf == nullptr && sendcount > 0)
-    return MPI_ERR_BUFFER;
-  if (((sendbuf != MPI_IN_PLACE) && (sendtype == MPI_DATATYPE_NULL)) || (recvtype == MPI_DATATYPE_NULL))
-    return MPI_ERR_TYPE;
-  if ((sendbuf != MPI_IN_PLACE) && (sendcount < 0))
-    return MPI_ERR_COUNT;
-  if (recvcounts == nullptr || displs == nullptr)
-    return MPI_ERR_ARG;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
+             "(I)Allgatherv: the communicator cannot be MPI_COMM_NULL");
+  CHECK_ARGS(sendbuf == nullptr && sendcount > 0, MPI_ERR_BUFFER,
+             "(I)Allgatherv: param 1 sendbuf cannot be NULL when sendcount > 0");
+  CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
+             "(I)Allgatherv: param 3 sendtype cannot be MPI_DATATYPE_NULL when sendbuff is not MPI_IN_PLACE");
+  CHECK_ARGS(recvtype == MPI_DATATYPE_NULL, MPI_ERR_TYPE,
+             "(I)Allgatherv: param 7 recvtype cannot be MPI_DATATYPE_NULL");
+  CHECK_ARGS(recvcounts == nullptr, MPI_ERR_COUNT,
+             "(I)Allgatherv: param 5 recvcounts cannot be null");
+  CHECK_ARGS(displs == nullptr, MPI_ERR_ARG,
+             "(I)Allgatherv: param 6 displs cannot be null");
+  CHECK_ARGS((sendbuf != MPI_IN_PLACE) && (sendcount < 0), MPI_ERR_COUNT,
+             "(I)Allgatherv: param 2 sendcount cannot be negative when sendbuf is not MPI_IN_PLACE");
+  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
+             "Iallgatherv: param 9 request cannot be NULL");
 
   for (int i = 0; i < comm->size(); i++) {
     if (recvcounts[i] < 0)
@@ -325,20 +334,27 @@ int PMPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                   MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if (((comm->rank() == root) && (sendtype == MPI_DATATYPE_NULL || not sendtype->is_valid())) ||
-      ((recvbuf != MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL || not recvtype->is_valid())))
-    return MPI_ERR_TYPE;
-  if (((comm->rank() == root) && (sendcount < 0)) || ((recvbuf != MPI_IN_PLACE) && (recvcount < 0)))
-    return MPI_ERR_COUNT;
-  if ((sendbuf == recvbuf) || ((comm->rank() == root) && sendcount > 0 && (sendbuf == nullptr)) ||
-      (recvcount > 0 && recvbuf == nullptr))
-    return MPI_ERR_BUFFER;
-  if (root < 0 || root >= comm->size())
-    return MPI_ERR_ROOT;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
+  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
+             "(I)Scatter: the communicator cannot be MPI_COMM_NULL");
+  CHECK_ARGS(recvbuf == nullptr && recvcount > 0, MPI_ERR_BUFFER,
+             "(I)Scatter: param 4 recvbuf cannot be NULL");
+  CHECK_ARGS(((sendbuf == recvbuf) || ((comm->rank() == root) && sendcount > 0 && (sendbuf == nullptr))), MPI_ERR_BUFFER,
+             "(I)Scatter: param 1 sendbuf cannot be NULL when sendcount > 0");
+  CHECK_ARGS(((comm->rank() == root) && (sendtype == MPI_DATATYPE_NULL || not sendtype->is_valid())), MPI_ERR_TYPE,
+             "(I)Scatter: param 3 sendtype cannot be MPI_DATATYPE_NULL or invalid on root");
+  CHECK_ARGS(((recvbuf != MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL || not recvtype->is_valid())), MPI_ERR_TYPE,
+             "(I)Scatter: param 6 recvtype cannot be MPI_DATATYPE_NULL or invalid when recvbuf is not MPI_IN_PLACE");
+  CHECK_ARGS(((comm->rank() == root) && (sendcount < 0)), MPI_ERR_COUNT,
+             "(I)Scatter: param 2 sendcount cannot be negative");
+  CHECK_ARGS(((recvbuf != MPI_IN_PLACE) && (recvcount < 0)), MPI_ERR_COUNT,
+             "(I)Scatter: param 5 recvcount cannot be negative");
+  CHECK_ARGS(root < 0, MPI_ERR_ROOT,
+             "(I)Scatter: root cannot be negative");
+  CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT,
+             "(I)Scatter: root (=%d) is larger than communicator size (=%d)", root,
+             comm->size());
+  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
+             "Iscatter: param 9 request cannot be NULL");
 
   smpi_bench_end();
   if (recvbuf == MPI_IN_PLACE) {
@@ -371,20 +387,24 @@ int PMPI_Scatterv(const void *sendbuf, const int *sendcounts, const int *displs,
 int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                    MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM, "Iscatterv: the communicator cannot be MPI_COMM_NULL");
+  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
+             "(I)Scatterv: the communicator cannot be MPI_COMM_NULL");
   CHECK_ARGS((comm->rank() == root) && (sendcounts == nullptr), MPI_ERR_ARG,
-             "Iscatterv: param 2 sendcounts cannot be NULL on the root rank");
+             "(I)Scatterv: param 2 sendcounts cannot be NULL on the root rank");
   CHECK_ARGS((comm->rank() == root) && (displs == nullptr), MPI_ERR_ARG,
-             "Iscatterv: param 3 displs cannot be NULL on the root rank");
+             "(I)Scatterv: param 3 displs cannot be NULL on the root rank");
   CHECK_ARGS((comm->rank() == root) && (sendtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
-             "Iscatterv: The sendtype cannot be NULL on the root rank");
+             "(I)Scatterv: The sendtype cannot be NULL on the root rank");
   CHECK_ARGS((recvbuf != MPI_IN_PLACE) && (recvtype == MPI_DATATYPE_NULL), MPI_ERR_TYPE,
-             "Iscatterv: the recvtype cannot be NULL when not receiving in place");
-  CHECK_ARGS(request == nullptr, MPI_ERR_ARG, "Iscatterv: param 10 request cannot be NULL");
+             "(I)Scatterv: the recvtype cannot be NULL when not receiving in place");
+  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
+             "Iscatterv: param 10 request cannot be NULL");
   CHECK_ARGS(recvbuf != MPI_IN_PLACE && recvcount < 0, MPI_ERR_COUNT,
-             "Iscatterv: When not receiving in place, the recvcount cannot be negative");
-  CHECK_ARGS(root < 0, MPI_ERR_ROOT, "Iscatterv: root cannot be negative");
-  CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT, "Iscatterv: root (=%d) is larger than communicator size (=%d)", root,
+             "(I)Scatterv: When not receiving in place, the recvcount cannot be negative");
+  CHECK_ARGS(root < 0, MPI_ERR_ROOT,
+             "(I)Scatterv: root cannot be negative");
+  CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT,
+             "(I)Scatterv: root (=%d) is larger than communicator size (=%d)", root,
              comm->size());
 
   if (comm->rank() == root) {
@@ -433,20 +453,25 @@ int PMPI_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype data
 
 int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request* request)
 {
-  if (comm == MPI_COMM_NULL)
-    return MPI_ERR_COMM;
-  if ((sendbuf == nullptr && count > 0) || ((comm->rank() == root) && recvbuf == nullptr))
-    return MPI_ERR_BUFFER;
-  if (datatype == MPI_DATATYPE_NULL || not datatype->is_valid())
-    return MPI_ERR_TYPE;
-  if (op == MPI_OP_NULL)
-    return MPI_ERR_OP;
-  if (request == nullptr)
-    return MPI_ERR_ARG;
-  if (root < 0 || root >= comm->size())
-    return MPI_ERR_ROOT;
-  if (count < 0)
-    return MPI_ERR_COUNT;
+  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,
+             "(I)Reduce: the communicator cannot be MPI_COMM_NULL");
+  CHECK_ARGS(((comm->rank() == root) && recvbuf == nullptr), MPI_ERR_BUFFER,
+             "(I)Reduce: param 2 recvbuf cannot be NULL");
+  CHECK_ARGS((sendbuf == nullptr && count > 0), MPI_ERR_BUFFER,
+             "(I)Reduce: param 1 sendbuf cannot be NULL when count > 0");
+  CHECK_ARGS((datatype == MPI_DATATYPE_NULL || not datatype->is_valid()), MPI_ERR_TYPE,
+             "(I)Reduce: param 4 datatype cannot be MPI_DATATYPE_NULL or invalid");
+  CHECK_ARGS(count < 0, MPI_ERR_COUNT,
+             "(I)Reduce: param 3 count cannot be negative");
+  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,
+             "Ireduce: param 8 request cannot be NULL");
+  CHECK_ARGS(op == MPI_OP_NULL, MPI_ERR_OP,
+             "(I)Reduce: param 5 op cannot be MPI_OP_NULL");
+  CHECK_ARGS(root < 0, MPI_ERR_ROOT,
+             "(I)Reduce: root cannot be negative");
+  CHECK_ARGS(root >= comm->size(), MPI_ERR_ROOT,
+             "(I)Reduce: root (=%d) is larger than communicator size (=%d)", root,
+             comm->size());
 
   smpi_bench_end();
   int rank = simgrid::s4u::this_actor::get_pid();

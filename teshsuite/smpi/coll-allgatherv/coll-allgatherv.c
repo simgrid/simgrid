@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
   if(status!=MPI_ERR_BUFFER)
     printf("MPI_Allgatherv did not return MPI_ERR_BUFFER for empty recvbuf\n");
   status = MPI_Allgatherv(sb, recv_counts[rank], MPI_INT, rb, NULL, recv_disps, MPI_INT, MPI_COMM_WORLD);
-  if(status!=MPI_ERR_ARG)
-    printf("MPI_Allgatherv did not return MPI_ERR_ARG for NULL recvcounts\n");
+  if(status!=MPI_ERR_COUNT)
+    printf("MPI_Allgatherv did not return MPI_ERR_COUNT for NULL recvcounts\n");
   status = MPI_Allgatherv(sb, recv_counts[rank], MPI_INT, rb, recv_counts, NULL, MPI_INT, MPI_COMM_WORLD);
   if(status!=MPI_ERR_ARG)
     printf("MPI_Allgatherv did not return MPI_ERR_ARG for NULL recvdisps\n");
