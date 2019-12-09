@@ -19,7 +19,8 @@ static void host()
 
   /* - For each disk mounted on host, display disk name and mount point */
   for (auto disk : disk_list)
-    XBT_INFO("Disk name: %s", disk->get_cname());
+    XBT_INFO("Disk name: %s (read: %.0f B/s -- write: %.0f B/s ", disk->get_cname(), disk->get_read_bandwidth(),
+             disk->get_write_bandwidth());
 
   /* - Write 400,000 bytes on Disk1 */
   simgrid::s4u::Disk* disk = disk_list.front();

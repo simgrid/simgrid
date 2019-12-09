@@ -26,17 +26,18 @@ namespace s4u {
  */
 
 class XBT_PUBLIC Disk : public xbt::Extendable<Disk> {
+  kernel::resource::DiskImpl* const pimpl_;
+  std::string name_;
   friend Engine;
   friend Io;
   friend kernel::resource::DiskImpl;
-
-public:
-  explicit Disk(const std::string& name, kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl), name_(name) {}
 
 protected:
   virtual ~Disk() = default;
 
 public:
+  explicit Disk(const std::string& name, kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl), name_(name) {}
+
   /** @brief Callback signal fired when a new Disk is created */
   static xbt::signal<void(Disk&)> on_creation;
   /** @brief Callback signal fired when a Disk is destroyed */
@@ -48,7 +49,8 @@ public:
   std::string const& get_name() const { return name_; }
   /** @brief Retrieves the name of that disk as a C string */
   const char* get_cname() const { return name_.c_str(); }
-
+  double get_read_bandwidth() const;
+  double get_write_bandwidth();
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
   void set_property(const std::string&, const std::string& value);
@@ -62,10 +64,6 @@ public:
   IoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
   kernel::resource::DiskImpl* get_impl() const { return pimpl_; }
-
-private:
-  kernel::resource::DiskImpl* const pimpl_;
-  std::string name_;
 };
 
 } // namespace s4u

@@ -8,8 +8,8 @@ $ ${bindir}/s4u-io-disk-raw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%1
 > [  0.000000] (0:maestro@) *** carl properties ****
 > [  0.000000] (0:maestro@)   remote_disk -> /scratch:Disk1:bob
 > [  0.000000] (1:@bob) *** Storage info on bob ***
-> [  0.000000] (1:@bob) Disk name: Disk1
-> [  0.000000] (1:@bob) Disk name: Disk2
+> [  0.000000] (1:@bob) Disk name: Disk1 (read: 100000000 B/s -- write: 40000000 B/s 
+> [  0.000000] (1:@bob) Disk name: Disk2 (read: 200000000 B/s -- write: 80000000 B/s 
 > [  0.010000] (1:@bob) Wrote 400000 bytes on 'Disk1'
 > [  0.012000] (1:@bob) Read 200000 bytes on 'Disk1'
 > [  0.012000] (1:@bob) *** Get/set data for storage element: Disk1 ***
