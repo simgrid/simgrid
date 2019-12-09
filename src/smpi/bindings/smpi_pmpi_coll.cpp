@@ -13,38 +13,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
-#define CHECK_ARGS(test, errcode, ...)                                                                                 \
-  if (test) {                                                                                                          \
-    XBT_WARN(__VA_ARGS__);                                                                                             \
-    return (errcode);                                                                                                  \
-  }
-
-#define CHECK_COMM(num)\
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,\
-             "%s: param %d communicator cannot be MPI_COMM_NULL", __func__, num);
-#define CHECK_REQUEST(num)\
-  CHECK_ARGS(request == nullptr, MPI_ERR_ARG,\
-             "%s: param %d request cannot be NULL",__func__, num);
-#define CHECK_BUFFER(num,buf,count)\
-  CHECK_ARGS(buf == nullptr && count > 0, MPI_ERR_BUFFER,\
-             "%s: param %d %s cannot be NULL if %s > 0",__func__, num, #buf, #count);
-#define CHECK_COUNT(num,count)\
-  CHECK_ARGS(count < 0, MPI_ERR_COUNT,\
-             "%s: param %d %s cannot be negative", __func__, num, #count);
-#define CHECK_TYPE(num, datatype)\
-  CHECK_ARGS((datatype == MPI_DATATYPE_NULL|| not datatype->is_valid()), MPI_ERR_TYPE,\
-             "%s: param %d %s cannot be MPI_DATATYPE_NULL or invalid", __func__, num, #datatype);
-#define CHECK_OP(num)\
-  CHECK_ARGS(op == MPI_OP_NULL, MPI_ERR_OP,\
-             "%s: param %d op cannot be MPI_OP_NULL or invalid", __func__, num);
-#define CHECK_ROOT(num)\
-  CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,\
-             "%s: param %d root (=%d) cannot be negative or larger than communicator size (=%d)", __func__, num, root,\
-             comm->size());
-#define CHECK_NULL(num,err,buf)\
-  CHECK_ARGS(buf == nullptr, err,\
-             "%s: param %d %s cannot be NULL", __func__, num, #buf);
-
   static const void* smpi_get_in_place_buf(const void* inplacebuf, const void* otherbuf,std::unique_ptr<unsigned char[]>& tmp_sendbuf, int count, MPI_Datatype datatype){
   if (inplacebuf == MPI_IN_PLACE) {
       tmp_sendbuf.reset(new unsigned char[count * datatype->get_extent()]);

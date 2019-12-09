@@ -8,6 +8,8 @@
 #include "smpi_file.hpp"
 #include "smpi_datatype.hpp"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
+
 extern MPI_Errhandler SMPI_default_File_Errhandler;
 
 int PMPI_File_open(MPI_Comm comm, const char *filename, int amode, MPI_Info info, MPI_File *fh){
@@ -38,21 +40,11 @@ int PMPI_File_close(MPI_File *fh){
   smpi_bench_begin();
   return ret;
 }
-#define CHECK_FILE(fh)                                                                                                 \
-  if ((fh) == MPI_FILE_NULL)                                                                                           \
-    return MPI_ERR_FILE;
-#define CHECK_BUFFER(buf, count)                                                                                       \
-  if ((buf) == nullptr && (count) > 0)                                                                                 \
-    return MPI_ERR_BUFFER;
-#define CHECK_COUNT(count)                                                                                             \
-  if ((count) < 0)                                                                                                     \
-    return MPI_ERR_COUNT;
+
+
 #define CHECK_OFFSET(offset)                                                                                           \
   if ((offset) < 0)                                                                                                    \
     return MPI_ERR_DISP;
-#define CHECK_DATATYPE(datatype, count)                                                                                \
-  if ((datatype) == MPI_DATATYPE_NULL && (count) > 0)                                                                  \
-    return MPI_ERR_TYPE;
 #define CHECK_STATUS(status)                                                                                           \
   if ((status) == nullptr)                                                                                             \
     return MPI_ERR_ARG;
@@ -70,7 +62,7 @@ int PMPI_File_close(MPI_File *fh){
   }
 
 int PMPI_File_seek(MPI_File fh, MPI_Offset offset, int whence){
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   smpi_bench_end();
   int ret = fh->seek(offset,whence);
   smpi_bench_begin();
@@ -78,7 +70,7 @@ int PMPI_File_seek(MPI_File fh, MPI_Offset offset, int whence){
 }
 
 int PMPI_File_seek_shared(MPI_File fh, MPI_Offset offset, int whence){
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   smpi_bench_end();
   int ret = fh->seek_shared(offset,whence);
   smpi_bench_begin();
@@ -95,7 +87,7 @@ int PMPI_File_get_position(MPI_File fh, MPI_Offset* offset){
 }
 
 int PMPI_File_get_position_shared(MPI_File fh, MPI_Offset* offset){
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   if (offset==nullptr)
     return MPI_ERR_DISP;
   smpi_bench_end();
@@ -105,10 +97,10 @@ int PMPI_File_get_position_shared(MPI_File fh, MPI_Offset* offset){
 }
 
 int PMPI_File_read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   PASS_ZEROCOUNT(count)
@@ -122,10 +114,10 @@ int PMPI_File_read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_
 }
 
 int PMPI_File_read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   PASS_ZEROCOUNT(count)
@@ -140,10 +132,10 @@ int PMPI_File_read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatyp
 }
 
 int PMPI_File_write(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
@@ -158,10 +150,10 @@ int PMPI_File_write(MPI_File fh, const void *buf, int count,MPI_Datatype datatyp
 }
 
 int PMPI_File_write_shared(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
@@ -177,10 +169,10 @@ int PMPI_File_write_shared(MPI_File fh, const void *buf, int count,MPI_Datatype 
 }
 
 int PMPI_File_read_all(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   smpi_bench_end();
@@ -193,10 +185,10 @@ int PMPI_File_read_all(MPI_File fh, void *buf, int count,MPI_Datatype datatype, 
 }
 
 int PMPI_File_read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   smpi_bench_end();
@@ -210,10 +202,10 @@ int PMPI_File_read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype dataty
 }
 
 int PMPI_File_write_all(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
@@ -227,10 +219,10 @@ int PMPI_File_write_all(MPI_File fh, const void *buf, int count,MPI_Datatype dat
 }
 
 int PMPI_File_write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
@@ -245,11 +237,11 @@ int PMPI_File_write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype
 }
 
 int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
   CHECK_OFFSET(offset)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   PASS_ZEROCOUNT(count);
@@ -266,11 +258,11 @@ int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_D
 }
 
 int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
   CHECK_OFFSET(offset)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_COUNT(3, count)
+  CHECK_TYPE(4, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   smpi_bench_end();
@@ -287,11 +279,11 @@ int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf, int count,M
 }
 
 int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
   CHECK_OFFSET(offset)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_COUNT(4, count)
+  CHECK_TYPE(5, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
@@ -309,11 +301,11 @@ int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void *buf, int coun
 }
 
 int PMPI_File_write_at_all(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FILE(fh)
-  CHECK_BUFFER(buf, count)
+  CHECK_FILE(1, fh)
+  CHECK_BUFFER(2, buf, count)
   CHECK_OFFSET(offset)
-  CHECK_COUNT(count)
-  CHECK_DATATYPE(datatype, count)
+  CHECK_COUNT(4, count)
+  CHECK_TYPE(5, datatype)
   CHECK_STATUS(status)
   CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
@@ -341,42 +333,42 @@ int PMPI_File_delete(const char *filename, MPI_Info info){
 
 int PMPI_File_get_info(MPI_File  fh, MPI_Info* info)
 {
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   *info = fh->info();
   return MPI_SUCCESS;
 }
 
 int PMPI_File_set_info(MPI_File  fh, MPI_Info info)
 {
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   fh->set_info(info);
   return MPI_SUCCESS;
 }
 
 int PMPI_File_get_size(MPI_File  fh, MPI_Offset* size)
 {
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   *size = fh->size();
   return MPI_SUCCESS;
 }
 
 int PMPI_File_get_amode(MPI_File  fh, int* amode)
 {
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   *amode = fh->flags();
   return MPI_SUCCESS;
 }
 
 int PMPI_File_get_group(MPI_File  fh, MPI_Group* group)
 {
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   *group = fh->comm()->group();
   return MPI_SUCCESS;
 }
 
 int PMPI_File_sync(MPI_File  fh)
 {
-  CHECK_FILE(fh)
+  CHECK_FILE(1, fh)
   fh->sync();
   return MPI_SUCCESS;
 }
