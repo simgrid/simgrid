@@ -44,17 +44,15 @@ public:
 
 private:
   kernel::routing::NetZoneImpl* const pimpl_;
-  std::unordered_map<std::string, std::string> properties_;
 
 public:
   /** Get the properties assigned to a netzone */
   const std::unordered_map<std::string, std::string>* get_properties() const;
-
-  std::vector<NetZone*> get_children();
-
   /** Retrieve the property value (or nullptr if not set) */
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
+
+  std::vector<NetZone*> get_children();
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */

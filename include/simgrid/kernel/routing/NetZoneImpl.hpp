@@ -8,6 +8,7 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/NetZone.hpp>
+#include <xbt/PropertyHolder.hpp>
 #include <xbt/graph.h>
 
 #include <map>
@@ -47,8 +48,8 @@ class BypassRoute;
  * called Autonomous Systems in this article).
  *
  */
-class XBT_PUBLIC NetZoneImpl {
-  friend simgrid::kernel::EngineImpl; // it destroys netRoot_
+class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
+  friend EngineImpl; // it destroys netRoot_
 
 protected:
   explicit NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model);
@@ -60,8 +61,8 @@ public:
   s4u::NetZone* get_iface() { return &piface_; }
 
   /** @brief Make a host within that NetZone */
-  simgrid::s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate, int core_count,
-                                  const std::map<std::string, std::string>* props);
+  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate, int core_count,
+                         const std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
   virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical);

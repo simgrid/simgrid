@@ -8,8 +8,8 @@
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Io.hpp"
-#include "src/surf/PropertyHolder.hpp"
 #include "src/surf/surf_interface.hpp"
+#include <xbt/PropertyHolder.hpp>
 
 #include <map>
 
@@ -47,7 +47,7 @@ public:
 /************
  * Resource *
  ************/
-class DiskImpl : public Resource, public surf::PropertyHolder {
+class DiskImpl : public Resource, public xbt::PropertyHolder {
   bool currently_destroying_ = false;
   s4u::Host* host_           = nullptr;
   s4u::Disk piface_;

@@ -8,10 +8,10 @@
 
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
-#include "src/surf/PropertyHolder.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
+#include <xbt/PropertyHolder.hpp>
 
 #include <vector>
 
@@ -42,7 +42,7 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
-class XBT_PRIVATE HostImpl : public simgrid::surf::PropertyHolder {
+class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
   s4u::Host* piface_ = nullptr; // FIXME: why don't we store a s4u::Host here as we do everywhere else?
 

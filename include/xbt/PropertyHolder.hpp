@@ -3,15 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SRC_SURF_PROPERTYHOLDER_HPP_
-#define SRC_SURF_PROPERTYHOLDER_HPP_
+#ifndef XBT_PROPERTYHOLDER_HPP
+#define XBT_PROPERTYHOLDER_HPP
 
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 namespace simgrid {
-namespace surf {
+namespace xbt {
 
 /** @brief a PropertyHolder can be given a set of textual properties
  *
@@ -20,7 +20,7 @@ namespace surf {
 class PropertyHolder { // DO NOT DERIVE THIS CLASS, or the diamond inheritance mayhem will get you
 
 public:
-  PropertyHolder() = default;
+  PropertyHolder()                      = default;
   PropertyHolder(const PropertyHolder&) = delete;
   PropertyHolder& operator=(const PropertyHolder&) = delete;
 
@@ -34,7 +34,7 @@ private:
   std::unique_ptr<std::unordered_map<std::string, std::string>> properties_ = nullptr;
 };
 
-} /* namespace surf */
-} /* namespace simgrid */
+} // namespace xbt
+} // namespace simgrid
 
-#endif /* SRC_SURF_PROPERTYHOLDER_HPP_ */
+#endif

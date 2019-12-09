@@ -3,12 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "PropertyHolder.hpp"
+#include <xbt/PropertyHolder.hpp>
 
 #include <map>
 
 namespace simgrid {
-namespace surf {
+namespace xbt {
 
 /** @brief Return the property associated to the provided key (or nullptr if not existing) */
 const char* PropertyHolder::get_property(const std::string& key) const
@@ -52,5 +52,5 @@ template <class Assoc> void PropertyHolder::set_properties(const Assoc& properti
 template void PropertyHolder::set_properties(const std::map<std::string, std::string>& properties);
 template void PropertyHolder::set_properties(const std::unordered_map<std::string, std::string>& properties);
 
-} /* namespace surf */
-} /* namespace simgrid */
+} // namespace xbt
+} // namespace simgrid

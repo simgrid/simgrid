@@ -1993,6 +1993,7 @@ include include/smpi/smpi_helpers_internal.h
 include include/smpi/smpi_main.h
 include include/xbt.h
 include include/xbt/Extendable.hpp
+include include/xbt/PropertyHolder.hpp
 include include/xbt/asserts.h
 include include/xbt/automaton.h
 include include/xbt/automaton.hpp
@@ -2513,8 +2514,6 @@ include src/smpi/smpirun.in
 include src/smpi/smpitools.sh
 include src/surf/HostImpl.cpp
 include src/surf/HostImpl.hpp
-include src/surf/PropertyHolder.cpp
-include src/surf/PropertyHolder.hpp
 include src/surf/StorageImpl.cpp
 include src/surf/StorageImpl.hpp
 include src/surf/cpu_cas01.cpp
@@ -2560,6 +2559,7 @@ include src/surf/xml/simgrid_dtd.h
 include src/surf/xml/surfxml_parseplatf.cpp
 include src/surf/xml/surfxml_sax_cb.cpp
 include src/xbt/OsSemaphore.hpp
+include src/xbt/PropertyHolder.cpp
 include src/xbt/automaton/automaton.c
 include src/xbt/automaton/automaton_lexer.yy.c
 include src/xbt/automaton/automatonparse_promela.c

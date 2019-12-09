@@ -10,7 +10,7 @@
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/surf/PropertyHolder.hpp"
+#include <xbt/PropertyHolder.hpp>
 
 #include <list>
 #include <unordered_map>
@@ -107,7 +107,7 @@ public:
  * @brief SURF network link interface class
  * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
  */
-class LinkImpl : public Resource, public surf::PropertyHolder {
+class LinkImpl : public Resource, public xbt::PropertyHolder {
   bool currently_destroying_ = false;
   s4u::Link piface_;
 

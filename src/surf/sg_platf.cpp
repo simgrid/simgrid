@@ -646,8 +646,8 @@ void sg_platf_new_Zone_set_properties(std::unordered_map<std::string, std::strin
 {
   xbt_assert(current_routing, "Cannot set properties of the current Zone: none under construction");
 
-  for (auto kv = props->begin(); kv != props->end(); ++kv)
-    current_routing->get_iface()->set_property(kv->first, kv->second);
+  if (props)
+    current_routing->set_properties(*props);
 }
 
 /**

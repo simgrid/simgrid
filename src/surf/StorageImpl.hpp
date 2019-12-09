@@ -8,8 +8,8 @@
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "src/surf/PropertyHolder.hpp"
 #include "surf_interface.hpp"
+#include "xbt/PropertyHolder.hpp"
 
 #include <map>
 
@@ -59,7 +59,7 @@ public:
  * @brief SURF storage interface class
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
-class StorageImpl : public Resource, public surf::PropertyHolder {
+class StorageImpl : public Resource, public xbt::PropertyHolder {
   s4u::Storage piface_;
 
 public:

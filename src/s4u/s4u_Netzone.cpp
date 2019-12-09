@@ -21,19 +21,18 @@ xbt::signal<void(NetZone const&)> NetZone::on_seal;
 
 const std::unordered_map<std::string, std::string>* NetZone::get_properties() const
 {
-  return &properties_;
+  return pimpl_->get_properties();
 }
 
 /** Retrieve the property value (or nullptr if not set) */
 const char* NetZone::get_property(const std::string& key) const
 {
-  auto prop = properties_.find(key);
-  return prop == properties_.end() ? nullptr : prop->second.c_str();
+  return pimpl_->get_property(key);
 }
 
 void NetZone::set_property(const std::string& key, const std::string& value)
 {
-  kernel::actor::simcall([this, &key, &value] { properties_[key] = value; });
+  kernel::actor::simcall([this, &key, &value] { pimpl_->set_property(key, value); });
 }
 
 /** @brief Returns the list of direct children (no grand-children) */

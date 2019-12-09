@@ -55,7 +55,6 @@ set(EXTRA_DIST
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.hpp
-  src/surf/PropertyHolder.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp
   src/surf/ptask_L07.hpp
@@ -284,6 +283,7 @@ set(XBT_SRC
   src/xbt/memory_map.cpp
   src/xbt/memory_map.hpp
   src/xbt/OsSemaphore.hpp
+  src/xbt/PropertyHolder.cpp
   src/xbt/parmap.cpp
   src/xbt/random.cpp
   src/xbt/snprintf.c
@@ -353,7 +353,6 @@ set(SURF_SRC
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
   src/surf/network_wifi.cpp
-  src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
   src/surf/StorageImpl.cpp
   src/surf/storage_n11.cpp
@@ -776,6 +775,7 @@ set(headers_to_install
   include/xbt/mallocator.h
   include/xbt/misc.h
   include/xbt/module.h
+  include/xbt/PropertyHolder.hpp
   include/xbt/parmap.h
   include/xbt/range.hpp
   include/xbt/random.hpp

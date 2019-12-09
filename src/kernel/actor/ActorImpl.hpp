@@ -8,7 +8,7 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "src/simix/popping_private.hpp"
-#include "src/surf/PropertyHolder.hpp"
+#include "xbt/PropertyHolder.hpp"
 #include <boost/intrusive/list.hpp>
 #include <functional>
 #include <list>
@@ -19,7 +19,7 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-class XBT_PUBLIC ActorImpl : public surf::PropertyHolder {
+class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder {
   s4u::Host* host_   = nullptr; /* the host on which the actor is running */
   // XBT_DEPRECATED_v329
   void* userdata_    = nullptr; /* kept for compatibility, it should be replaced with moddata */
