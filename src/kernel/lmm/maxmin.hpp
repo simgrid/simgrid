@@ -371,7 +371,7 @@ inline void Element::make_active()
 inline void Element::make_inactive()
 {
   if (active_element_set_hook.is_linked())
-    simgrid::xbt::intrusive_erase(constraint->active_element_set_, *this);
+    xbt::intrusive_erase(constraint->active_element_set_, *this);
 }
 
 /**
@@ -475,9 +475,9 @@ private:
   void remove_variable(Variable * var)
   {
     if (var->variable_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(variable_set, *var);
+      xbt::intrusive_erase(variable_set, *var);
     if (var->saturated_variable_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(saturated_variable_set, *var);
+      xbt::intrusive_erase(saturated_variable_set, *var);
   }
   void make_constraint_active(Constraint * cnst)
   {
@@ -487,9 +487,9 @@ private:
   void make_constraint_inactive(Constraint * cnst)
   {
     if (cnst->active_constraint_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(active_constraint_set, *cnst);
+      xbt::intrusive_erase(active_constraint_set, *cnst);
     if (cnst->modified_constraint_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(modified_constraint_set, *cnst);
+      xbt::intrusive_erase(modified_constraint_set, *cnst);
   }
 
   void enable_var(Variable * var);
@@ -564,8 +564,8 @@ XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);
 XBT_PUBLIC System* make_new_fair_bottleneck_system(bool selective_update);
 
 /** @} */
-}
-}
-}
+} // namespace lmm
+} // namespace kernel
+} // namespace simgrid
 
 #endif

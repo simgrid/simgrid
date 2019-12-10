@@ -52,7 +52,7 @@ ActorImpl* ActorImpl::self()
   return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }
 
-ActorImpl::ActorImpl(simgrid::xbt::string name, s4u::Host* host) : host_(host), name_(std::move(name)), piface_(this)
+ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std::move(name)), piface_(this)
 {
   pid_           = maxpid++;
   simcall.issuer_ = this;
@@ -63,7 +63,7 @@ ActorImpl::~ActorImpl()
   if (simix_global != nullptr && this != simix_global->maestro_) {
     if (context_.get() != nullptr) /* the actor was not start()ed yet. This happens if its host was initially off */
       context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-    simgrid::kernel::actor::simcall([this] { simgrid::s4u::Actor::on_destruction(*ciface()); });
+    actor::simcall([this] { s4u::Actor::on_destruction(*ciface()); });
     if (context_.get() != nullptr)
       context_->iwannadie = true;
   }
@@ -86,7 +86,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   if (not host->is_on()) {
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name.c_str(), host->get_cname());
-    throw simgrid::HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.");
+    throw HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.");
   }
 
   ActorImpl* actor = new ActorImpl(xbt::string(name), host);
@@ -111,12 +111,12 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   simix_global->actors_to_run.push_back(actor);
   intrusive_ptr_add_ref(actor);
 
-  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(actor->context_.get());
+  auto* context = dynamic_cast<context::AttachContext*>(actor->context_.get());
   xbt_assert(nullptr != context, "Not a suitable context");
   context->attach_start();
 
   /* The on_creation() signal must be delayed until there, where the pid and everything is set */
-  simgrid::s4u::Actor::on_creation(*actor->ciface());
+  s4u::Actor::on_creation(*actor->ciface());
 
   return ActorImplPtr(actor);
 }
@@ -188,7 +188,7 @@ void ActorImpl::cleanup()
   simix_global->mutex.unlock();
 
   context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  simgrid::kernel::actor::simcall([this] { simgrid::s4u::Actor::on_termination(*ciface()); });
+  actor::simcall([this] { s4u::Actor::on_termination(*ciface()); });
   context_->iwannadie = true;
 }
 
@@ -404,7 +404,7 @@ activity::ActivityImplPtr ActorImpl::join(ActorImpl* actor, double timeout)
 activity::ActivityImplPtr ActorImpl::sleep(double duration)
 {
   if (not host_->is_on())
-    throw_exception(std::make_exception_ptr(simgrid::HostFailureException(
+    throw_exception(std::make_exception_ptr(HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + host_->get_cname() + " failed, you cannot sleep there.")));
 
   auto sleep = new activity::SleepImpl();
@@ -472,7 +472,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
   if (not host_->is_on()) {
     XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name_.c_str(), host_->get_cname());
     intrusive_ptr_release(this);
-    throw simgrid::HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.");
+    throw HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.");
   }
 
   this->code_ = code;

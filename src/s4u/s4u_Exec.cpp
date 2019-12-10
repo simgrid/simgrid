@@ -126,7 +126,7 @@ ExecPtr Exec::set_priority(double priority)
 ExecSeq::ExecSeq(sg_host_t host, double flops_amount) : Exec(), flops_amount_(flops_amount)
 {
   Activity::set_remaining(flops_amount_);
-  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_host(host);
+  boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host);
 }
 
 Exec* ExecSeq::start()
@@ -154,16 +154,16 @@ ExecPtr ExecSeq::set_host(Host* host)
   xbt_assert(state_ == State::INITED || state_ == State::STARTED,
              "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
   if (state_ == State::STARTED)
-    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
-  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_host(host);
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->migrate(host);
+  boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host);
   return this;
 }
 
 /** @brief Returns the amount of flops that remain to be done */
 double ExecSeq::get_remaining()
 {
-  return simgrid::kernel::actor::simcall(
-      [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
+  return kernel::actor::simcall(
+      [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
 }
 
 /** @brief Returns the ratio of elements that are still to do
@@ -172,9 +172,8 @@ double ExecSeq::get_remaining()
  */
 double ExecSeq::get_remaining_ratio()
 {
-  return simgrid::kernel::actor::simcall([this]() {
-    return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio();
-  });
+  return kernel::actor::simcall(
+      [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio(); });
 }
 
 ///////////// PARALLEL EXECUTIONS ////////
