@@ -41,6 +41,7 @@ namespace smpi{
       else
         mount = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_mount_point();
       XBT_DEBUG("No absolute path given for file opening, use '%s'", mount.c_str());
+      mount.append("/");
       fullname.insert(0, mount);
     }
 
