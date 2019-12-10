@@ -102,7 +102,8 @@ class File{
       delete[] min_offsets;
       delete[] max_offsets;
       //contiguous. Just have each proc perform its read
-      status->count=count * datatype->size();
+      if(status != MPI_STATUS_IGNORE)
+        status->count=count * datatype->size();
       return T(this,buf,count,datatype, status);
     }
 
@@ -180,7 +181,8 @@ class File{
     //Set buf value to avoid copying dumb data
     simgrid::smpi::colls::alltoallv(sendbuf, send_sizes, send_disps, MPI_BYTE, buf, recv_sizes, recv_disps, MPI_BYTE,
                                     comm_);
-    status->count=count * datatype->size();
+    if(status!=MPI_STATUS_IGNORE)
+      status->count=count * datatype->size();
     smpi_free_tmp_buffer(sendbuf);
     delete[] send_sizes;
     delete[] recv_sizes;
