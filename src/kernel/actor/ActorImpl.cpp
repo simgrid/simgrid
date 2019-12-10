@@ -82,10 +82,10 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 {
   // This is mostly a copy/paste from create(), it'd be nice to share some code between those two functions.
 
-  XBT_DEBUG("Attach process %s on host '%s'", name.c_str(), host->get_cname());
+  XBT_DEBUG("Attach actor %s on host '%s'", name.c_str(), host->get_cname());
 
   if (not host->is_on()) {
-    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name.c_str(), host->get_cname());
+    XBT_WARN("Cannot attach actor '%s' on failed host '%s'", name.c_str(), host->get_cname());
     throw HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.");
   }
 
@@ -102,10 +102,10 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   if (properties != nullptr)
     actor->set_properties(*properties);
 
-  /* Add the process to it's host process list */
+  /* Add the actor to it's host actor list */
   host->pimpl_->add_actor(actor);
 
-  /* Now insert it in the global process list and in the process to run list */
+  /* Now insert it in the global actor list and in the actors to run list */
   simix_global->process_list[actor->get_pid()] = actor;
   XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
   simix_global->actors_to_run.push_back(actor);

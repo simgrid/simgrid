@@ -34,11 +34,11 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
 
 HostImpl::~HostImpl()
 {
-  /* All processes should be gone when the host is turned off (by the end of the simulation). */
+  /* All actors should be gone when the host is turned off (by the end of the simulation). */
   if (not actor_list_.empty()) {
     std::string msg = std::string("Shutting down host, but it's not empty:");
-    for (auto const& process : actor_list_)
-      msg += "\n\t" + std::string(process.get_name());
+    for (auto const& actor : actor_list_)
+      msg += "\n\t" + std::string(actor.get_name());
 
     SIMIX_display_process_status();
     xbt_die("%s", msg.c_str());
