@@ -143,7 +143,8 @@ namespace smpi{
       fh->file_->seek(position+movesize, SEEK_SET);
     }
     XBT_VERB("Position after read in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
-    status->count=count*datatype->size();
+    if(status != MPI_STATUS_IGNORE)
+      status->count=count*datatype->size();
     return MPI_SUCCESS;
   }
 
@@ -202,7 +203,8 @@ namespace smpi{
       fh->file_->seek(position+movesize, SEEK_SET);
     }
     XBT_VERB("Position after write in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
-    status->count=count*datatype->size();
+    if(status != MPI_STATUS_IGNORE)
+      status->count=count*datatype->size();
     return MPI_SUCCESS;
   }
 

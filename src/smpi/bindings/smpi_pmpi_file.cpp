@@ -29,7 +29,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
   CHECK_BUFFER(2, buf, count)                                                                                          \
   CHECK_COUNT(3, count)                                                                                                \
   CHECK_TYPE(4, datatype)                                                                                              \
-  CHECK_NULL(5, MPI_ERR_ARG, status)
 
 #define CHECK_FILE_INPUT_OFFSET                                                                                        \
   CHECK_FILE(1, fh)                                                                                                    \
@@ -37,7 +36,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
   CHECK_OFFSET(3, offset)                                                                                                 \
   CHECK_COUNT(4, count)                                                                                                \
   CHECK_TYPE(5, datatype)                                                                                              \
-  CHECK_NULL(6, MPI_ERR_ARG, status)
 
 extern MPI_Errhandler SMPI_default_File_Errhandler;
 
