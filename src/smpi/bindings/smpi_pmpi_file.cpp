@@ -9,9 +9,6 @@
 #include "smpi_datatype.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
-#define CHECK_FLAGS(fh)                                                                                                \
-  if ((fh)->flags() & MPI_MODE_SEQUENTIAL)                                                                             \
-    return MPI_ERR_AMODE;
 #define CHECK_RDONLY(fh)                                                                                               \
   if ((fh)->flags() & MPI_MODE_RDONLY)                                                                                 \
     return MPI_ERR_AMODE;
@@ -100,7 +97,7 @@ int PMPI_File_get_position_shared(MPI_File fh, MPI_Offset* offset){
 }
 
 int PMPI_File_read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
-  CHECK_FLAGS(fh)
+  CHECK_FILE_INPUTS
   CHECK_WRONLY(fh)
   PASS_ZEROCOUNT(count)
   smpi_bench_end();
@@ -114,7 +111,6 @@ int PMPI_File_read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_
 
 int PMPI_File_read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
-  CHECK_FLAGS(fh)
   CHECK_WRONLY(fh)
   PASS_ZEROCOUNT(count)
   smpi_bench_end();
@@ -129,7 +125,6 @@ int PMPI_File_read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatyp
 
 int PMPI_File_write(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
-  CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
   PASS_ZEROCOUNT(count)
   smpi_bench_end();
@@ -143,7 +138,6 @@ int PMPI_File_write(MPI_File fh, const void *buf, int count,MPI_Datatype datatyp
 
 int PMPI_File_write_shared(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
-  CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
   PASS_ZEROCOUNT(count)
   smpi_bench_end();
@@ -158,7 +152,6 @@ int PMPI_File_write_shared(MPI_File fh, const void *buf, int count,MPI_Datatype 
 
 int PMPI_File_read_all(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
-  CHECK_FLAGS(fh)
   CHECK_WRONLY(fh)
   smpi_bench_end();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
@@ -171,7 +164,6 @@ int PMPI_File_read_all(MPI_File fh, void *buf, int count,MPI_Datatype datatype, 
 
 int PMPI_File_read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
-  CHECK_FLAGS(fh)
   CHECK_WRONLY(fh)
   smpi_bench_end();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
@@ -185,7 +177,6 @@ int PMPI_File_read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype dataty
 
 int PMPI_File_write_all(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
-  CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
   smpi_bench_end();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
@@ -198,7 +189,6 @@ int PMPI_File_write_all(MPI_File fh, const void *buf, int count,MPI_Datatype dat
 
 int PMPI_File_write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
-  CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
   smpi_bench_end();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
@@ -212,7 +202,6 @@ int PMPI_File_write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype
 
 int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
-  CHECK_FLAGS(fh)
   CHECK_WRONLY(fh)
   PASS_ZEROCOUNT(count);
   smpi_bench_end();
@@ -229,7 +218,6 @@ int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_D
 
 int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUT_OFFSET
-  CHECK_FLAGS(fh)
   CHECK_WRONLY(fh)
   smpi_bench_end();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
@@ -246,7 +234,6 @@ int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf, int count,M
 
 int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUT_OFFSET
-  CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
   PASS_ZEROCOUNT(count);
   smpi_bench_end();
@@ -263,7 +250,6 @@ int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void *buf, int coun
 
 int PMPI_File_write_at_all(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUT_OFFSET
-  CHECK_FLAGS(fh)
   CHECK_RDONLY(fh)
   smpi_bench_end();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
