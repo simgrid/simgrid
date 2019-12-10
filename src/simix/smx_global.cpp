@@ -222,7 +222,7 @@ void Global::wake_all_waiting_actors()
 
 void Global::display_all_actor_status()
 {
-  XBT_INFO("%lu actors are still running, waiting for something.", process_list.size());
+  XBT_INFO("%zu actors are still running, waiting for something.", process_list.size());
   /*  List the actors and their state */
   XBT_INFO("Legend of the following listing: \"Actor <pid> (<name>@<host>): <status>\"");
   for (auto const& kv : process_list) {

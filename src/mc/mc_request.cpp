@@ -13,8 +13,7 @@
 
 using simgrid::mc::remote;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
-                                "Logging specific to MC (request)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc, "Logging specific to MC (request)");
 
 static char *pointer_to_string(void *pointer);
 static char *buff_size_to_string(size_t size);
@@ -57,13 +56,11 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
   if (r1->call_ == SIMCALL_COMM_IRECV && r2->call_ == SIMCALL_COMM_ISEND)
     return false;
 
-  // Those are internal requests, we do not need indirection
-  // because those objects are copies:
-  simgrid::kernel::activity::CommImpl* synchro1 = MC_get_comm(r1);
-  simgrid::kernel::activity::CommImpl* synchro2 = MC_get_comm(r2);
+  // Those are internal requests, we do not need indirection because those objects are copies:
+  kernel::activity::CommImpl* synchro1 = MC_get_comm(r1);
+  kernel::activity::CommImpl* synchro2 = MC_get_comm(r2);
 
   if ((r1->call_ == SIMCALL_COMM_ISEND || r1->call_ == SIMCALL_COMM_IRECV) && r2->call_ == SIMCALL_COMM_WAIT) {
-
     smx_mailbox_t mbox = MC_get_mbox(r1);
 
     if (mbox != synchro2->mbox_cpy
@@ -83,13 +80,12 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
       return false;
   }
 
-  /* FIXME: the following rule assumes that the result of the
-   * isend/irecv call is not stored in a buffer used in the
+  /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
    * test call. */
 #if 0
   if((r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
-     &&  r2->call == SIMCALL_COMM_TEST)
-     return false;
+      &&  r2->call == SIMCALL_COMM_TEST)
+    return false;
 #endif
 
   if (r1->call_ == SIMCALL_COMM_WAIT && (r2->call_ == SIMCALL_COMM_WAIT || r2->call_ == SIMCALL_COMM_TEST) &&
@@ -127,10 +123,9 @@ bool request_depend(smx_simcall_t req1, smx_simcall_t req2)
   if (req1->call_ != req2->call_)
     return request_depend_asymmetric(req1, req2) && request_depend_asymmetric(req2, req1);
 
-  // Those are internal requests, we do not need indirection
-  // because those objects are copies:
-  simgrid::kernel::activity::CommImpl* synchro1 = MC_get_comm(req1);
-  simgrid::kernel::activity::CommImpl* synchro2 = MC_get_comm(req2);
+  // Those are internal requests, we do not need indirection because those objects are copies:
+  kernel::activity::CommImpl* synchro1 = MC_get_comm(req1);
+  kernel::activity::CommImpl* synchro2 = MC_get_comm(req2);
 
   switch (req1->call_) {
     case SIMCALL_COMM_ISEND:
@@ -150,12 +145,11 @@ bool request_depend(smx_simcall_t req1, smx_simcall_t req2)
   }
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 static char *pointer_to_string(void *pointer)
 {
-
   if (XBT_LOG_ISENABLED(mc_request, xbt_log_priority_verbose))
     return bprintf("%p", pointer);
 
@@ -164,7 +158,6 @@ static char *pointer_to_string(void *pointer)
 
 static char *buff_size_to_string(size_t buff_size)
 {
-
   if (XBT_LOG_ISENABLED(mc_request, xbt_log_priority_verbose))
     return bprintf("%zu", buff_size);
 
@@ -198,7 +191,6 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
   smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
 
   switch (req->call_) {
-
     case SIMCALL_COMM_ISEND: {
       type     = "iSend";
       char* p  = pointer_to_string(simcall_comm_isend__get__src_buff(req));
@@ -368,9 +360,8 @@ namespace mc {
 
 bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
-  simgrid::kernel::activity::CommImpl* remote_act = nullptr;
+  kernel::activity::CommImpl* remote_act = nullptr;
   switch (req->call_) {
-
     case SIMCALL_COMM_WAIT:
       /* FIXME: check also that src and dst processes are not suspended */
       remote_act = simcall_comm_wait__getraw__comm(req);
@@ -388,27 +379,15 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
       return true;
   }
 
-  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
+  Remote<kernel::activity::CommImpl> temp_comm;
   mc_model_checker->process().read(temp_comm, remote(remote_act));
-  simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+  kernel::activity::CommImpl* comm = temp_comm.get_buffer();
   return comm->src_actor_.get() && comm->dst_actor_.get();
 }
 
-
 static const char* colors[] = {
-  "blue",
-  "red",
-  "green3",
-  "goldenrod",
-  "brown",
-  "purple",
-  "magenta",
-  "turquoise4",
-  "gray25",
-  "forestgreen",
-  "hotpink",
-  "lightblue",
-  "tan",
+    "blue",       "red",    "green3",      "goldenrod", "brown",     "purple", "magenta",
+    "turquoise4", "gray25", "forestgreen", "hotpink",   "lightblue", "tan",
 };
 
 static inline const char* get_color(int id)
@@ -430,62 +409,57 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
   switch (req->call_) {
     case SIMCALL_COMM_ISEND:
       if (issuer->get_host())
-        label = simgrid::xbt::string_printf("[(%ld)%s] iSend", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+        label = xbt::string_printf("[(%ld)%s] iSend", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
       else
         label = bprintf("[(%ld)] iSend", issuer->get_pid());
       break;
 
     case SIMCALL_COMM_IRECV:
       if (issuer->get_host())
-        label = simgrid::xbt::string_printf("[(%ld)%s] iRecv", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+        label = xbt::string_printf("[(%ld)%s] iRecv", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
       else
-        label = simgrid::xbt::string_printf("[(%ld)] iRecv", issuer->get_pid());
+        label = xbt::string_printf("[(%ld)] iRecv", issuer->get_pid());
       break;
 
     case SIMCALL_COMM_WAIT:
       if (value == -1) {
         if (issuer->get_host())
-          label = simgrid::xbt::string_printf("[(%ld)%s] WaitTimeout", issuer->get_pid(),
-                                              MC_smx_actor_get_host_name(issuer));
+          label = xbt::string_printf("[(%ld)%s] WaitTimeout", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
         else
-          label = simgrid::xbt::string_printf("[(%ld)] WaitTimeout", issuer->get_pid());
+          label = xbt::string_printf("[(%ld)] WaitTimeout", issuer->get_pid());
       } else {
-        simgrid::kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__getraw__comm(req);
-        simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-        mc_model_checker->process().read(temp_comm,
-                                         remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
-        simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+        kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__getraw__comm(req);
+        Remote<kernel::activity::CommImpl> temp_comm;
+        mc_model_checker->process().read(temp_comm, remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
+        kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
-        smx_actor_t src_proc = mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
-        smx_actor_t dst_proc = mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
+        smx_actor_t src_proc = mc_model_checker->process().resolve_actor(mc::remote(comm->src_actor_.get()));
+        smx_actor_t dst_proc = mc_model_checker->process().resolve_actor(mc::remote(comm->dst_actor_.get()));
         if (issuer->get_host())
-          label = simgrid::xbt::string_printf("[(%ld)%s] Wait [(%ld)->(%ld)]", issuer->get_pid(),
-                                              MC_smx_actor_get_host_name(issuer), src_proc ? src_proc->get_pid() : 0,
-                                              dst_proc ? dst_proc->get_pid() : 0);
+          label =
+              xbt::string_printf("[(%ld)%s] Wait [(%ld)->(%ld)]", issuer->get_pid(), MC_smx_actor_get_host_name(issuer),
+                                 src_proc ? src_proc->get_pid() : 0, dst_proc ? dst_proc->get_pid() : 0);
         else
-          label = simgrid::xbt::string_printf("[(%ld)] Wait [(%ld)->(%ld)]", issuer->get_pid(),
-                                              src_proc ? src_proc->get_pid() : 0, dst_proc ? dst_proc->get_pid() : 0);
+          label = xbt::string_printf("[(%ld)] Wait [(%ld)->(%ld)]", issuer->get_pid(),
+                                     src_proc ? src_proc->get_pid() : 0, dst_proc ? dst_proc->get_pid() : 0);
       }
       break;
 
     case SIMCALL_COMM_TEST: {
-      simgrid::kernel::activity::ActivityImpl* remote_act = simcall_comm_test__getraw__comm(req);
-      simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-      mc_model_checker->process().read(temp_comm,
-                                       remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
-      simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+      kernel::activity::ActivityImpl* remote_act = simcall_comm_test__getraw__comm(req);
+      Remote<simgrid::kernel::activity::CommImpl> temp_comm;
+      mc_model_checker->process().read(temp_comm, remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
+      kernel::activity::CommImpl* comm = temp_comm.get_buffer();
       if (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr) {
         if (issuer->get_host())
-          label = simgrid::xbt::string_printf("[(%ld)%s] Test FALSE", issuer->get_pid(),
-                                              MC_smx_actor_get_host_name(issuer));
+          label = xbt::string_printf("[(%ld)%s] Test FALSE", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
         else
           label = bprintf("[(%ld)] Test FALSE", issuer->get_pid());
       } else {
         if (issuer->get_host())
-          label =
-              simgrid::xbt::string_printf("[(%ld)%s] Test TRUE", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+          label = xbt::string_printf("[(%ld)%s] Test TRUE", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
         else
-          label = simgrid::xbt::string_printf("[(%ld)] Test TRUE", issuer->get_pid());
+          label = xbt::string_printf("[(%ld)] Test TRUE", issuer->get_pid());
       }
       break;
     }
@@ -493,55 +467,52 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
     case SIMCALL_COMM_WAITANY: {
       size_t comms_size = simcall_comm_waitany__get__count(req);
       if (issuer->get_host())
-        label = simgrid::xbt::string_printf("[(%ld)%s] WaitAny [%d of %zu]", issuer->get_pid(),
-                                            MC_smx_actor_get_host_name(issuer), value + 1, comms_size);
+        label = xbt::string_printf("[(%ld)%s] WaitAny [%d of %zu]", issuer->get_pid(),
+                                   MC_smx_actor_get_host_name(issuer), value + 1, comms_size);
       else
-        label = simgrid::xbt::string_printf("[(%ld)] WaitAny [%d of %zu]", issuer->get_pid(), value + 1, comms_size);
+        label = xbt::string_printf("[(%ld)] WaitAny [%d of %zu]", issuer->get_pid(), value + 1, comms_size);
       break;
     }
 
     case SIMCALL_COMM_TESTANY:
       if (value == -1) {
         if (issuer->get_host())
-          label = simgrid::xbt::string_printf("[(%ld)%s] TestAny FALSE", issuer->get_pid(),
-                                              MC_smx_actor_get_host_name(issuer));
+          label = xbt::string_printf("[(%ld)%s] TestAny FALSE", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
         else
-          label = simgrid::xbt::string_printf("[(%ld)] TestAny FALSE", issuer->get_pid());
+          label = xbt::string_printf("[(%ld)] TestAny FALSE", issuer->get_pid());
       } else {
         if (issuer->get_host())
-          label = simgrid::xbt::string_printf("[(%ld)%s] TestAny TRUE [%d of %lu]", issuer->get_pid(),
-                                              MC_smx_actor_get_host_name(issuer), value + 1,
-                                              simcall_comm_testany__get__count(req));
+          label =
+              xbt::string_printf("[(%ld)%s] TestAny TRUE [%d of %lu]", issuer->get_pid(),
+                                 MC_smx_actor_get_host_name(issuer), value + 1, simcall_comm_testany__get__count(req));
         else
-          label = simgrid::xbt::string_printf("[(%ld)] TestAny TRUE [%d of %lu]", issuer->get_pid(), value + 1,
-                                              simcall_comm_testany__get__count(req));
+          label = xbt::string_printf("[(%ld)] TestAny TRUE [%d of %lu]", issuer->get_pid(), value + 1,
+                                     simcall_comm_testany__get__count(req));
       }
       break;
 
     case SIMCALL_MUTEX_TRYLOCK:
-      label = simgrid::xbt::string_printf("[(%ld)] Mutex TRYLOCK", issuer->get_pid());
+      label = xbt::string_printf("[(%ld)] Mutex TRYLOCK", issuer->get_pid());
       break;
 
     case SIMCALL_MUTEX_LOCK:
-      label = simgrid::xbt::string_printf("[(%ld)] Mutex LOCK", issuer->get_pid());
+      label = xbt::string_printf("[(%ld)] Mutex LOCK", issuer->get_pid());
       break;
 
     case SIMCALL_MC_RANDOM:
       if (issuer->get_host())
-        label = simgrid::xbt::string_printf("[(%ld)%s] MC_RANDOM (%d)", issuer->get_pid(),
-                                            MC_smx_actor_get_host_name(issuer), value);
+        label = xbt::string_printf("[(%ld)%s] MC_RANDOM (%d)", issuer->get_pid(), MC_smx_actor_get_host_name(issuer),
+                                   value);
       else
-        label = simgrid::xbt::string_printf("[(%ld)] MC_RANDOM (%d)", issuer->get_pid(), value);
+        label = xbt::string_printf("[(%ld)] MC_RANDOM (%d)", issuer->get_pid(), value);
       break;
 
     default:
       THROW_UNIMPLEMENTED;
   }
 
-  return  simgrid::xbt::string_printf(
-        "label = \"%s\", color = %s, fontcolor = %s", label.c_str(),
-        color, color);
+  return xbt::string_printf("label = \"%s\", color = %s, fontcolor = %s", label.c_str(), color, color);
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid

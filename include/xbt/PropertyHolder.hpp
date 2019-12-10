@@ -18,6 +18,7 @@ namespace xbt {
  * Common PropertyHolders are elements of the platform file, such as Host, Link or Storage.
  */
 class PropertyHolder { // DO NOT DERIVE THIS CLASS, or the diamond inheritance mayhem will get you
+  std::unique_ptr<std::unordered_map<std::string, std::string>> properties_ = nullptr;
 
 public:
   PropertyHolder()                      = default;
@@ -29,9 +30,6 @@ public:
 
   const std::unordered_map<std::string, std::string>* get_properties();
   template <class Assoc> void set_properties(const Assoc& properties);
-
-private:
-  std::unique_ptr<std::unordered_map<std::string, std::string>> properties_ = nullptr;
 };
 
 } // namespace xbt

@@ -291,7 +291,6 @@ void FatTreeZone::generate_labels()
     }
 
     for (unsigned int j = 0; j < this->nodes_by_level_[i]; j++) {
-
       if (XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
         std::stringstream msgBuffer;
 
@@ -483,6 +482,6 @@ FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, Fa
   }
   uniqueId++;
 }
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
