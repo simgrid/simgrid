@@ -43,7 +43,7 @@ XBT_ATTRIB_NORETURN static void inthandler(int)
   if (simgrid::simix::cfg_verbose_exit) {
     XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option "
              "'debug/verbose-exit').");
-    SIMIX_display_process_status();
+    simix_global->display_all_actor_status();
   }
   else {
     XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'debug/verbose-exit' is set to false.");
@@ -216,6 +216,45 @@ void Global::wake_all_waiting_actors()
         XBT_DEBUG("probably vcpu's action %p, skip", action);
       else
         kernel::activity::ActivityImplPtr(action->get_activity())->post();
+    }
+  }
+}
+
+void Global::display_all_actor_status()
+{
+  XBT_INFO("%lu actors are still running, waiting for something.", process_list.size());
+  /*  List the actors and their state */
+  XBT_INFO("Legend of the following listing: \"Actor <pid> (<name>@<host>): <status>\"");
+  for (auto const& kv : process_list) {
+    kernel::actor::ActorImpl* actor = kv.second;
+
+    if (actor->waiting_synchro) {
+      const char* synchro_description = "unknown";
+      // we don't care about the Activity type to get its name, use RawImpl
+      const char* name = boost::static_pointer_cast<kernel::activity::ActivityImpl_T<kernel::activity::RawImpl>>(
+                             actor->waiting_synchro)
+                             ->get_cname();
+
+      if (boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(actor->waiting_synchro) != nullptr)
+        synchro_description = "execution";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::CommImpl>(actor->waiting_synchro) != nullptr)
+        synchro_description = "communication";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::SleepImpl>(actor->waiting_synchro) != nullptr)
+        synchro_description = "sleeping";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::RawImpl>(actor->waiting_synchro) != nullptr)
+        synchro_description = "synchronization";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(actor->waiting_synchro) != nullptr)
+        synchro_description = "I/O";
+
+      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %p (%s) in state %d to finish", actor->get_pid(),
+               actor->get_cname(), actor->get_host()->get_cname(), synchro_description, actor->waiting_synchro.get(),
+               name, (int)actor->waiting_synchro->state_);
+    } else {
+      XBT_INFO("Actor %ld (%s@%s)", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname());
     }
   }
 }
@@ -523,7 +562,7 @@ void SIMIX_run()
     } else {
       XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
     }
-    SIMIX_display_process_status();
+    simix_global->display_all_actor_status();
     simgrid::s4u::Engine::on_deadlock();
     xbt_abort();
   }
@@ -552,47 +591,9 @@ double SIMIX_timer_get_date(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
   return timer ? timer->get_date() : 0;
 }
 
-void SIMIX_display_process_status()
+void SIMIX_display_process_status() // XBT_ATTRIB_DEPRECATED_v329
 {
-  int nbprocess = simix_global->process_list.size();
-
-  XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
-  /*  List the process and their state */
-  XBT_INFO("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
-  for (auto const& kv : simix_global->process_list) {
-    simgrid::kernel::actor::ActorImpl* actor = kv.second;
-
-    if (actor->waiting_synchro) {
-      const char* synchro_description = "unknown";
-      // we don't care about the Activity type to get its name, use RawImpl
-      const char* name =
-          boost::static_pointer_cast<simgrid::kernel::activity::ActivityImpl_T<simgrid::kernel::activity::RawImpl>>(
-              actor->waiting_synchro)
-              ->get_cname();
-
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(actor->waiting_synchro) != nullptr)
-        synchro_description = "execution";
-
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(actor->waiting_synchro) != nullptr)
-        synchro_description = "communication";
-
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(actor->waiting_synchro) != nullptr)
-        synchro_description = "sleeping";
-
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::RawImpl>(actor->waiting_synchro) != nullptr)
-        synchro_description = "synchronization";
-
-      if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(actor->waiting_synchro) != nullptr)
-        synchro_description = "I/O";
-
-      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %p (%s) in state %d to finish", actor->get_pid(),
-               actor->get_cname(), actor->get_host()->get_cname(), synchro_description, actor->waiting_synchro.get(),
-               name, (int)actor->waiting_synchro->state_);
-    }
-    else {
-      XBT_INFO("Actor %ld (%s@%s)", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname());
-    }
-  }
+  simix_global->display_all_actor_status();
 }
 
 int SIMIX_is_maestro()

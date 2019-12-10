@@ -40,7 +40,7 @@ HostImpl::~HostImpl()
     for (auto const& actor : actor_list_)
       msg += "\n\t" + std::string(actor.get_name());
 
-    SIMIX_display_process_status();
+    simix_global->display_all_actor_status();
     xbt_die("%s", msg.c_str());
   }
   for (auto const& arg : actors_at_boot_)
