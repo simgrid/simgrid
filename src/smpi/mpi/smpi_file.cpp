@@ -13,6 +13,8 @@
 
 #include "smpi_file.hpp"
 #include "smpi_status.hpp"
+#include "simgrid/s4u/Disk.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/plugins/file_system.h"
 
 #define FP_SIZE sizeof(MPI_Offset)
@@ -25,7 +27,24 @@ namespace simgrid{
 namespace smpi{
 
   File::File(MPI_Comm comm, const char *filename, int amode, MPI_Info info): comm_(comm), flags_(amode), info_(info) {
-    file_= new simgrid::s4u::File(filename, nullptr);
+    std::string fullname=filename;
+    if (simgrid::s4u::Host::current()->get_disks().empty())
+      xbt_die("SMPI/IO : Trying to open file on a diskless host ! Add one to your platform file");
+
+    size_t found=fullname.find('/');
+    //in case no fullpath is provided ... just pick the first mountpoint.
+    if(found==std::string::npos){
+      auto disk = simgrid::s4u::Host::current()->get_disks().front();
+      std::string mount;
+      if (disk->get_host() != simgrid::s4u::Host::current())
+        mount = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_mount_point(disk->get_host());
+      else
+        mount = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_mount_point();
+      XBT_DEBUG("No absolute path given for file opening, use '%s'", mount.c_str());
+      fullname.insert(0, mount);
+    }
+
+    file_= new simgrid::s4u::File(fullname, nullptr);
     list_=nullptr;
     if (comm_->rank() == 0) {
       int size= comm_->size() + FP_SIZE;
