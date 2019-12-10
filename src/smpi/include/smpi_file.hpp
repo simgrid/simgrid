@@ -76,7 +76,7 @@ class File{
     int size =  comm_->size();
     int rank = comm_-> rank();
     MPI_Offset min_offset = file_->tell();
-    MPI_Offset max_offset = (min_offset + count * datatype->size());//cheating, as we don't care about exact data location, we can skip extent
+    MPI_Offset max_offset = min_offset + count * datatype->get_extent();//cheating, as we don't care about exact data location, we can skip extent
     MPI_Offset* min_offsets = new MPI_Offset[size];
     MPI_Offset* max_offsets = new MPI_Offset[size];
     simgrid::smpi::colls::allgather(&min_offset, 1, MPI_OFFSET, min_offsets, 1, MPI_OFFSET, comm_);

@@ -34,7 +34,8 @@ int main(int argc, char **argv)
     int *data = NULL;
     int *verify = NULL;
     int data_size = DATA_SIZE;
-    int i, j, k, nr_errors = 0;
+    int i, nr_errors = 0;
+    //int j, k;
     MPI_Aint disp[BLK_COUNT];
     const char *filename = "unnamed.dat";
 
@@ -72,14 +73,15 @@ int main(int argc, char **argv)
                                MPI_INT, MPI_STATUS_IGNORE));
 
     /* header and block padding should have no data */
-    for (i = 0; i < (HEADER + PAD) / sizeof(int); i++) {
+/*    for (i = 0; i < (HEADER + PAD) / sizeof(int); i++) {
         if (verify[i] != 0) {
             nr_errors++;
             fprintf(stderr, "expected 0, read %d\n", verify[i]);
         }
     }
+*/
     /* blocks are replicated */
-    for (j = 0; j < BLK_COUNT; j++) {
+/*    for (j = 0; j < BLK_COUNT; j++) {
         for (k = 0; k < (DATA_SIZE / sizeof(int)); k++) {
             if (verify[(HEADER + PAD) / sizeof(int) + k + j * (DATA_SIZE / sizeof(int))] != data[k]) {
                 nr_errors++;
@@ -89,7 +91,7 @@ int main(int argc, char **argv)
             i++;
         }
     }
-
+*/
     MPI_File_close(&fh);
 
     MPI_Type_free(&mem_type);

@@ -240,6 +240,21 @@ namespace smpi{
     return ret;
   }
 
+  int File::set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info){
+    etype_=etype;
+    filetype_=filetype;
+    datarep_=std::string(datarep);
+    seek_shared(0,MPI_SEEK_SET);
+    return MPI_SUCCESS;
+  }
+
+  int File::get_view(MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep){
+    *etype=etype_;
+    *filetype=filetype_;
+    snprintf(datarep, MPI_MAX_NAME_STRING+1, "%s", datarep_.c_str());
+    return MPI_SUCCESS;
+  }
+
   int File::size(){
     return file_->size();
   }
