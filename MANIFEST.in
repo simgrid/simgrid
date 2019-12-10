@@ -368,6 +368,8 @@ include examples/s4u/exec-async/s4u-exec-async.cpp
 include examples/s4u/exec-async/s4u-exec-async.tesh
 include examples/s4u/exec-basic/s4u-exec-basic.cpp
 include examples/s4u/exec-basic/s4u-exec-basic.tesh
+include examples/s4u/exec-dependent/s4u-exec-dependent.cpp
+include examples/s4u/exec-dependent/s4u-exec-dependent.tesh
 include examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp
 include examples/s4u/exec-dvfs/s4u-exec-dvfs.tesh
 include examples/s4u/exec-ptask/s4u-exec-ptask.cpp

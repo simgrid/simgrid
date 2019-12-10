@@ -7,9 +7,12 @@
 #define SIMGRID_S4U_ACTIVITY_HPP
 
 #include "xbt/asserts.h"
+#include "xbt/log.h"
 #include <atomic>
+#include <set>
 #include <simgrid/forward.h>
 #include <string>
+#include <vector>
 #include <xbt/signal.hpp>
 
 namespace simgrid {
@@ -38,14 +41,13 @@ class XBT_PUBLIC Activity {
 protected:
   Activity()  = default;
   virtual ~Activity() = default;
-
 public:
 #ifndef DOXYGEN
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
 #endif
 
-  enum class State { INITED = 0, STARTED, CANCELED, ERRORED, FINISHED };
+  enum class State { INITED = 0, STARTING, STARTED, CANCELED, ERRORED, FINISHED };
 
   /** Starts a previously created activity.
    *
@@ -53,7 +55,7 @@ public:
    */
   virtual Activity* start() = 0;
   /** Blocks until the activity is terminated */
-  virtual Activity* wait() = 0;
+  //  virtual Activity* wait() = 0;
   /** Blocks until the activity is terminated, or until the timeout is elapsed
    *  Raises: timeout exception.*/
   virtual Activity* wait_for(double timeout) = 0;
@@ -65,6 +67,7 @@ public:
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
   Activity::State get_state() { return state_; }
+  void set_state(Activity::State state) { state_ = state; }
   /** Tests whether the given activity is terminated yet. This is a pure function. */
   virtual bool test() = 0;
 
@@ -85,12 +88,31 @@ private:
   double remains_                          = 0;
 };
 
+// template <class AnyActivity> class DependencyGuard {
+// public:
+//  static bool activity_start_vetoer(AnyActivity* a) { return not a->has_dependencies(); }
+//  static void on_activity_done(AnyActivity* a);
+////  {
+////    while (a->has_successors()) {
+////      AnyActivity* b = a->get_successor();
+////      b->remove_dependency_on(a);
+////      if (not b->has_dependencies()) {
+////        XBT_INFO("Activity is done and a successor can start");
+////        b->vetoable_start();
+////      }
+////      a->remove_successor();
+////    }
+////  }
+//};
+
 template <class AnyActivity> class Activity_T : public Activity {
 private:
   std::string name_             = "";
   std::string tracing_category_ = "";
   void* user_data_              = nullptr;
   std::atomic_int_fast32_t refcount_{0};
+  std::vector<AnyActivity*> successors_;
+  std::set<AnyActivity*> dependencies_;
 
 public:
 #ifndef DOXYGEN
@@ -103,6 +125,51 @@ public:
   }
   friend void intrusive_ptr_add_ref(AnyActivity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
 #endif
+
+  void add_successor(AnyActivity* a)
+  {
+    //    XBT_INFO("Adding %s as a successor of %s", get_name(), a->get_name());
+    successors_.push_back(a);
+    a->add_dependency_on(static_cast<AnyActivity*>(this));
+  }
+  void remove_successor() { successors_.pop_back(); }
+  AnyActivity* get_successor() { return successors_.back(); }
+  bool has_successors() { return not successors_.empty(); }
+
+  void add_dependency_on(AnyActivity* a) { dependencies_.insert({a}); }
+  void remove_dependency_on(AnyActivity* a) { dependencies_.erase(a); }
+  bool has_dependencies() { return not dependencies_.empty(); }
+  void on_activity_done()
+  {
+    while (has_successors()) {
+      AnyActivity* b = get_successor();
+      b->remove_dependency_on(static_cast<AnyActivity*>(this));
+      if (not b->has_dependencies()) {
+        // XBT_INFO("Activity is done and a successor can start");
+        b->vetoable_start();
+      }
+      remove_successor();
+    }
+  }
+
+  AnyActivity* vetoable_start()
+  {
+    set_state(State::STARTING);
+    if (has_dependencies())
+      return static_cast<AnyActivity*>(this);
+    //    XBT_INFO("No veto, Activity can start");
+    set_state(State::STARTED);
+    static_cast<AnyActivity*>(this)->start();
+    return static_cast<AnyActivity*>(this);
+  }
+
+  virtual AnyActivity* wait()
+  {
+    static_cast<AnyActivity*>(this)->wait();
+    on_activity_done();
+    return static_cast<AnyActivity*>(this);
+  }
+
   AnyActivity* set_name(const std::string& name)
   {
     xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");
