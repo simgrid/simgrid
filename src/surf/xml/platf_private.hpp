@@ -171,8 +171,6 @@ public:
   std::string element;
 };
 
-enum class ActorOnFailure { DIE, RESTART }; // FIXME: move to a better namespace
-
 class ActorCreationArgs {
 public:
   std::vector<std::string> args;
@@ -181,7 +179,7 @@ public:
   const char* function                   = nullptr;
   double start_time                      = 0.0;
   double kill_time                       = 0.0;
-  ActorOnFailure on_failure;
+  bool restart_on_failure                                  = false;
 };
 
 class ZoneCreationArgs {

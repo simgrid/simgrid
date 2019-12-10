@@ -951,10 +951,10 @@ void ETag_surfxml_actor()
   switch (A_surfxml_actor_on___failure) {
   case AU_surfxml_actor_on___failure:
   case A_surfxml_actor_on___failure_DIE:
-    actor.on_failure = simgrid::kernel::routing::ActorOnFailure::DIE;
+    actor.restart_on_failure = false;
     break;
   case A_surfxml_actor_on___failure_RESTART:
-    actor.on_failure = simgrid::kernel::routing::ActorOnFailure::RESTART;
+    actor.restart_on_failure = true;
     break;
   default:
     surf_parse_error("Invalid on failure behavior");
