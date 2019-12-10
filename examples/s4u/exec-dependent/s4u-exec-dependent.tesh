@@ -1,0 +1,3 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-exec-dependent ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
