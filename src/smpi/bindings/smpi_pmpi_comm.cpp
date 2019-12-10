@@ -261,7 +261,7 @@ int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
        ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE)
     return MPI_ERR_ARG;
   else
-  return comm->attr_put<simgrid::smpi::Comm>(keyval, attr_value);
+    return comm->attr_put<simgrid::smpi::Comm>(keyval, attr_value);
 }
 
 int PMPI_Errhandler_free(MPI_Errhandler* errhandler){
