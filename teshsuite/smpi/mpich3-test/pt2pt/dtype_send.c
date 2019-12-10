@@ -52,6 +52,7 @@ int main(int argc, char **argv)
         MPI_Waitall(NUM_LOOPS, req, MPI_STATUSES_IGNORE);
 
     MPI_Barrier(MPI_COMM_WORLD);
+    free(req);
 
     /* test issends */
     MPI_Type_create_indexed_block(count, 1, displs, MPI_INT, &newtype);
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
         MPI_Waitall(NUM_LOOPS, req, MPI_STATUSES_IGNORE);
 
     MPI_Barrier(MPI_COMM_WORLD);
+    free(req);
 
     /* test irsends */
     MPI_Type_create_indexed_block(count, 1, displs, MPI_INT, &newtype);
@@ -91,6 +93,8 @@ int main(int argc, char **argv)
     MPI_Waitall(NUM_LOOPS, req, MPI_STATUSES_IGNORE);
 
     MPI_Barrier(MPI_COMM_WORLD);
+    free(req);
+    free(displs);
 
     MPI_Finalize();
 
