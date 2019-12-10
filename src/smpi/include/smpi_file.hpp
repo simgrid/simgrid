@@ -28,6 +28,9 @@ class File{
   MPI_Win win_;
   char* list_;
   MPI_Errhandler errhandler_;
+  MPI_Datatype etype_;
+  MPI_Datatype filetype_;
+  std::string datarep_;
 
   public:
   File(MPI_Comm comm, const char *filename, int amode, MPI_Info info);
@@ -42,6 +45,8 @@ class File{
   int sync();
   int seek(MPI_Offset offset, int whence);
   int seek_shared(MPI_Offset offset, int whence);
+  int set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info);
+  int get_view(MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep);
   MPI_Info info();
   void set_info( MPI_Info info);
   static int read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);

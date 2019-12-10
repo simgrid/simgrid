@@ -287,6 +287,29 @@ int PMPI_File_delete(const char *filename, MPI_Info info){
   return ret;
 }
 
+int PMPI_File_set_view(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info){
+  CHECK_FILE(1, fh)
+  if(not ((fh->flags() & MPI_MODE_SEQUENTIAL) && (disp == MPI_DISPLACEMENT_CURRENT)))
+    CHECK_OFFSET(2, disp)
+  CHECK_TYPE(3, etype)
+  CHECK_TYPE(4, filetype)
+  smpi_bench_end();
+  int ret = fh->set_view(disp, etype, filetype, datarep, info);
+  smpi_bench_begin();
+  return ret;
+}
+
+int PMPI_File_get_view(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep){
+  CHECK_FILE(1, fh)
+  CHECK_NULL(2, MPI_ERR_ARG, disp)
+  CHECK_NULL(3, MPI_ERR_ARG, etype)
+  CHECK_NULL(4, MPI_ERR_ARG, filetype)
+  smpi_bench_end();
+  int ret = fh->get_view(disp, etype, filetype, datarep);
+  smpi_bench_begin();
+  return ret;
+}
+
 int PMPI_File_get_info(MPI_File  fh, MPI_Info* info)
 {
   CHECK_FILE(1, fh)
