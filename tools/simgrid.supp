@@ -26,23 +26,7 @@
    fun:_dl_init
 }
 
-# There's a constant leak of 56 bytes in the depths of libc which
-# manifests, for example, when using backtrace()
-{
-   Memory leak in libc/dlopen with -pthread
-   Memcheck:Leak
-   fun:malloc
-   fun:_dl_map_object_deps
-   fun:dl_open_worker
-   fun:_dl_catch_error
-   fun:_dl_open
-   fun:do_dlopen
-   fun:_dl_catch_error
-   fun:dlerror_run
-   fun:__libc_dlopen_mode
-}
-
-# Another problem in glibc, where makecontext does not reset the EBP register,
+# There's problem in glibc, where makecontext does not reset the EBP register,
 # and backtrace goes too far when walking up the stack frames
 {
    Invalid read in backtrace, called after makecontext
@@ -60,6 +44,14 @@
    fun:expand_dynamic_string_token
    ...
    fun:_dl_start
+}
+
+# There are memory leaks when using dlopen
+{
+   Memory leak in libc/dlopen
+   Memcheck:Leak
+   ...
+   fun:_dlerror_run
 }
 
 # 72704 bytes leak from GCC >5.1 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=64535
@@ -81,34 +73,6 @@
    match-leak-kinds: all
    fun:malloc
    fun:smpi_simulated_main_
-}
-
-#SMPI leaks the dlopen handle used to load the program
-{
-   dlopen handle leaks (1/3)
-   Memcheck:Leak
-   match-leak-kinds:reachable
-   fun:malloc
-   ...
-   fun:dlopen@@GLIBC_*
-}
-
-{
-   dlopen handle leaks (2/3)
-   Memcheck:Leak
-   match-leak-kinds:reachable
-   fun:calloc
-   ...
-   fun:dlopen@@GLIBC_*
-}
-
-{
-   dlopen handle leaks (3/3)
-   Memcheck:Leak
-   match-leak-kinds:reachable
-   fun:realloc
-   ...
-   fun:dlopen@@GLIBC_*
 }
 
 # Memory leaks appearing to be in libcgraph.  They can be seen with the
