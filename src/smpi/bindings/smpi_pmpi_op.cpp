@@ -12,36 +12,26 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 int PMPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
 {
-  if (function == nullptr || op == nullptr) {
-    return MPI_ERR_ARG;
-  } else {
-    *op = new simgrid::smpi::Op(function, (commute!=0));
-    return MPI_SUCCESS;
-  }
+  CHECK_NULL(1, MPI_ERR_ARG, function)
+  CHECK_NULL(3, MPI_ERR_ARG, op)
+  *op = new simgrid::smpi::Op(function, (commute!=0));
+  return MPI_SUCCESS;
 }
 
 int PMPI_Op_free(MPI_Op * op)
 {
-  if (op == nullptr) {
-    return MPI_ERR_ARG;
-  } else if (*op == MPI_OP_NULL) {
-    return MPI_ERR_OP;
-  } else {
-    simgrid::smpi::Op::unref(op);
-    *op = MPI_OP_NULL;
-    return MPI_SUCCESS;
-  }
+  CHECK_NULL(1, MPI_ERR_ARG, op)
+  CHECK_MPI_NULL(1, MPI_OP_NULL, MPI_ERR_OP, *op)
+  simgrid::smpi::Op::unref(op);
+  *op = MPI_OP_NULL;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Op_commutative(MPI_Op op, int* commute){
-  if (op == MPI_OP_NULL) {
-    return MPI_ERR_OP;
-  } else if (commute==nullptr){
-    return MPI_ERR_ARG;
-  } else {
-    *commute = op->is_commutative();
-    return MPI_SUCCESS;
-  }
+  CHECK_OP(1)
+  CHECK_NULL(1, MPI_ERR_ARG, commute)
+  *commute = op->is_commutative();
+  return MPI_SUCCESS;
 }
 
 MPI_Op PMPI_Op_f2c(MPI_Fint op){

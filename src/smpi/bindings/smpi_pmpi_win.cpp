@@ -13,14 +13,23 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
+#define CHECK_RMA\
+  CHECK_BUFFER(1, origin_addr, origin_count)\
+  CHECK_COUNT(2, origin_count)\
+  CHECK_TYPE(3, origin_datatype)\
+  CHECK_PROC(4, target_rank)\
+  CHECK_NEGATIVE(4, MPI_ERR_RANK, target_rank)\
+  CHECK_COUNT(6, target_count)\
+  CHECK_TYPE(7, target_datatype)
 /* PMPI User level calls */
 
 int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
   int retval = 0;
+  CHECK_COMM(5)
+  CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
+  CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
   smpi_bench_end();
-  if (comm == MPI_COMM_NULL) {
-    retval= MPI_ERR_COMM;
-  }else if ((base == nullptr && size != 0) || disp_unit <= 0 || size < 0 ){
+  if (base == nullptr && size != 0){
     retval= MPI_ERR_OTHER;
   }else{
     *win = new simgrid::smpi::Win( base, size, disp_unit, info, comm);
@@ -31,195 +40,136 @@ int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MP
 }
 
 int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *base, MPI_Win *win){
-  int retval = 0;
+  CHECK_COMM(5)
+  CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
+  CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
+  void* ptr = xbt_malloc(size);
+  if(ptr==nullptr)
+    return MPI_ERR_NO_MEM;
   smpi_bench_end();
-  if (comm == MPI_COMM_NULL) {
-    retval= MPI_ERR_COMM;
-  }else if (disp_unit <= 0 || size < 0 ){
-    retval= MPI_ERR_OTHER;
-  }else{
-    void* ptr = xbt_malloc(size);
-    if(ptr==nullptr)
-      return MPI_ERR_NO_MEM;
-    *static_cast<void**>(base) = ptr;
-    *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,1);
-    retval = MPI_SUCCESS;
-  }
+  *static_cast<void**>(base) = ptr;
+  *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,1);
   smpi_bench_begin();
-  return retval;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_allocate_shared( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *base, MPI_Win *win){
-  int retval = 0;
-  smpi_bench_end();
-  if (comm == MPI_COMM_NULL) {
-    retval= MPI_ERR_COMM;
-  }else if (disp_unit <= 0 || size < 0 ){
-    retval= MPI_ERR_OTHER;
-  }else{
-    void* ptr = nullptr;
-    int rank = comm->rank();
-    if(rank==0){
-       ptr = xbt_malloc(size*comm->size());
-       if(ptr==nullptr)
-         return MPI_ERR_NO_MEM;
-    }
-
-    simgrid::smpi::colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);
-    simgrid::smpi::colls::barrier(comm);
-
-    *static_cast<void**>(base) = (char*)ptr+rank*size;
-    *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,rank==0);
-    retval = MPI_SUCCESS;
+  CHECK_COMM(5)
+  CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
+  CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
+  void* ptr = nullptr;
+  int rank = comm->rank();
+  if(rank==0){
+     ptr = xbt_malloc(size*comm->size());
+     if(ptr==nullptr)
+       return MPI_ERR_NO_MEM;
   }
+  smpi_bench_end();
+  simgrid::smpi::colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);
+  simgrid::smpi::colls::barrier(comm);
+  *static_cast<void**>(base) = (char*)ptr+rank*size;
+  *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,rank==0);
   smpi_bench_begin();
-  return retval;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_create_dynamic( MPI_Info info, MPI_Comm comm, MPI_Win *win){
-  int retval = 0;
+  CHECK_COMM(2)
   smpi_bench_end();
-  if (comm == MPI_COMM_NULL) {
-    retval= MPI_ERR_COMM;
-  }else{
-    *win = new simgrid::smpi::Win(info, comm);
-    retval = MPI_SUCCESS;
-  }
+  *win = new simgrid::smpi::Win(info, comm);
   smpi_bench_begin();
-  return retval;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_attach(MPI_Win win, void *base, MPI_Aint size){
-  int retval = 0;
+  CHECK_WIN(1, win)
+  CHECK_NEGATIVE(3, MPI_ERR_OTHER, size)
+  if (base == nullptr && size != 0)
+    return MPI_ERR_OTHER;
   smpi_bench_end();
-  if(win == MPI_WIN_NULL){
-    retval = MPI_ERR_WIN;
-  } else if ((base == nullptr && size != 0) || size < 0 ){
-    retval= MPI_ERR_OTHER;
-  }else{
-    retval = win->attach(base, size);
-  }
+  int retval = win->attach(base, size);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_detach(MPI_Win win, const void* base)
 {
-  int retval = 0;
+  CHECK_WIN(1, win)
+  CHECK_NULL(2, MPI_ERR_OTHER, base)
   smpi_bench_end();
-  if(win == MPI_WIN_NULL){
-    retval = MPI_ERR_WIN;
-  } else if (base == nullptr){
-    retval= MPI_ERR_OTHER;
-  }else{
-    retval = win->detach(base);
-  }
+  int retval = win->detach(base);
   smpi_bench_begin();
   return retval;
 }
 
-
 int PMPI_Win_free( MPI_Win* win){
-  int retval = 0;
+  CHECK_NULL(1, MPI_ERR_WIN, win)
+  CHECK_WIN(1, (*win))
   smpi_bench_end();
-  if (win == nullptr || *win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  }else{
-    delete *win;
-    retval=MPI_SUCCESS;
-  }
+  delete *win;
   smpi_bench_begin();
-  return retval;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_set_name(MPI_Win  win, const char * name)
 {
-  if (win == MPI_WIN_NULL)  {
-    return MPI_ERR_TYPE;
-  } else if (name == nullptr)  {
-    return MPI_ERR_ARG;
-  } else {
-    win->set_name(name);
-    return MPI_SUCCESS;
-  }
+  CHECK_WIN(1, win)
+  CHECK_NULL(2, MPI_ERR_ARG, name)
+  win->set_name(name);
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_get_name(MPI_Win  win, char * name, int* len)
 {
-  if (win == MPI_WIN_NULL)  {
-    return MPI_ERR_WIN;
-  } else if (name == nullptr)  {
-    return MPI_ERR_ARG;
-  } else {
-    win->get_name(name, len);
-    return MPI_SUCCESS;
-  }
+  CHECK_WIN(1, win)
+  CHECK_NULL(2, MPI_ERR_ARG, name)
+  win->get_name(name, len);
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_get_info(MPI_Win  win, MPI_Info* info)
 {
-  if (win == MPI_WIN_NULL)  {
-    return MPI_ERR_WIN;
-  } else {
-    *info = win->info();
-    return MPI_SUCCESS;
-  }
+  CHECK_WIN(1, win)
+  CHECK_NULL(2, MPI_ERR_ARG, info)
+  *info = win->info();
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_set_info(MPI_Win  win, MPI_Info info)
 {
-  if (win == MPI_WIN_NULL)  {
-    return MPI_ERR_TYPE;
-  } else {
-    win->set_info(info);
-    return MPI_SUCCESS;
-  }
+  CHECK_WIN(1, win)
+  win->set_info(info);
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
-  if (win == MPI_WIN_NULL)  {
-    return MPI_ERR_WIN;
-  }else {
-    win->get_group(group);
-    (*group)->ref();
-    return MPI_SUCCESS;
-  }
+  CHECK_WIN(1, win)
+  win->get_group(group);
+  (*group)->ref();
+  return MPI_SUCCESS;
 }
 
 int PMPI_Win_fence( int assert,  MPI_Win win){
-  int retval = 0;
+  CHECK_WIN(2, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_fence"));
-    retval = win->fence(assert);
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_fence"));
+  int retval = win->fence(assert);
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  CHECK_RMA
+  CHECK_WIN(8, win)
+
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if ((origin_count < 0 || target_count < 0) ||
-             (origin_addr==nullptr && origin_count > 0)){
-    retval = MPI_ERR_COUNT;
-  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
-            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
-    retval = MPI_ERR_TYPE;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -232,7 +182,6 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
     retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                            target_datatype);
-
     TRACE_smpi_comm_out(my_proc_id);
   }
   smpi_bench_begin();
@@ -241,26 +190,17 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
 int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request){
+  if(target_rank==MPI_PROC_NULL)
+    *request = MPI_REQUEST_NULL;
+  CHECK_RMA
+  CHECK_WIN(8, win)
+  CHECK_NULL(9, MPI_ERR_ARG, request)
+
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    *request = MPI_REQUEST_NULL;
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if ((origin_count < 0 || target_count < 0) ||
-             (origin_addr==nullptr && origin_count > 0)){
-    retval = MPI_ERR_COUNT;
-  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
-            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
-    retval = MPI_ERR_TYPE;
-  } else if(request == nullptr){
-    retval = MPI_ERR_REQUEST;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -282,23 +222,14 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
 
 int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  CHECK_RMA
+  CHECK_WIN(8, win)
+
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if ((origin_count < 0 || target_count < 0) ||
-            (origin_addr==nullptr && origin_count > 0)){
-    retval = MPI_ERR_COUNT;
-  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
-            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
-    retval = MPI_ERR_TYPE;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -322,26 +253,16 @@ int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
 
 int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win, MPI_Request* request){
+  if(target_rank==MPI_PROC_NULL)
+    *request = MPI_REQUEST_NULL;
+  CHECK_RMA
+  CHECK_WIN(8, win)
+  CHECK_NULL(9, MPI_ERR_ARG, request)
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    *request = MPI_REQUEST_NULL;
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if ((origin_count < 0 || target_count < 0) ||
-            (origin_addr==nullptr && origin_count > 0)){
-    retval = MPI_ERR_COUNT;
-  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
-            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
-    retval = MPI_ERR_TYPE;
-  } else if(request == nullptr){
-    retval = MPI_ERR_REQUEST;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -365,25 +286,15 @@ int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_dat
 
 int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
+  CHECK_RMA
+  CHECK_OP(8)
+  CHECK_WIN(9, win)
+
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if ((origin_count < 0 || target_count < 0) ||
-             (origin_addr==nullptr && origin_count > 0)){
-    retval = MPI_ERR_COUNT;
-  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
-            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
-    retval = MPI_ERR_TYPE;
-  } else if (op == MPI_OP_NULL) {
-    retval = MPI_ERR_OP;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -404,28 +315,18 @@ int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
 
 int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
+  if(target_rank==MPI_PROC_NULL)
+    *request = MPI_REQUEST_NULL;
+  CHECK_RMA
+  CHECK_OP(8)
+  CHECK_WIN(9, win)
+  CHECK_NULL(10, MPI_ERR_ARG, request)
+
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    *request = MPI_REQUEST_NULL;
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if ((origin_count < 0 || target_count < 0) ||
-             (origin_addr==nullptr && origin_count > 0)){
-    retval = MPI_ERR_COUNT;
-  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
-            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
-    retval = MPI_ERR_TYPE;
-  } else if (op == MPI_OP_NULL) {
-    retval = MPI_ERR_OP;
-  } else if(request == nullptr){
-    retval = MPI_ERR_REQUEST;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -448,26 +349,25 @@ int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype ori
 int PMPI_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
 int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
+  if (op != MPI_NO_OP)
+    CHECK_BUFFER(1, origin_addr, origin_count)
+  CHECK_COUNT(2, origin_count)
+  if(origin_count>0)
+    CHECK_TYPE(3, origin_datatype)
+  CHECK_BUFFER(4, result_addr, result_count)
+  CHECK_COUNT(5, result_count)
+  CHECK_TYPE(6, result_datatype)
+  CHECK_PROC(7, target_rank)
+  CHECK_NEGATIVE(7, MPI_ERR_RANK, target_rank)
+  CHECK_COUNT(9, target_count)
+  CHECK_TYPE(10, target_datatype)
+  CHECK_OP(11)
+  CHECK_WIN(12, win)
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if ((origin_count < 0 || target_count < 0 || result_count <0) ||
-             (origin_addr==nullptr && origin_count > 0 && op != MPI_NO_OP) ||
-             (result_addr==nullptr && result_count > 0)){
-    retval = MPI_ERR_COUNT;
-  } else if (((target_datatype == MPI_DATATYPE_NULL) || (result_datatype == MPI_DATATYPE_NULL)) ||
-            (((origin_datatype != MPI_DATATYPE_NULL) && (not origin_datatype->is_valid())) || (not target_datatype->is_valid()) || (not result_datatype->is_valid()))) {
-    retval = MPI_ERR_TYPE;
-  } else if (op == MPI_OP_NULL) {
-    retval = MPI_ERR_OP;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -492,29 +392,26 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
 int PMPI_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
 int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
+  if(target_rank==MPI_PROC_NULL)
+    *request = MPI_REQUEST_NULL;
+  CHECK_BUFFER(1, origin_addr, origin_count)
+  CHECK_COUNT(2, origin_count)
+  CHECK_TYPE(3, origin_datatype)
+  CHECK_BUFFER(4, result_addr, result_count)
+  CHECK_COUNT(5, result_count)
+  CHECK_TYPE(6, result_datatype)
+  CHECK_PROC(7, target_rank)
+  CHECK_NEGATIVE(7, MPI_ERR_RANK, target_rank)
+  CHECK_COUNT(9, target_count)
+  CHECK_TYPE(10, target_datatype)
+  CHECK_OP(11)
+  CHECK_WIN(12, win)
+  CHECK_NULL(10, MPI_ERR_ARG, request)
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    *request = MPI_REQUEST_NULL;
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if ((origin_count < 0 || target_count < 0 || result_count <0) ||
-             (origin_addr==nullptr && origin_count > 0 && op != MPI_NO_OP) ||
-             (result_addr==nullptr && result_count > 0)){
-    retval = MPI_ERR_COUNT;
-  } else if (((target_datatype == MPI_DATATYPE_NULL) || (result_datatype == MPI_DATATYPE_NULL)) ||
-            (((origin_datatype != MPI_DATATYPE_NULL) && (not origin_datatype->is_valid())) || (not target_datatype->is_valid()) || (not result_datatype->is_valid()))) {
-    retval = MPI_ERR_TYPE;
-  } else if (op == MPI_OP_NULL) {
-    retval = MPI_ERR_OP;
-  } else if(request == nullptr){
-    retval = MPI_ERR_REQUEST;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -542,21 +439,18 @@ int PMPI_Fetch_and_op(const void *origin_addr, void *result_addr, MPI_Datatype d
 int PMPI_Compare_and_swap(const void* origin_addr, void* compare_addr, void* result_addr, MPI_Datatype datatype,
                           int target_rank, MPI_Aint target_disp, MPI_Win win)
 {
+  CHECK_NULL(1, MPI_ERR_BUFFER, origin_addr)
+  CHECK_NULL(2, MPI_ERR_BUFFER, compare_addr)
+  CHECK_NULL(3, MPI_ERR_BUFFER, result_addr)
+  CHECK_TYPE(4, datatype)
+  CHECK_PROC(5, target_rank)
+  CHECK_NEGATIVE(5, MPI_ERR_RANK, target_rank)
+  CHECK_WIN(6, win)
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (target_rank == MPI_PROC_NULL) {
-    retval = MPI_SUCCESS;
-  } else if (target_rank <0){
-    retval = MPI_ERR_RANK;
-  } else if (win->dynamic()==0 && target_disp <0){
+  if (win->dynamic()==0 && target_disp <0){
     //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
     retval = MPI_ERR_ARG;
-  } else if (origin_addr==nullptr || result_addr==nullptr || compare_addr==nullptr){
-    retval = MPI_ERR_COUNT;
-  } else if ((datatype == MPI_DATATYPE_NULL) || (not datatype->is_valid())) {
-    retval = MPI_ERR_TYPE;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     MPI_Group group;
@@ -575,83 +469,59 @@ int PMPI_Compare_and_swap(const void* origin_addr, void* compare_addr, void* res
 }
 
 int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
-  int retval = 0;
+  CHECK_GROUP(1, group)
+  CHECK_WIN(2, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (group==MPI_GROUP_NULL){
-    retval = MPI_ERR_GROUP;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_post"));
-    retval = win->post(group,assert);
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_post"));
+  int retval = win->post(group,assert);
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
-  int retval = 0;
+  CHECK_GROUP(1, group)
+  CHECK_WIN(2, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (group==MPI_GROUP_NULL){
-    retval = MPI_ERR_GROUP;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_start"));
-    retval = win->start(group,assert);
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_start"));
+  int retval = win->start(group,assert);
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_complete(MPI_Win win){
-  int retval = 0;
+  CHECK_WIN(1, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_complete"));
-
-    retval = win->complete();
-
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_complete"));
+  int retval = win->complete();
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_wait(MPI_Win win){
-  int retval = 0;
+  CHECK_WIN(1, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_wait"));
-
-    retval = win->wait();
-
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_wait"));
+  int retval = win->wait();
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win){
+  CHECK_PROC(2, rank)
+  CHECK_WIN(4, win)
   int retval = 0;
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (lock_type != MPI_LOCK_EXCLUSIVE &&
-             lock_type != MPI_LOCK_SHARED) {
+  if (lock_type != MPI_LOCK_EXCLUSIVE &&
+      lock_type != MPI_LOCK_SHARED) {
     retval = MPI_ERR_LOCKTYPE;
-  } else if (rank == MPI_PROC_NULL){
-    retval = MPI_SUCCESS;
   } else {
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_lock"));
@@ -663,166 +533,125 @@ int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win){
 }
 
 int PMPI_Win_unlock(int rank, MPI_Win win){
-  int retval = 0;
+  CHECK_PROC(1, rank)
+  CHECK_WIN(2, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (rank == MPI_PROC_NULL){
-    retval = MPI_SUCCESS;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_unlock"));
-    retval = win->unlock(rank);
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_unlock"));
+  int retval = win->unlock(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_lock_all(int assert, MPI_Win win){
-  int retval = 0;
+  CHECK_WIN(2, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_lock_all"));
-    retval = win->lock_all(assert);
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_lock_all"));
+  int retval = win->lock_all(assert);
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_unlock_all(MPI_Win win){
-  int retval = 0;
+  CHECK_WIN(1, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_unlock_all"));
-    retval = win->unlock_all();
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_unlock_all"));
+  int retval = win->unlock_all();
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_flush(int rank, MPI_Win win){
-  int retval = 0;
+  CHECK_PROC(1, rank)
+  CHECK_WIN(2, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (rank == MPI_PROC_NULL){
-    retval = MPI_SUCCESS;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush"));
-    retval = win->flush(rank);
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush"));
+  int retval = win->flush(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_flush_local(int rank, MPI_Win win){
-  int retval = 0;
-  smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else if (rank == MPI_PROC_NULL){
-    retval = MPI_SUCCESS;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_local"));
-    retval = win->flush_local(rank);
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  CHECK_PROC(1, rank)
+  CHECK_WIN(2, win)  smpi_bench_end();
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_local"));
+  int retval = win->flush_local(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_flush_all(MPI_Win win){
-  int retval = 0;
+  CHECK_WIN(1, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_all"));
-    retval = win->flush_all();
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_all"));
+  int retval = win->flush_all();
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_flush_local_all(MPI_Win win){
-  int retval = 0;
+  CHECK_WIN(1, win)
   smpi_bench_end();
-  if (win == MPI_WIN_NULL) {
-    retval = MPI_ERR_WIN;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_local_all"));
-    retval = win->flush_local_all();
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_local_all"));
+  int retval = win->flush_local_all();
+  TRACE_smpi_comm_out(my_proc_id);
   smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_shared_query (MPI_Win win, int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
 {
-  if (win == MPI_WIN_NULL)
-    return MPI_ERR_TYPE;
-  else
-    return win->shared_query(rank, size, disp_unit, baseptr);
+  CHECK_WIN(1, win)
+  return win->shared_query(rank, size, disp_unit, baseptr);
 }
 
 int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
 {
   static MPI_Aint size;
   static MPI_Aint disp_unit;
-  if (win == MPI_WIN_NULL)
-    return MPI_ERR_TYPE;
-  else{
-    switch (keyval) {
-      case MPI_WIN_BASE:
-        *static_cast<void**>(attribute_val) = win->base();
-        *flag                               = 1;
-        return MPI_SUCCESS;
-      case MPI_WIN_SIZE:
-        size                                    = win->size();
-        *static_cast<MPI_Aint**>(attribute_val) = &size;
-        *flag                                   = 1;
-        return MPI_SUCCESS;
-      case MPI_WIN_DISP_UNIT:
-        disp_unit                               = win->disp_unit();
-        *static_cast<MPI_Aint**>(attribute_val) = &disp_unit;
-        *flag                                   = 1;
-        return MPI_SUCCESS;
-      default:
-        return win->attr_get<simgrid::smpi::Win>(keyval, attribute_val, flag);
-    }
+  CHECK_WIN(1, win)
+  switch (keyval) {
+    case MPI_WIN_BASE:
+      *static_cast<void**>(attribute_val) = win->base();
+      *flag                               = 1;
+      return MPI_SUCCESS;
+    case MPI_WIN_SIZE:
+      size                                    = win->size();
+      *static_cast<MPI_Aint**>(attribute_val) = &size;
+      *flag                                   = 1;
+      return MPI_SUCCESS;
+    case MPI_WIN_DISP_UNIT:
+      disp_unit                               = win->disp_unit();
+      *static_cast<MPI_Aint**>(attribute_val) = &disp_unit;
+      *flag                                   = 1;
+      return MPI_SUCCESS;
+    default:
+     return win->attr_get<simgrid::smpi::Win>(keyval, attribute_val, flag);
   }
 }
 
 int PMPI_Win_set_attr (MPI_Win win, int type_keyval, void *attribute_val)
 {
-  if (win==MPI_WIN_NULL)
-    return MPI_ERR_TYPE;
-  else
-    return win->attr_put<simgrid::smpi::Win>(type_keyval, attribute_val);
+  CHECK_WIN(1, win)
+  return win->attr_put<simgrid::smpi::Win>(type_keyval, attribute_val);
 }
 
 int PMPI_Win_delete_attr (MPI_Win win, int type_keyval)
 {
-  if (win==MPI_WIN_NULL)
-    return MPI_ERR_TYPE;
-  else
-    return win->attr_delete<simgrid::smpi::Win>(type_keyval);
+  CHECK_WIN(1, win)
+  return win->attr_delete<simgrid::smpi::Win>(type_keyval);
 }
 
 int PMPI_Win_create_keyval(MPI_Win_copy_attr_function* copy_fn, MPI_Win_delete_attr_function* delete_fn, int* keyval,
@@ -855,9 +684,8 @@ int PMPI_Win_create_errhandler(MPI_Win_errhandler_function* function, MPI_Errhan
 }
 
 int PMPI_Win_get_errhandler(MPI_Win win, MPI_Errhandler* errhandler){
-  if (win == nullptr) {
-    return MPI_ERR_WIN;
-  } else if (errhandler==nullptr){
+  CHECK_WIN(1, win)
+  if (errhandler==nullptr){
     return MPI_ERR_ARG;
   }
   *errhandler=win->errhandler();
@@ -865,9 +693,8 @@ int PMPI_Win_get_errhandler(MPI_Win win, MPI_Errhandler* errhandler){
 }
 
 int PMPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler){
-  if (win == nullptr) {
-    return MPI_ERR_WIN;
-  } else if (errhandler==nullptr){
+  CHECK_WIN(1, win)
+  if (errhandler==nullptr){
     return MPI_ERR_ARG;
   }
   win->set_errhandler(errhandler);
@@ -875,9 +702,7 @@ int PMPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler){
 }
 
 int PMPI_Win_call_errhandler(MPI_Win win,int errorcode){
-  if (win == nullptr) {
-    return MPI_ERR_WIN;
-  }
+  CHECK_WIN(1, win)
   win->errhandler()->call(win, errorcode);
   return MPI_SUCCESS;
 }

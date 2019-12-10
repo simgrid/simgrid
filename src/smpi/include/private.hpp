@@ -501,42 +501,57 @@ XBT_PRIVATE void private_execute_flops(double flops);
 
 #define CHECK_ARGS(test, errcode, ...)                                                                                 \
   if (test) {                                                                                                          \
-    XBT_WARN(__VA_ARGS__);                                                                                             \
+    if(errcode != MPI_SUCCESS)                                                                                         \
+      XBT_WARN(__VA_ARGS__);                                                                                           \
     return (errcode);                                                                                                  \
   }
 
+#define CHECK_MPI_NULL(num, val, err, ptr)                                                                             \
+  CHECK_ARGS(ptr == val, err,                                                                                          \
+             "%s: param %d %s cannot be %s", __func__, num, #ptr, #val);
+#define CHECK_NULL(num,err,buf)                                                                                        \
+  CHECK_ARGS(buf == nullptr, err,                                                                                      \
+             "%s: param %d %s cannot be NULL", __func__, num, #buf);
+#define CHECK_NEGATIVE(num, err, val)                                                                                  \
+  CHECK_ARGS(val < 0, err,                                                                                 \
+             "%s: param %d %s cannot be negative", __func__, num, #val);
+#define CHECK_COMM2(num, comm)                                                                                         \
+  CHECK_MPI_NULL(num, MPI_COMM_NULL, MPI_ERR_COMM, comm)
 #define CHECK_COMM(num)                                                                                                \
-  CHECK_ARGS(comm == MPI_COMM_NULL, MPI_ERR_COMM,                                                                      \
-             "%s: param %d communicator cannot be MPI_COMM_NULL", __func__, num);
+  CHECK_COMM2(num, comm)
 #define CHECK_REQUEST(num)                                                                                             \
   CHECK_ARGS(request == nullptr, MPI_ERR_REQUEST,                                                                      \
              "%s: param %d request cannot be NULL",__func__, num);
 #define CHECK_BUFFER(num,buf,count)                                                                                    \
   CHECK_ARGS(buf == nullptr && count > 0, MPI_ERR_BUFFER,                                                              \
              "%s: param %d %s cannot be NULL if %s > 0",__func__, num, #buf, #count);
-#define CHECK_COUNT(num,count)                                                                                         \
-  CHECK_ARGS(count < 0, MPI_ERR_COUNT,                                                                                 \
-             "%s: param %d %s cannot be negative", __func__, num, #count);
+#define CHECK_COUNT(num, count)                                                                                         \
+  CHECK_NEGATIVE(num, MPI_ERR_COUNT, count)
 #define CHECK_TYPE(num, datatype)                                                                                      \
   CHECK_ARGS((datatype == MPI_DATATYPE_NULL|| not datatype->is_valid()), MPI_ERR_TYPE,                                 \
              "%s: param %d %s cannot be MPI_DATATYPE_NULL or invalid", __func__, num, #datatype);
 #define CHECK_OP(num)                                                                                                  \
-  CHECK_ARGS(op == MPI_OP_NULL, MPI_ERR_OP,                                                                            \
-             "%s: param %d op cannot be MPI_OP_NULL or invalid", __func__, num);
+    CHECK_MPI_NULL(num, MPI_OP_NULL, MPI_ERR_OP, op)
 #define CHECK_ROOT(num)\
   CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,                                                         \
              "%s: param %d root (=%d) cannot be negative or larger than communicator size (=%d)", __func__, num, root, \
              comm->size());
-#define CHECK_NULL(num,err,buf)                                                                                        \
-  CHECK_ARGS(buf == nullptr, err,                                                                                      \
-             "%s: param %d %s cannot be NULL", __func__, num, #buf);
 #define CHECK_PROC(num,proc)                                                                                           \
-  CHECK_ARGS(proc == MPI_PROC_NULL, MPI_SUCCESS,                                                                       \
-             "%s: param %d %s cannot be MPI_PROC_NULL", __func__, num, #proc);
+    CHECK_MPI_NULL(num, MPI_PROC_NULL, MPI_SUCCESS, proc)
+#define CHECK_INFO(num,info)                                                                                           \
+    CHECK_MPI_NULL(num, MPI_INFO_NULL, MPI_ERR_INFO, info)
 #define CHECK_TAG(num,tag)                                                                                             \
-  CHECK_ARGS((tag<0 && tag !=  MPI_ANY_TAG), MPI_ERR_TAG,                                                              \
-             "%s: param %d %s cannot be negative", __func__, num, #tag);
-#define CHECK_FILE(num, fh)                                                                                                 \
-  CHECK_ARGS(fh == MPI_FILE_NULL, MPI_ERR_FILE,                                                                       \
-             "%s: param %d %s cannot be MPI_PROC_NULL", __func__, num, #fh);
+  CHECK_ARGS((tag < 0 && tag !=  MPI_ANY_TAG), MPI_ERR_TAG,                                                            \
+             "%s: param %d %s (=%d) cannot be negative", __func__, num, #tag, tag);
+#define CHECK_FILE(num, fh)                                                                                            \
+    CHECK_MPI_NULL(num, MPI_FILE_NULL, MPI_ERR_FILE, fh)
+#define CHECK_OFFSET(num, offset)                                                                                      \
+  CHECK_NEGATIVE(num, MPI_ERR_DISP, offset)
+#define CHECK_GROUP(num, group)                                                                                        \
+      CHECK_MPI_NULL(num, MPI_GROUP_NULL, MPI_ERR_GROUP, group)
+#define CHECK_WIN(num, group)                                                                                        \
+      CHECK_MPI_NULL(num, MPI_WIN_NULL, MPI_ERR_WIN, group)
+#define CHECK_RANK(num, rank, comm)                                                                                    \
+        CHECK_ARGS((rank >= comm->group()->size() || rank <0), MPI_ERR_RANK,                                           \
+             "%s: param %d %s (=%d) cannot be < 0 or > %d", __func__, num, #rank, rank, comm->group()->size() );
 #endif

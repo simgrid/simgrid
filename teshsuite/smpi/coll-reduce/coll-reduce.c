@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     printf("MPI_Reduce did not return MPI_ERR_TYPE for MPI_DATATYPE_NULL type\n");
   status = MPI_Reduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_OP_NULL, root, MPI_COMM_WORLD);
   if(status!=MPI_ERR_OP)
-    printf("MPI_Reduce did not return MPI_ERR_COMM for MPI_OP_NULL op\n");
+    printf("MPI_Reduce did not return MPI_ERR_OP for MPI_OP_NULL op\n");
   status = MPI_Reduce(sb, rb, size, MPI_UNSIGNED_LONG_LONG, MPI_SUM, -1, MPI_COMM_WORLD);
   if(status!=MPI_ERR_ROOT)
     printf("MPI_Reduce did not return MPI_ERR_ROOT for root -1\n");
