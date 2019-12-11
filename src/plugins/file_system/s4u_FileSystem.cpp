@@ -336,7 +336,7 @@ int File::unlink()
       local_disk_->extension<FileSystemDiskExt>()->decr_used_size(size_);
 
     // Remove the file from storage
-    content->erase(fullpath_);
+    content->erase(path_);
 
     return 0;
   }

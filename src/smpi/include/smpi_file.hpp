@@ -28,6 +28,9 @@ class File{
   MPI_Win win_;
   char* list_;
   MPI_Errhandler errhandler_;
+  MPI_Datatype etype_;
+  MPI_Datatype filetype_;
+  std::string datarep_;
 
   public:
   File(MPI_Comm comm, const char *filename, int amode, MPI_Info info);
@@ -42,6 +45,8 @@ class File{
   int sync();
   int seek(MPI_Offset offset, int whence);
   int seek_shared(MPI_Offset offset, int whence);
+  int set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info);
+  int get_view(MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep);
   MPI_Info info();
   void set_info( MPI_Info info);
   static int read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
@@ -71,7 +76,7 @@ class File{
     int size =  comm_->size();
     int rank = comm_-> rank();
     MPI_Offset min_offset = file_->tell();
-    MPI_Offset max_offset = (min_offset + count * datatype->size());//cheating, as we don't care about exact data location, we can skip extent
+    MPI_Offset max_offset = min_offset + count * datatype->get_extent();//cheating, as we don't care about exact data location, we can skip extent
     MPI_Offset* min_offsets = new MPI_Offset[size];
     MPI_Offset* max_offsets = new MPI_Offset[size];
     simgrid::smpi::colls::allgather(&min_offset, 1, MPI_OFFSET, min_offsets, 1, MPI_OFFSET, comm_);
@@ -102,7 +107,8 @@ class File{
       delete[] min_offsets;
       delete[] max_offsets;
       //contiguous. Just have each proc perform its read
-      status->count=count * datatype->size();
+      if(status != MPI_STATUS_IGNORE)
+        status->count=count * datatype->size();
       return T(this,buf,count,datatype, status);
     }
 
@@ -180,7 +186,8 @@ class File{
     //Set buf value to avoid copying dumb data
     simgrid::smpi::colls::alltoallv(sendbuf, send_sizes, send_disps, MPI_BYTE, buf, recv_sizes, recv_disps, MPI_BYTE,
                                     comm_);
-    status->count=count * datatype->size();
+    if(status!=MPI_STATUS_IGNORE)
+      status->count=count * datatype->size();
     smpi_free_tmp_buffer(sendbuf);
     delete[] send_sizes;
     delete[] recv_sizes;

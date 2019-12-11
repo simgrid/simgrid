@@ -43,6 +43,8 @@ use File::Path;
 $MPIMajorVersion = "3";
 $MPIMinorVersion = "1";
 $mpiexec = "smpirun";    # Name of mpiexec program (including path, if necessary)
+$platformfile = "../../../../examples/platforms/small_platform_with_routers.xml";
+$hostfile = "../../hostfile_mpich";
 $testIsStrict = "true";
 $MPIhasMPIX   = "no";
 $np_arg  = "-np";         # Name of argument to specify the number of processes
@@ -156,8 +158,10 @@ foreach $_ (@ARGV) {
     elsif (/--?np=(.*)/)   { $np_default = $1; }
     elsif (/--?maxnp=(.*)/) { $np_max = $1; }
     elsif (/--?tests=(.*)/) { $listfiles = $1; }
+    elsif (/--?platformfile=(.*)/) { $platformfile = $1; }
+    elsif (/--?hostfile=(.*)/) { $hostfile = $1; }
     elsif (/--?srcdir=(.*)/) { $srcdir = $1;
-	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_mpich --log=root.thr:critical --cfg=smpi/host-speed:1e9  --cfg=smpi/async-small-thresh:65536"; }
+	$mpiexec="$mpiexec  -platform ${srcdir}/$platformfile -hostfile ${srcdir}/$hostfile --log=root.thr:critical --cfg=smpi/host-speed:1e9  --cfg=smpi/async-small-thresh:65536"; }
     elsif (/--?verbose/) { $verbose = 1; }
     elsif (/--?showprogress/) { $showProgress = 1; }
     elsif (/--?debug/) { $debug = 1; }

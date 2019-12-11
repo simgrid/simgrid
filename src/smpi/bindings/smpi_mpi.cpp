@@ -363,7 +363,8 @@ WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_call_errhandler,(MPI_File fh, in
 WRAPPED_PMPI_CALL(int, MPI_File_create_errhandler,(MPI_File_errhandler_function *function, MPI_Errhandler *errhandler),(function, errhandler))
 WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_set_errhandler,( MPI_File fh, MPI_Errhandler errhandler), (fh, errhandler))
 WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_get_errhandler,( MPI_File fh, MPI_Errhandler *errhandler), (fh, errhandler))
-
+WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_set_view,(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info), (fh, disp, etype, filetype, datarep, info))
+WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_get_view,(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep), (fh, disp, etype, filetype, datarep))
 /*
   Unimplemented Calls - both PMPI and MPI calls are generated.
   When implementing, please move ahead, swap UNIMPLEMENTED_WRAPPED_PMPI_CALL for WRAPPED_PMPI_CALL,
@@ -390,8 +391,6 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Fint, MPI_File_c2f,(MPI_File file), (file))
 //UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_File, MPI_File_f2c,(MPI_Fint file), (file))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_size,(MPI_File fh, MPI_Offset size), (fh, size))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_preallocate,(MPI_File fh, MPI_Offset size), (fh, size))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_view,(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info), (fh, disp, etype, filetype, datarep, info))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_view,(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep), (fh, disp, etype, filetype, datarep))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_at,(MPI_File fh, MPI_Offset offset, const void *buf,int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_at_all,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, offset, buf, count, datatype, request))

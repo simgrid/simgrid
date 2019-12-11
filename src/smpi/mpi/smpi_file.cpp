@@ -13,6 +13,8 @@
 
 #include "smpi_file.hpp"
 #include "smpi_status.hpp"
+#include "simgrid/s4u/Disk.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "simgrid/plugins/file_system.h"
 
 #define FP_SIZE sizeof(MPI_Offset)
@@ -25,7 +27,25 @@ namespace simgrid{
 namespace smpi{
 
   File::File(MPI_Comm comm, const char *filename, int amode, MPI_Info info): comm_(comm), flags_(amode), info_(info) {
-    file_= new simgrid::s4u::File(filename, nullptr);
+    std::string fullname=filename;
+    if (simgrid::s4u::Host::current()->get_disks().empty())
+      xbt_die("SMPI/IO : Trying to open file on a diskless host ! Add one to your platform file");
+
+    size_t found=fullname.find('/');
+    //in case no fullpath is provided ... just pick the first mountpoint.
+    if(found==std::string::npos){
+      auto disk = simgrid::s4u::Host::current()->get_disks().front();
+      std::string mount;
+      if (disk->get_host() != simgrid::s4u::Host::current())
+        mount = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_mount_point(disk->get_host());
+      else
+        mount = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_mount_point();
+      XBT_DEBUG("No absolute path given for file opening, use '%s'", mount.c_str());
+      mount.append("/");
+      fullname.insert(0, mount);
+    }
+
+    file_= new simgrid::s4u::File(fullname, nullptr);
     list_=nullptr;
     if (comm_->rank() == 0) {
       int size= comm_->size() + FP_SIZE;
@@ -124,7 +144,8 @@ namespace smpi{
       fh->file_->seek(position+movesize, SEEK_SET);
     }
     XBT_VERB("Position after read in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
-    status->count=count*datatype->size();
+    if(status != MPI_STATUS_IGNORE)
+      status->count=count*datatype->size();
     return MPI_SUCCESS;
   }
 
@@ -183,7 +204,8 @@ namespace smpi{
       fh->file_->seek(position+movesize, SEEK_SET);
     }
     XBT_VERB("Position after write in MPI_File %s : %llu",fh->file_->get_path(), fh->file_->tell());
-    status->count=count*datatype->size();
+    if(status != MPI_STATUS_IGNORE)
+      status->count=count*datatype->size();
     return MPI_SUCCESS;
   }
 
@@ -216,6 +238,21 @@ namespace smpi{
     char c;
     simgrid::smpi::colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size() - 1, fh->comm_);
     return ret;
+  }
+
+  int File::set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info){
+    etype_=etype;
+    filetype_=filetype;
+    datarep_=std::string(datarep);
+    seek_shared(0,MPI_SEEK_SET);
+    return MPI_SUCCESS;
+  }
+
+  int File::get_view(MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep){
+    *etype=etype_;
+    *filetype=filetype_;
+    snprintf(datarep, MPI_MAX_NAME_STRING+1, "%s", datarep_.c_str());
+    return MPI_SUCCESS;
   }
 
   int File::size(){
