@@ -22,13 +22,14 @@ Exec::Exec()
 
 bool Exec::test()
 {
-  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::FINISHED);
+  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||
+             state_ == State::FINISHED);
 
   if (state_ == State::FINISHED)
     return true;
 
-  if (state_ == State::INITED)
-    this->start();
+  if (state_ == State::INITED || state_ == State::STARTING)
+    this->vetoable_start();
 
   if (simcall_execution_test(pimpl_)) {
     state_ = State::FINISHED;
@@ -45,6 +46,7 @@ Exec* Exec::wait()
   simcall_execution_wait(pimpl_);
   state_ = State::FINISHED;
   on_completion(*Actor::self(), *this);
+  this->release_dependencies();
   return this;
 }
 

@@ -1,3 +1,21 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-exec-dependent ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  0.250000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  0.500000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  0.750000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  1.000000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  1.250000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  1.500000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  1.750000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  2.000000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  2.250000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  2.500000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  2.750000] (2:vetoed_worker@Fafard) child cannot start yet
+> [  3.000000] (2:vetoed_worker@Fafard) child is now in state 2
+> [  3.250000] (2:vetoed_worker@Fafard) child is now in state 2
+> [  3.500000] (2:vetoed_worker@Fafard) child is now in state 2
+> [  3.750000] (2:vetoed_worker@Fafard) child is now in state 2
+> [  4.000000] (2:vetoed_worker@Fafard) Should be okay now, child is in state 5
+> [  4.000000] (0:maestro@) Simulation time 4

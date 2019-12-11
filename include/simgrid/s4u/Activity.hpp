@@ -55,7 +55,7 @@ public:
    */
   virtual Activity* start() = 0;
   /** Blocks until the activity is terminated */
-  //  virtual Activity* wait() = 0;
+  virtual Activity* wait() = 0;
   /** Blocks until the activity is terminated, or until the timeout is elapsed
    *  Raises: timeout exception.*/
   virtual Activity* wait_for(double timeout) = 0;
@@ -128,7 +128,6 @@ public:
 
   void add_successor(AnyActivity* a)
   {
-    //    XBT_INFO("Adding %s as a successor of %s", get_name(), a->get_name());
     successors_.push_back(a);
     a->add_dependency_on(static_cast<AnyActivity*>(this));
   }
@@ -139,7 +138,7 @@ public:
   void add_dependency_on(AnyActivity* a) { dependencies_.insert({a}); }
   void remove_dependency_on(AnyActivity* a) { dependencies_.erase(a); }
   bool has_dependencies() { return not dependencies_.empty(); }
-  void on_activity_done()
+  void release_dependencies()
   {
     while (has_successors()) {
       AnyActivity* b = get_successor();
@@ -160,13 +159,6 @@ public:
     //    XBT_INFO("No veto, Activity can start");
     set_state(State::STARTED);
     static_cast<AnyActivity*>(this)->start();
-    return static_cast<AnyActivity*>(this);
-  }
-
-  virtual AnyActivity* wait()
-  {
-    static_cast<AnyActivity*>(this)->wait();
-    on_activity_done();
     return static_cast<AnyActivity*>(this);
   }
 
