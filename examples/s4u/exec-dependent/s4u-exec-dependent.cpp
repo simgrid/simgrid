@@ -7,25 +7,35 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-simgrid::s4u::ExecPtr second;
+simgrid::s4u::ExecPtr child;
 
 static void worker()
 {
   double computation_amount = simgrid::s4u::this_actor::get_host()->get_speed();
 
-  simgrid::s4u::ExecPtr first = simgrid::s4u::this_actor::exec_init(computation_amount);
-  second                      = simgrid::s4u::this_actor::exec_init(computation_amount);
+  simgrid::s4u::ExecPtr first_parent  = simgrid::s4u::this_actor::exec_init(computation_amount);
+  simgrid::s4u::ExecPtr second_parent = simgrid::s4u::this_actor::exec_init(2 * computation_amount);
 
-  first->add_successor(second.get());
-  first->start();
-  first->wait();
+  child = simgrid::s4u::this_actor::exec_init(computation_amount);
+
+  first_parent->add_successor(child.get());
+  second_parent->add_successor(child.get());
+  second_parent->start();
+  first_parent->wait();
+  second_parent->wait();
 }
 
 static void vetoed_worker()
 {
-  second->vetoable_start();
-  XBT_INFO("%d %d", (int)second->get_state(), second->has_dependencies());
-  second->wait();
+  child->vetoable_start();
+  while (not child->test()) {
+    if (child->get_state() == simgrid::s4u::Exec::State::STARTING)
+      XBT_INFO("child cannot start yet");
+    else
+      XBT_INFO("child is now in state %d", (int)child->get_state());
+    simgrid::s4u::this_actor::sleep_for(0.25);
+  }
+  XBT_INFO("Should be okay now, child is in state %d", (int)child->get_state());
 }
 
 int main(int argc, char* argv[])
