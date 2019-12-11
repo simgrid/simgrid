@@ -66,9 +66,8 @@ Win::~Win(){
   if (name_ != nullptr){
     xbt_free(name_);
   }
-  if(info_!=MPI_INFO_NULL){
-    MPI_Info_free(&info_);
-  }
+  if (info_ != MPI_INFO_NULL)
+    simgrid::smpi::Info::unref(info_);
 
   comm_->remove_rma_win(this);
 
@@ -118,8 +117,9 @@ void Win::get_group(MPI_Group* group){
   }
 }
 
-MPI_Info Win::info(){
-  if(info_== MPI_INFO_NULL)
+MPI_Info Win::info()
+{
+  if (info_ == MPI_INFO_NULL)
     info_ = new Info();
   info_->ref();
   return info_;
@@ -145,10 +145,13 @@ int Win::dynamic(){
   return dynamic_;
 }
 
-void Win::set_info(MPI_Info info){
-  if(info_!= MPI_INFO_NULL)
-    info->ref();
-  info_=info;
+void Win::set_info(MPI_Info info)
+{
+  if (info_ != MPI_INFO_NULL)
+    simgrid::smpi::Info::unref(info_);
+  info_ = info;
+  if (info_ != MPI_INFO_NULL)
+    info_->ref();
 }
 
 void Win::set_name(const char* name){

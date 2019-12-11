@@ -27,6 +27,8 @@ namespace simgrid{
 namespace smpi{
 
   File::File(MPI_Comm comm, const char *filename, int amode, MPI_Info info): comm_(comm), flags_(amode), info_(info) {
+    if (info_ != MPI_INFO_NULL)
+      info_->ref();
     std::string fullname=filename;
     if (simgrid::s4u::Host::current()->get_disks().empty())
       xbt_die("SMPI/IO : Trying to open file on a diskless host ! Add one to your platform file");
@@ -72,6 +74,8 @@ namespace smpi{
     }
     delete win_;
     delete file_;
+    if (info_ != MPI_INFO_NULL)
+      simgrid::smpi::Info::unref(info_);
   }
 
   int File::close(MPI_File *fh){
@@ -270,17 +274,21 @@ namespace smpi{
     return simgrid::smpi::colls::barrier(comm_);
   }
 
-  MPI_Info File::info(){
-    if(info_== MPI_INFO_NULL)
+  MPI_Info File::info()
+  {
+    if (info_ == MPI_INFO_NULL)
       info_ = new Info();
     info_->ref();
     return info_;
   }
 
-  void File::set_info(MPI_Info info){
-    if(info_!= MPI_INFO_NULL)
-      info->ref();
-    info_=info;
+  void File::set_info(MPI_Info info)
+  {
+    if (info_ != MPI_INFO_NULL)
+      simgrid::smpi::Info::unref(info_);
+    info_ = info;
+    if (info_ != MPI_INFO_NULL)
+      info_->ref();
   }
 
   MPI_Comm File::comm(){

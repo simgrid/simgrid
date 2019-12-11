@@ -120,6 +120,7 @@ int Comm::dup_with_info(MPI_Info info, MPI_Comm* newcomm){
     (*newcomm)->info_=MPI_INFO_NULL;
   }
   if(info != MPI_INFO_NULL){
+    info->ref();
     (*newcomm)->info_=info;
   }
   return ret;
@@ -333,6 +334,8 @@ void Comm::unref(Comm* comm){
   if(comm->refcount_==0){
     comm->cleanup_smp();
     comm->cleanup_attr<Comm>();
+    if (comm->info_ != MPI_INFO_NULL)
+      simgrid::smpi::Info::unref(comm->info_);
     delete comm->topo_; // there's no use count on topos
     delete comm;
   }
@@ -537,17 +540,21 @@ void Comm::finish_rma_calls(){
   }
 }
 
-MPI_Info Comm::info(){
-  if(info_== MPI_INFO_NULL)
+MPI_Info Comm::info()
+{
+  if (info_ == MPI_INFO_NULL)
     info_ = new Info();
   info_->ref();
   return info_;
 }
 
-void Comm::set_info(MPI_Info info){
-  if(info_!= MPI_INFO_NULL)
+void Comm::set_info(MPI_Info info)
+{
+  if (info_ != MPI_INFO_NULL)
+    simgrid::smpi::Info::unref(info);
+  info_ = info;
+  if (info_ != MPI_INFO_NULL)
     info->ref();
-  info_=info;
 }
 
 MPI_Errhandler Comm::errhandler(){
