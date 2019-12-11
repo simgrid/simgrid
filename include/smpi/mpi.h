@@ -19,7 +19,7 @@
 
 #if SIMGRID_HAVE_MC
 #undef assert
-#define assert(x) MC_assert(x)
+#define assert(x) MC_assert((int)(x))
 #endif
 
 #ifdef TRACE_CALL_LOCATION /* Defined by smpicc on the command line */

@@ -148,7 +148,7 @@ static int parse_args(int argc, char **argv)
     }
 
     opt_file = strdup(argv[optind]);
-    assert(opt_file);
+    assert(opt_file!=NULL);
 
     return (0);
 }
