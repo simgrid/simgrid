@@ -7,7 +7,6 @@
 #define SIMGRID_S4U_ACTIVITY_HPP
 
 #include "xbt/asserts.h"
-#include "xbt/log.h"
 #include <atomic>
 #include <set>
 #include <simgrid/forward.h>
@@ -88,23 +87,6 @@ private:
   double remains_                          = 0;
 };
 
-// template <class AnyActivity> class DependencyGuard {
-// public:
-//  static bool activity_start_vetoer(AnyActivity* a) { return not a->has_dependencies(); }
-//  static void on_activity_done(AnyActivity* a);
-////  {
-////    while (a->has_successors()) {
-////      AnyActivity* b = a->get_successor();
-////      b->remove_dependency_on(a);
-////      if (not b->has_dependencies()) {
-////        XBT_INFO("Activity is done and a successor can start");
-////        b->vetoable_start();
-////      }
-////      a->remove_successor();
-////    }
-////  }
-//};
-
 template <class AnyActivity> class Activity_T : public Activity {
 private:
   std::string name_             = "";
@@ -144,7 +126,6 @@ public:
       AnyActivity* b = get_successor();
       b->remove_dependency_on(static_cast<AnyActivity*>(this));
       if (not b->has_dependencies()) {
-        // XBT_INFO("Activity is done and a successor can start");
         b->vetoable_start();
       }
       remove_successor();
@@ -156,7 +137,6 @@ public:
     set_state(State::STARTING);
     if (has_dependencies())
       return static_cast<AnyActivity*>(this);
-    //    XBT_INFO("No veto, Activity can start");
     set_state(State::STARTED);
     static_cast<AnyActivity*>(this)->start();
     return static_cast<AnyActivity*>(this);
