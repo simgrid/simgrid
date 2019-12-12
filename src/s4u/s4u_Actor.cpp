@@ -349,7 +349,7 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
 }
 
 void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                      const std::vector<double>& bytes_amounts, double timeout)
+                      const std::vector<double>& bytes_amounts, double timeout) // XBT_ATTRIB_DEPRECATED_v329
 {
   exec_init(hosts, flops_amounts, bytes_amounts)->wait_for(timeout);
 }

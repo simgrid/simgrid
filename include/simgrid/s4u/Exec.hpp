@@ -55,7 +55,7 @@ public:
 
   ExecPtr set_bound(double bound);
   ExecPtr set_priority(double priority);
-  ExecPtr set_timeout(double timeout);
+  XBT_ATTRIB_DEPRECATED_v329("Please use exec_init(...)->wait_for(timeout)") ExecPtr set_timeout(double timeout);
   Exec* cancel() override;
   Host* get_host() const;
   unsigned int get_host_number() const;

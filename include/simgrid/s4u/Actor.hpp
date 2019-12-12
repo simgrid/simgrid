@@ -308,12 +308,13 @@ XBT_PUBLIC void execute(double flop, double priority);
  *
  * \endrst
  */
+/** Block the current actor until the built parallel execution completes */
 XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                                  const std::vector<double>& bytes_amounts);
 
-/** Block the current actor until the built parallel execution completes, or until the timeout. */
-XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                                 const std::vector<double>& bytes_amounts, double timeout);
+XBT_ATTRIB_DEPRECATED_v329("Please use exec_init(...)->wait_for(timeout)") XBT_PUBLIC
+    void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                          const std::vector<double>& bytes_amounts, double timeout);
 
 /** Initialize a sequential execution that must then be started manually */
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);

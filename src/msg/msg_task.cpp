@@ -75,10 +75,9 @@ msg_error_t Task::execute()
 
     compute->set_name(name_)
         ->set_tracing_category(tracing_category_)
-        ->set_timeout(timeout_)
         ->set_priority(1 / priority_)
         ->set_bound(bound_)
-        ->wait();
+        ->wait_for(timeout_);
 
     set_not_used();
     XBT_DEBUG("Execution task '%s' finished", get_cname());

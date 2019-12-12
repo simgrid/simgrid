@@ -86,7 +86,7 @@ public:
 
       xbt_os_timer_t timer = smpi_process()->timer();
       xbt_os_threadtimer_start(timer);
-      simgrid::s4u::this_actor::parallel_execute(migration_hosts, comp_amount, comm_amount, -1.0);
+      simgrid::s4u::this_actor::parallel_execute(migration_hosts, comp_amount, comm_amount);
       xbt_os_threadtimer_stop(timer);
       smpi_execute(xbt_os_timer_elapsed(timer));
 

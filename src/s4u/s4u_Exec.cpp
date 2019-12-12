@@ -78,7 +78,7 @@ ExecPtr Exec::set_bound(double bound)
   bound_ = bound;
   return this;
 }
-ExecPtr Exec::set_timeout(double timeout)
+ExecPtr Exec::set_timeout(double timeout) // XBT_ATTRIB_DEPRECATED_v329
 {
   xbt_assert(state_ == State::INITED, "Cannot change the bound of an exec after its start");
   timeout_ = timeout;
