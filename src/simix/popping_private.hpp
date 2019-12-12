@@ -16,7 +16,7 @@
 
 XBT_PUBLIC_DATA const char* simcall_names[]; /* Name of each simcall */
 
-typedef int (*simix_match_func_t)(void*, void*, simgrid::kernel::activity::CommImpl*);
+typedef bool (*simix_match_func_t)(void*, void*, simgrid::kernel::activity::CommImpl*);
 typedef void (*simix_copy_data_func_t)(simgrid::kernel::activity::CommImpl*, void*, size_t);
 typedef void (*simix_clean_func_t)(void*);
 typedef void (*FPtr)(void); // Hide the ugliness

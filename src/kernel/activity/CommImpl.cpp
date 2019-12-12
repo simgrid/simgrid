@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related syn
 
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t src, smx_mailbox_t mbox, double task_size,
                                            double rate, unsigned char* src_buff, size_t src_buff_size,
-                                           int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                           bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                            void* data, double timeout)
 {
@@ -32,7 +32,8 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sr
 
 XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
     smx_simcall_t /*simcall*/, smx_actor_t src_proc, smx_mailbox_t mbox, double task_size, double rate,
-    unsigned char* src_buff, size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+    unsigned char* src_buff, size_t src_buff_size,
+    bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
     void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
     void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), // used to copy data if not default one
     void* data, bool detached)
@@ -98,7 +99,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
 
 XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox,
                                            unsigned char* dst_buff, size_t* dst_buff_size,
-                                           int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                           bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                            void* data, double timeout, double rate)
 {
@@ -110,8 +111,8 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
 
 XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(
     smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff, size_t* dst_buff_size,
-    simix_match_func_t match_fun, void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
-    void* data, double rate)
+    bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+    void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data, double rate)
 {
   simgrid::kernel::activity::CommImplPtr this_synchro =
       simgrid::kernel::activity::CommImplPtr(new simgrid::kernel::activity::CommImpl());

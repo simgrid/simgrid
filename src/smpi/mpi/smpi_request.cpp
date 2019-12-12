@@ -108,7 +108,7 @@ void Request::unref(MPI_Request* request)
   }
 }
 
-int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
+bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 {
   MPI_Request ref = static_cast<MPI_Request>(a);
   MPI_Request req = static_cast<MPI_Request>(b);
@@ -131,11 +131,12 @@ int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
     if(req->cancelled_==0)
       req->cancelled_ = -1; // mark as uncancelable
     XBT_DEBUG("match succeeded");
-    return 1;
-  }else return 0;
+    return true;
+  }
+  return false;
 }
 
-int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
+bool Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 {
   MPI_Request ref = static_cast<MPI_Request>(a);
   MPI_Request req = static_cast<MPI_Request>(b);
@@ -157,9 +158,9 @@ int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
     if(req->cancelled_==0)
       req->cancelled_ = -1; // mark as uncancelable
     XBT_DEBUG("match succeeded");
-    return 1;
-  } else
-    return 0;
+    return true;
+  }
+  return false;
 }
 
 void Request::print_request(const char *message)

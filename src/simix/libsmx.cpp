@@ -65,7 +65,7 @@ e_smx_state_t simcall_process_sleep(double duration) // XBT_DEPRECATED_v329
  * @ingroup simix_comm_management
  */
 void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
-                       size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                       size_t src_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                        void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                        double timeout)
 {
@@ -95,7 +95,7 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
  */
 smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                                   size_t src_buff_size,
-                                  int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                  bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                   void (*clean_fun)(void*),
                                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                   void* data, bool detached)
@@ -114,7 +114,7 @@ smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double
  * @ingroup simix_comm_management
  */
 void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
-                       int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                       bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                        void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                        double timeout, double rate)
 {
@@ -138,7 +138,7 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
  * @ingroup simix_comm_management
  */
 smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
-                                  int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                  bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                   void* data, double rate)
 {
@@ -152,7 +152,7 @@ smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void
  * @ingroup simix_comm_management
  */
 smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
-                                   int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data)
+                                   bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data)
 {
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 

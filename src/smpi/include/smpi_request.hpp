@@ -111,8 +111,8 @@ public:
   static int waitall(int count, MPI_Request requests[], MPI_Status status[]);
   static int waitsome(int incount, MPI_Request requests[], int* indices, MPI_Status status[]);
 
-  static int match_send(void* a, void* b, kernel::activity::CommImpl* ignored);
-  static int match_recv(void* a, void* b, kernel::activity::CommImpl* ignored);
+  static bool match_send(void* a, void* b, kernel::activity::CommImpl* ignored);
+  static bool match_recv(void* a, void* b, kernel::activity::CommImpl* ignored);
 
   static int grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request);
   static int grequest_complete( MPI_Request request);

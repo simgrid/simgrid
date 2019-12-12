@@ -85,7 +85,7 @@ void MailboxImpl::remove(const CommImplPtr& comm)
   xbt_die("Comm %p not found in mailbox %s", comm.get(), this->get_cname());
 }
 
-CommImplPtr MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, CommImpl*), void* data)
+CommImplPtr MailboxImpl::iprobe(int type, bool (*match_fun)(void*, void*, CommImpl*), void* data)
 {
   XBT_DEBUG("iprobe from %p %p", this, &comm_queue_);
 
@@ -122,7 +122,7 @@ CommImplPtr MailboxImpl::iprobe(int type, int (*match_fun)(void*, void*, CommImp
  *  @param remove_matching whether or not to clean the found object from the queue
  *  @return The communication activity if found, nullptr otherwise
  */
-CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, int (*match_fun)(void*, void*, CommImpl*),
+CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, bool (*match_fun)(void*, void*, CommImpl*),
                                             void* this_user_data, const CommImplPtr& my_synchro, bool done,
                                             bool remove_matching)
 {

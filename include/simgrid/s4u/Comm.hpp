@@ -30,7 +30,7 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   std::string tracing_category_       = "";
   /* FIXME: expose these elements in the API */
   bool detached_                                                          = false;
-  int (*match_fun_)(void*, void*, kernel::activity::CommImpl*)            = nullptr;
+  bool (*match_fun_)(void*, void*, kernel::activity::CommImpl*)           = nullptr;
   void (*clean_fun_)(void*)                                               = nullptr;
   void (*copy_data_function_)(kernel::activity::CommImpl*, void*, size_t) = nullptr;
 

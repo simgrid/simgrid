@@ -80,7 +80,7 @@ public:
   /** Creates and start a data transmission to that mailbox */
   CommPtr put_async(void* data, uint64_t simulated_size_in_bytes);
 
-  smx_activity_t iprobe(int type, int (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data);
+  smx_activity_t iprobe(int type, bool (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data);
   /** Blocking data transmission */
   void put(void* payload, uint64_t simulated_size_in_bytes);
   /** Blocking data transmission with timeout */

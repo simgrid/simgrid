@@ -58,7 +58,7 @@ public:
 #endif
 
   void (*clean_fun)(void*) = nullptr; /* Function to clean the detached src_buf if something goes wrong */
-  int (*match_fun)(void*, void*, CommImpl*) = nullptr; /* Filter function used by the other side. It is used when
+  bool (*match_fun)(void*, void*, CommImpl*) = nullptr; /* Filter function used by the other side. It is used when
 looking if a given communication matches my needs. For that, myself must match the
 expectations of the other side, too. See  */
   void (*copy_data_fun)(CommImpl*, void*, size_t) = nullptr;

@@ -138,30 +138,30 @@ SG_END_DECL
 #ifdef __cplusplus
 XBT_PUBLIC void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                                   size_t src_buff_size,
-                                  int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                  bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                   void* data, double timeout);
 
 XBT_PUBLIC smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate,
                                              void* src_buff, size_t src_buff_size,
-                                             int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                             bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                              void (*clean_fun)(void*),
                                              void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                              void* data, bool detached);
 
 XBT_PUBLIC void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
-                                  int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                  bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                   void* data, double timeout, double rate);
 
 XBT_PUBLIC smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
                                              size_t* dst_buff_size,
-                                             int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                             bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                              void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                              void* data, double rate);
 
 XBT_PUBLIC smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
-                                              int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                                              bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                                               void* data);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */

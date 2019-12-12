@@ -42,8 +42,8 @@ public:
   void set_receiver(s4u::ActorPtr actor);
   void push(CommImplPtr comm);
   void remove(const CommImplPtr& comm);
-  CommImplPtr iprobe(int type, int (*match_fun)(void*, void*, CommImpl*), void* data);
-  CommImplPtr find_matching_comm(CommImpl::Type type, int (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
+  CommImplPtr iprobe(int type, bool (*match_fun)(void*, void*, CommImpl*), void* data);
+  CommImplPtr find_matching_comm(CommImpl::Type type, bool (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
                                  const CommImplPtr& my_synchro, bool done, bool remove_matching);
 
   actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached

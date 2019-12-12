@@ -150,7 +150,7 @@ void* Mailbox::get(double timeout)
   return res;
 }
 
-smx_activity_t Mailbox::iprobe(int type, int (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data)
+smx_activity_t Mailbox::iprobe(int type, bool (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data)
 {
   return kernel::actor::simcall([this, type, match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
 }
