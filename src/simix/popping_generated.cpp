@@ -62,7 +62,7 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
     return;
   switch (simcall.call_) {
     case SIMCALL_EXECUTION_WAIT:
-      simcall_HANDLER_execution_wait(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall.args_[0]));
+      simcall_HANDLER_execution_wait(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall.args_[0]), simgrid::simix::unmarshal<double>(simcall.args_[1]));
       break;
 
     case SIMCALL_EXECUTION_WAITANY_FOR:

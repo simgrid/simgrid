@@ -29,9 +29,10 @@
  *
  * @param execution The execution synchro
  */
-e_smx_state_t simcall_execution_wait(const smx_activity_t& execution)
+e_smx_state_t simcall_execution_wait(const smx_activity_t& execution, double timeout)
 {
-  return (e_smx_state_t)simcall_BODY_execution_wait(static_cast<simgrid::kernel::activity::ExecImpl*>(execution.get()));
+  return (e_smx_state_t)simcall_BODY_execution_wait(static_cast<simgrid::kernel::activity::ExecImpl*>(execution.get()),
+                                                    timeout);
 }
 
 bool simcall_execution_test(const smx_activity_t& execution)

@@ -27,6 +27,18 @@ static inline void simcall_execution_wait__set__execution(smx_simcall_t simcall,
 {
   simgrid::simix::marshal<simgrid::kernel::activity::ExecImpl*>(simcall->args_[0], arg);
 }
+static inline double simcall_execution_wait__get__timeout(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<double>(simcall->args_[1]);
+}
+static inline double simcall_execution_wait__getraw__timeout(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal_raw<double>(simcall->args_[1]);
+}
+static inline void simcall_execution_wait__set__timeout(smx_simcall_t simcall, double arg)
+{
+  simgrid::simix::marshal<double>(simcall->args_[1], arg);
+}
 static inline int simcall_execution_wait__get__result(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<int>(simcall->result_);
@@ -999,7 +1011,7 @@ static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::f
 
 /* The prototype of all simcall handlers, automatically generated for you */
 
-XBT_PRIVATE void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execution);
+XBT_PRIVATE void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execution, double timeout);
 XBT_PRIVATE void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl** execs, size_t count, double timeout);
 XBT_PRIVATE void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execution);
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);

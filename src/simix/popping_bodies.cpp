@@ -39,11 +39,11 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
   return simgrid::simix::unmarshal<R>(self->simcall.result_);
 }
 
-inline static int simcall_BODY_execution_wait(simgrid::kernel::activity::ExecImpl* execution)
+inline static int simcall_BODY_execution_wait(simgrid::kernel::activity::ExecImpl* execution, double timeout)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_execution_wait(&SIMIX_process_self()->simcall, execution);
-  return simcall<int, simgrid::kernel::activity::ExecImpl*>(SIMCALL_EXECUTION_WAIT, execution);
+    simcall_HANDLER_execution_wait(&SIMIX_process_self()->simcall, execution, timeout);
+  return simcall<int, simgrid::kernel::activity::ExecImpl*, double>(SIMCALL_EXECUTION_WAIT, execution, timeout);
 }
 
 inline static int simcall_BODY_execution_waitany_for(simgrid::kernel::activity::ExecImpl** execs, size_t count, double timeout)

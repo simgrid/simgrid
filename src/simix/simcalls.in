@@ -35,7 +35,7 @@
 # Last but not the least, you should declare the new simix call in
 # ./include/simgrid/simix.h (otherwise you will get a warning at compile time)
 
-int           execution_wait(simgrid::kernel::activity::ExecImpl* execution) [[block]];
+int           execution_wait(simgrid::kernel::activity::ExecImpl* execution, double timeout) [[block]];
 int           execution_waitany_for(simgrid::kernel::activity::ExecImpl** execs, size_t count, double timeout) [[block]];
 bool          execution_test(simgrid::kernel::activity::ExecImpl* execution) [[block]];
 

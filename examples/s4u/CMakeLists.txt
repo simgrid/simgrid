@@ -9,7 +9,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  cloud-capping cloud-migration cloud-simple
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask
                  engine-filtering
-                 exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany
+                 exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor
                  io-async io-file-system io-file-remote io-disk-raw
                  platform-failures platform-profile platform-properties
                  plugin-hostload

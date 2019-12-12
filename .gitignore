@@ -181,6 +181,7 @@ examples/s4u/exec-monitor/s4u-exec-monitor
 examples/s4u/exec-ptask/s4u-exec-ptask
 examples/s4u/exec-remote/s4u-exec-remote
 examples/s4u/exec-waitany/s4u-exec-waitany
+examples/s4u/exec-waitfor/s4u-exec-waitfor
 examples/s4u/io-async/s4u-io-async
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-file-system/s4u-io-file-system

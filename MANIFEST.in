@@ -376,6 +376,8 @@ include examples/s4u/exec-remote/s4u-exec-remote.cpp
 include examples/s4u/exec-remote/s4u-exec-remote.tesh
 include examples/s4u/exec-waitany/s4u-exec-waitany.cpp
 include examples/s4u/exec-waitany/s4u-exec-waitany.tesh
+include examples/s4u/exec-waitfor/s4u-exec-waitfor.cpp
+include examples/s4u/exec-waitfor/s4u-exec-waitfor.tesh
 include examples/s4u/io-async/s4u-io-async.cpp
 include examples/s4u/io-async/s4u-io-async.tesh
 include examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp

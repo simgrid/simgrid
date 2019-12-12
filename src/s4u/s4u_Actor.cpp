@@ -345,11 +345,22 @@ void execute(double flops, double priority)
 void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                       const std::vector<double>& bytes_amounts)
 {
-  parallel_execute(hosts, flops_amounts, bytes_amounts, -1);
+  exec_init(hosts, flops_amounts, bytes_amounts)->wait();
 }
 
 void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                       const std::vector<double>& bytes_amounts, double timeout)
+{
+  exec_init(hosts, flops_amounts, bytes_amounts)->wait_for(timeout);
+}
+
+ExecPtr exec_init(double flops_amount)
+{
+  return ExecPtr(new ExecSeq(get_host(), flops_amount));
+}
+
+ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                  const std::vector<double>& bytes_amounts)
 {
   xbt_assert(hosts.size() > 0, "Your parallel executions must span over at least one host.");
   xbt_assert(hosts.size() == flops_amounts.size() || flops_amounts.empty(),
@@ -371,17 +382,6 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
   xbt_assert(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
              "flops_amounts comprises infinite values!");
 
-  exec_init(hosts, flops_amounts, bytes_amounts)->set_timeout(timeout)->wait();
-}
-
-ExecPtr exec_init(double flops_amount)
-{
-  return ExecPtr(new ExecSeq(get_host(), flops_amount));
-}
-
-ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                  const std::vector<double>& bytes_amounts)
-{
   return ExecPtr(new ExecPar(hosts, flops_amounts, bytes_amounts));
 }
 

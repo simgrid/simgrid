@@ -1,0 +1,10 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-exec-waitfor ${platfdir}/multicore_machine.xml "--log=root.fmt:[%10.6r]%e[%14P]%e%m%n"
+> [  0.000000] [        worker] Create an activity that should run for 5 seconds
+> [  0.000000] [        worker] But let it end after 3 seconds
+> [  3.000000] [        worker] Execution Timeout!
+> [  3.000000] [        worker] Create another activity that should run for 5 seconds and wait for it for 6 seconds
+> [  8.000000] [        worker] Execution complete
+> [  8.000000] [        worker] Finally test with a parallel execution
+> [ 10.000000] [        worker] Parallel Execution Timeout!

@@ -40,17 +40,17 @@ bool Exec::test()
 
 Exec* Exec::wait()
 {
+  return this->wait_for(-1);
+}
+
+Exec* Exec::wait_for(double timeout)
+{
   if (state_ == State::INITED)
     start();
-  simcall_execution_wait(pimpl_);
+  simcall_execution_wait(pimpl_, timeout);
   state_ = State::FINISHED;
   on_completion(*Actor::self(), *this);
   return this;
-}
-
-Exec* Exec::wait_for(double)
-{
-  THROW_UNIMPLEMENTED;
 }
 
 int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
