@@ -240,7 +240,8 @@ namespace smpi{
     return ret;
   }
 
-  int File::set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info){
+  int File::set_view(MPI_Offset /*disp*/, MPI_Datatype etype, MPI_Datatype filetype, const char* datarep, MPI_Info)
+  {
     etype_=etype;
     filetype_=filetype;
     datarep_=std::string(datarep);
@@ -248,7 +249,8 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::get_view(MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep){
+  int File::get_view(MPI_Offset* /*disp*/, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep)
+  {
     *etype=etype_;
     *filetype=filetype_;
     snprintf(datarep, MPI_MAX_NAME_STRING+1, "%s", datarep_.c_str());
