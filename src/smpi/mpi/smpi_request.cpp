@@ -108,27 +108,30 @@ void Request::unref(MPI_Request* request)
   }
 }
 
-bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
+bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request receiver)
 {
-  MPI_Request ref = static_cast<MPI_Request>(a);
-  MPI_Request req = static_cast<MPI_Request>(b);
-  XBT_DEBUG("Trying to match a recv of src %d against %d, tag %d against %d, id %d against %d",ref->src_,req->src_, ref->tag_, req->tag_,ref->comm_->id(),req->comm_->id());
+  xbt_assert(sender, "Cannot match against null sender");
+  xbt_assert(receiver, "Cannot match against null receiver");
+  XBT_DEBUG("Trying to match %s of sender src %d against %d, tag %d against %d, id %d against %d",
+            (req == receiver ? "send" : "recv"), sender->src_, receiver->src_, sender->tag_, receiver->tag_,
+            sender->comm_->id(), receiver->comm_->id());
 
-  xbt_assert(ref, "Cannot match recv against null reference");
-  xbt_assert(req, "Cannot match recv against null request");
-  if((ref->comm_->id()==MPI_UNDEFINED || req->comm_->id() == MPI_UNDEFINED || (ref->comm_->id()==req->comm_->id()))
-    && ((ref->src_ == MPI_ANY_SOURCE  && (ref->comm_->group()->rank(req->src_) != MPI_UNDEFINED)) || req->src_ == ref->src_)
-    && ((ref->tag_ == MPI_ANY_TAG && req->tag_ >=0) || req->tag_ == ref->tag_)){
-    //we match, we can transfer some values
-    if(ref->src_ == MPI_ANY_SOURCE)
-      ref->real_src_ = req->src_;
-    if(ref->tag_ == MPI_ANY_TAG)
-      ref->real_tag_ = req->tag_;
-    if(ref->real_size_ < req->real_size_)
-      ref->truncated_ = true;
-    if (req->detached_)
-      ref->detached_sender_=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
-    if(req->cancelled_==0)
+  if ((receiver->comm_->id() == MPI_UNDEFINED || sender->comm_->id() == MPI_UNDEFINED ||
+       receiver->comm_->id() == sender->comm_->id()) &&
+      ((receiver->src_ == MPI_ANY_SOURCE && (receiver->comm_->group()->rank(sender->src_) != MPI_UNDEFINED)) ||
+       receiver->src_ == sender->src_) &&
+      ((receiver->tag_ == MPI_ANY_TAG && sender->tag_ >= 0) || receiver->tag_ == sender->tag_)) {
+    // we match, we can transfer some values
+    if (receiver->src_ == MPI_ANY_SOURCE)
+      receiver->real_src_ = sender->src_;
+    if (receiver->tag_ == MPI_ANY_TAG)
+      receiver->real_tag_ = sender->tag_;
+    if (receiver->real_size_ < sender->real_size_)
+      receiver->truncated_ = true;
+    if (sender->detached_)
+      receiver->detached_sender_ = sender; // tie the sender to the receiver, as it is detached and has to be freed in
+                                           // the receiver
+    if (req->cancelled_ == 0)
       req->cancelled_ = -1; // mark as uncancelable
     XBT_DEBUG("match succeeded");
     return true;
@@ -136,31 +139,18 @@ bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
   return false;
 }
 
+bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
+{
+  MPI_Request ref = static_cast<MPI_Request>(a);
+  MPI_Request req = static_cast<MPI_Request>(b);
+  return match_common(req, req, ref);
+}
+
 bool Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 {
   MPI_Request ref = static_cast<MPI_Request>(a);
   MPI_Request req = static_cast<MPI_Request>(b);
-  XBT_DEBUG("Trying to match a send of src %d against %d, tag %d against %d, id %d against %d",ref->src_,req->src_, ref->tag_, req->tag_,ref->comm_->id(),req->comm_->id());
-  xbt_assert(ref, "Cannot match send against null reference");
-  xbt_assert(req, "Cannot match send against null request");
-
-  if((ref->comm_->id()==MPI_UNDEFINED || req->comm_->id() == MPI_UNDEFINED || (ref->comm_->id()==req->comm_->id()))
-      && ((req->src_ == MPI_ANY_SOURCE  && (req->comm_->group()->rank(ref->src_) != MPI_UNDEFINED)) || req->src_ == ref->src_)
-      && ((req->tag_ == MPI_ANY_TAG && ref->tag_ >=0)|| req->tag_ == ref->tag_)){
-    if(req->src_ == MPI_ANY_SOURCE)
-      req->real_src_ = ref->src_;
-    if(req->tag_ == MPI_ANY_TAG)
-      req->real_tag_ = ref->tag_;
-    if(req->real_size_ < ref->real_size_)
-      req->truncated_ = true;
-    if (ref->detached_)
-      req->detached_sender_=ref; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
-    if(req->cancelled_==0)
-      req->cancelled_ = -1; // mark as uncancelable
-    XBT_DEBUG("match succeeded");
-    return true;
-  }
-  return false;
+  return match_common(req, ref, req);
 }
 
 void Request::print_request(const char *message)

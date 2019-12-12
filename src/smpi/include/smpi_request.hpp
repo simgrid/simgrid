@@ -51,6 +51,7 @@ class Request : public F2C {
   smpi_mpi_generalized_request_funcs generalized_funcs;
   MPI_Request* nbc_requests_;
   int nbc_requests_size_;
+  static bool match_common(MPI_Request req, MPI_Request sender, MPI_Request receiver);
 
 public:
   Request() = default;
