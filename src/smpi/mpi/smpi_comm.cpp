@@ -40,6 +40,7 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int in_id) : group_(grou
   is_blocked_      = 0;
   info_            = MPI_INFO_NULL;
   errhandler_      = MPI_ERRORS_ARE_FATAL;
+  errhandler_->ref();
   //First creation of comm is done before SIMIX_run, so only do comms for others
   if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
     int id;
@@ -336,6 +337,8 @@ void Comm::unref(Comm* comm){
     comm->cleanup_attr<Comm>();
     if (comm->info_ != MPI_INFO_NULL)
       simgrid::smpi::Info::unref(comm->info_);
+    if (comm->errhandler_ != MPI_ERRHANDLER_NULL)
+      simgrid::smpi::Errhandler::unref(comm->errhandler_);
     delete comm->topo_; // there's no use count on topos
     delete comm;
   }
@@ -557,14 +560,20 @@ void Comm::set_info(MPI_Info info)
     info->ref();
 }
 
-MPI_Errhandler Comm::errhandler(){
+MPI_Errhandler Comm::errhandler()
+{
+  if (errhandler_ != MPI_ERRHANDLER_NULL)
+    errhandler_->ref();
   return errhandler_;
 }
 
-void Comm::set_errhandler(MPI_Errhandler errhandler){
-  errhandler_=errhandler;
-  if(errhandler_!= MPI_ERRHANDLER_NULL)
-    errhandler->ref();
+void Comm::set_errhandler(MPI_Errhandler errhandler)
+{
+  if (errhandler_ != MPI_ERRHANDLER_NULL)
+    simgrid::smpi::Errhandler::unref(errhandler_);
+  errhandler_ = errhandler;
+  if (errhandler_ != MPI_ERRHANDLER_NULL)
+    errhandler_->ref();
 }
 
 MPI_Comm Comm::split_type(int type, int /*key*/, MPI_Info)

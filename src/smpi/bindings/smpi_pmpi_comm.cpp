@@ -292,7 +292,9 @@ int PMPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler){
 
 int PMPI_Comm_call_errhandler(MPI_Comm comm,int errorcode){
   CHECK_COMM(1)
-  comm->errhandler()->call(comm, errorcode);
+  MPI_Errhandler err = comm->errhandler();
+  err->call(comm, errorcode);
+  simgrid::smpi::Errhandler::unref(err);
   return MPI_SUCCESS;
 }
 

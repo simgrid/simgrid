@@ -53,12 +53,14 @@ namespace smpi{
       int size= comm_->size() + FP_SIZE;
       list_ = new char[size];
       errhandler_= SMPI_default_File_Errhandler;
+      errhandler_->ref();
       memset(list_, 0, size);
       shared_file_pointer_ = new MPI_Offset();
       shared_mutex_ = s4u::Mutex::create();
       *shared_file_pointer_ = 0;
       win_=new Win(list_, size, 1, MPI_INFO_NULL, comm_);
     }else{
+      errhandler_ = MPI_ERRHANDLER_NULL;
       win_=new Win(list_, 0, 1, MPI_INFO_NULL, comm_);
     }
     simgrid::smpi::colls::bcast(&shared_file_pointer_, 1, MPI_AINT, 0, comm);
@@ -76,6 +78,8 @@ namespace smpi{
     delete file_;
     if (info_ != MPI_INFO_NULL)
       simgrid::smpi::Info::unref(info_);
+    if (errhandler_ != MPI_ERRHANDLER_NULL)
+      simgrid::smpi::Errhandler::unref(errhandler_);
   }
 
   int File::close(MPI_File *fh){
@@ -295,14 +299,20 @@ namespace smpi{
     return comm_;
   }
 
-  MPI_Errhandler File::errhandler(){
+  MPI_Errhandler File::errhandler()
+  {
+    if (errhandler_ != MPI_ERRHANDLER_NULL)
+      errhandler_->ref();
     return errhandler_;
   }
 
-  void File::set_errhandler(MPI_Errhandler errhandler){
-    errhandler_=errhandler;
-    if(errhandler_!= MPI_ERRHANDLER_NULL)
-      errhandler->ref();
+  void File::set_errhandler(MPI_Errhandler errhandler)
+  {
+    if (errhandler_ != MPI_ERRHANDLER_NULL)
+      simgrid::smpi::Errhandler::unref(errhandler_);
+    errhandler_ = errhandler;
+    if (errhandler_ != MPI_ERRHANDLER_NULL)
+      errhandler_->ref();
   }
 }
 }

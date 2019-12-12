@@ -43,6 +43,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   }
   mode_=0;
   errhandler_=MPI_ERRORS_ARE_FATAL;
+  errhandler_->ref();
   comm->add_rma_win(this);
   comm->ref();
 
@@ -68,6 +69,8 @@ Win::~Win(){
   }
   if (info_ != MPI_INFO_NULL)
     simgrid::smpi::Info::unref(info_);
+  if (errhandler_ != MPI_ERRHANDLER_NULL)
+    simgrid::smpi::Errhandler::unref(errhandler_);
 
   comm_->remove_rma_win(this);
 
@@ -739,14 +742,18 @@ int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
 
 MPI_Errhandler Win::errhandler()
 {
+  if (errhandler_ != MPI_ERRHANDLER_NULL)
+    errhandler_->ref();
   return errhandler_;
 }
 
 void Win::set_errhandler(MPI_Errhandler errhandler)
 {
+  if (errhandler_ != MPI_ERRHANDLER_NULL)
+    simgrid::smpi::Errhandler::unref(errhandler_);
   errhandler_ = errhandler;
   if (errhandler_ != MPI_ERRHANDLER_NULL)
-    errhandler->ref();
+    errhandler_->ref();
 }
 } // namespace smpi
 } // namespace simgrid

@@ -369,6 +369,8 @@ int PMPI_File_call_errhandler(MPI_File file,int errorcode){
   if (file == nullptr) {
     return MPI_ERR_WIN;
   }
-  file->errhandler()->call(file, errorcode);
+  MPI_Errhandler err = file->errhandler();
+  err->call(file, errorcode);
+  simgrid::smpi::Errhandler::unref(err);
   return MPI_SUCCESS;
 }

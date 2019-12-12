@@ -703,6 +703,8 @@ int PMPI_Win_set_errhandler(MPI_Win win, MPI_Errhandler errhandler){
 
 int PMPI_Win_call_errhandler(MPI_Win win,int errorcode){
   CHECK_WIN(1, win)
-  win->errhandler()->call(win, errorcode);
+  MPI_Errhandler err = win->errhandler();
+  err->call(win, errorcode);
+  simgrid::smpi::Errhandler::unref(err);
   return MPI_SUCCESS;
 }
