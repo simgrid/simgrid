@@ -26,11 +26,11 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
                          std::shared_ptr<simgrid::mc::State> graph_state)
     : num(pair_num), automaton_state(automaton_state)
 {
-  simgrid::mc::RemoteClient* process = &(mc_model_checker->process());
+  RemoteClient* process = &(mc_model_checker->process());
 
   this->graph_state = std::move(graph_state);
   if(this->graph_state->system_state == nullptr)
-    this->graph_state->system_state = std::make_shared<simgrid::mc::Snapshot>(pair_num);
+    this->graph_state->system_state = std::make_shared<Snapshot>(pair_num);
   this->heap_bytes_used = mmalloc_get_bytes_used_remote(process->get_heap()->heaplimit, process->get_malloc_info());
 
   this->actors_count = mc_model_checker->process().actors().size();
@@ -75,7 +75,7 @@ std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values(
   std::vector<int> values;
   unsigned int cursor = 0;
   xbt_automaton_propositional_symbol_t ps = nullptr;
-  xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, ps)
+  xbt_dynar_foreach (mc::property_automaton->propositional_symbols, cursor, ps)
     values.push_back(xbt_automaton_propositional_symbol_evaluate(ps));
   return std::make_shared<const std::vector<int>>(std::move(values));
 }
@@ -86,8 +86,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
     pair->num, pair->automaton_state, pair->atomic_propositions,
     pair->graph_state);
 
-  auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(),
-                                       simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
+  auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(), DerefAndCompareByActorsCountAndUsedHeap());
 
   if (pair->search_cycle) for (auto i = res.first; i != res.second; ++i) {
     std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
@@ -122,7 +121,7 @@ void LivenessChecker::replay()
 
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0) {
-    simgrid::mc::Pair* pair = exploration_stack_.back().get();
+    Pair* pair = exploration_stack_.back().get();
     if(pair->graph_state->system_state){
       pair->graph_state->system_state->restore(&mc_model_checker->process());
       return;
@@ -130,7 +129,7 @@ void LivenessChecker::replay()
   }
 
   /* Restore the initial state */
-  simgrid::mc::session->restore_initial_state();
+  mc::session->restore_initial_state();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
@@ -141,7 +140,6 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->graph_state;
 
     if (pair->exploration_started) {
-
       int req_num             = state->transition_.argument_;
       smx_simcall_t saved_req = &state->executed_req_;
 
@@ -154,11 +152,8 @@ void LivenessChecker::replay()
         req = &issuer->simcall;
 
         /* Debug information */
-        XBT_DEBUG("Replay (depth = %d) : %s (%p)",
-          depth,
-          simgrid::mc::request_to_string(
-            req, req_num, simgrid::mc::RequestType::simix).c_str(),
-          state.get());
+        XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
+                  request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
       }
 
       this->get_session().execute(state->transition_);
@@ -187,8 +182,7 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     visited_pair =
         std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
-  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(),
-                                         simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
+  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), DerefAndCompareByActorsCountAndUsedHeap());
 
   for (auto i = range.first; i != range.second; ++i) {
     VisitedPair* pair_test = i->get();
@@ -251,8 +245,8 @@ void LivenessChecker::show_acceptance_cycle(std::size_t depth)
   XBT_INFO("Counter-example that violates formula:");
   for (auto const& s : this->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
-  simgrid::mc::dumpRecordPath();
-  simgrid::mc::session->log_state();
+  mc::dumpRecordPath();
+  mc::session->log_state();
   XBT_INFO("Counter-example depth: %zu", depth);
 }
 
@@ -263,8 +257,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
     int req_num       = pair->graph_state->transition_.argument_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
     if (req && req->call_ != SIMCALL_NONE)
-      trace.push_back(simgrid::mc::request_to_string(
-        req, req_num, simgrid::mc::RequestType::executed));
+      trace.push_back(request_to_string(req, req_num, RequestType::executed));
   }
   return trace;
 }
@@ -275,7 +268,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(Pair* current_pair, xbt_autom
   expanded_pairs_count_++;
   std::shared_ptr<Pair> next_pair = std::make_shared<Pair>(expanded_pairs_count_);
   next_pair->automaton_state      = state;
-  next_pair->graph_state = std::shared_ptr<simgrid::mc::State>(new simgrid::mc::State(++expanded_states_count_));
+  next_pair->graph_state          = std::shared_ptr<State>(new State(++expanded_states_count_));
   next_pair->atomic_propositions  = std::move(propositions);
   if (current_pair)
     next_pair->depth = current_pair->depth + 1;
@@ -283,7 +276,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(Pair* current_pair, xbt_autom
     next_pair->depth = 1;
   /* Get enabled actors and insert them in the interleave set of the next graph_state */
   for (auto& actor : mc_model_checker->process().actors())
-    if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer()))
+    if (mc::actor_is_enabled(actor.copy.get_buffer()))
       next_pair->graph_state->add_interleaving_set(actor.copy.get_buffer());
   next_pair->requests = next_pair->graph_state->interleave_size();
   /* FIXME : get search_cycle value for each accepting state */
@@ -322,7 +315,7 @@ void LivenessChecker::run()
   MC_automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
-  simgrid::mc::session->initialize();
+  mc::session->initialize();
 
   /* Initialize */
   this->previous_pair_ = 0;
@@ -333,7 +326,7 @@ void LivenessChecker::run()
   // (application_state, automaton_state) pair to the exploration stack:
   unsigned int cursor = 0;
   xbt_automaton_state_t automaton_state;
-  xbt_dynar_foreach (simgrid::mc::property_automaton->states, cursor, automaton_state)
+  xbt_dynar_foreach (mc::property_automaton->states, cursor, automaton_state)
     if (automaton_state->type == -1)
       exploration_stack_.push_back(this->create_pair(nullptr, automaton_state, propos));
 
@@ -342,7 +335,7 @@ void LivenessChecker::run()
     std::shared_ptr<Pair> current_pair = exploration_stack_.back();
 
     /* Update current state in buchi automaton */
-    simgrid::mc::property_automaton->current_state = current_pair->automaton_state;
+    mc::property_automaton->current_state = current_pair->automaton_state;
 
     XBT_DEBUG(
         "********************* ( Depth = %d, search_cycle = %d, interleave size = %zu, pair_num = %d, requests = %d)",
@@ -359,7 +352,7 @@ void LivenessChecker::run()
       reached_pair = this->insert_acceptance_pair(current_pair.get());
       if (reached_pair == nullptr) {
         this->show_acceptance_cycle(current_pair->depth);
-        throw simgrid::mc::LivenessError();
+        throw LivenessError();
       }
     }
 
@@ -395,9 +388,7 @@ void LivenessChecker::run()
       fflush(dot_output);
     }
 
-    XBT_DEBUG("Execute: %s",
-      simgrid::mc::request_to_string(
-        req, req_num, simgrid::mc::RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", request_to_string(req, req_num, RequestType::simix).c_str());
 
     /* Update stats */
     mc_model_checker->executed_transitions++;
@@ -436,5 +427,5 @@ Checker* createLivenessChecker(Session& s)
   return new LivenessChecker(s);
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid

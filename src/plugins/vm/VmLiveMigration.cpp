@@ -13,12 +13,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(vm_live_migration, s4u, "S4U virtual machines li
 
 namespace simgrid {
 namespace vm {
-simgrid::xbt::Extension<s4u::Host, VmMigrationExt> VmMigrationExt::EXTENSION_ID;
+xbt::Extension<s4u::Host, VmMigrationExt> VmMigrationExt::EXTENSION_ID;
 
 void VmMigrationExt::ensureVmMigrationExtInstalled()
 {
   if (not EXTENSION_ID.valid())
-    EXTENSION_ID = simgrid::s4u::Host::extension_create<VmMigrationExt>();
+    EXTENSION_ID = s4u::Host::extension_create<VmMigrationExt>();
 }
 
 void MigrationRx::operator()()
@@ -59,18 +59,18 @@ void MigrationRx::operator()()
     counter++;
 
     // start link
-    container_t msg = simgrid::instr::Container::by_name(vm_->get_name());
-    simgrid::instr::Container::get_root()->get_link("VM_LINK")->start_event(msg, "M", key);
+    container_t msg = instr::Container::by_name(vm_->get_name());
+    instr::Container::get_root()->get_link("VM_LINK")->start_event(msg, "M", key);
 
     // destroy existing container of this vm
-    simgrid::instr::Container::by_name(vm_->get_name())->remove_from_parent();
+    instr::Container::by_name(vm_->get_name())->remove_from_parent();
 
     // create new container on the new_host location
-    new simgrid::instr::Container(vm_->get_name(), "VM", simgrid::instr::Container::by_name(dst_pm_->get_name()));
+    new instr::Container(vm_->get_name(), "VM", instr::Container::by_name(dst_pm_->get_name()));
 
     // end link
-    msg = simgrid::instr::Container::by_name(vm_->get_name());
-    simgrid::instr::Container::get_root()->get_link("VM_LINK")->end_event(msg, "M", key);
+    msg = instr::Container::by_name(vm_->get_name());
+    instr::Container::get_root()->get_link("VM_LINK")->end_event(msg, "M", key);
   }
   // Inform the SRC that the migration has been correctly performed
   std::string* payload = new std::string("__mig_stage4:");
@@ -181,7 +181,6 @@ void MigrationTx::operator()()
       skip_stage2 = true;
     } else if (sent > ramsize)
       XBT_CRITICAL("bug");
-
   } catch (const Exception&) {
     // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
@@ -203,7 +202,6 @@ void MigrationTx::operator()()
 
   /* Stage2: send update pages iteratively until the size of remaining states becomes smaller than threshold value. */
   if (not skip_stage2) {
-
     int stage2_round = 0;
     /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
     sg_size_t updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
@@ -213,7 +211,6 @@ void MigrationTx::operator()()
 
     /* When the remaining size is below the threshold value, move to stage 3. */
     while (threshold < remaining_size) {
-
       XBT_DEBUG("mig-stage 2:%d updated_size %llu computed_during_stage1 %f dp_rate %f dp_cap %llu", stage2_round,
                 updated_size, computed_during_stage1, dp_rate, dp_cap);
 
@@ -277,8 +274,8 @@ void MigrationTx::operator()()
   // effectively the VM on the DST node.
   XBT_DEBUG("mig: tx_done");
 }
-}
-}
+} // namespace vm
+} // namespace simgrid
 
 static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine const& vm)
 {

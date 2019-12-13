@@ -142,7 +142,6 @@ private:
 template<class T>
 class FutureState : public FutureStateBase {
 public:
-
   void set_value(T value)
   {
     if (this->get_status() != FutureStatus::not_ready)

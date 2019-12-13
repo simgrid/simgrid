@@ -531,7 +531,6 @@ public:
   resource::Action::ModifiedSet* modified_set_ = nullptr;
 
 private:
-
   typedef std::vector<int> dyn_light_t;
   
   //Data used in lmm::solve

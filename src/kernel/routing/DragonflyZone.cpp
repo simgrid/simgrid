@@ -280,7 +280,6 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   }
 
   if (targetRouter != myRouter) {
-
     // are we on a different group ?
     if (targetRouter->group_ != currentRouter->group_) {
       // go to the router of our group connected to this one.

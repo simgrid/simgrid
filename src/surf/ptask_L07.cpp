@@ -395,7 +395,6 @@ void L07Action::updateBound()
   if (communicationAmount_ != nullptr) {
     for (size_t i = 0; i < host_count; i++) {
       for (size_t j = 0; j < host_count; j++) {
-
         if (communicationAmount_[i * host_count + j] > 0) {
           double lat = 0.0;
           std::vector<kernel::resource::LinkImpl*> route;

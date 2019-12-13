@@ -104,7 +104,6 @@ LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vect
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
 {
   while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
-
     auto* action = static_cast<NetworkCm02Action*>(get_action_heap().pop());
     XBT_DEBUG("Something happened to action %p", action);
 

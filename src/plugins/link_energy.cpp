@@ -58,7 +58,7 @@ public:
 private:
   double get_power();
 
-  simgrid::s4u::Link* link_{};
+  s4u::Link* link_{};
 
   bool inited_{false};
   double idle_{0.0};
@@ -68,7 +68,7 @@ private:
   double last_updated_{0.0}; /*< Timestamp of the last energy update event*/
 };
 
-simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergy> LinkEnergy::EXTENSION_ID;
+xbt::Extension<s4u::Link, LinkEnergy> LinkEnergy::EXTENSION_ID;
 
 void LinkEnergy::update()
 {
@@ -126,7 +126,6 @@ void LinkEnergy::init_watts_range_list()
 
 double LinkEnergy::get_power()
 {
-
   if (!inited_)
     return 0.0;
 
@@ -141,7 +140,7 @@ double LinkEnergy::get_power()
 double LinkEnergy::get_consumed_energy()
 {
   if (last_updated_ < surf_get_clock()) // We need to simcall this as it modifies the environment
-    simgrid::kernel::actor::simcall(std::bind(&LinkEnergy::update, this));
+    kernel::actor::simcall(std::bind(&LinkEnergy::update, this));
   return this->total_energy_;
 }
 } // namespace plugin
@@ -155,7 +154,6 @@ static void on_communicate(simgrid::kernel::resource::NetworkAction const& actio
 {
   XBT_DEBUG("onCommunicate is called");
   for (simgrid::kernel::resource::LinkImpl* link : action.links()) {
-
     if (link == nullptr)
       continue;
 
