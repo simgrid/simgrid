@@ -138,7 +138,7 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
       break;
 
     case SIMCALL_IO_WAIT:
-      simcall_HANDLER_io_wait(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::IoImpl*>(simcall.args_[0]));
+      simcall_HANDLER_io_wait(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::IoImpl*>(simcall.args_[0]), simgrid::simix::unmarshal<double>(simcall.args_[1]));
       break;
 
     case SIMCALL_MC_RANDOM:

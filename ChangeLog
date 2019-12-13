@@ -7,6 +7,7 @@ S4U:
 - Actor: Rename migrate() into set_host()
 - Disk: Allow users to get the read and write nominal bandwidth values
 - Exec: Implement wait_for(timeout)
+- Io: Implement wait_for(timeout)
 
 XML:
 - Parse errors now raise a simgrid::ParseError that you may want to catch.

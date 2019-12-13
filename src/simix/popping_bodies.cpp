@@ -165,11 +165,11 @@ inline static int simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeout
   return simcall<int, smx_sem_t, double>(SIMCALL_SEM_ACQUIRE_TIMEOUT, sem, timeout);
 }
 
-inline static sg_size_t simcall_BODY_io_wait(simgrid::kernel::activity::IoImpl* io)
+inline static sg_size_t simcall_BODY_io_wait(simgrid::kernel::activity::IoImpl* io, double timeout)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_io_wait(&SIMIX_process_self()->simcall, io);
-  return simcall<sg_size_t, simgrid::kernel::activity::IoImpl*>(SIMCALL_IO_WAIT, io);
+    simcall_HANDLER_io_wait(&SIMIX_process_self()->simcall, io, timeout);
+  return simcall<sg_size_t, simgrid::kernel::activity::IoImpl*, double>(SIMCALL_IO_WAIT, io, timeout);
 }
 
 inline static int simcall_BODY_mc_random(int min, int max)

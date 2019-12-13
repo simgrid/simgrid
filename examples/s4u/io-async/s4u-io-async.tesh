@@ -2,8 +2,11 @@
 
 $ ${bindir:=.}/s4u-io-async ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:test@bob) Hello! read 20000000 bytes from Disk1
-> [  0.000000] (2:test_cancel@alice) Hello! write 50000000 bytes from Disk1
+> [  0.000000] (2:test_waitfor@alice) Hello! write 50000000 bytes from Disk1
 > [  0.200000] (1:test@bob) Goodbye now!
-> [  0.500000] (2:test_cancel@alice) I changed my mind, cancel!
-> [  0.500000] (2:test_cancel@alice) Goodbye now!
-> [  0.500000] (0:maestro@) Simulation time 0.5
+> [  0.500000] (2:test_waitfor@alice) Asynchronous write: Timeout!
+> [  0.500000] (2:test_waitfor@alice) Goodbye now!
+> [  0.500000] (3:test_cancel@alice) Hello! write 50000000 bytes from Disk1
+> [  1.000000] (3:test_cancel@alice) I changed my mind, cancel!
+> [  1.000000] (3:test_cancel@alice) Goodbye now!
+> [  1.000000] (0:maestro@) Simulation time 1

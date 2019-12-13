@@ -56,14 +56,14 @@ Io* Io::cancel()
 
 Io* Io::wait()
 {
-  simcall_io_wait(pimpl_);
-  state_ = State::FINISHED;
-  return this;
+  return this->wait_for(-1);
 }
 
-Io* Io::wait_for(double)
+Io* Io::wait_for(double timeout)
 {
-  THROW_UNIMPLEMENTED;
+  simcall_io_wait(pimpl_, timeout);
+  state_ = State::FINISHED;
+  return this;
 }
 
 bool Io::test()

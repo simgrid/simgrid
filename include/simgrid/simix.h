@@ -191,7 +191,7 @@ SG_END_DECL
 
 /*****************************   Io   **************************************/
 #ifdef __cplusplus
-XBT_PUBLIC e_smx_state_t simcall_io_wait(const smx_activity_t& io);
+XBT_PUBLIC e_smx_state_t simcall_io_wait(const smx_activity_t& io, double timeout);
 #endif
 /************************** MC simcalls   **********************************/
 SG_BEGIN_DECL

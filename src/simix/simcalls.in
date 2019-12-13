@@ -58,7 +58,7 @@ int        cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
 void      sem_acquire(smx_sem_t sem) [[block]];
 int       sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];
 
-sg_size_t io_wait(simgrid::kernel::activity::IoImpl* io) [[block]];
+sg_size_t io_wait(simgrid::kernel::activity::IoImpl* io, double timeout) [[block]];
 
 int        mc_random(int min, int max);
 

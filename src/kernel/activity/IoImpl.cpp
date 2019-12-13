@@ -11,22 +11,43 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/StorageImpl.hpp"
+#include "src/surf/cpu_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
-void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* synchro)
+void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* synchro, double timeout)
 {
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state_);
 
   /* Associate this simcall to the synchro */
   synchro->register_simcall(simcall);
 
-  if (MC_is_active() || MC_record_replay_is_active())
-    synchro->state_ = simgrid::kernel::activity::State::DONE;
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = SIMCALL_GET_MC_VALUE(*simcall);
+    if (idx == 0) {
+      synchro->state_ = simgrid::kernel::activity::State::DONE;
+    } else {
+      /* If we reached this point, the wait simcall must have a timeout */
+      /* Otherwise it shouldn't be enabled and executed by the MC */
+      if (timeout < 0.0)
+        THROW_IMPOSSIBLE;
+      synchro->state_ = simgrid::kernel::activity::State::TIMEOUT;
+    }
+    synchro->finish();
+  }
 
   /* If the synchro is already finished then perform the error handling */
   if (synchro->state_ != simgrid::kernel::activity::State::RUNNING)
     synchro->finish();
+  else {
+    /* we need a sleep action (even when there is no timeout) to be notified of host failures */
+    if (synchro->get_disk() != nullptr)
+      synchro->timeout_detector_ = synchro->get_disk()->get_host()->pimpl_cpu->sleep(timeout);
+    else
+      synchro->timeout_detector_ =
+          simgrid::s4u::Host::by_name(synchro->get_storage()->get_host())->pimpl_cpu->sleep(timeout);
+    synchro->timeout_detector_->set_activity(synchro);
+  }
 }
 
 namespace simgrid {
@@ -82,7 +103,15 @@ void IoImpl::post()
       state_ = State::CANCELED;
   } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
     state_ = State::DONE;
+  } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED) {
+    state_ = State::TIMEOUT;
   }
+
+  if (timeout_detector_) {
+    timeout_detector_->unref();
+    timeout_detector_ = nullptr;
+  }
+
   on_completion(*this);
 
   /* Answer all simcalls associated with the synchro */
@@ -105,6 +134,10 @@ void IoImpl::finish()
         break;
       case State::CANCELED:
         simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
+        break;
+      case State::TIMEOUT:
+        XBT_DEBUG("IoImpl::finish(): execution timeouted");
+        simcall->issuer_->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;
       default:
         xbt_die("Internal error in IoImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));

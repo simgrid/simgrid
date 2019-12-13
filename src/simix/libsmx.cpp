@@ -303,9 +303,9 @@ int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
   return simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 
-e_smx_state_t simcall_io_wait(const smx_activity_t& io)
+e_smx_state_t simcall_io_wait(const smx_activity_t& io, double timeout)
 {
-  return (e_smx_state_t)simcall_BODY_io_wait(static_cast<simgrid::kernel::activity::IoImpl*>(io.get()));
+  return (e_smx_state_t)simcall_BODY_io_wait(static_cast<simgrid::kernel::activity::IoImpl*>(io.get()), timeout);
 }
 
 void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t)
