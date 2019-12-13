@@ -308,6 +308,11 @@ e_smx_state_t simcall_io_wait(const smx_activity_t& io, double timeout)
   return (e_smx_state_t)simcall_BODY_io_wait(static_cast<simgrid::kernel::activity::IoImpl*>(io.get()), timeout);
 }
 
+bool simcall_io_test(const smx_activity_t& io)
+{
+  return simcall_BODY_io_test(static_cast<simgrid::kernel::activity::IoImpl*>(io.get()));
+}
+
 void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall.inspector_ = t;

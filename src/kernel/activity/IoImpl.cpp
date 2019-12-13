@@ -50,6 +50,19 @@ void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::I
   }
 }
 
+void simcall_HANDLER_io_test(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* synchro)
+{
+  bool res = (synchro->state_ != simgrid::kernel::activity::State::WAITING &&
+              synchro->state_ != simgrid::kernel::activity::State::RUNNING);
+  if (res) {
+    synchro->simcalls_.push_back(simcall);
+    synchro->finish();
+  } else {
+    simcall->issuer_->simcall_answer();
+  }
+  simcall_io_test__set__result(simcall, res);
+}
+
 namespace simgrid {
 namespace kernel {
 namespace activity {

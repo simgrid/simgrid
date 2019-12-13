@@ -48,6 +48,21 @@ static void test_cancel(sg_size_t size)
   XBT_INFO("Goodbye now!");
 }
 
+static void test_monitor(sg_size_t size)
+{
+  simgrid::s4u::Disk* disk = simgrid::s4u::Host::current()->get_disks().front();
+  simgrid::s4u::this_actor::sleep_for(1);
+  simgrid::s4u::IoPtr activity = disk->write_async(size);
+
+  while (not activity->test()) {
+    XBT_INFO("Remaining amount of bytes to write: %g", activity->get_remaining());
+    simgrid::s4u::this_actor::sleep_for(0.2);
+  }
+  activity->wait();
+
+  XBT_INFO("Goodbye now!");
+}
+
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
@@ -55,6 +70,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("bob"), test, 2e7);
   simgrid::s4u::Actor::create("test_waitfor", simgrid::s4u::Host::by_name("alice"), test_waitfor, 5e7);
   simgrid::s4u::Actor::create("test_cancel", simgrid::s4u::Host::by_name("alice"), test_cancel, 5e7);
+  simgrid::s4u::Actor::create("test_monitor", simgrid::s4u::Host::by_name("alice"), test_monitor, 5e7);
 
   e.run();
 

@@ -9,4 +9,9 @@ $ ${bindir:=.}/s4u-io-async ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%1
 > [  0.500000] (3:test_cancel@alice) Hello! write 50000000 bytes from Disk1
 > [  1.000000] (3:test_cancel@alice) I changed my mind, cancel!
 > [  1.000000] (3:test_cancel@alice) Goodbye now!
-> [  1.000000] (0:maestro@) Simulation time 1
+> [  1.000000] (4:test_monitor@alice) Remaining amount of bytes to write: 5e+07
+> [  1.200000] (4:test_monitor@alice) Remaining amount of bytes to write: 3.4e+07
+> [  1.400000] (4:test_monitor@alice) Remaining amount of bytes to write: 1.8e+07
+> [  1.600000] (4:test_monitor@alice) Remaining amount of bytes to write: 2e+06
+> [  1.800000] (4:test_monitor@alice) Goodbye now!
+> [  1.800000] (0:maestro@) Simulation time 1.8

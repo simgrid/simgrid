@@ -76,9 +76,12 @@ bool Io::test()
   if (state_ == State::INITED)
     this->start();
 
-  THROW_UNIMPLEMENTED;
+  if (simcall_io_test(pimpl_)) {
+    state_ = State::FINISHED;
+    return true;
+  }
 
-  // return false
+  return false;
 }
 
 /** @brief Returns the amount of flops that remain to be done */
