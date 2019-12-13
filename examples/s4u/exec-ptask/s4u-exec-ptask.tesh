@@ -17,5 +17,16 @@ $ ${bindir:=.}/s4u-exec-ptask ${platfdir}/energy_platform.xml --cfg=host/model:p
 > [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost2 speed_used 60000000.000000
 > [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost3 speed_used 100000000.000000
 > [320.000000] (1:test@MyHost1) Then, build a parallel task with no computation nor communication (synchro only)
-> [320.000000] (1:test@MyHost1) Goodbye now!
-> [320.000000] (0:maestro@) Simulation done.
+> [320.000000] (1:test@MyHost1) Then, Monitor the execution of a parallel task
+> [320.000000] (1:test@MyHost1) Remaining flop ratio: 100%
+> [325.000000] (1:test@MyHost1) Remaining flop ratio: 83%
+> [330.000000] (1:test@MyHost1) Remaining flop ratio: 67%
+> [335.000000] (1:test@MyHost1) Remaining flop ratio: 50%
+> [340.000000] (1:test@MyHost1) Remaining flop ratio: 33%
+> [345.000000] (1:test@MyHost1) Remaining flop ratio: 17%
+> [350.000000] (0:maestro@) UNCAT HOST [320.000000 - 350.000000] MyHost1 speed_used 33333.333333
+> [350.000000] (0:maestro@) UNCAT HOST [320.000000 - 350.000000] MyHost2 speed_used 33333.333333
+> [350.000000] (0:maestro@) UNCAT HOST [320.000000 - 350.000000] MyHost3 speed_used 33333.333333
+> [350.000000] (0:maestro@) UNCAT LINK [320.000000 - 350.000000] bus bandwidth_used 100000.000000
+> [350.000000] (1:test@MyHost1) Goodbye now!
+> [350.000000] (0:maestro@) Simulation done.

@@ -61,7 +61,7 @@ static void runner()
 
   /* ------[ test 3 ]----------------- */
   XBT_INFO("Then, build a parallel task involving only computations (of different amounts) and no communication");
-  computation_amounts = {3e8, 6e8, 1e9}; // 300Mflop, 6Mflop, 1Gflop
+  computation_amounts = {3e8, 6e8, 1e9}; // 300Mflop, 600Mflop, 1Gflop
   communication_amounts.clear();         // no comm
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
@@ -70,6 +70,20 @@ static void runner()
   computation_amounts.clear();
   communication_amounts.clear();
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
+
+  /* ------[ test 5 ]----------------- */
+  XBT_INFO("Then, Monitor the execution of a parallel task");
+  computation_amounts.assign(hosts_count, 1e6 /*1Mflop*/);
+  communication_amounts = {0, 1e6, 0, 0, 0, 1e6, 1e6, 0, 0};
+  simgrid::s4u::ExecPtr activity =
+      simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
+  activity->start();
+
+  while (not activity->test()) {
+    XBT_INFO("Remaining flop ratio: %.0f%%", 100 * activity->get_remaining_ratio());
+    simgrid::s4u::this_actor::sleep_for(5);
+  }
+  activity->wait();
 
   XBT_INFO("Goodbye now!");
 }
