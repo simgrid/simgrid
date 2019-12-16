@@ -23,7 +23,7 @@ namespace mc {
 
 VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
                          std::shared_ptr<const std::vector<int>> atomic_propositions,
-                         std::shared_ptr<simgrid::mc::State> graph_state)
+                         std::shared_ptr<State> graph_state)
     : num(pair_num), automaton_state(automaton_state)
 {
   RemoteClient* process = &(mc_model_checker->process());
@@ -164,9 +164,7 @@ void LivenessChecker::replay()
     mc_model_checker->executed_transitions++;
 
     depth++;
-
   }
-
   XBT_DEBUG("**** End Replay ****");
 }
 
@@ -382,7 +380,7 @@ void LivenessChecker::run()
         this->previous_request_.clear();
       }
       this->previous_pair_    = current_pair->num;
-      this->previous_request_ = simgrid::mc::request_get_dot_output(req, req_num);
+      this->previous_request_ = request_get_dot_output(req, req_num);
       if (current_pair->search_cycle)
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);
@@ -415,11 +413,10 @@ void LivenessChecker::run()
       if (evaluate_label(transition_succ->label, *prop_values))
         exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ->dst, prop_values));
      }
-
   }
 
   XBT_INFO("No property violation found.");
-  simgrid::mc::session->log_state();
+  mc::session->log_state();
 }
 
 Checker* createLivenessChecker(Session& s)

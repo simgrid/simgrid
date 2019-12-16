@@ -207,7 +207,6 @@ int MSG_comm_waitany(xbt_dynar_t comms)
  */
 msg_error_t MSG_comm_get_status(msg_comm_t comm)
 {
-
   return comm->get_status();
 }
 

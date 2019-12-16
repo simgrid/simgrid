@@ -257,7 +257,6 @@ void ExecImpl::finish()
     }
 
     switch (state_) {
-
       case State::DONE:
         /* do nothing, synchro done */
         XBT_DEBUG("ExecImpl::finish(): execution successful");

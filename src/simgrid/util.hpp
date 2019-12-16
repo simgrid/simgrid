@@ -35,7 +35,7 @@ typename C::mapped_type const* find_map_ptr(C const& c, K const& k)
     return &i->second;
 }
 
-}
-}
+} // namespace util
+} // namespace simgrid
 
 #endif

@@ -57,7 +57,6 @@ void DijkstraZone::seal()
 
   /* Add the loopback if needed */
   if (network_model_->loopback_ && hierarchy_ == RoutingMode::base) {
-
     xbt_dynar_foreach (xbt_graph_get_nodes(route_graph_), cursor, node) {
       bool found = false;
       xbt_edge_t edge = nullptr;
@@ -119,7 +118,6 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
-
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_node_id, xbt_node_t);
     xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst_node_id, xbt_node_t);
     xbt_edge_t edge     = xbt_graph_get_edge(route_graph_, node_s_v, node_e_v);
@@ -250,7 +248,7 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
     new_edge(dst->id(), src->id(), new_extended_route(hierarchy_, dst, src, gw_dst, gw_src, link_list, symmetrical, 0));
 }
 
-void DijkstraZone::new_edge(int src_id, int dst_id, simgrid::kernel::routing::RouteCreationArgs* route)
+void DijkstraZone::new_edge(int src_id, int dst_id, RouteCreationArgs* route)
 {
   XBT_DEBUG("Create Route from '%d' to '%d'", src_id, dst_id);
 
@@ -277,6 +275,6 @@ void DijkstraZone::new_edge(int src_id, int dst_id, simgrid::kernel::routing::Ro
   // Finally add it
   xbt_graph_new_edge(route_graph_, src, dst, route);
 }
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid

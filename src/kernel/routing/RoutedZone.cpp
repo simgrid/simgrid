@@ -25,7 +25,6 @@ static const char* instr_node_name(xbt_node_t node)
 
 xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char* name, std::map<std::string, xbt_node_t>* nodes)
 {
-
   auto elm = nodes->find(name);
   if (elm == nodes->end()) {
     xbt_node_t ret = xbt_graph_new_node(graph, xbt_strdup(name));
@@ -67,7 +66,7 @@ RoutedZone::RoutedZone(NetZoneImpl* father, const std::string& name, resource::N
 void RoutedZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                            std::map<std::string, xbt_edge_t>* edges)
 {
-  std::vector<kernel::routing::NetPoint*> vertices = get_vertices();
+  std::vector<NetPoint*> vertices = get_vertices();
 
   for (auto const& my_src : vertices) {
     for (auto const& my_dst : vertices) {
@@ -203,8 +202,8 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                dstName, gw_dst->get_cname());
   }
 
-  simgrid::s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
+  s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
 }
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid

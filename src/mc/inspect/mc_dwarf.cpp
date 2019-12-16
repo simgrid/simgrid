@@ -123,7 +123,6 @@ enum class FormClass {
 static TagClass classify_tag(int tag)
 {
   switch (tag) {
-
     case DW_TAG_array_type:
     case DW_TAG_class_type:
     case DW_TAG_enumeration_type:
@@ -224,7 +223,7 @@ static FormClass classify_form(int form)
  */
 inline XBT_PRIVATE const char* tagname(Dwarf_Die* die)
 {
-  return simgrid::dwarf::tagname(dwarf_tag(die));
+  return tagname(dwarf_tag(die));
 }
 
 } // namespace dwarf
@@ -1192,11 +1191,10 @@ namespace simgrid {
 namespace mc {
 
 /** @brief Finds informations about a given shared object/executable */
-std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(std::vector<simgrid::xbt::VmMap> const& maps,
-                                                                        const char* name)
+std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<xbt::VmMap> const& maps, const char* name)
 {
-  std::shared_ptr<simgrid::mc::ObjectInformation> result = std::make_shared<simgrid::mc::ObjectInformation>();
-  result->file_name                                      = name;
+  std::shared_ptr<ObjectInformation> result = std::make_shared<ObjectInformation>();
+  result->file_name                         = name;
   simgrid::mc::find_object_address(maps, result.get());
   MC_load_dwarf(result.get());
   MC_post_process_variables(result.get());
@@ -1209,11 +1207,11 @@ std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(std::vec
 
 /*************************************************************************/
 
-void postProcessObjectInformation(simgrid::mc::RemoteClient* process, simgrid::mc::ObjectInformation* info)
+void postProcessObjectInformation(RemoteClient* process, ObjectInformation* info)
 {
   for (auto& t : info->types) {
-    simgrid::mc::Type* type    = &(t.second);
-    simgrid::mc::Type* subtype = type;
+    Type* type    = &(t.second);
+    Type* subtype = type;
     while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type ||
            subtype->type == DW_TAG_const_type)
       if (subtype->subtype)

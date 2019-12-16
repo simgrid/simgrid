@@ -53,7 +53,6 @@ void Container::add_resources(std::vector<sg_host_t> hosts)
 
 void Container::create_hierarchy(sg_netzone_t from_as)
 {
-
   if (from_as->get_children().empty()) {
     // I am no AS
     // add hosts to jedule platform
@@ -71,7 +70,6 @@ void Container::create_hierarchy(sg_netzone_t from_as)
 std::vector<int> Container::get_hierarchy()
 {
   if(this->parent != nullptr ) {
-
     if (not this->parent->children.empty()) {
       // we are in the last level
       return this->parent->get_hierarchy();
@@ -150,8 +148,8 @@ void Container::print(FILE* jed_file)
   fprintf(jed_file, "    </res>\n");
 }
 
-}
-}
+} // namespace jedule
+} // namespace simgrid
 
 static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, std::vector<const char*> hostgroup,
                            jed_container_t parent)
@@ -193,7 +191,6 @@ static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, st
       pos = i;
     }
   }
-
 }
 
 void get_resource_selection_by_hosts(std::vector<simgrid::jedule::Subset>& subset_list,

@@ -26,12 +26,12 @@
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
-                                "Logging specific to MC safety verification ");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc, "Logging specific to MC safety verification ");
+
 namespace simgrid {
 namespace mc {
 
-void SafetyChecker::check_non_termination(simgrid::mc::State* current_state)
+void SafetyChecker::check_non_termination(State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
     if (snapshot_equal((*state)->system_state.get(), current_state->system_state.get())) {
@@ -42,10 +42,10 @@ void SafetyChecker::check_non_termination(simgrid::mc::State* current_state)
       XBT_INFO("Counter-example execution trace:");
       for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
-      simgrid::mc::dumpRecordPath();
-      simgrid::mc::session->log_state();
+      dumpRecordPath();
+      session->log_state();
 
-      throw simgrid::mc::TerminationError();
+      throw TerminationError();
     }
 }
 
@@ -64,8 +64,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
     int value         = state->transition_.argument_;
     smx_simcall_t req = &state->executed_req_;
     if (req)
-      trace.push_back(simgrid::mc::request_to_string(
-        req, value, simgrid::mc::RequestType::executed));
+      trace.push_back(request_to_string(req, value, RequestType::executed));
   }
   return trace;
 }
@@ -84,9 +83,8 @@ void SafetyChecker::run()
    * This allows one to explore the call stack at will. */
 
   while (not stack_.empty()) {
-
     /* Get current state */
-    simgrid::mc::State* state = stack_.back().get();
+    State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
     XBT_VERB("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num_,
@@ -125,13 +123,11 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG(
-        "Execute: %s",
-        simgrid::mc::request_to_string(req, state->transition_.argument_, simgrid::mc::RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", request_to_string(req, state->transition_.argument_, RequestType::simix).c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = simgrid::mc::request_get_dot_output(req, state->transition_.argument_);
+      req_str = request_get_dot_output(req, state->transition_.argument_);
 
     mc_model_checker->executed_transitions++;
 
@@ -139,8 +135,7 @@ void SafetyChecker::run()
     this->get_session().execute(state->transition_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    std::unique_ptr<simgrid::mc::State> next_state =
-        std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expanded_states_count_));
+    std::unique_ptr<State> next_state = std::unique_ptr<State>(new State(++expanded_states_count_));
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -155,9 +150,9 @@ void SafetyChecker::run()
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& remoteActor : mc_model_checker->process().actors()) {
         auto actor = remoteActor.copy.get_buffer();
-        if (simgrid::mc::actor_is_enabled(actor)) {
+        if (actor_is_enabled(actor)) {
           next_state->add_interleaving_set(actor);
-          if (reductionMode_ == simgrid::mc::ReductionMode::dpor)
+          if (reductionMode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
         }
       }
@@ -174,7 +169,7 @@ void SafetyChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  simgrid::mc::session->log_state();
+  session->log_state();
 }
 
 void SafetyChecker::backtrack()
@@ -184,39 +179,35 @@ void SafetyChecker::backtrack()
   /* Check for deadlocks */
   if (mc_model_checker->checkDeadlock()) {
     MC_show_deadlock();
-    throw simgrid::mc::DeadlockError();
+    throw DeadlockError();
   }
 
-  /* Traverse the stack backwards until a state with a non empty interleave
-     set is found, deleting all the states that have it empty in the way.
-     For each deleted state, check if the request that has generated it
-     (from it's predecessor state), depends on any other previous request
-     executed before it. If it does then add it to the interleave set of the
-     state that executed that previous request. */
+  /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
+   *  have it empty in the way. For each deleted state, check if the request that has generated it (from its
+   *  predecessor state), depends on any other previous request executed before it. If it does then add it to the
+   *  interleave set of the state that executed that previous request. */
 
   while (not stack_.empty()) {
-    std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
+    std::unique_ptr<State> state = std::move(stack_.back());
     stack_.pop_back();
-    if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
+    if (reductionMode_ == ReductionMode::dpor) {
       smx_simcall_t req = &state->internal_req;
       if (req->call_ == SIMCALL_MUTEX_LOCK || req->call_ == SIMCALL_MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none");
 
       const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
-        simgrid::mc::State* prev_state = i->get();
-        if (simgrid::mc::request_depend(req, &prev_state->internal_req)) {
+        State* prev_state = i->get();
+        if (request_depend(req, &prev_state->internal_req)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.argument_;
             smx_simcall_t prev_req = &prev_state->executed_req_;
-            XBT_DEBUG("%s (state=%d)",
-                      simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::internal).c_str(),
+            XBT_DEBUG("%s (state=%d)", simgrid::mc::request_to_string(prev_req, value, RequestType::internal).c_str(),
                       prev_state->num_);
             value    = state->transition_.argument_;
             prev_req = &state->executed_req_;
-            XBT_DEBUG("%s (state=%d)",
-                      simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::executed).c_str(),
+            XBT_DEBUG("%s (state=%d)", simgrid::mc::request_to_string(prev_req, value, RequestType::executed).c_str(),
                       state->num_);
           }
 
@@ -224,17 +215,12 @@ void SafetyChecker::backtrack()
             prev_state->add_interleaving_set(issuer);
           else
             XBT_DEBUG("Process %p is in done set", req->issuer_);
-
           break;
-
         } else if (req->issuer_ == prev_state->internal_req.issuer_) {
-
           XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(req->call_),
                     SIMIX_simcall_name(prev_state->internal_req.call_));
           break;
-
         } else {
-
           const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
           XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
                     SIMIX_simcall_name(req->call_), issuer->get_pid(), state->num_,
@@ -259,17 +245,17 @@ void SafetyChecker::backtrack()
 void SafetyChecker::restore_state()
 {
   /* Intermediate backtracking */
-  simgrid::mc::State* last_state = stack_.back().get();
+  State* last_state = stack_.back().get();
   if (last_state->system_state) {
     last_state->system_state->restore(&mc_model_checker->process());
     return;
   }
 
   /* Restore the initial state */
-  simgrid::mc::session->restore_initial_state();
+  session->restore_initial_state();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (std::unique_ptr<simgrid::mc::State> const& state : stack_) {
+  for (std::unique_ptr<State> const& state : stack_) {
     if (state == stack_.back())
       break;
     session->execute(state->transition_);
@@ -281,33 +267,32 @@ void SafetyChecker::restore_state()
 
 SafetyChecker::SafetyChecker(Session& s) : Checker(s)
 {
-  reductionMode_ = simgrid::mc::reduction_mode;
+  reductionMode_ = reduction_mode;
   if (_sg_mc_termination)
-    reductionMode_ = simgrid::mc::ReductionMode::none;
-  else if (reductionMode_ == simgrid::mc::ReductionMode::unset)
-    reductionMode_ = simgrid::mc::ReductionMode::dpor;
+    reductionMode_ = ReductionMode::none;
+  else if (reductionMode_ == ReductionMode::unset)
+    reductionMode_ = ReductionMode::dpor;
 
   if (_sg_mc_termination)
     XBT_INFO("Check non progressive cycles");
   else
     XBT_INFO("Check a safety property. Reduction is: %s.",
-        (reductionMode_ == simgrid::mc::ReductionMode::none ? "none":
-            (reductionMode_ == simgrid::mc::ReductionMode::dpor ? "dpor": "unknown")));
-  simgrid::mc::session->initialize();
+             (reductionMode_ == ReductionMode::none ? "none"
+                                                    : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
+  session->initialize();
 
   XBT_DEBUG("Starting the safety algorithm");
 
-  std::unique_ptr<simgrid::mc::State> initial_state =
-      std::unique_ptr<simgrid::mc::State>(new simgrid::mc::State(++expanded_states_count_));
+  std::unique_ptr<State> initial_state = std::unique_ptr<State>(new State(++expanded_states_count_));
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   for (auto& actor : mc_model_checker->process().actors())
-    if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer())) {
+    if (actor_is_enabled(actor.copy.get_buffer())) {
       initial_state->add_interleaving_set(actor.copy.get_buffer());
-      if (reductionMode_ != simgrid::mc::ReductionMode::none)
+      if (reductionMode_ != ReductionMode::none)
         break;
     }
 
@@ -319,5 +304,5 @@ Checker* createSafetyChecker(Session& s)
   return new SafetyChecker(s);
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid

@@ -277,7 +277,6 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
   //Make the backbone
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
-
     simgrid::kernel::routing::LinkCreationArgs link;
     link.id        = std::string(cluster->id)+ "_backbone";
     link.bandwidths.push_back(cluster->bb_bw);
@@ -463,7 +462,6 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   host->pimpl_->add_actor_at_boot(arg);
 
   if (start_time > SIMIX_get_clock()) {
-
     arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->get_cname(), start_time);

@@ -53,8 +53,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass 
              "Native initialization of msg/Host failed. Please report that bug");
 }
 
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls, jstring jname) {
-
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv* env, jclass cls, jstring jname)
+{
   /* get the C string from the java string */
   if (jname == nullptr) {
     jxbt_throw_null(env, "No host can have a null name");
@@ -297,7 +297,6 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getStorageContent(JNIEn
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
 {
-
   xbt_dynar_t table =  MSG_hosts_as_dynar();
   int count = xbt_dynar_length(table);
 

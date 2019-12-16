@@ -83,7 +83,6 @@ void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 
 void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
-
   XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   if (dst->is_router() || src->is_router())
@@ -134,7 +133,6 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
       const unsigned cur_dim = dimensions_[j];
       // current_node/dim_product = position in current dimension
       if ((current_node / dim_product) % cur_dim != (dst->id() / dim_product) % cur_dim) {
-
         if ((targetCoords[j] > myCoords[j] &&
              targetCoords[j] <= myCoords[j] + cur_dim / 2) // Is the target node on the right, without the wrap-around?
             || (myCoords[j] > cur_dim / 2 &&
@@ -190,6 +188,6 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   delete[] myCoords;
   delete[] targetCoords;
 }
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid

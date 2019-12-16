@@ -180,7 +180,6 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
       if (done) {
         appender->do_append(appender, buff);
       } else {
-
         /* The static buffer was too small, use a dynamically expanded one */
         ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
         ev->buffer      = static_cast<char*>(xbt_malloc(ev->buffer_size));
