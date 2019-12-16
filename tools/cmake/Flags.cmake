@@ -98,7 +98,11 @@ if(CMAKE_COMPILER_IS_GNUCC)
     message(WARNING "Failed to find relative source directory. Using \".\".")
     set(RELATIVE_SOURCE_DIR ".")
   endif()
-  set(optCFLAGS "${optCFLAGS} -fdebug-prefix-map=${CMAKE_SOURCE_DIR}=${RELATIVE_SOURCE_DIR}")
+  if (CMAKE_C_COMPILER_VERSION VERSION_LESS "8.0")
+    set(optCFLAGS "${optCFLAGS} -fdebug-prefix-map=${CMAKE_SOURCE_DIR}=${RELATIVE_SOURCE_DIR}")
+  else()
+    set(optCFLAGS "${optCFLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=${RELATIVE_SOURCE_DIR}")
+  endif()
 endif()
 
 # Configure LTO
