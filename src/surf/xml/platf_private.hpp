@@ -187,7 +187,12 @@ public:
   std::string id;
   int routing;
 };
-}}}
+
+extern XBT_PRIVATE xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
+
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 
 /********** Routing **********/
 void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb);
@@ -235,12 +240,5 @@ XBT_PUBLIC void surf_parse_set_out(FILE* out_str);
 XBT_PUBLIC int surf_parse_get_debug();
 XBT_PUBLIC void surf_parse_set_debug(int bdebug);
 XBT_PUBLIC int surf_parse_lex_destroy();
-
-namespace simgrid {
-namespace surf {
-
-extern XBT_PRIVATE simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs const&)> on_cluster;
-}
-}
 
 #endif                          /* SG_PLATF_H */

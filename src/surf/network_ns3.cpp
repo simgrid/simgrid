@@ -165,7 +165,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
     pt.extension_set<NetPointNs3>(new NetPointNs3());
     XBT_VERB("SimGrid's %s is known as node %d within ns-3", pt.get_cname(), pt.extension<NetPointNs3>()->node_num);
   });
-  surf::on_cluster.connect(&clusterCreation_cb);
+  routing::on_cluster_creation.connect(&clusterCreation_cb);
 
   s4u::Engine::on_platform_created.connect(&postparse_cb);
   s4u::NetZone::on_route_creation.connect(&routeCreation_cb);

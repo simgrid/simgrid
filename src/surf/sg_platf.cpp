@@ -33,11 +33,12 @@ XBT_PRIVATE std::map<std::string, simgrid::kernel::resource::StorageImpl*> mount
 XBT_PRIVATE std::vector<std::string> known_storages;
 
 namespace simgrid {
-namespace surf {
-
-simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs const&)> on_cluster;
-}
-}
+namespace kernel {
+namespace routing {
+xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 
 static int surf_parse_models_setup_already_called = 0;
 std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
@@ -57,7 +58,7 @@ void sg_platf_init()
 
 /** Module management function: frees all internal data structures */
 void sg_platf_exit() {
-  simgrid::surf::on_cluster.disconnect_slots();
+  simgrid::kernel::routing::on_cluster_creation.disconnect_slots();
   simgrid::s4u::Engine::on_platform_created.disconnect_slots();
 
   /* make sure that we will reinit the models while loading the platf once reinited */
@@ -292,7 +293,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   XBT_DEBUG("</AS>");
   sg_platf_new_Zone_seal();
 
-  simgrid::surf::on_cluster(*cluster);
+  simgrid::kernel::routing::on_cluster_creation(*cluster);
   delete cluster->radicals;
 }
 
