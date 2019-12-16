@@ -13,8 +13,6 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-Resource::~Resource() = default;
-
 double Resource::get_load() const
 {
   return constraint_->get_usage();

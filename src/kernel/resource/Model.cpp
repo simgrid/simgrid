@@ -13,7 +13,6 @@ namespace kernel {
 namespace resource {
 
 Model::Model(Model::UpdateAlgo algo) : update_algorithm_(algo) {}
-Model::~Model() = default;
 
 Action::ModifiedSet* Model::get_modified_set() const
 {
@@ -143,7 +142,7 @@ Action* Model::extract_action(Action::StateSet* list)
 {
   if (list->empty())
     return nullptr;
-  simgrid::kernel::resource::Action* res = &list->front();
+  Action* res = &list->front();
   list->pop_front();
   return res;
 }

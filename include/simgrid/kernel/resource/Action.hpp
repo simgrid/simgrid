@@ -20,12 +20,12 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-typedef std::pair<double, simgrid::kernel::resource::Action*> heap_element_type;
+typedef std::pair<double, Action*> heap_element_type;
 typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_size<false>, boost::heap::stable<true>,
                                   boost::heap::compare<simgrid::xbt::HeapComparator<heap_element_type>>>
     heap_type;
 
-typedef std::pair<double, simgrid::kernel::resource::Action*> heap_element_type;
+typedef std::pair<double, Action*> heap_element_type;
 class XBT_PUBLIC ActionHeap : public heap_type {
   friend Action;
 
@@ -221,14 +221,14 @@ private:
   std::string category_;     /**< tracing category for categorized resource utilization monitoring */
 
   double cost_;
-  simgrid::kernel::resource::Model* model_;
+  Model* model_;
   void* data_                       = nullptr; /**< for your convenience */
   activity::ActivityImpl* activity_ = nullptr;
 
   /* LMM */
-  double last_update_                                = 0;
-  double last_value_                                 = 0;
-  kernel::lmm::Variable* variable_                   = nullptr;
+  double last_update_      = 0;
+  double last_value_       = 0;
+  lmm::Variable* variable_ = nullptr;
 
   ActionHeap::Type type_                              = ActionHeap::Type::unset;
   boost::optional<ActionHeap::handle_type> heap_hook_ = boost::none;

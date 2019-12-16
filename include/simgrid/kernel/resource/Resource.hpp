@@ -22,6 +22,19 @@ namespace resource {
  * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or storage
  */
 class XBT_PUBLIC Resource {
+  std::string name_;
+  Model* model_;
+  bool is_on_ = true;
+
+  lmm::Constraint* const constraint_;
+
+protected:
+  struct Metric {
+    double peak;           /**< The peak of the metric, ie its max value */
+    double scale;          /**< Current availability of the metric according to the profiles, in [0,1] */
+    profile::Event* event; /**< The associated profile event associated to the metric */
+  };
+
 public:
   /**
    * @brief Constructor of LMM Resources
@@ -35,7 +48,7 @@ public:
   {
   }
 
-  virtual ~Resource();
+  virtual ~Resource() = default;
 
   /** @brief Get the Model of the current Resource */
   Model* get_model() const { return model_; }
@@ -67,27 +80,10 @@ public:
   /** @brief setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
   virtual void set_state_profile(profile::Profile* profile);
 
-private:
-  std::string name_;
-  Model* model_;
-  bool is_on_ = true;
-
-public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
   lmm::Constraint* get_constraint() const { return constraint_; }
 
-private:
-  kernel::lmm::Constraint* const constraint_;
-
-public:
   profile::Event* state_event_ = nullptr;
-
-protected:
-  struct Metric {
-    double peak;       /**< The peak of the metric, ie its max value */
-    double scale;      /**< Current availability of the metric according to the profiles, in [0,1] */
-    profile::Event* event; /**< The associated profile event associated to the metric */
-  };
 };
 } // namespace resource
 } // namespace kernel

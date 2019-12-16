@@ -137,7 +137,7 @@ void Action::cancel()
   set_state(Action::State::FAILED);
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) {
     if (modified_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
+      xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
     get_model()->get_action_heap().remove(this);
   }
 }
@@ -196,6 +196,7 @@ void Action::update_max_duration(double delta)
   if (max_duration_ != NO_MAX_DURATION)
     double_update(&max_duration_, delta, sg_surf_precision);
 }
+
 void Action::update_remains(double delta)
 {
   double_update(&remains_, delta, sg_maxmin_precision * sg_surf_precision);
@@ -210,11 +211,13 @@ double ActionHeap::top_date() const
 {
   return top().first;
 }
+
 void ActionHeap::insert(Action* action, double date, ActionHeap::Type type)
 {
   action->type_      = type;
   action->heap_hook_ = emplace(std::make_pair(date, action));
 }
+
 void ActionHeap::remove(Action* action)
 {
   action->type_ = ActionHeap::Type::unset;
@@ -223,6 +226,7 @@ void ActionHeap::remove(Action* action)
     action->heap_hook_ = boost::none;
   }
 }
+
 void ActionHeap::update(Action* action, double date, ActionHeap::Type type)
 {
   action->type_ = type;
@@ -232,6 +236,7 @@ void ActionHeap::update(Action* action, double date, ActionHeap::Type type)
     action->heap_hook_ = emplace(std::make_pair(date, action));
   }
 }
+
 Action* ActionHeap::pop()
 {
   Action* action = top().second;
