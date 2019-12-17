@@ -1,11 +1,11 @@
 .TH smpirun 1
 .SH NAME
-smpirun \- Exectute MPI programs in the SimGrid simulator
+smpirun \- Execute MPI programs in the SimGrid simulator
 .SH SYNOPSIS
 smpirun [\fISMPI OPTIONS\fR]… \fB\-platform\fR <platform.xml> \fB\-hostfile\fR <hostfile> program [\fISIMULATION OPTIONS\fR] [\fIPROGRAM OPTIONS\fR]
 .SH DESCRIPTION
-smpirun car run MPI programs that were compiled with smpicc on top of
-the simulator. Basically, it generates a deployment files from the
+smpirun can run MPI programs that were compiled with smpicc on top of
+the simulator. Basically, it generates a deployment file from the
 provided hostfile (if needed), and launches the simulation with the right
 arguments. It is intended to be easy to use to regular MPI users.
 .SH MANDATORY PARAMETERS
@@ -34,6 +34,15 @@ Do not remove the generated files after execution.
 Use command to run the program (e.g. "valgrind", "gdb --args", "rr record").
 You usually want to use the "-foreground" option as well in order to have a TTY.
 .TP
+\fB\-gdb\fR
+Run within GDB (equivalent to -wrapper "gdb --args" -keep-temps).
+.TP
+\fB\-lldb\fR
+Run within LLDB (equivalent to -wrapper "lldb --" -keep-temps).
+.TP
+\fB\-vgdb\fR
+Run within Valgrind+GDB (equivalent to -wrapper "valgrind --vgdb=yes --vgdb-error=0" -keep-temps).
+.TP
 \fB\-foreground\fR
 Run the child process in the foreground.
 This gives the child process access to the TTY.
@@ -45,10 +54,10 @@ Display the machine on which each process rank is mapped.
 Use that amount of processes. By default, there is the same number of processes as there are of hosts in the hostfile.
 .TP
 \fB\-no-privatize\fR
-Disable the globals privatization, that is activated by default.
+Disable the privatization of global variables, that is activated by default.
 This should only be necessary if you use dynamic libraries, but you
 should probably link statically instead of disabling this. Do not link
-statically against SimGrid, only the others.
+statically against SimGrid, only against the other libraries.
 .TP
 \fB\-trace\fR
 Activate the trace mechanism if available (equivalent to \fB--cfg\fR=\fItracing\fR:\fIyes\fR \fB--cfg\fR=\fItracing/smpi\fR:\fIyes\fR)
@@ -71,13 +80,22 @@ Trace resource utilization.
 \fB\-trace-file\fR <tracefile>
 Name of the tracefile
 .TP
+\fB\-replay\fR <tracefile>
+Replay a trace instead of actually executing an application.
+.TP
 \fB\-quiet\fR 
 Reduce output verbosity. This is useful to make tests reproducible.
-
+.TP
+\fB\-version\fR
+Displays the SimGrid version (human readable).
+.TP
+\fB\-git-version\fR
+Displays the git hash of SimGrid.
+.TP
 .SH SIMULATION OPTIONS
-You can change many simulation parameter on the command line by passing
+You can change many simulation parameters on command line by passing
 \fB--cfg\fR=\fIparameter\fR:\fIvalue\fR after the program name. 
-A full list of existing parameters and their meaning can be found at
+A full list of the existing parameters and their meaning can be found at
 https://simgrid.org/doc/latest/Configuring_SimGrid.html
 
 Here are some options commonly used with SMPI:
