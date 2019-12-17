@@ -28,9 +28,7 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
     intptr_t second;
 
     switch (atom) {
-
         // Registers:
-
       case DW_OP_breg0:
       case DW_OP_breg1:
       case DW_OP_breg2:

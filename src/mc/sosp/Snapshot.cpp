@@ -16,19 +16,18 @@ namespace mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-void simgrid::mc::Snapshot::snapshot_regions(simgrid::mc::RemoteClient* process)
+void Snapshot::snapshot_regions(RemoteClient* process)
 {
   snapshot_regions_.clear();
 
   for (auto const& object_info : process->object_infos)
-    add_region(simgrid::mc::RegionType::Data, object_info.get(), object_info->start_rw,
-               object_info->end_rw - object_info->start_rw);
+    add_region(RegionType::Data, object_info.get(), object_info->start_rw, object_info->end_rw - object_info->start_rw);
 
   xbt_mheap_t heap = process->get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 
-  add_region(simgrid::mc::RegionType::Heap, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
+  add_region(RegionType::Heap, nullptr, start_heap, (char*)end_heap - (char*)start_heap);
   heap_bytes_used_ = mmalloc_get_bytes_used_remote(heap->heaplimit, process->get_malloc_info());
 }
 
@@ -50,14 +49,13 @@ static bool valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* scope
     return true;
 }
 
-static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::mc::Frame* scope,
+static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* scope,
                                         std::vector<s_local_variable_t>& result)
 {
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
 
-  for (simgrid::mc::Variable& current_variable : scope->variables) {
-
+  for (Variable& current_variable : scope->variables) {
     if (not valid_variable(&current_variable, scope, (void*)stack_frame->ip))
       continue;
 
@@ -71,14 +69,13 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::m
     if (current_variable.address != nullptr)
       new_var.address = current_variable.address;
     else if (not current_variable.location_list.empty()) {
-      simgrid::dwarf::Location location = simgrid::dwarf::resolve(
-          current_variable.location_list, current_variable.object_info, &(stack_frame->unw_cursor),
-          (void*)stack_frame->frame_base, &mc_model_checker->process());
+      dwarf::Location location = simgrid::dwarf::resolve(current_variable.location_list, current_variable.object_info,
+                                                         &(stack_frame->unw_cursor), (void*)stack_frame->frame_base,
+                                                         &mc_model_checker->process());
 
       if (not location.in_memory())
         xbt_die("Cannot handle non-address variable");
       new_var.address = location.address();
-
     } else
       xbt_die("No address");
 
@@ -86,7 +83,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::m
   }
 
   // Recursive processing of nested scopes:
-  for (simgrid::mc::Frame& nested_scope : scope->scopes)
+  for (Frame& nested_scope : scope->scopes)
     fill_local_variables_values(stack_frame, &nested_scope, result);
 }
 
@@ -98,9 +95,9 @@ static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_
   return variables;
 }
 
-static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindContext* stack_context)
+static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
 {
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
+  RemoteClient* process = &mc_model_checker->process();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -108,7 +105,6 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
   // TODO, check condition check (unw_init_local==0 means end of frame)
 
   while (1) {
-
     s_mc_stack_frame_t stack_frame;
 
     stack_frame.unw_cursor = c;
@@ -124,7 +120,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
 
     // TODO, use real addresses in frame_t instead of fixing it here
 
-    simgrid::mc::Frame* frame = process->find_function(remote(ip));
+    Frame* frame              = process->find_function(remote(ip));
     stack_frame.frame         = frame;
 
     if (frame) {
@@ -153,7 +149,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
   return result;
 }
 
-void simgrid::mc::Snapshot::snapshot_stacks(simgrid::mc::RemoteClient* process)
+void Snapshot::snapshot_stacks(RemoteClient* process)
 {
   for (auto const& stack : process->stack_areas()) {
     s_mc_snapshot_stack_t st;
@@ -176,7 +172,7 @@ void simgrid::mc::Snapshot::snapshot_stacks(simgrid::mc::RemoteClient* process)
   }
 }
 
-static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
+static void snapshot_handle_ignore(Snapshot* snapshot)
 {
   xbt_assert(snapshot->process());
 
@@ -194,6 +190,7 @@ static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
   for (auto const& region : snapshot->process()->ignored_regions())
     snapshot->process()->clear_bytes(remote(region.addr), region.size);
 }
+
 static void snapshot_ignore_restore(simgrid::mc::Snapshot* snapshot)
 {
   for (auto const& ignored_data : snapshot->ignored_data_)
@@ -225,14 +222,14 @@ Snapshot::Snapshot(int num_state, RemoteClient* process)
 
 void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size)
 {
-  if (type == simgrid::mc::RegionType::Data)
+  if (type == RegionType::Data)
     xbt_assert(object_info, "Missing object info for object.");
-  else if (type == simgrid::mc::RegionType::Heap)
+  else if (type == RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  simgrid::mc::Region* region = new Region(type, start_addr, size);
+  Region* region = new Region(type, start_addr, size);
   region->object_info(object_info);
-  snapshot_regions_.push_back(std::unique_ptr<simgrid::mc::Region>(std::move(region)));
+  snapshot_regions_.push_back(std::unique_ptr<Region>(std::move(region)));
 }
 
 void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions options) const
@@ -281,7 +278,7 @@ void Snapshot::restore(RemoteClient* process)
   XBT_DEBUG("Restore snapshot %i", num_state_);
 
   // Restore regions
-  for (std::unique_ptr<simgrid::mc::Region> const& region : snapshot_regions_) {
+  for (std::unique_ptr<Region> const& region : snapshot_regions_) {
     if (region) // privatized variables are not snapshotted
       region.get()->restore();
   }

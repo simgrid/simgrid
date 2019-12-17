@@ -146,7 +146,6 @@ void SafetyChecker::run()
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
-
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& remoteActor : mc_model_checker->process().actors()) {
         auto actor = remoteActor.copy.get_buffer();

@@ -122,7 +122,6 @@ void Client::handle_messages()
 
     s_mc_message_t* message = (s_mc_message_t*)message_buffer;
     switch (message->type) {
-
       case MC_MESSAGE_DEADLOCK_CHECK:
         xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zd != %zu)",
                    received_size, sizeof(s_mc_message_t));
@@ -243,5 +242,5 @@ void Client::declare_stack(void* stack, size_t size, ucontext_t* context)
   if (channel_.send(message))
     xbt_die("Could not send STACK_REGION to model-checker");
 }
-}
-}
+} // namespace mc
+} // namespace simgrid

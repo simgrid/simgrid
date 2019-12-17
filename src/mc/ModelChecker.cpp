@@ -39,10 +39,10 @@ ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process)
     , page_store_(500)
     , process_(std::move(process))
 {
-
 }
 
-ModelChecker::~ModelChecker() {
+ModelChecker::~ModelChecker()
+{
   if (socket_event_ != nullptr)
     event_free(socket_event_);
   if (signal_event_ != nullptr)
@@ -116,7 +116,7 @@ void ModelChecker::shutdown()
 {
   XBT_DEBUG("Shuting down model-checker");
 
-  simgrid::mc::RemoteClient* process = &this->process();
+  RemoteClient* process = &this->process();
   if (process->running()) {
     XBT_DEBUG("Killing process");
     kill(process->pid(), SIGKILL);
@@ -124,11 +124,11 @@ void ModelChecker::shutdown()
   }
 }
 
-void ModelChecker::resume(simgrid::mc::RemoteClient& process)
+void ModelChecker::resume(RemoteClient& process)
 {
   int res = process.get_channel().send(MC_MESSAGE_CONTINUE);
   if (res)
-    throw simgrid::xbt::errno_error();
+    throw xbt::errno_error();
   process.clear_cache();
 }
 
@@ -146,8 +146,8 @@ static void MC_report_crash(int status)
   XBT_INFO("Counter-example execution trace:");
   for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
-  simgrid::mc::dumpRecordPath();
-  simgrid::mc::session->log_state();
+  dumpRecordPath();
+  session->log_state();
   if (xbt_log_no_loc) {
     XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
   } else {
@@ -164,8 +164,8 @@ static void MC_report_assertion_error()
   XBT_INFO("Counter-example execution trace:");
   for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
-  simgrid::mc::dumpRecordPath();
-  simgrid::mc::session->log_state();
+  dumpRecordPath();
+  session->log_state();
 }
 
 bool ModelChecker::handle_message(char* buffer, ssize_t size)
@@ -175,7 +175,6 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
   memcpy(&base_message, buffer, sizeof(base_message));
 
   switch(base_message.type) {
-
   case MC_MESSAGE_IGNORE_HEAP:
     {
     s_mc_message_ignore_heap_t message;
@@ -226,13 +225,12 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
     xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
     XBT_DEBUG("Received symbol: %s", message.name);
 
-    if (simgrid::mc::property_automaton == nullptr)
-      simgrid::mc::property_automaton = xbt_automaton_new();
+    if (property_automaton == nullptr)
+      property_automaton = xbt_automaton_new();
 
-    simgrid::mc::RemoteClient* process  = &this->process();
-    simgrid::mc::RemotePtr<int> address = simgrid::mc::remote((int*)message.data);
-    simgrid::xbt::add_proposition(simgrid::mc::property_automaton, message.name,
-                                  [process, address]() { return process->read(address); });
+    RemoteClient* process  = &this->process();
+    RemotePtr<int> address = remote((int*)message.data);
+    xbt::add_proposition(property_automaton, message.name, [process, address]() { return process->read(address); });
 
     break;
     }
@@ -246,7 +244,6 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
 
   default:
     xbt_die("Unexpected message from model-checked application");
-
   }
   return true;
 }
@@ -303,7 +300,6 @@ void ModelChecker::handle_waitpid()
     }
 
     if (pid == this->process().pid()) {
-
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
@@ -379,5 +375,5 @@ bool ModelChecker::checkDeadlock()
   return message.value != 0;
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid

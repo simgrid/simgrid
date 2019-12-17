@@ -18,5 +18,5 @@ Checker::Checker(Session& s) : session_(&s)
   mc_model_checker->setChecker(this);
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid

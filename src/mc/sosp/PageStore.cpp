@@ -26,8 +26,8 @@ namespace mc {
 
 /** @brief Compute a hash for the given memory page
  *
- *  The page is used before inserting the page in the page store
- *  in order to find duplicate of this page in the page store.
+ *  The page is used before inserting the page in the page store in order to find duplicate of this page in the page
+ *  store.
  *
  *  @param data Memory page
  *  @return hash off the page
@@ -118,7 +118,6 @@ void PageStore::resize(std::size_t size)
 std::size_t PageStore::alloc_page()
 {
   if (this->free_pages_.empty()) {
-
     // Expand the region:
     if (this->top_index_ == this->capacity_)
       // All the pages are allocated, we need add more pages:
@@ -126,9 +125,7 @@ std::size_t PageStore::alloc_page()
 
     // Use a page from the top:
     return this->top_index_++;
-
   } else {
-
     // Use a page from free_pages_ (inside of the region):
     size_t res = this->free_pages_[this->free_pages_.size() - 1];
     this->free_pages_.pop_back();
@@ -160,7 +157,6 @@ std::size_t PageStore::store_page(void* page)
   for (size_t const& pageno : page_set) {
     const void* snapshot_page = this->get_page(pageno);
     if (memcmp(page, snapshot_page, xbt_pagesize) == 0) {
-
       // If a page with the same content is already in the page store it's reused and its refcount is incremented.
       page_counts_[pageno]++;
       return pageno;

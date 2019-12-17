@@ -16,13 +16,11 @@
 namespace simgrid {
 namespace mc {
 
-/* For an executable object, addresses are virtual address
- * (there is no offset) i.e.
- * \f$\text{virtual address} = \{dwarf address}\f$
+/* For an executable object, addresses are virtual address (there is no offset) i.e.
+ *  \f$\text{virtual address} = \{dwarf address}\f$
  *
- * For a shared object, the addresses are offset from the beginning
- * of the shared object (the base address of the mapped shared
- * object must be used as offset
+ * For a shared object, the addresses are offset from the beginning of the shared object (the base address of the
+ * mapped shared object must be used as offset
  * i.e. \f$\text{virtual address} = \text{shared object base address}
  *             + \text{dwarf address}\f$.
  */
@@ -32,8 +30,7 @@ void* ObjectInformation::base_address() const
   if (this->executable())
     return nullptr;
 
-  // For an a shared-object (ET_DYN, including position-independent executables)
-  // the base address is its lowest address:
+  // For an a shared-object (ET_DYN, including position-independent executables) the base address is its lowest address:
   void* result = this->start_exec;
   if (this->start_rw != nullptr && result > (void*)this->start_rw)
     result = this->start_rw;
@@ -42,7 +39,7 @@ void* ObjectInformation::base_address() const
   return result;
 }
 
-simgrid::mc::Frame* ObjectInformation::find_function(const void* ip) const
+Frame* ObjectInformation::find_function(const void* ip) const
 {
   /* This is implemented by binary search on a sorted array.
    *
@@ -56,9 +53,9 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void* ip) const
    * We could use std::binary_search by including the high_pc inside
    * the FunctionIndexEntry.
    */
-  const simgrid::mc::FunctionIndexEntry* base = this->functions_index.data();
-  int i                                       = 0;
-  int j                                       = this->functions_index.size() - 1;
+  const FunctionIndexEntry* base = this->functions_index.data();
+  int i                          = 0;
+  int j                          = this->functions_index.size() - 1;
   while (j >= i) {
     int k = i + ((j - i) / 2);
 
@@ -81,9 +78,9 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void* ip) const
   return nullptr;
 }
 
-const simgrid::mc::Variable* ObjectInformation::find_variable(const char* name) const
+const Variable* ObjectInformation::find_variable(const char* name) const
 {
-  for (simgrid::mc::Variable const& variable : this->global_variables) {
+  for (Variable const& variable : this->global_variables) {
     if (variable.name == name)
       return &variable;
   }
@@ -103,11 +100,10 @@ void ObjectInformation::remove_global_variable(const char* name)
 
   while (first <= last) {
     size_type cursor                   = first + (last - first) / 2;
-    simgrid::mc::Variable& current_var = this->global_variables[cursor];
+    Variable& current_var              = this->global_variables[cursor];
     int cmp                            = current_var.name.compare(name);
 
     if (cmp == 0) {
-
       // Find the whole range:
       first = cursor;
       while (first != 0 && this->global_variables[first - 1].name == name)
@@ -132,8 +128,7 @@ void ObjectInformation::remove_global_variable(const char* name)
 
 /** Ignore a local variable in a scope
  *
- *  Ignore all instances of variables with a given name in
- *  any (possibly inlined) subprogram with a given namespaced
+ *  Ignore all instances of variables with a given name in any (possibly inlined) subprogram with a given namespaced
  *  name.
  *
  *  @param var_name        Name of the local variable to ignore
@@ -141,15 +136,14 @@ void ObjectInformation::remove_global_variable(const char* name)
  *  @param subprogram      (possibly inlined) Subprogram of the scope current scope
  *  @param scope           Current scope
  */
-static void remove_local_variable(simgrid::mc::Frame& scope, const char* var_name, const char* subprogram_name,
-                                  simgrid::mc::Frame const& subprogram)
+static void remove_local_variable(Frame& scope, const char* var_name, const char* subprogram_name,
+                                  Frame const& subprogram)
 {
   typedef std::vector<Variable>::size_type size_type;
 
   // If the current subprogram matches the given name:
   if ((subprogram_name == nullptr || (not subprogram.name.empty() && subprogram.name == subprogram_name)) &&
       not scope.variables.empty()) {
-
     // Try to find the variable and remove it:
     size_type start = 0;
     size_type end   = scope.variables.size() - 1;
@@ -157,7 +151,7 @@ static void remove_local_variable(simgrid::mc::Frame& scope, const char* var_nam
     // Binary search:
     while (start <= end) {
       size_type cursor                   = start + (end - start) / 2;
-      simgrid::mc::Variable& current_var = scope.variables[cursor];
+      Variable& current_var              = scope.variables[cursor];
       int compare                        = current_var.name.compare(var_name);
       if (compare == 0) {
         // Variable found, remove it:
@@ -173,11 +167,10 @@ static void remove_local_variable(simgrid::mc::Frame& scope, const char* var_nam
   }
 
   // And recursive processing in nested scopes:
-  for (simgrid::mc::Frame& nested_scope : scope.scopes) {
+  for (Frame& nested_scope : scope.scopes) {
     // The new scope may be an inlined subroutine, in this case we want to use its
     // namespaced name in recursive calls:
-    simgrid::mc::Frame const& nested_subprogram =
-        nested_scope.tag == DW_TAG_inlined_subroutine ? nested_scope : subprogram;
+    Frame const& nested_subprogram = nested_scope.tag == DW_TAG_inlined_subroutine ? nested_scope : subprogram;
     remove_local_variable(nested_scope, var_name, subprogram_name, nested_subprogram);
   }
 }
@@ -185,17 +178,17 @@ static void remove_local_variable(simgrid::mc::Frame& scope, const char* var_nam
 void ObjectInformation::remove_local_variable(const char* var_name, const char* subprogram_name)
 {
   for (auto& entry : this->subprograms)
-    simgrid::mc::remove_local_variable(entry.second, var_name, subprogram_name, entry.second);
+    mc::remove_local_variable(entry.second, var_name, subprogram_name, entry.second);
 }
 
 /** @brief Fills the position of the segments (executable, read-only, read/write) */
 // TODO, use the ELF segment information for more robustness
-void find_object_address(std::vector<simgrid::xbt::VmMap> const& maps, simgrid::mc::ObjectInformation* result)
+void find_object_address(std::vector<xbt::VmMap> const& maps, ObjectInformation* result)
 {
   const int PROT_RW = PROT_READ | PROT_WRITE;
   const int PROT_RX = PROT_READ | PROT_EXEC;
 
-  std::string name = simgrid::xbt::Path(result->file_name).get_base_name();
+  std::string name = xbt::Path(result->file_name).get_base_name();
 
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
@@ -236,7 +229,7 @@ void find_object_address(std::vector<simgrid::xbt::VmMap> const& maps, simgrid::
     else if (reg.prot == PROT_READ) {
       xbt_assert(not result->start_ro,
                  "Multiple read-only segments for %s, not supported. Compiling with the following may help: "
-		 "-Wl,-znorelro -Wl,-znoseparate-code",
+                 "-Wl,-znorelro -Wl,-znoseparate-code",
                  maps[i].pathname.c_str());
       result->start_ro = (char*)reg.start_addr;
       result->end_ro   = (char*)reg.end_addr;
