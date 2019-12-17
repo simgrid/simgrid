@@ -7,7 +7,6 @@
 #define JED_SIMGRID_PLATFORM_H_
 
 #include <simgrid/forward.h>
-#include <xbt/dynar.h>
 
 #include <memory>
 #include <string>

@@ -104,7 +104,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
     argc += static_cast<int>(env->GetArrayLength(jargs));
   xbt_assert(argc > 0);
 
-  // Need a static storage because the XBT layer saves the arguments in xbt_binary_name and xbt_cmdline.
+  // Need a static storage because the XBT layer saves the arguments in xbt::binary_name and xbt::cmdline.
   static std::vector<std::string> args;
   args.reserve(argc);
 

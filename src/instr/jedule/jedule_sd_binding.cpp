@@ -4,10 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/jedule/jedule.hpp"
-#include "src/simdag/simdag_private.hpp"
-
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
+#include "src/simdag/simdag_private.hpp"
 
 #if SIMGRID_HAVE_JEDULE
 
@@ -43,19 +42,18 @@ void jedule_sd_exit()
 void jedule_sd_dump(const char * filename)
 {
   if (my_jedule) {
-    char *fname;
+    std::string fname;
     if (not filename) {
-      fname = bprintf("%s.jed", xbt_binary_name);
+      fname = simgrid::xbt::binary_name + ".jed";
     } else {
-      fname = xbt_strdup(filename);
+      fname = filename;
     }
 
-    FILE *fh = fopen(fname, "w");
+    FILE* fh = fopen(fname.c_str(), "w");
 
     my_jedule->write_output(fh);
 
     fclose(fh);
-    xbt_free(fname);
   }
 }
 #endif

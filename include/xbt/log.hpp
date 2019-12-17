@@ -19,5 +19,6 @@ namespace xbt {
 XBT_PUBLIC void log_exception(e_xbt_log_priority_t priority, const char* context, std::exception const& exception);
 
 XBT_PUBLIC void install_exception_handler();
-}
-}
+
+} // namespace xbt
+} // namespace simgrid

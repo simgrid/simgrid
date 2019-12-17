@@ -19,11 +19,20 @@ XBT_PUBLIC const char* xbt_procname(void);
 
 XBT_PUBLIC int xbt_getpid(void);
 
-/* Get the name of the UNIX process englobing the world */
-XBT_PUBLIC_DATA char* xbt_binary_name;
-
-/** Contains all the parameters we got from the command line (including argv[0]) */
-XBT_PUBLIC_DATA xbt_dynar_t xbt_cmdline;
-
 SG_END_DECL
+
+#ifdef __cplusplus
+#include <string>
+#include <vector>
+namespace simgrid {
+namespace xbt {
+
+/* Get the name of the UNIX process englobing the world */
+XBT_PUBLIC_DATA std::string binary_name;
+/** Contains all the parameters we got from the command line (including argv[0]) */
+XBT_PUBLIC_DATA std::vector<std::string> cmdline;
+
+} // namespace xbt
+} // namespace simgrid
+#endif
 #endif /* XBT_VIRTU_H */

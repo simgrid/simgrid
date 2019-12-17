@@ -9,7 +9,7 @@
 #include "simgrid/version.h"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.hpp"
-#include "xbt/virtu.h" /* xbt_cmdline */
+#include "xbt/virtu.h" /* xbt::cmdline */
 
 #include <fstream>
 #include <string>
@@ -117,9 +117,7 @@ static void TRACE_start()
       tracing_file << "#This file was generated using SimGrid-" << SIMGRID_VERSION_MAJOR << "." << SIMGRID_VERSION_MINOR
                    << "." << SIMGRID_VERSION_PATCH << std::endl;
       tracing_file << "#[";
-      unsigned int cpt;
-      char* str;
-      xbt_dynar_foreach (xbt_cmdline, cpt, str) {
+      for (auto str : simgrid::xbt::cmdline) {
         tracing_file << str << " ";
       }
       tracing_file << "]" << std::endl;
