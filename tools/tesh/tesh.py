@@ -314,8 +314,8 @@ class Cmd(object):
             vdefault = m.group(2)
             if vname in os.environ:
                 return "$" + vname
-            else:
-                return vdefault
+            return vdefault
+
         self.args = re.sub(r"\${(\w+):=([^}]*)}", replace_perl_variables, self.args)
 
         # replace bash environment variables ($THINGS) to their values

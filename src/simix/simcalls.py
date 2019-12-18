@@ -178,8 +178,7 @@ class Simcall(object):
                                                                                     self.name,
                                                                                     ''.join(', %s %s' % (arg.rettype(), arg.name)
                                                                                             for i, arg in enumerate(self.args)))
-        else:
-            return ""
+        return ""
 
 
 def parse(fn):

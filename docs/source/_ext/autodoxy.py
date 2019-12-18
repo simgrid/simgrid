@@ -333,12 +333,9 @@ class DoxygenClassDocumenter(DoxygenDocumenter):
 
         if want_all:
             return False, ((m.find('name').text, m) for m in all_members)
-        else:
-            if not self.options.members:
-                return False, []
-            else:
-                return False, ((m.find('name').text, m) for m in all_members
-                               if m.find('name').text in self.options.members)
+        if not self.options.members:
+            return False, []
+        return False, ((m.find('name').text, m) for m in all_members if m.find('name').text in self.options.members)
 
     def filter_members(self, members, want_all):
         ret = []
