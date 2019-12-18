@@ -206,7 +206,7 @@ namespace smpi{
     MPI_Offset movesize = datatype->get_extent()*count;
     MPI_Offset writesize = datatype->size()*count;
     XBT_DEBUG("Position before write in MPI_File %s : %llu",fh->file_->get_path(),fh->file_->tell());
-    MPI_Offset write = fh->file_->write(writesize, 1);
+    MPI_Offset write = fh->file_->write(writesize, true);
     XBT_VERB("Write in MPI_File %s, %lld bytes written, readsize %lld bytes, movesize %lld", fh->file_->get_path(), write, writesize, movesize);
     if(writesize!=movesize){
       fh->file_->seek(position+movesize, SEEK_SET);
