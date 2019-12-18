@@ -191,12 +191,12 @@ class DoxygenDocumenter(Documenter):
         'members': members_option,
     }
 
-    def __init__(self, directive, name, indent=u'', id=None):
+    def __init__(self, directive, name, indent=u'', my_id = None):
         super(DoxygenDocumenter, self).__init__(directive, name, indent)
-        if id is not None:
-            self.parse_id(id)
+        if my_id is not None:
+            self.parse_id(my_id)
 
-    def parse_id(self, id):
+    def parse_id(self, id_to_parse):
         return False
 
     def parse_name(self):
@@ -360,8 +360,8 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             return True
         return False
 
-    def parse_id(self, id):
-        xp = './/*[@id="%s"]' % id
+    def parse_id(self, id_to_parse):
+        xp = './/*[@id="%s"]' % id_to_parse
         match = get_doxygen_root().xpath(xp)
         if match:
             match = match[0]
@@ -484,8 +484,8 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
         self.object = match[0]
         return True
 
-    def parse_id(self, id):
-        xp = './/*[@id="%s"]' % id
+    def parse_id(self, id_to_parse):
+        xp = './/*[@id="%s"]' % id_to_parse
         match = get_doxygen_root().xpath(xp)
         if match:
             match = match[0]
@@ -555,8 +555,8 @@ def set_doxygen_xml(app):
         raise err
 
     setup.DOXYGEN_ROOT = ET.ElementTree(ET.Element('root')).getroot()
-    for file in files:
-        root = ET.parse(file).getroot()
+    for current_file in files:
+        root = ET.parse(current_file).getroot()
         for node in root:
             setup.DOXYGEN_ROOT.append(node)
 
