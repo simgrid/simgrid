@@ -130,7 +130,7 @@ class _DoxygenXmlParagraphFormatter(object):
         self.continue_line = True
 
     def visit_parameterlist(self, node):
-        lines = [l for l in type(self)().generic_visit(node).lines if l is not '']
+        lines = [l for l in type(self)().generic_visit(node).lines if l != '']
         self.lines.extend([':parameters:', ''] + ['* %s' % l for l in lines] + [''])
 
     def visit_simplesect(self, node):
