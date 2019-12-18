@@ -363,7 +363,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
     def parse_id(self, id):
         xp = './/*[@id="%s"]' % id
         match = get_doxygen_root().xpath(xp)
-        if len(match) > 0:
+        if match:
             match = match[0]
             self.fullname = match.find('./definition').text.split()[-1]
             self.modname = self.fullname
@@ -390,7 +390,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
         else:
             xpath_query = xpath_query_noparam
         match = get_doxygen_root().xpath(xpath_query)
-        if len(match) == 0:
+        if not match:
             logger = logging.getLogger(__name__)
 
             if self.argsstring != None:
@@ -438,7 +438,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
 
     def format_template_name(self):
         types = [e.text for e in self.object.findall('templateparamlist/param/type')]
-        if len(types) == 0:
+        if not types:
             return ''
         ret = 'template <%s>' % ','.join(types)
 #        print ("template: {}".format(ret))
@@ -476,7 +476,7 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
                        '/memberdef[@kind="variable"]/name[text()="{:s}"]/..').format(obj, var)
 #        print("fullname {}".format(self.fullname))
         match = get_doxygen_root().xpath(xpath_query)
-        if len(match) == 0:
+        if not match:
             logger = logging.getLogger(__name__)
 
             logger.warning("[autodoxy] WARNING: could not find variable {}::{} in Doxygen files".format(obj, var))
@@ -487,7 +487,7 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
     def parse_id(self, id):
         xp = './/*[@id="%s"]' % id
         match = get_doxygen_root().xpath(xp)
-        if len(match) > 0:
+        if match:
             match = match[0]
             self.fullname = match.find('./definition').text.split()[-1]
             self.modname = self.fullname
@@ -524,7 +524,7 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
 
     def format_template_name(self):
         types = [e.text for e in self.object.findall('templateparamlist/param/type')]
-        if len(types) == 0:
+        if not types:
             return ''
         ret = 'template <%s>' % ','.join(types)
 #        print ("template: {}".format(ret))
@@ -551,7 +551,7 @@ def set_doxygen_xml(app):
     files = [os.path.join(app.config.doxygen_xml, f)
              for f in os.listdir(app.config.doxygen_xml)
              if f.lower().endswith('.xml') and not f.startswith('._')]
-    if len(files) == 0:
+    if not files:
         raise err
 
     setup.DOXYGEN_ROOT = ET.ElementTree(ET.Element('root')).getroot()

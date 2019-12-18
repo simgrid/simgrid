@@ -135,7 +135,7 @@ class Simcall(object):
         res.append(indent + 'case SIMCALL_%s:' % (self.name.upper()))
         if self.need_handler:
             call = "simcall_HANDLER_%s(&simcall%s%s)" % (self.name,
-                                                        ", " if len(args) > 0 else "",
+                                                        ", " if args else "",
                                                         ', '.join(args))
         else:
             call = "SIMIX_%s(%s)" % (self.name, ', '.join(args))

@@ -10,7 +10,6 @@ Copyright (c) 2012-2019. The SimGrid Team. All rights reserved.
 This program is free software; you can redistribute it and/or modify it
 under the terms of the license (GNU LGPL) which comes with this package.
 
-
 #TODO: child of child of child that printfs. Does it work?
 #TODO: a child dies after its parent. What happen?
 
@@ -24,7 +23,6 @@ under the terms of the license (GNU LGPL) which comes with this package.
 # ! expect (\1 > 500)
 
 """
-
 
 import sys
 import os
@@ -47,13 +45,11 @@ else:
 #
 #
 
-
 def isWindows():
     return sys.platform.startswith('win')
 
 # Singleton metaclass that works in Python 2 & 3
 # http://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
-
 
 class _Singleton(type):
     """ A metaclass that creates a Singleton base class when called. """
@@ -64,10 +60,8 @@ class _Singleton(type):
             cls._instances[cls] = super(_Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
-
 class Singleton(_Singleton('SingletonMeta', (object,), {})):
     pass
-
 
 SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n)
                              for n in dir(signal) if n.startswith('SIG') and '_' not in n)
@@ -427,7 +421,7 @@ class Cmd(object):
             logs.append("(ignoring the output of <{cmd}> as requested)".format(cmd=cmdName))
         else:
             stdouta = stdout_data.split("\n")
-            while len(stdouta) > 0 and stdouta[-1] == "":
+            while stdouta and stdouta[-1] == "":
                 del stdouta[-1]
             stdouta = self.remove_ignored_lines(stdouta)
             stdcpy = stdouta[:]
@@ -447,7 +441,7 @@ class Cmd(object):
                     lineterm="",
                     fromfile='expected',
                     tofile='obtained'))
-            if len(diff) > 0:
+            if diff:
                 logs.append("Output of <{cmd}> mismatch:".format(cmd=cmdName))
                 if self.sort >= 0:  # If sorted, truncate the diff output and show the unsorted version
                     difflen = 0
@@ -471,7 +465,7 @@ class Cmd(object):
                 if TeshState().keep:
                     f = open('obtained', 'w')
                     obtained = stdout_data.split("\n")
-                    while len(obtained) > 0 and obtained[-1] == "":
+                    while obtained and obtained[-1] == "":
                         del obtained[-1]
                     obtained = self.remove_ignored_lines(obtained)
                     for line in obtained:
@@ -514,13 +508,11 @@ class Cmd(object):
     def can_run(self):
         return self.args is not None
 
-
 ##############
 #
 # Main
 #
 #
-
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
@@ -609,7 +601,7 @@ if __name__ == '__main__':
     line = f.readfullline()
     while line is not None:
         # print(">>============="+line+"==<<")
-        if len(line) == 0:
+        if not line:
             #print ("END CMD block")
             if cmd.run_if_possible():
                 cmd = Cmd()
