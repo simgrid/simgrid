@@ -19,7 +19,7 @@ PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, e_event
     : container_(container), type_(type), timestamp_(timestamp), eventType_(eventType)
 {
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
-  if (trace_format == simgrid::instr::TraceFormat::Paje) {
+  if (trace_format == TraceFormat::Paje) {
     stream_ << std::fixed << std::setprecision(TRACE_precision());
     stream_ << eventType_ << " " << timestamp_ << " " << type_->get_id() << " " << container_->get_id();
   }
@@ -28,7 +28,7 @@ PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, e_event
 
 void PajeEvent::print()
 {
-  if (trace_format != simgrid::instr::TraceFormat::Paje)
+  if (trace_format != TraceFormat::Paje)
     return;
 
   XBT_DEBUG("Dump %s", stream_.str().c_str());
@@ -49,7 +49,7 @@ StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type
 
 void NewEvent::print()
 {
-  if (trace_format != simgrid::instr::TraceFormat::Paje)
+  if (trace_format != TraceFormat::Paje)
     return;
 
   stream_ << " " << value->get_id();
@@ -60,7 +60,7 @@ void NewEvent::print()
 
 void LinkEvent::print()
 {
-  if (trace_format != simgrid::instr::TraceFormat::Paje)
+  if (trace_format != TraceFormat::Paje)
     return;
 
   stream_ << " " << value_ << " " << endpoint_->get_id() << " " << key_;
@@ -74,7 +74,7 @@ void LinkEvent::print()
 
 void VariableEvent::print()
 {
-  if (trace_format != simgrid::instr::TraceFormat::Paje)
+  if (trace_format != TraceFormat::Paje)
     return;
 
   stream_ << " " << value_;
@@ -85,8 +85,7 @@ void VariableEvent::print()
 
 void StateEvent::print()
 {
-  if (trace_format == simgrid::instr::TraceFormat::Paje) {
-
+  if (trace_format == TraceFormat::Paje) {
     if (value != nullptr) // PAJE_PopState Event does not need to have a value
       stream_ << " " << value->get_id();
 
@@ -100,7 +99,7 @@ void StateEvent::print()
 #endif
     XBT_DEBUG("Dump %s", stream_.str().c_str());
     tracing_file << stream_.str() << std::endl;
-  } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
+  } else if (trace_format == TraceFormat::Ti) {
     if (extra_ == nullptr)
       return;
 
@@ -112,7 +111,7 @@ void StateEvent::print()
       container_name=std::to_string(stoi(container_name.erase(0, 5)) - 1);
     }
 #if HAVE_SMPI
-    if (simgrid::config::get_value<bool>("smpi/trace-call-location")) {
+    if (config::get_value<bool>("smpi/trace-call-location")) {
       stream_ << container_name << " location " << filename << " " << linenumber << std::endl ;
     }
 #endif
@@ -121,7 +120,6 @@ void StateEvent::print()
   } else {
     THROW_IMPOSSIBLE;
   }
-
 }
-}
-}
+} // namespace instr
+} // namespace simgrid

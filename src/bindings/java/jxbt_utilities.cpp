@@ -32,7 +32,6 @@ jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls, const char *name, const cha
   id = env->GetMethodID(cls, name, signature);
 
   if (not id) {
-
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
     jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, nullptr);
     const char *classname = env->GetStringUTFChars(jclassname, 0);

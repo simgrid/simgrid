@@ -83,8 +83,6 @@ namespace dvfs {
  *  global configuration
  */
 class Governor {
-
-private:
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
   int min_pstate; //< Never use a pstate less than this one

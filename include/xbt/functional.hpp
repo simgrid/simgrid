@@ -27,7 +27,6 @@ namespace simgrid {
 namespace xbt {
 
 template <class F> class MainFunction {
-private:
   F code_;
   std::shared_ptr<const std::vector<std::string>> args_;
 
@@ -109,8 +108,6 @@ template<class T> class Task;
  */
 template<class R, class... Args>
 class Task<R(Args...)> {
-private:
-
   // Placeholder for some class type:
   struct whatever {};
 
@@ -189,7 +186,6 @@ public:
   }
 
 private:
-
   template<class F>
   typename std::enable_if<canSBO<F>()>::type
   init(F code)
@@ -260,7 +256,6 @@ public:
 
 template<class F, class... Args>
 class TaskImpl {
-private:
   F code_;
   std::tuple<Args...> args_;
   typedef decltype(simgrid::xbt::apply(std::move(code_), std::move(args_))) result_type;

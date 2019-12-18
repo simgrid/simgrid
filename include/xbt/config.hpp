@@ -217,7 +217,6 @@ class Flag {
   std::string name_;
 
 public:
-
   /** Constructor
    *
    *  @param name  Flag name
@@ -305,7 +304,7 @@ public:
 XBT_PUBLIC void finalize();
 XBT_PUBLIC void show_aliases();
 XBT_PUBLIC void help();
-}
-}
+} // namespace config
+} // namespace simgrid
 
 #endif

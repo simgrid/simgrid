@@ -188,9 +188,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv * env, jobject
   process->resume();
 }
 
-JNIEXPORT void
-JNICALL Java_org_simgrid_msg_Process_setAutoRestart (JNIEnv *env, jobject jprocess, jboolean jauto_restart) {
-
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setAutoRestart(JNIEnv* env, jobject jprocess,
+                                                                   jboolean jauto_restart)
+{
   msg_process_t process = jprocess_to_native(jprocess, env);
   if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);

@@ -310,7 +310,6 @@ void LinkNS3::set_latency_profile(profile::Profile*)
 NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, totalBytes, false), src_(src), dst_(dst)
 {
-  
   // If there is no other started actions, we need to move NS-3 forward to be sync with SimGrid
   if (model->get_started_action_set()->size()==1){
     while(double_positive(surf_get_clock() - ns3::Simulator::Now().GetSeconds(), sg_surf_precision)){

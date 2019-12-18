@@ -76,7 +76,6 @@ double NetworkModel::next_occurring_event_full(double now)
 LinkImpl::LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint)
     : Resource(model, name, constraint), piface_(this)
 {
-
   if (name != "__loopback__")
     xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
 

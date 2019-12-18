@@ -157,7 +157,6 @@ public:
 
   Metric latency_                   = {0.0, 0, nullptr};
   Metric bandwidth_                 = {1.0, 0, nullptr};
-
 };
 
 /**********

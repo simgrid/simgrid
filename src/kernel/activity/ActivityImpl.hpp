@@ -36,6 +36,7 @@ enum class State {
 
 class XBT_PUBLIC ActivityImpl {
   std::atomic_int_fast32_t refcount_{0};
+
 public:
   virtual ~ActivityImpl();
   ActivityImpl() = default;

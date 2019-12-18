@@ -142,7 +142,6 @@ static int countelems(xbt_dict_t head)
 
 TEST_CASE("xbt::dict: dict data container", "dict")
 {
-
   SECTION("Basic usage: change, retrieve and traverse homogeneous dicts")
   {
     INFO("Traversal the null dictionary");

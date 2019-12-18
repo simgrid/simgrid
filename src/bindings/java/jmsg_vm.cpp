@@ -171,7 +171,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_resume(JNIEnv *env, jobject jvm)
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclass cls, jstring jname)
 {
-
   /* get the C string from the java string */
   if (jname == nullptr) {
     jxbt_throw_null(env, "No VM can have a null name");

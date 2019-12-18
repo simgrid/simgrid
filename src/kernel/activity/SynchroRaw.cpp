@@ -78,26 +78,25 @@ void RawImpl::finish()
   }
 
   switch (simcall->call_) {
-
     case SIMCALL_MUTEX_LOCK:
-      simgrid::xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping_, *simcall->issuer_);
+      xbt::intrusive_erase(simcall_mutex_lock__get__mutex(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_COND_WAIT:
-      simgrid::xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping_, *simcall->issuer_);
+      xbt::intrusive_erase(simcall_cond_wait__get__cond(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_COND_WAIT_TIMEOUT:
-      simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping_, *simcall->issuer_);
+      xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping_, *simcall->issuer_);
       simcall_cond_wait_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
     case SIMCALL_SEM_ACQUIRE:
-      simgrid::xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping_, *simcall->issuer_);
+      xbt::intrusive_erase(simcall_sem_acquire__get__sem(simcall)->sleeping_, *simcall->issuer_);
       break;
 
     case SIMCALL_SEM_ACQUIRE_TIMEOUT:
-      simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping_, *simcall->issuer_);
+      xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping_, *simcall->issuer_);
       simcall_sem_acquire_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
