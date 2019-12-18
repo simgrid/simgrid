@@ -27,7 +27,6 @@ static void sender(std::vector<std::string> args)
   /* Sleep a while before starting the example */
   simgrid::s4u::this_actor::sleep_for(10);
 
-
   if (flow_amount == 1) {
     /* - Send the task to the @ref worker */
     char* payload = bprintf("%f", comm_size);
@@ -71,7 +70,6 @@ static void receiver(std::vector<std::string> args)
 
 int main(int argc, char* argv[])
 {
-
   simgrid::s4u::Engine e(&argc, argv);
 
   XBT_INFO("Activating the SimGrid link energy plugin");
@@ -92,6 +90,7 @@ int main(int argc, char* argv[])
     argSender.push_back("1"); // Default value
     argReceiver.push_back("1");
   }
+
   if (argc > 3) {
     if (strcmp(argv[3], "random") == 0) { // We're asked to get a random size
       /* Initialize the random number generator */

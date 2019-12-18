@@ -30,7 +30,6 @@ NetworkConstantModel::NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::F
 LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,
                                             double /*latency*/, s4u::Link::SharingPolicy)
 {
-
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
           "Please remove any link from your platform (and switch to routing='None')",
           name.c_str());

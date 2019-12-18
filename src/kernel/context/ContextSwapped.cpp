@@ -53,7 +53,6 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
   if (has_code()) {
     xbt_assert((smx_context_stack_size & 0xf) == 0, "smx_context_stack_size should be multiple of 16");
     if (smx_context_guard_size > 0 && not MC_is_active()) {
-
 #if !defined(PTH_STACKGROWTH) || (PTH_STACKGROWTH != -1)
       xbt_die(
           "Stack overflow protection is known to be broken on your system: you stacks grow upwards (or detection is "

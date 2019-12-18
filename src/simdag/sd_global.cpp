@@ -33,7 +33,6 @@ std::set<SD_task_t>* simulate(double how_long){
   /* main loop */
   while (elapsed_time >= 0 && (how_long < 0 || 0.00001 < (how_long - total_time)) &&
          not sd_global->watch_point_reached) {
-
     XBT_DEBUG("Total time: %f", total_time);
 
     elapsed_time = surf_solve(how_long > 0 ? surf_get_clock() + how_long - total_time: -1.0);

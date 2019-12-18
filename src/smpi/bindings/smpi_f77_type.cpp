@@ -83,13 +83,14 @@ void mpi_type_free_keyval_ (int* keyval, int* ierr) {
  *ierr = MPI_Type_free_keyval( keyval);
 }
 
-void mpi_type_get_extent_ (int* datatype, MPI_Aint * lb, MPI_Aint * extent, int* ierr){
-
- *ierr = MPI_Type_get_extent(simgrid::smpi::Datatype::f2c(*datatype), lb, extent);
+void mpi_type_get_extent_(int* datatype, MPI_Aint* lb, MPI_Aint* extent, int* ierr)
+{
+  *ierr = MPI_Type_get_extent(simgrid::smpi::Datatype::f2c(*datatype), lb, extent);
 }
 
-void mpi_type_get_true_extent_ (int* datatype, MPI_Aint * lb, MPI_Aint * extent, int* ierr){
- *ierr = MPI_Type_get_true_extent(simgrid::smpi::Datatype::f2c(*datatype), lb, extent);
+void mpi_type_get_true_extent_(int* datatype, MPI_Aint* lb, MPI_Aint* extent, int* ierr)
+{
+  *ierr = MPI_Type_get_true_extent(simgrid::smpi::Datatype::f2c(*datatype), lb, extent);
 }
 
 void mpi_type_commit_(int* datatype,  int* ierr){

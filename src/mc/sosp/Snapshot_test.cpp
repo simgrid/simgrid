@@ -93,7 +93,6 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 void snap_test_helper::read_whole_region()
 {
   for (int n = 1; n != 32; ++n) {
-
     prologue_return ret = prologue(n);
     const void* read    = ret.region->read(ret.dstn, ret.src, ret.size);
     INFO("Mismatch in MC_region_read()");
@@ -109,7 +108,6 @@ void snap_test_helper::read_whole_region()
 void snap_test_helper::read_region_parts()
 {
   for (int n = 1; n != 32; ++n) {
-
     prologue_return ret = prologue(n);
 
     for (int j = 0; j != 100; ++j) {
@@ -145,7 +143,6 @@ void snap_test_helper::compare_whole_region()
 void snap_test_helper::compare_region_parts()
 {
   for (int n = 1; n != 32; ++n) {
-
     prologue_return ret = prologue(n);
 
     for (int j = 0; j != 100; ++j) {
@@ -165,7 +162,6 @@ void snap_test_helper::compare_region_parts()
 
 void snap_test_helper::read_pointer()
 {
-
   prologue_return ret = prologue(1);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
   simgrid::mc::Region* region2 = new simgrid::mc::Region(simgrid::mc::RegionType::Data, ret.src, ret.size);
@@ -183,7 +179,6 @@ void snap_test_helper::read_pointer()
 
 TEST_CASE("MC::Snapshot: A copy/snapshot of a given memory region", "MC::Snapshot")
 {
-
   INFO("Sparse snapshot (using pages)");
 
   snap_test_helper::Init();

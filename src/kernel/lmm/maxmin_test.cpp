@@ -71,7 +71,6 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
 
   SECTION("Consumption weight + variable penalty")
   {
-
     /*
      * Resource proportionality between variable is kept while
      * varying consumption weight
@@ -101,7 +100,6 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
 
   SECTION("Multiple constraints systems")
   {
-
     /*
      * Multiple constraint systems can be solved with shared variables
      *
@@ -151,7 +149,6 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
 
   SECTION("Variable penalty")
   {
-
     /*
      * A variable with a penalty of two get half of the max_share
      *
@@ -181,7 +178,6 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
 
   SECTION("Consumption weight")
   {
-
     /*
      * In a given constraint with all variable penalty to 1,
      * the max_share is affected only by the maximum consumption weight
@@ -212,7 +208,6 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
 
   SECTION("Consumption weight + variable penalty")
   {
-
     /*
      * Resource proportionality between variable is kept but
      * constraint bound can be violated
@@ -243,7 +238,6 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
 
   SECTION("Multiple constraints systems")
   {
-
     /*
      * Multiple constraint systems can be solved with shared variables
      * on unshared constraints.

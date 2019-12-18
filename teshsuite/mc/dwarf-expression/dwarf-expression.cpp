@@ -23,10 +23,8 @@ static std::default_random_engine rnd_engine;
 
 static simgrid::mc::RemoteClient* process;
 
-static
-uintptr_t eval_binary_operation(
-  simgrid::dwarf::ExpressionContext& state, int op, uintptr_t a, uintptr_t b) {
-
+static uintptr_t eval_binary_operation(simgrid::dwarf::ExpressionContext& state, int op, uintptr_t a, uintptr_t b)
+{
   Dwarf_Op ops[15];
   ops[0].atom = DW_OP_const8u;
   ops[0].number = a;
@@ -45,105 +43,101 @@ uintptr_t eval_binary_operation(
   return stack.top();
 }
 
-static
-void basic_test(simgrid::dwarf::ExpressionContext const& state) {
+static void basic_test(simgrid::dwarf::ExpressionContext const& state)
+{
   try {
+    Dwarf_Op ops[60];
 
-  Dwarf_Op ops[60];
+    uintptr_t a = rnd_engine();
+    uintptr_t b = rnd_engine();
 
-  uintptr_t a = rnd_engine();
-  uintptr_t b = rnd_engine();
+    simgrid::dwarf::ExpressionStack stack;
 
-  simgrid::dwarf::ExpressionStack stack;
+    bool caught_ex = false;
+    try {
+      ops[0].atom = DW_OP_drop;
+      simgrid::dwarf::execute(ops, 1, state, stack);
+    } catch (const simgrid::dwarf::evaluation_error&) {
+      caught_ex = true;
+    }
+    if (not caught_ex)
+      fprintf(stderr, "Exception expected");
 
-  bool caught_ex = false;
-  try {
-    ops[0].atom = DW_OP_drop;
+    ops[0].atom = DW_OP_lit21;
     simgrid::dwarf::execute(ops, 1, state, stack);
-  } catch (const simgrid::dwarf::evaluation_error&) {
-    caught_ex = true;
-  }
-  if (not caught_ex)
-    fprintf(stderr, "Exception expected");
+    assert(stack.size() == 1);
+    assert(stack.top() == 21);
 
-  ops[0].atom = DW_OP_lit21;
-  simgrid::dwarf::execute(ops, 1, state, stack);
-  assert(stack.size() == 1);
-  assert(stack.top() == 21);
+    ops[0].atom   = DW_OP_const8u;
+    ops[0].number = a;
+    simgrid::dwarf::execute(ops, 1, state, stack);
+    assert(stack.size() == 2);
+    assert(stack.top() == a);
 
-  ops[0].atom = DW_OP_const8u;
-  ops[0].number = a;
-  simgrid::dwarf::execute(ops, 1, state, stack);
-  assert(stack.size() == 2);
-  assert(stack.top() == a);
+    ops[0].atom = DW_OP_drop;
+    ops[1].atom = DW_OP_drop;
+    simgrid::dwarf::execute(ops, 2, state, stack);
+    assert(stack.empty());
 
-  ops[0].atom = DW_OP_drop;
-  ops[1].atom = DW_OP_drop;
-  simgrid::dwarf::execute(ops, 2, state, stack);
-  assert(stack.empty());
+    stack.clear();
+    ops[0].atom   = DW_OP_lit21;
+    ops[1].atom   = DW_OP_plus_uconst;
+    ops[1].number = a;
+    simgrid::dwarf::execute(ops, 2, state, stack);
+    assert(stack.size() == 1);
+    assert(stack.top() == a + 21);
 
-  stack.clear();
-  ops[0].atom = DW_OP_lit21;
-  ops[1].atom = DW_OP_plus_uconst;
-  ops[1].number = a;
-  simgrid::dwarf::execute(ops, 2, state, stack);
-  assert(stack.size() == 1);
-  assert(stack.top() == a + 21);
+    stack.clear();
+    ops[0].atom   = DW_OP_const8u;
+    ops[0].number = a;
+    ops[1].atom   = DW_OP_dup;
+    ops[2].atom   = DW_OP_plus;
+    simgrid::dwarf::execute(ops, 3, state, stack);
+    assert(stack.size() == 1);
+    assert(stack.top() == a + a);
 
-  stack.clear();
-  ops[0].atom = DW_OP_const8u;
-  ops[0].number = a;
-  ops[1].atom = DW_OP_dup;
-  ops[2].atom = DW_OP_plus;
-  simgrid::dwarf::execute(ops, 3, state, stack);
-  assert(stack.size() == 1);
-  assert(stack.top() == a + a);
+    stack.clear();
+    ops[0].atom   = DW_OP_const8u;
+    ops[0].number = a;
+    ops[1].atom   = DW_OP_const8u;
+    ops[1].number = b;
+    ops[2].atom   = DW_OP_over;
+    simgrid::dwarf::execute(ops, 3, state, stack);
+    assert(stack.size() == 3);
+    assert(stack.top() == a);
+    assert(stack.top(1) == b);
+    assert(stack.top(2) == a);
 
-  stack.clear();
-  ops[0].atom = DW_OP_const8u;
-  ops[0].number = a;
-  ops[1].atom = DW_OP_const8u;
-  ops[1].number = b;
-  ops[2].atom = DW_OP_over;
-  simgrid::dwarf::execute(ops, 3, state, stack);
-  assert(stack.size() == 3);
-  assert(stack.top()  == a);
-  assert(stack.top(1) == b);
-  assert(stack.top(2) == a);
-
-  stack.clear();
-  ops[0].atom = DW_OP_const8u;
-  ops[0].number = a;
-  ops[1].atom = DW_OP_const8u;
-  ops[1].number = b;
-  ops[2].atom = DW_OP_swap;
-  simgrid::dwarf::execute(ops, 3, state, stack);
-  assert(stack.size() == 2);
-  assert(stack.top()  == a);
-  assert(stack.top(1) == b);
-
+    stack.clear();
+    ops[0].atom   = DW_OP_const8u;
+    ops[0].number = a;
+    ops[1].atom   = DW_OP_const8u;
+    ops[1].number = b;
+    ops[2].atom   = DW_OP_swap;
+    simgrid::dwarf::execute(ops, 3, state, stack);
+    assert(stack.size() == 2);
+    assert(stack.top() == a);
+    assert(stack.top(1) == b);
   } catch (const simgrid::dwarf::evaluation_error&) {
     fprintf(stderr,"Expression evaluation error");
   }
 }
 
-static
-void test_deref(simgrid::dwarf::ExpressionContext const& state) {
+static void test_deref(simgrid::dwarf::ExpressionContext const& state)
+{
   try {
+    uintptr_t foo = 42;
 
-  uintptr_t foo = 42;
+    Dwarf_Op ops[60];
+    ops[0].atom   = DW_OP_const8u;
+    ops[0].number = (uintptr_t)&foo;
+    ops[1].atom   = DW_OP_deref;
 
-  Dwarf_Op ops[60];
-  ops[0].atom = DW_OP_const8u;
-  ops[0].number = (uintptr_t) &foo;
-  ops[1].atom = DW_OP_deref;
+    simgrid::dwarf::ExpressionStack stack;
 
-  simgrid::dwarf::ExpressionStack stack;
-
-  simgrid::dwarf::execute(ops, 2, state, stack);
-  assert(stack.size() == 1);
-  assert(stack.top()  == foo);
-
+    simgrid::dwarf::execute(ops, 2, state, stack);
+    assert(stack.size() == 1);
+    assert(stack.top() == foo);
   } catch (const simgrid::dwarf::evaluation_error&) {
     fprintf(stderr,"Expression evaluation error");
   }

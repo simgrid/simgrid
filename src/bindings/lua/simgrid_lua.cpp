@@ -40,22 +40,22 @@ static int debug(lua_State* L) {
  *
  * - Argument 1 (string): the text to print
  */
-static int info(lua_State* L) {
-
+static int info(lua_State* L)
+{
   const char* str = luaL_checkstring(L, 1);
   XBT_INFO("%s", str);
   return 0;
 }
 
-static int error(lua_State* L) {
-
+static int error(lua_State* L)
+{
   const char* str = luaL_checkstring(L, 1);
   XBT_ERROR("%s", str);
   return 0;
 }
 
-static int critical(lua_State* L) {
-
+static int critical(lua_State* L)
+{
   const char* str = luaL_checkstring(L, 1);
   XBT_CRITICAL("%s", str);
   return 0;
@@ -67,7 +67,8 @@ static int critical(lua_State* L) {
  * This function can be called from within lua via "simgrid.dump(table)". It will
  * then dump the table via XBT_DEBUG
  */
-static int dump(lua_State* L) {
+static int dump(lua_State* L)
+{
   int argc = lua_gettop(L);
 
   for (int i = 1; i <= argc; i++) {

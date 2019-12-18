@@ -73,7 +73,6 @@ sg_size_t Storage::read(sg_size_t size)
 
 IoPtr Storage::write_async(sg_size_t size)
 {
-
   return IoPtr(io_init(size, Io::OpType::WRITE)->start());
 }
 

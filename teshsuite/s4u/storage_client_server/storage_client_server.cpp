@@ -84,7 +84,6 @@ static void get_set_disk_data(simgrid::s4u::Disk* disk)
 
 static void dump_platform_disks()
 {
-
   for (auto const& h : simgrid::s4u::Engine::get_instance()->get_all_hosts())
     for (auto const& d : h->get_disks()) {
       if (h == d->get_host())
