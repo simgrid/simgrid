@@ -32,7 +32,7 @@ public:
   Model(const Model&) = delete;
   Model& operator=(const Model&) = delete;
 
-  virtual ~Model() = default;
+  virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *inited* state */
   Action::StateSet* get_inited_action_set() { return &inited_action_set_; }
