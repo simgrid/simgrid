@@ -61,7 +61,8 @@ def handle_python_module(fullname, englobing, elm):
 
     def found_decl(kind, obj):
         """Helper function that add an object in the python_decl data structure"""
-        if kind not in python_decl: python_decl[kind] = []
+        if kind not in python_decl:
+            python_decl[kind] = []
         python_decl[kind].append(obj)
 
 
@@ -141,14 +142,17 @@ for arg in xml_files[:3]:
             kind = member.attrib["kind"]
             name = member.find("name").text
             if kind == "variable":
-                if compoundname not in doxy_vars: doxy_vars[compoundname] = []
+                if compoundname not in doxy_vars:
+                    doxy_vars[compoundname] = []
                 doxy_vars[compoundname].append(name)
             elif kind == "function":
                 args = member.find('argsstring').text
                 args = re.sub('\)[^)]*$', ')', args) # ignore what's after the parameters (eg, '=0' or ' const')
 
-                if compoundname not in doxy_funs: doxy_funs[compoundname] = {}
-                if name not in doxy_funs[compoundname]: doxy_funs[compoundname][name] = []
+                if compoundname not in doxy_funs:
+                    doxy_funs[compoundname] = {}
+                if name not in doxy_funs[compoundname]:
+                    doxy_funs[compoundname][name] = []
                 doxy_funs[compoundname][name].append(args)
             else:
                 print ("member {}::{} is of kind {}".format(compoundname, name, kind))
