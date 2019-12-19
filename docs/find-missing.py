@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2019. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2019. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -12,6 +11,8 @@ Search for symbols documented in both the XML files produced by Doxygen and the 
 but not documented with autodoxy in the RST files.
 
 This script is tailored to SimGrid own needs and should be made more generic for autodoxy.
+
+If you are missing some dependencies, try:  pip3 install --requirement docs/requirements.txt
 """
 
 import fnmatch

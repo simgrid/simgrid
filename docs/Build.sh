@@ -2,6 +2,8 @@
 #
 # Simplistic script to rebuild our documentation with sphinx-build
 
+# If you are missing some dependencies, try: pip3 install --requirement docs/requirements.txt
+
 # Python needs to find simgrid on my machine, but not ctest -- sorry for the hack
 if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
 
