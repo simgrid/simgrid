@@ -63,21 +63,21 @@ of every page. Bugs in the code should be reported
    :caption: User Manual:
 
       Introduction <Introduction.rst>
-         Installing SimGrid <Installing_SimGrid.rst>
-         Start your Own Project <Start_Your_Own_Project.rst>
+         Installing SimGrid <Installing_SimGrid.rst>
+         Start your Own Project <Start_Your_Own_Project.rst>
       Describing your Application <application.rst>
-         The S4U Interface <app_s4u.rst>
-         The SMPI Interface <app_smpi.rst>
-         The MSG Interface <app_msg.rst>
+         The S4U Interface <app_s4u.rst>
+         The SMPI Interface <app_smpi.rst>
+         The MSG Interface <app_msg.rst>
       Describing the Simulated Platform <platform.rst>
-         Examples <Platform_Examples.rst>
-         Modeling Hints <platform_howtos.rst>
-         XML Reference <XML_Reference.rst>
+         Examples <Platform_Examples.rst>
+         Modeling Hints <platform_howtos.rst>
+         XML Reference <XML_Reference.rst>
       Describing the Experimental Setup <Experimental_Setup.rst>
-         Configuring SimGrid <Configuring_SimGrid.rst>
-         Deploying your Application <Deploying_your_Application.rst>
+         Configuring SimGrid <Configuring_SimGrid.rst>
+         Deploying your Application <Deploying_your_Application.rst>
       The SimGrid Models <models.rst>
-         ns-3 as a SimGrid model <ns3.rst>
+         ns-3 as a SimGrid model <ns3.rst>
       SimGrid Plugins <Plugins.rst>
       Simulation Outcomes <outcomes.rst>
       The SimGrid Community <community.rst>
