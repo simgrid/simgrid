@@ -493,8 +493,6 @@ Querying info about actors
       .. autoattribute:: simgrid.Actor.pid
       .. autoattribute:: simgrid.Actor.ppid
 
-      .. automethod:: simgrid.Actor.migrate
-
 Suspending and resuming actors
 ------------------------------
 
@@ -564,8 +562,7 @@ Signals
       .. autodoxyvar:: simgrid::s4u::Actor::on_resume
       .. autodoxyvar:: simgrid::s4u::Actor::on_sleep
       .. autodoxyvar:: simgrid::s4u::Actor::on_wake_up
-      .. autodoxyvar:: simgrid::s4u::Actor::on_migration_start
-      .. autodoxyvar:: simgrid::s4u::Actor::on_migration_end
+      .. autodoxyvar:: simgrid::s4u::Actor::on_host_change
       .. autodoxyvar:: simgrid::s4u::Actor::on_termination
       .. autodoxyvar:: simgrid::s4u::Actor::on_destruction
 
