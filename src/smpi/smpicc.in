@@ -48,9 +48,6 @@ else
     list_add LINKARGS "-lsimgrid" ${LINKER_UNDEFINED_ERROR:+"-Wl,-z,defs"}
 fi
 
-# By default, we execute the commands instead of only showing them to cmake
-Show=
-
 list_set CMDARGS
 while [ $# -gt 0 ]; do
     ARG="$1"
@@ -84,7 +81,7 @@ while [ $# -gt 0 ]; do
             ;;
 	'-show'|'-compile-info'|'-link-info')
             # Dry run displaying commands instead of executing them. Useful to cmake
-	    Show=echo
+	    show=1
 	    ;;
 	 *)
             list_add CMDARGS "${ARG}"
@@ -100,4 +97,8 @@ list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
-$Show "$@"
+if [ "x$VERBOSE" = x1 -o "x$show" = x1 ] ; then
+  echo "$@"
+  [ "x$show" = x1 ] && exit 0
+fi
+"$@"

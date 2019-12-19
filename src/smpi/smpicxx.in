@@ -32,9 +32,6 @@ else
     list_add LINKARGS "@libdir@\libsimgrid.dll"
 fi
 
-# By default, we execute the commands instead of only showing them to cmake
-show=
-
 list_set CMDARGS
 while [ $# -gt 0 ]; do
     ARG="$1"

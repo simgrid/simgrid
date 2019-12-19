@@ -41,9 +41,6 @@ filter_and_compile() {
 
 NEEDS_OUTPUT=1
 
-# By default, we execute the commands instead of only showing them to cmake
-Show=
-
 list_set CMDLINE "${REAL_FORTRAN_COMPILER}"
 list_add_not_empty CMDLINE "${FFLAGS}"
 while [ $# -gt 0 ]; do
@@ -85,7 +82,7 @@ while [ $# -gt 0 ]; do
             ;;
 	'-show'|'-compile-info'|'-link-info')
             # Dry run displaying commands instead of executing them. Useful to cmake
-	    Show=echo
+	    show=1
 	    ;;
         *)
             list_add CMDLINE "${ARG}"
@@ -102,4 +99,8 @@ list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
-$Show "$@"
+if [ "x$VERBOSE" = x1 -o "x$show" = x1 ] ; then
+  echo "$@"
+  [ "x$show" = x1 ] && exit 0
+fi
+"$@"
