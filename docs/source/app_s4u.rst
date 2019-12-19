@@ -376,54 +376,17 @@ shouldn't), using :cpp:func:`simgrid::s4u::Host::destroy`.
 API Reference
 *************
 
-.. _API_s4u_this_actor:
+.. _API_s4u_simulation_object:
 
-==================================
-Interacting with the current actor
-==================================
-
-Static methods working on the current actor (see :ref:`API_s4u_Actor`).
-
-.. doxygennamespace:: simgrid::s4u::this_actor
-
-.. _API_s4u_Activity:
-
-==============
-class Activity
-==============
-
-.. autodoxyclass:: simgrid::s4u::Activity
-
-   **Known subclasses:**
-   :ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
-   :ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
-   :ref:`I/O <API_s4u_Io>` (started on and consumming disks).
-   See also the :ref:`section on activities <s4u_Activities>` above.
-
-Querying info about activities
-------------------------------
-
-   .. autodoxymethod:: simgrid::s4u::Activity::get_remaining()
-   .. autodoxymethod:: simgrid::s4u::Activity::get_state()
-   .. autodoxymethod:: simgrid::s4u::Activity::set_remaining(double remains)
-   .. autodoxymethod:: simgrid::s4u::Activity::get_impl
-
-Activities lifecycle
---------------------
-
-   .. autodoxymethod:: simgrid::s4u::Activity::start
-   .. autodoxymethod:: simgrid::s4u::Activity::cancel
-   .. autodoxymethod:: simgrid::s4u::Activity::test
-   .. autodoxymethod:: simgrid::s4u::Activity::wait
-   .. autodoxymethod:: simgrid::s4u::Activity::wait_for
-   .. autodoxymethod:: simgrid::s4u::Activity::wait_until(double time_limit)
-
+==================
+Simulation objects
+==================
 
 .. _API_s4u_Actor:
 
-===========
-class Actor
-===========
+==============
+⁣  class Actor
+==============
 
 .. doxygentypedef:: ActorPtr
 
@@ -562,15 +525,214 @@ Signals
       .. autodoxyvar:: simgrid::s4u::Actor::on_resume
       .. autodoxyvar:: simgrid::s4u::Actor::on_sleep
       .. autodoxyvar:: simgrid::s4u::Actor::on_wake_up
-      .. autodoxyvar:: simgrid::s4u::Actor::on_host_change
       .. autodoxyvar:: simgrid::s4u::Actor::on_termination
       .. autodoxyvar:: simgrid::s4u::Actor::on_destruction
 
-.. _API_s4u_Barrier:
+.. _API_s4u_this_actor:
+
+====================
+⁣  The current actor
+====================
+
+Static methods working on the current actor (see :ref:`API_s4u_Actor`).
+
+.. doxygennamespace:: simgrid::s4u::this_actor
+
+.. _API_s4u_Engine:
+
+====================
+⁣  Simulation Engine
+====================
+
+.. doxygenclass:: simgrid::s4u::Engine
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Mailbox:
+
+================
+⁣  class Mailbox
+================
+
+Please also refer to the :ref:`full doc on s4u::Mailbox <s4u_mailbox>`.
+
+.. doxygenclass:: simgrid::s4u::Mailbox
+   :members:
+   :protected-members:
+   :undoc-members:
+.. _API_s4u_Resource:
+
+=========
+Resources
+=========
+
+.. _API_s4u_Disk:
 
 =============
-class Barrier
+⁣  class Disk
 =============
+
+.. doxygenclass:: simgrid::s4u::Disk
+   :members:
+   :protected-members:
+   :undoc-members:
+
+
+
+.. _API_s4u_Host:
+
+=============
+⁣  class Host
+=============
+
+.. doxygenclass:: simgrid::s4u::Host
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Link:
+
+=============
+⁣  class Link
+=============
+
+.. doxygenclass:: simgrid::s4u::Link
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_NetZone:
+
+================
+⁣  class NetZone
+================
+
+.. doxygenclass:: simgrid::s4u::NetZone
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_VirtualMachine:
+
+=======================
+⁣  class VirtualMachine
+=======================
+
+.. doxygenclass:: simgrid::s4u::VirtualMachine
+   :members:
+   :protected-members:
+   :undoc-members:
+
+
+.. _API_s4u_Activity:
+
+==============
+class Activity
+==============
+
+.. autodoxyclass:: simgrid::s4u::Activity
+
+   **Known subclasses:**
+   :ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
+   :ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
+   :ref:`I/O <API_s4u_Io>` (started on and consumming disks).
+   See also the :ref:`section on activities <s4u_Activities>` above.
+
+Querying info about activities
+------------------------------
+
+   .. autodoxymethod:: simgrid::s4u::Activity::get_remaining()
+   .. autodoxymethod:: simgrid::s4u::Activity::get_state()
+   .. autodoxymethod:: simgrid::s4u::Activity::set_remaining(double remains)
+   .. autodoxymethod:: simgrid::s4u::Activity::get_impl
+
+Activities lifecycle
+--------------------
+
+   .. autodoxymethod:: simgrid::s4u::Activity::start
+   .. autodoxymethod:: simgrid::s4u::Activity::cancel
+   .. autodoxymethod:: simgrid::s4u::Activity::test
+   .. autodoxymethod:: simgrid::s4u::Activity::wait
+   .. autodoxymethod:: simgrid::s4u::Activity::wait_for
+   .. autodoxymethod:: simgrid::s4u::Activity::wait_until(double time_limit)
+
+.. _API_s4u_Comm:
+
+=============
+⁣  class Comm
+=============
+
+.. doxygentypedef:: CommPtr
+
+.. doxygenclass:: simgrid::s4u::Comm
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Exec:
+
+=============
+⁣  class Exec
+=============
+
+.. doxygentypedef:: ExecPtr
+
+.. doxygenclass:: simgrid::s4u::Exec
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_ExecSeq:
+
+==================
+⁣    class ExecSeq
+==================
+
+.. doxygentypedef:: ExecSeqPtr
+
+.. doxygenclass:: simgrid::s4u::ExecSeq
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_ExecPar:
+
+==================
+⁣    class ExecPar
+==================
+
+.. doxygentypedef:: ExecParPtr
+
+.. doxygenclass:: simgrid::s4u::ExecPar
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Io:
+
+===========
+⁣  class Io
+===========
+
+.. doxygentypedef:: IoPtr
+
+.. doxygenclass:: simgrid::s4u::Io
+   :members:
+   :protected-members:
+   :undoc-members:
+
+.. _API_s4u_Synchronizations:
+
+=======================
+Synchronization Objects
+=======================
+
+.. _API_s4u_Barrier:
+
+================
+⁣  class Barrier
+================
 
 .. doxygentypedef:: BarrierPtr
 
@@ -585,24 +747,11 @@ class Barrier
          .. autodoxymethod:: simgrid::s4u::Barrier::wait()
 
 
-.. _API_s4u_Comm:
-
-=========
-s4u::Comm
-=========
-
-.. doxygentypedef:: CommPtr
-
-.. doxygenclass:: simgrid::s4u::Comm
-   :members:
-   :protected-members:
-   :undoc-members:
-
 .. _API_s4u_ConditionVariable:
 
-======================
-s4u::ConditionVariable
-======================
+==========================
+⁣  class ConditionVariable
+==========================
 
 .. doxygentypedef:: ConditionVariablePtr
 
@@ -611,120 +760,11 @@ s4u::ConditionVariable
    :protected-members:
    :undoc-members:
 
-.. _API_s4u_Disk:
-
-============
-s4u::Disk
-============
-
-.. doxygenclass:: simgrid::s4u::Disk
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_Engine:
-
-===========
-s4u::Engine
-===========
-
-.. doxygenclass:: simgrid::s4u::Engine
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_Exec:
-
-=========
-s4u::Exec
-=========
-
-.. doxygentypedef:: ExecPtr
-
-.. doxygenclass:: simgrid::s4u::Exec
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_ExecSeq:
-
-============
-s4u::ExecSeq
-============
-
-.. doxygentypedef:: ExecSeqPtr
-
-.. doxygenclass:: simgrid::s4u::ExecSeq
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_ExecPar:
-
-============
-s4u::ExecPar
-============
-
-.. doxygentypedef:: ExecParPtr
-
-.. doxygenclass:: simgrid::s4u::ExecPar
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_Host:
-
-=========
-s4u::Host
-=========
-
-.. doxygenclass:: simgrid::s4u::Host
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_Io:
-
-=======
-s4u::Io
-=======
-
-.. doxygentypedef:: IoPtr
-
-.. doxygenclass:: simgrid::s4u::Io
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_Link:
-
-=========
-s4u::Link
-=========
-
-.. doxygenclass:: simgrid::s4u::Link
-   :members:
-   :protected-members:
-   :undoc-members:
-
-.. _API_s4u_Mailbox:
-
-============
-s4u::Mailbox
-============
-
-Please also refer to the :ref:`full doc on s4u::Mailbox <s4u_mailbox>`.
-
-.. doxygenclass:: simgrid::s4u::Mailbox
-   :members:
-   :protected-members:
-   :undoc-members:
-
 .. _API_s4u_Mutex:
 
-==========
-s4u::Mutex
-==========
+==============
+⁣  class Mutex
+==============
 
 .. doxygentypedef:: MutexPtr
 
@@ -733,22 +773,11 @@ s4u::Mutex
    :protected-members:
    :undoc-members:
 
-.. _API_s4u_NetZone:
-
-============
-s4u::NetZone
-============
-
-.. doxygenclass:: simgrid::s4u::NetZone
-   :members:
-   :protected-members:
-   :undoc-members:
-
 .. _API_s4u_Semaphore:
 
-==============
-s4u::Semaphore
-==============
+==================
+⁣  class Semaphore
+==================
 
 .. doxygentypedef:: SemaphorePtr
 
@@ -757,16 +786,6 @@ s4u::Semaphore
    :protected-members:
    :undoc-members:
 
-.. _API_s4u_VirtualMachine:
-
-===================
-s4u::VirtualMachine
-===================
-
-.. doxygenclass:: simgrid::s4u::VirtualMachine
-   :members:
-   :protected-members:
-   :undoc-members:
 
 C API Reference
 ***************
