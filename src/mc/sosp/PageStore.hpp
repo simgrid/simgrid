@@ -141,7 +141,7 @@ public:
    *  @param pageno Number of the memory page in the store
    *  @return Start of the page
    */
-  const void* get_page(std::size_t pageno) const;
+  void* get_page(std::size_t pageno) const;
 
   // Debug/test methods
 
@@ -169,7 +169,7 @@ XBT_ALWAYS_INLINE void PageStore::ref_page(size_t pageno)
   ++this->page_counts_[pageno];
 }
 
-XBT_ALWAYS_INLINE const void* PageStore::get_page(std::size_t pageno) const
+XBT_ALWAYS_INLINE void* PageStore::get_page(std::size_t pageno) const
 {
   return (void*)simgrid::mc::mmu::join(pageno, (std::uintptr_t)this->memory_);
 }

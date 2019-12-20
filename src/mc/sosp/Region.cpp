@@ -49,7 +49,7 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgr
   auto split                = simgrid::mc::mmu::split(addr - region->start().address());
   auto pageno               = split.first;
   auto offset               = split.second;
-  const void* snapshot_page = region->get_chunks().page(pageno);
+  void* snapshot_page       = region->get_chunks().page(pageno);
   return (char*)snapshot_page + offset;
 }
 
@@ -58,7 +58,7 @@ void* Region::read(void* target, const void* addr, std::size_t size)
   xbt_assert(contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
   // Last byte of the region:
-  void* end = (char*)addr + size - 1;
+  const void* end = (const char*)addr + size - 1;
   if (simgrid::mc::mmu::same_chunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
     // The memory is contained in a single page:
     return mc_translate_address_region((uintptr_t)addr, this);
@@ -78,9 +78,9 @@ void* Region::read(void* target, const void* addr, std::size_t size)
   while (simgrid::mc::mmu::split((std::uintptr_t)addr).first != page_end) {
     void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, this);
     void* next_page     = (void*)simgrid::mc::mmu::join(simgrid::mc::mmu::split((std::uintptr_t)addr).first + 1, 0);
-    size_t readable     = (char*)next_page - (char*)addr;
+    size_t readable     = (char*)next_page - (const char*)addr;
     memcpy(dest, snapshot_addr, readable);
-    addr = (char*)addr + readable;
+    addr = (const char*)addr + readable;
     dest = (char*)dest + readable;
     size -= readable;
   }

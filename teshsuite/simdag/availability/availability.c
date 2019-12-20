@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,"Logging for the current example");
 
 static int name_compare_hosts(const void *n1, const void *n2)
 {
-  return strcmp(sg_host_get_name(*(sg_host_t *) n1), sg_host_get_name(*(sg_host_t *) n2));
+  return strcmp(sg_host_get_name(*(const sg_host_t*)n1), sg_host_get_name(*(const sg_host_t*)n2));
 }
 
 static void scheduleDAX(xbt_dynar_t dax)

@@ -123,7 +123,8 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
-  auto remote_string_address              = remote((simgrid::xbt::string_data*)&actor->get_host()->get_name());
+  auto remote_string_address =
+      remote(reinterpret_cast<const simgrid::xbt::string_data*>(&actor->get_host()->get_name()));
   simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   char hostname[remote_string.len];
   process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));

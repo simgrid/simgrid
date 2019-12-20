@@ -166,7 +166,7 @@ std::size_t PageStore::store_page(void* page)
   // Otherwise, a new page is allocated in the page store and the content of the page is `memcpy()`-ed to this new page.
   std::size_t pageno = alloc_page();
   xbt_assert(this->page_counts_[pageno] == 0, "Allocated page is already used");
-  void* snapshot_page = (void*)this->get_page(pageno);
+  void* snapshot_page = this->get_page(pageno);
   memcpy(snapshot_page, page, xbt_pagesize);
   page_set.insert(pageno);
   page_counts_[pageno]++;

@@ -10,12 +10,12 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, sd, "SimDag test basic_link_test");
 
 static int cmp_link(const void*a, const void*b) {
-  return strcmp(sg_link_name(*(SD_link_t*)a)  , sg_link_name(*(SD_link_t*)b));
+  return strcmp(sg_link_name(*(const SD_link_t*)a), sg_link_name(*(const SD_link_t*)b));
 }
 
 int main(int argc, char **argv)
 {
-  const char *user_data = "some user_data";
+  char user_data[] = "some user_data";
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   for (int i=0; i < count; i++){
     XBT_INFO("%s: latency = %.5f, bandwidth = %f", sg_link_name(links[i]),
              sg_link_latency(links[i]), sg_link_bandwidth(links[i]));
-    sg_link_data_set(links[i], (void*) user_data);
+    sg_link_data_set(links[i], user_data);
     xbt_assert(!strcmp(user_data, (const char*)sg_link_data(links[i])),"User data was corrupted.");
   }
   xbt_free(links);

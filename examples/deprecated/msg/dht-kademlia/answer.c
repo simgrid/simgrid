@@ -69,8 +69,8 @@ unsigned int answer_merge(answer_t destination, answer_t source)
 /** Helper to sort answer_t objects */
 static int _answer_sort_function(const void *e1, const void *e2)
 {
-  node_contact_t c1 = *(void **) e1;
-  node_contact_t c2 = *(void **) e2;
+  node_contact_t c1 = *(const node_contact_t*)e1;
+  node_contact_t c2 = *(const node_contact_t*)e2;
   if (c1->distance == c2->distance)
     return 0;
   else

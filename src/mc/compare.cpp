@@ -767,8 +767,8 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
   }
 
   // Get block number:
-  block1 = ((char*)area1 - (char*)state.std_heap_copy.heapbase) / BLOCKSIZE + 1;
-  block2 = ((char*)area2 - (char*)state.std_heap_copy.heapbase) / BLOCKSIZE + 1;
+  block1 = ((const char*)area1 - (const char*)state.std_heap_copy.heapbase) / BLOCKSIZE + 1;
+  block2 = ((const char*)area2 - (const char*)state.std_heap_copy.heapbase) / BLOCKSIZE + 1;
 
   // If either block is a stack block:
   if (is_block_stack((int) block1) && is_block_stack((int) block2)) {
@@ -779,8 +779,9 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
   }
 
   // If either block is not in the expected area of memory:
-  if (((char*)area1 < (char*)state.std_heap_copy.heapbase) || (block1 > (ssize_t)state.processStates[0].heapsize) ||
-      (block1 < 1) || ((char*)area2 < (char*)state.std_heap_copy.heapbase) ||
+  if (((const char*)area1 < (const char*)state.std_heap_copy.heapbase) ||
+      (block1 > (ssize_t)state.processStates[0].heapsize) || (block1 < 1) ||
+      ((const char*)area2 < (const char*)state.std_heap_copy.heapbase) ||
       (block2 > (ssize_t)state.processStates[1].heapsize) || (block2 < 1)) {
     return true;
   }
@@ -927,8 +928,8 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
     }
     // Type inference from the block type.
     else if (state.types_<1>(block1, frag1) != nullptr || state.types_<2>(block2, frag2) != nullptr) {
-      offset1 = (char*)area1 - (char*)real_addr_frag1;
-      offset2 = (char*)area2 - (char*)real_addr_frag2;
+      offset1 = (const char*)area1 - (const char*)real_addr_frag1;
+      offset2 = (const char*)area2 - (const char*)real_addr_frag2;
 
       if (state.types_<1>(block1, frag1) != nullptr && state.types_<2>(block2, frag2) != nullptr) {
         new_type1 = get_offset_type(real_addr_frag1, state.types_<1>(block1, frag1), offset1, size, snapshot1);
