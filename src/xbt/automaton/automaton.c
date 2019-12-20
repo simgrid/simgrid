@@ -274,32 +274,14 @@ XBT_PUBLIC const char* xbt_automaton_propositional_symbol_get_name(xbt_automaton
 }
 
 int xbt_automaton_state_compare(xbt_automaton_state_t s1, xbt_automaton_state_t s2){
-
   /* single id for each state, id and type sufficient for comparison*/
-
-  if(strcmp(s1->id, s2->id))
-    return 1;
-
-  if(s1->type != s2->type)
-    return 1;
-
-  return 0;
-
+  return (strcmp(s1->id, s2->id) != 0) || (s1->type != s2->type);
 }
 
-int xbt_automaton_transition_compare(const void *t1, const void *t2){
-
-  if(xbt_automaton_state_compare(((xbt_automaton_transition_t)t1)->src, ((xbt_automaton_transition_t)t2)->src))
-    return 1;
-
-  if(xbt_automaton_state_compare(((xbt_automaton_transition_t)t1)->dst, ((xbt_automaton_transition_t)t2)->dst))
-    return 1;
-
-  if(xbt_automaton_exp_label_compare(((xbt_automaton_transition_t)t1)->label,((xbt_automaton_transition_t)t2)->label))
-    return 1;
-
-  return 0;
-
+int xbt_automaton_transition_compare(xbt_automaton_transition_t t1, xbt_automaton_transition_t t2)
+{
+  return xbt_automaton_state_compare(t1->src, t2->src) || xbt_automaton_state_compare(t1->dst, t2->dst) ||
+         xbt_automaton_exp_label_compare(t1->label, t2->label);
 }
 
 int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_exp_label_t l2){
@@ -311,16 +293,14 @@ int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_
   switch(l1->type){
   case 0 : // OR
   case 1 : // AND
-    if(xbt_automaton_exp_label_compare(l1->u.or_and.left_exp, l2->u.or_and.left_exp))
-      res = 1;
-    else
-      res = xbt_automaton_exp_label_compare(l1->u.or_and.right_exp, l2->u.or_and.right_exp);
+    res = xbt_automaton_exp_label_compare(l1->u.or_and.left_exp, l2->u.or_and.left_exp) ||
+          xbt_automaton_exp_label_compare(l1->u.or_and.right_exp, l2->u.or_and.right_exp);
     break;
   case 2 : // NOT
     res = xbt_automaton_exp_label_compare(l1->u.exp_not, l2->u.exp_not);
     break;
   case 3 : // predicat
-    res = strcmp(l1->u.predicat, l2->u.predicat);
+    res = strcmp(l1->u.predicat, l2->u.predicat) != 0;
     break;
   case 4 : // 1
     res = 0;

@@ -105,7 +105,7 @@ XBT_PUBLIC int xbt_automaton_propositional_symbol_evaluate(xbt_automaton_proposi
 XBT_PUBLIC xbt_automaton_state_t xbt_automaton_get_current_state(xbt_automaton_t a);
 XBT_PUBLIC int xbt_automaton_state_compare(xbt_automaton_state_t s1, xbt_automaton_state_t s2);
 XBT_PUBLIC int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2);
-XBT_PUBLIC int xbt_automaton_transition_compare(const void* t1, const void* t2);
+XBT_PUBLIC int xbt_automaton_transition_compare(xbt_automaton_transition_t t1, xbt_automaton_transition_t t2);
 XBT_PUBLIC int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_exp_label_t l2);
 XBT_PUBLIC void xbt_automaton_state_free_voidp(void* s);
 XBT_PUBLIC void xbt_automaton_state_free(xbt_automaton_state_t s);
