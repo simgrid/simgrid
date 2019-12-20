@@ -192,7 +192,7 @@ private:
   {
     const static TaskVtable vtable {
       // Call:
-      [](TaskUnion& buffer, Args... args) {
+      [](TaskUnion& buffer, Args&&... args) {
         F* src = reinterpret_cast<F*>(&buffer);
         F code = std::move(*src);
         src->~F();
@@ -221,7 +221,7 @@ private:
   {
     const static TaskVtable vtable {
       // Call:
-      [](TaskUnion& buffer, Args... args) {
+      [](TaskUnion& buffer, Args&&... args) {
         // Delete F when we go out of scope:
         std::unique_ptr<F> code(*reinterpret_cast<F**>(&buffer));
         return (*code)(std::forward<Args>(args)...);
@@ -244,7 +244,7 @@ public:
   operator bool() const { return vtable_ != nullptr; }
   bool operator!() const { return vtable_ == nullptr; }
 
-  R operator()(Args... args)
+  R operator()(Args&&... args)
   {
     if (vtable_ == nullptr)
       throw std::bad_function_call();
