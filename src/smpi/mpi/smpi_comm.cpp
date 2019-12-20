@@ -424,6 +424,7 @@ void Comm::init_smp(){
       leader_group_size++;
     }
   }
+  xbt_assert(leader_group_size > 0);
   std::sort(leader_list, leader_list + leader_group_size);
 
   MPI_Group leaders_group = new  Group(leader_group_size);

@@ -735,7 +735,7 @@ int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
     *static_cast<void**>(baseptr) = target_win->base_;
   } else {
     *size                         = 0;
-    *static_cast<void**>(baseptr) = xbt_malloc(0);
+    *static_cast<void**>(baseptr) = nullptr;
   }
   return MPI_SUCCESS;
 }
