@@ -80,7 +80,8 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
   } else {
     if(comm_cart != nullptr){
       if (rank == 0) {
-        *comm_cart = new  Comm(new  Group(MPI_COMM_SELF->group()), this);
+        MPI_Group group = new Group(MPI_COMM_SELF->group());
+        *comm_cart      = new Comm(group, this);
       } else {
         *comm_cart = MPI_COMM_NULL;
       }

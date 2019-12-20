@@ -171,7 +171,8 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
   XBT_ATTRIB_UNUSED unsigned int core_bind = 0;
 
   for (unsigned i = 1; i < num_workers; i++) {
-    this->workers[i] = new std::thread(worker_main, new ThreadData(*this, i));
+    ThreadData* data = new ThreadData(*this, i);
+    this->workers[i] = new std::thread(worker_main, data);
 
     /* Bind the worker to a core if possible */
 #if HAVE_PTHREAD_SETAFFINITY
