@@ -136,6 +136,20 @@ void ActorImpl::detach()
   context->attach_stop();
 }
 
+void ActorImpl::cleanup_from_simix()
+{
+  const std::lock_guard<std::mutex> lock(simix_global->mutex);
+  simix_global->process_list.erase(pid_);
+  if (host_ && host_actor_list_hook.is_linked())
+    host_->pimpl_->remove_actor(this);
+  if (not smx_destroy_list_hook.is_linked()) {
+#if SIMGRID_HAVE_MC
+    xbt_dynar_push_as(simix_global->dead_actors_vector, ActorImpl*, this);
+#endif
+    simix_global->actors_to_destroy.push_back(*this);
+  }
+}
+
 void ActorImpl::cleanup()
 {
   finished_ = true;
@@ -172,20 +186,7 @@ void ActorImpl::cleanup()
     kill_timer->remove();
     kill_timer = nullptr;
   }
-
-  simix_global->mutex.lock();
-
-  simix_global->process_list.erase(pid_);
-  if (host_ && host_actor_list_hook.is_linked())
-    host_->pimpl_->remove_actor(this);
-  if (not smx_destroy_list_hook.is_linked()) {
-#if SIMGRID_HAVE_MC
-    xbt_dynar_push_as(simix_global->dead_actors_vector, ActorImpl*, this);
-#endif
-    simix_global->actors_to_destroy.push_back(*this);
-  }
-
-  simix_global->mutex.unlock();
+  cleanup_from_simix();
 
   context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
   actor::simcall([this] { s4u::Actor::on_termination(*ciface()); });

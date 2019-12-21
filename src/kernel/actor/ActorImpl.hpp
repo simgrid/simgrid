@@ -107,6 +107,7 @@ public:
 private:
   s4u::Actor piface_; // Our interface is part of ourselves
 
+  void cleanup_from_simix();
   void undaemonize();
 
 public:
