@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <simgrid/modelchecker.h>
+#include <xbt/dynar.h>
 
 #define GRANT_TAG 0
 #define REQUEST_TAG 1

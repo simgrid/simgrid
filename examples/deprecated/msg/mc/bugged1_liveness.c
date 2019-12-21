@@ -17,6 +17,7 @@
 
 #include <simgrid/modelchecker.h>
 #include <simgrid/msg.h>
+#include <xbt/dynar.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
 

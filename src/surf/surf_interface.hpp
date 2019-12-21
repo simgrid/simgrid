@@ -8,6 +8,7 @@
 
 #include "src/internal_config.h"
 #include "src/surf/surf_private.hpp"
+#include "xbt/function_types.h"
 
 #include <cmath>
 #include <set>

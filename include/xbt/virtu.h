@@ -9,21 +9,11 @@
 #define XBT_VIRTU_H
 
 #include <xbt/base.h>
-#include <xbt/dynar.h>
-#include <xbt/function_types.h>
-#include <xbt/misc.h>
-
-SG_BEGIN_DECL
-
-XBT_PUBLIC const char* xbt_procname(void);
-
-XBT_PUBLIC int xbt_getpid(void);
-
-SG_END_DECL
 
 #ifdef __cplusplus
 #include <string>
 #include <vector>
+
 namespace simgrid {
 namespace xbt {
 
@@ -35,4 +25,13 @@ XBT_PUBLIC_DATA std::vector<std::string> cmdline;
 } // namespace xbt
 } // namespace simgrid
 #endif
+
+SG_BEGIN_DECL
+
+XBT_PUBLIC const char* xbt_procname(void);
+
+XBT_PUBLIC int xbt_getpid(void);
+
+SG_END_DECL
+
 #endif /* XBT_VIRTU_H */
