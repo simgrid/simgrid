@@ -93,11 +93,13 @@ Type_Vector::Type_Vector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
 
 Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
                              const MPI_Aint* block_indices, MPI_Datatype old_type)
-    : Datatype(size, lb, ub, flags), block_count_(count), old_type_(old_type)
+    : Datatype(size, lb, ub, flags)
+    , block_count_(count)
+    , block_lengths_(new int[count])
+    , block_indices_(new MPI_Aint[count])
+    , old_type_(old_type)
 {
   old_type_->ref();
-  block_lengths_ = new int[count];
-  block_indices_ = new MPI_Aint[count];
   for (int i = 0; i < count; i++) {
     block_lengths_[i] = block_lengths[i];
     block_indices_[i] = block_indices[i];
@@ -106,11 +108,13 @@ Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int 
 
 Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
                              const int* block_indices, MPI_Datatype old_type, MPI_Aint factor)
-    : Datatype(size, lb, ub, flags), block_count_(count), old_type_(old_type)
+    : Datatype(size, lb, ub, flags)
+    , block_count_(count)
+    , block_lengths_(new int[count])
+    , block_indices_(new MPI_Aint[count])
+    , old_type_(old_type)
 {
   old_type_->ref();
-  block_lengths_ = new int[count];
-  block_indices_ = new MPI_Aint[count];
   for (int i = 0; i < count; i++) {
     block_lengths_[i] = block_lengths[i];
     block_indices_[i] = block_indices[i] * factor;
@@ -177,10 +181,14 @@ Type_Indexed::Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int co
 {
 }
 
-Type_Struct::Type_Struct(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths, const MPI_Aint* block_indices, const MPI_Datatype* old_types): Datatype(size, lb, ub, flags), block_count_(count){
-  block_lengths_= new int[count];
-  block_indices_= new MPI_Aint[count];
-  old_types_=  new MPI_Datatype[count];
+Type_Struct::Type_Struct(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
+                         const MPI_Aint* block_indices, const MPI_Datatype* old_types)
+    : Datatype(size, lb, ub, flags)
+    , block_count_(count)
+    , block_lengths_(new int[count])
+    , block_indices_(new MPI_Aint[count])
+    , old_types_(new MPI_Datatype[count])
+{
   for (int i = 0; i < count; i++) {
     block_lengths_[i]=block_lengths[i];
     block_indices_[i]=block_indices[i];

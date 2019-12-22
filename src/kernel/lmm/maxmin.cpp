@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "xbt/backtrace.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
@@ -172,17 +171,6 @@ void System::cnst_free(Constraint* cnst)
 Constraint::Constraint(resource::Resource* id_value, double bound_value) : bound_(bound_value), id_(id_value)
 {
   rank_ = next_rank_++;
-
-  remaining_           = 0.0;
-  usage_               = 0.0;
-  concurrency_limit_   = sg_concurrency_limit;
-  concurrency_current_ = 0;
-  concurrency_maximum_ = 0;
-  sharing_policy_      = s4u::Link::SharingPolicy::SHARED;
-
-  lambda_     = 0.0;
-  new_lambda_ = 0.0;
-  cnst_light_ = nullptr;
 }
 
 Constraint* System::constraint_new(resource::Resource* id, double bound_value)

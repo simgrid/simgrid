@@ -38,8 +38,7 @@ public:
   Channel(Channel&& that) : socket_(that.socket_) { that.socket_ = -1; }
   Channel& operator=(Channel&& that)
   {
-    this->socket_ = that.socket_;
-    that.socket_  = -1;
+    std::swap(this->socket_, that.socket_);
     return *this;
   }
 

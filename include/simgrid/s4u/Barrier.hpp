@@ -20,8 +20,8 @@ namespace s4u {
 
 class XBT_PUBLIC Barrier {
 private:
-  MutexPtr mutex_;
-  ConditionVariablePtr cond_;
+  MutexPtr mutex_            = Mutex::create();
+  ConditionVariablePtr cond_ = ConditionVariable::create();
   unsigned int expected_actors_;
   unsigned int arrived_actors_ = 0;
 
@@ -30,7 +30,7 @@ private:
 
 public:
   /** Creates a barrier for the given amount of actors */
-  explicit Barrier(unsigned int count);
+  explicit Barrier(unsigned int expected_processes) : expected_actors_(expected_processes) {}
 #ifndef DOXYGEN
   ~Barrier()              = default;
   Barrier(Barrier const&) = delete;

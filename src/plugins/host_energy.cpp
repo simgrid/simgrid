@@ -160,7 +160,7 @@ public:
 
   double watts_off_    = 0.0; /*< Consumption when the machine is turned off (shutdown) */
   double total_energy_ = 0.0; /*< Total energy consumed by the host */
-  double last_updated_;       /*< Timestamp of the last energy update event*/
+  double last_updated_ = surf_get_clock(); /*< Timestamp of the last energy update event*/
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID;
@@ -198,7 +198,7 @@ void HostEnergy::update()
   this->pstate_ = host_->is_on() ? host_->get_pstate() : pstate_off_;
 }
 
-HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr), last_updated_(surf_get_clock())
+HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr)
 {
   init_watts_range_list();
 

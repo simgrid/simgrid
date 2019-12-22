@@ -30,15 +30,6 @@ int Comm::keyval_id_=0;
 
 Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int in_id) : group_(group), topo_(topo),is_smp_comm_(smp), id_(in_id)
 {
-  refcount_        = 1;
-  topoType_        = MPI_INVALID_TOPO;
-  intra_comm_      = MPI_COMM_NULL;
-  leaders_comm_    = MPI_COMM_NULL;
-  is_uniform_      = 1;
-  non_uniform_map_ = nullptr;
-  leaders_map_     = nullptr;
-  is_blocked_      = 0;
-  info_            = MPI_INFO_NULL;
   errhandler_      = MPI_ERRORS_ARE_FATAL;
   errhandler_->ref();
   //First creation of comm is done before SIMIX_run, so only do comms for others

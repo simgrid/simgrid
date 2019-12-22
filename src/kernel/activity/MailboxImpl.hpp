@@ -29,10 +29,7 @@ class MailboxImpl {
   friend s4u::Mailbox* s4u::Mailbox::by_name(const std::string& name);
   friend mc::CommunicationDeterminismChecker;
 
-  explicit MailboxImpl(const std::string& name)
-      : piface_(this), name_(name), comm_queue_(MAX_MAILBOX_SIZE), done_comm_queue_(MAX_MAILBOX_SIZE)
-  {
-  }
+  explicit MailboxImpl(const std::string& name) : piface_(this), name_(name) {}
 
 public:
   const xbt::string& get_name() const { return name_; }
@@ -47,9 +44,9 @@ public:
                                  const CommImplPtr& my_synchro, bool done, bool remove_matching);
 
   actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
-  boost::circular_buffer_space_optimized<CommImplPtr> comm_queue_;
-  boost::circular_buffer_space_optimized<CommImplPtr> done_comm_queue_; // messages already received in the permanent
-                                                                        // receive mode
+  boost::circular_buffer_space_optimized<CommImplPtr> comm_queue_{MAX_MAILBOX_SIZE};
+  // messages already received in the permanent receive mode
+  boost::circular_buffer_space_optimized<CommImplPtr> done_comm_queue_{MAX_MAILBOX_SIZE};
 };
 } // namespace activity
 } // namespace kernel

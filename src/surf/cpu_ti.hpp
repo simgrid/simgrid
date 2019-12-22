@@ -45,7 +45,7 @@ class CpuTiTmgr {
   };
 
 public:
-  explicit CpuTiTmgr(double value) : type_(Type::FIXED), value_(value){};
+  explicit CpuTiTmgr(double value) : value_(value){};
   CpuTiTmgr(profile::Profile* speed_profile, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
@@ -55,7 +55,7 @@ public:
   double get_power_scale(double a);
 
 private:
-  Type type_;
+  Type type_ = Type::FIXED;
   double value_;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */

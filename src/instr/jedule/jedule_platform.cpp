@@ -19,9 +19,8 @@ std::unordered_map<std::string, jed_container_t> container_name2container;
 namespace simgrid {
 namespace jedule {
 Subset::Subset(int start_idx, int end_idx, Container* parent)
-: start_idx(start_idx), parent(parent)
+    : start_idx(start_idx), nres(end_idx - start_idx + 1), parent(parent)
 {
-  nres=end_idx-start_idx+1;
 }
 
 Container::Container(const std::string& name) : name(name)

@@ -85,15 +85,15 @@ namespace dvfs {
 class Governor {
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
-  int min_pstate; //< Never use a pstate less than this one
-  int max_pstate; //< Never use a pstate larger than this one
+  int min_pstate = cfg_min_pstate; //< Never use a pstate less than this one
+  int max_pstate = cfg_max_pstate; //< Never use a pstate larger than this one
 
 public:
   explicit Governor(simgrid::s4u::Host* ptr)
       : host_(ptr)
-      , min_pstate(cfg_min_pstate)
-      , max_pstate(cfg_max_pstate == max_pstate_not_limited ? host_->get_pstate_count() - 1 : cfg_max_pstate)
   {
+    if (cfg_max_pstate == max_pstate_not_limited)
+      max_pstate = host_->get_pstate_count() - 1;
     init();
   }
   virtual ~Governor() = default;

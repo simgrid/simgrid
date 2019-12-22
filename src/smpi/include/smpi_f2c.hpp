@@ -23,7 +23,7 @@ class F2C {
     // Beware of collisions if id in mpif.h is not unique
     static std::unordered_map<std::string, F2C*>* f2c_lookup_;
     static int f2c_id_;
-    int my_f2c_id_;
+    int my_f2c_id_ = -1;
 
   protected:
     static std::unordered_map<std::string, F2C*>* f2c_lookup();
@@ -36,7 +36,6 @@ class F2C {
     static char* get_key(char* key, int id);
     static void delete_lookup();
     static std::unordered_map<std::string, F2C*>* lookup();
-    F2C() : my_f2c_id_(-1){}
     virtual ~F2C() = default;
 
     //Override these to handle specific values.

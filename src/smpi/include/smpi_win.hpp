@@ -23,7 +23,7 @@ class Win : public F2C, public Keyval {
   void* base_;
   MPI_Aint size_;
   int disp_unit_;
-  int assert_;
+  int assert_ = 0;
   MPI_Info info_;
   MPI_Comm comm_;
   std::vector<MPI_Request> *requests_;

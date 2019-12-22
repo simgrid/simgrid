@@ -27,7 +27,6 @@ VisitedState::VisitedState(unsigned long state_number) : num(state_number)
   this->actors_count = mc_model_checker->process().actors().size();
 
   this->system_state = std::make_shared<simgrid::mc::Snapshot>(state_number);
-  this->original_num = -1;
 }
 
 void VisitedStates::prune()

@@ -49,12 +49,12 @@ typedef std::vector<LocationListEntry> LocationList;
  */
 class Location {
 private:
-  void* memory_;
+  void* memory_    = nullptr;
   int register_id_ = 0;
 
 public:
   explicit Location(void* x) : memory_(x) {}
-  explicit Location(int register_id) : memory_(nullptr), register_id_(register_id) {}
+  explicit Location(int register_id) : register_id_(register_id) {}
   // Type of location:
   bool in_register() const { return memory_ == nullptr; }
   bool in_memory() const { return memory_ != nullptr; }

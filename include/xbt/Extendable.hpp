@@ -19,12 +19,12 @@ template<class T>          class Extendable;
 
 template<class T, class U>
 class Extension {
-  static const std::size_t INVALID_ID = std::numeric_limits<std::size_t>::max();
-  std::size_t id_;
+  static constexpr std::size_t INVALID_ID = std::numeric_limits<std::size_t>::max();
+  std::size_t id_                         = INVALID_ID;
   friend class Extendable<T>;
   explicit constexpr Extension(std::size_t id) : id_(id) {}
 public:
-  explicit constexpr Extension() : id_(INVALID_ID) {}
+  explicit constexpr Extension() {}
   std::size_t id() const { return id_; }
   bool valid() const { return id_ != INVALID_ID; }
 };
@@ -48,7 +48,8 @@ template<class T>
 class Extendable {
 private:
   static std::vector<void(*)(void*)> deleters_;
-  std::vector<void*> extensions_;
+  std::vector<void*> extensions_{(deleters_.size() > 0 ? deleters_.size() : 1), nullptr};
+
 public:
   static size_t extension_create(void (*deleter)(void*))
   {
@@ -68,7 +69,7 @@ public:
   {
     return Extension<T, U>(extension_create([](void* p) { delete static_cast<U*>(p); }));
   }
-  Extendable() : extensions_((deleters_.size() > 0 ? deleters_.size() : 1), nullptr) {}
+  Extendable() {}
   Extendable(const Extendable&) = delete;
   Extendable& operator=(const Extendable&) = delete;
   ~Extendable()

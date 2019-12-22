@@ -183,11 +183,11 @@ public:
 template <class T> class ReplayAction {
 protected:
   const std::string name;
-  const aid_t my_proc_id;
+  const aid_t my_proc_id = s4u::this_actor::get_pid();
   T args;
 
 public:
-  explicit ReplayAction(const std::string& name) : name(name), my_proc_id(s4u::this_actor::get_pid()) {}
+  explicit ReplayAction(const std::string& name) : name(name) {}
   virtual ~ReplayAction() = default;
 
   void execute(xbt::ReplayAction& action)

@@ -21,14 +21,14 @@ namespace mc {
 /** State of the model-checker (global variables for the model checker)
  */
 class ModelChecker {
-  struct event_base *base_;
-  struct event* socket_event_;
-  struct event* signal_event_;
+  struct event_base* base_    = nullptr;
+  struct event* socket_event_ = nullptr;
+  struct event* signal_event_ = nullptr;
   /** String pool for host names */
   // TODO, use std::set with heterogeneous comparison lookup (C++14)?
   std::set<std::string> hostnames_;
   // This is the parent snapshot of the current state:
-  PageStore page_store_;
+  PageStore page_store_{500};
   std::unique_ptr<RemoteClient> process_;
   Checker* checker_ = nullptr;
 public:

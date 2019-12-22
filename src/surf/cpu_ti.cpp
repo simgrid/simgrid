@@ -222,7 +222,6 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
 
   /* no availability file, fixed trace */
   if (not speed_profile) {
-    type_  = Type::FIXED;
     value_ = value;
     XBT_DEBUG("No availability trace. Constant value = %f", value);
     return;
@@ -230,7 +229,6 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
 
   /* only one point available, fixed trace */
   if (speed_profile->event_list.size() == 1) {
-    type_  = Type::FIXED;
     value_ = speed_profile->event_list.front().value_;
     return;
   }

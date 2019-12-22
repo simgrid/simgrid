@@ -50,7 +50,7 @@ static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 
 // ***** snapshot_page_manager
 
-PageStore::PageStore(std::size_t size) : memory_(nullptr), capacity_(size), top_index_(0)
+PageStore::PageStore(std::size_t size) : capacity_(size)
 {
   // Using mmap in order to be able to expand the region by relocating it somewhere else in the virtual memory space:
   void* memory =

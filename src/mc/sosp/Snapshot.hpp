@@ -78,7 +78,7 @@ public:
 
   // To be private
   int num_state_;
-  std::size_t heap_bytes_used_;
+  std::size_t heap_bytes_used_ = 0;
   std::vector<std::unique_ptr<Region>> snapshot_regions_;
   std::set<pid_t> enabled_processes_;
   std::vector<std::size_t> stack_sizes_;

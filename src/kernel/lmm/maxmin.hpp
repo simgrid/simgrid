@@ -8,6 +8,7 @@
 
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Link.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "xbt/asserts.h"
 #include "xbt/mallocator.h"
 
@@ -260,24 +261,24 @@ public:
   boost::intrusive::list<Element, boost::intrusive::member_hook<Element, boost::intrusive::list_member_hook<>,
                                                                 &Element::active_element_set_hook>>
       active_element_set_;
-  double remaining_;
-  double usage_;
+  double remaining_ = 0.0;
+  double usage_     = 0.0;
   double bound_;
   // TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500
-  int concurrency_current_; /* The current concurrency */
-  int concurrency_maximum_; /* The maximum number of (enabled and disabled) variables associated to the constraint at
-                             * any given time (essentially for tracing)*/
+  int concurrency_current_ = 0; /* The current concurrency */
+  int concurrency_maximum_ = 0; /* The maximum number of (enabled and disabled) variables associated to the constraint
+                                 * at any given time (essentially for tracing)*/
 
-  s4u::Link::SharingPolicy sharing_policy_;
+  s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SHARED;
   int rank_; // Only used in debug messages to identify the constraint
-  double lambda_;
-  double new_lambda_;
-  ConstraintLight* cnst_light_;
+  double lambda_               = 0.0;
+  double new_lambda_           = 0.0;
+  ConstraintLight* cnst_light_ = nullptr;
 
 private:
   static int next_rank_;  // To give a separate rank_ to each constraint
-  int concurrency_limit_; /* The maximum number of variables that may be enabled at any time (stage variables if
-                           * necessary) */
+  int concurrency_limit_ = sg_concurrency_limit; /* The maximum number of variables that may be enabled at any time
+                                                  * (stage variables if necessary) */
   resource::Resource* id_;
 };
 

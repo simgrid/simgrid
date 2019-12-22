@@ -22,12 +22,20 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Win::keyvals_;
 int Win::keyval_id_=0;
 
-Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated, int dynamic): base_(base), size_(size), disp_unit_(disp_unit), assert_(0), info_(info), comm_(comm), allocated_(allocated), dynamic_(dynamic){
-  int comm_size = comm->size();
-  rank_         = comm->rank();
+Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated, int dynamic)
+    : base_(base)
+    , size_(size)
+    , disp_unit_(disp_unit)
+    , info_(info)
+    , comm_(comm)
+    , rank_(comm->rank())
+    , allocated_(allocated)
+    , dynamic_(dynamic)
+{
   XBT_DEBUG("Creating window");
   if(info!=MPI_INFO_NULL)
     info->ref();
+  int comm_size          = comm->size();
   name_                  = nullptr;
   opened_                = 0;
   group_                 = MPI_GROUP_NULL;

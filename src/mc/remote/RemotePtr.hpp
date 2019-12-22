@@ -59,11 +59,11 @@ public:
  *  as a `uint64_t`.
  */
 template <class T> class RemotePtr {
-  std::uint64_t address_;
+  std::uint64_t address_ = 0;
 
 public:
-  RemotePtr() : address_(0) {}
-  explicit RemotePtr(std::nullptr_t) : address_(0) {}
+  RemotePtr() = default;
+  explicit RemotePtr(std::nullptr_t) {}
   explicit RemotePtr(std::uint64_t address) : address_(address) {}
   explicit RemotePtr(T* address) : address_((std::uintptr_t)address) {}
   explicit RemotePtr(Remote<T*> p) : address_((std::uintptr_t)*p.get_buffer()) {}

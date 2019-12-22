@@ -77,7 +77,7 @@ namespace simgrid{
 namespace smpi{
 
 class Datatype : public F2C, public Keyval{
-  char* name_;
+  char* name_ = nullptr;
   /* The id here is the (unique) datatype id used for this datastructure.
    * It's default value is set to -1 since some code expects this return value
    * when no other id has been assigned
@@ -87,7 +87,7 @@ class Datatype : public F2C, public Keyval{
   MPI_Aint lb_;
   MPI_Aint ub_;
   int flags_;
-  int refcount_;
+  int refcount_ = 1;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;

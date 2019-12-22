@@ -83,17 +83,16 @@ Backtrace::Backtrace()
   impl_->st = boost::stacktrace::stacktrace();
 #endif
 }
-Backtrace::Backtrace(const Backtrace& bt)
+
+Backtrace::Backtrace(const Backtrace& bt) : impl_(bt.impl_)
 {
-  impl_ = bt.impl_;
   if (impl_)
     impl_->ref();
 }
 
 Backtrace::Backtrace(Backtrace&& bt)
 {
-  impl_    = bt.impl_;
-  bt.impl_ = nullptr;
+  std::swap(impl_, bt.impl_);
 }
 
 Backtrace& Backtrace::operator=(const Backtrace& rhs)

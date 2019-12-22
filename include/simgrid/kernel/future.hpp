@@ -445,17 +445,13 @@ template <class T> Future<T> unwrap_future(Future<Future<T>> future)
 template<class T>
 class Promise {
 public:
-  Promise() : state_(std::make_shared<FutureState<T>>()) {}
+  Promise() = default;
   explicit Promise(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
 
   // Move type
   Promise(Promise const&) = delete;
   Promise& operator=(Promise const&) = delete;
-  Promise(Promise&& that) :
-    state_(std::move(that.state_)), future_get_(that.future_get_)
-  {
-    that.future_get_ = false;
-  }
+  Promise(Promise&& that) : state_(std::move(that.state_)) { std::swap(future_get_, that.future_get_); }
 
   Promise& operator=(Promise&& that)
   {
@@ -493,14 +489,14 @@ public:
   }
 
 private:
-  std::shared_ptr<FutureState<T>> state_;
+  std::shared_ptr<FutureState<T>> state_{new FutureState<T>()};
   bool future_get_ = false;
 };
 
 template<>
 class Promise<void> {
 public:
-  Promise() : state_(std::make_shared<FutureState<void>>()) {}
+  Promise() = default;
   explicit Promise(std::shared_ptr<FutureState<void>> state) : state_(std::move(state)) {}
   ~Promise()
   {
@@ -512,11 +508,7 @@ public:
   // Move type
   Promise(Promise const&) = delete;
   Promise& operator=(Promise const&) = delete;
-  Promise(Promise&& that) :
-    state_(std::move(that.state_)), future_get_(that.future_get_)
-  {
-    that.future_get_ = false;
-  }
+  Promise(Promise&& that) : state_(std::move(that.state_)) { std::swap(future_get_, that.future_get_); }
   Promise& operator=(Promise&& that)
   {
     this->state_ = std::move(that.state_);
@@ -548,7 +540,7 @@ public:
   }
 
 private:
-  std::shared_ptr<FutureState<void>> state_;
+  std::shared_ptr<FutureState<void>> state_{new FutureState<void>()};
   bool future_get_ = false;
 };
 

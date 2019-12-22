@@ -17,11 +17,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_barrier, s4u, "S4U barrier");
 namespace simgrid {
 namespace s4u {
 
-Barrier::Barrier(unsigned int expected_processes)
-    : mutex_(Mutex::create()), cond_(ConditionVariable::create()), expected_actors_(expected_processes)
-{
-}
-
 /** @brief Create a new barrier
  *
  * See @ref s4u_raii.

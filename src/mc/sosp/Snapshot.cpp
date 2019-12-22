@@ -197,8 +197,7 @@ static void snapshot_ignore_restore(simgrid::mc::Snapshot* snapshot)
     snapshot->process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(), remote(ignored_data.start));
 }
 
-Snapshot::Snapshot(int num_state, RemoteClient* process)
-    : AddressSpace(process), num_state_(num_state), heap_bytes_used_(0), enabled_processes_(), hash_(0)
+Snapshot::Snapshot(int num_state, RemoteClient* process) : AddressSpace(process), num_state_(num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 

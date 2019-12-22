@@ -42,21 +42,12 @@ typedef std::vector<Dwarf_Op> DwarfExpression;
  *  the process memory, etc. All those informations are gathered in
  *  the evaluation context.
  */
-class ExpressionContext {
-public:
-  ExpressionContext()
-      : cursor(nullptr)
-      , frame_base(nullptr)
-      , address_space(nullptr)
-      , object_info(nullptr)
-  {
-  }
+struct ExpressionContext {
   /** CPU state (registers) */
-  unw_cursor_t* cursor;
-  void* frame_base;
-  /** Address space used to read memory */
-  const simgrid::mc::AddressSpace* address_space;
-  simgrid::mc::ObjectInformation* object_info;
+  unw_cursor_t* cursor                           = nullptr;
+  void* frame_base                               = nullptr;
+  const simgrid::mc::AddressSpace* address_space = nullptr; /** Address space used to read memory */
+  simgrid::mc::ObjectInformation* object_info    = nullptr;
 };
 
 /** When an error happens in the execution of a DWARF expression */
@@ -77,11 +68,9 @@ public:
 private:
   // Values of the stack (the top is stack_[size_ - 1]):
   uintptr_t stack_[max_size]{0};
-  size_t size_;
+  size_t size_ = 0;
 
 public:
-  ExpressionStack() : size_(0) {}
-
   // Access:
   std::size_t size() const { return size_; }
   bool empty() const { return size_ == 0; }

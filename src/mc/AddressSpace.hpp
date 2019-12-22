@@ -19,10 +19,10 @@ namespace mc {
  *  integers are not allowed.
  */
 class ReadOptions {
-  std::uint32_t value_;
+  std::uint32_t value_ = 0;
   constexpr explicit ReadOptions(std::uint32_t value) : value_(value) {}
 public:
-  constexpr ReadOptions() : value_(0) {}
+  constexpr ReadOptions() {}
 
   explicit constexpr operator bool() const { return value_ != 0; }
   constexpr bool operator!() const { return value_ == 0; }

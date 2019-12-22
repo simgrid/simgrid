@@ -16,8 +16,8 @@ namespace mc {
  *  @return                Snapshot page numbers of this new snapshot
  */
 ChunkedData::ChunkedData(PageStore& store, AddressSpace& as, RemotePtr<void> addr, std::size_t page_count)
+    : store_(&store)
 {
-  store_ = &store;
   this->pagenos_.resize(page_count);
   std::vector<char> buffer(xbt_pagesize);
 

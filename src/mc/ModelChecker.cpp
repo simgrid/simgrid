@@ -32,14 +32,7 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process)
-    : base_(nullptr)
-    , socket_event_(nullptr)
-    , signal_event_(nullptr)
-    , page_store_(500)
-    , process_(std::move(process))
-{
-}
+ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process) : process_(std::move(process)) {}
 
 ModelChecker::~ModelChecker()
 {

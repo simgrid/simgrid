@@ -37,16 +37,13 @@ enum e_message_type_t {
 class ChordMessage {
 public:
   e_message_type_t type;              // type of message
-  std::string issuer_host_name;       // used for logging
+  std::string issuer_host_name     = simgrid::s4u::this_actor::get_host()->get_name(); // used for logging
   int request_id     = -1;            // id (used by some types of messages)
   int request_finger = 1;             // finger parameter (used by some types of messages)
   int answer_id      = -1;            // answer (used by some types of messages)
   simgrid::s4u::Mailbox* answer_to = nullptr;       // mailbox to send an answer to (if any)
 
-  explicit ChordMessage(e_message_type_t type)
-      : type(type), issuer_host_name(simgrid::s4u::this_actor::get_host()->get_name())
-  {
-  }
+  explicit ChordMessage(e_message_type_t type) : type(type) {}
 
   static void destroy(void* message);
 };

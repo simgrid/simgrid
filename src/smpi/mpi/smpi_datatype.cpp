@@ -107,14 +107,16 @@ Datatype::Datatype(int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags) : D
 {
   id = std::to_string(ident);
 }
-Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(1){
+
+Datatype::Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags) : size_(size), lb_(lb), ub_(ub), flags_(flags)
+{
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
 #endif
 }
 
-//for predefined types, so in_use = 0.
+// for predefined types, so refcount_ = 0.
 Datatype::Datatype(char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
     : name_(name), id(std::to_string(ident)), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0)
 {
@@ -125,7 +127,8 @@ Datatype::Datatype(char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, in
 #endif
 }
 
-Datatype::Datatype(Datatype *datatype, int* ret) : name_(nullptr), size_(datatype->size_), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), refcount_(1)
+Datatype::Datatype(Datatype* datatype, int* ret)
+    : size_(datatype->size_), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_)
 {
   flags_ &= ~DT_FLAG_PREDEFINED;
   *ret = MPI_SUCCESS;
