@@ -460,6 +460,7 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
   CHECK_TYPE(3, datatype)
 
   int size = datatype->get_extent() * count;
+  xbt_assert(size > 0);
   void* recvbuf = xbt_new0(char, size);
   retval = MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count, datatype, src, recvtag, comm, status);
   if(retval==MPI_SUCCESS){
