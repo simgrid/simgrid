@@ -356,8 +356,8 @@ void CommunicationDeterminismChecker::restoreState()
 {
   /* Intermediate backtracking */
   State* last_state = stack_.back().get();
-  if (last_state->system_state) {
-    last_state->system_state->restore(&mc_model_checker->process());
+  if (last_state->system_state_) {
+    last_state->system_state_->restore(&mc_model_checker->process());
     MC_restore_communications_pattern(last_state);
     return;
   }

@@ -18,14 +18,14 @@ namespace mc {
 
 State::State(unsigned long state_number) : num_(state_number)
 {
-  this->internal_comm.clear();
-  this->internal_req  = s_smx_simcall();
+  this->internal_comm_.clear();
+  this->internal_req_ = s_smx_simcall();
   this->executed_req_ = s_smx_simcall();
 
   actor_states_.resize(MC_smx_get_maxpid());
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    system_state = std::make_shared<simgrid::mc::Snapshot>(num_);
+    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
       MC_state_copy_incomplete_communications_pattern(this);
       MC_state_copy_index_communications_pattern(this);
@@ -149,47 +149,47 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
   state->transition_.pid_ = actor->get_pid();
   state->executed_req_    = *req;
   // Fetch the data of the request and translate it:
-  state->internal_req = *req;
+  state->internal_req_ = *req;
 
   /* The waitany and testany request are transformed into a wait or test request over the corresponding communication
    * action so it can be treated later by the dependence function. */
   switch (req->call_) {
     case SIMCALL_COMM_WAITANY: {
-      state->internal_req.call_ = SIMCALL_COMM_WAIT;
+      state->internal_req_.call_ = SIMCALL_COMM_WAIT;
       simgrid::kernel::activity::CommImpl* remote_comm;
       remote_comm = mc_model_checker->process().read(
           remote(simcall_comm_waitany__get__comms(req) + state->transition_.argument_));
-      mc_model_checker->process().read(state->internal_comm, remote(remote_comm));
-      simcall_comm_wait__set__comm(&state->internal_req, state->internal_comm.get_buffer());
-      simcall_comm_wait__set__timeout(&state->internal_req, 0);
+      mc_model_checker->process().read(state->internal_comm_, remote(remote_comm));
+      simcall_comm_wait__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
+      simcall_comm_wait__set__timeout(&state->internal_req_, 0);
       break;
     }
 
     case SIMCALL_COMM_TESTANY:
-      state->internal_req.call_ = SIMCALL_COMM_TEST;
+      state->internal_req_.call_ = SIMCALL_COMM_TEST;
 
       if (state->transition_.argument_ > 0) {
         simgrid::kernel::activity::CommImpl* remote_comm = mc_model_checker->process().read(
             remote(simcall_comm_testany__get__comms(req) + state->transition_.argument_));
-        mc_model_checker->process().read(state->internal_comm, remote(remote_comm));
+        mc_model_checker->process().read(state->internal_comm_, remote(remote_comm));
       }
 
-      simcall_comm_test__set__comm(&state->internal_req, state->internal_comm.get_buffer());
-      simcall_comm_test__set__result(&state->internal_req, state->transition_.argument_);
+      simcall_comm_test__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
+      simcall_comm_test__set__result(&state->internal_req_, state->transition_.argument_);
       break;
 
     case SIMCALL_COMM_WAIT:
-      mc_model_checker->process().read_bytes(&state->internal_comm, sizeof(state->internal_comm),
+      mc_model_checker->process().read_bytes(&state->internal_comm_, sizeof(state->internal_comm_),
                                              remote(simcall_comm_wait__getraw__comm(req)));
-      simcall_comm_wait__set__comm(&state->executed_req_, state->internal_comm.get_buffer());
-      simcall_comm_wait__set__comm(&state->internal_req, state->internal_comm.get_buffer());
+      simcall_comm_wait__set__comm(&state->executed_req_, state->internal_comm_.get_buffer());
+      simcall_comm_wait__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
       break;
 
     case SIMCALL_COMM_TEST:
-      mc_model_checker->process().read_bytes(&state->internal_comm, sizeof(state->internal_comm),
+      mc_model_checker->process().read_bytes(&state->internal_comm_, sizeof(state->internal_comm_),
                                              remote(simcall_comm_test__getraw__comm(req)));
-      simcall_comm_test__set__comm(&state->executed_req_, state->internal_comm.get_buffer());
-      simcall_comm_test__set__comm(&state->internal_req, state->internal_comm.get_buffer());
+      simcall_comm_test__set__comm(&state->executed_req_, state->internal_comm_.get_buffer());
+      simcall_comm_test__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
       break;
 
     default:

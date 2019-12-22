@@ -29,8 +29,8 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
   RemoteClient* process = &(mc_model_checker->process());
 
   this->graph_state = std::move(graph_state);
-  if(this->graph_state->system_state == nullptr)
-    this->graph_state->system_state = std::make_shared<Snapshot>(pair_num);
+  if (this->graph_state->system_state_ == nullptr)
+    this->graph_state->system_state_ = std::make_shared<Snapshot>(pair_num);
   this->heap_bytes_used = mmalloc_get_bytes_used_remote(process->get_heap()->heaplimit, process->get_malloc_info());
 
   this->actors_count = mc_model_checker->process().actors().size();
@@ -92,7 +92,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
     std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
     if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
-        not snapshot_equal(pair_test->graph_state->system_state.get(), new_pair->graph_state->system_state.get()))
+        not snapshot_equal(pair_test->graph_state->system_state_.get(), new_pair->graph_state->system_state_.get()))
       continue;
     XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
     exploration_stack_.pop_back();
@@ -122,8 +122,8 @@ void LivenessChecker::replay()
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0) {
     Pair* pair = exploration_stack_.back().get();
-    if(pair->graph_state->system_state){
-      pair->graph_state->system_state->restore(&mc_model_checker->process());
+    if (pair->graph_state->system_state_) {
+      pair->graph_state->system_state_->restore(&mc_model_checker->process());
       return;
     }
   }
@@ -186,7 +186,7 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     VisitedPair* pair_test = i->get();
     if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
-        not snapshot_equal(pair_test->graph_state->system_state.get(), visited_pair->graph_state->system_state.get()))
+        not snapshot_equal(pair_test->graph_state->system_state_.get(), visited_pair->graph_state->system_state_.get()))
       continue;
     if (pair_test->other_num == -1)
       visited_pair->other_num = pair_test->num;

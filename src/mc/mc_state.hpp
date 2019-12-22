@@ -109,13 +109,13 @@ public:
    * SIMCALL_COMM_TESTANY is translated to a SIMCALL_COMM_TEST
    * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.
    */
-  s_smx_simcall internal_req;
+  s_smx_simcall internal_req_;
 
   /* Can be used as a copy of the remote synchro object */
-  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> internal_comm;
+  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> internal_comm_;
 
   /** Snapshot of system state (if needed) */
-  std::shared_ptr<simgrid::mc::Snapshot> system_state;
+  std::shared_ptr<simgrid::mc::Snapshot> system_state_;
 
   // For CommunicationDeterminismChecker
   std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern_;

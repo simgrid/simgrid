@@ -34,7 +34,7 @@ namespace mc {
 void SafetyChecker::check_non_termination(State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
-    if (snapshot_equal((*state)->system_state.get(), current_state->system_state.get())) {
+    if (snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
       XBT_INFO("Non-progressive cycle: state %d -> state %d", (*state)->num_, current_state->num_);
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
@@ -190,14 +190,14 @@ void SafetyChecker::backtrack()
     std::unique_ptr<State> state = std::move(stack_.back());
     stack_.pop_back();
     if (reductionMode_ == ReductionMode::dpor) {
-      smx_simcall_t req = &state->internal_req;
+      smx_simcall_t req = &state->internal_req_;
       if (req->call_ == SIMCALL_MUTEX_LOCK || req->call_ == SIMCALL_MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none");
 
       const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
-        if (request_depend(req, &prev_state->internal_req)) {
+        if (request_depend(req, &prev_state->internal_req_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.argument_;
@@ -215,15 +215,15 @@ void SafetyChecker::backtrack()
           else
             XBT_DEBUG("Process %p is in done set", req->issuer_);
           break;
-        } else if (req->issuer_ == prev_state->internal_req.issuer_) {
+        } else if (req->issuer_ == prev_state->internal_req_.issuer_) {
           XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(req->call_),
-                    SIMIX_simcall_name(prev_state->internal_req.call_));
+                    SIMIX_simcall_name(prev_state->internal_req_.call_));
           break;
         } else {
-          const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
+          const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req_);
           XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
                     SIMIX_simcall_name(req->call_), issuer->get_pid(), state->num_,
-                    SIMIX_simcall_name(prev_state->internal_req.call_), previous_issuer->get_pid(), prev_state->num_);
+                    SIMIX_simcall_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
         }
       }
     }
@@ -245,8 +245,8 @@ void SafetyChecker::restore_state()
 {
   /* Intermediate backtracking */
   State* last_state = stack_.back().get();
-  if (last_state->system_state) {
-    last_state->system_state->restore(&mc_model_checker->process());
+  if (last_state->system_state_) {
+    last_state->system_state_->restore(&mc_model_checker->process());
     return;
   }
 
