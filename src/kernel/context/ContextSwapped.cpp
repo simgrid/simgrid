@@ -38,7 +38,7 @@ namespace context {
 /* thread-specific storage for the worker's context */
 thread_local SwappedContext* SwappedContext::worker_context_ = nullptr;
 
-SwappedContextFactory::SwappedContextFactory() : ContextFactory(), parallel_(SIMIX_context_is_parallel())
+SwappedContextFactory::SwappedContextFactory() : ContextFactory()
 {
   parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
 }
@@ -47,7 +47,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
     : Context(std::move(code), actor), factory_(factory)
 {
   // Save maestro (=context created first) in preparation for run_all
-  if (not factory->parallel_ && factory->maestro_context_ == nullptr)
+  if (not SIMIX_context_is_parallel() && factory->maestro_context_ == nullptr)
     factory->maestro_context_ = this;
 
   if (has_code()) {
@@ -154,7 +154,7 @@ void SwappedContextFactory::run_all()
    * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul
    * for the ones of the simulated processes that must run.
    */
-  if (parallel_) {
+  if (SIMIX_context_is_parallel()) {
     // We lazily create the parmap so that all options are actually processed when doing so.
     if (parmap_ == nullptr)
       parmap_.reset(
@@ -192,7 +192,7 @@ void SwappedContextFactory::run_all()
  */
 void SwappedContext::resume()
 {
-  if (factory_->parallel_) {
+  if (SIMIX_context_is_parallel()) {
     // Save my current soul (either maestro, or one of the minions) in a thread-specific area
     worker_context_ = static_cast<SwappedContext*>(self());
     // Switch my soul and the actor's one
@@ -217,7 +217,7 @@ void SwappedContext::resume()
  */
 void SwappedContext::suspend()
 {
-  if (factory_->parallel_) {
+  if (SIMIX_context_is_parallel()) {
     // Get some more work to directly swap into the next executable actor instead of yielding back to the parmap
     boost::optional<smx_actor_t> next_work = factory_->parmap_->next();
     SwappedContext* next_context;

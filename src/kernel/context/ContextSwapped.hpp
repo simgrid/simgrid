@@ -24,8 +24,6 @@ public:
   void run_all() override;
 
 private:
-  bool parallel_;
-
   /* For the sequential execution */
   unsigned long process_index_     = 0;       // next actor to execute
   SwappedContext* maestro_context_ = nullptr; // save maestro's context

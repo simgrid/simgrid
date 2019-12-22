@@ -103,8 +103,6 @@ public:
   }
 
 private:
-  bool parallel_;
-
   ThreadContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro);
 };
 } // namespace context

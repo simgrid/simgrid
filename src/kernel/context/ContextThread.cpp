@@ -22,21 +22,21 @@ namespace context {
 
 // ThreadContextFactory
 
-ThreadContextFactory::ThreadContextFactory() : ContextFactory(), parallel_(SIMIX_context_is_parallel())
+ThreadContextFactory::ThreadContextFactory() : ContextFactory()
 {
-  if (parallel_)
+  if (SIMIX_context_is_parallel())
     ParallelThreadContext::initialize();
 }
 
 ThreadContextFactory::~ThreadContextFactory()
 {
-  if (parallel_)
+  if (SIMIX_context_is_parallel())
     ParallelThreadContext::finalize();
 }
 
 ThreadContext* ThreadContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro)
 {
-  if (parallel_)
+  if (SIMIX_context_is_parallel())
     return this->new_context<ParallelThreadContext>(std::move(code), actor, maestro);
   else
     return this->new_context<SerialThreadContext>(std::move(code), actor, maestro);
@@ -44,7 +44,7 @@ ThreadContext* ThreadContextFactory::create_context(std::function<void()>&& code
 
 void ThreadContextFactory::run_all()
 {
-  if (parallel_) {
+  if (SIMIX_context_is_parallel()) {
     // Parallel execution
     ParallelThreadContext::run_all();
   } else {
