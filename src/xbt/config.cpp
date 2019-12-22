@@ -141,14 +141,7 @@ private:
   bool isdefault = true;
 
 public:
-  /* Callback */
-  xbt_cfg_cb_t old_callback = nullptr;
-
   ConfigurationElement(const std::string& key, const std::string& desc) : key(key), desc(desc) {}
-  ConfigurationElement(const std::string& key, const std::string& desc, xbt_cfg_cb_t cb)
-      : key(key), desc(desc), old_callback(cb)
-  {
-  }
 
   virtual ~ConfigurationElement() = default;
 
@@ -188,9 +181,6 @@ public:
   TypedConfigurationElement(const std::string& key, const std::string& desc, T value = T())
       : ConfigurationElement(key, desc), content(std::move(value))
   {}
-  TypedConfigurationElement(const std::string& key, const std::string& desc, T value, xbt_cfg_cb_t cb)
-      : ConfigurationElement(key, desc, cb), content(std::move(value))
-  {}
   TypedConfigurationElement(const std::string& key, const std::string& desc, T value, std::function<void(T&)> callback)
       : ConfigurationElement(key, desc), content(std::move(value)), callback(std::move(callback))
   {}
@@ -202,8 +192,6 @@ public:
 
   void update()
   {
-    if (old_callback)
-      this->old_callback(get_key().c_str());
     if (this->callback)
       this->callback(this->content);
   }

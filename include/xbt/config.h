@@ -70,17 +70,6 @@ XBT_PUBLIC void sg_cfg_set_boolean(const char* name, const char* val);
 XBT_PUBLIC void sg_cfg_set_string(const char* name, const char* val);
 /* @} */
 
-/** @defgroup XBT_cfg_decl Configuration type declaration and memory management
- *  @ingroup XBT_config
- *
- *  @{
- */
-
-/** @brief Callback types. They get the name of the modified entry, and the position of the changed value */
-typedef void (*xbt_cfg_cb_t)(const char* name);
-
-/** @} */
-
 /** @defgroup XBT_cfg_get Getting the stored values
  *  @ingroup XBT_config
  *
