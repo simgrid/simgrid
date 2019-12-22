@@ -360,6 +360,8 @@ Executions on the CPU
 
        .. example-tab:: examples/platforms/energy_platform.xml
 
+.. _s4u_ex_disk_io:
+
 I/O on Disks and Files
 ----------------------
 

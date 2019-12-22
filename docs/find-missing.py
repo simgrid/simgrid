@@ -40,7 +40,10 @@ xml_files = [
     'build/xml/classsimgrid_1_1s4u_1_1Mutex.xml',
     'build/xml/classsimgrid_1_1s4u_1_1NetZone.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Semaphore.xml',
-    'build/xml/classsimgrid_1_1s4u_1_1VirtualMachine.xml'
+    'build/xml/classsimgrid_1_1s4u_1_1VirtualMachine.xml',
+    'build/xml/actor_8h.xml',
+    'build/xml/engine_8h.xml',
+    'build/xml/vm_8h.xml'
 ]
 
 python_modules = [
@@ -124,24 +127,31 @@ doxy_funs = {} # {classname: {func_name: [args]} }
 doxy_vars = {} # {classname: [names]}
 
 # find the declarations in the XML files
-for arg in xml_files[:3]:
+for arg in xml_files:
     if arg[-4:] != '.xml':
         print ("Argument '{}' does not end with '.xml'".format(arg))
         continue
-    print("Parse file {}".format(arg))
+    #print("Parse file {}".format(arg))
     tree = ET.parse(arg)
     for elem in tree.findall(".//compounddef"):
-        if elem.attrib["prot"] != "public":
-            continue
-        if "compoundname" in elem:
-            raise Exception("Compound {} has no 'compoundname' child tag.".format(elem))
-        compoundname = elem.find("compoundname").text
-        #print ("compoundname {}".format(compoundname))
+        if elem.attrib["kind"] == "class":
+            if elem.attrib["prot"] != "public":
+                continue
+            if "compoundname" in elem:
+                raise Exception("Compound {} has no 'compoundname' child tag.".format(elem))
+            compoundname = elem.find("compoundname").text
+            #print ("compoundname {}".format(compoundname))
+        elif elem.attrib["kind"] == "file":
+            compoundname = ""
+        else:
+            print("Element {} is of kind {}".format(elem.attrib["id"], elem.attrib["kind"]))
+
         for member in elem.findall('.//memberdef'):
             if member.attrib["prot"] != "public":
                 continue
             kind = member.attrib["kind"]
             name = member.find("name").text
+            #print("kind:{} compoundname:{} name:{}".format( kind,compoundname, name))
             if kind == "variable":
                 if compoundname not in doxy_vars:
                     doxy_vars[compoundname] = []
@@ -155,6 +165,8 @@ for arg in xml_files[:3]:
                 if name not in doxy_funs[compoundname]:
                     doxy_funs[compoundname][name] = []
                 doxy_funs[compoundname][name].append(args)
+            elif kind == "friend":
+                pass # Ignore friendship
             else:
                 print ("member {}::{} is of kind {}".format(compoundname, name, kind))
 
@@ -165,19 +177,24 @@ with os.popen('grep autodoxymethod:: source/*rst|sed \'s/^.*autodoxymethod:: //\
         if "(" in line:
             (line, args) = line.split('(', 1)
             args = "({}".format(args)
-        (klass, obj) = line.rsplit('::', 1)
+        if '::' in line:
+            (klass, obj) = line.rsplit('::', 1)
+        else:
+            (klass, obj) = ("", line)
 
         if klass not in doxy_funs:
             print("Warning: {} documented, but class {} not found in doxygen.".format(line, klass))
             continue
         if obj not in doxy_funs[klass]:
-            print("Warning: Object {} documented but not found in {}".format(line, klass))
+            print("Warning: Object '{}' documented but not found in '{}'".format(line, klass))
+#            for obj in doxy_funs[klass]:
+#                print("  found: {}::{}".format(klass, obj))
         elif len(doxy_funs[klass][obj])==1:
             del doxy_funs[klass][obj]
         elif args not in doxy_funs[klass][obj]:
             print("Warning: Function {}{} not found in {}".format(obj, args, klass))
         else:
-#            print("Found {} in {}".format(line, klass))
+            #print("Found {} in {}".format(line, klass))
             doxy_funs[klass][obj].remove(args)
             if len(doxy_funs[klass][obj]) == 0:
                 del doxy_funs[klass][obj]

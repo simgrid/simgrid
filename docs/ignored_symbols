@@ -17,3 +17,6 @@ intrusive_ptr_add_ref
 get_filtered_netzones_recursive
 simgrid::s4u::Storage
 simgrid::s4u::Activity_T
+simgrid::s4u::Engine::get_storage_count
+simgrid::s4u::Engine::storage_by_name
+simgrid::s4u::Engine::storage_by_name_or_null

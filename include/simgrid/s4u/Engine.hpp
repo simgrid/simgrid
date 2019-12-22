@@ -22,21 +22,23 @@ namespace simgrid {
 namespace s4u {
 /** @brief Simulation engine
  *
- * This class is an interface to the simulation engine.
+ * This is a singleton containing all the main functions of the simulation.
  */
 class XBT_PUBLIC Engine {
 public:
   /** Constructor, taking the command line parameters of your main function */
   explicit Engine(int* argc, char** argv);
-  /** Currently, only one instance is allowed to exist. This is why you can't copy or move it */
+  /* Currently, only one instance is allowed to exist. This is why you can't copy or move it */
+#ifndef DOXYGEN
   Engine(const Engine&) = delete;
   Engine(Engine&&)      = delete;
-
   ~Engine();
+#endif
+
   /** Finalize the default engine and all its dependencies */
   static void shutdown();
 
-  /** @brief Run the simulation after initialization */
+  /** Run the simulation after initialization */
   void run();
 
   /** @brief Retrieve the simulation time (in seconds) */
@@ -106,10 +108,12 @@ public:
   std::vector<ActorPtr> get_all_actors();
   std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter);
 
+#ifndef DOXYGEN
   size_t get_storage_count();
   std::vector<Storage*> get_all_storages();
   Storage* storage_by_name(const std::string& name);
   Storage* storage_by_name_or_null(const std::string& name);
+#endif
 
   std::vector<kernel::routing::NetPoint*> get_all_netpoints();
   kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name);

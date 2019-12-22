@@ -1,5 +1,3 @@
-.. _platform:
-
 .. raw:: html
 
    <object id="TOC" data="graphical-toc.svg" type="image/svg+xml"></object>
@@ -194,13 +192,13 @@ by the obtained simulation time. Lets consider the following platform:
 
 .. code-block:: xml
 
-   <host id="A" speed="1Gf"/>
-   <host id="B" speed="1Gf"/>
+   <host id="A" speed="1Gf" />
+   <host id="B" speed="1Gf" />
 
-   <link id="link1" latency="10ms" bandwidth="1Mbps"/>
+   <link id="link1" latency="10ms" bandwidth="1Mbps" />
 
-   <route src="A" dst="B>
-     <link_ctn id="link1/>
+   <route src="A" dst="B">
+     <link_ctn id="link1" />
    </route>
 
 If host `A` sends `100kB` (a hundred kilobytes) to host `B`, one could expect

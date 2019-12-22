@@ -72,6 +72,7 @@ of every page. Bugs in the code should be reported
       Describing the Simulated Platform <platform.rst>
          Examples <Platform_Examples.rst>
          Modeling Hints <platform_howtos.rst>
+         Defining a Routing <Platform_Routing.rst>
          XML Reference <XML_Reference.rst>
       Describing the Experimental Setup <Experimental_Setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>

@@ -16,7 +16,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#endif
+#endif /* C++ */
 
 // C interface
 ////////////////
@@ -88,6 +88,7 @@ namespace simgrid {
 namespace s4u {
 
 /** @brief A simulated file
+ *  @addtogroup Plugin_filesystem
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.
  *

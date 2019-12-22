@@ -378,15 +378,19 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             # classname or method name
             return True
 
-        (obj, meth) = self.fullname.rsplit('::', 1)
+        if '::' in self.fullname:
+            (obj, meth) = self.fullname.rsplit('::', 1)
+            prefix = './/compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'.format(obj)
+            obj = "{:s}::".format(obj)
+        else:
+            meth = self.fullname
+            prefix = './'
+            obj = ''
 
-        xpath_query_noparam = ('.//compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
-                               '/memberdef[@kind="function"]/name[text()="{:s}"]/..').format(obj, meth)
+        xpath_query_noparam = ('{:s}/memberdef[@kind="function"]/name[text()="{:s}"]/..').format(prefix, meth)
         xpath_query = ""
-#        print("fullname {}".format(self.fullname))
         if self.argsstring != None:
-            xpath_query = ('.//compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'
-                           '/memberdef[@kind="function" and argsstring/text()="{:s}"]/name[text()="{:s}"]/..').format(obj,self.argsstring,meth)
+            xpath_query = ('{:s}/memberdef[@kind="function" and argsstring/text()="{:s}"]/name[text()="{:s}"]/..').format(prefix,self.argsstring,meth)
         else:
             xpath_query = xpath_query_noparam
         match = get_doxygen_root().xpath(xpath_query)
@@ -396,15 +400,15 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             if self.argsstring != None:
                 candidates = get_doxygen_root().xpath(xpath_query_noparam)
                 if len(candidates) == 1:
-                    logger.warning("[autodoxy] Using method '{}::{}{}' instead of '{}::{}{}'. You may want to drop your specification of the signature, or to fix it."
+                    logger.warning("[autodoxy] Using method '{}{}{}' instead of '{}{}{}'. You may want to drop your specification of the signature, or to fix it."
                                    .format(obj, meth, candidates[0].find('argsstring').text, obj, meth, self.argsstring))
                     self.object = candidates[0]
                     return True
-                logger.warning("[autodoxy] WARNING: Could not find method {}::{}{}".format(obj, meth, self.argsstring))
+                logger.warning("[autodoxy] WARNING: Could not find method {}{}{}".format(obj, meth, self.argsstring))
                 for cand in candidates:
-                    logger.warning("[autodoxy] WARNING:   Existing candidate: {}::{}{}".format(obj, meth, cand.find('argsstring').text))
+                    logger.warning("[autodoxy] WARNING:   Existing candidate: {}{}{}".format(obj, meth, cand.find('argsstring').text))
             else:
-                logger.warning("[autodoxy] WARNING: could not find method {}::{} in Doxygen files".format(obj, meth))
+                logger.warning("[autodoxy] WARNING: could not find method {}{} in Doxygen files\nQuery: {}".format(obj, meth, xpath_query))
             return False
         self.object = match[0]
         return True

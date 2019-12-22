@@ -20,19 +20,21 @@ SIMGRID_REGISTER_PLUGIN(host_energy, "Cpu energy consumption.", &sg_host_energy_
 /** @defgroup plugin_host_energy
 
   @beginrst
+
 This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the
 simulated platform.
-To activate this plugin, first call :cpp:func:`sg_host_energy_plugin_init()` before your :cpp:func:`MSG_init()`, and then use
-:cpp:func:`MSG_host_get_consumed_energy()` to retrieve the consumption of a given host.
+To activate this plugin, first call :cpp:func:`sg_host_energy_plugin_init()` before your :cpp:func:`MSG_init()`, and
+then use :cpp:func:`MSG_host_get_consumed_energy()` to retrieve the consumption of a given host.
 
 When the host is on, this energy consumption naturally depends on both the current CPU load and the host energy profile.
 According to our measurements, the consumption is somehow linear in the amount of cores at full speed, with an
-abnormality when all the cores are idle. The full details are in `our scientific paper <https://hal.inria.fr/hal-01523608>`_
-on that topic.
+abnormality when all the cores are idle. The full details are in `our scientific paper
+<https://hal.inria.fr/hal-01523608>`_ on that topic.
 
 As a result, our energy model takes 4 parameters:
 
-  - ``Idle`` wattage (i.e., instantaneous consumption in Watt) when your host is up and running, but without anything to do.
+  - ``Idle`` wattage (i.e., instantaneous consumption in Watt) when your host is up and running, but without anything to
+do.
   - ``Epsilon`` wattage when all cores are at 0 or epsilon%, but not in Idle state.
   - ``AllCores`` wattage when all cores of the host are at 100%.
   - ``Off`` wattage when the host is turned off.
@@ -91,7 +93,8 @@ This encodes the following values:
    </table>
 
 To change the pstate of a given CPU, use the following functions:
-:cpp:func:`MSG_host_get_nb_pstates()`, :cpp:func:`simgrid::s4u::Host::set_pstate()`, :cpp:func:`MSG_host_get_power_peak_at()`.
+:cpp:func:`MSG_host_get_nb_pstates()`, :cpp:func:`simgrid::s4u::Host::set_pstate()`,
+:cpp:func:`MSG_host_get_power_peak_at()`.
 
 .. raw:: html
 
@@ -529,7 +532,7 @@ static void on_simulation_end()
 
 /** @ingroup plugin_host_energy
  * @brief Enable host energy plugin
- * @details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
+ * @details Enable energy plugin to get joules consumption of each cpu. Call this function before loading your platform.
  */
 void sg_host_energy_plugin_init()
 {

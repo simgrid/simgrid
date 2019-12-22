@@ -388,11 +388,11 @@ Simulation objects
 ⁣  class Actor
 ==============
 
+.. autodoxyclass:: simgrid::s4u::Actor
+
 .. doxygentypedef:: ActorPtr
 
 .. doxygentypedef:: aid_t
-
-.. autodoxyclass:: simgrid::s4u::Actor
 
 Creating actors
 ---------------
@@ -400,6 +400,10 @@ Creating actors
 .. tabs::
 
    .. group-tab:: C++
+
+      .. code:: C++
+
+         #include <simgrid/s4u/Engine.hpp>
 
       .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::function< void()> &code)
       .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code)
@@ -411,7 +415,26 @@ Creating actors
 
    .. group-tab:: Python
 
+      .. code:: Python
+
+         from simgrid import Actor
+
       .. automethod:: simgrid.Actor.create
+
+   .. group-tab:: C
+
+      .. code:: C
+
+         #include <simgrid/actor.h>
+
+      .. autodoxymethod:: sg_actor_init(const char *name, sg_host_t host)
+      .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char **argv)
+
+      .. autodoxymethod:: ::sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
+      .. autodoxymethod:: ::sg_actor_detach()
+
+      .. autodoxymethod:: sg_actor_ref(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_unref(sg_actor_t actor)
 
 Searching specific actors
 -------------------------
@@ -427,6 +450,11 @@ Searching specific actors
 
       .. automethod:: simgrid.Actor.by_pid
       .. automethod:: simgrid.Actor.self
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_by_PID(aid_t pid)
+      .. autodoxymethod:: sg_actor_self()
 
 Querying info about actors
 --------------------------
@@ -456,6 +484,20 @@ Querying info about actors
       .. autoattribute:: simgrid.Actor.pid
       .. autoattribute:: simgrid.Actor.ppid
 
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_get_name(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_PID(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_PPID(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_properties(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_property_value(sg_actor_t actor, const char *name)
+
+      .. autodoxymethod:: sg_actor_get_host(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_set_host(sg_actor_t actor, sg_host_t host)
+
+      .. autodoxymethod:: sg_actor_data(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_data_set(sg_actor_t actor, void *userdata)        
+
 Suspending and resuming actors
 ------------------------------
 
@@ -472,6 +514,12 @@ Suspending and resuming actors
       .. automethod:: simgrid.Actor.resume
       .. automethod:: simgrid.Actor.suspend
       .. automethod:: simgrid.Actor.is_suspended
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_suspend(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_resume(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_is_suspended(sg_actor_t actor)
 
 Specifying when actors should terminate
 ---------------------------------------
@@ -497,6 +545,17 @@ Specifying when actors should terminate
       .. automethod:: simgrid.Actor.daemonize
       .. automethod:: simgrid.Actor.is_daemon
 
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_kill(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_kill_all()
+      .. autodoxymethod:: sg_actor_set_kill_time(sg_actor_t actor, double kill_time)
+
+      .. autodoxymethod:: sg_actor_restart(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_daemonize(sg_actor_t actor)
+
+.. _API_s4u_Actor_end:
+
 Reacting to the end of actors
 -----------------------------
 
@@ -512,6 +571,11 @@ Reacting to the end of actors
    .. group-tab:: Python
 
       .. automethod:: simgrid.Actor.join
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_join(sg_actor_t actor, double timeout)
+      .. autodoxymethod:: sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
 
 Signals
 -------
@@ -544,10 +608,135 @@ Static methods working on the current actor (see :ref:`API_s4u_Actor`).
 ⁣  Simulation Engine
 ====================
 
-.. doxygenclass:: simgrid::s4u::Engine
-   :members:
-   :protected-members:
-   :undoc-members:
+.. autodoxyclass:: simgrid::s4u::Engine
+
+Initialization
+--------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Engine::Engine(int *argc, char **argv)
+      .. autodoxymethod:: simgrid::s4u::Engine::is_initialized()
+      .. autodoxymethod:: simgrid::s4u::Engine::shutdown()
+      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &str)
+
+      .. autodoxymethod:: simgrid::s4u::Engine::load_deployment(const std::string &deploy)
+      .. autodoxymethod:: simgrid::s4u::Engine::load_platform(const std::string &platf)
+      .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name, F code)
+      .. autodoxymethod:: simgrid::s4u::Engine::register_default(int(*code)(int, char **))
+      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, int(*code)(int, char **))
+      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, void(*code)(std::vector< std::string >))
+
+   .. group-tab:: Python
+   
+       .. automethod:: simgrid.Engine.load_deployment
+       .. automethod:: simgrid.Engine.load_platform
+       .. automethod:: simgrid.Engine.register_actor
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: simgrid_init
+
+      .. autodoxymethod:: simgrid_load_deployment
+      .. autodoxymethod:: simgrid_load_platform
+      .. autodoxymethod:: simgrid_register_default
+      .. autodoxymethod:: simgrid_register_function
+
+Run the simulation
+------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Engine::get_clock()
+      .. autodoxymethod:: simgrid::s4u::Engine::run()
+
+   .. group-tab:: Python
+   
+      .. automethod:: simgrid.Engine.get_clock
+      .. automethod:: simgrid.Engine.run
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: simgrid_get_clock
+      .. autodoxymethod:: simgrid_run
+
+Retrieving actors
+-----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Engine::get_actor_count()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_all_actors()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_actors(const std::function< bool(ActorPtr)> &filter)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: simgrid_get_actor_count()
+
+Retrieving hosts
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Engine::get_all_hosts()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_host_count()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_hosts(const std::function< bool(Host *)> &filter)
+      .. autodoxymethod:: simgrid::s4u::Engine::host_by_name(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Engine::host_by_name_or_null(const std::string &name)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Engine.get_all_hosts
+
+Retrieving links
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Engine::get_all_links()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_link_count()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_links
+      .. autodoxymethod:: simgrid::s4u::Engine::link_by_name(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Engine::link_by_name_or_null(const std::string &name)
+
+Interacting with the routing
+----------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Engine::get_all_netpoints()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_netzones()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_instance()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_netzone_root()
+      .. autodoxymethod:: simgrid::s4u::Engine::netpoint_by_name_or_null(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Engine::netzone_by_name_or_null(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Engine::set_netzone_root(NetZone *netzone)
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxyvar:: simgrid::s4u::Engine::on_deadlock
+      .. autodoxyvar:: simgrid::s4u::Engine::on_platform_created
+      .. autodoxyvar:: simgrid::s4u::Engine::on_platform_creation
+      .. autodoxyvar:: simgrid::s4u::Engine::on_simulation_end
+      .. autodoxyvar:: simgrid::s4u::Engine::on_time_advance
 
 .. _API_s4u_Mailbox:
 
@@ -624,6 +813,18 @@ Resources
    :protected-members:
    :undoc-members:
 
+.. autodoxymethod:: sg_vm_create_core
+.. autodoxymethod:: sg_vm_create_multicore
+.. autodoxymethod:: sg_vm_get_name
+.. autodoxymethod:: sg_vm_get_pm
+.. autodoxymethod:: sg_vm_is_created
+.. autodoxymethod:: sg_vm_is_running
+.. autodoxymethod:: sg_vm_is_suspended
+.. autodoxymethod:: sg_vm_start
+.. autodoxymethod:: sg_vm_suspend
+.. autodoxymethod:: sg_vm_resume
+.. autodoxymethod:: sg_vm_shutdown
+.. autodoxymethod:: sg_vm_destroy
 
 .. _API_s4u_Activity:
 
@@ -789,18 +990,6 @@ Synchronization Objects
 
 C API Reference
 ***************
-
-==============
-Main functions
-==============
-
-.. doxygenfunction:: simgrid_init
-.. doxygenfunction:: simgrid_get_clock
-.. doxygenfunction:: simgrid_load_deployment
-.. doxygenfunction:: simgrid_load_platform
-.. doxygenfunction:: simgrid_register_default
-.. doxygenfunction:: simgrid_register_function
-.. doxygenfunction:: simgrid_run
 
 ==================
 Condition Variable

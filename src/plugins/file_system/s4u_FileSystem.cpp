@@ -20,6 +20,13 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_file, s4u, "S4U files");
 int sg_storage_max_file_descriptors = 1024;
 
+/** @defgroup plugin_filesystem
+ @beginrst
+
+ @endrst
+ */
+
+
 namespace simgrid {
 namespace s4u {
 simgrid::xbt::Extension<Disk, FileSystemDiskExt> FileSystemDiskExt::EXTENSION_ID;
@@ -186,6 +193,7 @@ sg_size_t File::read(sg_size_t size)
 }
 
 /** @brief Write into a file (local or remote)
+ * @ingroup plugin_filesystem
  *
  * @param size of the file to write
  * @return the number of bytes successfully write or -1 if an error occurred
@@ -604,6 +612,13 @@ static void on_simulation_end()
 }
 
 /* **************************** Public interface *************************** */
+/** @brief Initialize the file system plugin.
+    @ingroup plugin_filesystem
+
+    @beginrst
+    See the examples in :ref:`s4u_ex_disk_io`.
+    @endrst
+ */
 void sg_storage_file_system_init()
 {
   sg_storage_max_file_descriptors = 1024;
@@ -648,12 +663,18 @@ void sg_file_close(sg_file_t fd)
   delete fd;
 }
 
+/** Retrieves the path to the file
+ * @ingroup plugin_filesystem
+ */
 const char* sg_file_get_name(sg_file_t fd)
 {
   xbt_assert((fd != nullptr), "Invalid file descriptor");
   return fd->get_path();
 }
 
+/** Retrieves the size of the file
+ * @ingroup plugin_filesystem
+ */
 sg_size_t sg_file_get_size(sg_file_t fd)
 {
   return fd->size();
@@ -664,19 +685,25 @@ void sg_file_dump(sg_file_t fd)
   fd->dump();
 }
 
+/** Retrieves the user data associated with the file
+ * @ingroup plugin_filesystem
+ */
 void* sg_file_get_data(sg_file_t fd)
 {
   return fd->get_data();
 }
 
+/** Changes the user data associated with the file
+ * @ingroup plugin_filesystem
+ */
 void sg_file_set_data(sg_file_t fd, void* data)
 {
   fd->set_data(data);
 }
 
 /**
- * @brief Set the file position indicator in the sg_file_t by adding offset bytes
- * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
+ * @brief Set the file position indicator in the sg_file_t by adding offset bytes to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
+ * @ingroup plugin_filesystem
  *
  * @param fd : file object that identifies the stream
  * @param offset : number of bytes to offset from origin
@@ -707,6 +734,8 @@ void sg_file_unlink(sg_file_t fd)
 
 /**
  * @brief Copy a file to another location on a remote host.
+ * @ingroup plugin_filesystem
+ *
  * @param file : the file to move
  * @param host : the remote host where the file has to be copied
  * @param fullpath : the complete path destination on the remote host
@@ -719,6 +748,8 @@ int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
 
 /**
  * @brief Move a file to another location on a remote host.
+ * @ingroup plugin_filesystem
+ *
  * @param file : the file to move
  * @param host : the remote host where the file has to be moved
  * @param fullpath : the complete path destination on the remote host

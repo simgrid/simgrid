@@ -20,6 +20,48 @@ Your platform description should follow the specification presented in the
 
 -------------------------------------------------------------------------------
 
+.. _pf_tag_disk:
+
+<disk>
+------
+
+SimGrid can simulate the time it takes to read or write data on disk, even if the stored data is not made persistent in
+any way by SimGrid. This means that your application will correctly be slowed down when doing simulated I/O, but there
+is no way to get the data stored this way. 
+
+We decided to not model anything beyond raw access in SimGrid because we believe that there is not single way of doing so.
+We provide an example model of file system as a plugin, (sparsely) documented in :ref:`plugin_filesystem`.
+
+**Parent tags:** :ref:`pf_tag_host` |br|
+**Children tags:** :ref:`pf_tag_prop` |br|
+**Attributes:**
+
+:``id``: A name of your choice (must be unique on this host).
+:``read_bw``: Read bandwidth for this disk. You must specify a unit as follows.
+
+   **Units in bytes and powers of 2** (1 KiBps = 1,024 Bps):
+     Bps, KiBps, MiBps, GiBps, TiBps, PiBps, or EiBps. |br|
+   **Units in bits  and powers of 2** (1 Bps = 8 bps):
+     bps, Kibps, Mibps, Gibps, Tibps, Pibps, or Eibps. |br|
+   **Units in bytes and powers of 10**  (1 KBps = 1,000 Bps):
+     Bps, KBps, MBps, GBps, TBps, PBps, or EBps. |br|
+   **Units in bits  and powers of 10:**
+     bps, Kbps, Mbps, Gbps, Tbps, Pbps, or Ebps.
+
+:``write_bw``: Write bandwidth for this disk. You must specify a unit as for the read bandwidth.
+
+.. code-block:: xml
+
+    <host id="alice" speed="1Gf">
+      <disk id="Disk1" read_bw="200MBps" write_bw="80MBps">
+        <!-- you can add properties for anything you want: they are not used by SimGrid -->
+        <prop id="content" value="storage/content/small_content.txt"/>
+      </disk>
+      <prop id="ram" value="100B" />
+    </host>
+
+-------------------------------------------------------------------------------
+
 .. _pf_tag_config:
 
 <config>

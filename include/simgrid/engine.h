@@ -14,14 +14,14 @@ XBT_PUBLIC void simgrid_init(int* argc, char** argv);
 
 /** Creates a new platform, including hosts, links, and the routing table.
  *
- * \rst
+ * \beginrst
  * See also: :ref:`platform`.
  * \endrst
  */
 XBT_PUBLIC void simgrid_load_platform(const char* filename);
 /** Load a deployment file and launch the actors that it contains
  *
- * \rst
+ * \beginrst
  * See also: :ref:`deploy`.
  * \endrst
  */

@@ -31,7 +31,7 @@ XML_PROGRAMLISTING     = NO # No program listings, please
 CREATE_SUBDIRS         = NO # Mandatory for exhale
 
 # Allow for rst directives and advanced functions e.g. grid tables
-ALIASES                = "beginrst=\verbatim "
+ALIASES                = "beginrst=\verbatim embed:rst"
 ALIASES               += "endrst=\endverbatim"
 
 # Enable preprocessing and related preprocessor necessities

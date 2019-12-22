@@ -34,8 +34,7 @@ SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy
  The second property means that when your host is turned off, it will dissipate only 10 Watts (please note that these
  values are arbitrary).
 
- To simulate the energy-related elements, first call the simgrid#energy#sg_link_energy_plugin_init() before your
- #MSG_init(),
+ To simulate the energy-related elements, first call the sg_link_energy_plugin_init() before loading the platform
  and then use the following function to retrieve the consumption of a given link: sg_link_get_consumed_energy().
  */
 
@@ -185,7 +184,7 @@ int sg_link_energy_is_inited()
 /** @ingroup plugin_link_energy
  * @brief Enable energy plugin
  * @details Enable energy plugin to get joules consumption of each cpu. You should call this function before
- * #MSG_init().
+ * loading your platform.
  */
 void sg_link_energy_plugin_init()
 {

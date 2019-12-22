@@ -270,9 +270,14 @@ void sg_vm_resume(sg_vm_t vm)
 }
 
 /** @brief Immediately kills all processes within the given VM.
- * Any memory that they allocated will be leaked, unless you used #MSG_process_on_exit().
  *
- * No extra delay occurs. If you want to simulate this too, you want to use a #MSG_process_sleep().
+ @beginrst
+ 
+ The memory allocated by these actors is leaked, unless you used :cpp:func:`simgrid::s4u::Actor::on_exit`.
+  
+ @endrst
+ * 
+ * No extra delay occurs by default. You may let your actor sleep by a specific amount to simulate any extra delay that you want.
  */
 void sg_vm_shutdown(sg_vm_t vm)
 {

@@ -43,6 +43,11 @@ Routes defined with :ref:`pf_tag_route` are symmetrical by default,
 meaning that the list of traversed links from A to B is the same as
 from B to A. Explicitly define non-symmetrical routes if you prefer.
 
+The last thing you must know on SimGrid platform files is that the
+root tag must be :ref:`pf_tag_platform`. If the ``version`` attribute
+does not match what SimGrid expects, you will be hinted to use to the
+``simgrid_update_xml`` utility to update your file.
+
 Cluster with a Crossbar
 -----------------------
 
