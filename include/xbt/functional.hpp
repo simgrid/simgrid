@@ -196,7 +196,7 @@ private:
         F* src = reinterpret_cast<F*>(&buffer);
         F code = std::move(*src);
         src->~F();
-        return code(std::forward<Args>(args)...);
+        return code(std::move(args)...);
       },
       // Destroy:
       std::is_trivially_destructible<F>::value ?
@@ -224,7 +224,7 @@ private:
       [](TaskUnion& buffer, Args&&... args) {
         // Delete F when we go out of scope:
         std::unique_ptr<F> code(*reinterpret_cast<F**>(&buffer));
-        return (*code)(std::forward<Args>(args)...);
+        return (*code)(std::move(args)...);
       },
       // Destroy:
       [](TaskUnion& buffer) {
@@ -250,7 +250,7 @@ public:
       throw std::bad_function_call();
     const TaskVtable* vtable = vtable_;
     vtable_ = nullptr;
-    return vtable->call(buffer_, std::forward<Args>(args)...);
+    return vtable->call(buffer_, std::move(args)...);
   }
 };
 
