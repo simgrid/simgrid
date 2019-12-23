@@ -22,7 +22,7 @@ public:
   Container& operator=(const Container&) = delete;
 
 private:
-  int last_id_;
+  int last_id_   = 0;
   int is_lowest_ = 0;
 
 public:

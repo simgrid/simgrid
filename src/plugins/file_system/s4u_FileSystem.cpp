@@ -479,10 +479,9 @@ FileSystemDiskExt::FileSystemDiskExt(simgrid::s4u::Disk* ptr)
     content_.reset(parse_content(content_str));
 }
 
-FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr)
+FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr) : size_(ptr->get_impl()->size_)
 {
   content_.reset(parse_content(ptr->get_impl()->content_name_));
-  size_    = ptr->get_impl()->size_;
 }
 
 std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::string& filename)

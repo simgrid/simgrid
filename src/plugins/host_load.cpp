@@ -63,7 +63,6 @@ public:
       , last_reset_(surf_get_clock())
       , current_speed_(host_->get_speed())
       , current_flops_(host_->get_load())
-      , theor_max_flops_(0)
   {
   }
   ~HostLoad() = default;

@@ -158,7 +158,7 @@ double VMModel::next_occurring_event(double now)
 
 VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM,
                                        int core_amount, size_t ramsize)
-    : HostImpl(piface), physical_host_(host_PM), core_amount_(core_amount), user_bound_(std::numeric_limits<double>::max()), ramsize_(ramsize)
+    : HostImpl(piface), physical_host_(host_PM), core_amount_(core_amount), ramsize_(ramsize)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(piface);

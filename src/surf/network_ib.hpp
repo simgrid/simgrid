@@ -21,10 +21,10 @@ class XBT_PRIVATE IBNode;
 
 class XBT_PRIVATE ActiveComm {
 public:
-  IBNode* destination;
-  NetworkAction* action;
-  double init_rate;
-  ActiveComm() : destination(nullptr), action(nullptr), init_rate(-1){};
+  IBNode* destination   = nullptr;
+  NetworkAction* action = nullptr;
+  double init_rate      = -1;
+  ActiveComm()          = default;
   virtual ~ActiveComm() = default;
 };
 
@@ -36,8 +36,8 @@ public:
   // store the number of comms received from each node
   std::map<IBNode*, int> ActiveCommsDown;
   // number of comms the node is receiving
-  int nbActiveCommsDown;
-  explicit IBNode(int id) : id(id), nbActiveCommsDown(0){};
+  int nbActiveCommsDown = 0;
+  explicit IBNode(int id) : id(id){};
   virtual ~IBNode() = default;
 };
 

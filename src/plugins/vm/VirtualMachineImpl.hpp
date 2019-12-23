@@ -66,7 +66,7 @@ public:
 private:
   s4u::Host* physical_host_;
   int core_amount_;
-  double user_bound_;
+  double user_bound_                   = std::numeric_limits<double>::max();
   size_t ramsize_            = 0;
   s4u::VirtualMachine::state vm_state_ = s4u::VirtualMachine::state::CREATED;
 };

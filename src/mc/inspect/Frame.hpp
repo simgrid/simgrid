@@ -23,7 +23,7 @@ namespace mc {
 /** Debug information about a given function or scope within a function */
 class Frame {
 public:
-  Frame();
+  Frame() = default;
 
   /** Kind of scope (DW_TAG_subprogram, DW_TAG_inlined_subroutine, etc.) */
   int tag = DW_TAG_invalid;
@@ -32,7 +32,7 @@ public:
   std::string name;
 
   /** Range of instruction addresses for which this scope is valid */
-  simgrid::xbt::Range<std::uint64_t> range;
+  simgrid::xbt::Range<std::uint64_t> range = {0, 0};
 
   simgrid::dwarf::LocationList frame_base_location;
 
@@ -58,16 +58,6 @@ public:
   void* frame_base(unw_cursor_t& unw_cursor) const;
   void remove_variable(char* name);
 };
-
-inline Frame::Frame()
-{
-  this->tag                = 0;
-  this->range              = {0, 0};
-  this->id                 = 0;
-  this->abstract_origin_id = 0;
-  this->object_info        = nullptr;
-}
-
 } // namespace mc
 } // namespace simgrid
 

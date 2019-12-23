@@ -20,11 +20,11 @@ template<class T>          class Extendable;
 template<class T, class U>
 class Extension {
   static const std::size_t INVALID_ID = std::numeric_limits<std::size_t>::max();
-  std::size_t id_;
+  std::size_t id_                     = INVALID_ID;
   friend class Extendable<T>;
   explicit constexpr Extension(std::size_t id) : id_(id) {}
 public:
-  explicit constexpr Extension() : id_(INVALID_ID) {}
+  explicit constexpr Extension() {}
   std::size_t id() const { return id_; }
   bool valid() const { return id_ != INVALID_ID; }
 };

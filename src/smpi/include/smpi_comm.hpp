@@ -19,22 +19,22 @@ namespace smpi{
 class Comm : public F2C, public Keyval{
   friend Topo;
   MPI_Group group_;
-  SMPI_Topo_type topoType_;
+  SMPI_Topo_type topoType_ = MPI_INVALID_TOPO;
   MPI_Topology topo_; // to be replaced by an union
-  int refcount_;
+  int refcount_ = 1;
   MPI_Comm leaders_comm_; // inter-node communicator
   MPI_Comm intra_comm_;   // intra-node communicator . For MPI_COMM_WORLD this can't be used, as var is global.
   // use an intracomm stored in the process data instead
-  int* leaders_map_; // who is the leader of each process
-  int is_uniform_;
-  int* non_uniform_map_;        // set if smp nodes have a different number of processes allocated
-  int is_blocked_;              // are ranks allocated on the same smp node contiguous ?
+  int* leaders_map_     = nullptr; // who is the leader of each process
+  int is_uniform_       = 1;
+  int* non_uniform_map_ = nullptr; // set if smp nodes have a different number of processes allocated
+  int is_blocked_       = 0;       // are ranks allocated on the same smp node contiguous ?
   int is_smp_comm_;             // set to 0 in case this is already an intra-comm or a leader-comm to avoid recursion
   std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
   std::string name_;
   MPI_Info info_;
   int id_;
-  MPI_Errhandler errhandler_;
+  MPI_Errhandler errhandler_ = MPI_ERRORS_ARE_FATAL;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
