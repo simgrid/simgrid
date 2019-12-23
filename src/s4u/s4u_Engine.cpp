@@ -283,7 +283,7 @@ std::vector<ActorPtr> Engine::get_all_actors()
 {
   std::vector<ActorPtr> actor_list;
   actor_list.push_back(simgrid::s4u::Actor::self());
-  for (auto& kv : simix_global->process_list) {
+  for (auto const& kv : simix_global->process_list) {
     actor_list.push_back(kv.second->iface());
   }
   return actor_list;
@@ -292,7 +292,7 @@ std::vector<ActorPtr> Engine::get_all_actors()
 std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter)
 {
   std::vector<ActorPtr> actor_list;
-  for (auto& kv : simix_global->process_list) {
+  for (auto const& kv : simix_global->process_list) {
     if (filter(kv.second->iface()))
       actor_list.push_back(kv.second->iface());
   }

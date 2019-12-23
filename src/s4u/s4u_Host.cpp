@@ -427,7 +427,7 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host)
   xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
   for (auto const& elm : host->get_mounted_storages()) {
     const char* mount_name = elm.first.c_str();
-    sg_storage_t storage   = elm.second;
+    const simgrid::s4u::Storage* storage = elm.second;
     xbt_dict_set(res, mount_name, (void*)storage->get_cname());
   }
 
@@ -647,8 +647,8 @@ void sg_host_dump(sg_host_t host)
  */
 void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 {
-  auto actors = host->get_all_actors();
-  for (auto& actor : actors)
+  auto const actors = host->get_all_actors();
+  for (auto const& actor : actors)
     xbt_dynar_push(whereto, &actor);
 }
 

@@ -70,7 +70,7 @@ ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::func
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::string& function,
                        std::vector<std::string> args)
 {
-  simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
+  const simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   return create(name, host, factory(std::move(args)));
 }
 
@@ -138,7 +138,7 @@ void Actor::set_host(Host* new_host)
     s4u::Actor::on_migration_start(*this);
   }
 
-  auto* previous_location = get_host();
+  const s4u::Host* previous_location = get_host();
 
   kernel::actor::simcall([this, new_host]() {
     if (pimpl_->waiting_synchro != nullptr) {
