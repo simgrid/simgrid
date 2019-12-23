@@ -54,7 +54,7 @@ static void host_state_change(s4u::Host const& host)
 
 static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
 {
-  s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
+  const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_impl();
     vm_impl->active_tasks_      = vm_impl->active_tasks_ + 1;
@@ -64,7 +64,7 @@ static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
 
 static void remove_active_exec(s4u::Actor const&, s4u::Exec const& task)
 {
-  s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
+  const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_impl();
     vm_impl->active_tasks_      = vm_impl->active_tasks_ - 1;
@@ -80,7 +80,7 @@ static s4u::VirtualMachine* get_vm_from_activity(kernel::activity::ActivityImpl 
 
 static void add_active_activity(kernel::activity::ActivityImpl const& act)
 {
-  s4u::VirtualMachine* vm = get_vm_from_activity(act);
+  const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
     vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
@@ -90,7 +90,7 @@ static void add_active_activity(kernel::activity::ActivityImpl const& act)
 
 static void remove_active_activity(kernel::activity::ActivityImpl const& act)
 {
-  s4u::VirtualMachine* vm = get_vm_from_activity(act);
+  const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
     vm_impl->active_tasks_ = vm_impl->active_tasks_ - 1;
@@ -136,7 +136,7 @@ double VMModel::next_occurring_event(double now)
 
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
-    kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
+    const kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
 
     double solved_value =
         ws_vm->get_impl()->action_->get_variable()->get_value(); // this is X1 in comment above, what

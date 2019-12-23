@@ -426,7 +426,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
   }
 
   if (local_disk_) {
-    Disk* dst_disk               = nullptr;
+    const Disk* dst_disk = nullptr;
 
     for (auto const& disk : host->get_disks()) {
       std::string current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point();
@@ -797,7 +797,8 @@ sg_size_t sg_storage_get_size(sg_storage_t st)
 
 xbt_dict_t sg_storage_get_content(sg_storage_t storage)
 {
-  std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->get_content();
+  const std::map<std::string, sg_size_t>* content =
+      storage->extension<simgrid::s4u::FileSystemStorageExt>()->get_content();
   // Note: ::operator delete is ok here (no destructor called) since the dict elements are of POD type sg_size_t.
   xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);
 

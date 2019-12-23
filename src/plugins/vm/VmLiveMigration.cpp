@@ -30,7 +30,7 @@ void MigrationRx::operator()()
       std::string("__mig_stage3:") + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" + dst_pm_->get_cname() + ")";
 
   while (not received_finalize) {
-    std::string* payload = static_cast<std::string*>(mbox->get());
+    const std::string* payload = static_cast<std::string*>(mbox->get());
 
     if (finalize_task_name == *payload)
       received_finalize = true;
