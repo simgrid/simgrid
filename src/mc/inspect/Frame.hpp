@@ -56,7 +56,6 @@ public:
   void* frame_base(unw_cursor_t& unw_cursor) const;
   void remove_variable(char* name);
 };
-
 } // namespace mc
 } // namespace simgrid
 

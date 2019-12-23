@@ -30,7 +30,6 @@ int Comm::keyval_id_=0;
 
 Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int in_id) : group_(group), topo_(topo),is_smp_comm_(smp), id_(in_id)
 {
-  errhandler_      = MPI_ERRORS_ARE_FATAL;
   errhandler_->ref();
   //First creation of comm is done before SIMIX_run, so only do comms for others
   if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
