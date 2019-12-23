@@ -64,7 +64,7 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
 {
   simgrid::kernel::routing::ActorCreationArgs actor;
 
-  sg_host_t host = sg_host_by_name(process_host);
+  const simgrid::s4u::Host* host = sg_host_by_name(process_host);
   if (not host)
     throw std::invalid_argument(simgrid::xbt::string_printf("Host '%s' unknown", process_host));
   actor.host = process_host;
@@ -77,7 +77,7 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
   }
 
   // Check we know how to handle this function name:
-  simgrid::simix::ActorCodeFactory& parse_code = SIMIX_get_actor_code_factory(process_function);
+  const simgrid::simix::ActorCodeFactory& parse_code = SIMIX_get_actor_code_factory(process_function);
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
 
   actor.function           = process_function;
