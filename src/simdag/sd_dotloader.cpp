@@ -103,7 +103,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
             computers.insert({char_performer, computer});
           }
           if (static_cast<unsigned int>(order) < computer->size()) {
-            SD_task_t task_test = computer->at(order);
+            const s_SD_task_t* task_test = computer->at(order);
             if (task_test && task_test != task) {
               /* the user gave the same order to several tasks */
               schedule_success = false;
@@ -153,8 +153,8 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
     std::sort(edges.begin(), edges.end(), [](const Agedge_t* a, const Agedge_t* b) { return AGSEQ(a) < AGSEQ(b); });
 
     for (Agedge_t* edge : edges) {
-      char *src_name=agnameof(agtail(edge));
-      char *dst_name=agnameof(aghead(edge));
+      const char* src_name = agnameof(agtail(edge));
+      const char* dst_name = agnameof(aghead(edge));
       double size = atof(agget(edge, (char *) "size"));
 
       SD_task_t src = jobs.at(src_name);

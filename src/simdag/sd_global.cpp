@@ -42,7 +42,7 @@ std::set<SD_task_t>* simulate(double how_long){
 
     /* let's see which tasks are done */
     for (auto const& model : all_existing_models) {
-      simgrid::kernel::resource::Action* action = model->extract_done_action();
+      const simgrid::kernel::resource::Action* action = model->extract_done_action();
       while (action != nullptr && action->get_data() != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->get_data());
         XBT_VERB("Task '%s' done", SD_task_get_name(task));
@@ -213,7 +213,7 @@ void SD_simulate(double how_long)
 
 void SD_simulate_with_update(double how_long, xbt_dynar_t changed_tasks_dynar)
 {
-  std::set<SD_task_t> *changed_tasks = simgrid::sd::simulate(how_long);
+  const std::set<SD_task_t>* changed_tasks = simgrid::sd::simulate(how_long);
   for (auto const& task : *changed_tasks)
     xbt_dynar_push(changed_tasks_dynar, &task);
 }
