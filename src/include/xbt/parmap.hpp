@@ -138,8 +138,8 @@ private:
   Synchro* new_synchro(e_xbt_parmap_mode_t mode);
   void work();
 
-  bool destroying;                   /**< is the parmap being destroyed? */
-  std::atomic_uint work_round;       /**< index of the current round */
+  bool destroying = false;           /**< is the parmap being destroyed? */
+  std::atomic_uint work_round{0};    /**< index of the current round */
   std::vector<std::thread*> workers; /**< worker thread handlers */
   unsigned num_workers;     /**< total number of worker threads including the controller */
   Synchro* synchro;         /**< synchronization object */
@@ -147,7 +147,7 @@ private:
   std::atomic_uint thread_counter{0};   /**< number of workers that have done the work */
   std::function<void(T)> fun;           /**< function to run in parallel on each element of data */
   const std::vector<T>* data = nullptr; /**< parameters to pass to fun in parallel */
-  std::atomic_uint index;               /**< index of the next element of data to pick */
+  std::atomic_uint index{0};            /**< index of the next element of data to pick */
 };
 
 /**
@@ -160,15 +160,12 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
   XBT_CDEBUG(xbt_parmap, "Create new parmap (%u workers)", num_workers);
 
   /* Initialize the thread pool data structure */
-  this->destroying  = false;
-  this->work_round  = 0;
   this->workers.resize(num_workers);
   this->num_workers = num_workers;
   this->synchro     = new_synchro(mode);
 
   /* Create the pool of worker threads (the caller of apply() will be worker[0]) */
   this->workers[0] = nullptr;
-  XBT_ATTRIB_UNUSED unsigned int core_bind = 0;
 
   for (unsigned i = 1; i < num_workers; i++) {
     ThreadData* data = new ThreadData(*this, i);
@@ -184,13 +181,10 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
     size_t size = sizeof(cpu_set_t);
 #endif
     pthread_t pthread = this->workers[i]->native_handle();
+    int core_bind     = (i - 1) % std::thread::hardware_concurrency();
     CPU_ZERO(&cpuset);
     CPU_SET(core_bind, &cpuset);
     pthread_setaffinity_np(pthread, size, &cpuset);
-    if (core_bind != std::thread::hardware_concurrency() - 1)
-      core_bind++;
-    else
-      core_bind = 0;
 #endif
   }
 }
