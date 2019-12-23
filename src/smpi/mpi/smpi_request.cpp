@@ -784,7 +784,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   if (request->action_ != nullptr){
     kernel::activity::CommImplPtr sync_comm = boost::static_pointer_cast<kernel::activity::CommImpl>(request->action_);
-    MPI_Request req                         = static_cast<MPI_Request>(sync_comm->src_data_);
+    const Request* req                      = static_cast<MPI_Request>(sync_comm->src_data_);
     *flag = 1;
     if (status != MPI_STATUS_IGNORE && (req->flags_ & MPI_REQ_PREPARED) == 0) {
       status->MPI_SOURCE = comm->group()->rank(req->src_);

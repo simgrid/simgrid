@@ -56,7 +56,7 @@ void smpi_prepare_global_memory_segment()
 static void smpi_get_executable_global_size()
 {
   char buffer[PATH_MAX];
-  char* full_name = realpath(simgrid::xbt::binary_name.c_str(), buffer);
+  const char* full_name = realpath(simgrid::xbt::binary_name.c_str(), buffer);
   xbt_assert(full_name != nullptr, "Could not resolve real path of binary file '%s'",
              simgrid::xbt::binary_name.c_str());
 
@@ -194,7 +194,7 @@ void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
   XBT_DEBUG("Switching data frame to the one of process %ld", actor->get_pid());
   simgrid::smpi::ActorExt* process = smpi_process_remote(actor);
   int current                     = process->privatized_region()->file_descriptor;
-  void* tmp = mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_RW, MAP_FIXED | MAP_SHARED, current, 0);
+  const void* tmp = mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_RW, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_data_exe_start))
     xbt_die("Couldn't map the new region (errno %d): %s", errno, strerror(errno));
   smpi_loaded_page = actor->get_pid();

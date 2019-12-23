@@ -54,7 +54,7 @@ void LoadBalancer::run()
   std::vector<simgrid::s4u::ActorPtr> all_actors =
       engine->get_filtered_actors([](simgrid::s4u::ActorPtr actor) { return not actor->is_daemon(); });
 
-  for (auto& actor : all_actors) {
+  for (auto const& actor : all_actors) {
     new_mapping.assign(actor, actor->get_host());
   }
   // Sort the actors, from highest to lowest load; we then just iterate over these actors
@@ -76,7 +76,7 @@ void LoadBalancer::run()
     heap_handle update_handle                  = usable_hosts.push(host); // Required to update elements in the heap
     additional_load[host]                      = {update_handle, 0};      // Save the handle for later
     const double total_flops_computed          = sg_host_get_computed_flops(host);
-    for (auto& actor : actors) {
+    for (auto const& actor : actors) {
       additional_load[host].load += actor_computation[actor->get_pid()] / total_flops_computed; // Normalize load - this allows comparison
                                                                                                 // even between hosts with different frequencies
       XBT_DEBUG("Actor %li -> %f", actor->get_pid(), actor_computation[actor->get_pid()]);
@@ -86,7 +86,7 @@ void LoadBalancer::run()
   }
 
   // Implementation of the Greedy algorithm
-  for (auto& actor : all_actors) {
+  for (auto const& actor : all_actors) {
     simgrid::s4u::Host* target_host = usable_hosts.top(); // This is the host with the lowest load
 
     simgrid::s4u::Host* cur_mapped_host = new_mapping.get_host(actor);

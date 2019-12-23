@@ -207,7 +207,7 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request)
 {
   //get receiver pointer
-  MPI_Win recv_win = connected_wins_[target_rank];
+  const Win* recv_win = connected_wins_[target_rank];
 
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
@@ -267,7 +267,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request)
 {
   //get sender pointer
-  MPI_Win send_win = connected_wins_[target_rank];
+  const Win* send_win = connected_wins_[target_rank];
 
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
@@ -282,7 +282,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   if(target_count*target_datatype->get_extent()>send_win->size_)
     return MPI_ERR_ARG;
 
-  void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_);
+  const void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
 
   if(target_rank != comm_->rank()){
@@ -326,7 +326,7 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
 {
   XBT_DEBUG("Entering MPI_Win_Accumulate");
   //get receiver pointer
-  MPI_Win recv_win = connected_wins_[target_rank];
+  const Win* recv_win = connected_wins_[target_rank];
 
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
@@ -382,7 +382,7 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
                         int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request*)
 {
   //get sender pointer
-  MPI_Win send_win = connected_wins_[target_rank];
+  const Win* send_win = connected_wins_[target_rank];
 
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
@@ -418,7 +418,7 @@ int Win::compare_and_swap(const void *origin_addr, void *compare_addr,
         void *result_addr, MPI_Datatype datatype, int target_rank,
         MPI_Aint target_disp){
   //get sender pointer
-  MPI_Win send_win = connected_wins_[target_rank];
+  const Win* send_win = connected_wins_[target_rank];
 
   if(opened_==0){//check that post/start has been done
     // no fence or start .. lock ok ?
@@ -732,7 +732,7 @@ int Win::finish_comms(int rank){
 
 int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
 {
-  MPI_Win target_win = rank != MPI_PROC_NULL ? connected_wins_[rank] : nullptr;
+  const Win* target_win = rank != MPI_PROC_NULL ? connected_wins_[rank] : nullptr;
   for (int i = 0; not target_win && i < comm_->size(); i++) {
     if (connected_wins_[i]->size_ > 0)
       target_win = connected_wins_[i];

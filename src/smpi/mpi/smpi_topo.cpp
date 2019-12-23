@@ -273,7 +273,7 @@ int Topo_Cart::Dims_create(int nnodes, int ndims, int dims[])
   /* Get # of free-to-be-assigned processes and # of free dimensions */
   int freeprocs = nnodes;
   int freedims = 0;
-  int *p = dims;
+  const int* p  = dims;
   for (int i = 0; i < ndims; ++i) {
     if (*p == 0) {
       ++freedims;

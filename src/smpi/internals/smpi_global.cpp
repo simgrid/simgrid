@@ -383,7 +383,7 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
     if (got == -1) {
       xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
     } else {
-      char* p  = buf;
+      const char* p = buf;
       int todo = got;
       while (int done = write(fdout, p, todo)) {
         if (done == -1) {

@@ -156,7 +156,7 @@ void TRACE_smpi_init(int rank)
   TRACE_smpi_setup_container(rank, sg_host_self());
   simgrid::s4u::this_actor::on_exit([self](bool) { smpi_container(self->get_pid())->remove_from_parent(); });
 #if HAVE_PAPI
-  container_t container   = smpi_container(rank);
+  const simgrid::instr::Container* container = smpi_container(rank);
   papi_counter_t counters = smpi_process()->papi_counters();
 
   for (auto const& it : counters) {

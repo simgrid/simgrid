@@ -162,9 +162,9 @@ void smpi_bench_end()
 
 #if HAVE_PAPI
   if (not smpi_cfg_papi_events_file().empty() && TRACE_smpi_is_enabled()) {
-    container_t container =
+    const simgrid::instr::Container* container =
         simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid()));
-    papi_counter_t& counter_data = smpi_process()->papi_counters();
+    const papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
       simgrid::instr::VariableType* variable = static_cast<simgrid::instr::VariableType*>(container->type_->by_name(pair.first));
@@ -376,7 +376,7 @@ int smpi_sample_2(int global, const char *file, int line, int iter_count)
   auto sample = samples.find(loc);
   if (sample == samples.end())
     xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  LocalData& data = sample->second;
+  const LocalData& data = sample->second;
 
   if (data.benching) {
     // we need to run a new bench
@@ -446,7 +446,7 @@ int smpi_sample_exit(int global, const char *file, int line, int iter_count){
       xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   
     if (smpi_process()->sampling()){//end of loop, but still sampling needed
-      LocalData& data = sample->second;
+      const LocalData& data = sample->second;
       smpi_process()->set_sampling(0);
       smpi_execute(data.mean * iter_count);
       smpi_bench_begin();

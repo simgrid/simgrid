@@ -112,7 +112,7 @@ template <typename T> int Keyval::attr_delete(int keyval){
 
 
 template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* flag){
-  smpi_key_elem elem = T::keyvals_.at(keyval);
+  const s_smpi_key_elem_t* elem = T::keyvals_.at(keyval);
   if(elem==nullptr)
     return MPI_ERR_ARG;
   if(attributes()->empty()){

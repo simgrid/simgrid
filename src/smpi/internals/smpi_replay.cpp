@@ -102,7 +102,7 @@ public:
 
     void get_requests(std::vector<MPI_Request>& vec)
     {
-      for (auto& pair : store) {
+      for (auto const& pair : store) {
         auto& req = pair.second;
         auto my_proc_id = simgrid::s4u::this_actor::get_pid();
         if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
@@ -558,7 +558,7 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
     std::vector<std::pair</*sender*/int,/*recv*/int>> sender_receiver;
     std::vector<MPI_Request> reqs;
     req_storage.get_requests(reqs);
-    for (const auto& req : reqs) {
+    for (auto const& req : reqs) {
       if (req && (req->flags() & MPI_REQ_RECV)) {
         sender_receiver.push_back({req->src(), req->dst()});
       }
@@ -566,7 +566,7 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
     Request::waitall(count_requests, &(reqs.data())[0], MPI_STATUSES_IGNORE);
     req_storage.get_store().clear();
 
-    for (auto& pair : sender_receiver) {
+    for (auto const& pair : sender_receiver) {
       TRACE_smpi_recv(pair.first, pair.second, 0);
     }
     TRACE_smpi_comm_out(my_proc_id);
