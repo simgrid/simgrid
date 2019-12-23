@@ -48,7 +48,7 @@ static void XBT_ATTRIB_DESTRUCTOR(800) simgrid_free_plugin_description()
 XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun)
 {
   if (not surf_plugin_description)
-    surf_plugin_description = new std::vector<surf_model_description_t>;
+    surf_plugin_description = new std::vector<surf_model_description_t>();
   surf_plugin_description->emplace_back(surf_model_description_t{name, description, init_fun});
 }
 

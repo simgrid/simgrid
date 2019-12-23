@@ -196,7 +196,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     simgrid::kernel::routing::HostCreationArgs host;
     host.id = host_id;
     if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
-      host.properties = new std::unordered_map<std::string, std::string>;
+      host.properties = new std::unordered_map<std::string, std::string>();
 
       for (auto const& elm : *cluster->properties)
         host.properties->insert({elm.first, elm.second});

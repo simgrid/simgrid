@@ -99,7 +99,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
           if (comp != computers.end()) {
             computer = comp->second;
           } else {
-            computer = new std::vector<SD_task_t>;
+            computer = new std::vector<SD_task_t>();
             computers.insert({char_performer, computer});
           }
           if (static_cast<unsigned int>(order) < computer->size()) {

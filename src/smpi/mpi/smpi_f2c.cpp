@@ -66,7 +66,7 @@ void F2C::free_f(int id)
 int F2C::add_f()
 {
   if (f2c_lookup_ == nullptr)
-    f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
+    f2c_lookup_ = new std::unordered_map<std::string, F2C*>();
 
   char key[KEY_SIZE];
   my_f2c_id_=f2c_id_;
@@ -78,7 +78,7 @@ int F2C::add_f()
 int F2C::c2f()
 {
   if (f2c_lookup_ == nullptr) {
-    f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
+    f2c_lookup_ = new std::unordered_map<std::string, F2C*>();
   }
 
   if(my_f2c_id_==-1)
@@ -91,7 +91,7 @@ int F2C::c2f()
 F2C* F2C::f2c(int id)
 {
   if (f2c_lookup_ == nullptr)
-    f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
+    f2c_lookup_ = new std::unordered_map<std::string, F2C*>();
 
   if(id >= 0){
     char key[KEY_SIZE];

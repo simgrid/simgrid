@@ -138,8 +138,8 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   }
 
   xbt_graph_t graph                        = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
-  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
+  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>();
+  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>();
 
   netzone->get_impl()->get_graph(graph, nodes, edges);
   for (auto elm : *edges) {
@@ -278,7 +278,7 @@ static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint const&
 static void instr_on_platform_created()
 {
   currentContainer.clear();
-  std::set<std::string>* filter = new std::set<std::string>;
+  std::set<std::string>* filter = new std::set<std::string>();
   XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(simgrid::s4u::Engine::get_instance()->get_netzone_root(),
                            simgrid::instr::Container::get_root(), filter);
@@ -508,8 +508,8 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string,
 xbt_graph_t instr_routing_platform_graph()
 {
   xbt_graph_t ret                          = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
-  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
+  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>();
+  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>();
   recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::get_instance()->get_netzone_root(),
                               simgrid::instr::Container::get_root());
   delete nodes;
