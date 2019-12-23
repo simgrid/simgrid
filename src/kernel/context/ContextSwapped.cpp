@@ -38,11 +38,6 @@ namespace context {
 /* thread-specific storage for the worker's context */
 thread_local SwappedContext* SwappedContext::worker_context_ = nullptr;
 
-SwappedContextFactory::SwappedContextFactory() : ContextFactory()
-{
-  parmap_ = nullptr; // will be created lazily with the right parameters if needed (ie, in parallel)
-}
-
 SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
     : Context(std::move(code), actor), factory_(factory)
 {

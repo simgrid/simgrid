@@ -18,7 +18,7 @@ class SwappedContext;
 class SwappedContextFactory : public ContextFactory {
   friend SwappedContext; // Reads whether we are in parallel mode
 public:
-  SwappedContextFactory();
+  SwappedContextFactory()                             = default;
   SwappedContextFactory(const SwappedContextFactory&) = delete;
   SwappedContextFactory& operator=(const SwappedContextFactory&) = delete;
   void run_all() override;
@@ -28,8 +28,8 @@ private:
   unsigned long process_index_     = 0;       // next actor to execute
   SwappedContext* maestro_context_ = nullptr; // save maestro's context
 
-  /* For the parallel execution */
-  std::unique_ptr<simgrid::xbt::Parmap<smx_actor_t>> parmap_;
+  /* For the parallel execution, will be created lazily with the right parameters if needed (ie, in parallel) */
+  std::unique_ptr<simgrid::xbt::Parmap<smx_actor_t>> parmap_{nullptr};
 };
 
 class SwappedContext : public Context {
