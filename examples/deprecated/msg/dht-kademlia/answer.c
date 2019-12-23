@@ -69,8 +69,8 @@ unsigned int answer_merge(answer_t destination, answer_t source)
 /** Helper to sort answer_t objects */
 static int _answer_sort_function(const void *e1, const void *e2)
 {
-  node_contact_t c1 = *(const node_contact_t*)e1;
-  node_contact_t c2 = *(const node_contact_t*)e2;
+  const s_node_contact_t* c1 = *(const node_contact_t*)e1;
+  const s_node_contact_t* c2 = *(const node_contact_t*)e2;
   if (c1->distance == c2->distance)
     return 0;
   else
@@ -147,6 +147,6 @@ unsigned int answer_destination_found(answer_t answer)
   if (xbt_dynar_is_empty(answer->nodes)) {
     return 0;
   }
-  node_contact_t contact_tail = xbt_dynar_get_as(answer->nodes, 0, node_contact_t);
+  const s_node_contact_t* contact_tail = xbt_dynar_get_as(answer->nodes, 0, node_contact_t);
   return contact_tail->distance == 0;
 }

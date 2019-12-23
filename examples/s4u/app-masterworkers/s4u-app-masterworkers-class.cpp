@@ -67,7 +67,7 @@ public:
   {
     double compute_cost;
     do {
-      double* msg  = static_cast<double*>(mailbox->get());
+      const double* msg = static_cast<double*>(mailbox->get());
       compute_cost = *msg;
       delete msg;
 

@@ -33,9 +33,9 @@ static void receiver(const std::string& mailbox_name)
 
   XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->get_cname());
 
-  std::string* msg1 = static_cast<std::string*>(mailbox->get());
-  std::string* msg2 = static_cast<std::string*>(mailbox->get());
-  std::string* msg3 = static_cast<std::string*>(mailbox->get());
+  const std::string* msg1 = static_cast<std::string*>(mailbox->get());
+  const std::string* msg2 = static_cast<std::string*>(mailbox->get());
+  const std::string* msg3 = static_cast<std::string*>(mailbox->get());
   XBT_INFO("I received '%s', '%s' and '%s'", msg1->c_str(), msg2->c_str(), msg3->c_str());
   delete msg1;
   delete msg2;

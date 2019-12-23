@@ -49,12 +49,12 @@ static void worker(std::vector<std::string> args)
 {
   xbt_assert(args.size() == 1, "The worker expects no argument");
 
-  simgrid::s4u::Host* my_host      = simgrid::s4u::this_actor::get_host();
+  const simgrid::s4u::Host* my_host = simgrid::s4u::this_actor::get_host();
   simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(my_host->get_name());
 
   double compute_cost;
   do {
-    double* msg  = static_cast<double*>(mailbox->get());
+    const double* msg = static_cast<double*>(mailbox->get());
     compute_cost = *msg;
     delete msg;
 

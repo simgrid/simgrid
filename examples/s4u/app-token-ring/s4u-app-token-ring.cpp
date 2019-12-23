@@ -24,7 +24,7 @@ public:
   {
     try {
       rank = std::stoi(simgrid::s4u::this_actor::get_name());
-    } catch (std::invalid_argument& ia) {
+    } catch (const std::invalid_argument& ia) {
       throw std::invalid_argument(std::string("Processes of this example must have a numerical name, not ") +
                                   ia.what());
     }
@@ -41,7 +41,7 @@ public:
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       std::string msg = "Token";
       neighbor_mailbox->put(&msg, task_comm_size);
-      std::string* res = static_cast<std::string*>(my_mailbox->get());
+      const std::string* res = static_cast<std::string*>(my_mailbox->get());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
     } else {
       std::string* res = static_cast<std::string*>(my_mailbox->get());

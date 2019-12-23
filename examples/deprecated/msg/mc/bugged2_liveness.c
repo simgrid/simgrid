@@ -25,7 +25,7 @@ static int coordinator(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); //is it a request or a release?
     if (!strcmp(kind, "request")) {     // that's a request
-      char *req = MSG_task_get_data(task);
+      const char* req = MSG_task_get_data(task);
       if (CS_used) {
         XBT_INFO("CS already used.");
         msg_task_t answer = MSG_task_create("not grant", 0, 1000, NULL);

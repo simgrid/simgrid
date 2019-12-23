@@ -31,7 +31,7 @@ int main(int argc, char **argv)
   xbt_assert(argc > 2, "Usage: %s platform_file dax_file [jedule_file]\n"
        "\tExample: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed", argv[0], argv[0]);
 
-  char *last = strrchr(argv[2], '.');
+  const char* last     = strrchr(argv[2], '.');
   char * tracefilename = bprintf("%.*s.trace",(int) (last == NULL ? strlen(argv[2]):last - argv[2]), argv[2]);
   if (argc == 4)
     tracefilename = xbt_strdup(argv[3]);
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
   XBT_INFO("------------------- Produce the trace file---------------------------");
-  char* basename = strrchr(tracefilename, '/');
+  const char* basename = strrchr(tracefilename, '/');
   XBT_INFO("Producing the trace of the run into %s", basename ? basename + 1 : tracefilename);
   FILE *out = fopen(tracefilename, "w");
   xbt_assert(out, "Cannot write to %s", tracefilename);

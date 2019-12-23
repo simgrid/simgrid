@@ -34,7 +34,7 @@ static void host()
   /* - Attach some user data to disk1 */
   XBT_INFO("*** Get/set data for storage element: Disk1 ***");
 
-  std::string* data = static_cast<std::string*>(disk->get_data());
+  const std::string* data = static_cast<std::string*>(disk->get_data());
 
   XBT_INFO("Get storage data: '%s'", data ? data->c_str() : "No user data");
 

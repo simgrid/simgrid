@@ -47,7 +47,7 @@ public:
 
   void joinChain()
   {
-    ChainMessage* msg = static_cast<ChainMessage*>(me->get());
+    const ChainMessage* msg = static_cast<ChainMessage*>(me->get());
     prev              = msg->prev_;
     next              = msg->next_;
     total_pieces      = msg->num_pieces;

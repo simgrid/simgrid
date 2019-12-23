@@ -18,7 +18,7 @@ static int server(int worker_amount)
   int value_got             = -1;
   simgrid::s4u::Mailbox* mb = simgrid::s4u::Mailbox::by_name("server");
   for (int count = 0; count < worker_amount; count++) {
-    int* msg  = static_cast<int*>(mb->get());
+    const int* msg = static_cast<int*>(mb->get());
     value_got = *msg;
     delete msg;
   }

@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(kademlia_node, "Messages specific for this example"
 namespace kademlia {
 static void destroy(void* message)
 {
-  Message* msg = static_cast<Message*>(message);
+  const Message* msg = static_cast<Message*>(message);
   delete msg->answer_;
   delete msg;
 }
@@ -22,7 +22,7 @@ static void destroy(void* message)
   */
 bool Node::join(unsigned int known_id)
 {
-  Answer* node_list;
+  const Answer* node_list;
   unsigned int i;
   bool got_answer = false;
 

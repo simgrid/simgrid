@@ -27,7 +27,7 @@ static void test_waitfor(sg_size_t size)
   simgrid::s4u::IoPtr activity = disk->write_async(size);
   try {
     activity->wait_for(0.5);
-  } catch (simgrid::TimeoutException&) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_INFO("Asynchronous write: Timeout!");
   }
 

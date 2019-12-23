@@ -24,7 +24,7 @@ struct _HostAttribute {
 
 static double sg_host_get_available_at(sg_host_t host)
 {
-  HostAttribute attr = (HostAttribute)sg_host_data(host);
+  const struct _HostAttribute* attr = (HostAttribute)sg_host_data(host);
   return attr->available_at;
 }
 
@@ -36,7 +36,7 @@ static void sg_host_set_available_at(sg_host_t host, double time)
 }
 
 static SD_task_t sg_host_get_last_scheduled_task( sg_host_t host){
-  HostAttribute attr = (HostAttribute)sg_host_data(host);
+  const struct _HostAttribute* attr = (HostAttribute)sg_host_data(host);
   return attr->last_scheduled_task;
 }
 

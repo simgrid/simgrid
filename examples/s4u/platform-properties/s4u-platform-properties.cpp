@@ -84,7 +84,7 @@ static void david(std::vector<std::string> /*args*/)
 static void bob(std::vector<std::string> /*args*/)
 {
   /* this host also tests the properties of the AS*/
-  simgrid::s4u::NetZone* root = simgrid::s4u::Engine::get_instance()->get_netzone_root();
+  const simgrid::s4u::NetZone* root = simgrid::s4u::Engine::get_instance()->get_netzone_root();
   XBT_INFO("== Print the properties of the root zone");
   XBT_INFO("   Zone property: filename -> %s", root->get_property("filename"));
   XBT_INFO("   Zone property: date -> %s", root->get_property("date"));

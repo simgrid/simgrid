@@ -111,7 +111,7 @@ static int node(int argc, char *argv[])
   */
 unsigned int join(node_t node, unsigned int id_known)
 {
-  answer_t node_list;
+  const s_answer_t* node_list;
   msg_error_t status;
   unsigned int trial = 0;
   unsigned int i;
@@ -137,7 +137,7 @@ unsigned int join(node_t node, unsigned int id_known)
           XBT_DEBUG("Received an answer from the node I know.");
           answer_got = 1;
           //retrieve the node list and ping them.
-          task_data_t data = MSG_task_get_data(node->task_received);
+          const s_task_data_t* data = MSG_task_get_data(node->task_received);
           xbt_assert((data != NULL), "Null data received");
           if (data->type == TASK_FIND_NODE_ANSWER) {
             node_contact_t contact;
@@ -217,7 +217,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
           if (status == MSG_OK) {
             xbt_assert((node->task_received != NULL), "Invalid task received");
             //Figure out if we received an answer or something else
-            task_data_t data = MSG_task_get_data(node->task_received);
+            const s_task_data_t* data = MSG_task_get_data(node->task_received);
             xbt_assert((data != NULL), "No data in the task");
 
             //Check if what we have received is what we are looking for.
@@ -309,7 +309,7 @@ unsigned int send_find_node_to_best(node_t node, answer_t node_list)
   while (j < KADEMLIA_ALPHA && i < node_list->size) {
     /* We need to have at most "KADEMLIA_ALPHA" requests each time, according to the protocol */
     /* Gets the node we want to send the query to */
-    node_contact_t node_to_query = xbt_dynar_get_as(node_list->nodes, i, node_contact_t);
+    const s_node_contact_t* node_to_query = xbt_dynar_get_as(node_list->nodes, i, node_contact_t);
     if (node_to_query->id != node->id) {        /* No need to query ourselves */
       send_find_node(node, node_to_query->id, destination);
       j++;

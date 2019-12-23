@@ -15,10 +15,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_platform_profile, "Messages specific for this s
 /* Main function of the Yielder process */
 static void watcher()
 {
-  simgrid::s4u::Host* jupiter = simgrid::s4u::Host::by_name("Jupiter");
-  simgrid::s4u::Host* fafard  = simgrid::s4u::Host::by_name("Fafard");
-  simgrid::s4u::Link* link1   = simgrid::s4u::Link::by_name("1");
-  simgrid::s4u::Link* link2   = simgrid::s4u::Link::by_name("2");
+  const simgrid::s4u::Host* jupiter = simgrid::s4u::Host::by_name("Jupiter");
+  const simgrid::s4u::Host* fafard  = simgrid::s4u::Host::by_name("Fafard");
+  const simgrid::s4u::Link* link1   = simgrid::s4u::Link::by_name("1");
+  const simgrid::s4u::Link* link2   = simgrid::s4u::Link::by_name("2");
 
   for (int i = 0; i < 10; i++) {
     XBT_INFO("Fafard: %.0fGflops, Jupiter: % 3.0fGflops, Link1: (%.2fMB/s %.0fms), Link2: (%.2fMB/s %.0fms)",

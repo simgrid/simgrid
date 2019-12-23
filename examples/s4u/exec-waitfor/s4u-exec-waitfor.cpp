@@ -20,7 +20,7 @@ static void worker()
   try {
     exec->wait_for(3);
     XBT_INFO("Execution complete");
-  } catch (simgrid::TimeoutException&) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_INFO("Execution Timeout!");
   }
 
@@ -30,7 +30,7 @@ static void worker()
   try {
     exec->wait_for(6);
     XBT_INFO("Execution complete");
-  } catch (simgrid::TimeoutException&) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_INFO("Execution Timeout!");
   }
 
@@ -50,7 +50,7 @@ static void worker()
   try {
     exec->wait_for(2);
     XBT_INFO("Parallel Execution complete");
-  } catch (simgrid::TimeoutException&) {
+  } catch (const simgrid::TimeoutException&) {
     XBT_INFO("Parallel Execution Timeout!");
   }
 }

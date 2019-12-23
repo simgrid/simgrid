@@ -47,7 +47,7 @@ static void communication_rx_fun(std::vector<std::string> args)
   const char* host_name         = simgrid::s4u::this_actor::get_host()->get_cname();
   simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(args.at(0));
 
-  struct s_payload* payload = static_cast<struct s_payload*>(mbox->get());
+  const s_payload* payload  = static_cast<struct s_payload*>(mbox->get());
   double clock_end          = simgrid::s4u::Engine::get_clock();
 
   XBT_INFO("%s:%s to %s:%s => %g sec", payload->tx_host->get_cname(), payload->tx_actor_name, host_name, actor_name,

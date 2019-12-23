@@ -267,7 +267,7 @@ int Node::remoteGetPredecessor(int ask_to)
 
   try {
     comm->wait_for(timeout);
-    ChordMessage* answer = static_cast<ChordMessage*>(data);
+    const ChordMessage* answer = static_cast<ChordMessage*>(data);
     XBT_DEBUG("Received the answer to my 'Get Predecessor' request: the predecessor of node %d is %d", ask_to,
               answer->answer_id);
     predecessor_id = answer->answer_id;
@@ -337,7 +337,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
 
   try {
     comm->wait_for(timeout);
-    ChordMessage* answer = static_cast<ChordMessage*>(data);
+    const ChordMessage* answer = static_cast<ChordMessage*>(data);
     XBT_DEBUG("Received the answer to my 'Find Successor' request for id %d: the successor of key %d is %d",
               answer->request_id, id_, answer->answer_id);
     successor = answer->answer_id;

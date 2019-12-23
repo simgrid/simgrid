@@ -57,7 +57,7 @@ public:
 
     // Test attaching some user data to the file
     file->set_data(new std::string("777"));
-    std::string* file_data = static_cast<std::string*>(file->get_data());
+    const std::string* file_data = static_cast<std::string*>(file->get_data());
     XBT_INFO("User data attached to the file: %s", file_data->c_str());
     delete file_data;
 

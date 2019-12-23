@@ -119,7 +119,7 @@ int main(int argc, char **argv)
   SD_task_schedule(taskC, 2, host_list, computation_amount, communication_amount, -1);
   SD_task_schedule(taskD, 2, host_list, computation_amount, communication_amount, -1);
 
-  std::set<SD_task_t> *changed_tasks = simgrid::sd::simulate(-1.0);
+  const std::set<SD_task_t>* changed_tasks = simgrid::sd::simulate(-1.0);
   for (auto const& task : *changed_tasks) {
     XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task),
           SD_task_get_start_time(task), SD_task_get_finish_time(task));

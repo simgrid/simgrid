@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   }
 
   char *tracefilename;
-  char *last = strrchr(argv[2], '.');
+  const char* last = strrchr(argv[2], '.');
   tracefilename = bprintf("%.*s.trace", (int) (last == NULL ? strlen(argv[2]) : last - argv[2]),argv[2]);
   if (argc == 4)
     tracefilename = xbt_strdup(argv[3]);

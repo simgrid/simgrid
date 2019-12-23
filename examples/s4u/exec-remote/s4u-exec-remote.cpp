@@ -9,7 +9,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void wizard()
 {
-  simgrid::s4u::Host* fafard  = simgrid::s4u::Host::by_name("Fafard");
+  const simgrid::s4u::Host* fafard = simgrid::s4u::Host::by_name("Fafard");
   simgrid::s4u::Host* ginette = simgrid::s4u::Host::by_name("Ginette");
   simgrid::s4u::Host* boivin  = simgrid::s4u::Host::by_name("Boivin");
 
