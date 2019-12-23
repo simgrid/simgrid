@@ -57,7 +57,7 @@ static container_t lowestCommonAncestor(container_t a1, container_t a2)
   int j = ancestors_a2.size() - 1;
   while (i >= 0 && j >= 0) {
     container_t a1p = ancestors_a1.at(i);
-    container_t a2p = ancestors_a2.at(j);
+    const simgrid::instr::Container* a2p = ancestors_a2.at(j);
     if (a1p == a2p) {
       p = a1p;
     } else {
@@ -143,7 +143,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
 
   netzone->get_impl()->get_graph(graph, nodes, edges);
   for (auto elm : *edges) {
-    xbt_edge_t edge = elm.second;
+    const xbt_edge* edge = elm.second;
     linkContainers(simgrid::instr::Container::by_name(static_cast<const char*>(edge->src->data)),
                    simgrid::instr::Container::by_name(static_cast<const char*>(edge->dst->data)), filter);
   }
@@ -207,8 +207,8 @@ static void instr_link_on_creation(simgrid::s4u::Link const& link)
 
 static void instr_host_on_creation(simgrid::s4u::Host const& host)
 {
-  container_t container = new simgrid::instr::HostContainer(host, currentContainer.back());
-  container_t root      = simgrid::instr::Container::get_root();
+  simgrid::instr::Container* container  = new simgrid::instr::HostContainer(host, currentContainer.back());
+  const simgrid::instr::Container* root = simgrid::instr::Container::get_root();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::VariableType* speed = container->type_->by_name_or_create("speed", "");
@@ -248,13 +248,13 @@ static void instr_action_on_state_change(simgrid::kernel::resource::Action const
     double value = action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i);
     /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
     simgrid::kernel::resource::Resource* resource = action.get_variable()->get_constraint(i)->get_id();
-    simgrid::kernel::resource::Cpu* cpu = dynamic_cast<simgrid::kernel::resource::Cpu*>(resource);
+    const simgrid::kernel::resource::Cpu* cpu     = dynamic_cast<simgrid::kernel::resource::Cpu*>(resource);
 
     if (cpu != nullptr)
       TRACE_surf_resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action.get_category(), value,
                                           action.get_last_update(), SIMIX_get_clock() - action.get_last_update());
 
-    simgrid::kernel::resource::LinkImpl* link = dynamic_cast<simgrid::kernel::resource::LinkImpl*>(resource);
+    const simgrid::kernel::resource::LinkImpl* link = dynamic_cast<simgrid::kernel::resource::LinkImpl*>(resource);
 
     if (link != nullptr)
       TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action.get_category(), value,
@@ -289,8 +289,8 @@ static void instr_on_platform_created()
 
 static void instr_actor_on_creation(simgrid::s4u::Actor const& actor)
 {
-  container_t root      = simgrid::instr::Container::get_root();
-  container_t container = simgrid::instr::Container::by_name(actor.get_host()->get_name());
+  const simgrid::instr::Container* root = simgrid::instr::Container::get_root();
+  simgrid::instr::Container* container  = simgrid::instr::Container::by_name(actor.get_host()->get_name());
 
   container->create_child(instr_pid(actor), "ACTOR");
   simgrid::instr::ContainerType* actor_type =
@@ -332,8 +332,8 @@ static void instr_actor_on_host_change(simgrid::s4u::Actor const& actor,
 
 static void instr_vm_on_creation(simgrid::s4u::Host const& host)
 {
-  container_t container             = new simgrid::instr::HostContainer(host, currentContainer.back());
-  container_t root                  = simgrid::instr::Container::get_root();
+  const simgrid::instr::Container* container = new simgrid::instr::HostContainer(host, currentContainer.back());
+  const simgrid::instr::Container* root      = simgrid::instr::Container::get_root();
   simgrid::instr::ContainerType* vm = container->type_->by_name_or_create<simgrid::instr::ContainerType>("VM");
   simgrid::instr::StateType* state  = vm->by_name_or_create<simgrid::instr::StateType>("VM_STATE");
   state->add_entity_value("suspend", "1 0 1");

@@ -201,7 +201,7 @@ void get_resource_selection_by_hosts(std::vector<simgrid::jedule::Subset>& subse
   std::unordered_map<const char*, std::vector<const char*>> parent2hostgroup;
   for (auto const& host : host_list) {
     const char *host_name = sg_host_get_name(host);
-    jed_container_t parent = host2_simgrid_parent_container.at(host_name);
+    const simgrid::jedule::Container* parent = host2_simgrid_parent_container.at(host_name);
     xbt_assert( parent != nullptr );
 
     auto host_group = parent2hostgroup.find(parent->name.c_str());
