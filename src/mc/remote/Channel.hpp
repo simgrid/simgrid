@@ -26,21 +26,12 @@ class Channel {
   }
 
 public:
-  Channel() = default;
   explicit Channel(int sock) : socket_(sock) {}
   ~Channel();
 
   // No copy:
   Channel(Channel const&) = delete;
   Channel& operator=(Channel const&) = delete;
-
-  // Move:
-  Channel(Channel&& that) : socket_(that.socket_) { that.socket_ = -1; }
-  Channel& operator=(Channel&& that)
-  {
-    std::swap(this->socket_, that.socket_);
-    return *this;
-  }
 
   // Send
   int send(const void* message, size_t size) const;
