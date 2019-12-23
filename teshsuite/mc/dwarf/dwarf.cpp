@@ -60,7 +60,7 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
   assert(subprogram);
   // TODO, Lookup frame by IP and test against name instead
 
-  simgrid::mc::Variable* var = find_local_variable(subprogram, variable);
+  const simgrid::mc::Variable* var = find_local_variable(subprogram, variable);
   assert(var);
 
   void* frame_base = subprogram->frame_base(*cursor);
@@ -83,7 +83,7 @@ static const simgrid::mc::Variable* test_global_variable(simgrid::mc::RemoteClie
 
   auto i = process.binary_info->types.find(variable->type_id);
   xbt_assert(i != process.binary_info->types.end(), "Missing type for %s", name);
-  simgrid::mc::Type* type = &i->second;
+  const simgrid::mc::Type* type = &i->second;
   xbt_assert(type->byte_size == byte_size, "Byte size mismatch for %s", name);
   return variable;
 }

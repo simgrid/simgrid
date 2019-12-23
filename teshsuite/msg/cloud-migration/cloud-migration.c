@@ -23,8 +23,8 @@ static void vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 static int migration_worker_main(int argc, char* argv[])
 {
   xbt_assert(argc == 3);
-  char* vm_name     = argv[1];
-  char* dst_pm_name = argv[2];
+  const char* vm_name     = argv[1];
+  const char* dst_pm_name = argv[2];
 
   msg_vm_t vm       = (msg_vm_t)MSG_host_by_name(vm_name);
   msg_host_t dst_pm = MSG_host_by_name(dst_pm_name);

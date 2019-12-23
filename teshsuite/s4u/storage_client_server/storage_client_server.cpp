@@ -61,7 +61,7 @@ static void display_disk_content(simgrid::s4u::Disk* disk)
 {
   XBT_INFO("*** Dump a disk ***");
   XBT_INFO("Print the content of the disk: %s", disk->get_cname());
-  std::map<std::string, sg_size_t>* content = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_content();
+  const std::map<std::string, sg_size_t>* content = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_content();
   if (not content->empty()) {
     for (auto const& entry : *content)
       XBT_INFO("  %s size: %llu bytes", entry.first.c_str(), entry.second);
@@ -74,7 +74,7 @@ static void get_set_disk_data(simgrid::s4u::Disk* disk)
 {
   XBT_INFO("*** GET/SET DATA for disk: %s ***", disk->get_cname());
 
-  std::string* data = static_cast<std::string*>(disk->get_data());
+  const std::string* data = static_cast<std::string*>(disk->get_data());
   XBT_INFO("Get data: '%s'", data ? data->c_str() : "No User Data");
   disk->set_data(new std::string("Some data"));
   data = static_cast<std::string*>(disk->get_data());
@@ -127,7 +127,7 @@ static void server()
 
   XBT_INFO("Server waiting for transfers ...");
   while (1) {
-    std::string* msg = static_cast<std::string*>(mailbox->get());
+    const std::string* msg = static_cast<std::string*>(mailbox->get());
     if (*msg == "finalize") { // Shutdown ...
       delete msg;
       break;

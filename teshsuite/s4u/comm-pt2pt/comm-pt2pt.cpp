@@ -143,7 +143,7 @@ static void receiver(std::vector<std::string> args)
       default:
         xbt_die("Unknown receiver spec for test %u: '%c'", test, args[0][test - 1]);
     }
-    std::string* receivedStr = static_cast<std::string*>(received);
+    const std::string* receivedStr = static_cast<std::string*>(received);
     xbt_assert(*receivedStr == mboxName);
     delete receivedStr;
     XBT_INFO("Test %u OK", test);

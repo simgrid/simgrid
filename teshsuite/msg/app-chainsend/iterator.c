@@ -29,7 +29,7 @@ void* xbt_dynar_iterator_next(xbt_dynar_iterator_t it)
   if (it->current >= it->length) {
     return NULL;
   } else {
-    int* next = xbt_dynar_get_ptr(it->indices_list, it->current);
+    const int* next = xbt_dynar_get_ptr(it->indices_list, it->current);
     it->current++;
     return xbt_dynar_get_ptr(it->list, *next);
   }

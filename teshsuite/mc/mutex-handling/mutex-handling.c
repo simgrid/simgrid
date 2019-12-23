@@ -48,7 +48,7 @@ static int receiver(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 static int sender(int argc, char *argv[])
 {
   xbt_assert(argc == 2);
-  char* message_name = argv[1];
+  const char* message_name = argv[1];
 #ifndef DISABLE_THE_MUTEX
   sg_mutex_lock(mutex);
 #endif

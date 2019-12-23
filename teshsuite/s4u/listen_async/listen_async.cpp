@@ -21,7 +21,7 @@ static void server()
 
   xbt_assert(mailbox->listen()); // True (1)
   XBT_INFO("Task listen works on regular mailboxes");
-  std::string* res = static_cast<std::string*>(mailbox->get());
+  const std::string* res = static_cast<std::string*>(mailbox->get());
 
   xbt_assert(*res == "Some data", "Data received: %s", res->c_str());
   XBT_INFO("Data successfully received from regular mailbox");

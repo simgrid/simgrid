@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_cloud_interrupt_migration, "Messages specific f
 
 static void vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 {
-  simgrid::s4u::Host* src_pm = vm->get_pm();
+  const simgrid::s4u::Host* src_pm = vm->get_pm();
   double mig_sta             = simgrid::s4u::Engine::get_clock();
   sg_vm_migrate(vm, dst_pm);
   double mig_end = simgrid::s4u::Engine::get_clock();
