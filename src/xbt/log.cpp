@@ -157,7 +157,7 @@ static constexpr size_t XBT_LOG_DYNAMIC_BUFFER_SIZE = 4096;
 
 void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 {
-  xbt_log_category_t cat = ev->cat;
+  const xbt_log_category_s* cat = ev->cat;
 
   xbt_assert(ev->priority >= 0, "Negative logging priority naturally forbidden");
   xbt_assert(static_cast<size_t>(ev->priority) < sizeof(xbt_log_priority_names)/sizeof(xbt_log_priority_names[0]),
@@ -282,7 +282,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 
     if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) {
       std::string res;
-      xbt_log_category_t cpp = category->parent->firstChild;
+      const xbt_log_category_s* cpp = category->parent->firstChild;
       while (cpp) {
         res += std::string(" ") + cpp->name;
         cpp = cpp->nextSibling;

@@ -197,7 +197,7 @@ std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
-    char* tok = strtok_r(lfields[0], "-", &saveptr);
+    const char* tok = strtok_r(lfields[0], "-", &saveptr);
     if (tok == nullptr) {
       std::fprintf(stderr,
                    "Start and end address of the map are not concatenated by a hyphen (-). Recovery impossible.\n");

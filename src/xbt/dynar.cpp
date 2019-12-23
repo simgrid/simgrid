@@ -71,8 +71,7 @@ static inline void *_xbt_dynar_elm(const xbt_dynar_t dynar, const unsigned long 
 
 static inline void _xbt_dynar_get_elm(void *const dst, const xbt_dynar_t dynar, const unsigned long idx)
 {
-  void *const elm = _xbt_dynar_elm(dynar, idx);
-
+  const void* const elm = _xbt_dynar_elm(dynar, idx);
   memcpy(dst, elm, dynar->elmsize);
 }
 
@@ -167,7 +166,7 @@ void xbt_dynar_merge(xbt_dynar_t* d1, xbt_dynar_t* d2)
 
   const unsigned long elmsize = (*d1)->elmsize;
 
-  void *ptr = _xbt_dynar_elm((*d2), 0);
+  const void* ptr = _xbt_dynar_elm((*d2), 0);
   _xbt_dynar_resize(*d1, (*d1)->size + (*d2)->size);
   void *elm = _xbt_dynar_elm((*d1), (*d1)->used);
 

@@ -123,7 +123,7 @@ inline void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
  */
 inline int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor, char **key, void **data)
 {
-  xbt_dictelm_t current;
+  const struct s_xbt_dictelm* current;
 
   XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_get_or_free");
 

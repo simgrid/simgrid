@@ -316,8 +316,8 @@ int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_
   unsigned int nb_elem = xbt_dynar_length(s1);
 
   for (unsigned int cursor = 0; cursor < nb_elem; cursor++) {
-    int* iptr1 = xbt_dynar_get_ptr(s1, cursor);
-    int* iptr2 = xbt_dynar_get_ptr(s2, cursor);
+    const int* iptr1 = xbt_dynar_get_ptr(s1, cursor);
+    const int* iptr2 = xbt_dynar_get_ptr(s2, cursor);
     if(*iptr1 != *iptr2)
       return 1;
   }

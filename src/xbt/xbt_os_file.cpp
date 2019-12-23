@@ -25,7 +25,7 @@ simgrid::xbt::Path::Path()
 {
 #if HAVE_UNISTD_H
   char buffer[2048];
-  char* ret = getcwd(buffer, 2048);
+  const char* ret = getcwd(buffer, 2048);
   xbt_assert(ret == buffer, "Error during getcwd: %s", strerror(errno));
   path_ = std::string(buffer);
 #else
@@ -36,13 +36,13 @@ simgrid::xbt::Path::Path()
 std::string simgrid::xbt::Path::get_dir_name()
 {
   std::string p(path_);
-  char *res = dirname(&p[0]);
+  const char* res = dirname(&p[0]);
   return std::string(res, strlen(res));
 }
 
 std::string simgrid::xbt::Path::get_base_name()
 {
   std::string p(path_);
-  char *res = basename(&p[0]);
+  const char* res = basename(&p[0]);
   return std::string(res, strlen(res));
 }

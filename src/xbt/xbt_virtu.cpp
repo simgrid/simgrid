@@ -11,7 +11,7 @@
 
 int xbt_getpid()
 {
-  smx_actor_t self = SIMIX_process_self();
+  const simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
   return self == nullptr ? 0 : self->get_pid();
 }
 

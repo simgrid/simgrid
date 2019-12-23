@@ -124,8 +124,7 @@ int replay_runner(const char* actor_name, const char* trace_filename)
       delete evt;
     }
     if (action_queues.find(actor_name_string) != action_queues.end()) {
-      std::queue<ReplayAction*>* myqueue = action_queues.at(actor_name_string);
-      delete myqueue;
+      delete action_queues.at(actor_name_string);
       action_queues.erase(actor_name_string);
     }
   } else { // Should have got my trace file in argument

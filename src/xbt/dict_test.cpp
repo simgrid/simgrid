@@ -192,7 +192,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
     /* RETRIEVE */
     INFO("Search 123");
-    char* data = (char*)xbt_dict_get(head, "123");
+    const char* data = (char*)xbt_dict_get(head, "123");
     REQUIRE((data && strcmp("123", data) == 0));
 
     search_not_found(head, "Can't be found");
@@ -299,7 +299,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
       INFO("using 1000 elements with " << SIZEOFKEY << " chars long randomized keys.");
       xbt_dict_t head = xbt_dict_new_homogeneous(free);
       for (int j = 0; j < 1000; j++) {
-        char* data = nullptr;
+        const char* data = nullptr;
         char* key  = (char*)xbt_malloc(SIZEOFKEY);
 
         do {

@@ -55,8 +55,7 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
       return;
     try {
       with_nested->rethrow_nested();
-    }
-    catch (std::exception& nested_exception) {
+    } catch (const std::exception& nested_exception) {
       log_exception(prio, "Caused by", nested_exception);
     }
     // We could catch nested_exception or WithContextException but we don't bother:
@@ -100,14 +99,14 @@ static void handler()
   }
 
   // Parse error are handled differently, as the call stack does not matter, only the file location
-  catch (simgrid::ParseError& e) {
+  catch (const simgrid::ParseError& e) {
     XBT_ERROR("%s", e.what());
     XBT_ERROR("Exiting now.");
     std::abort();
   }
 
   // We manage C++ exception ourselves
-  catch (std::exception& e) {
+  catch (const std::exception& e) {
     log_exception(xbt_log_priority_critical, "Uncaught exception", e);
     show_backtrace(bt);
     std::abort();

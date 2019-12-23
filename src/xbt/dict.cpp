@@ -197,7 +197,7 @@ void xbt_dict_set(xbt_dict_t dict, const char* key, void* data)
 void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
-  xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
+  const s_xbt_dictelm* current = dict->table[hash_code & dict->table_size];
 
   while (current != nullptr && (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
@@ -214,7 +214,7 @@ void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
-  xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
+  const s_xbt_dictelm* current = dict->table[hash_code & dict->table_size];
 
   while (current != nullptr && (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
@@ -235,7 +235,7 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
 char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
 {
   for (int i = 0; i <= dict->table_size; i++) {
-    xbt_dictelm_t current = dict->table[i];
+    const s_xbt_dictelm* current = dict->table[i];
     while (current != nullptr) {
       if (current->content == data)
         return current->key;
@@ -285,7 +285,7 @@ xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
  */
 void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 {
-  xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
+  const s_xbt_dictelm* current = xbt_dict_get_elm_or_null(dict, key);
 
   if (current == nullptr)
     return nullptr;

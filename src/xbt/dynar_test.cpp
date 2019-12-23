@@ -40,7 +40,7 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
 
     /* 2. Traverse manually the dynar */
     for (int i = 0; i < NB_ELEM; i++) {
-      int* iptr = (int*)xbt_dynar_get_ptr(d, i);
+      const int* iptr = (int*)xbt_dynar_get_ptr(d, i);
       REQUIRE(i == *iptr); // The retrieved value is not the same than the injected one
     }
 

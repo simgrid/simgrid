@@ -22,13 +22,13 @@ char* state_id_src;
 static void new_state(char* id, int src){
   char* saveptr = NULL; // for strtok_r()
   char* id_copy = xbt_strdup(id);
-  char* first_part = strtok_r(id_copy, "_", &saveptr);
+  const char* first_part = strtok_r(id_copy, "_", &saveptr);
   int type = 0 ; // -1=initial state; 0=intermediate state; 1=final state
 
   if(strcmp(first_part,"accept")==0){
     type = 1;
   }else{
-    char* second_part = strtok_r(NULL, "_", &saveptr);
+    const char* second_part = strtok_r(NULL, "_", &saveptr);
     if(strcmp(second_part,"init")==0){
       type = -1;
     }
