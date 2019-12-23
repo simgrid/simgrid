@@ -55,7 +55,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv* env, jclass cl
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas) {
-  simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
+  const simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
   return env->NewStringUTF(as->get_cname());
 }
 

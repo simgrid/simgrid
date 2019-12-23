@@ -180,7 +180,6 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender(JNIEnv * env, jobj
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv * env, jobject jtask)
 {
-  msg_host_t host;
   msg_task_t task = jtask_to_native(jtask, env);
 
   if (not task) {
@@ -188,7 +187,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv * env, jobj
     return nullptr;
   }
 
-  host = MSG_task_get_source(task);
+  auto const* host = MSG_task_get_source(task);
   if (host == nullptr) {
     return nullptr;
   }

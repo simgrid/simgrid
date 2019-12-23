@@ -207,7 +207,7 @@ Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname,
   }
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
   const char *value_java = env->GetStringUTFChars((jstring) jvalue, 0);
-  char *value = xbt_strdup(value_java);
+  const char* value      = xbt_strdup(value_java);
 
   MSG_host_set_property_value(host, name, value);
 
@@ -312,7 +312,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
   }
 
   for (int index = 0; index < count; index++) {
-    msg_host_t host = xbt_dynar_get_as(table, index, msg_host_t);
+    auto const* host = xbt_dynar_get_as(table, index, msg_host_t);
     jobject jhost   = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
 
     if (not jhost) {

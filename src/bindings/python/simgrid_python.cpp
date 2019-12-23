@@ -100,7 +100,7 @@ PYBIND11_MODULE(simgrid, m)
            simgrid::s4u::this_actor::on_exit([act, fun](bool /*failed*/) {
              try {
                fun();
-             } catch (py::error_already_set& e) {
+             } catch (const py::error_already_set& e) {
                xbt_die("Error while executing the on_exit lambda: %s", e.what());
              }
            });
@@ -141,7 +141,7 @@ PYBIND11_MODULE(simgrid, m)
                  /* If I was passed a class, I just built an instance, so I need to call it now */
                  if (py::isinstance<py::function>(res))
                    res();
-               } catch (py::error_already_set& ex) {
+               } catch (const py::error_already_set& ex) {
                  if (ex.matches(pyForcefulKillEx)) {
                    XBT_VERB("Actor killed");
                    /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
@@ -238,7 +238,7 @@ PYBIND11_MODULE(simgrid, m)
              return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args]() {
                try {
                  fun(*args);
-               } catch (py::error_already_set& ex) {
+               } catch (const py::error_already_set& ex) {
                  if (ex.matches(pyForcefulKillEx)) {
                    XBT_VERB("Actor killed");
                    /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */

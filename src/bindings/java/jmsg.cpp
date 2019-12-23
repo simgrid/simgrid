@@ -52,7 +52,7 @@ JavaVM *__java_vm = nullptr;
 JNIEnv *get_current_thread_env()
 {
   using simgrid::kernel::context::JavaContext;
-  JavaContext* ctx = static_cast<JavaContext*>(simgrid::kernel::context::Context::self());
+  const JavaContext* ctx = static_cast<JavaContext*>(simgrid::kernel::context::Context::self());
   if (ctx)
     return ctx->jenv_;
   else
@@ -92,7 +92,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
   env->GetJavaVM(&__java_vm);
 
   simgrid::kernel::context::factory_initializer = &simgrid::kernel::context::java_factory;
-  jthrowable exc = env->ExceptionOccurred();
+  const _jthrowable* exc                        = env->ExceptionOccurred();
   if (exc) {
     env->ExceptionClear();
   }
@@ -144,7 +144,7 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass
   /* Cleanup java hosts */
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   for (unsigned long index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
-    msg_host_t msg_host = xbt_dynar_get_as(hosts,index,msg_host_t);
+    auto const* msg_host = xbt_dynar_get_as(hosts, index, msg_host_t);
     jobject jhost = (jobject) msg_host->extension(JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);

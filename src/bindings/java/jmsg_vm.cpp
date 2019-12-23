@@ -178,7 +178,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclas
   }
   const char* name = env->GetStringUTFChars(jname, 0);
   /* get the VM by name   (VMs are just special hosts, unfortunately) */
-  msg_host_t host = MSG_host_by_name(name);
+  auto const* host = MSG_host_by_name(name);
 
   if (not host) { /* invalid name */
     jxbt_throw_host_not_found(env, name);

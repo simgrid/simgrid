@@ -24,7 +24,7 @@ jfieldID jprocess_field_Process_ppid;
 
 jobject jprocess_from_native(msg_process_t process)
 {
-  simgrid::kernel::context::JavaContext* context =
+  const simgrid::kernel::context::JavaContext* context =
       static_cast<simgrid::kernel::context::JavaContext*>(process->get_impl()->context_.get());
   return context->jprocess_;
 }
