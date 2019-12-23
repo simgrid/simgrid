@@ -275,7 +275,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
 
       /* Try first to associate to same block in the other heap */
       if (heapinfo2->type == heapinfo1->type && state.equals_to_<2>(i1, 0).valid_ == 0) {
-        void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
+        const void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
         if (not heap_area_differ(state, addr_block1, addr_block2, snapshot1, snapshot2, nullptr, nullptr, 0)) {
           for (size_t k = 1; k < heapinfo2->busy_block.size; k++)
             state.equals_to_<2>(i1 + k, 0) = HeapArea(i1, -1);
@@ -287,7 +287,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
       }
 
       while (i2 < state.heaplimit && not equal) {
-        void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
+        const void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
 
         if (i2 == i1) {
           i2++;
@@ -337,8 +337,8 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
 
         /* Try first to associate to same fragment_ in the other heap */
         if (heapinfo2->type == heapinfo1->type && not state.equals_to_<2>(i1, j1).valid_) {
-          void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
-          void* addr_frag2  = (void*)((char*)addr_block2 + (j1 << heapinfo2->type));
+          const void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
+          const void* addr_frag2  = (void*)((char*)addr_block2 + (j1 << heapinfo2->type));
           if (not heap_area_differ(state, addr_frag1, addr_frag2, snapshot1, snapshot2, nullptr, nullptr, 0))
             equal = true;
         }
@@ -367,8 +367,8 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
             if (state.equals_to_<2>(i2, j2).valid_)
               continue;
 
-            void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
-            void* addr_frag2  = (void*)((char*)addr_block2 + (j2 << heapinfo2b->type));
+            const void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
+            const void* addr_frag2  = (void*)((char*)addr_block2 + (j2 << heapinfo2b->type));
 
             if (not heap_area_differ(state, addr_frag1, addr_frag2, snapshot1, snapshot2, nullptr, nullptr, 0)) {
               equal = true;
@@ -530,8 +530,8 @@ static bool heap_area_differ_with_type(StateComparator& state, const void* real_
       return false;
   }
 
-  Type* subtype;
-  Type* subsubtype;
+  const Type* subtype;
+  const Type* subsubtype;
   int elm_size;
   const void* addr_pointed1;
   const void* addr_pointed2;
@@ -654,8 +654,8 @@ static bool heap_area_differ_with_type(StateComparator& state, const void* real_
         } else {
           for (simgrid::mc::Member& member : type->members) {
             // TODO, optimize this? (for the offset case)
-            void* real_member1 = dwarf::resolve_member(real_area1, type, &member, &snapshot1);
-            void* real_member2 = dwarf::resolve_member(real_area2, type, &member, &snapshot2);
+            const void* real_member1 = dwarf::resolve_member(real_area1, type, &member, &snapshot1);
+            const void* real_member2 = dwarf::resolve_member(real_area2, type, &member, &snapshot2);
             if (heap_area_differ_with_type(state, real_member1, real_member2, snapshot1, snapshot2, previous,
                                            member.type, -1, check_ignore, 0))
               return true;
@@ -1011,8 +1011,8 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
                                    const void* real_area2, const simgrid::mc::Snapshot& snapshot2,
                                    simgrid::mc::Region* region2, simgrid::mc::Type* type, int pointer_level)
 {
-  simgrid::mc::Type* subtype;
-  simgrid::mc::Type* subsubtype;
+  const simgrid::mc::Type* subtype;
+  const simgrid::mc::Type* subsubtype;
   int elm_size;
   int i;
 
@@ -1114,8 +1114,8 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
     case DW_TAG_structure_type:
     case DW_TAG_class_type:
       for (simgrid::mc::Member& member : type->members) {
-        void* member1                   = simgrid::dwarf::resolve_member(real_area1, type, &member, &snapshot1);
-        void* member2                   = simgrid::dwarf::resolve_member(real_area2, type, &member, &snapshot2);
+        const void* member1             = simgrid::dwarf::resolve_member(real_area1, type, &member, &snapshot1);
+        const void* member2             = simgrid::dwarf::resolve_member(real_area2, type, &member, &snapshot2);
         simgrid::mc::Region* subregion1 = snapshot1.get_region(member1, region1); // region1 is hinted
         simgrid::mc::Region* subregion2 = snapshot2.get_region(member2, region2); // region2 is hinted
         if (areas_differ_with_type(state, member1, snapshot1, subregion1, member2, snapshot2, subregion2, member.type,

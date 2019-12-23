@@ -121,7 +121,7 @@ void LivenessChecker::replay()
 
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0) {
-    Pair* pair = exploration_stack_.back().get();
+    const Pair* pair = exploration_stack_.back().get();
     if (pair->graph_state->system_state_) {
       pair->graph_state->system_state_->restore(&mc_model_checker->process());
       return;
@@ -141,7 +141,7 @@ void LivenessChecker::replay()
 
     if (pair->exploration_started) {
       int req_num             = state->transition_.argument_;
-      smx_simcall_t saved_req = &state->executed_req_;
+      const s_smx_simcall* saved_req = &state->executed_req_;
 
       smx_simcall_t req = nullptr;
 
@@ -183,7 +183,7 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
   auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), DerefAndCompareByActorsCountAndUsedHeap());
 
   for (auto i = range.first; i != range.second; ++i) {
-    VisitedPair* pair_test = i->get();
+    const VisitedPair* pair_test = i->get();
     if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
         not snapshot_equal(pair_test->graph_state->system_state_.get(), visited_pair->graph_state->system_state_.get()))
@@ -408,7 +408,7 @@ void LivenessChecker::run()
     // For each enabled transition in the property automaton, push a
     // (application_state, automaton_state) pair to the exploration stack:
     for (int i = xbt_dynar_length(current_pair->automaton_state->out) - 1; i >= 0; i--) {
-      xbt_automaton_transition_t transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(
+      const xbt_automaton_transition* transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(
           current_pair->automaton_state->out, i, xbt_automaton_transition_t);
       if (evaluate_label(transition_succ->label, *prop_values))
         exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ->dst, prop_values));

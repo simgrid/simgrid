@@ -23,7 +23,7 @@ void Snapshot::snapshot_regions(RemoteClient* process)
   for (auto const& object_info : process->object_infos)
     add_region(RegionType::Data, object_info.get(), object_info->start_rw, object_info->end_rw - object_info->start_rw);
 
-  xbt_mheap_t heap = process->get_heap();
+  const mdesc* heap = process->get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 
@@ -97,7 +97,7 @@ static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
 {
-  RemoteClient* process = &mc_model_checker->process();
+  const RemoteClient* process = &mc_model_checker->process();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();

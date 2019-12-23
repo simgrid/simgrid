@@ -220,7 +220,7 @@ void SafetyChecker::backtrack()
                     SIMIX_simcall_name(prev_state->internal_req_.call_));
           break;
         } else {
-          const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req_);
+          const kernel::actor::ActorImpl* previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req_);
           XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
                     SIMIX_simcall_name(req->call_), issuer->get_pid(), state->num_,
                     SIMIX_simcall_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
@@ -244,7 +244,7 @@ void SafetyChecker::backtrack()
 void SafetyChecker::restore_state()
 {
   /* Intermediate backtracking */
-  State* last_state = stack_.back().get();
+  const State* last_state = stack_.back().get();
   if (last_state->system_state_) {
     last_state->system_state_->restore(&mc_model_checker->process());
     return;

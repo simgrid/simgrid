@@ -39,7 +39,7 @@ namespace mc {
 int UnwindContext::find_proc_info(unw_addr_space_t /*as*/, unw_word_t ip, unw_proc_info_t* pip, int need_unwind_info,
                                   void* arg) noexcept
 {
-  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
+  const simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
   return unw_get_accessors(context->process_->unw_underlying_addr_space)
       ->find_proc_info(context->process_->unw_underlying_addr_space, ip, pip, need_unwind_info,
                        context->process_->unw_underlying_context);
@@ -51,7 +51,7 @@ int UnwindContext::find_proc_info(unw_addr_space_t /*as*/, unw_word_t ip, unw_pr
  */
 void UnwindContext::put_unwind_info(unw_addr_space_t /*as*/, unw_proc_info_t* pip, void* arg) noexcept
 {
-  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
+  const simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
   return unw_get_accessors(context->process_->unw_underlying_addr_space)
       ->put_unwind_info(context->process_->unw_underlying_addr_space, pip, context->process_->unw_underlying_context);
 }
@@ -62,7 +62,7 @@ void UnwindContext::put_unwind_info(unw_addr_space_t /*as*/, unw_proc_info_t* pi
  */
 int UnwindContext::get_dyn_info_list_addr(unw_addr_space_t /*as*/, unw_word_t* dilap, void* arg) noexcept
 {
-  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
+  const simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
   return unw_get_accessors(context->process_->unw_underlying_addr_space)
       ->get_dyn_info_list_addr(context->process_->unw_underlying_addr_space, dilap,
                                context->process_->unw_underlying_context);
@@ -74,7 +74,7 @@ int UnwindContext::get_dyn_info_list_addr(unw_addr_space_t /*as*/, unw_word_t* d
  */
 int UnwindContext::access_mem(unw_addr_space_t /*as*/, unw_word_t addr, unw_word_t* valp, int write, void* arg) noexcept
 {
-  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
+  const simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
   if (write)
     return -UNW_EREADONLYREG;
   context->address_space_->read_bytes(valp, sizeof(unw_word_t), remote(addr));
@@ -176,7 +176,7 @@ int UnwindContext::access_reg(unw_addr_space_t /*as*/, unw_regnum_t regnum, unw_
   unw_context_t* context                 = &as_context->unwind_context_;
   if (write)
     return -UNW_EREADONLYREG;
-  greg_t* preg = (greg_t*)get_reg(context, regnum);
+  const greg_t* preg = (greg_t*)get_reg(context, regnum);
   if (not preg)
     return -UNW_EBADREG;
   *valp = *preg;
@@ -188,8 +188,8 @@ int UnwindContext::access_reg(unw_addr_space_t /*as*/, unw_regnum_t regnum, unw_
 int UnwindContext::get_proc_name(unw_addr_space_t /*as*/, unw_word_t addr, char* bufp, size_t buf_len, unw_word_t* offp,
                                  void* arg) noexcept
 {
-  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
-  simgrid::mc::Frame* frame           = context->process_->find_function(remote(addr));
+  const simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*)arg;
+  const simgrid::mc::Frame* frame           = context->process_->find_function(remote(addr));
   if (not frame)
     return -UNW_ENOINFO;
   *offp = (unw_word_t)frame->range.begin() - addr;

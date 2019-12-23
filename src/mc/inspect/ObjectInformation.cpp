@@ -100,7 +100,7 @@ void ObjectInformation::remove_global_variable(const char* name)
 
   while (first <= last) {
     size_type cursor                   = first + (last - first) / 2;
-    Variable& current_var              = this->global_variables[cursor];
+    const Variable& current_var        = this->global_variables[cursor];
     int cmp                            = current_var.name.compare(name);
 
     if (cmp == 0) {
@@ -151,7 +151,7 @@ static void remove_local_variable(Frame& scope, const char* var_name, const char
     // Binary search:
     while (start <= end) {
       size_type cursor                   = start + (end - start) / 2;
-      Variable& current_var              = scope.variables[cursor];
+      const Variable& current_var        = scope.variables[cursor];
       int compare                        = current_var.name.compare(var_name);
       if (compare == 0) {
         // Variable found, remove it:

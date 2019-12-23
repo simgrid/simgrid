@@ -66,7 +66,7 @@ public:
   /* Regular use */
   bool on_heap(const void* address) const
   {
-    const xbt_mheap_t heap = process()->get_heap();
+    const mdesc* heap = process()->get_heap();
     return address >= heap->heapbase && address < heap->breakval;
   }
 

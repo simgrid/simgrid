@@ -96,7 +96,7 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   // HACK, type punning
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
   mc_model_checker->process().read(temp_comm, comm_addr);
-  simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+  const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
   smx_actor_t src_proc   = mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
   smx_actor_t dst_proc   = mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
@@ -185,7 +185,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
     Remote<kernel::activity::CommImpl> temp_synchro;
     mc_model_checker->process().read(temp_synchro,
                                      remote(static_cast<kernel::activity::CommImpl*>(pattern->comm_addr)));
-    kernel::activity::CommImpl* synchro = static_cast<kernel::activity::CommImpl*>(temp_synchro.get_buffer());
+    const kernel::activity::CommImpl* synchro = static_cast<kernel::activity::CommImpl*>(temp_synchro.get_buffer());
 
     char* remote_name = mc_model_checker->process().read<char*>(RemotePtr<char*>(
         (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->name_ : &synchro->mbox_cpy->name_)));
@@ -230,7 +230,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
 
     Remote<kernel::activity::CommImpl> temp_comm;
     mc_model_checker->process().read(temp_comm, remote(static_cast<kernel::activity::CommImpl*>(pattern->comm_addr)));
-    kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+    const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
     char* remote_name;
     mc_model_checker->process().read(
@@ -379,7 +379,7 @@ void CommunicationDeterminismChecker::restoreState()
       break;
 
     int req_num             = state->transition_.argument_;
-    smx_simcall_t saved_req = &state->executed_req_;
+    const s_smx_simcall* saved_req = &state->executed_req_;
     xbt_assert(saved_req);
 
     /* because we got a copy of the executed request, we have to fetch the

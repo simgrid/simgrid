@@ -891,10 +891,10 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die*
 
 static Elf64_Half get_type(Elf* elf)
 {
-  Elf64_Ehdr* ehdr64 = elf64_getehdr(elf);
+  const Elf64_Ehdr* ehdr64 = elf64_getehdr(elf);
   if (ehdr64)
     return ehdr64->e_type;
-  Elf32_Ehdr* ehdr32 = elf32_getehdr(elf);
+  const Elf32_Ehdr* ehdr32 = elf32_getehdr(elf);
   if (ehdr32)
     return ehdr32->e_type;
   xbt_die("Could not get ELF heeader");
@@ -935,7 +935,7 @@ static std::vector<char> get_build_id(Elf* elf)
   // Iterate over the program headers and find the PT_NOTE ones:
   for (size_t i = 0; i < phnum; ++i) {
     GElf_Phdr phdr_temp;
-    GElf_Phdr* phdr = gelf_getphdr(elf, i, &phdr_temp);
+    const GElf_Phdr* phdr = gelf_getphdr(elf, i, &phdr_temp);
     if (phdr->p_type != PT_NOTE)
       continue;
 

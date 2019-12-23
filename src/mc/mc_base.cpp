@@ -88,8 +88,8 @@ bool actor_is_enabled(smx_actor_t actor)
 
     case SIMCALL_COMM_WAIT: {
       /* FIXME: check also that src and dst processes are not suspended */
-      simgrid::kernel::activity::CommImpl* act =
-          static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
+      const kernel::activity::CommImpl* act =
+          static_cast<kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
 
       if (act->src_timeout_ || act->dst_timeout_) {
         /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
@@ -108,7 +108,7 @@ bool actor_is_enabled(smx_actor_t actor)
       simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(req);
       size_t count                                = simcall_comm_waitany__get__count(req);
       for (unsigned int index = 0; index < count; ++index) {
-        auto* comm = comms[index];
+        auto const* comm = comms[index];
         if (comm->src_actor_ && comm->dst_actor_)
           return true;
       }
@@ -116,7 +116,7 @@ bool actor_is_enabled(smx_actor_t actor)
     }
 
     case SIMCALL_MUTEX_LOCK: {
-      smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
+      const kernel::activity::MutexImpl* mutex = simcall_mutex_lock__get__mutex(req);
 
       if (mutex->owner_ == nullptr)
         return true;

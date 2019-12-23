@@ -435,7 +435,7 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
       continue;
     xbt_assert(c > 0, "Could not read string from remote process");
 
-    void* p = memchr(res.data() + off, '\0', c);
+    const void* p = memchr(res.data() + off, '\0', c);
     if (p)
       return std::string(res.data());
 
@@ -487,7 +487,7 @@ void RemoteClient::ignore_region(std::uint64_t addr, std::size_t size)
   }
 
   unsigned int cursor           = 0;
-  IgnoredRegion* current_region = nullptr;
+  const IgnoredRegion* current_region = nullptr;
 
   int start = 0;
   int end   = ignored_regions_.size() - 1;
@@ -536,7 +536,7 @@ void RemoteClient::ignore_heap(IgnoredHeapRegion const& region)
   size_type cursor;
   while (start <= end) {
     cursor               = start + (end - start) / 2;
-    auto& current_region = ignored_heap_[cursor];
+    auto const& current_region = ignored_heap_[cursor];
     if (current_region.address == region.address)
       return;
     else if (current_region.address < region.address)
@@ -565,7 +565,7 @@ void RemoteClient::unignore_heap(void* address, size_t size)
   size_type cursor;
   while (start <= end) {
     cursor       = (start + end) / 2;
-    auto& region = ignored_heap_[cursor];
+    auto const& region = ignored_heap_[cursor];
     if (region.address < address)
       start = cursor + 1;
     else if ((char*)region.address <= ((char*)address + size)) {

@@ -76,7 +76,7 @@ void* Region::read(void* target, const void* addr, std::size_t size)
 
   // Read each page:
   while (simgrid::mc::mmu::split((std::uintptr_t)addr).first != page_end) {
-    void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, this);
+    const void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, this);
     void* next_page     = (void*)simgrid::mc::mmu::join(simgrid::mc::mmu::split((std::uintptr_t)addr).first + 1, 0);
     size_t readable     = (char*)next_page - (const char*)addr;
     memcpy(dest, snapshot_addr, readable);
@@ -86,7 +86,7 @@ void* Region::read(void* target, const void* addr, std::size_t size)
   }
 
   // Read the end:
-  void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, this);
+  const void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, this);
   memcpy(dest, snapshot_addr, size);
 
   return target;

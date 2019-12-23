@@ -119,7 +119,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
   if (mc_model_checker == nullptr)
     return actor->get_host()->get_cname();
 
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
+  const simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
@@ -134,7 +134,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 
 const char* MC_smx_actor_get_name(smx_actor_t actor)
 {
-  simgrid::mc::RemoteClient* process = &mc_model_checker->process();
+  const simgrid::mc::RemoteClient* process = &mc_model_checker->process();
   if (mc_model_checker == nullptr)
     return actor->get_cname();
 
