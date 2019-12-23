@@ -119,10 +119,10 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
 
     /* Need to check that none of the model has failed */
     int i                         = 0;
-    kernel::lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
+    const kernel::lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
     while (cnst != nullptr) {
       i++;
-      kernel::resource::Resource* constraint_id = cnst->get_id();
+      const kernel::resource::Resource* constraint_id = cnst->get_id();
       if (not constraint_id->is_on()) {
         XBT_DEBUG("Action (%p) Failed!!", &action);
         action.finish(kernel::resource::Action::State::FAILED);
@@ -210,7 +210,7 @@ L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host
 kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   std::vector<s4u::Host*> host_list = {src, dst};
-  double* flops_amount = new double[2]();
+  const double* flops_amount        = new double[2]();
   double* bytes_amount = new double[4]();
 
   bytes_amount[1] = size;
@@ -288,12 +288,12 @@ bool CpuL07::is_used()
 /** @brief take into account changes of speed (either load or max) */
 void CpuL07::on_speed_change()
 {
-  kernel::lmm::Variable* var = nullptr;
+  const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem = nullptr;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), speed_.peak * speed_.scale);
   while ((var = get_constraint()->get_variable(&elem))) {
-    kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
+    const kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
   }
@@ -362,7 +362,7 @@ void LinkL07::set_bandwidth(double value)
 
 void LinkL07::set_latency(double value)
 {
-  kernel::lmm::Variable* var = nullptr;
+  const kernel::lmm::Variable* var;
   L07Action *action;
   const kernel::lmm::Element* elem = nullptr;
 

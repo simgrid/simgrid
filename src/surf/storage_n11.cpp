@@ -21,7 +21,7 @@ extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_ty
 void check_disk_attachment()
 {
   for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages()) {
-    simgrid::kernel::routing::NetPoint* host_elm =
+    const simgrid::kernel::routing::NetPoint* host_elm =
         simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(s->get_impl()->get_host());
     if (not host_elm)
       surf_parse_error(std::string("Unable to attach storage ") + s->get_cname() + ": host " +
@@ -52,7 +52,7 @@ StorageN11Model::StorageN11Model()
 StorageImpl* StorageN11Model::createStorage(const std::string& id, const std::string& type_id,
                                             const std::string& content_name, const std::string& attach)
 {
-  StorageType* storage_type = storage_types.at(type_id);
+  const StorageType* storage_type = storage_types.at(type_id);
 
   double Bread =
       surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);

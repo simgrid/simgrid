@@ -102,7 +102,7 @@ bool CpuCas01::is_used()
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::on_speed_change()
 {
-  lmm::Variable* var       = nullptr;
+  const lmm::Variable* var;
   const lmm::Element* elem = nullptr;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
@@ -137,8 +137,8 @@ void CpuCas01::apply_event(profile::Event* event, double value)
         get_host()->turn_on();
       }
     } else {
-      lmm::Constraint* cnst    = get_constraint();
-      lmm::Variable* var       = nullptr;
+      const lmm::Constraint* cnst = get_constraint();
+      const lmm::Variable* var;
       const lmm::Element* elem = nullptr;
       double date              = surf_get_clock();
 

@@ -218,8 +218,8 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     // other columns are to store one or more link for the node
 
     //add a loopback link
-    simgrid::s4u::Link* linkUp   = nullptr;
-    simgrid::s4u::Link* linkDown = nullptr;
+    const simgrid::s4u::Link* linkUp   = nullptr;
+    const simgrid::s4u::Link* linkDown = nullptr;
     if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
       std::string tmp_link = link_id + "_loopback";
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link.c_str(), cluster->loopback_bw);
@@ -352,7 +352,7 @@ void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage
   xbt_assert(std::find(known_storages.begin(), known_storages.end(), storage->id) == known_storages.end(),
              "Refusing to add a second storage named \"%s\"", storage->id.c_str());
 
-  simgrid::kernel::resource::StorageType* stype;
+  const simgrid::kernel::resource::StorageType* stype;
   auto st = storage_types.find(storage->type_id);
   if (st != storage_types.end()) {
     stype = st->second;
@@ -446,7 +446,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     }
     xbt_die("%s", msg.c_str());
   }
-  simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(actor->function);
+  const simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(actor->function);
   xbt_assert(factory, "Error while creating an actor from the XML file: Function '%s' not registered", actor->function);
 
   double start_time = actor->start_time;
@@ -671,8 +671,8 @@ void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostl
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get a host_link.");
 
-  simgrid::s4u::Link* linkUp   = simgrid::s4u::Link::by_name_or_null(hostlink->link_up);
-  simgrid::s4u::Link* linkDown = simgrid::s4u::Link::by_name_or_null(hostlink->link_down);
+  const simgrid::s4u::Link* linkUp   = simgrid::s4u::Link::by_name_or_null(hostlink->link_up);
+  const simgrid::s4u::Link* linkDown = simgrid::s4u::Link::by_name_or_null(hostlink->link_down);
 
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up.c_str());
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down.c_str());

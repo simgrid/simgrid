@@ -138,7 +138,7 @@ void LinkImpl::turn_off()
     Resource::turn_off();
     s4u::Link::on_state_change(this->piface_);
 
-    kernel::lmm::Variable* var       = nullptr;
+    const kernel::lmm::Variable* var;
     const kernel::lmm::Element* elem = nullptr;
     double now                       = surf_get_clock();
     while ((var = get_constraint()->get_variable(&elem))) {

@@ -231,7 +231,7 @@ void surf_exit()
 {
   simgrid::s4u::Engine::shutdown();
   for (auto const& e : storage_types) {
-    simgrid::kernel::resource::StorageType* stype = e.second;
+    const simgrid::kernel::resource::StorageType* stype = e.second;
     delete stype->properties;
     delete stype->model_properties;
     delete stype;

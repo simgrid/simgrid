@@ -345,7 +345,7 @@ void NetworkCm02Link::set_bandwidth(double value)
   if (sg_weight_S_parameter > 0) {
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
 
-    kernel::lmm::Variable* var;
+    const kernel::lmm::Variable* var;
     const kernel::lmm::Element* elem     = nullptr;
     const kernel::lmm::Element* nextelem = nullptr;
     int numelem                  = 0;
@@ -361,7 +361,7 @@ void NetworkCm02Link::set_bandwidth(double value)
 void NetworkCm02Link::set_latency(double value)
 {
   double delta                 = value - latency_.peak;
-  kernel::lmm::Variable* var   = nullptr;
+  const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
   int numelem                  = 0;

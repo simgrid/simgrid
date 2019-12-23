@@ -94,19 +94,19 @@ NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 
   try {
     Be = std::stod(radical_elements.front());
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument& ia) {
     throw std::invalid_argument(std::string("First part of smpi/IB-penalty-factors is not numerical:") + ia.what());
   }
 
   try {
     Bs = std::stod(radical_elements.at(1));
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument& ia) {
     throw std::invalid_argument(std::string("Second part of smpi/IB-penalty-factors is not numerical:") + ia.what());
   }
 
   try {
     ys = std::stod(radical_elements.back());
-  } catch (std::invalid_argument& ia) {
+  } catch (const std::invalid_argument& ia) {
     throw std::invalid_argument(std::string("Third part of smpi/IB-penalty-factors is not numerical:") + ia.what());
   }
 }
