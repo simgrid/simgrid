@@ -130,7 +130,7 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, bool (*match_fu
   auto& comm_queue      = done ? done_comm_queue_ : comm_queue_;
 
   for (auto it = comm_queue.begin(); it != comm_queue.end(); it++) {
-    CommImplPtr& comm = *it;
+    const CommImplPtr& comm = *it;
 
     if (comm->type_ == CommImpl::Type::SEND) {
       other_user_data = comm->src_data_;

@@ -134,8 +134,8 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
   link.policy    = cluster->sharing_policy;
   sg_platf_new_link(&link);
 
-  s4u::Link* linkUp;
-  s4u::Link* linkDown;
+  const s4u::Link* linkUp;
+  const s4u::Link* linkDown;
   if (link.policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
     linkUp   = s4u::Link::by_name(link_id + "_UP");
     linkDown = s4u::Link::by_name(link_id + "_DOWN");

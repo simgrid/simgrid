@@ -85,7 +85,7 @@ int NetZoneImpl::get_host_count()
 {
   int count = 0;
   for (auto const& card : get_vertices()) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
+    const s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
     if (host != nullptr)
       count++;
   }
@@ -218,8 +218,8 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
   /* engage the full recursive search */
 
   /* (1) find the path to root of src and dst*/
-  NetZoneImpl* src_as = src->get_englobing_zone();
-  NetZoneImpl* dst_as = dst->get_englobing_zone();
+  const NetZoneImpl* src_as = src->get_englobing_zone();
+  const NetZoneImpl* dst_as = dst->get_englobing_zone();
 
   xbt_assert(src_as, "Host %s must be in a netzone", src->get_cname());
   xbt_assert(dst_as, "Host %s must be in a netzone", dst->get_cname());
@@ -273,7 +273,7 @@ bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* ds
   /* Base case, no recursion is needed */
   if (dst->get_englobing_zone() == this && src->get_englobing_zone() == this) {
     if (bypass_routes_.find({src, dst}) != bypass_routes_.end()) {
-      BypassRoute* bypassedRoute = bypass_routes_.at({src, dst});
+      const BypassRoute* bypassedRoute = bypass_routes_.at({src, dst});
       for (resource::LinkImpl* const& link : bypassedRoute->links) {
         links.push_back(link);
         if (latency)
@@ -316,7 +316,7 @@ bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* ds
   int max_index = std::max(max_index_src, max_index_dst);
 
   /* (3) Search for a bypass making the path up to the ancestor useless */
-  BypassRoute* bypassedRoute = nullptr;
+  const BypassRoute* bypassedRoute = nullptr;
   std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*> key;
   for (int max = 0; max <= max_index; max++) {
     for (int i = 0; i < max; i++) {

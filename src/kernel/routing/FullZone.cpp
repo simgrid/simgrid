@@ -59,7 +59,7 @@ void FullZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
   XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   unsigned int table_size        = get_table_size();
-  RouteCreationArgs* e_route     = TO_ROUTE_FULL(src->id(), dst->id());
+  const RouteCreationArgs* e_route = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route != nullptr) {
     res->gw_src = e_route->gw_src;

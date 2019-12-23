@@ -227,7 +227,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
   // If it does, subtract it from the required slack
   int current_share = 0;
   if (var->concurrency_share_ > 1) {
-    for (Element& elem : var->cnsts_) {
+    for (const Element& elem : var->cnsts_) {
       if (elem.constraint == cnst && elem.enabled_element_set_hook.is_linked())
         current_share += elem.get_concurrency();
     }
@@ -402,7 +402,7 @@ static inline void saturated_variable_set_update(ConstraintLight* cnst_light_tab
   /* Add active variables (i.e. variables that need to be set) from the set of constraints to saturate
    * (cnst_light_tab)*/
   for (int const& saturated_cnst : saturated_constraints) {
-    ConstraintLight& cnst = cnst_light_tab[saturated_cnst];
+    const ConstraintLight& cnst = cnst_light_tab[saturated_cnst];
     for (Element const& elem : cnst.cnst->active_element_set_) {
       xbt_assert(elem.variable->sharing_penalty_ > 0); // All elements of active_element_set should be active
       if (elem.consumption_weight > 0 && not elem.variable->saturated_variable_set_hook_.is_linked())
@@ -607,7 +607,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           // Remember: non-shared constraints only require that max(elem.value * var.value) < cnst->bound
           cnst->usage_ = 0.0;
           elem.make_inactive();
-          for (Element& elem2 : cnst->enabled_element_set_) {
+          for (const Element& elem2 : cnst->enabled_element_set_) {
             xbt_assert(elem2.variable->sharing_penalty_ > 0);
             if (elem2.variable->value_ > 0)
               continue;

@@ -67,7 +67,7 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
       int nb = 0;
       XBT_DEBUG("Processing cnst %p ", &cnst);
       cnst.usage_ = 0.0;
-      for (Element& elem : cnst.enabled_element_set_) {
+      for (const Element& elem : cnst.enabled_element_set_) {
         xbt_assert(elem.variable->sharing_penalty_ > 0);
         if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook_.is_linked())
           nb++;
@@ -108,14 +108,14 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
       Constraint& cnst = *iter;
       XBT_DEBUG("Updating cnst %p ", &cnst);
       if (cnst.sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE) {
-        for (Element& elem : cnst.enabled_element_set_) {
+        for (const Element& elem : cnst.enabled_element_set_) {
           xbt_assert(elem.variable->sharing_penalty_ > 0);
           XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining_, elem.variable,
                     elem.variable->mu_);
           double_update(&cnst.remaining_, elem.consumption_weight * elem.variable->mu_, sg_maxmin_precision);
         }
       } else {
-        for (Element& elem : cnst.enabled_element_set_) {
+        for (const Element& elem : cnst.enabled_element_set_) {
           xbt_assert(elem.variable->sharing_penalty_ > 0);
           XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g", &cnst,
                     cnst.usage_, elem.variable, elem.variable->mu_);
@@ -130,7 +130,7 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
         XBT_DEBUG("\tGet rid of constraint %p", &cnst);
 
         iter = cnst_list.erase(iter);
-        for (Element& elem : cnst.enabled_element_set_) {
+        for (const Element& elem : cnst.enabled_element_set_) {
           if (elem.variable->sharing_penalty_ <= 0)
             break;
           if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook_.is_linked()) {

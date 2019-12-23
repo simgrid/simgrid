@@ -67,7 +67,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 
   NetPoint* prev_dst_gw = nullptr;
   while (not route_stack.empty()) {
-    RouteCreationArgs* e_route = route_stack.back();
+    const RouteCreationArgs* e_route = route_stack.back();
     route_stack.pop_back();
     if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr &&
         prev_dst_gw->get_cname() != e_route->gw_src->get_cname()) {

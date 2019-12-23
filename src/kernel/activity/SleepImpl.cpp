@@ -55,7 +55,7 @@ void SleepImpl::post()
 void SleepImpl::finish()
 {
   while (not simcalls_.empty()) {
-    smx_simcall_t simcall = simcalls_.front();
+    const s_smx_simcall* simcall = simcalls_.front();
     simcalls_.pop_front();
 
     simcall->issuer_->waiting_synchro = nullptr;

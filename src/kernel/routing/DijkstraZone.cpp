@@ -125,7 +125,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     if (edge == nullptr)
       throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
 
-    RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
+    const RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
     for (auto const& link : e_route->link_list) {
       route->link_list.insert(route->link_list.begin(), link);
@@ -168,9 +168,9 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
 
       xbt_dynar_foreach (xbt_graph_node_get_outedges(v_node), cursor, edge) {
         xbt_node_t u_node                  = xbt_graph_edge_get_target(edge);
-        GraphNodeData* data                = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
+        const GraphNodeData* data            = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
         int u_id                           = data->graph_id_;
-        RouteCreationArgs* tmp_e_route     = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
+        const RouteCreationArgs* tmp_e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
         int cost_v_u                       = tmp_e_route->link_list.size(); /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[v_id] < cost_arr[u_id]) {
@@ -194,9 +194,9 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     if (edge == nullptr)
       throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
 
-    RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
+    const RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
-    NetPoint* prev_gw_src = gw_src;
+    const NetPoint* prev_gw_src = gw_src;
     gw_src                = e_route->gw_src;
     NetPoint* gw_dst      = e_route->gw_dst;
 

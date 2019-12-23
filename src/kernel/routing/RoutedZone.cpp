@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic imple
 
 static const char* instr_node_name(xbt_node_t node)
 {
-  void* data = xbt_graph_node_get_data(node);
+  const void* data = xbt_graph_node_get_data(node);
   return static_cast<const char*>(data);
 }
 
@@ -153,8 +153,8 @@ void RoutedZone::get_route_check_params(NetPoint* src, NetPoint* dst)
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->get_cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->get_cname());
 
-  NetZoneImpl* src_as = src->get_englobing_zone();
-  NetZoneImpl* dst_as = dst->get_englobing_zone();
+  const NetZoneImpl* src_as = src->get_englobing_zone();
+  const NetZoneImpl* dst_as = dst->get_englobing_zone();
 
   xbt_assert(src_as == dst_as,
              "Internal error: %s@%s and %s@%s are not in the same netzone as expected. Please report that bug.",

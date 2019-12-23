@@ -172,7 +172,7 @@ void SwappedContextFactory::run_all()
       return;
 
     /* maestro is already saved in the first slot of workers_context_ */
-    smx_actor_t first_actor = simix_global->actors_to_run.front();
+    const actor::ActorImpl* first_actor = simix_global->actors_to_run.front();
     process_index_          = 1;
     /* execute the first actor; it will chain to the others when using suspend() */
     static_cast<SwappedContext*>(first_actor->context_.get())->resume();

@@ -117,7 +117,7 @@ Profile* Profile::from_file(const std::string& path)
   xbt_assert(not path.empty(), "Cannot parse a trace from an empty filename");
   xbt_assert(trace_list.find(path) == trace_list.end(), "Refusing to define trace %s twice", path.c_str());
 
-  std::ifstream* f = surf_ifsopen(path);
+  const std::ifstream* f = surf_ifsopen(path);
   xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", path.c_str(), (boost::join(surf_path, ":")).c_str());
 
   std::stringstream buffer;
