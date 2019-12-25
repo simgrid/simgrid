@@ -660,7 +660,13 @@ sg_host_t sg_host_self()
 /* needs to be public and without simcall for exceptions and logging events */
 const char* sg_host_self_get_name()
 {
-  return SIMIX_is_maestro() ? "" : simgrid::kernel::actor::ActorImpl::self()->get_host()->get_cname();
+  const char* res = "";
+  if (not SIMIX_is_maestro()) {
+    simgrid::s4u::Host* host = simgrid::kernel::actor::ActorImpl::self()->get_host();
+    if (host != nullptr)
+      res = host->get_cname();
+  }
+  return res;
 }
 
 double sg_host_load(sg_host_t host)
