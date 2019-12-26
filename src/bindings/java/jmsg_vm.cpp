@@ -35,28 +35,28 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cl
   xbt_assert(jvm_field_bind, "Native initialization of msg/VM failed. Please report that bug");
 }
 
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isCreated(JNIEnv * env, jobject jvm)
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isCreated(JNIEnv* env, jobject jvm)
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
   return MSG_vm_is_created(vm);
 }
 
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv * env, jobject jvm)
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv* env, jobject jvm)
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
-  return (jint) MSG_vm_is_running(vm);
+  return MSG_vm_is_running(vm);
 }
 
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isMigrating(JNIEnv * env, jobject jvm)
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isMigrating(JNIEnv* env, jobject jvm)
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
-  return (jint) MSG_vm_is_migrating(vm);
+  return MSG_vm_is_migrating(vm);
 }
 
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isSuspended(JNIEnv * env, jobject jvm)
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isSuspended(JNIEnv* env, jobject jvm)
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
-  return (jint) MSG_vm_is_suspended(vm);
+  return MSG_vm_is_suspended(vm);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jdouble bound)

@@ -78,16 +78,16 @@ public class VM extends Host {
 	private native void nativeFinalize();
 
 	/** Returns whether the given VM is currently suspended */	
-	public native int isCreated();
+	public native boolean isCreated();
 
 	/** Returns whether the given VM is currently running */
-	public native int isRunning();
+	public native boolean isRunning();
 
 	/** Returns whether the given VM is currently running */
-	public native int isMigrating();
+	public native boolean isMigrating();
 
 	/** Returns whether the given VM is currently suspended */	
-	public native int isSuspended();
+	public native boolean isSuspended();
 
 	/** Returns the amount of virtual CPUs provided */
 	public int getCoreAmount() {

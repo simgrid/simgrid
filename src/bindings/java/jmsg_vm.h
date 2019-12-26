@@ -29,11 +29,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv* env, jclass cl
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass cls_arg);
 
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isCreated(JNIEnv* env, jobject jvm);
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv* env, jobject jvm);
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isMigrating(JNIEnv* env, jobject jvm);
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isSuspended(JNIEnv* env, jobject jvm);
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_VM_isResuming(JNIEnv* env, jobject jvm);
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isCreated(JNIEnv* env, jobject jvm);
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv* env, jobject jvm);
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isMigrating(JNIEnv* env, jobject jvm);
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isSuspended(JNIEnv* env, jobject jvm);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv* env, jobject jvm, jdouble bound);
 
