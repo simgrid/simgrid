@@ -87,9 +87,9 @@ void System::check_concurrency() const
       continue;
 
     const Element& elem    = var.cnsts_[0];
-    int belong_to_enabled  = elem.enabled_element_set_hook.is_linked();
-    int belong_to_disabled = elem.disabled_element_set_hook.is_linked();
-    int belong_to_active   = elem.active_element_set_hook.is_linked();
+    bool belong_to_enabled  = elem.enabled_element_set_hook.is_linked();
+    bool belong_to_disabled = elem.disabled_element_set_hook.is_linked();
+    bool belong_to_active   = elem.active_element_set_hook.is_linked();
 
     for (Element const& elem2 : var.cnsts_) {
       xbt_assert(belong_to_enabled == elem2.enabled_element_set_hook.is_linked(),
@@ -827,8 +827,8 @@ void System::update_variable_penalty(Variable* var, double penalty)
   if (penalty == var->sharing_penalty_)
     return;
 
-  int enabling_var  = (penalty > 0 && var->sharing_penalty_ <= 0);
-  int disabling_var = (penalty <= 0 && var->sharing_penalty_ > 0);
+  bool enabling_var  = (penalty > 0 && var->sharing_penalty_ <= 0);
+  bool disabling_var = (penalty <= 0 && var->sharing_penalty_ > 0);
 
   XBT_IN("(sys=%p, var=%p, penalty=%f)", this, var, penalty);
 

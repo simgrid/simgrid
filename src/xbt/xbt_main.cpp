@@ -63,19 +63,16 @@ static void xbt_postexit();
 
 #ifndef __GNUC__
 /* Should not be necessary but for some reason, DllMain is called twice at attachment and at detachment.*/
-static int xbt_dll_process_is_attached = 0;
-
 /* see also http://msdn.microsoft.com/en-us/library/ms682583%28VS.85%29.aspx */
 /* and http://www.microsoft.com/whdc/driver/kernel/DLL_bestprac.mspx */
 static BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
-  if (fdwReason == DLL_PROCESS_ATTACH
-      && xbt_dll_process_is_attached == 0) {
-    xbt_dll_process_is_attached = 1;
+  static bool xbt_dll_process_is_attached = false;
+  if (fdwReason == DLL_PROCESS_ATTACH && not xbt_dll_process_is_attached) {
+    xbt_dll_process_is_attached = true;
     xbt_preinit();
-  } else if (fdwReason == DLL_PROCESS_DETACH
-      && xbt_dll_process_is_attached == 1) {
-    xbt_dll_process_is_attached = 0;
+  } else if (fdwReason == DLL_PROCESS_DETACH && xbt_dll_process_is_attached) {
+    xbt_dll_process_is_attached = false;
   }
   return 1;
 }

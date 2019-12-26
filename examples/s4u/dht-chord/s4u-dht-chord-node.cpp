@@ -20,9 +20,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(s4u_chord);
  * @param id id to check
  * @param start lower bound
  * @param end upper bound
- * @return a non-zero value if id in in [start, end]
+ * @return true if id in in [start, end]
  */
-static int is_in_interval(int id, int start, int end)
+static bool is_in_interval(int id, int start, int end)
 {
   int i = id % nb_keys;
   int s = start % nb_keys;

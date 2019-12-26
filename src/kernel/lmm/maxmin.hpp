@@ -337,7 +337,7 @@ public:
   /** @brief Check if a variable can be enabled
    * Make sure to set staged_penalty before, if your intent is only to check concurrency
    */
-  int can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() >= concurrency_share_; }
+  bool can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() >= concurrency_share_; }
 
   /* hookup to system */
   boost::intrusive::list_member_hook<> variable_set_hook_;
