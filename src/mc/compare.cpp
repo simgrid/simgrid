@@ -338,7 +338,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
         /* Try first to associate to same fragment_ in the other heap */
         if (heapinfo2->type == heapinfo1->type && not state.equals_to_<2>(i1, j1).valid_) {
           const void* addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
-          const void* addr_frag2  = (void*)((char*)addr_block2 + (j1 << heapinfo2->type));
+          const void* addr_frag2  = (const char*)addr_block2 + (j1 << heapinfo2->type);
           if (not heap_area_differ(state, addr_frag1, addr_frag2, snapshot1, snapshot2, nullptr, nullptr, 0))
             equal = true;
         }
@@ -368,7 +368,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
               continue;
 
             const void* addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
-            const void* addr_frag2  = (void*)((char*)addr_block2 + (j2 << heapinfo2b->type));
+            const void* addr_frag2  = (const char*)addr_block2 + (j2 << heapinfo2b->type);
 
             if (not heap_area_differ(state, addr_frag1, addr_frag2, snapshot1, snapshot2, nullptr, nullptr, 0)) {
               equal = true;
