@@ -28,7 +28,8 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Comm::keyvals_;
 int Comm::keyval_id_=0;
 
-Comm::Comm(MPI_Group group, MPI_Topology topo, int smp, int in_id) : group_(group), topo_(topo),is_smp_comm_(smp), id_(in_id)
+Comm::Comm(MPI_Group group, MPI_Topology topo, bool smp, int in_id)
+    : group_(group), topo_(topo), is_smp_comm_(smp), id_(in_id)
 {
   errhandler_->ref();
   //First creation of comm is done before SIMIX_run, so only do comms for others
@@ -202,19 +203,22 @@ MPI_Comm Comm::get_intra_comm(){
   else return intra_comm_;
 }
 
-int Comm::is_uniform(){
+bool Comm::is_uniform()
+{
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_uniform();
-  return is_uniform_;
+  return is_uniform_ != 0;
 }
 
-int Comm::is_blocked(){
+bool Comm::is_blocked()
+{
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_blocked();
-  return is_blocked_;
+  return is_blocked_ != 0;
 }
 
-int Comm::is_smp_comm(){
+bool Comm::is_smp_comm()
+{
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_smp_comm();
   return is_smp_comm_;
@@ -456,7 +460,7 @@ void Comm::init_smp(){
         break;
       }
     }
-    if(is_uniform==0 && this->is_uniform()!=0){
+    if (is_uniform == 0 && this->is_uniform()) {
       non_uniform_map_ = non_uniform_map;
     }else{
       xbt_free(non_uniform_map);

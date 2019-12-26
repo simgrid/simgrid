@@ -29,7 +29,8 @@ class Comm : public F2C, public Keyval{
   int is_uniform_       = 1;
   int* non_uniform_map_ = nullptr; // set if smp nodes have a different number of processes allocated
   int is_blocked_       = 0;       // are ranks allocated on the same smp node contiguous ?
-  int is_smp_comm_;             // set to 0 in case this is already an intra-comm or a leader-comm to avoid recursion
+  bool is_smp_comm_     = false;   // set to false in case this is already an intra-comm or a leader-comm to avoid
+                                   // recursion
   std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
   std::string name_;
   MPI_Info info_ = MPI_INFO_NULL;
@@ -41,7 +42,7 @@ public:
   static int keyval_id_;
 
   Comm() = default;
-  Comm(MPI_Group group, MPI_Topology topo, int smp = 0, int id=MPI_UNDEFINED);
+  Comm(MPI_Group group, MPI_Topology topo, bool smp = false, int id = MPI_UNDEFINED);
   int dup(MPI_Comm* newcomm);
   int dup_with_info(MPI_Info info, MPI_Comm* newcomm);
   MPI_Group group();
@@ -62,9 +63,9 @@ public:
   MPI_Comm get_leaders_comm();
   MPI_Comm get_intra_comm();
   MPI_Comm find_intra_comm(int* leader);
-  int is_uniform();
-  int is_blocked();
-  int is_smp_comm();
+  bool is_uniform();
+  bool is_blocked();
+  bool is_smp_comm();
   MPI_Comm split(int color, int key);
   void cleanup_smp();
   void ref();

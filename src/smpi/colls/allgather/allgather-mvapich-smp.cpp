@@ -100,7 +100,7 @@ int allgather__mvapich2_smp(const void *sendbuf,int sendcnt, MPI_Datatype sendty
     /* Exchange the data between the node leaders*/
     if (local_rank == 0 && (leader_comm_size > 1)) {
         /*When data in each socket is different*/
-        if (comm->is_uniform() != 1) {
+        if (not comm->is_uniform()) {
 
             int *node_sizes = NULL;
             int i = 0;

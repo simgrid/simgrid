@@ -69,7 +69,7 @@ int allreduce__mpich(const void *sbuf, void *rbuf, int count,
     block_dsize = dsize * count;
 
     /*MPICH uses SMP algorithms for all commutative ops now*/
-    if(!comm->is_smp_comm()){
+    if (not comm->is_smp_comm()) {
       if(comm->get_leaders_comm()==MPI_COMM_NULL){
         comm->init_smp();
       }
@@ -263,7 +263,7 @@ int bcast__mpich(void *buff, int count,
     //int segsize = 0;
     size_t message_size, dsize;
 
-    if(!comm->is_smp_comm()){
+    if (not comm->is_smp_comm()) {
       if(comm->get_leaders_comm()==MPI_COMM_NULL){
         comm->init_smp();
       }
@@ -359,7 +359,7 @@ int reduce__mpich(const void *sendbuf, void *recvbuf,
     int communicator_size=0;
     size_t message_size, dsize;
 
-    if(!comm->is_smp_comm()){
+    if (not comm->is_smp_comm()) {
       if(comm->get_leaders_comm()==MPI_COMM_NULL){
         comm->init_smp();
       }
