@@ -23,7 +23,6 @@ public:
 
 private:
   int last_id_   = 0;
-  int is_lowest_ = 0;
 
 public:
   std::string name;

@@ -37,7 +37,6 @@ void Container::add_child(jed_container_t child)
 
 void Container::add_resources(std::vector<sg_host_t> hosts)
 {
-  this->is_lowest_ = 1;
   this->children.clear();
   this->last_id_ = 0;
 
