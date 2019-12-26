@@ -83,7 +83,7 @@ public:
     std::string file_name = action[2];
     double clock          = simgrid::s4u::Engine::get_clock();
 
-    simgrid::s4u::File* file = get_file_descriptor(file_name);
+    const simgrid::s4u::File* file = get_file_descriptor(file_name);
 
     ACT_DEBUG("Entering Close: %s (filename: %s)", NAME.c_str(), file_name.c_str());
     delete file;

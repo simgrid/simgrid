@@ -662,7 +662,7 @@ const char* sg_host_self_get_name()
 {
   const char* res = "";
   if (not SIMIX_is_maestro()) {
-    simgrid::s4u::Host* host = simgrid::kernel::actor::ActorImpl::self()->get_host();
+    const simgrid::s4u::Host* host = simgrid::kernel::actor::ActorImpl::self()->get_host();
     if (host != nullptr)
       res = host->get_cname();
   }
