@@ -457,10 +457,10 @@ int reduce_scatter__mpich(const void *sbuf, void *rbuf,
     if( (op==MPI_OP_NULL || op->is_commutative()) &&  total_message_size > 524288) {
         return reduce_scatter__mpich_pair(sbuf, rbuf, rcounts, dtype, op, comm);
     } else if ((op != MPI_OP_NULL && not op->is_commutative())) {
-      int is_block_regular = 1;
+      bool is_block_regular = true;
       for (i = 0; i < (comm_size - 1); ++i) {
         if (rcounts[i] != rcounts[i + 1]) {
-          is_block_regular = 0;
+          is_block_regular = false;
           break;
         }
       }

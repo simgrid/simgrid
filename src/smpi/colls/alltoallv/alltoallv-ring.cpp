@@ -43,10 +43,10 @@ int alltoallv__ring(const void* send_buff, const int* send_counts, const int* se
   num_procs = comm->size();
   send_chunk = send_type->get_extent();
   recv_chunk = recv_type->get_extent();
-  int pof2 = ((num_procs != 0) && ((num_procs & (~num_procs + 1)) == num_procs));
+  bool pof2  = ((num_procs != 0) && ((num_procs & (~num_procs + 1)) == num_procs));
   for (i = 0; i < num_procs; i++) {
 
-    if (pof2 == 1) {
+    if (pof2) {
       /* use exclusive-or algorithm */
       src = dst = rank ^ i;
     } else {

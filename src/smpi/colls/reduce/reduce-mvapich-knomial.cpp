@@ -128,7 +128,7 @@ int reduce__mvapich2_knomial(
         MPI_Comm comm)
 {
     int mpi_errno = MPI_SUCCESS;
-    int rank, is_commutative;
+    int rank;
     int src, k;
     MPI_Request send_request;
     int index=0;
@@ -146,7 +146,7 @@ int reduce__mvapich2_knomial(
     datatype->extent(&true_lb, &true_extent);
     extent = datatype->get_extent();
 
-    is_commutative =  (op==MPI_OP_NULL || op->is_commutative());
+    bool is_commutative = (op == MPI_OP_NULL || op->is_commutative());
 
     if (rank != root) {
         recvbuf = (void*)smpi_get_tmp_recvbuffer(count * std::max(extent, true_extent));

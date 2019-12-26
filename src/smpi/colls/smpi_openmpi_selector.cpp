@@ -100,12 +100,12 @@ int barrier__ompi(MPI_Comm  comm)
 /*     * the use the recursive doubling algorithm, otherwise*/
 /*     * bruck is the one we want.*/
     {
-        int has_one = 0;
+        bool has_one = false;
         for( ; communicator_size > 0; communicator_size >>= 1 ) {
             if( communicator_size & 0x1 ) {
                 if( has_one )
                     return barrier__ompi_bruck(comm);
-                has_one = 1;
+                has_one = true;
             }
         }
     }

@@ -86,10 +86,9 @@ int allgather__mvapich2(const void *sendbuf, int sendcount, MPI_Datatype sendtyp
   int mpi_errno = MPI_SUCCESS;
   long nbytes = 0, comm_size, recvtype_size;
   int range = 0;
-  int partial_sub_ok = 0;
+  bool partial_sub_ok = false;
   int conf_index = 0;
   int range_threshold = 0;
-  int is_two_level = 0;
   MPI_Comm shmem_comm;
   //MPI_Comm *shmem_commptr=NULL;
   /* Get the size of the communicator */
@@ -116,14 +115,14 @@ int allgather__mvapich2(const void *sendbuf, int sendcount, MPI_Datatype sendtyp
     do {
       if (local_size == mv2_allgather_table_ppn_conf[i]) {
         conf_index = i;
-        partial_sub_ok = 1;
+        partial_sub_ok = true;
         break;
       }
       i++;
     } while(i < mv2_allgather_num_ppn_conf);
   }
   conf_check_end:
-  if (partial_sub_ok != 1) {
+  if (not partial_sub_ok) {
     conf_index = 0;
   }
 
@@ -147,11 +146,11 @@ int allgather__mvapich2(const void *sendbuf, int sendcount, MPI_Datatype sendtyp
       mv2_allgather_thresholds_table[conf_index][range].inter_leader[range_threshold].
       MV2_pt_Allgatherction;
 
-  is_two_level =  mv2_allgather_thresholds_table[conf_index][range].two_level[range_threshold];
+  bool is_two_level = mv2_allgather_thresholds_table[conf_index][range].two_level[range_threshold];
 
   /* intracommunicator */
-  if(is_two_level ==1){
-    if(partial_sub_ok ==1){
+  if (is_two_level) {
+    if (partial_sub_ok) {
       if (comm->is_blocked()){
       mpi_errno = MPIR_2lvl_Allgather_MV2(sendbuf, sendcount, sendtype,
                             recvbuf, recvcount, recvtype,
@@ -340,18 +339,17 @@ int allreduce__mvapich2(const void *sendbuf,
 
   MPI_Aint sendtype_size = 0;
   long nbytes = 0;
-  int is_commutative = 0;
   MPI_Aint true_lb, true_extent;
 
   sendtype_size=datatype->size();
   nbytes = count * sendtype_size;
 
   datatype->extent(&true_lb, &true_extent);
-  is_commutative = op->is_commutative();
+  bool is_commutative = op->is_commutative();
 
   {
     int range = 0, range_threshold = 0, range_threshold_intra = 0;
-    int is_two_level = 0;
+    bool is_two_level = false;
 
     /* Search for the corresponding system size inside the tuning table */
     while ((range < (mv2_size_allreduce_tuning_table - 1)) &&
@@ -360,7 +358,7 @@ int allreduce__mvapich2(const void *sendbuf,
     }
     /* Search for corresponding inter-leader function */
     /* skip mcast pointers if mcast is not available */
-    if(mv2_allreduce_thresholds_table[range].mcast_enabled != 1){
+    if (not mv2_allreduce_thresholds_table[range].mcast_enabled) {
         while ((range_threshold < (mv2_allreduce_thresholds_table[range].size_inter_table - 1))
             && ((mv2_allreduce_thresholds_table[range].
                 inter_leader[range_threshold].MV2_pt_Allreducection
@@ -378,8 +376,8 @@ int allreduce__mvapich2(const void *sendbuf,
     && (mv2_allreduce_thresholds_table[range].inter_leader[range_threshold].max != -1)) {
         range_threshold++;
     }
-    if(mv2_allreduce_thresholds_table[range].is_two_level_allreduce[range_threshold] == 1){
-        is_two_level = 1;
+    if (mv2_allreduce_thresholds_table[range].is_two_level_allreduce[range_threshold]) {
+      is_two_level = true;
     }
     /* Search for corresponding intra-node function */
     while ((range_threshold_intra <
@@ -403,23 +401,23 @@ int allreduce__mvapich2(const void *sendbuf,
         {
           MV2_Allreducection = &MPIR_Allreduce_pt2pt_rd_MV2;
         }
-        if(is_two_level != 1) {
+        if (not is_two_level) {
             MV2_Allreducection = &MPIR_Allreduce_pt2pt_rd_MV2;
         }
     }
 
-    if(is_two_level == 1){
-        // check if shm is ready, if not use other algorithm first
-        if (is_commutative) {
+    if (is_two_level) {
+      // check if shm is ready, if not use other algorithm first
+      if (is_commutative) {
           if(comm->get_leaders_comm()==MPI_COMM_NULL){
             comm->init_smp();
           }
           mpi_errno = MPIR_Allreduce_two_level_MV2(sendbuf, recvbuf, count,
                                                      datatype, op, comm);
-                } else {
+      } else {
         mpi_errno = MPIR_Allreduce_pt2pt_rd_MV2(sendbuf, recvbuf, count,
             datatype, op, comm);
-        }
+      }
     } else {
         mpi_errno = MV2_Allreducection(sendbuf, recvbuf, count,
             datatype, op, comm);
@@ -468,12 +466,11 @@ int bcast__mvapich2(void *buffer,
 {
     int mpi_errno = MPI_SUCCESS;
     int comm_size/*, rank*/;
-    int two_level_bcast = 1;
+    bool two_level_bcast      = true;
     long nbytes = 0;
     int range = 0;
     int range_threshold = 0;
     int range_threshold_intra = 0;
-    // int is_homogeneous, is_contig;
     MPI_Aint type_size;
     //, position;
     // unsigned char *tmp_buf = NULL;
@@ -490,15 +487,15 @@ int bcast__mvapich2(void *buffer,
     comm_size = comm->size();
     //rank = comm->rank();
 
-    //is_contig=1;
+    // bool is_contig = true;
 /*    if (HANDLE_GET_KIND(datatype) == HANDLE_KIND_BUILTIN)*/
-/*        is_contig = 1;*/
+/*        is_contig = true;*/
 /*    else {*/
 /*        MPID_Datatype_get_ptr(datatype, dtp);*/
 /*        is_contig = dtp->is_contig;*/
 /*    }*/
 
-    // is_homogeneous = 1;
+    // bool is_homogeneous = true;
 
     /* MPI_Type_size() might not give the accurate size of the packed
      * datatype for heterogeneous systems (because of padding, encoding,
@@ -585,7 +582,7 @@ int bcast__mvapich2(void *buffer,
 #else
         mv2_bcast_thresholds_table[range].is_two_level_bcast[range_threshold];
 #endif
-     if (two_level_bcast == 1) {
+    if (two_level_bcast) {
        // if (not is_contig || not is_homogeneous) {
 //   tmp_buf = smpi_get_tmp_sendbuffer(nbytes);
 
@@ -669,11 +666,11 @@ int reduce__mvapich2(const void *sendbuf,
   int range = 0;
   int range_threshold = 0;
   int range_intra_threshold = 0;
-  int is_commutative, pof2;
+  int pof2;
   int comm_size = 0;
   long nbytes = 0;
   int sendtype_size;
-  int is_two_level = 0;
+  bool is_two_level = false;
 
   comm_size = comm->size();
   sendtype_size=datatype->size();
@@ -682,7 +679,7 @@ int reduce__mvapich2(const void *sendbuf,
   if (count == 0)
     return MPI_SUCCESS;
 
-  is_commutative = (op==MPI_OP_NULL || op->is_commutative());
+  bool is_commutative = (op == MPI_OP_NULL || op->is_commutative());
 
   /* find nearest power-of-two less than or equal to comm_size */
   for( pof2 = 1; pof2 <= comm_size; pof2 <<= 1 );
@@ -729,24 +726,23 @@ int reduce__mvapich2(const void *sendbuf,
     {
       mv2_reduce_inter_knomial_factor = mv2_reduce_thresholds_table[range].inter_k_degree;
     }
-  if(mv2_reduce_thresholds_table[range].is_two_level_reduce[range_threshold] == 1){
-      is_two_level = 1;
+  if (mv2_reduce_thresholds_table[range].is_two_level_reduce[range_threshold]) {
+    is_two_level = true;
   }
   /* We call Reduce function */
-  if(is_two_level == 1)
-    {
-       if (is_commutative == 1) {
+  if (is_two_level) {
+    if (is_commutative) {
          if(comm->get_leaders_comm()==MPI_COMM_NULL){
            comm->init_smp();
          }
          mpi_errno = MPIR_Reduce_two_level_helper_MV2(sendbuf, recvbuf, count,
                                            datatype, op, root, comm);
-        } else {
+    } else {
       mpi_errno = MPIR_Reduce_binomial_MV2(sendbuf, recvbuf, count,
           datatype, op, root, comm);
-      }
+    }
     } else if(MV2_Reduce_function == &MPIR_Reduce_inter_knomial_wrapper_MV2 ){
-        if(is_commutative ==1)
+        if (is_commutative)
           {
             mpi_errno = MV2_Reduce_function(sendbuf, recvbuf, count,
                 datatype, op, root, comm);
@@ -781,13 +777,12 @@ int reduce_scatter__mvapich2(const void *sendbuf, void *recvbuf, const int *recv
   int mpi_errno = MPI_SUCCESS;
   int i = 0, comm_size = comm->size(), total_count = 0, type_size =
       0, nbytes = 0;
-  int is_commutative = 0;
   int* disps          = new int[comm_size];
 
   if(mv2_red_scat_thresholds_table==NULL)
     init_mv2_reduce_scatter_tables_stampede();
 
-  is_commutative=(op==MPI_OP_NULL || op->is_commutative());
+  bool is_commutative = (op == MPI_OP_NULL || op->is_commutative());
   for (i = 0; i < comm_size; i++) {
       disps[i] = total_count;
       total_count += recvcnts[i];
@@ -823,10 +818,10 @@ int reduce_scatter__mvapich2(const void *sendbuf, void *recvbuf, const int *recv
           recvcnts, datatype,
           op, comm);
   } else {
-      int is_block_regular = 1;
+      bool is_block_regular = true;
       for (i = 0; i < (comm_size - 1); ++i) {
           if (recvcnts[i] != recvcnts[i+1]) {
-              is_block_regular = 0;
+              is_block_regular = false;
               break;
           }
       }
@@ -861,7 +856,7 @@ int scatter__mvapich2(const void *sendbuf,
   int mpi_errno = MPI_SUCCESS;
   //   int mpi_errno_ret = MPI_SUCCESS;
   int rank, nbytes, comm_size;
-  int partial_sub_ok = 0;
+  bool partial_sub_ok = false;
   int conf_index = 0;
      MPI_Comm shmem_comm;
   //    MPID_Comm *shmem_commptr=NULL;
@@ -897,7 +892,7 @@ int scatter__mvapich2(const void *sendbuf,
             do {
                 if (local_size == mv2_scatter_table_ppn_conf[i]) {
                     conf_index = i;
-                    partial_sub_ok = 1;
+                    partial_sub_ok = true;
                     break;
                 }
                 i++;
@@ -905,7 +900,7 @@ int scatter__mvapich2(const void *sendbuf,
         }
     }
 
-  if (partial_sub_ok != 1) {
+  if (not partial_sub_ok) {
       conf_index = 0;
   }
 

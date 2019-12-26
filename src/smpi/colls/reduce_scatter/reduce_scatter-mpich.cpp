@@ -32,16 +32,13 @@ int reduce_scatter__mpich_pair(const void *sendbuf, void *recvbuf, const int rec
     unsigned char* tmp_recvbuf;
     int mpi_errno = MPI_SUCCESS;
     int total_count, dst, src;
-    int is_commutative;
     comm_size = comm->size();
     rank = comm->rank();
 
     extent =datatype->get_extent();
     datatype->extent(&true_lb, &true_extent);
 
-    if (op->is_commutative()) {
-        is_commutative = 1;
-    }
+    bool is_commutative = (op == MPI_OP_NULL || op->is_commutative());
 
     int* disps = new int[comm_size];
 
@@ -274,16 +271,14 @@ int reduce_scatter__mpich_rdb(const void *sendbuf, void *recvbuf, const int recv
     int mask, dst_tree_root, my_tree_root, j, k;
     int received;
     MPI_Datatype sendtype, recvtype;
-    int nprocs_completed, tmp_mask, tree_root, is_commutative=0;
+    int nprocs_completed, tmp_mask, tree_root;
     comm_size = comm->size();
     rank = comm->rank();
 
     extent =datatype->get_extent();
     datatype->extent(&true_lb, &true_extent);
 
-    if ((op==MPI_OP_NULL) || op->is_commutative()) {
-        is_commutative = 1;
-    }
+    bool is_commutative = (op == MPI_OP_NULL || op->is_commutative());
 
     int* disps = new int[comm_size];
 

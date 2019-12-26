@@ -250,9 +250,9 @@ int bcast__mvapich2_intra_node(void *buffer,
 {
     int mpi_errno = MPI_SUCCESS;
     int comm_size;
-    int two_level_bcast = 1;
+    bool two_level_bcast = true;
     size_t nbytes = 0;
-    int is_homogeneous, is_contig;
+    bool is_homogeneous, is_contig;
     MPI_Aint type_size;
     unsigned char* tmp_buf = nullptr;
     MPI_Comm shmem_comm;
@@ -275,16 +275,16 @@ int bcast__mvapich2_intra_node(void *buffer,
    // rank = comm->rank();
 /*
     if (HANDLE_GET_KIND(datatype) == HANDLE_KIND_BUILTIN)*/
-        is_contig = 1;
+        is_contig = true;
 /*    else {
         MPID_Datatype_get_ptr(datatype, dtp);
         is_contig = dtp->is_contig;
     }
 */
-    is_homogeneous = 1;
+    is_homogeneous = true;
 #ifdef MPID_HAS_HETERO
     if (comm_ptr->is_hetero)
-        is_homogeneous = 0;
+      is_homogeneous = false;
 #endif
 
     /* MPI_Type_size() might not give the accurate size of the packed
@@ -303,13 +303,13 @@ int bcast__mvapich2_intra_node(void *buffer,
     nbytes = (size_t) (count) * (type_size);
     if (comm_size <= mv2_bcast_two_level_system_size) {
         if (nbytes > mv2_bcast_short_msg && nbytes < mv2_bcast_large_msg) {
-            two_level_bcast = 1;
+          two_level_bcast = true;
         } else {
-            two_level_bcast = 0;
+          two_level_bcast = false;
         }
     }
 
-    if (two_level_bcast == 1
+    if (two_level_bcast
 #if defined(_MCST_SUPPORT_)
             || comm_ptr->ch.is_mcast_ok
 #endif

@@ -339,7 +339,7 @@ struct mv2_allgather_tuning_element {
 
 struct mv2_allgather_tuning_table {
   int numproc;
-  int two_level[MV2_MAX_NB_THRESHOLDS];
+  bool two_level[MV2_MAX_NB_THRESHOLDS];
   int size_inter_table;
   mv2_allgather_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
 };
@@ -379,7 +379,7 @@ static void init_mv2_allgather_tables_stampede()
   mv2_allgather_tuning_table mv2_tmp_allgather_thresholds_table_1ppn[] = {
       {
           2,
-          {0},
+          {false},
           1,
           {
               {0, -1, &MPIR_Allgather_Ring_MV2},
@@ -387,7 +387,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           4,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 262144, &MPIR_Allgather_RD_MV2}, {262144, -1, &MPIR_Allgather_Ring_MV2},
@@ -395,7 +395,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           8,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 131072, &MPIR_Allgather_RD_MV2}, {131072, -1, &MPIR_Allgather_Ring_MV2},
@@ -403,7 +403,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           16,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 131072, &MPIR_Allgather_RD_MV2}, {131072, -1, &MPIR_Allgather_Ring_MV2},
@@ -411,7 +411,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           32,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 65536, &MPIR_Allgather_RD_MV2}, {65536, -1, &MPIR_Allgather_Ring_MV2},
@@ -419,7 +419,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           64,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 32768, &MPIR_Allgather_RD_MV2}, {32768, -1, &MPIR_Allgather_Ring_MV2},
@@ -432,7 +432,7 @@ static void init_mv2_allgather_tables_stampede()
   mv2_allgather_tuning_table mv2_tmp_allgather_thresholds_table_2ppn[] = {
       {
           4,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 524288, &MPIR_Allgather_RD_MV2}, {524288, -1, &MPIR_Allgather_Ring_MV2},
@@ -440,7 +440,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           8,
-          {0, 1, 0},
+          {false, true, false},
           2,
           {
               {0, 32768, &MPIR_Allgather_RD_MV2},
@@ -450,7 +450,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           16,
-          {0, 1, 0},
+          {false, true, false},
           2,
           {
               {0, 16384, &MPIR_Allgather_RD_MV2},
@@ -460,7 +460,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           32,
-          {1, 1, 0},
+          {true, true, false},
           2,
           {
               {0, 65536, &MPIR_Allgather_RD_MV2},
@@ -470,7 +470,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           64,
-          {1, 1, 0},
+          {true, true, false},
           2,
           {
               {0, 32768, &MPIR_Allgather_RD_MV2},
@@ -480,7 +480,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           128,
-          {1, 1, 0},
+          {true, true, false},
           2,
           {
               {0, 65536, &MPIR_Allgather_RD_MV2},
@@ -495,7 +495,7 @@ static void init_mv2_allgather_tables_stampede()
   mv2_allgather_tuning_table mv2_tmp_allgather_thresholds_table_16ppn[] = {
       {
           16,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 1024, &MPIR_Allgather_RD_MV2}, {1024, -1, &MPIR_Allgather_Ring_MV2},
@@ -503,7 +503,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           32,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 1024, &MPIR_Allgather_RD_Allgather_Comm_MV2}, {1024, -1, &MPIR_Allgather_Ring_MV2},
@@ -511,7 +511,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           64,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 1024, &MPIR_Allgather_RD_Allgather_Comm_MV2}, {1024, -1, &MPIR_Allgather_Ring_MV2},
@@ -519,7 +519,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           128,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 1024, &MPIR_Allgather_RD_Allgather_Comm_MV2}, {1024, -1, &MPIR_Allgather_Ring_MV2},
@@ -527,7 +527,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           256,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 1024, &MPIR_Allgather_RD_Allgather_Comm_MV2}, {1024, -1, &MPIR_Allgather_Ring_MV2},
@@ -535,7 +535,7 @@ static void init_mv2_allgather_tables_stampede()
       },
       {
           512,
-          {0, 0},
+          {false, false},
           2,
           {
               {0, 1024, &MPIR_Allgather_RD_Allgather_Comm_MV2}, {1024, -1, &MPIR_Allgather_Ring_MV2},
@@ -737,8 +737,8 @@ struct mv2_allreduce_tuning_element {
 
 struct mv2_allreduce_tuning_table {
   int numproc;
-  int mcast_enabled;
-  int is_two_level_allreduce[MV2_MAX_NB_THRESHOLDS];
+  bool mcast_enabled;
+  bool is_two_level_allreduce[MV2_MAX_NB_THRESHOLDS];
   int size_inter_table;
   mv2_allreduce_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
   int size_intra_table;
@@ -793,8 +793,8 @@ static void init_mv2_allreduce_tables_stampede()
   mv2_allreduce_tuning_table mv2_tmp_allreduce_thresholds_table[] = {
       {
           16,
-          0,
-          {1, 0},
+          false,
+          {true, false},
           2,
           {
               {0, 1024, &MPIR_Allreduce_pt2pt_rd_MV2}, {1024, -1, &MPIR_Allreduce_pt2pt_rs_MV2},
@@ -806,8 +806,8 @@ static void init_mv2_allreduce_tables_stampede()
       },
       {
           32,
-          0,
-          {1, 1, 0},
+          false,
+          {true, true, false},
           3,
           {
               {0, 1024, &MPIR_Allreduce_pt2pt_rd_MV2},
@@ -821,8 +821,8 @@ static void init_mv2_allreduce_tables_stampede()
       },
       {
           64,
-          0,
-          {1, 1, 0},
+          false,
+          {true, true, false},
           3,
           {
               {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
@@ -836,8 +836,8 @@ static void init_mv2_allreduce_tables_stampede()
       },
       {
           128,
-          0,
-          {1, 1, 0},
+          false,
+          {true, true, false},
           3,
           {
               {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
@@ -851,8 +851,8 @@ static void init_mv2_allreduce_tables_stampede()
       },
       {
           256,
-          0,
-          {1, 1, 0},
+          false,
+          {true, true, false},
           3,
           {
               {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
@@ -866,8 +866,8 @@ static void init_mv2_allreduce_tables_stampede()
       },
       {
           512,
-          0,
-          {1, 1, 0},
+          false,
+          {true, true, false},
           3,
           {
               {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
@@ -881,8 +881,8 @@ static void init_mv2_allreduce_tables_stampede()
       },
       {
           1024,
-          0,
-          {1, 1, 1, 0},
+          false,
+          {true, true, true, false},
           4,
           {
               {0, 512, &MPIR_Allreduce_pt2pt_rd_MV2},
@@ -897,8 +897,8 @@ static void init_mv2_allreduce_tables_stampede()
       },
       {
           2048,
-          0,
-          {1, 1, 1, 0},
+          false,
+          {true, true, true, false},
           4,
           {
               {0, 64, &MPIR_Allreduce_pt2pt_rd_MV2},
@@ -929,7 +929,7 @@ struct mv2_bcast_tuning_table {
   int bcast_segment_size;
   int intra_node_knomial_factor;
   int inter_node_knomial_factor;
-  int is_two_level_bcast[MV2_MAX_NB_THRESHOLDS];
+  bool is_two_level_bcast[MV2_MAX_NB_THRESHOLDS];
   int size_inter_table;
   mv2_bcast_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
   int size_intra_table;
@@ -980,7 +980,7 @@ static void init_mv2_bcast_tables_stampede()
        8192,
        4,
        4,
-       {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+       {true, true, true, true, true, true, true, true, true, true, true},
        11,
        {{0, 8, &MPIR_Pipelined_Bcast_Zcpy_MV2, 2},
         {8, 16, &MPIR_Pipelined_Bcast_Zcpy_MV2, 4},
@@ -1009,7 +1009,7 @@ static void init_mv2_bcast_tables_stampede()
        8192,
        4,
        4,
-       {1, 1, 1, 1, 1, 1, 1, 1},
+       {true, true, true, true, true, true, true, true},
        8,
        {{0, 128, &MPIR_Pipelined_Bcast_Zcpy_MV2, 2},
         {128, 256, &MPIR_Pipelined_Bcast_Zcpy_MV2, 4},
@@ -1032,7 +1032,7 @@ static void init_mv2_bcast_tables_stampede()
        8192,
        4,
        4,
-       {1, 1, 1, 1, 1, 1, 1, 1, 1},
+       {true, true, true, true, true, true, true, true, true},
        9,
        {{0, 2, &MPIR_Pipelined_Bcast_Zcpy_MV2, 4},
         {2, 4, &MPIR_Pipelined_Bcast_Zcpy_MV2, 8},
@@ -1057,7 +1057,7 @@ static void init_mv2_bcast_tables_stampede()
        8192,
        4,
        4,
-       {1, 1, 1, 0},
+       {true, true, true, false},
        4,
        {{0, 8192, &MPIR_Pipelined_Bcast_Zcpy_MV2, 8},
         {8192, 16384, &MPIR_Pipelined_Bcast_Zcpy_MV2, 4},
@@ -1072,7 +1072,7 @@ static void init_mv2_bcast_tables_stampede()
        8192,
        4,
        4,
-       {1, 1, 1, 1, 1},
+       {true, true, true, true, true},
        5,
        {{0, 16384, &MPIR_Pipelined_Bcast_Zcpy_MV2, 4},
         {16384, 131072, &MPIR_Pipelined_Bcast_Zcpy_MV2, 2},
@@ -1089,7 +1089,7 @@ static void init_mv2_bcast_tables_stampede()
        8192,
        4,
        4,
-       {1, 1, 1, 1, 1},
+       {true, true, true, true, true},
        5,
        {{0, 4096, &MPIR_Pipelined_Bcast_Zcpy_MV2, 8},
         {4096, 16384, &MPIR_Pipelined_Bcast_Zcpy_MV2, 4},
@@ -1106,7 +1106,7 @@ static void init_mv2_bcast_tables_stampede()
        8192,
        4,
        4,
-       {1, 1, 1, 1, 1},
+       {true, true, true, true, true},
        5,
        {{0, 8192, &MPIR_Pipelined_Bcast_Zcpy_MV2, 8},
         {8192, 16384, &MPIR_Pipelined_Bcast_Zcpy_MV2, 4},
@@ -1123,7 +1123,7 @@ static void init_mv2_bcast_tables_stampede()
        8192,
        4,
        4,
-       {1, 1, 1, 1, 1, 1, 1},
+       {true, true, true, true, true, true, true},
        7,
        {{0, 16, &MPIR_Pipelined_Bcast_Zcpy_MV2, 8},
         {16, 32, &MPIR_Pipelined_Bcast_Zcpy_MV2, 4},
@@ -1157,7 +1157,7 @@ struct mv2_reduce_tuning_table {
   int numproc;
   int inter_k_degree;
   int intra_k_degree;
-  int is_two_level_reduce[MV2_MAX_NB_THRESHOLDS];
+  bool is_two_level_reduce[MV2_MAX_NB_THRESHOLDS];
   int size_inter_table;
   mv2_reduce_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
   int size_intra_table;
@@ -1195,7 +1195,7 @@ static void init_mv2_reduce_tables_stampede()
           16,
           4,
           4,
-          {1, 0, 0},
+          {true, false, false},
           3,
           {
               {0, 262144, &MPIR_Reduce_inter_knomial_wrapper_MV2},
@@ -1211,7 +1211,7 @@ static void init_mv2_reduce_tables_stampede()
           32,
           4,
           4,
-          {1, 1, 1, 1, 0, 0, 0},
+          {true, true, true, true, false, false, false},
           7,
           {
               {0, 8192, &MPIR_Reduce_inter_knomial_wrapper_MV2},
@@ -1236,7 +1236,7 @@ static void init_mv2_reduce_tables_stampede()
           64,
           4,
           4,
-          {1, 1, 1, 1, 0},
+          {true, true, true, true, false},
           5,
           {
               {0, 8192, &MPIR_Reduce_inter_knomial_wrapper_MV2},
@@ -1258,7 +1258,7 @@ static void init_mv2_reduce_tables_stampede()
           128,
           4,
           4,
-          {1, 0, 1, 0, 1, 0},
+          {true, false, true, false, true, false},
           6,
           {
               {0, 8192, &MPIR_Reduce_inter_knomial_wrapper_MV2},
@@ -1281,7 +1281,7 @@ static void init_mv2_reduce_tables_stampede()
           256,
           4,
           4,
-          {1, 1, 1, 0, 1, 1, 0},
+          {true, true, true, false, true, true, false},
           7,
           {
               {0, 8192, &MPIR_Reduce_inter_knomial_wrapper_MV2},
@@ -1306,7 +1306,7 @@ static void init_mv2_reduce_tables_stampede()
           512,
           4,
           4,
-          {1, 0, 1, 1, 1, 0},
+          {true, false, true, true, true, false},
           6,
           {
               {0, 8192, &MPIR_Reduce_inter_knomial_wrapper_MV2},
@@ -1329,7 +1329,7 @@ static void init_mv2_reduce_tables_stampede()
           1024,
           4,
           4,
-          {1, 0, 1, 1, 1},
+          {true, false, true, true, true},
           5,
           {
               {0, 8192, &MPIR_Reduce_inter_knomial_wrapper_MV2},
@@ -1351,7 +1351,7 @@ static void init_mv2_reduce_tables_stampede()
           2048,
           4,
           4,
-          {1, 0, 1, 1, 1, 1},
+          {true, false, true, true, true, true},
           6,
           {
               {0, 2048, &MPIR_Reduce_inter_knomial_wrapper_MV2},

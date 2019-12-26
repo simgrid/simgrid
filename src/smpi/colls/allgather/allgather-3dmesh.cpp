@@ -50,8 +50,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
 /*****************************************************************************
- * Function: is_2dmesh
- * return: int
+ * Function: is_3dmesh
+ * return: bool
  * num: the number of processors in a communicator
  * i: x dimension
  * j: y dimension
@@ -60,7 +60,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ****************************************************************************/
 #ifndef THREED
 #define THREED
-static int is_3dmesh(int num, int *i, int *j, int *k)
+static bool is_3dmesh(int num, int* i, int* j, int* k)
 {
   int x, max = num / 3;
   x = cbrt(num);
@@ -69,11 +69,11 @@ static int is_3dmesh(int num, int *i, int *j, int *k)
     if ((num % (x * x)) == 0) {
       *i = *j = x;
       *k = num / (x * x);
-      return 1;
+      return true;
     }
     x++;
   }
-  return 0;
+  return false;
 }
 #endif
 /*****************************************************************************

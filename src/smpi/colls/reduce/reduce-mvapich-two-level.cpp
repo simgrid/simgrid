@@ -91,7 +91,7 @@ int reduce__mvapich2_two_level( const void *sendbuf,
     const unsigned char* in_buf = nullptr;
     unsigned char *out_buf = nullptr, *tmp_buf = nullptr;
     MPI_Aint true_lb, true_extent, extent;
-    int is_commutative = 0, stride = 0;
+    int stride          = 0;
     int intra_node_root=0;
 
     //if not set (use of the algo directly, without mvapich2 selector)
@@ -115,7 +115,7 @@ int reduce__mvapich2_two_level( const void *sendbuf,
     leader_of_root = comm->group()->rank(leaders_map[root]);
     leader_root = leader_comm->group()->rank(leaders_map[root]);
 
-    is_commutative= (op==MPI_OP_NULL || op->is_commutative());
+    bool is_commutative = (op == MPI_OP_NULL || op->is_commutative());
 
     datatype->extent(&true_lb,
                                        &true_extent);
@@ -124,8 +124,7 @@ int reduce__mvapich2_two_level( const void *sendbuf,
 
     if (local_size == total_size) {
         /* First handle the case where there is only one node */
-        if (stride <= MV2_INTRA_SHMEM_REDUCE_MSG &&
-            is_commutative == 1) {
+        if (stride <= MV2_INTRA_SHMEM_REDUCE_MSG && is_commutative) {
             if (local_rank == 0 ) {
               tmp_buf = smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
               tmp_buf = tmp_buf - true_lb;
@@ -215,7 +214,7 @@ int reduce__mvapich2_two_level( const void *sendbuf,
          *this step*/
         if (MV2_Reduce_intra_function == & MPIR_Reduce_shmem_MV2)
         {
-          if (is_commutative == 1 && (count * (std::max(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE)) {
+          if (is_commutative && (count * (std::max(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE)) {
             mpi_errno = MV2_Reduce_intra_function(in_buf, out_buf, count, datatype, op, intra_node_root, shmem_comm);
             } else {
                     mpi_errno = MPIR_Reduce_intra_knomial_wrapper_MV2(in_buf, out_buf, count,

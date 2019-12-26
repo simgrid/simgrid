@@ -114,7 +114,8 @@ int bcast__scatter_rdb_allgather(
     int relative_rank, mask;
     int mpi_errno = MPI_SUCCESS;
     int scatter_size, curr_size, recv_size = 0;
-    int j, k, i, tmp_mask, is_contig, is_homogeneous;
+    int j, k, i, tmp_mask;
+    bool is_contig, is_homogeneous;
     MPI_Aint type_size = 0, nbytes = 0;
     int relative_dst, dst_tree_root, my_tree_root, send_offset;
     int recv_offset, tree_root, nprocs_completed, offset;
@@ -130,13 +131,9 @@ int bcast__scatter_rdb_allgather(
     if (comm_size == 1) goto fn_exit;
 
     //if (HANDLE_GET_KIND(datatype) == HANDLE_KIND_BUILTIN)
-    if(datatype->flags() & DT_FLAG_CONTIGUOUS)
-        is_contig = 1;
-    else {
-        is_contig = 0;
-    }
+    is_contig = ((datatype->flags() & DT_FLAG_CONTIGUOUS) != 0);
 
-    is_homogeneous = 1;
+    is_homogeneous = true;
 
     /* MPI_Type_size() might not give the accurate size of the packed
      * datatype for heterogeneous systems (because of padding, encoding,

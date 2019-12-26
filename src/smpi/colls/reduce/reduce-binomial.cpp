@@ -29,7 +29,7 @@ int reduce__binomial(const void *sendbuf, void *recvbuf, int count,
   extent = datatype->get_extent();
 
   unsigned char* tmp_buf = smpi_get_tmp_sendbuffer(count * extent);
-  int is_commutative =  (op==MPI_OP_NULL || op->is_commutative());
+  bool is_commutative    = (op == MPI_OP_NULL || op->is_commutative());
   mask = 1;
 
   int lroot;

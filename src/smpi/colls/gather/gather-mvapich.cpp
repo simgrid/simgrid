@@ -52,9 +52,8 @@ typedef int (*MV2_Gather_function_ptr) (const void *sendbuf,
 extern MV2_Gather_function_ptr MV2_Gather_inter_leader_function;
 extern MV2_Gather_function_ptr MV2_Gather_intra_node_function;
 
-#define TEMP_BUF_HAS_NO_DATA (0)
-#define TEMP_BUF_HAS_DATA (1)
-
+#define TEMP_BUF_HAS_NO_DATA (false)
+#define TEMP_BUF_HAS_DATA (true)
 
 namespace simgrid{
 namespace smpi{
@@ -80,13 +79,9 @@ namespace smpi{
  *                      intra node gather function
  * errflag           - (out) to record errors
  */
-static int MPIR_pt_pt_intra_gather( const void *sendbuf, int sendcnt, MPI_Datatype sendtype,
-                            void *recvbuf, int recvcnt, MPI_Datatype recvtype,
-                            int root, int rank,
-                            void *tmp_buf, int nbytes,
-                            int is_data_avail,
-                            MPI_Comm comm,
-                            MV2_Gather_function_ptr intra_node_fn_ptr)
+static int MPIR_pt_pt_intra_gather(const void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
+                                   MPI_Datatype recvtype, int root, int rank, void* tmp_buf, int nbytes,
+                                   bool is_data_avail, MPI_Comm comm, MV2_Gather_function_ptr intra_node_fn_ptr)
 {
     int mpi_errno = MPI_SUCCESS;
     MPI_Aint recvtype_extent = 0;  /* Datatype extent */

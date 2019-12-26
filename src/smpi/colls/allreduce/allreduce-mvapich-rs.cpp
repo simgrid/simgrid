@@ -35,7 +35,7 @@ int allreduce__mvapich2_rs(const void *sendbuf,
     int mpi_errno = MPI_SUCCESS;
     int newrank = 0;
     int mask, pof2, i, send_idx, recv_idx, last_idx, send_cnt;
-    int dst, is_commutative, rem, newdst, recv_cnt;
+    int dst, rem, newdst, recv_cnt;
     MPI_Aint true_lb, true_extent, extent;
 
     if (count == 0) {
@@ -47,7 +47,7 @@ int allreduce__mvapich2_rs(const void *sendbuf,
     int comm_size =  comm->size();
     int rank = comm->rank();
 
-    is_commutative = (op==MPI_OP_NULL || op->is_commutative());
+    bool is_commutative = (op == MPI_OP_NULL || op->is_commutative());
 
     /* need to allocate temporary buffer to store incoming data */
     datatype->extent(&true_lb, &true_extent);

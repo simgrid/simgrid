@@ -53,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  * Function: is_2dmesh
 
- * Return: int
+ * Return: bool
 
  * Inputs:
      num: the number of processors in a communicator
@@ -66,7 +66,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ****************************************************************************/
 #ifndef TWOD
 #define TWOD
-static int is_2dmesh(int num, int *i, int *j)
+static bool is_2dmesh(int num, int* i, int* j)
 {
   int x, max = num / 2;
   x = sqrt(double(num));
@@ -82,11 +82,11 @@ static int is_2dmesh(int num, int *i, int *j)
         *j = x;
       }
 
-      return 1;
+      return true;
     }
     x++;
   }
-  return 0;
+  return false;
 }
 #endif
 /*****************************************************************************
