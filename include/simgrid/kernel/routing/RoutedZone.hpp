@@ -61,7 +61,7 @@ protected:
                                                 bool symmetrical, bool change_order);
   void get_route_check_params(NetPoint* src, NetPoint* dst);
   void add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                              std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
+                              const std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
 };
 } // namespace routing
 } // namespace kernel

@@ -133,7 +133,7 @@ public:
   s4u::Actor* restart();
   void suspend();
   void resume();
-  activity::ActivityImplPtr join(ActorImpl* actor, double timeout);
+  activity::ActivityImplPtr join(const ActorImpl* actor, double timeout);
   activity::ActivityImplPtr sleep(double duration);
   /** Ask the actor to throw an exception right away */
   void throw_exception(std::exception_ptr e);

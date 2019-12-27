@@ -439,7 +439,7 @@ public:
   /** @brief Update a constraint bound */
   void update_constraint_bound(Constraint * cnst, double bound);
 
-  int constraint_used(Constraint* cnst) { return cnst->active_constraint_set_hook_.is_linked(); }
+  int constraint_used(const Constraint* cnst) const { return cnst->active_constraint_set_hook_.is_linked(); }
 
   /** @brief Print the lmm system */
   void print() const;
@@ -505,8 +505,8 @@ private:
    */
   void update(Constraint * cnst, Variable * var, double value);
 
-  void update_modified_set(Constraint * cnst);
-  void update_modified_set_rec(Constraint * cnst);
+  void update_modified_set(Constraint* cnst);
+  void update_modified_set_rec(const Constraint* cnst);
 
   /** @brief Remove all constraints of the modified_constraint_set. */
   void remove_all_modified_set();

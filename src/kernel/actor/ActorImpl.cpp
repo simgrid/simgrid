@@ -392,7 +392,7 @@ void ActorImpl::resume()
   XBT_OUT();
 }
 
-activity::ActivityImplPtr ActorImpl::join(ActorImpl* actor, double timeout)
+activity::ActivityImplPtr ActorImpl::join(const ActorImpl* actor, double timeout)
 {
   activity::ActivityImplPtr sleep = this->sleep(timeout);
   actor->on_exit->emplace_back([sleep](bool) {

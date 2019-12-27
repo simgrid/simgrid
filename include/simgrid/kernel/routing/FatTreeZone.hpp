@@ -51,7 +51,7 @@ public:
    * instead of passing by an upper level switch.
    */
   resource::LinkImpl* loopback;
-  FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int position);
+  FatTreeNode(const ClusterCreationArgs* cluster, int id, int level, int position);
 };
 
 /** @brief Link in a fat tree (@ref FatTreeZone).
@@ -61,7 +61,7 @@ public:
  */
 class FatTreeLink {
 public:
-  FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* source, FatTreeNode* destination);
+  FatTreeLink(const ClusterCreationArgs* cluster, FatTreeNode* source, FatTreeNode* destination);
   /** Link going up in the tree */
   resource::LinkImpl* up_link_;
   /** Link going down in the tree */

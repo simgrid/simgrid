@@ -166,7 +166,7 @@ void RoutedZone::get_route_check_params(NetPoint* src, NetPoint* dst)
              src->get_cname(), dst->get_cname(), src_as->get_cname(), dst_as->get_cname(), get_cname());
 }
 void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                        std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
+                                        const std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
   const char* srcName = src->get_cname();
   const char* dstName = dst->get_cname();

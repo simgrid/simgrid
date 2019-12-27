@@ -438,7 +438,7 @@ void FatTreeZone::generate_dot_file(const std::string& filename) const
   file.close();
 }
 
-FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int position)
+FatTreeNode::FatTreeNode(const ClusterCreationArgs* cluster, int id, int level, int position)
     : id(id), level(level), position(position)
 {
   LinkCreationArgs linkTemplate;
@@ -460,7 +460,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
   }
 }
 
-FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, FatTreeNode* upNode)
+FatTreeLink::FatTreeLink(const ClusterCreationArgs* cluster, FatTreeNode* downNode, FatTreeNode* upNode)
     : up_node_(upNode), down_node_(downNode)
 {
   static int uniqueId = 0;

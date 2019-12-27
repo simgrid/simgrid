@@ -162,7 +162,7 @@ void SwappedContextFactory::run_all()
     //     It only yields back to worker_context when the work array is exhausted.
     //   - So, resume() is only launched from the parmap for the first job of each minion.
     parmap_->apply(
-        [](smx_actor_t process) {
+        [](const actor::ActorImpl* process) {
           SwappedContext* context = static_cast<SwappedContext*>(process->context_.get());
           context->resume();
         },

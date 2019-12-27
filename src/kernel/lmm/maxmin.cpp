@@ -396,7 +396,7 @@ static inline void saturated_constraints_update(double usage, int cnst_light_num
   }
 }
 
-static inline void saturated_variable_set_update(ConstraintLight* cnst_light_tab,
+static inline void saturated_variable_set_update(const ConstraintLight* cnst_light_tab,
                                                  const dyn_light_t& saturated_constraints, System* sys)
 {
   /* Add active variables (i.e. variables that need to be set) from the set of constraints to saturate
@@ -872,7 +872,7 @@ void System::update_constraint_bound(Constraint* cnst, double bound)
  *  A recursive algorithm to optimize the system recalculation selecting only constraints that have changed. Each
  *  constraint change is propagated to the list of constraints for each variable.
  */
-void System::update_modified_set_rec(Constraint* cnst)
+void System::update_modified_set_rec(const Constraint* cnst)
 {
   for (Element const& elem : cnst->enabled_element_set_) {
     Variable* var = elem.variable;
