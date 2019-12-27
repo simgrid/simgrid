@@ -161,7 +161,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property("pstate", &Host::get_pstate, &Host::set_pstate, "The current pstate")
 
       .def("current", &Host::current, "Retrieves the host on which the running actor is located, see :cpp:func:`simgrid::s4u::Host::current()`")
-      .def_property_readonly("name", [](Host* self) -> const std::string {
+      .def_property_readonly("name", [](const Host* self) -> const std::string {
           return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
         }, "The name of this host")
       .def_property_readonly("load", &Host::get_load,
@@ -171,11 +171,11 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
-      .def("__str__", [](Mailbox* self) -> const std::string {
+      .def("__str__", [](const Mailbox* self) -> const std::string {
          return std::string("Mailbox(") + self->get_cname() + ")";
       }, "Textual representation of the Mailbox`")
       .def("by_name", &Mailbox::by_name, "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
-      .def_property_readonly("name", [](Mailbox* self) -> const std::string {
+      .def_property_readonly("name", [](const Mailbox* self) -> const std::string {
          return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
       }, "The name of that mailbox, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
       .def("put", [](Mailbox* self, py::object data, int size) {
