@@ -25,13 +25,13 @@ std::set<std::string> user_link_variables;
 extern std::set<std::string> trivaNodeTypes;
 extern std::set<std::string> trivaEdgeTypes;
 
-static xbt_dynar_t instr_set_to_dynar(std::set<std::string>* filter)
+static xbt_dynar_t instr_set_to_dynar(const std::set<std::string>& filter)
 {
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return nullptr;
 
   xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
-  for (auto const& name : *filter)
+  for (auto const& name : filter)
     xbt_dynar_push_as(ret, char*, xbt_strdup(name.c_str()));
 
   return ret;
@@ -123,7 +123,7 @@ xbt_dynar_t TRACE_get_categories ()
 {
   if (not TRACE_is_enabled() || not TRACE_categorized())
     return nullptr;
-  return instr_set_to_dynar(&created_categories);
+  return instr_set_to_dynar(created_categories);
 }
 
 /** @ingroup TRACE_mark
@@ -258,7 +258,7 @@ xbt_dynar_t TRACE_get_marks ()
   if (not TRACE_is_enabled())
     return nullptr;
 
-  return instr_set_to_dynar(&declared_marks);
+  return instr_set_to_dynar(declared_marks);
 }
 
 static void instr_user_variable(double time, const char* resource, const char* variable_name, const char* father_type,
@@ -620,7 +620,7 @@ void TRACE_host_variable_sub_with_time (double time, const char *host, const cha
  */
 xbt_dynar_t TRACE_get_host_variables ()
 {
-  return instr_set_to_dynar(&user_host_variables);
+  return instr_set_to_dynar(user_host_variables);
 }
 
 /* for link variables */
@@ -891,7 +891,7 @@ void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, con
  */
 xbt_dynar_t TRACE_get_link_variables ()
 {
-  return instr_set_to_dynar(&user_link_variables);
+  return instr_set_to_dynar(user_link_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -985,7 +985,7 @@ void TRACE_host_pop_state(const char* host, const char* state_name)
  */
 xbt_dynar_t TRACE_get_node_types ()
 {
-  return instr_set_to_dynar(&trivaNodeTypes);
+  return instr_set_to_dynar(trivaNodeTypes);
 }
 
 /** @ingroup TRACE_API
@@ -998,5 +998,5 @@ xbt_dynar_t TRACE_get_node_types ()
  */
 xbt_dynar_t TRACE_get_edge_types ()
 {
-  return instr_set_to_dynar(&trivaEdgeTypes);
+  return instr_set_to_dynar(trivaEdgeTypes);
 }

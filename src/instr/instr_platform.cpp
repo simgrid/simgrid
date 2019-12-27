@@ -29,7 +29,7 @@ static const char* instr_node_name(xbt_node_t node)
   return static_cast<char*>(xbt_graph_node_get_data(node));
 }
 
-static container_t lowestCommonAncestor(container_t a1, container_t a2)
+static container_t lowestCommonAncestor(const simgrid::instr::Container* a1, const simgrid::instr::Container* a2)
 {
   // this is only an optimization (since most of a1 and a2 share the same parent)
   if (a1->father_ == a2->father_)
@@ -517,7 +517,7 @@ xbt_graph_t instr_routing_platform_graph()
   return ret;
 }
 
-void instr_routing_platform_graph_export_graphviz(xbt_graph_t g, const char* filename)
+void instr_routing_platform_graph_export_graphviz(const s_xbt_graph_t* g, const char* filename)
 {
   unsigned int cursor = 0;
   xbt_node_t node     = nullptr;

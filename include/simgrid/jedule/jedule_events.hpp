@@ -23,7 +23,7 @@ public:
       : name_(name), start_time_(start_time), end_time_(end_time), type_(type)
   {
   }
-  void add_characteristic(char* characteristic);
+  void add_characteristic(const char* characteristic);
   void add_resources(const std::vector<sg_host_t>& host_selection);
   void add_info(char* key, char* value);
   void print(FILE* file) const;
