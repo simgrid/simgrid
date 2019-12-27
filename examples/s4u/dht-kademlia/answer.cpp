@@ -27,7 +27,7 @@ void Answer::print()
 /** @brief Merge two answers together, only keeping the best nodes
   * @param source the source of the nodes to add
   */
-unsigned int Answer::merge(Answer* source)
+unsigned int Answer::merge(const Answer* source)
 {
   if (this == source)
     return 0;

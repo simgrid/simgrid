@@ -25,7 +25,7 @@ public:
 
   explicit Connection(int id) : id(id), mailbox_(simgrid::s4u::Mailbox::by_name(std::to_string(id))){};
   void addSpeedValue(double speed) { peer_speed = peer_speed * 0.6 + speed * 0.4; }
-  bool hasPiece(unsigned int piece) { return bitfield & 1U << piece; }
+  bool hasPiece(unsigned int piece) const { return bitfield & 1U << piece; }
 };
 
 class Peer {
@@ -53,17 +53,17 @@ public:
   std::string getStatus();
   bool hasFinished();
   int nbInterestedPeers();
-  bool isInterestedBy(Connection* remote_peer);
-  bool isInterestedByFree(Connection* remote_peer);
+  bool isInterestedBy(const Connection* remote_peer) const;
+  bool isInterestedByFree(const Connection* remote_peer) const;
   void updateActivePeersSet(Connection* remote_peer);
   void updateInterestedAfterReceive();
   void updateChokedPeers();
 
-  bool hasNotPiece(unsigned int piece) { return not(bitfield_ & 1U << piece); }
+  bool hasNotPiece(unsigned int piece) const { return not(bitfield_ & 1U << piece); }
   bool hasCompletedPiece(unsigned int piece);
   unsigned int countPieces(unsigned int bitfield);
   /** Check that a piece is not currently being download by the peer. */
-  bool isNotDownloadingPiece(unsigned int piece) { return not(current_pieces & 1U << piece); }
+  bool isNotDownloadingPiece(unsigned int piece) const { return not(current_pieces & 1U << piece); }
   int partiallyDownloadedPiece(Connection* remote_peer);
   void updatePiecesCountFromBitfield(unsigned int bitfield);
   void removeCurrentPiece(Connection* remote_peer, unsigned int current_piece);

@@ -28,12 +28,12 @@ public:
 
   bool join(unsigned int known_id);
   void sendFindNode(unsigned int id, unsigned int destination);
-  unsigned int sendFindNodeToBest(Answer* node_list);
+  unsigned int sendFindNodeToBest(const Answer* node_list);
   void routingTableUpdate(unsigned int id);
   Answer* findClosest(unsigned int destination_id);
   bool findNode(unsigned int id_to_find, bool count_in_stats);
   void randomLookup();
-  void handleFindNode(Message* msg);
+  void handleFindNode(const Message* msg);
 };
 }
 // identifier functions

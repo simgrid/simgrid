@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_engine_filtering, "Messages specific for this s
 
 namespace filter {
 /* First example of thing that we can use as a filtering criteria: a simple boolean function */
-static bool filter_speed_more_than_50Mf(simgrid::s4u::Host* host)
+static bool filter_speed_more_than_50Mf(const simgrid::s4u::Host* host)
 {
   return host->get_speed() > 50E6;
 }
@@ -29,7 +29,7 @@ static bool filter_speed_more_than_50Mf(simgrid::s4u::Host* host)
  */
 class SingleCore {
 public:
-  bool operator()(simgrid::s4u::Host* host) { return host->get_core_count() == 1; }
+  bool operator()(const simgrid::s4u::Host* host) { return host->get_core_count() == 1; }
 };
 
 /* This functor is a bit more complex, as it saves the current state when created.
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
   /* Use a lambda function to filter hosts: We only want multicore hosts */
   XBT_INFO("Hosts currently registered with this engine: %zu", e.get_host_count());
   std::vector<simgrid::s4u::Host*> list =
-      e.get_filtered_hosts([](simgrid::s4u::Host* host) { return host->get_core_count() > 1; });
+      e.get_filtered_hosts([](const simgrid::s4u::Host* host) { return host->get_core_count() > 1; });
 
   for (auto& host : list)
     XBT_INFO("The following hosts have more than one core: %s", host->get_cname());

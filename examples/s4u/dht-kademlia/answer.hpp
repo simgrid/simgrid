@@ -23,10 +23,10 @@ public:
   std::vector<std::pair<unsigned int, unsigned int>> nodes;
   explicit Answer(unsigned int destination_id) : destination_id_(destination_id) {}
   virtual ~Answer() = default;
-  unsigned int getDestinationId() { return destination_id_; }
+  unsigned int getDestinationId() const { return destination_id_; }
   unsigned int getSize() { return size_; }
   void print();
-  unsigned int merge(Answer* a);
+  unsigned int merge(const Answer* a);
   void trim();
   bool destinationFound();
   void addBucket(const kademlia::Bucket* bucket);

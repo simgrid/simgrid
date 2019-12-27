@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 /* This shows how to extend the trace format by adding a new kind of events.
    This function is registered through xbt_replay_action_register() below. */
-static void action_blah(simgrid::xbt::ReplayAction& /*args*/)
+static void action_blah(const simgrid::xbt::ReplayAction& /*args*/)
 {
   /* Add your answer to the blah event here.
      args is a strings array containing the blank-separated parameters found in the trace for this event instance. */

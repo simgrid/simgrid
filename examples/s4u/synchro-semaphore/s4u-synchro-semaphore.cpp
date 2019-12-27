@@ -16,8 +16,7 @@ const char* buffer;                                                        /* Wh
 simgrid::s4u::SemaphorePtr sem_empty = simgrid::s4u::Semaphore::create(1); /* indicates whether the buffer is empty */
 simgrid::s4u::SemaphorePtr sem_full  = simgrid::s4u::Semaphore::create(0); /* indicates whether the buffer is full */
 
-
-static void producer(std::vector<std::string>* args)
+static void producer(const std::vector<std::string>* args)
 {
   for (auto str : *args) {
     sem_empty->acquire();

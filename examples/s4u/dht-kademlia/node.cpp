@@ -93,7 +93,7 @@ void Node::sendFindNode(unsigned int id, unsigned int destination)
   * Sends to the best "KADEMLIA_ALPHA" nodes in the "node_list" array a "FIND_NODE" request, to ask them for their best
   * nodes
   */
-unsigned int Node::sendFindNodeToBest(Answer* node_list)
+unsigned int Node::sendFindNodeToBest(const Answer* node_list)
 {
   unsigned int i           = 0;
   unsigned int j           = 0;
@@ -268,7 +268,7 @@ void Node::randomLookup()
 }
 
 /** @brief Handles the answer to an incoming "find_node" task */
-void Node::handleFindNode(Message* msg)
+void Node::handleFindNode(const Message* msg)
 {
   routingTableUpdate(msg->sender_id_);
   XBT_VERB("Received a FIND_NODE from %s (%s), he's trying to find %08x", msg->answer_to_->get_cname(),

@@ -21,7 +21,7 @@ static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
   } else                                                                                                               \
     ((void)0)
 
-static void log_action(simgrid::xbt::ReplayAction& action, double date)
+static void log_action(const simgrid::xbt::ReplayAction& action, double date)
 {
   if (XBT_LOG_ISENABLED(replay_io, xbt_log_priority_verbose)) {
     std::string s = boost::algorithm::join(action, " ");

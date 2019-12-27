@@ -172,12 +172,12 @@ bool Peer::hasFinished()
 }
 
 /** Indicates if the remote peer has a piece not stored by the local peer */
-bool Peer::isInterestedBy(Connection* remote_peer)
+bool Peer::isInterestedBy(const Connection* remote_peer) const
 {
   return remote_peer->bitfield & (bitfield_ ^ ((1 << FILE_PIECES) - 1));
 }
 
-bool Peer::isInterestedByFree(Connection* remote_peer)
+bool Peer::isInterestedByFree(const Connection* remote_peer) const
 {
   for (unsigned int i = 0; i < FILE_PIECES; i++)
     if (hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i))

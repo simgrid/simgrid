@@ -21,7 +21,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_migration, "Messages specific for this s4u example");
 
-static void worker(simgrid::s4u::Host* first, simgrid::s4u::Host* second)
+static void worker(simgrid::s4u::Host* first, const simgrid::s4u::Host* second)
 {
   double flopAmount = first->get_speed() * 5 + second->get_speed() * 5;
 

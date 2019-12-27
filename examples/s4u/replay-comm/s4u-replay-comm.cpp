@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(replay_comm, "Messages specific for this msg exampl
   } else                                                                                                               \
   ((void)0)
 
-static void log_action(simgrid::xbt::ReplayAction& action, double date)
+static void log_action(const simgrid::xbt::ReplayAction& action, double date)
 {
   if (XBT_LOG_ISENABLED(replay_comm, xbt_log_priority_verbose)) {
     std::string s = boost::algorithm::join(action, " ");

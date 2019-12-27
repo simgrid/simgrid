@@ -65,7 +65,7 @@ static void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int 
 }
 
 // Sleeps for a given amount of time
-static int sleeper_process(int* param)
+static int sleeper_process(const int* param)
 {
   XBT_DEBUG("Sleeping for %d seconds", *param);
   simgrid::s4u::this_actor::sleep_for(*param);
@@ -106,7 +106,7 @@ static int job_executor_process(Job* job)
 }
 
 // Executes a workload of SMPI processes
-static int workload_executor_process(std::vector<Job*>* workload)
+static int workload_executor_process(const std::vector<Job*>* workload)
 {
   for (Job* job : *workload) {
     // Let's wait until the job's waiting time if needed
