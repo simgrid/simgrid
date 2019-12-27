@@ -43,6 +43,7 @@ typedef struct s_node {
   xbt_dynar_t pending_tasks;
 } s_node_t;
 typedef s_node_t* node_t;
+typedef const s_node_t* const_node_t;
 
 typedef struct s_state {
   int id;
@@ -71,11 +72,6 @@ typedef struct s_task_data {
   state_t state;
 } s_task_data_t;
 typedef s_task_data_t* task_data_t;
-
-static int domain(unsigned int a, unsigned int level);
-static int shl(int a, int b);
-static int closest_in_namespace_set(node_t node, int dest);
-static int routing_next(node_t node, int dest);
 
 /**
  * @brief Gets the mailbox name of a host given its chord id.
@@ -118,7 +114,8 @@ static void task_free(void* task)
 }
 
 /* Get the closest id to the dest in the node namespace_set */
-static int closest_in_namespace_set(node_t node, int dest) {
+static int closest_in_namespace_set(const_node_t node, int dest)
+{
   int res = -1;
   if ((node->namespace_set[NAMESPACE_SIZE-1] <= dest) && (dest <= node->namespace_set[0])) {
     int best_dist = abs(node->id - dest);
@@ -173,7 +170,8 @@ static int routing_next(node_t node, int dest) {
 }
 
 /* Get the corresponding state of a node */
-static state_t node_get_state(node_t node) {
+static state_t node_get_state(const_node_t node)
+{
   state_t state = xbt_new0(s_state_t,1);
   state->id = node->id;
   for (int i=0; i<NEIGHBORHOOD_SIZE; i++)
@@ -189,17 +187,20 @@ static state_t node_get_state(node_t node) {
   return state;
 }
 
-static void print_node_id(node_t node) {
+static void print_node_id(const_node_t node)
+{
   XBT_INFO(" Id: %i '%08x' ", node->id, (unsigned)node->id);
 }
 
-static void print_node_neighborood_set(node_t node) {
+static void print_node_neighborood_set(const_node_t node)
+{
   XBT_INFO(" Neighborhood:");
   for (int i=0; i<NEIGHBORHOOD_SIZE; i++)
     XBT_INFO("  %08x", (unsigned)node->neighborhood_set[i]);
 }
 
-static void print_node_routing_table(node_t node) {
+static void print_node_routing_table(const_node_t node)
+{
   XBT_INFO(" Routing table:");
   for (int i=0; i<LEVELS_COUNT; i++){
     for (int j=0; j<LEVEL_SIZE; j++)
@@ -207,14 +208,16 @@ static void print_node_routing_table(node_t node) {
   }
 }
 /* Print the node namespace set */
-static void print_node_namespace_set(node_t node) {
+static void print_node_namespace_set(const_node_t node)
+{
   XBT_INFO(" Namespace:");
   for (int i=0; i<NAMESPACE_SIZE; i++)
     XBT_INFO("  %08x", (unsigned)node->namespace_set[i]);
 }
 
 /* Print the node information */
-static void print_node(node_t node) {
+static void print_node(const_node_t node)
+{
   XBT_INFO("Node:");
   print_node_id(node);
   print_node_neighborood_set(node);
@@ -427,7 +430,8 @@ static void handle_task(node_t node, msg_task_t task) {
 }
 
 /* Join the ring */
-static int join(node_t node){
+static int join(const_node_t node)
+{
   task_data_t req_data = xbt_new0(s_task_data_t,1);
   req_data->type = TASK_JOIN;
   req_data->sender_id = node->id;

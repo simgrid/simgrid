@@ -30,6 +30,7 @@ typedef struct s_task_data {
 } s_task_data_t;
 
 typedef s_task_data_t *task_data_t;
+typedef const s_task_data_t* const_task_data_t;
 
 //Task handling functions
 msg_task_t task_new_find_node(unsigned int sender_id, unsigned int destination_id, char *mailbox, const char *hostname);

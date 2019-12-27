@@ -32,7 +32,7 @@ void answer_free(answer_t answer)
 }
 
 /** @brief Prints a answer_t, for debugging purposes */
-void answer_print(answer_t answer)
+void answer_print(const_answer_t answer)
 {
   unsigned int cpt;
   node_contact_t contact;
@@ -46,7 +46,7 @@ void answer_print(answer_t answer)
   * @param destination the destination in which the nodes will be put
   * @param source the source of the nodes to add
   */
-unsigned int answer_merge(answer_t destination, answer_t source)
+unsigned int answer_merge(answer_t destination, const_answer_t source)
 {
   node_contact_t contact;
   node_contact_t contact_copy;
@@ -84,7 +84,7 @@ static int _answer_sort_function(const void *e1, const void *e2)
   * @param answer the answer to sort
   * @param destination_id the id of the guy we are trying to find
   */
-void answer_sort(answer_t answer)
+void answer_sort(const_answer_t answer)
 {
   xbt_dynar_sort(answer->nodes, &_answer_sort_function);
 }
@@ -108,7 +108,7 @@ void answer_trim(answer_t answer)
   * @param answer the answer object we're going  to put the data in
   * @param destination_id the id of the guy we are trying to find.
   */
-void answer_add_bucket(bucket_t bucket, answer_t answer)
+void answer_add_bucket(const_bucket_t bucket, answer_t answer)
 {
   xbt_assert((bucket != NULL), "Provided a NULL bucket");
   xbt_assert((bucket->nodes != NULL), "Provided a bucket which nodes are NULL");
@@ -126,7 +126,7 @@ void answer_add_bucket(bucket_t bucket, answer_t answer)
 /** @brief Returns if the id supplied is in the answer.
   * @param id : id we're looking for
   */
-unsigned int answer_contains(answer_t answer, unsigned int id)
+unsigned int answer_contains(const_answer_t answer, unsigned int id)
 {
   unsigned int i = 0;
   node_contact_t contact;
@@ -142,7 +142,7 @@ unsigned int answer_contains(answer_t answer, unsigned int id)
   * @param answer the answer
   * @return if the destination is found.
   */
-unsigned int answer_destination_found(answer_t answer)
+unsigned int answer_destination_found(const_answer_t answer)
 {
   if (xbt_dynar_is_empty(answer->nodes)) {
     return 0;

@@ -16,6 +16,7 @@ typedef struct s_bucket {
 } s_bucket_t;
 
 typedef s_bucket_t *bucket_t;
+typedef const s_bucket_t* const_bucket_t;
 
 /* Node routing table */
 typedef struct s_routing_table {
@@ -24,16 +25,17 @@ typedef struct s_routing_table {
 } s_routing_table_t;
 
 typedef s_routing_table_t *routing_table_t;
+typedef const s_routing_table_t* const_routing_table_t;
 
 // bucket functions
-unsigned int bucket_find_id(bucket_t bucket, unsigned int id);
-unsigned int bucket_contains(bucket_t bucket, unsigned int id);
+unsigned int bucket_find_id(const_bucket_t bucket, unsigned int id);
+unsigned int bucket_contains(const_bucket_t bucket, unsigned int id);
 
 // routing table functions
 routing_table_t routing_table_init(unsigned int node_id);
 void routing_table_free(routing_table_t table);
 unsigned int routing_table_contains(routing_table_t table, unsigned int node_id);
-void routing_table_print(routing_table_t table);
-bucket_t routing_table_find_bucket(routing_table_t table, unsigned int id);
+void routing_table_print(const_routing_table_t table);
+bucket_t routing_table_find_bucket(const_routing_table_t table, unsigned int id);
 
 #endif                          /* _MSG_KADEMLIA_EXAMPLES_ROUTING_TABLE */

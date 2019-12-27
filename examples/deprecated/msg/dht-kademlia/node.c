@@ -42,7 +42,7 @@ void node_free(node_t node)
   * @param node Our node data
   * @param id The id of the node we need to add unsigned into our routing table
   */
-void node_routing_table_update(node_t node, unsigned int id)
+void node_routing_table_update(const_node_t node, unsigned int id)
 {
   routing_table_t table = node->table;
   //retrieval of the bucket in which the should be
@@ -74,7 +74,7 @@ void node_routing_table_update(node_t node, unsigned int id)
   * @param node : our node
   * @param destination_id : the id of the guy we are trying to find
   */
-answer_t node_find_closest(node_t node, unsigned int destination_id)
+answer_t node_find_closest(const_node_t node, unsigned int destination_id)
 {
   int i;
   answer_t answer = answer_init(destination_id);
@@ -155,7 +155,7 @@ node_contact_t node_contact_new(unsigned int id, unsigned int distance)
 }
 
 /** Builds a contact information from a contact information */
-node_contact_t node_contact_copy(node_contact_t node_contact)
+node_contact_t node_contact_copy(const_node_contact_t node_contact)
 {
   node_contact_t contact = xbt_new(s_node_contact_t, 1);
 

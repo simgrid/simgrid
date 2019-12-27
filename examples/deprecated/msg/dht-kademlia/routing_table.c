@@ -43,7 +43,7 @@ unsigned int routing_table_contains(routing_table_t table, unsigned int node_id)
 }
 
 /**@brief prints the routing table, to debug stuff. */
-void routing_table_print(routing_table_t table)
+void routing_table_print(const_routing_table_t table)
 {
   unsigned int j;
   unsigned int value;
@@ -63,7 +63,7 @@ void routing_table_print(routing_table_t table)
   * @param bucket the bucket in which we try to find our identifier
   * @param id the id
   */
-unsigned int bucket_find_id(bucket_t bucket, unsigned int id)
+unsigned int bucket_find_id(const_bucket_t bucket, unsigned int id)
 {
   unsigned int i;
   unsigned int current_id;
@@ -76,7 +76,7 @@ unsigned int bucket_find_id(bucket_t bucket, unsigned int id)
 }
 
 /** Returns if the bucket contains an identifier.  */
-unsigned int bucket_contains(bucket_t bucket, unsigned int id)
+unsigned int bucket_contains(const_bucket_t bucket, unsigned int id)
 {
   return xbt_dynar_member(bucket->nodes, &id);
 }
@@ -86,7 +86,7 @@ unsigned int bucket_contains(bucket_t bucket, unsigned int id)
   * @param id the identifier
   * @return the bucket in which the the identifier would be.
   */
-bucket_t routing_table_find_bucket(routing_table_t table, unsigned int id)
+bucket_t routing_table_find_bucket(const_routing_table_t table, unsigned int id)
 {
   unsigned int xor_number = table->id ^ id;
   unsigned int prefix     = get_node_prefix(xor_number, IDENTIFIER_SIZE);

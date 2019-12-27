@@ -20,6 +20,7 @@ typedef struct s_node_contact {
 } s_node_contact_t;
 
 typedef s_node_contact_t *node_contact_t;
+typedef const s_node_contact_t* const_node_contact_t;
 
 /* Node data */
 typedef struct s_node {
@@ -35,12 +36,13 @@ typedef struct s_node {
 } s_node_t;
 
 typedef s_node_t *node_t;
+typedef const s_node_t* const_node_t;
 
 // node functions
 node_t node_init(unsigned int id);
 void node_free(node_t node);
-void node_routing_table_update(node_t node, unsigned int id);
-answer_t node_find_closest(node_t node, unsigned int destination_id);
+void node_routing_table_update(const_node_t node, unsigned int id);
+answer_t node_find_closest(const_node_t node, unsigned int destination_id);
 
 // identifier functions
 unsigned int get_id_in_prefix(unsigned int id, unsigned int prefix);
@@ -49,6 +51,6 @@ void get_node_mailbox(unsigned int id, char *mailbox);
 
 // node contact functions
 node_contact_t node_contact_new(unsigned int id, unsigned int distance);
-node_contact_t node_contact_copy(node_contact_t node_contact);
+node_contact_t node_contact_copy(const_node_contact_t node_contact);
 void node_contact_free(node_contact_t contact);
 #endif                          /* _MSG_EXAMPLES_ROUTING_H */

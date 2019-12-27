@@ -301,7 +301,7 @@ void send_find_node(node_t node, unsigned int id, unsigned int destination)
   * Sends to the best "KADEMLIA_ALPHA" nodes in the "node_list" array a "FIND_NODE" request, to ask them for their best
  * nodes
   */
-unsigned int send_find_node_to_best(node_t node, answer_t node_list)
+unsigned int send_find_node_to_best(node_t node, const_answer_t node_list)
 {
   unsigned int i = 0;
   unsigned int j = 0;
@@ -340,7 +340,7 @@ void handle_task(node_t node, msg_task_t task)
 }
 
 /** @brief Handles the answer to an incoming "find_node" task */
-void handle_find_node(node_t node, task_data_t data)
+void handle_find_node(node_t node, const_task_data_t data)
 {
   XBT_VERB("Received a FIND_NODE from %s (%s), he's trying to find %08x",
            data->answer_to, data->issuer_host_name, data->destination_id);

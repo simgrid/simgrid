@@ -17,15 +17,16 @@ typedef struct s_node_answer {
 } s_answer_t;
 
 typedef s_answer_t *answer_t;
+typedef const s_answer_t* const_answer_t;
 
 answer_t answer_init(unsigned int destination_id);
 void answer_free(answer_t answer);
-void answer_print(answer_t answer);
-unsigned int answer_merge(answer_t destination, answer_t source);
-void answer_sort(answer_t answer);
+void answer_print(const_answer_t answer);
+unsigned int answer_merge(answer_t destination, const_answer_t source);
+void answer_sort(const_answer_t answer);
 void answer_trim(answer_t answer);
-void answer_add_bucket(bucket_t bucket, answer_t answer);
-unsigned int answer_contains(answer_t answer, unsigned int id);
-unsigned int answer_destination_found(answer_t answer);
+void answer_add_bucket(const_bucket_t bucket, answer_t answer);
+unsigned int answer_contains(const_answer_t answer, unsigned int id);
+unsigned int answer_destination_found(const_answer_t answer);
 
 #endif                          /* _KADEMLIA_EXAMPLES_ANSWER_H_ */
