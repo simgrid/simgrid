@@ -45,6 +45,7 @@ SG_BEGIN_DECL
 
 /** @brief Dictionary data type (opaque structure) */
 typedef struct s_xbt_dict *xbt_dict_t;
+typedef const struct s_xbt_dict* const_xbt_dict_t;
 typedef struct s_xbt_dictelm *xbt_dictelm_t;
 typedef struct s_xbt_dictelm {
   char *key;
@@ -124,8 +125,10 @@ struct s_xbt_dict_cursor {
 
 /** @brief Cursor on dictionaries (opaque type) */
 typedef struct s_xbt_dict_cursor *xbt_dict_cursor_t;
+typedef const struct s_xbt_dict_cursor* const_xbt_dict_cursor_t;
 
-static inline xbt_dictelm_t xbt_dict_cursor_get_elm(xbt_dict_cursor_t cursor) {
+static inline xbt_dictelm_t xbt_dict_cursor_get_elm(const_xbt_dict_cursor_t cursor)
+{
   return cursor->current;
 }
 

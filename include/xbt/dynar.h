@@ -63,6 +63,7 @@ SG_BEGIN_DECL
  */
 /** @brief Dynar data type (opaque type) */
 typedef struct xbt_dynar_s *xbt_dynar_t;
+typedef const struct xbt_dynar_s* const_xbt_dynar_t;
 
 XBT_PUBLIC xbt_dynar_t xbt_dynar_new(const unsigned long elm_size, void_f_pvoid_t const free_f);
 XBT_PUBLIC void xbt_dynar_init(xbt_dynar_t dynar, const unsigned long elmsize, void_f_pvoid_t const free_f);
@@ -201,7 +202,7 @@ typedef struct xbt_dynar_s {
   void_f_pvoid_t free_f;
 } s_xbt_dynar_t;
 
-static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int idx, void* const dst)
+static inline int _xbt_dynar_cursor_get(const_xbt_dynar_t dynar, unsigned int idx, void* const dst)
 {
   if (!dynar) /* iterating over a NULL dynar is a no-op */
     return 0;

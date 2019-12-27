@@ -25,7 +25,7 @@ xbt_dictelm_t xbt_dictelm_new(const char* key, int key_len, unsigned int hash_co
   return element;
 }
 
-void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element)
+void xbt_dictelm_free(const_xbt_dict_t dict, xbt_dictelm_t element)
 {
   if (element) {
     char *key = element->key;
@@ -40,7 +40,7 @@ void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element)
   }
 }
 
-void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void* data)
+void xbt_dictelm_set_data(const_xbt_dict_t dict, xbt_dictelm_t element, void* data)
 {
   void_f_pvoid_t free_f = dict->free_f;
   if (free_f && element->content)

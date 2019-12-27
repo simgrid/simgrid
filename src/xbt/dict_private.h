@@ -34,8 +34,8 @@ XBT_PRIVATE void * dict_elm_mallocator_new_f(void);
 
 /*####[ Function prototypes ]################################################*/
 XBT_PRIVATE xbt_dictelm_t xbt_dictelm_new(const char* key, int key_len, unsigned int hash_code, void* content);
-XBT_PRIVATE void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element);
-XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void* data);
+XBT_PRIVATE void xbt_dictelm_free(const_xbt_dict_t dict, xbt_dictelm_t element);
+XBT_PRIVATE void xbt_dictelm_set_data(const_xbt_dict_t dict, xbt_dictelm_t element, void* data);
 
 SG_END_DECL
 
