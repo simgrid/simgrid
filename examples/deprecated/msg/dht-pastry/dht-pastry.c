@@ -134,7 +134,8 @@ static int closest_in_namespace_set(const_node_t node, int dest)
 }
 
 /* Find the next node to forward a message to */
-static int routing_next(node_t node, int dest) {
+static int routing_next(const_node_t node, int dest)
+{
   int closest = closest_in_namespace_set(node, dest);
   if (closest!=-1)
     return closest;

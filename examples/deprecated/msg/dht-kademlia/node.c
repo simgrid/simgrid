@@ -44,9 +44,9 @@ void node_free(node_t node)
   */
 void node_routing_table_update(const_node_t node, unsigned int id)
 {
-  routing_table_t table = node->table;
+  const_routing_table_t table = node->table;
   //retrieval of the bucket in which the should be
-  bucket_t bucket = routing_table_find_bucket(table, id);
+  const_bucket_t bucket = routing_table_find_bucket(table, id);
 
   //check if the id is already in the bucket.
   unsigned int id_pos = bucket_find_id(bucket, id);
@@ -79,7 +79,7 @@ answer_t node_find_closest(const_node_t node, unsigned int destination_id)
   int i;
   answer_t answer = answer_init(destination_id);
   /* We find the corresponding bucket for the id */
-  bucket_t bucket = routing_table_find_bucket(node->table, destination_id);
+  const_bucket_t bucket = routing_table_find_bucket(node->table, destination_id);
   int bucket_id = bucket->id;
   xbt_assert((bucket_id <= IDENTIFIER_SIZE), "Bucket found has a wrong identifier");
   /* So, we copy the contents of the bucket unsigned into our result dynar */
@@ -91,12 +91,12 @@ answer_t node_find_closest(const_node_t node, unsigned int destination_id)
   for (i = 1; answer->size < BUCKET_SIZE && ((bucket_id - i > 0) || (bucket_id + i < IDENTIFIER_SIZE)); i++) {
     /* We check the previous buckets */
     if (bucket_id - i >= 0) {
-      bucket_t bucket_p = &node->table->buckets[bucket_id - i];
+      const_bucket_t bucket_p = &node->table->buckets[bucket_id - i];
       answer_add_bucket(bucket_p, answer);
     }
     /* We check the next buckets */
     if (bucket_id + i <= IDENTIFIER_SIZE) {
-      bucket_t bucket_n = &node->table->buckets[bucket_id + i];
+      const_bucket_t bucket_n = &node->table->buckets[bucket_id + i];
       answer_add_bucket(bucket_n, answer);
     }
   }

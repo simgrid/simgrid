@@ -41,7 +41,7 @@ bool Node::join(unsigned int known_id)
       XBT_DEBUG("Received an answer from the node I know.");
       got_answer = true;
       // retrieve the node list and ping them.
-      Message* msg = static_cast<Message*>(received_msg);
+      const Message* msg = static_cast<Message*>(received_msg);
       node_list    = msg->answer_;
       if (node_list) {
         for (auto contact : node_list->nodes)
@@ -206,7 +206,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
         receive_comm = mailbox->get_async(&received_msg);
 
       if (receive_comm->test()) {
-        Message* msg = static_cast<Message*>(received_msg);
+        const Message* msg = static_cast<Message*>(received_msg);
         // Check if what we have received is what we are looking for.
         if (msg->answer_ && msg->answer_->getDestinationId() == id_to_find) {
           routingTableUpdate(msg->sender_id_);

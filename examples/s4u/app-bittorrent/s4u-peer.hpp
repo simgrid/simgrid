@@ -64,12 +64,12 @@ public:
   unsigned int countPieces(unsigned int bitfield);
   /** Check that a piece is not currently being download by the peer. */
   bool isNotDownloadingPiece(unsigned int piece) const { return not(current_pieces & 1U << piece); }
-  int partiallyDownloadedPiece(Connection* remote_peer);
+  int partiallyDownloadedPiece(const Connection* remote_peer);
   void updatePiecesCountFromBitfield(unsigned int bitfield);
   void removeCurrentPiece(Connection* remote_peer, unsigned int current_piece);
   void updateBitfieldBlocks(int piece, int block_index, int block_length);
   int getFirstMissingBlockFrom(int piece);
-  int selectPieceToDownload(Connection* remote_peer);
+  int selectPieceToDownload(const Connection* remote_peer);
   void requestNewPieceTo(Connection* remote_peer);
 
   bool getPeersFromTracker();

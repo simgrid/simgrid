@@ -46,7 +46,7 @@ static void sg_host_set_last_scheduled_task(sg_host_t host, SD_task_t task){
   sg_host_data_set(host, attr);
 }
 
-static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
+static xbt_dynar_t get_ready_tasks(const_xbt_dynar_t dax)
 {
   unsigned int i;
   xbt_dynar_t ready_tasks;

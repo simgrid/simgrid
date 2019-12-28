@@ -77,7 +77,7 @@ void DijkstraZone::seal()
   }
 
   /* initialize graph indexes in nodes after graph has been built */
-  xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_);
+  const_xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_);
 
   xbt_dynar_foreach (nodes, cursor, node) {
     GraphNodeData* data = static_cast<GraphNodeData*>(xbt_graph_node_get_data(node));

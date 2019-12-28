@@ -322,7 +322,7 @@ unsigned int send_find_node_to_best(node_t node, const_answer_t node_list)
 /** @brief Handles an incoming received task */
 void handle_task(node_t node, msg_task_t task)
 {
-  task_data_t data = MSG_task_get_data(task);
+  const_task_data_t data = MSG_task_get_data(task);
   xbt_assert((data != NULL), "Received NULL data");
   //Adding/updating the guy to our routing table
   node_routing_table_update(node, data->sender_id);

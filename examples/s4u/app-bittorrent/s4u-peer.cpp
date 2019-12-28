@@ -429,7 +429,7 @@ void Peer::removeCurrentPiece(Connection* remote_peer, unsigned int current_piec
  * @param remote_peer: information about the connection
  * @return the piece to download if possible. -1 otherwise
  */
-int Peer::selectPieceToDownload(Connection* remote_peer)
+int Peer::selectPieceToDownload(const Connection* remote_peer)
 {
   int piece = partiallyDownloadedPiece(remote_peer);
   // strict priority policy
@@ -645,7 +645,7 @@ int Peer::getFirstMissingBlockFrom(int piece)
 }
 
 /** Returns a piece that is partially downloaded and stored by the remote peer if any -1 otherwise. */
-int Peer::partiallyDownloadedPiece(Connection* remote_peer)
+int Peer::partiallyDownloadedPiece(const Connection* remote_peer)
 {
   for (unsigned int i = 0; i < FILE_PIECES; i++)
     if (hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i) && getFirstMissingBlockFrom(i) > 0)

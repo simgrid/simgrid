@@ -110,7 +110,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv* env, jclass 
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jclass cls, jint pid)
 {
-  msg_process_t process = MSG_process_from_PID(pid);
+  auto const* process = MSG_process_from_PID(pid);
 
   if (not process) {
     jxbt_throw_process_not_found(env, std::string("PID = ") + std::to_string(static_cast<int>(pid)));
