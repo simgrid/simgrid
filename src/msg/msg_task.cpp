@@ -161,12 +161,12 @@ void Task::set_priority(double priority)
   priority_ = 1.0 / priority;
 }
 
-s4u::Actor* Task::get_sender()
+s4u::Actor* Task::get_sender() const
 {
   return comm ? comm->get_sender() : nullptr;
 }
 
-s4u::Host* Task::get_source()
+s4u::Host* Task::get_source() const
 {
   return comm ? comm->get_sender()->get_host() : nullptr;
 }
@@ -241,7 +241,7 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 }
 
 /** @brief Return the user data of the given task */
-void* MSG_task_get_data(msg_task_t task)
+void* MSG_task_get_data(const_msg_task_t task)
 {
   return task->get_data();
 }
@@ -253,19 +253,19 @@ void MSG_task_set_data(msg_task_t task, void *data)
 }
 
 /** @brief Returns the sender of the given task */
-msg_process_t MSG_task_get_sender(msg_task_t task)
+msg_process_t MSG_task_get_sender(const_msg_task_t task)
 {
   return task->get_sender();
 }
 
 /** @brief Returns the source (the sender's host) of the given task */
-msg_host_t MSG_task_get_source(msg_task_t task)
+msg_host_t MSG_task_get_source(const_msg_task_t task)
 {
   return task->get_source();
 }
 
 /** @brief Returns the name of the given task. */
-const char *MSG_task_get_name(msg_task_t task)
+const char* MSG_task_get_name(const_msg_task_t task)
 {
   return task->get_cname();
 }
@@ -682,7 +682,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
  *
  * It works for either parallel or sequential tasks.
  */
-double MSG_task_get_remaining_work_ratio(msg_task_t task)
+double MSG_task_get_remaining_work_ratio(const_msg_task_t task)
 {
   xbt_assert((task != nullptr), "Cannot get information from a nullptr task");
   if (task->compute) {
@@ -701,7 +701,8 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task)
  * It works for sequential tasks, but the remaining amount of work is not a scalar value for parallel tasks.
  * So you will get an exception if you call this function on parallel tasks. Just don't do it.
  */
-double MSG_task_get_flops_amount(msg_task_t task) {
+double MSG_task_get_flops_amount(const_msg_task_t task)
+{
   if (task->compute != nullptr) {
     return task->compute->get_remaining();
   } else {
@@ -737,14 +738,14 @@ void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
  *  If the communication does not exist it will return 0.
  *  So, if the communication has FINISHED or FAILED it returns zero.
  */
-double MSG_task_get_remaining_communication(msg_task_t task)
+double MSG_task_get_remaining_communication(const_msg_task_t task)
 {
   XBT_DEBUG("calling simcall_communication_get_remains(%p)", task->comm.get());
   return task->comm->get_remaining();
 }
 
 /** @brief Returns the size of the data attached to the given task. */
-double MSG_task_get_bytes_amount(msg_task_t task)
+double MSG_task_get_bytes_amount(const_msg_task_t task)
 {
   xbt_assert(task != nullptr, "Invalid parameter");
   return task->bytes_amount;
@@ -807,7 +808,7 @@ void MSG_task_set_category(msg_task_t task, const char* category)
  * @param task the task to be considered
  * @return Returns the name of the tracing category of the given task, "" otherwise
  */
-const char* MSG_task_get_category(msg_task_t task)
+const char* MSG_task_get_category(const_msg_task_t task)
 {
   return task->get_tracing_category().c_str();
 }

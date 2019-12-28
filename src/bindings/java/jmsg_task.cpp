@@ -151,7 +151,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setBound(JNIEnv * env, jobject 
 }
 
 JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName(JNIEnv * env, jobject jtask) {
-  msg_task_t task = jtask_to_native(jtask, env);
+  const_msg_task_t task = jtask_to_native(jtask, env);
 
   if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -162,7 +162,7 @@ JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName(JNIEnv * env, jobjec
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender(JNIEnv * env, jobject jtask) {
-  msg_task_t task = jtask_to_native(jtask, env);
+  const_msg_task_t task = jtask_to_native(jtask, env);
 
   if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -178,7 +178,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender(JNIEnv * env, jobj
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv * env, jobject jtask)
 {
-  msg_task_t task = jtask_to_native(jtask, env);
+  const_msg_task_t task = jtask_to_native(jtask, env);
 
   if (not task) {
     jxbt_throw_notbound(env, "task", jtask);
@@ -199,7 +199,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource(JNIEnv * env, jobj
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env, jobject jtask)
 {
-  msg_task_t ptask = jtask_to_native(jtask, env);
+  const_msg_task_t ptask = jtask_to_native(jtask, env);
 
   if (not ptask) {
     jxbt_throw_notbound(env, "task", jtask);

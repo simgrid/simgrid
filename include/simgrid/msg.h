@@ -39,17 +39,10 @@ class Task;
 }
 }
 typedef simgrid::msg::Comm sg_msg_Comm;
-/** @brief Task datatype.
- *
- *  Since most scheduling algorithms rely on a concept of task  that can be either <em>computed</em> locally or
- *  <em>transferred</em> on another processor, it seems to be the right level of abstraction for our purposes.
- *  A <em>task</em> may then be defined by a <em>computing amount</em>, a <em>message size</em> and
- *  some <em>private data</em>.
- */
-typedef simgrid::msg::Task* msg_task_t;
+typedef simgrid::msg::Task sg_msg_Task;
 #else
 typedef struct msg_Comm sg_msg_Comm;
-typedef struct msg_Task* msg_task_t;
+typedef struct msg_Task sg_msg_Task;
 #endif
 
 #ifdef __cplusplus
@@ -248,6 +241,17 @@ XBT_PUBLIC void MSG_process_unref(msg_process_t process);
  * \endrst
  */
 typedef sg_msg_Comm* msg_comm_t;
+typedef const sg_msg_Comm* const_msg_comm_t;
+
+/** @brief Task datatype.
+ *
+ *  Since most scheduling algorithms rely on a concept of task  that can be either <em>computed</em> locally or
+ *  <em>transferred</em> on another processor, it seems to be the right level of abstraction for our purposes.
+ *  A <em>task</em> may then be defined by a <em>computing amount</em>, a <em>message size</em> and
+ *  some <em>private data</em>.
+ */
+typedef sg_msg_Task* msg_task_t;
+typedef const sg_msg_Task* const_msg_task_t;
 
 /* ******************************** Task ************************************ */
 
@@ -331,7 +335,7 @@ XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);
 XBT_PUBLIC xbt_dynar_t MSG_processes_as_dynar();
 XBT_PUBLIC int MSG_process_get_number();
 
-XBT_PUBLIC void* MSG_process_get_data(msg_process_t process);
+XBT_PUBLIC void* MSG_process_get_data(const_sg_actor_t process);
 XBT_PUBLIC msg_error_t MSG_process_set_data(msg_process_t process, void* data);
 
 XBT_PUBLIC void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data);
@@ -340,11 +344,11 @@ XBT_PUBLIC void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data);
 XBT_PUBLIC msg_task_t MSG_task_create(const char* name, double flops_amount, double bytes_amount, void* data);
 XBT_PUBLIC msg_task_t MSG_parallel_task_create(const char* name, int host_nb, const msg_host_t* host_list,
                                                double* flops_amount, double* bytes_amount, void* data);
-XBT_PUBLIC void* MSG_task_get_data(msg_task_t task);
+XBT_PUBLIC void* MSG_task_get_data(const_msg_task_t task);
 XBT_PUBLIC void MSG_task_set_data(msg_task_t task, void* data);
-XBT_PUBLIC msg_process_t MSG_task_get_sender(msg_task_t task);
-XBT_PUBLIC msg_host_t MSG_task_get_source(msg_task_t task);
-XBT_PUBLIC const char* MSG_task_get_name(msg_task_t task);
+XBT_PUBLIC msg_process_t MSG_task_get_sender(const_msg_task_t task);
+XBT_PUBLIC msg_host_t MSG_task_get_source(const_msg_task_t task);
+XBT_PUBLIC const char* MSG_task_get_name(const_msg_task_t task);
 XBT_PUBLIC void MSG_task_set_name(msg_task_t task, const char* name);
 XBT_PUBLIC msg_error_t MSG_task_cancel(msg_task_t task);
 XBT_PUBLIC msg_error_t MSG_task_destroy(msg_task_t task);
@@ -356,12 +360,12 @@ XBT_PUBLIC void MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC void MSG_task_set_bound(msg_task_t task, double bound);
 
 XBT_PUBLIC void MSG_task_set_flops_amount(msg_task_t task, double flops_amount);
-XBT_PUBLIC double MSG_task_get_flops_amount(msg_task_t task);
-XBT_PUBLIC double MSG_task_get_remaining_work_ratio(msg_task_t task);
+XBT_PUBLIC double MSG_task_get_flops_amount(const_msg_task_t task);
+XBT_PUBLIC double MSG_task_get_remaining_work_ratio(const_msg_task_t task);
 XBT_PUBLIC void MSG_task_set_bytes_amount(msg_task_t task, double bytes_amount);
 
-XBT_PUBLIC double MSG_task_get_remaining_communication(msg_task_t task);
-XBT_PUBLIC double MSG_task_get_bytes_amount(msg_task_t task);
+XBT_PUBLIC double MSG_task_get_remaining_communication(const_msg_task_t task);
+XBT_PUBLIC double MSG_task_get_bytes_amount(const_msg_task_t task);
 
 XBT_PUBLIC msg_error_t MSG_task_receive_with_timeout(msg_task_t* task, const char* alias, double timeout);
 
@@ -382,12 +386,12 @@ XBT_PUBLIC msg_comm_t MSG_task_irecv(msg_task_t* task, const char* alias);
 XBT_PUBLIC msg_comm_t MSG_task_irecv_bounded(msg_task_t* task, const char* alias, double rate);
 XBT_PUBLIC int MSG_comm_test(msg_comm_t comm);
 XBT_PUBLIC int MSG_comm_testany(xbt_dynar_t comms);
-XBT_PUBLIC void MSG_comm_destroy(msg_comm_t comm);
+XBT_PUBLIC void MSG_comm_destroy(const_msg_comm_t comm);
 XBT_PUBLIC msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout);
 XBT_PUBLIC void MSG_comm_waitall(msg_comm_t* comm, int nb_elem, double timeout);
 XBT_PUBLIC int MSG_comm_waitany(xbt_dynar_t comms);
-XBT_PUBLIC msg_task_t MSG_comm_get_task(msg_comm_t comm);
-XBT_PUBLIC msg_error_t MSG_comm_get_status(msg_comm_t comm);
+XBT_PUBLIC msg_task_t MSG_comm_get_task(const_msg_comm_t comm);
+XBT_PUBLIC msg_error_t MSG_comm_get_status(const_msg_comm_t comm);
 
 /** @brief Check if there is a communication going on in a mailbox.
  *
@@ -403,7 +407,7 @@ XBT_PUBLIC msg_error_t MSG_task_send(msg_task_t task, const char* alias);
 XBT_PUBLIC msg_error_t MSG_task_send_bounded(msg_task_t task, const char* alias, double rate);
 XBT_PUBLIC int MSG_task_listen_from(const char* alias);
 XBT_PUBLIC void MSG_task_set_category(msg_task_t task, const char* category);
-XBT_PUBLIC const char* MSG_task_get_category(msg_task_t task);
+XBT_PUBLIC const char* MSG_task_get_category(const_msg_task_t task);
 
 /************************** Mailbox handling ************************************/
 

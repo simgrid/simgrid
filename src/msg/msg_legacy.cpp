@@ -139,7 +139,7 @@ msg_error_t MSG_process_sleep(double duration)
  *
  * This function checks whether @a process is a valid pointer and returns the user data associated to this process.
  */
-void* MSG_process_get_data(msg_process_t process)
+void* MSG_process_get_data(const_sg_actor_t process)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 

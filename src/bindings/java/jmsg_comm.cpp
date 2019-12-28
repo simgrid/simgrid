@@ -21,7 +21,7 @@ static jfieldID jtask_field_Comm_task;
 static jfieldID jcomm_field_Comm_taskBind;
 
 void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
-  msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
+  const_msg_comm_t comm = (msg_comm_t)(uintptr_t)env->GetLongField(jcomm, jcomm_field_Comm_bind);
   //test if we are receiving or sending a task.
   jboolean jreceiving = env->GetBooleanField(jcomm, jcomm_field_Comm_receiving);
   if (jreceiving == JNI_TRUE) {
@@ -59,13 +59,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass 
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
-  msg_comm_t comm;
   msg_task_t *task_received;
 
   task_received = (msg_task_t*)  (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_taskBind);
   delete task_received;
 
-  comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
+  const_msg_comm_t comm = (msg_comm_t)(uintptr_t)env->GetLongField(jcomm, jcomm_field_Comm_bind);
   MSG_comm_destroy(comm);
 }
 

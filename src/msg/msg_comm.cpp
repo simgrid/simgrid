@@ -124,7 +124,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
 }
 
 /** @brief Destroys the provided communication. */
-void MSG_comm_destroy(msg_comm_t comm)
+void MSG_comm_destroy(const_msg_comm_t comm)
 {
   delete comm;
 }
@@ -205,7 +205,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
  * @param comm a finished communication
  * @return the status of the communication, or #MSG_OK if no error occurred during the communication
  */
-msg_error_t MSG_comm_get_status(msg_comm_t comm)
+msg_error_t MSG_comm_get_status(const_msg_comm_t comm)
 {
   return comm->get_status();
 }
@@ -215,7 +215,7 @@ msg_error_t MSG_comm_get_status(msg_comm_t comm)
  * @param comm the communication where to get the task
  * @return the task from the communication
  */
-msg_task_t MSG_comm_get_task(msg_comm_t comm)
+msg_task_t MSG_comm_get_task(const_msg_comm_t comm)
 {
   xbt_assert(comm, "Invalid parameter");
 

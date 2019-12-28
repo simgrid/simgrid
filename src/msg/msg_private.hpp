@@ -48,30 +48,30 @@ public:
   Task& operator=(const Task&) = delete;
   ~Task()                      = default;
 
-  bool is_used() { return is_used_; }
-  bool is_parallel() { return parallel_; }
+  bool is_used() const { return is_used_; }
+  bool is_parallel() const { return parallel_; }
 
   void set_used();
   void set_not_used() { this->is_used_ = false; }
   const std::string& get_name() const { return name_; }
-  const char* get_cname() { return name_.c_str(); }
+  const char* get_cname() const { return name_.c_str(); }
   void set_name(const char* new_name) { name_ = std::string(new_name); }
   void set_tracing_category(const char* category) { tracing_category_ = category ? std::string(category) : ""; }
-  const std::string& get_tracing_category() { return tracing_category_; }
+  const std::string& get_tracing_category() const { return tracing_category_; }
   bool has_tracing_category() { return not tracing_category_.empty(); }
   XBT_ATTRIB_DEPRECATED_v329("Please use set_data()") void* get_user_data() { return get_data(); }
   XBT_ATTRIB_DEPRECATED_v329("Please use get_data()") void set_user_data(void* data) { set_data(data); }
-  long long int get_id() { return id_; }
-  double get_priority() { return priority_; }
+  long long int get_id() const { return id_; }
+  double get_priority() const { return priority_; }
   void set_priority(double priority);
   void set_bound(double bound) { bound_ = bound; }
-  double get_bound() { return bound_; }
+  double get_bound() const { return bound_; }
   void set_rate(double rate) { rate_ = rate; }
-  double get_rate() { return rate_; }
+  double get_rate() const { return rate_; }
   void set_timeout(double timeout) { timeout_ = timeout; }
 
-  s4u::Actor* get_sender();
-  s4u::Host* get_source();
+  s4u::Actor* get_sender() const;
+  s4u::Host* get_source() const;
 
   s4u::ExecPtr compute = nullptr; /* S4U modeling of computation */
   s4u::CommPtr comm    = nullptr; /* S4U modeling of communication */
@@ -98,7 +98,7 @@ public:
   bool test();
   msg_error_t wait_for(double timeout);
   void set_status(msg_error_t status) { status_ = status; }
-  msg_error_t get_status() { return status_; }
+  msg_error_t get_status() const { return status_; }
 };
 
 } // namespace msg
