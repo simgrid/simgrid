@@ -16,7 +16,7 @@ namespace dwarf {
 XBT_PRIVATE const char* attrname(int attr);
 XBT_PRIVATE const char* tagname(int tag);
 
-XBT_PRIVATE void* resolve_member(const void* base, simgrid::mc::Type* type, simgrid::mc::Member* member,
+XBT_PRIVATE void* resolve_member(const void* base, const simgrid::mc::Type* type, const simgrid::mc::Member* member,
                                  const simgrid::mc::AddressSpace* snapshot);
 
 XBT_PRIVATE

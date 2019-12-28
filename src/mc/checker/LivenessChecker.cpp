@@ -39,7 +39,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
   this->atomic_propositions = std::move(atomic_propositions);
 }
 
-static bool evaluate_label(xbt_automaton_exp_label_t l, std::vector<int> const& values)
+static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> const& values)
 {
   switch (l->type) {
   case xbt_automaton_exp_label::AUT_OR:
@@ -260,7 +260,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
   return trace;
 }
 
-std::shared_ptr<Pair> LivenessChecker::create_pair(Pair* current_pair, xbt_automaton_state_t state,
+std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt_automaton_state_t state,
                                                    std::shared_ptr<const std::vector<int>> propositions)
 {
   expanded_pairs_count_++;

@@ -89,7 +89,7 @@ static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf
  *  @param unit the DIE of the compile unit of the current DIE
  *  @param frame containing frame if any
  */
-static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die* die, Dwarf_Die* unit,
+static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die* die, const Dwarf_Die* unit,
                                          simgrid::mc::Frame* frame, const char* ns);
 
 /** @brief Get the DW_TAG_type of the DIE
@@ -431,7 +431,7 @@ static bool MC_compare_variable(simgrid::mc::Variable const& a, simgrid::mc::Var
  *  @param  member the member of the type
  *  @param  child  DIE of the member (DW_TAG_member)
  */
-static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::Member* member, Dwarf_Die* child)
+static void MC_dwarf_fill_member_location(const simgrid::mc::Type* type, simgrid::mc::Member* member, Dwarf_Die* child)
 {
   xbt_assert(not dwarf_hasattr(child, DW_AT_data_bit_offset), "Can't groke DW_AT_data_bit_offset.");
 
@@ -484,8 +484,8 @@ static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::
  *  @param unit DIE of the compilation unit containing the type DIE
  *  @param type the type
  */
-static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* /*info*/, Dwarf_Die* die, Dwarf_Die* /*unit*/,
-                                 simgrid::mc::Type* type)
+static void MC_dwarf_add_members(const simgrid::mc::ObjectInformation* /*info*/, Dwarf_Die* die,
+                                 const Dwarf_Die* /*unit*/, simgrid::mc::Type* type)
 {
   int res;
   Dwarf_Die child;
@@ -644,8 +644,8 @@ static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf
 static int mc_anonymous_variable_index = 0;
 
 static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::ObjectInformation* info, Dwarf_Die* die,
-                                                                 Dwarf_Die* /*unit*/, simgrid::mc::Frame* frame,
-                                                                 const char* ns)
+                                                                 const Dwarf_Die* /*unit*/,
+                                                                 const simgrid::mc::Frame* frame, const char* ns)
 {
   // Skip declarations:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
@@ -739,7 +739,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::Ob
   return variable;
 }
 
-static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die* die, Dwarf_Die* unit,
+static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die* die, const Dwarf_Die* unit,
                                          simgrid::mc::Frame* frame, const char* ns)
 {
   std::unique_ptr<simgrid::mc::Variable> variable = MC_die_to_variable(info, die, unit, frame, ns);
@@ -1207,7 +1207,7 @@ std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<xbt::VmMa
 
 /*************************************************************************/
 
-void postProcessObjectInformation(RemoteClient* process, ObjectInformation* info)
+void postProcessObjectInformation(const RemoteClient* process, ObjectInformation* info)
 {
   for (auto& t : info->types) {
     Type* type    = &(t.second);

@@ -20,7 +20,7 @@ namespace dwarf {
 
 /** Resolve a location expression */
 Location resolve(simgrid::dwarf::DwarfExpression const& expression, simgrid::mc::ObjectInformation* object_info,
-                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space)
+                 unw_cursor_t* c, void* frame_pointer_address, const simgrid::mc::AddressSpace* address_space)
 {
   simgrid::dwarf::ExpressionContext context;
   context.frame_base    = frame_pointer_address;
@@ -50,7 +50,7 @@ static simgrid::dwarf::DwarfExpression const* find_expression(simgrid::dwarf::Lo
 }
 
 Location resolve(simgrid::dwarf::LocationList const& locations, simgrid::mc::ObjectInformation* object_info,
-                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space)
+                 unw_cursor_t* c, void* frame_pointer_address, const simgrid::mc::AddressSpace* address_space)
 {
   unw_word_t ip = 0;
   if (c && unw_get_reg(c, UNW_REG_IP, &ip))
@@ -61,7 +61,7 @@ Location resolve(simgrid::dwarf::LocationList const& locations, simgrid::mc::Obj
   return simgrid::dwarf::resolve(*expression, object_info, c, frame_pointer_address, address_space);
 }
 
-LocationList location_list(simgrid::mc::ObjectInformation& info, Dwarf_Attribute& attr)
+LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Attribute& attr)
 {
   LocationList locations;
   std::ptrdiff_t offset = 0;

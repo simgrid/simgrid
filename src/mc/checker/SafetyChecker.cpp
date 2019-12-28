@@ -31,7 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc, "Logging specific to MC safety ve
 namespace simgrid {
 namespace mc {
 
-void SafetyChecker::check_non_termination(State* current_state)
+void SafetyChecker::check_non_termination(const State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
     if (snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {

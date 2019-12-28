@@ -42,7 +42,7 @@ void wait_for_requests()
   while (not simix_global->actors_to_run.empty()) {
     simix_global->run_all_actors();
     for (smx_actor_t const& process : simix_global->actors_that_ran) {
-      smx_simcall_t req = &process->simcall;
+      const s_smx_simcall* req = &process->simcall;
       if (req->call_ != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
         process->simcall_handle(0);
     }
@@ -148,7 +148,7 @@ bool actor_is_enabled(smx_actor_t actor)
 /* This is the list of requests that are visible from the checker algorithm.
  * Any other requests are handled right away on the application side.
  */
-bool request_is_visible(smx_simcall_t req)
+bool request_is_visible(const s_smx_simcall* req)
 {
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");

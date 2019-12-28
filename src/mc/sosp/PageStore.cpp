@@ -142,7 +142,7 @@ void PageStore::remove_page(std::size_t pageno)
 }
 
 /** Store a page in memory */
-std::size_t PageStore::store_page(void* page)
+std::size_t PageStore::store_page(const void* page)
 {
   xbt_assert(top_index_ <= this->capacity_, "top_index is not consistent");
 

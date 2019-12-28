@@ -28,10 +28,10 @@ public:
   void handle_messages();
 
 private:
-  void handle_deadlock_check(s_mc_message_t* msg);
-  void handle_continue(s_mc_message_t* msg);
-  void handle_simcall(s_mc_message_simcall_handle_t* message);
-  void handle_actor_enabled(s_mc_message_actor_enabled_t* msg);
+  void handle_deadlock_check(const s_mc_message_t* msg);
+  void handle_continue(const s_mc_message_t* msg);
+  void handle_simcall(const s_mc_message_simcall_handle_t* message);
+  void handle_actor_enabled(const s_mc_message_actor_enabled_t* msg);
 
 public:
   Channel const& get_channel() const { return channel_; }

@@ -40,7 +40,7 @@ void Snapshot::snapshot_regions(RemoteClient* process)
  *  @param ip    Instruction pointer
  *  @return      true if the variable is valid
  * */
-static bool valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* scope, const void* ip)
+static bool valid_variable(const simgrid::mc::Variable* var, simgrid::mc::Frame* scope, const void* ip)
 {
   // The variable is not yet valid:
   if (scope->range.begin() + var->start_scope > (std::uint64_t)ip)
@@ -55,7 +55,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
 
-  for (Variable& current_variable : scope->variables) {
+  for (const Variable& current_variable : scope->variables) {
     if (not valid_variable(&current_variable, scope, (void*)stack_frame->ip))
       continue;
 
@@ -191,7 +191,7 @@ static void snapshot_handle_ignore(Snapshot* snapshot)
     snapshot->process()->clear_bytes(remote(region.addr), region.size);
 }
 
-static void snapshot_ignore_restore(simgrid::mc::Snapshot* snapshot)
+static void snapshot_ignore_restore(const simgrid::mc::Snapshot* snapshot)
 {
   for (auto const& ignored_data : snapshot->ignored_data_)
     snapshot->process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(), remote(ignored_data.start));
@@ -233,7 +233,7 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
 
 void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions options) const
 {
-  Region* region = this->get_region((void*)address.address());
+  const Region* region = this->get_region((void*)address.address());
   if (region) {
     void* res = region->read(buffer, (void*)address.address(), size);
     if (buffer == res || options & ReadOptions::lazy())

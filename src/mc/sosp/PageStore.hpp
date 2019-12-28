@@ -134,7 +134,7 @@ public:
   void ref_page(size_t pageno);
 
   /** @brief Store a page in the page store */
-  std::size_t store_page(void* page);
+  std::size_t store_page(const void* page);
 
   /** @brief Get a page from its page number
    *

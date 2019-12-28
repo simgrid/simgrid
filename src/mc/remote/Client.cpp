@@ -72,7 +72,7 @@ Client* Client::initialize()
   return instance_.get();
 }
 
-void Client::handle_deadlock_check(s_mc_message_t*)
+void Client::handle_deadlock_check(const s_mc_message_t*)
 {
   bool deadlock = false;
   if (not simix_global->process_list.empty()) {
@@ -88,11 +88,11 @@ void Client::handle_deadlock_check(s_mc_message_t*)
   s_mc_message_int_t answer{MC_MESSAGE_DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
-void Client::handle_continue(s_mc_message_t*)
+void Client::handle_continue(const s_mc_message_t*)
 {
   /* Nothing to do */
 }
-void Client::handle_simcall(s_mc_message_simcall_handle_t* message)
+void Client::handle_simcall(const s_mc_message_simcall_handle_t* message)
 {
   smx_actor_t process = SIMIX_process_from_PID(message->pid);
   if (not process)
@@ -102,7 +102,7 @@ void Client::handle_simcall(s_mc_message_simcall_handle_t* message)
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
 }
 
-void Client::handle_actor_enabled(s_mc_message_actor_enabled_t* msg)
+void Client::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg)
 {
   bool res = simgrid::mc::actor_is_enabled(SIMIX_process_from_PID(msg->aid));
   s_mc_message_int_t answer{MC_MESSAGE_ACTOR_ENABLED_REPLY, res};
@@ -120,7 +120,7 @@ void Client::handle_messages()
     if (received_size < 0)
       xbt_die("Could not receive commands from the model-checker");
 
-    s_mc_message_t* message = (s_mc_message_t*)message_buffer;
+    const s_mc_message_t* message = (s_mc_message_t*)message_buffer;
     switch (message->type) {
       case MC_MESSAGE_DEADLOCK_CHECK:
         xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zd != %zu)",

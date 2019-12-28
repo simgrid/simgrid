@@ -66,13 +66,13 @@ public:
 
 XBT_PRIVATE
 Location resolve(simgrid::dwarf::DwarfExpression const& expression, simgrid::mc::ObjectInformation* object_info,
-                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space);
+                 unw_cursor_t* c, void* frame_pointer_address, const simgrid::mc::AddressSpace* address_space);
 
 Location resolve(simgrid::dwarf::LocationList const& locations, simgrid::mc::ObjectInformation* object_info,
-                 unw_cursor_t* c, void* frame_pointer_address, simgrid::mc::AddressSpace* address_space);
+                 unw_cursor_t* c, void* frame_pointer_address, const simgrid::mc::AddressSpace* address_space);
 
 XBT_PRIVATE
-simgrid::dwarf::LocationList location_list(simgrid::mc::ObjectInformation& info, Dwarf_Attribute& attr);
+simgrid::dwarf::LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Attribute& attr);
 
 } // namespace dwarf
 } // namespace simgrid

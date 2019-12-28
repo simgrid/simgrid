@@ -30,7 +30,7 @@ public:
   void log_state() override;
 
 private:
-  void check_non_termination(simgrid::mc::State* current_state);
+  void check_non_termination(const State* current_state);
   void backtrack();
   void restore_state();
 

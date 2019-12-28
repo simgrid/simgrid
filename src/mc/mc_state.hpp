@@ -124,7 +124,10 @@ public:
   explicit State(unsigned long state_number);
 
   std::size_t interleave_size() const;
-  void add_interleaving_set(smx_actor_t actor) { this->actor_states_[actor->get_pid()].consider(); }
+  void add_interleaving_set(const simgrid::kernel::actor::ActorImpl* actor)
+  {
+    this->actor_states_[actor->get_pid()].consider();
+  }
   Transition get_transition() const;
 };
 }

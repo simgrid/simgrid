@@ -34,7 +34,7 @@ void replay(RecordTrace const& trace)
     smx_actor_t process = SIMIX_process_from_PID(transition.pid_);
     if (not process)
       xbt_die("Unexpected process (pid:%d).", transition.pid_);
-    smx_simcall_t simcall = &(process->simcall);
+    const s_smx_simcall* simcall = &(process->simcall);
     if (simcall == nullptr || simcall->call_ == SIMCALL_NONE)
       xbt_die("No simcall for process %d.", transition.pid_);
     if (not simgrid::mc::request_is_visible(simcall) || not simgrid::mc::actor_is_enabled(process))

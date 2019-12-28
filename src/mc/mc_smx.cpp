@@ -31,7 +31,7 @@ static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
  *  @param target       Local vector (to be filled with copies of `s_smx_actor_t`)
  *  @param remote_dynar Address of the process dynar in the remote list
  */
-static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* process,
+static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteClient* process,
                                                  std::vector<simgrid::mc::ActorInformation>& target,
                                                  simgrid::mc::RemotePtr<s_xbt_dynar_t> remote_dynar)
 {

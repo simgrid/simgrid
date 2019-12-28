@@ -157,7 +157,8 @@ XBT_PRIVATE std::shared_ptr<ObjectInformation> createObjectInformation(std::vect
                                                                        const char* name);
 
 /** Augment the current module with informations about the other ones */
-XBT_PRIVATE void postProcessObjectInformation(simgrid::mc::RemoteClient* process, simgrid::mc::ObjectInformation* info);
+XBT_PRIVATE void postProcessObjectInformation(const simgrid::mc::RemoteClient* process,
+                                              simgrid::mc::ObjectInformation* info);
 } // namespace mc
 } // namespace simgrid
 

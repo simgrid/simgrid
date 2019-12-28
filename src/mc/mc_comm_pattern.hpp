@@ -43,7 +43,7 @@ enum e_mc_comm_pattern_difference_t {
   DATA_DIFF,
 };
 
-static inline e_mc_call_type_t MC_get_call_type(smx_simcall_t req)
+static inline e_mc_call_type_t MC_get_call_type(const s_smx_simcall* req)
 {
   switch (req->call_) {
     case SIMCALL_COMM_ISEND:

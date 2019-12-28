@@ -44,7 +44,7 @@ void Region::restore()
   }
 }
 
-static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgrid::mc::Region* region)
+static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, const simgrid::mc::Region* region)
 {
   auto split                = simgrid::mc::mmu::split(addr - region->start().address());
   auto pageno               = split.first;
@@ -53,7 +53,7 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, simgr
   return (char*)snapshot_page + offset;
 }
 
-void* Region::read(void* target, const void* addr, std::size_t size)
+void* Region::read(void* target, const void* addr, std::size_t size) const
 {
   xbt_assert(contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
@@ -103,8 +103,8 @@ void* Region::read(void* target, const void* addr, std::size_t size)
  * @param region2 Region of the address in the second snapshot
  * @return same semantic as memcmp
  */
-int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::Region* region1, const void* addr2,
-                              simgrid::mc::Region* region2, size_t size)
+int MC_snapshot_region_memcmp(const void* addr1, const simgrid::mc::Region* region1, const void* addr2,
+                              const simgrid::mc::Region* region2, size_t size)
 {
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.

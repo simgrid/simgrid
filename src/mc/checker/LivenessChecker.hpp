@@ -71,7 +71,7 @@ private:
   void remove_acceptance_pair(int pair_num);
   void purge_visited_pairs();
   void backtrack();
-  std::shared_ptr<Pair> create_pair(Pair* pair, xbt_automaton_state_t state,
+  std::shared_ptr<Pair> create_pair(const Pair* pair, xbt_automaton_state_t state,
                                     std::shared_ptr<const std::vector<int>> propositions);
 
   // A stack of (application_state, automaton_state) pairs for DFS exploration:

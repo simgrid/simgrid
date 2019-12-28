@@ -29,8 +29,8 @@ std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communic
 
 /********** Static functions ***********/
 
-static e_mc_comm_pattern_difference_t compare_comm_pattern(simgrid::mc::PatternCommunication* comm1,
-                                                           simgrid::mc::PatternCommunication* comm2)
+static e_mc_comm_pattern_difference_t compare_comm_pattern(const simgrid::mc::PatternCommunication* comm1,
+                                                           const simgrid::mc::PatternCommunication* comm2)
 {
   if(comm1->type != comm2->type)
     return TYPE_DIFF;
@@ -50,7 +50,7 @@ static e_mc_comm_pattern_difference_t compare_comm_pattern(simgrid::mc::PatternC
 }
 
 static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int process,
-                                      simgrid::mc::PatternCommunication* comm, unsigned int cursor)
+                                      const simgrid::mc::PatternCommunication* comm, unsigned int cursor)
 {
   char* type;
   char* res;
@@ -116,7 +116,7 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
 namespace simgrid {
 namespace mc {
 
-void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, PatternCommunication* comm,
+void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, const PatternCommunication* comm,
                                                                  int backtracking)
 {
   if (not backtracking) {
@@ -253,7 +253,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::ac
   std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer];
   auto current_comm_pattern =
       std::find_if(begin(incomplete_pattern), end(incomplete_pattern),
-                   [&comm_addr](PatternCommunication* comm) { return remote(comm->comm_addr) == comm_addr; });
+                   [&comm_addr](const PatternCommunication* comm) { return remote(comm->comm_addr) == comm_addr; });
   if (current_comm_pattern == std::end(incomplete_pattern))
     xbt_die("Corresponding communication not found!");
 

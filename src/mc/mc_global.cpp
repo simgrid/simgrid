@@ -136,7 +136,7 @@ void dumpStack(FILE* file, unw_cursor_t&& cursor)
 }
 #endif
 
-double MC_process_clock_get(smx_actor_t process)
+double MC_process_clock_get(const simgrid::kernel::actor::ActorImpl* process)
 {
   if (simgrid::mc::processes_time.empty())
     return 0;
@@ -145,7 +145,7 @@ double MC_process_clock_get(smx_actor_t process)
   return -1;
 }
 
-void MC_process_clock_add(smx_actor_t process, double amount)
+void MC_process_clock_add(const simgrid::kernel::actor::ActorImpl* process, double amount)
 {
   simgrid::mc::processes_time[process->get_pid()] += amount;
 }

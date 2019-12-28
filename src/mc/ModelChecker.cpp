@@ -161,7 +161,7 @@ static void MC_report_assertion_error()
   session->log_state();
 }
 
-bool ModelChecker::handle_message(char* buffer, ssize_t size)
+bool ModelChecker::handle_message(const char* buffer, ssize_t size)
 {
   s_mc_message_t base_message;
   xbt_assert(size >= (ssize_t)sizeof(base_message), "Broken message");

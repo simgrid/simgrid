@@ -33,10 +33,9 @@ void VisitedStates::prune()
 {
   while (states_.size() > (std::size_t)_sg_mc_max_visited_states) {
     XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
-    auto min_element = boost::range::min_element(states_,
-      [](std::unique_ptr<simgrid::mc::VisitedState>& a, std::unique_ptr<simgrid::mc::VisitedState>& b) {
-        return a->num < b->num;
-      });
+    auto min_element = boost::range::min_element(
+        states_, [](const std::unique_ptr<simgrid::mc::VisitedState>& a,
+                    const std::unique_ptr<simgrid::mc::VisitedState>& b) { return a->num < b->num; });
     xbt_assert(min_element != states_.end());
     // and drop it:
     states_.erase(min_element);

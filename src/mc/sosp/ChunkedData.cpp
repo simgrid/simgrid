@@ -15,7 +15,7 @@ namespace mc {
  *  @param page_count      Number of pages of the region
  *  @return                Snapshot page numbers of this new snapshot
  */
-ChunkedData::ChunkedData(PageStore& store, AddressSpace& as, RemotePtr<void> addr, std::size_t page_count)
+ChunkedData::ChunkedData(PageStore& store, const AddressSpace& as, RemotePtr<void> addr, std::size_t page_count)
     : store_(&store)
 {
   this->pagenos_.resize(page_count);

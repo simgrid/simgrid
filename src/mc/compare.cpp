@@ -60,7 +60,7 @@ public:
   std::vector<Type*> types;
   std::size_t heapsize = 0;
 
-  void initHeapInformation(xbt_mheap_t heap, const std::vector<IgnoredHeapRegion>& i);
+  void initHeapInformation(const s_xbt_mheap_t* heap, const std::vector<IgnoredHeapRegion>& i);
 };
 
 class StateComparator {
@@ -77,8 +77,8 @@ public:
     compared_pointers.clear();
   }
 
-  int initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2, const std::vector<IgnoredHeapRegion>& i1,
-                          const std::vector<IgnoredHeapRegion>& i2);
+  int initHeapInformation(const s_xbt_mheap_t* heap1, const s_xbt_mheap_t* heap2,
+                          const std::vector<IgnoredHeapRegion>& i1, const std::vector<IgnoredHeapRegion>& i2);
 
   template <int rank> HeapArea& equals_to_(std::size_t i, std::size_t j)
   {
@@ -123,7 +123,7 @@ public:
            this->equals_to_<2>(b2, f2).block_ == b1 && this->equals_to_<2>(b2, f2).fragment_ == f1;
   }
 
-  void match_equals(HeapLocationPairs* list);
+  void match_equals(const HeapLocationPairs* list);
 };
 
 } // namespace mc
@@ -171,7 +171,7 @@ static bool is_block_stack(int block)
 namespace simgrid {
 namespace mc {
 
-void StateComparator::match_equals(HeapLocationPairs* list)
+void StateComparator::match_equals(const HeapLocationPairs* list)
 {
   for (auto const& pair : *list) {
     if (pair[0].fragment_ != -1) {
@@ -184,7 +184,7 @@ void StateComparator::match_equals(HeapLocationPairs* list)
   }
 }
 
-void ProcessComparisonState::initHeapInformation(xbt_mheap_t heap, const std::vector<IgnoredHeapRegion>& i)
+void ProcessComparisonState::initHeapInformation(const s_xbt_mheap_t* heap, const std::vector<IgnoredHeapRegion>& i)
 {
   auto heaplimit  = heap->heaplimit;
   this->heapsize  = heap->heapsize;
@@ -193,7 +193,8 @@ void ProcessComparisonState::initHeapInformation(xbt_mheap_t heap, const std::ve
   this->types.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, nullptr);
 }
 
-int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2, const std::vector<IgnoredHeapRegion>& i1,
+int StateComparator::initHeapInformation(const s_xbt_mheap_t* heap1, const s_xbt_mheap_t* heap2,
+                                         const std::vector<IgnoredHeapRegion>& i1,
                                          const std::vector<IgnoredHeapRegion>& i2)
 {
   if ((heap1->heaplimit != heap2->heaplimit) || (heap1->heapsize != heap2->heapsize))
@@ -228,8 +229,8 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
   malloc_info heapinfo_temp2;
   malloc_info heapinfo_temp2b;
 
-  Region* heap_region1 = MC_get_heap_region(snapshot1);
-  Region* heap_region2 = MC_get_heap_region(snapshot2);
+  const Region* heap_region1 = MC_get_heap_region(snapshot1);
+  const Region* heap_region2 = MC_get_heap_region(snapshot2);
 
   // This is the address of std_heap->heapinfo in the application process:
   void* heapinfo_address = &((xbt_mheap_t)process.heap_address)->heapinfo;
@@ -448,8 +449,8 @@ static bool heap_area_differ_without_type(StateComparator& state, const void* re
                                           HeapLocationPairs* previous, int size, int check_ignore)
 {
   const RemoteClient& process = mc_model_checker->process();
-  Region* heap_region1        = MC_get_heap_region(snapshot1);
-  Region* heap_region2        = MC_get_heap_region(snapshot2);
+  const Region* heap_region1  = MC_get_heap_region(snapshot1);
+  const Region* heap_region2  = MC_get_heap_region(snapshot2);
 
   for (int i = 0; i < size; ) {
     if (check_ignore > 0) {
@@ -509,7 +510,7 @@ static bool heap_area_differ_without_type(StateComparator& state, const void* re
  */
 static bool heap_area_differ_with_type(StateComparator& state, const void* real_area1, const void* real_area2,
                                        const Snapshot& snapshot1, const Snapshot& snapshot2,
-                                       HeapLocationPairs* previous, Type* type, int area_size, int check_ignore,
+                                       HeapLocationPairs* previous, const Type* type, int area_size, int check_ignore,
                                        int pointer_level)
 {
   // HACK: This should not happen but in practice, there are some
@@ -536,8 +537,8 @@ static bool heap_area_differ_with_type(StateComparator& state, const void* real_
   const void* addr_pointed1;
   const void* addr_pointed2;
 
-  Region* heap_region1 = MC_get_heap_region(snapshot1);
-  Region* heap_region2 = MC_get_heap_region(snapshot2);
+  const Region* heap_region1 = MC_get_heap_region(snapshot1);
+  const Region* heap_region2 = MC_get_heap_region(snapshot2);
 
   switch (type->type) {
     case DW_TAG_unspecified_type:
@@ -652,7 +653,7 @@ static bool heap_area_differ_with_type(StateComparator& state, const void* real_
             return true;
         }
         } else {
-          for (simgrid::mc::Member& member : type->members) {
+          for (const simgrid::mc::Member& member : type->members) {
             // TODO, optimize this? (for the offset case)
             const void* real_member1 = dwarf::resolve_member(real_area1, type, &member, &snapshot1);
             const void* real_member2 = dwarf::resolve_member(real_area2, type, &member, &snapshot2);
@@ -700,7 +701,7 @@ static Type* get_offset_type(void* real_base_address, Type* type, int offset, in
         return nullptr;
     }
 
-    for (simgrid::mc::Member& member : type->members) {
+    for (const simgrid::mc::Member& member : type->members) {
       if (member.has_offset_location()) {
         // We have the offset, use it directly (shortcut):
         if (member.offset() == offset)
@@ -806,8 +807,8 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
       type_size = type->byte_size;
   }
 
-  simgrid::mc::Region* heap_region1 = MC_get_heap_region(snapshot1);
-  simgrid::mc::Region* heap_region2 = MC_get_heap_region(snapshot2);
+  const Region* heap_region1 = MC_get_heap_region(snapshot1);
+  const Region* heap_region2 = MC_get_heap_region(snapshot2);
 
   const malloc_info* heapinfo1 =
       (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[block1], sizeof(malloc_info));
@@ -1009,7 +1010,7 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
 static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const void* real_area1,
                                    const simgrid::mc::Snapshot& snapshot1, simgrid::mc::Region* region1,
                                    const void* real_area2, const simgrid::mc::Snapshot& snapshot2,
-                                   simgrid::mc::Region* region2, simgrid::mc::Type* type, int pointer_level)
+                                   simgrid::mc::Region* region2, const simgrid::mc::Type* type, int pointer_level)
 {
   const simgrid::mc::Type* subtype;
   const simgrid::mc::Type* subsubtype;
@@ -1113,7 +1114,7 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
     }
     case DW_TAG_structure_type:
     case DW_TAG_class_type:
-      for (simgrid::mc::Member& member : type->members) {
+      for (const simgrid::mc::Member& member : type->members) {
         const void* member1             = simgrid::dwarf::resolve_member(real_area1, type, &member, &snapshot1);
         const void* member2             = simgrid::dwarf::resolve_member(real_area2, type, &member, &snapshot2);
         simgrid::mc::Region* subregion1 = snapshot1.get_region(member1, region1); // region1 is hinted
@@ -1133,9 +1134,10 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
   return false;
 }
 
-static bool global_variables_differ(simgrid::mc::StateComparator& state, simgrid::mc::ObjectInformation* object_info,
-                                    simgrid::mc::Region* r1, simgrid::mc::Region* r2,
-                                    const simgrid::mc::Snapshot& snapshot1, const simgrid::mc::Snapshot& snapshot2)
+static bool global_variables_differ(simgrid::mc::StateComparator& state,
+                                    const simgrid::mc::ObjectInformation* object_info, simgrid::mc::Region* r1,
+                                    simgrid::mc::Region* r2, const simgrid::mc::Snapshot& snapshot1,
+                                    const simgrid::mc::Snapshot& snapshot2)
 {
   xbt_assert(r1 && r2, "Missing region.");
 

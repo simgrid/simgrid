@@ -69,16 +69,16 @@ public:
    *  @param size    Size of the data to read in bytes
    *  @return Pointer where the data is located (either target buffer or original location)
    */
-  void* read(void* target, const void* addr, std::size_t size);
+  void* read(void* target, const void* addr, std::size_t size) const;
 };
 
 } // namespace mc
 } // namespace simgrid
 
-int MC_snapshot_region_memcmp(const void* addr1, simgrid::mc::Region* region1, const void* addr2,
-                              simgrid::mc::Region* region2, std::size_t size);
+int MC_snapshot_region_memcmp(const void* addr1, const simgrid::mc::Region* region1, const void* addr2,
+                              const simgrid::mc::Region* region2, std::size_t size);
 
-static XBT_ALWAYS_INLINE void* MC_region_read_pointer(simgrid::mc::Region* region, const void* addr)
+static XBT_ALWAYS_INLINE void* MC_region_read_pointer(const simgrid::mc::Region* region, const void* addr)
 {
   void* res;
   return *(void**)region->read(&res, addr, sizeof(void*));

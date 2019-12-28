@@ -40,8 +40,7 @@ XBT_PRIVATE void handle_simcall(smx_simcall_t req, int req_num);
 XBT_PRIVATE bool actor_is_enabled(smx_actor_t process);
 
 /** Check if the given simcall is visible */
-XBT_PRIVATE bool request_is_visible(smx_simcall_t req);
-
+XBT_PRIVATE bool request_is_visible(const s_smx_simcall* req);
 }
 }
 
