@@ -232,11 +232,17 @@ typedef s4u_Mutex* sg_mutex_t;
 typedef s4u_Semaphore* sg_sem_t;
 typedef s4u_NetZone* sg_netzone_t;
 typedef s4u_Host* sg_host_t;
+typedef const s4u_Host* const_sg_host_t;
 typedef s4u_Link* sg_link_t;
+typedef const s4u_Link* const_sg_link_t;
 typedef s4u_Disk* sg_disk_t;
+typedef const s4u_Disk* const_sg_disk_t;
 typedef s4u_Storage* sg_storage_t;
+typedef const s4u_Storage* const_sg_storage_t;
 typedef s4u_File* sg_file_t;
+typedef const s4u_File* const_sg_file_t;
 typedef s4u_VM* sg_vm_t;
+typedef const s4u_VM* const_sg_vm_t;
 typedef s4u_Actor* sg_actor_t;
 typedef const s4u_Actor* const_sg_actor_t;
 

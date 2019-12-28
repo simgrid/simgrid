@@ -13,18 +13,18 @@ SG_BEGIN_DECL
 
 XBT_PUBLIC void sg_vm_live_migration_plugin_init();
 XBT_PRIVATE void sg_vm_dirty_page_tracking_init();
-XBT_PUBLIC void sg_vm_start_dirty_page_tracking(sg_vm_t vm);
-XBT_PUBLIC void sg_vm_stop_dirty_page_tracking(sg_vm_t vm);
-XBT_PUBLIC double sg_vm_lookup_computed_flops(sg_vm_t vm);
+XBT_PUBLIC void sg_vm_start_dirty_page_tracking(const_sg_vm_t vm);
+XBT_PUBLIC void sg_vm_stop_dirty_page_tracking(const_sg_vm_t vm);
+XBT_PUBLIC double sg_vm_lookup_computed_flops(const_sg_vm_t vm);
 XBT_PUBLIC void sg_vm_migrate(sg_vm_t vm, sg_host_t dst_pm);
-XBT_PUBLIC void sg_vm_set_dirty_page_intensity(sg_vm_t vm, double intensity);
-XBT_PUBLIC double sg_vm_get_dirty_page_intensity(sg_vm_t vm);
-XBT_PUBLIC void sg_vm_set_working_set_memory(sg_vm_t vm, sg_size_t size);
-XBT_PUBLIC sg_size_t sg_vm_get_working_set_memory(sg_vm_t vm);
-XBT_PUBLIC void sg_vm_set_migration_speed(sg_vm_t vm, double speed);
-XBT_PUBLIC double sg_vm_get_migration_speed(sg_vm_t vm);
-XBT_PUBLIC double sg_vm_get_max_downtime(sg_vm_t vm);
-XBT_PUBLIC int sg_vm_is_migrating(sg_vm_t vm);
+XBT_PUBLIC void sg_vm_set_dirty_page_intensity(const_sg_vm_t vm, double intensity);
+XBT_PUBLIC double sg_vm_get_dirty_page_intensity(const_sg_vm_t vm);
+XBT_PUBLIC void sg_vm_set_working_set_memory(const_sg_vm_t vm, sg_size_t size);
+XBT_PUBLIC sg_size_t sg_vm_get_working_set_memory(const_sg_vm_t vm);
+XBT_PUBLIC void sg_vm_set_migration_speed(const_sg_vm_t vm, double speed);
+XBT_PUBLIC double sg_vm_get_migration_speed(const_sg_vm_t vm);
+XBT_PUBLIC double sg_vm_get_max_downtime(const_sg_vm_t vm);
+XBT_PUBLIC int sg_vm_is_migrating(const_sg_vm_t vm);
 XBT_PUBLIC sg_vm_t sg_vm_create_migratable(sg_host_t pm, const char* name, int coreAmount, int ramsize,
                                            int mig_netspeed, int dp_intensity);
 

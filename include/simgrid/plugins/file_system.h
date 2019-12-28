@@ -27,12 +27,12 @@ XBT_PUBLIC void sg_storage_file_system_init();
 XBT_PUBLIC sg_file_t sg_file_open(const char* fullpath, void* data);
 XBT_PUBLIC sg_size_t sg_file_read(sg_file_t fd, sg_size_t size);
 XBT_PUBLIC sg_size_t sg_file_write(sg_file_t fd, sg_size_t size);
-XBT_PUBLIC void sg_file_close(sg_file_t fd);
+XBT_PUBLIC void sg_file_close(const_sg_file_t fd);
 
 XBT_PUBLIC const char* sg_file_get_name(sg_file_t fd);
 XBT_PUBLIC sg_size_t sg_file_get_size(sg_file_t fd);
 XBT_PUBLIC void sg_file_dump(sg_file_t fd);
-XBT_PUBLIC void* sg_file_get_data(sg_file_t fd);
+XBT_PUBLIC void* sg_file_get_data(const_sg_file_t fd);
 XBT_PUBLIC void sg_file_set_data(sg_file_t fd, void* data);
 XBT_PUBLIC void sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin);
 XBT_PUBLIC sg_size_t sg_file_tell(sg_file_t fd);
@@ -41,15 +41,15 @@ XBT_PUBLIC void sg_file_unlink(sg_file_t fd);
 XBT_PUBLIC int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath);
 XBT_PUBLIC int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath);
 
-XBT_PUBLIC sg_size_t sg_disk_get_size_free(sg_disk_t d);
-XBT_PUBLIC sg_size_t sg_disk_get_size_used(sg_disk_t d);
-XBT_PUBLIC sg_size_t sg_disk_get_size(sg_disk_t d);
-XBT_PUBLIC const char* sg_disk_get_mount_point(sg_disk_t d);
+XBT_PUBLIC sg_size_t sg_disk_get_size_free(const_sg_disk_t d);
+XBT_PUBLIC sg_size_t sg_disk_get_size_used(const_sg_disk_t d);
+XBT_PUBLIC sg_size_t sg_disk_get_size(const_sg_disk_t d);
+XBT_PUBLIC const char* sg_disk_get_mount_point(const_sg_disk_t d);
 
-XBT_PUBLIC sg_size_t sg_storage_get_size_free(sg_storage_t st);
-XBT_PUBLIC sg_size_t sg_storage_get_size_used(sg_storage_t st);
-XBT_PUBLIC sg_size_t sg_storage_get_size(sg_storage_t st);
-XBT_PUBLIC xbt_dict_t sg_storage_get_content(sg_storage_t storage);
+XBT_PUBLIC sg_size_t sg_storage_get_size_free(const_sg_storage_t st);
+XBT_PUBLIC sg_size_t sg_storage_get_size_used(const_sg_storage_t st);
+XBT_PUBLIC sg_size_t sg_storage_get_size(const_sg_storage_t st);
+XBT_PUBLIC xbt_dict_t sg_storage_get_content(const_sg_storage_t storage);
 
 XBT_PUBLIC xbt_dict_t sg_host_get_storage_content(sg_host_t host);
 
@@ -103,7 +103,7 @@ class XBT_PUBLIC File : public xbt::Extendable<File> {
   sg_size_t current_position_ = SEEK_SET;
 
   Storage* find_local_storage_on(Host* host);
-  Disk* find_local_disk_on(Host* host);
+  Disk* find_local_disk_on(const Host* host);
   sg_size_t write_on_storage(sg_size_t size, bool write_inside);
   sg_size_t write_on_disk(sg_size_t size, bool write_inside);
 
@@ -150,7 +150,7 @@ public:
 class XBT_PUBLIC FileSystemDiskExt {
 public:
   static simgrid::xbt::Extension<Disk, FileSystemDiskExt> EXTENSION_ID;
-  explicit FileSystemDiskExt(Disk* ptr);
+  explicit FileSystemDiskExt(const Disk* ptr);
   FileSystemDiskExt(const FileSystemDiskExt&) = delete;
   FileSystemDiskExt& operator=(const FileSystemDiskExt&) = delete;
   std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
@@ -177,7 +177,7 @@ private:
 class XBT_PUBLIC FileSystemStorageExt {
 public:
   static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
-  explicit FileSystemStorageExt(Storage* ptr);
+  explicit FileSystemStorageExt(const Storage* ptr);
   FileSystemStorageExt(const FileSystemStorageExt&) = delete;
   FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
   std::map<std::string, sg_size_t>* parse_content(const std::string& filename);

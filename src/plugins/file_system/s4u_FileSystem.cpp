@@ -58,7 +58,7 @@ Storage* File::find_local_storage_on(Host* host)
   return st;
 }
 
-Disk* File::find_local_disk_on(Host* host)
+Disk* File::find_local_disk_on(const Host* host)
 {
   Disk* d                      = nullptr;
   size_t longest_prefix_length = 0;
@@ -470,7 +470,7 @@ int File::remote_move(sg_host_t host, const char* fullpath)
   return res;
 }
 
-FileSystemDiskExt::FileSystemDiskExt(simgrid::s4u::Disk* ptr)
+FileSystemDiskExt::FileSystemDiskExt(const Disk* ptr)
 {
   const char* size_str    = ptr->get_property("size");
   if (size_str)
@@ -487,7 +487,7 @@ FileSystemDiskExt::FileSystemDiskExt(simgrid::s4u::Disk* ptr)
     content_.reset(parse_content(content_str));
 }
 
-FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr) : size_(ptr->get_impl()->size_)
+FileSystemStorageExt::FileSystemStorageExt(const Storage* ptr) : size_(ptr->get_impl()->size_)
 {
   content_.reset(parse_content(ptr->get_impl()->content_name_));
 }
@@ -658,7 +658,7 @@ sg_size_t sg_file_write(sg_file_t fd, sg_size_t size)
   return fd->write(size);
 }
 
-void sg_file_close(sg_file_t fd)
+void sg_file_close(const_sg_file_t fd)
 {
   delete fd;
 }
@@ -688,7 +688,7 @@ void sg_file_dump(sg_file_t fd)
 /** Retrieves the user data associated with the file
  * @ingroup plugin_filesystem
  */
-void* sg_file_get_data(sg_file_t fd)
+void* sg_file_get_data(const_sg_file_t fd)
 {
   return fd->get_data();
 }
@@ -760,42 +760,42 @@ int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath)
   return file->remote_move(host, fullpath);
 }
 
-sg_size_t sg_disk_get_size_free(sg_disk_t d)
+sg_size_t sg_disk_get_size_free(const_sg_disk_t d)
 {
   return d->extension<FileSystemDiskExt>()->get_size() - d->extension<FileSystemDiskExt>()->get_used_size();
 }
 
-sg_size_t sg_disk_get_size_used(sg_disk_t d)
+sg_size_t sg_disk_get_size_used(const_sg_disk_t d)
 {
   return d->extension<FileSystemDiskExt>()->get_used_size();
 }
 
-sg_size_t sg_disk_get_size(sg_disk_t d)
+sg_size_t sg_disk_get_size(const_sg_disk_t d)
 {
   return d->extension<FileSystemDiskExt>()->get_size();
 }
 
-const char* sg_disk_get_mount_point(sg_disk_t d)
+const char* sg_disk_get_mount_point(const_sg_disk_t d)
 {
   return d->extension<FileSystemDiskExt>()->get_mount_point();
 }
 
-sg_size_t sg_storage_get_size_free(sg_storage_t st)
+sg_size_t sg_storage_get_size_free(const_sg_storage_t st)
 {
   return st->extension<FileSystemStorageExt>()->get_size() - st->extension<FileSystemStorageExt>()->get_used_size();
 }
 
-sg_size_t sg_storage_get_size_used(sg_storage_t st)
+sg_size_t sg_storage_get_size_used(const_sg_storage_t st)
 {
   return st->extension<FileSystemStorageExt>()->get_used_size();
 }
 
-sg_size_t sg_storage_get_size(sg_storage_t st)
+sg_size_t sg_storage_get_size(const_sg_storage_t st)
 {
   return st->extension<FileSystemStorageExt>()->get_size();
 }
 
-xbt_dict_t sg_storage_get_content(sg_storage_t storage)
+xbt_dict_t sg_storage_get_content(const_sg_storage_t storage)
 {
   const std::map<std::string, sg_size_t>* content =
       storage->extension<simgrid::s4u::FileSystemStorageExt>()->get_content();

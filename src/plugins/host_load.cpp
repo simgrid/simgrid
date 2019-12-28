@@ -269,7 +269,7 @@ void sg_host_load_plugin_init()
 /** @brief Returns the current load of that host, as a ratio = achieved_flops / (core_current_speed * core_amount)
  *  @ingroup plugin_host_load
  */
-double sg_host_get_current_load(sg_host_t host)
+double sg_host_get_current_load(const_sg_host_t host)
 {
   xbt_assert(HostLoad::EXTENSION_ID.valid(), "Please sg_host_load_plugin_init() to initialize this plugin.");
 
@@ -279,7 +279,7 @@ double sg_host_get_current_load(sg_host_t host)
 /** @brief Returns the current load of that host
  *  @ingroup plugin_host_load
  */
-double sg_host_get_avg_load(sg_host_t host)
+double sg_host_get_avg_load(const_sg_host_t host)
 {
   xbt_assert(HostLoad::EXTENSION_ID.valid(), "Please sg_host_load_plugin_init() to initialize this plugin.");
 
@@ -289,7 +289,7 @@ double sg_host_get_avg_load(sg_host_t host)
 /** @brief Returns the time this host was idle since the last reset
  *  @ingroup plugin_host_load
  */
-double sg_host_get_idle_time(sg_host_t host)
+double sg_host_get_idle_time(const_sg_host_t host)
 {
   xbt_assert(HostLoad::EXTENSION_ID.valid(), "Please sg_host_load_plugin_init() to initialize this plugin.");
 
@@ -299,7 +299,7 @@ double sg_host_get_idle_time(sg_host_t host)
 /** @brief Returns the time this host was idle since the beginning of the simulation
  *  @ingroup plugin_host_load
  */
-double sg_host_get_total_idle_time(sg_host_t host)
+double sg_host_get_total_idle_time(const_sg_host_t host)
 {
   xbt_assert(HostLoad::EXTENSION_ID.valid(), "Please sg_host_load_plugin_init() to initialize this plugin.");
 
@@ -309,7 +309,7 @@ double sg_host_get_total_idle_time(sg_host_t host)
 /** @brief Returns the amount of flops computed by that host since the last reset
  *  @ingroup plugin_host_load
  */
-double sg_host_get_computed_flops(sg_host_t host)
+double sg_host_get_computed_flops(const_sg_host_t host)
 {
   xbt_assert(HostLoad::EXTENSION_ID.valid(), "Please sg_host_load_plugin_init() to initialize this plugin.");
 
@@ -319,7 +319,7 @@ double sg_host_get_computed_flops(sg_host_t host)
 /** @brief Resets the idle time and flops amount of that host
  *  @ingroup plugin_host_load
  */
-void sg_host_load_reset(sg_host_t host)
+void sg_host_load_reset(const_sg_host_t host)
 {
   xbt_assert(HostLoad::EXTENSION_ID.valid(), "Please sg_host_load_plugin_init() to initialize this plugin.");
 

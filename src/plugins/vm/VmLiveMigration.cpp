@@ -311,7 +311,7 @@ simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, co
   return vm;
 }
 
-int sg_vm_is_migrating(simgrid::s4u::VirtualMachine* vm)
+int sg_vm_is_migrating(const simgrid::s4u::VirtualMachine* vm)
 {
   return vm->get_impl()->is_migrating_;
 }

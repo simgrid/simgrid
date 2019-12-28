@@ -597,7 +597,7 @@ static void ensure_plugin_inited()
  *  The result is that the actor requesting this value will be interrupted,
  *  the value will be updated in kernel mode before returning the control to the requesting actor.
  */
-double sg_host_get_consumed_energy(sg_host_t host)
+double sg_host_get_consumed_energy(const_sg_host_t host)
 {
   ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_consumed_energy();
@@ -606,7 +606,7 @@ double sg_host_get_consumed_energy(sg_host_t host)
 /** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated when the host is idling
  */
-double sg_host_get_idle_consumption(sg_host_t host)
+double sg_host_get_idle_consumption(const_sg_host_t host)
 {
   ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_watt_idle_at(0);
@@ -615,7 +615,7 @@ double sg_host_get_idle_consumption(sg_host_t host)
 /** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated at the given pstate when the host is idling
  */
-double sg_host_get_idle_consumption_at(sg_host_t host, int pstate)
+double sg_host_get_idle_consumption_at(const_sg_host_t host, int pstate)
 {
   ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_watt_idle_at(pstate);
@@ -624,7 +624,7 @@ double sg_host_get_idle_consumption_at(sg_host_t host, int pstate)
 /** @ingroup plugin_host_energy
  *  @brief Get the amount of watt dissipated at the given pstate when the host is at 0 or epsilon% CPU usage.
  */
-double sg_host_get_wattmin_at(sg_host_t host, int pstate)
+double sg_host_get_wattmin_at(const_sg_host_t host, int pstate)
 {
   ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_watt_min_at(pstate);
@@ -632,7 +632,7 @@ double sg_host_get_wattmin_at(sg_host_t host, int pstate)
 /** @ingroup plugin_host_energy
  *  @brief  Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
  */
-double sg_host_get_wattmax_at(sg_host_t host, int pstate)
+double sg_host_get_wattmax_at(const_sg_host_t host, int pstate)
 {
   ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_watt_max_at(pstate);
@@ -640,7 +640,7 @@ double sg_host_get_wattmax_at(sg_host_t host, int pstate)
 /** @ingroup plugin_host_energy
  *  @brief  Returns the power slope at the given pstate
  */
-double sg_host_get_power_range_slope_at(sg_host_t host, int pstate)
+double sg_host_get_power_range_slope_at(const_sg_host_t host, int pstate)
 {
   ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_power_range_slope_at(pstate);
@@ -648,7 +648,7 @@ double sg_host_get_power_range_slope_at(sg_host_t host, int pstate)
 /** @ingroup plugin_host_energy
  *  @brief Returns the current consumption of the host
  */
-double sg_host_get_current_consumption(sg_host_t host)
+double sg_host_get_current_consumption(const_sg_host_t host)
 {
   ensure_plugin_inited();
   return host->extension<HostEnergy>()->get_current_watts_value();

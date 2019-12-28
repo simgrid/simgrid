@@ -197,7 +197,7 @@ sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
   return new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
 }
 
-const char* sg_vm_get_name(sg_vm_t vm)
+const char* sg_vm_get_name(const_sg_vm_t vm)
 {
   return vm->get_cname();
 }

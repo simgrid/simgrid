@@ -148,8 +148,8 @@ double LinkEnergy::get_consumed_energy()
 using simgrid::plugin::LinkEnergy;
 
 /* **************************** events  callback *************************** */
-static void on_communicate(simgrid::kernel::resource::NetworkAction const& action, simgrid::s4u::Host*,
-                           simgrid::s4u::Host*)
+static void on_communicate(const simgrid::kernel::resource::NetworkAction& action, const simgrid::s4u::Host*,
+                           const simgrid::s4u::Host*)
 {
   XBT_DEBUG("onCommunicate is called");
   for (simgrid::kernel::resource::LinkImpl* link : action.links()) {
@@ -224,7 +224,7 @@ void sg_link_energy_plugin_init()
  *  The result is that the actor requesting this value will be interrupted,
  *  the value will be updated in kernel mode before returning the control to the requesting actor.
  */
-double sg_link_get_consumed_energy(sg_link_t link)
+double sg_link_get_consumed_energy(const_sg_link_t link)
 {
   if (not LinkEnergy::EXTENSION_ID.valid())
     throw simgrid::xbt::InitializationError("The Energy plugin is not active. Please call sg_link_energy_plugin_init() "

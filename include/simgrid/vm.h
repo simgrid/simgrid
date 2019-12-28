@@ -29,7 +29,7 @@ XBT_PUBLIC int sg_vm_is_created(sg_vm_t vm);
 XBT_PUBLIC int sg_vm_is_running(sg_vm_t vm);
 XBT_PUBLIC int sg_vm_is_suspended(sg_vm_t vm);
 
-XBT_PUBLIC const char* sg_vm_get_name(sg_vm_t vm);
+XBT_PUBLIC const char* sg_vm_get_name(const_sg_vm_t vm);
 XBT_PUBLIC void sg_vm_set_ramsize(sg_vm_t vm, size_t size);
 XBT_PUBLIC size_t sg_vm_get_ramsize(sg_vm_t vm);
 XBT_PUBLIC void sg_vm_set_bound(sg_vm_t vm, double bound);
