@@ -35,13 +35,6 @@ void routing_table_free(routing_table_t table)
   xbt_free(table);
 }
 
-/** Returns if the routing table contains the id. */
-unsigned int routing_table_contains(routing_table_t table, unsigned int node_id)
-{
-  bucket_t bucket = routing_table_find_bucket(table, node_id);
-  return bucket_contains(bucket, node_id);
-}
-
 /**@brief prints the routing table, to debug stuff. */
 void routing_table_print(const_routing_table_t table)
 {
@@ -73,12 +66,6 @@ unsigned int bucket_find_id(const_bucket_t bucket, unsigned int id)
     }
   }
   return -1;
-}
-
-/** Returns if the bucket contains an identifier.  */
-unsigned int bucket_contains(const_bucket_t bucket, unsigned int id)
-{
-  return xbt_dynar_member(bucket->nodes, &id);
 }
 
 /** @brief Finds the corresponding bucket in a routing table for a given identifier

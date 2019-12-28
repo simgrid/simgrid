@@ -29,12 +29,10 @@ typedef const s_routing_table_t* const_routing_table_t;
 
 // bucket functions
 unsigned int bucket_find_id(const_bucket_t bucket, unsigned int id);
-unsigned int bucket_contains(const_bucket_t bucket, unsigned int id);
 
 // routing table functions
 routing_table_t routing_table_init(unsigned int node_id);
 void routing_table_free(routing_table_t table);
-unsigned int routing_table_contains(routing_table_t table, unsigned int node_id);
 void routing_table_print(const_routing_table_t table);
 bucket_t routing_table_find_bucket(const_routing_table_t table, unsigned int id);
 
