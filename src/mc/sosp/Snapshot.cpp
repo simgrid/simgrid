@@ -23,7 +23,7 @@ void Snapshot::snapshot_regions(RemoteClient* process)
   for (auto const& object_info : process->object_infos)
     add_region(RegionType::Data, object_info.get(), object_info->start_rw, object_info->end_rw - object_info->start_rw);
 
-  const mdesc* heap = process->get_heap();
+  const s_xbt_mheap_t* heap = process->get_heap();
   void* start_heap = heap->base;
   void* end_heap   = heap->breakval;
 

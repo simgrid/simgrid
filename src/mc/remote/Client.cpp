@@ -183,7 +183,7 @@ void Client::ignore_memory(void* addr, std::size_t size)
 
 void Client::ignore_heap(void* address, std::size_t size)
 {
-  const mdesc* heap = mmalloc_get_current_heap();
+  const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
   s_mc_message_ignore_heap_t message;
   message.type    = MC_MESSAGE_IGNORE_HEAP;
@@ -227,7 +227,7 @@ void Client::declare_symbol(const char* name, int* value)
 
 void Client::declare_stack(void* stack, size_t size, ucontext_t* context)
 {
-  const mdesc* heap = mmalloc_get_current_heap();
+  const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
   s_stack_region_t region;
   memset(&region, 0, sizeof(region));

@@ -1227,9 +1227,9 @@ bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
   }
 
   /* Init heap information used in heap comparison algorithm */
-  xbt_mheap_t heap1 = static_cast<xbt_mheap_t>(s1->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
+  xbt_mheap_t heap1 = static_cast<xbt_mheap_t>(s1->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t),
                                                               remote(process.heap_address), ReadOptions::lazy()));
-  xbt_mheap_t heap2 = static_cast<xbt_mheap_t>(s2->read_bytes(alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
+  xbt_mheap_t heap2 = static_cast<xbt_mheap_t>(s2->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t),
                                                               remote(process.heap_address), ReadOptions::lazy()));
   if (state_comparator.initHeapInformation(heap1, heap2, s1->to_ignore_, s2->to_ignore_) == -1) {
     XBT_VERB("(%d - %d) Different heap information", s1->num_state_, s2->num_state_);
