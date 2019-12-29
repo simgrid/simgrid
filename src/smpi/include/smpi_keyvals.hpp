@@ -56,7 +56,8 @@ class Keyval{
     template <typename T> int attr_delete(int keyval);
     template <typename T> int attr_get(int keyval, void* attr_value, int* flag);
     template <typename T> int attr_put(int keyval, void* attr_value);
-    template <typename T> static int call_deleter(T* obj, smpi_key_elem elem, int keyval, void * value, int* flag);
+    template <typename T>
+    static int call_deleter(T* obj, const s_smpi_key_elem_t* elem, int keyval, void* value, int* flag);
     template <typename T> void cleanup_attr();
 };
 

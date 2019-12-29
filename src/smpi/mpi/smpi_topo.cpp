@@ -12,7 +12,7 @@
 #include <vector>
 
 /* static functions */
-static int assignnodes(int ndim, int nfactor, int *pfacts,int **pdims);
+static int assignnodes(int ndim, int nfactor, const int* pfacts, int** pdims);
 static int getfactors(int num, int *nfators, int **factors);
 
 
@@ -349,7 +349,7 @@ int Topo_Cart::Dims_create(int nnodes, int ndims, int dims[])
  *          - ptr to array of dimensions (returned value)
  *  Returns:    - 0 or ERROR
  */
-static int assignnodes(int ndim, int nfactor, int *pfacts, int **pdims)
+static int assignnodes(int ndim, int nfactor, const int* pfacts, int** pdims)
 {
   int *pmin;
 

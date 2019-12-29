@@ -64,7 +64,7 @@ public:
 typedef std::tuple</*sender*/ int, /* receiver */ int, /* tag */ int> req_key_t;
 typedef std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int,int,int>>> req_storage_t;
 
-void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
+void log_timed_action(const simgrid::xbt::ReplayAction& action, double clock)
 {
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     std::string s = boost::algorithm::join(action, " ");
@@ -754,7 +754,7 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
   TRACE_smpi_comm_in(my_proc_id, "smpi_replay_run_init", new simgrid::instr::NoOpTIData("init"));
   TRACE_smpi_comm_out(my_proc_id);
   xbt_replay_action_register("init", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::InitAction().execute(action); });
-  xbt_replay_action_register("finalize", [](simgrid::xbt::ReplayAction&) { /* nothing to do */ });
+  xbt_replay_action_register("finalize", [](simgrid::xbt::ReplayAction const&) { /* nothing to do */ });
   xbt_replay_action_register("comm_size", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });
   xbt_replay_action_register("comm_split",[](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });
   xbt_replay_action_register("comm_dup",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });

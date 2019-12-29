@@ -474,13 +474,13 @@ void smpi_trace_set_call_location(const char* file, const int line)
 }
 
 /** Required for Fortran bindings */
-void smpi_trace_set_call_location_(const char* file, int* line)
+void smpi_trace_set_call_location_(const char* file, const int* line)
 {
   smpi_trace_set_call_location(file, *line);
 }
 
 /** Required for Fortran if -fsecond-underscore is activated */
-void smpi_trace_set_call_location__(const char* file, int* line)
+void smpi_trace_set_call_location__(const char* file, const int* line)
 {
   smpi_trace_set_call_location(file, *line);
 }

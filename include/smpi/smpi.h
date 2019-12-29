@@ -1002,9 +1002,9 @@ XBT_PUBLIC void smpi_comm_set_copy_data_callback(void (*callback)(smx_activity_t
  */
 XBT_PUBLIC void smpi_trace_set_call_location(const char* file, int line);
 /** Fortran binding **/
-XBT_PUBLIC void smpi_trace_set_call_location_(const char* file, int* line);
+XBT_PUBLIC void smpi_trace_set_call_location_(const char* file, const int* line);
 /** Fortran binding + -fsecond-underscore **/
-XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, int* line);
+XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, const int* line);
 
 #define SMPI_ITER_NAME1(line) _XBT_CONCAT(iter_count, line)
 #define SMPI_ITER_NAME(line) SMPI_ITER_NAME1(line)

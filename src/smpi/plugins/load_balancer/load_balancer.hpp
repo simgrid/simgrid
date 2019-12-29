@@ -46,11 +46,8 @@ public:
   void for_each_actor(simgrid::s4u::Host* host, const std::function<void(simgrid::s4u::ActorPtr)>& callback)
   {
     auto range = host_to_actors.equal_range(host);
-    std::for_each(
-        range.first,
-        range.second,
-        [&callback](host_to_actors_map_t::value_type& x) { callback(x.second); }
-    );
+    std::for_each(range.first, range.second,
+                  [&callback](host_to_actors_map_t::value_type const& x) { callback(x.second); });
   }
 };
 

@@ -1111,7 +1111,7 @@ void Request::free_f(int id)
   }
 }
 
-int Request::get_status(MPI_Request req, int* flag, MPI_Status* status)
+int Request::get_status(const Request* req, int* flag, MPI_Status* status)
 {
   *flag=0;
 

@@ -84,7 +84,7 @@ public:
   void add_rma_win(MPI_Win win);
   void remove_rma_win(MPI_Win win);
   void finish_rma_calls();
-  MPI_Comm split_type(int type, int key, MPI_Info info);
+  MPI_Comm split_type(int type, int key, const Info* info);
 };
 
 } // namespace smpi

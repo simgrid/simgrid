@@ -21,7 +21,7 @@ class Info : public F2C{
 
 public:
   Info() = default;
-  explicit Info(Info* orig) : map_(orig->map_) {}
+  explicit Info(const Info* orig) : map_(orig->map_) {}
   ~Info() = default;
   void ref();
   static void unref(MPI_Info info);

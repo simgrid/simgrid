@@ -78,9 +78,8 @@ public:
   int get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
               int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
               MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request=nullptr);
-  int compare_and_swap(const void *origin_addr, void *compare_addr,
-        void *result_addr, MPI_Datatype datatype, int target_rank,
-        MPI_Aint target_disp);
+  int compare_and_swap(const void* origin_addr, const void* compare_addr, void* result_addr, MPI_Datatype datatype,
+                       int target_rank, MPI_Aint target_disp);
   static Win* f2c(int id);
 
   int lock(int lock_type, int rank, int assert);

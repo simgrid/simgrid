@@ -114,7 +114,7 @@ public:
   void commit();
   bool is_valid();
   bool is_basic();
-  static const char* encode(MPI_Datatype dt) { return dt->id.c_str(); }
+  static const char* encode(const Datatype* dt) { return dt->id.c_str(); }
   static MPI_Datatype decode(const std::string& datatype_id);
   bool is_replayable();
   void addflag(int flag);
@@ -129,8 +129,8 @@ public:
   static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
                            void* extra_state);
   static int keyval_free(int* keyval);
-  int pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm comm);
-  int unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm comm);
+  int pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, const Comm* comm);
+  int unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, const Comm* comm);
 
   static int create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, MPI_Datatype* new_type);
   static int create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type);

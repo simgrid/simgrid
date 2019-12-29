@@ -136,7 +136,7 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
   return key;
 }
 
-void TRACE_smpi_setup_container(int rank, sg_host_t host)
+void TRACE_smpi_setup_container(int rank, const_sg_host_t host)
 {
   container_t father = simgrid::instr::Container::get_root();
   if (TRACE_smpi_is_grouped()) {

@@ -14,7 +14,8 @@ std::unordered_map<int, void*>* Keyval::attributes(){
   return &attributes_;
 }
 
-template <> int Keyval::call_deleter<Comm>(Comm* obj, smpi_key_elem elem, int keyval, void* value, int* /*flag*/)
+template <>
+int Keyval::call_deleter<Comm>(Comm* obj, const s_smpi_key_elem_t* elem, int keyval, void* value, int* /*flag*/)
 {
   int ret = MPI_SUCCESS;
   if(elem->delete_fn.comm_delete_fn!=MPI_NULL_DELETE_FN)
@@ -24,7 +25,8 @@ template <> int Keyval::call_deleter<Comm>(Comm* obj, smpi_key_elem elem, int ke
   return ret;
 }
 
-template <> int Keyval::call_deleter<Win>(Win* obj, smpi_key_elem elem, int keyval, void* value, int* /*flag*/)
+template <>
+int Keyval::call_deleter<Win>(Win* obj, const s_smpi_key_elem_t* elem, int keyval, void* value, int* /*flag*/)
 {
   int ret = MPI_SUCCESS;
   if(elem->delete_fn.win_delete_fn!=MPI_NULL_DELETE_FN)
@@ -35,7 +37,7 @@ template <> int Keyval::call_deleter<Win>(Win* obj, smpi_key_elem elem, int keyv
 }
 
 template <>
-int Keyval::call_deleter<Datatype>(Datatype* obj, smpi_key_elem elem, int keyval, void* value, int* /*flag*/)
+int Keyval::call_deleter<Datatype>(Datatype* obj, const s_smpi_key_elem_t* elem, int keyval, void* value, int* /*flag*/)
 {
   int ret = MPI_SUCCESS;
   if(elem->delete_fn.type_delete_fn!=MPI_NULL_DELETE_FN)

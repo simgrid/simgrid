@@ -12,7 +12,7 @@
 
 /* Helper functions */
 XBT_PRIVATE container_t smpi_container(int rank);
-XBT_PRIVATE void TRACE_smpi_setup_container(int rank, sg_host_t host);
+XBT_PRIVATE void TRACE_smpi_setup_container(int rank, const_sg_host_t host);
 
 XBT_PRIVATE void TRACE_smpi_computing_init(int rank);
 XBT_PRIVATE void TRACE_smpi_computing_out(int rank);

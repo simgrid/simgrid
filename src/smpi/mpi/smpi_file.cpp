@@ -91,7 +91,7 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::del(const char* filename, MPI_Info)
+  int File::del(const char* filename, const Info*)
   {
     //get the file with MPI_MODE_DELETE_ON_CLOSE and then close it
     File* f = new File(MPI_COMM_SELF,filename,MPI_MODE_DELETE_ON_CLOSE|MPI_MODE_RDWR, nullptr);
@@ -248,7 +248,7 @@ namespace smpi{
     return ret;
   }
 
-  int File::set_view(MPI_Offset /*disp*/, MPI_Datatype etype, MPI_Datatype filetype, const char* datarep, MPI_Info)
+  int File::set_view(MPI_Offset /*disp*/, MPI_Datatype etype, MPI_Datatype filetype, const char* datarep, const Info*)
   {
     etype_=etype;
     filetype_=filetype;

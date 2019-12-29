@@ -34,7 +34,7 @@
 XBT_PRIVATE unsigned char* smpi_get_tmp_sendbuffer(size_t size);
 XBT_PRIVATE unsigned char* smpi_get_tmp_recvbuffer(size_t size);
 
-XBT_PRIVATE void log_timed_action(simgrid::xbt::ReplayAction& action, double clock);
+XBT_PRIVATE void log_timed_action(const simgrid::xbt::ReplayAction& action, double clock);
 
 namespace simgrid {
 namespace smpi {

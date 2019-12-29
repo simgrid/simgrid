@@ -132,13 +132,14 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   };
 }
 
-static void memcpy_private(void* dest, const void* src, std::vector<std::pair<size_t, size_t>>& private_blocks)
+static void memcpy_private(void* dest, const void* src, const std::vector<std::pair<size_t, size_t>>& private_blocks)
 {
   for (auto const& block : private_blocks)
     memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
 }
 
-static void check_blocks(std::vector<std::pair<size_t, size_t>> &private_blocks, size_t buff_size) {
+static void check_blocks(const std::vector<std::pair<size_t, size_t>>& private_blocks, size_t buff_size)
+{
   for (auto const& block : private_blocks)
     xbt_assert(block.first <= block.second && block.second <= buff_size, "Oops, bug in shared malloc.");
 }
@@ -557,7 +558,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
 
   /* This is a ... heavy way to count the MPI ranks */
   int rank_counts = 0;
-  simgrid::s4u::Actor::on_creation.connect([&rank_counts](simgrid::s4u::Actor& actor) {
+  simgrid::s4u::Actor::on_creation.connect([&rank_counts](const simgrid::s4u::Actor& actor) {
     if (not actor.is_daemon())
       rank_counts++;
   });

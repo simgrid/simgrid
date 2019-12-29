@@ -414,9 +414,9 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
   return MPI_SUCCESS;
 }
 
-int Win::compare_and_swap(const void *origin_addr, void *compare_addr,
-        void *result_addr, MPI_Datatype datatype, int target_rank,
-        MPI_Aint target_disp){
+int Win::compare_and_swap(const void* origin_addr, const void* compare_addr, void* result_addr, MPI_Datatype datatype,
+                          int target_rank, MPI_Aint target_disp)
+{
   //get sender pointer
   const Win* send_win = connected_wins_[target_rank];
 

@@ -571,7 +571,7 @@ void Comm::set_errhandler(MPI_Errhandler errhandler)
     errhandler_->ref();
 }
 
-MPI_Comm Comm::split_type(int type, int /*key*/, MPI_Info)
+MPI_Comm Comm::split_type(int type, int /*key*/, const Info*)
 {
   //MPI_UNDEFINED can be given to some nodes... but we need them to still perform the smp part which is collective
   if(type != MPI_COMM_TYPE_SHARED && type != MPI_UNDEFINED){

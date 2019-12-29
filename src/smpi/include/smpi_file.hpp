@@ -45,7 +45,7 @@ class File{
   int sync();
   int seek(MPI_Offset offset, int whence);
   int seek_shared(MPI_Offset offset, int whence);
-  int set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info);
+  int set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char* datarep, const Info* info);
   int get_view(MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep);
   MPI_Info info();
   void set_info( MPI_Info info);
@@ -57,7 +57,7 @@ class File{
   static int write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   template <int (*T)(MPI_File, void *, int, MPI_Datatype, MPI_Status *)> int op_all(void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
   static int close(MPI_File *fh);
-  static int del(const char *filename, MPI_Info info);
+  static int del(const char* filename, const Info* info);
   MPI_Errhandler errhandler();
   void set_errhandler( MPI_Errhandler errhandler);
 };

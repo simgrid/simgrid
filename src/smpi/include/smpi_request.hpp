@@ -117,7 +117,7 @@ public:
 
   static int grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request);
   static int grequest_complete( MPI_Request request);
-  static int get_status(MPI_Request req, int* flag, MPI_Status * status);
+  static int get_status(const Request* req, int* flag, MPI_Status* status);
 
   static void free_f(int id);
   static Request* f2c(int);
