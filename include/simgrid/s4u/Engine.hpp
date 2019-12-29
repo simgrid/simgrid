@@ -82,9 +82,9 @@ protected:
   friend kernel::resource::LinkImpl;
   void host_register(const std::string& name, Host* host);
   void host_unregister(const std::string& name);
-  void link_register(const std::string& name, Link* link);
+  void link_register(const std::string& name, const Link* link);
   void link_unregister(const std::string& name);
-  void storage_register(const std::string& name, Storage* storage);
+  void storage_register(const std::string& name, const Storage* storage);
   void storage_unregister(const std::string& name);
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
@@ -119,7 +119,7 @@ public:
   kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name);
 
   NetZone* get_netzone_root();
-  void set_netzone_root(NetZone* netzone);
+  void set_netzone_root(const NetZone* netzone);
 
   NetZone* netzone_by_name_or_null(const std::string& name);
 

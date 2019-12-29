@@ -31,7 +31,7 @@ Comm::~Comm()
   }
 }
 
-int Comm::wait_any_for(std::vector<CommPtr>* comms, double timeout)
+int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
 {
   std::unique_ptr<kernel::activity::CommImpl* []> rcomms(new kernel::activity::CommImpl*[comms->size()]);
   std::transform(begin(*comms), end(*comms), rcomms.get(),
@@ -39,7 +39,7 @@ int Comm::wait_any_for(std::vector<CommPtr>* comms, double timeout)
   return simcall_comm_waitany(rcomms.get(), comms->size(), timeout);
 }
 
-void Comm::wait_all(std::vector<CommPtr>* comms)
+void Comm::wait_all(const std::vector<CommPtr>* comms)
 {
   // TODO: this should be a simcall or something
   // TODO: we are missing a version with timeout
@@ -182,7 +182,7 @@ Comm* Comm::wait_for(double timeout)
   }
   return this;
 }
-int Comm::test_any(std::vector<CommPtr>* comms)
+int Comm::test_any(const std::vector<CommPtr>* comms)
 {
   std::unique_ptr<kernel::activity::CommImpl* []> rcomms(new kernel::activity::CommImpl*[comms->size()]);
   std::transform(begin(*comms), end(*comms), rcomms.get(),

@@ -37,7 +37,7 @@ public:
 
   NetZone* get_father();
 
-  std::vector<Host*> get_all_hosts();
+  std::vector<Host*> get_all_hosts() const;
   int get_host_count();
 
   kernel::routing::NetZoneImpl* get_impl() const { return pimpl_; }
@@ -52,7 +52,7 @@ public:
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
 
-  std::vector<NetZone*> get_children();
+  std::vector<NetZone*> get_children() const;
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */

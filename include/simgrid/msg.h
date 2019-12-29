@@ -98,18 +98,18 @@ XBT_PUBLIC size_t MSG_get_host_number();
 XBT_PUBLIC xbt_dynar_t MSG_hosts_as_dynar();
 
 /** @brief Returns the name of this host */
-XBT_PUBLIC const char* MSG_host_get_name(sg_host_t host);
+XBT_PUBLIC const char* MSG_host_get_name(const_sg_host_t host);
 /** @brief Returns the user data of this host */
-XBT_PUBLIC void* MSG_host_get_data(sg_host_t host);
+XBT_PUBLIC void* MSG_host_get_data(const_sg_host_t host);
 /** @brief Sets the user data of this host */
 XBT_PUBLIC void MSG_host_set_data(sg_host_t host, void* data);
 XBT_PUBLIC xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host);
-XBT_PUBLIC xbt_dynar_t MSG_host_get_attached_storage_lists(sg_host_t host);
-XBT_PUBLIC double MSG_host_get_speed(sg_host_t host);
-XBT_PUBLIC double MSG_host_get_power_peak_at(sg_host_t host, int pstate_index);
-XBT_PUBLIC int MSG_host_get_core_number(sg_host_t host);
-XBT_PUBLIC int MSG_host_get_nb_pstates(sg_host_t host);
-XBT_PUBLIC int MSG_host_get_pstate(sg_host_t host);
+XBT_PUBLIC xbt_dynar_t MSG_host_get_attached_storage_lists(const_sg_host_t host);
+XBT_PUBLIC double MSG_host_get_speed(const_sg_host_t host);
+XBT_PUBLIC double MSG_host_get_power_peak_at(const_sg_host_t host, int pstate_index);
+XBT_PUBLIC int MSG_host_get_core_number(const_sg_host_t host);
+XBT_PUBLIC int MSG_host_get_nb_pstates(const_sg_host_t host);
+XBT_PUBLIC int MSG_host_get_pstate(const_sg_host_t host);
 XBT_PUBLIC void MSG_host_set_pstate(sg_host_t host, int pstate);
 /** @brief Start the host if it is off
  *
@@ -123,15 +123,15 @@ XBT_PUBLIC void MSG_host_on(sg_host_t h);
  * for more info on DVFS.
  */
 XBT_PUBLIC void MSG_host_off(sg_host_t h);
-XBT_PUBLIC int MSG_host_is_on(sg_host_t h);
-XBT_PUBLIC xbt_dict_t MSG_host_get_properties(sg_host_t host);
-XBT_PUBLIC const char* MSG_host_get_property_value(sg_host_t host, const char* name);
+XBT_PUBLIC int MSG_host_is_on(const_sg_host_t h);
+XBT_PUBLIC xbt_dict_t MSG_host_get_properties(const_sg_host_t host);
+XBT_PUBLIC const char* MSG_host_get_property_value(const_sg_host_t host, const char* name);
 XBT_PUBLIC void MSG_host_set_property_value(sg_host_t host, const char* name, const char* value);
-XBT_PUBLIC void MSG_host_get_process_list(sg_host_t host, xbt_dynar_t whereto);
+XBT_PUBLIC void MSG_host_get_process_list(const_sg_host_t host, xbt_dynar_t whereto);
 
 /** @brief Return the location on which the current process is executed */
 XBT_PUBLIC sg_host_t MSG_host_self();
-XBT_PUBLIC double MSG_host_get_load(sg_host_t host);
+XBT_PUBLIC double MSG_host_get_load(const_sg_host_t host);
 
 /* ******************************** VMs ************************************* */
 typedef sg_vm_t msg_vm_t;
@@ -181,19 +181,19 @@ XBT_PUBLIC sg_size_t MSG_storage_write(msg_storage_t storage, sg_size_t size);
  */
 typedef sg_actor_t msg_process_t;
 
-XBT_PUBLIC int MSG_process_get_PID(msg_process_t process);
-XBT_PUBLIC int MSG_process_get_PPID(msg_process_t process);
+XBT_PUBLIC int MSG_process_get_PID(const_sg_actor_t process);
+XBT_PUBLIC int MSG_process_get_PPID(const_sg_actor_t process);
 /** @brief Return a process from its PID (or NULL if not found).
  *
  * Note that the PID are unique in the whole simulation, not only on a given host.
  */
 XBT_PUBLIC sg_actor_t MSG_process_from_PID(int pid);
-XBT_PUBLIC const char* MSG_process_get_name(msg_process_t process);
-XBT_PUBLIC sg_host_t MSG_process_get_host(msg_process_t process);
+XBT_PUBLIC const char* MSG_process_get_name(const_sg_actor_t process);
+XBT_PUBLIC sg_host_t MSG_process_get_host(const_sg_actor_t process);
 
 /*property handlers*/
-XBT_PUBLIC xbt_dict_t MSG_process_get_properties(msg_process_t process);
-XBT_PUBLIC const char* MSG_process_get_property_value(msg_process_t process, const char* name);
+XBT_PUBLIC xbt_dict_t MSG_process_get_properties(const_sg_actor_t process);
+XBT_PUBLIC const char* MSG_process_get_property_value(const_sg_actor_t process, const char* name);
 
 XBT_PUBLIC void MSG_process_suspend(msg_process_t process);
 XBT_PUBLIC void MSG_process_resume(msg_process_t process);
@@ -435,7 +435,7 @@ typedef sg_bar_t msg_bar_t;
 /** @brief Initializes a barrier, with count elements */
 XBT_PUBLIC msg_bar_t MSG_barrier_init(unsigned int count);
 /** @brief Destroys barrier */
-XBT_PUBLIC void MSG_barrier_destroy(msg_bar_t bar);
+XBT_PUBLIC void MSG_barrier_destroy(const_sg_bar_t bar);
 /** @brief Performs a barrier already initialized */
 XBT_PUBLIC int MSG_barrier_wait(msg_bar_t bar);
 

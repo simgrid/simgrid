@@ -31,7 +31,7 @@ XBT_PUBLIC size_t sg_host_count();
 XBT_PUBLIC xbt_dynar_t sg_hosts_as_dynar();
 
 XBT_PUBLIC size_t sg_host_extension_create(void (*deleter)(void*));
-XBT_PUBLIC void* sg_host_extension_get(sg_host_t host, size_t rank);
+XBT_PUBLIC void* sg_host_extension_get(const_sg_host_t host, size_t rank);
 
 /** @brief Finds a sg_host_t using its name.
  *
@@ -42,14 +42,14 @@ XBT_PUBLIC void* sg_host_extension_get(sg_host_t host, size_t rank);
 XBT_PUBLIC sg_host_t sg_host_by_name(const char* name);
 
 /** @brief Return the name of the #sg_host_t. */
-XBT_PUBLIC const char* sg_host_get_name(sg_host_t host);
+XBT_PUBLIC const char* sg_host_get_name(const_sg_host_t host);
 
 // ========== User Data ==============
 /** @brief Return the user data of a #sg_host_t.
  *
  * This functions returns the user data associated to @a host if any.
  */
-XBT_PUBLIC void* sg_host_data(sg_host_t host);
+XBT_PUBLIC void* sg_host_data(const_sg_host_t host);
 XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_data()") XBT_PUBLIC void* sg_host_user(sg_host_t host);
 /** @brief Set the user data of a #sg_host_t.
  *
@@ -71,21 +71,21 @@ XBT_PUBLIC xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host);
  * @param host a host
  * @return a dynar containing all storages (name) attached to the host
  */
-XBT_PUBLIC xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host);
+XBT_PUBLIC xbt_dynar_t sg_host_get_attached_storage_list(const_sg_host_t host);
 
 // =========== user-level functions ===============
 /** @brief Return the speed of the processor (in flop/s), regardless of the current load on the machine. */
-XBT_PUBLIC double sg_host_speed(sg_host_t host);
-XBT_PUBLIC double sg_host_get_pstate_speed(sg_host_t host, int pstate_index);
+XBT_PUBLIC double sg_host_speed(const_sg_host_t host);
+XBT_PUBLIC double sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index);
 
-XBT_PUBLIC double sg_host_get_available_speed(sg_host_t host);
+XBT_PUBLIC double sg_host_get_available_speed(const_sg_host_t host);
 
-XBT_PUBLIC int sg_host_core_count(sg_host_t host);
+XBT_PUBLIC int sg_host_core_count(const_sg_host_t host);
 
 /** @brief Returns the current computation load (in flops per second).
  * @param host a host
  */
-XBT_PUBLIC double sg_host_load(sg_host_t host);
+XBT_PUBLIC double sg_host_load(const_sg_host_t host);
 
 /** @brief Return the location on which the current process is running. */
 XBT_PUBLIC sg_host_t sg_host_self();
@@ -96,14 +96,14 @@ XBT_PUBLIC const char* sg_host_self_get_name();
  *
  * @param  host host to test
  */
-XBT_PUBLIC int sg_host_get_nb_pstates(sg_host_t host);
+XBT_PUBLIC int sg_host_get_nb_pstates(const_sg_host_t host);
 
-XBT_PUBLIC int sg_host_get_pstate(sg_host_t host);
+XBT_PUBLIC int sg_host_get_pstate(const_sg_host_t host);
 XBT_PUBLIC void sg_host_set_pstate(sg_host_t host, int pstate);
 
 XBT_PUBLIC void sg_host_turn_on(sg_host_t host);
 XBT_PUBLIC void sg_host_turn_off(sg_host_t host);
-XBT_PUBLIC int sg_host_is_on(sg_host_t host);
+XBT_PUBLIC int sg_host_is_on(const_sg_host_t host);
 
 /** @ingroup m_host_management
  * @brief Returns a xbt_dict_t consisting of the list of properties assigned to this host
@@ -111,7 +111,7 @@ XBT_PUBLIC int sg_host_is_on(sg_host_t host);
  * @param host a host
  * @return a dict containing the properties
  */
-XBT_PUBLIC xbt_dict_t sg_host_get_properties(sg_host_t host);
+XBT_PUBLIC xbt_dict_t sg_host_get_properties(const_sg_host_t host);
 
 /** @ingroup m_host_management
  * @brief Returns the value of a given host property
@@ -120,7 +120,7 @@ XBT_PUBLIC xbt_dict_t sg_host_get_properties(sg_host_t host);
  * @param name a property name
  * @return value of a property (or nullptr if property not set)
  */
-XBT_PUBLIC const char* sg_host_get_property_value(sg_host_t host, const char* name);
+XBT_PUBLIC const char* sg_host_get_property_value(const_sg_host_t host, const char* name);
 
 /** @ingroup m_host_management
  * @brief Change the value of a given host property
@@ -131,14 +131,14 @@ XBT_PUBLIC const char* sg_host_get_property_value(sg_host_t host, const char* na
  */
 XBT_PUBLIC void sg_host_set_property_value(sg_host_t host, const char* name, const char* value);
 
-XBT_PUBLIC void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links);
-XBT_PUBLIC double sg_host_route_latency(sg_host_t from, sg_host_t to);
-XBT_PUBLIC double sg_host_route_bandwidth(sg_host_t from, sg_host_t to);
+XBT_PUBLIC void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links);
+XBT_PUBLIC double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to);
+XBT_PUBLIC double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to);
 void sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount);
 
-XBT_PUBLIC void sg_host_dump(sg_host_t ws);
+XBT_PUBLIC void sg_host_dump(const_sg_host_t ws);
 
-XBT_PUBLIC void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto);
+XBT_PUBLIC void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto);
 SG_END_DECL
 
 #endif /* SIMGRID_HOST_H_ */

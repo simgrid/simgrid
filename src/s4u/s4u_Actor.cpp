@@ -74,11 +74,11 @@ ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::stri
   return create(name, host, factory(std::move(args)));
 }
 
-void intrusive_ptr_add_ref(Actor* actor)
+void intrusive_ptr_add_ref(const Actor* actor)
 {
   intrusive_ptr_add_ref(actor->pimpl_);
 }
-void intrusive_ptr_release(Actor* actor)
+void intrusive_ptr_release(const Actor* actor)
 {
   intrusive_ptr_release(actor->pimpl_);
 }
@@ -479,7 +479,7 @@ void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char** arg
  *
  * This function checks whether @a actor is a valid pointer and return its PID (or 0 in case of problem).
  */
-aid_t sg_actor_get_PID(sg_actor_t actor)
+aid_t sg_actor_get_PID(const_sg_actor_t actor)
 {
   /* Do not raise an exception here: this function is called by the logs
    * and the exceptions, so it would be called back again and again */
@@ -494,7 +494,7 @@ aid_t sg_actor_get_PID(sg_actor_t actor)
  * This function checks whether @a actor is a valid pointer and return its parent's PID.
  * Returns -1 if the actor has not been created by any other actor.
  */
-aid_t sg_actor_get_PPID(sg_actor_t actor)
+aid_t sg_actor_get_PPID(const_sg_actor_t actor)
 {
   return actor->get_ppid();
 }
@@ -515,12 +515,12 @@ sg_actor_t sg_actor_by_PID(aid_t pid)
 /** @ingroup m_actor_management
  * @brief Return the name of an actor.
  */
-const char* sg_actor_get_name(sg_actor_t actor)
+const char* sg_actor_get_name(const_sg_actor_t actor)
 {
   return actor->get_cname();
 }
 
-sg_host_t sg_actor_get_host(sg_actor_t actor)
+sg_host_t sg_actor_get_host(const_sg_actor_t actor)
 {
   return actor->get_host();
 }
@@ -532,7 +532,7 @@ sg_host_t sg_actor_get_host(sg_actor_t actor)
  * @param name a property name
  * @return value of a property (or nullptr if the property is not set)
  */
-const char* sg_actor_get_property_value(sg_actor_t actor, const char* name)
+const char* sg_actor_get_property_value(const_sg_actor_t actor, const char* name)
 {
   return actor->get_property(name);
 }
@@ -542,7 +542,7 @@ const char* sg_actor_get_property_value(sg_actor_t actor, const char* name)
  *
  * This function returns all the parameters associated with an actor
  */
-xbt_dict_t sg_actor_get_properties(sg_actor_t actor)
+xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor)
 {
   xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
   xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);

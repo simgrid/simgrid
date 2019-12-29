@@ -42,7 +42,7 @@ const char* Link::get_cname() const
 {
   return this->pimpl_->get_cname();
 }
-bool Link::is_used()
+bool Link::is_used() const
 {
   return this->pimpl_->is_used();
 }
@@ -57,12 +57,12 @@ double Link::get_bandwidth() const
   return this->pimpl_->get_bandwidth();
 }
 
-Link::SharingPolicy Link::get_sharing_policy()
+Link::SharingPolicy Link::get_sharing_policy() const
 {
   return this->pimpl_->get_sharing_policy();
 }
 
-double Link::get_usage()
+double Link::get_usage() const
 {
   return this->pimpl_->get_constraint()->get_usage();
 }
@@ -107,7 +107,7 @@ void Link::set_property(const std::string& key, const std::string& value)
 
 /* **************************** Public C interface *************************** */
 
-const char* sg_link_name(sg_link_t link)
+const char* sg_link_name(const_sg_link_t link)
 {
   return link->get_cname();
 }
@@ -116,19 +116,19 @@ sg_link_t sg_link_by_name(const char* name)
   return simgrid::s4u::Link::by_name(name);
 }
 
-int sg_link_is_shared(sg_link_t link)
+int sg_link_is_shared(const_sg_link_t link)
 {
   return (int)link->get_sharing_policy();
 }
-double sg_link_bandwidth(sg_link_t link)
+double sg_link_bandwidth(const_sg_link_t link)
 {
   return link->get_bandwidth();
 }
-double sg_link_latency(sg_link_t link)
+double sg_link_latency(const_sg_link_t link)
 {
   return link->get_latency();
 }
-void* sg_link_data(sg_link_t link)
+void* sg_link_data(const_sg_link_t link)
 {
   return link->get_data();
 }

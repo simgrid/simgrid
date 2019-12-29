@@ -20,8 +20,8 @@ class Activity;
 class Actor;
 /** Smart pointer to a simgrid::s4u::Actor */
 typedef boost::intrusive_ptr<Actor> ActorPtr;
-XBT_PUBLIC void intrusive_ptr_release(Actor* actor);
-XBT_PUBLIC void intrusive_ptr_add_ref(Actor* actor);
+XBT_PUBLIC void intrusive_ptr_release(const Actor* actor);
+XBT_PUBLIC void intrusive_ptr_add_ref(const Actor* actor);
 
 class Barrier;
 /** Smart pointer to a simgrid::s4u::Barrier */
@@ -38,8 +38,8 @@ XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
 class ConditionVariable;
 /** Smart pointer to a simgrid::s4u::ConditionVariable */
 typedef boost::intrusive_ptr<ConditionVariable> ConditionVariablePtr;
-XBT_PUBLIC void intrusive_ptr_release(ConditionVariable* c);
-XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariable* c);
+XBT_PUBLIC void intrusive_ptr_release(const ConditionVariable* c);
+XBT_PUBLIC void intrusive_ptr_add_ref(const ConditionVariable* c);
 
 class Engine;
 
@@ -66,8 +66,8 @@ class Link;
 class Mailbox;
 
 class Mutex;
-XBT_PUBLIC void intrusive_ptr_release(Mutex* m);
-XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* m);
+XBT_PUBLIC void intrusive_ptr_release(const Mutex* m);
+XBT_PUBLIC void intrusive_ptr_add_ref(const Mutex* m);
 /** Smart pointer to a simgrid::s4u::Mutex */
 typedef boost::intrusive_ptr<Mutex> MutexPtr;
 
@@ -227,10 +227,15 @@ typedef struct s_smx_sem* smx_sem_t;
 #endif
 
 typedef s4u_Barrier* sg_bar_t;
+typedef const s4u_Barrier* const_sg_bar_t;
 typedef s4u_ConditionVariable* sg_cond_t;
+typedef const s4u_ConditionVariable* const_sg_cond_t;
 typedef s4u_Mutex* sg_mutex_t;
+typedef const s4u_Mutex* const_sg_mutex_t;
 typedef s4u_Semaphore* sg_sem_t;
+typedef const s4u_Semaphore* const_sg_sem_t;
 typedef s4u_NetZone* sg_netzone_t;
+typedef const s4u_NetZone* const_sg_netzone_t;
 typedef s4u_Host* sg_host_t;
 typedef const s4u_Host* const_sg_host_t;
 typedef s4u_Link* sg_link_t;

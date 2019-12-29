@@ -22,7 +22,7 @@ jfieldID jprocess_field_Process_name;
 jfieldID jprocess_field_Process_pid;
 jfieldID jprocess_field_Process_ppid;
 
-jobject jprocess_from_native(const simgrid::s4u::Actor* process)
+jobject jprocess_from_native(const_sg_actor_t process)
 {
   const simgrid::kernel::context::JavaContext* context =
       static_cast<simgrid::kernel::context::JavaContext*>(process->get_impl()->context_.get());
@@ -44,7 +44,7 @@ msg_process_t jprocess_to_native(jobject jprocess, JNIEnv* env)
   return (msg_process_t)(intptr_t)env->GetLongField(jprocess, jprocess_field_Process_bind);
 }
 
-void jprocess_bind(jobject jprocess, msg_process_t process, JNIEnv * env)
+void jprocess_bind(jobject jprocess, const_sg_actor_t process, JNIEnv* env)
 {
   env->SetLongField(jprocess, jprocess_field_Process_bind, (intptr_t)process);
 }
@@ -129,12 +129,12 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_nativeGetPID(JNIEnv* env, jobject jprocess)
 {
-  msg_process_t process = jprocess_to_native(jprocess, env);
+  const_sg_actor_t process = jprocess_to_native(jprocess, env);
   return MSG_process_get_PID(process);
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, jobject jprocess, jobject jname) {
-  msg_process_t process = jprocess_to_native(jprocess, env);
+  const_sg_actor_t process = jprocess_to_native(jprocess, env);
 
   if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);

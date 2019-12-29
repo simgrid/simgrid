@@ -126,13 +126,13 @@ int Host::get_pstate_count() const
  *
  * Daemons and regular actors are all mixed in this list.
  */
-std::vector<ActorPtr> Host::get_all_actors()
+std::vector<ActorPtr> Host::get_all_actors() const
 {
   return pimpl_->get_all_actors();
 }
 
 /** @brief Returns how many actors (daemonized or not) have been launched on this host */
-int Host::get_actor_count()
+int Host::get_actor_count() const
 {
   return pimpl_->get_actor_count();
 }
@@ -149,7 +149,7 @@ int Host::get_actor_count()
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
  */
-void Host::route_to(Host* dest, std::vector<Link*>& links, double* latency)
+void Host::route_to(const Host* dest, std::vector<Link*>& links, double* latency) const
 {
   std::vector<kernel::resource::LinkImpl*> linkImpls;
   this->route_to(dest, linkImpls, latency);
@@ -158,7 +158,7 @@ void Host::route_to(Host* dest, std::vector<Link*>& links, double* latency)
 }
 
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
-void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency)
+void Host::route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency) const
 {
   kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint_, dest->get_netpoint(), links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
@@ -361,12 +361,12 @@ sg_host_t* sg_host_list()
   return res;
 }
 
-const char* sg_host_get_name(sg_host_t host)
+const char* sg_host_get_name(const_sg_host_t host)
 {
   return host->get_cname();
 }
 
-void* sg_host_extension_get(sg_host_t host, size_t ext)
+void* sg_host_extension_get(const_sg_host_t host, size_t ext)
 {
   return host->extension(ext);
 }
@@ -399,7 +399,7 @@ xbt_dynar_t sg_hosts_as_dynar()
 // ========= Layering madness ==============*
 
 // ========== User data Layer ==========
-void* sg_host_data(sg_host_t host)
+void* sg_host_data(const_sg_host_t host)
 {
   return host->get_data();
 }
@@ -434,7 +434,7 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host)
   return res;
 }
 
-xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host)
+xbt_dynar_t sg_host_get_attached_storage_list(const_sg_host_t host)
 {
   xbt_dynar_t storage_dynar               = xbt_dynar_new(sizeof(const char*), nullptr);
   std::vector<const char*> storage_vector = host->get_attached_storages();
@@ -446,7 +446,7 @@ xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host)
 // =========== user-level functions ===============
 // ================================================
 /** @brief Returns the total speed of a host */
-double sg_host_speed(sg_host_t host)
+double sg_host_speed(const_sg_host_t host)
 {
   return host->get_speed();
 }
@@ -457,7 +457,7 @@ double sg_host_speed(sg_host_t host)
  * @param pstate_index pstate to test
  * @return Returns the processor speed associated with pstate_index
  */
-double sg_host_get_pstate_speed(sg_host_t host, int pstate_index)
+double sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
 {
   return host->get_pstate_speed(pstate_index);
 }
@@ -468,12 +468,12 @@ double sg_host_get_pstate_speed(sg_host_t host, int pstate_index)
  * @param host a host
  * @return the number of cores
  */
-int sg_host_core_count(sg_host_t host)
+int sg_host_core_count(const_sg_host_t host)
 {
   return host->get_core_count();
 }
 
-double sg_host_get_available_speed(sg_host_t host)
+double sg_host_get_available_speed(const_sg_host_t host)
 {
   return host->get_available_speed();
 }
@@ -482,7 +482,7 @@ double sg_host_get_available_speed(sg_host_t host)
  *
  *  See also @ref plugin_energy.
  */
-int sg_host_get_nb_pstates(sg_host_t host)
+int sg_host_get_nb_pstates(const_sg_host_t host)
 {
   return host->get_pstate_count();
 }
@@ -491,7 +491,7 @@ int sg_host_get_nb_pstates(sg_host_t host)
  *
  *  See also @ref plugin_energy.
  */
-int sg_host_get_pstate(sg_host_t host)
+int sg_host_get_pstate(const_sg_host_t host)
 {
   return host->get_pstate();
 }
@@ -537,13 +537,13 @@ void sg_host_turn_off(sg_host_t host)
  * @param host host to test
  * @return Returns true if the host is up and running, and false if it's currently down
  */
-int sg_host_is_on(sg_host_t host)
+int sg_host_is_on(const_sg_host_t host)
 {
   return host->is_on();
 }
 
 /** @brief Get the properties of a host */
-xbt_dict_t sg_host_get_properties(sg_host_t host)
+xbt_dict_t sg_host_get_properties(const_sg_host_t host)
 {
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
   const std::unordered_map<std::string, std::string>* props = host->get_properties();
@@ -562,7 +562,7 @@ xbt_dict_t sg_host_get_properties(sg_host_t host)
  * @param name a property name
  * @return value of a property (or nullptr if property not set)
  */
-const char* sg_host_get_property_value(sg_host_t host, const char* name)
+const char* sg_host_get_property_value(const_sg_host_t host, const char* name)
 {
   return host->get_property(name);
 }
@@ -579,7 +579,7 @@ void sg_host_set_property_value(sg_host_t host, const char* name, const char* va
  * @param to where to
  * @param links [OUT] where to store the list of links (must exist, cannot be nullptr).
  */
-void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
+void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   from->route_to(to, vlinks, nullptr);
@@ -592,7 +592,7 @@ void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
  * @param from where from
  * @param to where to
  */
-double sg_host_route_latency(sg_host_t from, sg_host_t to)
+double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   double res = 0;
@@ -605,7 +605,7 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
  * @param from where from
  * @param to where to
  */
-double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
+double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
 {
   double min_bandwidth = -1.0;
 
@@ -625,7 +625,7 @@ void sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount)
 }
 
 /** @brief Displays debugging information about a host */
-void sg_host_dump(sg_host_t host)
+void sg_host_dump(const_sg_host_t host)
 {
   XBT_INFO("Displaying host %s", host->get_cname());
   XBT_INFO("  - speed: %.0f", host->get_speed());
@@ -645,7 +645,7 @@ void sg_host_dump(sg_host_t host)
  * @param host a host
  * @param whereto a dynar in which we should push actors living on that host
  */
-void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
+void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
 {
   auto const actors = host->get_all_actors();
   for (auto const& actor : actors)
@@ -669,7 +669,7 @@ const char* sg_host_self_get_name()
   return res;
 }
 
-double sg_host_load(sg_host_t host)
+double sg_host_load(const_sg_host_t host)
 {
   return host->get_load();
 }

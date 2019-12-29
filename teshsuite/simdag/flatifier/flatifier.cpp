@@ -45,7 +45,7 @@ static void dump_hosts()
   unsigned int totalHosts = sg_host_count();
   sg_host_t* hosts        = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
-            [](sg_host_t a, sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
+            [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
 
   for (unsigned int i = 0; i < totalHosts; i++) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->get_cname(), sg_host_speed(hosts[i]));

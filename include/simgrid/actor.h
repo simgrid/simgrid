@@ -25,13 +25,13 @@ XBT_PUBLIC sg_actor_t sg_actor_init(const char* name, sg_host_t host);
  *
  * Note that argv is copied over, so you should free your own copy once the actor is started. */
 XBT_PUBLIC void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char** argv);
-XBT_PUBLIC aid_t sg_actor_get_PID(sg_actor_t actor);
-XBT_PUBLIC aid_t sg_actor_get_PPID(sg_actor_t actor);
+XBT_PUBLIC aid_t sg_actor_get_PID(const_sg_actor_t actor);
+XBT_PUBLIC aid_t sg_actor_get_PPID(const_sg_actor_t actor);
 XBT_PUBLIC sg_actor_t sg_actor_by_PID(aid_t pid);
-XBT_PUBLIC const char* sg_actor_get_name(sg_actor_t actor);
-XBT_PUBLIC sg_host_t sg_actor_get_host(sg_actor_t actor);
-XBT_PUBLIC const char* sg_actor_get_property_value(sg_actor_t actor, const char* name);
-XBT_PUBLIC xbt_dict_t sg_actor_get_properties(sg_actor_t actor);
+XBT_PUBLIC const char* sg_actor_get_name(const_sg_actor_t actor);
+XBT_PUBLIC sg_host_t sg_actor_get_host(const_sg_actor_t actor);
+XBT_PUBLIC const char* sg_actor_get_property_value(const_sg_actor_t actor, const char* name);
+XBT_PUBLIC xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor);
 XBT_PUBLIC void sg_actor_suspend(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_resume(sg_actor_t actor);
 XBT_PUBLIC int sg_actor_is_suspended(sg_actor_t actor);

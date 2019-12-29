@@ -36,7 +36,7 @@ Storage* Storage::by_name_or_null(const std::string& name)
   return Engine::get_instance()->storage_by_name_or_null(name);
 }
 
-const char* Storage::get_type()
+const char* Storage::get_type() const
 {
   return pimpl_->typeId_.c_str();
 }
@@ -96,13 +96,13 @@ sg_size_t Storage::write(sg_size_t size)
  *
  * This functions checks whether a storage is a valid pointer or not and return its name.
  */
-const char* sg_storage_get_name(sg_storage_t storage)
+const char* sg_storage_get_name(const_sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
   return storage->get_cname();
 }
 
-const char* sg_storage_get_host(sg_storage_t storage)
+const char* sg_storage_get_host(const_sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
   return storage->get_host()->get_cname();
@@ -113,7 +113,7 @@ const char* sg_storage_get_host(sg_storage_t storage)
  * @param storage a storage
  * @return a dict containing the properties
  */
-xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
+xbt_dict_t sg_storage_get_properties(const_sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
   xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);
@@ -145,7 +145,7 @@ void sg_storage_set_property_value(sg_storage_t storage, const char* name, const
  * @param name a property name
  * @return value of a property (or nullptr if property not set)
  */
-const char* sg_storage_get_property_value(sg_storage_t storage, const char* name)
+const char* sg_storage_get_property_value(const_sg_storage_t storage, const char* name)
 {
   return storage->get_property(name);
 }
@@ -172,7 +172,7 @@ xbt_dynar_t sg_storages_as_dynar()
   return res;
 }
 
-void* sg_storage_get_data(sg_storage_t storage)
+void* sg_storage_get_data(const_sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
   return storage->get_data();

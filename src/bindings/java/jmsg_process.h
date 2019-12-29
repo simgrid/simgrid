@@ -33,10 +33,10 @@ jobject jprocess_ref(jobject jprocess, JNIEnv* env);
 void jprocess_unref(jobject jprocess, JNIEnv* env);
 
 /** Binds a native instance to a java instance. */
-void jprocess_bind(jobject jprocess, msg_process_t process, JNIEnv* env);
+void jprocess_bind(jobject jprocess, const_sg_actor_t process, JNIEnv* env);
 
 /** Extract the java instance from the native one */
-jobject jprocess_from_native(const simgrid::s4u::Actor* process);
+jobject jprocess_from_native(const_sg_actor_t process);
 
 /** Extract the native instance from the java one */
 msg_process_t jprocess_to_native(jobject jprocess, JNIEnv* env);

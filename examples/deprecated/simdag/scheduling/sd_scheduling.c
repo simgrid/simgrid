@@ -22,7 +22,7 @@ struct _HostAttribute {
   SD_task_t last_scheduled_task;
 };
 
-static double sg_host_get_available_at(sg_host_t host)
+static double sg_host_get_available_at(const_sg_host_t host)
 {
   const struct _HostAttribute* attr = (HostAttribute)sg_host_data(host);
   return attr->available_at;
@@ -35,7 +35,8 @@ static void sg_host_set_available_at(sg_host_t host, double time)
   sg_host_data_set(host, attr);
 }
 
-static SD_task_t sg_host_get_last_scheduled_task( sg_host_t host){
+static SD_task_t sg_host_get_last_scheduled_task(const_sg_host_t host)
+{
   const struct _HostAttribute* attr = (HostAttribute)sg_host_data(host);
   return attr->last_scheduled_task;
 }
@@ -63,7 +64,7 @@ static xbt_dynar_t get_ready_tasks(const_xbt_dynar_t dax)
   return ready_tasks;
 }
 
-static double finish_on_at(SD_task_t task, sg_host_t host)
+static double finish_on_at(SD_task_t task, const_sg_host_t host)
 {
   double result;
 

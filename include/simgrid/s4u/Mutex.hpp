@@ -32,8 +32,8 @@ class XBT_PUBLIC Mutex {
 
   kernel::activity::MutexImpl* const pimpl_;
   /* refcounting */
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* mutex);
-  friend XBT_PUBLIC void intrusive_ptr_release(Mutex* mutex);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(const Mutex* mutex);
+  friend XBT_PUBLIC void intrusive_ptr_release(const Mutex* mutex);
 
 public:
   explicit Mutex(kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}

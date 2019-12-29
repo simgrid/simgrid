@@ -28,7 +28,7 @@ static int emigrant(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   controlled_process = MSG_process_self(); /* - Get controlled at checkpoint */
   MSG_barrier_wait(barrier);
   MSG_process_suspend(MSG_process_self());
-  msg_host_t h = MSG_process_get_host(MSG_process_self());
+  const_sg_host_t h = MSG_process_get_host(MSG_process_self());
   XBT_INFO("I've been moved on this new host: %s", MSG_host_get_name(h));
   XBT_INFO("Uh, nothing to do here. Stopping now");
   return 0;

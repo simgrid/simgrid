@@ -194,7 +194,7 @@ Link* Engine::link_by_name_or_null(const std::string& name)
   return link == pimpl->links_.end() ? nullptr : link->second->get_iface();
 }
 
-void Engine::link_register(const std::string& name, Link* link)
+void Engine::link_register(const std::string& name, const Link* link)
 {
   pimpl->links_[name] = link->get_impl();
 }
@@ -238,7 +238,7 @@ Storage* Engine::storage_by_name_or_null(const std::string& name)
   return storage == pimpl->storages_.end() ? nullptr : storage->second->get_iface();
 }
 
-void Engine::storage_register(const std::string& name, Storage* storage)
+void Engine::storage_register(const std::string& name, const Storage* storage)
 {
   pimpl->storages_[name] = storage->get_impl();
 }
@@ -318,7 +318,7 @@ s4u::NetZone* Engine::get_netzone_root()
   return pimpl->netzone_root_->get_iface();
 }
 /** @brief Set the root netzone, containing all others. Once set, it cannot be changed. */
-void Engine::set_netzone_root(s4u::NetZone* netzone)
+void Engine::set_netzone_root(const s4u::NetZone* netzone)
 {
   xbt_assert(pimpl->netzone_root_ == nullptr, "The root NetZone cannot be changed once set");
   pimpl->netzone_root_ = netzone->get_impl();

@@ -312,7 +312,7 @@ static int java_main(int argc, char *argv[])
   xbt_assert((jprocess != nullptr), "Process allocation failed.");
   jprocess = env->NewGlobalRef(jprocess);
   //bind the process to the context
-  msg_process_t process = MSG_process_self();
+  const_sg_actor_t process = MSG_process_self();
 
   context->jprocess_ = jprocess;
   /* sets the PID and the PPID of the process */

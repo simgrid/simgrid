@@ -31,12 +31,12 @@ void ConditionVariable::wait(MutexPtr lock)
   simcall_cond_wait(cond_, lock->pimpl_);
 }
 
-void ConditionVariable::wait(std::unique_lock<Mutex>& lock)
+void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
 {
   simcall_cond_wait(cond_, lock.mutex()->pimpl_);
 }
 
-std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, double timeout)
+std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
 {
   // The simcall uses -1 for "any timeout" but we don't want this:
   if (timeout < 0)
@@ -51,7 +51,7 @@ std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, d
   }
 }
 
-std::cv_status ConditionVariable::wait_until(std::unique_lock<Mutex>& lock, double timeout_time)
+std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock, double timeout_time)
 {
   double now = SIMIX_get_clock();
   double timeout;
@@ -75,12 +75,12 @@ void ConditionVariable::notify_all()
   simgrid::kernel::actor::simcall([this]() { cond_->broadcast(); });
 }
 
-void intrusive_ptr_add_ref(ConditionVariable* cond)
+void intrusive_ptr_add_ref(const ConditionVariable* cond)
 {
   intrusive_ptr_add_ref(cond->cond_);
 }
 
-void intrusive_ptr_release(ConditionVariable* cond)
+void intrusive_ptr_release(const ConditionVariable* cond)
 {
   intrusive_ptr_release(cond->cond_);
 }
@@ -118,7 +118,7 @@ void sg_cond_notify_all(sg_cond_t cond)
   cond->notify_all();
 }
 
-void sg_cond_destroy(sg_cond_t cond)
+void sg_cond_destroy(const_sg_cond_t cond)
 {
   delete cond;
 }

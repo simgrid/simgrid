@@ -14,7 +14,7 @@ XBT_PUBLIC sg_mutex_t sg_mutex_init();
 XBT_PUBLIC void sg_mutex_lock(sg_mutex_t mutex);
 XBT_PUBLIC void sg_mutex_unlock(sg_mutex_t mutex);
 XBT_PUBLIC int sg_mutex_try_lock(sg_mutex_t mutex);
-XBT_PUBLIC void sg_mutex_destroy(sg_mutex_t mutex);
+XBT_PUBLIC void sg_mutex_destroy(const_sg_mutex_t mutex);
 
 SG_END_DECL
 

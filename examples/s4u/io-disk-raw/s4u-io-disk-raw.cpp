@@ -18,7 +18,7 @@ static void host()
   std::vector<simgrid::s4u::Disk*> const& disk_list = simgrid::s4u::Host::current()->get_disks();
 
   /* - For each disk mounted on host, display disk name and mount point */
-  for (auto disk : disk_list)
+  for (auto const& disk : disk_list)
     XBT_INFO("Disk name: %s (read: %.0f B/s -- write: %.0f B/s ", disk->get_cname(), disk->get_read_bandwidth(),
              disk->get_write_bandwidth());
 

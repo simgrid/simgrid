@@ -49,13 +49,13 @@ MutexPtr Mutex::create()
 }
 
 /* refcounting of the intrusive_ptr is delegated to the implementation object */
-void intrusive_ptr_add_ref(Mutex* mutex)
+void intrusive_ptr_add_ref(const Mutex* mutex)
 {
   xbt_assert(mutex);
   if (mutex->pimpl_)
     mutex->pimpl_->ref();
 }
-void intrusive_ptr_release(Mutex* mutex)
+void intrusive_ptr_release(const Mutex* mutex)
 {
   xbt_assert(mutex);
   if (mutex->pimpl_)
@@ -89,7 +89,7 @@ int sg_mutex_try_lock(sg_mutex_t mutex)
   return mutex->try_lock();
 }
 
-void sg_mutex_destroy(sg_mutex_t mutex)
+void sg_mutex_destroy(const_sg_mutex_t mutex)
 {
   delete mutex;
 }

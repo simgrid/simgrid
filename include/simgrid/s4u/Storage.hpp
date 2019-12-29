@@ -52,8 +52,8 @@ public:
   /** @brief Retrieves the name of that storage as a C string */
   const char* get_cname() const { return name_.c_str(); }
 
-  const char* get_type();
-  Host* get_host() { return attached_to_; };
+  const char* get_type() const;
+  Host* get_host() const { return attached_to_; };
   void set_host(Host* host) { attached_to_ = host; }
 
   const std::unordered_map<std::string, std::string>* get_properties() const;

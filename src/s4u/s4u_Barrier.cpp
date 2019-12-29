@@ -74,7 +74,7 @@ sg_bar_t sg_barrier_init(unsigned int count)
 }
 
 /** @brief Initializes a barrier, with count elements */
-void sg_barrier_destroy(sg_bar_t bar)
+void sg_barrier_destroy(const_sg_bar_t bar)
 {
   delete bar;
 }

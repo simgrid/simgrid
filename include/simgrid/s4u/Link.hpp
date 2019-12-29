@@ -52,13 +52,13 @@ public:
   double get_latency() const;
 
   /** @brief Describes how the link is shared between flows */
-  SharingPolicy get_sharing_policy();
+  SharingPolicy get_sharing_policy() const;
 
   /** @brief Returns the current load (in flops per second) */
-  double get_usage();
+  double get_usage() const;
 
   /** @brief Check if the Link is used (at least one flow uses the link) */
-  bool is_used();
+  bool is_used() const;
 
   void turn_on();
   bool is_on() const;

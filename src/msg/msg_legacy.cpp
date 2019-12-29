@@ -47,11 +47,11 @@ int MSG_task_listen(const char* alias)
 }
 
 /* ************************** Actors *************************** */
-int MSG_process_get_PID(sg_actor_t actor)
+int MSG_process_get_PID(const_sg_actor_t actor)
 {
   return sg_actor_get_PID(actor);
 }
-int MSG_process_get_PPID(sg_actor_t actor)
+int MSG_process_get_PPID(const_sg_actor_t actor)
 {
   return sg_actor_get_PPID(actor);
 }
@@ -59,19 +59,19 @@ msg_process_t MSG_process_from_PID(int PID)
 {
   return sg_actor_by_PID(PID);
 }
-const char* MSG_process_get_name(sg_actor_t actor)
+const char* MSG_process_get_name(const_sg_actor_t actor)
 {
   return sg_actor_get_name(actor);
 }
-sg_host_t MSG_process_get_host(sg_actor_t actor)
+sg_host_t MSG_process_get_host(const_sg_actor_t actor)
 {
   return sg_actor_get_host(actor);
 }
-xbt_dict_t MSG_process_get_properties(sg_actor_t actor)
+xbt_dict_t MSG_process_get_properties(const_sg_actor_t actor)
 {
   return sg_actor_get_properties(actor);
 }
-const char* MSG_process_get_property_value(sg_actor_t actor, const char* name)
+const char* MSG_process_get_property_value(const_sg_actor_t actor, const char* name)
 {
   return sg_actor_get_property_value(actor, name);
 }
@@ -304,11 +304,11 @@ sg_host_t MSG_host_by_name(const char* name)
 {
   return sg_host_by_name(name);
 }
-const char* MSG_host_get_name(sg_host_t host)
+const char* MSG_host_get_name(const_sg_host_t host)
 {
   return sg_host_get_name(host);
 }
-void* MSG_host_get_data(sg_host_t host)
+void* MSG_host_get_data(const_sg_host_t host)
 {
   return sg_host_data(host);
 }
@@ -320,27 +320,27 @@ xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host)
 {
   return sg_host_get_mounted_storage_list(host);
 }
-xbt_dynar_t MSG_host_get_attached_storage_lists(sg_host_t host)
+xbt_dynar_t MSG_host_get_attached_storage_lists(const_sg_host_t host)
 {
   return sg_host_get_attached_storage_list(host);
 }
-double MSG_host_get_speed(sg_host_t host)
+double MSG_host_get_speed(const_sg_host_t host)
 {
   return sg_host_speed(host);
 }
-double MSG_host_get_power_peak_at(sg_host_t host, int pstate_index)
+double MSG_host_get_power_peak_at(const_sg_host_t host, int pstate_index)
 {
   return sg_host_get_pstate_speed(host, pstate_index);
 }
-int MSG_host_get_core_number(sg_host_t host)
+int MSG_host_get_core_number(const_sg_host_t host)
 {
   return sg_host_core_count(host);
 }
-int MSG_host_get_nb_pstates(sg_host_t host)
+int MSG_host_get_nb_pstates(const_sg_host_t host)
 {
   return sg_host_get_nb_pstates(host);
 }
-int MSG_host_get_pstate(sg_host_t host)
+int MSG_host_get_pstate(const_sg_host_t host)
 {
   return sg_host_get_pstate(host);
 }
@@ -356,15 +356,15 @@ void MSG_host_off(sg_host_t h)
 {
   sg_host_turn_off(h);
 }
-int MSG_host_is_on(sg_host_t h)
+int MSG_host_is_on(const_sg_host_t h)
 {
   return sg_host_is_on(h);
 }
-xbt_dict_t MSG_host_get_properties(sg_host_t host)
+xbt_dict_t MSG_host_get_properties(const_sg_host_t host)
 {
   return sg_host_get_properties(host);
 }
-const char* MSG_host_get_property_value(sg_host_t host, const char* name)
+const char* MSG_host_get_property_value(const_sg_host_t host, const char* name)
 {
   return sg_host_get_property_value(host, name);
 }
@@ -372,7 +372,7 @@ void MSG_host_set_property_value(sg_host_t host, const char* name, const char* v
 {
   sg_host_set_property_value(host, name, value);
 }
-void MSG_host_get_process_list(sg_host_t host, xbt_dynar_t whereto)
+void MSG_host_get_process_list(const_sg_host_t host, xbt_dynar_t whereto)
 {
   sg_host_get_actor_list(host, whereto);
 }
@@ -381,7 +381,7 @@ sg_host_t MSG_host_self()
   return sg_host_self();
 }
 
-double MSG_host_get_load(sg_host_t host)
+double MSG_host_get_load(const_sg_host_t host)
 {
   return sg_host_load(host);
 }
@@ -452,7 +452,7 @@ sg_bar_t MSG_barrier_init(unsigned int count)
   return sg_barrier_init(count);
 }
 
-void MSG_barrier_destroy(sg_bar_t bar)
+void MSG_barrier_destroy(const_sg_bar_t bar)
 {
   sg_barrier_destroy(bar);
 }

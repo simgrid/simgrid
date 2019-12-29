@@ -25,12 +25,12 @@ double Disk::get_read_bandwidth() const
   return this->pimpl_->get_read_bandwidth();
 }
 
-double Disk::get_write_bandwidth()
+double Disk::get_write_bandwidth() const
 {
   return pimpl_->get_write_bandwidth();
 }
 
-Host* Disk::get_host()
+Host* Disk::get_host() const
 {
   return pimpl_->get_host();
 }

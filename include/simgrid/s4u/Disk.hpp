@@ -50,11 +50,11 @@ public:
   /** @brief Retrieves the name of that disk as a C string */
   const char* get_cname() const { return name_.c_str(); }
   double get_read_bandwidth() const;
-  double get_write_bandwidth();
+  double get_write_bandwidth() const;
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
   void set_property(const std::string&, const std::string& value);
-  Host* get_host();
+  Host* get_host() const;
 
   IoPtr io_init(sg_size_t size, s4u::Io::OpType type);
 

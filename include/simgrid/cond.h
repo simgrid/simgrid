@@ -23,7 +23,7 @@ XBT_PUBLIC void sg_cond_notify_one(sg_cond_t cond);
 /** @brief Broadcasts the given mutex variable */
 XBT_PUBLIC void sg_cond_notify_all(sg_cond_t cond);
 /** @brief Destroys the given mutex variable */
-XBT_PUBLIC void sg_cond_destroy(sg_cond_t cond);
+XBT_PUBLIC void sg_cond_destroy(const_sg_cond_t cond);
 
 SG_END_DECL
 

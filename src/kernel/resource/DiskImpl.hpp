@@ -74,7 +74,7 @@ public:
   void turn_on() override;
   void turn_off() override;
 
-  s4u::Host* get_host() { return host_; }
+  s4u::Host* get_host() const { return host_; }
   void set_host(s4u::Host* host) { host_ = host; }
 
   void destroy(); // Must be called instead of the destructor

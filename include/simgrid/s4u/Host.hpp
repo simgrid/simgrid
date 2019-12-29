@@ -81,8 +81,8 @@ public:
 
   kernel::routing::NetPoint* get_netpoint() const { return pimpl_netpoint_; }
 
-  int get_actor_count();
-  std::vector<ActorPtr> get_all_actors();
+  int get_actor_count() const;
+  std::vector<ActorPtr> get_all_actors() const;
 
   /** Turns that host on if it was previously off
    *
@@ -129,8 +129,8 @@ public:
    */
   std::unordered_map<std::string, Storage*> const& get_mounted_storages();
 
-  void route_to(Host* dest, std::vector<Link*>& links, double* latency);
-  void route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency);
+  void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
+  void route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency) const;
   void send_to(Host* dest, double byte_amount);
 
   NetZone* get_englobing_zone();

@@ -33,8 +33,8 @@ int main(int argc, char **argv)
     j = rand()%host_count;
   } while(i==j);
 
-  sg_host_t h1 = hosts[i];
-  sg_host_t h2 = hosts[j];
+  const_sg_host_t h1 = hosts[i];
+  const_sg_host_t h2 = hosts[j];
   printf("%d\tand\t%d\t\t",i,j);
   xbt_dynar_t route = xbt_dynar_new(sizeof(SD_link_t), NULL);
 

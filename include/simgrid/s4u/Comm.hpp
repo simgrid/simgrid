@@ -49,14 +49,14 @@ public:
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
-  static int wait_any(std::vector<CommPtr> * comms) { return wait_any_for(comms, -1); }
+  static int wait_any(const std::vector<CommPtr>* comms) { return wait_any_for(comms, -1); }
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  static int wait_any_for(std::vector<CommPtr>* comms_in, double timeout);
+  static int wait_any_for(const std::vector<CommPtr>* comms_in, double timeout);
 
   /*! take a vector s4u::CommPtr and return when all of them is finished. */
-  static void wait_all(std::vector<CommPtr>* comms);
+  static void wait_all(const std::vector<CommPtr>* comms);
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
-  static int test_any(std::vector<CommPtr> * comms);
+  static int test_any(const std::vector<CommPtr>* comms);
 
   Comm* start() override;
   Comm* wait() override;

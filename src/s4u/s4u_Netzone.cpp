@@ -36,7 +36,7 @@ void NetZone::set_property(const std::string& key, const std::string& value)
 }
 
 /** @brief Returns the list of direct children (no grand-children) */
-std::vector<NetZone*> NetZone::get_children()
+std::vector<NetZone*> NetZone::get_children() const
 {
   std::vector<NetZone*> res;
   for (auto child : *(pimpl_->get_children()))
@@ -62,7 +62,7 @@ NetZone* NetZone::get_father()
  * Only the hosts that are directly contained in this NetZone are retrieved,
  * not the ones contained in sub-netzones.
  */
-std::vector<Host*> NetZone::get_all_hosts()
+std::vector<Host*> NetZone::get_all_hosts() const
 {
   return pimpl_->get_all_hosts();
 }
@@ -99,7 +99,7 @@ sg_netzone_t sg_zone_get_root()
   return simgrid::s4u::Engine::get_instance()->get_netzone_root();
 }
 
-const char* sg_zone_get_name(sg_netzone_t netzone)
+const char* sg_zone_get_name(const_sg_netzone_t netzone)
 {
   return netzone->get_cname();
 }
@@ -109,24 +109,24 @@ sg_netzone_t sg_zone_get_by_name(const char* name)
   return simgrid::s4u::Engine::get_instance()->netzone_by_name_or_null(name);
 }
 
-void sg_zone_get_sons(sg_netzone_t netzone, xbt_dict_t whereto)
+void sg_zone_get_sons(const_sg_netzone_t netzone, xbt_dict_t whereto)
 {
   for (auto const& elem : netzone->get_children()) {
     xbt_dict_set(whereto, elem->get_cname(), static_cast<void*>(elem));
   }
 }
 
-const char* sg_zone_get_property_value(sg_netzone_t netzone, const char* name)
+const char* sg_zone_get_property_value(const_sg_netzone_t netzone, const char* name)
 {
   return netzone->get_property(name);
 }
 
-void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, char* value)
+void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, const char* value)
 {
   netzone->set_property(name, value);
 }
 
-void sg_zone_get_hosts(sg_netzone_t netzone, xbt_dynar_t whereto)
+void sg_zone_get_hosts(const_sg_netzone_t netzone, xbt_dynar_t whereto)
 {
   /* converts vector to dynar */
   std::vector<simgrid::s4u::Host*> hosts = netzone->get_all_hosts();

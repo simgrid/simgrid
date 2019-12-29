@@ -199,11 +199,12 @@ PYBIND11_MODULE(simgrid, m)
            "Test whether the communication is terminated, see :cpp:func:`simgrid::s4u::Comm::test()`")
       .def("wait", [](simgrid::s4u::CommPtr self) { self->wait(); },
            "Block until the completion of that communication, see :cpp:func:`simgrid::s4u::Comm::wait()`")
-      .def("wait_all", [](std::vector<simgrid::s4u::CommPtr>* comms) { simgrid::s4u::Comm::wait_all(comms); },
+      .def("wait_all", [](const std::vector<simgrid::s4u::CommPtr>* comms) { simgrid::s4u::Comm::wait_all(comms); },
            "Block until the completion of all communications in the list, see "
            ":cpp:func:`simgrid::s4u::Comm::wait_all()`")
       .def(
-          "wait_any", [](std::vector<simgrid::s4u::CommPtr>* comms) { return simgrid::s4u::Comm::wait_any(comms); },
+          "wait_any",
+          [](const std::vector<simgrid::s4u::CommPtr>* comms) { return simgrid::s4u::Comm::wait_any(comms); },
           "Block until the completion of any communication in the list and return the index of the terminated one, see "
           ":cpp:func:`simgrid::s4u::Comm::wait_any()`");
   py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec", "Execution, see :ref:`class s4u::Exec <API_s4u_Exec>`")

@@ -104,7 +104,7 @@ int sg_sem_get_capacity(sg_sem_t sem)
   return sem->get_capacity();
 }
 
-void sg_sem_destroy(sg_sem_t sem)
+void sg_sem_destroy(const_sg_sem_t sem)
 {
   delete sem;
 }

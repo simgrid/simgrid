@@ -18,8 +18,8 @@ int main(int argc, char **argv)
   sg_host_t *hosts = sg_host_list();
   if (argc >= 3) {
     if (!strcmp(argv[2], "ONE_LINK")) {
-      sg_host_t h1 = hosts[0];
-      sg_host_t h2 = hosts[1];
+      const_sg_host_t h1 = hosts[0];
+      const_sg_host_t h2 = hosts[1];
       const char *name1 = sg_host_get_name(h1);
       const char *name2 = sg_host_get_name(h2);
 
@@ -39,10 +39,10 @@ int main(int argc, char **argv)
     if (!strcmp(argv[2], "FULL_LINK")) {
       int list_size = sg_host_count();
       for (int i = 0; i < list_size; i++) {
-        sg_host_t h1 = hosts[i];
+        const_sg_host_t h1 = hosts[i];
         const char *name1 = sg_host_get_name(h1);
         for (int j = 0; j < list_size; j++) {
-          sg_host_t h2 = hosts[j];
+          const_sg_host_t h2 = hosts[j];
           const char *name2 = sg_host_get_name(h2);
           fprintf(stderr, "Route between %s and %s\n", name1, name2);
           xbt_dynar_t route = xbt_dynar_new(sizeof(SD_link_t), NULL);

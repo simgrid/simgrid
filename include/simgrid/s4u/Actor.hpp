@@ -56,8 +56,8 @@ public:
   Actor& operator=(Actor const&) = delete;
 
   // ***** Reference count *****
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(Actor * actor);
-  friend XBT_PUBLIC void intrusive_ptr_release(Actor * actor);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(const Actor* actor);
+  friend XBT_PUBLIC void intrusive_ptr_release(const Actor* actor);
 #endif
   /** Retrieve the amount of references on that object. Useful to debug the automatic refcounting */
   int get_refcount();
