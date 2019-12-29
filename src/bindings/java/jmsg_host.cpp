@@ -340,7 +340,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_updateAllEnergyConsumptions(JNI
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost)
 {
-  msg_host_t host = jhost_get_native(env, jhost);
+  const_sg_host_t host = jhost_get_native(env, jhost);
 
   if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
@@ -384,7 +384,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getLoad(JNIEnv* env, jobject
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentLoad (JNIEnv *env, jobject jhost)
 {
-  msg_host_t host = jhost_get_native(env, jhost);
+  const_sg_host_t host = jhost_get_native(env, jhost);
 
   if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
@@ -396,7 +396,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentLoad (JNIEnv *env,
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getComputedFlops (JNIEnv *env, jobject jhost)
 {
-  msg_host_t host = jhost_get_native(env, jhost);
+  const_sg_host_t host = jhost_get_native(env, jhost);
 
   if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
@@ -408,7 +408,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getComputedFlops (JNIEnv *en
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getAvgLoad (JNIEnv *env, jobject jhost)
 {
-  msg_host_t host = jhost_get_native(env, jhost);
+  const_sg_host_t host = jhost_get_native(env, jhost);
 
   if (not host) {
     jxbt_throw_notbound(env, "host", jhost);

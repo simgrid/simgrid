@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 static int tester(int, char**)
 {
   msg_task_t task = MSG_task_create("name", 0, 10, NULL);
-  msg_comm_t comm = MSG_task_isend(task, "mailbox");
+  const_msg_comm_t comm = MSG_task_isend(task, "mailbox");
 
   XBT_INFO("MSG_task_listen_from returns() %d (should return my pid, which is %d)", MSG_task_listen_from("mailbox"),
            MSG_process_get_PID(MSG_process_self()));

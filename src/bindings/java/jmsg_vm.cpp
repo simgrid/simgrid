@@ -49,7 +49,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv* env, jobjec
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isMigrating(JNIEnv* env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
+  const_sg_vm_t vm = jvm_get_native(env, jvm);
   return MSG_vm_is_migrating(vm);
 }
 

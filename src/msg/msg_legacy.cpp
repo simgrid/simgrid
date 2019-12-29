@@ -406,7 +406,7 @@ int MSG_vm_is_suspended(sg_vm_t vm)
 {
   return sg_vm_is_suspended(vm);
 }
-const char* MSG_vm_get_name(sg_vm_t vm)
+const char* MSG_vm_get_name(const_sg_vm_t vm)
 {
   return sg_vm_get_name(vm);
 }

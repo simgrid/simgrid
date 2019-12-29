@@ -1151,7 +1151,7 @@ static bool global_variables_differ(simgrid::mc::StateComparator& state,
         || (char *) current_var.address > (char *) object_info->end_rw)
       continue;
 
-    simgrid::mc::Type* bvariable_type = current_var.type;
+    const simgrid::mc::Type* bvariable_type = current_var.type;
     if (areas_differ_with_type(state, current_var.address, snapshot1, r1, current_var.address, snapshot2, r2,
                                bvariable_type, 0)) {
       XBT_VERB("Global variable %s (%p) is different between snapshots", current_var.name.c_str(), current_var.address);
@@ -1229,10 +1229,10 @@ bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
   }
 
   /* Init heap information used in heap comparison algorithm */
-  xbt_mheap_t heap1 = static_cast<xbt_mheap_t>(s1->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t),
-                                                              remote(process.heap_address), ReadOptions::lazy()));
-  xbt_mheap_t heap2 = static_cast<xbt_mheap_t>(s2->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t),
-                                                              remote(process.heap_address), ReadOptions::lazy()));
+  const s_xbt_mheap_t* heap1 = static_cast<xbt_mheap_t>(s1->read_bytes(
+      alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), remote(process.heap_address), ReadOptions::lazy()));
+  const s_xbt_mheap_t* heap2 = static_cast<xbt_mheap_t>(s2->read_bytes(
+      alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), remote(process.heap_address), ReadOptions::lazy()));
   if (state_comparator.initHeapInformation(heap1, heap2, s1->to_ignore_, s2->to_ignore_) == -1) {
     XBT_VERB("(%d - %d) Different heap information", s1->num_state_, s2->num_state_);
     return false;

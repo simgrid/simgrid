@@ -46,7 +46,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_File_seek(JNIEnv *env, jobject jfile
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_File_close(JNIEnv *env, jobject jfile) {
-  msg_file_t file = jfile_get_native(env, jfile);
+  const_sg_file_t file = jfile_get_native(env, jfile);
 
   MSG_file_close(file);
   jfile_bind(env, jfile, nullptr);

@@ -15,7 +15,6 @@ static int host(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   msg_file_t file = NULL;
   sg_size_t read;
   sg_size_t write;
-  msg_storage_t st;
   const char* st_name;
 
   switch (MSG_process_self_PID()) {
@@ -42,7 +41,7 @@ static int host(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 
   const char* filename = MSG_file_get_name(file);
   XBT_INFO("\tOpen file '%s'", filename);
-  st = MSG_storage_get_by_name(st_name);
+  const_sg_storage_t st = MSG_storage_get_by_name(st_name);
 
   XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu", filename, MSG_storage_get_used_size(st),
            MSG_storage_get_size(st));
