@@ -23,7 +23,7 @@ namespace resource {
  * Trace *
  *********/
 
-CpuTiProfile::CpuTiProfile(profile::Profile* profile)
+CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
 {
   double integral = 0;
   double time = 0;

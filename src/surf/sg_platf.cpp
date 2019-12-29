@@ -116,7 +116,7 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
   return netpoint;
 }
 
-static void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link, const std::string& link_name)
+static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link, const std::string& link_name)
 {
   simgrid::kernel::resource::LinkImpl* l =
       surf_network_model->create_link(link_name, link->bandwidths, link->latency, link->policy);
@@ -133,7 +133,7 @@ static void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link, 
     l->set_state_profile(link->state_trace);
 }
 
-void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link)
+void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link)
 {
   if (link->policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
     sg_platf_new_link(link, link->id + "_UP");
@@ -309,7 +309,7 @@ void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb)
   XBT_DEBUG("Add a backbone to AS '%s'", current_routing->get_cname());
 }
 
-void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet)
+void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabinet)
 {
   for (int const& radical : *cabinet->radicals) {
     std::string hostname = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
@@ -336,7 +336,7 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
   delete cabinet->radicals;
 }
 
-simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(simgrid::kernel::routing::DiskCreationArgs* disk)
+simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
   simgrid::kernel::resource::DiskImpl* d = surf_disk_model->createDisk(disk->id, disk->read_bw, disk->write_bw);
   if (disk->properties) {
@@ -386,7 +386,7 @@ void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage
   }
 }
 
-void sg_platf_new_storage_type(simgrid::kernel::routing::StorageTypeCreationArgs* storage_type)
+void sg_platf_new_storage_type(const simgrid::kernel::routing::StorageTypeCreationArgs* storage_type)
 {
   xbt_assert(storage_types.find(storage_type->id) == storage_types.end(),
              "Reading a storage type, processing unit \"%s\" already exists", storage_type->id.c_str());
@@ -493,7 +493,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   }
 }
 
-void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
+void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
 {
   simgrid::kernel::routing::VivaldiZone* as = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(as, "<peer> tag can only be used in Vivaldi netzones.");
@@ -565,7 +565,7 @@ static void surf_config_models_setup()
  *
  * @param zone the parameters defining the Zone to build.
  */
-simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone)
+simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
   if (not surf_parse_models_setup_already_called) {
     simgrid::s4u::Engine::on_platform_creation();
@@ -641,7 +641,7 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::
   return new_zone;
 }
 
-void sg_platf_new_Zone_set_properties(std::unordered_map<std::string, std::string>* props)
+void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>* props)
 {
   xbt_assert(current_routing, "Cannot set properties of the current Zone: none under construction");
 
@@ -664,7 +664,7 @@ void sg_platf_new_Zone_seal()
 }
 
 /** @brief Add a link connecting a host to the rest of its AS (which must be cluster or vivaldi) */
-void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
+void sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
 {
   simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());

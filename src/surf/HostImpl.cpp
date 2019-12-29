@@ -82,7 +82,7 @@ void HostImpl::turn_off(kernel::actor::ActorImpl* issuer)
   }
   // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
   // Then get rid of the others.
-  auto elm = remove_if(begin(actors_at_boot_), end(actors_at_boot_), [](kernel::actor::ProcessArg* arg) {
+  auto elm = remove_if(begin(actors_at_boot_), end(actors_at_boot_), [](const kernel::actor::ProcessArg* arg) {
     if (arg->auto_restart)
       return false;
     delete arg;
@@ -111,7 +111,7 @@ std::vector<s4u::Disk*> HostImpl::get_disks()
   return disks;
 }
 
-void HostImpl::add_disk(s4u::Disk* disk)
+void HostImpl::add_disk(const s4u::Disk* disk)
 {
   disks_.push_back(disk->get_impl());
 }

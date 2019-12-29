@@ -52,7 +52,7 @@ public:
   virtual ~HostImpl();
 
   std::vector<s4u::Disk*> get_disks();
-  void add_disk(s4u::Disk* disk);
+  void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& disk_name);
 
   /** @brief Get the vector of storages (by names) attached to the Host */

@@ -27,14 +27,14 @@ NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& nam
   simgrid::s4u::Link::on_creation(*get_iface());
 }
 
-void NetworkWifiLink::set_host_rate(s4u::Host* host, int rate_level)
+void NetworkWifiLink::set_host_rate(const s4u::Host* host, int rate_level)
 {
   auto insert_done = host_rates_.insert(std::make_pair(host->get_name(), rate_level));
   if (insert_done.second == false)
     insert_done.first->second = rate_level;
 }
 
-double NetworkWifiLink::get_host_rate(sg_host_t host)
+double NetworkWifiLink::get_host_rate(const s4u::Host* host)
 {
   std::map<xbt::string, int>::iterator host_rates_it;
   host_rates_it = host_rates_.find(host->get_name());

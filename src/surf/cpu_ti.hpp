@@ -27,7 +27,7 @@ class XBT_PRIVATE CpuTi;
  *********/
 class CpuTiProfile {
 public:
-  explicit CpuTiProfile(profile::Profile* profile);
+  explicit CpuTiProfile(const profile::Profile* profile);
 
   double integrate_simple(double a, double b);
   double integrate_simple_point(double a);
