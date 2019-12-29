@@ -35,6 +35,7 @@ typedef sg_link_t SD_link_t;
 
     */
 typedef struct s_SD_task_t* SD_task_t;
+typedef const struct s_SD_task_t* const_SD_task_t;
 
 /** @brief Task states
     @ingroup SD_task_api */
@@ -73,34 +74,34 @@ typedef enum {
  *  @{
  */
 XBT_PUBLIC SD_task_t SD_task_create(const char* name, void* data, double amount);
-XBT_PUBLIC void* SD_task_get_data(SD_task_t task);
+XBT_PUBLIC void* SD_task_get_data(const_SD_task_t task);
 XBT_PUBLIC void SD_task_set_data(SD_task_t task, void* data);
-XBT_PUBLIC e_SD_task_state_t SD_task_get_state(SD_task_t task);
-XBT_PUBLIC const char* SD_task_get_name(SD_task_t task);
+XBT_PUBLIC e_SD_task_state_t SD_task_get_state(const_SD_task_t task);
+XBT_PUBLIC const char* SD_task_get_name(const_SD_task_t task);
 XBT_PUBLIC void SD_task_set_name(SD_task_t task, const char* name);
 XBT_PUBLIC void SD_task_set_rate(SD_task_t task, double rate);
 
 XBT_PUBLIC void SD_task_watch(SD_task_t task, e_SD_task_state_t state);
 XBT_PUBLIC void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
-XBT_PUBLIC double SD_task_get_amount(SD_task_t task);
+XBT_PUBLIC double SD_task_get_amount(const_SD_task_t task);
 XBT_PUBLIC void SD_task_set_amount(SD_task_t task, double amount);
-XBT_PUBLIC double SD_task_get_alpha(SD_task_t task);
-XBT_PUBLIC double SD_task_get_remaining_amount(SD_task_t task);
-XBT_PUBLIC double SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_t* host_list,
+XBT_PUBLIC double SD_task_get_alpha(const_SD_task_t task);
+XBT_PUBLIC double SD_task_get_remaining_amount(const_SD_task_t task);
+XBT_PUBLIC double SD_task_get_execution_time(const_SD_task_t task, int host_count, const sg_host_t* host_list,
                                              const double* flops_amount, const double* bytes_amount);
-XBT_PUBLIC e_SD_task_kind_t SD_task_get_kind(SD_task_t task);
+XBT_PUBLIC e_SD_task_kind_t SD_task_get_kind(const_SD_task_t task);
 XBT_PUBLIC void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t* host_list, const double* flops_amount,
                                  const double* bytes_amount, double rate);
 XBT_PUBLIC void SD_task_unschedule(SD_task_t task);
-XBT_PUBLIC double SD_task_get_start_time(SD_task_t task);
-XBT_PUBLIC double SD_task_get_finish_time(SD_task_t task);
-XBT_PUBLIC xbt_dynar_t SD_task_get_parents(SD_task_t task);
-XBT_PUBLIC xbt_dynar_t SD_task_get_children(SD_task_t task);
-XBT_PUBLIC int SD_task_get_workstation_count(SD_task_t task);
-XBT_PUBLIC sg_host_t* SD_task_get_workstation_list(SD_task_t task);
+XBT_PUBLIC double SD_task_get_start_time(const_SD_task_t task);
+XBT_PUBLIC double SD_task_get_finish_time(const_SD_task_t task);
+XBT_PUBLIC xbt_dynar_t SD_task_get_parents(const_SD_task_t task);
+XBT_PUBLIC xbt_dynar_t SD_task_get_children(const_SD_task_t task);
+XBT_PUBLIC int SD_task_get_workstation_count(const_SD_task_t task);
+XBT_PUBLIC sg_host_t* SD_task_get_workstation_list(const_SD_task_t task);
 XBT_PUBLIC void SD_task_destroy(SD_task_t task);
-XBT_PUBLIC void SD_task_dump(SD_task_t task);
-XBT_PUBLIC void SD_task_dotty(SD_task_t task, void* out_FILE);
+XBT_PUBLIC void SD_task_dump(const_SD_task_t task);
+XBT_PUBLIC void SD_task_dotty(const_SD_task_t task, void* out_FILE);
 
 XBT_PUBLIC SD_task_t SD_task_create_comp_seq(const char* name, void* data, double amount);
 XBT_PUBLIC SD_task_t SD_task_create_comp_par_amdahl(const char* name, void* data, double amount, double alpha);
@@ -131,7 +132,7 @@ XBT_PUBLIC void SD_task_schedulel(SD_task_t task, int count, ...);
  */
 XBT_PUBLIC void SD_task_dependency_add(SD_task_t src, SD_task_t dst);
 XBT_PUBLIC void SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC int SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
+XBT_PUBLIC int SD_task_dependency_exists(const_SD_task_t src, SD_task_t dst);
 /** @} */
 
 /************************** Global *******************************************/

@@ -30,20 +30,23 @@ void uniq_transfer_task_name(SD_task_t task)
   SD_task_set_name(task, new_name.c_str());
 }
 
-static bool children_are_marked(SD_task_t task){
+static bool children_are_marked(const_SD_task_t task)
+{
   return std::none_of(task->successors->begin(), task->successors->end(),
                       [](const SD_task_t& elm) { return not elm->marked; }) &&
          std::none_of(task->outputs->begin(), task->outputs->end(),
                       [](const SD_task_t& elm) { return not elm->marked; });
 }
 
-static bool parents_are_marked(SD_task_t task){
+static bool parents_are_marked(const_SD_task_t task)
+{
   return std::none_of(task->predecessors->begin(), task->predecessors->end(),
                       [](const SD_task_t& elm) { return not elm->marked; }) &&
          std::none_of(task->inputs->begin(), task->inputs->end(), [](const SD_task_t& elm) { return not elm->marked; });
 }
 
-bool acyclic_graph_detail(xbt_dynar_t dag){
+bool acyclic_graph_detail(const_xbt_dynar_t dag)
+{
   unsigned int count;
   bool all_marked = true;
   SD_task_t task = nullptr;

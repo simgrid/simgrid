@@ -204,7 +204,7 @@ void SD_task_destroy(SD_task_t task)
  * @return the user data associated with this task (can be @c nullptr)
  * @see SD_task_set_data()
  */
-void *SD_task_get_data(SD_task_t task)
+void* SD_task_get_data(const_SD_task_t task)
 {
   return task->data;
 }
@@ -254,7 +254,7 @@ void SD_task_set_rate(SD_task_t task, double rate)
  * #SD_NOT_SCHEDULED, #SD_SCHEDULED, #SD_RUNNABLE, #SD_RUNNING, #SD_DONE or #SD_FAILED
  * @see e_SD_task_state_t
  */
-e_SD_task_state_t SD_task_get_state(SD_task_t task)
+e_SD_task_state_t SD_task_get_state(const_SD_task_t task)
 {
   return task->state;
 }
@@ -316,7 +316,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
  * @param task a task
  * @return the name of this task (can be @c nullptr)
  */
-const char *SD_task_get_name(SD_task_t task)
+const char* SD_task_get_name(const_SD_task_t task)
 {
   return task->name;
 }
@@ -334,7 +334,7 @@ void SD_task_set_name(SD_task_t task, const char *name)
  * @return a newly allocated dynar comprising the parents of this task
  */
 
-xbt_dynar_t SD_task_get_parents(SD_task_t task)
+xbt_dynar_t SD_task_get_parents(const_SD_task_t task)
 {
   xbt_dynar_t parents = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
@@ -351,7 +351,7 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
  * @param task a task
  * @return a newly allocated dynar comprising the parents of this task
  */
-xbt_dynar_t SD_task_get_children(SD_task_t task)
+xbt_dynar_t SD_task_get_children(const_SD_task_t task)
 {
   xbt_dynar_t children = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
@@ -369,7 +369,7 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
  * Only call this on already scheduled tasks!
  * @param task a task
  */
-int SD_task_get_workstation_count(SD_task_t task)
+int SD_task_get_workstation_count(const_SD_task_t task)
 {
   return task->allocation->size();
 }
@@ -380,7 +380,7 @@ int SD_task_get_workstation_count(SD_task_t task)
  * Only call this on already scheduled tasks!
  * @param task a task
  */
-sg_host_t *SD_task_get_workstation_list(SD_task_t task)
+sg_host_t* SD_task_get_workstation_list(const_SD_task_t task)
 {
   return task->allocation->data();
 }
@@ -392,7 +392,7 @@ sg_host_t *SD_task_get_workstation_list(SD_task_t task)
  * @return the total amount of work (computation or data transfer) for this task
  * @see SD_task_get_remaining_amount()
  */
-double SD_task_get_amount(SD_task_t task)
+double SD_task_get_amount(const_SD_task_t task)
 {
   return task->amount;
 }
@@ -420,7 +420,7 @@ void SD_task_set_amount(SD_task_t task, double amount)
  * @param task a parallel task assuming Amdahl's law as speedup model
  * @return the alpha parameter (serial part of a task in percent) for this task
  */
-double SD_task_get_alpha(SD_task_t task)
+double SD_task_get_alpha(const_SD_task_t task)
 {
   xbt_assert(SD_task_get_kind(task) == SD_TASK_COMP_PAR_AMDAHL, "Alpha parameter is not defined for this kind of task");
   return task->alpha;
@@ -433,7 +433,7 @@ double SD_task_get_alpha(SD_task_t task)
  * @return the remaining amount of work (computation or data transfer) of this task
  * @see SD_task_get_amount()
  */
-double SD_task_get_remaining_amount(SD_task_t task)
+double SD_task_get_remaining_amount(const_SD_task_t task)
 {
   if (task->surf_action)
     return task->surf_action->get_remains();
@@ -441,13 +441,13 @@ double SD_task_get_remaining_amount(SD_task_t task)
     return (task->state == SD_DONE) ? 0 : task->amount;
 }
 
-e_SD_task_kind_t SD_task_get_kind(SD_task_t task)
+e_SD_task_kind_t SD_task_get_kind(const_SD_task_t task)
 {
   return task->kind;
 }
 
 /** @brief Displays debugging information about a task */
-void SD_task_dump(SD_task_t task)
+void SD_task_dump(const_SD_task_t task)
 {
   XBT_INFO("Displaying task %s", SD_task_get_name(task));
   if (task->state == SD_RUNNABLE)
@@ -499,7 +499,7 @@ void SD_task_dump(SD_task_t task)
 }
 
 /** @brief Dumps the task in dotty formalism into the FILE* passed as second argument */
-void SD_task_dotty(SD_task_t task, void *out)
+void SD_task_dotty(const_SD_task_t task, void* out)
 {
   FILE *fout = static_cast<FILE*>(out);
   fprintf(fout, "  T%p [label=\"%.20s\"", task, task->name);
@@ -583,7 +583,7 @@ void SD_task_dependency_add(SD_task_t src, SD_task_t dst)
  * If src is nullptr, checks whether dst has any pre-dependency.
  * If dst is nullptr, checks whether src has any post-dependency.
  */
-int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
+int SD_task_dependency_exists(const_SD_task_t src, SD_task_t dst)
 {
   xbt_assert(src != nullptr || dst != nullptr, "Invalid parameter: both src and dst are nullptr");
 
@@ -676,7 +676,7 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
  * @param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
  * @see SD_schedule()
  */
-double SD_task_get_execution_time(SD_task_t /*task*/, int host_count, const sg_host_t* host_list,
+double SD_task_get_execution_time(const_SD_task_t /*task*/, int host_count, const sg_host_t* host_list,
                                   const double* flops_amount, const double* bytes_amount)
 {
   xbt_assert(host_count > 0, "Invalid parameter");
@@ -820,7 +820,7 @@ void SD_task_run(SD_task_t task)
  * @param task: a task
  * @return the start time of this task
  */
-double SD_task_get_start_time(SD_task_t task)
+double SD_task_get_start_time(const_SD_task_t task)
 {
   if (task->surf_action)
     return task->surf_action->get_start_time();
@@ -838,7 +838,7 @@ double SD_task_get_start_time(SD_task_t task)
  * @param task: a task
  * @return the start time of this task
  */
-double SD_task_get_finish_time(SD_task_t task)
+double SD_task_get_finish_time(const_SD_task_t task)
 {
   if (task->surf_action)        /* should never happen as actions are destroyed right after their completion */
     return task->surf_action->get_finish_time();
