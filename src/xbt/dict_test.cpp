@@ -49,7 +49,7 @@ static xbt_dict_t new_fixture()
   return head;
 }
 
-static void search_ext(xbt_dict_t head, const char* key, const char* data)
+static void search_ext(const_xbt_dict_t head, const char* key, const char* data)
 {
   INFO("Search " << STR(key));
   char* found = (char*)xbt_dict_get(head, key);
@@ -63,7 +63,7 @@ static void search_ext(xbt_dict_t head, const char* key, const char* data)
   }
 }
 
-static void search(xbt_dict_t head, const char* key)
+static void search(const_xbt_dict_t head, const char* key)
 {
   search_ext(head, key, key);
 }
@@ -74,7 +74,7 @@ static void debugged_remove(xbt_dict_t head, const char* key)
   xbt_dict_remove(head, key);
 }
 
-static void traverse(xbt_dict_t head)
+static void traverse(const_xbt_dict_t head)
 {
   xbt_dict_cursor_t cursor = nullptr;
   char* key;
@@ -87,13 +87,13 @@ static void traverse(xbt_dict_t head)
   }
 }
 
-static void search_not_found(xbt_dict_t head, const char* data)
+static void search_not_found(const_xbt_dict_t head, const char* data)
 {
   INFO("Search " << STR(data) << " (expected not to be found)");
   REQUIRE_THROWS_AS(xbt_dict_get(head, data), std::out_of_range);
 }
 
-static void count(xbt_dict_t dict, int length)
+static void count(const_xbt_dict_t dict, int length)
 {
   INFO("Count elements (expecting " << length << ")");
   REQUIRE(xbt_dict_length(dict) == length); // Announced length differs
@@ -108,7 +108,7 @@ static void count(xbt_dict_t dict, int length)
   REQUIRE(effective == length); // Effective length differs
 }
 
-static void count_check_get_key(xbt_dict_t dict, int length)
+static void count_check_get_key(const_xbt_dict_t dict, int length)
 {
   xbt_dict_cursor_t cursor;
   char* key;
@@ -127,7 +127,7 @@ static void count_check_get_key(xbt_dict_t dict, int length)
   REQUIRE(effective == length); // Effective length differs
 }
 
-static int countelems(xbt_dict_t head)
+static int countelems(const_xbt_dict_t head)
 {
   xbt_dict_cursor_t cursor;
   char* key;

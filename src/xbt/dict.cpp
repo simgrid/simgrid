@@ -79,7 +79,7 @@ void xbt_dict_free(xbt_dict_t * dict)
 }
 
 /** Returns the amount of elements in the dict */
-unsigned int xbt_dict_size(xbt_dict_t dict)
+unsigned int xbt_dict_size(const_xbt_dict_t dict)
 {
   return (dict != nullptr ? static_cast<unsigned int>(dict->count) : static_cast<unsigned int>(0));
 }
@@ -194,7 +194,7 @@ void xbt_dict_set(xbt_dict_t dict, const char* key, void* data)
  *
  * Search the given @a key. Throws std::out_of_range when not found.
  */
-void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
+void* xbt_dict_get_ext(const_xbt_dict_t dict, const char* key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   const s_xbt_dictelm* current = dict->table[hash_code & dict->table_size];
@@ -211,7 +211,7 @@ void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 }
 
 /** @brief like xbt_dict_get_ext(), but returning nullptr when not found */
-void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
+void* xbt_dict_get_or_null_ext(const_xbt_dict_t dict, const char* key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   const s_xbt_dictelm* current = dict->table[hash_code & dict->table_size];
@@ -232,7 +232,7 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
  *
  * Returns nullptr if the object cannot be found
  */
-char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
+char* xbt_dict_get_key(const_xbt_dict_t dict, const void* data)
 {
   for (int i = 0; i <= dict->table_size; i++) {
     const s_xbt_dictelm* current = dict->table[i];
@@ -255,7 +255,7 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
  * Search the given @a key. Throws std::out_of_range when not found.
  * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
  */
-void *xbt_dict_get(xbt_dict_t dict, const char *key)
+void* xbt_dict_get(const_xbt_dict_t dict, const char* key)
 {
   return xbt_dict_get_elm(dict, key)->content;
 }
@@ -270,7 +270,7 @@ void *xbt_dict_get(xbt_dict_t dict, const char *key)
  * Search the given @a key. Throws std::out_of_range when not found.
  * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
  */
-xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
+xbt_dictelm_t xbt_dict_get_elm(const_xbt_dict_t dict, const char* key)
 {
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
@@ -283,7 +283,7 @@ xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 /**
  * @brief like xbt_dict_get(), but returning nullptr when not found
  */
-void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
+void* xbt_dict_get_or_null(const_xbt_dict_t dict, const char* key)
 {
   const s_xbt_dictelm* current = xbt_dict_get_elm_or_null(dict, key);
 
@@ -296,7 +296,7 @@ void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 /**
  * @brief like xbt_dict_get_elm(), but returning nullptr when not found
  */
-xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
+xbt_dictelm_t xbt_dict_get_elm_or_null(const_xbt_dict_t dict, const char* key)
 {
   unsigned int hash_code = xbt_str_hash(key);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
@@ -382,7 +382,7 @@ void xbt_dict_reset(xbt_dict_t dict)
  * @brief Return the number of elements in the dict.
  * @param dict a dictionary
  */
-int xbt_dict_length(xbt_dict_t dict)
+int xbt_dict_length(const_xbt_dict_t dict)
 {
   return dict->count;
 }
@@ -390,7 +390,7 @@ int xbt_dict_length(xbt_dict_t dict)
 /**
  * @brief test if the dict is empty or not
  */
-int xbt_dict_is_empty(xbt_dict_t dict)
+int xbt_dict_is_empty(const_xbt_dict_t dict)
 {
   return not dict || (xbt_dict_length(dict) == 0);
 }

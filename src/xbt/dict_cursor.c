@@ -22,7 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict, "To traverse dictiona
 /** @brief Creator
  *  @param dict the dict
  */
-inline xbt_dict_cursor_t xbt_dict_cursor_new(const xbt_dict_t dict)
+inline xbt_dict_cursor_t xbt_dict_cursor_new(const_xbt_dict_t dict)
 {
   xbt_dict_cursor_t res = xbt_new(struct s_xbt_dict_cursor, 1);
   res->dict = dict;
@@ -70,7 +70,7 @@ inline void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
  * @param      dict   on what to let the cursor iterate
  * @param[out] cursor dest address
  */
-inline void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cursor)
+inline void xbt_dict_cursor_first(const_xbt_dict_t dict, xbt_dict_cursor_t* cursor)
 {
   XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_cursor_first");
   if (!*cursor) {
@@ -146,7 +146,7 @@ inline int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor, char **key, v
  * @param cursor: the cursor
  * @returns the current key
  */
-inline char *xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor)
+inline char* xbt_dict_cursor_get_key(const_xbt_dict_cursor_t cursor)
 {
   __cursor_not_null(cursor);
 
@@ -158,7 +158,7 @@ inline char *xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor)
  * @param cursor the cursor
  * @returns the current data
  */
-inline void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
+inline void* xbt_dict_cursor_get_data(const_xbt_dict_cursor_t cursor)
 {
   __cursor_not_null(cursor);
 
