@@ -13,11 +13,12 @@
 #include <cstdio>
 #include <cstring>
 
-static void append_file(xbt_log_appender_t this_, char *str) {
+static void append_file(const s_xbt_log_appender_t* this_, const char* str)
+{
   fputs(str, (FILE *) this_->data);
 }
 
-static void free_(xbt_log_appender_t this_)
+static void free_(const s_xbt_log_appender_t* this_)
 {
   fclose(static_cast<FILE*>(this_->data));
 }
@@ -86,20 +87,21 @@ static void open_append2_file(xbt_log_append2_file_t data){
   }
 }
 
-static void append2_file(xbt_log_appender_t this_, char *str) {
-   xbt_log_append2_file_t d=(xbt_log_append2_file_t) this_->data;
-   xbt_assert(d->file);
-   if(ftell(d->file)>=d->limit) {
-     open_append2_file(d);
-   }
-   fputs(str, d->file);
-   if(d->count<0){
-     fputs(APPEND2_END_TOKEN,d->file);
-     fseek(d->file,-((signed long)strlen(APPEND2_END_TOKEN)),SEEK_CUR);
-   }
+static void append2_file(const s_xbt_log_appender_t* this_, const char* str)
+{
+  xbt_log_append2_file_t d = (xbt_log_append2_file_t)this_->data;
+  xbt_assert(d->file);
+  if (ftell(d->file) >= d->limit) {
+    open_append2_file(d);
+  }
+  fputs(str, d->file);
+  if (d->count < 0) {
+    fputs(APPEND2_END_TOKEN, d->file);
+    fseek(d->file, -((signed long)strlen(APPEND2_END_TOKEN)), SEEK_CUR);
+  }
 }
 
-static void free_append2_(xbt_log_appender_t this_)
+static void free_append2_(const s_xbt_log_appender_t* this_)
 {
   xbt_log_append2_file_t data = static_cast<xbt_log_append2_file_t>(this_->data);
   if (data->file)

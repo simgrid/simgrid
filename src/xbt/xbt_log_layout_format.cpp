@@ -68,7 +68,7 @@ static constexpr const char* ERRMSG =
 #define show_int(data) show_it((data), "d")
 #define show_double(data) show_it((data), "f")
 
-static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, const char* msg_fmt)
+static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event_t ev, const char* msg_fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -175,7 +175,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
   return 1;
 }
 
-static void xbt_log_layout_format_free(xbt_log_layout_t lay)
+static void xbt_log_layout_format_free(const s_xbt_log_layout_t* lay)
 {
   xbt_free(lay->data);
 }

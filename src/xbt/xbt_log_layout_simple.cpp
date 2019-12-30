@@ -23,7 +23,7 @@ extern int xbt_log_no_loc;
     p += (len);                                                                                                        \
   } while (0)
 
-static int xbt_log_layout_simple_doit(xbt_log_layout_t, xbt_log_event_t ev, const char* fmt)
+static int xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_t ev, const char* fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;

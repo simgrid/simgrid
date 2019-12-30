@@ -123,7 +123,7 @@ void xbt_log_init(int *argc, char **argv)
   }
 }
 
-static void log_cat_exit(xbt_log_category_t cat)
+static void log_cat_exit(const s_xbt_log_category_t* cat)
 {
   xbt_log_category_t child;
 
@@ -340,7 +340,7 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
   cat->isThreshInherited = 1;
 }
 
-static void _set_inherited_thresholds(xbt_log_category_t cat)
+static void _set_inherited_thresholds(const s_xbt_log_category_t* cat)
 {
   xbt_log_category_t child = cat->firstChild;
 
@@ -631,7 +631,7 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const std::
     cats.push_back(cat);
 
   std::sort(begin(cats), end(cats),
-            [](xbt_log_category_t a, xbt_log_category_t b) { return strcmp(a->name, b->name) < 0; });
+            [](const s_xbt_log_category_t* a, const s_xbt_log_category_t* b) { return strcmp(a->name, b->name) < 0; });
 
   for (auto const& cat : cats) {
     XBT_HELP("%s%s: %s", this_prefix.c_str(), cat->name, cat->description);

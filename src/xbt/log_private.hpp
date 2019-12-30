@@ -8,14 +8,14 @@
 
 #include "xbt/log.h"
 struct xbt_log_appender_s {
-  void (*do_append) (xbt_log_appender_t this_appender, char *event);
-  void (*free_) (xbt_log_appender_t this_);
+  void (*do_append)(const s_xbt_log_appender_t* this_appender, const char* event);
+  void (*free_)(const s_xbt_log_appender_t* this_);
   void *data;
 };
 
 struct xbt_log_layout_s {
-  int (*do_layout) (xbt_log_layout_t l, xbt_log_event_t event, const char *fmt);
-  void (*free_) (xbt_log_layout_t l);
+  int (*do_layout)(const s_xbt_log_layout_t* l, xbt_log_event_t event, const char* fmt);
+  void (*free_)(const s_xbt_log_layout_t* l);
   void *data;
 };
 
