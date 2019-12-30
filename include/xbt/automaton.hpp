@@ -19,9 +19,7 @@ namespace xbt {
  *  This API hides all the callback and dynamic allocation hell from
  *  the used which can use C++ style functors and lambda expressions.
  */
-template<class F>
-xbt_automaton_propositional_symbol_t add_proposition(
-  xbt_automaton_t a, const char* id, F f)
+template <class F> xbt_automaton_propositional_symbol_t add_proposition(const_xbt_automaton_t a, const char* id, F f)
 {
   F* callback = new F(std::move(f));
   return xbt_automaton_propositional_symbol_new_callback(

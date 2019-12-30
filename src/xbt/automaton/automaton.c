@@ -28,7 +28,8 @@ xbt_automaton_t xbt_automaton_new(void){
   return automaton;
 }
 
-xbt_automaton_state_t xbt_automaton_state_new(xbt_automaton_t a, int type, char* id){
+xbt_automaton_state_t xbt_automaton_state_new(const_xbt_automaton_t a, int type, const char* id)
+{
   xbt_automaton_state_t state = xbt_new0(struct xbt_automaton_state, 1);
   state->type = type;
   state->id = xbt_strdup(id);
@@ -38,7 +39,9 @@ xbt_automaton_state_t xbt_automaton_state_new(xbt_automaton_t a, int type, char*
   return state;
 }
 
-xbt_automaton_transition_t xbt_automaton_transition_new(xbt_automaton_t a, xbt_automaton_state_t src, xbt_automaton_state_t dst, xbt_automaton_exp_label_t label){
+xbt_automaton_transition_t xbt_automaton_transition_new(const_xbt_automaton_t a, xbt_automaton_state_t src,
+                                                        xbt_automaton_state_t dst, xbt_automaton_exp_label_t label)
+{
   xbt_automaton_transition_t transition = xbt_new0(struct xbt_automaton_transition, 1);
   if(src != NULL){
     xbt_dynar_push(src->out, &transition);
@@ -81,7 +84,7 @@ xbt_automaton_exp_label_t xbt_automaton_exp_label_new_not(xbt_automaton_exp_labe
   return label;
 }
 
-xbt_automaton_exp_label_t xbt_automaton_exp_label_new_predicat(char* p)
+xbt_automaton_exp_label_t xbt_automaton_exp_label_new_predicat(const char* p)
 {
   xbt_automaton_exp_label_t label = xbt_new0(struct xbt_automaton_exp_label, 1);
   label->type                     = AUT_PREDICAT;
@@ -96,16 +99,19 @@ xbt_automaton_exp_label_t xbt_automaton_exp_label_new_one(void)
   return label;
 }
 
-xbt_dynar_t xbt_automaton_get_states(xbt_automaton_t a){
+xbt_dynar_t xbt_automaton_get_states(const_xbt_automaton_t a)
+{
   return a->states;
 }
 
-xbt_dynar_t xbt_automaton_get_transitions(xbt_automaton_t a){
+xbt_dynar_t xbt_automaton_get_transitions(const_xbt_automaton_t a)
+{
   return a->transitions;
 }
 
-xbt_automaton_transition_t xbt_automaton_get_transition(XBT_ATTRIB_UNUSED xbt_automaton_t a, xbt_automaton_state_t src,
-                                                        xbt_automaton_state_t dst)
+xbt_automaton_transition_t xbt_automaton_get_transition(XBT_ATTRIB_UNUSED const_xbt_automaton_t a,
+                                                        const_xbt_automaton_state_t src,
+                                                        const_xbt_automaton_state_t dst)
 {
   xbt_automaton_transition_t transition;
   unsigned int cursor;
@@ -116,11 +122,13 @@ xbt_automaton_transition_t xbt_automaton_get_transition(XBT_ATTRIB_UNUSED xbt_au
   return NULL;
 }
 
-xbt_automaton_state_t xbt_automaton_transition_get_source(xbt_automaton_transition_t t){
+xbt_automaton_state_t xbt_automaton_transition_get_source(const_xbt_automaton_transition_t t)
+{
   return t->src;
 }
 
-xbt_automaton_state_t xbt_automaton_transition_get_destination(xbt_automaton_transition_t t){
+xbt_automaton_state_t xbt_automaton_transition_get_destination(const_xbt_automaton_transition_t t)
+{
   return t->dst;
 }
 
@@ -134,15 +142,18 @@ void xbt_automaton_transition_set_destination(xbt_automaton_transition_t t, xbt_
   xbt_dynar_push(dst->in,&t);
 }
 
-xbt_dynar_t xbt_automaton_state_get_out_transitions(xbt_automaton_state_t s){
+xbt_dynar_t xbt_automaton_state_get_out_transitions(const_xbt_automaton_state_t s)
+{
   return s->out;
 }
 
-xbt_dynar_t xbt_automaton_state_get_in_transitions(xbt_automaton_state_t s){
+xbt_dynar_t xbt_automaton_state_get_in_transitions(const_xbt_automaton_state_t s)
+{
   return s->in;
 }
 
-xbt_automaton_state_t xbt_automaton_state_exists(xbt_automaton_t a, char *id){
+xbt_automaton_state_t xbt_automaton_state_exists(const_xbt_automaton_t a, const char* id)
+{
   xbt_automaton_state_t state = NULL;
   unsigned int cursor = 0;
   xbt_dynar_foreach(a->states, cursor, state){
@@ -152,7 +163,8 @@ xbt_automaton_state_t xbt_automaton_state_exists(xbt_automaton_t a, char *id){
   return NULL;
 }
 
-void xbt_automaton_display(xbt_automaton_t a){
+void xbt_automaton_display(const_xbt_automaton_t a)
+{
   unsigned int cursor;
   xbt_automaton_state_t state = NULL;
 
@@ -173,7 +185,8 @@ void xbt_automaton_display(xbt_automaton_t a){
   }
 }
 
-void xbt_automaton_exp_label_display(xbt_automaton_exp_label_t label){
+void xbt_automaton_exp_label_display(const_xbt_automaton_exp_label_t label)
+{
   printf("(");
   switch(label->type){
     case 0:
@@ -202,7 +215,8 @@ void xbt_automaton_exp_label_display(xbt_automaton_exp_label_t label){
   printf(")");
 }
 
-xbt_automaton_state_t xbt_automaton_get_current_state(xbt_automaton_t a){
+xbt_automaton_state_t xbt_automaton_get_current_state(const_xbt_automaton_t a)
+{
   return a->current_state;
 }
 
@@ -211,7 +225,7 @@ static int call_simple_function(int function(void) )
   return function();
 }
 
-xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id,
+xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(const_xbt_automaton_t a, const char* id,
                                                                             int (*fct)(void))
 {
   xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
@@ -223,7 +237,7 @@ xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_
   return prop_symb;
 }
 
-XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a,
+XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new_pointer(const_xbt_automaton_t a,
                                                                                                const char* id,
                                                                                                int* value)
 {
@@ -237,7 +251,7 @@ XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symb
 }
 
 XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new_callback(
-    xbt_automaton_t a, const char* id, xbt_automaton_propositional_symbol_callback_type callback, void* data,
+    const_xbt_automaton_t a, const char* id, xbt_automaton_propositional_symbol_callback_type callback, void* data,
     xbt_automaton_propositional_symbol_free_function_type free_function)
 {
   xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
@@ -249,7 +263,7 @@ XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symb
   return prop_symb;
 }
 
-XBT_PUBLIC int xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol)
+XBT_PUBLIC int xbt_automaton_propositional_symbol_evaluate(const_xbt_automaton_propositional_symbol_t symbol)
 {
   if (symbol->callback)
     return (symbol->callback)(symbol->data);
@@ -258,34 +272,35 @@ XBT_PUBLIC int xbt_automaton_propositional_symbol_evaluate(xbt_automaton_proposi
 }
 
 XBT_PUBLIC xbt_automaton_propositional_symbol_callback_type
-xbt_automaton_propositional_symbol_get_callback(xbt_automaton_propositional_symbol_t symbol)
+xbt_automaton_propositional_symbol_get_callback(const_xbt_automaton_propositional_symbol_t symbol)
 {
   return symbol->callback;
 }
 
-XBT_PUBLIC void* xbt_automaton_propositional_symbol_get_data(xbt_automaton_propositional_symbol_t symbol)
+XBT_PUBLIC void* xbt_automaton_propositional_symbol_get_data(const_xbt_automaton_propositional_symbol_t symbol)
 {
   return symbol->data;
 }
 
-XBT_PUBLIC const char* xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol)
+XBT_PUBLIC const char* xbt_automaton_propositional_symbol_get_name(const_xbt_automaton_propositional_symbol_t symbol)
 {
   return symbol->pred;
 }
 
-int xbt_automaton_state_compare(xbt_automaton_state_t s1, xbt_automaton_state_t s2){
+int xbt_automaton_state_compare(const_xbt_automaton_state_t s1, const_xbt_automaton_state_t s2)
+{
   /* single id for each state, id and type sufficient for comparison*/
   return (strcmp(s1->id, s2->id) != 0) || (s1->type != s2->type);
 }
 
-int xbt_automaton_transition_compare(xbt_automaton_transition_t t1, xbt_automaton_transition_t t2)
+int xbt_automaton_transition_compare(const_xbt_automaton_transition_t t1, const_xbt_automaton_transition_t t2)
 {
   return xbt_automaton_state_compare(t1->src, t2->src) || xbt_automaton_state_compare(t1->dst, t2->dst) ||
          xbt_automaton_exp_label_compare(t1->label, t2->label);
 }
 
-int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_exp_label_t l2){
-
+int xbt_automaton_exp_label_compare(const_xbt_automaton_exp_label_t l1, const_xbt_automaton_exp_label_t l2)
+{
   if(l1->type != l2->type)
     return 1;
 
