@@ -32,7 +32,7 @@ xbt_graph_t xbt_graph_new_graph(unsigned short int directed, void *data)
 }
 
 /** @brief add a node to the given graph */
-xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
+xbt_node_t xbt_graph_new_node(const s_xbt_graph_t* g, void* data)
 {
   xbt_node_t node= xbt_new0(struct xbt_node, 1);
   node->data = data;
@@ -50,7 +50,7 @@ xbt_node_t xbt_graph_new_node(xbt_graph_t g, void *data)
 }
 
 /** @brief add an edge to the given graph */
-xbt_edge_t xbt_graph_new_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst, void *data)
+xbt_edge_t xbt_graph_new_edge(const s_xbt_graph_t* g, xbt_node_t src, xbt_node_t dst, void* data)
 {
   xbt_edge_t edge = xbt_new0(struct xbt_edge, 1);
   xbt_dynar_push(src->out, &edge);
@@ -69,7 +69,7 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst, voi
 }
 
 /** @brief Get the edge connecting src and dst */
-xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst)
+xbt_edge_t xbt_graph_get_edge(const s_xbt_graph_t* g, const s_xbt_node_t* src, const s_xbt_node_t* dst)
 {
   xbt_edge_t edge;
   unsigned int cursor;
@@ -90,7 +90,7 @@ xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src, xbt_node_t dst)
 }
 
 /** @brief Get the user data associated to a node */
-void *xbt_graph_node_get_data(xbt_node_t node)
+void* xbt_graph_node_get_data(const s_xbt_node_t* node)
 {
   return node->data;
 }
@@ -102,7 +102,7 @@ void xbt_graph_node_set_data(xbt_node_t node, void *data)
 }
 
 /** @brief Get the user data associated to a edge */
-void *xbt_graph_edge_get_data(xbt_edge_t edge)
+void* xbt_graph_edge_get_data(const s_xbt_edge_t* edge)
 {
   return edge->data;
 }
@@ -150,31 +150,31 @@ void xbt_graph_free_graph(xbt_graph_t g, void_f_pvoid_t node_free_function, void
 }
 
 /** @brief Retrieve the graph's nodes as a dynar */
-xbt_dynar_t xbt_graph_get_nodes(xbt_graph_t g)
+xbt_dynar_t xbt_graph_get_nodes(const s_xbt_graph_t* g)
 {
   return g->nodes;
 }
 
 /** @brief Retrieve the graph's edges as a dynar */
-xbt_dynar_t xbt_graph_get_edges(xbt_graph_t g)
+xbt_dynar_t xbt_graph_get_edges(const s_xbt_graph_t* g)
 {
   return g->edges;
 }
 
 /** @brief Retrieve the node at the source of the given edge */
-xbt_node_t xbt_graph_edge_get_source(xbt_edge_t e)
+xbt_node_t xbt_graph_edge_get_source(const s_xbt_edge_t* e)
 {
   return e->src;
 }
 
 /** @brief Retrieve the node being the target of the given edge */
-xbt_node_t xbt_graph_edge_get_target(xbt_edge_t e)
+xbt_node_t xbt_graph_edge_get_target(const s_xbt_edge_t* e)
 {
   return e->dst;
 }
 
 /** @brief Retrieve the outgoing edges of the given node */
-xbt_dynar_t xbt_graph_node_get_outedges(xbt_node_t n)
+xbt_dynar_t xbt_graph_node_get_outedges(const s_xbt_node_t* n)
 {
   return n->out;
 }
