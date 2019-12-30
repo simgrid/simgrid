@@ -405,7 +405,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
   size_t longest_prefix_length = 0;
   if (local_storage_) {
     /* Find the host that owns the storage where the file has to be copied */
-    Storage* storage_dest        = nullptr;
+    const Storage* storage_dest = nullptr;
 
     for (auto const& elm : host->get_mounted_storages()) {
       std::string mount_point = std::string(fullpath).substr(0, elm.first.size());

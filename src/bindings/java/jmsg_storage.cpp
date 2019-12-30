@@ -136,7 +136,7 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv * env,jo
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, jobject jstorage, jobject jname) {
-  msg_storage_t storage = jstorage_get_native(env, jstorage);
+  const_sg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (not storage) {
     jxbt_throw_notbound(env, "storage", jstorage);
@@ -173,7 +173,7 @@ Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject 
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobject jstorage) {
-  msg_storage_t storage = jstorage_get_native(env, jstorage);
+  const_sg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (not storage) {
     jxbt_throw_notbound(env, "storage", jstorage);

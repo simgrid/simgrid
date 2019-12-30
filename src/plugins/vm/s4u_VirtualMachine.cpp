@@ -122,7 +122,7 @@ void VirtualMachine::destroy()
   Host::destroy();
 }
 
-simgrid::s4u::Host* VirtualMachine::get_pm()
+simgrid::s4u::Host* VirtualMachine::get_pm() const
 {
   return pimpl_vm_->get_physical_host();
 }
@@ -137,7 +137,7 @@ VirtualMachine::state VirtualMachine::get_state()
   return kernel::actor::simcall([this]() { return pimpl_vm_->get_state(); });
 }
 
-size_t VirtualMachine::get_ramsize()
+size_t VirtualMachine::get_ramsize() const
 {
   return pimpl_vm_->get_ramsize();
 }
@@ -203,7 +203,7 @@ const char* sg_vm_get_name(const_sg_vm_t vm)
 }
 
 /** @brief Get the physical host of a given VM. */
-sg_host_t sg_vm_get_pm(sg_vm_t vm)
+sg_host_t sg_vm_get_pm(const_sg_vm_t vm)
 {
   return vm->get_pm();
 }
@@ -213,7 +213,7 @@ void sg_vm_set_ramsize(sg_vm_t vm, size_t size)
   vm->set_ramsize(size);
 }
 
-size_t sg_vm_get_ramsize(sg_vm_t vm)
+size_t sg_vm_get_ramsize(const_sg_vm_t vm)
 {
   return vm->get_ramsize();
 }

@@ -262,7 +262,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIEnv * env, jobject jhost)
 {
-  msg_host_t host = jhost_get_native(env, jhost);
+  const_sg_host_t host = jhost_get_native(env, jhost);
 
   if (not host) {
     jxbt_throw_notbound(env, "host", jhost);

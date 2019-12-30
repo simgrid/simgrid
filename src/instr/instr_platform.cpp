@@ -121,7 +121,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   XBT_DEBUG("  linkContainers %s <-> %s", src->get_cname(), dst->get_cname());
 }
 
-static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container,
+static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, container_t container,
                                      std::set<std::string>* filter)
 {
   if (not TRACE_platform_topology()) {
@@ -491,7 +491,7 @@ void instr_new_value_for_user_state_type(const std::string& type_name, const cha
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
 
 static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
-                                        std::map<std::string, xbt_edge_t>* edges, sg_netzone_t netzone,
+                                        std::map<std::string, xbt_edge_t>* edges, const_sg_netzone_t netzone,
                                         container_t container)
 {
   if (not netzone->get_children().empty()) {

@@ -49,7 +49,7 @@ void Container::add_resources(std::vector<sg_host_t> hosts)
   }
 }
 
-void Container::create_hierarchy(sg_netzone_t from_as)
+void Container::create_hierarchy(const_sg_netzone_t from_as)
 {
   if (from_as->get_children().empty()) {
     // I am no AS

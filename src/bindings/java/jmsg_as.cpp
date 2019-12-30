@@ -62,7 +62,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
   int index = 0;
   jobjectArray jtable;
-  sg_netzone_t self_as = jnetzone_get_native(env, jas);
+  const simgrid::s4u::NetZone* self_as = jnetzone_get_native(env, jas);
 
   jclass cls = env->FindClass("org/simgrid/msg/As");
 
@@ -96,7 +96,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
-  simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
+  const simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
 
   if (not as) {
     jxbt_throw_notbound(env, "as", jas);
@@ -121,7 +121,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   jobjectArray jtable;
   jobject jhost;
   jstring jname;
-  simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
+  const simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
 
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
   if (not cls)

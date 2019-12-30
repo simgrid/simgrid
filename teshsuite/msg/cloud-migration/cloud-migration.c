@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 static void vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 {
-  msg_host_t src_pm = MSG_vm_get_pm(vm);
+  const_sg_host_t src_pm = MSG_vm_get_pm(vm);
   double mig_sta    = MSG_get_clock();
   MSG_vm_migrate(vm, dst_pm);
   double mig_end = MSG_get_clock();
@@ -34,7 +34,7 @@ static int migration_worker_main(int argc, char* argv[])
   return 0;
 }
 
-static void vm_migrate_async(const_sg_vm_t vm, msg_host_t dst_pm)
+static void vm_migrate_async(const_sg_vm_t vm, const_sg_host_t dst_pm)
 {
   const char* vm_name     = MSG_vm_get_name(vm);
   const char* dst_pm_name = MSG_host_get_name(dst_pm);

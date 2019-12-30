@@ -476,7 +476,7 @@ static void on_action_state_change(simgrid::kernel::resource::CpuAction const& a
     simgrid::s4u::Host* host = cpu->get_host();
     if (host != nullptr) {
       // If it's a VM, take the corresponding PM
-      simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
+      const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
       if (vm) // If it's a VM, take the corresponding PM
         host = vm->get_pm();
 
@@ -556,7 +556,7 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
     if (activity.get_host_number() == 1) { // We only run on one host
       simgrid::s4u::Host* host         = activity.get_host();
-      simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
+      const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
       if (vm != nullptr)
         host = vm->get_pm();
       xbt_assert(host != nullptr);

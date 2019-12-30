@@ -31,9 +31,9 @@ XBT_PUBLIC int sg_vm_is_suspended(sg_vm_t vm);
 
 XBT_PUBLIC const char* sg_vm_get_name(const_sg_vm_t vm);
 XBT_PUBLIC void sg_vm_set_ramsize(sg_vm_t vm, size_t size);
-XBT_PUBLIC size_t sg_vm_get_ramsize(sg_vm_t vm);
+XBT_PUBLIC size_t sg_vm_get_ramsize(const_sg_vm_t vm);
 XBT_PUBLIC void sg_vm_set_bound(sg_vm_t vm, double bound);
-XBT_PUBLIC sg_host_t sg_vm_get_pm(sg_vm_t vm);
+XBT_PUBLIC sg_host_t sg_vm_get_pm(const_sg_vm_t vm);
 
 XBT_PUBLIC void sg_vm_start(sg_vm_t vm);
 XBT_PUBLIC void sg_vm_suspend(sg_vm_t vm);

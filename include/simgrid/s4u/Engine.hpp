@@ -168,7 +168,8 @@ private:
 };
 
 #ifndef DOXYGEN /* Internal use only, no need to expose it */
-template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone* current, std::vector<T*>* whereto)
+template <class T>
+XBT_PRIVATE void get_filtered_netzones_recursive(const s4u::NetZone* current, std::vector<T*>* whereto)
 {
   static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
                 "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");

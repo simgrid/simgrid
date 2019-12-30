@@ -21,8 +21,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 /* Ensure that transfer tasks have unique names even though a file is used several times */
 void uniq_transfer_task_name(SD_task_t task)
 {
-  SD_task_t child = *(task->successors->begin());
-  SD_task_t parent = *(task->predecessors->begin());
+  const_SD_task_t child  = *(task->successors->begin());
+  const_SD_task_t parent = *(task->predecessors->begin());
 
   std::string new_name =
       std::string(SD_task_get_name(parent)) + "_" + SD_task_get_name(task) + "_" + SD_task_get_name(child);

@@ -46,9 +46,9 @@ public:
   void shutdown();
   void destroy() override;
 
-  Host* get_pm();
+  Host* get_pm() const;
   void set_pm(Host* pm);
-  size_t get_ramsize();
+  size_t get_ramsize() const;
   void set_ramsize(size_t ramsize);
   void set_bound(double bound);
 

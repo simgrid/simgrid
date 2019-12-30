@@ -126,7 +126,7 @@ static int l_host_at(lua_State * L)
  */
 static int l_host_get_property_value(lua_State * L)
 {
-  sg_host_t ht = sglua_check_host(L, 1);
+  const_sg_host_t ht = sglua_check_host(L, 1);
   const char *prop = luaL_checkstring(L, 2);
   lua_pushstring(L, sg_host_get_property_value(ht,prop));
   return 1;

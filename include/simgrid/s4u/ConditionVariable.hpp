@@ -55,7 +55,7 @@ public:
 
   std::cv_status wait_until(const std::unique_lock<Mutex>& lock, double timeout_time);
   std::cv_status wait_for(const std::unique_lock<Mutex>& lock, double duration);
-  template <class P> bool wait_until(std::unique_lock<Mutex> & lock, double timeout_time, P pred)
+  template <class P> bool wait_until(const std::unique_lock<Mutex>& lock, double timeout_time, P pred)
   {
     while (not pred())
       if (this->wait_until(lock, timeout_time) == std::cv_status::timeout)

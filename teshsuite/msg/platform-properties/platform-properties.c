@@ -70,7 +70,7 @@ static int david(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 static int bob(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   /* this host also tests the properties of the AS*/
-  msg_netzone_t root = MSG_zone_get_root();
+  const_sg_netzone_t root = MSG_zone_get_root();
   XBT_INFO("== Print the properties of the AS");
   XBT_INFO("   Process property: filename -> %s", MSG_zone_get_property_value(root, "filename"));
   XBT_INFO("   Process property: date -> %s", MSG_zone_get_property_value(root, "date"));

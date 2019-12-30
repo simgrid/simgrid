@@ -75,11 +75,12 @@ static void dump_links()
   unsigned int totalLinks    = sg_link_count();
   simgrid::s4u::Link** links = sg_link_list();
 
-  std::sort(links, links + totalLinks,
-            [](simgrid::s4u::Link* a, simgrid::s4u::Link* b) { return strcmp(sg_link_name(a), sg_link_name(b)) < 0; });
+  std::sort(links, links + totalLinks, [](const simgrid::s4u::Link* a, const simgrid::s4u::Link* b) {
+    return strcmp(sg_link_name(a), sg_link_name(b)) < 0;
+  });
 
   for (unsigned int i = 0; i < totalLinks; i++) {
-    simgrid::s4u::Link* link = links[i];
+    const simgrid::s4u::Link* link = links[i];
     std::printf("  <link id=\"");
 
     std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->get_cname(), link->get_bandwidth(), link->get_latency());
@@ -112,7 +113,7 @@ static void dump_routes()
   unsigned int totalHosts = sg_host_count();
   sg_host_t* hosts        = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
-            [](sg_host_t a, sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
+            [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
   std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
       simgrid::s4u::Engine::get_instance()->get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),

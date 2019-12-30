@@ -197,12 +197,12 @@ msg_process_t MSG_process_self()
 }
 
 /** @brief Take an extra reference on that process to prevent it to be garbage-collected */
-void MSG_process_ref(msg_process_t process)
+void MSG_process_ref(const_sg_actor_t process)
 {
   sg_actor_ref(process);
 }
 /** @brief Release a reference on that process so that it can get be garbage-collected */
-void MSG_process_unref(msg_process_t process)
+void MSG_process_unref(const_sg_actor_t process)
 {
   sg_actor_unref(process);
 }
@@ -216,7 +216,7 @@ sg_netzone_t MSG_zone_get_root()
 {
   return sg_zone_get_root();
 }
-const char* MSG_zone_get_name(sg_netzone_t zone)
+const char* MSG_zone_get_name(const_sg_netzone_t zone)
 {
   return sg_zone_get_name(zone);
 }
@@ -224,25 +224,25 @@ sg_netzone_t MSG_zone_get_by_name(const char* name)
 {
   return sg_zone_get_by_name(name);
 }
-void MSG_zone_get_sons(sg_netzone_t zone, xbt_dict_t whereto)
+void MSG_zone_get_sons(const_sg_netzone_t zone, xbt_dict_t whereto)
 {
   return sg_zone_get_sons(zone, whereto);
 }
-const char* MSG_zone_get_property_value(sg_netzone_t zone, const char* name)
+const char* MSG_zone_get_property_value(const_sg_netzone_t zone, const char* name)
 {
   return sg_zone_get_property_value(zone, name);
 }
-void MSG_zone_set_property_value(sg_netzone_t zone, const char* name, char* value)
+void MSG_zone_set_property_value(sg_netzone_t zone, const char* name, const char* value)
 {
   sg_zone_set_property_value(zone, name, value);
 }
-void MSG_zone_get_hosts(sg_netzone_t zone, xbt_dynar_t whereto)
+void MSG_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto)
 {
   sg_zone_get_hosts(zone, whereto);
 }
 
 /* ************************** Storages *************************** */
-const char* MSG_storage_get_name(sg_storage_t storage)
+const char* MSG_storage_get_name(const_sg_storage_t storage)
 {
   return sg_storage_get_name(storage);
 }
@@ -250,7 +250,7 @@ sg_storage_t MSG_storage_get_by_name(const char* name)
 {
   return sg_storage_get_by_name(name);
 }
-xbt_dict_t MSG_storage_get_properties(sg_storage_t storage)
+xbt_dict_t MSG_storage_get_properties(const_sg_storage_t storage)
 {
   return sg_storage_get_properties(storage);
 }
@@ -258,7 +258,7 @@ void MSG_storage_set_property_value(sg_storage_t storage, const char* name, cons
 {
   sg_storage_set_property_value(storage, name, value);
 }
-const char* MSG_storage_get_property_value(sg_storage_t storage, const char* name)
+const char* MSG_storage_get_property_value(const_sg_storage_t storage, const char* name)
 {
   return sg_storage_get_property_value(storage, name);
 }
@@ -270,11 +270,11 @@ void MSG_storage_set_data(sg_storage_t storage, void* data)
 {
   sg_storage_set_data(storage, data);
 }
-void* MSG_storage_get_data(sg_storage_t storage)
+void* MSG_storage_get_data(const_sg_storage_t storage)
 {
   return sg_storage_get_data(storage);
 }
-const char* MSG_storage_get_host(sg_storage_t storage)
+const char* MSG_storage_get_host(const_sg_storage_t storage)
 {
   return sg_storage_get_host(storage);
 }
@@ -414,11 +414,11 @@ void MSG_vm_set_ramsize(sg_vm_t vm, size_t size)
 {
   sg_vm_set_ramsize(vm, size);
 }
-size_t MSG_vm_get_ramsize(sg_vm_t vm)
+size_t MSG_vm_get_ramsize(const_sg_vm_t vm)
 {
   return sg_vm_get_ramsize(vm);
 }
-sg_host_t MSG_vm_get_pm(sg_vm_t vm)
+sg_host_t MSG_vm_get_pm(const_sg_vm_t vm)
 {
   return sg_vm_get_pm(vm);
 }
@@ -482,7 +482,7 @@ int MSG_sem_get_capacity(sg_sem_t sem)
 {
   return sg_sem_get_capacity(sem);
 }
-void MSG_sem_destroy(sg_sem_t sem)
+void MSG_sem_destroy(const_sg_sem_t sem)
 {
   sg_sem_destroy(sem);
 }

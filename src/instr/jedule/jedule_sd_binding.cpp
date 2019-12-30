@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule, "Logging specific to Jedule SD b
 
 jedule_t my_jedule;
 
-void jedule_log_sd_event(SD_task_t task)
+void jedule_log_sd_event(const_SD_task_t task)
 {
   xbt_assert(task != nullptr);
 
@@ -27,7 +27,7 @@ void jedule_log_sd_event(SD_task_t task)
 
 void jedule_sd_init()
 {
-  sg_netzone_t root_comp = simgrid::s4u::Engine::get_instance()->get_netzone_root();
+  const_sg_netzone_t root_comp = simgrid::s4u::Engine::get_instance()->get_netzone_root();
   XBT_DEBUG("root name %s\n", root_comp->get_cname());
 
   my_jedule = new simgrid::jedule::Jedule(root_comp->get_name());

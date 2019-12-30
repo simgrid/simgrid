@@ -45,10 +45,10 @@ public:
   /** @brief Get the physical host on which the given VM is running */
   s4u::Host* get_physical_host() { return physical_host_; }
 
-  sg_size_t get_ramsize() { return ramsize_; }
+  sg_size_t get_ramsize() const { return ramsize_; }
   void set_ramsize(sg_size_t ramsize) { ramsize_ = ramsize; }
 
-  s4u::VirtualMachine::state get_state() { return vm_state_; }
+  s4u::VirtualMachine::state get_state() const { return vm_state_; }
   void set_state(s4u::VirtualMachine::state state) { vm_state_ = state; }
 
   int get_core_amount() { return core_amount_; }

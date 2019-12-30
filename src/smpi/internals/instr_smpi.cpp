@@ -252,7 +252,7 @@ void TRACE_smpi_recv(int src, int dst, int tag)
 }
 
 /**************** Functions to trace the migration of tasks. *****************/
-void TRACE_smpi_process_change_host(int rank, sg_host_t new_host)
+void TRACE_smpi_process_change_host(int rank, const_sg_host_t new_host)
 {
   if (not TRACE_smpi_is_enabled()) return;
 

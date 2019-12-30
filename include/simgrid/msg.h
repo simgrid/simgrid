@@ -67,12 +67,12 @@ typedef enum {
 typedef sg_netzone_t msg_netzone_t;
 
 XBT_PUBLIC msg_netzone_t MSG_zone_get_root();
-XBT_PUBLIC const char* MSG_zone_get_name(msg_netzone_t zone);
+XBT_PUBLIC const char* MSG_zone_get_name(const_sg_netzone_t zone);
 XBT_PUBLIC msg_netzone_t MSG_zone_get_by_name(const char* name);
-XBT_PUBLIC void MSG_zone_get_sons(msg_netzone_t zone, xbt_dict_t whereto);
-XBT_PUBLIC const char* MSG_zone_get_property_value(msg_netzone_t zone, const char* name);
-XBT_PUBLIC void MSG_zone_set_property_value(msg_netzone_t zone, const char* name, char* value);
-XBT_PUBLIC void MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
+XBT_PUBLIC void MSG_zone_get_sons(const_sg_netzone_t zone, xbt_dict_t whereto);
+XBT_PUBLIC const char* MSG_zone_get_property_value(const_sg_netzone_t zone, const char* name);
+XBT_PUBLIC void MSG_zone_set_property_value(msg_netzone_t zone, const char* name, const char* value);
+XBT_PUBLIC void MSG_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto);
 
 /* ******************************** Hosts ************************************ */
 /** @brief Host datatype.
@@ -145,8 +145,8 @@ XBT_PUBLIC int MSG_vm_is_suspended(msg_vm_t vm);
 
 XBT_PUBLIC const char* MSG_vm_get_name(const_sg_vm_t vm);
 XBT_PUBLIC void MSG_vm_set_ramsize(msg_vm_t vm, size_t size);
-XBT_PUBLIC size_t MSG_vm_get_ramsize(msg_vm_t vm);
-XBT_PUBLIC msg_host_t MSG_vm_get_pm(msg_vm_t vm);
+XBT_PUBLIC size_t MSG_vm_get_ramsize(const_sg_vm_t vm);
+XBT_PUBLIC msg_host_t MSG_vm_get_pm(const_sg_vm_t vm);
 XBT_PUBLIC void MSG_vm_set_bound(msg_vm_t vm, double bound);
 
 XBT_PUBLIC void MSG_vm_start(msg_vm_t vm);
@@ -158,15 +158,15 @@ XBT_PUBLIC void MSG_vm_destroy(msg_vm_t vm);
 /* ******************************** Storage ********************************* */
 typedef sg_storage_t msg_storage_t;
 
-XBT_PUBLIC const char* MSG_storage_get_name(msg_storage_t storage);
+XBT_PUBLIC const char* MSG_storage_get_name(const_sg_storage_t storage);
 XBT_PUBLIC msg_storage_t MSG_storage_get_by_name(const char* name);
-XBT_PUBLIC xbt_dict_t MSG_storage_get_properties(msg_storage_t storage);
+XBT_PUBLIC xbt_dict_t MSG_storage_get_properties(const_sg_storage_t storage);
 XBT_PUBLIC void MSG_storage_set_property_value(msg_storage_t storage, const char* name, const char* value);
-XBT_PUBLIC const char* MSG_storage_get_property_value(msg_storage_t storage, const char* name);
+XBT_PUBLIC const char* MSG_storage_get_property_value(const_sg_storage_t storage, const char* name);
 XBT_PUBLIC xbt_dynar_t MSG_storages_as_dynar();
 XBT_PUBLIC void MSG_storage_set_data(msg_storage_t storage, void* data);
-XBT_PUBLIC void* MSG_storage_get_data(msg_storage_t storage);
-XBT_PUBLIC const char* MSG_storage_get_host(msg_storage_t storage);
+XBT_PUBLIC void* MSG_storage_get_data(const_sg_storage_t storage);
+XBT_PUBLIC const char* MSG_storage_get_host(const_sg_storage_t storage);
 XBT_PUBLIC sg_size_t MSG_storage_read(msg_storage_t storage, sg_size_t size);
 XBT_PUBLIC sg_size_t MSG_storage_write(msg_storage_t storage, sg_size_t size);
 
@@ -231,8 +231,8 @@ XBT_PUBLIC msg_process_t MSG_process_self();
 XBT_PUBLIC aid_t MSG_process_self_PID();
 XBT_PUBLIC aid_t MSG_process_self_PPID();
 XBT_PUBLIC const char* MSG_process_self_name();
-XBT_PUBLIC void MSG_process_ref(msg_process_t process);
-XBT_PUBLIC void MSG_process_unref(msg_process_t process);
+XBT_PUBLIC void MSG_process_ref(const_sg_actor_t process);
+XBT_PUBLIC void MSG_process_unref(const_sg_actor_t process);
 
 /** @brief Object representing an ongoing communication between processes.
  *
@@ -427,7 +427,7 @@ XBT_PUBLIC void MSG_sem_acquire(msg_sem_t sem);
 XBT_PUBLIC int MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
 XBT_PUBLIC void MSG_sem_release(msg_sem_t sem);
 XBT_PUBLIC int MSG_sem_get_capacity(msg_sem_t sem);
-XBT_PUBLIC void MSG_sem_destroy(msg_sem_t sem);
+XBT_PUBLIC void MSG_sem_destroy(const_sg_sem_t sem);
 XBT_PUBLIC int MSG_sem_would_block(msg_sem_t sem);
 
 /** @brief Opaque type representing a barrier identifier */

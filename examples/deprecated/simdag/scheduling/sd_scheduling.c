@@ -64,7 +64,7 @@ static xbt_dynar_t get_ready_tasks(const_xbt_dynar_t dax)
   return ready_tasks;
 }
 
-static double finish_on_at(SD_task_t task, const_sg_host_t host)
+static double finish_on_at(const_SD_task_t task, const_sg_host_t host)
 {
   double result;
 
@@ -112,7 +112,7 @@ static double finish_on_at(SD_task_t task, const_sg_host_t host)
   return result;
 }
 
-static sg_host_t SD_task_get_best_host(SD_task_t task)
+static sg_host_t SD_task_get_best_host(const_SD_task_t task)
 {
   sg_host_t *hosts = sg_host_list();
   int nhosts = sg_host_count();

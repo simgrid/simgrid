@@ -735,12 +735,12 @@ void sg_actor_self_execute(double flops)
 }
 
 /** @brief Take an extra reference on that actor to prevent it to be garbage-collected */
-void sg_actor_ref(sg_actor_t actor)
+void sg_actor_ref(const_sg_actor_t actor)
 {
   intrusive_ptr_add_ref(actor);
 }
 /** @brief Release a reference on that actor so that it can get be garbage-collected */
-void sg_actor_unref(sg_actor_t actor)
+void sg_actor_unref(const_sg_actor_t actor)
 {
   intrusive_ptr_release(actor);
 }
