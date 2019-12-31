@@ -15,8 +15,8 @@
 
 void yyerror(const char *s);
 
-static void new_state(char* id, int src);
-static void new_transition(char* id, xbt_automaton_exp_label_t label);
+static void new_state(const char* id, int src);
+static void new_transition(const char* id, xbt_automaton_exp_label_t label);
 
 %}
 

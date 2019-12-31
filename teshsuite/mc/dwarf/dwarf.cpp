@@ -55,7 +55,9 @@ static simgrid::mc::Variable* find_local_variable(
   return nullptr;
 }
 
-static void test_local_variable(simgrid::mc::ObjectInformation* info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
+static void test_local_variable(simgrid::mc::ObjectInformation* info, const char* function, const char* variable,
+                                const void* address, unw_cursor_t* cursor)
+{
   simgrid::mc::Frame* subprogram = find_function_by_name(info, function);
   assert(subprogram);
   // TODO, Lookup frame by IP and test against name instead
@@ -70,8 +72,8 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
   xbt_assert(location.address() == address, "Bad resolution of local variable %s of %s", variable, function);
 }
 
-static const simgrid::mc::Variable* test_global_variable(simgrid::mc::RemoteClient& process,
-                                                         simgrid::mc::ObjectInformation* info, const char* name,
+static const simgrid::mc::Variable* test_global_variable(const simgrid::mc::RemoteClient& process,
+                                                         const simgrid::mc::ObjectInformation* info, const char* name,
                                                          void* address, long byte_size)
 {
   const simgrid::mc::Variable* variable = info->find_variable(name);
@@ -102,7 +104,7 @@ struct s_foo {
   int i;
 };
 
-static void test_type_by_name(simgrid::mc::RemoteClient& process, s_foo /*my_foo*/)
+static void test_type_by_name(const simgrid::mc::RemoteClient& process, s_foo /*my_foo*/)
 {
   assert(process.binary_info->full_types_by_name.find("struct s_foo") != process.binary_info->full_types_by_name.end());
 }

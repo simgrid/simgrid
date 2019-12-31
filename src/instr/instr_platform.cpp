@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_routing, instr, "Tracing platform hierarch
 
 static std::vector<simgrid::instr::NetZoneContainer*> currentContainer; /* push and pop, used only in creation */
 
-static const char* instr_node_name(xbt_node_t node)
+static const char* instr_node_name(const s_xbt_node_t* node)
 {
   return static_cast<char*>(xbt_graph_node_get_data(node));
 }
@@ -490,7 +490,7 @@ void instr_new_value_for_user_state_type(const std::string& type_name, const cha
 
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
 
-static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+static void recursiveXBTGraphExtraction(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
                                         std::map<std::string, xbt_edge_t>* edges, const_sg_netzone_t netzone,
                                         container_t container)
 {

@@ -17,13 +17,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic imple
 /* ***************************************************************** */
 /* *********************** GENERIC METHODS ************************* */
 
-static const char* instr_node_name(xbt_node_t node)
+static const char* instr_node_name(const s_xbt_node_t* node)
 {
   const void* data = xbt_graph_node_get_data(node);
   return static_cast<const char*>(data);
 }
 
-xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char* name, std::map<std::string, xbt_node_t>* nodes)
+xbt_node_t new_xbt_graph_node(const s_xbt_graph_t* graph, const char* name, std::map<std::string, xbt_node_t>* nodes)
 {
   auto elm = nodes->find(name);
   if (elm == nodes->end()) {
@@ -34,7 +34,8 @@ xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char* name, std::map<std:
     return elm->second;
 }
 
-xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d, std::map<std::string, xbt_edge_t>* edges)
+xbt_edge_t new_xbt_graph_edge(const s_xbt_graph_t* graph, xbt_node_t s, xbt_node_t d,
+                              std::map<std::string, xbt_edge_t>* edges)
 {
   const char* sn = instr_node_name(s);
   const char* dn = instr_node_name(d);
@@ -63,7 +64,7 @@ RoutedZone::RoutedZone(NetZoneImpl* father, const std::string& name, resource::N
 {
 }
 
-void RoutedZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
                            std::map<std::string, xbt_edge_t>* edges)
 {
   std::vector<NetPoint*> vertices = get_vertices();

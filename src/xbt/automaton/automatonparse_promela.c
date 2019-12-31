@@ -19,7 +19,8 @@
 static xbt_automaton_t parsed_automaton;
 char* state_id_src;
 
-static void new_state(char* id, int src){
+static void new_state(const char* id, int src)
+{
   char* saveptr = NULL; // for strtok_r()
   char* id_copy = xbt_strdup(id);
   const char* first_part = strtok_r(id_copy, "_", &saveptr);
@@ -49,7 +50,7 @@ static void new_state(char* id, int src){
   }
 }
 
-static void new_transition(char* id, xbt_automaton_exp_label_t label)
+static void new_transition(const char* id, xbt_automaton_exp_label_t label)
 {
   new_state(id, 0);
   xbt_automaton_state_t state_dst = xbt_automaton_state_exists(parsed_automaton, id);

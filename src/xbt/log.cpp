@@ -125,8 +125,6 @@ void xbt_log_init(int *argc, char **argv)
 
 static void log_cat_exit(const s_xbt_log_category_t* cat)
 {
-  xbt_log_category_t child;
-
   if (cat->appender) {
     if (cat->appender->free_)
       cat->appender->free_(cat->appender);
@@ -138,7 +136,7 @@ static void log_cat_exit(const s_xbt_log_category_t* cat)
     xbt_free(cat->layout);
   }
 
-  for (child = cat->firstChild; child != nullptr; child = child->nextSibling)
+  for (auto const* child = cat->firstChild; child != nullptr; child = child->nextSibling)
     log_cat_exit(child);
 }
 
@@ -164,7 +162,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
              "Priority %d is greater than the biggest allowed value", ev->priority);
 
   while (1) {
-    xbt_log_appender_t appender = cat->appender;
+    const s_xbt_log_appender_t* appender = cat->appender;
 
     if (appender != nullptr) {
       xbt_assert(cat->layout, "No valid layout for the appender of category %s", cat->name);

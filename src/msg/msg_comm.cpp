@@ -82,7 +82,7 @@ int MSG_comm_test(msg_comm_t comm)
  * @return the position of the finished communication if any
  * (but it may have failed, use MSG_comm_get_status() to know its status), or -1 if none is finished
  */
-int MSG_comm_testany(xbt_dynar_t comms)
+int MSG_comm_testany(const_xbt_dynar_t comms)
 {
   int finished_index = -1;
 
@@ -159,7 +159,7 @@ void MSG_comm_waitall(msg_comm_t* comm, int nb_elem, double timeout)
  * @return the position of the first finished communication
  * (but it may have failed, use MSG_comm_get_status() to know its status)
  */
-int MSG_comm_waitany(xbt_dynar_t comms)
+int MSG_comm_waitany(const_xbt_dynar_t comms)
 {
   int finished_index = -1;
 

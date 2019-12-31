@@ -327,7 +327,8 @@ int xbt_automaton_exp_label_compare(const_xbt_automaton_exp_label_t l1, const_xb
   return res;
 }
 
-int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2){
+int xbt_automaton_propositional_symbols_compare_value(const_xbt_dynar_t s1, const_xbt_dynar_t s2)
+{
   unsigned int nb_elem = xbt_dynar_length(s1);
 
   for (unsigned int cursor = 0; cursor < nb_elem; cursor++) {

@@ -145,7 +145,7 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
   return (result);
 }
 
-void *__mmalloc_remap_core(xbt_mheap_t mdp)
+void* __mmalloc_remap_core(const s_xbt_mheap_t* mdp)
 {
   /* FIXME:  Quick hack, needs error checking and other attention. */
 

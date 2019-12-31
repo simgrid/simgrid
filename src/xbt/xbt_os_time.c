@@ -140,7 +140,7 @@ void xbt_os_timer_free(xbt_os_timer_t timer)
   free(timer);
 }
 
-double xbt_os_timer_elapsed(xbt_os_timer_t timer)
+double xbt_os_timer_elapsed(const_xbt_os_timer_t timer)
 {
 #if HAVE_POSIX_GETTIME && defined (_POSIX_THREAD_CPUTIME)
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) + ((double) timer->elapse.tv_sec ) +

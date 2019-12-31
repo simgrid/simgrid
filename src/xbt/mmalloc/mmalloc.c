@@ -50,7 +50,7 @@ static void *align(struct mdesc *mdp, size_t size)
 /** Initialize heapinfo about the heapinfo pages :)
  *
  */
-static void initialize_heapinfo_heapinfo(xbt_mheap_t mdp)
+static void initialize_heapinfo_heapinfo(const s_xbt_mheap_t* mdp)
 {
   // Update heapinfo about the heapinfo pages (!):
   xbt_assert((uintptr_t) mdp->heapinfo % BLOCKSIZE == 0);

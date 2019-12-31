@@ -107,20 +107,20 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
   int src_id = src->id();
   int dst_id = dst->id();
 
-  xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_);
+  const_xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
-  xbt_node_t src_elm = node_map_search(src_id);
-  xbt_node_t dst_elm = node_map_search(dst_id);
+  const s_xbt_node_t* src_elm = node_map_search(src_id);
+  const s_xbt_node_t* dst_elm = node_map_search(dst_id);
 
   int src_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(src_elm))->graph_id_;
   int dst_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(dst_elm))->graph_id_;
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
-    xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_node_id, xbt_node_t);
-    xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst_node_id, xbt_node_t);
-    xbt_edge_t edge     = xbt_graph_get_edge(route_graph_, node_s_v, node_e_v);
+    const s_xbt_node_t* node_s_v = xbt_dynar_get_as(nodes, src_node_id, xbt_node_t);
+    const s_xbt_node_t* node_e_v = xbt_dynar_get_as(nodes, dst_node_id, xbt_node_t);
+    const s_xbt_edge_t* edge     = xbt_graph_get_edge(route_graph_, node_s_v, node_e_v);
 
     if (edge == nullptr)
       throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
@@ -162,12 +162,12 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     while (not pqueue.empty()) {
       int v_id = pqueue.top().second;
       pqueue.pop();
-      xbt_node_t v_node = xbt_dynar_get_as(nodes, v_id, xbt_node_t);
+      const s_xbt_node_t* v_node = xbt_dynar_get_as(nodes, v_id, xbt_node_t);
       xbt_edge_t edge   = nullptr;
       unsigned int cursor;
 
       xbt_dynar_foreach (xbt_graph_node_get_outedges(v_node), cursor, edge) {
-        xbt_node_t u_node                  = xbt_graph_edge_get_target(edge);
+        const s_xbt_node_t* u_node           = xbt_graph_edge_get_target(edge);
         const GraphNodeData* data            = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
         int u_id                           = data->graph_id_;
         const RouteCreationArgs* tmp_e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
@@ -187,9 +187,9 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
   NetPoint* first_gw = nullptr;
 
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
-    xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
-    xbt_node_t node_v      = xbt_dynar_get_as(nodes, v, xbt_node_t);
-    xbt_edge_t edge        = xbt_graph_get_edge(route_graph_, node_pred_v, node_v);
+    const s_xbt_node_t* node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
+    const s_xbt_node_t* node_v      = xbt_dynar_get_as(nodes, v, xbt_node_t);
+    const s_xbt_edge_t* edge        = xbt_graph_get_edge(route_graph_, node_pred_v, node_v);
 
     if (edge == nullptr)
       throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));

@@ -77,7 +77,7 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   }
 }
 
-void ClusterZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+void ClusterZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
                             std::map<std::string, xbt_edge_t>* edges)
 {
   xbt_assert(router_,

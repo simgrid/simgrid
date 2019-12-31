@@ -385,11 +385,11 @@ XBT_PUBLIC void MSG_task_dsend_bounded(msg_task_t task, const char* alias, void_
 XBT_PUBLIC msg_comm_t MSG_task_irecv(msg_task_t* task, const char* alias);
 XBT_PUBLIC msg_comm_t MSG_task_irecv_bounded(msg_task_t* task, const char* alias, double rate);
 XBT_PUBLIC int MSG_comm_test(msg_comm_t comm);
-XBT_PUBLIC int MSG_comm_testany(xbt_dynar_t comms);
+XBT_PUBLIC int MSG_comm_testany(const_xbt_dynar_t comms);
 XBT_PUBLIC void MSG_comm_destroy(const_msg_comm_t comm);
 XBT_PUBLIC msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout);
 XBT_PUBLIC void MSG_comm_waitall(msg_comm_t* comm, int nb_elem, double timeout);
-XBT_PUBLIC int MSG_comm_waitany(xbt_dynar_t comms);
+XBT_PUBLIC int MSG_comm_waitany(const_xbt_dynar_t comms);
 XBT_PUBLIC msg_task_t MSG_comm_get_task(const_msg_comm_t comm);
 XBT_PUBLIC msg_error_t MSG_comm_get_status(const_msg_comm_t comm);
 

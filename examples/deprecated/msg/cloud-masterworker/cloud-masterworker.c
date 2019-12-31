@@ -70,7 +70,7 @@ static int master_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[]
   msg_vm_t vm;
   unsigned int i;
 
-  xbt_dynar_t worker_pms = MSG_process_get_data(MSG_process_self());
+  const_xbt_dynar_t worker_pms = MSG_process_get_data(MSG_process_self());
   int nb_workers = xbt_dynar_length(worker_pms);
 
   xbt_dynar_t vms = xbt_dynar_new(sizeof(msg_vm_t), NULL);
