@@ -38,5 +38,5 @@ tracker_task_data_t tracker_task_data_new(const char* issuer_host_name, const ch
                                           int downloaded, int left);
 void tracker_task_data_free(tracker_task_data_t task);
 
-int is_in_list(xbt_dynar_t peers, int id);
+int is_in_list(const_xbt_dynar_t peers, int id);
 #endif /* BITTORRENT_TRACKER_H */

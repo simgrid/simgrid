@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peer, "Messages specific for the peer");
 
-void peer_init_chain(peer_t peer, message_t msg)
+void peer_init_chain(peer_t peer, const s_message_t* msg)
 {
   peer->prev         = msg->prev_hostname;
   peer->next         = msg->next_hostname;
@@ -16,7 +16,7 @@ void peer_init_chain(peer_t peer, message_t msg)
   peer->init         = 1;
 }
 
-static void peer_forward_msg(peer_t peer, message_t msg)
+static void peer_forward_msg(const s_peer_t* peer, const s_message_t* msg)
 {
   msg_task_t task = task_message_data_new(NULL, msg->data_length);
   XBT_DEBUG("Sending (isend) from %s into mailbox %s", peer->me, peer->next);
@@ -27,7 +27,7 @@ static void peer_forward_msg(peer_t peer, message_t msg)
 int peer_execute_task(peer_t peer, msg_task_t task)
 {
   int done      = 0;
-  message_t msg = MSG_task_get_data(task);
+  const s_message_t* msg = MSG_task_get_data(task);
 
   XBT_DEBUG("Peer %s got message of type %u\n", peer->me, msg->type);
   if (msg->type == MESSAGE_BUILD_CHAIN)
@@ -97,7 +97,7 @@ void peer_init(peer_t p, int argc, char* argv[])
   }
 }
 
-void peer_shutdown(peer_t p)
+void peer_shutdown(const s_peer_t* p)
 {
   unsigned int size = xbt_dynar_length(p->pending_sends);
   unsigned int idx;
@@ -128,7 +128,7 @@ void peer_delete(peer_t p)
   xbt_free(p);
 }
 
-void peer_print_stats(peer_t p, float elapsed_time)
+void peer_print_stats(const s_peer_t* p, float elapsed_time)
 {
   XBT_INFO("### %f %llu bytes (Avg %f MB/s); copy finished (simulated).", elapsed_time, p->bytes,
            p->bytes / 1024.0 / 1024.0 / elapsed_time);

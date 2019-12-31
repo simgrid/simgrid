@@ -39,7 +39,7 @@ void connection_free(void* data)
   xbt_free(co);
 }
 
-int connection_has_piece(connection_t connection, unsigned int piece)
+int connection_has_piece(const s_connection_t* connection, unsigned int piece)
 {
   return (connection->bitfield & 1U << piece);
 }

@@ -35,5 +35,5 @@ connection_t connection_new(int id);
 void connection_add_speed_value(connection_t connection, double speed);
 /** Frees a connection object */
 void connection_free(void* data);
-int connection_has_piece(connection_t connection, unsigned int piece);
+int connection_has_piece(const s_connection_t* connection, unsigned int piece);
 #endif /* BITTORRENT_CONNECTION_H_ */

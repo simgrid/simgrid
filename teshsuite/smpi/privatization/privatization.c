@@ -5,14 +5,15 @@
 
 
 static int myvalue = 0;
-static void test_opts(int* argc, char **argv[]){
+static void test_opts(int argc, char* const argv[])
+{
   int found = 0;
   static struct option long_options[] = {
   {(char*)"long",     no_argument, 0,  0 },
   {0,         0,                 0,  0 }
   };
   while (1) {
-    int ret = getopt_long_only(*argc, *argv, "s", long_options, NULL);
+    int ret = getopt_long_only(argc, argv, "s", long_options, NULL);
     if(ret==-1)
       break;
 
@@ -38,7 +39,7 @@ int main(int argc, char **argv)
 
     MPI_Init(&argc, &argv);
     /* test getopt_long function */
-    test_opts(&argc, &argv);
+    test_opts(argc, argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &me);
 

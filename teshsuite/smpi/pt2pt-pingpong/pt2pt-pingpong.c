@@ -9,11 +9,11 @@
 #include <stdio.h>
 #include <mpi.h>
 
-static void test_opts(int* argc, char **argv[]){
+static void test_opts(int argc, char* const argv[])
+{
   int found = 0;
   int ret;
-  while ((ret = getopt(*argc, *argv, "s")) >= 0)
-  {
+  while ((ret = getopt(argc, argv, "s")) >= 0) {
     if (ret == 's')
       found = 1;
   }
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   int err = MPI_Init(&argc, &argv); /* Initialize MPI */
 
   /* test getopt function */
-  test_opts(&argc, &argv);
+  test_opts(argc, argv);
 
   if (err != MPI_SUCCESS) {
     printf("MPI initialization failed!\n");

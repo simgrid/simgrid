@@ -39,13 +39,13 @@ int count_pieces(unsigned int bitfield)
   return count;
 }
 
-int peer_has_not_piece(peer_t peer, unsigned int piece)
+int peer_has_not_piece(const s_peer_t* peer, unsigned int piece)
 {
   return !(peer->bitfield & 1U << piece);
 }
 
 /** Check that a piece is not currently being download by the peer. */
-int peer_is_not_downloading_piece(peer_t peer, unsigned int piece)
+int peer_is_not_downloading_piece(const s_peer_t* peer, unsigned int piece)
 {
   return !(peer->current_pieces & 1U << piece);
 }
@@ -174,7 +174,7 @@ void seed_loop(peer_t peer, double deadline)
 /** @brief Retrieves the peer list from the tracker
  *  @param peer current peer data
  */
-int get_peers_data(peer_t peer)
+int get_peers_data(const s_peer_t* peer)
 {
   int success    = 0;
   double timeout = MSG_get_clock() + GET_PEERS_TIMEOUT;
@@ -274,7 +274,7 @@ int has_finished(unsigned int bitfield)
   return bitfield == (1U << FILE_PIECES) - 1U;
 }
 
-int nb_interested_peers(peer_t peer)
+int nb_interested_peers(const s_peer_t* peer)
 {
   xbt_dict_cursor_t cursor = NULL;
   char* key;
@@ -287,7 +287,7 @@ int nb_interested_peers(peer_t peer)
   return nb;
 }
 
-void update_active_peers_set(peer_t peer, connection_t remote_peer)
+void update_active_peers_set(const s_peer_t* peer, connection_t remote_peer)
 {
   if ((remote_peer->interested != 0) && (remote_peer->choked_upload == 0)) {
     // add in the active peers set
@@ -450,7 +450,7 @@ void remove_current_piece(peer_t peer, connection_t remote_peer, unsigned int cu
  *  @param peer peer we want to update the list
  *  @param bitfield bitfield
  */
-void update_pieces_count_from_bitfield(peer_t peer, unsigned int bitfield)
+void update_pieces_count_from_bitfield(const s_peer_t* peer, unsigned int bitfield)
 {
   for (int i = 0; i < FILE_PIECES; i++) {
     if (bitfield & (1U << i)) {
@@ -469,7 +469,7 @@ void update_pieces_count_from_bitfield(peer_t peer, unsigned int bitfield)
  * @param remote_peer: information about the connection
  * @return the piece to download if possible. -1 otherwise
  */
-int select_piece_to_download(peer_t peer, connection_t remote_peer)
+int select_piece_to_download(const s_peer_t* peer, const s_connection_t* remote_peer)
 {
   int piece = partially_downloaded_piece(peer, remote_peer);
   // strict priority policy
@@ -670,7 +670,7 @@ void update_choked_peers(peer_t peer)
 /** @brief Update "interested" state of peers: send "not interested" to peers that don't have any more pieces we want.
  *  @param peer our peer data
  */
-void update_interested_after_receive(peer_t peer)
+void update_interested_after_receive(const s_peer_t* peer)
 {
   char* key;
   xbt_dict_cursor_t cursor;
@@ -703,7 +703,7 @@ void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_l
 }
 
 /** Returns if a peer has completed the download of a piece */
-int piece_complete(peer_t peer, int index)
+int piece_complete(const s_peer_t* peer, int index)
 {
   for (int i = 0; i < PIECES_BLOCKS; i++) {
     if (!(peer->bitfield_blocks & 1ULL << (index * PIECES_BLOCKS + i))) {
@@ -714,7 +714,7 @@ int piece_complete(peer_t peer, int index)
 }
 
 /** Returns the first block that a peer doesn't have in a piece. If the peer has all blocks of the piece, returns -1. */
-int get_first_block(peer_t peer, int piece)
+int get_first_block(const s_peer_t* peer, int piece)
 {
   for (int i = 0; i < PIECES_BLOCKS; i++) {
     if (!(peer->bitfield_blocks & 1ULL << (piece * PIECES_BLOCKS + i))) {
@@ -725,13 +725,13 @@ int get_first_block(peer_t peer, int piece)
 }
 
 /** Indicates if the remote peer has a piece not stored by the local peer */
-int is_interested(peer_t peer, connection_t remote_peer)
+int is_interested(const s_peer_t* peer, const s_connection_t* remote_peer)
 {
   return remote_peer->bitfield & (peer->bitfield ^ ((1 << FILE_PIECES) - 1));
 }
 
 /** Indicates if the remote peer has a piece not stored by the local peer nor requested by the local peer */
-int is_interested_and_free(peer_t peer, connection_t remote_peer)
+int is_interested_and_free(const s_peer_t* peer, const s_connection_t* remote_peer)
 {
   for (int i = 0; i < FILE_PIECES; i++) {
     if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) && peer_is_not_downloading_piece(peer, i)) {
@@ -742,7 +742,7 @@ int is_interested_and_free(peer_t peer, connection_t remote_peer)
 }
 
 /** Returns a piece that is partially downloaded and stored by the remote peer if any -1 otherwise. */
-int partially_downloaded_piece(peer_t peer, connection_t remote_peer)
+int partially_downloaded_piece(const s_peer_t* peer, const s_connection_t* remote_peer)
 {
   for (int i = 0; i < FILE_PIECES; i++) {
     if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) && peer_is_not_downloading_piece(peer, i) &&
@@ -756,7 +756,7 @@ int partially_downloaded_piece(peer_t peer, connection_t remote_peer)
  *  @param peer peer
  *  @param remote_peer peer data to the peer we want to send the request
  */
-void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece)
+void send_request_to_peer(const s_peer_t* peer, connection_t remote_peer, int piece)
 {
   remote_peer->current_piece = piece;
   xbt_assert(connection_has_piece(remote_peer, piece));
@@ -777,7 +777,7 @@ void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece)
  *  @param peer peer data
  *  @param mailbox destination mailbox
  */
-void send_interested(peer_t peer, const char* mailbox)
+void send_interested(const s_peer_t* peer, const char* mailbox)
 {
   msg_task_t task = task_message_new(MESSAGE_INTERESTED, peer->hostname, peer->mailbox, peer->id,
                                      task_message_size(MESSAGE_INTERESTED));
@@ -789,7 +789,7 @@ void send_interested(peer_t peer, const char* mailbox)
  *  @param peer peer data
  *  @param mailbox destination mailbox
  */
-void send_notinterested(peer_t peer, const char* mailbox)
+void send_notinterested(const s_peer_t* peer, const char* mailbox)
 {
   msg_task_t task = task_message_new(MESSAGE_NOTINTERESTED, peer->hostname, peer->mailbox, peer->id,
                                      task_message_size(MESSAGE_NOTINTERESTED));
@@ -800,7 +800,7 @@ void send_notinterested(peer_t peer, const char* mailbox)
 /** @brief Send a handshake message to all the peers the peer has.
  *  @param peer peer data
  */
-void send_handshake_all(peer_t peer)
+void send_handshake_all(const s_peer_t* peer)
 {
   connection_t remote_peer;
   xbt_dict_cursor_t cursor = NULL;
@@ -817,7 +817,7 @@ void send_handshake_all(peer_t peer)
  *  @param peer peer data
  *  @param mailbox mailbox where to we send the message
  */
-void send_handshake(peer_t peer, const char* mailbox)
+void send_handshake(const s_peer_t* peer, const char* mailbox)
 {
   XBT_DEBUG("Sending a HANDSHAKE to %s", mailbox);
   msg_task_t task = task_message_new(MESSAGE_HANDSHAKE, peer->hostname, peer->mailbox, peer->id,
@@ -826,7 +826,7 @@ void send_handshake(peer_t peer, const char* mailbox)
 }
 
 /** Send a "choked" message to a peer. */
-void send_choked(peer_t peer, const char* mailbox)
+void send_choked(const s_peer_t* peer, const char* mailbox)
 {
   XBT_DEBUG("Sending a CHOKE to %s", mailbox);
   msg_task_t task =
@@ -835,7 +835,7 @@ void send_choked(peer_t peer, const char* mailbox)
 }
 
 /** Send a "unchoked" message to a peer */
-void send_unchoked(peer_t peer, const char* mailbox)
+void send_unchoked(const s_peer_t* peer, const char* mailbox)
 {
   XBT_DEBUG("Sending a UNCHOKE to %s", mailbox);
   msg_task_t task =
@@ -844,7 +844,7 @@ void send_unchoked(peer_t peer, const char* mailbox)
 }
 
 /** Send a "HAVE" message to all peers we are connected to */
-void send_have(peer_t peer, int piece)
+void send_have(const s_peer_t* peer, int piece)
 {
   XBT_DEBUG("Sending HAVE message to all my peers");
   connection_t remote_peer;
@@ -860,7 +860,7 @@ void send_have(peer_t peer, int piece)
 /** @brief Send a bitfield message to all the peers the peer has.
  *  @param peer peer data
  */
-void send_bitfield(peer_t peer, const char* mailbox)
+void send_bitfield(const s_peer_t* peer, const char* mailbox)
 {
   XBT_DEBUG("Sending a BITFIELD to %s", mailbox);
   msg_task_t task = task_message_bitfield_new(peer->hostname, peer->mailbox, peer->id, peer->bitfield, FILE_PIECES);
@@ -868,7 +868,7 @@ void send_bitfield(peer_t peer, const char* mailbox)
 }
 
 /** Send a "request" message to a pair, containing a request for a piece */
-void send_request(peer_t peer, const char* mailbox, int piece, int block_index, int block_length)
+void send_request(const s_peer_t* peer, const char* mailbox, int piece, int block_index, int block_length)
 {
   XBT_DEBUG("Sending a REQUEST to %s for piece %d (%d,%d)", mailbox, piece, block_index, block_length);
   msg_task_t task = task_message_request_new(peer->hostname, peer->mailbox, peer->id, piece, block_index, block_length);
@@ -876,7 +876,7 @@ void send_request(peer_t peer, const char* mailbox, int piece, int block_index, 
 }
 
 /** Send a "piece" message to a pair, containing a piece of the file */
-void send_piece(peer_t peer, const char* mailbox, int piece, int block_index, int block_length)
+void send_piece(const s_peer_t* peer, const char* mailbox, int piece, int block_index, int block_length)
 {
   XBT_DEBUG("Sending the PIECE %d (%d,%d) to %s", piece, block_index, block_length, mailbox);
   xbt_assert(piece >= 0, "Tried to send a piece that doesn't exist.");

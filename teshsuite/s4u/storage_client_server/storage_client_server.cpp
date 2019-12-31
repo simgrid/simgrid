@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 
-static void display_disk_properties(simgrid::s4u::Disk* disk)
+static void display_disk_properties(const simgrid::s4u::Disk* disk)
 {
   const std::unordered_map<std::string, std::string>* props = disk->get_properties();
   if (not props->empty()) {
@@ -57,7 +57,7 @@ static void hsm_put(const std::string& remote_host, const std::string& src, cons
   simgrid::s4u::this_actor::sleep_for(.4);
 }
 
-static void display_disk_content(simgrid::s4u::Disk* disk)
+static void display_disk_content(const simgrid::s4u::Disk* disk)
 {
   XBT_INFO("*** Dump a disk ***");
   XBT_INFO("Print the content of the disk: %s", disk->get_cname());
@@ -92,7 +92,7 @@ static void dump_platform_disks()
     }
 }
 
-static void disk_info(simgrid::s4u::Host* host)
+static void disk_info(const simgrid::s4u::Host* host)
 {
   XBT_INFO("*** Disk info on %s ***", host->get_cname());
 

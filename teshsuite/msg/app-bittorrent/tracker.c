@@ -41,7 +41,7 @@ int tracker(int argc, char* argv[])
         // Retrieve the data sent by the peer.
         tracker_task_data_t data = MSG_task_get_data(task_received);
         // Add the peer to our peer list.
-        if (is_in_list(peers_list, data->peer_id) == 0) {
+        if (!is_in_list(peers_list, data->peer_id)) {
           xbt_dynar_push_as(peers_list, int, data->peer_id);
         }
         // Sending peers to the peer
@@ -126,7 +126,7 @@ void tracker_task_data_free(tracker_task_data_t task)
  * @param peers dynar containing the peers
  * @param id identifier of the peer to test
  */
-int is_in_list(xbt_dynar_t peers, int id)
+int is_in_list(const_xbt_dynar_t peers, int id)
 {
   return xbt_dynar_member(peers, &id);
 }

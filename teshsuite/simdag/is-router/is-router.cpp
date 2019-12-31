@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
       simgrid::s4u::Engine::get_instance()->get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),
-            [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
+            [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
             });
 
