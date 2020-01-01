@@ -1,6 +1,6 @@
 /* Change the size of a block allocated by `mmalloc'. */
 
-/* Copyright (c) 2010-2019. The SimGrid Team.
+/* Copyright (c) 2010-2020. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

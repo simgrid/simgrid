@@ -1,6 +1,6 @@
 /* A simple example ping-pong program to test MPI_Send and MPI_Recv */
 
-/* Copyright (c) 2009-2019. The SimGrid Team.
+/* Copyright (c) 2009-2020. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

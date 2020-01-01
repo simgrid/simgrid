@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2019. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -81,7 +81,7 @@ int PMPI_Get_version (int *version,int *subversion){
 
 int PMPI_Get_library_version (char *version,int *len){
   smpi_bench_end();
-  snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The Simgrid Team 2007-2019",
+  snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The SimGrid Team 2007-2020",
            SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR);
   *len = strlen(version) > MPI_MAX_LIBRARY_VERSION_STRING ? MPI_MAX_LIBRARY_VERSION_STRING : strlen(version);
   smpi_bench_begin();

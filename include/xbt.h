@@ -1,6 +1,6 @@
 /* xbt.h - Public interface to the xbt (SimGrid's toolbox)                  */
 
-/* Copyright (c) 2004-2019. The SimGrid Team.
+/* Copyright (c) 2004-2020. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

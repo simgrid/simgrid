@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2014-2019. The SimGrid Team. All rights reserved.
+# Copyright (c) 2014-2020. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -242,7 +242,7 @@ def header(name):
     fd.write(
         '/* change simcalls specification in src/simix/simcalls.in             */\n')
     fd.write(
-        '/* Copyright (c) 2014-2019. The SimGrid Team. All rights reserved.    */\n')
+        '/* Copyright (c) 2014-2020. The SimGrid Team. All rights reserved.    */\n')
     fd.write(
         '/**********************************************************************/\n\n')
     fd.write('/*\n')

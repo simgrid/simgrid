@@ -1,6 +1,6 @@
 # Search for libunwind and components, both includes and libraries
 #
-# Copyright (C) 2003-2019 The SimGrid Team.
+# Copyright (C) 2003-2020 The SimGrid Team.
 # This is distributed under the LGPL licence but please contact us for
 # relicensing if you need. This is merely free software, no matter the licence.
 #
