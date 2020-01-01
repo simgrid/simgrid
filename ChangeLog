@@ -23,6 +23,23 @@ XBT:
 - Remove unused parameter 'free_ctn' for xbt_dict_set() and xbt_dict_set_ext().
 - New module: random, providing classical random numbers generators.
 
+SMPI:
+- New option : "smpi/auto-shared-malloc-thresh" which sets a value for 
+  allocations' size above which they are considered "shared" by default (as if 
+  they were performed through SMPI_SHARED_MALLOC macros). 
+  Default = 0 = disabled feature.
+  Note : malloc, calloc and free are now overriden by smpicc/cxx by default.
+  This can cause some troubles if codes are already overriding these. If this
+  is the case, defining SMPI_NO_OVERRIDE_MALLOC in the compilation flags can
+  help, but will make this feature unusable.
+- Input check is now performed much more consistently and outputs precise
+  warnings for each error found
+- New supported calls : MPI_File_set_view, MPI_File_get_view
+- MPI I/O now only supports disks, as storage is discontinued.
+- MPI I/O allows opening files without specifying absolute path
+- Note : SMPI configuration options are now initialized by smpi_init_options()
+  call, which should be called if SMPI is not being used through smpirun.
+
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - GH#31: [MC] please provide an option to make MPI_Send asynchronous
  - GH#305: Unscheduled tasks are still excuted
@@ -30,6 +47,8 @@ Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - GH#321: [S4U] Get task remaining work ratio
  - GH#323: Crash when an actor turn off his physical host
  - FG!19: Removing RngStream
+ - https://lists.gforge.inria.fr/pipermail/simgrid-user/2019-November/004653.html : 
+   MPI_Cart_sub was not working properly. Kudos to Jonathan Borne for the report.
 
 ----------------------------------------------------------------------------
 
