@@ -54,7 +54,7 @@ static int master_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
 {
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_host_t pm1 = MSG_host_by_name("Tremblay");
-  const sg_host_t pm2 = MSG_host_by_name("Bourassa");
+  const_sg_host_t pm2 = MSG_host_by_name("Bourassa");
 
   msg_vm_t vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_set_ramsize(vm0, 1e9); // 1Gbytes
