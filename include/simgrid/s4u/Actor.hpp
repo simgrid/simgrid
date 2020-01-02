@@ -84,9 +84,12 @@ public:
 #endif
 
   /** Signal indicating that an actor terminated its code.
+   *  @beginrst
    *  The actor may continue to exist if it is still referenced in the simulation, but it's not active anymore.
-   *  If you want to free extra data when the actor's destructor is called, use Actor::on_destruction.
-   *  If you want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
+   *  If you want to free extra data when the actor's destructor is called, use :cpp:var:`Actor::on_destruction`.
+   *  If you want to register to the termination of a given actor, use :cpp:func:`this_actor::on_exit()` instead.
+   *  @endrst
+   */
   static xbt::signal<void(Actor const&)> on_termination;
   /** Signal indicating that an actor is about to disappear (its destructor was called).
    *  This signal is fired for any destructed actor, which is mostly useful when designing plugins and extensions.
@@ -373,8 +376,6 @@ XBT_PUBLIC void set_host(Host* new_host);
 #ifndef DOXYGEN
 XBT_ATTRIB_DEPRECATED_v329("Please use set_host() instead") XBT_PUBLIC void migrate(Host* new_host);
 #endif
-
-/** @} */
 }
 
 

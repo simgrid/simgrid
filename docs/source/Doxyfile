@@ -29,9 +29,11 @@ GENERATE_LATEX         = NO
 FULL_PATH_NAMES        = NO # Don't leak the path on which it was built
 XML_PROGRAMLISTING     = NO # No program listings, please
 CREATE_SUBDIRS         = NO # Mandatory for exhale
+AUTOLINK_SUPPORT       = NO # Don't try to link words that correspond to documented classes to their corresponding doc
 
 # Allow for rst directives and advanced functions e.g. grid tables
-ALIASES                = "beginrst=\verbatim embed:rst"
+ALIASES                = "beginrst=\verbatim embed:rst:leading-asterisk"
+ALIASES               += "rst=\verbatim "
 ALIASES               += "endrst=\endverbatim"
 
 # Enable preprocessing and related preprocessor necessities
@@ -39,6 +41,8 @@ ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = NO
 SKIP_FUNCTION_MACROS   = NO
+
+QUIET=YES
 
 PREDEFINED             += \
     __cplusplus \
@@ -55,5 +59,6 @@ PREDEFINED             += \
     XBT_PRIVATE= \
     XBT_ATTRIB_NORETURN= \
     XBT_ATTRIB_UNUSED= \
+    XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s,c,l)= \
     XBT_ATTRIB_DEPRECATED_v328(m)= \
     XBT_ATTRIB_DEPRECATED_v329(m)=

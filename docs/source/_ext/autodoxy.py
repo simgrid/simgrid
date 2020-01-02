@@ -238,6 +238,7 @@ class DoxygenDocumenter(Documenter):
         directive = getattr(self, 'directivetype', self.objtype)
         name = self.format_name()
         sourcename = self.get_sourcename()
+        #print('.. %s:%s:: %s%s' % (domain, directive, name, sig))
         self.add_line(u'.. %s:%s:: %s%s' % (domain, directive, name, sig),
                       sourcename)
 

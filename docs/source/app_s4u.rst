@@ -430,8 +430,8 @@ Creating actors
       .. autodoxymethod:: sg_actor_init(const char *name, sg_host_t host)
       .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char **argv)
 
-      .. autodoxymethod:: ::sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
-      .. autodoxymethod:: ::sg_actor_detach()
+      .. autodoxymethod:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
+      .. autodoxymethod:: sg_actor_detach()
 
       .. autodoxymethod:: sg_actor_ref(sg_actor_t actor)
       .. autodoxymethod:: sg_actor_unref(sg_actor_t actor)
@@ -943,7 +943,7 @@ Synchronization Objects
 
       .. group-tab:: C++
 
-         .. autodoxymethod:: simgrid::s4u::Barrier::Barrier(unsigned int count)
+         .. autodoxymethod:: simgrid::s4u::Barrier::Barrier(unsigned int expected_actors)
          .. autodoxymethod:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
          .. autodoxymethod:: simgrid::s4u::Barrier::wait()
 

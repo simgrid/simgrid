@@ -30,7 +30,7 @@ private:
 
 public:
   /** Creates a barrier for the given amount of actors */
-  explicit Barrier(unsigned int expected_processes) : expected_actors_(expected_processes) {}
+  explicit Barrier(unsigned int expected_actors) : expected_actors_(expected_actors) {}
 #ifndef DOXYGEN
   ~Barrier()              = default;
   Barrier(Barrier const&) = delete;
