@@ -44,7 +44,7 @@ bool Node::join(unsigned int known_id)
       const Message* msg = static_cast<Message*>(received_msg);
       node_list    = msg->answer_;
       if (node_list) {
-        for (auto contact : node_list->nodes)
+        for (auto const& contact : node_list->getNodes())
           routingTableUpdate(contact.first);
       } else {
         handleFindNode(msg);
@@ -98,7 +98,7 @@ unsigned int Node::sendFindNodeToBest(const Answer* node_list)
   unsigned int i           = 0;
   unsigned int j           = 0;
   unsigned int destination = node_list->getDestinationId();
-  for (auto node_to_query : node_list->nodes) {
+  for (auto const& node_to_query : node_list->getNodes()) {
     /* We need to have at most "KADEMLIA_ALPHA" requests each time, according to the protocol */
     /* Gets the node we want to send the query to */
     if (node_to_query.first != id_) { /* No need to query ourselves */
@@ -168,7 +168,6 @@ Answer* Node::findClosest(unsigned int destination_id)
     }
   }
   /* We trim the array to have only BUCKET_SIZE or less elements */
-  std::sort(answer->nodes.begin(), answer->nodes.end(), sortbydistance);
   answer->trim();
 
   return answer;
@@ -211,13 +210,13 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
         if (msg->answer_ && msg->answer_->getDestinationId() == id_to_find) {
           routingTableUpdate(msg->sender_id_);
           // Handle the answer
-          for (auto contact : node_list->nodes)
+          for (auto const& contact : node_list->getNodes())
             routingTableUpdate(contact.first);
           answers++;
 
           nodes_added = node_list->merge(msg->answer_);
           XBT_DEBUG("Received an answer from %s (%s) with %zu nodes on it", msg->answer_to_->get_cname(),
-                    msg->issuer_host_name_.c_str(), msg->answer_->nodes.size());
+                    msg->issuer_host_name_.c_str(), msg->answer_->getSize());
         } else {
           if (msg->answer_) {
             routingTableUpdate(msg->sender_id_);

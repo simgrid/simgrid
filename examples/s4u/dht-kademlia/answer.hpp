@@ -12,23 +12,21 @@
 #include <set>
 
 namespace kademlia {
-bool sortbydistance(const std::pair<unsigned int, unsigned int>& a, const std::pair<unsigned int, unsigned int>& b);
-
 /* Node query answer. contains the elements closest to the id given. */
 class Answer {
   unsigned int destination_id_;
-  unsigned int size_ = 0;
+  std::vector<std::pair<unsigned int, unsigned int>> nodes_;
 
 public:
-  std::vector<std::pair<unsigned int, unsigned int>> nodes;
   explicit Answer(unsigned int destination_id) : destination_id_(destination_id) {}
   virtual ~Answer() = default;
   unsigned int getDestinationId() const { return destination_id_; }
-  unsigned int getSize() { return size_; }
+  size_t getSize() const { return nodes_.size(); }
+  const std::vector<std::pair<unsigned int, unsigned int>>& getNodes() const { return nodes_; }
   void print();
   unsigned int merge(const Answer* a);
   void trim();
-  bool destinationFound();
+  bool destinationFound() const;
   void addBucket(const kademlia::Bucket* bucket);
 };
 }

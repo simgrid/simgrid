@@ -10,17 +10,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(kademlia_node);
 
 namespace kademlia {
 
-bool sortbydistance(const std::pair<unsigned int, unsigned int>& a, const std::pair<unsigned int, unsigned int>& b)
-{
-  return (a.second < b.second);
-}
-
 /** @brief Prints a answer_t, for debugging purposes */
 void Answer::print()
 {
-  XBT_INFO("Searching %08x, size %u", destination_id_, size_);
+  XBT_INFO("Searching %08x, size %zu", destination_id_, nodes_.size());
   unsigned int i = 0;
-  for (auto contact : nodes)
+  for (auto const& contact : nodes_)
     XBT_INFO("Node %08x: %08x is at distance %u", i++, contact.first, contact.second);
 }
 
@@ -33,14 +28,12 @@ unsigned int Answer::merge(const Answer* source)
     return 0;
 
   unsigned int nb_added = 0;
-  for (auto contact : source->nodes) {
-    if (std::find(nodes.begin(), nodes.end(), contact) == nodes.end()) {
-      nodes.push_back(contact);
-      size_++;
+  for (auto const& contact : source->nodes_) {
+    if (std::find(nodes_.begin(), nodes_.end(), contact) == nodes_.end()) {
+      nodes_.push_back(contact);
       nb_added++;
     }
   }
-  std::sort(nodes.begin(), nodes.end(), sortbydistance);
   trim();
   return nb_added;
 }
@@ -48,22 +41,21 @@ unsigned int Answer::merge(const Answer* source)
 /** @brief Trims an Answer, in order for it to have a size of less or equal to "bucket_size" */
 void Answer::trim()
 {
-  while (size_ > BUCKET_SIZE) {
-    nodes.pop_back();
-    size_--;
-  }
-  xbt_assert(nodes.size() == size_, "Wrong size for the answer");
+  // sort by distance
+  std::sort(nodes_.begin(), nodes_.end(),
+            [](const std::pair<unsigned int, unsigned int>& a, const std::pair<unsigned int, unsigned int>& b) {
+              return (a.second < b.second);
+            });
+  if (nodes_.size() > BUCKET_SIZE)
+    nodes_.resize(BUCKET_SIZE);
 }
 
 /** @brief Returns if the destination we are trying to find is found
   * @return if the destination is found.
   */
-bool Answer::destinationFound()
+bool Answer::destinationFound() const
 {
-  if (nodes.empty())
-    return 0;
-
-  return (*nodes.begin()).second == 0;
+  return not nodes_.empty() && nodes_.begin()->second == 0;
 }
 
 /** @brief Adds the content of a bucket unsigned into a answer object.
@@ -73,10 +65,9 @@ void Answer::addBucket(const Bucket* bucket)
 {
   xbt_assert((bucket != nullptr), "Provided a NULL bucket");
 
-  for (auto id : bucket->nodes) {
+  for (auto const& id : bucket->nodes) {
     unsigned int distance = id ^ destination_id_;
-    nodes.push_back(std::pair<unsigned int, unsigned int>(id, distance));
-    size_++;
+    nodes_.push_back(std::pair<unsigned int, unsigned int>(id, distance));
   }
 }
 }
