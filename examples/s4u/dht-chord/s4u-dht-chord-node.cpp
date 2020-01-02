@@ -314,7 +314,7 @@ int Node::findSuccessor(int id)
 int Node::remoteFindSuccessor(int ask_to, int id)
 {
   int successor                           = -1;
-  void* data                              = nullptr;
+  ChordMessage* data                      = nullptr;
   simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
   simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_succ");
 
@@ -333,18 +333,18 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   }
   // receive the answer
   XBT_DEBUG("Sent a 'Find Successor' request to %d for key %d, waiting for the answer", ask_to, id);
-  simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
+  simgrid::s4u::CommPtr comm = return_mailbox->get_async(reinterpret_cast<void**>(&data));
 
   try {
     comm->wait_for(timeout);
-    const ChordMessage* answer = static_cast<ChordMessage*>(data);
+    const ChordMessage* answer = data;
     XBT_DEBUG("Received the answer to my 'Find Successor' request for id %d: the successor of key %d is %d",
               answer->request_id, id_, answer->answer_id);
     successor = answer->answer_id;
     delete answer;
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request");
-    delete static_cast<ChordMessage*>(data);
+    delete data;
   }
 
   return successor;
