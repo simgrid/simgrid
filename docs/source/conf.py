@@ -144,3 +144,7 @@ html_context = {
     "gitlab_version": "master",  # Version
     "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
 }
+
+# -- Other options
+
+nitpicky = True # Generate a warning for all a cross-reference (such as :func:`myfunc`) that cannot be found
