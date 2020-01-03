@@ -181,22 +181,26 @@ public:
  * In other words: The logic goes here, the setup is done by the ActionArgParser.
  */
 template <class T> class ReplayAction {
+  const std::string name_;
+  const aid_t my_proc_id_ = s4u::this_actor::get_pid();
+  T args_;
+
 protected:
-  const std::string name;
-  const aid_t my_proc_id = s4u::this_actor::get_pid();
-  T args;
+  const std::string& get_name() const { return name_; }
+  aid_t get_pid() const { return my_proc_id_; }
+  const T& get_args() const { return args_; }
 
 public:
-  explicit ReplayAction(const std::string& name) : name(name) {}
+  explicit ReplayAction(const std::string& name) : name_(name) {}
   virtual ~ReplayAction() = default;
 
   void execute(xbt::ReplayAction& action)
   {
     // Needs to be re-initialized for every action, hence here
     double start_time = smpi_process()->simulated_elapsed();
-    args.parse(action, name);
+    args_.parse(action, name_);
     kernel(action);
-    if (name != "Init")
+    if (name_ != "Init")
       log_timed_action(action, start_time);
   }
 

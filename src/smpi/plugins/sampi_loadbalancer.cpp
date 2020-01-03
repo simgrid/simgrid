@@ -54,7 +54,7 @@ public:
     simgrid::s4u::Host* cur_host = simgrid::s4u::this_actor::get_host();
     simgrid::s4u::Host* migrate_to_host;
 
-    TRACE_migration_call(my_proc_id, nullptr);
+    TRACE_migration_call(get_pid(), nullptr);
 
     // We only migrate every "cfg_migration_frequency"-times, not at every call
     migration_call_counter[simgrid::s4u::Actor::self()]++;
@@ -68,7 +68,7 @@ public:
     static bool was_executed = false;
     if (not was_executed) {
       was_executed = true;
-      XBT_DEBUG("Process %li runs the load balancer", my_proc_id);
+      XBT_DEBUG("Process %li runs the load balancer", get_pid());
       smpi_bench_begin();
       lb.run();
       smpi_bench_end();
@@ -82,7 +82,7 @@ public:
     if (cur_host != migrate_to_host) { // Origin and dest are not the same -> migrate
       std::vector<simgrid::s4u::Host*> migration_hosts = {cur_host, migrate_to_host};
       std::vector<double> comp_amount                  = {0, 0};
-      std::vector<double> comm_amount = {0, /*must not be 0*/ std::max(args.memory_consumption, 1.0), 0, 0};
+      std::vector<double> comm_amount = {0, /*must not be 0*/ std::max(get_args().memory_consumption, 1.0), 0, 0};
 
       xbt_os_timer_t timer = smpi_process()->timer();
       xbt_os_threadtimer_start(timer);
@@ -91,8 +91,8 @@ public:
       smpi_execute(xbt_os_timer_elapsed(timer));
 
       // Update the process and host mapping in SimGrid.
-      XBT_DEBUG("Migrating process %li from %s to %s", my_proc_id, cur_host->get_cname(), migrate_to_host->get_cname());
-      TRACE_smpi_process_change_host(my_proc_id, migrate_to_host);
+      XBT_DEBUG("Migrating process %li from %s to %s", get_pid(), cur_host->get_cname(), migrate_to_host->get_cname());
+      TRACE_smpi_process_change_host(get_pid(), migrate_to_host);
       simgrid::s4u::this_actor::set_host(migrate_to_host);
     }
 

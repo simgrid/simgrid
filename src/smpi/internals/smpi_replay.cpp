@@ -411,6 +411,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
 {
   std::string s = boost::algorithm::join(action, " ");
   xbt_assert(req_storage.size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
+  const WaitTestParser& args = get_args();
   MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
   req_storage.remove(request);
 
@@ -425,7 +426,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
   // Must be taken before Request::wait() since the request may be set to
   // MPI_REQUEST_NULL by Request::wait!
   bool is_wait_for_receive = (request->flags() & MPI_REQ_RECV);
-  // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
+  // TODO: Here we take the rank while we normally take the process id (look for get_pid())
   TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::WaitTIData(args.src, args.dst, args.tag));
 
   MPI_Status status;
@@ -438,57 +439,63 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
 
 void SendAction::kernel(simgrid::xbt::ReplayAction&)
 {
+  const SendRecvParser& args = get_args();
   int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
 
-  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
-        args.tag, Datatype::encode(args.datatype1)));
+  TRACE_smpi_comm_in(
+      get_pid(), __func__,
+      new simgrid::instr::Pt2PtTIData(get_name(), args.partner, args.size, args.tag, Datatype::encode(args.datatype1)));
   if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, args.tag, args.size * args.datatype1->size());
+    TRACE_smpi_send(get_pid(), get_pid(), dst_traced, args.tag, args.size * args.datatype1->size());
 
-  if (name == "send") {
+  if (get_name() == "send") {
     Request::send(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
-  } else if (name == "isend") {
+  } else if (get_name() == "isend") {
     MPI_Request request = Request::isend(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
     req_storage.add(request);
   } else {
-    xbt_die("Don't know this action, %s", name.c_str());
+    xbt_die("Don't know this action, %s", get_name().c_str());
   }
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void RecvAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
-        args.tag, Datatype::encode(args.datatype1)));
+  const SendRecvParser& args = get_args();
+  TRACE_smpi_comm_in(
+      get_pid(), __func__,
+      new simgrid::instr::Pt2PtTIData(get_name(), args.partner, args.size, args.tag, Datatype::encode(args.datatype1)));
 
   MPI_Status status;
   // unknown size from the receiver point of view
-  if (args.size <= 0.0) {
+  double arg_size = args.size;
+  if (arg_size <= 0.0) {
     Request::probe(args.partner, args.tag, MPI_COMM_WORLD, &status);
-    args.size = status.count;
+    arg_size = status.count;
   }
 
   bool is_recv = false; // Help analyzers understanding that status is not used unintialized
-  if (name == "recv") {
+  if (get_name() == "recv") {
     is_recv = true;
-    Request::recv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD, &status);
-  } else if (name == "irecv") {
-    MPI_Request request = Request::irecv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
+    Request::recv(nullptr, arg_size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD, &status);
+  } else if (get_name() == "irecv") {
+    MPI_Request request = Request::irecv(nullptr, arg_size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
     req_storage.add(request);
   } else {
     THROW_IMPOSSIBLE;
   }
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
   if (is_recv && not TRACE_smpi_view_internals()) {
     int src_traced = MPI_COMM_WORLD->group()->actor(status.MPI_SOURCE)->get_pid();
-    TRACE_smpi_recv(src_traced, my_proc_id, args.tag);
+    TRACE_smpi_recv(src_traced, get_pid(), args.tag);
   }
 }
 
 void ComputeAction::kernel(simgrid::xbt::ReplayAction&)
 {
+  const ComputeParser& args = get_args();
   if (smpi_cfg_simulate_computation()) {
     smpi_execute_flops(args.flops/smpi_adjust_comp_speed());
   }
@@ -496,6 +503,7 @@ void ComputeAction::kernel(simgrid::xbt::ReplayAction&)
 
 void SleepAction::kernel(simgrid::xbt::ReplayAction&)
 {
+  const SleepParser& args = get_args();
   XBT_DEBUG("Sleep for: %lf secs", args.time);
   int rank = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_sleeping_in(rank, args.time);
@@ -505,18 +513,20 @@ void SleepAction::kernel(simgrid::xbt::ReplayAction&)
 
 void LocationAction::kernel(simgrid::xbt::ReplayAction&)
 {
+  const LocationParser& args = get_args();
   smpi_trace_set_call_location(args.filename.c_str(), args.line);
 }
 
 void TestAction::kernel(simgrid::xbt::ReplayAction&)
 {
+  const WaitTestParser& args = get_args();
   MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
   req_storage.remove(request);
   // if request is null here, this may mean that a previous test has succeeded
   // Different times in traced application and replayed version may lead to this
   // In this case, ignore the extra calls.
   if (request != MPI_REQUEST_NULL) {
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("test"));
+    TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::NoOpTIData("test"));
 
     MPI_Status status;
     int flag = 0;
@@ -530,7 +540,7 @@ void TestAction::kernel(simgrid::xbt::ReplayAction&)
     else
       req_storage.add(request);
 
-    TRACE_smpi_comm_out(my_proc_id);
+    TRACE_smpi_comm_out(get_pid());
   }
 }
 
@@ -554,7 +564,7 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
   const unsigned int count_requests = req_storage.size();
 
   if (count_requests > 0) {
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData("waitall", -1, count_requests, ""));
+    TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::Pt2PtTIData("waitall", -1, count_requests, ""));
     std::vector<std::pair</*sender*/int,/*recv*/int>> sender_receiver;
     std::vector<MPI_Request> reqs;
     req_storage.get_requests(reqs);
@@ -569,167 +579,181 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
     for (auto const& pair : sender_receiver) {
       TRACE_smpi_recv(pair.first, pair.second, 0);
     }
-    TRACE_smpi_comm_out(my_proc_id);
+    TRACE_smpi_comm_out(get_pid());
   }
 }
 
 void BarrierAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("barrier"));
+  TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::NoOpTIData("barrier"));
   colls::barrier(MPI_COMM_WORLD);
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void BcastAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, "action_bcast",
-      new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
-        -1.0, args.size, -1, Datatype::encode(args.datatype1), ""));
+  const BcastArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), "action_bcast",
+                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(), -1.0,
+                                                    args.size, -1, Datatype::encode(args.datatype1), ""));
 
   colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void ReduceAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, "action_reduce",
-      new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
-        args.comp_size, args.comm_size, -1,
-        Datatype::encode(args.datatype1), ""));
+  const ReduceArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), "action_reduce",
+                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
+                                                    args.comp_size, args.comm_size, -1,
+                                                    Datatype::encode(args.datatype1), ""));
 
   colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
                 recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
                 args.root, MPI_COMM_WORLD);
   private_execute_flops(args.comp_size);
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void AllReduceAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, "action_allreduce", new simgrid::instr::CollTIData("allreduce", -1, args.comp_size, args.comm_size, -1,
-        Datatype::encode(args.datatype1), ""));
+  const AllReduceArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), "action_allreduce",
+                     new simgrid::instr::CollTIData("allreduce", -1, args.comp_size, args.comm_size, -1,
+                                                    Datatype::encode(args.datatype1), ""));
 
   colls::allreduce(send_buffer(args.comm_size * args.datatype1->size()),
                    recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
                    MPI_COMM_WORLD);
   private_execute_flops(args.comp_size);
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void AllToAllAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, "action_alltoall",
-      new simgrid::instr::CollTIData("alltoall", -1, -1.0, args.send_size, args.recv_size,
-        Datatype::encode(args.datatype1),
-        Datatype::encode(args.datatype2)));
+  const AllToAllArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), "action_alltoall",
+                     new simgrid::instr::CollTIData("alltoall", -1, -1.0, args.send_size, args.recv_size,
+                                                    Datatype::encode(args.datatype1),
+                                                    Datatype::encode(args.datatype2)));
 
   colls::alltoall(send_buffer(args.send_size * args.comm_size * args.datatype1->size()), args.send_size, args.datatype1,
                   recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()), args.recv_size, args.datatype2,
                   MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void GatherAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, name.c_str(), new simgrid::instr::CollTIData(name, (name == "gather") ? args.root : -1, -1.0, args.send_size, args.recv_size,
-        Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
+  const GatherArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), get_name().c_str(),
+                     new simgrid::instr::CollTIData(get_name(), (get_name() == "gather") ? args.root : -1, -1.0,
+                                                    args.send_size, args.recv_size, Datatype::encode(args.datatype1),
+                                                    Datatype::encode(args.datatype2)));
 
-  if (name == "gather") {
+  if (get_name() == "gather") {
     int rank = MPI_COMM_WORLD->rank();
     colls::gather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
                   (rank == args.root) ? recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()) : nullptr,
                   args.recv_size, args.datatype2, args.root, MPI_COMM_WORLD);
-  }
-  else
+  } else
     colls::allgather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
                      recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2,
                      MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void GatherVAction::kernel(simgrid::xbt::ReplayAction&)
 {
   int rank = MPI_COMM_WORLD->rank();
+  const GatherVArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), get_name().c_str(),
+                     new simgrid::instr::VarCollTIData(
+                         get_name(), (get_name() == "gatherv") ? args.root : -1, args.send_size, nullptr, -1,
+                         args.recvcounts, Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
-  TRACE_smpi_comm_in(my_proc_id, name.c_str(), new simgrid::instr::VarCollTIData(
-        name, (name == "gatherv") ? args.root : -1, args.send_size, nullptr, -1, args.recvcounts,
-        Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
-
-  if (name == "gatherv") {
+  if (get_name() == "gatherv") {
     colls::gatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
                    (rank == args.root) ? recv_buffer(args.recv_size_sum * args.datatype2->size()) : nullptr,
                    args.recvcounts->data(), args.disps.data(), args.datatype2, args.root, MPI_COMM_WORLD);
-  }
-  else {
+  } else {
     colls::allgatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
                       recv_buffer(args.recv_size_sum * args.datatype2->size()), args.recvcounts->data(),
                       args.disps.data(), args.datatype2, MPI_COMM_WORLD);
   }
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void ScatterAction::kernel(simgrid::xbt::ReplayAction&)
 {
   int rank = MPI_COMM_WORLD->rank();
-  TRACE_smpi_comm_in(my_proc_id, "action_scatter", new simgrid::instr::CollTIData(name, args.root, -1.0, args.send_size, args.recv_size,
-        Datatype::encode(args.datatype1),
-        Datatype::encode(args.datatype2)));
+  const ScatterArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), "action_scatter",
+                     new simgrid::instr::CollTIData(get_name(), args.root, -1.0, args.send_size, args.recv_size,
+                                                    Datatype::encode(args.datatype1),
+                                                    Datatype::encode(args.datatype2)));
 
   colls::scatter(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
                  (rank == args.root) ? recv_buffer(args.recv_size * args.datatype2->size()) : nullptr, args.recv_size,
                  args.datatype2, args.root, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void ScatterVAction::kernel(simgrid::xbt::ReplayAction&)
 {
   int rank = MPI_COMM_WORLD->rank();
-  TRACE_smpi_comm_in(my_proc_id, "action_scatterv", new simgrid::instr::VarCollTIData(name, args.root, -1, args.sendcounts, args.recv_size,
-        nullptr, Datatype::encode(args.datatype1),
-        Datatype::encode(args.datatype2)));
+  const ScatterVArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), "action_scatterv",
+                     new simgrid::instr::VarCollTIData(get_name(), args.root, -1, args.sendcounts, args.recv_size,
+                                                       nullptr, Datatype::encode(args.datatype1),
+                                                       Datatype::encode(args.datatype2)));
 
   colls::scatterv((rank == args.root) ? send_buffer(args.send_size_sum * args.datatype1->size()) : nullptr,
                   args.sendcounts->data(), args.disps.data(), args.datatype1,
                   recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2, args.root,
                   MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, "action_reducescatter",
+  const ReduceScatterArgParser& args = get_args();
+  TRACE_smpi_comm_in(
+      get_pid(), "action_reducescatter",
       new simgrid::instr::VarCollTIData("reducescatter", -1, 0, nullptr, -1, args.recvcounts,
-        std::to_string(args.comp_size), /* ugly hack to print comp_size */
-        Datatype::encode(args.datatype1)));
+                                        std::to_string(args.comp_size), /* ugly hack to print comp_size */
+                                        Datatype::encode(args.datatype1)));
 
   colls::reduce_scatter(send_buffer(args.recv_size_sum * args.datatype1->size()),
                         recv_buffer(args.recv_size_sum * args.datatype1->size()), args.recvcounts->data(),
                         args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
 
   private_execute_flops(args.comp_size);
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 
 void AllToAllVAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  TRACE_smpi_comm_in(my_proc_id, __func__,
-      new simgrid::instr::VarCollTIData(
-        "alltoallv", -1, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
-        Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
+  const AllToAllVArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), __func__,
+                     new simgrid::instr::VarCollTIData(
+                         "alltoallv", -1, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
+                         Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
   colls::alltoallv(send_buffer(args.send_buf_size * args.datatype1->size()), args.sendcounts->data(),
                    args.senddisps.data(), args.datatype1, recv_buffer(args.recv_buf_size * args.datatype2->size()),
                    args.recvcounts->data(), args.recvdisps.data(), args.datatype2, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_comm_out(get_pid());
 }
 } // Replay Namespace
 }} // namespace simgrid::smpi
