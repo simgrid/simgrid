@@ -14,26 +14,26 @@ def sleeper():
 
 
 def master():
-    this_actor.info("Start sleeper")
-    actor = Actor.create("sleeper from master", Host.current(), sleeper)
-    this_actor.info("Join the sleeper (timeout 2)")
+    this_actor.info("Start 1st sleeper")
+    actor = Actor.create("1st sleeper from master", Host.current(), sleeper)
+    this_actor.info("Join the 1st sleeper (timeout 2)")
     actor.join(2)
 
-    this_actor.info("Start sleeper")
-    actor = Actor.create("sleeper from master", Host.current(), sleeper)
-    this_actor.info("Join the sleeper (timeout 4)")
+    this_actor.info("Start 2nd sleeper")
+    actor = Actor.create("2nd sleeper from master", Host.current(), sleeper)
+    this_actor.info("Join the 2nd sleeper (timeout 4)")
     actor.join(4)
 
-    this_actor.info("Start sleeper")
-    actor = Actor.create("sleeper from master", Host.current(), sleeper)
-    this_actor.info("Join the sleeper (timeout 2)")
+    this_actor.info("Start 3rd sleeper")
+    actor = Actor.create("3rd sleeper from master", Host.current(), sleeper)
+    this_actor.info("Join the 3rd sleeper (timeout 2)")
     actor.join(2)
 
-    this_actor.info("Start sleeper")
-    actor = Actor.create("sleeper from master", Host.current(), sleeper)
+    this_actor.info("Start 4th sleeper")
+    actor = Actor.create("4th sleeper from master", Host.current(), sleeper)
     this_actor.info("Waiting 4")
     this_actor.sleep_for(4)
-    this_actor.info("Join the sleeper after its end (timeout 1)")
+    this_actor.info("Join the 4th sleeper after its end (timeout 1)")
     actor.join(1)
 
     this_actor.info("Goodbye now!")

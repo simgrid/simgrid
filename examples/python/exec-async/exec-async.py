@@ -12,12 +12,12 @@ class Waiter:
 
     def __call__(self):
         computation_amount = this_actor.get_host().speed
-        this_actor.info("Execute {:.0f} flops, should take 1 second.".format(computation_amount))
+        this_actor.info("Waiter executes {:.0f} flops, should take 1 second.".format(computation_amount))
         activity = this_actor.exec_init(computation_amount)
         activity.start()
         activity.wait()
 
-        this_actor.info("Goodbye now!")
+        this_actor.info("Goodbye from waiter!")
 
 
 class Monitor:
@@ -25,7 +25,7 @@ class Monitor:
 
     def __call__(self):
         computation_amount = this_actor.get_host().speed
-        this_actor.info("Execute {:.0f} flops, should take 1 second.".format(computation_amount))
+        this_actor.info("Monitor executes {:.0f} flops, should take 1 second.".format(computation_amount))
         activity = this_actor.exec_init(computation_amount).start()
 
         while not activity.test():
@@ -34,7 +34,7 @@ class Monitor:
             this_actor.sleep_for(0.3)
         activity.wait()
 
-        this_actor.info("Goodbye now!")
+        this_actor.info("Goodbye from monitor!")
 
 
 class Canceller:
@@ -42,14 +42,14 @@ class Canceller:
 
     def __call__(self):
         computation_amount = this_actor.get_host().speed
-        this_actor.info("Execute {:.0f} flops, should take 1 second.".format(computation_amount))
+        this_actor.info("Canceller executes {:.0f} flops, should take 1 second.".format(computation_amount))
         activity = this_actor.exec_init(computation_amount).start()
 
         this_actor.sleep_for(0.5)
         this_actor.info("I changed my mind, cancel!")
         activity.cancel()
 
-        this_actor.info("Goodbye now!")
+        this_actor.info("Goodbye from canceller!")
 
 
 if __name__ == '__main__':

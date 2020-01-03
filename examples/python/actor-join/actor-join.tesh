@@ -1,21 +1,21 @@
 $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/actor-join.py ${platfdir}/small_platform.xml
-> [Tremblay:master:(1) 0.000000] [python/INFO] Start sleeper
-> [Tremblay:sleeper from master:(2) 0.000000] [python/INFO] Sleeper started
-> [Tremblay:master:(1) 0.000000] [python/INFO] Join the sleeper (timeout 2)
-> [Tremblay:master:(1) 2.000000] [python/INFO] Start sleeper
-> [Tremblay:sleeper from master:(3) 2.000000] [python/INFO] Sleeper started
-> [Tremblay:master:(1) 2.000000] [python/INFO] Join the sleeper (timeout 4)
-> [Tremblay:sleeper from master:(2) 3.000000] [python/INFO] I'm done. See you!
-> [Tremblay:sleeper from master:(3) 5.000000] [python/INFO] I'm done. See you!
-> [Tremblay:master:(1) 5.000000] [python/INFO] Start sleeper
-> [Tremblay:sleeper from master:(4) 5.000000] [python/INFO] Sleeper started
-> [Tremblay:master:(1) 5.000000] [python/INFO] Join the sleeper (timeout 2)
-> [Tremblay:master:(1) 7.000000] [python/INFO] Start sleeper
-> [Tremblay:sleeper from master:(5) 7.000000] [python/INFO] Sleeper started
+> [Tremblay:master:(1) 0.000000] [python/INFO] Start 1st sleeper
+> [Tremblay:1st sleeper from master:(2) 0.000000] [python/INFO] Sleeper started
+> [Tremblay:master:(1) 0.000000] [python/INFO] Join the 1st sleeper (timeout 2)
+> [Tremblay:master:(1) 2.000000] [python/INFO] Start 2nd sleeper
+> [Tremblay:2nd sleeper from master:(3) 2.000000] [python/INFO] Sleeper started
+> [Tremblay:master:(1) 2.000000] [python/INFO] Join the 2nd sleeper (timeout 4)
+> [Tremblay:1st sleeper from master:(2) 3.000000] [python/INFO] I'm done. See you!
+> [Tremblay:2nd sleeper from master:(3) 5.000000] [python/INFO] I'm done. See you!
+> [Tremblay:master:(1) 5.000000] [python/INFO] Start 3rd sleeper
+> [Tremblay:3rd sleeper from master:(4) 5.000000] [python/INFO] Sleeper started
+> [Tremblay:master:(1) 5.000000] [python/INFO] Join the 3rd sleeper (timeout 2)
+> [Tremblay:master:(1) 7.000000] [python/INFO] Start 4th sleeper
+> [Tremblay:4th sleeper from master:(5) 7.000000] [python/INFO] Sleeper started
 > [Tremblay:master:(1) 7.000000] [python/INFO] Waiting 4
-> [Tremblay:sleeper from master:(4) 8.000000] [python/INFO] I'm done. See you!
-> [Tremblay:sleeper from master:(5) 10.000000] [python/INFO] I'm done. See you!
-> [Tremblay:master:(1) 11.000000] [python/INFO] Join the sleeper after its end (timeout 1)
+> [Tremblay:3rd sleeper from master:(4) 8.000000] [python/INFO] I'm done. See you!
+> [Tremblay:4th sleeper from master:(5) 10.000000] [python/INFO] I'm done. See you!
+> [Tremblay:master:(1) 11.000000] [python/INFO] Join the 4th sleeper after its end (timeout 1)
 > [Tremblay:master:(1) 11.000000] [python/INFO] Goodbye now!
 > [Tremblay:master:(1) 12.000000] [python/INFO] Goodbye now!
 > [12.000000] [python/INFO] Simulation time 12.0

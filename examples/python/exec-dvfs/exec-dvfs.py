@@ -30,7 +30,7 @@ class Dvfs:
 
         host.pstate = new_pstate
 
-        this_actor.info("Current power peak={:f}".format(host.speed))
+        this_actor.info("Changed power peak={:f}".format(host.speed))
 
         # Run a second task
         this_actor.execute(workload)
@@ -42,7 +42,7 @@ class Dvfs:
         host2 = Host.by_name("MyHost2")
         this_actor.info("Count of Processor states={:d}".format(host2.get_pstate_count()))
 
-        this_actor.info("Current power peak={:f}".format(host2.speed))
+        this_actor.info("Final power peak={:f}".format(host2.speed))
 
 if __name__ == '__main__':
     e = Engine(sys.argv)
