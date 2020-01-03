@@ -92,7 +92,11 @@ XBT_PUBLIC sg_host_t sg_host_self();
 
 XBT_PUBLIC const char* sg_host_self_get_name();
 
-/** @brief Return the total count of pstates defined for a host. See also @ref plugin_energy.
+/** @brief Return the total count of pstates defined for a host.
+ *
+ * @beginrst
+ * See also :ref:`plugin_host_energy`.
+ * @endrst
  *
  * @param  host host to test
  */

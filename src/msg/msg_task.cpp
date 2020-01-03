@@ -205,7 +205,7 @@ void Task::report_multiple_use() const
  * @param message_size a value of the amount of data (in bytes) needed to transfer this new task. If 0, then it cannot
  * be transferred with MSG_task_send() and MSG_task_recv(). This value has to be >=0.
  * @param data a pointer to any data may want to attach to the new object.  It is for user-level information and can
- * be nullptr. It can be retrieved with the function @ref MSG_task_get_data.
+ * be nullptr. It can be retrieved with the function MSG_task_get_data().
  * @return The new corresponding object.
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
@@ -230,7 +230,7 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
  * @param bytes_amount an array of @p host_nb* @p host_nb doubles.
  * @param data a pointer to any data may want to attach to the new object.
  *             It is for user-level information and can be nullptr.
- *             It can be retrieved with the function @ref MSG_task_get_data().
+ *             It can be retrieved with the function MSG_task_get_data().
  */
 msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_host_t * host_list,
                                     double *flops_amount, double *bytes_amount, void *data)
@@ -776,11 +776,13 @@ void MSG_task_set_bound(msg_task_t task, double bound)
  * @brief Sets the tracing category of a task.
  *
  * This function should be called after the creation of a MSG task, to define the category of that task. The
- * first parameter task must contain a task that was  =created with the function #MSG_task_create. The second
+ * first parameter task must contain a task that was =created with the function MSG_task_create(). The second
  * parameter category must contain a category that was previously declared with the function #TRACE_category
  * (or with #TRACE_category_with_color).
  *
- * See @ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
+ * @beginrst
+ * See :ref:`outcomes_vizu` for details on how to trace the (categorized) resource utilization.
+ * @endrst
  *
  * @param task the task that is going to be categorized
  * @param category the name of the category to be associated to the task

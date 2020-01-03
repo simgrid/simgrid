@@ -113,14 +113,18 @@ XBT_PUBLIC int MSG_host_get_pstate(const_sg_host_t host);
 XBT_PUBLIC void MSG_host_set_pstate(sg_host_t host, int pstate);
 /** @brief Start the host if it is off
  *
- * See also #MSG_host_is_on() to test the current state of the host and @ref SURF_plugin_energy
+ * @beginrst
+ * See also :cpp:func:`MSG_host_is_on()` to test the current state of the host, and :ref:`plugin_host_energy`
  * for more info on DVFS.
+ * @endrst
  */
 XBT_PUBLIC void MSG_host_on(sg_host_t h);
 /** @brief Stop the host if it is on
  *
- * See also MSG_host_is_on() to test the current state of the host and @ref SURF_plugin_energy
+ * @beginrst
+ * See also :cpp:func:`MSG_host_is_on()` to test the current state of the host, and :ref:`plugin_host_energy`
  * for more info on DVFS.
+ * @endrst
  */
 XBT_PUBLIC void MSG_host_off(sg_host_t h);
 XBT_PUBLIC int MSG_host_is_on(const_sg_host_t h);
@@ -262,8 +266,10 @@ typedef const sg_msg_Task* const_msg_task_t;
 /************************** Global ******************************************/
 /** @brief set a configuration variable
  *
- * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref
- * options.
+ * @beginrst
+ * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section
+ * :ref:`options`.
+ * @endrst
  *
  * Example:
  * MSG_config("host/model","ptask_L07");

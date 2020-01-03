@@ -32,7 +32,7 @@ msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *d
  * @param name a name for the object. It is for user-level information and can be nullptr.
  * @param code is a function describing the behavior of the process.
  * @param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
- *        can be nullptr. It can be retrieved with the function @ref MSG_process_get_data.
+ *        can be nullptr. It can be retrieved with the function MSG_process_get_data().
  * @param host the location where the new process is executed.
  * @param argc first argument passed to @a code
  * @param argv second argument passed to @a code
@@ -52,7 +52,7 @@ msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_
  * @param name a name for the object. It is for user-level information and can be nullptr.
  * @param code is a function describing the behavior of the process.
  * @param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
- *        can be nullptr. It can be retrieved with the function @ref MSG_process_get_data.
+ *        can be nullptr. It can be retrieved with the function MSG_process_get_data().
  * @param host the location where the new process is executed.
  * @param argc first argument passed to @a code
  * @param argv second argument passed to @a code. WARNING, these strings are freed by the SimGrid kernel when the

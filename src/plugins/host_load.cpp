@@ -12,19 +12,17 @@
 // Makes sure that this plugin can be activated from the command line with ``--cfg=plugin:host_load``
 SIMGRID_REGISTER_PLUGIN(host_load, "Cpu load", &sg_host_load_plugin_init)
 
-/** @defgroup plugin_host_load
+/** @defgroup plugin_host_load Simple plugin that monitors the current load for each host.
 
   @beginrst
-
-Simple plugin that monitors the current load for each host.
-
 In addition, this constitutes a good introductory example on how to write a plugin.
 It attaches an extension to each host to store some data, and places callbacks in the following signals:
 
   - :cpp:member:`simgrid::s4u::Host::on_creation`: Attach a new extension to the newly created host.
   - :cpp:member:`simgrid::s4u::Exec::on_start`: Make note that a new execution started, increasing the load.
   - :cpp:member:`simgrid::s4u::Exec::on_completion`: Make note that an execution completed, decreasing the load.
-  - :cpp:member:`simgrid::s4u::Host::on_state_change`: Do what is appropriate when the host gets suspended, turned off or similar.
+  - :cpp:member:`simgrid::s4u::Host::on_state_change`: Do what is appropriate when the host gets suspended, turned off
+    or similar.
   - :cpp:member:`simgrid::s4u::Host::on_speed_change`: Do what is appropriate when the DVFS is modified.
 
   Note that extensions are automatically destroyed when the host gets destroyed.

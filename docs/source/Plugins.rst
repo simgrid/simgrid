@@ -12,8 +12,8 @@ SimGrid Plugins
      elem.style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
    }
    </script>
-   <br />
-   <br />
+   <br>
+   <br>
 
 You can extend SimGrid without modifying it, thanks to our plugin
 mechanism. This page describes how to write your own plugin, and
@@ -104,7 +104,7 @@ to explore the other ones.
 Host Energy
 ===========
 
-.. doxygengroup:: Plugin_host_energy
+.. doxygengroup:: plugin_host_energy
 
 
 
@@ -113,7 +113,7 @@ Host Energy
 Link Energy
 ===========
 
-.. doxygengroup:: Plugin_link_energy
+.. doxygengroup:: plugin_link_energy
 
 
 
@@ -122,7 +122,7 @@ Link Energy
 Host Load
 =========
 
-.. doxygengroup:: Plugin_host_load
+.. doxygengroup:: plugin_host_load
 
 
 
@@ -131,7 +131,7 @@ Host Load
 File System
 ===========
 
-.. doxygengroup:: Plugin_filesystem
+.. doxygengroup:: plugin_filesystem
 
 
 ..  LocalWords:  SimGrid

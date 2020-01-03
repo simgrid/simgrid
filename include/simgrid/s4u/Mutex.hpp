@@ -22,8 +22,11 @@ namespace s4u {
  * Instead, you should use the present class, that is a drop-in replacement of
  * <a href="http://en.cppreference.com/w/cpp/thread/mutex">std::mutex</a>.
  *
- * As for any S4U object, Mutexes are using the @ref s4u_raii "RAII idiom" for memory management.
- * Use create() to get a simgrid::s4u::MutexPtr to a newly created mutex and only manipulate simgrid::s4u::MutexPtr.
+ * @beginrst
+ * As for any S4U object, Mutexes are using the :ref:`RAII idiom <s4u_raii>` for memory management.
+ * Use :cpp:func:`create() <simgrid::s4u::Mutex::create()>` to get a :cpp:type:`simgrid::s4u::MutexPtr` to a newly
+ * created mutex, and only manipulate :cpp:type:`simgrid::s4u::MutexPtr`.
+ * @endrst
  *
  */
 class XBT_PUBLIC Mutex {
@@ -36,13 +39,12 @@ class XBT_PUBLIC Mutex {
   friend XBT_PUBLIC void intrusive_ptr_release(const Mutex* mutex);
 
 public:
+#ifndef DOXYGEN
   explicit Mutex(kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
   ~Mutex();
-  // No copy:
-  /** You cannot create a new mutex by copying an existing one. Use MutexPtr instead */
-  Mutex(Mutex const&) = delete;
-  /** You cannot create a new mutex by value assignment either. Use MutexPtr instead */
-  Mutex& operator=(Mutex const&) = delete;
+  Mutex(Mutex const&) = delete;            // No copy constructor; Use MutexPtr instead
+  Mutex& operator=(Mutex const&) = delete; // No direct assignment either. Use MutexPtr instead
+#endif
 
   /** Constructs a new mutex */
   static MutexPtr create();

@@ -27,13 +27,15 @@ namespace s4u {
  *
  * Some physical resource with computing and networking capabilities on which Actors execute.
  *
+ * @beginrst
  * All hosts are automatically created during the call of the method
- * @ref simgrid::s4u::Engine::load_platform().
+ * :cpp:func:`simgrid::s4u::Engine::load_platform()`.
  * You cannot create a host yourself.
  *
- * You can retrieve a particular host using @ref simgrid::s4u::Host::by_name()
- * and actors can retrieve the host on which they run using @ref simgrid::s4u::Host::current() or
- * @ref simgrid::s4u::this_actor::get_host().
+ * You can retrieve a particular host using :cpp:func:`simgrid::s4u::Host::by_name()`
+ * and actors can retrieve the host on which they run using :cpp:func:`simgrid::s4u::Host::current()` or
+ * :cpp:func:`simgrid::s4u::this_actor::get_host()`
+ * @endrst
  */
 class XBT_PUBLIC Host : public xbt::Extendable<Host> {
   friend vm::VMModel;            // Use the pimpl_cpu to compute the VM sharing

@@ -137,8 +137,10 @@ public:
   static bool is_initialized();
   /** @brief set a configuration variable
    *
-   * Do --help on any simgrid binary to see the list of currently existing configuration variables (see also @ref
-   * options).
+   * @beginrst
+   * Do --help on any simgrid binary to see the list of currently existing configuration variables
+   * (see also :ref:`options`).
+   * @endrst
    *
    * Example:
    * e->set_config("host/model:ptask_L07");

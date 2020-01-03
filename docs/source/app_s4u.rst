@@ -338,6 +338,8 @@ that marked as permanent receiver, you should call
 memory gets properly reclaimed. This call should be at the end of the
 actor's function, not in a on_exit callback.
 
+.. _s4u_raii:
+
 Memory Management
 *****************
 
@@ -433,8 +435,8 @@ Creating actors
       .. autodoxymethod:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
       .. autodoxymethod:: sg_actor_detach()
 
-      .. autodoxymethod:: sg_actor_ref(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_unref(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_ref(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_unref(const_sg_actor_t actor)
 
 Searching specific actors
 -------------------------
@@ -486,13 +488,13 @@ Querying info about actors
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_get_name(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_get_PID(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_get_PPID(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_get_properties(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_get_property_value(sg_actor_t actor, const char *name)
+      .. autodoxymethod:: sg_actor_get_name(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_PID(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_PPID(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_properties(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_property_value(const_sg_actor_t actor, const char *name)
 
-      .. autodoxymethod:: sg_actor_get_host(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_get_host(const_sg_actor_t actor)
       .. autodoxymethod:: sg_actor_set_host(sg_actor_t actor, sg_host_t host)
 
       .. autodoxymethod:: sg_actor_data(const_sg_actor_t actor)
@@ -723,7 +725,7 @@ Interacting with the routing
       .. autodoxymethod:: simgrid::s4u::Engine::get_netzone_root()
       .. autodoxymethod:: simgrid::s4u::Engine::netpoint_by_name_or_null(const std::string &name)
       .. autodoxymethod:: simgrid::s4u::Engine::netzone_by_name_or_null(const std::string &name)
-      .. autodoxymethod:: simgrid::s4u::Engine::set_netzone_root(NetZone *netzone)
+      .. autodoxymethod:: simgrid::s4u::Engine::set_netzone_root(const NetZone *netzone)
 
 Signals
 -------

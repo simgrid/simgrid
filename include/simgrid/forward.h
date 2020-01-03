@@ -68,7 +68,11 @@ class Mailbox;
 class Mutex;
 XBT_PUBLIC void intrusive_ptr_release(const Mutex* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(const Mutex* m);
-/** Smart pointer to a simgrid::s4u::Mutex */
+/**
+ * @beginrst
+ * Smart pointer to a :cpp:type:`simgrid::s4u::Mutex`
+ * @endrst
+ */
 typedef boost::intrusive_ptr<Mutex> MutexPtr;
 
 class NetZone;

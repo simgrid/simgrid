@@ -15,7 +15,7 @@
 
 SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy_plugin_init)
 
-/** @defgroup plugin_link_energy
+/** @defgroup plugin_link_energy Plugin Link Energy
 
  This is the link energy plugin, accounting for the dissipated energy in the simulated platform.
 

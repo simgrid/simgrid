@@ -17,14 +17,14 @@
 
 SIMGRID_REGISTER_PLUGIN(host_energy, "Cpu energy consumption.", &sg_host_energy_plugin_init)
 
-/** @defgroup plugin_host_energy
+/** @defgroup plugin_host_energy plugin_host_energy Plugin Host Energy
 
   @beginrst
 
 This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the
 simulated platform.
-To activate this plugin, first call :cpp:func:`sg_host_energy_plugin_init()` before your :cpp:func:`MSG_init()`, and
-then use :cpp:func:`MSG_host_get_consumed_energy()` to retrieve the consumption of a given host.
+To activate this plugin, first call :cpp:func:`sg_host_energy_plugin_init()` before your loading your platform, and
+then use :cpp:func:`sg_host_get_consumed_energy()` to retrieve the consumption of a given host.
 
 When the host is on, this energy consumption naturally depends on both the current CPU load and the host energy profile.
 According to our measurements, the consumption is somehow linear in the amount of cores at full speed, with an
@@ -34,7 +34,7 @@ abnormality when all the cores are idle. The full details are in `our scientific
 As a result, our energy model takes 4 parameters:
 
   - ``Idle`` wattage (i.e., instantaneous consumption in Watt) when your host is up and running, but without anything to
-do.
+    do.
   - ``Epsilon`` wattage when all cores are at 0 or epsilon%, but not in Idle state.
   - ``AllCores`` wattage when all cores of the host are at 100%.
   - ``Off`` wattage when the host is turned off.
