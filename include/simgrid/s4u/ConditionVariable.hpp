@@ -16,12 +16,12 @@
 namespace simgrid {
 namespace s4u {
 
-/** @brief A condition variable
- *  @ingroup s4u_api
- *
- *  This is a drop-in replacement of `std::condition_variable` and should respect the same
- *  semantic. But we currently use (only) double for both durations and
- *  timestamp timeouts.
+/**
+ * @rst
+ * SimGrid's Condition Variables are meant to be drop-in replacements of
+ * `std::condition_variable <https://en.cppreference.com/w/cpp/thread/condition_variable>`_
+ * and should respect the same semantic.
+ * @endrst
  */
 class XBT_PUBLIC ConditionVariable {
 private:
@@ -29,9 +29,9 @@ private:
   kernel::activity::ConditionVariableImpl* const cond_;
 
 public:
+#ifndef DOXYGEN
   explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
 
-#ifndef DOXYGEN
   ConditionVariable(ConditionVariable const&) = delete;
   ConditionVariable& operator=(ConditionVariable const&) = delete;
 
@@ -39,6 +39,12 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(const ConditionVariable* cond);
 #endif
 
+  /** Create a new condition variable and return a smart pointer
+   *
+   * @rst
+   * You should only manipulate :cpp:type:`simgrid::s4u::ConditionVariablePtr`, as created by this function (see also :ref:`s4u_raii`).
+   * @endrst
+   */
   static ConditionVariablePtr create();
 
   //  Wait functions without time:

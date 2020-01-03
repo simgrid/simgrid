@@ -956,12 +956,60 @@ Synchronization Objects
 ⁣  class ConditionVariable
 ==========================
 
-.. doxygentypedef:: ConditionVariablePtr
+.. autodoxyclass:: simgrid::s4u::ConditionVariable
 
-.. doxygenclass:: simgrid::s4u::ConditionVariable
-   :members:
-   :protected-members:
-   :undoc-members:
+Basic management
+----------------
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. code-block:: C
+
+            #include <simgrid/s4u/ConditionVariable.hpp>
+
+         .. doxygentypedef:: ConditionVariablePtr
+
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::create()
+
+      .. group-tab:: C
+
+         .. code-block:: C
+
+            #include <simgrid/cond.h>
+
+         .. doxygentypedef:: sg_cond_t
+         .. doxygenfunction:: sg_cond_init
+         .. doxygenfunction:: sg_cond_destroy
+
+Waiting and notifying
+---------------------
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::notify_all()
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::notify_one()
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(MutexPtr lock)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< Mutex > &lock)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< Mutex > &lock, P pred)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< Mutex > &lock, double duration)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< Mutex > &lock, double duration, P pred)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< Mutex > &lock, std::chrono::duration< Rep, Period > duration)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< Mutex > &lock, std::chrono::duration< Rep, Period > duration, P pred)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time, P pred)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< Mutex > &lock, double timeout_time)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< Mutex > &lock, double timeout_time, P pred)
+
+      .. group-tab:: C
+
+         .. doxygenfunction:: sg_cond_notify_all
+         .. doxygenfunction:: sg_cond_notify_one
+         .. doxygenfunction:: sg_cond_wait
+         .. doxygenfunction:: sg_cond_wait_for
 
 .. _API_s4u_Mutex:
 
@@ -989,22 +1037,6 @@ Synchronization Objects
    :protected-members:
    :undoc-members:
 
-
-C API Reference
-***************
-
-==================
-Condition Variable
-==================
-
-See also the :ref:`C++ API <API_s4u_ConditionVariable>`.
-
-.. doxygenfunction:: sg_cond_init
-.. doxygenfunction:: sg_cond_notify_all
-.. doxygenfunction:: sg_cond_notify_one
-.. doxygenfunction:: sg_cond_wait
-.. doxygenfunction:: sg_cond_wait_for
-
 Python API Reference
 ********************
 
@@ -1018,25 +1050,11 @@ this_actor
 .. automodule:: simgrid.this_actor
    :members:
 
-===========
-Class Actor
-===========
-
-.. autoclass:: simgrid.Actor
-   :members:
-
 ==========
 Class Comm
 ==========
 
 .. autoclass:: simgrid.Comm
-   :members:
-
-============
-Class Engine
-============
-
-.. autoclass:: simgrid.Engine
    :members:
 
 ==========

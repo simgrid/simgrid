@@ -18,11 +18,11 @@ XBT_PUBLIC void sg_cond_wait(sg_cond_t cond, sg_mutex_t mutex);
 /** @brief Blocks onto the given condition variable, but only for the given amount of time.
  *  @return 0 on success, 1 on timeout */
 XBT_PUBLIC int sg_cond_wait_for(sg_cond_t cond, sg_mutex_t mutex, double delay);
-/** @brief Signals the given mutex variable */
+/** @brief Signals the given condition variable */
 XBT_PUBLIC void sg_cond_notify_one(sg_cond_t cond);
-/** @brief Broadcasts the given mutex variable */
+/** @brief Broadcasts the given condition variable */
 XBT_PUBLIC void sg_cond_notify_all(sg_cond_t cond);
-/** @brief Destroys the given mutex variable */
+/** @brief Destroys the given condition variable */
 XBT_PUBLIC void sg_cond_destroy(const_sg_cond_t cond);
 
 SG_END_DECL

@@ -36,7 +36,10 @@ XBT_PUBLIC void intrusive_ptr_release(Comm* c);
 XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
 
 class ConditionVariable;
-/** Smart pointer to a simgrid::s4u::ConditionVariable */
+/** @beginrst
+ * Smart pointer to a :cpp:type:`simgrid::s4u::ConditionVariable`
+ * @endrst
+ */
 typedef boost::intrusive_ptr<ConditionVariable> ConditionVariablePtr;
 XBT_PUBLIC void intrusive_ptr_release(const ConditionVariable* c);
 XBT_PUBLIC void intrusive_ptr_add_ref(const ConditionVariable* c);
