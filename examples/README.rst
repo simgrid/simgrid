@@ -407,19 +407,26 @@ result in short reads and short write, as in reality.
 Classical synchronization objects
 ---------------------------------
 
- - **Mutex:**
-   Shows how to use simgrid::s4u::Mutex synchronization objects.
-
-   .. tabs::
-
-      .. example-tab:: examples/s4u/synchro-mutex/s4u-synchro-mutex.cpp
-
  - **Barrier:**
    Shows how to use simgrid::s4u::Barrier synchronization objects.
 
    .. tabs::
 
       .. example-tab:: examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp
+
+ - **Condition variable:**
+   Shows how to use simgrid::s4u::ConditionVariable synchronization objects.
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable.cpp
+
+ - **Mutex:**
+   Shows how to use simgrid::s4u::Mutex synchronization objects.
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/synchro-mutex/s4u-synchro-mutex.cpp
 
  - **Semaphore:**
    Shows how to use simgrid::s4u::Semaphore synchronization objects.

@@ -15,7 +15,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  plugin-hostload
                  replay-comm replay-io
                  routing-get-clusters
-                 synchro-barrier synchro-mutex synchro-semaphore)
+                 synchro-barrier synchro-condition-variable synchro-mutex synchro-semaphore)
   add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
   add_dependencies     (tests s4u-${example})
   target_link_libraries(s4u-${example} simgrid)
