@@ -12,22 +12,21 @@
 namespace simgrid {
 namespace s4u {
 
-/** @brief A classical mutex, but blocking in the simulation world
- *  @ingroup s4u_api
+/** @brief A classical mutex, but blocking in the simulation world.
  *
+ * @rst
  * It is strictly impossible to use a real mutex, such as
- * <a href="http://en.cppreference.com/w/cpp/thread/mutex">std::mutex</a>
- * or <a href="http://pubs.opengroup.org/onlinepubs/007908775/xsh/pthread_mutex_lock.html">pthread_mutex_t</a>,
+ * `std::mutex <http://en.cppreference.com/w/cpp/thread/mutex>`_
+ * or `pthread_mutex_t <http://pubs.opengroup.org/onlinepubs/007908775/xsh/pthread_mutex_lock.html>`_,
  * because it would block the whole simulation.
- * Instead, you should use the present class, that is a drop-in replacement of
- * <a href="http://en.cppreference.com/w/cpp/thread/mutex">std::mutex</a>.
+ * Instead, you should use the present class, that is a drop-in replacement of these mechanisms.
  *
- * @beginrst
- * As for any S4U object, Mutexes are using the :ref:`RAII idiom <s4u_raii>` for memory management.
+ * An example is available in Section :ref:`s4u_ex_IPC`.
+ *
+ * As for any S4U object, you can use the :ref:`RAII idiom <s4u_raii>` for memory management of Mutexes.
  * Use :cpp:func:`create() <simgrid::s4u::Mutex::create()>` to get a :cpp:type:`simgrid::s4u::MutexPtr` to a newly
  * created mutex, and only manipulate :cpp:type:`simgrid::s4u::MutexPtr`.
  * @endrst
- *
  */
 class XBT_PUBLIC Mutex {
   friend ConditionVariable;
@@ -39,9 +38,9 @@ class XBT_PUBLIC Mutex {
   friend XBT_PUBLIC void intrusive_ptr_release(const Mutex* mutex);
 
 public:
-#ifndef DOXYGEN
   explicit Mutex(kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
   ~Mutex();
+#ifndef DOXYGEN
   Mutex(Mutex const&) = delete;            // No copy constructor; Use MutexPtr instead
   Mutex& operator=(Mutex const&) = delete; // No direct assignment either. Use MutexPtr instead
 #endif

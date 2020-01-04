@@ -931,6 +931,62 @@ Activities lifecycle
 Synchronization Objects
 =======================
 
+.. _API_s4u_Mutex:
+
+==============
+⁣  Mutex
+==============
+
+.. autodoxyclass:: simgrid::s4u::Mutex
+
+Basic management
+----------------
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. code-block:: C++
+
+            #include <simgrid/s4u/Mutex.hpp>
+
+         .. doxygentypedef:: MutexPtr
+
+         .. autodoxymethod:: simgrid::s4u::Mutex::Mutex(kernel::activity::MutexImpl *mutex)
+         .. autodoxymethod:: simgrid::s4u::Mutex::create()
+         .. autodoxymethod:: simgrid::s4u::Mutex::~Mutex()
+
+      .. group-tab:: C
+
+         .. code-block:: C
+
+            #include <simgrid/mutex.h>
+
+         .. doxygentypedef:: sg_mutex_t
+         .. cpp:type:: const s4u_Mutex* const_sg_mutex_t
+
+            Constant pointer to a SimGrid mutex object.
+
+         .. autodoxymethod:: sg_mutex_init()
+         .. autodoxymethod:: sg_mutex_destroy(const_sg_mutex_t mutex)
+
+Locking
+-------
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::Mutex::lock()
+         .. autodoxymethod:: simgrid::s4u::Mutex::try_lock()
+         .. autodoxymethod:: simgrid::s4u::Mutex::unlock()
+
+      .. group-tab:: C
+
+         .. autodoxymethod:: sg_mutex_lock(sg_mutex_t mutex)
+         .. autodoxymethod:: sg_mutex_try_lock(sg_mutex_t mutex)
+         .. autodoxymethod:: sg_mutex_unlock(sg_mutex_t mutex)
+
 .. _API_s4u_Barrier:
 
 ================
@@ -1030,31 +1086,65 @@ Waiting and notifying
          .. doxygenfunction:: sg_cond_wait
          .. doxygenfunction:: sg_cond_wait_for
 
-.. _API_s4u_Mutex:
-
-==============
-⁣  class Mutex
-==============
-
-.. doxygentypedef:: MutexPtr
-
-.. doxygenclass:: simgrid::s4u::Mutex
-   :members:
-   :protected-members:
-   :undoc-members:
-
 .. _API_s4u_Semaphore:
 
 ==================
-⁣  class Semaphore
+⁣  Semaphore
 ==================
 
-.. doxygentypedef:: SemaphorePtr
+.. autodoxyclass:: simgrid::s4u::Semaphore
 
-.. doxygenclass:: simgrid::s4u::Semaphore
-   :members:
-   :protected-members:
-   :undoc-members:
+
+Basic management
+----------------
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. code-block:: C++
+
+            #include <simgrid/s4u/Semaphore.hpp>
+
+         .. doxygentypedef:: SemaphorePtr
+         .. autodoxymethod:: simgrid::s4u::Semaphore::Semaphore(unsigned int initial_capacity)
+         .. autodoxymethod:: simgrid::s4u::Semaphore::~Semaphore()
+         .. autodoxymethod:: simgrid::s4u::Semaphore::create(unsigned int initial_capacity)
+
+      .. group-tab:: C
+
+         .. code-block:: C
+
+            #include <simgrid/semaphore.h>
+
+         .. doxygentypedef:: sg_sem_t
+         .. cpp:type:: const s4u_Semaphore* const_sg_sem_t
+
+            Constant pointer to a SimGrid semaphore object.
+
+         .. autodoxymethod:: sg_sem_init(int initial_value)
+         .. autodoxymethod:: sg_sem_destroy(const_sg_sem_t sem)
+
+Locking
+-------
+
+   .. tabs::
+
+      .. group-tab:: C++
+
+         .. autodoxymethod:: simgrid::s4u::Semaphore::acquire()
+         .. autodoxymethod:: simgrid::s4u::Semaphore::acquire_timeout(double timeout)
+         .. autodoxymethod:: simgrid::s4u::Semaphore::get_capacity()
+         .. autodoxymethod:: simgrid::s4u::Semaphore::release()
+         .. autodoxymethod:: simgrid::s4u::Semaphore::would_block()
+
+      .. group-tab:: C
+
+         .. autodoxymethod:: sg_sem_acquire(sg_sem_t sem)
+         .. autodoxymethod:: sg_sem_acquire_timeout(sg_sem_t sem, double timeout)
+         .. autodoxymethod:: sg_sem_get_capacity(sg_sem_t sem)
+         .. autodoxymethod:: sg_sem_release(sg_sem_t sem)
+         .. autodoxymethod:: sg_sem_would_block(sg_sem_t sem)
 
 Python API Reference
 ********************

@@ -13,16 +13,19 @@ namespace simgrid {
 namespace s4u {
 
 /** @brief A classical semaphore, but blocking in the simulation world
- *  @ingroup s4u_api
  *
+ * @rst
  * It is strictly impossible to use a real semaphore, such as
- * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/sem_init.html">sem_init</a>,
+ * `sem_init <http://pubs.opengroup.org/onlinepubs/9699919799/functions/sem_init.html>`_,
  * because it would block the whole simulation.
  * Instead, you should use the present class, that offers a very similar interface.
  *
- * As for any S4U object, Semaphores are using the @ref s4u_raii "RAII idiom" for memory management.
- * Use #create() to get a simgrid::s4u::SemaphorePtr to a newly created semaphore
- * and only manipulate simgrid::s4u::SemaphorePtr.
+ * An example is available in Section :ref:`s4u_ex_IPC`.
+ *
+ * As for any S4U object, you can use the :ref:`RAII idiom <s4u_raii>` for memory management of semaphores.
+ * Use :cpp:func:`create() <simgrid::s4u::Mutex::create()>` to get a :cpp:type:`simgrid::s4u::SemaphorePtr` to a newly
+ * created semaphore, that will get automatically freed when the variable goes out of scope.
+ * @endrst
  *
  */
 class XBT_PUBLIC Semaphore {
@@ -36,11 +39,10 @@ public:
   explicit Semaphore(unsigned int initial_capacity);
   ~Semaphore();
 
-  // No copy:
-  /** You cannot create a new semaphore by copying an existing one. Use SemaphorePtr instead */
-  Semaphore(Semaphore const&) = delete;
-  /** You cannot create a new semaphore by value assignment either. Use SemaphorePtr instead */
-  Semaphore& operator=(Semaphore const&) = delete;
+#ifndef DOXYGEN
+  Semaphore(Semaphore const&) = delete;            // No copy constructor. Use SemaphorePtr instead
+  Semaphore& operator=(Semaphore const&) = delete; // No direct assignment either. Use SemaphorePtr instead
+#endif
 
   /** Constructs a new semaphore */
   static SemaphorePtr create(unsigned int initial_capacity);

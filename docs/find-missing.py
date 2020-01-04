@@ -42,8 +42,18 @@ xml_files = [
     'build/xml/classsimgrid_1_1s4u_1_1Semaphore.xml',
     'build/xml/classsimgrid_1_1s4u_1_1VirtualMachine.xml',
     'build/xml/actor_8h.xml',
+    'build/xml/barrier_8h.xml',
+    'build/xml/cond_8h.xml',
     'build/xml/engine_8h.xml',
-    'build/xml/vm_8h.xml'
+    'build/xml/forward_8h.xml',
+    'build/xml/host_8h.xml',
+    'build/xml/link_8h.xml',
+    'build/xml/mailbox_8h.xml',
+    'build/xml/msg_8h.xml',
+    'build/xml/mutex_8h.xml',
+    'build/xml/semaphore_8h.xml',
+    'build/xml/vm_8h.xml',
+    'build/xml/zone_8h.xml'
 ]
 
 python_modules = [
