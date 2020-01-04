@@ -192,11 +192,12 @@ private:
   {
     const static TaskVtable vtable {
       // Call:
-      [](TaskUnion& buffer, Args&&... args) {
+      [](TaskUnion& buffer, Args... args) {
         F* src = reinterpret_cast<F*>(&buffer);
         F code = std::move(*src);
         src->~F();
-        return code(std::move(args)...);
+        // NOTE: std::forward<Args>(args)... is correct.
+        return code(std::forward<Args>(args)...);
       },
       // Destroy:
       std::is_trivially_destructible<F>::value ?
@@ -221,10 +222,11 @@ private:
   {
     const static TaskVtable vtable {
       // Call:
-      [](TaskUnion& buffer, Args&&... args) {
+      [](TaskUnion& buffer, Args... args) {
         // Delete F when we go out of scope:
         std::unique_ptr<F> code(*reinterpret_cast<F**>(&buffer));
-        return (*code)(std::move(args)...);
+        // NOTE: std::forward<Args>(args)... is correct.
+        return (*code)(std::forward<Args>(args)...);
       },
       // Destroy:
       [](TaskUnion& buffer) {
@@ -244,13 +246,15 @@ public:
   operator bool() const { return vtable_ != nullptr; }
   bool operator!() const { return vtable_ == nullptr; }
 
-  R operator()(Args&&... args)
+  R operator()(Args... args)
   {
     if (vtable_ == nullptr)
       throw std::bad_function_call();
     const TaskVtable* vtable = vtable_;
     vtable_ = nullptr;
-    return vtable->call(buffer_, std::move(args)...);
+    // NOTE: std::forward<Args>(args)... is correct.
+    // see C++ [func.wrap.func.inv] for an example
+    return vtable->call(buffer_, std::forward<Args>(args)...);
   }
 };
 
