@@ -934,10 +934,8 @@ Synchronization Objects
 .. _API_s4u_Barrier:
 
 ================
-⁣  class Barrier
+⁣  Barrier
 ================
-
-.. doxygentypedef:: BarrierPtr
 
 .. autodoxyclass:: simgrid::s4u::Barrier
 
@@ -945,9 +943,30 @@ Synchronization Objects
 
       .. group-tab:: C++
 
+         .. code-block:: C++
+
+            #include <simgrid/s4u/Barrier.hpp>
+
+         .. doxygentypedef:: BarrierPtr
+
          .. autodoxymethod:: simgrid::s4u::Barrier::Barrier(unsigned int expected_actors)
          .. autodoxymethod:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
          .. autodoxymethod:: simgrid::s4u::Barrier::wait()
+
+      .. group-tab:: C
+
+         .. code-block:: C
+
+            #include <simgrid/barrier.hpp>
+
+         .. doxygentypedef:: sg_bar_t
+         .. cpp:type:: const s4u_Barrier* const_sg_bar_t
+
+            Constant pointer to a SimGrid barrier object.
+
+         .. autodoxymethod:: sg_barrier_init(unsigned int count)
+         .. autodoxymethod:: sg_barrier_destroy(const_sg_bar_t bar)
+         .. autodoxymethod:: sg_barrier_wait(sg_bar_t bar)
 
 
 .. _API_s4u_ConditionVariable:
@@ -965,7 +984,7 @@ Basic management
 
       .. group-tab:: C++
 
-         .. code-block:: C
+         .. code-block:: C++
 
             #include <simgrid/s4u/ConditionVariable.hpp>
 

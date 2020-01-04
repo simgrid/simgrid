@@ -233,7 +233,9 @@ typedef struct s_smx_sem* smx_sem_t;
 
 #endif
 
+/** Pointer to a SimGrid barrier object */
 typedef s4u_Barrier* sg_bar_t;
+/** Constant pointer to a SimGrid barrier object */
 typedef const s4u_Barrier* const_sg_bar_t;
 typedef s4u_ConditionVariable* sg_cond_t;
 typedef const s4u_ConditionVariable* const_sg_cond_t;
