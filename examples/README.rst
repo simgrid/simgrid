@@ -408,28 +408,28 @@ Classical synchronization objects
 ---------------------------------
 
  - **Barrier:**
-   Shows how to use simgrid::s4u::Barrier synchronization objects.
+   Shows how to use :cpp:type:`simgrid::s4u::Barrier` synchronization objects.
 
    .. tabs::
 
       .. example-tab:: examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp
 
  - **Condition variable:**
-   Shows how to use simgrid::s4u::ConditionVariable synchronization objects.
+   Shows how to use :cpp:type:`simgrid::s4u::ConditionVariable` synchronization objects.
 
    .. tabs::
 
       .. example-tab:: examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable.cpp
 
  - **Mutex:**
-   Shows how to use simgrid::s4u::Mutex synchronization objects.
+   Shows how to use :cpp:type:`simgrid::s4u::Mutex` synchronization objects.
 
    .. tabs::
 
       .. example-tab:: examples/s4u/synchro-mutex/s4u-synchro-mutex.cpp
 
  - **Semaphore:**
-   Shows how to use simgrid::s4u::Semaphore synchronization objects.
+   Shows how to use :cpp:type:`simgrid::s4u::Semaphore` synchronization objects.
 
    .. tabs::
 

@@ -953,7 +953,7 @@ Synchronization Objects
 .. _API_s4u_ConditionVariable:
 
 ==========================
-⁣  class ConditionVariable
+⁣  Condition variable
 ==========================
 
 .. autodoxyclass:: simgrid::s4u::ConditionVariable
@@ -992,17 +992,17 @@ Waiting and notifying
 
          .. autodoxymethod:: simgrid::s4u::ConditionVariable::notify_all()
          .. autodoxymethod:: simgrid::s4u::ConditionVariable::notify_one()
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(MutexPtr lock)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< Mutex > &lock)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(s4u::MutexPtr lock)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< s4u::Mutex > &lock)
          .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< Mutex > &lock, P pred)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< Mutex > &lock, double duration)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< Mutex > &lock, double duration, P pred)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< Mutex > &lock, std::chrono::duration< Rep, Period > duration)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< Mutex > &lock, std::chrono::duration< Rep, Period > duration, P pred)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time, P pred)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< Mutex > &lock, double timeout_time)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< Mutex > &lock, double timeout_time, P pred)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, double duration)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, double duration, P pred)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, std::chrono::duration< Rep, Period > duration)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, std::chrono::duration< Rep, Period > duration, P pred)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time, P pred)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, double timeout_time)
+         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, double timeout_time, P pred)
 
       .. group-tab:: C
 
