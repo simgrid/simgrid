@@ -416,6 +416,8 @@ include examples/s4u/routing-get-clusters/s4u-routing-get-clusters.cpp
 include examples/s4u/routing-get-clusters/s4u-routing-get-clusters.tesh
 include examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp
 include examples/s4u/synchro-barrier/s4u-synchro-barrier.tesh
+include examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable.cpp
+include examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable.tesh
 include examples/s4u/synchro-mutex/s4u-synchro-mutex.cpp
 include examples/s4u/synchro-mutex/s4u-synchro-mutex.tesh
 include examples/s4u/synchro-semaphore/s4u-synchro-semaphore.cpp
@@ -1796,6 +1798,7 @@ include docs/source/Experimental_Setup.rst
 include docs/source/Installing_SimGrid.rst
 include docs/source/Introduction.rst
 include docs/source/Platform_Examples.rst
+include docs/source/Platform_Routing.rst
 include docs/source/Plugins.rst
 include docs/source/Start_Your_Own_Project.rst
 include docs/source/Tutorial_Algorithms.rst
