@@ -965,7 +965,7 @@ Basic management
          .. doxygentypedef:: sg_mutex_t
          .. cpp:type:: const s4u_Mutex* const_sg_mutex_t
 
-            Constant pointer to a SimGrid mutex object.
+            Pointer to a constant mutex object.
 
          .. autodoxymethod:: sg_mutex_init()
          .. autodoxymethod:: sg_mutex_destroy(const_sg_mutex_t mutex)
@@ -1018,7 +1018,7 @@ Locking
          .. doxygentypedef:: sg_bar_t
          .. cpp:type:: const s4u_Barrier* const_sg_bar_t
 
-            Constant pointer to a SimGrid barrier object.
+            Pointer to a constant barrier object.
 
          .. autodoxymethod:: sg_barrier_init(unsigned int count)
          .. autodoxymethod:: sg_barrier_destroy(const_sg_bar_t bar)
@@ -1120,7 +1120,7 @@ Basic management
          .. doxygentypedef:: sg_sem_t
          .. cpp:type:: const s4u_Semaphore* const_sg_sem_t
 
-            Constant pointer to a SimGrid semaphore object.
+            Pointer to a constant semaphore object.
 
          .. autodoxymethod:: sg_sem_init(int initial_value)
          .. autodoxymethod:: sg_sem_destroy(const_sg_sem_t sem)
