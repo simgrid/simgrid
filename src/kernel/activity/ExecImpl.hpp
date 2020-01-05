@@ -15,13 +15,13 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
-  resource::Action* timeout_detector_ = nullptr;
+  std::unique_ptr<resource::Action, std::function<void(resource::Action*)>> timeout_detector_{
+      nullptr, [](resource::Action* a) { a->unref(); }};
   double sharing_penalty_             = 1.0;
   double bound_                       = 0.0;
   std::vector<s4u::Host*> hosts_;
   std::vector<double> flops_amounts_;
   std::vector<double> bytes_amounts_;
-  ~ExecImpl();
 
 public:
   ExecImpl& set_timeout(double timeout);

@@ -99,13 +99,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-ExecImpl::~ExecImpl()
-{
-  if (timeout_detector_)
-    timeout_detector_->unref();
-  XBT_DEBUG("Destroy exec %p", this);
-}
-
 ExecImpl& ExecImpl::set_host(s4u::Host* host)
 {
   if (not hosts_.empty())
@@ -123,7 +116,7 @@ ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
 ExecImpl& ExecImpl::set_timeout(double timeout)
 {
   if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
-    timeout_detector_ = hosts_.front()->pimpl_cpu->sleep(timeout);
+    timeout_detector_.reset(hosts_.front()->pimpl_cpu->sleep(timeout));
     timeout_detector_->set_activity(this);
   }
   return *this;
@@ -210,12 +203,7 @@ void ExecImpl::post()
   }
 
   clean_action();
-
-  if (timeout_detector_) {
-    timeout_detector_->unref();
-    timeout_detector_ = nullptr;
-  }
-
+  timeout_detector_.reset();
   /* Answer all simcalls associated with the synchro */
   finish();
 }
