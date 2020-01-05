@@ -33,15 +33,11 @@ namespace context {
 class BoostContext : public SwappedContext {
 public:
   BoostContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory);
-  ~BoostContext() override;
 
   void swap_into(SwappedContext* to) override;
 
 private:
-#if BOOST_VERSION < 105600
-  boost::context::fcontext_t* fc_ = nullptr;
-  typedef intptr_t arg_type;
-#elif BOOST_VERSION < 106100
+#if BOOST_VERSION < 106100
   boost::context::fcontext_t fc_;
   typedef intptr_t arg_type;
 #else

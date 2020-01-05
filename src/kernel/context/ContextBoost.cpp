@@ -40,20 +40,7 @@ BoostContext::BoostContext(std::function<void()>&& code, actor::ActorImpl* actor
 #else
     this->fc_ = boost::context::detail::make_fcontext(stack, smx_context_stack_size, BoostContext::wrapper);
 #endif
-
-  } else {
-#if BOOST_VERSION < 105600
-    this->fc_ = new boost::context::fcontext_t();
-#endif
   }
-}
-
-BoostContext::~BoostContext()
-{
-#if BOOST_VERSION < 105600
-  if (not get_stack())
-    delete this->fc_;
-#endif
 }
 
 void BoostContext::wrapper(BoostContext::arg_type arg)
@@ -82,9 +69,7 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
 void BoostContext::swap_into(SwappedContext* to_)
 {
   BoostContext* to = static_cast<BoostContext*>(to_);
-#if BOOST_VERSION < 105600
-  boost::context::jump_fcontext(this->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
-#elif BOOST_VERSION < 106100
+#if BOOST_VERSION < 106100
   boost::context::jump_fcontext(&this->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
 #else
   BoostContext* ctx[2] = {this, to};
