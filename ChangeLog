@@ -21,7 +21,7 @@ Kernel:
 
 XBT:
 - Remove unused parameter 'free_ctn' for xbt_dict_set() and xbt_dict_set_ext().
-- Drop unused xbt_dict functions.
+- Drop unused xbt_dict and xbt_dynar functions.
 - New module: random, providing classical random numbers generators.
 
 SMPI:

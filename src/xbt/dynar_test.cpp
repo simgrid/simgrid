@@ -75,19 +75,6 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
     }
     REQUIRE(xbt_dynar_is_empty(d));
 
-    for (int i = 0; i < NB_ELEM; i++) {
-      xbt_dynar_push_as(d, int, -1);
-    }
-    int* pi;
-    xbt_dynar_foreach_ptr(d, cursor, pi) { *pi = 0; }
-    xbt_dynar_foreach (d, cursor, cpt) {
-      REQUIRE(cpt == 0); // The value is not the same as the expected one.
-    }
-    xbt_dynar_foreach_ptr(d, cursor, pi) { *pi = 1; }
-    xbt_dynar_foreach (d, cursor, cpt) {
-      REQUIRE(cpt == 1); // The value is not the same as the expected one
-    }
-
     /* 5. Free the resources */
     xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
     xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
@@ -111,24 +98,11 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
     for (int i = 0; i < NB_ELEM; i++) {
       xbt_dynar_push_as(d, int, i);
     }
-    for (int i = 0; i < NB_ELEM / 5; i++) {
-      xbt_dynar_insert_at_as(d, NB_ELEM / 2, int, i);
-    }
 
-    for (int i = 0; i < NB_ELEM / 2; i++) {
+    for (int i = 0; i < NB_ELEM; i++) {
       int val;
       xbt_dynar_shift(d, &val);
       REQUIRE(val == i); // The retrieved value is not the same than the injected one at the beginning
-    }
-    for (int i = 999; i >= 0; i--) {
-      int val;
-      xbt_dynar_shift(d, &val);
-      REQUIRE(val == i); // The retrieved value is not the same than the injected one in the middle
-    }
-    for (int i = 2500; i < NB_ELEM; i++) {
-      int val;
-      xbt_dynar_shift(d, &val);
-      REQUIRE(val == i); // The retrieved value is not the same than the injected one at the end
     }
     xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
     xbt_dynar_free(&d); /* free the struct twice here to check that it's ok, but freeing  it only once */
@@ -179,27 +153,6 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
       int val;
       xbt_dynar_remove_at(d, 0, &val);
       REQUIRE(i == val); // The retrieved value is not the same than the injected one
-    }
-    REQUIRE(xbt_dynar_is_empty(d));
-    xbt_dynar_free(&d);
-
-    /* ********************* */
-    INFO("==== Insert " << NB_ELEM << " int in reverse order, traverse them, remove them");
-    d = xbt_dynar_new(sizeof(int), nullptr);
-    for (int i = NB_ELEM - 1; i >= 0; i--) {
-      xbt_dynar_replace(d, i, &i);
-    }
-
-    /* 3. Traverse the dynar */
-    xbt_dynar_foreach (d, cursor, cpt) {
-      REQUIRE(cursor == (unsigned)cpt); // The retrieved value is not the same than the injected one
-    }
-    /* end_of_traversal */
-
-    for (int i = NB_ELEM - 1; i >= 0; i--) {
-      int val;
-      xbt_dynar_remove_at(d, xbt_dynar_length(d) - 1, &val);
-      REQUIRE(val == i); // The retrieved value is not the same than the injected one
     }
     REQUIRE(xbt_dynar_is_empty(d));
     xbt_dynar_free(&d);
@@ -328,13 +281,6 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
       snprintf(buf, 1023, "%d", i);
       s1 = xbt_strdup(buf);
       xbt_dynar_push(d, &s1);
-    }
-    for (int k = 0; k < 3; k++) {
-      for (int i = 0; i < NB_ELEM; i++) {
-        snprintf(buf, 1023, "%d", i);
-        s1 = xbt_strdup(buf);
-        xbt_dynar_replace(d, i, &s1);
-      }
     }
     for (int i = 0; i < NB_ELEM; i++) {
       snprintf(buf, 1023, "%d", i);
