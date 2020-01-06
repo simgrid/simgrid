@@ -429,6 +429,11 @@ Creating actors
 
          #include <simgrid/actor.h>
 
+      .. doxygentypedef:: sg_actor_t
+      .. cpp:type:: const s4u_Actor* const_sg_actor_t
+
+         Pointer to a constant actor object.
+
       .. autodoxymethod:: sg_actor_init(const char *name, sg_host_t host)
       .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char **argv)
 
