@@ -71,14 +71,9 @@ XBT_PUBLIC unsigned int xbt_dict_size(const_xbt_dict_t dict);
  */
 
 XBT_PUBLIC void xbt_dict_set(xbt_dict_t dict, const char* key, void* data);
-XBT_PUBLIC void* xbt_dict_get(const_xbt_dict_t dict, const char* key);
 XBT_PUBLIC void* xbt_dict_get_or_null(const_xbt_dict_t dict, const char* key);
-XBT_PUBLIC char* xbt_dict_get_key(const_xbt_dict_t dict, const void* data);
-XBT_PUBLIC xbt_dictelm_t xbt_dict_get_elm(const_xbt_dict_t dict, const char* key);
 XBT_PUBLIC xbt_dictelm_t xbt_dict_get_elm_or_null(const_xbt_dict_t dict, const char* key);
 
-XBT_PUBLIC void xbt_dict_remove(xbt_dict_t dict, const char* key);
-XBT_PUBLIC void xbt_dict_reset(xbt_dict_t dict);
 XBT_PUBLIC int xbt_dict_length(const_xbt_dict_t dict);
 XBT_PUBLIC int xbt_dict_is_empty(const_xbt_dict_t dict);
 
@@ -91,7 +86,6 @@ XBT_PUBLIC int xbt_dict_is_empty(const_xbt_dict_t dict);
  *  @{
  */
 XBT_PUBLIC void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data);
-XBT_PUBLIC void* xbt_dict_get_ext(const_xbt_dict_t dict, const char* key, int key_len);
 XBT_PUBLIC void* xbt_dict_get_or_null_ext(const_xbt_dict_t dict, const char* key, int key_len);
 XBT_PUBLIC void xbt_dict_remove_ext(xbt_dict_t dict, const char* key, int key_len);
 
@@ -126,11 +120,6 @@ struct s_xbt_dict_cursor {
 /** @brief Cursor on dictionaries (opaque type) */
 typedef struct s_xbt_dict_cursor *xbt_dict_cursor_t;
 typedef const struct s_xbt_dict_cursor* const_xbt_dict_cursor_t;
-
-static inline xbt_dictelm_t xbt_dict_cursor_get_elm(const_xbt_dict_cursor_t cursor)
-{
-  return cursor->current;
-}
 
 XBT_PUBLIC xbt_dict_cursor_t xbt_dict_cursor_new(const_xbt_dict_t dict);
 XBT_PUBLIC void xbt_dict_cursor_free(xbt_dict_cursor_t* cursor);

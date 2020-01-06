@@ -52,7 +52,7 @@ static xbt_dict_t new_fixture()
 static void search_ext(const_xbt_dict_t head, const char* key, const char* data)
 {
   INFO("Search " << STR(key));
-  char* found = (char*)xbt_dict_get(head, key);
+  char* found = (char*)xbt_dict_get_or_null(head, key);
   INFO("Found " << STR(found));
   if (data) {
     REQUIRE(found); // data do not match expectations: found null while searching for data
@@ -71,7 +71,7 @@ static void search(const_xbt_dict_t head, const char* key)
 static void debugged_remove(xbt_dict_t head, const char* key)
 {
   INFO("Remove '" << STR(key) << "'");
-  xbt_dict_remove(head, key);
+  xbt_dict_remove_ext(head, key, strlen(key));
 }
 
 static void traverse(const_xbt_dict_t head)
@@ -90,7 +90,7 @@ static void traverse(const_xbt_dict_t head)
 static void search_not_found(const_xbt_dict_t head, const char* data)
 {
   INFO("Search " << STR(data) << " (expected not to be found)");
-  REQUIRE_THROWS_AS(xbt_dict_get(head, data), std::out_of_range);
+  REQUIRE(xbt_dict_get_or_null(head, data) == nullptr);
 }
 
 static void count(const_xbt_dict_t dict, int length)
@@ -104,25 +104,6 @@ static void count(const_xbt_dict_t dict, int length)
   int effective = 0;
   xbt_dict_foreach (dict, cursor, key, data)
     effective++;
-
-  REQUIRE(effective == length); // Effective length differs
-}
-
-static void count_check_get_key(const_xbt_dict_t dict, int length)
-{
-  xbt_dict_cursor_t cursor;
-  char* key;
-  void* data;
-  int effective = 0;
-
-  INFO("Count elements (expecting " << length << "), and test the getkey function");
-  REQUIRE(xbt_dict_length(dict) == length); // Announced length differs
-
-  xbt_dict_foreach (dict, cursor, key, data) {
-    effective++;
-    char* key2 = xbt_dict_get_key(dict, data);
-    xbt_assert(not strcmp(key, key2), "The data was registered under %s instead of %s as expected", key2, key);
-  }
 
   REQUIRE(effective == length); // Effective length differs
 }
@@ -155,7 +136,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
     INFO("Traverse the full dictionary");
     head = new_fixture();
-    count_check_get_key(head, 7);
+    count(head, 7);
 
     debugged_add_ext(head, "toto", "tutu");
     search_ext(head, "toto", "tutu");
@@ -170,29 +151,29 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
     /* CHANGING */
     head = new_fixture();
-    count_check_get_key(head, 7);
+    count(head, 7);
     INFO("Change 123 to 'Changed 123'");
     xbt_dict_set(head, "123", xbt_strdup("Changed 123"));
-    count_check_get_key(head, 7);
+    count(head, 7);
 
     INFO("Change 123 back to '123'");
     xbt_dict_set(head, "123", xbt_strdup("123"));
-    count_check_get_key(head, 7);
+    count(head, 7);
 
     INFO("Change 12a to 'Dummy 12a'");
     xbt_dict_set(head, "12a", xbt_strdup("Dummy 12a"));
-    count_check_get_key(head, 7);
+    count(head, 7);
 
     INFO("Change 12a to '12a'");
     xbt_dict_set(head, "12a", xbt_strdup("12a"));
-    count_check_get_key(head, 7);
+    count(head, 7);
 
     INFO("Traverse the resulting dictionary");
     traverse(head);
 
     /* RETRIEVE */
     INFO("Search 123");
-    const char* data = (char*)xbt_dict_get(head, "123");
+    const char* data = (char*)xbt_dict_get_or_null(head, "123");
     REQUIRE((data && strcmp("123", data) == 0));
 
     search_not_found(head, "Can't be found");
@@ -252,13 +233,6 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     REQUIRE_THROWS_AS(debugged_remove(head, "12346"), std::out_of_range);
     traverse(head);
 
-    INFO("Free dict, create new fresh one, and then reset the dict");
-    xbt_dict_free(&head);
-    head = new_fixture();
-    xbt_dict_reset(head);
-    count(head, 0);
-    traverse(head);
-
     INFO("Free the dictionary twice");
     xbt_dict_free(&head);
     xbt_dict_free(&head);
@@ -311,8 +285,8 @@ TEST_CASE("xbt::dict: dict data container", "dict")
         } while (data != nullptr);
 
         xbt_dict_set(head, key, key);
-        data = (char*)xbt_dict_get(head, key);
-        REQUIRE(not strcmp(key, data)); // Retrieved value != Injected value
+        data = (char*)xbt_dict_get_or_null(head, key);
+        REQUIRE((data && not strcmp(key, data))); // Retrieved value != Injected value
 
         count(head, j + 1);
       }
@@ -338,10 +312,10 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     for (int i = 0; i < 20; i++) {
       for (int j = 0; j < NB_ELM; j++) {
         snprintf(key, 10, "%d", j);
-        void* data = xbt_dict_get(head, key);
-        REQUIRE(not strcmp(key, (char*)data)); // with get, key != data
-        data = xbt_dict_get_ext(head, key, strlen(key));
-        REQUIRE(not strcmp(key, (char*)data)); // with get_ext, key != data
+        void* data = xbt_dict_get_or_null(head, key);
+        REQUIRE((data && not strcmp(key, (char*)data))); // with get, key != data
+        data = xbt_dict_get_or_null_ext(head, key, strlen(key));
+        REQUIRE((data && not strcmp(key, (char*)data))); // with get_ext, key != data
       }
     }
     xbt_free(key);
@@ -350,7 +324,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     key = (char*)xbt_malloc(10);
     for (int j = 0; j < NB_ELM; j++) {
       snprintf(key, 10, "%d", j);
-      xbt_dict_remove(head, key);
+      xbt_dict_remove_ext(head, key, strlen(key));
     }
     xbt_free(key);
 
@@ -371,8 +345,8 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
     INFO("Check elements");
     for (int i = 0; i < count; ++i) {
-      xbt_dict_get_ext(dict, (char*)&i, sizeof(i));
-      REQUIRE(xbt_dict_size(dict) == (unsigned)count); // Unexpected value at index i
+      void* data = xbt_dict_get_or_null_ext(dict, (char*)&i, sizeof(i));
+      REQUIRE((intptr_t)data == i); // Unexpected value at index i
     }
 
     INFO("Free the array");

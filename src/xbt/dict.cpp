@@ -192,25 +192,8 @@ void xbt_dict_set(xbt_dict_t dict, const char* key, void* data)
  * @param key_len the size of the @a key
  * @return the data that we are looking for
  *
- * Search the given @a key. Throws std::out_of_range when not found.
+ * Search the given @a key. Returns nullptr when not found.
  */
-void* xbt_dict_get_ext(const_xbt_dict_t dict, const char* key, int key_len)
-{
-  unsigned int hash_code = xbt_str_hash_ext(key, key_len);
-  const s_xbt_dictelm* current = dict->table[hash_code & dict->table_size];
-
-  while (current != nullptr && (hash_code != current->hash_code || key_len != current->key_len
-          || memcmp(key, current->key, key_len))) {
-    current = current->next;
-  }
-
-  if (current == nullptr)
-    throw std::out_of_range(simgrid::xbt::string_printf("key %.*s not found", key_len, key));
-
-  return current->content;
-}
-
-/** @brief like xbt_dict_get_ext(), but returning nullptr when not found */
 void* xbt_dict_get_or_null_ext(const_xbt_dict_t dict, const char* key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
@@ -228,60 +211,13 @@ void* xbt_dict_get_or_null_ext(const_xbt_dict_t dict, const char* key, int key_l
 }
 
 /**
- * @brief retrieve the key associated to that object. Warning, that's a linear search
- *
- * Returns nullptr if the object cannot be found
- */
-char* xbt_dict_get_key(const_xbt_dict_t dict, const void* data)
-{
-  for (int i = 0; i <= dict->table_size; i++) {
-    const s_xbt_dictelm* current = dict->table[i];
-    while (current != nullptr) {
-      if (current->content == data)
-        return current->key;
-      current = current->next;
-    }
-  }
-  return nullptr;
-}
-
-/**
  * @brief Retrieve data from the dict (null-terminated key)
  *
  * @param dict the dealer of data
  * @param key the key to find data
  * @return the data that we are looking for
  *
- * Search the given @a key. Throws std::out_of_range when not found.
- * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
- */
-void* xbt_dict_get(const_xbt_dict_t dict, const char* key)
-{
-  return xbt_dict_get_elm(dict, key)->content;
-}
-
-/**
- * @brief Retrieve element from the dict (null-terminated key)
- *
- * @param dict the dealer of data
- * @param key the key to find data
- * @return the s_xbt_dictelm_t that we are looking for
- *
- * Search the given @a key. Throws std::out_of_range when not found.
- * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
- */
-xbt_dictelm_t xbt_dict_get_elm(const_xbt_dict_t dict, const char* key)
-{
-  xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
-
-  if (current == nullptr)
-    throw std::out_of_range(simgrid::xbt::string_printf("key %s not found", key));
-
-  return current;
-}
-
-/**
- * @brief like xbt_dict_get(), but returning nullptr when not found
+ * Search the given @a key. Returns nullptr when not found.
  */
 void* xbt_dict_get_or_null(const_xbt_dict_t dict, const char* key)
 {
@@ -294,7 +230,13 @@ void* xbt_dict_get_or_null(const_xbt_dict_t dict, const char* key)
 }
 
 /**
- * @brief like xbt_dict_get_elm(), but returning nullptr when not found
+ * @brief Retrieve element from the dict (null-terminated key)
+ *
+ * @param dict the dealer of data
+ * @param key the key to find data
+ * @return the s_xbt_dictelm_t that we are looking for
+ *
+ * Search the given @a key. Returns nullptr when not found.
  */
 xbt_dictelm_t xbt_dict_get_elm_or_null(const_xbt_dict_t dict, const char* key)
 {
@@ -342,40 +284,6 @@ void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 
   xbt_dictelm_free(dict, current);
   dict->count--;
-}
-
-/**
- * @brief Remove data from the dict (null-terminated key)
- *
- * @param dict the dict
- * @param key the key of the data to be removed
- *
- * Remove the entry associated with the given @a key
- */
-void xbt_dict_remove(xbt_dict_t dict, const char *key)
-{
-  xbt_dict_remove_ext(dict, key, strlen(key));
-}
-
-/** @brief Remove all data from the dict */
-void xbt_dict_reset(xbt_dict_t dict)
-{
-  if (dict->count == 0)
-    return;
-
-  for (int i = 0; i <= dict->table_size; i++) {
-    xbt_dictelm_t previous = nullptr;
-    xbt_dictelm_t current = dict->table[i];
-    while (current != nullptr) {
-      previous = current;
-      current = current->next;
-      xbt_dictelm_free(dict, previous);
-    }
-    dict->table[i] = nullptr;
-  }
-
-  dict->count = 0;
-  dict->fill = 0;
 }
 
 /**
