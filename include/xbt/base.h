@@ -13,21 +13,6 @@
 #  define _GNU_SOURCE
 #endif
 
-// Teach the compiler that some code path is unreachable:
-#if defined(__has_builtin)
-#  if __has_builtin(__builtin_unreachable)
-#    define XBT_UNREACHABLE() __builtin_unreachable()
-#  else
-#    include <stdlib.h>
-#    define XBT_UNREACHABLE() abort()
-#  endif
-#elif (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
-#  define XBT_UNREACHABLE() __builtin_unreachable()
-#else
-#  include <stdlib.h>
-#  define XBT_UNREACHABLE() abort()
-#endif
-
 /* On MinGW, stdio.h defines __MINGW_PRINTF_FORMAT and __MINGW_SCANF_FORMAT
    which are the suitable format style (either gnu_printf or ms_printf)
    depending on which version is available (__USE_MINGW_ANSI_STDIO): */
