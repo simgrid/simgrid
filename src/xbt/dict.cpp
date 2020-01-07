@@ -33,8 +33,7 @@ constexpr int MAX_FILL_PERCENT = 80;
  */
 xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
 {
-  if (dict_elm_mallocator == nullptr)
-    xbt_dict_preinit();
+  xbt_dict_preinit();
 
   xbt_dict_t dict;
 
