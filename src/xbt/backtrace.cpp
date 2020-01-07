@@ -10,15 +10,9 @@
 #include <xbt/sysdep.h>
 #include <xbt/virtu.h>
 
-#include <cstddef>
+#include <cstdio>
 #include <cstdlib>
-#include <cstring>
-#include <fstream>
 #include <sstream>
-#include <sys/stat.h>
-#include <vector>
-
-#include <boost/algorithm/string.hpp>
 
 // Try to detect and use the C++ itanium ABI for name demangling:
 #ifdef __GXX_ABI_VERSION
@@ -81,8 +75,8 @@ std::string Backtrace::resolve() const
 void Backtrace::display() const
 {
   std::string backtrace = resolve();
-  fprintf(stderr, "Backtrace (displayed in actor %s):\n%s\n", xbt_procname(),
-          backtrace.empty() ? "(backtrace not set -- did you install Boost.Stacktrace?)" : backtrace.c_str());
+  std::fprintf(stderr, "Backtrace (displayed in actor %s):\n%s\n", xbt_procname(),
+               backtrace.empty() ? "(backtrace not set -- did you install Boost.Stacktrace?)" : backtrace.c_str());
 }
 
 } // namespace xbt

@@ -8,11 +8,9 @@
 
 #include <xbt/base.h>
 
-#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>
-#include <vector>
 
 SG_BEGIN_DECL
 /** @brief Shows a backtrace of the current location */
