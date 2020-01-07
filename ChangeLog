@@ -21,7 +21,12 @@ Kernel:
 
 XBT:
 - Remove unused parameter 'free_ctn' for xbt_dict_set() and xbt_dict_set_ext().
-- Drop unused xbt_dict and xbt_dynar functions.
+- Drop unused functions for dicts and dynars: xbt_dict_cursor_get_elm,
+  xbt_dict_get, xbt_dict_get_elm, xbt_dict_get_ext, xbt_dict_get_key,
+  xbt_dict_remove, xbt_dict_reset, xbt_dynar_compare, xbt_dynar_dump,
+  xbt_dynar_foreach_ptr, xbt_dynar_free_data, xbt_dynar_free_voidp,
+  xbt_dynar_init, xbt_dynar_insert_at_as, xbt_dynar_merge,
+  xbt_dynar_remove_n_at, xbt_dynar_replace, xbt_dynar_search, xbt_dynar_set.
 - New module: random, providing classical random numbers generators.
 
 SMPI:
