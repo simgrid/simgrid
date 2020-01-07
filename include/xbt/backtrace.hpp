@@ -38,15 +38,10 @@ class BacktraceImpl;
  */
 class Backtrace {
 public:
-  BacktraceImpl* impl_ = nullptr;
+  std::shared_ptr<BacktraceImpl> impl_;
   Backtrace();
-  Backtrace(const Backtrace& bt);
-  Backtrace(Backtrace&& bt);
-  Backtrace& operator=(const Backtrace& rhs);
-  Backtrace& operator=(Backtrace&& rhs);
-  ~Backtrace();
   /** @brief Translate the backtrace in a human friendly form, unmangled with source code locations. */
-  std::string const resolve() const;
+  std::string resolve() const;
   /** @brief Display the resolved backtrace on stderr */
   void display() const;
 };

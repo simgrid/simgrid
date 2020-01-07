@@ -57,94 +57,32 @@ std::unique_ptr<char, std::function<void(char*)>> demangle(const char* name)
 }
 
 class BacktraceImpl {
-  short refcount_ = 1;
-
-public:
-  void ref() { refcount_++; }
-  bool unref()
-  {
-    refcount_--;
-    if (refcount_ == 0) {
-      delete this;
-      return true;
-    } else {
-      return false;
-    }
-  }
 #if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
-  boost::stacktrace::stacktrace st;
+  const boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
+#else
+  const char st[1] = ""; // fallback value
 #endif
+public:
+  std::string resolve() const
+  {
+    std::stringstream ss;
+    ss << st;
+    return ss.str();
+  }
 };
 
-Backtrace::Backtrace()
-{
-#if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
-  impl_     = new BacktraceImpl();
-  impl_->st = boost::stacktrace::stacktrace();
-#endif
-}
+Backtrace::Backtrace() : impl_(std::make_shared<BacktraceImpl>()) {}
 
-Backtrace::Backtrace(const Backtrace& bt) : impl_(bt.impl_)
+std::string Backtrace::resolve() const
 {
-  if (impl_)
-    impl_->ref();
-}
-
-Backtrace::Backtrace(Backtrace&& bt)
-{
-  std::swap(impl_, bt.impl_);
-}
-
-Backtrace& Backtrace::operator=(const Backtrace& rhs)
-{
-  if (this != &rhs) {
-    if (impl_)
-      impl_->unref();
-    impl_ = rhs.impl_;
-    if (impl_)
-      impl_->ref();
-  }
-  return *this;
-}
-
-Backtrace& Backtrace::operator=(Backtrace&& rhs)
-{
-  if (this != &rhs) {
-    if (impl_)
-      impl_->unref();
-    impl_     = rhs.impl_;
-    rhs.impl_ = nullptr;
-  }
-  return *this;
-}
-
-Backtrace::~Backtrace()
-{
-  if (impl_)
-    impl_->unref();
-}
-
-std::string const Backtrace::resolve() const
-{
-  std::string result("");
-
-#if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
-  std::stringstream ss;
-  ss << impl_->st;
-  result.append(ss.str());
-#endif
-  return result;
+  return impl_->resolve();
 }
 
 void Backtrace::display() const
 {
   std::string backtrace = resolve();
-  if (backtrace.empty()) {
-    fprintf(stderr, "(backtrace not set -- did you install Boost.Stacktrace?)\n");
-    return;
-  }
-  fprintf(stderr, "Backtrace (displayed in actor %s):\n", xbt_procname());
-  std::fprintf(stderr, "%s\n", backtrace.c_str());
+  fprintf(stderr, "Backtrace (displayed in actor %s):\n%s\n", xbt_procname(),
+          backtrace.empty() ? "(backtrace not set -- did you install Boost.Stacktrace?)" : backtrace.c_str());
 }
 
 } // namespace xbt
