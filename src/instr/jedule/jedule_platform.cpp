@@ -31,14 +31,14 @@ Container::Container(const std::string& name) : name(name)
 void Container::add_child(jed_container_t child)
 {
   xbt_assert(child != nullptr);
-  this->children.emplace_back(child);
-  child->parent = this;
+  children_.emplace_back(child);
+  child->set_parent(this);
 }
 
 void Container::add_resources(std::vector<sg_host_t> hosts)
 {
-  this->children.clear();
-  this->last_id_ = 0;
+  children_.clear();
+  last_id_ = 0;
 
   for (auto const& host : hosts) {
     const char *host_name = sg_host_get_name(host);
@@ -65,26 +65,32 @@ void Container::create_hierarchy(const_sg_netzone_t from_as)
   }
 }
 
+int Container::get_child_position(Container* child)
+{
+  unsigned int i = 0;
+  int child_nb   = -1;
+
+  for (auto const& c : children_) {
+    if (c.get() == child) {
+      child_nb = i;
+      break;
+    }
+    i++;
+  }
+  return child_nb;
+}
+
 std::vector<int> Container::get_hierarchy()
 {
-  if(this->parent != nullptr ) {
-    if (not this->parent->children.empty()) {
+  if (parent_ != nullptr) {
+    if (not parent_->has_children()) {
       // we are in the last level
-      return this->parent->get_hierarchy();
+      return parent_->get_hierarchy();
     } else {
-      unsigned int i =0;
-      int child_nb = -1;
-
-      for (auto const& child : this->parent->children) {
-        if (child.get() == this) {
-          child_nb = i;
-          break;
-        }
-        i++;
-      }
+      int child_nb = parent_->get_child_position(this);
 
       xbt_assert( child_nb > - 1);
-      std::vector<int> heir_list = this->parent->get_hierarchy();
+      std::vector<int> heir_list = parent_->get_hierarchy();
       heir_list.insert(heir_list.begin(), child_nb);
       return heir_list;
     }
@@ -136,8 +142,8 @@ void Container::print_resources(FILE* jed_file)
 void Container::print(FILE* jed_file)
 {
   fprintf(jed_file, "    <res name=\"%s\">\n", this->name.c_str());
-  if (not this->children.empty()) {
-    for (auto const& child : this->children) {
+  if (not children_.empty()) {
+    for (auto const& child : children_) {
       child->print(jed_file);
     }
   } else {
@@ -164,7 +170,7 @@ static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, st
   for (auto const& host_name : hostgroup) {
     xbt_assert( host_name != nullptr );
     jed_container_t parent_cont = host2_simgrid_parent_container.at(host_name);
-    unsigned int id             = parent_cont->name2id.at(host_name);
+    unsigned int id             = parent_cont->get_id_by_name(host_name);
     id_list.push_back(id);
   }
   unsigned int nb_ids = id_list.size();
@@ -203,9 +209,9 @@ void get_resource_selection_by_hosts(std::vector<simgrid::jedule::Subset>& subse
     const simgrid::jedule::Container* parent = host2_simgrid_parent_container.at(host_name);
     xbt_assert( parent != nullptr );
 
-    auto host_group = parent2hostgroup.find(parent->name.c_str());
+    auto host_group = parent2hostgroup.find(parent->get_cname());
     if (host_group == parent2hostgroup.end())
-      parent2hostgroup.insert({parent->name.c_str(), std::vector<const char*>(1,host_name)});
+      parent2hostgroup.insert({parent->get_cname(), std::vector<const char*>(1, host_name)});
     else
       host_group->second.push_back(host_name);
   }

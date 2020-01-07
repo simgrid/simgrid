@@ -22,7 +22,7 @@ void jedule_log_sd_event(const_SD_task_t task)
   simgrid::jedule::Event event(std::string(SD_task_get_name(task)), SD_task_get_start_time(task),
                                SD_task_get_finish_time(task), "SD");
   event.add_resources(*task->allocation);
-  my_jedule->event_set_.emplace_back(std::move(event));
+  my_jedule->add_event(std::move(event));
 }
 
 void jedule_sd_init()
@@ -31,7 +31,6 @@ void jedule_sd_init()
   XBT_DEBUG("root name %s\n", root_comp->get_cname());
 
   my_jedule = new simgrid::jedule::Jedule(root_comp->get_name());
-  my_jedule->root_container_.create_hierarchy(root_comp);
 }
 
 void jedule_sd_exit()

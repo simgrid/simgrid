@@ -16,20 +16,24 @@
 namespace simgrid {
 namespace jedule{
 class XBT_PUBLIC Container {
+  int last_id_ = 0;
+  std::string name;
+  std::unordered_map<const char*, unsigned int> name2id;
+  Container* parent_ = nullptr;
+  std::vector<std::unique_ptr<Container>> children_;
+  std::vector<sg_host_t> resource_list;
+
 public:
   explicit Container(const std::string& name);
   Container(const Container&) = delete;
   Container& operator=(const Container&) = delete;
 
-private:
-  int last_id_   = 0;
+  const char* get_cname() const { return name.c_str(); }
+  void set_parent(Container* parent) { parent_ = parent; }
+  bool has_children() { return not children_.empty(); }
+  int get_child_position(Container* child);
+  unsigned int get_id_by_name(const char* name) { return name2id.at(name); }
 
-public:
-  std::string name;
-  std::unordered_map<const char*, unsigned int> name2id;
-  Container *parent = nullptr;
-  std::vector<std::unique_ptr<Container>> children;
-  std::vector<sg_host_t> resource_list;
   void add_child(Container* child);
   void add_resources(std::vector<sg_host_t> hosts);
   void create_hierarchy(const_sg_netzone_t from_as);
@@ -47,8 +51,8 @@ public:
   Container *parent;
 };
 
-}
-}
+} // namespace jedule
+} // namespace simgrid
 typedef simgrid::jedule::Container * jed_container_t;
 void get_resource_selection_by_hosts(std::vector<simgrid::jedule::Subset>& subset_list,
                                      const std::vector<sg_host_t>& host_list);

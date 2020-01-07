@@ -20,6 +20,11 @@ void Jedule::add_meta_info(char* key, char* value)
   this->meta_info_.insert({key, value});
 }
 
+void Jedule::add_event(const Event& event)
+{
+  event_set_.emplace_back(event);
+}
+
 void Jedule::write_output(FILE* file)
 {
   if (not this->event_set_.empty()) {
@@ -45,6 +50,6 @@ void Jedule::write_output(FILE* file)
   }
 }
 
-}
-}
+} // namespace jedule
+} // namespace simgrid
 #endif
