@@ -110,8 +110,17 @@ for name in python_modules:
     try:
         module = __import__(name)
     except Exception:
-        print("Cannot import {}. Did you set PYTHONPATH=../lib accordingly?".format(name))
-        sys.exit(1)
+        if os.path.exists("../lib") and "../lib" not in sys.path:
+            print("Adding ../lib to PYTHONPATH as {} cannot be imported".format(name))
+            sys.path.append("../lib")
+            try:
+                module = __import__(name)
+            except Exception:
+                print("Cannot import {}, even with PYTHONPATH=../lib".format(name))
+                sys.exit(1)
+        else:
+            print("Cannot import {}".format(name))
+            sys.exit(1)
     for sub in dir(module):
         if sub[0] == '_':
             continue
@@ -181,7 +190,7 @@ for arg in xml_files:
                 print ("member {}::{} is of kind {}".format(compoundname, name, kind))
 
 # Forget about the declarations that are done in the RST
-with os.popen('grep autodoxymethod:: source/*rst|sed \'s/^.*autodoxymethod:: //\'') as pse:
+with os.popen('grep autodoxymethod:: find-missing.ignore source/*rst|sed \'s/^.*autodoxymethod:: //\'') as pse:
     for line in (l.strip() for l in pse):
         (klass, obj, args) = (None, None, None)
         if "(" in line:
@@ -208,7 +217,7 @@ with os.popen('grep autodoxymethod:: source/*rst|sed \'s/^.*autodoxymethod:: //\
             doxy_funs[klass][obj].remove(args)
             if len(doxy_funs[klass][obj]) == 0:
                 del doxy_funs[klass][obj]
-with os.popen('grep autodoxyvar:: source/*rst|sed \'s/^.*autodoxyvar:: //\'') as pse:
+with os.popen('grep autodoxyvar:: find-missing.ignore source/*rst|sed \'s/^.*autodoxyvar:: //\'') as pse:
     for line in (l.strip() for l in pse):
         (klass, var) = line.rsplit('::', 1)
 
