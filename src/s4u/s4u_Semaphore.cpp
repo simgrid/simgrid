@@ -21,7 +21,7 @@ Semaphore::Semaphore(unsigned int initial_capacity)
 Semaphore::~Semaphore()
 {
   if (sem_ != nullptr) {
-    xbt_assert(sem_->sleeping_.empty(), "Cannot destroy semaphore since someone is still using it");
+    xbt_assert(not sem_->is_used(), "Cannot destroy semaphore since someone is still using it");
     delete sem_;
   }
 }

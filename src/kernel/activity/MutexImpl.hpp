@@ -18,6 +18,9 @@ class XBT_PUBLIC MutexImpl {
   std::atomic_int_fast32_t refcount_{1};
   s4u::Mutex piface_;
   bool locked_ = false;
+  actor::ActorImpl* owner_ = nullptr;
+  // List of sleeping actors:
+  actor::SynchroList sleeping_;
 
 public:
   MutexImpl() : piface_(this) {}
@@ -32,9 +35,8 @@ public:
   MutexImpl* ref();
   void unref();
 
-  actor::ActorImpl* owner_ = nullptr;
-  // List of sleeping actors:
-  actor::SynchroList sleeping_;
+  void remove_sleeping_actor(actor::ActorImpl& actor) { xbt::intrusive_erase(sleeping_, actor); }
+  actor::ActorImpl* get_owner() const { return owner_; }
 
   // boost::intrusive_ptr<Mutex> support:
   friend void intrusive_ptr_add_ref(MutexImpl* mutex)

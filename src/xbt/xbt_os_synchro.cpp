@@ -57,12 +57,12 @@ int xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
 
 void xbt_cond_signal(xbt_cond_t cond)
 {
-  cond->cond_.notify_one();
+  cond->get_iface()->notify_one();
 }
 
 void xbt_cond_broadcast(xbt_cond_t cond)
 {
-  cond->cond_.notify_all();
+  cond->get_iface()->notify_all();
 }
 
 void xbt_cond_destroy(xbt_cond_t cond)

@@ -20,7 +20,7 @@ ConditionVariablePtr ConditionVariable::create()
 {
   kernel::activity::ConditionVariableImpl* cond =
       kernel::actor::simcall([] { return new kernel::activity::ConditionVariableImpl(); });
-  return ConditionVariablePtr(&cond->cond_, false);
+  return ConditionVariablePtr(cond->get_iface(), false);
 }
 
 /**

@@ -28,9 +28,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-ConditionVariableImpl::ConditionVariableImpl() : cond_(this) {}
-ConditionVariableImpl::~ConditionVariableImpl() = default;
-
 /**
  * @brief Signalizes a condition.
  *
@@ -85,7 +82,7 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
 
   /* If there is a mutex unlock it */
   if (mutex != nullptr) {
-    xbt_assert(mutex->owner_ == issuer,
+    xbt_assert(mutex->get_owner() == issuer,
                "Actor %s cannot wait on ConditionVariable %p since it does not own the provided mutex %p",
                issuer->get_cname(), this, mutex);
     mutex_ = mutex;

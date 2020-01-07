@@ -15,22 +15,23 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC ConditionVariableImpl {
-public:
-  ConditionVariableImpl();
-  ~ConditionVariableImpl();
-
-  actor::SynchroList sleeping_; /* list of sleeping processes */
   MutexImpl* mutex_ = nullptr;
-  s4u::ConditionVariable cond_;
+  s4u::ConditionVariable piface_;
+  actor::SynchroList sleeping_; /* list of sleeping actors*/
 
-  void broadcast();
-  void signal();
-  void wait(MutexImpl* mutex, double timeout, actor::ActorImpl* issuer);
-
-private:
   std::atomic_int_fast32_t refcount_{1};
   friend void intrusive_ptr_add_ref(ConditionVariableImpl* cond);
   friend void intrusive_ptr_release(ConditionVariableImpl* cond);
+
+public:
+  ConditionVariableImpl() : piface_(this){};
+  ~ConditionVariableImpl() = default;
+
+  void remove_sleeping_actor(actor::ActorImpl& actor) { xbt::intrusive_erase(sleeping_, actor); }
+  s4u::ConditionVariable* get_iface() { return &piface_; }
+  void broadcast();
+  void signal();
+  void wait(MutexImpl* mutex, double timeout, actor::ActorImpl* issuer);
 };
 } // namespace activity
 } // namespace kernel
