@@ -42,11 +42,10 @@ void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::I
   else {
     /* we need a sleep action (even when there is no timeout) to be notified of host failures */
     if (synchro->get_disk() != nullptr)
-      synchro->timeout_detector_ = synchro->get_disk()->get_host()->pimpl_cpu->sleep(timeout);
+      synchro->set_timeout_detector(synchro->get_disk()->get_host()->pimpl_cpu->sleep(timeout));
     else
-      synchro->timeout_detector_ =
-          simgrid::s4u::Host::by_name(synchro->get_storage()->get_host())->pimpl_cpu->sleep(timeout);
-    synchro->timeout_detector_->set_activity(synchro);
+      synchro->set_timeout_detector(
+          simgrid::s4u::Host::by_name(synchro->get_storage()->get_host())->pimpl_cpu->sleep(timeout));
   }
 }
 

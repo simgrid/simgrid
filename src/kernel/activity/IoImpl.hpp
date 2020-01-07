@@ -20,12 +20,19 @@ class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
   sg_size_t size_                 = 0;
   s4u::Io::OpType type_           = s4u::Io::OpType::READ;
   sg_size_t performed_ioops_      = 0;
+  resource::Action* timeout_detector_ = nullptr;
 
 public:
   IoImpl& set_size(sg_size_t size);
   IoImpl& set_type(s4u::Io::OpType type);
   IoImpl& set_storage(resource::StorageImpl* storage);
   IoImpl& set_disk(resource::DiskImpl* disk);
+
+  void set_timeout_detector(resource::Action* action)
+  {
+    timeout_detector_ = action;
+    timeout_detector_->set_activity(this);
+  }
 
   sg_size_t get_performed_ioops() { return performed_ioops_; }
   resource::DiskImpl* get_disk() { return disk_; }
@@ -35,7 +42,6 @@ public:
   void post() override;
   void finish() override;
 
-  resource::Action* timeout_detector_ = nullptr;
   static xbt::signal<void(IoImpl const&)> on_start;
   static xbt::signal<void(IoImpl const&)> on_completion;
 };
