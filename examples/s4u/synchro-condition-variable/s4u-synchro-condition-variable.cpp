@@ -32,10 +32,8 @@ static void master_fun()
   data        = std::string("Example data");
   auto worker = simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), worker_fun, cv, mutex);
 
-  { // wait for the worker
-    std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
-    cv->wait(lock, []() { return done; });
-  }
+  // wait for the worker
+  cv->wait(std::unique_lock<simgrid::s4u::Mutex>(*mutex), []() { return done; });
   XBT_INFO("data is now '%s'.", data.c_str());
 
   worker->join();
