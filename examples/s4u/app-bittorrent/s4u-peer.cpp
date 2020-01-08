@@ -160,9 +160,9 @@ void Peer::sendRequestTo(Connection* remote_peer, unsigned int piece)
 
 std::string Peer::getStatus()
 {
-  std::string res = std::string("");
-  for (int i = FILE_PIECES - 1; i >= 0; i--)
-    res = std::string((bitfield_ & (1U << i)) ? "1" : "0") + res;
+  std::string res;
+  for (unsigned i = 0; i < FILE_PIECES; i++)
+    res += (bitfield_ & (1U << i)) ? '1' : '0';
   return res;
 }
 
