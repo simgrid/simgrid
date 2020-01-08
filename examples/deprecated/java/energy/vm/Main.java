@@ -14,7 +14,7 @@ class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws HostNotFoundException {
+  public static void main(String[] args) {
     Msg.energyInit();
     Msg.init(args);
 
