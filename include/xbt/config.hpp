@@ -286,7 +286,7 @@ public:
   template<class U>
   Flag& operator=(U const& that) { value_ = that; return *this; }
   template<class U>
-  Flag& operator=(U && that)     { value_ = that; return *this; }
+  Flag& operator=(U&& that) { value_ = std::forward<U>(that); return *this; }
   template<class U>
   bool operator==(U const& that) const { return value_ == that; }
   template<class U>
