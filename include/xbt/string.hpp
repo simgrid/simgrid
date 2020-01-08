@@ -91,8 +91,7 @@ public:
   string(string const& s) : string(s.c_str(), s.size()) {}
   string(string&& s)
   {
-    str.len    = s.str.len;
-    str.data   = s.str.data;
+    str        = std::move(s.str);
     s.str.len  = 0;
     s.str.data = &NUL;
   }

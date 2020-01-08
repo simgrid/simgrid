@@ -68,8 +68,7 @@ public:
   static unw_addr_space_t createUnwindAddressSpace();
 };
 
-void dumpStack(FILE* file, unw_cursor_t&& cursor);
-void dumpStack(FILE* file, pid_t pid);
+void dumpStack(FILE* file, unw_cursor_t cursor);
 } // namespace mc
 } // namespace simgrid
 

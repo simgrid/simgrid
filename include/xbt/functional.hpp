@@ -168,8 +168,7 @@ public:
       that.vtable_->move(buffer_, that.buffer_);
     else
       std::memcpy(static_cast<void*>(&buffer_), static_cast<void*>(&that.buffer_), sizeof(buffer_));
-
-    vtable_ = that.vtable_;
+    vtable_      = std::move(that.vtable_);
     that.vtable_ = nullptr;
   }
   Task& operator=(Task const& that) = delete;
@@ -180,7 +179,7 @@ public:
       that.vtable_->move(buffer_, that.buffer_);
     else
       std::memcpy(static_cast<void*>(&buffer_), static_cast<void*>(&that.buffer_), sizeof(buffer_));
-    vtable_ = that.vtable_;
+    vtable_      = std::move(that.vtable_);
     that.vtable_ = nullptr;
     return *this;
   }
