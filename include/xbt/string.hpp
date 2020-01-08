@@ -89,9 +89,8 @@ public:
   string() : string(&NUL, 0) {}
   explicit string(const char* s) : string(s, strlen(s)) {}
   string(string const& s) : string(s.c_str(), s.size()) {}
-  string(string&& s)
+  string(string&& s) : str(std::move(s.str))
   {
-    str        = std::move(s.str);
     s.str.len  = 0;
     s.str.data = &NUL;
   }
