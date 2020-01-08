@@ -6,7 +6,6 @@
 package energy.vm;
 
 import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
 
 class Main {
