@@ -427,13 +427,6 @@ void suspend()
   kernel::actor::simcall_blocking<void>([self] { self->suspend(); });
 }
 
-void resume()
-{
-  kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
-  kernel::actor::simcall([self] { self->resume(); });
-  Actor::on_resume(*self->ciface());
-}
-
 void exit()
 {
   kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();

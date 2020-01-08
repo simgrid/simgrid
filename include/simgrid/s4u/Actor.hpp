@@ -352,9 +352,6 @@ XBT_PUBLIC void suspend();
 /** @brief Yield the current actor. */
 XBT_PUBLIC void yield();
 
-/** @brief Resume the current actor, that was suspend()ed previously. */
-XBT_PUBLIC void resume();
-
 /** @brief kill the current actor. */
 XBT_PUBLIC void exit();
 
