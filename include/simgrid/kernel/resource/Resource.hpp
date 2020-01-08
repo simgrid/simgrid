@@ -34,6 +34,7 @@ protected:
     double scale;          /**< Current availability of the metric according to the profiles, in [0,1] */
     profile::Event* event; /**< The associated profile event associated to the metric */
   };
+  profile::Event* state_event_ = nullptr;
 
 public:
   /**
@@ -82,8 +83,6 @@ public:
 
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
   lmm::Constraint* get_constraint() const { return constraint_; }
-
-  profile::Event* state_event_ = nullptr;
 };
 } // namespace resource
 } // namespace kernel

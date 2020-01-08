@@ -104,6 +104,10 @@ class XBT_PUBLIC File : public xbt::Extendable<File> {
   std::string path_;
   std::string fullpath_;
   sg_size_t current_position_ = SEEK_SET;
+  int desc_id                 = 0;
+  Disk* local_disk_           = nullptr;
+  Storage* local_storage_     = nullptr;
+  std::string mount_point_;
 
   Storage* find_local_storage_on(Host* host);
   Disk* find_local_disk_on(const Host* host);
@@ -143,14 +147,15 @@ public:
 
   int unlink(); /** Remove a file from the contents of a disk */
   void dump();
-
-  int desc_id = 0;
-  Disk* local_disk_       = nullptr;
-  Storage* local_storage_ = nullptr;
-  std::string mount_point_;
 };
 
 class XBT_PUBLIC FileSystemDiskExt {
+  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  std::map<Host*, std::string> remote_mount_points_;
+  std::string mount_point_;
+  sg_size_t used_size_ = 0;
+  sg_size_t size_      = static_cast<sg_size_t>(500 * 1024) * 1024 * 1024;
+
 public:
   static simgrid::xbt::Extension<Disk, FileSystemDiskExt> EXTENSION_ID;
   explicit FileSystemDiskExt(const Disk* ptr);
@@ -168,16 +173,13 @@ public:
   sg_size_t get_used_size() const { return used_size_; }
   void decr_used_size(sg_size_t size) { used_size_ -= size; }
   void incr_used_size(sg_size_t size) { used_size_ += size; }
-
-private:
-  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
-  std::map<Host*, std::string> remote_mount_points_;
-  std::string mount_point_;
-  sg_size_t used_size_ = 0;
-  sg_size_t size_      = static_cast<sg_size_t>(500 * 1024) * 1024 * 1024;
 };
 
 class XBT_PUBLIC FileSystemStorageExt {
+  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  sg_size_t used_size_ = 0;
+  sg_size_t size_      = 0;
+
 public:
   static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
   explicit FileSystemStorageExt(const Storage* ptr);
@@ -189,11 +191,6 @@ public:
   sg_size_t get_used_size() { return used_size_; }
   void decr_used_size(sg_size_t size) { used_size_ -= size; }
   void incr_used_size(sg_size_t size) { used_size_ += size; }
-
-private:
-  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
-  sg_size_t used_size_ = 0;
-  sg_size_t size_     = 0;
 };
 
 class XBT_PUBLIC FileDescriptorHostExt {
