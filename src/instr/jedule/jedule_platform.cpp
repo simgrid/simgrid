@@ -65,39 +65,28 @@ void Container::create_hierarchy(const_sg_netzone_t from_as)
   }
 }
 
-int Container::get_child_position(Container* child)
+int Container::get_child_position(const Container* child) const
 {
-  unsigned int i = 0;
-  int child_nb   = -1;
-
-  for (auto const& c : children_) {
-    if (c.get() == child) {
-      child_nb = i;
-      break;
-    }
-    i++;
-  }
-  return child_nb;
+  auto it = std::find_if(begin(children_), end(children_),
+                         [&child](const std::unique_ptr<Container>& c) { return c.get() == child; });
+  return it == end(children_) ? -1 : std::distance(begin(children_), it);
 }
 
 std::vector<int> Container::get_hierarchy()
 {
-  if (parent_ != nullptr) {
-    if (not parent_->has_children()) {
-      // we are in the last level
-      return parent_->get_hierarchy();
-    } else {
-      int child_nb = parent_->get_child_position(this);
-
-      xbt_assert( child_nb > - 1);
-      std::vector<int> heir_list = parent_->get_hierarchy();
-      heir_list.insert(heir_list.begin(), child_nb);
-      return heir_list;
-    }
-  } else {
+  if (parent_ == nullptr) {
     int top_level = 0;
     std::vector<int> heir_list = {top_level};
     return heir_list;
+  } else if (parent_->has_children()) {
+    int child_nb = parent_->get_child_position(this);
+    xbt_assert(child_nb > -1);
+    std::vector<int> heir_list = parent_->get_hierarchy();
+    heir_list.insert(heir_list.begin(), child_nb);
+    return heir_list;
+  } else {
+    // we are in the last level
+    return parent_->get_hierarchy();
   }
 }
 

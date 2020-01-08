@@ -31,7 +31,7 @@ public:
   const char* get_cname() const { return name.c_str(); }
   void set_parent(Container* parent) { parent_ = parent; }
   bool has_children() { return not children_.empty(); }
-  int get_child_position(Container* child);
+  int get_child_position(const Container* child) const;
   unsigned int get_id_by_name(const char* name) { return name2id.at(name); }
 
   void add_child(Container* child);
