@@ -4,8 +4,8 @@
   <zone  id="AS0"  routing="Full">
 
     <!-- Use the pstate mechanism to encode the boot/shutdown time and energy.
-      --
-      -- See the C++ file in the same directory for more information.
+      -
+      -  See the C++ file in the same directory for more information.
       -->
 
     <!-- pstate values:

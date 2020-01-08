@@ -2,22 +2,21 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 
 <!-- Describe a dogbone graph, with 4 hosts:
-  --
-  -- S1 ---[ 1 ]---                 ---[ 3 ]--- C1
-  --               \               /
-  --                R1 --[ 2 ]-- R2
-  --               /               \
-  -- S2 ---[ 4 ]---                 ---[ 5 ]--- C2
-  --
-  --
-  -- This platform is a valid ns-3 platform, even if it exhibits routes of length >1,
-  -- because when you only keep the routes of length 1,
-  -- you get a graph where every host can speak to any other host.
-  --
-  -- For example, S1--C1 is (l1,l2,l3) of length >1
-  -- But it's also S1--C1 = S1--R1, R1--R2, R2--C1 which are all of length 1
-  --
-  -- https://simgrid.org/doc/latest/ns3.html
+  -
+  -  S1 ___[ 1 ]___                 ___[ 3 ]___ C1
+  -                \               /
+  -                 R1 __[ 2 ]__ R2
+  -                /               \
+  -  S2 ___[ 4 ]__/                 \__[ 5 ]___ C2
+  -
+  -  This platform is a valid ns-3 platform, even if it exhibits routes of length >1,
+  -  because when you only keep the routes of length 1,
+  -  you get a graph where every host can speak to any other host.
+  -
+  -  For example, S1__C1 is (l1,l2,l3) of length >1
+  -  But it's also S1__C1 = S1__R1, R1__R2, R2__C1 which are all of length 1
+  -
+  -  https://simgrid.org/doc/latest/ns3.html
   -->
 
 <platform version="4.1">
