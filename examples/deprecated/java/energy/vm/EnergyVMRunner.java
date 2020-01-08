@@ -35,7 +35,7 @@ public class EnergyVMRunner extends Process {
     }
   }
 
-  EnergyVMRunner(Host host, String name, String[] args) throws HostNotFoundException {
+  EnergyVMRunner(Host host, String name, String[] args) {
     super(host, name, args);
   }
 
