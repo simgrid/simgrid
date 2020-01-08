@@ -186,7 +186,7 @@ Most of these are best described in `STAR-MPI's white paper <https://doi.org/10.
  - mvapich2: use mvapich2 selector for the alltoall operations
  - impi: use intel mpi selector for the alltoall operations
  - automatic (experimental): use an automatic self-benchmarking algorithm
- - bruck: Described by Bruck et.al. in <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949">this paper</a>
+ - bruck: Described by Bruck et.al. in `this paper <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949>`_
  - 2dmesh: organizes the nodes as a two dimensional mesh, and perform allgather
    along the dimensions
  - 3dmesh: adds a third dimension to the previous algorithm
@@ -313,9 +313,9 @@ MPI_Allreduce
  - impi: use intel mpi selector for the allreduce operations
  - automatic (experimental): use an automatic self-benchmarking algorithm
  - lr: logical ring reduce-scatter then logical ring allgather
- - rab1: variations of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: reduce_scatter then allgather
- - rab2: variations of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: alltoall then allgather
- - rab_rsag: variation of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: recursive doubling
+ - rab1: variations of the  `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ algorithm: reduce_scatter then allgather
+ - rab2: variations of the  `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ algorithm: alltoall then allgather
+ - rab_rsag: variation of the  `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ algorithm: recursive doubling
    reduce_scatter then recursive doubling allgather
  - rdb: recursive doubling
  - smp_binomial: binomial tree with smp: binomial intra
