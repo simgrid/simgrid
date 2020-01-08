@@ -112,6 +112,16 @@ public:
  * Action *
  **********/
 class L07Action : public kernel::resource::CpuAction {
+  std::vector<s4u::Host*> hostList_;
+  bool free_arrays_ = false; // By default, computationAmount_ and friends are freed by caller. But not for sequential
+                             // exec and regular comms
+  const double* computationAmount_;   /* pointer to the data that lives in s4u action -- do not free unless if
+                                       * free_arrays */
+  const double* communicationAmount_; /* pointer to the data that lives in s4u action -- do not free unless if
+                                       * free_arrays */
+  double latency_;
+  double rate_;
+
   friend CpuAction* CpuL07::execution_start(double size);
   friend CpuAction* CpuL07::sleep(double duration);
   friend CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
@@ -126,18 +136,9 @@ public:
   ~L07Action();
 
   void updateBound();
-
-  std::vector<s4u::Host*> hostList_;
-  const double* computationAmount_;   /* pointer to the data that lives in s4u action -- do not free unless if
-                                       * free_arrays */
-  const double* communicationAmount_; /* pointer to the data that lives in s4u action -- do not free unless if
-                                       * free_arrays */
-  double latency_;
-  double rate_;
-
-private:
-  bool free_arrays_ = false; // By default, computationAmount_ and friends are freed by caller. But not for sequential
-                             // exec and regular comms
+  double get_latency() const { return latency_; }
+  void set_latency(double latency) { latency_ = latency; }
+  void update_latency(double delta, double precision) { double_update(&latency_, delta, precision); }
 };
 
 } // namespace surf

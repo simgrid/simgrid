@@ -71,8 +71,8 @@ double HostL07Model::next_occurring_event(double now)
   double min = HostModel::next_occurring_event_full(now);
   for (kernel::resource::Action const& action : *get_started_action_set()) {
     const L07Action& net_action = static_cast<const L07Action&>(action);
-    if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min)) {
-      min = net_action.latency_;
+    if (net_action.get_latency() > 0 && (min < 0 || net_action.get_latency() < min)) {
+      min = net_action.get_latency();
       XBT_DEBUG("Updating min with %p (start %f): %f", &net_action, net_action.get_start_time(), min);
     }
   }
@@ -86,13 +86,13 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     L07Action& action = static_cast<L07Action&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
-    if (action.latency_ > 0) {
-      if (action.latency_ > delta) {
-        double_update(&(action.latency_), delta, sg_surf_precision);
+    if (action.get_latency() > 0) {
+      if (action.get_latency() > delta) {
+        action.update_latency(delta, sg_surf_precision);
       } else {
-        action.latency_ = 0.0;
+        action.set_latency(0.0);
       }
-      if ((action.latency_ <= 0.0) && (action.is_suspended() == 0)) {
+      if ((action.get_latency() <= 0.0) && (action.is_suspended() == 0)) {
         action.updateBound();
         get_maxmin_system()->update_variable_penalty(action.get_variable(), 1.0);
         action.set_last_update();
