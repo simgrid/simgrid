@@ -3,9 +3,9 @@
 ##   This file is loaded only if the Java option is activated
 ##
 
-find_package(Java 1.7 COMPONENTS Runtime Development)
+find_package(Java 1.8 COMPONENTS Runtime Development)
 if (NOT ${Java_FOUND})
-  message(FATAL_ERROR "Java not found (need at least Java7). Please install the JDK or disable that option")
+  message(FATAL_ERROR "Java not found (need at least Java8). Please install the JDK or disable that option")
 endif()
 set(Java_FOUND 1)
 include(UseJava)
