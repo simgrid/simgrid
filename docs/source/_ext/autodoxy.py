@@ -381,7 +381,8 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
 
         if '::' in self.fullname:
             (obj, meth) = self.fullname.rsplit('::', 1)
-            prefix = './/compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func"]'.format(obj)
+            # 'public-func' and 'public-static-func' are for classes while 'func' alone is for namespaces
+            prefix = './/compoundname[text()="{:s}"]/../sectiondef[@kind="public-func" or @kind="public-static-func" or @kind="func"]'.format(obj)
             obj = "{:s}::".format(obj)
         else:
             meth = self.fullname
@@ -406,10 +407,12 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
                     self.object = candidates[0]
                     return True
                 logger.warning("[autodoxy] WARNING: Could not find method {}{}{}".format(obj, meth, self.argsstring))
+                if not candidates:
+                    logger.warning("[autodoxy] WARNING:  (no candidate found)")
                 for cand in candidates:
                     logger.warning("[autodoxy] WARNING:   Existing candidate: {}{}{}".format(obj, meth, cand.find('argsstring').text))
             else:
-                logger.warning("[autodoxy] WARNING: could not find method {}{} in Doxygen files\nQuery: {}".format(obj, meth, xpath_query))
+                logger.warning("[autodoxy] WARNING: Could not find method {}{} in Doxygen files\nQuery: {}".format(obj, meth, xpath_query))
             return False
         self.object = match[0]
         return True

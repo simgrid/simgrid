@@ -41,6 +41,7 @@ xml_files = [
     'build/xml/classsimgrid_1_1s4u_1_1NetZone.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Semaphore.xml',
     'build/xml/classsimgrid_1_1s4u_1_1VirtualMachine.xml',
+    'build/xml/namespacesimgrid_1_1s4u_1_1this__actor.xml',
     'build/xml/actor_8h.xml',
     'build/xml/barrier_8h.xml',
     'build/xml/cond_8h.xml',
@@ -162,6 +163,8 @@ for arg in xml_files:
             #print ("compoundname {}".format(compoundname))
         elif elem.attrib["kind"] == "file":
             compoundname = ""
+        elif elem.attrib["kind"] == "namespace":
+            compoundname = elem.find("compoundname").text
         else:
             print("Element {} is of kind {}".format(elem.attrib["id"], elem.attrib["kind"]))
 
