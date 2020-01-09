@@ -59,7 +59,7 @@ public:
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   void set_name(const char* new_name) { name_ = std::string(new_name); }
-  void set_tracing_category(const char* category) { tracing_category_ = category ? std::string(category) : ""; }
+  void set_tracing_category(const char* category) { tracing_category_ = category ? category : ""; }
   const std::string& get_tracing_category() const { return tracing_category_; }
   bool has_tracing_category() { return not tracing_category_.empty(); }
   XBT_ATTRIB_DEPRECATED_v329("Please use set_data()") void* get_user_data() { return get_data(); }

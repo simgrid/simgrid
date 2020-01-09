@@ -213,7 +213,7 @@ void Task::report_multiple_use() const
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
-  return simgrid::msg::Task::create(name ? std::string(name) : "", flop_amount, message_size, data);
+  return simgrid::msg::Task::create(name ? name : "", flop_amount, message_size, data);
 }
 
 /** @brief Creates a new parallel task
