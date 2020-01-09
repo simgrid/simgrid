@@ -605,9 +605,129 @@ Signals
 ⁣  The current actor
 ====================
 
-Static methods working on the current actor (see :ref:`API_s4u_Actor`).
+These functions can be used in your user code to interact with the actor
+currently running (the one retrieved with :cpp:func:`simgrid::s4u::Actor::self`).
+Using these functions can greatly improve the code readability.
 
-.. doxygennamespace:: simgrid::s4u::this_actor
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::this_actor::get_cname()
+      .. autodoxymethod:: simgrid::s4u::this_actor::get_name()
+      .. autodoxymethod:: simgrid::s4u::this_actor::get_pid()
+      .. autodoxymethod:: simgrid::s4u::this_actor::get_ppid()
+      .. autodoxymethod:: simgrid::s4u::this_actor::is_maestro()
+
+      .. autodoxymethod:: simgrid::s4u::this_actor::get_host()
+      .. autodoxymethod:: simgrid::s4u::this_actor::set_host(Host *new_host)
+
+   .. group-tab:: Python
+
+      .. autofunction:: simgrid.this_actor.get_host
+      .. autofunction:: simgrid.this_actor.set_host
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_self_data()
+      .. autodoxymethod:: sg_actor_self_data_set(void *data)
+      .. autodoxymethod:: sg_actor_self_get_name()
+      .. autodoxymethod:: sg_actor_self_get_pid()
+      .. autodoxymethod:: sg_actor_self_get_ppid()
+      .. autodoxymethod:: sg_host_self()
+      .. autodoxymethod:: sg_host_self_get_name()
+
+Suspending and resuming
+-----------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::this_actor::suspend()
+      .. autodoxymethod:: simgrid::s4u::this_actor::yield()
+
+   .. group-tab:: Python
+
+      .. autofunction:: simgrid.this_actor.suspend
+      .. autofunction:: simgrid.this_actor.yield_
+
+Logging messages
+----------------
+
+.. tabs::
+
+   .. group-tab:: Python
+
+       .. autofunction:: simgrid.this_actor.info
+       .. autofunction:: simgrid.this_actor.error
+
+Sleeping
+--------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::this_actor::sleep_for(double duration)
+      .. autodoxymethod:: simgrid::s4u::this_actor::sleep_for(std::chrono::duration< Rep, Period > duration)
+      .. autodoxymethod:: simgrid::s4u::this_actor::sleep_until(const SimulationTimePoint< Duration > &wakeup_time)
+      .. autodoxymethod:: simgrid::s4u::this_actor::sleep_until(double wakeup_time)
+
+   .. group-tab:: Python
+
+      .. autofunction:: simgrid.this_actor.sleep_for
+      .. autofunction:: simgrid.this_actor.sleep_until
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_sleep_for(double duration)
+
+Simulating executions
+---------------------
+
+Simulate the execution of some code on this actor. You can either simulate
+parallel or sequential code, and you can either block upon the termination of
+the execution, or start an asynchronous activity.
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::this_actor::exec_async(double flops_amounts)
+      .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(double flops_amounts)
+      .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop)
+      .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop, double priority)
+      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts, double timeout)
+
+   .. group-tab:: Python
+
+      .. autofunction:: simgrid.this_actor.exec_init
+      .. autofunction:: simgrid.this_actor.execute
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_self_execute(double flops)
+
+Exiting
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::this_actor::exit()
+      .. autodoxymethod:: simgrid::s4u::this_actor::on_exit(const std::function< void(bool)> &fun)
+
+   .. group-tab:: Python
+
+      .. autofunction:: simgrid.this_actor.exit
+      .. autofunction:: simgrid.this_actor.on_exit
 
 .. _API_s4u_Engine:
 

@@ -292,17 +292,18 @@ XBT_PUBLIC void execute(double flop, double priority);
  * vector means that `host0` should compute 1000 flops while `host1` will compute 2000 flops. A matrix of
  * communications' sizes of ``[0, 1, 2, 3]`` specifies the following data exchanges:
  *
- *   +-----------+-------+------+
- *   |from \\ to | host0 | host1|
- *   +===========+=======+======+
- *   |host0      |   0   |  1   |
- *   +-----------+-------+------+
- *   |host1      |   2   |  3   |
- *   +-----------+-------+------+
+ * - from host0: [ to host0:  0 bytes; to host1: 1 byte ]
+ *
+ * - from host1: [ to host0: 2 bytes; to host1: 3 bytes ]
+ *
+ * Or, in other words:
  *
  * - From host0 to host0: 0 bytes are exchanged
+ *
  * - From host0 to host1: 1 byte is exchanged
+ *
  * - From host1 to host0: 2 bytes are exchanged
+ *
  * - From host1 to host1: 3 bytes are exchanged
  *
  * In a parallel execution, all parts (all executions on each hosts, all communications) progress exactly at the
