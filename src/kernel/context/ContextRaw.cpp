@@ -220,6 +220,7 @@ void RawContext::wrapper(RawContext* context)
   }
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
+  THROW_IMPOSSIBLE;
 }
 
 void RawContext::swap_into(SwappedContext* to_)

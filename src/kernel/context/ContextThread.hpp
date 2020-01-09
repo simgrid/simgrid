@@ -24,7 +24,7 @@ public:
   ThreadContext(const ThreadContext&) = delete;
   ThreadContext& operator=(const ThreadContext&) = delete;
   ~ThreadContext() override;
-  void stop() override;
+  XBT_ATTRIB_NORETURN void stop() override;
   void suspend() override;
   void attach_start() override;
   void attach_stop() override;

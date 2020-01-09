@@ -64,6 +64,7 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
   }
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
+  THROW_IMPOSSIBLE;
 }
 
 void BoostContext::swap_into(SwappedContext* to_)

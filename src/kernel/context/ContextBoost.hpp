@@ -45,7 +45,7 @@ private:
   typedef boost::context::detail::transfer_t arg_type;
 #endif
 
-  static void wrapper(arg_type arg);
+  XBT_ATTRIB_NORETURN static void wrapper(arg_type arg);
 };
 
 class BoostContextFactory : public SwappedContextFactory {

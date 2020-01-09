@@ -34,7 +34,7 @@ private:
   /** pointer to top the stack stack */
   void* stack_top_ = nullptr;
 
-  static void wrapper(RawContext* context);
+  XBT_ATTRIB_NORETURN static void wrapper(RawContext* context);
 };
 
 class RawContextFactory : public SwappedContextFactory {

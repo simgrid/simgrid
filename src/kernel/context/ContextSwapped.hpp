@@ -41,7 +41,7 @@ public:
 
   void suspend() override;
   virtual void resume();
-  void stop() override;
+  XBT_ATTRIB_NORETURN void stop() override;
 
   virtual void swap_into(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 

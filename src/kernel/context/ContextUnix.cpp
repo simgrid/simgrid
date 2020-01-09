@@ -25,7 +25,7 @@ static_assert(sizeof(simgrid::kernel::context::UContext*) <= CTX_ADDR_LEN * size
 
 /* Make sure that this symbol is easy to recognize by name, even on exotic platforms */
 extern "C" {
-static void smx_ctx_wrapper(int i1, int i2);
+XBT_ATTRIB_NORETURN static void smx_ctx_wrapper(int i1, int i2);
 }
 
 // The name of this function is currently hardcoded in MC (as string).
@@ -49,6 +49,7 @@ static void smx_ctx_wrapper(int i1, int i2)
   }
   ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
+  THROW_IMPOSSIBLE;
 }
 
 namespace simgrid {
