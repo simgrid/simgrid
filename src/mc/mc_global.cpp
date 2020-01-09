@@ -106,22 +106,22 @@ void MC_automaton_load(const char *file)
 namespace simgrid {
 namespace mc {
 
-void dumpStack(FILE* file, unw_cursor_t cursor)
+void dumpStack(FILE* file, unw_cursor_t* cursor)
 {
   int nframe = 0;
   char buffer[100];
 
   unw_word_t off;
   do {
-    const char* name = not unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
+    const char* name = not unw_get_proc_name(cursor, buffer, 100, &off) ? buffer : "?";
     // Unmangle C++ names:
     auto realname = simgrid::xbt::demangle(name);
 
 #if defined(__x86_64__)
     unw_word_t rip = 0;
     unw_word_t rsp = 0;
-    unw_get_reg(&cursor, UNW_X86_64_RIP, &rip);
-    unw_get_reg(&cursor, UNW_X86_64_RSP, &rsp);
+    unw_get_reg(cursor, UNW_X86_64_RIP, &rip);
+    unw_get_reg(cursor, UNW_X86_64_RSP, &rsp);
     fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n", nframe, realname.get(), (std::uint64_t)rip,
             (std::uint64_t)rsp);
 #else
@@ -129,7 +129,7 @@ void dumpStack(FILE* file, unw_cursor_t cursor)
 #endif
 
     ++nframe;
-  } while(unw_step(&cursor));
+  } while (unw_step(cursor));
 }
 
 }
