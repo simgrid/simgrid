@@ -60,13 +60,8 @@ ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std
 
 ActorImpl::~ActorImpl()
 {
-  if (simix_global != nullptr && this != simix_global->maestro_) {
-    if (context_.get() != nullptr) /* the actor was not start()ed yet. This happens if its host was initially off */
-      context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-    actor::simcall([this] { s4u::Actor::on_destruction(*ciface()); });
-    if (context_.get() != nullptr)
-      context_->iwannadie = true;
-  }
+  if (simix_global != nullptr && this != simix_global->maestro_)
+    s4u::Actor::on_destruction(*ciface());
 }
 
 /* Become an actor in the simulation
