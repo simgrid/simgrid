@@ -53,6 +53,7 @@ SMPI:
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG#39: Missing s4u::Comm::wait_any_for example
+ - FG#42: Add support for ThreadSanitizer (TSan)
  - FG!19: Removing RngStream
  - FG!20: A module for RNG calls
  - FG!21: Choice between ad-hoc and standard distributions implementations

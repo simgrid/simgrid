@@ -82,6 +82,9 @@ private:
   SwappedContext* asan_ctx_ = nullptr;
   bool asan_stop_           = false;
 #endif
+#if HAVE_SANITIZER_THREAD_FIBER_SUPPORT
+  void* tsan_fiber_;
+#endif
 
   virtual void swap_into_for_real(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 };

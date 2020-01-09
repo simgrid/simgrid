@@ -30,6 +30,9 @@
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
 #include <sanitizer/asan_interface.h>
 #endif
+#if HAVE_SANITIZER_THREAD_FIBER_SUPPORT
+#include <sanitizer/tsan_interface.h>
+#endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -123,6 +126,14 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
     this->asan_stack_ = get_stack_bottom();
 #endif
+#if HAVE_SANITIZER_THREAD_FIBER_SUPPORT
+    this->tsan_fiber_ = __tsan_create_fiber(0);
+#endif
+  } else {
+    // not has_code(): in maestro context
+#if HAVE_SANITIZER_THREAD_FIBER_SUPPORT
+    this->tsan_fiber_ = __tsan_get_current_fiber();
+#endif
   }
 }
 
@@ -131,6 +142,9 @@ SwappedContext::~SwappedContext()
   if (stack_ == nullptr) // maestro has no extra stack
     return;
 
+#if HAVE_SANITIZER_THREAD_FIBER_SUPPORT
+  __tsan_destroy_fiber(tsan_fiber_);
+#endif
 #if HAVE_VALGRIND_H
   if (RUNNING_ON_VALGRIND)
     VALGRIND_STACK_DEREGISTER(valgrind_stack_id_);
@@ -166,6 +180,9 @@ void SwappedContext::swap_into(SwappedContext* to)
   void* fake_stack = nullptr;
   to->asan_ctx_    = this;
   __sanitizer_start_switch_fiber(this->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
+#endif
+#if HAVE_SANITIZER_THREAD_FIBER_SUPPORT
+  __tsan_switch_to_fiber(to->tsan_fiber_, 0);
 #endif
 
   swap_into_for_real(to);
