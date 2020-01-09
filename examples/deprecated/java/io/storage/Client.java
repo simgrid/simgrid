@@ -16,7 +16,6 @@
 package io.storage;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
