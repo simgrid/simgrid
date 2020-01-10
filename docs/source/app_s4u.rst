@@ -871,12 +871,106 @@ Signals
 ⁣  class Mailbox
 ================
 
+.. autodoxyclass:: simgrid::s4u::Mailbox
+
 Please also refer to the :ref:`full doc on s4u::Mailbox <s4u_mailbox>`.
 
-.. doxygenclass:: simgrid::s4u::Mailbox
-   :members:
-   :protected-members:
-   :undoc-members:
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Mailbox.hpp>
+
+      Note that there is no MailboxPtr type, and that you cannot use the RAII
+      idiom on mailboxes because they are internal objects to the simulation
+      engine. Once created, there is no way to destroy a mailbox before the end
+      of the simulation.
+         
+      .. autodoxymethod:: simgrid::s4u::Mailbox::by_name(const std::string &name)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Mailbox.by_name
+
+Querying info
+.............
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_cname()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_name()
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Mailbox.name
+
+Sending data
+............
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Mailbox::put(void *payload, uint64_t simulated_size_in_bytes)
+      .. autodoxymethod:: simgrid::s4u::Mailbox::put(void *payload, uint64_t simulated_size_in_bytes, double timeout)
+      .. autodoxymethod:: simgrid::s4u::Mailbox::put_async(void *data, uint64_t simulated_size_in_bytes)
+      .. autodoxymethod:: simgrid::s4u::Mailbox::put_init()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::put_init(void *data, uint64_t simulated_size_in_bytes)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Mailbox.put
+      .. automethod:: simgrid.Mailbox.put_async
+
+
+Receiving data
+..............
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Mailbox::empty()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::front()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get(double timeout)
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_async(void **data)
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_init()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::iprobe(int type, bool(*match_fun)(void *, void *, kernel::activity::CommImpl *), void *data)
+      .. autodoxymethod:: simgrid::s4u::Mailbox::listen()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::ready()
+
+   .. group-tab:: Python
+
+       .. automethod:: simgrid.Mailbox.get
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_mailbox_listen(const char *alias)
+
+Receiving actor
+...............
+
+See :ref:`s4u_receiving_actor`.
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_receiver()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::set_receiver(ActorPtr actor)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: ::sg_mailbox_set_receiver(const char *alias)
+                  
 .. _API_s4u_Resource:
 
 =========
