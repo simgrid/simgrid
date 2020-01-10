@@ -81,7 +81,7 @@ if [ -f /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe ]; then
     PATH="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:$PATH"
     major=$(powershell.exe -command "[environment]::OSVersion.Version.Major" | sed 's/\r//g')
     build=$(powershell.exe -command "[environment]::OSVersion.Version.Build"| sed 's/\r//g')
-    ver= "$major v$build - WSL $os $ver"
+    ver="$major v$build - WSL $os $ver"
     os=Windows
 fi
 
