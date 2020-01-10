@@ -43,47 +43,28 @@ onoff() {
   fi
 }
 
-# Check that we have what we need, or die quickly.
-# The paths are not the same on all platforms, unfortunately.
-#test -e /bin/tar  || die 1 "I need tar to compile. Please fix your slave."
-#test -e /bin/gzip || die 1 "I need gzip to compile. Please fix your slave."
-#test -e /usr/include/libunwind.h || die 1 "I need libunwind to compile. Please fix your slave."
-#test -e /usr/include/valgrind/valgrind.h || die 1 "I need valgrind to compile. Please fix your slave."
-
-if type lsb_release >/dev/null 2>&1; then
-  if [ -f /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe ]; then
-    #To identify the windows underneath the winbuntu
-    PATH="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:$PATH"
-    major=$(powershell.exe -command "[environment]::OSVersion.Version.Major" | sed 's/\r//g')
-    build=$(powershell.exe -command "[environment]::OSVersion.Version.Build"| sed 's/\r//g')
-    os=Windows
-    ver="$major v$build - WSL $(lsb_release -sd)"
-  else
+if type lsb_release >/dev/null 2>&1; then # recent versions of Debian/Ubuntu
     # linuxbase.org
     os=$(lsb_release -si)
     ver="$(lsb_release -sr) ($(lsb_release -sc))"
-  fi
-elif [ -f /etc/lsb-release ]; then
-    # For some versions of Debian/Ubuntu without lsb_release command
+elif [ -f /etc/lsb-release ]; then # For some versions of Debian/Ubuntu without lsb_release command
     . /etc/lsb-release
     os=$DISTRIB_ID
     ver=$DISTRIB_RELEASE
-elif [ -f /etc/debian_version ]; then
-    # Older Debian/Ubuntu/etc.
+elif [ -f /etc/debian_version ]; then # Older Debian/Ubuntu/etc.
     os=Debian
     ver=$(cat /etc/debian_version)
-elif [ -f /etc/redhat-release ]; then
+elif [ -f /etc/redhat-release ]; then #RH, Fedora, Centos
     read -r os ver < /etc/redhat-release
-elif [ -f /usr/bin/sw_vers ]; then
+elif [ -f /usr/bin/sw_vers ]; then #osx
     os=$(sw_vers -productName)
     ver=$(sw_vers -productVersion)
-elif [ -f /bin/freebsd-version ]; then
+elif [ -f /bin/freebsd-version ]; then #freebsd
     os=$(uname -s)
     ver=$(freebsd-version -u)
-elif [ -f /etc/version ]; then
+elif [ -f /etc/release ]; then #openindiana
     read -r os ver < /etc/release
-elif [ -f /etc/os-release ]; then
-    # freedesktop.org and systemd, put last as usually missing useful info
+elif [ -f /etc/os-release ]; then # freedesktop.org and systemd, put last as usually missing useful info
     . /etc/os-release
     os=$NAME
     ver=$VERSION_ID
@@ -93,6 +74,17 @@ else
     os=$(uname -s)
     ver=$(uname -r)
 fi
+
+# Are we running on wsl ?
+if [ -f /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe ]; then
+    #To identify the windows underneath the linux
+    PATH="/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:$PATH"
+    major=$(powershell.exe -command "[environment]::OSVersion.Version.Major" | sed 's/\r//g')
+    build=$(powershell.exe -command "[environment]::OSVersion.Version.Build"| sed 's/\r//g')
+    ver= "$major v$build - WSL $os $ver"
+    os=Windows
+fi
+
 case $(uname -m) in
 x86_64)
     bits="64 bits"
