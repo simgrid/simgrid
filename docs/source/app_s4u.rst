@@ -392,12 +392,10 @@ Simulation objects
 
 .. autodoxyclass:: simgrid::s4u::Actor
 
-.. doxygentypedef:: ActorPtr
-
 .. doxygentypedef:: aid_t
 
-Creating actors
----------------
+Basic management
+----------------
 
 .. tabs::
 
@@ -405,23 +403,15 @@ Creating actors
 
       .. code:: C++
 
-         #include <simgrid/s4u/Engine.hpp>
+         #include <simgrid/s4u/Actor.hpp>
 
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::function< void()> &code)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code, Args... args)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::string &function, std::vector< std::string > args)
-
-      .. autodoxymethod:: simgrid::s4u::Actor::init(const std::string &name, s4u::Host *host)
-      .. autodoxymethod:: simgrid::s4u::Actor::start(const std::function< void()> &code)
+      .. doxygentypedef:: ActorPtr
 
    .. group-tab:: Python
 
       .. code:: Python
 
          from simgrid import Actor
-
-      .. automethod:: simgrid.Actor.create
 
    .. group-tab:: C
 
@@ -434,14 +424,35 @@ Creating actors
 
          Pointer to a constant actor object.
 
+      .. autodoxymethod:: sg_actor_ref(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_unref(const_sg_actor_t actor)
+
+Creating actors
+---------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::function< void()> &code)
+      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code)
+      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code, Args... args)
+      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::string &function, std::vector< std::string > args)
+
+      .. autodoxymethod:: simgrid::s4u::Actor::init(const std::string &name, s4u::Host *host)
+      .. autodoxymethod:: simgrid::s4u::Actor::start(const std::function< void()> &code)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Actor.create
+
+   .. group-tab:: C
+
       .. autodoxymethod:: sg_actor_init(const char *name, sg_host_t host)
       .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char **argv)
 
       .. autodoxymethod:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
       .. autodoxymethod:: sg_actor_detach()
-
-      .. autodoxymethod:: sg_actor_ref(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_unref(const_sg_actor_t actor)
 
 Searching specific actors
 -------------------------
