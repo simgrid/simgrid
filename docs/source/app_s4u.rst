@@ -909,7 +909,7 @@ Basic management
       .. automethod:: simgrid.Mailbox.by_name
 
 Querying info
-.............
+-------------
 
 .. tabs::
 
@@ -923,7 +923,7 @@ Querying info
       .. autoattribute:: simgrid.Mailbox.name
 
 Sending data
-............
+------------
 
 .. tabs::
 
@@ -942,7 +942,7 @@ Sending data
 
 
 Receiving data
-..............
+--------------
 
 .. tabs::
 
@@ -967,7 +967,7 @@ Receiving data
       .. autodoxymethod:: sg_mailbox_listen(const char *alias)
 
 Receiving actor
-...............
+---------------
 
 See :ref:`s4u_receiving_actor`.
 
@@ -994,11 +994,63 @@ Resources
 ⁣  class Disk
 =============
 
-.. doxygenclass:: simgrid::s4u::Disk
-   :members:
-   :protected-members:
-   :undoc-members:
+.. autodoxyclass:: simgrid::s4u::Disk
 
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Disk.hpp>
+
+      Note that there is no DiskPtr type, and that you cannot use the RAII
+      idiom on disks because SimGrid does not allow (yet) to create nor
+      destroy resources once the simulation is started. 
+         
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Disk::get_cname()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_host()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_name()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_properties()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_property(const std::string &key)
+      .. autodoxymethod:: simgrid::s4u::Disk::get_read_bandwidth()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_write_bandwidth()
+      .. autodoxymethod:: simgrid::s4u::Disk::set_property(const std::string &, const std::string &value)
+
+I/O operations
+--------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Disk::io_init(sg_size_t size, s4u::Io::OpType type)
+      .. autodoxymethod:: simgrid::s4u::Disk::read(sg_size_t size)
+      .. autodoxymethod:: simgrid::s4u::Disk::read_async(sg_size_t size)
+      .. autodoxymethod:: simgrid::s4u::Disk::write(sg_size_t size)
+      .. autodoxymethod:: simgrid::s4u::Disk::write_async(sg_size_t size)
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxyvar:: simgrid::s4u::Disk::on_creation
+      .. autodoxyvar:: simgrid::s4u::Disk::on_destruction
+      .. autodoxyvar:: simgrid::s4u::Disk::on_state_change
 
 
 .. _API_s4u_Host:
@@ -1381,13 +1433,6 @@ Python API Reference
 
 The Python API is automatically generated with pybind11. It closely mimicks the C++
 API, to which you should refer for more information.
-
-==========
-this_actor
-==========
-
-.. automodule:: simgrid.this_actor
-   :members:
 
 ==========
 Class Comm
