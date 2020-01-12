@@ -36,6 +36,7 @@ namespace s4u {
  * @endrst
  */
 class XBT_PUBLIC Host : public xbt::Extendable<Host> {
+#ifndef DOXYGEN
   friend vm::VMModel;            // Use the pimpl_cpu to compute the VM sharing
   friend vm::VirtualMachineImpl; // creates the the pimpl_cpu
   friend kernel::routing::NetZoneImpl;
@@ -43,13 +44,13 @@ class XBT_PUBLIC Host : public xbt::Extendable<Host> {
 public:
   explicit Host(const std::string& name);
 
-  /** Host destruction logic */
 protected:
   virtual ~Host();
   void set_netpoint(kernel::routing::NetPoint* netpoint) { pimpl_netpoint_ = netpoint; }
 
 private:
   bool currently_destroying_ = false;
+#endif
 
 public:
   /** Called on each newly created host */
@@ -63,9 +64,11 @@ public:
   static xbt::signal<void(Host const&)> on_speed_change;
 
   virtual void destroy();
+#ifndef DOXYGEN
   // No copy/move
   Host(Host const&) = delete;
   Host& operator=(Host const&) = delete;
+#endif
 
   /** Retrieve a host from its name, or return nullptr */
   static Host* by_name_or_null(const std::string& name);
@@ -107,9 +110,34 @@ public:
   void set_state_profile(kernel::profile::Profile* p);
   void set_speed_profile(kernel::profile::Profile* p);
 
+  /** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
+   *
+   *  The amount of flops per second available for computing depends on several things:
+   *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
+   *      computing speed you would get at another pstate)
+   *    - If you declared an external load (with @ref simgrid::surf::Cpu::set_speed_profile()), you must multiply the
+   * result of get_speed() by get_available_speed() to retrieve what a new computation would get.
+   *
+   *  The remaining speed is then shared between the executions located on this host.
+   *  You can retrieve the amount of tasks currently running on this host with @ref get_load().
+   *
+   *  The host may have multiple cores, and your executions may be able to use more than a single core.
+   *
+   *  Finally, executions of priority 2 get twice the amount of flops than executions of priority 1.
+   */
   double get_speed() const;
+  /** @brief Get the available speed ratio, between 0 and 1.
+   *
+   * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_profile()).
+   */
   double get_available_speed() const;
+  /** Returns the number of core of the processor. */
   int get_core_count() const;
+  /** Returns the current computation load (in flops per second)
+   *
+   * The external load (coming from an availability trace) is not taken in account.
+   * You may also be interested in the load plugin.
+   */
   double get_load() const;
 
   double get_pstate_speed(int pstate_index) const;

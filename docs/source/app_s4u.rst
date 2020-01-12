@@ -454,8 +454,8 @@ Creating actors
       .. autodoxymethod:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
       .. autodoxymethod:: sg_actor_detach()
 
-Searching specific actors
--------------------------
+Retrieving actors
+-----------------
 
 .. tabs::
 
@@ -474,8 +474,8 @@ Searching specific actors
       .. autodoxymethod:: sg_actor_by_PID(aid_t pid)
       .. autodoxymethod:: sg_actor_self()
 
-Querying info about actors
---------------------------
+Querying info
+-------------
 
 .. tabs::
 
@@ -835,6 +835,10 @@ Retrieving hosts
 
       .. automethod:: simgrid.Engine.get_all_hosts
 
+   .. group-tab:: C
+
+      See also :cpp:func:`sg_host_list` and :cpp:func:`sg_host_count`.
+
 Retrieving links
 ----------------
 
@@ -1058,6 +1062,116 @@ Signals
 =============
 ⁣  class Host
 =============
+
+.. autodoxyclass:: simgrid::s4u::Host
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Host.hpp>
+
+      Note that there is no HostPtr type, and that you cannot use the RAII
+      idiom on hosts because SimGrid does not allow (yet) to create nor
+      destroy resources once the simulation is started. 
+
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import Host
+
+   .. group-tab:: C
+
+      .. code:: C
+
+         #include <simgrid/host.h>
+
+      .. doxygentypedef:: sg_host_t
+      .. cpp:type:: const s4u_Host* const_sg_host_t
+
+         Pointer to a constant host object.
+
+Retrieving hosts
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      See also :cpp:func:`simgrid::s4u::Engine::get_all_hosts`.
+
+      .. autodoxymethod:: simgrid::s4u::Host::by_name(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Host::by_name_or_null(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Host::current()
+
+   .. group-tab:: Python
+
+      See also :py:func:`simgrid.Engine.get_all_hosts`.
+
+      .. automethod:: simgrid.Host.by_name
+      .. automethod:: simgrid.Host.current
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_host_by_name(const char *name)
+      .. autodoxymethod:: sg_host_count()
+      .. autodoxymethod:: sg_host_list()
+      .. autodoxymethod:: sg_hosts_as_dynar()
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::get_cname()
+      .. autodoxymethod:: simgrid::s4u::Host::get_core_count()
+      .. autodoxymethod:: simgrid::s4u::Host::get_disks()
+      .. autodoxymethod:: simgrid::s4u::Host::get_name()
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Exec.host
+      .. autoattribute:: simgrid.Host.name
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: ::sg_host_core_count(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_name(const_sg_host_t host)
+
+DVFS
+----
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::get_pstate()
+      .. autodoxymethod:: simgrid::s4u::Host::get_pstate_count()
+      .. autodoxymethod:: simgrid::s4u::Host::get_pstate_speed(int pstate_index)
+      .. autodoxymethod:: simgrid::s4u::Host::set_pstate(int pstate_index)
+      .. autodoxymethod:: simgrid::s4u::Host::set_speed_profile(kernel::profile::Profile *p)
+      .. autodoxymethod:: simgrid::s4u::Host::set_state_profile(kernel::profile::Profile *p)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.get_pstate_count
+      .. automethod:: simgrid.Host.get_pstate_speed
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_host_get_available_speed(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_nb_pstates(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_pstate(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
+      .. autodoxymethod:: sg_host_set_pstate(sg_host_t host, int pstate)
 
 .. doxygenclass:: simgrid::s4u::Host
    :members:
@@ -1453,13 +1567,6 @@ Class Host
 ==========
 
 .. autoclass:: simgrid.Host
-   :members:
-
-=============
-Class Mailbox
-=============
-
-.. autoclass:: simgrid.Mailbox
    :members:
 
 .. |hr| raw:: html

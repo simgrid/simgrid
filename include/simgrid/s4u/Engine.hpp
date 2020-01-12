@@ -91,8 +91,13 @@ protected:
 #endif /*DOXYGEN*/
 
 public:
+  /** Returns the amount of hosts existing in the platform. */
   size_t get_host_count();
-  /** @brief Returns the list of all hosts found in the platform */
+  /** Returns a vector of all hosts found in the platform.
+   *
+   * The order is generally different from the creation/declaration order in the XML platform because we use a hash
+   * table internally.
+   */
   std::vector<Host*> get_all_hosts();
   std::vector<Host*> get_filtered_hosts(const std::function<bool(Host*)>& filter);
   Host* host_by_name(const std::string& name);

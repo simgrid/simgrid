@@ -11,16 +11,15 @@
 #include <simgrid/forward.h>
 
 SG_BEGIN_DECL
-/** @brief Host datatype.
+/** Returns an array of all existing hosts (use sg_host_count() to know the array size).
  *
- *   A <em>location</em> (or <em>host</em>) is any possible place where an actor may run. Thus it is represented as a
- *   <em>physical resource with computing capabilities</em>, some <em>mailboxes</em> to enable running actors to
- *   communicate with remote ones, and some <em>private data</em> that can be only accessed by local actors.
+ * @remark The host order in this array is generally different from the
+ * creation/declaration order in the XML platform (we use a hash table
+ * internally).
  */
-
 XBT_PUBLIC sg_host_t* sg_host_list();
 
-/** @brief Return the current number of hosts. */
+/** Returns the amount of hosts existing in the platform. */
 XBT_PUBLIC size_t sg_host_count();
 
 /**
@@ -33,15 +32,10 @@ XBT_PUBLIC xbt_dynar_t sg_hosts_as_dynar();
 XBT_PUBLIC size_t sg_host_extension_create(void (*deleter)(void*));
 XBT_PUBLIC void* sg_host_extension_get(const_sg_host_t host, size_t rank);
 
-/** @brief Finds a sg_host_t using its name.
- *
- * This is a name directory service
- * @param name the name of an host.
- * @return the corresponding host
- */
+/** Finds an host from its name */
 XBT_PUBLIC sg_host_t sg_host_by_name(const char* name);
 
-/** @brief Return the name of the #sg_host_t. */
+/** @brief Return the name of the sg_host_t. */
 XBT_PUBLIC const char* sg_host_get_name(const_sg_host_t host);
 
 // ========== User Data ==============
