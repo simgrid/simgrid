@@ -270,8 +270,8 @@ void CpuTiModel::create_pm_vm_models()
   xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
   xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
 
-  surf_cpu_model_pm = new simgrid::kernel::resource::CpuTiModel();
-  surf_cpu_model_vm = new simgrid::kernel::resource::CpuTiModel();
+  surf_cpu_model_pm = new CpuTiModel();
+  surf_cpu_model_vm = new CpuTiModel();
 }
 
 CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
@@ -284,7 +284,7 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
 }
 
-kernel::resource::Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
 {
   return new CpuTi(this, host, speed_per_pstate, core);
 }
@@ -314,7 +314,7 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
   while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
     auto* action = static_cast<CpuTiAction*>(get_action_heap().pop());
     XBT_DEBUG("Action %p: finish", action);
-    action->finish(kernel::resource::Action::State::FINISHED);
+    action->finish(Action::State::FINISHED);
     /* update remaining amount of all actions */
     action->cpu_->update_remaining_amount(surf_get_clock());
   }
@@ -323,7 +323,7 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModel* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+CpuTi::CpuTi(CpuTiModel* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
     : Cpu(model, host, speed_per_pstate, core)
 {
   xbt_assert(core == 1, "Multi-core not handled by this model yet");
@@ -339,6 +339,7 @@ CpuTi::~CpuTi()
   set_modified(false);
   delete speed_integrated_trace_;
 }
+
 void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
 {
   delete speed_integrated_trace_;
@@ -348,7 +349,7 @@ void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
   if (profile && profile->event_list.size() > 1) {
     kernel::profile::DatedValue val = profile->event_list.back();
     if (val.date_ < 1e-12) {
-      auto* prof   = new simgrid::kernel::profile::Profile();
+      auto* prof   = new kernel::profile::Profile();
       speed_.event = prof->schedule(&profile::future_evt_set, this);
     }
   }
@@ -382,11 +383,10 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
 
       /* put all action running on cpu to failed */
       for (CpuTiAction& action : action_set_) {
-        if (action.get_state() == kernel::resource::Action::State::INITED ||
-            action.get_state() == kernel::resource::Action::State::STARTED ||
-            action.get_state() == kernel::resource::Action::State::IGNORED) {
+        if (action.get_state() == Action::State::INITED || action.get_state() == Action::State::STARTED ||
+            action.get_state() == Action::State::IGNORED) {
           action.set_finish_time(date);
-          action.set_state(kernel::resource::Action::State::FAILED);
+          action.set_state(Action::State::FAILED);
           get_model()->get_action_heap().remove(&action);
         }
       }
@@ -447,7 +447,7 @@ void CpuTi::update_actions_finish_time(double now)
     }
     /* add in action heap */
     if (min_finish != NO_MAX_DURATION)
-      get_model()->get_action_heap().update(&action, min_finish, kernel::resource::ActionHeap::Type::unset);
+      get_model()->get_action_heap().update(&action, min_finish, ActionHeap::Type::unset);
     else
       get_model()->get_action_heap().remove(&action);
 
@@ -507,7 +507,7 @@ void CpuTi::update_remaining_amount(double now)
   last_update_ = now;
 }
 
-kernel::resource::CpuAction* CpuTi::execution_start(double size)
+CpuAction* CpuTi::execution_start(double size)
 {
   XBT_IN("(%s,%g)", get_cname(), size);
   auto* action = new CpuTiAction(this, size);
@@ -518,7 +518,7 @@ kernel::resource::CpuAction* CpuTi::execution_start(double size)
   return action;
 }
 
-kernel::resource::CpuAction* CpuTi::sleep(double duration)
+CpuAction* CpuTi::sleep(double duration)
 {
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);
@@ -527,9 +527,9 @@ kernel::resource::CpuAction* CpuTi::sleep(double duration)
   auto* action = new CpuTiAction(this, 1.0);
 
   action->set_max_duration(duration);
-  action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
+  action->set_suspend_state(Action::SuspendStates::SLEEPING);
   if (duration == NO_MAX_DURATION)
-    action->set_state(simgrid::kernel::resource::Action::State::IGNORED);
+    action->set_state(Action::State::IGNORED);
 
   action_set_.push_back(*action);
 
@@ -546,7 +546,7 @@ void CpuTi::set_modified(bool modified)
     }
   } else {
     if (cpu_ti_hook.is_linked())
-      simgrid::xbt::intrusive_erase(modified_cpus, *this);
+      xbt::intrusive_erase(modified_cpus, *this);
   }
 }
 
@@ -562,7 +562,7 @@ CpuTiAction::~CpuTiAction()
 {
   /* remove from action_set */
   if (action_ti_hook.is_linked())
-    simgrid::xbt::intrusive_erase(cpu_->action_set_, *this);
+    xbt::intrusive_erase(cpu_->action_set_, *this);
   /* remove from heap */
   get_model()->get_action_heap().remove(this);
   cpu_->set_modified(true);
@@ -617,7 +617,7 @@ void CpuTiAction::set_max_duration(double duration)
     min_finish = get_finish_time();
 
   /* add in action heap */
-  get_model()->get_action_heap().update(this, min_finish, kernel::resource::ActionHeap::Type::unset);
+  get_model()->get_action_heap().update(this, min_finish, ActionHeap::Type::unset);
 
   XBT_OUT();
 }

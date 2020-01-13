@@ -34,7 +34,7 @@ class DiskAction;
 /*********
  * Model *
  *********/
-class DiskModel : public kernel::resource::Model {
+class DiskModel : public Model {
 public:
   DiskModel();
   DiskModel(const DiskModel&) = delete;
