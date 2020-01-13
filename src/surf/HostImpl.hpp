@@ -45,6 +45,8 @@ public:
 class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
   s4u::Host* piface_ = nullptr; // FIXME: why don't we store a s4u::Host here as we do everywhere else?
+  std::map<std::string, kernel::resource::StorageImpl*> storage_;
+  std::vector<kernel::resource::DiskImpl*> disks_;
 
 public:
   friend simgrid::vm::VirtualMachineImpl;
@@ -52,14 +54,14 @@ public:
   virtual ~HostImpl();
 
   std::vector<s4u::Disk*> get_disks();
+  void set_disks(const std::vector<kernel::resource::DiskImpl*>& disks, s4u::Host* host);
   void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& disk_name);
 
   /** @brief Get the vector of storages (by names) attached to the Host */
   virtual std::vector<const char*> get_attached_storages();
-
-  std::map<std::string, kernel::resource::StorageImpl*> storage_;
-  std::vector<kernel::resource::DiskImpl*> disks_;
+  std::unordered_map<std::string, s4u::Storage*>* get_mounted_storages();
+  void set_storages(const std::map<std::string, kernel::resource::StorageImpl*>& storages) { storage_ = storages; }
 
   s4u::Host* get_iface() { return piface_; }
 

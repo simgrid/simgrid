@@ -31,13 +31,15 @@ class XBT_PUBLIC VirtualMachineImpl : public surf::HostImpl, public simgrid::xbt
   friend simgrid::s4u::VirtualMachine;
 
 public:
-  explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host, int core_amount, size_t ramsize);
-  ~VirtualMachineImpl();
-
   /** @brief Callbacks fired after VM creation. Signature: `void(VirtualMachineImpl&)` */
   static xbt::signal<void(simgrid::vm::VirtualMachineImpl&)> on_creation;
   /** @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachineImpl const&)` */
   static xbt::signal<void(simgrid::vm::VirtualMachineImpl const&)> on_destruction;
+
+  static std::deque<s4u::VirtualMachine*> allVms_;
+
+  explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host, int core_amount, size_t ramsize);
+  ~VirtualMachineImpl();
 
   virtual void suspend(kernel::actor::ActorImpl* issuer);
   virtual void resume();
@@ -54,24 +56,29 @@ public:
   s4u::VirtualMachine::state get_state() const { return vm_state_; }
   void set_state(s4u::VirtualMachine::state state) { vm_state_ = state; }
 
-  int get_core_amount() { return core_amount_; }
+  unsigned int get_core_amount() { return core_amount_; }
+  kernel::resource::Action* get_action() { return action_; }
 
   virtual void set_bound(double bound);
 
-  /* The vm object of the lower layer */
-  kernel::resource::Action* action_ = nullptr;
-  static std::deque<s4u::VirtualMachine*> allVms_;
-  bool is_migrating_ = false;
-  int active_tasks_ = 0;
-
   void update_action_weight();
 
+  void add_active_exec() { active_execs_++; }
+  void remove_active_exec() { active_execs_--; }
+
+  void start_migration() { is_migrating_ = true; }
+  void end_migration() { is_migrating_ = false; }
+  bool is_migrating() const { return is_migrating_; }
+
 private:
+  kernel::resource::Action* action_ = nullptr;
+  unsigned int active_execs_        = 0;
   s4u::Host* physical_host_;
-  int core_amount_;
+  unsigned int core_amount_;
   double user_bound_                   = std::numeric_limits<double>::max();
-  size_t ramsize_            = 0;
+  size_t ramsize_                      = 0;
   s4u::VirtualMachine::state vm_state_ = s4u::VirtualMachine::state::CREATED;
+  bool is_migrating_                   = false;
 };
 
 /*********

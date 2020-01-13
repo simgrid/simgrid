@@ -79,12 +79,10 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   simgrid::s4u::Host* host =
       routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount, &props);
 
-  host->pimpl_->storage_ = mount_list;
+  host->pimpl_->set_storages(mount_list);
   mount_list.clear();
 
-  host->pimpl_->disks_ = std::move(args->disks);
-  for (auto d : host->pimpl_->disks_)
-    d->set_host(host);
+  host->pimpl_->set_disks(args->disks, host);
 
   /* Change from the defaults */
   if (args->state_trace)

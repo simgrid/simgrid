@@ -37,7 +37,7 @@ Storage* Storage::by_name_or_null(const std::string& name)
 
 const char* Storage::get_type() const
 {
-  return pimpl_->typeId_.c_str();
+  return pimpl_->get_type();
 }
 
 const std::unordered_map<std::string, std::string>* Storage::get_properties() const

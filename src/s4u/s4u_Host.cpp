@@ -307,12 +307,9 @@ std::vector<const char*> Host::get_attached_storages() const
 
 std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()
 {
-  if (mounts_ == nullptr) {
-    mounts_ = new std::unordered_map<std::string, Storage*>();
-    for (auto const& m : this->pimpl_->storage_) {
-      mounts_->insert({m.first, m.second->get_iface()});
-    }
-  }
+  if (mounts_ == nullptr)
+    mounts_ = kernel::actor::simcall([this] { return this->pimpl_->get_mounted_storages(); });
+
   return *mounts_;
 }
 

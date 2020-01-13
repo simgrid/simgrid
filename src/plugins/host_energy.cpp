@@ -137,6 +137,9 @@ class HostEnergy {
    */
   int pstate_           = 0;
   const int pstate_off_ = -1;
+  double watts_off_     = 0.0;              /*< Consumption when the machine is turned off (shutdown) */
+  double total_energy_  = 0.0;              /*< Total energy consumed by the host */
+  double last_updated_  = surf_get_clock(); /*< Timestamp of the last energy update event*/
 
   /* Only used to split total energy into unused/used hosts.
    * If you want to get this info for something else, rather use the host_load plugin
@@ -159,11 +162,8 @@ public:
   double get_watt_min_at(int pstate);
   double get_watt_max_at(int pstate);
   double get_power_range_slope_at(int pstate);
+  double get_last_update_time() { return last_updated_; }
   void update();
-
-  double watts_off_    = 0.0; /*< Consumption when the machine is turned off (shutdown) */
-  double total_energy_ = 0.0; /*< Total energy consumed by the host */
-  double last_updated_ = surf_get_clock(); /*< Timestamp of the last energy update event*/
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID;
@@ -171,7 +171,7 @@ simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID
 /* Computes the consumption so far. Called lazily on need. */
 void HostEnergy::update()
 {
-  double start_time  = this->last_updated_;
+  double start_time  = last_updated_;
   double finish_time = surf_get_clock();
   //
   // We may have start == finish if the past consumption was updated since the simcall was started
@@ -180,7 +180,7 @@ void HostEnergy::update()
   // Even in this case, we need to save the pstate for the next call (after this if),
   // which may have changed since that recent update.
   if (start_time < finish_time) {
-    double previous_energy = this->total_energy_;
+    double previous_energy = total_energy_;
 
     double instantaneous_power_consumption = this->get_current_watts_value();
 
@@ -188,17 +188,17 @@ void HostEnergy::update()
 
     // TODO Trace: Trace energy_this_step from start_time to finish_time in host->getName()
 
-    this->total_energy_ = previous_energy + energy_this_step;
-    this->last_updated_ = finish_time;
+    total_energy_ = previous_energy + energy_this_step;
+    last_updated_ = finish_time;
 
     XBT_DEBUG("[update_energy of %s] period=[%.8f-%.8f]; current speed=%.2E flop/s (pstate %i); total consumption "
               "before: %.8f J -> added now: %.8f J",
-              host_->get_cname(), start_time, finish_time, host_->get_pstate_speed(this->pstate_), this->pstate_,
-              previous_energy, energy_this_step);
+              host_->get_cname(), start_time, finish_time, host_->get_pstate_speed(pstate_), pstate_, previous_energy,
+              energy_this_step);
   }
 
   /* Save data for the upcoming time interval: whether it's on/off and the pstate if it's on */
-  this->pstate_ = host_->is_on() ? host_->get_pstate() : pstate_off_;
+  pstate_ = host_->is_on() ? host_->get_pstate() : pstate_off_;
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr)
@@ -483,7 +483,7 @@ static void on_action_state_change(simgrid::kernel::resource::CpuAction const& a
       // Get the host_energy extension for the relevant host
       HostEnergy* host_energy = host->extension<HostEnergy>();
 
-      if (host_energy->last_updated_ < surf_get_clock())
+      if (host_energy->get_last_update_time() < surf_get_clock())
         host_energy->update();
     }
   }

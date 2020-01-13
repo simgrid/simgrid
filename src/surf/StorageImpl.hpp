@@ -61,8 +61,18 @@ public:
  */
 class StorageImpl : public Resource, public xbt::PropertyHolder {
   s4u::Storage piface_;
+  lmm::Constraint* constraint_read_;  /* Constraint for maximum write bandwidth*/
+  lmm::Constraint* constraint_write_; /* Constraint for maximum write bandwidth*/
+
+  std::string typeId_;
+  bool currently_destroying_ = false;
+  // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
+  // the Host directly.
+  std::string attach_;
 
 public:
+  const std::string content_name_; // Only used at parsing time then goes to the FileSystemExtension
+  const sg_size_t size_;           // Only used at parsing time then goes to the FileSystemExtension
   /** @brief Storage constructor */
   StorageImpl(Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double bread, double bwrite,
               const std::string& type_id, const std::string& content_name, sg_size_t size, const std::string& attach);
@@ -72,6 +82,9 @@ public:
   ~StorageImpl() override;
 
   s4u::Storage* get_iface() { return &piface_; }
+  const char* get_type() { return typeId_.c_str(); }
+  lmm::Constraint* get_read_constraint() const { return constraint_read_; }
+  lmm::Constraint* get_write_constraint() const { return constraint_write_; }
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool is_used() override;
 
@@ -98,19 +111,6 @@ public:
    */
   virtual StorageAction* write(sg_size_t size) = 0;
   const std::string& get_host() const { return attach_; }
-
-  lmm::Constraint* constraint_write_; /* Constraint for maximum write bandwidth*/
-  lmm::Constraint* constraint_read_;  /* Constraint for maximum write bandwidth*/
-
-  std::string typeId_;
-  std::string content_name_; // Only used at parsing time then goes to the FileSystemExtension
-  sg_size_t size_;          // Only used at parsing time then goes to the FileSystemExtension
-
-private:
-  bool currently_destroying_ = false;
-  // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
-  // the Host directly.
-  std::string attach_;
 };
 
 /**********

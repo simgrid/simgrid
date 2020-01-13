@@ -60,7 +60,7 @@ static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_impl();
-    vm_impl->active_tasks_      = vm_impl->active_tasks_ + 1;
+    vm_impl->add_active_exec();
     vm_impl->update_action_weight();
   }
 }
@@ -70,7 +70,7 @@ static void remove_active_exec(s4u::Actor const&, s4u::Exec const& task)
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_impl();
-    vm_impl->active_tasks_      = vm_impl->active_tasks_ - 1;
+    vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
 }
@@ -86,7 +86,7 @@ static void add_active_activity(kernel::activity::ActivityImpl const& act)
   const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
-    vm_impl->active_tasks_ = vm_impl->active_tasks_ + 1;
+    vm_impl->add_active_exec();
     vm_impl->update_action_weight();
   }
 }
@@ -96,7 +96,7 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
   const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
     VirtualMachineImpl *vm_impl = vm->get_impl();
-    vm_impl->active_tasks_ = vm_impl->active_tasks_ - 1;
+    vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
 }
@@ -141,9 +141,8 @@ double VMModel::next_occurring_event(double now)
   for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
     const kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
 
-    double solved_value =
-        ws_vm->get_impl()->action_->get_variable()->get_value(); // this is X1 in comment above, what
-                                                                 // this VM got in the sharing on the PM
+    // solved_value below is X1 in comment above: what this VM got in the sharing on the PM
+    double solved_value = ws_vm->get_impl()->get_action()->get_variable()->get_value();
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->get_pm()->get_cname());
 
     xbt_assert(cpu->get_model() == surf_cpu_model_vm);
@@ -321,9 +320,9 @@ void VirtualMachineImpl::set_bound(double bound)
 
 void VirtualMachineImpl::update_action_weight(){
   /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
-  int impact = std::min(active_tasks_, get_core_amount());
+  int impact = std::min(active_execs_, get_core_amount());
 
-  XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", this, impact, active_tasks_);
+  XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %u)", this, impact, active_execs_);
 
   if (impact > 0)
     action_->set_sharing_penalty(1. / impact);

@@ -111,6 +111,13 @@ std::vector<s4u::Disk*> HostImpl::get_disks()
   return disks;
 }
 
+void HostImpl::set_disks(const std::vector<kernel::resource::DiskImpl*>& disks, s4u::Host* host)
+{
+  disks_ = std::move(disks);
+  for (auto d : disks_)
+    d->set_host(host);
+}
+
 void HostImpl::add_disk(const s4u::Disk* disk)
 {
   disks_.push_back(disk->get_impl());
@@ -136,6 +143,13 @@ std::vector<const char*> HostImpl::get_attached_storages()
       storages.push_back(s.second->get_iface()->get_cname());
   return storages;
 }
-
+std::unordered_map<std::string, s4u::Storage*>* HostImpl::get_mounted_storages()
+{
+  std::unordered_map<std::string, s4u::Storage*>* mounts = new std::unordered_map<std::string, s4u::Storage*>();
+  for (auto const& m : storage_) {
+    mounts->insert({m.first, m.second->get_iface()});
+  }
+  return mounts;
+}
 } // namespace surf
 } // namespace simgrid

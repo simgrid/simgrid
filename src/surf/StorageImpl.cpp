@@ -41,9 +41,9 @@ StorageImpl::StorageImpl(kernel::resource::Model* model, const std::string& name
     : Resource(model, name, maxminSystem->constraint_new(this, std::max(bread, bwrite)))
     , piface_(name, this)
     , typeId_(type_id)
+    , attach_(attach)
     , content_name_(content_name)
     , size_(size)
-    , attach_(attach)
 {
   StorageImpl::turn_on();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
