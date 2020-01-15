@@ -18,18 +18,10 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-class BypassRoute {
-public:
-  explicit BypassRoute(NetPoint* gwSrc, NetPoint* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
-  NetPoint* gw_src;
-  NetPoint* gw_dst;
-  std::vector<resource::LinkImpl*> links;
-};
-
 NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model)
-    : network_model_(network_model), piface_(this), father_(father), name_(name)
+    : piface_(this), father_(father), name_(name), network_model_(network_model)
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
+  xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
 
   netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone, father);
@@ -44,28 +36,9 @@ NetZoneImpl::~NetZoneImpl()
   for (auto const& kv : bypass_routes_)
     delete kv.second;
 
-  simgrid::s4u::Engine::get_instance()->netpoint_unregister(netpoint_);
+  s4u::Engine::get_instance()->netpoint_unregister(netpoint_);
 }
-const char* NetZoneImpl::get_cname() const
-{
-  return name_.c_str();
-}
-NetZoneImpl* NetZoneImpl::get_father()
-{
-  return father_;
-}
-void NetZoneImpl::seal()
-{
-  sealed_ = true;
-}
-/** @brief Returns the list of direct children (no grand-children)
- *
- * This returns the internal data, no copy. Don't mess with it.
- */
-std::vector<NetZoneImpl*>* NetZoneImpl::get_children()
-{
-  return &children_;
-}
+
 /** @brief Returns the list of the hosts found in this NetZone (not recursively)
  *
  * Only the hosts that are directly contained in this NetZone are retrieved,
@@ -75,7 +48,7 @@ std::vector<s4u::Host*> NetZoneImpl::get_all_hosts()
 {
   std::vector<s4u::Host*> res;
   for (auto const& card : get_vertices()) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
+    s4u::Host* host = s4u::Host::by_name_or_null(card->get_name());
     if (host != nullptr)
       res.push_back(host);
   }
@@ -85,17 +58,17 @@ int NetZoneImpl::get_host_count()
 {
   int count = 0;
   for (auto const& card : get_vertices()) {
-    const s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
+    const s4u::Host* host = s4u::Host::by_name_or_null(card->get_name());
     if (host != nullptr)
       count++;
   }
   return count;
 }
 
-simgrid::s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate,
-                                             int coreAmount, const std::map<std::string, std::string>* props)
+s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate,
+                                    int coreAmount, const std::map<std::string, std::string>* props)
 {
-  simgrid::s4u::Host* res = new simgrid::s4u::Host(name);
+  s4u::Host* res = new s4u::Host(name);
 
   if (hierarchy_ == RoutingMode::unset)
     hierarchy_ = RoutingMode::base;
@@ -107,19 +80,19 @@ simgrid::s4u::Host* NetZoneImpl::create_host(const std::string& name, const std:
   if (props != nullptr)
     res->set_properties(*props);
 
-  simgrid::s4u::Host::on_creation(*res); // notify the signal
+  s4u::Host::on_creation(*res); // notify the signal
 
   return res;
 }
 
-int NetZoneImpl::add_component(kernel::routing::NetPoint* elm)
+int NetZoneImpl::add_component(NetPoint* elm)
 {
   vertices_.push_back(elm);
   return vertices_.size() - 1; // The rank of the newly created object
 }
-void NetZoneImpl::add_route(kernel::routing::NetPoint* /*src*/, kernel::routing::NetPoint* /*dst*/,
-                            kernel::routing::NetPoint* /*gw_src*/, kernel::routing::NetPoint* /*gw_dst*/,
-                            std::vector<kernel::resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
+
+void NetZoneImpl::add_route(NetPoint* /*src*/, NetPoint* /*dst*/, NetPoint* /*gw_src*/, NetPoint* /*gw_dst*/,
+                            std::vector<resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
 {
   xbt_die("NetZone '%s' does not accept new routes (wrong class).", get_cname());
 }
@@ -145,7 +118,7 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
   }
 
   /* Build a copy that will be stored in the dict */
-  kernel::routing::BypassRoute* newRoute = new kernel::routing::BypassRoute(gw_src, gw_dst);
+  BypassRoute* newRoute = new BypassRoute(gw_src, gw_dst);
   for (auto const& link : link_list)
     newRoute->links.push_back(link);
 
@@ -263,7 +236,7 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
 }
 
 /* PRECONDITION: this is the common ancestor of src and dst */
-bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
+bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
                                    /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency)
 {
   // If never set a bypass route return nullptr without any further computations
@@ -414,6 +387,6 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
   if (route.gw_dst != dst)
     get_global_route(route.gw_dst, dst, links, latency);
 }
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
