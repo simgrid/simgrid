@@ -67,7 +67,7 @@ void sg_platf_exit() {
 }
 
 /** @brief Add a host to the current AS */
-void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
+void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
   std::map<std::string, std::string> props;
   if (args->properties) {
