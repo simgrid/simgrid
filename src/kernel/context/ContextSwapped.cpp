@@ -39,11 +39,11 @@ namespace context {
 thread_local SwappedContext* SwappedContext::worker_context_ = nullptr;
 
 SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
-    : Context(std::move(code), actor), factory_(factory)
+    : Context(std::move(code), actor), factory_(*factory)
 {
   // Save maestro (=context created first) in preparation for run_all
-  if (not SIMIX_context_is_parallel() && factory->maestro_context_ == nullptr)
-    factory->maestro_context_ = this;
+  if (not SIMIX_context_is_parallel() && factory_.maestro_context_ == nullptr)
+    factory_.maestro_context_ = this;
 
   if (has_code()) {
     xbt_assert((smx_context_stack_size & 0xf) == 0, "smx_context_stack_size should be multiple of 16");
@@ -212,7 +212,7 @@ void SwappedContext::suspend()
   SwappedContext* next_context;
   if (SIMIX_context_is_parallel()) {
     // Get some more work to directly swap into the next executable actor instead of yielding back to the parmap
-    boost::optional<smx_actor_t> next_work = factory_->parmap_->next();
+    boost::optional<smx_actor_t> next_work = factory_.parmap_->next();
     if (next_work) {
       // There is a next soul to embody (ie, another executable actor)
       XBT_DEBUG("Run next process");
@@ -226,8 +226,8 @@ void SwappedContext::suspend()
     }
   } else { // sequential execution
     /* determine the next context */
-    unsigned long int i = factory_->process_index_;
-    factory_->process_index_++;
+    unsigned long int i = factory_.process_index_;
+    factory_.process_index_++;
 
     if (i < simix_global->actors_to_run.size()) {
       /* Actually swap into the next actor directly without transiting to maestro */
@@ -236,7 +236,7 @@ void SwappedContext::suspend()
     } else {
       /* all processes were run, actually return to maestro */
       XBT_DEBUG("No more actors to run");
-      next_context = factory_->maestro_context_;
+      next_context = factory_.maestro_context_;
     }
   }
   Context::set_current(next_context);
