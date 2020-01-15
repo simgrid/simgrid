@@ -47,8 +47,6 @@ public:
 
   unsigned char* get_stack();
 
-  static thread_local SwappedContext* worker_context_;
-
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_   = nullptr;
   size_t asan_stack_size_   = 0;
@@ -57,6 +55,8 @@ public:
 #endif
 
 private:
+  static thread_local SwappedContext* worker_context_;
+
   unsigned char* stack_ = nullptr; // the thread stack
   SwappedContextFactory& factory_; // for sequential and parallel run_all()
 
