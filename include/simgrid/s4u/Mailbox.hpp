@@ -7,8 +7,8 @@
 #define SIMGRID_S4U_MAILBOX_HPP
 
 #include <simgrid/forward.h>
-
 #include <simgrid/s4u/Actor.hpp>
+#include <smpi/forward.hpp>
 #include <xbt/string.hpp>
 
 #include <string>
@@ -19,6 +19,7 @@ namespace s4u {
 /** @brief Mailboxes: Network rendez-vous points. */
 class XBT_PUBLIC Mailbox {
   friend Comm;
+  friend smpi::Request;
   friend kernel::activity::MailboxImpl;
 
   kernel::activity::MailboxImpl* const pimpl_;
@@ -26,12 +27,10 @@ class XBT_PUBLIC Mailbox {
   explicit Mailbox(kernel::activity::MailboxImpl * mbox) : pimpl_(mbox) {}
   ~Mailbox() = default;
 
-public:
-#ifndef DOXYGEN
-  /** private function, do not use. FIXME: make me protected */
+protected:
   kernel::activity::MailboxImpl* get_impl() const { return pimpl_; }
-#endif
 
+public:
   /** @brief Retrieves the name of that mailbox as a C++ string */
   const xbt::string& get_name() const;
   /** @brief Retrieves the name of that mailbox as a C string */
