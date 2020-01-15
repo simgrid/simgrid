@@ -362,9 +362,7 @@ std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints()
 /** @brief Register a new netpoint to the system */
 void Engine::netpoint_register(kernel::routing::NetPoint* point)
 {
-  // simgrid::kernel::actor::simcall([&]{ FIXME: this segfaults in set_thread
-  pimpl->netpoints_[point->get_name()] = point;
-  // });
+  simgrid::kernel::actor::simcall([this, point] { pimpl->netpoints_[point->get_name()] = point; });
 }
 
 /** @brief Unregister a given netpoint */
