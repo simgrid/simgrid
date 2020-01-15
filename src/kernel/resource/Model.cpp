@@ -46,7 +46,7 @@ double Model::next_occurring_event_lazy(double now)
   while (not maxmin_system_->modified_set_->empty()) {
     Action* action = &(maxmin_system_->modified_set_->front());
     maxmin_system_->modified_set_->pop_front();
-    bool max_duration_flag = false;
+    ActionHeap::Type action_type = ActionHeap::Type::normal;
 
     if (action->get_state_set() != &started_action_set_)
       continue;
@@ -74,7 +74,7 @@ double Model::next_occurring_event_lazy(double now)
         (min <= -1 || action->get_start_time() + action->get_max_duration() < min)) {
       // when the task will complete anyway because of the deadline if any
       min          = action->get_start_time() + action->get_max_duration();
-      max_duration_flag = true;
+      action_type  = ActionHeap::Type::max_duration;
     }
 
     XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->get_variable()->rank_);
@@ -83,7 +83,7 @@ double Model::next_occurring_event_lazy(double now)
               action->get_start_time(), min, share, action->get_max_duration());
 
     if (min > -1) {
-      action_heap_.update(action, min, max_duration_flag ? ActionHeap::Type::max_duration : ActionHeap::Type::normal);
+      action_heap_.update(action, min, action_type);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else
       DIE_IMPOSSIBLE;

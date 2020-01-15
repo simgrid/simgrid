@@ -64,7 +64,7 @@ CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
 
   bool select = config::get_value<bool>("cpu/maxmin-selective-update");
 
-  if (algo == Model::UpdateAlgo::LAZY) {
+  if (is_update_lazy()) {
     xbt_assert(select || config::is_default("cpu/maxmin-selective-update"),
                "You cannot disable cpu selective update when using the lazy update mechanism");
     select = true;
@@ -188,7 +188,7 @@ CpuAction* CpuCas01::sleep(double duration)
     action->set_state(Action::State::IGNORED);
 
   get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), 0.0);
-  if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) { // remove action from the heap
+  if (get_model()->is_update_lazy()) { // remove action from the heap
     get_model()->get_action_heap().remove(action);
     // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its
     // max_duration correctly at the next call to share_resources
@@ -208,7 +208,7 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
                 model->get_maxmin_system()->variable_new(this, 1.0 / requested_core, requested_core * speed, 1))
     , requested_core_(requested_core)
 {
-  if (model->get_update_algorithm() == Model::UpdateAlgo::LAZY)
+  if (model->is_update_lazy())
     set_last_update();
   model->get_maxmin_system()->expand(constraint, get_variable(), 1.0);
 }

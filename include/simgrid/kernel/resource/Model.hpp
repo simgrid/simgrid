@@ -34,6 +34,8 @@ public:
 
   virtual ~Model();
 
+  bool is_update_lazy() { return update_algorithm_ == UpdateAlgo::LAZY; }
+
   /** @brief Get the set of [actions](@ref Action) in *inited* state */
   Action::StateSet* get_inited_action_set() { return &inited_action_set_; }
 
@@ -59,7 +61,10 @@ public:
   void set_maxmin_system(lmm::System* system);
 
   /** @brief Get the update algorithm of the current Model */
-  UpdateAlgo get_update_algorithm() const { return update_algorithm_; }
+  XBT_ATTRIB_DEPRECATED_v329("Please use is_update_lazy()") UpdateAlgo get_update_algorithm() const
+  {
+    return update_algorithm_;
+  }
 
   /** @brief Get Action heap */
   ActionHeap& get_action_heap() { return action_heap_; }

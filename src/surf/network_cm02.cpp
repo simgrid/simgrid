@@ -189,7 +189,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_ = latency;
   action->rate_ = rate;
 
-  if (get_update_algorithm() == Model::UpdateAlgo::LAZY) {
+  if (is_update_lazy()) {
     action->set_last_update();
   }
 
@@ -214,7 +214,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (action->latency_ > 0) {
     action->set_variable(get_maxmin_system()->variable_new(action, 0.0, -1.0, constraints_per_variable));
-    if (get_update_algorithm() == Model::UpdateAlgo::LAZY) {
+    if (is_update_lazy()) {
       // add to the heap the event when the latency is payed
       double date = action->latency_ + action->get_last_update();
 

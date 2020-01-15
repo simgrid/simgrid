@@ -207,7 +207,7 @@ public:
   /** @brief Get the state set in which the action is */
   StateSet* get_state_set() const { return state_set_; };
 
-  simgrid::kernel::resource::Model* get_model() const { return model_; }
+  Model* get_model() const { return model_; }
 
 private:
   StateSet* state_set_;
