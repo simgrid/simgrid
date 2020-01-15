@@ -252,7 +252,7 @@ void ExecImpl::finish()
 
       case State::FAILED:
         XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
-        simcall->issuer_->context_->iwannadie = true;
+        simcall->issuer_->context_->set_wannadie();
         if (simcall->issuer_->get_host()->is_on())
           simcall->issuer_->exception_ =
               std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
@@ -279,7 +279,7 @@ void ExecImpl::finish()
     if (simcall->issuer_->get_host()->is_on())
       simcall->issuer_->simcall_answer();
     else
-      simcall->issuer_->context_->iwannadie = true;
+      simcall->issuer_->context_->set_wannadie();
   }
 }
 

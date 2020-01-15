@@ -45,16 +45,17 @@ class XBT_PUBLIC Context {
 
   std::function<void()> code_;
   actor::ActorImpl* actor_ = nullptr;
+  bool iwannadie_          = false;
   void declare_context(std::size_t size);
 
 public:
-  bool iwannadie = false;
-
   Context(std::function<void()>&& code, actor::ActorImpl* actor);
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
   virtual ~Context();
 
+  bool wannadie() const { return iwannadie_; }
+  void set_wannadie(bool value = true) { iwannadie_ = value; }
   void operator()() { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
   actor::ActorImpl* get_actor() { return this->actor_; }

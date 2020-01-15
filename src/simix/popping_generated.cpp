@@ -59,7 +59,7 @@ const char* simcall_names[] = {
 void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
   XBT_DEBUG("Handling simcall %p: %s", &simcall, SIMIX_simcall_name(simcall.call_));
   SIMCALL_SET_MC_VALUE(simcall, value);
-  if (context_->iwannadie)
+  if (context_->wannadie())
     return;
   switch (simcall.call_) {
     case SIMCALL_EXECUTION_WAIT:

@@ -140,7 +140,7 @@ void IoImpl::finish()
         /* do nothing, synchro done */
         break;
       case State::FAILED:
-        simcall->issuer_->context_->iwannadie = true;
+        simcall->issuer_->context_->set_wannadie();
         simcall->issuer_->exception_ =
             std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
         break;

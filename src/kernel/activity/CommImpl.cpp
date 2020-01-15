@@ -607,7 +607,7 @@ void CommImpl::finish()
     /* Check out for errors */
 
     if (not simcall->issuer_->get_host()->is_on()) {
-      simcall->issuer_->context_->iwannadie = true;
+      simcall->issuer_->context_->set_wannadie();
     } else {
       switch (state_) {
         case State::DONE:
@@ -627,7 +627,7 @@ void CommImpl::finish()
 
         case State::SRC_HOST_FAILURE:
           if (simcall->issuer_ == src_actor_)
-            simcall->issuer_->context_->iwannadie = true;
+            simcall->issuer_->context_->set_wannadie();
           else
             simcall->issuer_->exception_ =
                 std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
@@ -635,7 +635,7 @@ void CommImpl::finish()
 
         case State::DST_HOST_FAILURE:
           if (simcall->issuer_ == dst_actor_)
-            simcall->issuer_->context_->iwannadie = true;
+            simcall->issuer_->context_->set_wannadie();
           else
             simcall->issuer_->exception_ =
                 std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));

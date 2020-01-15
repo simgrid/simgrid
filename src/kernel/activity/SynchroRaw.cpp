@@ -71,7 +71,7 @@ void RawImpl::finish()
 
   if (state_ == State::FAILED) {
     XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
-    simcall->issuer_->context_->iwannadie = true;
+    simcall->issuer_->context_->set_wannadie();
     simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
   } else if (state_ != State::SRC_TIMEOUT) {
     xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));

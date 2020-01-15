@@ -157,7 +157,7 @@ void ActorImpl::cleanup()
 
   if (on_exit) {
     // Execute the termination callbacks
-    bool failed = context_->iwannadie;
+    bool failed = context_->wannadie();
     for (auto exit_fun = on_exit->crbegin(); exit_fun != on_exit->crend(); ++exit_fun)
       (*exit_fun)(failed);
     on_exit.reset();
@@ -183,14 +183,14 @@ void ActorImpl::cleanup()
   }
   cleanup_from_simix();
 
-  context_->iwannadie = false; // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
+  context_->set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
   actor::simcall([this] { s4u::Actor::on_termination(*ciface()); });
-  context_->iwannadie = true;
+  context_->set_wannadie();
 }
 
 void ActorImpl::exit()
 {
-  context_->iwannadie = true;
+  context_->set_wannadie();
   suspended_          = false;
   exception_          = nullptr;
 
@@ -276,7 +276,7 @@ void ActorImpl::yield()
   /* Ok, maestro returned control to us */
   XBT_DEBUG("Control returned to me: '%s'", get_cname());
 
-  if (context_->iwannadie) {
+  if (context_->wannadie()) {
     XBT_DEBUG("Actor %s@%s is dead", get_cname(), host_->get_cname());
     context_->stop();
     THROW_IMPOSSIBLE;
@@ -371,7 +371,7 @@ void ActorImpl::resume()
 {
   XBT_IN("actor = %p", this);
 
-  if (context_->iwannadie) {
+  if (context_->wannadie()) {
     XBT_VERB("Ignoring request to suspend an actor that is currently dying.");
     return;
   }
