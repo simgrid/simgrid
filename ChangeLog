@@ -4,7 +4,7 @@ SimGrid (3.24.1) NOT RELEASED YET (v3.25 expected December 22. 2029, 04:19 UTC)
 
 General:
 - Upgrade documented Java dependency to Java 8 (earlier versions don't work).
-- Drop support for Viva/Triva (old visualization tools), hence removed 
+- Drop support for Viva/Triva (old visualization tools), hence removed
   TRACE_get_node_types() and TRACE_get_edge_types() functions.
 
 S4U:
@@ -52,13 +52,19 @@ SMPI:
   call, which should be called if SMPI is not being used through smpirun.
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
+ - FG#39: Missing s4u::Comm::wait_any_for example
+ - FG!19: Removing RngStream
+ - FG!20: A module for RNG calls
+ - FG!21: Choice between ad-hoc and standard distributions implementations
+ - FG!23: Master
+ - FG!25: Fix link in Mutex doc
+ - FG!26: Fix links in SMPI interface doc
  - GH#31: [MC] please provide an option to make MPI_Send asynchronous
  - GH#305: Unscheduled tasks are still excuted
  - GH#313: smpirun: manual outdated w.r.t. --help
  - GH#321: [S4U] Get task remaining work ratio
  - GH#323: Crash when an actor turn off his physical host
  - GH#335: Missing links on dragonfly example svg
- - FG!19: Removing RngStream
  - https://lists.gforge.inria.fr/pipermail/simgrid-user/2019-November/004653.html:
    MPI_Cart_sub was not working properly. Kudos to Jonathan Borne for the report.
 
