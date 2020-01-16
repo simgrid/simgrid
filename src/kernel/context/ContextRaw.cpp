@@ -13,11 +13,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 // Raw context routines
 
-typedef void (*rawctx_entry_point_t)(simgrid::kernel::context::RawContext*);
+typedef void (*rawctx_entry_point_t)(simgrid::kernel::context::SwappedContext*);
 
 typedef void* raw_stack_t;
 extern "C" raw_stack_t raw_makecontext(void* malloced_stack, int stack_size, rawctx_entry_point_t entry_point,
-                                       simgrid::kernel::context::RawContext* arg);
+                                       simgrid::kernel::context::SwappedContext* arg);
 extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 
 // TODO, we should handle FP, MMX and the x87 control-word (for x86 and x86_64)
@@ -168,7 +168,7 @@ __asm__ (
    update the definition of HAVE_RAW_CONTEXTS in tools/cmake/CompleteInFiles.cmake */
 
 raw_stack_t raw_makecontext(void* malloced_stack, int stack_size, rawctx_entry_point_t entry_point,
-                            simgrid::kernel::context::RawContext* arg)
+                            simgrid::kernel::context::SwappedContext* arg)
 {
   THROW_UNIMPLEMENTED;
 }
@@ -199,28 +199,11 @@ RawContext::RawContext(std::function<void()>&& code, actor::ActorImpl* actor, Sw
     : SwappedContext(std::move(code), actor, factory)
 {
    if (has_code()) {
-     this->stack_top_ = raw_makecontext(get_stack(), smx_context_stack_size, RawContext::wrapper, this);
+     this->stack_top_ = raw_makecontext(get_stack(), smx_context_stack_size, smx_ctx_wrapper, this);
    } else {
      if (MC_is_active())
        MC_ignore_heap(&stack_top_, sizeof(stack_top_));
    }
-}
-
-void RawContext::wrapper(RawContext* context)
-{
-  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
-  try {
-    (*context)();
-    context->Context::stop();
-  } catch (ForcefulKillException const&) {
-    XBT_DEBUG("Caught a ForcefulKillException");
-  } catch (simgrid::Exception const& e) {
-    XBT_INFO("Actor killed by an uncaught exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
-    throw;
-  }
-  ASAN_ONLY(context->asan_stop_ = true);
-  context->suspend();
-  THROW_IMPOSSIBLE;
 }
 
 void RawContext::swap_into(SwappedContext* to_)

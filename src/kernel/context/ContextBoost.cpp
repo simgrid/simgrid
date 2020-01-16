@@ -44,21 +44,9 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
 #else
   BoostContext* context = static_cast<BoostContext**>(arg.data)[1];
   context->verify_previous_context(static_cast<BoostContext**>(arg.data)[0]);
-  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
-  try {
-    (*context)();
-    context->Context::stop();
-  } catch (ForcefulKillException const&) {
-    XBT_DEBUG("Caught a ForcefulKillException");
-  } catch (simgrid::Exception const& e) {
-    XBT_INFO("Actor killed by an uncaught exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
-    throw;
-  }
-  ASAN_ONLY(context->asan_stop_ = true);
-  context->suspend();
-  THROW_IMPOSSIBLE;
+  smx_ctx_wrapper(context);
 }
 
 void BoostContext::swap_into(SwappedContext* to_)
