@@ -23,33 +23,16 @@ constexpr int CTX_ADDR_LEN = 2;
 static_assert(sizeof(simgrid::kernel::context::UContext*) <= CTX_ADDR_LEN * sizeof(int),
               "Ucontexts are not supported on this arch yet. Please increase CTX_ADDR_LEN.");
 
-/* Make sure that this symbol is easy to recognize by name, even on exotic platforms */
+// This function is called by makecontext(3): use extern "C" to have C language linkage for its type
 extern "C" {
-XBT_ATTRIB_NORETURN void smx_ctx_wrapper(int i1, int i2);
-}
-
-// The name of this function is currently hardcoded in MC (as string).
-// Do not change it without fixing those references as well.
-void smx_ctx_wrapper(int i1, int i2)
+XBT_ATTRIB_NORETURN static void sysv_ctx_wrapper(int i1, int i2)
 {
   // Rebuild the Context* pointer from the integers:
   int ctx_addr[CTX_ADDR_LEN] = {i1, i2};
   simgrid::kernel::context::UContext* context;
   memcpy(&context, ctx_addr, sizeof context);
-
-  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
-  try {
-    (*context)();
-    context->Context::stop();
-  } catch (simgrid::ForcefulKillException const&) {
-    XBT_DEBUG("Caught a ForcefulKillException");
-  } catch (simgrid::Exception const& e) {
-    XBT_INFO("Actor killed by an uncaught exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
-    throw;
-  }
-  ASAN_ONLY(context->asan_stop_ = true);
-  context->suspend();
-  THROW_IMPOSSIBLE;
+  smx_ctx_wrapper(context);
+}
 }
 
 namespace simgrid {
@@ -80,7 +63,7 @@ UContext::UContext(std::function<void()>&& code, actor::ActorImpl* actor, Swappe
     int ctx_addr[CTX_ADDR_LEN]{};
     UContext* arg = this;
     memcpy(ctx_addr, &arg, sizeof this);
-    makecontext(&this->uc_, (void (*)())smx_ctx_wrapper, 2, ctx_addr[0], ctx_addr[1]);
+    makecontext(&this->uc_, (void (*)())sysv_ctx_wrapper, 2, ctx_addr[0], ctx_addr[1]);
 
 #if SIMGRID_HAVE_MC
     if (MC_is_active()) {

@@ -31,6 +31,29 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
+// The name of this function is currently hardcoded in MC (as string).
+// Do not change it without fixing those references as well.
+void smx_ctx_wrapper(simgrid::kernel::context::SwappedContext* context)
+{
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+  __sanitizer_finish_switch_fiber(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
+#endif
+  try {
+    (*context)();
+    context->Context::stop();
+  } catch (simgrid::ForcefulKillException const&) {
+    XBT_DEBUG("Caught a ForcefulKillException");
+  } catch (simgrid::Exception const& e) {
+    XBT_INFO("Actor killed by an uncaught exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    throw;
+  }
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+  context->asan_stop_ = true;
+#endif
+  context->suspend();
+  THROW_IMPOSSIBLE;
+}
+
 namespace simgrid {
 namespace kernel {
 namespace context {
