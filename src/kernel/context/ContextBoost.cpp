@@ -43,7 +43,7 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
   BoostContext* context = reinterpret_cast<BoostContext*>(arg);
 #else
   BoostContext* context = static_cast<BoostContext**>(arg.data)[1];
-  ASAN_ONLY(xbt_assert(context->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]));
+  context->verify_previous_context(static_cast<BoostContext**>(arg.data)[0]);
   ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
@@ -72,7 +72,7 @@ void BoostContext::swap_into(SwappedContext* to_)
   ASAN_ONLY(to->asan_ctx_ = this);
   ASAN_START_SWITCH(this->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   boost::context::detail::transfer_t arg = boost::context::detail::jump_fcontext(to->fc_, ctx);
-  ASAN_ONLY(xbt_assert(this->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]));
+  this->verify_previous_context(static_cast<BoostContext**>(arg.data)[0]);
   ASAN_FINISH_SWITCH(fake_stack, &this->asan_ctx_->asan_stack_, &this->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif

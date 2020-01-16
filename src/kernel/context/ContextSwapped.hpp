@@ -57,6 +57,10 @@ public:
   bool asan_stop_           = false;
 #endif
 
+protected:
+  // With ASan, after a context switch, check that the originating context is the expected one (see BoostContext)
+  void verify_previous_context(const SwappedContext* context) const;
+
 private:
   static thread_local SwappedContext* worker_context_;
 
@@ -67,6 +71,13 @@ private:
   unsigned int valgrind_stack_id_;
 #endif
 };
+
+inline void SwappedContext::verify_previous_context(XBT_ATTRIB_UNUSED const SwappedContext* context) const
+{
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+  xbt_assert(this->asan_ctx_ == context);
+#endif
+}
 
 } // namespace context
 } // namespace kernel
