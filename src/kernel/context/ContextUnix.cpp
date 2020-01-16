@@ -5,8 +5,6 @@
 
 /* \file UContext.cpp Context switching with ucontexts from System V        */
 
-#include "context_private.hpp"
-
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -73,14 +71,10 @@ UContext::UContext(std::function<void()>&& code, actor::ActorImpl* actor, Swappe
   }
 }
 
-void UContext::swap_into(SwappedContext* to_)
+void UContext::swap_into_for_real(SwappedContext* to_)
 {
   const UContext* to = static_cast<UContext*>(to_);
-  ASAN_ONLY(void* fake_stack = nullptr);
-  ASAN_ONLY(to_->asan_ctx_ = this);
-  ASAN_START_SWITCH(this->asan_stop_ ? nullptr : &fake_stack, to_->asan_stack_, to_->asan_stack_size_);
   swapcontext(&this->uc_, &to->uc_);
-  ASAN_FINISH_SWITCH(fake_stack, &this->asan_ctx_->asan_stack_, &this->asan_ctx_->asan_stack_size_);
 }
 
 

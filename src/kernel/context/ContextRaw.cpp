@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ContextRaw.hpp"
-#include "context_private.hpp"
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
@@ -206,14 +205,10 @@ RawContext::RawContext(std::function<void()>&& code, actor::ActorImpl* actor, Sw
    }
 }
 
-void RawContext::swap_into(SwappedContext* to_)
+void RawContext::swap_into_for_real(SwappedContext* to_)
 {
   const RawContext* to = static_cast<RawContext*>(to_);
-  ASAN_ONLY(void* fake_stack = nullptr);
-  ASAN_ONLY(to_->asan_ctx_ = this);
-  ASAN_START_SWITCH(this->asan_stop_ ? nullptr : &fake_stack, to_->asan_stack_, to_->asan_stack_size_);
   raw_swapcontext(&this->stack_top_, to->stack_top_);
-  ASAN_FINISH_SWITCH(fake_stack, &this->asan_ctx_->asan_stack_, &this->asan_ctx_->asan_stack_size_);
 }
 
 ContextFactory* raw_factory()

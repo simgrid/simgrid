@@ -34,8 +34,6 @@ class BoostContext : public SwappedContext {
 public:
   BoostContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory);
 
-  void swap_into(SwappedContext* to) override;
-
 private:
 #if BOOST_VERSION < 106100
   boost::context::fcontext_t fc_;
@@ -46,6 +44,8 @@ private:
 #endif
 
   XBT_ATTRIB_NORETURN static void wrapper(arg_type arg);
+
+  void swap_into_for_real(SwappedContext* to) override;
 };
 
 class BoostContextFactory : public SwappedContextFactory {

@@ -2185,7 +2185,6 @@ include src/kernel/context/ContextThread.cpp
 include src/kernel/context/ContextThread.hpp
 include src/kernel/context/ContextUnix.cpp
 include src/kernel/context/ContextUnix.hpp
-include src/kernel/context/context_private.hpp
 include src/kernel/future.cpp
 include src/kernel/lmm/fair_bottleneck.cpp
 include src/kernel/lmm/maxmin.cpp

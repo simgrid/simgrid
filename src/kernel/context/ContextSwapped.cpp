@@ -7,7 +7,6 @@
 #include "simgrid/modelchecker.h"
 #include "src/internal_config.h"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/context/context_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "xbt/parmap.hpp"
 
@@ -27,6 +26,9 @@
 
 #if HAVE_VALGRIND_H
 #include <valgrind/valgrind.h>
+#endif
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+#include <sanitizer/asan_interface.h>
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
@@ -156,6 +158,21 @@ void SwappedContext::stop()
   Context::stop();
   /* We must cut the actor execution using an exception to properly free the C++ RAII variables */
   throw ForcefulKillException();
+}
+
+void SwappedContext::swap_into(SwappedContext* to)
+{
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+  void* fake_stack = nullptr;
+  to->asan_ctx_    = this;
+  __sanitizer_start_switch_fiber(this->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
+#endif
+
+  swap_into_for_real(to);
+
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+  __sanitizer_finish_switch_fiber(fake_stack, &this->asan_ctx_->asan_stack_, &this->asan_ctx_->asan_stack_size_);
+#endif
 }
 
 /** Maestro wants to run all ready actors */

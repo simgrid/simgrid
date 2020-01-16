@@ -6,6 +6,7 @@
 #ifndef SIMGRID_KERNEL_CONTEXT_SWAPPED_CONTEXT_HPP
 #define SIMGRID_KERNEL_CONTEXT_SWAPPED_CONTEXT_HPP
 
+#include "src/internal_config.h" // HAVE_SANITIZER_*
 #include "src/kernel/context/Context.hpp"
 
 #include <memory>
@@ -55,19 +56,12 @@ public:
   virtual void resume();
   XBT_ATTRIB_NORETURN void stop() override;
 
-  virtual void swap_into(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
+  void swap_into(SwappedContext* to);
 
   unsigned char* get_stack() const { return stack_; }
   // Return the address for the bottom of the stack.  Depending on the stack direction it may be the lower or higher
   // address
   unsigned char* get_stack_bottom() const { return PTH_STACKGROWTH == -1 ? stack_ + smx_context_stack_size : stack_; }
-
-#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
-  const void* asan_stack_   = nullptr;
-  size_t asan_stack_size_   = 0;
-  SwappedContext* asan_ctx_ = nullptr;
-  bool asan_stop_           = false;
-#endif
 
 protected:
   // With ASan, after a context switch, check that the originating context is the expected one (see BoostContext)
@@ -82,6 +76,14 @@ private:
 #if HAVE_VALGRIND_H
   unsigned int valgrind_stack_id_;
 #endif
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+  const void* asan_stack_   = nullptr;
+  size_t asan_stack_size_   = 0;
+  SwappedContext* asan_ctx_ = nullptr;
+  bool asan_stop_           = false;
+#endif
+
+  virtual void swap_into_for_real(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 };
 
 inline void SwappedContext::verify_previous_context(XBT_ATTRIB_UNUSED const SwappedContext* context) const

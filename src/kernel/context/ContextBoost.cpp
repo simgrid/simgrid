@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ContextBoost.hpp"
-#include "context_private.hpp"
 #include "simgrid/Exception.hpp"
 #include "src/simix/smx_private.hpp"
 
@@ -49,19 +48,15 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
   smx_ctx_wrapper(context);
 }
 
-void BoostContext::swap_into(SwappedContext* to_)
+void BoostContext::swap_into_for_real(SwappedContext* to_)
 {
   BoostContext* to = static_cast<BoostContext*>(to_);
 #if BOOST_VERSION < 106100
   boost::context::jump_fcontext(&this->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
 #else
   BoostContext* ctx[2] = {this, to};
-  ASAN_ONLY(void* fake_stack = nullptr);
-  ASAN_ONLY(to->asan_ctx_ = this);
-  ASAN_START_SWITCH(this->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   boost::context::detail::transfer_t arg = boost::context::detail::jump_fcontext(to->fc_, ctx);
   this->verify_previous_context(static_cast<BoostContext**>(arg.data)[0]);
-  ASAN_FINISH_SWITCH(fake_stack, &this->asan_ctx_->asan_stack_, &this->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
 }

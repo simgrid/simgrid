@@ -28,11 +28,11 @@ class RawContext : public SwappedContext {
 public:
   RawContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory);
 
-  void swap_into(SwappedContext* to) override;
-
 private:
   /** pointer to top the stack stack */
   void* stack_top_ = nullptr;
+
+  void swap_into_for_real(SwappedContext* to) override;
 };
 
 class RawContextFactory : public SwappedContextFactory {
