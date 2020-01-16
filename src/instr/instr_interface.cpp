@@ -22,8 +22,6 @@ std::set<std::string> declared_marks;
 std::set<std::string> user_host_variables;
 std::set<std::string> user_vm_variables;
 std::set<std::string> user_link_variables;
-extern std::set<std::string> trivaNodeTypes;
-extern std::set<std::string> trivaEdgeTypes;
 
 static xbt_dynar_t instr_set_to_dynar(const std::set<std::string>& filter)
 {
@@ -973,30 +971,4 @@ void TRACE_host_push_state(const char* host, const char* state_name, const char*
 void TRACE_host_pop_state(const char* host, const char* state_name)
 {
   simgrid::instr::Container::by_name(host)->get_state(state_name)->pop_event();
-}
-
-/** @ingroup TRACE_API
- *  @brief Get Paje container types that can be mapped to the nodes of a graph.
- *
- *  This function can be used to create a user made  graph configuration file for Triva. Normally, it is used with the
- *  functions defined in @ref TRACE_user_variables.
- *
- *  @return A dynar with the types, must be freed with xbt_dynar_free.
- */
-xbt_dynar_t TRACE_get_node_types ()
-{
-  return instr_set_to_dynar(trivaNodeTypes);
-}
-
-/** @ingroup TRACE_API
- *  @brief Get Paje container types that can be mapped to the edges of a graph.
- *
- *  This function can be used to create a user made graph configuration file for Triva. Normally, it is used with the
- *  functions defined in @ref TRACE_user_variables.
- *
- *  @return A dynar with the types, must be freed with xbt_dynar_free.
- */
-xbt_dynar_t TRACE_get_edge_types ()
-{
-  return instr_set_to_dynar(trivaEdgeTypes);
 }

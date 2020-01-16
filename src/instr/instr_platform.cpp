@@ -106,9 +106,6 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   simgrid::instr::LinkType* link = father->type_->by_name_or_create(link_typename, src->type_, dst->type_);
   link->set_calling_container(father);
 
-  // register EDGE types for triva configuration
-  trivaEdgeTypes.insert(link->get_name());
-
   // create the link
   static long long counter = 0;
 

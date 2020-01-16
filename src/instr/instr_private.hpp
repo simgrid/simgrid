@@ -270,8 +270,6 @@ XBT_PRIVATE void TRACE_surf_resource_set_utilization(const char* type, const cha
                                                      double delta);
 
 /* instr_paje.c */
-extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
-extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
 XBT_PRIVATE void instr_define_callbacks();
 void instr_new_variable_type(const std::string& new_typename, const std::string& color);

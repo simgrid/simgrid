@@ -76,25 +76,5 @@ int main(int argc, char *argv[])
     }
     xbt_dynar_free (&link_variables);
   }
-
-  xbt_dynar_t nodes_type = TRACE_get_node_types ();
-  if (nodes_type){
-    XBT_INFO ("Node types in the trace:");
-    char *node_type;
-    xbt_dynar_foreach (nodes_type, cursor, node_type){
-      XBT_INFO ("%s", node_type);
-    }
-    xbt_dynar_free (&nodes_type);
-  }
-  xbt_dynar_t edges_type = TRACE_get_edge_types ();
-  if (edges_type){
-    XBT_INFO("Edge types in the trace:");
-    char *edge_type;
-    xbt_dynar_foreach (edges_type, cursor, edge_type){
-      XBT_INFO ("%s", edge_type);
-    }
-    xbt_dynar_free (&edges_type);
-  }
-
   return 0;
 }

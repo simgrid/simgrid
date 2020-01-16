@@ -20,8 +20,6 @@ double prefix = 0.0;                               // TI specific
 
 static container_t rootContainer = nullptr;    /* the root container */
 static std::map<std::string, container_t> allContainers; /* all created containers indexed by name */
-std::set<std::string> trivaNodeTypes;           /* all host types defined */
-std::set<std::string> trivaEdgeTypes;           /* all link types defined */
 
 long long int instr_new_paje_id ()
 {
@@ -60,8 +58,6 @@ RouterContainer::RouterContainer(const std::string& name, Container* father)
 
   netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
   xbt_assert(netpoint_, "Element '%s' not found", get_cname());
-
-  trivaNodeTypes.insert(type_->get_name());
 }
 
 HostContainer::HostContainer(simgrid::s4u::Host const& host, NetZoneContainer* father)
@@ -71,8 +67,6 @@ HostContainer::HostContainer(simgrid::s4u::Host const& host, NetZoneContainer* f
 
   netpoint_ = host.get_netpoint();
   xbt_assert(netpoint_, "Element '%s' not found", host.get_cname());
-
-  trivaNodeTypes.insert(type_->get_name());
 }
 
 Container::Container(const std::string& name, const std::string& type_name, Container* father)
@@ -99,10 +93,6 @@ Container::Container(const std::string& name, const std::string& type_name, Cont
         simgrid::xbt::string_printf("container %s already present in allContainers data structure", get_cname()));
 
   XBT_DEBUG("Add container name '%s'", get_cname());
-
-  //register NODE types for triva configuration
-  if (type_name == "LINK")
-    trivaNodeTypes.insert(type_->get_name());
 }
 
 Container::~Container()
@@ -240,5 +230,5 @@ VariableType* Container::get_variable(const std::string& name)
   ret->set_calling_container(this);
   return ret;
 }
-}
-}
+} // namespace instr
+} // namespace simgrid

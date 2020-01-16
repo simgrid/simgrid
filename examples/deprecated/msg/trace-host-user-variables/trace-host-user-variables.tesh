@@ -8,13 +8,6 @@ $ ${bindir:=.}/trace-host-user-variables --cfg=tracing:yes --cfg=tracing/platfor
 > [0.004078] [msg_test/INFO] HDD_capacity
 > [0.004078] [msg_test/INFO] HDD_utilization
 > [0.004078] [msg_test/INFO] Declared link variables:
-> [0.004078] [msg_test/INFO] Node types in the trace:
-> [0.004078] [msg_test/INFO] HOST
-> [0.004078] [msg_test/INFO] LINK
-> [0.004078] [msg_test/INFO] Edge types in the trace:
-> [0.004078] [msg_test/INFO] 0-HOST1-LINK4
-> [0.004078] [msg_test/INFO] 0-LINK4-HOST1
-> [0.004078] [msg_test/INFO] 0-LINK4-LINK4
 
 $ rm -f simgrid.trace
 

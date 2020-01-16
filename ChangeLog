@@ -4,6 +4,8 @@ SimGrid (3.24.1) NOT RELEASED YET (v3.25 expected December 22. 2029, 04:19 UTC)
 
 General:
 - Upgrade documented Java dependency to Java 8 (earlier versions don't work).
+- Drop support for Viva/Triva (old visualization tools), hence removed 
+  TRACE_get_node_types() and TRACE_get_edge_types() functions.
 
 S4U:
 - Actor: Merge signals on_migration_start/end into on_host_change
