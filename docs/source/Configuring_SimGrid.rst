@@ -876,24 +876,21 @@ you never used the tracing API.
 
   .. code-block:: shell
 
-     --cfg=tracing:yes --cfg=tracing/uncategorized:yes --cfg=triva/uncategorized:uncat.plist
+     --cfg=tracing:yes --cfg=tracing/uncategorized:yes
 
-  The first parameter activates the tracing subsystem, the second
+  The first parameter activates the tracing subsystem, and the second
   tells it to trace host and link utilization (without any
-  categorization) and the third creates a graph configuration file to
-  configure Triva when analysing the resulting trace file.
+  categorization).
 
 - MSG or SimDag-based simulator and categorized traces (you need to
   declare categories and classify your tasks according to them) 
 
   .. code-block:: shell
 
-     --cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=triva/categorized:cat.plist
+     --cfg=tracing:yes --cfg=tracing/categorized:yes
 
-  The first parameter activates the tracing subsystem, the second
-  tells it to trace host and link categorized utilization and the
-  third creates a graph configuration file to configure Triva when
-  analysing the resulting trace file.
+  The first parameter activates the tracing subsystem, and the second
+  tells it to trace host and link categorized utilization.
 
 - SMPI simulator and traces for a space/time view:
 
