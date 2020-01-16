@@ -45,7 +45,10 @@ public:
 
   virtual void swap_into(SwappedContext* to) = 0; // Defined in Raw, Boost and UContext subclasses
 
-  unsigned char* get_stack();
+  unsigned char* get_stack() const { return stack_; }
+  // Return the address for the bottom of the stack.  Depending on the stack direction it may be the lower or higher
+  // address
+  unsigned char* get_stack_bottom() const { return PTH_STACKGROWTH == -1 ? stack_ + smx_context_stack_size : stack_; }
 
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_   = nullptr;

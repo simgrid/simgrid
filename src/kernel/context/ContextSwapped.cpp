@@ -48,7 +48,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
   if (has_code()) {
     xbt_assert((smx_context_stack_size & 0xf) == 0, "smx_context_stack_size should be multiple of 16");
     if (smx_context_guard_size > 0 && not MC_is_active()) {
-#if !defined(PTH_STACKGROWTH) || (PTH_STACKGROWTH != -1)
+#if PTH_STACKGROWTH != -1
       xbt_die(
           "Stack overflow protection is known to be broken on your system: you stacks grow upwards (or detection is "
           "broken). "
@@ -91,14 +91,12 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
       this->stack_ = static_cast<unsigned char*>(xbt_malloc0(smx_context_stack_size));
     }
 
-#if PTH_STACKGROWTH == -1
-    ASAN_ONLY(this->asan_stack_ = this->stack_ + smx_context_stack_size);
-#else
-    ASAN_ONLY(this->asan_stack_ = this->stack_);
-#endif
 #if HAVE_VALGRIND_H
     if (RUNNING_ON_VALGRIND)
       this->valgrind_stack_id_ = VALGRIND_STACK_REGISTER(this->stack_, this->stack_ + smx_context_stack_size);
+#endif
+#if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
+    this->asan_stack_ = get_stack_bottom();
 #endif
   }
 }
@@ -128,11 +126,6 @@ SwappedContext::~SwappedContext()
 #endif /* not windows */
 
   xbt_free(stack_);
-}
-
-unsigned char* SwappedContext::get_stack()
-{
-  return stack_;
 }
 
 void SwappedContext::stop()
