@@ -55,7 +55,7 @@ public:
 namespace vivaldi {
 class XBT_PRIVATE Coords {
 public:
-  static simgrid::xbt::Extension<NetPoint, Coords> EXTENSION_ID;
+  static xbt::Extension<NetPoint, Coords> EXTENSION_ID;
   explicit Coords(NetPoint* host, const std::string& str);
   virtual ~Coords() = default;
 

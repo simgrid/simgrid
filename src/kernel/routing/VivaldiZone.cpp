@@ -18,8 +18,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf"
 namespace simgrid {
 namespace kernel {
 namespace routing {
+
 namespace vivaldi {
-simgrid::xbt::Extension<NetPoint, Coords> Coords::EXTENSION_ID;
+
+xbt::Extension<NetPoint, Coords> Coords::EXTENSION_ID;
 
 Coords::Coords(NetPoint* netpoint, const std::string& coordStr)
 {
@@ -53,7 +55,7 @@ static inline double euclidean_dist_comp(int index, std::vector<double>* src, st
 
 static std::vector<double>* netpoint_get_coords(NetPoint* np)
 {
-  simgrid::kernel::routing::vivaldi::Coords* coords = np->extension<simgrid::kernel::routing::vivaldi::Coords>();
+  vivaldi::Coords* coords = np->extension<vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
              (np->is_netzone() ? "Netzone" : (np->is_host() ? "Host" : "Router")), np->get_cname(), np);
   return &coords->coords;
@@ -69,7 +71,7 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out,
   xbt_assert(netpoint->get_englobing_zone() == this,
              "Cannot add a peer link to a netpoint that is not in this netzone");
 
-  new simgrid::kernel::routing::vivaldi::Coords(netpoint, coord);
+  new vivaldi::Coords(netpoint, coord);
 
   std::string link_up      = "link_" + netpoint->get_name() + "_UP";
   std::string link_down    = "link_" + netpoint->get_name() + "_DOWN";
@@ -87,8 +89,8 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   if (src->is_netzone()) {
     std::string srcName = "router_" + src->get_name();
     std::string dstName = "router_" + dst->get_name();
-    route->gw_src       = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(srcName);
-    route->gw_dst       = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(dstName);
+    route->gw_src       = s4u::Engine::get_instance()->netpoint_by_name_or_null(srcName);
+    route->gw_dst       = s4u::Engine::get_instance()->netpoint_by_name_or_null(dstName);
   }
 
   /* Retrieve the private links */
@@ -129,6 +131,6 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     *lat += euclidean_dist / 1000.0; // From .ms to .s
   }
 }
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
