@@ -441,7 +441,7 @@ int Peer::selectPieceToDownload(const Connection* remote_peer)
     int nb_interesting_pieces = 0;
     // compute the number of interesting pieces
     for (unsigned int i = 0; i < FILE_PIECES; i++)
-      if (hasNotPiece(i) && remote_peer->hasPiece(i))
+      if (remotePeerHasMissingPiece(remote_peer, i))
         nb_interesting_pieces++;
 
     xbt_assert(nb_interesting_pieces != 0);
@@ -449,7 +449,7 @@ int Peer::selectPieceToDownload(const Connection* remote_peer)
     int random_piece_index = simgrid::xbt::random::uniform_int(0, nb_interesting_pieces - 1);
     int current_index      = 0;
     for (unsigned int i = 0; i < FILE_PIECES; i++) {
-      if (hasNotPiece(i) && remote_peer->hasPiece(i)) {
+      if (remotePeerHasMissingPiece(remote_peer, i)) {
         if (random_piece_index == current_index) {
           piece = i;
           break;
@@ -465,14 +465,14 @@ int Peer::selectPieceToDownload(const Connection* remote_peer)
     int nb_interesting_pieces = 0;
     // compute the number of interesting pieces
     for (unsigned int i = 0; i < FILE_PIECES; i++)
-      if (hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i))
+      if (remotePeerHasMissingPiece(remote_peer, i) && isNotDownloadingPiece(i))
         nb_interesting_pieces++;
     xbt_assert(nb_interesting_pieces != 0);
     // get a random interesting piece
     int random_piece_index = simgrid::xbt::random::uniform_int(0, nb_interesting_pieces - 1);
     int current_index      = 0;
     for (unsigned int i = 0; i < FILE_PIECES; i++) {
-      if (hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i)) {
+      if (remotePeerHasMissingPiece(remote_peer, i) && isNotDownloadingPiece(i)) {
         if (random_piece_index == current_index) {
           piece = i;
           break;
@@ -488,14 +488,14 @@ int Peer::selectPieceToDownload(const Connection* remote_peer)
     int current_index = 0;
     // compute the smallest number of copies of available pieces
     for (unsigned int i = 0; i < FILE_PIECES; i++) {
-      if (pieces_count[i] < min && hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i))
+      if (pieces_count[i] < min && remotePeerHasMissingPiece(remote_peer, i) && isNotDownloadingPiece(i))
         min = pieces_count[i];
     }
 
     xbt_assert(min != SHRT_MAX || not isInterestedByFree(remote_peer));
     // compute the number of rarest pieces
     for (unsigned int i = 0; i < FILE_PIECES; i++)
-      if (pieces_count[i] == min && hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i))
+      if (pieces_count[i] == min && remotePeerHasMissingPiece(remote_peer, i) && isNotDownloadingPiece(i))
         nb_min_pieces++;
 
     xbt_assert(nb_min_pieces != 0 || not isInterestedByFree(remote_peer));
@@ -505,7 +505,7 @@ int Peer::selectPieceToDownload(const Connection* remote_peer)
       random_rarest_index = simgrid::xbt::random::uniform_int(0, nb_min_pieces - 1);
     }
     for (unsigned int i = 0; i < FILE_PIECES; i++)
-      if (pieces_count[i] == min && hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i)) {
+      if (pieces_count[i] == min && remotePeerHasMissingPiece(remote_peer, i) && isNotDownloadingPiece(i)) {
         if (random_rarest_index == current_index) {
           piece = i;
           break;
@@ -606,7 +606,7 @@ void Peer::updateInterestedAfterReceive()
       bool interested = false;
       // Check if the peer still has a piece we want.
       for (unsigned int i = 0; i < FILE_PIECES; i++)
-        if (hasNotPiece(i) && remote_peer.hasPiece(i)) {
+        if (remotePeerHasMissingPiece(&remote_peer, i)) {
           interested = true;
           break;
         }
@@ -648,7 +648,7 @@ int Peer::getFirstMissingBlockFrom(int piece)
 int Peer::partiallyDownloadedPiece(const Connection* remote_peer)
 {
   for (unsigned int i = 0; i < FILE_PIECES; i++)
-    if (hasNotPiece(i) && remote_peer->hasPiece(i) && isNotDownloadingPiece(i) && getFirstMissingBlockFrom(i) > 0)
+    if (remotePeerHasMissingPiece(remote_peer, i) && isNotDownloadingPiece(i) && getFirstMissingBlockFrom(i) > 0)
       return i;
   return -1;
 }

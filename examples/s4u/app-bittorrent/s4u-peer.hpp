@@ -60,6 +60,10 @@ public:
   void updateChokedPeers();
 
   bool hasNotPiece(unsigned int piece) const { return not(bitfield_ & 1U << piece); }
+  bool remotePeerHasMissingPiece(const Connection* remote_peer, unsigned int piece)
+  {
+    return hasNotPiece(piece) && remote_peer->hasPiece(piece);
+  }
   bool hasCompletedPiece(unsigned int piece);
   unsigned int countPieces(unsigned int bitfield);
   /** Check that a piece is not currently being download by the peer. */
