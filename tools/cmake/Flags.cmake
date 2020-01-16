@@ -228,9 +228,12 @@ if(enable_thread_sanitizer)
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fsanitize=thread -fno-omit-frame-pointer -no-pie")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread -fno-omit-frame-pointer -no-pie")
     set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -fsanitize=thread -no-pie")
-    set(HAVE_SANITIZER_THREAD TRUE CACHE INTERNAL "")
+    try_compile(HAVE_SANITIZER_THREAD ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_tsan.cpp)
+    try_compile(HAVE_SANITIZER_THREAD_FIBER_SUPPORT ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_tsan.cpp
+      COMPILE_DEFINITIONS -DCHECK_FIBER_SUPPORT)
 else()
     set(HAVE_SANITIZER_THREAD FALSE CACHE INTERNAL "")
+    set(HAVE_SANITIZER_THREAD_FIBER_SUPPORT FALSE CACHE INTERNAL "")
 endif()
 
 if(enable_undefined_sanitizer)
