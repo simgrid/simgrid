@@ -25,12 +25,12 @@ static_assert(sizeof(simgrid::kernel::context::UContext*) <= CTX_ADDR_LEN * size
 
 /* Make sure that this symbol is easy to recognize by name, even on exotic platforms */
 extern "C" {
-XBT_ATTRIB_NORETURN static void smx_ctx_wrapper(int i1, int i2);
+XBT_ATTRIB_NORETURN void smx_ctx_wrapper(int i1, int i2);
 }
 
 // The name of this function is currently hardcoded in MC (as string).
 // Do not change it without fixing those references as well.
-static void smx_ctx_wrapper(int i1, int i2)
+void smx_ctx_wrapper(int i1, int i2)
 {
   // Rebuild the Context* pointer from the integers:
   int ctx_addr[CTX_ADDR_LEN] = {i1, i2};
