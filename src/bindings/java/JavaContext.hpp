@@ -51,4 +51,4 @@ XBT_PRIVATE void java_main_jprocess(jobject process);
 
 }}} // namespace simgrid::kernel::context
 
-#endif                          /* !_XBT_CONTEXT_JAVA_H */
+#endif /* SIMGRID_JAVA_JAVA_CONTEXT_HPP */

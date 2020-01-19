@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _KADEMLIA_NODE_HPP
-#define _KADEMLIA_NODE_HPP
+#ifndef KADEMLIA_NODE_HPP
+#define KADEMLIA_NODE_HPP
 #include "answer.hpp"
 #include "message.hpp"
 #include "routing_table.hpp"
@@ -40,4 +40,4 @@ public:
 unsigned int get_id_in_prefix(unsigned int id, unsigned int prefix);
 unsigned int get_node_prefix(unsigned int id, unsigned int nb_bits);
 
-#endif /* _MSG_EXAMPLES_ROUTING_H */
+#endif /* KADEMLIA_NODE_HPP */

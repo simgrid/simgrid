@@ -51,4 +51,4 @@ XBT_PUBLIC void xbt_mallocator_initialization_is_done(int protect);
 /** @} */
 
 SG_END_DECL
-#endif                          /* _XBT_MALLOCATOR_H */
+#endif /* XBT_MALLOCATOR_H */

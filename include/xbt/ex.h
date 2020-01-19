@@ -58,4 +58,4 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_throw_unimplemented(const char* file, in
 SG_END_DECL
 
 /** @} */
-#endif                          /* __XBT_EX_H__ */
+#endif /* XBT_EX_H */

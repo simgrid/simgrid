@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_HOST_INTERFACE_HPP_
-#define SURF_HOST_INTERFACE_HPP_
+#ifndef SURF_HOST_INTERFACE_HPP
+#define SURF_HOST_INTERFACE_HPP
 
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
@@ -87,4 +87,4 @@ public:
 
 XBT_PUBLIC_DATA simgrid::surf::HostModel* surf_host_model;
 
-#endif /* SURF_Host_INTERFACE_HPP_ */
+#endif /* SURF_HOST_INTERFACE_HPP */

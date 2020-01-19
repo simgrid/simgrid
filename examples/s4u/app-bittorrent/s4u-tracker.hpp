@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef BITTORRENT_TRACKER_HPP_
-#define BITTORRENT_TRACKER_HPP_
+#ifndef BITTORRENT_TRACKER_HPP
+#define BITTORRENT_TRACKER_HPP
 
 #include "s4u-bittorrent.hpp"
 #include <set>

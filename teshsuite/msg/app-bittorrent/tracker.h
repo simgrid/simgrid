@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef BITTORRENT_TRACKER_H_
-#define BITTORRENT_TRACKER_H_
+#ifndef BITTORRENT_TRACKER_H
+#define BITTORRENT_TRACKER_H
 #include "bittorrent.h"
 #include <xbt/dynar.h>
 /**

@@ -493,4 +493,4 @@ extern xbt_log_layout_t xbt_log_default_layout;
 #define XBT_HELP(...) XBT_CINFO(xbt_help, __VA_ARGS__)
 
 SG_END_DECL
-#endif                          /* ! _XBT_LOG_H_ */
+#endif /* XBT_LOG_H */

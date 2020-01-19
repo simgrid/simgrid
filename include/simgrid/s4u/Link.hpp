@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef S4U_LINK_HPP_
-#define S4U_LINK_HPP_
+#ifndef S4U_LINK_HPP
+#define S4U_LINK_HPP
 
 #include <simgrid/forward.h>
 #include <simgrid/kernel/resource/Action.hpp>
@@ -102,4 +102,4 @@ public:
 } // namespace s4u
 } // namespace simgrid
 
-#endif /* SURF_NETWORK_INTERFACE_HPP_ */
+#endif /* S4U_LINK_HPP */
