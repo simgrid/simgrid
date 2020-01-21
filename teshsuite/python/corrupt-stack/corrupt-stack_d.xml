@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <actor host="Ruby" function="sleeper3"/>
+  <actor host="Tremblay" function="sleeper1"/>
+  <actor host="Java" function="sleeper5"/>
+</platform>

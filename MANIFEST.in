@@ -690,6 +690,12 @@ include teshsuite/msg/trace_integration/test-hbp1.5-hbp1.5.xml
 include teshsuite/msg/trace_integration/test-hbp2.5-hbp1.5.xml
 include teshsuite/msg/trace_integration/trace_integration.c
 include teshsuite/msg/trace_integration/trace_integration.tesh
+include teshsuite/python/borken-context/borken-context.py
+include teshsuite/python/borken-context/borken-context.tesh
+include teshsuite/python/borken-context/borken-context_d.xml
+include teshsuite/python/corrupt-stack/corrupt-stack.py
+include teshsuite/python/corrupt-stack/corrupt-stack.tesh
+include teshsuite/python/corrupt-stack/corrupt-stack_d.xml
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.cpp
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
 include teshsuite/s4u/activity-lifecycle/testing_platform.xml
@@ -2653,6 +2659,7 @@ include teshsuite/lua/CMakeLists.txt
 include teshsuite/lua/lua_platforms.tesh
 include teshsuite/mc/CMakeLists.txt
 include teshsuite/msg/CMakeLists.txt
+include teshsuite/python/CMakeLists.txt
 include teshsuite/s4u/CMakeLists.txt
 include teshsuite/simdag/CMakeLists.txt
 include teshsuite/simix/CMakeLists.txt
