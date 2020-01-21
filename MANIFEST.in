@@ -253,6 +253,8 @@ include examples/python/actor-join/actor-join.py
 include examples/python/actor-join/actor-join.tesh
 include examples/python/actor-kill/actor-kill.py
 include examples/python/actor-kill/actor-kill.tesh
+include examples/python/actor-lifetime/actor-lifetime.py
+include examples/python/actor-lifetime/actor-lifetime.tesh
 include examples/python/actor-migrate/actor-migrate.py
 include examples/python/actor-migrate/actor-migrate.tesh
 include examples/python/actor-suspend/actor-suspend.py
@@ -1932,8 +1934,6 @@ include examples/platforms/vivaldi.xml
 include examples/platforms/wifi.xml
 include examples/python/CMakeLists.txt
 include examples/python/actor-create/actor-create_d.xml
-include examples/python/actor-lifetime/actor-lifetime.py
-include examples/python/actor-lifetime/actor-lifetime.tesh
 include examples/python/actor-lifetime/actor-lifetime_d.xml
 include examples/python/async-wait/async-wait_d.xml
 include examples/python/async-waitall/async-waitall_d.xml
