@@ -21,6 +21,7 @@
 
 SG_BEGIN_DECL
 
+/** Explore every branches where that function returns a value between min and max (inclusive) */
 XBT_PUBLIC int MC_random(int min, int max);
 
 #if SIMGRID_HAVE_MC
