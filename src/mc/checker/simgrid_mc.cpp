@@ -55,7 +55,14 @@ int main(int argc, char** argv)
   smpi_init_options();//only performed once
 #endif
   sg_config_init(&argc, argv);
-  simgrid::mc::session = new simgrid::mc::Session([argv_copy] { execvp(argv_copy[1], argv_copy + 1); });
+  simgrid::mc::session = new simgrid::mc::Session([argv_copy] {
+    int i = 1;
+    while (argv_copy[i] != nullptr && argv_copy[i][0] == '-')
+      i++;
+    xbt_assert(argv_copy[i] != nullptr,
+               "Unable to find a binary to exec on the command line. Did you only pass config flags?");
+    execvp(argv_copy[i], argv_copy + i);
+  });
   delete[] argv_copy;
 
   std::unique_ptr<simgrid::mc::Checker> checker = create_checker(*simgrid::mc::session);
