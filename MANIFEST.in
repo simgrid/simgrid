@@ -1782,6 +1782,7 @@ include doc/doxygen/uhood.doc
 include doc/doxygen/uhood_arch.doc
 include doc/doxygen/uhood_switch.doc
 include docs/Build.sh
+include docs/find-missing.ignore
 include docs/find-missing.py
 include docs/ignored_symbols
 include docs/manpages/smpicc.1

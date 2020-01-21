@@ -879,6 +879,7 @@ set(DOC_SOURCES
   docs/requirements.txt
   docs/source/conf.py
   docs/source/Doxyfile
+  docs/find-missing.ignore
   docs/find-missing.py
   docs/source/_ext/autodoxy.py
   docs/source/_ext/showfile.css
