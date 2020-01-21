@@ -220,16 +220,13 @@ void RemoteClient::init()
   this->init_memory_map_info();
 
   int fd = open_vm(this->pid_, O_RDWR);
-  if (fd < 0)
-    xbt_die("Could not open file for process virtual address space");
+  xbt_assert(fd >= 0, "Could not open file for process virtual address space");
   this->memory_file = fd;
 
   // Read std_heap (is a struct mdesc*):
   const simgrid::mc::Variable* std_heap_var = this->find_variable("__mmalloc_default_mdp");
-  if (not std_heap_var)
-    xbt_die("No heap information in the target process");
-  if (not std_heap_var->address)
-    xbt_die("No constant address for this variable");
+  xbt_assert(std_heap_var, "No heap information in the target process");
+  xbt_assert(std_heap_var->address, "No constant address for this variable");
   this->read_bytes(&this->heap_address, sizeof(mdesc*), remote(std_heap_var->address));
 
   this->smx_actors_infos.clear();
