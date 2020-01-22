@@ -69,9 +69,6 @@ PYBIND11_MODULE(simgrid, m)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
 
   /* this_actor namespace */
-  void (*sleep_for_fun)(double)   = &simgrid::s4u::this_actor::sleep_for; // pick the right overload
-  void (*sleep_until_fun)(double) = &simgrid::s4u::this_actor::sleep_until;
-
   py::module m2 = m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace.");
   m2.def("info", [](const char* s) { XBT_INFO("%s", s); }, "Display a logging message of 'info' priority.");
   m2.def("error", [](const char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.");
@@ -85,11 +82,12 @@ PYBIND11_MODULE(simgrid, m)
          "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::set_host()`",
          py::arg("dest"));
   m2.def(
-      "sleep_for", sleep_for_fun,
+      "sleep_for", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_for),
       "Block the actor sleeping for that amount of seconds, see :cpp:func:`void simgrid::s4u::this_actor::sleep_for`",
       py::arg("duration"));
-  m2.def("sleep_until", sleep_until_fun, "Block the actor sleeping until the specified timestamp, see :cpp:func:`void "
-                                         "simgrid::s4u::this_actor::sleep_until`",
+  m2.def("sleep_until", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_until),
+         "Block the actor sleeping until the specified timestamp, see :cpp:func:`void "
+         "simgrid::s4u::this_actor::sleep_until`",
          py::arg("duration"));
   m2.def("suspend", &simgrid::s4u::this_actor::suspend, "Suspend the current actor, that is blocked until resume()ed "
                                                         "by another actor. see :cpp:func:`void "
@@ -263,8 +261,8 @@ PYBIND11_MODULE(simgrid, m)
                                             "An actor is an independent stream of execution in your distributed "
                                             "application, see :ref:`class s4u::Actor <API_s4u_Actor>`")
       .def("create",
-           [](py::str name, py::object host, py::object fun, py::args args) {
-             return simgrid::s4u::Actor::create(name, host.cast<Host*>(), [fun, args]() {
+           [](py::str name, Host* host, py::object fun, py::args args) {
+             return simgrid::s4u::Actor::create(name, host, [fun, args]() {
                try {
                  fun(*args);
                } catch (const py::error_already_set& ex) {
