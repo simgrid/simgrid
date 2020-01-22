@@ -259,7 +259,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("get",
            [](Mailbox* self) {
              py::object data = pybind11::reinterpret_steal<py::object>(static_cast<PyObject*>(self->get()));
-             data.dec_ref();
+             // data.dec_ref(); // FIXME: why does it break python-actor-create?
              return data;
            },
            py::call_guard<GilScopedRelease>(),
