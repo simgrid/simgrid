@@ -111,39 +111,44 @@ PYBIND11_MODULE(simgrid, m)
       .def("info", [](const char* s) { XBT_INFO("%s", s); }, "Display a logging message of 'info' priority.")
       .def("error", [](const char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.")
       .def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
+           py::call_guard<GilScopedRelease>(),
            "Block the current actor, computing the given amount of flops at the given priority, "
            "see :cpp:func:`void simgrid::s4u::this_actor::execute(double, double)`",
            py::arg("flops"), py::arg("priority") = 1)
-      .def("exec_init", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_init))
+      .def("exec_init", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_init),
+           py::call_guard<GilScopedRelease>())
       .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
-      .def("set_host", &simgrid::s4u::this_actor::set_host,
+      .def("set_host", &simgrid::s4u::this_actor::set_host, py::call_guard<GilScopedRelease>(),
            "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::set_host()`",
            py::arg("dest"))
       .def("sleep_for", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_for),
-           "Block the actor sleeping for that amount of seconds, "
-           "see :cpp:func:`void simgrid::s4u::this_actor::sleep_for`",
+           py::call_guard<GilScopedRelease>(), "Block the actor sleeping for that amount of seconds, "
+                                               "see :cpp:func:`void simgrid::s4u::this_actor::sleep_for`",
            py::arg("duration"))
       .def("sleep_until", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_until),
-           "Block the actor sleeping until the specified timestamp, "
-           "see :cpp:func:`void simgrid::s4u::this_actor::sleep_until`",
+           py::call_guard<GilScopedRelease>(), "Block the actor sleeping until the specified timestamp, "
+                                               "see :cpp:func:`void simgrid::s4u::this_actor::sleep_until`",
            py::arg("duration"))
-      .def("suspend", &simgrid::s4u::this_actor::suspend,
+      .def("suspend", &simgrid::s4u::this_actor::suspend, py::call_guard<GilScopedRelease>(),
            "Suspend the current actor, that is blocked until resume()ed by another actor. "
            "see :cpp:func:`void simgrid::s4u::this_actor::suspend`")
-      .def("yield_", &simgrid::s4u::this_actor::yield,
+      .def("yield_", &simgrid::s4u::this_actor::yield, py::call_guard<GilScopedRelease>(),
            "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`")
-      .def("exit", &simgrid::s4u::this_actor::exit, "kill the current actor")
+      .def("exit", &simgrid::s4u::this_actor::exit, py::call_guard<GilScopedRelease>(), "kill the current actor")
       .def("on_exit",
            [](py::object fun) {
              simgrid::s4u::this_actor::on_exit([fun](bool /*failed*/) {
+               GilScopedAcquire py_context; // need a new context for callback
                try {
                  fun();
                } catch (const py::error_already_set& e) {
-                 xbt_die("Error while executing the on_exit lambda: %s", e.what());
+                 std::string what = e.what();
+                 py_context.reset();
+                 xbt_die("Error while executing the on_exit lambda: %s", what.c_str());
                }
              });
            },
-           "");
+           py::call_guard<GilScopedRelease>(), "");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine, see :ref:`class s4u::Engine <API_s4u_Engine>`")
@@ -203,9 +208,13 @@ PYBIND11_MODULE(simgrid, m)
            "Retrieve the cound of defined pstate levels, see :cpp:func:`simgrid::s4u::Host::get_pstate_count`")
       .def("get_pstate_speed", &Host::get_pstate_speed,
            "Retrieve the maximal speed at the given pstate, see :cpp:func:`simgrid::s4u::Host::get_pstate_speed`")
-      .def_property("pstate", &Host::get_pstate, &Host::set_pstate, "The current pstate")
-
-      .def("current", &Host::current,
+      .def_property("pstate", &Host::get_pstate,
+                    [](Host* h, int i) {
+                      GilScopedRelease gil_guard;
+                      h->set_pstate(i);
+                    },
+                    "The current pstate")
+      .def("current", &Host::current, py::call_guard<GilScopedRelease>(),
            "Retrieves the host on which the running actor is located, see :cpp:func:`simgrid::s4u::Host::current()`")
       .def_property_readonly("name",
                              [](const Host* self) {
@@ -226,7 +235,7 @@ PYBIND11_MODULE(simgrid, m)
       m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
       .def("__str__", [](const Mailbox* self) { return std::string("Mailbox(") + self->get_cname() + ")"; },
            "Textual representation of the Mailbox`")
-      .def("by_name", &Mailbox::by_name,
+      .def("by_name", &Mailbox::by_name, py::call_guard<GilScopedRelease>(),
            "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
       .def_property_readonly("name",
                              [](const Mailbox* self) {
@@ -238,12 +247,14 @@ PYBIND11_MODULE(simgrid, m)
              data.inc_ref();
              self->put(data.ptr(), size);
            },
+           py::call_guard<GilScopedRelease>(),
            "Blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put(void*, uint64_t)`")
       .def("put_async",
            [](Mailbox* self, py::object data, int size) {
              data.inc_ref();
              return self->put_async(data.ptr(), size);
            },
+           py::call_guard<GilScopedRelease>(),
            "Non-blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put_async(void*, uint64_t)`")
       .def("get",
            [](Mailbox* self) {
@@ -251,29 +262,38 @@ PYBIND11_MODULE(simgrid, m)
              data.dec_ref();
              return data;
            },
+           py::call_guard<GilScopedRelease>(),
            "Blocking data reception, see :cpp:func:`void* simgrid::s4u::Mailbox::get()`");
 
   /* Class Comm */
   py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm",
                                                         "Communication, see :ref:`class s4u::Comm <API_s4u_Comm>`")
-      .def("test", &simgrid::s4u::Comm::test,
+      .def("test", &simgrid::s4u::Comm::test, py::call_guard<GilScopedRelease>(),
            "Test whether the communication is terminated, see :cpp:func:`simgrid::s4u::Comm::test()`")
-      .def("wait", &simgrid::s4u::Comm::wait,
+      .def("wait", &simgrid::s4u::Comm::wait, py::call_guard<GilScopedRelease>(),
            "Block until the completion of that communication, see :cpp:func:`simgrid::s4u::Comm::wait()`")
-      .def("wait_all", &simgrid::s4u::Comm::wait_all,
+      .def("wait_all", &simgrid::s4u::Comm::wait_all, py::call_guard<GilScopedRelease>(),
            "Block until the completion of all communications in the list, see "
            ":cpp:func:`simgrid::s4u::Comm::wait_all()`")
-      .def("wait_any", &simgrid::s4u::Comm::wait_any,
+      .def("wait_any", &simgrid::s4u::Comm::wait_any, py::call_guard<GilScopedRelease>(),
            "Block until the completion of any communication in the list and return the index of the terminated one, "
            "see :cpp:func:`simgrid::s4u::Comm::wait_any()`");
 
   /* Class Exec */
   py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec",
                                                         "Execution, see :ref:`class s4u::Exec <API_s4u_Exec>`")
-      .def_property_readonly("remaining", &simgrid::s4u::Exec::get_remaining,
+      .def_property_readonly("remaining",
+                             [](simgrid::s4u::ExecPtr self) {
+                               GilScopedRelease gil_guard;
+                               return self->get_remaining();
+                             },
                              "Amount of flops that remain to be computed until completion, see "
                              ":cpp:func:`simgrid::s4u::Exec::get_remaining()`")
-      .def_property_readonly("remaining_ratio", &simgrid::s4u::Exec::get_remaining_ratio,
+      .def_property_readonly("remaining_ratio",
+                             [](simgrid::s4u::ExecPtr self) {
+                               GilScopedRelease gil_guard;
+                               return self->get_remaining_ratio();
+                             },
                              "Amount of work remaining until completion from 0 (completely done) to 1 (nothing done "
                              "yet). See :cpp:func:`simgrid::s4u::Exec::get_remaining_ratio()`")
       .def_property("host",
@@ -286,11 +306,13 @@ PYBIND11_MODULE(simgrid, m)
                     },
                     &simgrid::s4u::Exec::set_host,
                     "Host on which this execution runs. See :cpp:func:`simgrid::s4u::ExecSeq::get_host()`")
-      .def("test", &simgrid::s4u::Exec::test,
+      .def("test", &simgrid::s4u::Exec::test, py::call_guard<GilScopedRelease>(),
            "Test whether the execution is terminated, see :cpp:func:`simgrid::s4u::Exec::test()`")
-      .def("cancel", &simgrid::s4u::Exec::cancel, "Cancel that execution, see :cpp:func:`simgrid::s4u::Exec::cancel()`")
-      .def("start", &simgrid::s4u::Exec::start, "Start that execution, see :cpp:func:`simgrid::s4u::Exec::start()`")
-      .def("wait", &simgrid::s4u::Exec::wait,
+      .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<GilScopedRelease>(),
+           "Cancel that execution, see :cpp:func:`simgrid::s4u::Exec::cancel()`")
+      .def("start", &simgrid::s4u::Exec::start, py::call_guard<GilScopedRelease>(),
+           "Start that execution, see :cpp:func:`simgrid::s4u::Exec::start()`")
+      .def("wait", &simgrid::s4u::Exec::wait, py::call_guard<GilScopedRelease>(),
            "Block until the completion of that execution, see :cpp:func:`simgrid::s4u::Exec::wait()`");
 
   /* Class Actor */
@@ -316,24 +338,31 @@ PYBIND11_MODULE(simgrid, m)
              });
            },
            py::call_guard<GilScopedRelease>(), "Create an actor from a function or an object.")
-      .def_property("host", &Actor::get_host, &Actor::set_host, "The host on which this actor is located")
+      .def_property("host", &Actor::get_host,
+                    [](Actor* a, Host* h) {
+                      GilScopedRelease gil_guard;
+                      a->set_host(h);
+                    },
+                    "The host on which this actor is located")
       .def_property_readonly("name", &Actor::get_cname, "The name of this actor.")
       .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor.")
       .def_property_readonly("ppid", &Actor::get_ppid,
                              "The PID (unique identifier) of the actor that created this one.")
       .def("by_pid", &Actor::by_pid, "Retrieve an actor by its PID")
-      .def("daemonize", &Actor::daemonize,
+      .def("daemonize", &Actor::daemonize, py::call_guard<GilScopedRelease>(),
            "This actor will be automatically terminated when the last non-daemon actor finishes (more info in the C++ "
            "documentation).")
       .def("is_daemon", &Actor::is_daemon,
            "Returns True if that actor is a daemon and will be terminated automatically when the last non-daemon actor "
            "terminates.")
-      .def("join", py::overload_cast<double>(&Actor::join),
+      .def("join", py::overload_cast<double>(&Actor::join), py::call_guard<GilScopedRelease>(),
            "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout"))
-      .def("kill", &Actor::kill, "Kill that actor")
-      .def("kill_all", &Actor::kill_all, "Kill all actors but the caller.")
+      .def("kill", &Actor::kill, py::call_guard<GilScopedRelease>(), "Kill that actor")
+      .def("kill_all", &Actor::kill_all, py::call_guard<GilScopedRelease>(), "Kill all actors but the caller.")
       .def("self", &Actor::self, "Retrieves the current actor.")
       .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
-      .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor.")
-      .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed.");
+      .def("suspend", &Actor::suspend, py::call_guard<GilScopedRelease>(),
+           "Suspend that actor, that is blocked until resume()ed by another actor.")
+      .def("resume", &Actor::resume, py::call_guard<GilScopedRelease>(),
+           "Resume that actor, that was previously suspend()ed.");
 }
