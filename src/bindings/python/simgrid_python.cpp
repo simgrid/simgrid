@@ -165,7 +165,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("load_deployment", &Engine::load_deployment,
            "Load a deployment file and launch the actors that it contains, see "
            ":cpp:func:`simgrid::s4u::Engine::load_deployment()`")
-      .def("run", &Engine::run, "Run the simulation")
+      .def("run", &Engine::run, py::call_guard<GilScopedRelease>(), "Run the simulation")
       .def("register_actor",
            [](Engine* e, const std::string& name, py::object fun_or_class) {
              e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
