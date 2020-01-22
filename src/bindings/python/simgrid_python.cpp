@@ -169,6 +169,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("register_actor",
            [](Engine* e, const std::string& name, py::object fun_or_class) {
              e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
+               GilScopedAcquire py_context;
                try {
                  /* Convert the std::vector into a py::tuple */
                  py::tuple params(args.size() - 1);
@@ -181,12 +182,14 @@ PYBIND11_MODULE(simgrid, m)
                  if (py::isinstance<py::function>(res))
                    res();
                } catch (const py::error_already_set& ex) {
-                 if (ex.matches(pyForcefulKillEx)) {
+                 bool ffk = ex.matches(pyForcefulKillEx);
+                 py_context.reset();
+                 if (ffk) {
                    XBT_VERB("Actor killed");
-                   /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
-                 } else {
-                   throw;
+                   /* Forward that ForcefulKill exception */
+                   simgrid::ForcefulKillException::do_throw();
                  }
+                 throw;
                }
              });
            },
@@ -297,19 +300,22 @@ PYBIND11_MODULE(simgrid, m)
       .def("create",
            [](py::str name, Host* host, py::object fun, py::args args) {
              return simgrid::s4u::Actor::create(name, host, [fun, args]() {
+               GilScopedAcquire py_context;
                try {
                  fun(*args);
                } catch (const py::error_already_set& ex) {
-                 if (ex.matches(pyForcefulKillEx)) {
+                 bool ffk = ex.matches(pyForcefulKillEx);
+                 py_context.reset();
+                 if (ffk) {
                    XBT_VERB("Actor killed");
-                   /* Stop here that ForcefulKill exception which was meant to free the RAII stuff on the stack */
-                 } else {
-                   throw;
+                   /* Forward that ForcefulKill exception */
+                   simgrid::ForcefulKillException::do_throw();
                  }
+                 throw;
                }
              });
            },
-           "Create an actor from a function or an object.")
+           py::call_guard<GilScopedRelease>(), "Create an actor from a function or an object.")
       .def_property("host", &Actor::get_host, &Actor::set_host, "The host on which this actor is located")
       .def_property_readonly("name", &Actor::get_cname, "The name of this actor.")
       .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor.")
