@@ -69,44 +69,44 @@ PYBIND11_MODULE(simgrid, m)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
 
   /* this_actor namespace */
-  py::module m2 = m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace.");
-  m2.def("info", [](const char* s) { XBT_INFO("%s", s); }, "Display a logging message of 'info' priority.");
-  m2.def("error", [](const char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.");
-  m2.def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
-         "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void "
-         "simgrid::s4u::this_actor::execute(double, double)`",
-         py::arg("flops"), py::arg("priority") = 1);
-  m2.def("exec_init", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_init));
-  m2.def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located");
-  m2.def("set_host", &simgrid::s4u::this_actor::set_host,
-         "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::set_host()`",
-         py::arg("dest"));
-  m2.def(
-      "sleep_for", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_for),
-      "Block the actor sleeping for that amount of seconds, see :cpp:func:`void simgrid::s4u::this_actor::sleep_for`",
-      py::arg("duration"));
-  m2.def("sleep_until", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_until),
-         "Block the actor sleeping until the specified timestamp, see :cpp:func:`void "
-         "simgrid::s4u::this_actor::sleep_until`",
-         py::arg("duration"));
-  m2.def("suspend", &simgrid::s4u::this_actor::suspend, "Suspend the current actor, that is blocked until resume()ed "
-                                                        "by another actor. see :cpp:func:`void "
-                                                        "simgrid::s4u::this_actor::suspend`");
-  m2.def("yield_", &simgrid::s4u::this_actor::yield,
-         "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`");
-  m2.def("exit", &simgrid::s4u::this_actor::exit, "kill the current actor");
-  m2.def("on_exit",
-         [](py::object fun) {
-           ActorPtr act = Actor::self();
-           simgrid::s4u::this_actor::on_exit([act, fun](bool /*failed*/) {
-             try {
-               fun();
-             } catch (const py::error_already_set& e) {
-               xbt_die("Error while executing the on_exit lambda: %s", e.what());
-             }
-           });
-         },
-         "");
+  m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace.")
+      .def("info", [](const char* s) { XBT_INFO("%s", s); }, "Display a logging message of 'info' priority.")
+      .def("error", [](const char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.")
+      .def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
+           "Block the current actor, computing the given amount of flops at the given priority, "
+           "see :cpp:func:`void simgrid::s4u::this_actor::execute(double, double)`",
+           py::arg("flops"), py::arg("priority") = 1)
+      .def("exec_init", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_init))
+      .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
+      .def("set_host", &simgrid::s4u::this_actor::set_host,
+           "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::set_host()`",
+           py::arg("dest"))
+      .def("sleep_for", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_for),
+           "Block the actor sleeping for that amount of seconds, "
+           "see :cpp:func:`void simgrid::s4u::this_actor::sleep_for`",
+           py::arg("duration"))
+      .def("sleep_until", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_until),
+           "Block the actor sleeping until the specified timestamp, "
+           "see :cpp:func:`void simgrid::s4u::this_actor::sleep_until`",
+           py::arg("duration"))
+      .def("suspend", &simgrid::s4u::this_actor::suspend,
+           "Suspend the current actor, that is blocked until resume()ed by another actor. "
+           "see :cpp:func:`void simgrid::s4u::this_actor::suspend`")
+      .def("yield_", &simgrid::s4u::this_actor::yield,
+           "Yield the actor, see :cpp:func:`void simgrid::s4u::this_actor::yield()`")
+      .def("exit", &simgrid::s4u::this_actor::exit, "kill the current actor")
+      .def("on_exit",
+           [](py::object fun) {
+             ActorPtr act = Actor::self();
+             simgrid::s4u::this_actor::on_exit([act, fun](bool /*failed*/) {
+               try {
+                 fun();
+               } catch (const py::error_already_set& e) {
+                 xbt_die("Error while executing the on_exit lambda: %s", e.what());
+               }
+             });
+           },
+           "");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine, see :ref:`class s4u::Engine <API_s4u_Engine>`")
