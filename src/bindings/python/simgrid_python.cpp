@@ -44,8 +44,6 @@ using simgrid::s4u::Mailbox;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
-PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>)
-
 namespace {
 
 static std::string get_simgrid_version()
@@ -57,15 +55,15 @@ static std::string get_simgrid_version()
   return simgrid::xbt::string_printf("%i.%i.%i", major, minor, patch);
 }
 
-static std::string simgrid_version = get_simgrid_version();
-
 } // namespace
+
+PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>)
 
 PYBIND11_MODULE(simgrid, m)
 {
   m.doc() = "SimGrid userspace API";
 
-  m.attr("simgrid_version") = simgrid_version;
+  m.attr("simgrid_version") = get_simgrid_version();
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
@@ -75,8 +73,8 @@ PYBIND11_MODULE(simgrid, m)
   void (*sleep_until_fun)(double) = &simgrid::s4u::this_actor::sleep_until;
 
   py::module m2 = m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace.");
-  m2.def("info", [](char* s) { XBT_INFO("%s", s); }, "Display a logging message of default priority.");
-  m2.def("error", [](char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.");
+  m2.def("info", [](const char* s) { XBT_INFO("%s", s); }, "Display a logging message of 'info' priority.");
+  m2.def("error", [](const char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.");
   m2.def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
          "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void "
          "simgrid::s4u::this_actor::execute(double, double)`",
@@ -232,6 +230,8 @@ PYBIND11_MODULE(simgrid, m)
            [](const std::vector<simgrid::s4u::CommPtr>* comms) { return simgrid::s4u::Comm::wait_any(comms); },
            "Block until the completion of any communication in the list and return the index of the terminated one, "
            "see :cpp:func:`simgrid::s4u::Comm::wait_any()`");
+
+  /* Class Exec */
   py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec",
                                                         "Execution, see :ref:`class s4u::Exec <API_s4u_Exec>`")
       .def_property_readonly("remaining", [](simgrid::s4u::ExecPtr self) { return self->get_remaining(); },
