@@ -76,7 +76,7 @@ PYBIND11_MODULE(simgrid, m)
          "Block the current actor, computing the given amount of flops at the given priority, see :cpp:func:`void "
          "simgrid::s4u::this_actor::execute(double, double)`",
          py::arg("flops"), py::arg("priority") = 1);
-  m2.def("exec_init", [](double flops) { return simgrid::s4u::this_actor::exec_init(flops); });
+  m2.def("exec_init", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_init));
   m2.def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located");
   m2.def("set_host", &simgrid::s4u::this_actor::set_host,
          "Moves the current actor to another host, see :cpp:func:`void simgrid::s4u::this_actor::set_host()`",
@@ -216,25 +216,24 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Comm */
   py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm",
                                                         "Communication, see :ref:`class s4u::Comm <API_s4u_Comm>`")
-      .def("test", [](simgrid::s4u::CommPtr self) { return self->test(); },
+      .def("test", &simgrid::s4u::Comm::test,
            "Test whether the communication is terminated, see :cpp:func:`simgrid::s4u::Comm::test()`")
-      .def("wait", [](simgrid::s4u::CommPtr self) { self->wait(); },
+      .def("wait", &simgrid::s4u::Comm::wait,
            "Block until the completion of that communication, see :cpp:func:`simgrid::s4u::Comm::wait()`")
-      .def("wait_all", [](const std::vector<simgrid::s4u::CommPtr>* comms) { simgrid::s4u::Comm::wait_all(comms); },
+      .def("wait_all", &simgrid::s4u::Comm::wait_all,
            "Block until the completion of all communications in the list, see "
            ":cpp:func:`simgrid::s4u::Comm::wait_all()`")
-      .def("wait_any",
-           [](const std::vector<simgrid::s4u::CommPtr>* comms) { return simgrid::s4u::Comm::wait_any(comms); },
+      .def("wait_any", &simgrid::s4u::Comm::wait_any,
            "Block until the completion of any communication in the list and return the index of the terminated one, "
            "see :cpp:func:`simgrid::s4u::Comm::wait_any()`");
 
   /* Class Exec */
   py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec",
                                                         "Execution, see :ref:`class s4u::Exec <API_s4u_Exec>`")
-      .def_property_readonly("remaining", [](simgrid::s4u::ExecPtr self) { return self->get_remaining(); },
+      .def_property_readonly("remaining", &simgrid::s4u::Exec::get_remaining,
                              "Amount of flops that remain to be computed until completion, see "
                              ":cpp:func:`simgrid::s4u::Exec::get_remaining()`")
-      .def_property_readonly("remaining_ratio", [](simgrid::s4u::ExecPtr self) { return self->get_remaining_ratio(); },
+      .def_property_readonly("remaining_ratio", &simgrid::s4u::Exec::get_remaining_ratio,
                              "Amount of work remaining until completion from 0 (completely done) to 1 (nothing done "
                              "yet). See :cpp:func:`simgrid::s4u::Exec::get_remaining_ratio()`")
       .def_property("host",
@@ -245,15 +244,13 @@ PYBIND11_MODULE(simgrid, m)
                       xbt_throw_unimplemented(__FILE__, __LINE__,
                                               "host of parallel executions is not implemented in python yet.");
                     },
-                    [](simgrid::s4u::ExecPtr self, simgrid::s4u::Host* host) { self->set_host(host); },
+                    &simgrid::s4u::Exec::set_host,
                     "Host on which this execution runs. See :cpp:func:`simgrid::s4u::ExecSeq::get_host()`")
-      .def("test", [](simgrid::s4u::ExecPtr self) { return self->test(); },
+      .def("test", &simgrid::s4u::Exec::test,
            "Test whether the execution is terminated, see :cpp:func:`simgrid::s4u::Exec::test()`")
-      .def("cancel", [](simgrid::s4u::ExecPtr self) { self->cancel(); },
-           "Cancel that execution, see :cpp:func:`simgrid::s4u::Exec::cancel()`")
-      .def("start", [](simgrid::s4u::ExecPtr self) { return self->start(); },
-           "Start that execution, see :cpp:func:`simgrid::s4u::Exec::start()`")
-      .def("wait", [](simgrid::s4u::ExecPtr self) { return self->wait(); },
+      .def("cancel", &simgrid::s4u::Exec::cancel, "Cancel that execution, see :cpp:func:`simgrid::s4u::Exec::cancel()`")
+      .def("start", &simgrid::s4u::Exec::start, "Start that execution, see :cpp:func:`simgrid::s4u::Exec::start()`")
+      .def("wait", &simgrid::s4u::Exec::wait,
            "Block until the completion of that execution, see :cpp:func:`simgrid::s4u::Exec::wait()`");
 
   /* Class Actor */
@@ -290,7 +287,7 @@ PYBIND11_MODULE(simgrid, m)
            "terminates.")
       .def("join", py::overload_cast<double>(&Actor::join),
            "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout"))
-      .def("kill", [](ActorPtr act) { act->kill(); }, "Kill that actor")
+      .def("kill", &Actor::kill, "Kill that actor")
       .def("kill_all", &Actor::kill_all, "Kill all actors but the caller.")
       .def("self", &Actor::self, "Retrieves the current actor.")
       .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
