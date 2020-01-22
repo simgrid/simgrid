@@ -55,6 +55,44 @@ static std::string get_simgrid_version()
   return simgrid::xbt::string_printf("%i.%i.%i", major, minor, patch);
 }
 
+/* Classes GilScopedAcquire and GilScopedRelease have the same purpose as pybind11::gil_scoped_acquire and
+ * pybind11::gil_scoped_release.  Refer to the manual of pybind11 for details:
+ * https://pybind11.readthedocs.io/en/stable/advanced/misc.html#global-interpreter-lock-gil
+ *
+ * The pybind11 versions are however too sophisticated (using TLS for example) and don't work well with all kinds of
+ * contexts.
+ * See also https://github.com/pybind/pybind11/issues/1276, which may be related.
+ *
+ * Briefly, GilScopedAcquire can be used on actor creation to acquire a new PyThreadState.  The PyThreadState has to be
+ * released for context switches (i.e. before simcalls). That's the purpose of GilScopedRelease.
+ *
+ * Like their pybind11 counterparts, both classes use a RAII pattern.
+ */
+class XBT_PRIVATE GilScopedAcquire {
+  static PyThreadState* acquire()
+  {
+    PyThreadState* state = PyThreadState_New(PyInterpreterState_Head());
+    PyEval_AcquireThread(state);
+    return state;
+  }
+  static void release(PyThreadState* state)
+  {
+    PyEval_ReleaseThread(state);
+    PyThreadState_Clear(state);
+    PyThreadState_Delete(state);
+  }
+
+  std::unique_ptr<PyThreadState, decltype(&release)> thread_state{acquire(), &release};
+
+public:
+  void reset() { thread_state.reset(); }
+};
+
+class XBT_PRIVATE GilScopedRelease {
+  std::unique_ptr<PyThreadState, decltype(&PyEval_RestoreThread)> thread_state{PyEval_SaveThread(),
+                                                                               &PyEval_RestoreThread};
+};
+
 } // namespace
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>)
