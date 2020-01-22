@@ -112,7 +112,7 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine, see :ref:`class s4u::Engine <API_s4u_Engine>`")
-      .def(py::init([](std::vector<std::string> args) -> simgrid::s4u::Engine* {
+      .def(py::init([](std::vector<std::string> args) {
         static char noarg[] = {'\0'};
         int argc            = args.size();
         std::unique_ptr<char* []> argv(new char*[argc + 1]);
@@ -170,7 +170,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("current", &Host::current,
            "Retrieves the host on which the running actor is located, see :cpp:func:`simgrid::s4u::Host::current()`")
       .def_property_readonly("name",
-                             [](const Host* self) -> const std::string {
+                             [](const Host* self) {
                                return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
                              },
                              "The name of this host")
@@ -186,13 +186,12 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(
       m, "Mailbox", "Mailbox, see :ref:`class s4u::Mailbox <API_s4u_Mailbox>`")
-      .def("__str__",
-           [](const Mailbox* self) -> const std::string { return std::string("Mailbox(") + self->get_cname() + ")"; },
+      .def("__str__", [](const Mailbox* self) { return std::string("Mailbox(") + self->get_cname() + ")"; },
            "Textual representation of the Mailbox`")
       .def("by_name", &Mailbox::by_name,
            "Retrieve a Mailbox from its name, see :cpp:func:`simgrid::s4u::Mailbox::by_name()`")
       .def_property_readonly("name",
-                             [](const Mailbox* self) -> const std::string {
+                             [](const Mailbox* self) {
                                return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
                              },
                              "The name of that mailbox, see :cpp:func:`simgrid::s4u::Mailbox::get_name()`")
@@ -203,13 +202,13 @@ PYBIND11_MODULE(simgrid, m)
            },
            "Blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put(void*, uint64_t)`")
       .def("put_async",
-           [](Mailbox* self, py::object data, int size) -> simgrid::s4u::CommPtr {
+           [](Mailbox* self, py::object data, int size) {
              data.inc_ref();
              return self->put_async(data.ptr(), size);
            },
            "Non-blocking data transmission, see :cpp:func:`void simgrid::s4u::Mailbox::put_async(void*, uint64_t)`")
       .def("get",
-           [](Mailbox* self) -> py::object {
+           [](Mailbox* self) {
              py::object data = pybind11::reinterpret_steal<py::object>(static_cast<PyObject*>(self->get()));
              data.dec_ref();
              return data;
