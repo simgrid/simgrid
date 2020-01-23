@@ -97,8 +97,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("exit", &simgrid::s4u::this_actor::exit, "kill the current actor")
       .def("on_exit",
            [](py::object fun) {
-             ActorPtr act = Actor::self();
-             simgrid::s4u::this_actor::on_exit([act, fun](bool /*failed*/) {
+             simgrid::s4u::this_actor::on_exit([fun](bool /*failed*/) {
                try {
                  fun();
                } catch (const py::error_already_set& e) {
