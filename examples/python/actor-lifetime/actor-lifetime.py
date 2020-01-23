@@ -14,8 +14,7 @@ class Sleeper:
     """This actor just sleeps until termination"""
 
     def __init__(self, *args):
-        # sys.exit(1); simgrid.info("Exiting now (done sleeping or got killed)."))
-        this_actor.on_exit(lambda: print("BAAA"))
+        this_actor.on_exit(lambda: this_actor.info("Exiting now (done sleeping or got killed)."))
 
     def __call__(self):
         this_actor.info("Hello! I go to sleep.")
