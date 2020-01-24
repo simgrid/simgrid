@@ -49,7 +49,7 @@ void wait_for_requests()
   }
 #if SIMGRID_HAVE_MC
   xbt_dynar_reset(simix_global->actors_vector);
-  for (std::pair<aid_t, smx_actor_t> const& kv : simix_global->process_list) {
+  for (std::pair<const aid_t, smx_actor_t> const& kv : simix_global->process_list) {
     xbt_dynar_push_as(simix_global->actors_vector, smx_actor_t, kv.second);
   }
 #endif
