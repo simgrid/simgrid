@@ -47,21 +47,24 @@ jobs:
     - os: windows
       script:
       - mv "C:/Program Files/Git/usr/bin/sh.exe" "sh-ignored.exe"
-      -  df -h
-      -  du -hs /tmp || true
-      -  choco install boost-msvc-12 python jdk8
-      -  export CC=gcc
-      -  export CXX=g++
-      -  export PATH='C:\Python38':'C:\local\boost_1_58_0':$PATH
-      -  export BOOST_LIBRARYDIR='C:/local/boost_1_58_0/lib64-msvc-12.0'
-      -  export BOOST_INCLUDEDIR='C:/local/boost_1_58_0/include'
-      -  export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211'
-      -  cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
-      -  df -h
-      -  du -hs /tmp || true
-      -  mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
-      -  df -h
-      -  du -hc /tmp || true
+      - df -h
+      - du -hs /tmp || true
+      - choco install boost-msvc-12 python jdk8
+      - export CC=gcc
+      - export CXX=g++
+      - export PATH='C:\Python38':'C:\local\boost_1_58_0':$PATH
+      - export BOOST_LIBRARYDIR='C:/local/boost_1_58_0/lib64-msvc-12.0'
+      - export BOOST_INCLUDEDIR='C:/local/boost_1_58_0/include'
+      - export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211'
+      # We need pybind11. SimGrid will pick it automatically if the subdir is here
+      - git clone --depth=1 https://github.com/pybind/pybind11.git
+      - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
+      - df -h
+      - du -hs /tmp || true
+      - mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
+      - mingw32-make.exe VERBOSE=1 python-bindings && ctest --output-on-failure -R python
+      - df -h
+      - du -hc /tmp || true
     - os: osx
       osx_image: xcode11
       script:
