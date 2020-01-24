@@ -12,7 +12,10 @@
 #include <simgrid/forward.h>
 #include <string>
 #include <vector>
+#include <xbt/log.hpp>
 #include <xbt/signal.hpp>
+
+XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
 
 namespace simgrid {
 namespace s4u {
@@ -89,7 +92,7 @@ private:
 
 template <class AnyActivity> class Activity_T : public Activity {
 private:
-  std::string name_             = "";
+  std::string name_             = "unnamed";
   std::string tracing_category_ = "";
   void* user_data_              = nullptr;
   std::atomic_int_fast32_t refcount_{0};
@@ -124,6 +127,7 @@ public:
   {
     while (has_successors()) {
       AnyActivity* b = get_successor();
+      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
       b->remove_dependency_on(static_cast<AnyActivity*>(this));
       if (not b->has_dependencies()) {
         b->vetoable_start();
@@ -138,6 +142,7 @@ public:
     if (has_dependencies())
       return static_cast<AnyActivity*>(this);
     set_state(State::STARTED);
+    XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
     static_cast<AnyActivity*>(this)->start();
     return static_cast<AnyActivity*>(this);
   }
