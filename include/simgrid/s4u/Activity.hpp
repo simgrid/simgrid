@@ -12,7 +12,6 @@
 #include <simgrid/forward.h>
 #include <string>
 #include <vector>
-#include <xbt/log.hpp>
 #include <xbt/signal.hpp>
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
