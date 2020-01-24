@@ -11,7 +11,7 @@
 # receiver terminates.
 
 import sys
-from simgrid import *
+from simgrid import Engine, this_actor
 
 def Sender():
     this_actor.sleep_for(3)
@@ -35,4 +35,5 @@ if __name__ == '__main__':
     e.run()
     this_actor.info("Dummy import...")
     import gc
+    gc.collect()
     this_actor.info("done.")

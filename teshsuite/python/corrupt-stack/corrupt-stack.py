@@ -8,33 +8,33 @@
 # An intricate recursion is used to make the crash happen.
 
 import sys
-from simgrid import *
+from simgrid import Engine, this_actor
 
-def do_sleep1(i, len):
+def do_sleep1(i, dur):
     if i > 0:
         this_actor.info("Iter {:d}".format(i))
-        do_sleep3(i - 1, len)
-        this_actor.sleep_for(len)
+        do_sleep3(i - 1, dur)
+        this_actor.sleep_for(dur)
         this_actor.info("Mid ({:d})".format(i))
-        do_sleep3(int(i / 2), len)
+        do_sleep3(int(i / 2), dur)
         this_actor.info("Done ({:d})".format(i))
 
-def do_sleep3(i, len):
+def do_sleep3(i, dur):
     if i > 0:
         this_actor.info("Iter {:d}".format(i))
-        do_sleep5(i - 1, len)
-        this_actor.sleep_for(len)
+        do_sleep5(i - 1, dur)
+        this_actor.sleep_for(dur)
         this_actor.info("Mid ({:d})".format(i))
-        do_sleep5(int(i / 2), len)
+        do_sleep5(int(i / 2), dur)
         this_actor.info("Done ({:d})".format(i))
 
-def do_sleep5(i, len):
+def do_sleep5(i, dur):
     if i > 0:
         this_actor.info("Iter {:d}".format(i))
-        do_sleep1(i - 1, len)
-        this_actor.sleep_for(len)
+        do_sleep1(i - 1, dur)
+        this_actor.sleep_for(dur)
         this_actor.info("Mid ({:d})".format(i))
-        do_sleep1(int(i / 2), len)
+        do_sleep1(int(i / 2), dur)
         this_actor.info("Done ({:d})".format(i))
 
 def Sleeper1():
