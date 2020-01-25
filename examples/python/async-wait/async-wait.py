@@ -60,11 +60,9 @@ class Receiver:
     def __init__(self, *args):
         if len(args) != 1:  # Receiver actor expects 1 argument: its ID
             raise AssertionError("Actor receiver requires 1 parameter, but got {:d}".format(len(args)))
-        self.id = int(args[0])
+        self.mbox = Mailbox.by_name("receiver-{:s}".format(args[0]))
 
     def __call__(self):
-        # FIXME: It should be ok to initialize self.mbox from __init__, but it's currently failing on the OS X Jenkins slave.
-        self.mbox = Mailbox.by_name("receiver-{:d}".format(self.id))
         this_actor.info("Wait for my first message")
         while True:
             received = self.mbox.get()
