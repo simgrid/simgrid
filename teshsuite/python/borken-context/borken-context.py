@@ -13,11 +13,11 @@
 import sys
 from simgrid import Engine, this_actor
 
-def Sender():
+def sender():
     this_actor.sleep_for(3)
     this_actor.info("Goodbye now!")
 
-def Receiver():
+def receiver():
     this_actor.sleep_for(5)
     this_actor.info("Five seconds elapsed")
 
@@ -27,8 +27,8 @@ if __name__ == '__main__':
     e.load_platform(sys.argv[1])             # Load the platform description
 
     # Register the classes representing the actors
-    e.register_actor("sender", Sender)
-    e.register_actor("receiver", Receiver)
+    e.register_actor("sender", sender)
+    e.register_actor("receiver", receiver)
 
     e.load_deployment(sys.argv[2])
 

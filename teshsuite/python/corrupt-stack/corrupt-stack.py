@@ -37,13 +37,13 @@ def do_sleep5(i, dur):
         do_sleep1(int(i / 2), dur)
         this_actor.info("Done ({:d})".format(i))
 
-def Sleeper1():
+def sleeper1():
     do_sleep1(16, 1)
 
-def Sleeper3():
+def sleeper3():
     do_sleep3(6, 3)
 
-def Sleeper5():
+def sleeper5():
     do_sleep5(4, 5)
 
 if __name__ == '__main__':
@@ -52,9 +52,9 @@ if __name__ == '__main__':
     e.load_platform(sys.argv[1])             # Load the platform description
 
     # Register the classes representing the actors
-    e.register_actor("sleeper1", Sleeper1)
-    e.register_actor("sleeper3", Sleeper3)
-    e.register_actor("sleeper5", Sleeper5)
+    e.register_actor("sleeper1", sleeper1)
+    e.register_actor("sleeper3", sleeper3)
+    e.register_actor("sleeper5", sleeper5)
 
     e.load_deployment(sys.argv[2])
 
