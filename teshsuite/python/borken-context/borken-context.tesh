@@ -1,0 +1,7 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/borken-context.py ${platfdir}/small_platform_fatpipe.xml borken-context_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  3.000000] (1:sender@Tremblay) Goodbye now!
+> [  5.000000] (2:receiver@Ruby) Five seconds elapsed
+> [  5.000000] (0:maestro@) Dummy import...
+> [  5.000000] (0:maestro@) done.

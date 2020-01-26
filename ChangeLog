@@ -7,6 +7,11 @@ General:
 - Drop support for Viva/Triva (old visualization tools), hence removed
   TRACE_get_node_types() and TRACE_get_edge_types() functions.
 
+Python:
+- Require pybind11 version 2.4.
+- Greatly improve locking during context switches with Python. No more tests are
+  failing currently, even on win32.
+
 S4U:
 - Actor: Merge signals on_migration_start/end into on_host_change
 - Actor: Rename migrate() into set_host()
@@ -52,6 +57,7 @@ SMPI:
   call, which should be called if SMPI is not being used through smpirun.
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
+ - FG#9: Python bindings crashing
  - FG#39: Missing s4u::Comm::wait_any_for example
  - FG#42: Add support for ThreadSanitizer (TSan)
  - FG!19: Removing RngStream
