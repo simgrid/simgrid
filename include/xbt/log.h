@@ -104,6 +104,7 @@ typedef enum {
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)                                                          \
   SG_BEGIN_DECL                                                                                                        \
   extern void _XBT_LOGV_CTOR(catName)(void) XBT_ATTRIB_CONSTRUCTOR(600);                                               \
+  SG_END_DECL                                                                                                          \
   void _XBT_LOGV_CTOR(catName)(void)                                                                                   \
   {                                                                                                                    \
     XBT_LOG_EXTERNAL_CATEGORY(catName);                                                                                \
@@ -111,7 +112,6 @@ typedef enum {
       _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized);                                          \
     }                                                                                                                  \
   }                                                                                                                    \
-  SG_END_DECL                                                                                                          \
   XBT_EXPORT_NO_IMPORT s_xbt_log_category_t _XBT_LOGV(catName) = {                                                     \
       &_XBT_LOGV(parent),                                                                                              \
       NULL /* firstChild */,                                                                                           \
