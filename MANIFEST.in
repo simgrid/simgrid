@@ -384,6 +384,8 @@ include examples/s4u/exec-waitfor/s4u-exec-waitfor.cpp
 include examples/s4u/exec-waitfor/s4u-exec-waitfor.tesh
 include examples/s4u/io-async/s4u-io-async.cpp
 include examples/s4u/io-async/s4u-io-async.tesh
+include examples/s4u/io-dependent/s4u-io-dependent.cpp
+include examples/s4u/io-dependent/s4u-io-dependent.tesh
 include examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp
 include examples/s4u/io-disk-raw/s4u-io-disk-raw.tesh
 include examples/s4u/io-file-remote/s4u-io-file-remote.cpp
