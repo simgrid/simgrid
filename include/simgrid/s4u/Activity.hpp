@@ -95,8 +95,8 @@ private:
   std::string tracing_category_ = "";
   void* user_data_              = nullptr;
   std::atomic_int_fast32_t refcount_{0};
-  std::vector<AnyActivity*> successors_;
-  std::set<AnyActivity*> dependencies_;
+  std::vector<Activity*> successors_;
+  std::set<Activity*> dependencies_;
 
 public:
 #ifndef DOXYGEN
@@ -110,24 +110,25 @@ public:
   friend void intrusive_ptr_add_ref(AnyActivity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
 #endif
 
-  void add_successor(AnyActivity* a)
+  void add_successor(Activity* a)
   {
     successors_.push_back(a);
-    a->add_dependency_on(static_cast<AnyActivity*>(this));
+    static_cast<AnyActivity*>(a)->add_dependency_on(static_cast<Activity*>(this));
   }
   void remove_successor() { successors_.pop_back(); }
-  AnyActivity* get_successor() { return successors_.back(); }
+  Activity* get_successor() { return successors_.back(); }
   bool has_successors() { return not successors_.empty(); }
 
-  void add_dependency_on(AnyActivity* a) { dependencies_.insert({a}); }
-  void remove_dependency_on(AnyActivity* a) { dependencies_.erase(a); }
+  void add_dependency_on(Activity* a) { dependencies_.insert({a}); }
+  void remove_dependency_on(Activity* a) { dependencies_.erase(a); }
   bool has_dependencies() { return not dependencies_.empty(); }
   void release_dependencies()
   {
     while (has_successors()) {
-      AnyActivity* b = get_successor();
-      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
-      b->remove_dependency_on(static_cast<AnyActivity*>(this));
+      AnyActivity* b = static_cast<AnyActivity*>(get_successor());
+      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", static_cast<AnyActivity*>(this)->get_cname(),
+                 b->get_cname());
+      b->remove_dependency_on(static_cast<Activity*>(this));
       if (not b->has_dependencies()) {
         b->vetoable_start();
       }
@@ -141,7 +142,8 @@ public:
     if (has_dependencies())
       return static_cast<AnyActivity*>(this);
     set_state(State::STARTED);
-    XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
+    XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'",
+               static_cast<AnyActivity*>(this)->get_cname());
     static_cast<AnyActivity*>(this)->start();
     return static_cast<AnyActivity*>(this);
   }
