@@ -33,6 +33,7 @@ bool Exec::test()
 
   if (simcall_execution_test(pimpl_)) {
     state_ = State::FINISHED;
+    this->release_dependencies();
     return true;
   }
 
