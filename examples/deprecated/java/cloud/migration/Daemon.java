@@ -18,7 +18,6 @@ public class Daemon extends Process {
   public void main(String[] args) throws MsgException {
     int i = 1;
     while(!Main.isEndOfTest()) {
-      // TODO the binding is not yet available
     try {
       currentTask.execute();
     } catch (HostFailureException e) {
