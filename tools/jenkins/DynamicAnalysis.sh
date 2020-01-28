@@ -49,7 +49,7 @@ cd $WORKSPACE/build
 ### Proceed with the tests
 ctest -D ExperimentalStart || true
 
-cmake -Denable_documentation=OFF -Denable_lua=OFF  \
+cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_python=OFF \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_jedule=OFF -Denable_mallocators=OFF \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF \
