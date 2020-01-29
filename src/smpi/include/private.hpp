@@ -461,6 +461,9 @@ void mpi_file_set_view_(int* fh, long long int* offset, int* etype, int* filetyp
 void mpi_file_read_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_write_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void smpi_init_fortran_types();
+void smpi_execute_flops_(double* flops);
+void smpi_execute_(double* duration);
+void smpi_execute_benched_(double* duration);
 } // extern "C"
 
 XBT_PRIVATE int smpi_temp_shm_get();

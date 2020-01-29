@@ -979,4 +979,16 @@ void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status
   *ierr=  MPI_File_write(reinterpret_cast<MPI_File>(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
 }
 
+void smpi_execute_flops_(double* flops){
+  smpi_execute_flops(*flops);
+}
+
+void smpi_execute_(double* duration){
+  smpi_execute(*duration);
+}
+
+void smpi_execute_benched_(double* duration){
+  smpi_execute_benched(*duration);
+}
+
 } // extern "C"
