@@ -25,7 +25,6 @@ class ModelChecker {
   struct event* socket_event_ = nullptr;
   struct event* signal_event_ = nullptr;
   /** String pool for host names */
-  // TODO, use std::set with heterogeneous comparison lookup (C++14)?
   std::set<std::string> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_{500};

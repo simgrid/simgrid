@@ -116,6 +116,13 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 
 static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link, const std::string& link_name)
 {
+  static double last_warned_latency = sg_surf_precision;
+  if (link->latency != 0.0 && link->latency < last_warned_latency) {
+    XBT_WARN("Latency for link %s is smaller than surf/precision (%g < %g)."
+             " For more accuracy, consider setting \"--cfg=surf/precision:%g\".",
+             link_name.c_str(), link->latency, sg_surf_precision, link->latency);
+    last_warned_latency = link->latency;
+  }
   simgrid::kernel::resource::LinkImpl* l =
       surf_network_model->create_link(link_name, link->bandwidths, link->latency, link->policy);
 
