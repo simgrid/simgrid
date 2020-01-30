@@ -11,9 +11,8 @@ Important user-visible changes:
 - SimDAG++: Automatic dependencies on S4U activities (experimental)
   - Some features are already implemented but not all of them
   - Cannot block an activity until it's scheduled on a resource
-  - Only Exec and Io so far. Comms are not handled yet.
-  - No heterogeneous wait_any() that would mix Exec and Io activities.
-  - See examples/s4u/{io-,exec-}dependent for what's already there.
+  - No heterogeneous wait_any() that would mix Exec/Comm/Io activities.
+  - See examples/s4u/{io,exec,comm}-dependent for what's already there.
 
 
 

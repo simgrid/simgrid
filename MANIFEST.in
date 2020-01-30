@@ -336,6 +336,8 @@ include examples/s4u/cloud-migration/s4u-cloud-migration.cpp
 include examples/s4u/cloud-migration/s4u-cloud-migration.tesh
 include examples/s4u/cloud-simple/s4u-cloud-simple.cpp
 include examples/s4u/cloud-simple/s4u-cloud-simple.tesh
+include examples/s4u/comm-dependent/s4u-comm-dependent.cpp
+include examples/s4u/comm-dependent/s4u-comm-dependent.tesh
 include examples/s4u/dht-chord/s4u-dht-chord-node.cpp
 include examples/s4u/dht-chord/s4u-dht-chord.cpp
 include examples/s4u/dht-chord/s4u-dht-chord.hpp

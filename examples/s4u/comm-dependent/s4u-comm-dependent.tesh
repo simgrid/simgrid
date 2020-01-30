@@ -1,0 +1,10 @@
+#!/usr/bin/env tesh
+
+p Testing with default compound
+
+$ ${bindir:=.}/s4u-comm-dependent ${platfdir}/small_platform.xml  --log=s4u_activity.t:debug "--log=root.fmt:[%6.2r]%e(%i:%P@%h)%e%m%n"
+> [  2.00] (1:sender@Tremblay) Remove a dependency from 'exec on sender' on 'comm to receiver'
+> [  2.00] (1:sender@Tremblay) All dependencies are solved, let's start 'comm to receiver'
+> [  3.07] (2:receiver@Jupiter) Remove a dependency from 'comm from sender' on 'exec on receiver'
+> [  3.07] (2:receiver@Jupiter) All dependencies are solved, let's start 'exec on receiver'
+> [  5.07] (0:maestro@) Simulation time: 5.070
