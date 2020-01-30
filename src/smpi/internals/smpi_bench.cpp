@@ -82,6 +82,12 @@ void smpi_execute_benched(double duration)
   smpi_bench_begin();
 }
 
+void smpi_execute_flops_benched(double flops) {
+  smpi_bench_end();
+  smpi_execute_flops(flops);
+  smpi_bench_begin();
+}
+
 void smpi_bench_begin()
 {
   if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
