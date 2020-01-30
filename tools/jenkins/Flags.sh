@@ -82,7 +82,7 @@ fi
 if [ $buildmsg = "OFF" -a $buildjava = "ON" ] 
 then
   echo "Don't even try to build Java without MSG"
-  exit 1
+  exit 0
 fi
 
 echo "Step ${STEP}/${NSTEPS} - Building with java=${buildjava}, debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}, MSG=${buildmsg}"
