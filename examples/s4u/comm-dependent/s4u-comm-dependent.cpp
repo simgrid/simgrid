@@ -22,16 +22,18 @@ static void sender(simgrid::s4u::Mailbox* mailbox)
 
 static void receiver(simgrid::s4u::Mailbox* mailbox)
 {
-  double received;
+  double* received           = nullptr;
   double computation_amount  = simgrid::s4u::this_actor::get_host()->get_speed();
   simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_init(2 * computation_amount);
-  simgrid::s4u::CommPtr comm = mailbox->get_init()->set_dst_data((void**)&received);
+  simgrid::s4u::CommPtr comm = mailbox->get_init()->set_dst_data((void**)&received, sizeof(double));
 
   comm->set_name("comm from sender")->add_successor(exec)->start();
   exec->set_name("exec on receiver")->vetoable_start();
 
   comm->wait();
   exec->wait();
+  XBT_INFO("Received: %.0f flops were computed on sender", *received);
+  delete received;
 }
 
 int main(int argc, char* argv[])
