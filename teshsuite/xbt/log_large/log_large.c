@@ -6,14 +6,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt.h"
-#include <simgrid/msg.h>
+#include <simgrid/engine.h>
+#include <xbt.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logs of this example");
 
 int main(int argc, char *argv[])
 {
-  MSG_init(&argc, argv);
+  simgrid_init(&argc, argv);
   char *tmp = bprintf("\n%d%s%d%s%d%s%d%s%d%s%d%s%d%s%d%s%d%s%d%s",
     1, ".........1.........2.........3.........4.........5.........6.........7.........8.........9.........0\n",
     2, ".........1.........2.........3.........4.........5.........6.........7.........8.........9.........0\n",

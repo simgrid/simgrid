@@ -6,7 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h" // HAVE_FUTEX_H
-#include <simgrid/msg.h>
+#include <simgrid/s4u/Engine.hpp>
 #include <xbt.h>
 #include <xbt/parmap.hpp>
 
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 {
   int status = 0;
   xbt_log_control_set("parmap_test.fmt:[%c/%p]%e%m%n");
-  MSG_init(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   SIMIX_context_set_nthreads(16); // dummy value > 1
 
   XBT_INFO("Basic testing posix");

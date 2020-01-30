@@ -815,9 +815,14 @@ set(simgrid_sources
   ${XBT_SRC}
   ${PLUGINS_SRC}
   ${BINDINGS_SRC}
-  ${MSG_SRC}
   ${SIMDAG_SRC}
   )
+
+if(${enable_MSG})
+  set(simgrid_sources ${simgrid_sources}   ${MSG_SRC})
+else()
+  set(EXTRA_DIST      ${simgrid_sources}   ${MSG_SRC})
+endif()
 
 if(${SIMGRID_HAVE_JEDULE})
   set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
@@ -999,7 +1004,7 @@ set(CMAKEFILES_TXT
   examples/s4u/CMakeLists.txt
   examples/smpi/CMakeLists.txt
   examples/smpi/NAS/CMakeLists.txt
-  examples/smpi/smpi_msg_masterslave/CMakeLists.txt
+  examples/smpi/smpi_s4u_masterslave/CMakeLists.txt
   examples/smpi/replay_multiple/CMakeLists.txt
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
   examples/python/CMakeLists.txt

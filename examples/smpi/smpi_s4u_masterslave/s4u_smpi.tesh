@@ -1,0 +1,43 @@
+p Test the use of SMPI+MSG in the same file, as well as several different SMPI instances at the same time
+$ ./masterslave_mailbox_smpi ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/deployment_masterslave_mailbox_smpi.xml --log=smpi.:info --cfg=smpi/simulate-computation:no
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
+> [0.000000] [smpi_config/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.  Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 2 workers and 20 tasks to process
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending task 0 of 20 to mailbox 'Ginette'
+> [Ginette:master_mpi:(4) 0.000000] [msg_test/INFO] here for rank 0
+> [Bourassa:master_mpi:(5) 0.000000] [msg_test/INFO] here for rank 1
+> [Ginette:alltoall_mpi:(6) 0.000000] [msg_test/INFO] alltoall for rank 0
+> [Bourassa:alltoall_mpi:(7) 0.000000] [msg_test/INFO] alltoall for rank 1
+> [Jupiter:alltoall_mpi:(8) 0.000000] [msg_test/INFO] alltoall for rank 2
+> [Fafard:alltoall_mpi:(9) 0.000000] [msg_test/INFO] alltoall for rank 3
+> [Ginette:master_mpi:(4) 0.000000] [msg_test/INFO] After comm 0
+> [Ginette:master_mpi:(4) 0.000000] [msg_test/INFO] After finalize 0 0
+> [Bourassa:master_mpi:(5) 0.016868] [msg_test/INFO] After comm 1
+> [Bourassa:master_mpi:(5) 0.016868] [msg_test/INFO] After finalize 1 0
+> [Ginette:alltoall_mpi:(6) 0.100219] [msg_test/INFO] after alltoall 0
+> [Fafard:alltoall_mpi:(9) 0.100625] [msg_test/INFO] after alltoall 3
+> [Tremblay:master:(1) 0.125464] [msg_test/INFO] Sending task 1 of 20 to mailbox 'Jupiter'
+> [Bourassa:alltoall_mpi:(7) 0.129082] [msg_test/INFO] after alltoall 1
+> [Jupiter:alltoall_mpi:(8) 0.129358] [msg_test/INFO] after alltoall 2
+> [Tremblay:master:(1) 0.294619] [msg_test/INFO] Sending task 2 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 1.280294] [msg_test/INFO] Sending task 3 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 1.449449] [msg_test/INFO] Sending task 4 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 2.435124] [msg_test/INFO] Sending task 5 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 2.604279] [msg_test/INFO] Sending task 6 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 3.589954] [msg_test/INFO] Sending task 7 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 3.759109] [msg_test/INFO] Sending task 8 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 4.744784] [msg_test/INFO] Sending task 9 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 4.913938] [msg_test/INFO] Sending task 10 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 5.899614] [msg_test/INFO] Sending task 11 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 6.068768] [msg_test/INFO] Sending task 12 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 7.054444] [msg_test/INFO] Sending task 13 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 7.223598] [msg_test/INFO] Sending task 14 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 8.209273] [msg_test/INFO] Sending task 15 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 8.378428] [msg_test/INFO] Sending task 16 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 9.364103] [msg_test/INFO] Sending task 17 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 9.533258] [msg_test/INFO] Sending task 18 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 10.518933] [msg_test/INFO] Sending task 19 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 10.688088] [msg_test/INFO] All tasks have been dispatched. Request all workers to stop.
+> [Ginette:worker:(2) 11.566584] [msg_test/INFO] Exiting now.
+> [Jupiter:worker:(3) 11.585598] [msg_test/INFO] Exiting now.
+> [11.585598] [msg_test/INFO] Simulation time 11.5856

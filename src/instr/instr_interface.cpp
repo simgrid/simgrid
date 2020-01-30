@@ -239,7 +239,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
                                 simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));
   } else {
     XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-    new simgrid::instr::NewEvent(MSG_get_clock(), simgrid::instr::Container::get_root(), type,
+    new simgrid::instr::NewEvent(simgrid_get_clock(), simgrid::instr::Container::get_root(), type,
                                  type->get_entity_value(mark_value));
   }
 }
@@ -383,7 +383,7 @@ void TRACE_vm_variable_declare_with_color (const char *variable, const char *col
  */
 void TRACE_vm_variable_set (const char *vm, const char *variable, double value)
 {
-  TRACE_vm_variable_set_with_time (MSG_get_clock(), vm, variable, value);
+  TRACE_vm_variable_set_with_time(simgrid_get_clock(), vm, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -397,7 +397,7 @@ void TRACE_vm_variable_set (const char *vm, const char *variable, double value)
  */
 void TRACE_vm_variable_add (const char *vm, const char *variable, double value)
 {
-  TRACE_vm_variable_add_with_time (MSG_get_clock(), vm, variable, value);
+  TRACE_vm_variable_add_with_time(simgrid_get_clock(), vm, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -411,7 +411,7 @@ void TRACE_vm_variable_add (const char *vm, const char *variable, double value)
  */
 void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
 {
-  TRACE_vm_variable_sub_with_time (MSG_get_clock(), vm, variable, value);
+  TRACE_vm_variable_sub_with_time(simgrid_get_clock(), vm, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -517,7 +517,7 @@ void TRACE_host_variable_declare_with_color (const char *variable, const char *c
  */
 void TRACE_host_variable_set (const char *host, const char *variable, double value)
 {
-  TRACE_host_variable_set_with_time (MSG_get_clock(), host, variable, value);
+  TRACE_host_variable_set_with_time(simgrid_get_clock(), host, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -531,7 +531,7 @@ void TRACE_host_variable_set (const char *host, const char *variable, double val
  */
 void TRACE_host_variable_add (const char *host, const char *variable, double value)
 {
-  TRACE_host_variable_add_with_time (MSG_get_clock(), host, variable, value);
+  TRACE_host_variable_add_with_time(simgrid_get_clock(), host, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -545,7 +545,7 @@ void TRACE_host_variable_add (const char *host, const char *variable, double val
  */
 void TRACE_host_variable_sub (const char *host, const char *variable, double value)
 {
-  TRACE_host_variable_sub_with_time (MSG_get_clock(), host, variable, value);
+  TRACE_host_variable_sub_with_time(simgrid_get_clock(), host, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -664,7 +664,7 @@ void TRACE_link_variable_declare_with_color (const char *variable, const char *c
  */
 void TRACE_link_variable_set (const char *link, const char *variable, double value)
 {
-  TRACE_link_variable_set_with_time (MSG_get_clock(), link, variable, value);
+  TRACE_link_variable_set_with_time(simgrid_get_clock(), link, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -678,7 +678,7 @@ void TRACE_link_variable_set (const char *link, const char *variable, double val
  */
 void TRACE_link_variable_add (const char *link, const char *variable, double value)
 {
-  TRACE_link_variable_add_with_time (MSG_get_clock(), link, variable, value);
+  TRACE_link_variable_add_with_time(simgrid_get_clock(), link, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -692,7 +692,7 @@ void TRACE_link_variable_add (const char *link, const char *variable, double val
  */
 void TRACE_link_variable_sub (const char *link, const char *variable, double value)
 {
-  TRACE_link_variable_sub_with_time (MSG_get_clock(), link, variable, value);
+  TRACE_link_variable_sub_with_time(simgrid_get_clock(), link, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -772,7 +772,7 @@ void TRACE_link_variable_sub_with_time (double time, const char *link, const cha
  */
 void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value)
 {
-  TRACE_link_srcdst_variable_set_with_time (MSG_get_clock(), src, dst, variable, value);
+  TRACE_link_srcdst_variable_set_with_time(simgrid_get_clock(), src, dst, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -791,7 +791,7 @@ void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const cha
  */
 void TRACE_link_srcdst_variable_add (const char *src, const char *dst, const char *variable, double value)
 {
-  TRACE_link_srcdst_variable_add_with_time (MSG_get_clock(), src, dst, variable, value);
+  TRACE_link_srcdst_variable_add_with_time(simgrid_get_clock(), src, dst, variable, value);
 }
 
 /** @ingroup TRACE_user_variables
@@ -810,7 +810,7 @@ void TRACE_link_srcdst_variable_add (const char *src, const char *dst, const cha
  */
 void TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const char *variable, double value)
 {
-  TRACE_link_srcdst_variable_sub_with_time (MSG_get_clock(), src, dst, variable, value);
+  TRACE_link_srcdst_variable_sub_with_time(simgrid_get_clock(), src, dst, variable, value);
 }
 
 /** @ingroup TRACE_user_variables

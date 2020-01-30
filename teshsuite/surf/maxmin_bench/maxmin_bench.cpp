@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "simgrid/msg.h"
 #include "xbt/module.h"
 #include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"
@@ -120,7 +120,7 @@ unsigned int TestClasses [][4]=
 
 int main(int argc, char **argv)
 {
-  MSG_init(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   float rate_no_limit=0.2;
   float acc_date=0;

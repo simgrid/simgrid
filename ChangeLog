@@ -3,11 +3,13 @@
 SimGrid (3.24.1) NOT RELEASED YET (v3.25 expected December 22. 2029, 04:19 UTC)
 
 Important user-visible changes:
-- Great improvement of the Python binding's stability.
+- Improve the Python usability (stability and documentation).
   - A nasty synchronization bug was ironed out, see also below.
-- Reorganization of the C & Python bindings' documentation.
-  - Python was organized as a separate tree, C was not part of the doc
+  - Python's doc was organized as a separate tree, now integrated with C++.
+  - C bindings of S4U were not part of the doc.
   - The C++ doc was also improved as methods are now split by theme.
+- Further deprecate MSG: you now have to pass -Denable-MSG=ON to cmake.
+  - The plan is to completely remove MSG by the end of 2020.
 - SimDAG++: Automatic dependencies on S4U activities (experimental)
   - Some features are already implemented but not all of them
   - Cannot block an activity until it's scheduled on a resource

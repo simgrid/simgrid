@@ -24,6 +24,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_routing, instr, "Tracing platform hierarch
 
 static std::vector<simgrid::instr::NetZoneContainer*> currentContainer; /* push and pop, used only in creation */
 
+std::string instr_pid(simgrid::s4u::Actor const& proc)
+{
+  return std::string(proc.get_name()) + "-" + std::to_string(proc.get_pid());
+}
+
 static const char* instr_node_name(const s_xbt_node_t* node)
 {
   return static_cast<char*>(xbt_graph_node_get_data(node));

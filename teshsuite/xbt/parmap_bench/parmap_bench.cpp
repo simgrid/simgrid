@@ -5,7 +5,7 @@
 
 #include "src/internal_config.h" // HAVE_FUTEX_H
 #include "xbt/parmap.hpp"
-#include <simgrid/msg.h>
+#include <simgrid/s4u/Engine.hpp>
 #include <xbt.h>
 
 #include <cstdlib>
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
   unsigned modes = MODES_DEFAULT;
 
   xbt_log_control_set("parmap_bench.fmt:[%c/%p]%e%m%n");
-  MSG_init(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   if (argc != 3 && argc != 4) {
     XBT_INFO("Usage: %s nthreads timeout [modes]", argv[0]);

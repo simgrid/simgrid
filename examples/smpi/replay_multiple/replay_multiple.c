@@ -4,8 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h"
 #include "mpi.h"
+#include "simgrid/engine.h"
+#include "xbt/str.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -27,16 +28,14 @@ static int smpi_replay(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]){
-  msg_error_t res;
-
-  MSG_init(&argc, argv);
+  simgrid_init(&argc, argv);
   SMPI_init();
 
   xbt_assert(argc > 3, "Usage: %s description_file platform_file deployment_file\n"
              "\tExample: %s smpi_multiple_apps msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
   /*  Simulation setting */
-  MSG_create_environment(argv[2]);
+  simgrid_load_platform(argv[2]);
 
   /*   Application deployment: read the description file in order to identify instances to launch */
   FILE* fp = fopen(argv[1], "r");
@@ -63,12 +62,11 @@ int main(int argc, char *argv[]){
 
   fclose(fp);
 
-  MSG_launch_application(argv[3]);
+  simgrid_load_deployment(argv[3]);
+  simgrid_run();
 
-  res = MSG_main();
-
-  XBT_INFO("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Simulation time %g", simgrid_get_clock());
 
   SMPI_finalize();
-  return res != MSG_OK;
+  return 0;
 }

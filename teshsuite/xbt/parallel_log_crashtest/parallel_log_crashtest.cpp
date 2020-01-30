@@ -5,7 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h"
+#include "simgrid/s4u/Engine.hpp"
 #include <thread>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
@@ -29,7 +29,7 @@ static void crasher_thread(int id)
 
 int main(int argc, char* argv[])
 {
-  MSG_init(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   std::thread crashers[crasher_amount];
 

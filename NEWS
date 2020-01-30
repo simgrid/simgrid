@@ -7,9 +7,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| ___|
 
 The Dependstable Snake Release.
 
- * Great improvement of the Python binding's stability.
- * Reorganization of the C & Python bindings' documentation.
- * SimDAG++: Automatic dependencies on S4U activities (experimental)
+ * Improve the Python usability (stability and documentation).
+ * Further deprecate MSG: you now have to pass -Denable-MSG=ON to cmake.
+ * SimDAG++: Automatic dependencies on S4U activities (experimental).
  * (+ many bug fixes and internal refactoring)
                     _               _____  ____  _  _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| || |

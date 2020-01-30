@@ -1,5 +1,5 @@
 foreach (x bugged1 bugged2 bugged3 centralized_mutex electric_fence bugged1_liveness bugged2_liveness)
-  if(SIMGRID_HAVE_MC)
+  if(SIMGRID_HAVE_MC AND SIMGRID_HAVE_MSG)
     add_executable       (${x} EXCLUDE_FROM_ALL ${x}.c)
     target_link_libraries(${x} simgrid)
     add_dependencies(tests ${x})
@@ -8,7 +8,7 @@ foreach (x bugged1 bugged2 bugged3 centralized_mutex electric_fence bugged1_live
   set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/deploy_${x}.xml)
 endforeach()
 
-if(SIMGRID_HAVE_MC)
+if(SIMGRID_HAVE_MC AND SIMGRID_HAVE_MSG)
   if(HAVE_C_STACK_CLEANER)
     add_executable       (bugged1_liveness_cleaner_on  EXCLUDE_FROM_ALL bugged1_liveness.c)
     target_link_libraries(bugged1_liveness_cleaner_on  simgrid)

@@ -6,13 +6,7 @@
 #include "msg_private.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/instr/instr_private.hpp"
 #include "src/simix/smx_private.hpp"
-
-std::string instr_pid(simgrid::s4u::Actor const& proc)
-{
-  return std::string(proc.get_name()) + "-" + std::to_string(proc.get_pid());
-}
 
 /******************************** Process ************************************/
 /** @brief Creates and runs a new #msg_process_t.

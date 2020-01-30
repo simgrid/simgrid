@@ -8,8 +8,8 @@
 #include "xbt/sysdep.h"
 #include "src/xbt/log_private.hpp"
 
-#include "simgrid/host.h" /* sg_host_self_get_name */
-#include "simgrid/msg.h"  /* MSG_get_clock */
+#include "simgrid/engine.h" /* simgrid_get_clock */
+#include "simgrid/host.h"   /* sg_host_self_get_name */
 #include <cstdio>
 
 extern const char *xbt_log_priority_names[8];
@@ -45,7 +45,7 @@ static int xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_t
   }
 
   /* Display the date */
-  len = snprintf(p, rem_size, "%f] ", MSG_get_clock());
+  len = snprintf(p, rem_size, "%f] ", simgrid_get_clock());
   check_overflow(len);
 
   /* Display file position if not INFO */

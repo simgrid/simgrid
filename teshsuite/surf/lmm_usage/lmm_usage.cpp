@@ -5,7 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/log.h"
@@ -167,7 +167,7 @@ static void test3()
 
 int main(int argc, char** argv)
 {
-  MSG_init(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   XBT_INFO("***** Test 1");
   test1();
 

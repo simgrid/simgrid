@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/engine.h" /* simgrid_get_clock */
 #include "simgrid/host.h"
-#include "simgrid/msg.h" /* MSG_get_clock */
 #include "src/xbt/log_private.hpp"
 #include "xbt/sysdep.h"
 #include <algorithm>
@@ -144,10 +144,10 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
             show_string(ev->functionName);
             break;
           case 'd': /* date; LOG4J compliant */
-            show_double(MSG_get_clock());
+            show_double(simgrid_get_clock());
             break;
           case 'r': /* application age; LOG4J compliant */
-            show_double(MSG_get_clock());
+            show_double(simgrid_get_clock());
             break;
           case 'm': { /* user-provided message; LOG4J compliant */
             int sz;
