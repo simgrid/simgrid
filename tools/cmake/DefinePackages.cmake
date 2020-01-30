@@ -821,7 +821,7 @@ set(simgrid_sources
 if(${enable_MSG})
   set(simgrid_sources ${simgrid_sources}   ${MSG_SRC})
 else()
-  set(EXTRA_DIST      ${simgrid_sources}   ${MSG_SRC})
+  set(EXTRA_DIST      ${EXTRA_DIST}        ${MSG_SRC})
 endif()
 
 if(${SIMGRID_HAVE_JEDULE})
