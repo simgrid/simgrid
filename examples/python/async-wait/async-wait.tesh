@@ -10,5 +10,5 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/async-wait.py ${pl
 > [  0.105458] (2:receiver@Ruby) I got a 'Message 0'.
 > [  0.210917] (2:receiver@Ruby) I got a 'Message 1'.
 > [  0.316375] (2:receiver@Ruby) I got a 'Message 2'.
-> [  0.318326] (2:receiver@Ruby) I got a 'finalize'.
 > [  0.318326] (1:sender@Tremblay) Goodbye now!
+> [  0.318326] (2:receiver@Ruby) I got a 'finalize'.
