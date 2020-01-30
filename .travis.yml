@@ -42,7 +42,7 @@ jobs:
       script:
       - sudo apt-get update -qq
       - sudo apt-get install cmake valgrind gfortran libboost-dev libboost-all-dev libdw-dev libevent-dev libunwind8-dev pybind11-dev
-      - (cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . || (echo XXX CMakeOutput.log; cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeOutput.log; echo XXX CMakeError.log;cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeError.log; exit 1))
+      - (cmake -Denable_model-checking=ON  -Denable_documentation=OFF -Denable_coverage=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . || (echo XXX CMakeOutput.log; cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeOutput.log; echo XXX CMakeError.log;cat /home/travis/build/simgrid/simgrid/CMakeFiles/CMakeError.log; exit 1))
       - make -j2 VERBOSE=1 all && make -j2 tests && ctest -j2 --output-on-failure
     - os: windows
       script:
@@ -58,7 +58,7 @@ jobs:
       - export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211'
       # We need pybind11. SimGrid will pick it automatically if the subdir is here
       # - git clone --depth=1 https://github.com/pybind/pybind11.git
-      - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
+      - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
       - df -h
       - du -hs /tmp || true
       - mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java
@@ -69,7 +69,7 @@ jobs:
       osx_image: xcode11
       script:
       - export LIBRARY_PATH=/usr/local/lib/gcc/9
-      - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .
+      - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .
       - make -j2 VERBOSE=1 all && make -j2 tests && ctest -j2 --output-on-failure
 notifications:
   recipients:

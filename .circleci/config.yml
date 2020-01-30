@@ -19,5 +19,5 @@ jobs:
           name: Configure, build and test da stuff
           command: |
             mkdir _build && cd _build
-            cmake -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON ..
+            cmake -Denable_documentation=OFF -Denable_coverage=ON -Denable_java=ON -Denable_MSG=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON ..
             make -j4 tests && ctest -j4 --output-on-failure

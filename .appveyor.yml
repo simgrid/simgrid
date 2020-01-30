@@ -43,7 +43,7 @@ install:
 - cmd: git clone --depth=1 https://github.com/pybind/pybind11.git
 
 build_script:
-- cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
+- cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_MSG=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
 - mingw32-make.exe VERBOSE=1 java-all python-bindings # Only the Java and Python parts
 - ctest --output-on-failure -R java
 - ctest --output-on-failure -R python
