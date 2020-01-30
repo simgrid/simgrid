@@ -392,12 +392,10 @@ Simulation objects
 
 .. autodoxyclass:: simgrid::s4u::Actor
 
-.. doxygentypedef:: ActorPtr
-
 .. doxygentypedef:: aid_t
 
-Creating actors
----------------
+Basic management
+----------------
 
 .. tabs::
 
@@ -405,23 +403,15 @@ Creating actors
 
       .. code:: C++
 
-         #include <simgrid/s4u/Engine.hpp>
+         #include <simgrid/s4u/Actor.hpp>
 
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::function< void()> &code)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code, Args... args)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::string &function, std::vector< std::string > args)
-
-      .. autodoxymethod:: simgrid::s4u::Actor::init(const std::string &name, s4u::Host *host)
-      .. autodoxymethod:: simgrid::s4u::Actor::start(const std::function< void()> &code)
+      .. doxygentypedef:: ActorPtr
 
    .. group-tab:: Python
 
       .. code:: Python
 
          from simgrid import Actor
-
-      .. automethod:: simgrid.Actor.create
 
    .. group-tab:: C
 
@@ -434,17 +424,38 @@ Creating actors
 
          Pointer to a constant actor object.
 
+      .. autodoxymethod:: sg_actor_ref(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_unref(const_sg_actor_t actor)
+
+Creating actors
+---------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::function< void()> &code)
+      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code)
+      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code, Args... args)
+      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::string &function, std::vector< std::string > args)
+
+      .. autodoxymethod:: simgrid::s4u::Actor::init(const std::string &name, s4u::Host *host)
+      .. autodoxymethod:: simgrid::s4u::Actor::start(const std::function< void()> &code)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Actor.create
+
+   .. group-tab:: C
+
       .. autodoxymethod:: sg_actor_init(const char *name, sg_host_t host)
       .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char **argv)
 
       .. autodoxymethod:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
       .. autodoxymethod:: sg_actor_detach()
 
-      .. autodoxymethod:: sg_actor_ref(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_unref(const_sg_actor_t actor)
-
-Searching specific actors
--------------------------
+Retrieving actors
+-----------------
 
 .. tabs::
 
@@ -463,8 +474,8 @@ Searching specific actors
       .. autodoxymethod:: sg_actor_by_PID(aid_t pid)
       .. autodoxymethod:: sg_actor_self()
 
-Querying info about actors
---------------------------
+Querying info
+-------------
 
 .. tabs::
 
@@ -824,6 +835,10 @@ Retrieving hosts
 
       .. automethod:: simgrid.Engine.get_all_hosts
 
+   .. group-tab:: C
+
+      See also :cpp:func:`sg_host_list` and :cpp:func:`sg_host_count`.
+
 Retrieving links
 ----------------
 
@@ -898,7 +913,7 @@ Basic management
       .. automethod:: simgrid.Mailbox.by_name
 
 Querying info
-.............
+-------------
 
 .. tabs::
 
@@ -912,7 +927,7 @@ Querying info
       .. autoattribute:: simgrid.Mailbox.name
 
 Sending data
-............
+------------
 
 .. tabs::
 
@@ -931,7 +946,7 @@ Sending data
 
 
 Receiving data
-..............
+--------------
 
 .. tabs::
 
@@ -956,7 +971,7 @@ Receiving data
       .. autodoxymethod:: sg_mailbox_listen(const char *alias)
 
 Receiving actor
-...............
+---------------
 
 See :ref:`s4u_receiving_actor`.
 
@@ -983,11 +998,63 @@ Resources
 ⁣  class Disk
 =============
 
-.. doxygenclass:: simgrid::s4u::Disk
-   :members:
-   :protected-members:
-   :undoc-members:
+.. autodoxyclass:: simgrid::s4u::Disk
 
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Disk.hpp>
+
+      Note that there is no DiskPtr type, and that you cannot use the RAII
+      idiom on disks because SimGrid does not allow (yet) to create nor
+      destroy resources once the simulation is started. 
+         
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Disk::get_cname()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_host()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_name()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_properties()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_property(const std::string &key)
+      .. autodoxymethod:: simgrid::s4u::Disk::get_read_bandwidth()
+      .. autodoxymethod:: simgrid::s4u::Disk::get_write_bandwidth()
+      .. autodoxymethod:: simgrid::s4u::Disk::set_property(const std::string &, const std::string &value)
+
+I/O operations
+--------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Disk::io_init(sg_size_t size, s4u::Io::OpType type)
+      .. autodoxymethod:: simgrid::s4u::Disk::read(sg_size_t size)
+      .. autodoxymethod:: simgrid::s4u::Disk::read_async(sg_size_t size)
+      .. autodoxymethod:: simgrid::s4u::Disk::write(sg_size_t size)
+      .. autodoxymethod:: simgrid::s4u::Disk::write_async(sg_size_t size)
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxyvar:: simgrid::s4u::Disk::on_creation
+      .. autodoxyvar:: simgrid::s4u::Disk::on_destruction
+      .. autodoxyvar:: simgrid::s4u::Disk::on_state_change
 
 
 .. _API_s4u_Host:
@@ -995,6 +1062,116 @@ Resources
 =============
 ⁣  class Host
 =============
+
+.. autodoxyclass:: simgrid::s4u::Host
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Host.hpp>
+
+      Note that there is no HostPtr type, and that you cannot use the RAII
+      idiom on hosts because SimGrid does not allow (yet) to create nor
+      destroy resources once the simulation is started. 
+
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import Host
+
+   .. group-tab:: C
+
+      .. code:: C
+
+         #include <simgrid/host.h>
+
+      .. doxygentypedef:: sg_host_t
+      .. cpp:type:: const s4u_Host* const_sg_host_t
+
+         Pointer to a constant host object.
+
+Retrieving hosts
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      See also :cpp:func:`simgrid::s4u::Engine::get_all_hosts`.
+
+      .. autodoxymethod:: simgrid::s4u::Host::by_name(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Host::by_name_or_null(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Host::current()
+
+   .. group-tab:: Python
+
+      See also :py:func:`simgrid.Engine.get_all_hosts`.
+
+      .. automethod:: simgrid.Host.by_name
+      .. automethod:: simgrid.Host.current
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_host_by_name(const char *name)
+      .. autodoxymethod:: sg_host_count()
+      .. autodoxymethod:: sg_host_list()
+      .. autodoxymethod:: sg_hosts_as_dynar()
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::get_cname()
+      .. autodoxymethod:: simgrid::s4u::Host::get_core_count()
+      .. autodoxymethod:: simgrid::s4u::Host::get_disks()
+      .. autodoxymethod:: simgrid::s4u::Host::get_name()
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Exec.host
+      .. autoattribute:: simgrid.Host.name
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: ::sg_host_core_count(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_name(const_sg_host_t host)
+
+DVFS
+----
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::get_pstate()
+      .. autodoxymethod:: simgrid::s4u::Host::get_pstate_count()
+      .. autodoxymethod:: simgrid::s4u::Host::get_pstate_speed(int pstate_index)
+      .. autodoxymethod:: simgrid::s4u::Host::set_pstate(int pstate_index)
+      .. autodoxymethod:: simgrid::s4u::Host::set_speed_profile(kernel::profile::Profile *p)
+      .. autodoxymethod:: simgrid::s4u::Host::set_state_profile(kernel::profile::Profile *p)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.get_pstate_count
+      .. automethod:: simgrid.Host.get_pstate_speed
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_host_get_available_speed(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_nb_pstates(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_pstate(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
+      .. autodoxymethod:: sg_host_set_pstate(sg_host_t host, int pstate)
 
 .. doxygenclass:: simgrid::s4u::Host
    :members:
@@ -1372,13 +1549,6 @@ The Python API is automatically generated with pybind11. It closely mimicks the 
 API, to which you should refer for more information.
 
 ==========
-this_actor
-==========
-
-.. automodule:: simgrid.this_actor
-   :members:
-
-==========
 Class Comm
 ==========
 
@@ -1397,13 +1567,6 @@ Class Host
 ==========
 
 .. autoclass:: simgrid.Host
-   :members:
-
-=============
-Class Mailbox
-=============
-
-.. autoclass:: simgrid.Mailbox
    :members:
 
 .. |hr| raw:: html

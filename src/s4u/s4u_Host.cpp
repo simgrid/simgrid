@@ -227,44 +227,19 @@ double Host::get_pstate_speed(int pstate_index) const
   return this->pimpl_cpu->get_pstate_peak_speed(pstate_index);
 }
 
-/** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
- *
- *  The amount of flops per second available for computing depends on several things:
- *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
- *      computing speed you would get at another pstate)
- *    - If you declared an external load (with @ref simgrid::surf::Cpu::set_speed_profile()), you must multiply the
- * result of get_speed() by get_available_speed() to retrieve what a new computation would get.
- *
- *  The remaining speed is then shared between the executions located on this host.
- *  You can retrieve the amount of tasks currently running on this host with @ref get_load().
- *
- *  The host may have multiple cores, and your executions may be able to use more than a single core.
- *
- *  Finally, executions of priority 2 get twice the amount of flops than executions of priority 1.
- */
 double Host::get_speed() const
 {
   return this->pimpl_cpu->get_speed(1.0);
 }
-/** @brief Returns the current computation load (in flops per second)
- *
- * The external load (coming from an availability trace) is not taken in account.
- * You may also be interested in the load plugin.
- */
 double Host::get_load() const
 {
   return this->pimpl_cpu->get_load();
 }
-/** @brief Get the available speed ratio, between 0 and 1.
- *
- * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_profile()).
- */
 double Host::get_available_speed() const
 {
   return this->pimpl_cpu->get_speed_ratio();
 }
 
-/** @brief Returns the number of core of the processor. */
 int Host::get_core_count() const
 {
   return this->pimpl_cpu->get_core_count();
@@ -336,16 +311,6 @@ size_t sg_host_count()
 {
   return simgrid::s4u::Engine::get_instance()->get_host_count();
 }
-/** @brief Returns the host list
- *
- * Uses sg_host_count() to know the array size.
- *
- * @return an array of @ref sg_host_t containing all the hosts in the platform.
- * @remark The host order in this array is generally different from the
- * creation/declaration order in the XML platform (we use a hash table
- * internally).
- * @see sg_host_count()
- */
 sg_host_t* sg_host_list()
 {
   xbt_assert(sg_host_count() > 0, "There is no host!");

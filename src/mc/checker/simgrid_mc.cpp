@@ -47,19 +47,25 @@ int main(int argc, char** argv)
   _sg_do_model_check = 1;
 
   // The initialization function can touch argv.
-  // We make a copy of argv before modifying it in order to pass the original
-  // value to the model-checked:
+  // We make a copy of argv before modifying it in order to pass the original value to the model-checked application:
   char** argv_copy = argvdup(argc, argv);
   xbt_log_init(&argc, argv);
 #if HAVE_SMPI
-  smpi_init_options();//only performed once
+  smpi_init_options(); // only performed once
 #endif
   sg_config_init(&argc, argv);
-  simgrid::mc::session = new simgrid::mc::Session([argv_copy] { execvp(argv_copy[1], argv_copy + 1); });
+  simgrid::mc::session = new simgrid::mc::Session([argv_copy] {
+    int i = 1;
+    while (argv_copy[i] != nullptr && argv_copy[i][0] == '-')
+      i++;
+    xbt_assert(argv_copy[i] != nullptr,
+               "Unable to find a binary to exec on the command line. Did you only pass config flags?");
+    execvp(argv_copy[i], argv_copy + i);
+  });
   delete[] argv_copy;
 
-  std::unique_ptr<simgrid::mc::Checker> checker = create_checker(*simgrid::mc::session);
-  int res                                       = SIMGRID_MC_EXIT_SUCCESS;
+  auto checker = create_checker(*simgrid::mc::session);
+  int res      = SIMGRID_MC_EXIT_SUCCESS;
   try {
     checker->run();
   } catch (const simgrid::mc::DeadlockError&) {

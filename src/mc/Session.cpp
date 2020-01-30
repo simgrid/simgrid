@@ -27,6 +27,10 @@ namespace mc {
 
 static void setup_child_environment(int socket)
 {
+  /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
+   * env variable is set. If so, MC mode is assumed, and the client is setup from its side
+   */
+
 #ifdef __linux__
   // Make sure we do not outlive our parent
   sigset_t mask;
@@ -75,7 +79,7 @@ Session::Session(const std::function<void()>& code)
     ::close(sockets[1]);
     setup_child_environment(sockets[0]);
     code();
-    xbt_die("The model-checked process failed to exec()");
+    xbt_die("The model-checked process failed to exec(): %s", strerror(errno));
   }
 
   // Parent (model-checker):
@@ -95,6 +99,7 @@ Session::~Session()
   this->close();
 }
 
+/** Take the initial snapshot of the application, that must be stopped. */
 void Session::initialize()
 {
   xbt_assert(initial_snapshot_ == nullptr);
@@ -123,7 +128,8 @@ void Session::log_state()
   }
   if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")){
     int ret=system("free");
-    if(ret!=0)XBT_WARN("system call did not return 0, but %d",ret);
+    if (ret != 0)
+      XBT_WARN("Call to system(free) did not return 0, but %d", ret);
   }
 }
 

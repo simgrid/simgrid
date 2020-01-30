@@ -2,6 +2,21 @@
 
 SimGrid (3.24.1) NOT RELEASED YET (v3.25 expected December 22. 2029, 04:19 UTC)
 
+Important user-visible changes:
+- Great improvement of the Python binding's stability.
+  - A nasty synchronization bug was ironed out, see also below.
+- Reorganization of the C & Python bindings' documentation.
+  - Python was organized as a separate tree, C was not part of the doc
+  - The C++ doc was also improved as methods are now split by theme.
+- SimDAG++: Automatic dependencies on S4U activities (experimental)
+  - Some features are already implemented but not all of them
+  - Cannot block an activity until it's scheduled on a resource
+  - Only Exec and Io so far. Comms are not handled yet.
+  - No heterogeneous wait_any() that would mix Exec and Io activities.
+  - See examples/s4u/{io-,exec-}dependent for what's already there.
+
+
+
 General:
 - Upgrade documented Java dependency to Java 8 (earlier versions don't work).
 - Drop support for Viva/Triva (old visualization tools), hence removed
@@ -9,8 +24,9 @@ General:
 
 Python:
 - Require pybind11 version 2.4.
-- Greatly improve locking during context switches with Python. No more tests are
-  failing currently, even on win32.
+- Greatly improve locking during context switches with Python.
+  - Declaring Python callbacks to this_actor::on_exit is now working.
+  - No more tests are failing currently, even on win32.
 
 S4U:
 - Actor: Merge signals on_migration_start/end into on_host_change

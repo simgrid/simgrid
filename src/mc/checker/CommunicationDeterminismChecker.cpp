@@ -525,7 +525,6 @@ void CommunicationDeterminismChecker::run()
   mc::session->initialize();
 
   this->prepare();
-
   this->real_run();
 }
 

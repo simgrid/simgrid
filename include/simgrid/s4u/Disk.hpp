@@ -36,10 +36,14 @@ class XBT_PUBLIC Disk : public xbt::Extendable<Disk> {
   friend kernel::resource::DiskImpl;
 
 protected:
+#ifndef DOXYGEN
   virtual ~Disk() = default;
+#endif
 
 public:
+#ifndef DOXYGEN
   explicit Disk(const std::string& name, kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl), name_(name) {}
+#endif
 
   /** @brief Callback signal fired when a new Disk is created */
   static xbt::signal<void(Disk&)> on_creation;
@@ -66,7 +70,9 @@ public:
 
   IoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
+#ifndef DOXYGEN
   kernel::resource::DiskImpl* get_impl() const { return pimpl_; }
+#endif
 };
 
 } // namespace s4u

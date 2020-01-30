@@ -26,7 +26,7 @@ namespace s4u {
 
 /** An actor is an independent stream of execution in your distributed application.
  *
- * \beginrst
+ * \rst
  * It is located on a (simulated) :cpp:class:`host <simgrid::s4u::Host>`, but can interact
  * with the whole simulated platform.
  *

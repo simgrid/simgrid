@@ -171,4 +171,4 @@ It is only used by find-missing, that will not report any definition linked here
 .. autodoxyvar:: ::const_sg_bar_t
 .. autodoxyvar:: ::const_sg_mutex_t
 .. autodoxyvar:: ::const_sg_sem_t
-
+.. autodoxyvar:: ::const_sg_host_t

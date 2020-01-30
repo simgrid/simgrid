@@ -5,6 +5,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| ___|
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|____/
                (not released yet)
 
+The Dependstable Snake Release.
+
+ * Great improvement of the Python binding's stability.
+ * Reorganization of the C & Python bindings' documentation.
+ * SimDAG++: Automatic dependencies on S4U activities (experimental)
+ * (+ many bug fixes and internal refactoring)
                     _               _____  ____  _  _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| || |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | || |_
