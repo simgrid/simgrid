@@ -2,6 +2,8 @@
 
 set -e
 
+echo "Starting Flags.sh $@" 
+
 die() {
     echo "$@"
     exit 1
@@ -16,7 +18,7 @@ onoff() {
   fi
 }
 
-[ $# -eq 4 ] || die "Needs 4 arguments : JAVA MC SMPI DEBUG"
+[ $# -eq 5 ] || die "Needs 5 arguments : JAVA MC SMPI DEBUG MSG"
 
 ### Cleanup previous runs
 
@@ -70,9 +72,21 @@ else
   builddebug="OFF"
 fi
 
+if [ $4 = "MSG" ]
+then
+  buildmsg="ON"
+else
+  buildmsg="OFF"
+fi
 
-echo "Step ${STEP}/${NSTEPS} - Building with java=${buildjava}, debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}"
-cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=${buildjava} \
+if [ $buildmsg = "OFF" -a $buildjava = "ON" ] 
+then
+  echo "Don't even try to build Java without MSG"
+  exit 1
+fi
+
+echo "Step ${STEP}/${NSTEPS} - Building with java=${buildjava}, debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}, MSG=${buildmsg}"
+cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=${buildjava} -Denable_MSG=${buildmsg} \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_jedule=ON -Denable_mallocators=ON -Denable_debug=${builddebug} \
       -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \
