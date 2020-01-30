@@ -30,8 +30,8 @@ static void worker()
   child->set_name("child");
 
   // Create the dependencies by declaring 'child' as a successor of first_parent and second_parent
-  first_parent->add_successor(child.get());
-  second_parent->add_successor(child.get());
+  first_parent->add_successor(child);
+  second_parent->add_successor(child);
 
   // Start the activities.
   first_parent->start();

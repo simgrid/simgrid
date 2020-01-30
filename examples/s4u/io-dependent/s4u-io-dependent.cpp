@@ -28,9 +28,9 @@ static void test()
   // 'bob_write' is a successor of 'bob_compute'
   // 'carl_read' is a successor of 'bob_write'
   // 'carl_compute' is a successor of 'carl_read'
-  bob_compute->add_successor(bob_write.get());
-  bob_write->add_successor(carl_read.get());
-  carl_read->add_successor(carl_compute.get());
+  bob_compute->add_successor(bob_write);
+  bob_write->add_successor(carl_read);
+  carl_read->add_successor(carl_compute);
 
   // Start the activities.
   bob_compute->start();

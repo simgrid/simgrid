@@ -63,10 +63,11 @@ public:
   void set_state(Activity::State state) { state_ = state; }
   /** Tests whether the given activity is terminated yet. This is a pure function. */
   virtual bool test() = 0;
+  virtual const char* get_cname()       = 0;
+  virtual const std::string& get_name() = 0;
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
   virtual double get_remaining();
-
   /** Set the [remaining] amount of work that this Activity will entail
    *
    * It is forbidden to change the amount of work once the Activity is started */
@@ -74,6 +75,41 @@ public:
 
   /** Returns the internal implementation of this Activity */
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
+
+  void add_successor(ActivityPtr a)
+  {
+    successors_.push_back(a);
+    a->add_dependency_on(this);
+  }
+  void remove_successor() { successors_.pop_back(); }
+  ActivityPtr get_successor() { return successors_.back(); }
+  bool has_successors() { return not successors_.empty(); }
+
+  void add_dependency_on(ActivityPtr a) { dependencies_.insert({a}); }
+  void remove_dependency_on(ActivityPtr a) { dependencies_.erase(a); }
+  bool has_dependencies() { return not dependencies_.empty(); }
+  void release_dependencies()
+  {
+    while (has_successors()) {
+      ActivityPtr b = get_successor();
+      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
+      b->remove_dependency_on(this);
+      if (not b->has_dependencies()) {
+        b->vetoable_start();
+      }
+      remove_successor();
+    }
+  }
+
+  void vetoable_start()
+  {
+    state_ = State::STARTING;
+    if (not has_dependencies()) {
+      state_ = State::STARTED;
+      XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
+      start();
+    }
+  }
 
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Activity* a)
@@ -89,57 +125,17 @@ private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   Activity::State state_                   = Activity::State::INITED;
   double remains_                          = 0;
+  std::vector<ActivityPtr> successors_;
+  std::set<ActivityPtr> dependencies_;
   std::atomic_int_fast32_t refcount_{0};
 };
 
 template <class AnyActivity> class Activity_T : public Activity {
-private:
   std::string name_             = "unnamed";
   std::string tracing_category_ = "";
   void* user_data_              = nullptr;
-  std::vector<Activity*> successors_;
-  std::set<Activity*> dependencies_;
 
 public:
-
-  void add_successor(Activity* a)
-  {
-    successors_.push_back(a);
-    static_cast<AnyActivity*>(a)->add_dependency_on(static_cast<Activity*>(this));
-  }
-  void remove_successor() { successors_.pop_back(); }
-  Activity* get_successor() { return successors_.back(); }
-  bool has_successors() { return not successors_.empty(); }
-
-  void add_dependency_on(Activity* a) { dependencies_.insert({a}); }
-  void remove_dependency_on(Activity* a) { dependencies_.erase(a); }
-  bool has_dependencies() { return not dependencies_.empty(); }
-  void release_dependencies()
-  {
-    while (has_successors()) {
-      AnyActivity* b = static_cast<AnyActivity*>(get_successor());
-      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", static_cast<AnyActivity*>(this)->get_cname(),
-                 b->get_cname());
-      b->remove_dependency_on(static_cast<Activity*>(this));
-      if (not b->has_dependencies()) {
-        b->vetoable_start();
-      }
-      remove_successor();
-    }
-  }
-
-  AnyActivity* vetoable_start()
-  {
-    set_state(State::STARTING);
-    if (has_dependencies())
-      return static_cast<AnyActivity*>(this);
-    set_state(State::STARTED);
-    XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'",
-               static_cast<AnyActivity*>(this)->get_cname());
-    static_cast<AnyActivity*>(this)->start();
-    return static_cast<AnyActivity*>(this);
-  }
-
   AnyActivity* set_name(const std::string& name)
   {
     xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");
