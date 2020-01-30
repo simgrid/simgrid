@@ -105,7 +105,6 @@ public:
   {
     state_ = State::STARTING;
     if (not has_dependencies()) {
-      state_ = State::STARTED;
       XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
       start();
     }

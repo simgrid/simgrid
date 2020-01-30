@@ -94,7 +94,7 @@ s4u::CommPtr Mailbox::put_async(void* payload, uint64_t simulated_size_in_bytes)
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
   s4u::CommPtr res = put_init(payload, simulated_size_in_bytes);
-  res->start();
+  res->vetoable_start();
   return res;
 }
 void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes)
@@ -104,6 +104,7 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes)
   CommPtr c = put_init();
   c->set_remaining(simulated_size_in_bytes);
   c->set_src_data(payload);
+  c->vetoable_start();
   c->wait();
 }
 /** Blocking send with timeout */
@@ -114,7 +115,7 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes, double timeou
   CommPtr c = put_init();
   c->set_remaining(simulated_size_in_bytes);
   c->set_src_data(payload);
-  // c->start() is optional.
+  c->vetoable_start();
   c->wait_for(timeout);
 }
 
@@ -129,7 +130,7 @@ s4u::CommPtr Mailbox::get_async(void** data)
 {
   s4u::CommPtr res = get_init();
   res->set_dst_data(data, sizeof(*data));
-  res->start();
+  res->vetoable_start();
   return res;
 }
 
@@ -138,6 +139,7 @@ void* Mailbox::get()
   void* res = nullptr;
   CommPtr c = get_init();
   c->set_dst_data(&res, sizeof(res));
+  c->vetoable_start();
   c->wait();
   return res;
 }
@@ -146,6 +148,7 @@ void* Mailbox::get(double timeout)
   void* res = nullptr;
   CommPtr c = get_init();
   c->set_dst_data(&res, sizeof(res));
+  c->vetoable_start();
   c->wait_for(timeout);
   return res;
 }
