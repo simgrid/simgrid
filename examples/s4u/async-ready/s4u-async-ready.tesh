@@ -86,6 +86,6 @@ $ ${bindir:=.}/s4u-async-ready ${platfdir}/small_platform_fatpipe.xml s4u-async-
 > [  0.110000] (3:peer@Perl) I got a 'Message 5 from peer 1'.
 > [  0.110000] (3:peer@Perl) I got a 'finalize'.
 > [  0.110000] (3:peer@Perl) I'm done, just waiting for my peers to receive the messages before exiting
-> [  0.110000] (3:peer@Perl) Goodbye now!
 > [  0.110000] (1:peer@Tremblay) Goodbye now!
 > [  0.110000] (2:peer@Ruby) Goodbye now!
+> [  0.110000] (3:peer@Perl) Goodbye now!

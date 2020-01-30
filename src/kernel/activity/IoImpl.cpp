@@ -34,6 +34,7 @@ void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::I
       synchro->state_ = simgrid::kernel::activity::State::TIMEOUT;
     }
     synchro->finish();
+    return;
   }
 
   /* If the synchro is already finished then perform the error handling */

@@ -61,23 +61,28 @@ Io* Io::wait()
 
 Io* Io::wait_for(double timeout)
 {
+  if (state_ == State::INITED)
+    vetoable_start();
   simcall_io_wait(pimpl_, timeout);
   state_ = State::FINISHED;
+  this->release_dependencies();
   return this;
 }
 
 bool Io::test()
 {
-  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::FINISHED);
+  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||
+             state_ == State::FINISHED);
 
   if (state_ == State::FINISHED)
     return true;
 
-  if (state_ == State::INITED)
-    this->start();
+  if (state_ == State::INITED || state_ == State::STARTING)
+    this->vetoable_start();
 
   if (simcall_io_test(pimpl_)) {
     state_ = State::FINISHED;
+    this->release_dependencies();
     return true;
   }
 
