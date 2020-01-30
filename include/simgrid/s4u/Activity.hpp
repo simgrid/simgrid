@@ -71,10 +71,21 @@ public:
   /** Returns the internal implementation of this Activity */
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 
+#ifndef DOXYGEN
+  friend void intrusive_ptr_release(Activity* a)
+  {
+    if (a->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+      std::atomic_thread_fence(std::memory_order_acquire);
+      delete a;
+    }
+  }
+  friend void intrusive_ptr_add_ref(Activity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
+#endif
 private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   Activity::State state_                   = Activity::State::INITED;
   double remains_                          = 0;
+  std::atomic_int_fast32_t refcount_{0};
 };
 
 template <class AnyActivity> class Activity_T : public Activity {
@@ -82,19 +93,8 @@ private:
   std::string name_             = "";
   std::string tracing_category_ = "";
   void* user_data_              = nullptr;
-  std::atomic_int_fast32_t refcount_{0};
 
 public:
-#ifndef DOXYGEN
-  friend void intrusive_ptr_release(AnyActivity* a)
-  {
-    if (a->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-      std::atomic_thread_fence(std::memory_order_acquire);
-      delete a;
-    }
-  }
-  friend void intrusive_ptr_add_ref(AnyActivity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
-#endif
   AnyActivity* set_name(const std::string& name)
   {
     xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");
@@ -119,6 +119,14 @@ public:
   }
 
   void* get_user_data() { return user_data_; }
+#ifndef DOXYGEN
+  /* The refcounting is done in the ancestor class, Activity, but we want each of the classes benefiting of the CRTP
+   * (Exec, Comm, etc) to have smart pointers too, so we define these methods here, that forward the ptr_release and
+   * add_ref to the Activity class. Hopefully, the "inline" helps to not hinder the perf here.
+   */
+  friend void inline intrusive_ptr_release(AnyActivity* a) { intrusive_ptr_release(static_cast<Activity*>(a)); }
+  friend void inline intrusive_ptr_add_ref(AnyActivity* a) { intrusive_ptr_add_ref(static_cast<Activity*>(a)); }
+#endif
 };
 
 } // namespace s4u

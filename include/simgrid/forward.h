@@ -16,6 +16,10 @@ namespace simgrid {
 
 namespace s4u {
 class Activity;
+/** Smart pointer to a simgrid::s4u::Actor */
+typedef boost::intrusive_ptr<Activity> ActivityPtr;
+XBT_PUBLIC void intrusive_ptr_release(const Activity* actor);
+XBT_PUBLIC void intrusive_ptr_add_ref(const Activity* actor);
 
 class Actor;
 /** Smart pointer to a simgrid::s4u::Actor */
