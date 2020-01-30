@@ -34,6 +34,33 @@ class XBT_PUBLIC Activity {
 protected:
   Activity()  = default;
   virtual ~Activity() = default;
+
+  void add_dependency_on(ActivityPtr a) { dependencies_.insert({a}); }
+  void remove_dependency_on(ActivityPtr a) { dependencies_.erase(a); }
+  bool has_dependencies() { return not dependencies_.empty(); }
+
+  void release_dependencies()
+  {
+    while (not successors_.empty()) {
+      ActivityPtr b = successors_.back();
+      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
+      b->remove_dependency_on(this);
+      if (not b->has_dependencies()) {
+        b->vetoable_start();
+      }
+      successors_.pop_back();
+    }
+  }
+
+  void vetoable_start()
+  {
+    state_ = State::STARTING;
+    if (not has_dependencies()) {
+      XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
+      start();
+    }
+  }
+
 public:
 #ifndef DOXYGEN
   Activity(Activity const&) = delete;
@@ -81,34 +108,7 @@ public:
     successors_.push_back(a);
     a->add_dependency_on(this);
   }
-  void remove_successor() { successors_.pop_back(); }
-  ActivityPtr get_successor() { return successors_.back(); }
-  bool has_successors() { return not successors_.empty(); }
 
-  void add_dependency_on(ActivityPtr a) { dependencies_.insert({a}); }
-  void remove_dependency_on(ActivityPtr a) { dependencies_.erase(a); }
-  bool has_dependencies() { return not dependencies_.empty(); }
-  void release_dependencies()
-  {
-    while (has_successors()) {
-      ActivityPtr b = get_successor();
-      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
-      b->remove_dependency_on(this);
-      if (not b->has_dependencies()) {
-        b->vetoable_start();
-      }
-      remove_successor();
-    }
-  }
-
-  void vetoable_start()
-  {
-    state_ = State::STARTING;
-    if (not has_dependencies()) {
-      XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
-      start();
-    }
-  }
 
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Activity* a)
