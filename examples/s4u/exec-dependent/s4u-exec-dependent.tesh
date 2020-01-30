@@ -1,0 +1,11 @@
+#!/usr/bin/env tesh
+
+! output sort
+$ ${bindir:=.}/s4u-exec-dependent ${platfdir}/small_platform.xml --log=s4u_activity.t:debug "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  2.000000] (1:worker@Fafard) Remove a dependency from 'parent 1' on 'child'
+> [  2.000000] (1:worker@Fafard) Exec 'parent 1' is complete
+> [  3.000000] (1:worker@Fafard) Remove a dependency from 'parent 2' on 'child'
+> [  3.000000] (1:worker@Fafard) All dependencies are solved, let's start 'child'
+> [  3.000000] (1:worker@Fafard) Exec 'parent 2' is complete
+> [  4.000000] (1:worker@Fafard) Exec 'child' is complete
+> [  4.000000] (0:maestro@) Simulation time 4

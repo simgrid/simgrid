@@ -8,9 +8,13 @@
 
 #include "xbt/asserts.h"
 #include <atomic>
+#include <set>
 #include <simgrid/forward.h>
 #include <string>
+#include <vector>
 #include <xbt/signal.hpp>
+
+XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
 
 namespace simgrid {
 namespace s4u {
@@ -31,13 +35,41 @@ protected:
   Activity()  = default;
   virtual ~Activity() = default;
 
+  void release_dependencies()
+  {
+    while (not successors_.empty()) {
+      ActivityPtr b = successors_.back();
+      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
+      b->dependencies_.erase(this);
+      if (b->dependencies_.empty()) {
+        b->vetoable_start();
+      }
+      successors_.pop_back();
+    }
+  }
+
+  void add_successor(ActivityPtr a)
+  {
+    successors_.push_back(a);
+    a->dependencies_.insert({this});
+  }
+
 public:
+  void vetoable_start()
+  {
+    state_ = State::STARTING;
+    if (dependencies_.empty()) {
+      XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
+      start();
+    }
+  }
+
 #ifndef DOXYGEN
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
 #endif
 
-  enum class State { INITED = 0, STARTED, CANCELED, ERRORED, FINISHED };
+  enum class State { INITED = 0, STARTING, STARTED, CANCELED, ERRORED, FINISHED };
 
   /** Starts a previously created activity.
    *
@@ -57,12 +89,14 @@ public:
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
   Activity::State get_state() { return state_; }
+  void set_state(Activity::State state) { state_ = state; }
   /** Tests whether the given activity is terminated yet. This is a pure function. */
   virtual bool test() = 0;
+  virtual const char* get_cname()       = 0;
+  virtual const std::string& get_name() = 0;
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
   virtual double get_remaining();
-
   /** Set the [remaining] amount of work that this Activity will entail
    *
    * It is forbidden to change the amount of work once the Activity is started */
@@ -85,16 +119,23 @@ private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   Activity::State state_                   = Activity::State::INITED;
   double remains_                          = 0;
+  std::vector<ActivityPtr> successors_;
+  std::set<ActivityPtr> dependencies_;
   std::atomic_int_fast32_t refcount_{0};
 };
 
 template <class AnyActivity> class Activity_T : public Activity {
-private:
-  std::string name_             = "";
+  std::string name_             = "unnamed";
   std::string tracing_category_ = "";
   void* user_data_              = nullptr;
 
 public:
+  AnyActivity* add_successor(ActivityPtr a)
+  {
+    Activity::add_successor(a);
+    return static_cast<AnyActivity*>(this);
+  }
+
   AnyActivity* set_name(const std::string& name)
   {
     xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");

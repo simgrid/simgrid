@@ -22,16 +22,18 @@ Exec::Exec()
 
 bool Exec::test()
 {
-  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::FINISHED);
+  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||
+             state_ == State::FINISHED);
 
   if (state_ == State::FINISHED)
     return true;
 
-  if (state_ == State::INITED)
-    this->start();
+  if (state_ == State::INITED || state_ == State::STARTING)
+    this->vetoable_start();
 
   if (simcall_execution_test(pimpl_)) {
     state_ = State::FINISHED;
+    this->release_dependencies();
     return true;
   }
 
@@ -46,10 +48,11 @@ Exec* Exec::wait()
 Exec* Exec::wait_for(double timeout)
 {
   if (state_ == State::INITED)
-    start();
+    vetoable_start();
   simcall_execution_wait(pimpl_, timeout);
   state_ = State::FINISHED;
   on_completion(*Actor::self(), *this);
+  this->release_dependencies();
   return this;
 }
 
@@ -58,7 +61,11 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
   std::unique_ptr<kernel::activity::ExecImpl* []> rexecs(new kernel::activity::ExecImpl*[execs->size()]);
   std::transform(begin(*execs), end(*execs), rexecs.get(),
                  [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
-  return simcall_execution_waitany_for(rexecs.get(), execs->size(), timeout);
+
+  int changed_pos = simcall_execution_waitany_for(rexecs.get(), execs->size(), timeout);
+  if (changed_pos != -1)
+    execs->at(changed_pos)->release_dependencies();
+  return changed_pos;
 }
 
 Exec* Exec::cancel()

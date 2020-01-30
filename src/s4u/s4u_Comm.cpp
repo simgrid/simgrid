@@ -36,7 +36,10 @@ int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
   std::unique_ptr<kernel::activity::CommImpl* []> rcomms(new kernel::activity::CommImpl*[comms->size()]);
   std::transform(begin(*comms), end(*comms), rcomms.get(),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  return simcall_comm_waitany(rcomms.get(), comms->size(), timeout);
+  int changed_pos = simcall_comm_waitany(rcomms.get(), comms->size(), timeout);
+  if (changed_pos != -1)
+    comms->at(changed_pos)->release_dependencies();
+  return changed_pos;
 }
 
 void Comm::wait_all(const std::vector<CommPtr>* comms)
@@ -82,6 +85,7 @@ CommPtr Comm::set_src_data(void* buff, size_t size)
   src_buff_size_ = size;
   return this;
 }
+
 CommPtr Comm::set_dst_data(void** buff)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
@@ -116,8 +120,8 @@ CommPtr Comm::set_tracing_category(const std::string& category)
 
 Comm* Comm::start()
 {
-  xbt_assert(get_state() == State::INITED, "You cannot use %s() once your communication started (not implemented)",
-             __FUNCTION__);
+  xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
+             "You cannot use %s() once your communication started (not implemented)", __FUNCTION__);
 
   if (src_buff_ != nullptr) { // Sender side
     on_sender_start(*Actor::self());
@@ -154,7 +158,8 @@ Comm* Comm::wait_for(double timeout)
     case State::FINISHED:
       break;
 
-    case State::INITED: // It's not started yet. Do it in one simcall
+    case State::INITED:
+    case State::STARTING: // It's not started yet. Do it in one simcall
       if (src_buff_ != nullptr) {
         on_sender_start(*Actor::self());
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
@@ -166,12 +171,14 @@ Comm* Comm::wait_for(double timeout)
                           get_user_data(), timeout, rate_);
       }
       state_ = State::FINISHED;
+      this->release_dependencies();
       break;
 
     case State::STARTED:
       simcall_comm_wait(pimpl_, timeout);
       on_completion(*Actor::self());
       state_ = State::FINISHED;
+      this->release_dependencies();
       break;
 
     case State::CANCELED:
@@ -182,12 +189,16 @@ Comm* Comm::wait_for(double timeout)
   }
   return this;
 }
+
 int Comm::test_any(const std::vector<CommPtr>* comms)
 {
   std::unique_ptr<kernel::activity::CommImpl* []> rcomms(new kernel::activity::CommImpl*[comms->size()]);
   std::transform(begin(*comms), end(*comms), rcomms.get(),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  return simcall_comm_testany(rcomms.get(), comms->size());
+  int changed_pos = simcall_comm_testany(rcomms.get(), comms->size());
+  if (changed_pos != -1)
+    comms->at(changed_pos)->release_dependencies();
+  return changed_pos;
 }
 
 Comm* Comm::detach()
@@ -196,7 +207,8 @@ Comm* Comm::detach()
              __FUNCTION__);
   xbt_assert(src_buff_ != nullptr && src_buff_size_ != 0, "You can only detach sends, not recvs");
   detached_ = true;
-  return start();
+  vetoable_start();
+  return this;
 }
 
 Comm* Comm::cancel()
@@ -216,11 +228,12 @@ bool Comm::test()
   if (state_ == State::FINISHED)
     return true;
 
-  if (state_ == State::INITED)
-    this->start();
+  if (state_ == State::INITED || state_ == State::STARTING)
+    this->vetoable_start();
 
   if (simcall_comm_test(pimpl_)) {
     state_ = State::FINISHED;
+    this->release_dependencies();
     return true;
   }
   return false;
