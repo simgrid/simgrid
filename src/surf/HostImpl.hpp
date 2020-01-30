@@ -44,7 +44,7 @@ public:
  */
 class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
-  s4u::Host* piface_ = nullptr; // FIXME: why don't we store a s4u::Host here as we do everywhere else?
+  s4u::Host* piface_ = nullptr; // we must have a pointer there because the VM wants to change the piface in its ctor
   std::map<std::string, kernel::resource::StorageImpl*> storage_;
   std::vector<kernel::resource::DiskImpl*> disks_;
 
