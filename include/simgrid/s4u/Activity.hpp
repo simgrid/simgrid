@@ -35,33 +35,35 @@ protected:
   Activity()  = default;
   virtual ~Activity() = default;
 
-  void add_dependency_on(ActivityPtr a) { dependencies_.insert({a}); }
-  void remove_dependency_on(ActivityPtr a) { dependencies_.erase(a); }
-  bool has_dependencies() { return not dependencies_.empty(); }
-
   void release_dependencies()
   {
     while (not successors_.empty()) {
       ActivityPtr b = successors_.back();
       XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
-      b->remove_dependency_on(this);
-      if (not b->has_dependencies()) {
+      b->dependencies_.erase(this);
+      if (b->dependencies_.empty()) {
         b->vetoable_start();
       }
       successors_.pop_back();
     }
   }
 
+  void add_successor(ActivityPtr a)
+  {
+    successors_.push_back(a);
+    a->dependencies_.insert({this});
+  }
+
+public:
   void vetoable_start()
   {
     state_ = State::STARTING;
-    if (not has_dependencies()) {
+    if (dependencies_.empty()) {
       XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
       start();
     }
   }
 
-public:
 #ifndef DOXYGEN
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
@@ -103,13 +105,6 @@ public:
   /** Returns the internal implementation of this Activity */
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 
-  void add_successor(ActivityPtr a)
-  {
-    successors_.push_back(a);
-    a->add_dependency_on(this);
-  }
-
-
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Activity* a)
   {
@@ -135,6 +130,12 @@ template <class AnyActivity> class Activity_T : public Activity {
   void* user_data_              = nullptr;
 
 public:
+  AnyActivity* add_successor(ActivityPtr a)
+  {
+    Activity::add_successor(a);
+    return static_cast<AnyActivity*>(this);
+  }
+
   AnyActivity* set_name(const std::string& name)
   {
     xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");
