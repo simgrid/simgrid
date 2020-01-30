@@ -72,7 +72,7 @@ else
   builddebug="OFF"
 fi
 
-if [ $4 = "MSG" ]
+if [ $5 = "MSG" ]
 then
   buildmsg="ON"
 else
