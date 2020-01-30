@@ -980,6 +980,7 @@ XBT_PUBLIC void smpi_process_set_user_data(void*);
 XBT_PUBLIC void smpi_init_options();
 
 XBT_PUBLIC void smpi_execute_flops(double flops);
+XBT_PUBLIC void smpi_execute_flops_benched(double flops);
 XBT_PUBLIC void smpi_execute(double duration);
 XBT_PUBLIC void smpi_execute_benched(double duration);
 

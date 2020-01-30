@@ -983,6 +983,10 @@ void smpi_execute_flops_(double* flops){
   smpi_execute_flops(*flops);
 }
 
+void smpi_execute_flops_benched_(double* flops){
+  smpi_execute_flops_benched(*flops);
+}
+
 void smpi_execute_(double* duration){
   smpi_execute(*duration);
 }
