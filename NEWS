@@ -11,6 +11,7 @@ The Dependstable Snake Release.
  * Further deprecate MSG: you now have to pass -Denable-MSG=ON to cmake.
  * SimDAG++: Automatic dependencies on S4U activities (experimental).
  * (+ many bug fixes and internal refactoring)
+
                     _               _____  ____  _  _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| || |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | || |_
@@ -24,6 +25,7 @@ The Clean Disk Release.
  * Introduce <disk> (cleaner logic than <storage>).
  * SMPI: Implement Errhandlers and some more MPI3.1 calls.
  * (+ many bug fixes and internal refactorings)
+
                     _               _____  ____  _____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ /
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | |_ \
@@ -37,6 +39,7 @@ The Exotic Solstice Release.
  * SMPI: more of MPI3.1; some MPI/IO and async collectives.
  * Python bindings can now be installed from pip.
  * (+ a whole load of bug fixes and internal refactorings)
+
                     _               _____  ____  ____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \|___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | __) |
@@ -50,6 +53,7 @@ The Easter Christmas Release (this one is somewhat late).
  * Doc: SMPI tutorial and platform description ported to RTD
  * Many internal cleanups leading to some user-level speedups
  * (+ the classical bug fixes and internal refactorings)
+
                     _               _____  ____  _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \/ |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | |
@@ -89,6 +93,7 @@ The Fixed ABI release.
 
  * Reduce the changes to the binary interface of MSG,
    accidentally introduced by v3.19.
+
                     _               _____  _  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | (_) |
@@ -102,6 +107,7 @@ The Moscovitly-cold Spring release.
  * SMPI: Support ICC, better testing on classical proxy apps.
  * Some kernel headers are now installed, allowing external plugins.
  * (+ the classical bug fixes and doc improvement)
+
                     _               _____  _  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / / |( _ )
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | |/ _ \
@@ -116,6 +122,7 @@ The "Ho Ho Ho! SimGrid 4 beta is coming to town" release.
  * New model: energy consumption due to the network.
  * Major cleanups in the disk and storage subsystems.
  * (+ further deprecate XBT, bug fixes and doc improvement)
+
                     _               _____  _ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___  |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | |  / /
@@ -129,6 +136,7 @@ The Drained Leaks release: (almost) no known leaks despite the tests.
  * The coverage of our tests is above 80%.
  * All memleaks but one plugged; A dozen of bugs fixed.
  * XBT: Further replace XBT with std::* constructs.
+
                     _               _____  _  __
 __   _____ _ __ ___(_) ___  _ __   |___ / / |/ /_
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | '_ \
@@ -143,6 +151,7 @@ The Blooming Spring Release: developments are budding.
  * SMPI: Further performance improvements; RMA support.
  * Cloud: Multi-core VMs (do not overcommit them yet)
  * (+ bug fixes, cleanups and documentation improvements)
+
                     _               _____  _ ____
 __   _____ _ __ ___(_) ___  _ __   |___ / / | ___|
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | |___ \
@@ -156,6 +165,7 @@ The Spring Release: continuous integration servers become green.
  * SMPI: Support MPI 2.2; Convert internals to C++ (TBC).
  * Java: Massive memleaks and performance issues fixed.
  * (+ bug fixes, cleanups and documentation improvements)
+
                     _               _____  _ _  _    _ ____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / / | || |  / | ___|/ _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | || |_ | |___ \ (_) |
@@ -166,6 +176,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / | || |  / | ___|/ _ \
 The Christmas Pi Release (better approximation).
 
  * Fix various glitches in the previous release.
+
                     _               _____  _ _  _
 __   _____ _ __ ___(_) ___  _ __   |___ / / | || |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | || |_
@@ -183,6 +194,7 @@ The Christmas Pi Release.
    - MSG, SimDag, MPI interfaces mostly unchanged
    
  * The model-checker now works on FreeBSD too.
+
                     _               _____  _ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___ /
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | |_ \
@@ -206,6 +218,7 @@ The Half Release, a.k.a. the Zealous Easter Trim.
    - All host manipulations now done in S4U
    - SimDag was mostly rewritten on top of S4U
    - MSG & SimDag interfaces mostly unchanged
+
                     _               _____  _ ____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | __) |
