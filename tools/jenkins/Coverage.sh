@@ -54,7 +54,7 @@ rm -rf xml_coverage.xml
 
 ctest -D ExperimentalStart || true
 
-cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON -Denable_MSG=ON \
+cmake -Denable_documentation=OFF -Denable_lua=ON \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_jedule=ON -Denable_mallocators=ON \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON \
