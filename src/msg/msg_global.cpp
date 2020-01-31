@@ -26,8 +26,8 @@ static void MSG_exit();
  * @brief Initialize MSG with less verifications
  * You should use the MSG_init() function instead. Failing to do so may turn into PEBKAC some day. You've been warned.
  */
-void MSG_init_nocheck(int *argc, char **argv) {
-
+void MSG_init_nocheck(int* argc, char** argv)
+{
   TRACE_global_init();
 
   if (not msg_global) {
@@ -58,12 +58,14 @@ void MSG_init_nocheck(int *argc, char **argv) {
     atexit(MSG_exit);
 }
 
-void MSG_config(const char *key, const char *value){
+void MSG_config(const char* key, const char* value)
+{
   xbt_assert(msg_global,"ERROR: Please call MSG_init() before using MSG_config()");
   simgrid::config::set_as_string(key, value);
 }
 
-static void MSG_exit() {
+static void MSG_exit()
+{
   delete msg_global;
   msg_global = nullptr;
 }

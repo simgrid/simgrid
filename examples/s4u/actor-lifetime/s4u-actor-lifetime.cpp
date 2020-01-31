@@ -12,7 +12,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this s4u example");
 
 /* This actor just sleeps until termination */
 class sleeper {
-
 public:
   explicit sleeper(std::vector<std::string> /*args*/)
   {

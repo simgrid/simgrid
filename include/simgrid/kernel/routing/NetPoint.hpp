@@ -25,7 +25,6 @@ namespace routing {
  * @details This represents a position in the network. One can send information between two netpoints
  */
 class NetPoint : public simgrid::xbt::Extendable<NetPoint> {
-
 public:
   enum class Type { Host, Router, NetZone };
 

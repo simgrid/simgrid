@@ -29,7 +29,6 @@ static void worker()
 
     if (compute_cost > 0) /* If compute_cost is valid, execute a computation of that cost */
       simgrid::s4u::this_actor::execute(compute_cost);
-
   } while (compute_cost > 0); /* Stop when receiving an invalid compute_cost */
 
   XBT_INFO("Exiting now.");

@@ -43,7 +43,6 @@ template <typename F, typename T> void test_parse_ok(F function, const std::stri
 
 TEST_CASE("xbt::str: String Handling", "xbt_str")
 {
-
   SECTION("Test the function xbt_str_split_quoted")
   {
     test_split_quoted("Empty", "", {});

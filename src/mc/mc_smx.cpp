@@ -45,8 +45,8 @@ static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteClient
 
   // Load each element of the vector from the MCed process:
   for (unsigned int i = 0; i < dynar.used; ++i) {
-
     simgrid::mc::ActorInformation info;
+
     info.address  = simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl>(data[i]);
     info.hostname = nullptr;
     process->read_bytes(&info.copy, sizeof(info.copy), remote(data[i]));

@@ -28,11 +28,11 @@ static int sender(int argc, char** argv)
 
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
-
     std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
     simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
     std::string msgName           = std::string("Message ") + std::to_string(i);
     std::string* payload          = new std::string(msgName); // copy the data we send:
+
     // 'msgName' is not a stable storage location
     XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
     /* Create a communication representing the ongoing communication */

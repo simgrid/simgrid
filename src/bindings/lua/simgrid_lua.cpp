@@ -26,8 +26,8 @@ extern "C" int luaopen_simgrid(lua_State* L);
  *
  * - Argument 1 (string): the text to print
  */
-static int debug(lua_State* L) {
-
+static int debug(lua_State* L)
+{
   const char* str = luaL_checkstring(L, 1);
   XBT_DEBUG("%s", str);
   return 0;

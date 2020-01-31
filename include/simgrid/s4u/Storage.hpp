@@ -38,6 +38,7 @@ public:
 
 protected:
   virtual ~Storage() = default;
+
 public:
   /** @brief Callback signal fired when a new Storage is created */
   static xbt::signal<void(Storage&)> on_creation;

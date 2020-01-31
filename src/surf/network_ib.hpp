@@ -54,7 +54,6 @@ public:
 
   std::unordered_map<std::string, IBNode> active_nodes;
   std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;
-
 };
 } // namespace resource
 } // namespace kernel

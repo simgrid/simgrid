@@ -70,6 +70,7 @@ public:
         throw std::future_error(std::future_errc::no_state);
     }
   }
+
 private:
   boost::variant<boost::blank, T, std::exception_ptr> value_;
 };

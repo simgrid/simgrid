@@ -176,7 +176,6 @@ typedef struct {
  * if such a file exists.
  * */
 struct mdesc {
-
   /** @brief Mutex locking the access to the heap */
   pthread_mutex_t mutex;
 
@@ -261,7 +260,6 @@ struct mdesc {
 
   /* @brief Instrumentation */
   struct mstats heapstats;
-
 };
 
 /* Bits to look at in the malloc descriptor flags word */

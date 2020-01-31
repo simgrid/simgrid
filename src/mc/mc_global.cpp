@@ -69,7 +69,6 @@ void MC_init_dot_output()
 
   fprintf(dot_output,
           "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
-
 }
 
 /*******************************  Core of MC *******************************/

@@ -135,6 +135,7 @@ public:
         },
         nullptr);
   }
+
 private:
   // We wrap an event-based kernel future:
   simgrid::kernel::Future<T> future_;

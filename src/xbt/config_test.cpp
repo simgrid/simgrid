@@ -25,7 +25,6 @@ static void make_set()
 
 TEST_CASE("xbt::config: Configuration support", "config")
 {
-
   SECTION("Alloc and free a config set")
   {
     auto temp = simgrid_config;

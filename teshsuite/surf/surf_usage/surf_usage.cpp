@@ -99,7 +99,6 @@ int main(int argc, char **argv)
       XBT_DEBUG("\t * Done : %p", &action);
       action.unref();
     }
-
   } while (
       (surf_network_model->get_started_action_set()->size() || surf_cpu_model_pm->get_started_action_set()->size()) &&
       surf_solve(-1.0) >= 0.0);

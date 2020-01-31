@@ -67,9 +67,9 @@ static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
 
   /* While not all is buffered and there remain space in the buffers */
   while (flow->buffered_bytes_ < flow->total_bytes_ && sock->GetTxAvailable() > 0) {
-
     // Send at most 1040 bytes (data size in a TCP packet), as ns-3 seems to not split correctly by itself
     uint32_t toWrite = std::min({flow->remaining_, sock->GetTxAvailable(), std::uint32_t(1040)});
+
     if (toWrite == 0) { // buffer full
       XBT_DEBUG("%f: buffer full on flow %p (still %u to go)", ns3::Simulator::Now().GetSeconds(), flow,
                 flow->remaining_);

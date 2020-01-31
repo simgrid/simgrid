@@ -65,7 +65,6 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 
 TEST_CASE("kernel::profile: Resource profiles, defining the external load", "kernel::profile")
 {
-
   SECTION("No event, no loop")
   {
     std::vector<simgrid::kernel::profile::DatedValue> got = trace2vector("");
@@ -96,7 +95,6 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
   SECTION("Three events, no loop")
   {
-
     std::vector<simgrid::kernel::profile::DatedValue> got = trace2vector("3.0 1.0\n"
                                                                          "5.0 2.0\n"
                                                                          "9.0 3.0\n");

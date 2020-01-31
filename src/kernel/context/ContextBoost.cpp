@@ -24,7 +24,6 @@ BoostContext* BoostContextFactory::create_context(std::function<void()>&& code, 
 BoostContext::BoostContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory)
     : SwappedContext(std::move(code), actor, factory)
 {
-
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
   if (has_code()) {
 #if BOOST_VERSION < 106100

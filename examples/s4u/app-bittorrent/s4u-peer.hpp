@@ -44,6 +44,7 @@ class Peer {
 
   simgrid::s4u::CommPtr comm_received = nullptr; // current comm
   Message* message                    = nullptr; // current message being received
+
 public:
   explicit Peer(std::vector<std::string> args);
   Peer(const Peer&) = delete;

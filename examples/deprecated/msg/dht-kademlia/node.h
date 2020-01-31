@@ -32,7 +32,6 @@ typedef struct s_node {
   char mailbox[MAILBOX_NAME_SIZE];      //node mailbox
   unsigned int find_node_success;       //Number of find_node which have succeeded.
   unsigned int find_node_failed;        //Number of find_node which have failed.
-
 } s_node_t;
 
 typedef s_node_t *node_t;

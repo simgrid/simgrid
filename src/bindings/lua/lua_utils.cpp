@@ -26,11 +26,9 @@
  */
 const char* sglua_tostring(lua_State* L, int index)
 {
-
   static char buff[64];
 
   switch (lua_type(L, index)) {
-
     case LUA_TNIL:
       snprintf(buff, 4, "nil");
       break;
@@ -87,7 +85,6 @@ const char* sglua_tostring(lua_State* L, int index)
  */
 const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index)
 {
-
   static char buff[64];
   /* value_tostring also always returns the same pointer */
   int len = snprintf(buff, 63, "[%s] -> ", sglua_tostring(L, key_index));

@@ -30,8 +30,8 @@ class ModelChecker {
   PageStore page_store_{500};
   std::unique_ptr<RemoteClient> process_;
   Checker* checker_ = nullptr;
-public:
 
+public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
   explicit ModelChecker(std::unique_ptr<RemoteClient> process);

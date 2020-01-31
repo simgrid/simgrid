@@ -61,7 +61,6 @@ static inline void xbt_bench_init(char *tracefile)
 	mybench->output = fopen(tracefile, "a+");
 	if (mybench->output == NULL)
 		printf("Error while opening the tracefile");
-
 }
 
 /* Initializing StarPU benchmarking */
@@ -72,7 +71,6 @@ static inline void bench_init_starpu(char *tracefile, bench_t *bench)
   mybench->output = fopen(tracefile, "a+");
   if (mybench->output == NULL)
 		printf("Error while opening the tracefile");
-
 }
 
 /* Start benchmarking using macros */

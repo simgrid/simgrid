@@ -62,9 +62,9 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   }
 
   if (not dst->is_router()) { // No specific link for router
-
     std::pair<resource::LinkImpl*, resource::LinkImpl*> info =
         private_links_.at(node_pos_with_loopback_limiter(dst->id()));
+
     if (info.second) { // link down
       route->link_list.push_back(info.second);
       if (lat)

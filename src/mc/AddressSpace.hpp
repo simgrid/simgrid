@@ -21,6 +21,7 @@ namespace mc {
 class ReadOptions {
   std::uint32_t value_ = 0;
   constexpr explicit ReadOptions(std::uint32_t value) : value_(value) {}
+
 public:
   constexpr ReadOptions() {}
 
@@ -132,7 +133,6 @@ public:
     this->read_bytes(&res[0], len, address);
     return res;
   }
-
 };
 
 }

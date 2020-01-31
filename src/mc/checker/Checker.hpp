@@ -29,6 +29,7 @@ namespace mc {
 // abstract
 class Checker {
   Session* session_;
+
 public:
   explicit Checker(Session& session);
 

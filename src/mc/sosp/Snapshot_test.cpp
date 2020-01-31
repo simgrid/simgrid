@@ -127,7 +127,6 @@ void snap_test_helper::read_region_parts()
 void snap_test_helper::compare_whole_region()
 {
   for (int n = 1; n != 32; ++n) {
-
     prologue_return ret = prologue(n);
 
     INFO("Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");

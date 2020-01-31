@@ -78,5 +78,4 @@ void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int v
   default:
     xbt_die("Unexpected call type %i", (int)call_type);
   }
-
 }

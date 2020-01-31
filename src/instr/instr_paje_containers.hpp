@@ -19,6 +19,7 @@ class VariableType;
 class Container {
   long long int id_;
   std::string name_; /* Unique name of this container */
+
 public:
   Container(const std::string& name, const std::string& type_name, Container* father);
   Container(const Container&) = delete;

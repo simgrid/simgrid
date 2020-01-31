@@ -22,7 +22,6 @@ ChunkedData::ChunkedData(PageStore& store, const AddressSpace& as, RemotePtr<voi
   std::vector<char> buffer(xbt_pagesize);
 
   for (size_t i = 0; i != page_count; ++i) {
-
     RemotePtr<void> page = remote((void*)simgrid::mc::mmu::join(i, addr.address()));
     xbt_assert(simgrid::mc::mmu::split(page.address()).second == 0, "Not at the beginning of a page");
 
