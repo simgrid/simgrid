@@ -432,7 +432,10 @@ and if you get it working, please @ref community_contact "tell us".
 Python-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Recompiling the Python bindings from the source should be as easy as:
+Once you have the Python development headers installed as well as a
+recent version of the `pybind11 <https://pybind11.readthedocs.io/en/stable/>` 
+module (version at least 2.4), recompiling the Python bindings from
+the source should be as easy as: 
 
 .. code-block:: shell
 
