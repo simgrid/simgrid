@@ -9,7 +9,10 @@ The MSG Interface (legacy interface)
    the process of releasing SimGrid 4. So MSG is frozen and will
    probably never evolve. If you are starting a new project, you
    should consider S4U instead. Note that the support for MSG will not
-   be removed from SimGrid before 2020 at least.
+   be removed from SimGrid before 2020Q4 or 2021Q1.
+
+   This interface is disabled by default. Pass -Denable_msg=ON to
+   cmake if you still need it.
 
 MSG is a simple API to write algorithms organized with Concurrent
 Sequential Processes (CSP) that interact by exchanging messages. It

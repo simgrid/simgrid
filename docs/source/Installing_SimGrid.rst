@@ -244,7 +244,8 @@ enable_documentation (on/OFF)
   version for now.
 
 enable_java (on/OFF)
-  Generates the java bindings of SimGrid.
+  Generates the java bindings of SimGrid. You must also enable MSG for
+  this to work.
 
 enable_jedule (on/OFF)
   Produces execution traces from SimDag simulations, which can then be visualized with the
@@ -272,6 +273,9 @@ enable_model-checking (on/OFF)
   Activates the formal verification mode. This will **hinder
   simulation speed** even when the model checker is not activated at
   run time.
+
+enable_msg (on/OFF)
+  Activates the :ref:`MSG <MSG_doc>` legacy interface.
 
 enable_ns3 (on/OFF)
   Activates the ns-3 bindings. See section :ref:`model_ns3`.
