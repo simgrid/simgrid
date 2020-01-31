@@ -20,6 +20,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   endforeach()
 endif()
 
+# These test seem to not compile with gfortran 10 for now, so work around that bug that is not ours
+if((CMAKE_Fortran_COMPILER_ID MATCHES "GNU") AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "9.99"))
+  set_property(SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/inplacef.f" PROPERTY COMPILE_FLAGS -fallow-argument-mismatch)
+endif()
+
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/allredint8f.f
