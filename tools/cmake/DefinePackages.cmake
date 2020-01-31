@@ -691,7 +691,6 @@ set(headers_to_install
   include/simgrid/smpi/replay.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
-  include/simgrid/msg.h
   include/simgrid/simdag.h
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
@@ -819,9 +818,11 @@ set(simgrid_sources
   )
 
 if(${enable_MSG})
-  set(simgrid_sources ${simgrid_sources}   ${MSG_SRC})
+  set(headers_to_install ${headers_to_install}  include/simgrid/msg.h)
+  set(simgrid_sources    ${simgrid_sources}     ${MSG_SRC})
 else()
-  set(EXTRA_DIST      ${EXTRA_DIST}        ${MSG_SRC})
+  set(EXTRA_DIST         ${EXTRA_DIST}          include/simgrid/msg.h
+                                                ${MSG_SRC})
 endif()
 
 if(${SIMGRID_HAVE_JEDULE})
