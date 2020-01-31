@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Starting Flags.sh $@" 
+echo "Starting Flags.sh $*"
 
 die() {
     echo "$@"
@@ -79,7 +79,7 @@ else
   buildmsg="OFF"
 fi
 
-if [ $buildmsg = "OFF" -a $buildjava = "ON" ] 
+if [ $buildmsg = "OFF" ] && [ $buildjava = "ON" ]
 then
   echo "Don't even try to build Java without MSG"
   exit 0
