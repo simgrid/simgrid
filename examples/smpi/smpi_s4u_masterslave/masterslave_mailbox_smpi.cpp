@@ -90,13 +90,11 @@ static int alltoall_mpi(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   XBT_INFO("alltoall for rank %d", rank);
-  int* out = new int[1000 * size];
-  int* in  = new int[1000 * size];
-  MPI_Alltoall(out, 1000, MPI_INT, in, 1000, MPI_INT, MPI_COMM_WORLD);
+  std::vector<int> out(1000 * size);
+  std::vector<int> in(1000 * size);
+  MPI_Alltoall(out.data(), 1000, MPI_INT, in.data(), 1000, MPI_INT, MPI_COMM_WORLD);
 
   XBT_INFO("after alltoall %d", rank);
-  delete[] out;
-  delete[] in;
   MPI_Finalize();
   return 0;
 }
