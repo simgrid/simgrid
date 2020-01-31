@@ -20,7 +20,7 @@ merge_empty_bins <- function (h){
     for(i in 1:(length(h$counts)-1)){
       if(h$counts[i]!=0 || h$counts[i+1]!=0){
         counts2[j]<-h$counts[i]
-        breaks2[j+1]<-h$breaks[i+1];
+        breaks2[j+1]<-h$breaks[i+1]
         j<-j+1
       }
     }
