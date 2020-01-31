@@ -33,12 +33,12 @@ static int receiver(const char* box_name)
   auto mb = simgrid::s4u::Mailbox::by_name(box_name);
 
   payload = static_cast<int*>(mb->get());
-  MC_assert(*payload == 0);
-  free(payload);
+  MC_assert(*payload == 1);
+  delete payload;
 
   payload = static_cast<int*>(mb->get());
-  MC_assert(*payload == 1);
-  free(payload);
+  MC_assert(*payload == 2);
+  delete payload;
 
   return 0;
 }
@@ -48,39 +48,33 @@ static int sender(const char* box_name, simgrid::s4u::MutexPtr mutex, int value)
   int* payload = new int(value);
   auto mb      = simgrid::s4u::Mailbox::by_name(box_name);
 
-#ifndef DISABLE_THE_MUTEX
-  mutex->lock();
-#endif
+  if (mutex)
+    mutex->lock();
 
   mb->put(static_cast<void*>(payload), 8);
 
-#ifndef DISABLE_THE_MUTEX
-  mutex->unlock();
-#endif
+  if (mutex)
+    mutex->unlock();
+
   return 0;
 }
 
 int main(int argc, char* argv[])
 {
-  XBT_ATTRIB_UNUSED simgrid::s4u::MutexPtr mutex;
-#ifndef DISABLE_THE_MUTEX
-  mutex = simgrid::s4u::Mutex::create();
-#endif
-
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc > 2,
-             "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n",
+  xbt_assert(argc > 1, "Usage: %s platform_file\n"
+                       "\tExample: %s msg_platform.xml\n",
              argv[0], argv[0]);
 
-  e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("Tremblay"), sender, "box", mutex, 1);
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("Tremblay"), sender, "box", mutex, 2);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("Jupiter"), receiver, "box");
-
+  simgrid::s4u::MutexPtr mutex;
 #ifndef DISABLE_THE_MUTEX
   mutex = simgrid::s4u::Mutex::create();
 #endif
+
+  e.load_platform(argv[1]);
+  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("Jupiter"), receiver, "box");
+  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("Boivin"), sender, "box", mutex, 1);
+  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("Fafard"), sender, "box", mutex, 2);
 
   e.run();
   XBT_INFO("Simulation time %g", e.get_clock());

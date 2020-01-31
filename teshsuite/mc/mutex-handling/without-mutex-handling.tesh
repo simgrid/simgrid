@@ -1,5 +1,5 @@
 #!/usr/bin/env tesh
 ! expect return 1
-! output ignore
+! output display
 ! timeout 30
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/without-mutex-handling ${srcdir:=.}/examples/platforms/small_platform.xml ${srcdir:=.}/teshsuite/mc/mutex-handling/mutex-handling_d.xml
