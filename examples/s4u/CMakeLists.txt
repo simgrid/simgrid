@@ -102,6 +102,16 @@ foreach (file s4u-bittorrent s4u-peer s4u-tracker)
                                      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.hpp)
 endforeach()
 
+# The tests of DHT, along with the parallel variant
+
+if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+  # Thread-local storage (TLS) is needed for parallel execution, but it doesn't
+  # play well with Ucontexts on 64bit SunOS (at least on x86_64).
+  set(parallel-factories "thread;raw;boost")
+else()
+  set(parallel-factories "thread;ucontext;raw;boost")
+endif()
+
 foreach(example app-bittorrent app-masterworkers 
                 dht-chord dht-kademlia
                 )
@@ -110,6 +120,12 @@ foreach(example app-bittorrent app-masterworkers
 				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
 				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
 				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+
+  ADD_TESH_FACTORIES(s4u-${example}-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
+                                             --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
+	 			             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+				             --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
+				             ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
 
 # Examples not accepting factories
