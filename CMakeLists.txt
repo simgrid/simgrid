@@ -232,7 +232,7 @@ if(enable_ns3)
 endif()
 
 set(SIMGRID_HAVE_MSG 0)
-if(enable_MSG)
+if(enable_msg)
   set(SIMGRID_HAVE_MSG 1)
 endif()
 
@@ -412,8 +412,8 @@ endif()
 mark_as_advanced(PATH_LIBDW_H)
 mark_as_advanced(PATH_LIBDW_LIB)
 
-if(enable_java AND NOT enable_MSG)
-  message(FATAL_ERROR "Cannot activate the Java bindings without the MSG module. Either add -Denable_MSG=ON or -Denable_java=OFF")
+if(enable_java AND NOT enable_msg)
+  message(FATAL_ERROR "Cannot activate the Java bindings without the MSG module. Either add -Denable_msg=ON or -Denable_java=OFF")
 endif()
 
 if (enable_model-checking AND enable_ns3)

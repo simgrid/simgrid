@@ -817,7 +817,7 @@ set(simgrid_sources
   ${SIMDAG_SRC}
   )
 
-if(${enable_MSG})
+if(${enable_msg})
   set(headers_to_install ${headers_to_install}  include/simgrid/msg.h)
   set(simgrid_sources    ${simgrid_sources}     ${MSG_SRC})
 else()

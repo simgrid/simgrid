@@ -58,7 +58,7 @@ jobs:
       - export JAVA_HOME='C:/Program Files/Java/jdk1.8.0_211'
       # We need pybind11. SimGrid will pick it automatically if the subdir is here
       # - git clone --depth=1 https://github.com/pybind/pybind11.git
-      - cmake -G "MinGW Makefiles" -Denable_java=ON -Denable_MSG=ON -Denable_lua=OFF -Denable_documentation=OFF -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
+      - cmake -G "MinGW Makefiles" -Denable_java=ON -Denable_msg=ON -Denable_lua=OFF -Denable_documentation=OFF -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
       - df -h
       - du -hs /tmp || true
       - mingw32-make.exe VERBOSE=1 java-all && ctest --output-on-failure -R java

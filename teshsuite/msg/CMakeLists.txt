@@ -9,7 +9,7 @@ foreach(x app-pingpong app-token-ring
           task-priority
           plugin-hostload
           trace_integration)
-  if(enable_MSG)
+  if(enable_msg)
     add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x} simgrid)
     set_target_properties(${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -22,7 +22,7 @@ endforeach()
 
 # CPP examples
 foreach(x task_destroy_cancel task_listen_from task_progress host_on_off_processes)
-  if(enable_MSG)
+  if(enable_msg)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -33,7 +33,7 @@ foreach(x task_destroy_cancel task_listen_from task_progress host_on_off_process
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
 
-if(enable_MSG)
+if(enable_msg)
   add_executable       (bittorrent EXCLUDE_FROM_ALL app-bittorrent/bittorrent.c app-bittorrent/bittorrent-messages.c app-bittorrent/bittorrent-peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
   target_link_libraries(bittorrent simgrid)
   set_target_properties(bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
@@ -43,7 +43,7 @@ foreach (file bittorrent connection bittorrent-messages bittorrent-peer tracker)
   set(teshsuite_src  ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
 endforeach()
 
-if(enable_MSG)
+if(enable_msg)
   add_executable       (chainsend EXCLUDE_FROM_ALL app-chainsend/chainsend.c app-chainsend/iterator.c app-chainsend/common.c app-chainsend/messages.c app-chainsend/broadcaster.c app-chainsend/peer.c)
   target_link_libraries(chainsend simgrid)
   set_target_properties(chainsend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-chainsend)
@@ -89,7 +89,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1-c1s1-c3s2.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp2.5-hbp1.5.xml    PARENT_SCOPE)
 
-if(enable_MSG)
+if(enable_msg)
   foreach(x 
     async-wait async-waitall async-waitany
     app-bittorrent app-chainsend app-pingpong app-token-ring

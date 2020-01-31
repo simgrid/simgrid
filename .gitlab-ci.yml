@@ -51,7 +51,7 @@ release:
   script:
   - apt-get --allow-releaseinfo-change update && apt install -y binutils-x86-64-linux-gnu wget unzip zip
   # Build the linux version of the jarfile without the boost dependency
-  - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_MSG=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF .
+  - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF .
   - make VERBOSE=1 dist simgrid simgrid-java_jar
   # Get the foreign architectures
   - wget https://ci.appveyor.com/api/projects/mquinson/simgrid/artifacts/simgrid.jar -O simgrid-windows.jar

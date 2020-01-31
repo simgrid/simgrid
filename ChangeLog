@@ -8,8 +8,9 @@ Important user-visible changes:
   - Python's doc was organized as a separate tree, now integrated with C++.
   - C bindings of S4U were not part of the doc.
   - The C++ doc was also improved as methods are now split by theme.
-- Further deprecate MSG: you now have to pass -Denable-MSG=ON to cmake.
-  - The plan is to completely remove MSG by the end of 2020.
+- Further deprecate MSG: you now have to pass -Denable_msg=ON to cmake.
+  - This is mandatory to use the Java bindings.
+  - OFF by default; The plan is to completely remove MSG by 2020Q4 or 2021Q1.
 - SimDAG++: Automatic dependencies on S4U activities (experimental)
   - Some features are already implemented but not all of them
   - Cannot block an activity until it's scheduled on a resource

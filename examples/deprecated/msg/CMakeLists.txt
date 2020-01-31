@@ -5,7 +5,7 @@ foreach(x app-masterworker cloud-masterworker
           synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker
           trace-process-migration trace-host-user-variables)
-  if(enable_MSG)
+  if(enable_msg)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -15,14 +15,14 @@ foreach(x app-masterworker cloud-masterworker
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()
 
-if(SIMGRID_HAVE_NS3 AND enable_MSG)
+if(SIMGRID_HAVE_NS3 AND enable_msg)
   add_executable       (network-ns3 EXCLUDE_FROM_ALL network-ns3/network-ns3.c)
   target_link_libraries(network-ns3 simgrid)
   set_target_properties(network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
   add_dependencies(tests network-ns3)    
 endif()
 
-if(enable_MSG)
+if(enable_msg)
   add_executable       (dht-kademlia EXCLUDE_FROM_ALL dht-kademlia/dht-kademlia.c dht-kademlia/node.c dht-kademlia/routing_table.c dht-kademlia/task.c dht-kademlia/answer.c)
   target_link_libraries(dht-kademlia simgrid)
   set_target_properties(dht-kademlia PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-kademlia)
@@ -55,7 +55,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml        PARENT_SCOPE)
 
-if(enable_MSG)
+if(enable_msg)
   foreach(x app-masterworker cloud-masterworker
             dht-pastry dht-kademlia platform-failures
             energy-vm
@@ -107,4 +107,4 @@ if(enable_MSG)
                                         --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                         ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/network-ns3/network-ns3.tesh)
   endif()
-endif(enable_MSG)
+endif(enable_msg)

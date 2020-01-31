@@ -24,7 +24,7 @@ option(enable_documentation "Whether to produce documentation" off)
 
 option(enable_ns3            "Whether ns-3 model is activated." off)
 option(enable_java           "Whether the Java bindings are activated." off)
-option(enable_MSG            "Whether the MSG module is activated." off)
+option(enable_msg            "Whether the MSG module is activated." off)
 option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
 option(minimal-bindings      "Whether to compile the bindings libraries (Java/Python) with the minimal dependency set" off)
 mark_as_advanced(minimal-bindings)

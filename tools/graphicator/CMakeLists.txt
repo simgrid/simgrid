@@ -1,4 +1,4 @@
-if(enable_MSG)
+if(enable_msg)
   add_executable       (graphicator graphicator.c)
   add_dependencies     (tests       graphicator)
   target_link_libraries(graphicator simgrid)
