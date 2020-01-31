@@ -17,12 +17,10 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.f)
     add_dependencies(tests ${test})
     target_link_libraries(${test} simgrid mtest_f77)
+    if((CMAKE_Fortran_COMPILER_ID MATCHES "GNU") AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "9.99"))
+      set_property(SOURCE ${test}.f PROPERTY COMPILE_FLAGS -std=legacy)
+    endif()
   endforeach()
-endif()
-
-# These test seem to not compile with gfortran 10 for now, so work around that bug that is not ours
-if((CMAKE_Fortran_COMPILER_ID MATCHES "GNU") AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "9.99"))
-  set_property(SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/inplacef.f" PROPERTY COMPILE_FLAGS -fallow-argument-mismatch)
 endif()
 
 set(examples_src
