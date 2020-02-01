@@ -47,7 +47,7 @@ public:
   bool test() override;
 
   double get_remaining() override;
-  sg_size_t get_performed_ioops();
+  sg_size_t get_performed_ioops() const;
 };
 
 } // namespace s4u

@@ -16,8 +16,18 @@ namespace s4u {
 
 /** Computation Activity, representing the asynchronous executions.
  *
- * They are generated from this_actor::exec_init() or Host::execute(), and can be used to model pools of threads or
- * similar mechanisms.
+ * @rst
+ * Most of them are created with :cpp:func:`simgrid::s4u::this_actor::exec_init()` or
+ * :cpp:func:`simgrid::s4u::Host::execute()`, and represent a classical (sequential) execution. This can be used to
+ * simulate some computation occuring in another thread when the calling actor is not blocked during the execution.
+ *
+ * You can also use :cpp:func:`simgrid::s4u::this_actor::parallel_execute()` to create *parallel* executions. These
+ * objects represent distributed computations involving computations on several hosts and communications between them.
+ * Such objects can for example represent a matrix multiplication done with ScaLAPACK on a real system. Once created,
+ * parallel Exec are very similar to the sequential ones. The only difference is that you cannot migrate them, and their
+ * remaining amount of work can only be defined as a ratio. See the doc of :cpp:func:`simgrid::s4u::Exec::get_remaining`
+ * and :cpp:func:`simgrid::s4u::Exec::get_remaining_ratio` for more info.
+ * @endrst
  */
 class XBT_PUBLIC Exec : public Activity_T<Exec> {
   double priority_              = 1.0;
@@ -40,6 +50,8 @@ public:
   static xbt::signal<void(Actor const&, Exec const&)> on_completion;
 
   Exec* start() override               = 0;
+  /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
+   * parallel executions. */
   virtual double get_remaining_ratio() = 0;
   virtual ExecPtr set_host(Host* host) = 0;
 

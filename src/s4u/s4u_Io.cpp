@@ -96,10 +96,9 @@ double Io::get_remaining()
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
 }
 
-sg_size_t Io::get_performed_ioops()
+sg_size_t Io::get_performed_ioops() const
 {
-  return kernel::actor::simcall(
-      [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_performed_ioops(); });
+  return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_performed_ioops();
 }
 
 } // namespace s4u

@@ -38,7 +38,7 @@ public:
   NetZone* get_father();
 
   std::vector<Host*> get_all_hosts() const;
-  int get_host_count();
+  int get_host_count() const;
 
   kernel::routing::NetZoneImpl* get_impl() const { return pimpl_; }
 

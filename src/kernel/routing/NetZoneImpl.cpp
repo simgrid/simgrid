@@ -44,7 +44,7 @@ NetZoneImpl::~NetZoneImpl()
  * Only the hosts that are directly contained in this NetZone are retrieved,
  * not the ones contained in sub-netzones.
  */
-std::vector<s4u::Host*> NetZoneImpl::get_all_hosts()
+std::vector<s4u::Host*> NetZoneImpl::get_all_hosts() const
 {
   std::vector<s4u::Host*> res;
   for (auto const& card : get_vertices()) {
@@ -54,7 +54,7 @@ std::vector<s4u::Host*> NetZoneImpl::get_all_hosts()
   }
   return res;
 }
-int NetZoneImpl::get_host_count()
+int NetZoneImpl::get_host_count() const
 {
   int count = 0;
   for (auto const& card : get_vertices()) {

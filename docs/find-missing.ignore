@@ -2,8 +2,26 @@ This file lists the symbols ignored in the documentation.
 It follows the RST syntact but is completely ignored by sphinx. 
 It is only used by find-missing, that will not report any definition linked here as missing.
 
-# This one triggers a bug in doxygen or sphinx when I try to document it with autodoxy
+# These ones trigger a bug in autodoxy, that get confused with the const in the function parameter
+# So I document them manually in the rst for now. Shame, weak.
 .. autodoxyvar:: simgrid::s4u::Link::on_communicate
+.. autodoxyvar:: simgrid::s4u::Actor::on_host_change
+.. autodoxyvar:: simgrid::s4u::Exec::on_completion
+.. autodoxyvar:: simgrid::s4u::Exec::on_start
+
+# This is a bug in find-missing, as these symbols are actually documented
+.. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency)
+.. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency)
+
+
+# These could be hidden as private things, eg in s4u_Exec.cpp
+.. autodoxymethod:: simgrid::s4u::ExecPar::get_remaining()
+.. autodoxymethod:: simgrid::s4u::ExecPar::get_remaining_ratio()
+.. autodoxymethod:: simgrid::s4u::ExecPar::start()
+.. autodoxymethod:: simgrid::s4u::ExecSeq::get_remaining()
+.. autodoxymethod:: simgrid::s4u::ExecSeq::get_remaining_ratio()
+.. autodoxymethod:: simgrid::s4u::ExecSeq::set_host(Host *host)
+.. autodoxymethod:: simgrid::s4u::ExecSeq::start()
 
 # I don't plan to document MSG in the new way.
 .. autodoxymethod:: ::MSG_barrier_destroy(const_sg_bar_t bar)
@@ -185,7 +203,12 @@ member ::msg_error_t is of kind enum
 .. autodoxymethod:: simgrid::s4u::Link::get_impl()
 .. autodoxymethod:: simgrid::s4u::NetZone::get_impl()
 .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_impl()
-
+.. autodoxymethod:: simgrid::s4u::Activity::get_impl()
+.. autodoxymethod:: simgrid::s4u::Comm::~Comm()
+.. autodoxymethod:: simgrid::s4u::Exec::~Exec()
+.. autodoxymethod:: simgrid::s4u::ExecPar::~ExecPar()
+.. autodoxymethod:: simgrid::s4u::ExecSeq::~ExecSeq()
+.. autodoxymethod:: simgrid::s4u::Io::~Io()
 
 # These ones are a bug of Doxygen, that parse them as variables instead of types.
 # So we don't use this bogus parse result, but go directly for cpp:type directives in app_s4u.rst

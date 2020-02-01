@@ -34,9 +34,9 @@ public:
     timeout_detector_->set_activity(this);
   }
 
-  sg_size_t get_performed_ioops() { return performed_ioops_; }
-  resource::DiskImpl* get_disk() { return disk_; }
-  resource::StorageImpl* get_storage() { return storage_; }
+  sg_size_t get_performed_ioops() const { return performed_ioops_; }
+  resource::DiskImpl* get_disk() const { return disk_; }
+  resource::StorageImpl* get_storage() const { return storage_; }
 
   IoImpl* start();
   void post() override;

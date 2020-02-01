@@ -67,7 +67,7 @@ std::vector<Host*> NetZone::get_all_hosts() const
   return pimpl_->get_all_hosts();
 }
 
-int NetZone::get_host_count()
+int NetZone::get_host_count() const
 {
   return pimpl_->get_host_count();
 }

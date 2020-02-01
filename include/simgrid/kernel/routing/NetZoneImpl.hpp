@@ -103,9 +103,9 @@ public:
   resource::NetworkModel* network_model_;
 
   s4u::NetZone* get_iface() { return &piface_; }
-  unsigned int get_table_size() { return vertices_.size(); }
-  std::vector<kernel::routing::NetPoint*> get_vertices() { return vertices_; }
-  NetZoneImpl* get_father() { return father_; }
+  unsigned int get_table_size() const { return vertices_.size(); }
+  std::vector<kernel::routing::NetPoint*> get_vertices() const { return vertices_; }
+  NetZoneImpl* get_father() const { return father_; }
   /** @brief Returns the list of direct children (no grand-children). This returns the internal data, no copy.
    * Don't mess with it.*/
   std::vector<NetZoneImpl*>* get_children() { return &children_; }
@@ -114,8 +114,8 @@ public:
   /** @brief Retrieves the name of that netzone as a C string */
   const char* get_cname() const { return name_.c_str(); };
 
-  std::vector<s4u::Host*> get_all_hosts();
-  int get_host_count();
+  std::vector<s4u::Host*> get_all_hosts() const;
+  int get_host_count() const;
 
   /** @brief Make a host within that NetZone */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate, int core_count,

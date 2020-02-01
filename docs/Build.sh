@@ -13,7 +13,7 @@ if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
   echo "Doxygen not rerun: 'doxy' was not provided as an argument"
 else
   rm -rf build/xml source/api/
-  cd source; doxygen; cd ..
+  (cd source; doxygen 2>&1; cd ..) | grep -v "is not documented." #   XXXXX Reduce the verbosity for now
 fi
 
 if [ "x$1" != 'xjava' ] && [ -e source/java ] ; then

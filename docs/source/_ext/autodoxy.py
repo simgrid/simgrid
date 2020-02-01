@@ -311,7 +311,7 @@ class DoxygenClassDocumenter(DoxygenDocumenter):
         xpath_query = './/compoundname[text()="%s"]/..' % self.fullname
         match = get_doxygen_root().xpath(xpath_query)
         if len(match) != 1:
-            raise ExtensionError('[autodoxy] could not find class (fullname="%s"). I tried'
+            raise ExtensionError('[autodoxy] could not find class (fullname="%s"). I tried '
                                  'the following xpath: "%s"' % (self.fullname, xpath_query))
 
         self.object = match[0]

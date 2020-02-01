@@ -166,7 +166,6 @@ ExecPtr ExecSeq::set_host(Host* host)
   return this;
 }
 
-/** @brief Returns the amount of flops that remain to be done */
 double ExecSeq::get_remaining()
 {
   return kernel::actor::simcall(
