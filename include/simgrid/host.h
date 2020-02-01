@@ -38,6 +38,7 @@ XBT_PUBLIC sg_host_t sg_host_by_name(const char* name);
 /** @brief Return the name of the sg_host_t. */
 XBT_PUBLIC const char* sg_host_get_name(const_sg_host_t host);
 
+#ifndef DOXYGEN
 // ========== User Data ==============
 /** @brief Return the user data of a #sg_host_t.
  *
@@ -53,6 +54,7 @@ XBT_PUBLIC void sg_host_data_set(sg_host_t host, void* userdata);
 XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_data_set()") XBT_PUBLIC
     void sg_host_user_set(sg_host_t host, void* userdata);
 XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_data_set(h, NULL)") XBT_PUBLIC void sg_host_user_destroy(sg_host_t host);
+#endif
 
 // ========= storage related functions ============
 /** @brief Return the list of mount point names on an host.

@@ -165,6 +165,12 @@ It is only used by find-missing, that will not report any definition linked here
 .. autodoxymethod:: ::MSG_zone_get_sons(const_sg_netzone_t zone, xbt_dict_t whereto)
 .. autodoxymethod:: ::MSG_zone_set_property_value(msg_netzone_t zone, const char *name, const char *value)
 
+# Storage must die
+.. autodoxymethod:: sg_host_get_attached_storage_list(const_sg_host_t host)
+.. autodoxymethod:: sg_host_get_mounted_storage_list(sg_host_t host)
+.. autodoxymethod:: simgrid::s4u::Host::get_attached_storages()
+.. autodoxymethod:: simgrid::s4u::Host::get_mounted_storages()
+
 # These ones are a bug of Doxygen, that parse them as variables instead of types.
 # So we don't use this bogus parse result, but go directly for cpp:type directives in app_s4u.rst
 .. autodoxyvar:: ::const_sg_actor_t
@@ -172,3 +178,4 @@ It is only used by find-missing, that will not report any definition linked here
 .. autodoxyvar:: ::const_sg_mutex_t
 .. autodoxyvar:: ::const_sg_sem_t
 .. autodoxyvar:: ::const_sg_host_t
+.. autodoxyvar:: ::const_sg_storage_t

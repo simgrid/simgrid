@@ -1080,6 +1080,8 @@ Basic management
       idiom on hosts because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
 
+      .. autodoxymethod:: simgrid::s4u::Host::destroy()
+
    .. group-tab:: Python
 
       .. code:: Python
@@ -1133,18 +1135,80 @@ Querying info
 
       .. autodoxymethod:: simgrid::s4u::Host::get_cname()
       .. autodoxymethod:: simgrid::s4u::Host::get_core_count()
-      .. autodoxymethod:: simgrid::s4u::Host::get_disks()
       .. autodoxymethod:: simgrid::s4u::Host::get_name()
+      .. autodoxymethod:: simgrid::s4u::Host::get_available_speed()
+      .. autodoxymethod:: simgrid::s4u::Host::get_load()
+      .. autodoxymethod:: simgrid::s4u::Host::get_speed()
 
    .. group-tab:: Python
 
-      .. autoattribute:: simgrid.Exec.host
       .. autoattribute:: simgrid.Host.name
+      .. autoattribute:: simgrid.Host.load
+      .. autoattribute:: simgrid.Host.pstate
+      .. autoattribute:: simgrid.Host.speed
 
    .. group-tab:: C
 
-      .. autodoxymethod:: ::sg_host_core_count(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_core_count(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_dump(const_sg_host_t ws)
       .. autodoxymethod:: sg_host_get_name(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_load(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_speed(const_sg_host_t host)
+
+User data and properties
+------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::get_properties()
+      .. autodoxymethod:: simgrid::s4u::Host::get_property(const std::string &key)
+      .. autodoxymethod:: simgrid::s4u::Host::set_properties(const std::map< std::string, std::string > &properties)
+      .. autodoxymethod:: simgrid::s4u::Host::set_property(const std::string &key, const std::string &value)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: ::sg_host_set_property_value(sg_host_t host, const char *name, const char *value)
+      .. autodoxymethod:: ::sg_host_get_properties(const_sg_host_t host)
+      .. autodoxymethod:: ::sg_host_get_property_value(const_sg_host_t host, const char *name)
+      .. autodoxymethod:: ::sg_host_extension_create(void(*deleter)(void *))
+      .. autodoxymethod:: ::sg_host_extension_get(const_sg_host_t host, size_t rank)
+
+Retrieve components
+-------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::add_disk(Disk *disk)
+      .. autodoxymethod:: simgrid::s4u::Host::get_actor_count()
+      .. autodoxymethod:: simgrid::s4u::Host::get_all_actors()
+      .. autodoxymethod:: simgrid::s4u::Host::get_disks()
+      .. autodoxymethod:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
+
+   .. group-tabs:: C
+
+      .. autodoxymethod:: ::sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
+
+
+On/Off
+------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::is_on()
+      .. autodoxymethod:: simgrid::s4u::Host::turn_off()
+      .. autodoxymethod:: simgrid::s4u::Host::turn_on()
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: ::sg_host_is_on(const_sg_host_t host)
+      .. autodoxymethod:: ::sg_host_turn_off(sg_host_t host)
+      .. autodoxymethod:: ::sg_host_turn_on(sg_host_t host)
 
 DVFS
 ----
@@ -1173,10 +1237,48 @@ DVFS
       .. autodoxymethod:: sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
       .. autodoxymethod:: sg_host_set_pstate(sg_host_t host, int pstate)
 
-.. doxygenclass:: simgrid::s4u::Host
-   :members:
-   :protected-members:
-   :undoc-members:
+Execution
+---------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::exec_async(double flops_amounts)
+      .. autodoxymethod:: simgrid::s4u::Host::execute(double flops)
+      .. autodoxymethod:: simgrid::s4u::Host::execute(double flops, double priority)
+
+Platform and routing
+--------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Host::get_englobing_zone()
+      .. autodoxymethod:: simgrid::s4u::Host::get_netpoint()
+      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency)
+      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency)
+      .. autodoxymethod:: simgrid::s4u::Host::send_to(Host *dest, double byte_amount)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: ::sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
+      .. autodoxymethod:: ::sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
+      .. autodoxymethod:: ::sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
+      .. autodoxymethod:: ::sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount)
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxyvar:: simgrid::s4u::Host::on_creation
+      .. autodoxyvar:: simgrid::s4u::Host::on_destruction
+      .. autodoxyvar:: simgrid::s4u::Host::on_speed_change
+      .. autodoxyvar:: simgrid::s4u::Host::on_state_change
 
 .. _API_s4u_Link:
 
@@ -1560,13 +1662,6 @@ Class Exec
 ==========
 
 .. autoclass:: simgrid.Exec
-   :members:
-
-==========
-Class Host
-==========
-
-.. autoclass:: simgrid.Host
    :members:
 
 .. |hr| raw:: html

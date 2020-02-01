@@ -50,7 +50,7 @@ Host::~Host()
  *
  * Don't delete directly a host, call h->destroy() instead.
  *
- * This is cumbersome but this is the simplest solution to ensure that the onDestruction() callback receives a valid
+ * This is cumbersome but this is the simplest solution to ensure that the on_destruction() callback receives a valid
  * object (because of the destructor order in a class hierarchy).
  */
 void Host::destroy()
