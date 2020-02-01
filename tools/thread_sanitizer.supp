@@ -1,0 +1,11 @@
+# Thread sanitizer suppressions for stuff that we cannot control
+
+# Race reported around std::__cxx11::stod / __gnu_cxx::__stoa when the value of
+# errno is saved and restored
+race:ext/string_conversions.h
+
+# False positive seen when simultaneously destroying a CommPtr in s4u-app-masterworkers-parallel
+# For more information, see
+# https://stackoverflow.com/questions/24446561/threadsanitizer-reports-data-race-on-operator-deletevoid-when-using-embedde
+# and more precisely the answer: https://stackoverflow.com/a/49173574
+race:simgrid::kernel::activity::CommImpl::~CommImpl()

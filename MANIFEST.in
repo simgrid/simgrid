@@ -1763,6 +1763,7 @@ include tools/tesh/set-return.tesh
 include tools/tesh/set-timeout.tesh
 include tools/tesh/setenv.tesh
 include tools/tesh/tesh.py
+include tools/thread_sanitizer.supp
 include AUTHORS
 include CITATION.bib
 include CMakeLists.txt
