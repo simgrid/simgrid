@@ -180,6 +180,7 @@ member ::msg_error_t is of kind enum
 
 # These should not be public
 .. autodoxymethod:: simgrid::s4u::Link::get_impl()
+.. autodoxymethod:: simgrid::s4u::NetZone::get_impl()
 
 # These ones are a bug of Doxygen, that parse them as variables instead of types.
 # So we don't use this bogus parse result, but go directly for cpp:type directives in app_s4u.rst

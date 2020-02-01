@@ -1175,8 +1175,8 @@ User data and properties
       .. autodoxymethod:: sg_host_extension_create(void(*deleter)(void *))
       .. autodoxymethod:: sg_host_extension_get(const_sg_host_t host, size_t rank)
 
-Retrieve components
--------------------
+Retrieving components
+---------------------
 
 .. tabs::
 
@@ -1417,6 +1417,123 @@ Signals
 ================
 ⁣  class NetZone
 ================
+
+.. autodoxyclass:: simgrid::s4u::NetZone
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/NetZone.hpp>
+
+      Note that there is no NetZonePtr type, and that you cannot use the RAII
+      idiom on network zones because SimGrid does not allow (yet) to create nor
+      destroy resources once the simulation is started. 
+
+   .. group-tab:: C
+
+      .. code:: C
+
+         #include <simgrid/zone.h>
+
+      .. doxygentypedef:: sg_netzone_t
+      .. cpp:type:: const s4u_NetZone* const_sg_netzone_t
+
+         Pointer to a constant network zone object.
+
+Retrieving zones
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      See :cpp:func:`simgrid::s4u::Engine::get_netzone_root`,
+      :cpp:func:`simgrid::s4u::Engine::netzone_by_name_or_null` and
+      :cpp:func:`simgrid::s4u::Engine::get_filtered_netzones`.
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_zone_get_by_name(const char *name)
+      .. autodoxymethod:: sg_zone_get_root()
+
+Querying info
+--------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::NetZone::get_cname()
+      .. autodoxymethod:: simgrid::s4u::NetZone::get_name()
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: ::sg_zone_get_name(const_sg_netzone_t zone)
+
+User data and properties
+------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::NetZone::get_properties()
+      .. autodoxymethod:: simgrid::s4u::NetZone::get_property(const std::string &key)
+      .. autodoxymethod:: simgrid::s4u::NetZone::set_property(const std::string &key, const std::string &value)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: ::sg_zone_get_property_value(const_sg_netzone_t as, const char *name)
+      .. autodoxymethod:: ::sg_zone_set_property_value(sg_netzone_t netzone, const char *name, const char *value)
+
+Retrieving components
+---------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::NetZone::get_all_hosts()
+      .. autodoxymethod:: simgrid::s4u::NetZone::get_host_count()
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto)
+
+Routing data
+------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::NetZone::add_bypass_route(kernel::routing::NetPoint *src, kernel::routing::NetPoint *dst, kernel::routing::NetPoint *gw_src, kernel::routing::NetPoint *gw_dst, std::vector< kernel::resource::LinkImpl * > &link_list, bool symmetrical)
+      .. autodoxymethod:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
+      .. autodoxymethod:: simgrid::s4u::NetZone::add_route(kernel::routing::NetPoint *src, kernel::routing::NetPoint *dst, kernel::routing::NetPoint *gw_src, kernel::routing::NetPoint *gw_dst, std::vector< kernel::resource::LinkImpl * > &link_list, bool symmetrical)
+      .. autodoxymethod:: simgrid::s4u::NetZone::get_children()
+      .. autodoxymethod:: simgrid::s4u::NetZone::get_father()
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_zone_get_sons(const_sg_netzone_t zone, xbt_dict_t whereto)
+
+Signals
+-------
+
+.. tabs::
+
+  .. group-tab:: C++
+
+     .. autodoxyvar:: simgrid::s4u::NetZone::on_creation
+     .. autodoxyvar:: simgrid::s4u::NetZone::on_route_creation
+     .. autodoxyvar:: simgrid::s4u::NetZone::on_seal
+
 
 .. doxygenclass:: simgrid::s4u::NetZone
    :members:

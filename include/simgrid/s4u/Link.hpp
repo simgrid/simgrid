@@ -24,7 +24,11 @@ namespace simgrid {
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Link>;
 
 namespace s4u {
-/** @brief A Link represents the network facilities between [hosts](@ref simgrid::s4u::Host) */
+/**
+ * @rst
+ * A Link represents the network facilities between :cpp:class:`hosts <simgrid::s4u::Host>`.
+ * @endrst
+ */
 class XBT_PUBLIC Link : public xbt::Extendable<Link> {
   friend kernel::resource::LinkImpl;
 
