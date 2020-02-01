@@ -402,11 +402,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             if self.argsstring != None:
                 candidates = get_doxygen_root().xpath(xpath_query_noparam)
                 if len(candidates) == 1:
-                    if "{}{}{}".format(obj, meth, candidates[0].find('argsstring').text) == "{}{}{} const".format(obj, meth, self.argsstring):
-                        # ignore discrepencies due to the missing 'const' method quantifyier
-                        pass
-                    else:
-                        logger.warning("[autodoxy] Using method '{}{}{}' instead of '{}{}{}'. You may want to drop your specification of the signature, or to fix it."
+                    logger.warning("[autodoxy] Using method '{}{}{}' instead of '{}{}{}'. You may want to drop your specification of the signature, or to fix it."
                                        .format(obj, meth, candidates[0].find('argsstring').text, obj, meth, self.argsstring))
                     self.object = candidates[0]
                     return True
@@ -525,7 +521,7 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
         else:
             rtype = rtype_el.text
 
- #       print("rtype: {}".format(rtype))
+#        print("rtype: {}".format(rtype))
         signame = (rtype and (rtype + ' ') or '') + self.klassname + "::" + self.objname
         return self.format_template_name() + signame
 
