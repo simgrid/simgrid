@@ -28,9 +28,11 @@ public:
   explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount);
   explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount, size_t ramsize);
 
+#ifndef DOXYGEN
   // No copy/move
   VirtualMachine(VirtualMachine const&) = delete;
   VirtualMachine& operator=(VirtualMachine const&) = delete;
+#endif
 
   enum class state {
     CREATED, /**< created, but not yet started */

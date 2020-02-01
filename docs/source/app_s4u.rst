@@ -1474,7 +1474,7 @@ Querying info
 
    .. group-tab:: C
 
-      .. autodoxymethod:: ::sg_zone_get_name(const_sg_netzone_t zone)
+      .. autodoxymethod:: sg_zone_get_name(const_sg_netzone_t zone)
 
 User data and properties
 ------------------------
@@ -1489,8 +1489,8 @@ User data and properties
 
    .. group-tab:: C
 
-      .. autodoxymethod:: ::sg_zone_get_property_value(const_sg_netzone_t as, const char *name)
-      .. autodoxymethod:: ::sg_zone_set_property_value(sg_netzone_t netzone, const char *name, const char *value)
+      .. autodoxymethod:: sg_zone_get_property_value(const_sg_netzone_t as, const char *name)
+      .. autodoxymethod:: sg_zone_set_property_value(sg_netzone_t netzone, const char *name, const char *value)
 
 Retrieving components
 ---------------------
@@ -1546,23 +1546,110 @@ Signals
 ⁣  class VirtualMachine
 =======================
 
-.. doxygenclass:: simgrid::s4u::VirtualMachine
-   :members:
-   :protected-members:
-   :undoc-members:
 
-.. autodoxymethod:: sg_vm_create_core
-.. autodoxymethod:: sg_vm_create_multicore
-.. autodoxymethod:: sg_vm_get_name
-.. autodoxymethod:: sg_vm_get_pm
-.. autodoxymethod:: sg_vm_is_created
-.. autodoxymethod:: sg_vm_is_running
-.. autodoxymethod:: sg_vm_is_suspended
-.. autodoxymethod:: sg_vm_start
-.. autodoxymethod:: sg_vm_suspend
-.. autodoxymethod:: sg_vm_resume
-.. autodoxymethod:: sg_vm_shutdown
-.. autodoxymethod:: sg_vm_destroy
+.. autodoxyclass:: simgrid::s4u::VirtualMachine
+
+Basic management
+----------------
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/VirtualMachine.hpp>
+
+      Note that there is no VirtualMachinePtr type, and that you cannot use the RAII
+      idiom on virtual machines. There is no good reason for that and should change in the future.
+
+   .. group-tab:: C
+
+      .. code:: C
+
+         #include <simgrid/vm.h>
+
+      .. doxygentypedef:: sg_vm_t
+      .. cpp:type:: const s4u_VirtualMachine* const_sg_vm_t
+
+         Pointer to a constant virtual machine object.
+
+Creating VMs
+------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::VirtualMachine(const std::string &name, Host *physical_host, int core_amount)
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::VirtualMachine(const std::string &name, Host *physical_host, int core_amount, size_t ramsize)
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::destroy()
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_vm_create_core
+      .. autodoxymethod:: sg_vm_create_multicore
+      .. autodoxymethod:: sg_vm_destroy
+
+Querying info
+--------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_pm()
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_ramsize()
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_state()
+
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_bound(double bound)
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_pm(Host *pm)
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_ramsize(size_t ramsize)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_vm_get_ramsize(const_sg_vm_t vm)
+      .. autodoxymethod:: sg_vm_set_bound(sg_vm_t vm, double bound)
+      .. autodoxymethod:: sg_vm_set_ramsize(sg_vm_t vm, size_t size)
+
+      .. autodoxymethod:: sg_vm_get_name
+      .. autodoxymethod:: sg_vm_get_pm
+      .. autodoxymethod:: sg_vm_is_created
+      .. autodoxymethod:: sg_vm_is_running
+      .. autodoxymethod:: sg_vm_is_suspended
+
+Life cycle
+----------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::resume()
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::shutdown()
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::start()
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::suspend()
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_vm_start
+      .. autodoxymethod:: sg_vm_suspend
+      .. autodoxymethod:: sg_vm_resume
+      .. autodoxymethod:: sg_vm_shutdown
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_migration_end
+      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_migration_start
+      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_resume
+      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_shutdown
+      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_start
+      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_started
+      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_suspend
 
 .. _API_s4u_Activity:
 
@@ -1578,16 +1665,15 @@ class Activity
    :ref:`I/O <API_s4u_Io>` (started on and consumming disks).
    See also the :ref:`section on activities <s4u_Activities>` above.
 
-Querying info about activities
-------------------------------
+Querying info
+-------------
 
    .. autodoxymethod:: simgrid::s4u::Activity::get_remaining()
    .. autodoxymethod:: simgrid::s4u::Activity::get_state()
    .. autodoxymethod:: simgrid::s4u::Activity::set_remaining(double remains)
-   .. autodoxymethod:: simgrid::s4u::Activity::get_impl
 
-Activities lifecycle
---------------------
+Activities life cycle
+---------------------
 
    .. autodoxymethod:: simgrid::s4u::Activity::start
    .. autodoxymethod:: simgrid::s4u::Activity::cancel
@@ -1595,6 +1681,7 @@ Activities lifecycle
    .. autodoxymethod:: simgrid::s4u::Activity::wait
    .. autodoxymethod:: simgrid::s4u::Activity::wait_for
    .. autodoxymethod:: simgrid::s4u::Activity::wait_until(double time_limit)
+   .. autodoxymethod:: simgrid::s4u::Activity::vetoable_start()
 
 .. _API_s4u_Comm:
 

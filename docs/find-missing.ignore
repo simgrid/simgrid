@@ -2,6 +2,9 @@ This file lists the symbols ignored in the documentation.
 It follows the RST syntact but is completely ignored by sphinx. 
 It is only used by find-missing, that will not report any definition linked here as missing.
 
+# This one triggers a bug in doxygen or sphinx when I try to document it with autodoxy
+.. autodoxyvar:: simgrid::s4u::Link::on_communicate
+
 # I don't plan to document MSG in the new way.
 .. autodoxymethod:: ::MSG_barrier_destroy(const_sg_bar_t bar)
 .. autodoxymethod:: ::MSG_barrier_init(unsigned int count)
@@ -181,6 +184,8 @@ member ::msg_error_t is of kind enum
 # These should not be public
 .. autodoxymethod:: simgrid::s4u::Link::get_impl()
 .. autodoxymethod:: simgrid::s4u::NetZone::get_impl()
+.. autodoxymethod:: simgrid::s4u::VirtualMachine::get_impl()
+
 
 # These ones are a bug of Doxygen, that parse them as variables instead of types.
 # So we don't use this bogus parse result, but go directly for cpp:type directives in app_s4u.rst

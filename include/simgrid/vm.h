@@ -1,4 +1,4 @@
-/* Public interface to the Link datatype                                    */
+/* Public interface to the Virtual Machine datatype                         */
 
 /* Copyright (c) 2018-2020. The SimGrid Team. All rights reserved.          */
 
@@ -14,16 +14,8 @@
 /* C interface */
 SG_BEGIN_DECL
 
-/** @brief Opaque type describing a Virtual Machine.
- *  @ingroup msg_VMs
- *
- * All this is highly experimental and the interface will probably change in the future.
- * Please don't depend on this yet (although testing is welcomed if you feel so).
- * Usual lack of guaranty of any kind applies here, and is even increased.
- *
- */
 XBT_PUBLIC sg_vm_t sg_vm_create_core(sg_host_t pm, const char* name);
-XBT_PUBLIC sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount);
+XBT_PUBLIC sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int core_amount);
 
 XBT_PUBLIC int sg_vm_is_created(sg_vm_t vm);
 XBT_PUBLIC int sg_vm_is_running(sg_vm_t vm);
