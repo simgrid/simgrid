@@ -1169,11 +1169,11 @@ User data and properties
 
    .. group-tab:: C
 
-      .. autodoxymethod:: ::sg_host_set_property_value(sg_host_t host, const char *name, const char *value)
-      .. autodoxymethod:: ::sg_host_get_properties(const_sg_host_t host)
-      .. autodoxymethod:: ::sg_host_get_property_value(const_sg_host_t host, const char *name)
-      .. autodoxymethod:: ::sg_host_extension_create(void(*deleter)(void *))
-      .. autodoxymethod:: ::sg_host_extension_get(const_sg_host_t host, size_t rank)
+      .. autodoxymethod:: sg_host_set_property_value(sg_host_t host, const char *name, const char *value)
+      .. autodoxymethod:: sg_host_get_properties(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_property_value(const_sg_host_t host, const char *name)
+      .. autodoxymethod:: sg_host_extension_create(void(*deleter)(void *))
+      .. autodoxymethod:: sg_host_extension_get(const_sg_host_t host, size_t rank)
 
 Retrieve components
 -------------------
@@ -1188,10 +1188,9 @@ Retrieve components
       .. autodoxymethod:: simgrid::s4u::Host::get_disks()
       .. autodoxymethod:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
 
-   .. group-tabs:: C
+   .. group-tab:: C
 
-      .. autodoxymethod:: ::sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
-
+      .. autodoxymethod:: sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
 
 On/Off
 ------
@@ -1206,9 +1205,9 @@ On/Off
 
    .. group-tab:: C
 
-      .. autodoxymethod:: ::sg_host_is_on(const_sg_host_t host)
-      .. autodoxymethod:: ::sg_host_turn_off(sg_host_t host)
-      .. autodoxymethod:: ::sg_host_turn_on(sg_host_t host)
+      .. autodoxymethod:: sg_host_is_on(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_turn_off(sg_host_t host)
+      .. autodoxymethod:: sg_host_turn_on(sg_host_t host)
 
 DVFS
 ----
@@ -1263,10 +1262,10 @@ Platform and routing
 
    .. group-tab:: C
 
-      .. autodoxymethod:: ::sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
-      .. autodoxymethod:: ::sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
-      .. autodoxymethod:: ::sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
-      .. autodoxymethod:: ::sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount)
+      .. autodoxymethod:: sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
+      .. autodoxymethod:: sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
+      .. autodoxymethod:: sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
+      .. autodoxymethod:: sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount)
 
 Signals
 -------
@@ -1286,10 +1285,132 @@ Signals
 ⁣  class Link
 =============
 
-.. doxygenclass:: simgrid::s4u::Link
-   :members:
-   :protected-members:
-   :undoc-members:
+.. autodoxyclass:: simgrid::s4u::Link
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Link.hpp>
+
+      Note that there is no LinkPtr type, and that you cannot use the RAII
+      idiom on hosts because SimGrid does not allow (yet) to create nor
+      destroy resources once the simulation is started. 
+
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import Link
+
+   .. group-tab:: C
+
+      .. code:: C
+
+         #include <simgrid/link.h>
+
+      .. doxygentypedef:: sg_link_t
+      .. cpp:type:: const s4u_Link* const_sg_link_t
+
+         Pointer to a constant link object.
+
+Retrieving links
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      See also :cpp:func:`simgrid::s4u::Engine::get_all_links`.
+
+      .. autodoxymethod:: simgrid::s4u::Link::by_name(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Link::by_name_or_null(const std::string &name)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_link_by_name(const char *name)
+      .. autodoxymethod:: sg_link_count()
+      .. autodoxymethod:: sg_link_list()
+
+Querying info
+--------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Link::get_bandwidth()
+      .. autodoxymethod:: simgrid::s4u::Link::get_cname()
+      .. autodoxymethod:: simgrid::s4u::Link::get_latency()
+      .. autodoxymethod:: simgrid::s4u::Link::get_name()
+      .. autodoxymethod:: simgrid::s4u::Link::get_sharing_policy()
+      .. autodoxymethod:: simgrid::s4u::Link::get_usage()
+      .. autodoxymethod:: simgrid::s4u::Link::is_used()
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_link_bandwidth(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_is_shared(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_latency(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_name(const_sg_link_t link)
+
+User data and properties
+------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Link::get_property(const std::string &key)
+      .. autodoxymethod:: simgrid::s4u::Link::set_property(const std::string &key, const std::string &value)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_link_data(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_data_set(sg_link_t link, void *data)
+
+On/Off
+------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      See also :cpp:func:`simgrid::s4u::Link::set_state_profile`.
+
+      .. autodoxymethod:: simgrid::s4u::Link::is_on()
+      .. autodoxymethod:: simgrid::s4u::Link::turn_off()
+      .. autodoxymethod:: simgrid::s4u::Link::turn_on()
+
+Dynamic profiles
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Link::set_bandwidth_profile(kernel::profile::Profile *profile)
+      .. autodoxymethod:: simgrid::s4u::Link::set_latency_profile(kernel::profile::Profile *profile)
+      .. autodoxymethod:: simgrid::s4u::Link::set_state_profile(kernel::profile::Profile *profile)
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxyvar:: simgrid::s4u::Link::on_bandwidth_change
+      .. cpp:var:: xbt::signal<void(kernel::resource::NetworkAction&, Host* src, Host* dst)> Link::on_communicate
+      .. autodoxyvar:: simgrid::s4u::Link::on_communication_state_change
+      .. autodoxyvar:: simgrid::s4u::Link::on_creation
+      .. autodoxyvar:: simgrid::s4u::Link::on_destruction
+      .. autodoxyvar:: simgrid::s4u::Link::on_state_change
 
 .. _API_s4u_NetZone:
 
@@ -1643,26 +1764,6 @@ Locking
          .. autodoxymethod:: sg_sem_get_capacity(sg_sem_t sem)
          .. autodoxymethod:: sg_sem_release(sg_sem_t sem)
          .. autodoxymethod:: sg_sem_would_block(sg_sem_t sem)
-
-Python API Reference
-********************
-
-The Python API is automatically generated with pybind11. It closely mimicks the C++
-API, to which you should refer for more information.
-
-==========
-Class Comm
-==========
-
-.. autoclass:: simgrid.Comm
-   :members:
-
-==========
-Class Exec
-==========
-
-.. autoclass:: simgrid.Exec
-   :members:
 
 .. |hr| raw:: html
 
