@@ -1726,6 +1726,7 @@ include teshsuite/xbt/signals/signals.cpp
 include teshsuite/xbt/signals/signals.tesh
 include tools/MSG_visualization/colorize.pl
 include tools/MSG_visualization/trace2fig.pl
+include tools/address_sanitizer.supp
 include tools/doxygen/fig2dev_postprocessor.pl
 include tools/doxygen/xbt_log_extract_hierarchy.pl
 include tools/fix-paje-trace.sh
@@ -1734,7 +1735,6 @@ include tools/graphicator/graphicator.c
 include tools/graphicator/graphicator.tesh
 include tools/normalize-pointers.py
 include tools/pkg-config/simgrid.pc.in
-include tools/sanitizers.supp
 include tools/sg_xml_unit_converter.py
 include tools/simgrid.supp
 include tools/simgrid2vite.sed
