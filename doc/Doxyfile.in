@@ -1443,7 +1443,8 @@ PREDEFINED             = __cplusplus \
 			 XBT_ATTRIB_NORETURN= \
 			 XBT_ATTRIB_UNUSED= \
                          XBT_ATTRIB_DEPRECATED_v328(m)= \
-                         XBT_ATTRIB_DEPRECATED_v329(m)=
+                         XBT_ATTRIB_DEPRECATED_v329(m)= \
+                         XBT_ATTRIB_DEPRECATED_v330(m)=
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.
