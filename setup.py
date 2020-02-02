@@ -82,7 +82,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='simgrid',
-    version='3.25.0',
+    version='3.25.1',
     author='Da SimGrid Team',
     author_email='simgrid-devel@lists.gforge.inria.fr',
     description='Toolkit for scalable simulation of distributed applications',

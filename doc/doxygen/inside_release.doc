@@ -27,6 +27,7 @@ Please apply the following checklist before releasing.
     https://framagit.org/simgrid/simgrid-template-s4u/pipelines
     https://framagit.org/simgrid/external-projects-ci/pipelines
   - The python module builds (see below).
+  - You can have a simgrid.jar from jenkins/macosx + AppVeyor
 
 @subsection inside_release_c_releasing Actually releasing SimGrid
 
@@ -36,9 +37,10 @@ Please apply the following checklist before releasing.
   - docs/source/conf.py
   - setup.py
 - Commit and push to both framagit and github
-- Wait for both appveyor and jenkins/highsierra to complete the build
+- Wait for both appveyor and jenkins/osX to complete the build
 - If it's not successful, fix it and push again
 - Once it's successful everywhere: merge 'master' into 'stable' and push it to framagit
+  - You can interrupt the build on jenkins, as it was tested just before
   - This builds the tar.gz and jar artefacts. The old doc says how to do manually if something goes wrong.
   - Do not merge into 'stable' before appveyor and jenkins are done,
     or your jarfile will not contain the code you expect for win and mac.
@@ -52,7 +54,6 @@ Please apply the following checklist before releasing.
   - Add a link to the version of the ChangeLog that comes with this tag.
 - Update the website
   - emacs org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
-  - make -C org all sync
   - jed .gitlab-ci.yml
     - Change the link to the SimGrid-doc-3_XX.zip file 
     - Only keep 2 versions so that people don't find older ones in google
