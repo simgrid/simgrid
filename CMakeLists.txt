@@ -4,8 +4,6 @@ set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "25")
 set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
-set(SIMGRID_VERSION_DATE  "2020") # Year for copyright information
-
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
 else()
