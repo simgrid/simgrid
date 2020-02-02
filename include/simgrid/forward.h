@@ -17,25 +17,25 @@ namespace simgrid {
 namespace s4u {
 class Activity;
 /** Smart pointer to a simgrid::s4u::Actor */
-typedef boost::intrusive_ptr<Activity> ActivityPtr;
+using ActivityPtr = boost::intrusive_ptr<Activity>;
 XBT_PUBLIC void intrusive_ptr_release(const Activity* actor);
 XBT_PUBLIC void intrusive_ptr_add_ref(const Activity* actor);
 
 class Actor;
 /** Smart pointer to a simgrid::s4u::Actor */
-typedef boost::intrusive_ptr<Actor> ActorPtr;
+using ActorPtr = boost::intrusive_ptr<Actor>;
 XBT_PUBLIC void intrusive_ptr_release(const Actor* actor);
 XBT_PUBLIC void intrusive_ptr_add_ref(const Actor* actor);
 
 class Barrier;
 /** Smart pointer to a simgrid::s4u::Barrier */
-typedef boost::intrusive_ptr<Barrier> BarrierPtr;
+using BarrierPtr = boost::intrusive_ptr<Barrier>;
 XBT_PUBLIC void intrusive_ptr_release(Barrier* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Barrier* m);
 
 class Comm;
 /** Smart pointer to a simgrid::s4u::Comm */
-typedef boost::intrusive_ptr<Comm> CommPtr;
+using CommPtr = boost::intrusive_ptr<Comm>;
 XBT_PUBLIC void intrusive_ptr_release(Comm* c);
 XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
 
@@ -44,7 +44,7 @@ class ConditionVariable;
  * Smart pointer to a :cpp:type:`simgrid::s4u::ConditionVariable`
  * @endrst
  */
-typedef boost::intrusive_ptr<ConditionVariable> ConditionVariablePtr;
+using ConditionVariablePtr = boost::intrusive_ptr<ConditionVariable>;
 XBT_PUBLIC void intrusive_ptr_release(const ConditionVariable* c);
 XBT_PUBLIC void intrusive_ptr_add_ref(const ConditionVariable* c);
 
@@ -52,19 +52,17 @@ class Engine;
 
 class Exec;
 /** Smart pointer to a simgrid::s4u::Exec */
-typedef boost::intrusive_ptr<Exec> ExecPtr;
+using ExecPtr = boost::intrusive_ptr<Exec>;
 XBT_PUBLIC void intrusive_ptr_release(Exec* e);
 XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
-class ExecSeq;
-typedef boost::intrusive_ptr<ExecSeq> ExecSeqPtr;
-class ExecPar;
-typedef boost::intrusive_ptr<ExecPar> ExecParPtr;
+class ExecSeq; // FIXME: hide this class in implementation
+class ExecPar; // FIXME: hide this class in implementation
 
 class Host;
 
 class Io;
 /** Smart pointer to a simgrid::s4u::Io */
-typedef boost::intrusive_ptr<Io> IoPtr;
+using IoPtr = boost::intrusive_ptr<Io>;
 XBT_PUBLIC void intrusive_ptr_release(Io* i);
 XBT_PUBLIC void intrusive_ptr_add_ref(Io* i);
 
@@ -80,7 +78,7 @@ XBT_PUBLIC void intrusive_ptr_add_ref(const Mutex* m);
  * Smart pointer to a :cpp:type:`simgrid::s4u::Mutex`
  * @endrst
  */
-typedef boost::intrusive_ptr<Mutex> MutexPtr;
+using MutexPtr = boost::intrusive_ptr<Mutex>;
 
 class NetZone;
 class VirtualMachine;
@@ -88,7 +86,7 @@ class File;
 
 class Semaphore;
 /** Smart pointer to a simgrid::s4u::Semaphore */
-typedef boost::intrusive_ptr<Semaphore> SemaphorePtr;
+using SemaphorePtr = boost::intrusive_ptr<Semaphore>;
 XBT_PUBLIC void intrusive_ptr_release(Semaphore* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Semaphore* m);
 
