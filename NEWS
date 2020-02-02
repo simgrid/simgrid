@@ -3,9 +3,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| ___|
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) |___ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ ___) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|____/
-               (not released yet)
+               February 2. 2020 (02 02 2020)
 
-The Dependstable Snake Release.
+The Palindrom Day Release.
 
  * Improve the Python usability (stability and documentation).
  * Further deprecate MSG: you now have to pass -Denable-MSG=ON to cmake.

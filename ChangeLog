@@ -1,6 +1,8 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.24.1) NOT RELEASED YET (v3.25 expected December 22. 2029, 04:19 UTC)
+SimGrid (3.25) February 2. 2020 (aka 02 02 2020)
+
+The Palindrom Day Release.
 
 Important user-visible changes:
 - Improve the Python usability (stability and documentation).
