@@ -10,6 +10,8 @@
 #include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
+#include <simgrid/comm.h>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous communications");
 
 namespace simgrid {
@@ -251,3 +253,14 @@ Actor* Comm::get_sender()
 
 } // namespace s4u
 } // namespace simgrid
+/* **************************** Public C interface *************************** */
+int sg_comm_wait_any_for(const xbt_dynar_t comms, double timeout)
+{
+  std::vector<simgrid::s4u::CommPtr> s4u_comms;
+  unsigned int i;
+  sg_comm_t comm;
+  xbt_dynar_foreach (comms, i, comm) {
+    s4u_comms.push_back(comm);
+  }
+  return simgrid::s4u::Comm::wait_any_for(&s4u_comms, timeout);
+}
