@@ -561,6 +561,8 @@ include examples/smpi/trace_call_location/trace_call_location.c
 include examples/smpi/trace_call_location/trace_call_location.tesh
 include examples/smpi/trace_simple/trace_simple.c
 include examples/smpi/trace_simple/trace_simple.tesh
+include teshsuite/c/async-waitany/async-waitany.c
+include teshsuite/c/async-waitany/async-waitany_d.xml
 include teshsuite/java/semaphoregc/SemaphoreGC.java
 include teshsuite/java/semaphoregc/semaphoregc.tesh
 include teshsuite/java/sleephostoff/SleepHostOff.java
@@ -616,9 +618,6 @@ include teshsuite/msg/async-wait/async-wait_d.xml
 include teshsuite/msg/async-waitall/async-waitall.c
 include teshsuite/msg/async-waitall/async-waitall.tesh
 include teshsuite/msg/async-waitall/async-waitall_d.xml
-include teshsuite/msg/async-waitany/async-waitany.c
-include teshsuite/msg/async-waitany/async-waitany.tesh
-include teshsuite/msg/async-waitany/async-waitany_d.xml
 include teshsuite/msg/cloud-capping/cloud-capping.c
 include teshsuite/msg/cloud-capping/cloud-capping.tesh
 include teshsuite/msg/cloud-migration/cloud-migration.c
@@ -1962,6 +1961,7 @@ include include/simgrid/Exception.hpp
 include include/simgrid/actor.h
 include include/simgrid/barrier.h
 include include/simgrid/chrono.hpp
+include include/simgrid/comm.h
 include include/simgrid/cond.h
 include include/simgrid/config.h.in
 include include/simgrid/engine.h
@@ -2660,6 +2660,7 @@ include src/xbt/xbt_str.cpp
 include src/xbt/xbt_str_test.cpp
 include src/xbt/xbt_virtu.cpp
 include src/xbt_modinter.h
+include teshsuite/c/CMakeLists.txt
 include teshsuite/java/CMakeLists.txt
 include teshsuite/lua/CMakeLists.txt
 include teshsuite/lua/lua_platforms.tesh
