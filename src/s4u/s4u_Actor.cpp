@@ -462,11 +462,11 @@ sg_actor_t sg_actor_init(const char* name, sg_host_t host)
   return simgrid::s4u::Actor::init(name, host).get();
 }
 
-void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char** argv)
+void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char* const* argv)
 {
   simgrid::simix::ActorCode function;
   if (code)
-    function = simgrid::xbt::wrap_main(code, argc, static_cast<const char* const*>(argv));
+    function = simgrid::xbt::wrap_main(code, argc, argv);
   actor->start(std::move(function));
 }
 

@@ -171,13 +171,6 @@ const char* sg_mailbox_get_name(sg_mailbox_t mailbox)
   return mailbox->get_cname();
 }
 
-sg_comm_t sg_mailbox_put_async(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes)
-{
-  auto comm = mailbox->put_async(payload, simulated_size_in_bytes);
-  comm->add_ref();
-  return comm.get();
-}
-
 /** @brief Set the mailbox to receive in asynchronous mode
  *
  * All messages sent to this mailbox will be transferred to the receiver without waiting for the receive call.
@@ -205,4 +198,16 @@ int sg_mailbox_listen(const char* alias)
 void* sg_mailbox_get(sg_mailbox_t mailbox)
 {
   return mailbox->get();
+}
+
+void sg_mailbox_put(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes)
+{
+  return mailbox->put(payload, simulated_size_in_bytes);
+}
+
+sg_comm_t sg_mailbox_put_async(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes)
+{
+  auto comm = mailbox->put_async(payload, simulated_size_in_bytes);
+  comm->add_ref();
+  return comm.get();
 }

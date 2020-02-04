@@ -17,6 +17,7 @@ XBT_PUBLIC const char* sg_mailbox_get_name(sg_mailbox_t mailbox);
 XBT_PUBLIC void sg_mailbox_set_receiver(const char* alias);
 XBT_PUBLIC int sg_mailbox_listen(const char* alias);
 
+XBT_PUBLIC void sg_mailbox_put(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes);
 XBT_PUBLIC sg_comm_t sg_mailbox_put_async(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes);
 XBT_PUBLIC void* sg_mailbox_get(sg_mailbox_t mailbox);
 
