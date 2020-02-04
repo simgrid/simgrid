@@ -177,7 +177,7 @@ Comm* Comm::wait_for(double timeout)
       break;
 
     case State::STARTED:
-      simcall_comm_wait(pimpl_, timeout);
+      simcall_comm_wait(get_impl(), timeout);
       on_completion(*Actor::self());
       state_ = State::FINISHED;
       this->release_dependencies();
@@ -233,7 +233,7 @@ bool Comm::test()
   if (state_ == State::INITED || state_ == State::STARTING)
     this->vetoable_start();
 
-  if (simcall_comm_test(pimpl_)) {
+  if (simcall_comm_test(get_impl())) {
     state_ = State::FINISHED;
     this->release_dependencies();
     return true;

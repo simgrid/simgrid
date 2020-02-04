@@ -29,15 +29,15 @@
  *
  * @param execution The execution synchro
  */
-e_smx_state_t simcall_execution_wait(const smx_activity_t& execution, double timeout)
+e_smx_state_t simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* execution, double timeout)
 {
-  return (e_smx_state_t)simcall_BODY_execution_wait(static_cast<simgrid::kernel::activity::ExecImpl*>(execution.get()),
+  return (e_smx_state_t)simcall_BODY_execution_wait(static_cast<simgrid::kernel::activity::ExecImpl*>(execution),
                                                     timeout);
 }
 
-bool simcall_execution_test(const smx_activity_t& execution)
+bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution)
 {
-  return simcall_BODY_execution_test(static_cast<simgrid::kernel::activity::ExecImpl*>(execution.get()));
+  return simcall_BODY_execution_test(static_cast<simgrid::kernel::activity::ExecImpl*>(execution));
 }
 
 unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count, double timeout)
@@ -78,10 +78,11 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
+    simgrid::kernel::activity::ActivityImplPtr comm =
+        nullptr; /* MC needs the comm to be set to nullptr during the simcall */
     comm = simcall_comm_isend(sender, mbox, task_size, rate,
         src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, 0);
-    simcall_comm_wait(comm, timeout);
+    simcall_comm_wait(comm.get(), timeout);
     comm = nullptr;
   }
   else {
@@ -93,12 +94,11 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
 /**
  * @ingroup simix_comm_management
  */
-smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
-                                  size_t src_buff_size,
-                                  bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                  void (*clean_fun)(void*),
-                                  void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
-                                  void* data, bool detached)
+simgrid::kernel::activity::ActivityImplPtr
+simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
+                   size_t src_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                   void (*clean_fun)(void*), void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
+                   void* data, bool detached)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(task_size), "task_size is not finite!");
@@ -123,10 +123,11 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
+    simgrid::kernel::activity::ActivityImplPtr comm =
+        nullptr; /* MC needs the comm to be set to nullptr during the simcall */
     comm = simcall_comm_irecv(receiver, mbox, dst_buff, dst_buff_size,
                               match_fun, copy_data_fun, data, rate);
-    simcall_comm_wait(comm, timeout);
+    simcall_comm_wait(comm.get(), timeout);
     comm = nullptr;
   }
   else {
@@ -137,10 +138,10 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
 /**
  * @ingroup simix_comm_management
  */
-smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
-                                  bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                  void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
-                                  void* data, double rate)
+simgrid::kernel::activity::ActivityImplPtr
+simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
+                   bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data, double rate)
 {
   xbt_assert(mbox, "No rendez-vous point defined for irecv");
 
@@ -151,8 +152,9 @@ smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void
 /**
  * @ingroup simix_comm_management
  */
-smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
-                                   bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data)
+simgrid::kernel::activity::ActivityImplPtr
+simcall_comm_iprobe(smx_mailbox_t mbox, int type, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                    void* data)
 {
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
@@ -162,10 +164,11 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
 /**
  * @ingroup simix_comm_management
  */
-unsigned int simcall_comm_waitany(smx_activity_t comms[], size_t count, double timeout)
+unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count,
+                                  double timeout) // XBT_ATTRIB_DEPRECATED_v330
 {
   std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(new simgrid::kernel::activity::CommImpl*[count]);
-  std::transform(comms, comms + count, rcomms.get(), [](const smx_activity_t& comm) {
+  std::transform(comms, comms + count, rcomms.get(), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
   return simcall_BODY_comm_waitany(rcomms.get(), count, timeout);
@@ -179,12 +182,12 @@ unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], 
 /**
  * @ingroup simix_comm_management
  */
-int simcall_comm_testany(smx_activity_t comms[], size_t count)
+int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count) // XBT_ATTRIB_DEPRECATED_v330
 {
   if (count == 0)
     return -1;
   std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(new simgrid::kernel::activity::CommImpl*[count]);
-  std::transform(comms, comms + count, rcomms.get(), [](const smx_activity_t& comm) {
+  std::transform(comms, comms + count, rcomms.get(), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
   return simcall_BODY_comm_testany(rcomms.get(), count);
@@ -200,19 +203,19 @@ int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t co
 /**
  * @ingroup simix_comm_management
  */
-void simcall_comm_wait(const smx_activity_t& comm, double timeout)
+void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  simcall_BODY_comm_wait(static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
+  simcall_BODY_comm_wait(static_cast<simgrid::kernel::activity::CommImpl*>(comm), timeout);
 }
 
 /**
  * @ingroup simix_comm_management
  *
  */
-bool simcall_comm_test(const smx_activity_t& comm)
+bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm)
 {
-  return simcall_BODY_comm_test(static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()));
+  return simcall_BODY_comm_test(static_cast<simgrid::kernel::activity::CommImpl*>(comm));
 }
 
 /**
@@ -303,14 +306,14 @@ int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
   return simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 
-e_smx_state_t simcall_io_wait(const smx_activity_t& io, double timeout)
+e_smx_state_t simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io, double timeout)
 {
-  return (e_smx_state_t)simcall_BODY_io_wait(static_cast<simgrid::kernel::activity::IoImpl*>(io.get()), timeout);
+  return (e_smx_state_t)simcall_BODY_io_wait(static_cast<simgrid::kernel::activity::IoImpl*>(io), timeout);
 }
 
-bool simcall_io_test(const smx_activity_t& io)
+bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io)
 {
-  return simcall_BODY_io_test(static_cast<simgrid::kernel::activity::IoImpl*>(io.get()));
+  return simcall_BODY_io_test(static_cast<simgrid::kernel::activity::IoImpl*>(io));
 }
 
 void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t)

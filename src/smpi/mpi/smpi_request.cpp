@@ -376,7 +376,7 @@ void Request::start()
       mailbox = process->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %s (in case of SSEND)?",
                 mailbox->get_cname());
-      smx_activity_t action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
+      simgrid::kernel::activity::ActivityImplPtr action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
 
       if (action == nullptr) {
         mailbox = process->mailbox();
@@ -392,7 +392,7 @@ void Request::start()
     } else {
       mailbox = process->mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
-      smx_activity_t action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
+      simgrid::kernel::activity::ActivityImplPtr action = mailbox->iprobe(0, &match_recv, static_cast<void*>(this));
 
       if (action == nullptr) {
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
@@ -470,7 +470,7 @@ void Request::start()
     } else if (((flags_ & MPI_REQ_RMA) != 0) || static_cast<int>(size_) < smpi_cfg_async_small_thresh()) { // eager mode
       mailbox = process->mailbox();
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %s?", mailbox->get_cname());
-      smx_activity_t action = mailbox->iprobe(1, &match_send, static_cast<void*>(this));
+      simgrid::kernel::activity::ActivityImplPtr action = mailbox->iprobe(1, &match_send, static_cast<void*>(this));
       if (action == nullptr) {
         if ((flags_ & MPI_REQ_SSEND) == 0) {
           mailbox = process->mailbox_small();
@@ -562,7 +562,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   if (((*request)->flags_ & MPI_REQ_PREPARED) == 0) {
     if ((*request)->action_ != nullptr && (*request)->cancelled_ != 1){
       try{
-        *flag = simcall_comm_test((*request)->action_);
+        *flag = simcall_comm_test((*request)->action_.get());
       } catch (const Exception&) {
         *flag = 0;
         return ret;
@@ -917,7 +917,7 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
   if ((*request)->action_ != nullptr){
       try{
         // this is not a detached send
-        simcall_comm_wait((*request)->action_, -1.0);
+        simcall_comm_wait((*request)->action_.get(), -1.0);
       } catch (const Exception&) {
         XBT_VERB("Request cancelled");
       }

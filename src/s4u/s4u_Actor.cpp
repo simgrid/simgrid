@@ -106,7 +106,7 @@ void Actor::join(double timeout)
       // The joined process is already finished, just wake up the issuer right away
       issuer->simcall_answer();
     } else {
-      smx_activity_t sync = issuer->join(target, timeout);
+      kernel::activity::ActivityImplPtr sync = issuer->join(target, timeout);
       sync->register_simcall(&issuer->simcall);
     }
   });
@@ -315,7 +315,7 @@ void sleep_for(double duration)
         issuer->simcall_answer();
         return;
       }
-      smx_activity_t sync = issuer->sleep(duration);
+      kernel::activity::ActivityImplPtr sync = issuer->sleep(duration);
       sync->register_simcall(&issuer->simcall);
     });
 

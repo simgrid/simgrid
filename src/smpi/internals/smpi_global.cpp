@@ -128,7 +128,7 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   static void (*saved_callback)(smx_activity_t, void*, size_t);
   saved_callback               = callback;
   smpi_comm_copy_data_callback = [](simgrid::kernel::activity::CommImpl* comm, void* buff, size_t size) {
-    saved_callback(smx_activity_t(comm), buff, size);
+    saved_callback(comm, buff, size);
   };
 }
 

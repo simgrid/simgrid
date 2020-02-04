@@ -31,7 +31,7 @@ bool Exec::test()
   if (state_ == State::INITED || state_ == State::STARTING)
     this->vetoable_start();
 
-  if (simcall_execution_test(pimpl_)) {
+  if (simcall_execution_test(get_impl())) {
     state_ = State::FINISHED;
     this->release_dependencies();
     return true;
@@ -49,7 +49,7 @@ Exec* Exec::wait_for(double timeout)
 {
   if (state_ == State::INITED)
     vetoable_start();
-  simcall_execution_wait(pimpl_, timeout);
+  simcall_execution_wait(get_impl(), timeout);
   state_ = State::FINISHED;
   on_completion(*Actor::self(), *this);
   this->release_dependencies();

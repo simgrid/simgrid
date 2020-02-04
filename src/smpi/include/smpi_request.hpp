@@ -41,7 +41,7 @@ class Request : public F2C {
   bool truncated_;
   size_t real_size_;
   MPI_Comm comm_;
-  smx_activity_t action_;
+  simgrid::kernel::activity::ActivityImplPtr action_;
   unsigned flags_;
   bool detached_;
   MPI_Request detached_sender_;
