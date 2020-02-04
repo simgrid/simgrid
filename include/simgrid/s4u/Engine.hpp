@@ -48,9 +48,15 @@ public:
 
   void load_platform(const std::string& platf);
 
-  void register_function(const std::string& name, int (*code)(int, char**));
+  XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_function(
+      const std::string& name, int (*code)(int, char**));
+
+  void register_function(const std::string& name, void (*code)(int, char**));
   void register_function(const std::string& name, void (*code)(std::vector<std::string>));
-  void register_default(int (*code)(int, char**));
+
+  XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_default(
+      int (*code)(int, char**));
+  void register_default(void (*code)(int, char**));
 
   template <class F> void register_actor(const std::string& name)
   {

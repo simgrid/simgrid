@@ -21,7 +21,7 @@ typedef int (*int_f_int_pvoid_t)(int, void*);
 typedef int (*int_f_pvoid_pvoid_t) (void *, void *);
 typedef int (*int_f_cpvoid_cpvoid_t) (const void *, const void *);
 
-typedef int (*xbt_main_func_t) (int argc, char *argv[]);
+typedef void (*xbt_main_func_t)(int argc, char* argv[]);
 
 SG_END_DECL
 #endif                          /* XBT_FUNCTION_TYPE_H */

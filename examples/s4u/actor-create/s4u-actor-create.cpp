@@ -44,7 +44,7 @@ static void receiver(const std::string& mailbox_name)
 }
 
 /* Our second class of actors is also a function */
-static int forwarder(int argc, char** argv)
+static void forwarder(int argc, char** argv)
 {
   xbt_assert(argc >= 3, "Actor forwarder requires 2 parameters, but got only %d", argc - 1);
   simgrid::s4u::Mailbox* in    = simgrid::s4u::Mailbox::by_name(argv[1]);
@@ -52,7 +52,6 @@ static int forwarder(int argc, char** argv)
   std::string* msg             = static_cast<std::string*>(in->get());
   XBT_INFO("Forward '%s'.", msg->c_str());
   out->put(msg, msg->size());
-  return 0;
 }
 
 /* Declares a third class of actors which sends a message to the mailbox 'mb42'.

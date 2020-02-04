@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(async_waitany, "Messages specific for this example");
 
-static int sender(int argc, char* argv[])
+static void sender(int argc, char* argv[])
 {
   xbt_assert(argc == 4, "Expecting 3 parameters from the XML deployment file but got %d", argc);
   long messages_count  = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
@@ -77,10 +77,9 @@ static int sender(int argc, char* argv[])
   free(mboxes);
 
   XBT_INFO("Goodbye now!");
-  return 0;
 }
 
-static int receiver(int argc, char* argv[])
+static void receiver(int argc, char* argv[])
 {
   xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
   int id = xbt_str_parse_int(argv[1], "ID should be numerical, not %s");
@@ -99,7 +98,6 @@ static int receiver(int argc, char* argv[])
   }
 
   XBT_INFO("I'm done. See you!");
-  return 0;
 }
 
 int main(int argc, char* argv[])

@@ -25,7 +25,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_ready, "Messages specific for this s4u example");
 
-static int peer(int argc, char** argv)
+static void peer(int argc, char** argv)
 {
   xbt_assert(argc == 5, "Expecting 4 parameters from the XML deployment file but got %d", argc);
   int my_id           = std::stoi(argv[1]); /* - my id */
@@ -90,7 +90,6 @@ static int peer(int argc, char** argv)
   simgrid::s4u::Comm::wait_all(&pending_comms);
 
   XBT_INFO("Goodbye now!");
-  return 0;
 }
 
 

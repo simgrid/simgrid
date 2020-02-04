@@ -13,7 +13,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int smpi_replay(int argc, char *argv[]) {
+static void smpi_replay(int argc, char* argv[])
+{
   const char* instance_id    = argv[1];
   int rank                   = xbt_str_parse_int(argv[2], "Cannot parse rank '%s'");
   const char* trace_filename = argv[3];
@@ -24,7 +25,6 @@ static int smpi_replay(int argc, char *argv[]) {
   }
 
   smpi_replay_run(instance_id, rank, start_delay_flops, trace_filename);
-  return 0;
 }
 
 int main(int argc, char *argv[]){

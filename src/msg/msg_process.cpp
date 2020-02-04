@@ -14,7 +14,7 @@
  * Does exactly the same as #MSG_process_create_with_arguments but without providing standard arguments
  * (@a argc, @a argv, @a start_time, @a kill_time).
  */
-msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
+msg_process_t MSG_process_create(const char* name, int (*code)(int, char**), void* data, msg_host_t host)
 {
   return MSG_process_create_with_environment(name == nullptr ? "" : name, code, data, host, 0, nullptr, nullptr);
 }
@@ -32,8 +32,8 @@ msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *d
  * @param argv second argument passed to @a code
  */
 
-msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
-                                              int argc, char **argv)
+msg_process_t MSG_process_create_with_arguments(const char* name, int (*code)(int, char**), void* data, msg_host_t host,
+                                                int argc, char** argv)
 {
   return MSG_process_create_with_environment(name, code, data, host, argc, argv, nullptr);
 }
@@ -55,8 +55,8 @@ msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_
  * @see msg_process_t
  * @return The new corresponding object.
  */
-msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
-                                                  int argc, char **argv, xbt_dict_t properties)
+msg_process_t MSG_process_create_with_environment(const char* name, int (*code)(int, char**), void* data,
+                                                  msg_host_t host, int argc, char** argv, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host param must not be nullptr");
   sg_actor_t actor = sg_actor_init(std::move(name), host);
@@ -70,7 +70,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
       xbt_dict_foreach (properties, cursor, key, value)
         actor->set_property(key, value);
     }
-    sg_actor_start(actor, code, argc, argv);
+    sg_actor_start(actor, (void (*)(int, char**))code, argc, argv);
   } catch (simgrid::HostFailureException const&) {
     xbt_die("Could not launch a new process on failed host %s.", host->get_cname());
   }

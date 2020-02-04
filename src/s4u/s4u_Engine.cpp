@@ -90,8 +90,17 @@ void Engine::load_platform(const std::string& platf)
   XBT_DEBUG("PARSE TIME: %g", (end - start));
 }
 
+void Engine::register_function(const std::string& name, int (*code)(int, char**)) // deprecated
+{
+  pimpl->register_function(name, code);
+}
+void Engine::register_default(int (*code)(int, char**)) // deprecated
+{
+  pimpl->register_default(code);
+}
+
 /** Registers the main function of an actor that will be launched from the deployment file */
-void Engine::register_function(const std::string& name, int (*code)(int, char**))
+void Engine::register_function(const std::string& name, void (*code)(int, char**))
 {
   pimpl->register_function(name, code);
 }
@@ -106,7 +115,7 @@ void Engine::register_function(const std::string& name, void (*code)(std::vector
  * It will be used as fallback when the function requested from the deployment file was not registered.
  * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
  */
-void Engine::register_default(int (*code)(int, char**))
+void Engine::register_default(void (*code)(int, char**))
 {
   pimpl->register_default(code);
 }
@@ -403,11 +412,11 @@ void simgrid_run()
 {
   simgrid::s4u::Engine::get_instance()->run();
 }
-void simgrid_register_function(const char* name, int (*code)(int, char**))
+void simgrid_register_function(const char* name, void (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);
 }
-void simgrid_register_default(int (*code)(int, char**))
+void simgrid_register_default(void (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_default(code);
 }

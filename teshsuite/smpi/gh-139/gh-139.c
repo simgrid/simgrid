@@ -27,7 +27,7 @@ void* req_wait(void* bar);
 
 // Thread creation helper
 
-static int thread_create_wrapper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void thread_create_wrapper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   int the_global_rank  = global_rank;
   struct threadwrap* t = (struct threadwrap*)sg_actor_self_data();
@@ -37,7 +37,6 @@ static int thread_create_wrapper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED c
   t->f(t->param);
   sg_actor_self_data_set(NULL);
   free(t);
-  return 0;
 }
 
 static void mpi_thread_create(const char* name, void* (*f)(void*), void* param)

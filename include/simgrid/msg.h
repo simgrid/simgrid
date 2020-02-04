@@ -300,7 +300,7 @@ XBT_PUBLIC msg_error_t MSG_main();
  * @param code the function (must have the same prototype than the main function of any C program: int ..(int argc, char
  * *argv[]))
  */
-XBT_PUBLIC void MSG_function_register(const char* name, xbt_main_func_t code);
+XBT_PUBLIC void MSG_function_register(const char* name, int (*code)(int, char**));
 /** @brief Registers a code function as being the default value.
  *
  * This function will get used by MSG_launch_application() when there is no registered function of the requested name
@@ -309,7 +309,7 @@ XBT_PUBLIC void MSG_function_register(const char* name, xbt_main_func_t code);
  * @param code the function (must have the same prototype than the main function of any C program: int ..(int argc, char
  * *argv[]))
  */
-XBT_PUBLIC void MSG_function_register_default(xbt_main_func_t code);
+XBT_PUBLIC void MSG_function_register_default(int (*code)(int, char**));
 /** @brief Creates a new platform, including hosts, links and the routing_table */
 XBT_PUBLIC void MSG_create_environment(const char* file);
 /** @brief Creates the application described in the provided file */
@@ -327,10 +327,10 @@ XBT_PUBLIC double MSG_get_clock();
 XBT_PUBLIC unsigned long int MSG_get_sent_msg();
 
 /************************** Process handling *********************************/
-XBT_PUBLIC msg_process_t MSG_process_create(const char* name, xbt_main_func_t code, void* data, msg_host_t host);
-XBT_PUBLIC msg_process_t MSG_process_create_with_arguments(const char* name, xbt_main_func_t code, void* data,
+XBT_PUBLIC msg_process_t MSG_process_create(const char* name, int (*code)(int, char**), void* data, msg_host_t host);
+XBT_PUBLIC msg_process_t MSG_process_create_with_arguments(const char* name, int (*code)(int, char**), void* data,
                                                            msg_host_t host, int argc, char** argv);
-XBT_PUBLIC msg_process_t MSG_process_create_with_environment(const char* name, xbt_main_func_t code, void* data,
+XBT_PUBLIC msg_process_t MSG_process_create_with_environment(const char* name, int (*code)(int, char**), void* data,
                                                              msg_host_t host, int argc, char** argv,
                                                              xbt_dict_t properties);
 

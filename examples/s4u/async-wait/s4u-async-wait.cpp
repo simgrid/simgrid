@@ -18,7 +18,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_wait, "Messages specific for this s4u example");
 
-static int sender(int argc, char** argv)
+static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 4, "Expecting 3 parameters from the XML deployment file but got %d", argc);
   long messages_count  = std::stol(argv[1]); /* - number of tasks */
@@ -63,11 +63,10 @@ static int sender(int argc, char** argv)
   }
 
   XBT_INFO("Goodbye now!");
-  return 0;
 }
 
 /* Receiver actor expects 1 argument: its ID */
-static int receiver(int argc, char** argv)
+static void receiver(int argc, char** argv)
 {
   xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(std::string("receiver-") + argv[1]);
@@ -80,7 +79,6 @@ static int receiver(int argc, char** argv)
       cont = false; // If it's a finalize message, we're done.
     delete received;
   }
-  return 0;
 }
 
 int main(int argc, char *argv[])

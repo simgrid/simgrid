@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(remote_io, "Messages specific for this io example");
 
-static int host(int argc, char* argv[])
+static void host(int argc, char* argv[])
 {
   simgrid::s4u::File file(argv[1], nullptr);
   const char* filename = file.get_path();
@@ -32,7 +32,6 @@ static int host(int argc, char* argv[])
       file.remote_copy(simgrid::s4u::Host::by_name(argv[2]), argv[3]);
     }
   }
-  return 0;
 }
 
 int main(int argc, char** argv)

@@ -61,7 +61,7 @@ static void worker(std::vector<std::string> args)
   XBT_INFO("Exiting now.");
 }
 
-static int master_mpi(int argc, char* argv[])
+static void master_mpi(int argc, char* argv[])
 {
   MPI_Init(&argc, &argv);
 
@@ -78,10 +78,9 @@ static int master_mpi(int argc, char* argv[])
   MPI_Finalize();
 
   XBT_INFO("After finalize %d %d", rank, test[0]);
-  return 0;
 }
 
-static int alltoall_mpi(int argc, char* argv[])
+static void alltoall_mpi(int argc, char* argv[])
 {
   MPI_Init(&argc, &argv);
 
@@ -96,7 +95,6 @@ static int alltoall_mpi(int argc, char* argv[])
 
   XBT_INFO("after alltoall %d", rank);
   MPI_Finalize();
-  return 0;
 }
 
 int main(int argc, char* argv[])

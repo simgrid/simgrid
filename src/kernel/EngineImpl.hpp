@@ -27,8 +27,10 @@ public:
   virtual ~EngineImpl();
 
   void load_deployment(const std::string& file);
+  void register_function(const std::string& name, int (*code)(int, char**)); // deprecated
   void register_function(const std::string& name, xbt_main_func_t code);
   void register_function(const std::string& name, void (*code)(std::vector<std::string>));
+  void register_default(int (*code)(int, char**)); // deprecated
   void register_default(xbt_main_func_t code);
 
   routing::NetZoneImpl* netzone_root_ = nullptr;

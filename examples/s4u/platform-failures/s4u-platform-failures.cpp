@@ -22,7 +22,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-static int master(int argc, char* argv[])
+static void master(int argc, char* argv[])
 {
   xbt_assert(argc == 5, "Expecting one parameter");
 
@@ -67,10 +67,9 @@ static int master(int argc, char* argv[])
   }
 
   XBT_INFO("Goodbye now!");
-  return 0;
 }
 
-static int worker(int argc, char* argv[])
+static void worker(int argc, char* argv[])
 {
   xbt_assert(argc == 2, "Expecting one parameter");
   long id                          = xbt_str_parse_int(argv[1], "Invalid argument %s");
@@ -96,7 +95,6 @@ static int worker(int argc, char* argv[])
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     }
   }
-  return 0;
 }
 
 int main(int argc, char* argv[])

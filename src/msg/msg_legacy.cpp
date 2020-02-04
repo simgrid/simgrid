@@ -23,13 +23,13 @@ msg_error_t MSG_main()
   simgrid_run();
   return MSG_OK;
 }
-void MSG_function_register(const char* name, xbt_main_func_t code)
+void MSG_function_register(const char* name, int (*code)(int, char**))
 {
-  simgrid_register_function(name, code);
+  simgrid_register_function(name, (void (*)(int, char**))code);
 }
-void MSG_function_register_default(xbt_main_func_t code)
+void MSG_function_register_default(int (*code)(int, char**))
 {
-  simgrid_register_default(code);
+  simgrid_register_default((void (*)(int, char**))code);
 }
 double MSG_get_clock()
 {

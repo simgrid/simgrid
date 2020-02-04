@@ -32,7 +32,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_create, "The logging channel used in this
  *
  * One 'receiver' actor is instantiated within the simulation later in this file.
  */
-static int receiver(int argc, char** argv)
+static void receiver(int argc, char** argv)
 {
   xbt_assert(argc == 2, "This actor expects a single argument: the mailbox on which to get messages");
   sg_mailbox_t mailbox = sg_mailbox_by_name(argv[1]);
@@ -44,11 +44,10 @@ static int receiver(int argc, char** argv)
   const char* msg3 = sg_mailbox_get(mailbox);
   XBT_INFO("I received '%s', '%s' and '%s'", msg1, msg2, msg3);
   XBT_INFO("I'm done. See you.");
-  return 0;
 }
 
 /* Our second class of actors, in charge of sending stuff */
-static int sender(int argc, char** argv)
+static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 3, "Actor 'sender' requires 2 parameters (mailbox and data to send), but got only %d", argc - 1);
   XBT_INFO("Hello s4u, I have something to send");
@@ -57,7 +56,6 @@ static int sender(int argc, char** argv)
 
   sg_mailbox_put(mailbox, xbt_strdup(sent_data), strlen(sent_data));
   XBT_INFO("I'm done. See you.");
-  return 0;
 }
 
 /* Here comes the main function of your program */

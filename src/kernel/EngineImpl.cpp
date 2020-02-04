@@ -48,6 +48,12 @@ void EngineImpl::load_deployment(const std::string& file)
   surf_parse();
   surf_parse_close();
 }
+void EngineImpl::register_function(const std::string& name, int (*code)(int, char**)) // deprecated
+{
+  simix_global->registered_functions[name] = [code](std::vector<std::string> args) {
+    return xbt::wrap_main(code, std::move(args));
+  };
+}
 void EngineImpl::register_function(const std::string& name, xbt_main_func_t code)
 {
   simix_global->registered_functions[name] = [code](std::vector<std::string> args) {
@@ -62,6 +68,12 @@ void EngineImpl::register_function(const std::string& name, void (*code)(std::ve
   };
 }
 
+void EngineImpl::register_default(int (*code)(int, char**)) // deprecated
+{
+  simix_global->default_function = [code](std::vector<std::string> args) {
+    return xbt::wrap_main(code, std::move(args));
+  };
+}
 void EngineImpl::register_default(xbt_main_func_t code)
 {
   simix_global->default_function = [code](std::vector<std::string> args) {
