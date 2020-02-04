@@ -1,0 +1,19 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+
+  <!-- This a weird deployment file: we only start one actor from here and the others from the main().
+    -
+    -  This is only for the example, but don't do that at home.
+    -  Instead, you want to start all your actors from the deployment file.
+    -->
+   
+  <actor host="Fafard" function="sender">
+    <argument value="PopPop!"/> <!-- msg as argv[1] -->
+    <argument value="other mb"/> <!-- mbox as argv[2] -->
+  </actor>
+  <actor host="Ginette" function="forwarder">
+    <argument value="other mb"/>
+    <argument value="mb42"/>
+  </actor>
+</platform>

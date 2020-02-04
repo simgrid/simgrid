@@ -1,0 +1,13 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-actor-create
+> [Tremblay:sender1:(2) 0.000000] [s4u_actor_create/INFO] Hello s4u, I have something to send
+> [Jupiter:sender2:(3) 0.000000] [s4u_actor_create/INFO] Hello s4u, I have something to send
+> [Fafard:sender:(4) 0.000000] [s4u_actor_create/INFO] Hello s4u, I have something to send
+> [Fafard:receiver:(1) 0.000000] [s4u_actor_create/INFO] Hello s4u, I'm ready to get any message you'd want on mb42
+> [Fafard:sender:(4) 0.016392] [s4u_actor_create/INFO] I'm done. See you.
+> [Ginette:forwarder:(5) 0.016392] [s4u_actor_create/INFO] Forward 'PopPop!'.
+> [Tremblay:sender1:(2) 0.025709] [s4u_actor_create/INFO] I'm done. See you.
+> [Jupiter:sender2:(3) 0.070434] [s4u_actor_create/INFO] I'm done. See you.
+> [Fafard:receiver:(1) 0.086825] [s4u_actor_create/INFO] I received 'GaBuZoMeu', 'GloubiBoulga' and 'PopPop!'
+> [Fafard:receiver:(1) 0.086825] [s4u_actor_create/INFO] I'm done. See you.
