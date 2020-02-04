@@ -31,7 +31,7 @@ static int sender(int argc, char* argv[])
   sg_mailbox_t* mboxes = malloc(sizeof(sg_mailbox_t) * receivers_count);
   for (long i = 0; i < receivers_count; i++) {
     char mailbox_name[80];
-    snprintf(mailbox_name, 79, "receiver-%ld", (i));
+    snprintf(mailbox_name, 79, "receiver-%ld", i);
     sg_mailbox_t mbox = sg_mailbox_by_name(mailbox_name);
     mboxes[i]         = mbox;
   }
@@ -39,20 +39,19 @@ static int sender(int argc, char* argv[])
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
     char msg_content[80];
-    snprintf(msg_content, 79, "Message_%d", i);
+    snprintf(msg_content, 79, "Message %d", i);
     sg_mailbox_t mbox = mboxes[i % receivers_count];
     XBT_INFO("Send '%s' to '%s'", msg_content, sg_mailbox_get_name(mbox));
 
-    sg_comm_t comm                       = sg_mailbox_put_async(mbox, xbt_strdup(msg_content), msg_size);
-    pending_comms[pending_comms_count++] = comm;
+    /* Create a communication representing the ongoing communication, and store it in pending_comms */
+    pending_comms[pending_comms_count++] = sg_mailbox_put_async(mbox, xbt_strdup(msg_content), msg_size);
   }
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
     XBT_INFO("Send 'finalize' to 'receiver-%d'", i);
     char* end_msg                        = xbt_strdup("finalize");
     sg_mailbox_t mbox                    = mboxes[i % receivers_count];
-    sg_comm_t comm                       = sg_mailbox_put_async(mbox, end_msg, 0);
-    pending_comms[pending_comms_count++] = comm;
+    pending_comms[pending_comms_count++] = sg_mailbox_put_async(mbox, end_msg, 0);
   }
 
   XBT_INFO("Done dispatching all messages");

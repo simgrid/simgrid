@@ -12,8 +12,8 @@ set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml    PARENT_SCOPE)
 
 foreach(x async-waitany)
-  ADD_TESH(tesh-c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/c/${x}
-                       --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/c/${x}
-                       ${CMAKE_HOME_DIRECTORY}/teshsuite/c/${x}/${x}.tesh)
+  ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                  --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/${x}
+                  --cd ${CMAKE_HOME_DIRECTORY}/examples/c/${x}
+                  ${CMAKE_HOME_DIRECTORY}/examples/c/${x}/${x}.tesh)
 endforeach()

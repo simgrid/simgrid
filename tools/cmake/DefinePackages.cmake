@@ -1003,6 +1003,7 @@ set(txt_files
 # The list of cmake build directories is constructed from the following list.
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
+  examples/c/CMakeLists.txt
   examples/s4u/CMakeLists.txt
   examples/smpi/CMakeLists.txt
   examples/smpi/NAS/CMakeLists.txt
@@ -1015,7 +1016,6 @@ set(CMAKEFILES_TXT
   examples/deprecated/msg/mc/CMakeLists.txt
   examples/deprecated/simdag/CMakeLists.txt
 
-  teshsuite/c/CMakeLists.txt
   teshsuite/java/CMakeLists.txt
   teshsuite/lua/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt

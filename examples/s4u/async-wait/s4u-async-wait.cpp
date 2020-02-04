@@ -36,8 +36,8 @@ static int sender(int argc, char** argv)
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
     std::string msg_content = std::string("Message ") + std::to_string(i);
-    // Copy the data we send: 'msg_content' is not a stable storage location.
-    // It will be destroyed when this actor leaves the loop, ie before the receiver gets it
+    // Copy the data we send: the 'msg_content' variable is not a stable storage location.
+    // It will be destroyed when this actor leaves the loop, ie before the receiver gets the data
     std::string* payload = new std::string(msg_content);
 
     XBT_INFO("Send '%s' to '%s'", msg_content.c_str(), mboxes[i % receivers_count]->get_cname());
