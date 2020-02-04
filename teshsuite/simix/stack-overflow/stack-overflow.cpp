@@ -5,9 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/simix.hpp"
+#include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "xbt/log.h"
-#include <simgrid/engine.h>
 
 #include <string>
 
@@ -41,13 +41,13 @@ static void master()
 
 int main(int argc, char* argv[])
 {
-  SIMIX_global_init(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
 
-  simgrid_load_platform(argv[1]);
-  simcall_process_create("master", master, NULL, sg_host_by_name("Tremblay"), NULL);
-  SIMIX_run();
+  e.load_platform(argv[1]);
+  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
+  e.run();
 
   return 0;
 }

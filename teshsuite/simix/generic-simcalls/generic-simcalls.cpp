@@ -8,8 +8,9 @@
 
 #include <xbt/future.hpp>
 
-#include <simgrid/engine.h>
 #include <simgrid/kernel/future.hpp>
+#include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Engine.hpp>
 #include <simgrid/simix.hpp>
 #include <simgrid/simix/blocking_simcall.hpp>
 #include <xbt/log.h>
@@ -99,10 +100,10 @@ static void master()
 
 int main(int argc, char* argv[])
 {
-  SIMIX_global_init(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
-  simgrid_load_platform(argv[1]);
-  simcall_process_create("master", example::master, NULL, sg_host_by_name("Tremblay"), NULL);
-  SIMIX_run();
+  e.load_platform(argv[1]);
+  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), example::master);
+  e.run();
   return 0;
 }
