@@ -54,6 +54,13 @@ Starting and Stoping Actors
           - Directly with :py:func:`simgrid.Actor.create()`
           - From XML with :py:func:`simgrid.Engine.register_actor()` and then :py:func:`simgrid.Engine.load_deployment()`
              
+       .. example-tab:: examples/c/actor-create/actor-create.c
+       
+          You create actors either:
+            
+          - Directly with :cpp:func:`sg_actor_create()` followed by :cpp:func:`sg_actor_start`.
+          - From XML with :cpp:func:`simgrid_register_function` and then :cpp:func:`simgrid_load_deployment`.
+             
        .. example-tab:: examples/python/actor-create/actor-create_d.xml
        
           The following file is used in both C++ and Python.
@@ -268,6 +275,10 @@ Communications on the Network
       .. example-tab:: examples/python/async-waitany/async-waitany.py
 
          See also :py:func:`simgrid.Comm.wait_any()`.
+	 
+      .. example-tab:: examples/c/async-waitany/async-waitany.c
+
+         See also :cpp:func:`sg_comm_wait_any`.
      
 .. _s4u_ex_execution:
 

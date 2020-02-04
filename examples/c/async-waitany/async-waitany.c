@@ -63,7 +63,7 @@ static int sender(int argc, char* argv[])
    * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
    */
   while (pending_comms_count != 0) {
-    int changed_pos = sg_comm_wait_any_for(pending_comms, pending_comms_count, -1);
+    int changed_pos = sg_comm_wait_any(pending_comms, pending_comms_count);
     memmove(pending_comms + changed_pos, pending_comms + changed_pos + 1,
             sizeof(sg_comm_t) * (pending_comms_count - changed_pos - 1));
     pending_comms_count--;

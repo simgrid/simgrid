@@ -254,6 +254,10 @@ Actor* Comm::get_sender()
 } // namespace s4u
 } // namespace simgrid
 /* **************************** Public C interface *************************** */
+int sg_comm_wait_any(sg_comm_t* comms, size_t count)
+{
+  return sg_comm_wait_any_for(comms, count, -1);
+}
 int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;

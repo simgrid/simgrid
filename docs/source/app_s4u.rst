@@ -988,7 +988,7 @@ See :ref:`s4u_receiving_actor`.
 
    .. group-tab:: C
 
-      .. autodoxymethod:: ::sg_mailbox_set_receiver(const char *alias)
+      .. autodoxymethod:: sg_mailbox_set_receiver(const char *alias)
                   
 .. _API_s4u_Resource:
 
