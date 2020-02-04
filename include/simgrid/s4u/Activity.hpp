@@ -116,6 +116,16 @@ public:
   }
   friend void intrusive_ptr_add_ref(Activity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
 #endif
+  Activity* add_ref()
+  {
+    intrusive_ptr_add_ref(this);
+    return this;
+  }
+  Activity* unref()
+  {
+    intrusive_ptr_release(this);
+    return this;
+  }
 
 private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
