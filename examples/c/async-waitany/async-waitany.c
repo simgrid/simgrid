@@ -58,8 +58,8 @@ static int sender(int argc, char* argv[])
 
   /* Now that all message exchanges were initiated, wait for their completion, in order of termination.
    *
-   * This loop waits for first terminating message with wait_any() and remove it with erase(), until all comms are
-   * terminated
+   * This loop waits for first terminating message with wait_any() and remove it from the array (with a memmove),
+   *  until all comms are terminated.
    * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
    */
   while (pending_comms_count != 0) {
