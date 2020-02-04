@@ -254,16 +254,14 @@ Actor* Comm::get_sender()
 } // namespace s4u
 } // namespace simgrid
 /* **************************** Public C interface *************************** */
-int sg_comm_wait_any_for(const xbt_dynar_t comms, double timeout)
+int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
-  unsigned int i;
-  sg_comm_t comm;
-  xbt_dynar_foreach (comms, i, comm) {
-    s4u_comms.emplace_back(comm);
+  for (unsigned int i = 0; i < count; i++) {
+    s4u_comms.emplace_back(comms[i]);
   }
   int pos = simgrid::s4u::Comm::wait_any_for(&s4u_comms, timeout);
   if (pos != -1)
-    intrusive_ptr_release(xbt_dynar_get_as(comms, pos, sg_comm_t));
+    s4u_comms[pos]->unref();
   return pos;
 }

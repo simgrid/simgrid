@@ -23,35 +23,36 @@ static int sender(int argc, char* argv[])
   long msg_size        = xbt_str_parse_int(argv[2], "Invalid communication size: %s");
   long receivers_count = xbt_str_parse_int(argv[3], "Invalid amount of receivers: %s");
 
-  /* Dynar in which we store all ongoing communications */
-  xbt_dynar_t pending_comms = xbt_dynar_new(sizeof(sg_comm_t), NULL);
+  /* Array in which we store all ongoing communications */
+  sg_comm_t* pending_comms = malloc(sizeof(sg_comm_t) * (messages_count + receivers_count));
+  int pending_comms_count  = 0;
 
-  /* Make a dynar of the mailboxes to use */
-  xbt_dynar_t mboxes = xbt_dynar_new(sizeof(sg_mailbox_t), NULL);
+  /* Make an array of the mailboxes to use */
+  sg_mailbox_t* mboxes = malloc(sizeof(sg_mailbox_t) * receivers_count);
   for (long i = 0; i < receivers_count; i++) {
     char mailbox_name[80];
     snprintf(mailbox_name, 79, "receiver-%ld", (i));
     sg_mailbox_t mbox = sg_mailbox_by_name(mailbox_name);
-    xbt_dynar_push(mboxes, &mbox);
+    mboxes[i]         = mbox;
   }
 
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
     char msg_content[80];
     snprintf(msg_content, 79, "Message_%d", i);
-    sg_mailbox_t mbox = xbt_dynar_get_as(mboxes, i % receivers_count, sg_mailbox_t);
+    sg_mailbox_t mbox = mboxes[i % receivers_count];
     XBT_INFO("Send '%s' to '%s'", msg_content, sg_mailbox_get_name(mbox));
 
-    sg_comm_t comm = sg_mailbox_put_async(mbox, xbt_strdup(msg_content), msg_size);
-    xbt_dynar_push(pending_comms, &comm);
+    sg_comm_t comm                       = sg_mailbox_put_async(mbox, xbt_strdup(msg_content), msg_size);
+    pending_comms[pending_comms_count++] = comm;
   }
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
     XBT_INFO("Send 'finalize' to 'receiver-%d'", i);
-    char* end_msg  = xbt_strdup("finalize");
-    sg_mailbox_t mbox = xbt_dynar_get_as(mboxes, i % receivers_count, sg_mailbox_t);
-    sg_comm_t comm    = sg_mailbox_put_async(mbox, end_msg, 0);
-    xbt_dynar_push(pending_comms, &comm);
+    char* end_msg                        = xbt_strdup("finalize");
+    sg_mailbox_t mbox                    = mboxes[i % receivers_count];
+    sg_comm_t comm                       = sg_mailbox_put_async(mbox, end_msg, 0);
+    pending_comms[pending_comms_count++] = comm;
   }
 
   XBT_INFO("Done dispatching all messages");
@@ -62,16 +63,19 @@ static int sender(int argc, char* argv[])
    * terminated
    * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
    */
-  while (!xbt_dynar_is_empty(pending_comms)) {
-    int changed_pos = sg_comm_wait_any_for(pending_comms, -1);
-    xbt_dynar_remove_at(pending_comms, changed_pos, NULL);
+  while (pending_comms_count != 0) {
+    int changed_pos = sg_comm_wait_any_for(pending_comms, pending_comms_count, -1);
+    memmove(pending_comms + changed_pos, pending_comms + changed_pos + 1,
+            sizeof(sg_comm_t) * (pending_comms_count - changed_pos - 1));
+    pending_comms_count--;
+
     if (changed_pos != 0)
       XBT_INFO("Remove the %dth pending comm: it terminated earlier than another comm that was initiated first.",
                changed_pos);
   }
 
-  xbt_dynar_free(&pending_comms);
-  xbt_dynar_free(&mboxes);
+  free(pending_comms);
+  free(mboxes);
 
   XBT_INFO("Goodbye now!");
   return 0;

@@ -12,7 +12,7 @@
 /* C interface */
 SG_BEGIN_DECL
 
-XBT_PUBLIC int sg_comm_wait_any_for(const xbt_dynar_t comms, double timeout);
+XBT_PUBLIC int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout);
 
 SG_END_DECL
 
