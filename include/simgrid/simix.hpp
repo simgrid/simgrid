@@ -95,13 +95,6 @@ template <class R, class F> R simcall_blocking(F&& code, mc::SimcallInspector* t
 namespace simgrid {
 namespace simix {
 
-// What's executed as SIMIX actor code:
-typedef std::function<void()> ActorCode;
-
-// Create an ActorCode based on a std::string
-typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
-
-XBT_PUBLIC void register_function(const std::string& name, const ActorCodeFactory& factory);
 
 typedef std::pair<double, Timer*> TimerQelt;
 static boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<xbt::HeapComparator<TimerQelt>>> simix_timers;
@@ -130,9 +123,5 @@ public:
 
 } // namespace simix
 } // namespace simgrid
-
-XBT_PUBLIC smx_actor_t simcall_process_create(const std::string& name, const simgrid::simix::ActorCode& code,
-                                              void* data, sg_host_t host,
-                                              std::unordered_map<std::string, std::string>* properties);
 
 #endif

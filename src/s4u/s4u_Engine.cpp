@@ -92,23 +92,24 @@ void Engine::load_platform(const std::string& platf)
 
 void Engine::register_function(const std::string& name, int (*code)(int, char**)) // deprecated
 {
-  pimpl->register_function(name, code);
+  register_function(name, [code](std::vector<std::string> args) { return xbt::wrap_main(code, std::move(args)); });
 }
 void Engine::register_default(int (*code)(int, char**)) // deprecated
 {
-  pimpl->register_default(code);
+  register_default([code](std::vector<std::string> args) { return xbt::wrap_main(code, std::move(args)); });
 }
 
 /** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, void (*code)(int, char**))
 {
-  pimpl->register_function(name, code);
+  register_function(name, [code](std::vector<std::string> args) { return xbt::wrap_main(code, std::move(args)); });
 }
 
 /** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, void (*code)(std::vector<std::string>))
 {
-  pimpl->register_function(name, code);
+  register_function(name,
+                    [code](std::vector<std::string> args) { return std::bind(std::move(code), std::move(args)); });
 }
 /** Registers a function as the default main function of actors
  *
@@ -117,7 +118,16 @@ void Engine::register_function(const std::string& name, void (*code)(std::vector
  */
 void Engine::register_default(void (*code)(int, char**))
 {
-  pimpl->register_default(code);
+  register_default([code](std::vector<std::string> args) { return xbt::wrap_main(code, std::move(args)); });
+}
+void Engine::register_default(kernel::actor::ActorCodeFactory code)
+{
+  simgrid::kernel::actor::simcall([this, code]() { pimpl->register_default(code); });
+}
+
+void Engine::register_function(const std::string& name, kernel::actor::ActorCodeFactory code)
+{
+  simgrid::kernel::actor::simcall([this, name, code]() { pimpl->register_function(name, code); });
 }
 
 /** Load a deployment file and launch the actors that it contains

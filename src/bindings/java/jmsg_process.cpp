@@ -70,13 +70,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   jobject jprocess = jprocess_ref(jprocess_arg, env);
 
   /* Actually build the MSG process */
-  jstring jname         = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
-  const char* name      = env->GetStringUTFChars(jname, 0);
-  simgrid::simix::ActorCode function = [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); };
-  smx_actor_t self                   = SIMIX_process_self();
-  sg_host_t host                     = jhost_get_native(env, jhost);
-  smx_actor_t actor                  = simgrid::kernel::actor::simcall([name, function, host, self] {
-    return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(function), nullptr, host, nullptr, self)
+  jstring jname     = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
+  const char* name  = env->GetStringUTFChars(jname, 0);
+  auto actor_code   = [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); };
+  smx_actor_t self  = SIMIX_process_self();
+  sg_host_t host    = jhost_get_native(env, jhost);
+  smx_actor_t actor = simgrid::kernel::actor::simcall([name, actor_code, host, self] {
+    return simgrid::kernel::actor::ActorImpl::create(std::move(name), std::move(actor_code), nullptr, host, nullptr,
+                                                     self)
         .get();
   });
   MSG_process_yield();

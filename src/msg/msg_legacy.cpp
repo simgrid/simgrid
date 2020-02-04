@@ -4,7 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/msg/msg_private.hpp"
+#include "xbt/functional.hpp"
 
 #define MSG_CALL(type, oldname, args)
 
@@ -25,11 +27,13 @@ msg_error_t MSG_main()
 }
 void MSG_function_register(const char* name, int (*code)(int, char**))
 {
-  simgrid_register_function(name, (void (*)(int, char**))code);
+  simgrid::s4u::Engine::get_instance()->register_function(
+      name, [code](std::vector<std::string> args) { return simgrid::xbt::wrap_main(code, std::move(args)); });
 }
 void MSG_function_register_default(int (*code)(int, char**))
 {
-  simgrid_register_default((void (*)(int, char**))code);
+  simgrid::s4u::Engine::get_instance()->register_default(
+      [code](std::vector<std::string> args) { return simgrid::xbt::wrap_main(code, std::move(args)); });
 }
 double MSG_get_clock()
 {

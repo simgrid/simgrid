@@ -461,7 +461,7 @@ ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host)
   return ActorImplPtr(actor);
 }
 
-ActorImpl* ActorImpl::start(const simix::ActorCode& code)
+ActorImpl* ActorImpl::start(const ActorCode& code)
 {
   xbt_assert(code && host_ != nullptr, "Invalid parameters");
 
@@ -473,7 +473,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
 
   this->code_ = code;
   XBT_VERB("Create context %s", get_cname());
-  context_.reset(simix_global->context_factory->create_context(simix::ActorCode(code), this));
+  context_.reset(simix_global->context_factory->create_context(ActorCode(code), this));
 
   XBT_DEBUG("Start context '%s'", get_cname());
 
@@ -488,7 +488,7 @@ ActorImpl* ActorImpl::start(const simix::ActorCode& code)
   return this;
 }
 
-ActorImplPtr ActorImpl::create(const std::string& name, const simix::ActorCode& code, void* data, s4u::Host* host,
+ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
                                const std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
@@ -517,9 +517,9 @@ void create_maestro(const std::function<void()>& code)
   ActorImpl* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
 
   if (not code) {
-    maestro->context_.reset(simix_global->context_factory->create_context(simix::ActorCode(), maestro));
+    maestro->context_.reset(simix_global->context_factory->create_context(ActorCode(), maestro));
   } else {
-    maestro->context_.reset(simix_global->context_factory->create_maestro(simix::ActorCode(code), maestro));
+    maestro->context_.reset(simix_global->context_factory->create_maestro(ActorCode(code), maestro));
   }
 
   maestro->simcall.issuer_      = maestro;
@@ -602,7 +602,7 @@ void SIMIX_process_on_exit(smx_actor_t actor,
  * @param host where the new agent is executed.
  * @param properties the properties of the process
  */
-smx_actor_t simcall_process_create(const std::string& name, const simgrid::simix::ActorCode& code, void* data,
+smx_actor_t simcall_process_create(const std::string& name, const simgrid::kernel::actor::ActorCode& code, void* data,
                                    sg_host_t host, std::unordered_map<std::string, std::string>* properties)
 {
   smx_actor_t self = simgrid::kernel::actor::ActorImpl::self();

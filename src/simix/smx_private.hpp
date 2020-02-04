@@ -55,12 +55,6 @@ public:
 #endif
   kernel::actor::ActorImpl* maestro_ = nullptr;
 
-  // Maps function names to actor code:
-  std::unordered_map<std::string, simix::ActorCodeFactory> registered_functions;
-
-  // This might be used when no corresponding function name is registered:
-  simix::ActorCodeFactory default_function;
-
   std::mutex mutex;
 
   std::vector<xbt::Task<void()>> tasks;

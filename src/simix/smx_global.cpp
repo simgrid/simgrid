@@ -264,7 +264,7 @@ config::Flag<double> cfg_breakpoint{
 } // namespace simix
 } // namespace simgrid
 
-static simgrid::simix::ActorCode maestro_code;
+static simgrid::kernel::actor::ActorCode maestro_code;
 void SIMIX_set_maestro(void (*code)(void*), void* data)
 {
 #ifdef _WIN32

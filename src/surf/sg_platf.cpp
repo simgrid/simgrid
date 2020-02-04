@@ -451,7 +451,8 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     }
     xbt_die("%s", msg.c_str());
   }
-  const simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(actor->function);
+  const simgrid::kernel::actor::ActorCodeFactory& factory =
+      simgrid::kernel::EngineImpl::get_instance()->get_function(actor->function);
   xbt_assert(factory, "Error while creating an actor from the XML file: Function '%s' not registered", actor->function);
 
   double start_time = actor->start_time;
@@ -459,7 +460,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   bool auto_restart = actor->restart_on_failure;
 
   std::string actor_name     = actor->args[0];
-  simgrid::simix::ActorCode code = factory(std::move(actor->args));
+  simgrid::kernel::actor::ActorCode code = factory(std::move(actor->args));
   std::shared_ptr<std::unordered_map<std::string, std::string>> properties(actor->properties);
 
   simgrid::kernel::actor::ProcessArg* arg =

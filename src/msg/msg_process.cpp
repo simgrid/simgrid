@@ -70,7 +70,7 @@ msg_process_t MSG_process_create_with_environment(const char* name, int (*code)(
       xbt_dict_foreach (properties, cursor, key, value)
         actor->set_property(key, value);
     }
-    sg_actor_start(actor, (void (*)(int, char**))code, argc, argv);
+    actor->start(std::move(simgrid::xbt::wrap_main(code, argc, argv)));
   } catch (simgrid::HostFailureException const&) {
     xbt_die("Could not launch a new process on failed host %s.", host->get_cname());
   }

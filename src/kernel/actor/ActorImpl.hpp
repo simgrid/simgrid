@@ -115,9 +115,9 @@ public:
   s4u::Actor* ciface() { return &piface_; }
 
   ActorImplPtr init(const std::string& name, s4u::Host* host);
-  ActorImpl* start(const simix::ActorCode& code);
+  ActorImpl* start(const ActorCode& code);
 
-  static ActorImplPtr create(const std::string& name, const simix::ActorCode& code, void* data, s4u::Host* host,
+  static ActorImplPtr create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
                              const std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
   static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host,
                              const std::unordered_map<std::string, std::string>* properties);
@@ -199,5 +199,9 @@ XBT_PUBLIC int get_maxpid();
 } // namespace simgrid
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
+
+XBT_PUBLIC smx_actor_t simcall_process_create(const std::string& name, const simgrid::kernel::actor::ActorCode& code,
+                                              void* data, sg_host_t host,
+                                              std::unordered_map<std::string, std::string>* properties);
 
 #endif

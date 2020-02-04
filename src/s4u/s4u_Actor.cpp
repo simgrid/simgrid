@@ -11,6 +11,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/include/mc/mc.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/HostImpl.hpp"
@@ -73,7 +74,8 @@ ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::func
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::string& function,
                        std::vector<std::string> args)
 {
-  const simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
+  const simgrid::kernel::actor::ActorCodeFactory& factory =
+      simgrid::kernel::EngineImpl::get_instance()->get_function(function);
   return create(name, host, factory(std::move(args)));
 }
 
@@ -464,7 +466,7 @@ sg_actor_t sg_actor_init(const char* name, sg_host_t host)
 
 void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char* const* argv)
 {
-  simgrid::simix::ActorCode function;
+  simgrid::kernel::actor::ActorCode function;
   if (code)
     function = simgrid::xbt::wrap_main(code, argc, argv);
   actor->start(std::move(function));

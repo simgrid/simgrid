@@ -446,7 +446,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
     }
   }
 
-  simix_global->default_function = [executable, fdin_size](std::vector<std::string> args) {
+  simgrid::s4u::Engine::get_instance()->register_default([executable, fdin_size](std::vector<std::string> args) {
     return std::function<void()>([executable, fdin_size, args] {
       static std::size_t rank = 0;
       // Copy the dynamic library:
@@ -501,7 +501,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
       xbt_assert(entry_point, "Could not resolve entry point");
       smpi_run_entry_point(entry_point, executable, args);
     });
-  };
+  });
 }
 
 static void smpi_init_privatization_no_dlopen(const std::string& executable)
@@ -520,10 +520,10 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable)
     smpi_backup_global_memory_segment();
 
   // Execute the same entry point for each simulated process:
-  simix_global->default_function = [entry_point, executable](std::vector<std::string> args) {
+  simgrid::s4u::Engine::get_instance()->register_default([entry_point, executable](std::vector<std::string> args) {
     return std::function<void()>(
         [entry_point, executable, args] { smpi_run_entry_point(entry_point, executable, args); });
-  };
+  });
 }
 
 int smpi_main(const char* executable, int argc, char* argv[])

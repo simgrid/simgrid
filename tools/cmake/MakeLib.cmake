@@ -24,16 +24,6 @@ set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 set_property(TARGET simgrid
              APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
 
-# Don't complain when we cast (int (*)(int,char**)) into (void(*)(int,char**))
-# This will stop when MSG goes away
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_legacy.cpp  PROPERTY COMPILE_FLAGS -Wno-error=bad-function-cast)
-  set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_process.cpp PROPERTY COMPILE_FLAGS -Wno-error=bad-function-cast)
-elseif(CMAKE_COMPILER_IS_GNUCXX)
-  set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_legacy.cpp  PROPERTY COMPILE_FLAGS -Wno-error=cast-function-type)
-  set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_process.cpp PROPERTY COMPILE_FLAGS -Wno-error=cast-function-type)
-endif()
-
 add_dependencies(simgrid maintainer_files)
 
 if(enable_model-checking)

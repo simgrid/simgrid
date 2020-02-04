@@ -11,6 +11,7 @@
 #ifdef __cplusplus
 
 #include <boost/intrusive_ptr.hpp>
+#include <vector>
 
 namespace simgrid {
 
@@ -103,6 +104,11 @@ class EngineImpl;
 namespace actor {
 class ActorImpl;
 typedef boost::intrusive_ptr<ActorImpl> ActorImplPtr;
+
+// What's executed as an actor code:
+typedef std::function<void()> ActorCode;
+// Create an ActorCode from the parameters parsed in the XML file (or elsewhere)
+typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 } // namespace actor
 
 namespace activity {

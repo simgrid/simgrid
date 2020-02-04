@@ -48,37 +48,14 @@ void EngineImpl::load_deployment(const std::string& file)
   surf_parse();
   surf_parse_close();
 }
-void EngineImpl::register_function(const std::string& name, int (*code)(int, char**)) // deprecated
-{
-  simix_global->registered_functions[name] = [code](std::vector<std::string> args) {
-    return xbt::wrap_main(code, std::move(args));
-  };
-}
-void EngineImpl::register_function(const std::string& name, xbt_main_func_t code)
-{
-  simix_global->registered_functions[name] = [code](std::vector<std::string> args) {
-    return xbt::wrap_main(code, std::move(args));
-  };
-}
 
-void EngineImpl::register_function(const std::string& name, void (*code)(std::vector<std::string>))
+void EngineImpl::register_function(const std::string& name, actor::ActorCodeFactory code)
 {
-  simix_global->registered_functions[name] = [code](std::vector<std::string> args) {
-    return std::bind(std::move(code), std::move(args));
-  };
+  registered_functions[name] = code;
 }
-
-void EngineImpl::register_default(int (*code)(int, char**)) // deprecated
+void EngineImpl::register_default(actor::ActorCodeFactory code)
 {
-  simix_global->default_function = [code](std::vector<std::string> args) {
-    return xbt::wrap_main(code, std::move(args));
-  };
-}
-void EngineImpl::register_default(xbt_main_func_t code)
-{
-  simix_global->default_function = [code](std::vector<std::string> args) {
-    return xbt::wrap_main(code, std::move(args));
-  };
+  default_function = code;
 }
 
 } // namespace kernel

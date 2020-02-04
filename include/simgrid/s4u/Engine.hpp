@@ -25,6 +25,8 @@ namespace s4u {
  * This is a singleton containing all the main functions of the simulation.
  */
 class XBT_PUBLIC Engine {
+  friend simgrid::kernel::EngineImpl;
+
 public:
   /** Constructor, taking the command line parameters of your main function */
   explicit Engine(int* argc, char** argv);
@@ -57,21 +59,22 @@ public:
   XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_default(
       int (*code)(int, char**));
   void register_default(void (*code)(int, char**));
+  void register_default(kernel::actor::ActorCodeFactory factory);
 
+  void register_function(const std::string& name, kernel::actor::ActorCodeFactory factory);
   template <class F> void register_actor(const std::string& name)
   {
-    simix::register_function(name, [](std::vector<std::string> args) {
-      return simix::ActorCode([args] {
+    register_function(name, [](std::vector<std::string> args) {
+      return kernel::actor::ActorCode([args] {
         F code(std::move(args));
         code();
       });
     });
   }
-
   template <class F> void register_actor(const std::string& name, F code)
   {
-    simix::register_function(name, [code](std::vector<std::string> args) {
-      return simix::ActorCode([code, args] { code(std::move(args)); });
+    register_function(name, [code](std::vector<std::string> args) {
+      return kernel::actor::ActorCode([code, args] { code(std::move(args)); });
     });
   }
 

@@ -109,7 +109,4 @@ XBT_PRIVATE void SIMIX_context_mod_exit();
 #ifndef WIN32
 XBT_PUBLIC_DATA unsigned char sigsegv_stack[SIGSTKSZ];
 #endif
-
-XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const std::string& name);
-
 #endif
