@@ -9,7 +9,11 @@ foreach(x actor-create async-waitany)
 endforeach()
 
 set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
-set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml    PARENT_SCOPE)
+set(tesh_files    ${tesh_files}     PARENT_SCOPE)
+
+set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-create_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml    
+			       PARENT_SCOPE)
 
 foreach(x async-waitany)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms

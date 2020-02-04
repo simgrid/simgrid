@@ -16,6 +16,12 @@ include doc/webcruft/simgrid_logo_2011.gif
 include doc/webcruft/simgrid_logo_2011.png
 include doc/webcruft/simgrid_logo_2011_small.png
 include doc/webcruft/storage_sample_scenario.png
+include examples/c/actor-create/actor-create.c
+include examples/c/actor-create/actor-create.tesh
+include examples/c/actor-create/actor-create_d.xml
+include examples/c/async-waitany/async-waitany.c
+include examples/c/async-waitany/async-waitany.tesh
+include examples/c/async-waitany/async-waitany_d.xml
 include examples/deprecated/java/app/bittorrent/Common.java
 include examples/deprecated/java/app/bittorrent/Connection.java
 include examples/deprecated/java/app/bittorrent/Main.java
@@ -561,8 +567,6 @@ include examples/smpi/trace_call_location/trace_call_location.c
 include examples/smpi/trace_call_location/trace_call_location.tesh
 include examples/smpi/trace_simple/trace_simple.c
 include examples/smpi/trace_simple/trace_simple.tesh
-include teshsuite/c/async-waitany/async-waitany.c
-include teshsuite/c/async-waitany/async-waitany_d.xml
 include teshsuite/java/semaphoregc/SemaphoreGC.java
 include teshsuite/java/semaphoregc/semaphoregc.tesh
 include teshsuite/java/sleephostoff/SleepHostOff.java
@@ -618,6 +622,9 @@ include teshsuite/msg/async-wait/async-wait_d.xml
 include teshsuite/msg/async-waitall/async-waitall.c
 include teshsuite/msg/async-waitall/async-waitall.tesh
 include teshsuite/msg/async-waitall/async-waitall_d.xml
+include teshsuite/msg/async-waitany/async-waitany.c
+include teshsuite/msg/async-waitany/async-waitany.tesh
+include teshsuite/msg/async-waitany/async-waitany_d.xml
 include teshsuite/msg/cloud-capping/cloud-capping.c
 include teshsuite/msg/cloud-capping/cloud-capping.tesh
 include teshsuite/msg/cloud-migration/cloud-migration.c
@@ -1863,6 +1870,7 @@ include docs/source/tuto_smpi/img/big-picture.svg
 include docs/source/tuto_smpi/img/lu.S.4.png
 include docs/source/tuto_smpi/roundtrip.c
 include examples/README.rst
+include examples/c/CMakeLists.txt
 include examples/deprecated/java/.classpath
 include examples/deprecated/java/.project
 include examples/deprecated/java/CMakeLists.txt
@@ -2660,7 +2668,6 @@ include src/xbt/xbt_str.cpp
 include src/xbt/xbt_str_test.cpp
 include src/xbt/xbt_virtu.cpp
 include src/xbt_modinter.h
-include teshsuite/c/CMakeLists.txt
 include teshsuite/java/CMakeLists.txt
 include teshsuite/lua/CMakeLists.txt
 include teshsuite/lua/lua_platforms.tesh

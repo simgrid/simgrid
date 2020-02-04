@@ -1,6 +1,6 @@
 # C examples
 foreach(x app-pingpong app-token-ring
-          async-wait async-waitall
+          async-wait async-waitall async-waitany
           cloud-capping cloud-migration cloud-two-tasks cloud-simple
           get_sender host_on_off host_on_off_recv
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
@@ -67,6 +67,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/async-waitall_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/io-file-remote_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/platform-properties_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/baseline_d.xml
