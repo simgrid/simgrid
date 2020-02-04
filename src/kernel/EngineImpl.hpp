@@ -31,8 +31,8 @@ public:
   virtual ~EngineImpl();
 
   void load_deployment(const std::string& file);
-  void register_function(const std::string& name, actor::ActorCodeFactory code);
-  void register_default(actor::ActorCodeFactory code);
+  void register_function(const std::string& name, const actor::ActorCodeFactory& code);
+  void register_default(const actor::ActorCodeFactory& code);
 
   routing::NetZoneImpl* netzone_root_ = nullptr;
   static EngineImpl* get_instance() { return simgrid::s4u::Engine::get_instance()->pimpl; }

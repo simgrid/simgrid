@@ -120,14 +120,14 @@ void Engine::register_default(void (*code)(int, char**))
 {
   register_default([code](std::vector<std::string> args) { return xbt::wrap_main(code, std::move(args)); });
 }
-void Engine::register_default(kernel::actor::ActorCodeFactory code)
+void Engine::register_default(const kernel::actor::ActorCodeFactory& code)
 {
-  simgrid::kernel::actor::simcall([this, code]() { pimpl->register_default(code); });
+  simgrid::kernel::actor::simcall([this, &code]() { pimpl->register_default(code); });
 }
 
-void Engine::register_function(const std::string& name, kernel::actor::ActorCodeFactory code)
+void Engine::register_function(const std::string& name, const kernel::actor::ActorCodeFactory& code)
 {
-  simgrid::kernel::actor::simcall([this, name, code]() { pimpl->register_function(name, code); });
+  simgrid::kernel::actor::simcall([this, name, &code]() { pimpl->register_function(name, code); });
 }
 
 /** Load a deployment file and launch the actors that it contains

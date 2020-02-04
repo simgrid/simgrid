@@ -59,9 +59,9 @@ public:
   XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_default(
       int (*code)(int, char**));
   void register_default(void (*code)(int, char**));
-  void register_default(kernel::actor::ActorCodeFactory factory);
+  void register_default(const kernel::actor::ActorCodeFactory& factory);
 
-  void register_function(const std::string& name, kernel::actor::ActorCodeFactory factory);
+  void register_function(const std::string& name, const kernel::actor::ActorCodeFactory& factory);
   template <class F> void register_actor(const std::string& name)
   {
     register_function(name, [](std::vector<std::string> args) {

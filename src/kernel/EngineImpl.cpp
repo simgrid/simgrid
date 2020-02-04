@@ -49,11 +49,11 @@ void EngineImpl::load_deployment(const std::string& file)
   surf_parse_close();
 }
 
-void EngineImpl::register_function(const std::string& name, actor::ActorCodeFactory code)
+void EngineImpl::register_function(const std::string& name, const actor::ActorCodeFactory& code)
 {
   registered_functions[name] = code;
 }
-void EngineImpl::register_default(actor::ActorCodeFactory code)
+void EngineImpl::register_default(const actor::ActorCodeFactory& code)
 {
   default_function = code;
 }
