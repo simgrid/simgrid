@@ -1,34 +1,28 @@
 #!/usr/bin/env tesh
 
-p Testing the MSG_comm_waitany function
-
 ! output sort 19
 $ ${bindir:=.}/async-waitany ${platfdir:=.}/small_platform.xml ${srcdir:=.}/async-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_0 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-1 Task_1 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_2 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-1 Task_3 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_4 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-1 Task_5 comm_size 1000000.000000
-> [ 10.000000] (2:receiver@Fafard) Wait to receive task 0
-> [ 10.000000] (2:receiver@Fafard) Wait to receive task 1
-> [ 10.000000] (2:receiver@Fafard) Wait to receive task 2
-> [ 10.000000] (3:receiver@Jupiter) Wait to receive task 0
-> [ 10.000000] (3:receiver@Jupiter) Wait to receive task 1
-> [ 10.000000] (3:receiver@Jupiter) Wait to receive task 2
-> [ 10.423774] (2:receiver@Fafard) Processing "Task_4"
-> [ 10.469435] (3:receiver@Jupiter) Processing "Task_5"
-> [ 11.079116] (2:receiver@Fafard) "Task_4" done
-> [ 11.079116] (2:receiver@Fafard) Processing "Task_0"
-> [ 11.124778] (3:receiver@Jupiter) "Task_5" done
-> [ 11.124778] (3:receiver@Jupiter) Processing "Task_1"
-> [ 11.734459] (2:receiver@Fafard) "Task_0" done
-> [ 11.734459] (2:receiver@Fafard) Processing "Task_2"
-> [ 11.780120] (3:receiver@Jupiter) "Task_1" done
-> [ 11.780120] (3:receiver@Jupiter) Processing "Task_3"
-> [ 12.389801] (2:receiver@Fafard) "Task_2" done
-> [ 12.415509] (2:receiver@Fafard) I'm done. See you!
-> [ 12.435462] (3:receiver@Jupiter) "Task_3" done
-> [ 12.454477] (0:maestro@) Simulation time 12.4545
-> [ 12.454477] (1:sender@Tremblay) Goodbye now!
-> [ 12.454477] (3:receiver@Jupiter) I'm done. See you!
+> [  0.000000] (1:sender@Tremblay) Send 'Message_0' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'Message_1' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'Message_2' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'Message_3' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'Message_4' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'Message_5' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Done dispatching all messages
+> [  0.000000] (2:receiver@Fafard) Wait for my first message on 'receiver-0'
+> [  0.000000] (3:receiver@Jupiter) Wait for my first message on 'receiver-1'
+> [  0.158397] (2:receiver@Fafard) I got a 'Message_0'.
+> [  0.169155] (3:receiver@Jupiter) I got a 'Message_1'.
+> [  0.316794] (2:receiver@Fafard) I got a 'Message_2'.
+> [  0.338309] (3:receiver@Jupiter) I got a 'Message_3'.
+> [  0.475190] (2:receiver@Fafard) I got a 'Message_4'.
+> [  0.500898] (1:sender@Tremblay) Remove the 1th pending comm: it terminated earlier than another comm that was initiated first.
+> [  0.500898] (2:receiver@Fafard) I got a 'finalize'.
+> [  0.500898] (2:receiver@Fafard) I'm done. See you!
+> [  0.507464] (3:receiver@Jupiter) I got a 'Message_5'.
+> [  0.526478] (0:maestro@) Simulation time 0.526478
+> [  0.526478] (1:sender@Tremblay) Goodbye now!
+> [  0.526478] (3:receiver@Jupiter) I got a 'finalize'.
+> [  0.526478] (3:receiver@Jupiter) I'm done. See you!

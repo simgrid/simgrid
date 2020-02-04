@@ -55,6 +55,7 @@ protected:
   }
 
 public:
+  kernel::activity::ActivityImpl* get_impl() { return pimpl_.get(); }
   void vetoable_start()
   {
     state_ = State::STARTING;

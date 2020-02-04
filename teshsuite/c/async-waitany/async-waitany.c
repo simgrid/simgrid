@@ -25,34 +25,33 @@ static int sender(int argc, char* argv[])
 
   /* Dynar in which we store all ongoing communications */
   xbt_dynar_t pending_comms = xbt_dynar_new(sizeof(sg_comm_t), NULL);
-  ;
 
   /* Make a dynar of the mailboxes to use */
   xbt_dynar_t mboxes = xbt_dynar_new(sizeof(sg_mailbox_t), NULL);
   for (long i = 0; i < receivers_count; i++) {
     char mailbox_name[80];
     snprintf(mailbox_name, 79, "receiver-%ld", (i));
-    xbt_dynar_push_as(mboxes, sg_mailbox_t, sg_mailbox_by_name(mailbox_name));
+    sg_mailbox_t mbox = sg_mailbox_by_name(mailbox_name);
+    xbt_dynar_push(mboxes, &mbox);
   }
 
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
     char msg_content[80];
     snprintf(msg_content, 79, "Message_%d", i);
-    sg_mailbox_t mbox = (sg_mailbox_t)xbt_dynar_get_ptr(mboxes, i % receivers_count);
-
+    sg_mailbox_t mbox = xbt_dynar_get_as(mboxes, i % receivers_count, sg_mailbox_t);
     XBT_INFO("Send '%s' to '%s'", msg_content, sg_mailbox_get_name(mbox));
 
     sg_comm_t comm = sg_mailbox_put_async(mbox, xbt_strdup(msg_content), msg_size);
-    xbt_dynar_push_as(pending_comms, sg_comm_t, comm);
+    xbt_dynar_push(pending_comms, &comm);
   }
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
     XBT_INFO("Send 'finalize' to 'receiver-%d'", i);
     char* end_msg  = xbt_strdup("finalize");
-    sg_comm_t comm = sg_mailbox_put_async((sg_mailbox_t)xbt_dynar_get_ptr(mboxes, i % receivers_count), end_msg, 0);
-    xbt_dynar_push_as(pending_comms, sg_comm_t, comm);
-    xbt_free(end_msg);
+    sg_mailbox_t mbox = xbt_dynar_get_as(mboxes, i % receivers_count, sg_mailbox_t);
+    sg_comm_t comm    = sg_mailbox_put_async(mbox, end_msg, 0);
+    xbt_dynar_push(pending_comms, &comm);
   }
 
   XBT_INFO("Done dispatching all messages");

@@ -192,7 +192,7 @@ class VirtualMachineImpl;
 
 typedef simgrid::s4u::Actor s4u_Actor;
 typedef simgrid::s4u::Barrier s4u_Barrier;
-typedef simgrid::s4u::CommPtr s4u_CommPtr;
+typedef simgrid::s4u::Comm s4u_Comm;
 typedef simgrid::s4u::Host s4u_Host;
 typedef simgrid::s4u::Link s4u_Link;
 typedef simgrid::s4u::File s4u_File;
@@ -217,7 +217,7 @@ typedef simgrid::kernel::activity::State e_smx_state_t;
 
 typedef struct s4u_Actor s4u_Actor;
 typedef struct s4u_Barrier s4u_Barrier;
-typedef struct s4u_Comm* s4u_CommPtr;
+typedef struct s4u_Comm s4u_Comm;
 typedef struct s4u_Host s4u_Host;
 typedef struct s4u_Link s4u_Link;
 typedef struct s4u_File s4u_File;
@@ -245,8 +245,8 @@ typedef struct s_smx_sem* smx_sem_t;
 typedef s4u_Barrier* sg_bar_t;
 /** Constant pointer to a SimGrid barrier object */
 typedef const s4u_Barrier* const_sg_bar_t;
-typedef s4u_CommPtr sg_comm_t;
-typedef const s4u_CommPtr const_sg_comm_t;
+typedef s4u_Comm* sg_comm_t;
+typedef const s4u_Comm* const_sg_comm_t;
 typedef s4u_ConditionVariable* sg_cond_t;
 typedef const s4u_ConditionVariable* const_sg_cond_t;
 typedef s4u_Mailbox* sg_mailbox_t;

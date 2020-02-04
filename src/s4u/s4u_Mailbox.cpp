@@ -173,7 +173,7 @@ const char* sg_mailbox_get_name(sg_mailbox_t mailbox)
 
 sg_comm_t sg_mailbox_put_async(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes)
 {
-  return mailbox->put_async(payload, simulated_size_in_bytes);
+  return (mailbox->put_async(payload, simulated_size_in_bytes)).detach();
 }
 
 /** @brief Set the mailbox to receive in asynchronous mode
