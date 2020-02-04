@@ -26,8 +26,13 @@ set_property(TARGET simgrid
 
 # Don't complain when we cast (int (*)(int,char**)) into (void(*)(int,char**))
 # This will stop when MSG goes away
-set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_legacy.cpp   PROPERTY COMPILE_FLAGS -Wno-error=cast-function-type)
-set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_process.cpp  PROPERTY COMPILE_FLAGS -Wno-error=cast-function-type)
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_legacy.cpp  PROPERTY COMPILE_FLAGS -Wno-error=bad-function-cast)
+  set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_process.cpp PROPERTY COMPILE_FLAGS -Wno-error=bad-function-cast)
+elseif(CMAKE_COMPILER_IS_GNUCXX)
+  set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_legacy.cpp  PROPERTY COMPILE_FLAGS -Wno-error=cast-function-type)
+  set_property(SOURCE ${CMAKE_HOME_DIRECTORY}/src/msg/msg_process.cpp PROPERTY COMPILE_FLAGS -Wno-error=cast-function-type)
+endif()
 
 add_dependencies(simgrid maintainer_files)
 
