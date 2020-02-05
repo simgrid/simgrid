@@ -6,9 +6,95 @@
 #ifndef SIMGRID_XBT_RANDOM_HPP
 #define SIMGRID_XBT_RANDOM_HPP
 
+#include "xbt/base.h"
+#include <random>
+
 namespace simgrid {
 namespace xbt {
 namespace random {
+
+/** A random number generator.
+ *
+ * It uses a std::mersenne_twister_engine (std::mt19937) and provides several distributions.
+ * This interface is implemented by StdRandom and XbtRandom.
+ */
+class XBT_PUBLIC Random {
+public:
+  std::mt19937 mt19937_gen; // the random number engine
+
+  /** @brief Build a new random number generator with default seed */
+  Random() = default;
+  /** @brief Build a new random number generator with given seed */
+  Random(int seed) : mt19937_gen(seed) {}
+
+  virtual ~Random() = default;
+
+  /**
+   * @brief Sets the seed of the Mersenne-Twister RNG
+   */
+  void set_seed(int seed) { mt19937_gen.seed(seed); }
+
+  /**
+   * @brief Draws an integer number uniformly in range [min, max] (min and max included)
+   *
+   * @param min Minimum value
+   * @param max Maximum value
+   */
+  virtual int uniform_int(int min, int max) = 0;
+
+  /**
+   * @brief Draws a real number uniformly in range [min, max) (min included, and max excluded)
+   *
+   * @param min Minimum value
+   * @param max Maximum value
+   */
+  virtual double uniform_real(double min, double max) = 0;
+
+  /**
+   * @brief Draws a real number according to the given exponential distribution
+   *
+   * @param lambda Parameter of the exponential law
+   */
+  virtual double exponential(double lambda) = 0;
+
+  /**
+   * @brief Draws a real number according to the given normal distribution
+   *
+   * @param mean Mean of the normal distribution
+   * @param sd Standard deviation of the normal distribution
+   */
+  virtual double normal(double mean, double sd) = 0;
+};
+
+/** A random number generator using the C++ standard library.
+ *
+ * Caution: reproducibility is not guaranteed across different implementations.
+ */
+class XBT_PUBLIC StdRandom : public Random {
+public:
+  StdRandom() = default;
+  StdRandom(int seed) : Random(seed) {}
+
+  int uniform_int(int min, int max) override;
+  double uniform_real(double min, double max) override;
+  double exponential(double lambda) override;
+  double normal(double mean, double sd) override;
+};
+
+/** A reproducible random number generator.
+ *
+ * Uses our own implementation of distributions to ensure reproducibility.
+ */
+class XBT_PUBLIC XbtRandom : public Random {
+public:
+  XbtRandom() = default;
+  XbtRandom(int seed) : Random(seed) {}
+
+  int uniform_int(int min, int max) override;
+  double uniform_real(double min, double max) override;
+  double exponential(double lambda) override;
+  double normal(double mean, double sd) override;
+};
 
 /**
  * @brief Tells xbt/random to use the ad-hoc distribution implementation.
