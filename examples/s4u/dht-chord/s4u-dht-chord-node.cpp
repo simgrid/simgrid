@@ -498,7 +498,15 @@ void Node::operator()()
   while (now < std::min(start_time_ + deadline_, MAX_SIMULATION_TIME)) {
     if (comm_receive == nullptr)
       comm_receive = mailbox_->get_async(&data);
-    if (comm_receive->test()) {
+    bool comm_completed = true;
+    try {
+      if (not comm_receive->test())
+        comm_completed = false;
+    } catch (const simgrid::TimeoutException&) {
+      XBT_DEBUG("Caught a timeout, go ahead.");
+    }
+
+    if (comm_completed) {
       if (data != nullptr) {
         ChordMessage* message = static_cast<ChordMessage*>(data);
         handleMessage(message);
@@ -528,10 +536,14 @@ void Node::operator()()
     now = simgrid::s4u::Engine::get_clock();
   }
   if (comm_receive != nullptr) {
-    if (comm_receive->test())
-      delete static_cast<ChordMessage*>(data);
-    else
-      comm_receive->cancel();
+    try {
+      if (comm_receive->test())
+        delete static_cast<ChordMessage*>(data);
+      else
+        comm_receive->cancel();
+    } catch (const simgrid::TimeoutException&) {
+      XBT_DEBUG("Caught a timeout for last message, nevermind.");
+    }
   }
   // leave the ring
   leave();
