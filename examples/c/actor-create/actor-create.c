@@ -25,7 +25,7 @@
 #include <xbt/log.h>
 
 // This declares a logging channel so that XBT_INFO can be used later
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_create, "The logging channel used in this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(actor_create, "The logging channel used in this example");
 
 /* Our first class of actors is simply implemented with a function.
  * As every CSG actors, its parameters are in a vector of string (argc/argv), and it does not return anything.
@@ -37,7 +37,7 @@ static void receiver(int argc, char** argv)
   xbt_assert(argc == 2, "This actor expects a single argument: the mailbox on which to get messages");
   sg_mailbox_t mailbox = sg_mailbox_by_name(argv[1]);
 
-  XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", argv[1]);
+  XBT_INFO("Hello, I'm ready to get any message you'd want on %s", argv[1]);
 
   const char* msg1 = sg_mailbox_get(mailbox);
   const char* msg2 = sg_mailbox_get(mailbox);
@@ -50,12 +50,22 @@ static void receiver(int argc, char** argv)
 static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 3, "Actor 'sender' requires 2 parameters (mailbox and data to send), but got only %d", argc - 1);
-  XBT_INFO("Hello s4u, I have something to send");
-  sg_mailbox_t mailbox = sg_mailbox_by_name(argv[1]);
-  char* sent_data      = argv[2];
+  XBT_INFO("Hello, I have something to send");
+  char* sent_data      = argv[1];
+  sg_mailbox_t mailbox = sg_mailbox_by_name(argv[2]);
 
   sg_mailbox_put(mailbox, xbt_strdup(sent_data), strlen(sent_data));
   XBT_INFO("I'm done. See you.");
+}
+
+static void forwarder(int argc, char** argv)
+{
+  xbt_assert(argc >= 3, "Actor forwarder requires 2 parameters, but got only %d", argc - 1);
+  sg_mailbox_t mailbox_in  = sg_mailbox_by_name(argv[1]);
+  sg_mailbox_t mailbox_out = sg_mailbox_by_name(argv[2]);
+  char* msg                = (char*)(sg_mailbox_get(mailbox_in));
+  XBT_INFO("Forward '%s'.", msg);
+  sg_mailbox_put(mailbox_out, msg, strlen(msg));
 }
 
 /* Here comes the main function of your program */
@@ -78,16 +88,26 @@ int main(int argc, char** argv)
   sg_actor_t recv         = sg_actor_init("receiver", sg_host_by_name("Fafard"));
   sg_actor_start(recv, receiver, recv_argc, recv_argv);
 
+  int sender1_argc           = 3;
+  const char* sender1_argv[] = {"sender", "GaBuZoMeu", "mb42", NULL};
+  sg_actor_t sender1         = sg_actor_init("sender1", sg_host_by_name("Tremblay"));
+  sg_actor_start(sender1, sender, sender1_argc, sender1_argv);
+
+  int sender2_argc           = 3;
+  const char* sender2_argv[] = {"sender", "GloubiBoulga", "mb42", NULL};
+  sg_actor_t sender2         = sg_actor_init("sender2", sg_host_by_name("Jupiter"));
+  sg_actor_start(sender2, sender, sender2_argc, sender2_argv);
+
   /* But starting actors directly is considered as a bad experimental habit, since it ties the code
    * you want to test with the experimental scenario. Starting your actors from an external deployment
    * file in XML ensures that you can test your code in several scenarios without changing the code itself.
    *
    * For that, you first need to register your function or your actor as follows.
-   * Actor classes must have a (std::vector<std::string>) constructor,
-   * and actor functions must be of type int(*)(int argc, char**argv). */
-  simgrid_register_function("sender", &sender);
+   * actor functions must be of type void(*)(int argc, char**argv). */
+  simgrid_register_function("sender", sender);
+  simgrid_register_function("forwarder", forwarder);
   /* Once actors and functions are registered, just load the deployment file */
-  simgrid_load_deployment("csg-actor-create_d.xml");
+  simgrid_load_deployment("actor-create_d.xml");
 
   /* Once every actors are started in the engine, the simulation can start */
   simgrid_run();

@@ -16,7 +16,7 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
                                PARENT_SCOPE)
 
-foreach(x app-pingpong async-waitany)
+foreach(x actor-create app-pingpong async-waitany)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                   --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/${x}
                   --cd ${CMAKE_HOME_DIRECTORY}/examples/c/${x}
