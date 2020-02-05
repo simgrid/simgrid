@@ -8,10 +8,6 @@
 
 #include "simgrid/msg.h"
 #include "src/surf/network_wifi.hpp"
-#include <exception>
-#include <iostream>
-#include <random>
-#include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(simulator, "[usage] wifi_usage <platform-file>");
 

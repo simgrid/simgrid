@@ -8,9 +8,9 @@
 #include "xbt/dict.h"
 
 #include "simgrid/Exception.hpp"
+#include "xbt/random.hpp"
 #include <cstdio>
 #include <cstring>
-#include <random>
 
 #include "catch.hpp"
 
@@ -264,9 +264,6 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
   SECTION("Crash test")
   {
-    std::random_device rd;
-    std::default_random_engine rnd_engine(rd());
-
     for (int i = 0; i < 10; i++) {
       INFO("CRASH test number " << i + 1 << " (" << 10 - i - 1 << " to go)");
       INFO("Fill the struct, count its elems and frees the structure");
@@ -278,7 +275,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
 
         do {
           for (int k = 0; k < SIZEOFKEY - 1; k++) {
-            key[k] = rnd_engine() % ('z' - 'a') + 'a';
+            key[k] = simgrid::xbt::random::uniform_int('a', 'z');
           }
           key[SIZEOFKEY - 1] = '\0';
           data               = (char*)xbt_dict_get_or_null(head, key);

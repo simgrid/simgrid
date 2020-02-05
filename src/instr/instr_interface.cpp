@@ -9,9 +9,9 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.hpp"
 #include "surf/surf.hpp"
+#include "xbt/random.hpp"
 #include <algorithm>
 #include <cmath>
-#include <random>
 
 enum class InstrUserVariable { DECLARE, SET, ADD, SUB };
 
@@ -89,11 +89,9 @@ void TRACE_category_with_color (const char *category, const char *color)
   std::string final_color;
   if (not color) {
     //generate a random color
-    static std::default_random_engine rnd_engine;
-    std::uniform_real_distribution<double> prng(0.0, std::nextafter(1.0, 2.0));
-    double red   = prng(rnd_engine);
-    double green = prng(rnd_engine);
-    double blue  = prng(rnd_engine);
+    double red   = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
+    double green = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
+    double blue  = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
     final_color  = std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue);
   }else{
     final_color = std::string(color);

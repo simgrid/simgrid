@@ -11,7 +11,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 
-#include <random>
+#include "xbt/random.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
@@ -166,9 +166,8 @@ bool request_is_visible(const s_smx_simcall* req)
 int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
   if (not MC_is_active() && MC_record_path.empty()) {
-    static std::default_random_engine rnd_engine;
-    std::uniform_int_distribution<int> prng(min, max);
-    return prng(rnd_engine);
+    static simgrid::xbt::random::XbtRandom prng;
+    return prng.uniform_int(min, max);
   }
   return simcall->mc_value_;
 }

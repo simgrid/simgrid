@@ -5,13 +5,12 @@
 
 #include "simgrid/plugins/energy.h"
 #include "xbt/log.h"
+#include "xbt/random.hpp"
 #include <simgrid/s4u.hpp>
 
-#include <random>
-
 /* Parameters of the random generation of the flow size */
-static const unsigned long int min_size = 1e6;
-static const unsigned long int max_size = 1e9;
+static const int min_size = 1e6;
+static const int max_size = 1e9;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_energyconsumption, "Messages specific for this s4u example");
 
@@ -93,16 +92,8 @@ int main(int argc, char* argv[])
 
   if (argc > 3) {
     if (strcmp(argv[3], "random") == 0) { // We're asked to get a random size
-      /* Initialize the random number generator */
-      std::random_device rd;
-      std::default_random_engine generator(rd());
-
-      /* Distribution on which to apply the generator */
-      std::uniform_int_distribution<unsigned long int> distribution(min_size, max_size);
-
-      char* size = bprintf("%lu", distribution(generator));
-      argSender.push_back(std::string(size));
-      xbt_free(size);
+      std::string size = std::to_string(simgrid::xbt::random::uniform_int(min_size, max_size));
+      argSender.push_back(size);
     } else {                        // Not "random" ? Then it should be the size to use
       argSender.push_back(argv[3]); // Take the datasize from the command line
     }
