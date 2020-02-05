@@ -495,10 +495,17 @@ void Node::operator()()
   double next_check_predecessor_date = start_time_ + PERIODIC_CHECK_PREDECESSOR_DELAY;
   double next_lookup_date            = start_time_ + PERIODIC_LOOKUP_DELAY;
   simgrid::s4u::CommPtr comm_receive = nullptr;
-  while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME) {
+  while (now < std::min(start_time_ + deadline_, MAX_SIMULATION_TIME)) {
     if (comm_receive == nullptr)
       comm_receive = mailbox_->get_async(&data);
-    while ((now < (start_time_ + deadline_)) && now < MAX_SIMULATION_TIME && not comm_receive->test()) {
+    if (comm_receive->test()) {
+      if (data != nullptr) {
+        ChordMessage* message = static_cast<ChordMessage*>(data);
+        handleMessage(message);
+        data = nullptr;
+      }
+      comm_receive = nullptr;
+    } else {
       // no task was received: make some periodic calls
       if (now >= next_stabilize_date) {
         stabilize();
@@ -516,15 +523,8 @@ void Node::operator()()
         // nothing to do: sleep for a while
         simgrid::s4u::this_actor::sleep_for(SLEEP_DELAY);
       }
-      now = simgrid::s4u::Engine::get_clock();
     }
 
-    if (data != nullptr) {
-      ChordMessage* message = static_cast<ChordMessage*>(data);
-      handleMessage(message);
-      comm_receive = nullptr;
-      data         = nullptr;
-    }
     now = simgrid::s4u::Engine::get_clock();
   }
   if (comm_receive != nullptr) {
