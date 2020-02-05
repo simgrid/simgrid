@@ -1,5 +1,5 @@
 # C examples
-foreach(x app-pingpong app-token-ring
+foreach(x app-token-ring
           async-wait async-waitall async-waitany
           cloud-capping cloud-migration cloud-two-tasks cloud-simple
           get_sender host_on_off host_on_off_recv
@@ -92,7 +92,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
 if(enable_msg)
   foreach(x 
     async-wait async-waitall
-    app-bittorrent app-chainsend app-pingpong app-token-ring
+    app-bittorrent app-chainsend app-token-ring
     cloud-capping cloud-migration cloud-two-tasks cloud-simple
     energy-pstate
     host_on_off host_on_off_processes host_on_off_recv

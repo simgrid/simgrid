@@ -19,6 +19,9 @@ include doc/webcruft/storage_sample_scenario.png
 include examples/c/actor-create/actor-create.c
 include examples/c/actor-create/actor-create.tesh
 include examples/c/actor-create/actor-create_d.xml
+include examples/c/app-pingpong/app-pingpong.c
+include examples/c/app-pingpong/app-pingpong.tesh
+include examples/c/app-pingpong/app-pingpong_d.xml
 include examples/c/async-waitany/async-waitany.c
 include examples/c/async-waitany/async-waitany.tesh
 include examples/c/async-waitany/async-waitany_d.xml
@@ -608,8 +611,6 @@ include teshsuite/msg/app-chainsend/messages.c
 include teshsuite/msg/app-chainsend/messages.h
 include teshsuite/msg/app-chainsend/peer.c
 include teshsuite/msg/app-chainsend/peer.h
-include teshsuite/msg/app-pingpong/app-pingpong.c
-include teshsuite/msg/app-pingpong/app-pingpong.tesh
 include teshsuite/msg/app-pingpong/app-pingpong_d.xml
 include teshsuite/msg/app-token-ring/app-token-ring.c
 include teshsuite/msg/app-token-ring/app-token-ring.tesh

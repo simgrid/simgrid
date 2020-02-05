@@ -2,10 +2,6 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
 <!-- For using with ping_pong, platform_sendrecv.xml -->
-  <actor host="Tremblay" function="pinger">
-    <argument value="Jupiter"/>
-  </actor>
-  <actor host="Jupiter"  function="ponger">
-    <argument value="Tremblay"/>
-  </actor>
+  <actor host="Tremblay" function="pinger"/>
+  <actor host="Jupiter"  function="ponger"/>
 </platform>
