@@ -166,7 +166,7 @@ ExecPtr ExecSeq::set_host(Host* host)
   return this;
 }
 
-double ExecSeq::get_remaining()
+double ExecSeq::get_remaining() const
 {
   return kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
@@ -176,7 +176,7 @@ double ExecSeq::get_remaining()
  *
  * The returned value is between 0 (completely done) and 1 (nothing done yet).
  */
-double ExecSeq::get_remaining_ratio()
+double ExecSeq::get_remaining_ratio() const
 {
   return kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio(); });
@@ -204,13 +204,13 @@ Exec* ExecPar::start()
   return this;
 }
 
-double ExecPar::get_remaining_ratio()
+double ExecPar::get_remaining_ratio() const
 {
   return kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_par_remaining_ratio(); });
 }
 
-double ExecPar::get_remaining()
+double ExecPar::get_remaining() const
 {
   XBT_WARN("Calling get_remaining() on a parallel execution is not allowed. Call get_remaining_ratio() instead.");
   return get_remaining_ratio();

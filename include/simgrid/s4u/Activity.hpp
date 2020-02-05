@@ -88,15 +88,15 @@ public:
   /** Cancel that activity */
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
-  Activity::State get_state() { return state_; }
+  Activity::State get_state() const { return state_; }
   void set_state(Activity::State state) { state_ = state; }
   /** Tests whether the given activity is terminated yet. This is a pure function. */
   virtual bool test() = 0;
-  virtual const char* get_cname()       = 0;
-  virtual const std::string& get_name() = 0;
+  virtual const char* get_cname() const       = 0;
+  virtual const std::string& get_name() const = 0;
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
-  virtual double get_remaining();
+  virtual double get_remaining() const;
   /** Set the [remaining] amount of work that this Activity will entail
    *
    * It is forbidden to change the amount of work once the Activity is started */
@@ -149,8 +149,8 @@ public:
     name_ = name;
     return static_cast<AnyActivity*>(this);
   }
-  const std::string& get_name() { return name_; }
-  const char* get_cname() { return name_.c_str(); }
+  const std::string& get_name() const override { return name_; }
+  const char* get_cname() const override { return name_.c_str(); }
 
   AnyActivity* set_tracing_category(const std::string& category)
   {
@@ -158,7 +158,7 @@ public:
     tracing_category_ = category;
     return static_cast<AnyActivity*>(this);
   }
-  const std::string& get_tracing_category() { return tracing_category_; }
+  const std::string& get_tracing_category() const { return tracing_category_; }
 
   AnyActivity* set_user_data(void* data)
   {
@@ -166,7 +166,7 @@ public:
     return static_cast<AnyActivity*>(this);
   }
 
-  void* get_user_data() { return user_data_; }
+  void* get_user_data() const { return user_data_; }
 #ifndef DOXYGEN
   /* The refcounting is done in the ancestor class, Activity, but we want each of the classes benefiting of the CRTP
    * (Exec, Comm, etc) to have smart pointers too, so we define these methods here, that forward the ptr_release and

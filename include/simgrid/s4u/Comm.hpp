@@ -113,11 +113,11 @@ public:
   CommPtr set_tracing_category(const std::string& category);
 
   /** Retrieve the mailbox on which this comm acts */
-  Mailbox* get_mailbox();
+  Mailbox* get_mailbox() const;
   /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
-  size_t get_dst_data_size();
+  size_t get_dst_data_size() const;
 
-  Actor* get_sender();
+  Actor* get_sender() const;
 };
 } // namespace s4u
 } // namespace simgrid

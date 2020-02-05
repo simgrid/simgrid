@@ -21,7 +21,7 @@ void Activity::wait_until(double time_limit)
     wait_for(time_limit - now);
 }
 
-double Activity::get_remaining()
+double Activity::get_remaining() const
 {
   return remains_;
 }

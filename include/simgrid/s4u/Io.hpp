@@ -46,7 +46,7 @@ public:
   Io* cancel() override;
   bool test() override;
 
-  double get_remaining() override;
+  double get_remaining() const override;
   sg_size_t get_performed_ioops() const;
 };
 

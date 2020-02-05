@@ -90,7 +90,7 @@ bool Io::test()
 }
 
 /** @brief Returns the amount of flops that remain to be done */
-double Io::get_remaining()
+double Io::get_remaining() const
 {
   return kernel::actor::simcall(
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_remaining(); });

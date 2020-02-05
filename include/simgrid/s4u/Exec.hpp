@@ -52,7 +52,7 @@ public:
   Exec* start() override               = 0;
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */
-  virtual double get_remaining_ratio() = 0;
+  virtual double get_remaining_ratio() const = 0;
   virtual ExecPtr set_host(Host* host) = 0;
 
   Exec* wait() override;
@@ -90,8 +90,8 @@ public:
 
   ExecPtr set_host(Host* host) override;
 
-  double get_remaining() override;
-  double get_remaining_ratio() override;
+  double get_remaining() const override;
+  double get_remaining_ratio() const override;
 };
 
 class XBT_PUBLIC ExecPar : public Exec {
@@ -107,8 +107,8 @@ public:
   friend XBT_PUBLIC ExecPtr this_actor::exec_init(const std::vector<s4u::Host*>& hosts,
                                                   const std::vector<double>& flops_amounts,
                                                   const std::vector<double>& bytes_amounts);
-  double get_remaining() override;
-  double get_remaining_ratio() override;
+  double get_remaining() const override;
+  double get_remaining_ratio() const override;
   Exec* start() override;
 };
 

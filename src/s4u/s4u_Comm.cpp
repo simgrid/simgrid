@@ -97,7 +97,7 @@ CommPtr Comm::set_dst_data(void** buff)
   return this;
 }
 
-size_t Comm::get_dst_data_size()
+size_t Comm::get_dst_data_size() const
 {
   xbt_assert(state_ == State::FINISHED, "You cannot use %s before your communication terminated", __FUNCTION__);
   return dst_buff_size_;
@@ -241,12 +241,12 @@ bool Comm::test()
   return false;
 }
 
-Mailbox* Comm::get_mailbox()
+Mailbox* Comm::get_mailbox() const
 {
   return mailbox_;
 }
 
-Actor* Comm::get_sender()
+Actor* Comm::get_sender() const
 {
   return sender_ ? sender_->ciface() : nullptr;
 }
