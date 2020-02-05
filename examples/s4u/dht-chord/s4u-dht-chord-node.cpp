@@ -52,6 +52,8 @@ Node::Node(std::vector<std::string> args)
 
   // initialize my node
   id_                = std::stoi(args[1]);
+  XBT_DEBUG("Initialize node with id: %d", id_);
+  random.set_seed(id_);
   mailbox_           = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
   next_finger_to_fix = 0;
   fingers_.resize(nb_bits, id_);
@@ -134,7 +136,7 @@ void Node::notifyAndQuit()
 void Node::randomLookup()
 {
   int res          = id_;
-  int random_index = simgrid::xbt::random::uniform_int(0, nb_bits - 1);
+  int random_index = random.uniform_int(0, nb_bits - 1);
   int random_id    = fingers_[random_index];
   XBT_DEBUG("Making a lookup request for id %d", random_id);
   if (random_id != id_)

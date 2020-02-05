@@ -55,6 +55,7 @@ class Node {
   bool joined        = false;
   int id_;                           // my id
   int pred_id_ = -1;                 // predecessor id
+  simgrid::xbt::random::XbtRandom random; // random number generator for this node
   simgrid::s4u::Mailbox* mailbox_;   // my mailbox
   std::vector<int> fingers_;         // finger table,(fingers[0] is my successor)
   int next_finger_to_fix;            // index of the next finger to fix in fix_fingers()
