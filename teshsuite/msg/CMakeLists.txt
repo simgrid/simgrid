@@ -61,7 +61,6 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
 set(bin_files    ${bin_files}      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/generate.py                  PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
