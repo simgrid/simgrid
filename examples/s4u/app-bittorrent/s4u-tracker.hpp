@@ -32,6 +32,7 @@ public:
 
 class Tracker {
   double deadline;
+  simgrid::xbt::random::XbtRandom random{42};
   simgrid::s4u::Mailbox* mailbox;
   std::set<int> known_peers;
 

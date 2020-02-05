@@ -31,6 +31,7 @@ public:
 class Peer {
   int id;
   double deadline;
+  simgrid::xbt::random::XbtRandom random;
   simgrid::s4u::Mailbox* mailbox_;
   std::unordered_map<int, Connection> connected_peers;
   std::set<Connection*> active_peers; // active peers list
