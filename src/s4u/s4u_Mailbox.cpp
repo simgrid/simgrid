@@ -167,7 +167,7 @@ sg_mailbox_t sg_mailbox_by_name(const char* alias)
   return simgrid::s4u::Mailbox::by_name(alias);
 }
 
-const char* sg_mailbox_get_name(sg_mailbox_t mailbox)
+const char* sg_mailbox_get_name(const_sg_mailbox_t mailbox)
 {
   return mailbox->get_cname();
 }
