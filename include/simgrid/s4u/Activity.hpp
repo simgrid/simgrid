@@ -120,11 +120,7 @@ public:
     intrusive_ptr_add_ref(this);
     return this;
   }
-  Activity* unref()
-  {
-    intrusive_ptr_release(this);
-    return this;
-  }
+  void unref() { intrusive_ptr_release(this); }
 
 private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
