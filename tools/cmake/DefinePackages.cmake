@@ -893,6 +893,7 @@ set(DOC_SOURCES
   docs/source/_ext/showfile.css
   docs/source/_ext/showfile.js
   docs/source/_ext/showfile.py
+  docs/source/_static/css/custom.css
   docs/source/_templates/breadcrumbs.html
 
   docs/source/img/eclipseScreenShot.png

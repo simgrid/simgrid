@@ -611,7 +611,6 @@ include teshsuite/msg/app-chainsend/messages.c
 include teshsuite/msg/app-chainsend/messages.h
 include teshsuite/msg/app-chainsend/peer.c
 include teshsuite/msg/app-chainsend/peer.h
-include teshsuite/msg/app-pingpong/app-pingpong_d.xml
 include teshsuite/msg/app-token-ring/app-token-ring.c
 include teshsuite/msg/app-token-ring/app-token-ring.tesh
 include teshsuite/msg/async-wait/async-wait.c
@@ -1830,6 +1829,7 @@ include docs/source/_ext/autodoxy.py
 include docs/source/_ext/showfile.css
 include docs/source/_ext/showfile.js
 include docs/source/_ext/showfile.py
+include docs/source/_static/css/custom.css
 include docs/source/_templates/breadcrumbs.html
 include docs/source/app_msg.rst
 include docs/source/app_s4u.rst
@@ -1973,6 +1973,7 @@ include include/simgrid/chrono.hpp
 include include/simgrid/comm.h
 include include/simgrid/cond.h
 include include/simgrid/config.h.in
+include include/simgrid/disk.h
 include include/simgrid/engine.h
 include include/simgrid/forward.h
 include include/simgrid/host.h
