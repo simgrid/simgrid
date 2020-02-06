@@ -39,10 +39,13 @@ static void receiver(int argc, char** argv)
 
   XBT_INFO("Hello, I'm ready to get any message you'd want on %s", argv[1]);
 
-  const char* msg1 = sg_mailbox_get(mailbox);
-  const char* msg2 = sg_mailbox_get(mailbox);
-  const char* msg3 = sg_mailbox_get(mailbox);
+  char* msg1 = sg_mailbox_get(mailbox);
+  char* msg2 = sg_mailbox_get(mailbox);
+  char* msg3 = sg_mailbox_get(mailbox);
   XBT_INFO("I received '%s', '%s' and '%s'", msg1, msg2, msg3);
+  xbt_free(msg1);
+  xbt_free(msg2);
+  xbt_free(msg3);
   XBT_INFO("I'm done. See you.");
 }
 
@@ -51,8 +54,8 @@ static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 3, "Actor 'sender' requires 2 parameters (mailbox and data to send), but got only %d", argc - 1);
   XBT_INFO("Hello, I have something to send");
-  char* sent_data      = argv[1];
-  sg_mailbox_t mailbox = sg_mailbox_by_name(argv[2]);
+  const char* sent_data = argv[1];
+  sg_mailbox_t mailbox  = sg_mailbox_by_name(argv[2]);
 
   sg_mailbox_put(mailbox, xbt_strdup(sent_data), strlen(sent_data));
   XBT_INFO("I'm done. See you.");
@@ -63,7 +66,7 @@ static void forwarder(int argc, char** argv)
   xbt_assert(argc >= 3, "Actor forwarder requires 2 parameters, but got only %d", argc - 1);
   sg_mailbox_t mailbox_in  = sg_mailbox_by_name(argv[1]);
   sg_mailbox_t mailbox_out = sg_mailbox_by_name(argv[2]);
-  char* msg                = (char*)(sg_mailbox_get(mailbox_in));
+  char* msg                = sg_mailbox_get(mailbox_in);
   XBT_INFO("Forward '%s'.", msg);
   sg_mailbox_put(mailbox_out, msg, strlen(msg));
 }

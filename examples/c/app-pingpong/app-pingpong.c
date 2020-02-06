@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(app_pingpong, "Messages specific for this example");
 
-static void pinger(int argc, char* argv[])
+static void pinger(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   sg_mailbox_t mailbox_in  = sg_mailbox_by_name("Mailbox 1");
   sg_mailbox_t mailbox_out = sg_mailbox_by_name("Mailbox 2");
@@ -37,7 +37,7 @@ static void pinger(int argc, char* argv[])
   xbt_free(sender_time);
 }
 
-static void ponger(int argc, char* argv[])
+static void ponger(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   sg_mailbox_t mailbox_in  = sg_mailbox_by_name("Mailbox 2");
   sg_mailbox_t mailbox_out = sg_mailbox_by_name("Mailbox 1");
