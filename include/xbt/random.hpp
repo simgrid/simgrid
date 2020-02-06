@@ -26,7 +26,7 @@ void set_implem_std();
 void set_mersenne_seed(int);
 
 /**
- * @brief Draws an integer number uniformly between min and max included
+ * @brief Draws an integer number uniformly in range [min, max] (min and max included)
  *
  * @param min Minimum value
  * @param max Maximum value
@@ -34,7 +34,7 @@ void set_mersenne_seed(int);
 int uniform_int(int min, int max);
 
 /**
- * @brief Draws a real number uniformly between min and max included
+ * @brief Draws a real number uniformly in range [min, max) (min included, and max excluded)
  *
  * @param min Minimum value
  * @param max Maximum value

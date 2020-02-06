@@ -55,7 +55,7 @@ double uniform_real(double min, double max)
   }
 
   // This reuses Boost's uniform real distribution ideas
-  constexpr unsigned long divisor = decltype(mt19937_gen)::max() - decltype(mt19937_gen)::min();
+  constexpr unsigned long divisor = decltype(mt19937_gen)::max() - decltype(mt19937_gen)::min() + 1;
   unsigned long numerator         = mt19937_gen() - decltype(mt19937_gen)::min();
   return min + (max - min) * numerator / divisor;
 }

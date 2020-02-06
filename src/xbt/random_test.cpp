@@ -16,10 +16,10 @@ TEST_CASE("xbt::random: Random Number Generation")
   SECTION("Using XBT_RNG_xbt")
   {
     simgrid::xbt::random::set_mersenne_seed(12345);
-    REQUIRE_THAT(simgrid::xbt::random::exponential(25), EpsilonApprox(0.00291934351538427348));
+    REQUIRE_THAT(simgrid::xbt::random::exponential(25), EpsilonApprox(0.00291934352469749815));
     REQUIRE(simgrid::xbt::random::uniform_int(1, 6) == 4);
-    REQUIRE_THAT(simgrid::xbt::random::uniform_real(0, 1), EpsilonApprox(0.31637556043369124970));
-    REQUIRE_THAT(simgrid::xbt::random::normal(0, 2), EpsilonApprox(1.62746784745133976635));
+    REQUIRE_THAT(simgrid::xbt::random::uniform_real(0, 1), EpsilonApprox(0.31637556036002933979));
+    REQUIRE_THAT(simgrid::xbt::random::normal(0, 2), EpsilonApprox(1.62746784853777226587));
   }
 
   SECTION("Using XBT_RNG_std")
