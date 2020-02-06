@@ -101,18 +101,15 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
 
   double clock_sta = s4u::Engine::get_clock();
 
-  s4u::Activity* comm = nullptr;
+  s4u::CommPtr comm = mbox->put_init(msg, size);
+  if (mig_speed > 0)
+    comm->set_rate(mig_speed);
   try {
-    if (mig_speed > 0)
-      comm = mbox->put_init(msg, size)->set_rate(mig_speed)->wait_for(timeout);
-    else
-      comm = mbox->put_async(msg, size)->wait_for(timeout);
-  } catch (const Exception&) {
-    if (comm) {
-      sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());
-      XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
-      sent -= remaining;
-    }
+    comm->wait_for(timeout);
+  } catch (const simgrid::TimeoutException&) {
+    sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());
+    XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
+    sent -= remaining;
     delete msg;
   }
 
