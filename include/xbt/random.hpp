@@ -25,7 +25,7 @@ public:
   /** @brief Build a new random number generator with default seed */
   Random() = default;
   /** @brief Build a new random number generator with given seed */
-  Random(int seed) : mt19937_gen(seed) {}
+  explicit Random(int seed) : mt19937_gen(seed) {}
 
   virtual ~Random() = default;
 
@@ -73,7 +73,7 @@ public:
 class XBT_PUBLIC StdRandom : public Random {
 public:
   StdRandom() = default;
-  StdRandom(int seed) : Random(seed) {}
+  explicit StdRandom(int seed) : Random(seed) {}
 
   int uniform_int(int min, int max) override;
   double uniform_real(double min, double max) override;
@@ -88,7 +88,7 @@ public:
 class XBT_PUBLIC XbtRandom : public Random {
 public:
   XbtRandom() = default;
-  XbtRandom(int seed) : Random(seed) {}
+  explicit XbtRandom(int seed) : Random(seed) {}
 
   int uniform_int(int min, int max) override;
   double uniform_real(double min, double max) override;
