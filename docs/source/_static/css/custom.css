@@ -1,3 +1,7 @@
 object#TOC {
     max-width: 100%;
 }
+
+div[itemprop="articleBody"] {
+    word-wrap: break-word;
+}
