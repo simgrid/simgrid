@@ -28,10 +28,12 @@ int main(int argc, char **argv)
   /* Random number initialization */
   srand( (int) (xbt_os_time()*1000) );
 
-  do {
-    i = rand()%host_count;
-    j = rand()%host_count;
-  } while(i==j);
+  /* Take random i and j, with i != j */
+  xbt_assert(host_count > 1);
+  i = rand() % host_count;
+  j = rand() % (host_count - 1);
+  if (j >= i)
+    j++;
 
   const_sg_host_t h1 = hosts[i];
   const_sg_host_t h2 = hosts[j];
