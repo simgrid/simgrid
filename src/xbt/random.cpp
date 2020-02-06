@@ -37,13 +37,13 @@ int uniform_int(int min, int max)
   }
 
   unsigned long range  = max - min + 1;
-  unsigned long value  = mt19937_gen();
   xbt_assert(min <= max,
              "The minimum value for the uniform integer distribution must not be greater than the maximum value");
   xbt_assert(range > 0, "Overflow in the uniform integer distribution, please use a smaller range.");
-  while (value >= decltype(mt19937_gen)::max() - decltype(mt19937_gen)::max() % range) {
+  unsigned long value;
+  do {
     value = mt19937_gen();
-  }
+  } while (value >= decltype(mt19937_gen)::max() - decltype(mt19937_gen)::max() % range);
   return value % range + min;
 }
 
@@ -80,10 +80,10 @@ double normal(double mean, double sd)
     return dist(mt19937_gen);
   }
 
-  double u1 = 0.0;
-  while (u1 < std::numeric_limits<double>::min()) {
+  double u1;
+  do {
     u1 = uniform_real(0.0, 1.0);
-  }
+  } while (u1 < std::numeric_limits<double>::min());
   double u2 = uniform_real(0.0, 1.0);
   double z0 = sqrt(-2.0 * log(u1)) * cos(2.0 * M_PI * u2);
   return z0 * sd + mean;
