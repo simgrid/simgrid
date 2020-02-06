@@ -135,9 +135,10 @@ XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") in
 SG_BEGIN_DECL
 XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") void simcall_process_set_data(smx_actor_t process,
                                                                                                   void* data);
-XBT_ATTRIB_DEPRECATED_v328("Please use Actor::suspend()") XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
+XBT_ATTRIB_DEPRECATED_v328("Please use sg_actor_suspend()") XBT_PUBLIC
+    void simcall_process_suspend(smx_actor_t process);
 
-XBT_ATTRIB_DEPRECATED_v328("Please use Actor::join()") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v328("Please use sg_actor_join()") XBT_PUBLIC
     void simcall_process_join(smx_actor_t process, double timeout);
 
 XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_sleep_for()") XBT_PUBLIC e_smx_state_t
@@ -169,11 +170,10 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
                    bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                    void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data, double rate);
 
-XBT_PUBLIC simgrid::kernel::activity::ActivityImplPtr
-simcall_comm_iprobe(smx_mailbox_t mbox, int type, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                    void* data);
+XBT_ATTRIB_DEPRECATED_v330("Please use Mailbox::iprobe()") XBT_PUBLIC simgrid::kernel::activity::ActivityImplPtr
+    simcall_comm_iprobe(smx_mailbox_t mbox, int type,
+                        bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data);
 
-/* FIXME: waitany is going to be a vararg function, and should take a timeout */
 XBT_ATTRIB_DEPRECATED_v330("Please use a CommImpl*[] for first parameter") XBT_PUBLIC
     unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count, double timeout);
 XBT_PUBLIC unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count,

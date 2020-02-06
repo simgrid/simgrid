@@ -611,7 +611,7 @@ smx_actor_t simcall_process_create(const std::string& name, const simgrid::kerne
   });
 }
 
-void simcall_process_set_data(smx_actor_t process, void* data)
+void simcall_process_set_data(smx_actor_t process, void* data) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid::kernel::actor::simcall([process, data] { process->set_user_data(data); });
 }

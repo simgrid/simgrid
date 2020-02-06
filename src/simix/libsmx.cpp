@@ -154,7 +154,7 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
  */
 simgrid::kernel::activity::ActivityImplPtr
 simcall_comm_iprobe(smx_mailbox_t mbox, int type, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                    void* data)
+                    void* data) // XBT_ATTRIB_DEPRECATED_v330
 {
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
