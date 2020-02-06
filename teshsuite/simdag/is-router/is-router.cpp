@@ -16,8 +16,8 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
 
-  xbt_dynar_t hosts = sg_hosts_as_dynar();
-  std::printf("Host count: %zu, link number: %d\n", sg_host_count(), sg_link_count());
+  std::vector<sg_host_t> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+  std::printf("Host count: %zu, link number: %d\n", hosts.size(), sg_link_count());
 
   std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
       simgrid::s4u::Engine::get_instance()->get_all_netpoints();
@@ -26,9 +26,7 @@ int main(int argc, char **argv)
               return a->get_name() < b->get_name();
             });
 
-  int it;
-  sg_host_t host;
-  xbt_dynar_foreach(hosts, it, host) {
+  for (const auto& host : hosts) {
     const simgrid::kernel::routing::NetPoint* nc = host->get_netpoint();
     const char *type = "buggy";
     if (nc->is_router())
@@ -39,7 +37,6 @@ int main(int argc, char **argv)
       type = "host";
     std::printf("   - Seen: \"%s\". Type: %s\n", host->get_cname(), type);
   }
-  xbt_dynar_free(&hosts);
 
   std::printf("NetCards count: %zu\n", netpoints.size());
   for (auto const& nc : netpoints) {

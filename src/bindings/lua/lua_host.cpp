@@ -6,6 +6,7 @@
 /* SimGrid Lua bindings                                                     */
 
 #include "lua_private.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include <lauxlib.h>
 
@@ -86,9 +87,7 @@ static int l_host_get_name(lua_State * L)
  */
 static int l_host_number(lua_State * L)
 {
-  xbt_dynar_t hosts = sg_hosts_as_dynar();
-  lua_pushinteger(L, xbt_dynar_length(hosts));
-  xbt_dynar_free(&hosts);
+  lua_pushinteger(L, simgrid::s4u::Engine::get_instance()->get_host_count());
   return 1;
 }
 
@@ -103,15 +102,14 @@ static int l_host_number(lua_State * L)
 static int l_host_at(lua_State * L)
 {
   int index = luaL_checkinteger(L, 1);
-  xbt_dynar_t hosts = sg_hosts_as_dynar();
-  sg_host_t host = xbt_dynar_get_as(hosts,index - 1,sg_host_t);// lua indexing start by 1 (lua[1] <=> C[0])
+  std::vector<sg_host_t> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+  sg_host_t host               = hosts[index - 1]; // lua indexing start by 1 (lua[1] <=> C[0])
   lua_newtable(L);              /* create a table, put the userdata on top of it */
   sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t));
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
   lua_setmetatable(L, -2);
   lua_setfield(L, -2, HOST_FIELDNAME);        /* put the userdata as field of the table */
-  xbt_dynar_free(&hosts);
   return 1;
 }
 
