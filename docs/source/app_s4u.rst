@@ -449,7 +449,7 @@ Creating actors
    .. group-tab:: C
 
       .. autodoxymethod:: sg_actor_init(const char *name, sg_host_t host)
-      .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char **argv)
+      .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char *const *argv)
 
       .. autodoxymethod:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
       .. autodoxymethod:: sg_actor_detach()
@@ -713,12 +713,12 @@ the execution, or start an asynchronous activity.
    .. group-tab:: C++
 
       .. autodoxymethod:: simgrid::s4u::this_actor::exec_async(double flops_amounts)
-      .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(const std::vector< s4u::Host *> &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
       .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(double flops_amounts)
       .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop)
       .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop, double priority)
-      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
-      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts, double timeout)
+      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host *> &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host *> &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts, double timeout)
 
    .. group-tab:: Python
 
@@ -1260,8 +1260,8 @@ Platform and routing
 
       .. autodoxymethod:: simgrid::s4u::Host::get_englobing_zone()
       .. autodoxymethod:: simgrid::s4u::Host::get_netpoint() const
-      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
-      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency) const
+      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link *> &links, double *latency) const
+      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl *> &links, double *latency) const
       .. autodoxymethod:: simgrid::s4u::Host::send_to(Host *dest, double byte_amount)
 
    .. group-tab:: C
@@ -1517,9 +1517,9 @@ Routing data
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::NetZone::add_bypass_route(kernel::routing::NetPoint *src, kernel::routing::NetPoint *dst, kernel::routing::NetPoint *gw_src, kernel::routing::NetPoint *gw_dst, std::vector< kernel::resource::LinkImpl * > &link_list, bool symmetrical)
+      .. autodoxymethod:: simgrid::s4u::NetZone::add_bypass_route(kernel::routing::NetPoint *src, kernel::routing::NetPoint *dst, kernel::routing::NetPoint *gw_src, kernel::routing::NetPoint *gw_dst, std::vector< kernel::resource::LinkImpl *> &link_list, bool symmetrical)
       .. autodoxymethod:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
-      .. autodoxymethod:: simgrid::s4u::NetZone::add_route(kernel::routing::NetPoint *src, kernel::routing::NetPoint *dst, kernel::routing::NetPoint *gw_src, kernel::routing::NetPoint *gw_dst, std::vector< kernel::resource::LinkImpl * > &link_list, bool symmetrical)
+      .. autodoxymethod:: simgrid::s4u::NetZone::add_route(kernel::routing::NetPoint *src, kernel::routing::NetPoint *dst, kernel::routing::NetPoint *gw_src, kernel::routing::NetPoint *gw_dst, std::vector< kernel::resource::LinkImpl *> &link_list, bool symmetrical)
       .. autodoxymethod:: simgrid::s4u::NetZone::get_children() const
       .. autodoxymethod:: simgrid::s4u::NetZone::get_father()
 
@@ -1685,8 +1685,8 @@ Querying info
 
       .. autodoxymethod:: simgrid::s4u::Activity::get_cname
       .. autodoxymethod:: simgrid::s4u::Activity::get_name
-      .. autodoxymethod:: simgrid::s4u::Activity::get_remaining()
-      .. autodoxymethod:: simgrid::s4u::Activity::get_state()
+      .. autodoxymethod:: simgrid::s4u::Activity::get_remaining() const
+      .. autodoxymethod:: simgrid::s4u::Activity::get_state() const
       .. autodoxymethod:: simgrid::s4u::Activity::set_remaining(double remains)
       .. autodoxymethod:: simgrid::s4u::Activity::set_state(Activity::State state)
 
@@ -1740,9 +1740,9 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Comm::get_dst_data_size()
-      .. autodoxymethod:: simgrid::s4u::Comm::get_mailbox()
-      .. autodoxymethod:: simgrid::s4u::Comm::get_sender()
+      .. autodoxymethod:: simgrid::s4u::Comm::get_dst_data_size() const
+      .. autodoxymethod:: simgrid::s4u::Comm::get_mailbox() const
+      .. autodoxymethod:: simgrid::s4u::Comm::get_sender() const
       .. autodoxymethod:: simgrid::s4u::Comm::set_dst_data(void **buff)
       .. autodoxymethod:: simgrid::s4u::Comm::set_dst_data(void **buff, size_t size)
       .. autodoxymethod:: simgrid::s4u::Comm::detach()
