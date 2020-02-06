@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   xbt_assert(host_count > 1);
   i = rand() % host_count;
   j = rand() % (host_count - 1);
-  if (j >= i)
+  if (j >= i) // '>=' is not a bug: j is uniform on host_count-1 values, and shifted on need to maintain uniform random
     j++;
 
   const_sg_host_t h1 = hosts[i];
