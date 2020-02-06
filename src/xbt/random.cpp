@@ -42,6 +42,9 @@ int uniform_int(int min, int max)
   xbt_assert(
       min <= max,
       "The maximum value for the uniform integer distribution must be greater than or equal to the minimum value");
+  while (value >= mt19937_gen.max() - mt19937_gen.max() % range) {
+    value = mt19937_gen();
+  }
   return value % range + min;
 }
 
