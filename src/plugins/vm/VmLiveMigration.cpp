@@ -106,7 +106,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
     comm->set_rate(mig_speed);
   try {
     comm->wait_for(timeout);
-  } catch (const simgrid::TimeoutException&) {
+  } catch (const Exception&) {
     sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());
     XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
     sent -= remaining;
