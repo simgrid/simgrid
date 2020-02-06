@@ -5,9 +5,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "xbt/module.h"
+#include "xbt/random.hpp"
 #include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"
 
@@ -16,23 +17,6 @@
 #include <cstdlib>
 
 double date;
-int64_t seedx = 0;
-
-static int myrand() {
-  seedx=seedx * 16807 % 2147483647;
-  return static_cast<int32_t>(seedx%1000);
-}
-
-static double float_random(double max)
-{
-  constexpr double MYRANDMAX = 1000.0;
-  return ((max * myrand()) / (MYRANDMAX + 1.0));
-}
-
-static unsigned int int_random(int max)
-{
-  return static_cast<uint32_t>(float_random(max));
-}
 
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
                  float rate_no_limit, int max_share, int mode)
@@ -45,39 +29,39 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   simgrid::kernel::lmm::System* Sys = new simgrid::kernel::lmm::System(false);
 
   for (int i = 0; i < nb_cnst; i++) {
-    cnst[i] = Sys->constraint_new(NULL, float_random(10.0));
+    cnst[i] = Sys->constraint_new(NULL, simgrid::xbt::random::uniform_real(0.0, 10.0));
     int l;
-    if(rate_no_limit>float_random(1.0))
-      //Look at what happens when there is no concurrency limit
-      l=-1;
-    else
-      //Badly logarithmically random concurrency limit in [2^pw_base_limit+1,2^pw_base_limit+2^pw_max_limit]
-      l=(1<<pw_base_limit)+(1<<int_random(pw_max_limit));
-
+    if (rate_no_limit > simgrid::xbt::random::uniform_real(0.0, 1.0)) {
+      // Look at what happens when there is no concurrency limit
+      l = -1;
+    } else {
+      // Badly logarithmically random concurrency limit in [2^pw_base_limit+1,2^pw_base_limit+2^pw_max_limit]
+      l = (1 << pw_base_limit) + (1 << simgrid::xbt::random::uniform_int(0, pw_max_limit - 1));
+    }
     cnst[i]->set_concurrency_limit(l);
   }
 
   for (int i = 0; i < nb_var; i++) {
     var[i] = Sys->variable_new(NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
-    int concurrency_share = 1 + int_random(max_share);
+    int concurrency_share = 1 + simgrid::xbt::random::uniform_int(0, max_share - 1);
     var[i]->set_concurrency_share(concurrency_share);
 
     for (int j = 0; j < nb_cnst; j++)
       used[j] = 0;
     for (int j = 0; j < nb_elem; j++) {
-      int k = int_random(nb_cnst);
+      int k = simgrid::xbt::random::uniform_int(0, nb_cnst - 1);
       if (used[k]>=concurrency_share) {
         j--;
         continue;
       }
-      Sys->expand(cnst[k], var[i], float_random(1.5));
-      Sys->expand_add(cnst[k], var[i], float_random(1.5));
+      Sys->expand(cnst[k], var[i], simgrid::xbt::random::uniform_real(0.0, 1.5));
+      Sys->expand_add(cnst[k], var[i], simgrid::xbt::random::uniform_real(0.0, 1.5));
       used[k]++;
     }
   }
 
-  fprintf(stderr,"Starting to solve(%i)\n",myrand()%1000);
+  fprintf(stderr, "Starting to solve(%i)\n", simgrid::xbt::random::uniform_int(0, 999));
   date = xbt_os_time() * 1000000;
   Sys->solve();
   date = xbt_os_time() * 1000000 - date;
@@ -177,8 +161,8 @@ int main(int argc, char **argv)
   //nb_elem=200
 
   for(int i=0;i<testcount;i++){
-    seedx=i+1;
-    fprintf(stderr, "Starting %i: (%i)\n",i,myrand()%1000);
+    simgrid::xbt::random::set_mersenne_seed(i + 1);
+    fprintf(stderr, "Starting %i: (%i)\n", i, simgrid::xbt::random::uniform_int(0, 999));
     test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,mode);
     acc_date+=date;
     acc_date2+=date*date;
