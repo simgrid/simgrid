@@ -27,8 +27,8 @@ TEST_CASE("xbt::random: Random Number Generation")
     std::mt19937 gen;
     gen.seed(12345);
 
-    simgrid::xbt::random::set_mersenne_seed(12345);
     simgrid::xbt::random::set_implem_std();
+    simgrid::xbt::random::set_mersenne_seed(12345);
 
     std::exponential_distribution<> distA(25);
     std::uniform_int_distribution<> distB(1, 6);
