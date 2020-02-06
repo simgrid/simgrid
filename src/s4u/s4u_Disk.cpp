@@ -76,3 +76,37 @@ sg_size_t Disk::write(sg_size_t size)
 
 } // namespace s4u
 } // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+
+const char* sg_disk_name(const_sg_disk_t disk)
+{
+  return disk->get_cname();
+}
+
+double sg_disk_read_bandwidth(const_sg_disk_t disk)
+{
+  return disk->get_read_bandwidth();
+}
+
+double sg_disk_write_bandwidth(const_sg_disk_t disk)
+{
+  return disk->get_write_bandwidth();
+}
+
+sg_size_t sg_disk_read(sg_disk_t disk, sg_size_t size)
+{
+  return disk->read(size);
+}
+sg_size_t sg_disk_write(sg_disk_t disk, sg_size_t size)
+{
+  return disk->write(size);
+}
+void* sg_disk_data(const_sg_disk_t disk)
+{
+  return disk->get_data();
+}
+void sg_disk_data_set(sg_disk_t disk, void* data)
+{
+  disk->set_data(data);
+}

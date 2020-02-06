@@ -699,6 +699,7 @@ set(headers_to_install
   include/simgrid/simix.hpp
   include/simgrid/simix/blocking_simcall.hpp
   include/simgrid/kernel/future.hpp
+  include/simgrid/disk.h
   include/simgrid/host.h
   include/simgrid/link.h
   include/simgrid/cond.h

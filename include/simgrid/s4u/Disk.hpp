@@ -6,6 +6,7 @@
 #ifndef INCLUDE_SIMGRID_S4U_DISK_HPP_
 #define INCLUDE_SIMGRID_S4U_DISK_HPP_
 
+#include <simgrid/disk.h>
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Io.hpp>
 #include <xbt/Extendable.hpp>
