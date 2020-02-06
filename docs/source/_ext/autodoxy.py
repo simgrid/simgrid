@@ -18,7 +18,12 @@ import sys
 
 from six import itervalues
 from lxml import etree as ET
-from sphinx.ext.autodoc import Documenter, AutoDirective, members_option, ALL
+from sphinx.ext.autodoc import Documenter, members_option, ALL
+try:
+    from sphinx.ext.autodoc import AutoDirective
+    sphinxVersion = 1
+except ImportError:
+    sphinxVersion = 2
 from sphinx.errors import ExtensionError
 from sphinx.util import logging
 
@@ -260,8 +265,12 @@ class DoxygenDocumenter(Documenter):
         # document non-skipped members
         memberdocumenters = []
         for (mname, member, isattr) in self.filter_members(members, want_all):
-            classes = [cls for cls in itervalues(AutoDirective._registry)
-                       if cls.can_document_member(member, mname, isattr, self)]
+            if sphinxVersion >= 2:
+                classes = [cls for cls in itervalues(self.env.app.registry.documenters)
+                            if cls.can_document_member(member, mname, isattr, self)]
+            else:
+                classes = [cls for cls in itervalues(AutoDirective._registry)
+                            if cls.can_document_member(member, mname, isattr, self)]
             if not classes:
                 # don't know how to document this member
                 continue
@@ -323,7 +332,7 @@ class DoxygenClassDocumenter(DoxygenDocumenter):
     def format_name(self):
         return self.fullname
 
-    def get_doc(self, encoding):
+    def get_doc(self, encoding=None): # This method is called with 1 parameter in Sphinx 2.x and 2 parameters in Sphinx 1.x
         detaileddescription = self.object.find('detaileddescription')
         doc = [format_xml_paragraph(detaileddescription)]
         return doc
@@ -417,7 +426,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
         self.object = match[0]
         return True
 
-    def get_doc(self, encoding):
+    def get_doc(self, encoding=None): # This method is called with 1 parameter in Sphinx 2.x and 2 parameters in Sphinx 1.x
         detaileddescription = self.object.find('detaileddescription')
         doc = [format_xml_paragraph(detaileddescription)]
         return doc
@@ -525,7 +534,7 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
         signame = (rtype and (rtype + ' ') or '') + self.klassname + "::" + self.objname
         return self.format_template_name() + signame
 
-    def get_doc(self, encoding):
+    def get_doc(self, encoding=None): # This method is called with 1 parameter in Sphinx 2.x and 2 parameters in Sphinx 1.x
         detaileddescription = self.object.find('detaileddescription')
         doc = [format_xml_paragraph(detaileddescription)]
         return doc
