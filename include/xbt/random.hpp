@@ -14,10 +14,12 @@ namespace random {
  * @brief Tells xbt/random to use the ad-hoc distribution implementation.
  */
 void set_implem_xbt();
+
 /**
  * @brief Tells xbt/random to use the standard library distribution implementation.
  */
 void set_implem_std();
+
 /**
  * @brief Sets the seed of the Mersenne-Twister RNG
  */
@@ -30,6 +32,7 @@ void set_mersenne_seed(int);
  * @param max Maximum value
  */
 int uniform_int(int min, int max);
+
 /**
  * @brief Draws a real number uniformly between min and max included
  *
@@ -37,12 +40,14 @@ int uniform_int(int min, int max);
  * @param max Maximum value
  */
 double uniform_real(double min, double max);
+
 /**
  * @brief Draws a real number according to the given exponential distribution
  *
  * @param lambda Parameter of the exponential law
  */
 double exponential(double lambda);
+
 /**
  * @brief Draws a real number according to the given normal distribution
  *

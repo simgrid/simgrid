@@ -34,15 +34,14 @@ int uniform_int(int min, int max)
   if (rng_implem == XBT_RNG_std) {
     std::uniform_int_distribution<> dist(min, max);
     return dist(mt19937_gen);
-    }
+  }
 
   unsigned long range  = max - min + 1;
   unsigned long value  = mt19937_gen();
+  xbt_assert(min <= max,
+             "The minimum value for the uniform integer distribution must not be greater than the maximum value");
   xbt_assert(range > 0, "Overflow in the uniform integer distribution, please use a smaller range.");
-  xbt_assert(
-      min <= max,
-      "The maximum value for the uniform integer distribution must be greater than or equal to the minimum value");
-  while (value >= mt19937_gen.max() - mt19937_gen.max() % range) {
+  while (value >= decltype(mt19937_gen)::max() - decltype(mt19937_gen)::max() % range) {
     value = mt19937_gen();
   }
   return value % range + min;
@@ -53,11 +52,11 @@ double uniform_real(double min, double max)
   if (rng_implem == XBT_RNG_std) {
     std::uniform_real_distribution<> dist(min, max);
     return dist(mt19937_gen);
-    }
+  }
 
   // This reuses Boost's uniform real distribution ideas
-  unsigned long numerator = mt19937_gen() - mt19937_gen.min();
-  unsigned long divisor   = mt19937_gen.max() - mt19937_gen.min();
+  constexpr unsigned long divisor = decltype(mt19937_gen)::max() - decltype(mt19937_gen)::min();
+  unsigned long numerator         = mt19937_gen() - decltype(mt19937_gen)::min();
   return min + (max - min) * numerator / divisor;
 }
 
@@ -66,9 +65,9 @@ double exponential(double lambda)
   if (rng_implem == XBT_RNG_std) {
     std::exponential_distribution<> dist(lambda);
     return dist(mt19937_gen);
-    }
+  }
 
-  return -1 / lambda * log(uniform_real(0, 1));
+  return -1.0 / lambda * log(uniform_real(0.0, 1.0));
 }
 
 double normal(double mean, double sd)
@@ -78,12 +77,12 @@ double normal(double mean, double sd)
     return dist(mt19937_gen);
   }
 
-  double u1 = 0;
+  double u1 = 0.0;
   while (u1 < std::numeric_limits<double>::min()) {
-    u1 = uniform_real(0, 1);
+    u1 = uniform_real(0.0, 1.0);
   }
-  double u2 = uniform_real(0, 1);
-  double z0 = sqrt(-2.0 * log(u1)) * cos(2 * M_PI * u2);
+  double u2 = uniform_real(0.0, 1.0);
+  double z0 = sqrt(-2.0 * log(u1)) * cos(2.0 * M_PI * u2);
   return z0 * sd + mean;
 }
 
