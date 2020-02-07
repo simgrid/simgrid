@@ -40,6 +40,11 @@ bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution) 
   return simgrid::kernel::actor::simcall([execution] { return execution->test(); });
 }
 
+bool simcall_execution_test(const simgrid::kernel::activity::ActivityImplPtr& execution) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return simgrid::kernel::actor::simcall([execution] { return execution->test(); });
+}
+
 unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count, double timeout)
 {
   return simcall_BODY_execution_waitany_for(execs, count, timeout);
@@ -311,9 +316,14 @@ e_smx_state_t simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io, doubl
   return (e_smx_state_t)simcall_BODY_io_wait(static_cast<simgrid::kernel::activity::IoImpl*>(io), timeout);
 }
 
-bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io)
+bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io) // XBT_ATTRIB_DEPRECATED_v330
 {
-  return simcall_BODY_io_test(static_cast<simgrid::kernel::activity::IoImpl*>(io));
+  return simgrid::kernel::actor::simcall([io] { return io->test(); });
+}
+
+bool simcall_io_test(const simgrid::kernel::activity::ActivityImplPtr& io) // XBT_ATTRIB_DEPRECATD_v330
+{
+  return simgrid::kernel::actor::simcall([io] { return io->test(); });
 }
 
 void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t)

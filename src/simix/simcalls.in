@@ -58,7 +58,6 @@ void      sem_acquire(smx_sem_t sem) [[block]];
 int       sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];
 
 sg_size_t io_wait(simgrid::kernel::activity::IoImpl* io, double timeout) [[block]];
-bool      io_test(simgrid::kernel::activity::IoImpl* io) [[block]];
 
 int        mc_random(int min, int max);
 

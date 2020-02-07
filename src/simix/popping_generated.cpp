@@ -44,7 +44,6 @@ const char* simcall_names[] = {
     "SIMCALL_SEM_ACQUIRE",
     "SIMCALL_SEM_ACQUIRE_TIMEOUT",
     "SIMCALL_IO_WAIT",
-    "SIMCALL_IO_TEST",
     "SIMCALL_MC_RANDOM",
     "SIMCALL_RUN_KERNEL",
     "SIMCALL_RUN_BLOCKING",
@@ -135,10 +134,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
 
     case SIMCALL_IO_WAIT:
       simcall_HANDLER_io_wait(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::IoImpl*>(simcall.args_[0]), simgrid::simix::unmarshal<double>(simcall.args_[1]));
-      break;
-
-    case SIMCALL_IO_TEST:
-      simcall_HANDLER_io_test(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::IoImpl*>(simcall.args_[0]));
       break;
 
     case SIMCALL_MC_RANDOM:

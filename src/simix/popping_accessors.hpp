@@ -933,31 +933,6 @@ static inline void simcall_io_wait__set__result(smx_simcall_t simcall, sg_size_t
   simgrid::simix::marshal<sg_size_t>(simcall->result_, result);
 }
 
-static inline simgrid::kernel::activity::IoImpl* simcall_io_test__get__io(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<simgrid::kernel::activity::IoImpl*>(simcall->args_[0]);
-}
-static inline simgrid::kernel::activity::IoImpl* simcall_io_test__getraw__io(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::IoImpl*>(simcall->args_[0]);
-}
-static inline void simcall_io_test__set__io(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* arg)
-{
-  simgrid::simix::marshal<simgrid::kernel::activity::IoImpl*>(simcall->args_[0], arg);
-}
-static inline bool simcall_io_test__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<bool>(simcall->result_);
-}
-static inline bool simcall_io_test__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<bool>(simcall->result_);
-}
-static inline void simcall_io_test__set__result(smx_simcall_t simcall, bool result)
-{
-  simgrid::simix::marshal<bool>(simcall->result_, result);
-}
-
 static inline int simcall_mc_random__get__min(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<int>(simcall->args_[0]);
@@ -1041,5 +1016,4 @@ XBT_PRIVATE void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_co
 XBT_PRIVATE void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
 XBT_PRIVATE void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* io, double timeout);
-XBT_PRIVATE void simcall_HANDLER_io_test(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* io);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

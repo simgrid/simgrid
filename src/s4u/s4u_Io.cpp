@@ -80,7 +80,7 @@ bool Io::test()
   if (state_ == State::INITED || state_ == State::STARTING)
     this->vetoable_start();
 
-  if (simcall_io_test(get_impl())) {
+  if (kernel::actor::simcall([this] { return this->get_impl()->test(); })) {
     state_ = State::FINISHED;
     this->release_dependencies();
     return true;

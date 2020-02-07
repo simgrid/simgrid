@@ -212,17 +212,15 @@ SG_END_DECL
 /*****************************   Io   **************************************/
 #ifdef __cplusplus
 XBT_PUBLIC e_smx_state_t simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io, double timeout);
-XBT_PUBLIC bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io);
+XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::test()") XBT_PUBLIC
+    bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io);
+XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::test()") XBT_PUBLIC
+    bool simcall_io_test(const simgrid::kernel::activity::ActivityImplPtr& io);
 
 XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline e_smx_state_t
     simcall_io_wait(const simgrid::kernel::activity::ActivityImplPtr& io, double timeout)
 {
   return simcall_io_wait(io.get(), timeout);
-}
-XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline bool simcall_io_test(
-    const simgrid::kernel::activity::ActivityImplPtr& io)
-{
-  return simcall_io_test(io.get());
 }
 
 #endif

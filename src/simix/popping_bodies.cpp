@@ -165,13 +165,6 @@ inline static sg_size_t simcall_BODY_io_wait(simgrid::kernel::activity::IoImpl* 
   return simcall<sg_size_t, simgrid::kernel::activity::IoImpl*, double>(SIMCALL_IO_WAIT, io, timeout);
 }
 
-inline static bool simcall_BODY_io_test(simgrid::kernel::activity::IoImpl* io)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_io_test(&SIMIX_process_self()->simcall, io);
-  return simcall<bool, simgrid::kernel::activity::IoImpl*>(SIMCALL_IO_TEST, io);
-}
-
 inline static int simcall_BODY_mc_random(int min, int max)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
