@@ -25,6 +25,8 @@ include examples/c/app-pingpong/app-pingpong_d.xml
 include examples/c/async-waitany/async-waitany.c
 include examples/c/async-waitany/async-waitany.tesh
 include examples/c/async-waitany/async-waitany_d.xml
+include examples/c/io-disk-raw/io-disk-raw.c
+include examples/c/io-disk-raw/io-disk-raw.tesh
 include examples/deprecated/java/app/bittorrent/Common.java
 include examples/deprecated/java/app/bittorrent/Connection.java
 include examples/deprecated/java/app/bittorrent/Main.java
@@ -652,8 +654,6 @@ include teshsuite/msg/io-file-remote/io-file-remote.tesh
 include teshsuite/msg/io-file-remote/io-file-remote_d.xml
 include teshsuite/msg/io-file/io-file.c
 include teshsuite/msg/io-file/io-file.tesh
-include teshsuite/msg/io-raw-storage/io-raw-storage.c
-include teshsuite/msg/io-raw-storage/io-raw-storage.tesh
 include teshsuite/msg/platform-properties/platform-properties.c
 include teshsuite/msg/platform-properties/platform-properties.tesh
 include teshsuite/msg/platform-properties/platform-properties_d.xml

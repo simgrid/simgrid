@@ -5,7 +5,7 @@ foreach(x app-token-ring
           get_sender host_on_off host_on_off_recv
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
           energy-consumption energy-ptask energy-pstate platform-properties
-          io-file io-raw-storage io-file-remote
+          io-file io-file-remote
           task-priority
           plugin-hostload
           trace_integration)
@@ -99,7 +99,7 @@ if(enable_msg)
     task_destroy_cancel task_listen_from task_progress 
     process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
     energy-consumption energy-ptask
-    io-file io-raw-storage io-file-remote
+    io-file io-file-remote
     platform-properties
     task-priority
     plugin-hostload
