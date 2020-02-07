@@ -391,7 +391,7 @@ void sg_host_disks(sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
     (*disks)[i] = list[i];
 }
 
-xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host)
+xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
 {
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);

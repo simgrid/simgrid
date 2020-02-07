@@ -320,7 +320,7 @@ void MSG_host_set_data(sg_host_t host, void* data)
 {
   return sg_host_data_set(host, data);
 }
-xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host)
+xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
 {
   return sg_host_get_mounted_storage_list(host);
 }
