@@ -63,8 +63,6 @@ public:
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static int wait_any_for(std::vector<ExecPtr>* execs, double timeout);
 
-  bool test() override;
-
   ExecPtr set_bound(double bound);
   ExecPtr set_priority(double priority);
   XBT_ATTRIB_DEPRECATED_v329("Please use exec_init(...)->wait_for(timeout)") ExecPtr set_timeout(double timeout);

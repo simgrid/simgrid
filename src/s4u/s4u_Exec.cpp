@@ -20,26 +20,6 @@ Exec::Exec()
   pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
 }
 
-bool Exec::test()
-{
-  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||
-             state_ == State::FINISHED);
-
-  if (state_ == State::FINISHED)
-    return true;
-
-  if (state_ == State::INITED || state_ == State::STARTING)
-    this->vetoable_start();
-
-  if (kernel::actor::simcall([this] { return this->get_impl()->test(); })) {
-    state_ = State::FINISHED;
-    this->release_dependencies();
-    return true;
-  }
-
-  return false;
-}
-
 Exec* Exec::wait()
 {
   return this->wait_for(-1);

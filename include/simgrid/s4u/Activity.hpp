@@ -90,8 +90,9 @@ public:
   /** Retrieve the current state of the activity */
   Activity::State get_state() const { return state_; }
   void set_state(Activity::State state) { state_ = state; }
-  /** Tests whether the given activity is terminated yet. This is a pure function. */
-  virtual bool test() = 0;
+  /** Tests whether the given activity is terminated yet. */
+  virtual bool test();
+
   virtual const char* get_cname() const       = 0;
   virtual const std::string& get_name() const = 0;
 
