@@ -2663,7 +2663,6 @@ include src/xbt/xbt_log_layout_format.cpp
 include src/xbt/xbt_log_layout_simple.cpp
 include src/xbt/xbt_main.cpp
 include src/xbt/xbt_os_file.cpp
-include src/xbt/xbt_os_synchro.cpp
 include src/xbt/xbt_os_time.c
 include src/xbt/xbt_replay.cpp
 include src/xbt/xbt_str.cpp

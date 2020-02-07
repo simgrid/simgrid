@@ -11,7 +11,6 @@
 #include "smpi_errhandler.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
-#include "xbt/synchro.h"
 
 #include <vector>
 #include <list>

@@ -9,7 +9,6 @@
 #include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_smpi.hpp"
-#include "xbt/synchro.h"
 
 namespace simgrid {
 namespace smpi {

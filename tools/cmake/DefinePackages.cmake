@@ -293,7 +293,6 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_simple.cpp
   src/xbt/xbt_main.cpp
   src/xbt/xbt_os_file.cpp
-  src/xbt/xbt_os_synchro.cpp
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp

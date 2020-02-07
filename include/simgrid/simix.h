@@ -198,12 +198,12 @@ XBT_ATTRIB_DEPRECATED_v330("Please use a ActivityImpl* for first parameter") inl
 
 /************************** Synchro simcalls **********************************/
 SG_BEGIN_DECL
-XBT_PUBLIC smx_mutex_t simcall_mutex_init();
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_mutex_init()") XBT_PUBLIC smx_mutex_t simcall_mutex_init();
 XBT_PUBLIC void simcall_mutex_lock(smx_mutex_t mutex);
 XBT_PUBLIC int simcall_mutex_trylock(smx_mutex_t mutex);
 XBT_PUBLIC void simcall_mutex_unlock(smx_mutex_t mutex);
 
-XBT_PUBLIC smx_cond_t simcall_cond_init();
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_cond_init()") XBT_PUBLIC smx_cond_t simcall_cond_init();
 XBT_PUBLIC void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
 XBT_PUBLIC int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double max_duration);
 

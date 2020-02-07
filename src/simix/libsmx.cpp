@@ -222,7 +222,7 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm)
  * @ingroup simix_synchro_management
  *
  */
-smx_mutex_t simcall_mutex_init()
+smx_mutex_t simcall_mutex_init() // XBT_ATTRIB_DEPRECATED_v330
 {
   if (simix_global == nullptr) {
     fprintf(stderr, "You must initialize the SimGrid engine before using it\n"); // We can't use xbt_die since we may
@@ -263,7 +263,7 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
  * @ingroup simix_synchro_management
  *
  */
-smx_cond_t simcall_cond_init()
+smx_cond_t simcall_cond_init() // XBT_ATTRIB_DEPRECATED_v330
 {
   return simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
 }
