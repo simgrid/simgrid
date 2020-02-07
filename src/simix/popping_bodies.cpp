@@ -53,13 +53,6 @@ inline static int simcall_BODY_execution_waitany_for(simgrid::kernel::activity::
   return simcall<int, simgrid::kernel::activity::ExecImpl**, size_t, double>(SIMCALL_EXECUTION_WAITANY_FOR, execs, count, timeout);
 }
 
-inline static bool simcall_BODY_execution_test(simgrid::kernel::activity::ExecImpl* execution)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_execution_test(&SIMIX_process_self()->simcall, execution);
-  return simcall<bool, simgrid::kernel::activity::ExecImpl*>(SIMCALL_EXECUTION_TEST, execution);
-}
-
 inline static void simcall_BODY_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */

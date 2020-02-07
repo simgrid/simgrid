@@ -117,17 +117,15 @@ XBT_PUBLIC void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommI
 XBT_PUBLIC e_smx_state_t simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* execution, double timeout);
 XBT_PUBLIC unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
                                                       double timeout);
-XBT_PUBLIC bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution);
+XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::test()") XBT_PUBLIC
+    bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution);
+XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::test()") XBT_PUBLIC
+    bool simcall_execution_test(const simgrid::kernel::activity::ActivityImplPtr& execution);
 
 XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline e_smx_state_t
     simcall_execution_wait(const simgrid::kernel::activity::ActivityImplPtr& execution, double timeout)
 {
   return simcall_execution_wait(execution.get(), timeout);
-}
-XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline bool simcall_execution_test(
-    const simgrid::kernel::activity::ActivityImplPtr& execution)
-{
-  return simcall_execution_test(execution.get());
 }
 #endif
 

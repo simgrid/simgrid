@@ -28,7 +28,6 @@ const char* simcall_names[] = {
     "SIMCALL_NONE",
     "SIMCALL_EXECUTION_WAIT",
     "SIMCALL_EXECUTION_WAITANY_FOR",
-    "SIMCALL_EXECUTION_TEST",
     "SIMCALL_COMM_SEND",
     "SIMCALL_COMM_ISEND",
     "SIMCALL_COMM_RECV",
@@ -68,10 +67,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
 
     case SIMCALL_EXECUTION_WAITANY_FOR:
       simcall_HANDLER_execution_waitany_for(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl**>(simcall.args_[0]), simgrid::simix::unmarshal<size_t>(simcall.args_[1]), simgrid::simix::unmarshal<double>(simcall.args_[2]));
-      break;
-
-    case SIMCALL_EXECUTION_TEST:
-      simcall_HANDLER_execution_test(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall.args_[0]));
       break;
 
     case SIMCALL_COMM_SEND:

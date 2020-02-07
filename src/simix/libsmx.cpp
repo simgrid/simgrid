@@ -35,9 +35,9 @@ e_smx_state_t simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* ex
                                                     timeout);
 }
 
-bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution)
+bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution) // XBT_ATTRIB_DEPRECATED_v330
 {
-  return simcall_BODY_execution_test(static_cast<simgrid::kernel::activity::ExecImpl*>(execution));
+  return simgrid::kernel::actor::simcall([execution] { return execution->test(); });
 }
 
 unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count, double timeout)

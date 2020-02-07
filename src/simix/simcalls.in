@@ -37,7 +37,6 @@
 
 int           execution_wait(simgrid::kernel::activity::ExecImpl* execution, double timeout) [[block]];
 int           execution_waitany_for(simgrid::kernel::activity::ExecImpl** execs, size_t count, double timeout) [[block]];
-bool          execution_test(simgrid::kernel::activity::ExecImpl* execution) [[block]];
 
 void           comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) [[block]];
 boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, bool detached);

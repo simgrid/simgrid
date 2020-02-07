@@ -37,6 +37,15 @@ double ActivityImpl::get_remaining() const
   return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
+bool ActivityImpl::test()
+{
+  if (state_ != State::WAITING && state_ != State::RUNNING) {
+    finish();
+    return true;
+  }
+  return false;
+}
+
 void ActivityImpl::suspend()
 {
   if (surf_action_ == nullptr)

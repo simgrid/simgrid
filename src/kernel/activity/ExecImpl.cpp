@@ -49,19 +49,6 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::acti
   }
 }
 
-void simcall_HANDLER_execution_test(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro)
-{
-  bool res = (synchro->state_ != simgrid::kernel::activity::State::WAITING &&
-              synchro->state_ != simgrid::kernel::activity::State::RUNNING);
-  if (res) {
-    synchro->simcalls_.push_back(simcall);
-    synchro->finish();
-  } else {
-    simcall->issuer_->simcall_answer();
-  }
-  simcall_execution_test__set__result(simcall, res);
-}
-
 void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execs[],
                                            size_t count, double timeout)
 {

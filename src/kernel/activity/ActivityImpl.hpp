@@ -44,6 +44,8 @@ public:
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
 
+  bool test();
+
   virtual void suspend();
   virtual void resume();
   virtual void cancel();
