@@ -88,9 +88,7 @@ namespace activity {
 
 ExecImpl& ExecImpl::set_host(s4u::Host* host)
 {
-  if (not hosts_.empty())
-    hosts_.clear();
-  hosts_.push_back(host);
+  hosts_.assign(1, host);
   return *this;
 }
 
@@ -111,9 +109,7 @@ ExecImpl& ExecImpl::set_timeout(double timeout)
 
 ExecImpl& ExecImpl::set_flops_amount(double flops_amount)
 {
-  if (not flops_amounts_.empty())
-    flops_amounts_.clear();
-  flops_amounts_.push_back(flops_amount);
+  flops_amounts_.assign(1, flops_amount);
   return *this;
 }
 
