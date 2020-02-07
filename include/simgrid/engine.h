@@ -7,6 +7,7 @@
 #define INCLUDE_SIMGRID_ENGINE_H_
 
 #include <simgrid/forward.h>
+#include <stddef.h>
 
 SG_BEGIN_DECL /* C interface */
 /** Initialize the SimGrid engine, taking the command line parameters of your main function. */
@@ -49,6 +50,8 @@ XBT_PUBLIC int simgrid_get_actor_count();
  * even if the user is asking for help.
  */
 XBT_PUBLIC void sg_config_continue_after_help();
+
+XBT_PUBLIC void simgrid_get_all_hosts(size_t* host_count, sg_host_t** hosts);
 
 SG_END_DECL
 
