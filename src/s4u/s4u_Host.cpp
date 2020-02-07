@@ -382,6 +382,15 @@ void sg_host_user_destroy(sg_host_t host) // deprecated
 }
 
 // ========= storage related functions ============
+void sg_host_disks(sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
+{
+  std::vector<sg_disk_t> list = host->get_disks();
+  *disk_count                 = list.size();
+  *disks                      = static_cast<sg_disk_t*>(xbt_malloc(sizeof(sg_disk_t) * (*disk_count)));
+  for (size_t i = 0; i < *disk_count; i++)
+    (*disks)[i] = list[i];
+}
+
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
