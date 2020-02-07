@@ -19,9 +19,15 @@ include doc/webcruft/storage_sample_scenario.png
 include examples/c/actor-create/actor-create.c
 include examples/c/actor-create/actor-create.tesh
 include examples/c/actor-create/actor-create_d.xml
+include examples/c/actor-daemon/actor-daemon.c
+include examples/c/actor-daemon/actor-daemon.tesh
+include examples/c/actor-join/actor-join.c
+include examples/c/actor-join/actor-join.tesh
 include examples/c/app-pingpong/app-pingpong.c
 include examples/c/app-pingpong/app-pingpong.tesh
 include examples/c/app-pingpong/app-pingpong_d.xml
+include examples/c/app-token-ring/app-token-ring.c
+include examples/c/app-token-ring/app-token-ring.tesh
 include examples/c/async-waitany/async-waitany.c
 include examples/c/async-waitany/async-waitany.tesh
 include examples/c/async-waitany/async-waitany_d.xml
@@ -613,8 +619,6 @@ include teshsuite/msg/app-chainsend/messages.c
 include teshsuite/msg/app-chainsend/messages.h
 include teshsuite/msg/app-chainsend/peer.c
 include teshsuite/msg/app-chainsend/peer.h
-include teshsuite/msg/app-token-ring/app-token-ring.c
-include teshsuite/msg/app-token-ring/app-token-ring.tesh
 include teshsuite/msg/async-wait/async-wait.c
 include teshsuite/msg/async-wait/async-wait.tesh
 include teshsuite/msg/async-wait/async-wait2_d.xml
@@ -659,10 +663,6 @@ include teshsuite/msg/platform-properties/platform-properties.tesh
 include teshsuite/msg/platform-properties/platform-properties_d.xml
 include teshsuite/msg/plugin-hostload/plugin-hostload.c
 include teshsuite/msg/plugin-hostload/plugin-hostload.tesh
-include teshsuite/msg/process-daemon/process-daemon.c
-include teshsuite/msg/process-daemon/process-daemon.tesh
-include teshsuite/msg/process-join/process-join.c
-include teshsuite/msg/process-join/process-join.tesh
 include teshsuite/msg/process-kill/process-kill.c
 include teshsuite/msg/process-kill/process-kill.tesh
 include teshsuite/msg/process-lifetime/baseline_d.xml

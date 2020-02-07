@@ -25,19 +25,18 @@ public:
     try {
       rank = std::stoi(simgrid::s4u::this_actor::get_name());
     } catch (const std::invalid_argument& ia) {
-      throw std::invalid_argument(std::string("Processes of this example must have a numerical name, not ") +
-                                  ia.what());
+      throw std::invalid_argument(std::string("Actors of this example must have a numerical name, not ") + ia.what());
     }
     my_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(rank));
     if (rank + 1 == simgrid::s4u::Engine::get_instance()->get_host_count())
-      /* The last process, which sends the token back to rank 0 */
+      /* The last actor sends the token back to rank 0 */
       neighbor_mailbox = simgrid::s4u::Mailbox::by_name("0");
     else
-      /* The others processes send to their right neighbor (rank+1) */
+      /* The others actors send to their right neighbor (rank+1) */
       neighbor_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(rank + 1));
 
     if (rank == 0) {
-      /* The root process (rank 0) first sends the token then waits to receive it back */
+      /* The root actor (rank 0) first sends the token then waits to receive it back */
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       std::string msg = "Token";
       neighbor_mailbox->put(&msg, task_comm_size);
@@ -62,7 +61,7 @@ int main(int argc, char** argv)
   int id = 0;
   std::vector<simgrid::s4u::Host*> list = e.get_all_hosts();
   for (auto const& host : list) {
-    /* - Give a unique rank to each host and create a @ref relay_runner process on each */
+    /* - Give a unique rank to each host and create a @ref relay_runner actor on each */
     simgrid::s4u::Actor::create((std::to_string(id)).c_str(), host, RelayRunner());
     id++;
   }

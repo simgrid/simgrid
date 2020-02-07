@@ -1,0 +1,21 @@
+$ ${bindir:=.}/actor-join-c ${platfdir}/small_platform.xml
+> [Tremblay:master:(1) 0.000000] [actor_join/INFO] Start sleeper
+> [Tremblay:sleeper from master:(2) 0.000000] [actor_join/INFO] Sleeper started
+> [Tremblay:master:(1) 0.000000] [actor_join/INFO] Join the sleeper (timeout 2)
+> [Tremblay:master:(1) 2.000000] [actor_join/INFO] Start sleeper
+> [Tremblay:sleeper from master:(3) 2.000000] [actor_join/INFO] Sleeper started
+> [Tremblay:master:(1) 2.000000] [actor_join/INFO] Join the sleeper (timeout 4)
+> [Tremblay:sleeper from master:(2) 3.000000] [actor_join/INFO] I'm done. See you!
+> [Tremblay:sleeper from master:(3) 5.000000] [actor_join/INFO] I'm done. See you!
+> [Tremblay:master:(1) 5.000000] [actor_join/INFO] Start sleeper
+> [Tremblay:sleeper from master:(4) 5.000000] [actor_join/INFO] Sleeper started
+> [Tremblay:master:(1) 5.000000] [actor_join/INFO] Join the sleeper (timeout 2)
+> [Tremblay:master:(1) 7.000000] [actor_join/INFO] Start sleeper
+> [Tremblay:sleeper from master:(5) 7.000000] [actor_join/INFO] Sleeper started
+> [Tremblay:master:(1) 7.000000] [actor_join/INFO] Waiting 4
+> [Tremblay:sleeper from master:(4) 8.000000] [actor_join/INFO] I'm done. See you!
+> [Tremblay:sleeper from master:(5) 10.000000] [actor_join/INFO] I'm done. See you!
+> [Tremblay:master:(1) 11.000000] [actor_join/INFO] Join the sleeper after its end (timeout 1)
+> [Tremblay:master:(1) 11.000000] [actor_join/INFO] Goodbye now!
+> [Tremblay:master:(1) 12.000000] [actor_join/INFO] Goodbye now!
+> [12.000000] [actor_join/INFO] Simulation time 12

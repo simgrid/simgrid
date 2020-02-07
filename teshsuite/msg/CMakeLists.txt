@@ -1,9 +1,8 @@
 # C examples
-foreach(x app-token-ring
-          async-wait async-waitall async-waitany
+foreach(x async-wait async-waitall async-waitany
           cloud-capping cloud-migration cloud-two-tasks cloud-simple
           get_sender host_on_off host_on_off_recv
-          process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
+          process-kill process-lifetime process-migration process-suspend process-yield
           energy-consumption energy-ptask energy-pstate platform-properties
           io-file io-file-remote
           task-priority
@@ -91,13 +90,13 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
 if(enable_msg)
   foreach(x 
     async-wait async-waitall
-    app-bittorrent app-chainsend app-token-ring
+    app-bittorrent app-chainsend
     cloud-capping cloud-migration cloud-two-tasks cloud-simple
     energy-pstate
     host_on_off host_on_off_processes host_on_off_recv
     get_sender
     task_destroy_cancel task_listen_from task_progress 
-    process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
+    process-kill process-lifetime process-migration process-suspend process-yield
     energy-consumption energy-ptask
     io-file io-file-remote
     platform-properties
