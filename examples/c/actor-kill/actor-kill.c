@@ -29,7 +29,7 @@ static void victimA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv
   XBT_INFO("Bye!"); /* - But will never reach the end of it */
 }
 
-static void victimB_fun()
+static void victimB_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Terminate before being killed");
 }
