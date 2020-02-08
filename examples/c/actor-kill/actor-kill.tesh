@@ -1,0 +1,16 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/actor-kill-c ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+> [  0.000000] (killer@Tremblay) Hello!
+> [  0.000000] (victim A@Fafard) Hello!
+> [  0.000000] (victim A@Fafard) Suspending myself
+> [  0.000000] (victim B@Jupiter) Terminate before being killed
+> [ 10.000000] (killer@Tremblay) Resume the victim A
+> [ 10.000000] (victim A@Fafard) OK, OK. Let's work
+> [ 12.000000] (killer@Tremblay) Kill the victim A
+> [ 12.000000] (victim A@Fafard) I have been killed!
+> [ 13.000000] (killer@Tremblay) Kill victimB, even if it's already dead
+> [ 14.000000] (killer@Tremblay) Start a new actor, and kill it right away
+> [ 14.000000] (victim C@Jupiter) I have been killed!
+> [ 15.000000] (killer@Tremblay) Killing everybody but myself
+> [ 15.000000] (killer@Tremblay) OK, goodbye now. I commit a suicide.

@@ -23,6 +23,8 @@ include examples/c/actor-daemon/actor-daemon.c
 include examples/c/actor-daemon/actor-daemon.tesh
 include examples/c/actor-join/actor-join.c
 include examples/c/actor-join/actor-join.tesh
+include examples/c/actor-kill/actor-kill.c
+include examples/c/actor-kill/actor-kill.tesh
 include examples/c/app-pingpong/app-pingpong.c
 include examples/c/app-pingpong/app-pingpong.tesh
 include examples/c/app-pingpong/app-pingpong_d.xml
@@ -663,8 +665,6 @@ include teshsuite/msg/platform-properties/platform-properties.tesh
 include teshsuite/msg/platform-properties/platform-properties_d.xml
 include teshsuite/msg/plugin-hostload/plugin-hostload.c
 include teshsuite/msg/plugin-hostload/plugin-hostload.tesh
-include teshsuite/msg/process-kill/process-kill.c
-include teshsuite/msg/process-kill/process-kill.tesh
 include teshsuite/msg/process-lifetime/baseline_d.xml
 include teshsuite/msg/process-lifetime/kill_d.xml
 include teshsuite/msg/process-lifetime/process-lifetime.c

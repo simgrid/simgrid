@@ -1,4 +1,6 @@
-foreach(x actor-create actor-daemon actor-join app-pingpong app-token-ring async-waitany io-disk-raw)
+foreach(x
+        actor-create actor-daemon actor-join actor-kill 
+        app-pingpong app-token-ring async-waitany io-disk-raw)
   add_executable       (${x}-c EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}-c simgrid)
   set_target_properties(${x}-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -16,7 +18,9 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
                                PARENT_SCOPE)
 
-foreach(x actor-create actor-daemon actor-join app-pingpong app-token-ring async-waitany io-disk-raw)
+foreach(x
+        actor-create actor-daemon actor-join actor-kill
+        app-pingpong app-token-ring async-waitany io-disk-raw)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                   --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/${x}
                   --cd ${CMAKE_HOME_DIRECTORY}/examples/c/${x}

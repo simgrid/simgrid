@@ -51,6 +51,11 @@ int MSG_task_listen(const char* alias)
 }
 
 /* ************************** Actors *************************** */
+void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data)
+{
+  sg_actor_on_exit(fun, data);
+}
+
 int MSG_process_get_PID(const_sg_actor_t actor)
 {
   return sg_actor_get_PID(actor);

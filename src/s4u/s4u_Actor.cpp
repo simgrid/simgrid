@@ -472,11 +472,17 @@ void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char
   actor->start(std::move(function));
 }
 
+void sg_actor_exit()
+{
+  simgrid::s4u::this_actor::exit();
+}
+
 /** @ingroup m_actor_management
  * @brief Returns the process ID of @a actor.
  *
  * This function checks whether @a actor is a valid pointer and return its PID (or 0 in case of problem).
  */
+
 aid_t sg_actor_get_PID(const_sg_actor_t actor)
 {
   /* Do not raise an exception here: this function is called by the logs
@@ -752,4 +758,12 @@ void* sg_actor_data(const_sg_actor_t actor)
 void sg_actor_data_set(sg_actor_t actor, void* userdata)
 {
   actor->set_data(userdata);
+}
+/** @brief Add a function to the list of "on_exit" functions for the current process.
+ *  The on_exit functions are the functions executed when your process is killed.
+ *  You should use them to free the data used by your process.
+ */
+void sg_actor_on_exit(int_f_int_pvoid_t fun, void* data)
+{
+  simgrid::s4u::this_actor::on_exit([fun, data](bool failed) { fun(failed ? 1 /*FAILURE*/ : 0 /*SUCCESS*/, data); });
 }

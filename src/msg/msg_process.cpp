@@ -101,12 +101,3 @@ xbt_dynar_t MSG_processes_as_dynar() {
   }
   return res;
 }
-
-/** @brief Add a function to the list of "on_exit" functions for the current process.
- *  The on_exit functions are the functions executed when your process is killed.
- *  You should use them to free the data used by your process.
- */
-void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data)
-{
-  simgrid::s4u::this_actor::on_exit([fun, data](bool failed) { fun(failed ? 1 /*FAILURE*/ : 0 /*SUCCESS*/, data); });
-}
