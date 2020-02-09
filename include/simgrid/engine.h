@@ -51,8 +51,6 @@ XBT_PUBLIC int simgrid_get_actor_count();
  */
 XBT_PUBLIC void sg_config_continue_after_help();
 
-XBT_PUBLIC void simgrid_get_all_hosts(size_t* host_count, sg_host_t** hosts);
-
 SG_END_DECL
 
 #endif /* INCLUDE_SIMGRID_ENGINE_H_ */

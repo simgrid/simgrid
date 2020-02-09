@@ -57,9 +57,8 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   simgrid_load_platform(argv[1]); /* - Load the platform description */
 
-  size_t host_count;
-  sg_host_t* hosts;
-  simgrid_get_all_hosts(&host_count, &hosts);
+  size_t host_count = sg_host_count();
+  sg_host_t* hosts  = sg_host_list();
 
   XBT_INFO("Number of hosts '%zu'", host_count);
   for (size_t i = 0; i < host_count; i++) {

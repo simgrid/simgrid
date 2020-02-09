@@ -63,9 +63,8 @@ int main(int argc, char* argv[])
 
   simgrid_register_function("host", host);
 
-  size_t host_count;
-  sg_host_t* hosts;
-  simgrid_get_all_hosts(&host_count, &hosts);
+  size_t host_count = sg_host_count();
+  sg_host_t* hosts  = sg_host_list();
 
   for (long i = 0; i < host_count; i++) {
     XBT_INFO("*** %s properties ****", sg_host_get_name(hosts[i]));

@@ -439,20 +439,3 @@ int simgrid_get_actor_count()
 {
   return simgrid::s4u::Engine::get_instance()->get_actor_count();
 }
-
-void simgrid_get_all_hosts(size_t* host_count, sg_host_t** hosts)
-{
-  simgrid::s4u::Engine* e               = simgrid::s4u::Engine::get_instance();
-  *host_count                           = e->get_host_count();
-  std::vector<simgrid::s4u::Host*> list = e->get_all_hosts();
-
-  auto last = std::remove_if(begin(list), end(list), [](const simgrid::s4u::Host* host) {
-    return not host || not host->get_netpoint() || not host->get_netpoint()->is_host();
-  });
-  std::sort(begin(list), last,
-            [](const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) { return a->get_name() < b->get_name(); });
-
-  *hosts = static_cast<sg_host_t*>(xbt_malloc(sizeof(sg_host_t) * (*host_count)));
-  for (size_t i = 0; i < *host_count; i++)
-    (*hosts)[i] = list[i];
-}
