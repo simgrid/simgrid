@@ -169,10 +169,6 @@ use  :cpp:func:`s4u::Activity::wait_for() <simgrid::s4u::Activity::wait_for>`.
 Finally, to wait at most until a specified time limit, use
 :cpp:func:`s4u::Activity::wait_until() <simgrid::s4u::Activity::wait_until>`.
 
-.. todo::
-
-   wait_for and wait_until are currently not implemented for Exec and Io activities.
-
 Every kind of activity can be asynchronous:
 
   - :ref:`s4u::CommPtr <API_s4u_Comm>` are created with 
