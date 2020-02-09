@@ -318,12 +318,6 @@ sg_host_t* sg_host_list()
   xbt_assert(host_count > 0, "There is no host!");
   std::vector<simgrid::s4u::Host*> hosts = e->get_all_hosts();
 
-  auto last = std::remove_if(begin(hosts), end(hosts), [](const simgrid::s4u::Host* host) {
-    return not host || not host->get_netpoint() || not host->get_netpoint()->is_host();
-  });
-  std::sort(begin(hosts), last,
-            [](const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) { return a->get_name() < b->get_name(); });
-
   sg_host_t* res = xbt_new(sg_host_t, hosts.size());
   memcpy(res, hosts.data(), sizeof(sg_host_t) * hosts.size());
 
