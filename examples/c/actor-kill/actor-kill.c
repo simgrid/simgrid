@@ -39,8 +39,11 @@ static void killer_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
   XBT_INFO("Hello!"); /* - First start a victim process */
   sg_actor_t victimA = sg_actor_init("victim A", sg_host_by_name("Fafard"));
   sg_actor_start(victimA, victimA_fun, 0, NULL);
+
   sg_actor_t victimB = sg_actor_init("victim B", sg_host_by_name("Jupiter"));
+  sg_actor_ref(victimB); // We have to take that ref because victimB will end before we try to kill it
   sg_actor_start(victimB, victimB_fun, 0, NULL);
+
   sg_actor_sleep_for(10.0);
 
   XBT_INFO("Resume the victim A"); /* - Resume it from its suspended state */
@@ -53,6 +56,7 @@ static void killer_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
 
   XBT_INFO("Kill victimB, even if it's already dead"); /* that's a no-op, there is no zombies in SimGrid */
   sg_actor_kill(victimB); // the actor is automatically garbage-collected after this last reference
+  sg_actor_unref(victimB); // Release the ref taken on victimB to avoid to leak memory
   sg_actor_sleep_for(1.0);
 
   XBT_INFO("Start a new actor, and kill it right away");
