@@ -225,7 +225,8 @@ Comm* Comm::cancel()
 
 bool Comm::test()
 {
-  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::FINISHED);
+  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||
+             state_ == State::FINISHED);
 
   if (state_ == State::FINISHED)
     return true;
