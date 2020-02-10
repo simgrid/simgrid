@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "simgrid/modelchecker.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
@@ -44,6 +46,38 @@ bool ActivityImpl::test()
     return true;
   }
   return false;
+}
+
+void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
+{
+  XBT_DEBUG("Wait for execution of synchro %p, state %d", this, (int)state_);
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
+
+  /* Associate this simcall to the synchro */
+  register_simcall(&issuer->simcall);
+
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = SIMCALL_GET_MC_VALUE(issuer->simcall);
+    if (idx == 0) {
+      state_ = simgrid::kernel::activity::State::DONE;
+    } else {
+      /* If we reached this point, the wait simcall must have a timeout */
+      /* Otherwise it shouldn't be enabled and executed by the MC */
+      if (timeout < 0.0)
+        THROW_IMPOSSIBLE;
+      state_ = simgrid::kernel::activity::State::TIMEOUT;
+    }
+    finish();
+    return;
+  }
+
+  /* If the synchro is already finished then perform the error handling */
+  if (state_ != simgrid::kernel::activity::State::RUNNING)
+    finish();
+  else {
+    /* we need a sleep action (even when there is no timeout) to be notified of host failures */
+    set_timeout(timeout);
+  }
 }
 
 void ActivityImpl::suspend()

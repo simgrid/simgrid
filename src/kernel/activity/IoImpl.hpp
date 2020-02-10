@@ -34,7 +34,6 @@ public:
   resource::StorageImpl* get_storage() const { return storage_; }
 
   IoImpl* start();
-  void wait_for(actor::ActorImpl* issuer, double timeout);
   void post() override;
   void finish() override;
 
