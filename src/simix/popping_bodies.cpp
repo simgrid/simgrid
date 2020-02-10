@@ -39,13 +39,6 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
   return simgrid::simix::unmarshal<R>(self->simcall.result_);
 }
 
-inline static int simcall_BODY_execution_wait(simgrid::kernel::activity::ExecImpl* execution, double timeout)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_execution_wait(&SIMIX_process_self()->simcall, execution, timeout);
-  return simcall<int, simgrid::kernel::activity::ExecImpl*, double>(SIMCALL_EXECUTION_WAIT, execution, timeout);
-}
-
 inline static int simcall_BODY_execution_waitany_for(simgrid::kernel::activity::ExecImpl** execs, size_t count, double timeout)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
@@ -156,13 +149,6 @@ inline static int simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeout
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
     simcall_HANDLER_sem_acquire_timeout(&SIMIX_process_self()->simcall, sem, timeout);
   return simcall<int, smx_sem_t, double>(SIMCALL_SEM_ACQUIRE_TIMEOUT, sem, timeout);
-}
-
-inline static sg_size_t simcall_BODY_io_wait(simgrid::kernel::activity::IoImpl* io, double timeout)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_io_wait(&SIMIX_process_self()->simcall, io, timeout);
-  return simcall<sg_size_t, simgrid::kernel::activity::IoImpl*, double>(SIMCALL_IO_WAIT, io, timeout);
 }
 
 inline static int simcall_BODY_mc_random(int min, int max)

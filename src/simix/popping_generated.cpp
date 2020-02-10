@@ -26,7 +26,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
     "SIMCALL_NONE",
-    "SIMCALL_EXECUTION_WAIT",
     "SIMCALL_EXECUTION_WAITANY_FOR",
     "SIMCALL_COMM_SEND",
     "SIMCALL_COMM_ISEND",
@@ -43,7 +42,6 @@ const char* simcall_names[] = {
     "SIMCALL_COND_WAIT_TIMEOUT",
     "SIMCALL_SEM_ACQUIRE",
     "SIMCALL_SEM_ACQUIRE_TIMEOUT",
-    "SIMCALL_IO_WAIT",
     "SIMCALL_MC_RANDOM",
     "SIMCALL_RUN_KERNEL",
     "SIMCALL_RUN_BLOCKING",
@@ -60,10 +58,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
   if (context_->wannadie())
     return;
   switch (simcall.call_) {
-    case SIMCALL_EXECUTION_WAIT:
-      simcall_HANDLER_execution_wait(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl*>(simcall.args_[0]), simgrid::simix::unmarshal<double>(simcall.args_[1]));
-      break;
-
     case SIMCALL_EXECUTION_WAITANY_FOR:
       simcall_HANDLER_execution_waitany_for(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl**>(simcall.args_[0]), simgrid::simix::unmarshal<size_t>(simcall.args_[1]), simgrid::simix::unmarshal<double>(simcall.args_[2]));
       break;
@@ -130,10 +124,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
 
     case SIMCALL_SEM_ACQUIRE_TIMEOUT:
       simcall_HANDLER_sem_acquire_timeout(&simcall, simgrid::simix::unmarshal<smx_sem_t>(simcall.args_[0]), simgrid::simix::unmarshal<double>(simcall.args_[1]));
-      break;
-
-    case SIMCALL_IO_WAIT:
-      simcall_HANDLER_io_wait(&simcall, simgrid::simix::unmarshal<simgrid::kernel::activity::IoImpl*>(simcall.args_[0]), simgrid::simix::unmarshal<double>(simcall.args_[1]));
       break;
 
     case SIMCALL_MC_RANDOM:

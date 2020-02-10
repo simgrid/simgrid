@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
@@ -63,7 +64,9 @@ Io* Io::wait_for(double timeout)
 {
   if (state_ == State::INITED)
     vetoable_start();
-  simcall_io_wait(get_impl(), timeout);
+
+  kernel::actor::ActorImpl* issuer = Actor::self()->get_impl();
+  kernel::actor::simcall_blocking<void>([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
   state_ = State::FINISHED;
   this->release_dependencies();
   return this;

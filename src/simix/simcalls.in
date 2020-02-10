@@ -35,7 +35,6 @@
 # Last but not the least, you should declare the new simix call in
 # ./include/simgrid/simix.h (otherwise you will get a warning at compile time)
 
-int           execution_wait(simgrid::kernel::activity::ExecImpl* execution, double timeout) [[block]];
 int           execution_waitany_for(simgrid::kernel::activity::ExecImpl** execs, size_t count, double timeout) [[block]];
 
 void           comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) [[block]];
@@ -56,8 +55,6 @@ int        cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
 
 void      sem_acquire(smx_sem_t sem) [[block]];
 int       sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];
-
-sg_size_t io_wait(simgrid::kernel::activity::IoImpl* io, double timeout) [[block]];
 
 int        mc_random(int min, int max);
 

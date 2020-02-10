@@ -15,11 +15,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
-void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* synchro, double timeout)
-{
-  synchro->wait_for(simcall->issuer_, timeout);
-}
-
 namespace simgrid {
 namespace kernel {
 namespace activity {

@@ -29,10 +29,22 @@
  *
  * @param execution The execution synchro
  */
-e_smx_state_t simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* execution, double timeout)
+e_smx_state_t simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* execution,
+                                     double timeout) // XBT_ATTRIB_DEPRECATED_v330
 {
-  return (e_smx_state_t)simcall_BODY_execution_wait(static_cast<simgrid::kernel::activity::ExecImpl*>(execution),
-                                                    timeout);
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::kernel::actor::simcall_blocking<void>(
+      [execution, issuer, timeout] { execution->wait_for(issuer, timeout); });
+  return simgrid::kernel::activity::State::DONE;
+}
+
+e_smx_state_t simcall_execution_wait(const simgrid::kernel::activity::ActivityImplPtr& execution,
+                                     double timeout) // XBT_ATTRIB_DEPRECATED_v330
+{
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::kernel::actor::simcall_blocking<void>(
+      [execution, issuer, timeout] { execution->wait_for(issuer, timeout); });
+  return simgrid::kernel::activity::State::DONE;
 }
 
 bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution) // XBT_ATTRIB_DEPRECATED_v330
@@ -311,9 +323,19 @@ int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
   return simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 
-e_smx_state_t simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io, double timeout)
+e_smx_state_t simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io, double timeout) // XBT_ATTRIB_DEPRECATED_v330
 {
-  return (e_smx_state_t)simcall_BODY_io_wait(static_cast<simgrid::kernel::activity::IoImpl*>(io), timeout);
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::kernel::actor::simcall_blocking<void>([io, issuer, timeout] { io->wait_for(issuer, timeout); });
+  return simgrid::kernel::activity::State::DONE;
+}
+
+e_smx_state_t simcall_io_wait(const simgrid::kernel::activity::ActivityImplPtr& io,
+                              double timeout) // XBT_ATTRIB_DEPRECATED_v330
+{
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::kernel::actor::simcall_blocking<void>([io, issuer, timeout] { io->wait_for(issuer, timeout); });
+  return simgrid::kernel::activity::State::DONE;
 }
 
 bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io) // XBT_ATTRIB_DEPRECATED_v330

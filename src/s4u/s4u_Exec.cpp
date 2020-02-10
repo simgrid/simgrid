@@ -29,7 +29,9 @@ Exec* Exec::wait_for(double timeout)
 {
   if (state_ == State::INITED)
     vetoable_start();
-  simcall_execution_wait(get_impl(), timeout);
+
+  kernel::actor::ActorImpl* issuer = Actor::self()->get_impl();
+  kernel::actor::simcall_blocking<void>([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
   state_ = State::FINISHED;
   on_completion(*Actor::self(), *this);
   this->release_dependencies();
