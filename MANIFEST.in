@@ -25,6 +25,13 @@ include examples/c/actor-join/actor-join.c
 include examples/c/actor-join/actor-join.tesh
 include examples/c/actor-kill/actor-kill.c
 include examples/c/actor-kill/actor-kill.tesh
+include examples/c/actor-migrate/actor-migrate.c
+include examples/c/actor-migrate/actor-migrate.tesh
+include examples/c/actor-suspend/actor-suspend.c
+include examples/c/actor-suspend/actor-suspend.tesh
+include examples/c/actor-yield/actor-yield.c
+include examples/c/actor-yield/actor-yield.tesh
+include examples/c/actor-yield/actor-yield_d.xml
 include examples/c/app-pingpong/app-pingpong.c
 include examples/c/app-pingpong/app-pingpong.tesh
 include examples/c/app-pingpong/app-pingpong_d.xml
@@ -671,13 +678,6 @@ include teshsuite/msg/process-lifetime/process-lifetime.c
 include teshsuite/msg/process-lifetime/process-lifetime.tesh
 include teshsuite/msg/process-lifetime/start_d.xml
 include teshsuite/msg/process-lifetime/start_kill_d.xml
-include teshsuite/msg/process-migration/process-migration.c
-include teshsuite/msg/process-migration/process-migration.tesh
-include teshsuite/msg/process-suspend/process-suspend.c
-include teshsuite/msg/process-suspend/process-suspend.tesh
-include teshsuite/msg/process-yield/process-yield.c
-include teshsuite/msg/process-yield/process-yield.tesh
-include teshsuite/msg/process-yield/process-yield_d.xml
 include teshsuite/msg/task-priority/task-priority.c
 include teshsuite/msg/task-priority/task-priority.tesh
 include teshsuite/msg/task-priority/task-priority_d.xml

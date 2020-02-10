@@ -2,7 +2,7 @@
 foreach(x async-wait async-waitall async-waitany
           cloud-capping cloud-migration cloud-two-tasks cloud-simple
           get_sender host_on_off host_on_off_recv
-          process-lifetime process-migration process-suspend process-yield
+          process-lifetime
           energy-consumption energy-ptask energy-pstate platform-properties
           io-file io-file-remote
           task-priority
@@ -72,7 +72,6 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/kill_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/start_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/start_kill_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-yield/process-yield_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/task-priority/task-priority_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp3.0-hbp4.0.xml
@@ -96,7 +95,7 @@ if(enable_msg)
     host_on_off host_on_off_processes host_on_off_recv
     get_sender
     task_destroy_cancel task_listen_from task_progress 
-    process-lifetime process-migration process-suspend process-yield
+    process-lifetime
     energy-consumption energy-ptask
     io-file io-file-remote
     platform-properties
