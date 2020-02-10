@@ -17,37 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)
 
 void simcall_HANDLER_io_wait(smx_simcall_t simcall, simgrid::kernel::activity::IoImpl* synchro, double timeout)
 {
-  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state_);
-
-  /* Associate this simcall to the synchro */
-  synchro->register_simcall(simcall);
-
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = SIMCALL_GET_MC_VALUE(*simcall);
-    if (idx == 0) {
-      synchro->state_ = simgrid::kernel::activity::State::DONE;
-    } else {
-      /* If we reached this point, the wait simcall must have a timeout */
-      /* Otherwise it shouldn't be enabled and executed by the MC */
-      if (timeout < 0.0)
-        THROW_IMPOSSIBLE;
-      synchro->state_ = simgrid::kernel::activity::State::TIMEOUT;
-    }
-    synchro->finish();
-    return;
-  }
-
-  /* If the synchro is already finished then perform the error handling */
-  if (synchro->state_ != simgrid::kernel::activity::State::RUNNING)
-    synchro->finish();
-  else {
-    /* we need a sleep action (even when there is no timeout) to be notified of host failures */
-    if (synchro->get_disk() != nullptr)
-      synchro->set_timeout_detector(synchro->get_disk()->get_host()->pimpl_cpu->sleep(timeout));
-    else
-      synchro->set_timeout_detector(
-          simgrid::s4u::Host::by_name(synchro->get_storage()->get_host())->pimpl_cpu->sleep(timeout));
-  }
+  synchro->wait_for(simcall->issuer_, timeout);
 }
 
 namespace simgrid {
@@ -91,6 +61,40 @@ IoImpl* IoImpl::start()
   IoImpl::on_start(*this);
 
   return this;
+}
+
+void IoImpl::wait_for(actor::ActorImpl* issuer, double timeout)
+{
+  XBT_DEBUG("Wait for execution of synchro %p, state %d", this, (int)state_);
+
+  /* Associate this simcall to the synchro */
+  register_simcall(&issuer->simcall);
+
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = SIMCALL_GET_MC_VALUE(issuer->simcall);
+    if (idx == 0) {
+      state_ = simgrid::kernel::activity::State::DONE;
+    } else {
+      /* If we reached this point, the wait simcall must have a timeout */
+      /* Otherwise it shouldn't be enabled and executed by the MC */
+      if (timeout < 0.0)
+        THROW_IMPOSSIBLE;
+      state_ = simgrid::kernel::activity::State::TIMEOUT;
+    }
+    finish();
+    return;
+  }
+
+  /* If the synchro is already finished then perform the error handling */
+  if (state_ != simgrid::kernel::activity::State::RUNNING)
+    finish();
+  else {
+    /* we need a sleep action (even when there is no timeout) to be notified of host failures */
+    if (get_disk() != nullptr)
+      set_timeout_detector(get_disk()->get_host()->pimpl_cpu->sleep(timeout));
+    else
+      set_timeout_detector(simgrid::s4u::Host::by_name(get_storage()->get_host())->pimpl_cpu->sleep(timeout));
+  }
 }
 
 void IoImpl::post()

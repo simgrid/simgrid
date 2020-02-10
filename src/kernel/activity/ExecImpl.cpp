@@ -19,34 +19,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* synchro, double timeout)
 {
-  XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state_);
-  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-
-  /* Associate this simcall to the synchro */
-  synchro->register_simcall(simcall);
-
-  /* set surf's synchro */
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = SIMCALL_GET_MC_VALUE(*simcall);
-    if (idx == 0) {
-      synchro->state_ = simgrid::kernel::activity::State::DONE;
-    } else {
-      /* If we reached this point, the wait simcall must have a timeout */
-      /* Otherwise it shouldn't be enabled and executed by the MC */
-      if (timeout < 0.0)
-        THROW_IMPOSSIBLE;
-      synchro->state_ = simgrid::kernel::activity::State::TIMEOUT;
-    }
-    synchro->finish();
-    return;
-  }
-
-  /* If the synchro is already finished then perform the error handling */
-  if (synchro->state_ != simgrid::kernel::activity::State::RUNNING) {
-    synchro->finish();
-  } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
-    synchro->set_timeout(timeout);
-  }
+  synchro->wait_for(simcall->issuer_, timeout);
 }
 
 void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execs[],
@@ -145,6 +118,37 @@ ExecImpl* ExecImpl::start()
 
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
   return this;
+}
+
+void ExecImpl::wait_for(actor::ActorImpl* issuer, double timeout)
+{
+  XBT_DEBUG("Wait for execution of synchro %p, state %d", this, (int)state_);
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
+
+  /* Associate this simcall to the synchro */
+  register_simcall(&issuer->simcall);
+
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = SIMCALL_GET_MC_VALUE(issuer->simcall);
+    if (idx == 0) {
+      state_ = simgrid::kernel::activity::State::DONE;
+    } else {
+      /* If we reached this point, the wait simcall must have a timeout */
+      /* Otherwise it shouldn't be enabled and executed by the MC */
+      if (timeout < 0.0)
+        THROW_IMPOSSIBLE;
+      state_ = simgrid::kernel::activity::State::TIMEOUT;
+    }
+    finish();
+    return;
+  }
+
+  /* If the synchro is already finished then perform the error handling */
+  if (state_ != simgrid::kernel::activity::State::RUNNING) {
+    finish();
+  } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
+    set_timeout(timeout);
+  }
 }
 
 double ExecImpl::get_seq_remaining_ratio()
