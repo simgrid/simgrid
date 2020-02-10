@@ -54,6 +54,7 @@ XBT_PUBLIC void sg_actor_kill_all();
 XBT_PUBLIC void sg_actor_set_kill_time(sg_actor_t actor, double kill_time);
 XBT_PUBLIC void sg_actor_yield();
 XBT_PUBLIC void sg_actor_sleep_for(double duration);
+XBT_PUBLIC void sg_actor_sleep_until(double wakeup_time);
 XBT_PUBLIC sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dict_t properties);
 XBT_PUBLIC void sg_actor_detach();
 XBT_PUBLIC sg_actor_t sg_actor_self();

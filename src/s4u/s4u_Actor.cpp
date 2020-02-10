@@ -675,6 +675,11 @@ void sg_actor_sleep_for(double duration)
   simgrid::s4u::this_actor::sleep_for(duration);
 }
 
+void sg_actor_sleep_until(double wakeup_time)
+{
+  simgrid::s4u::this_actor::sleep_until(wakeup_time);
+}
+
 sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
