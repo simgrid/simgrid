@@ -23,16 +23,11 @@ class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
   resource::Action* timeout_detector_ = nullptr;
 
 public:
+  IoImpl& set_timeout(double timeout) override;
   IoImpl& set_size(sg_size_t size);
   IoImpl& set_type(s4u::Io::OpType type);
   IoImpl& set_storage(resource::StorageImpl* storage);
   IoImpl& set_disk(resource::DiskImpl* disk);
-
-  void set_timeout_detector(resource::Action* action)
-  {
-    timeout_detector_ = action;
-    timeout_detector_->set_activity(this);
-  }
 
   sg_size_t get_performed_ioops() const { return performed_ioops_; }
   resource::DiskImpl* get_disk() const { return disk_; }

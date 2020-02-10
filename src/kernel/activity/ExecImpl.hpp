@@ -24,7 +24,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::vector<double> bytes_amounts_;
 
 public:
-  ExecImpl& set_timeout(double timeout);
+  ExecImpl& set_timeout(double timeout) override;
   ExecImpl& set_bound(double bound);
   ExecImpl& set_sharing_penalty(double sharing_penalty);
 

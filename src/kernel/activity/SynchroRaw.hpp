@@ -20,7 +20,7 @@ class XBT_PUBLIC RawImpl : public ActivityImpl_T<RawImpl> {
 
 public:
   RawImpl& set_host(s4u::Host* host);
-  RawImpl& set_timeout(double timeout);
+  RawImpl& set_timeout(double timeout) override;
 
   RawImpl* start();
   void suspend() override;

@@ -45,6 +45,7 @@ public:
   resource::Action* surf_action_ = nullptr;
 
   bool test();
+  virtual ActivityImpl& set_timeout(double timeout) { THROW_UNIMPLEMENTED; }
 
   virtual void suspend();
   virtual void resume();
