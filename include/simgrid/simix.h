@@ -114,9 +114,9 @@ XBT_PUBLIC void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommI
 
 /******************************* Host simcalls ********************************/
 #ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::wait_for()") XBT_PUBLIC e_smx_state_t
+XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
     simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* execution, double timeout);
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::wait_for()") XBT_PUBLIC e_smx_state_t
+XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
     simcall_execution_wait(const simgrid::kernel::activity::ActivityImplPtr& execution, double timeout);
 XBT_PUBLIC unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
                                                       double timeout);
@@ -137,7 +137,12 @@ XBT_ATTRIB_DEPRECATED_v328("Please use sg_actor_suspend()") XBT_PUBLIC
 XBT_ATTRIB_DEPRECATED_v328("Please use sg_actor_join()") XBT_PUBLIC
     void simcall_process_join(smx_actor_t process, double timeout);
 
-XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_sleep_for()") XBT_PUBLIC e_smx_state_t
+XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_sleep_for()") XBT_PUBLIC
+#ifdef __cplusplus
+    simgrid::kernel::activity::State
+#else
+    enum kernel_activity_state
+#endif
     simcall_process_sleep(double duration);
 SG_END_DECL
 
@@ -209,9 +214,9 @@ SG_END_DECL
 
 /*****************************   Io   **************************************/
 #ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::wait_for()") XBT_PUBLIC e_smx_state_t
+XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
     simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io, double timeout);
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::wait_for()") XBT_PUBLIC e_smx_state_t
+XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
     simcall_io_wait(const simgrid::kernel::activity::ActivityImplPtr& io, double timeout);
 XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::test()") XBT_PUBLIC
     bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io);
