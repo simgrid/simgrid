@@ -188,7 +188,7 @@ sg_size_t File::read(sg_size_t size)
   if (host && host->get_name() != Host::current()->get_name() && read_size > 0) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
-    host->send_to(Host::current(), read_size);
+    host->sendto(Host::current(), read_size);
   }
 
   return read_size;
@@ -209,7 +209,7 @@ sg_size_t File::write_on_disk(sg_size_t size, bool write_inside)
   if (host && host->get_name() != Host::current()->get_name()) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
-    Host::current()->send_to(host, size);
+    Host::current()->sendto(host, size);
   }
   XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu' '%llu:%llu'", get_path(), local_disk_->get_cname(), size, size_,
             sg_disk_get_size_used(local_disk_), sg_disk_get_size(local_disk_));
@@ -246,7 +246,7 @@ sg_size_t File::write_on_storage(sg_size_t size, bool write_inside)
   if (host && host->get_name() != Host::current()->get_name()) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
-    Host::current()->send_to(host, size);
+    Host::current()->sendto(host, size);
   }
 
   XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu' '%llu:%llu'", get_path(), local_storage_->get_cname(), size, size_,
@@ -449,7 +449,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
   if (src_host) {
     XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
               dst_host->get_cname());
-    src_host->send_to(dst_host, read_size);
+    src_host->sendto(dst_host, read_size);
   }
 
   /* Create file on remote host, write it and close it */
