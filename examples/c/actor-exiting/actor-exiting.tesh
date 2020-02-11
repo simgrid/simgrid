@@ -1,0 +1,4 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/actor-exiting-c ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+> [ 10.194200] (A@Tremblay) I stop now

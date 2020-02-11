@@ -1,5 +1,5 @@
 foreach(x
-        actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield
+        actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-pingpong app-token-ring async-waitany io-disk-raw)
   add_executable       (${x}-c EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}-c simgrid)
@@ -20,7 +20,7 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                PARENT_SCOPE)
 
 foreach(x
-        actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield
+        actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-pingpong app-token-ring async-waitany io-disk-raw)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                   --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/${x}

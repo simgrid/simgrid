@@ -21,6 +21,8 @@ include examples/c/actor-create/actor-create.tesh
 include examples/c/actor-create/actor-create_d.xml
 include examples/c/actor-daemon/actor-daemon.c
 include examples/c/actor-daemon/actor-daemon.tesh
+include examples/c/actor-exiting/actor-exiting.c
+include examples/c/actor-exiting/actor-exiting.tesh
 include examples/c/actor-join/actor-join.c
 include examples/c/actor-join/actor-join.tesh
 include examples/c/actor-kill/actor-kill.c
