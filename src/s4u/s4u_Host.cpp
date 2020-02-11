@@ -389,7 +389,7 @@ void sg_host_user_destroy(sg_host_t host) // deprecated
 }
 
 // ========= storage related functions ============
-void sg_host_disks(sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
+void sg_host_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
 {
   std::vector<sg_disk_t> list = host->get_disks();
   *disk_count                 = list.size();

@@ -21,7 +21,7 @@ namespace activity {
 
 IoImpl& IoImpl::set_timeout(double timeout)
 {
-  s4u::Host* host   = get_disk() ? get_disk()->get_host() : s4u::Host::by_name(get_storage()->get_host());
+  const s4u::Host* host = get_disk() ? get_disk()->get_host() : s4u::Host::by_name(get_storage()->get_host());
   timeout_detector_ = host->pimpl_cpu->sleep(timeout);
   timeout_detector_->set_activity(this);
   return *this;
