@@ -1,6 +1,8 @@
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
-        app-pingpong app-token-ring async-waitany io-disk-raw)
+        app-pingpong app-token-ring 
+        async-waitall async-waitany 
+        io-disk-raw)
   add_executable       (${x}-c EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}-c simgrid)
   set_target_properties(${x}-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -16,12 +18,15 @@ set(tesh_files    ${tesh_files}     PARENT_SCOPE)
 set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-create_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/actor-yield_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/async-waitall_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
                                PARENT_SCOPE)
 
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
-        app-pingpong app-token-ring async-waitany io-disk-raw)
+        app-pingpong app-token-ring 
+        async-waitall async-waitany 
+        io-disk-raw)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                   --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/${x}
                   --cd ${CMAKE_HOME_DIRECTORY}/examples/c/${x}

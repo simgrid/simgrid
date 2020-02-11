@@ -1,0 +1,22 @@
+#!/usr/bin/env tesh
+
+! output sort 19
+$ ${bindir:=.}/async-waitall-c ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/async-waitall_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver-0'
+> [  0.000000] (2:receiver@Ruby) Wait for my first message
+> [  0.000000] (3:receiver@Perl) Wait for my first message
+> [  0.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 3' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 4' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Done dispatching all messages
+> [  0.004022] (2:receiver@Ruby) I got a 'Message 0'.
+> [  0.004022] (3:receiver@Perl) I got a 'Message 1'.
+> [  0.008043] (2:receiver@Ruby) I got a 'Message 2'.
+> [  0.008043] (3:receiver@Perl) I got a 'Message 3'.
+> [  0.009995] (3:receiver@Perl) I got a 'finalize'.
+> [  0.012065] (2:receiver@Ruby) I got a 'Message 4'.
+> [  0.014016] (2:receiver@Ruby) I got a 'finalize'.
+> [  0.014016] (1:sender@Tremblay) Goodbye now!

@@ -39,6 +39,9 @@ include examples/c/app-pingpong/app-pingpong.tesh
 include examples/c/app-pingpong/app-pingpong_d.xml
 include examples/c/app-token-ring/app-token-ring.c
 include examples/c/app-token-ring/app-token-ring.tesh
+include examples/c/async-waitall/async-waitall.c
+include examples/c/async-waitall/async-waitall.tesh
+include examples/c/async-waitall/async-waitall_d.xml
 include examples/c/async-waitany/async-waitany.c
 include examples/c/async-waitany/async-waitany.tesh
 include examples/c/async-waitany/async-waitany_d.xml
@@ -636,9 +639,6 @@ include teshsuite/msg/async-wait/async-wait2_d.xml
 include teshsuite/msg/async-wait/async-wait3_d.xml
 include teshsuite/msg/async-wait/async-wait4_d.xml
 include teshsuite/msg/async-wait/async-wait_d.xml
-include teshsuite/msg/async-waitall/async-waitall.c
-include teshsuite/msg/async-waitall/async-waitall.tesh
-include teshsuite/msg/async-waitall/async-waitall_d.xml
 include teshsuite/msg/async-waitany/async-waitany.c
 include teshsuite/msg/async-waitany/async-waitany.tesh
 include teshsuite/msg/async-waitany/async-waitany_d.xml
