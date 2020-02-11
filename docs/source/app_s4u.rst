@@ -1258,14 +1258,15 @@ Platform and routing
       .. autodoxymethod:: simgrid::s4u::Host::get_netpoint() const
       .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link *> &links, double *latency) const
       .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl *> &links, double *latency) const
-      .. autodoxymethod:: simgrid::s4u::Host::send_to(Host *dest, double byte_amount)
+      .. autodoxymethod:: simgrid::s4u::Host::sendto(Host *dest, double byte_amount)
+      .. autodoxymethod:: simgrid::s4u::Host::sendto_async(Host *dest, double byte_amount)
 
    .. group-tab:: C
 
       .. autodoxymethod:: sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
       .. autodoxymethod:: sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
       .. autodoxymethod:: sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
-      .. autodoxymethod:: sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount)
+      .. autodoxymethod:: sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
 
 Signals
 -------

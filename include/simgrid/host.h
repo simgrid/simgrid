@@ -135,7 +135,15 @@ XBT_PUBLIC void sg_host_set_property_value(sg_host_t host, const char* name, con
 XBT_PUBLIC void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links);
 XBT_PUBLIC double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to);
 XBT_PUBLIC double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to);
-void sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount);
+XBT_PUBLIC void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount);
+
+#ifndef DOXYGEN
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_sendto") inline void sg_host_send_to(sg_host_t from, sg_host_t to,
+                                                                                    double byte_amount)
+{
+  sg_host_sendto(from, to, byte_amount);
+}
+#endif
 
 XBT_PUBLIC void sg_host_dump(const_sg_host_t ws);
 

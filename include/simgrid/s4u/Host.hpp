@@ -159,13 +159,28 @@ public:
 
   void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
   void route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency) const;
-  /** Do a communication between two arbitrary hosts.
+  /** Do a blocking communication between two arbitrary hosts.
    *
    * This starts a blocking communication right away, bypassing the mailbox and actors mechanism.
    * The calling actor is blocked until the end of the communication; there is really no limit on the hosts involved.
    * In particular, the actor does not have to be on one of the involved hosts. Enjoy the comfort of the simulator :)
    */
-  void send_to(Host* dest, double byte_amount);
+  void sendto(Host* dest, double byte_amount);
+
+  /** Do an asynchronous communication between two arbitrary hosts.
+   *
+   * This initializes a communication that completely bypass the mailbox and actors mechanism.
+   * There is really no limit on the hosts involved. In particular, the actor does not have to be on one of the involved
+   * hosts.
+   */
+  ActivityPtr sendto_async(Host* dest, double byte_amount);
+
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v330("Please use Host::sendto()") void send_to(Host* dest, double byte_amount)
+  {
+    sendto(dest, byte_amount);
+  }
+#endif
 
   NetZone* get_englobing_zone();
   /** Block the calling actor on an execution located on the called host

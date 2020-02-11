@@ -174,12 +174,17 @@ NetZone* Host::get_englobing_zone()
   return pimpl_netpoint_->get_englobing_zone()->get_iface();
 }
 
-void Host::send_to(Host* dest, double byte_amount)
+void Host::sendto(Host* dest, double byte_amount)
+{
+  sendto_async(dest, byte_amount)->wait();
+}
+
+ActivityPtr Host::sendto_async(Host* dest, double byte_amount)
 {
   std::vector<Host*> m_host_list   = {this, dest};
   std::vector<double> flops_amount = {0, 0};
   std::vector<double> bytes_amount = {0, byte_amount, 0, 0};
-  this_actor::parallel_execute(m_host_list, flops_amount, bytes_amount);
+  return this_actor::exec_init(m_host_list, flops_amount, bytes_amount)->start();
 }
 
 /** Get the properties assigned to a host */
@@ -591,9 +596,9 @@ double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
   return min_bandwidth;
 }
 
-void sg_host_send_to(sg_host_t from, sg_host_t to, double byte_amount)
+void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
 {
-  from->send_to(to, byte_amount);
+  from->sendto(to, byte_amount);
 }
 
 /** @brief Displays debugging information about a host */
