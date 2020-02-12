@@ -477,7 +477,7 @@ void sg_actor_exit()
   simgrid::s4u::this_actor::exit();
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Returns the process ID of @a actor.
  *
  * This function checks whether @a actor is a valid pointer and return its PID (or 0 in case of problem).
@@ -492,7 +492,7 @@ aid_t sg_actor_get_PID(const_sg_actor_t actor)
   return actor->get_pid();
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Returns the process ID of the parent of @a actor.
  *
  * This function checks whether @a actor is a valid pointer and return its parent's PID.
@@ -503,8 +503,7 @@ aid_t sg_actor_get_PPID(const_sg_actor_t actor)
   return actor->get_ppid();
 }
 
-/** @ingroup m_actor_management
- *
+/**
  * @brief Return a #sg_actor_t given its PID.
  *
  * This function search in the list of all the created sg_actor_t for a sg_actor_t  whose PID is equal to @a PID.
@@ -516,9 +515,7 @@ sg_actor_t sg_actor_by_PID(aid_t pid)
   return simgrid::s4u::Actor::by_pid(pid).get();
 }
 
-/** @ingroup m_actor_management
- * @brief Return the name of an actor.
- */
+/** @brief Return the name of an actor. */
 const char* sg_actor_get_name(const_sg_actor_t actor)
 {
   return actor->get_cname();
@@ -529,7 +526,7 @@ sg_host_t sg_actor_get_host(const_sg_actor_t actor)
   return actor->get_host();
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Returns the value of a given actor property
  *
  * @param actor an actor
@@ -541,7 +538,7 @@ const char* sg_actor_get_property_value(const_sg_actor_t actor, const char* name
   return actor->get_property(name);
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Return the list of properties
  *
  * This function returns all the parameters associated with an actor
@@ -559,7 +556,7 @@ xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor)
   return as_dict;
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Suspend the actor.
  *
  * This function suspends the actor by suspending the task on which it was waiting for the completion.
@@ -570,7 +567,7 @@ void sg_actor_suspend(sg_actor_t actor)
   actor->suspend();
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Resume a suspended actor.
  *
  * This function resumes a suspended actor by resuming the task on which it was waiting for the completion.
@@ -581,7 +578,7 @@ void sg_actor_resume(sg_actor_t actor)
   actor->resume();
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Returns true if the actor is suspended .
  *
  * This checks whether an actor is suspended or not by inspecting the task on which it was waiting for the completion.
@@ -591,17 +588,13 @@ int sg_actor_is_suspended(sg_actor_t actor)
   return actor->is_suspended();
 }
 
-/**
- * @ingroup m_actor_management
- * @brief Restarts an actor from the beginning.
- */
+/** @brief Restarts an actor from the beginning. */
 sg_actor_t sg_actor_restart(sg_actor_t actor)
 {
   return actor->restart();
 }
 
 /**
- * @ingroup m_actor_management
  * @brief Sets the "auto-restart" flag of the actor.
  * If the flag is set to 1, the actor will be automatically restarted when its host comes back up.
  */
@@ -610,15 +603,13 @@ void sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
   actor->set_auto_restart(auto_restart);
 }
 
-/** @ingroup m_actor_management
- * @brief This actor will be terminated automatically when the last non-daemon actor finishes
- */
+/** @brief This actor will be terminated automatically when the last non-daemon actor finishes */
 void sg_actor_daemonize(sg_actor_t actor)
 {
   actor->daemonize();
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Migrates an actor to another location.
  *
  * This function changes the value of the #sg_host_t on  which @a actor is running.
@@ -632,7 +623,7 @@ void sg_actor_migrate(sg_actor_t process, sg_host_t host) // deprecated
   process->set_host(host);
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Wait for the completion of a #sg_actor_t.
  *
  * @param actor the actor to wait for
@@ -653,7 +644,7 @@ void sg_actor_kill_all()
   simgrid::s4u::Actor::kill_all();
 }
 
-/** @ingroup m_actor_management
+/**
  * @brief Set the kill time of an actor.
  *
  * @param actor an actor
