@@ -3,7 +3,7 @@ foreach(x async-wait
           cloud-capping cloud-migration cloud-two-tasks cloud-simple
           get_sender host_on_off host_on_off_recv
           process-lifetime
-          energy-consumption energy-ptask energy-pstate platform-properties
+          energy-ptask energy-pstate platform-properties
           io-file io-file-remote
           task-priority
           plugin-hostload
@@ -94,7 +94,7 @@ if(enable_msg)
     get_sender
     task_destroy_cancel task_listen_from task_progress 
     process-lifetime
-    energy-consumption energy-ptask
+    energy-ptask
     io-file io-file-remote
     platform-properties
     task-priority

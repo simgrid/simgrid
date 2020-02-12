@@ -45,6 +45,8 @@ include examples/c/async-waitall/async-waitall_d.xml
 include examples/c/async-waitany/async-waitany.c
 include examples/c/async-waitany/async-waitany.tesh
 include examples/c/async-waitany/async-waitany_d.xml
+include examples/c/energy-exec/energy-exec.c
+include examples/c/energy-exec/energy-exec.tesh
 include examples/c/io-disk-raw/io-disk-raw.c
 include examples/c/io-disk-raw/io-disk-raw.tesh
 include examples/deprecated/java/app/bittorrent/Common.java
@@ -647,8 +649,6 @@ include teshsuite/msg/cloud-simple/cloud-simple.c
 include teshsuite/msg/cloud-simple/cloud-simple.tesh
 include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.c
 include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.tesh
-include teshsuite/msg/energy-consumption/energy-consumption.c
-include teshsuite/msg/energy-consumption/energy-consumption.tesh
 include teshsuite/msg/energy-pstate/energy-pstate.c
 include teshsuite/msg/energy-pstate/energy-pstate.tesh
 include teshsuite/msg/energy-ptask/energy-ptask.c

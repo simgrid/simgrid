@@ -247,7 +247,6 @@ teshsuite/msg/cloud-capping/cloud-capping
 teshsuite/msg/cloud-migration/cloud-migration
 teshsuite/msg/cloud-simple/cloud-simple
 teshsuite/msg/cloud-two-tasks/cloud-two-tasks
-teshsuite/msg/energy-consumption/energy-consumption
 teshsuite/msg/energy-pstate/energy-pstate
 teshsuite/msg/energy-ptask/energy-ptask
 teshsuite/msg/get_sender/get_sender
