@@ -639,9 +639,6 @@ include teshsuite/msg/async-wait/async-wait2_d.xml
 include teshsuite/msg/async-wait/async-wait3_d.xml
 include teshsuite/msg/async-wait/async-wait4_d.xml
 include teshsuite/msg/async-wait/async-wait_d.xml
-include teshsuite/msg/async-waitany/async-waitany.c
-include teshsuite/msg/async-waitany/async-waitany.tesh
-include teshsuite/msg/async-waitany/async-waitany_d.xml
 include teshsuite/msg/cloud-capping/cloud-capping.c
 include teshsuite/msg/cloud-capping/cloud-capping.tesh
 include teshsuite/msg/cloud-migration/cloud-migration.c
@@ -712,6 +709,8 @@ include teshsuite/python/corrupt-stack/corrupt-stack_d.xml
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.cpp
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
 include teshsuite/s4u/activity-lifecycle/testing_platform.xml
+include teshsuite/s4u/activity-test-wait/activity-test-wait.cpp
+include teshsuite/s4u/activity-test-wait/activity-test-wait.tesh
 include teshsuite/s4u/actor-autorestart/actor-autorestart.cpp
 include teshsuite/s4u/actor-autorestart/actor-autorestart.tesh
 include teshsuite/s4u/actor/actor.cpp
