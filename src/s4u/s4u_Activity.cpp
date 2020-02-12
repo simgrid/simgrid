@@ -25,9 +25,9 @@ void Activity::wait_until(double time_limit)
 bool Activity::test()
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||
-             state_ == State::FINISHED);
+             state_ == State::CANCELED || state_ == State::FINISHED);
 
-  if (state_ == State::FINISHED)
+  if (state_ == State::CANCELED || state_ == State::FINISHED)
     return true;
 
   if (state_ == State::INITED || state_ == State::STARTING)
