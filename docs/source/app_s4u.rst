@@ -567,6 +567,7 @@ Specifying when actors should terminate
 
       .. autodoxymethod:: sg_actor_restart(sg_actor_t actor)
       .. autodoxymethod:: sg_actor_daemonize(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_is_daemon
 
 .. _API_s4u_Actor_end:
 

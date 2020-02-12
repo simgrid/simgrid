@@ -609,6 +609,12 @@ void sg_actor_daemonize(sg_actor_t actor)
   actor->daemonize();
 }
 
+/** Returns whether or not this actor has been daemonized or not */
+int sg_actor_is_daemon(sg_actor_t actor)
+{
+  return actor->is_daemon();
+}
+
 /**
  * @brief Migrates an actor to another location.
  *
