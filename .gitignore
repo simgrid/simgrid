@@ -118,6 +118,19 @@ tags
 callgrind.out.*
 ### Examples and traces
 *.exe
+examples/c/actor-daemon/actor-daemon-c
+examples/c/actor-exiting/actor-exiting-c
+examples/c/actor-join/actor-join-c
+examples/c/actor-kill/actor-kill-c
+examples/c/actor-migrate/actor-migrate-c
+examples/c/actor-suspend/actor-suspend-c
+examples/c/actor-yield/actor-yield-c
+examples/c/app-pingpong/app-pingpong-c
+examples/c/app-token-ring/app-token-ring-c
+examples/c/async-waitall/async-waitall-c
+examples/c/async-waitany/async-waitany-c
+examples/c/energy-exec/energy-exec-c
+examples/c/io-disk-raw/io-disk-raw-c
 examples/deprecated/msg/app-masterworker/app-masterworker
 examples/deprecated/msg/cloud-masterworker/cloud-masterworker
 examples/deprecated/msg/dht-kademlia/dht-kademlia
