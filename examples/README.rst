@@ -90,11 +90,16 @@ Starting and Stoping Actors
        .. example-tab:: examples/s4u/actor-kill/s4u-actor-kill.cpp
        
           See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
-          :cpp:func:`simgrid::s4u::this_actor::exit`.
+          :cpp:func:`simgrid::s4u::this_actor::exit`, :cpp:func:`simgrid::s4u::this_actor::on_exit`.
 
        .. example-tab:: examples/python/actor-kill/actor-kill.py
 
-          See also :py:func:`simgrid.Actor.kill`, :py:func:`simgrid.Actor.kill_all`, :py:func:`simgrid.this_actor.exit`.
+          See also :py:func:`simgrid.Actor.kill`, :py:func:`simgrid.Actor.kill_all`, :py:func:`simgrid.this_actor.exit`,
+          :py:func:`simgrid.this_actor.on_exit`.
+	  
+       .. example-tab:: examples/c/actor-kill/actor-kill.c
+
+          See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
 
   - **Controling the actor life cycle from the XML:**
     You can specify a start time and a kill time in the deployment file.
@@ -122,6 +127,10 @@ Starting and Stoping Actors
        .. example-tab:: examples/python/actor-daemon/actor-daemon.py
 
           See also :py:func:`simgrid.Actor.daemonize()` and :py:func:`simgrid.Actor.is_daemon()`.
+
+       .. example-tab:: examples/c/actor-daemon/actor-daemon.c
+
+          See also :cpp:func:`sg_actor_daemonize` and :cpp:func:`sg_actor_is_daemon`.
 
 Inter-Actors Interactions
 -------------------------
@@ -172,6 +181,10 @@ synchronization objects <s4u_ex_IPC>`.
        .. example-tab:: examples/python/actor-join/actor-join.py
 
           See also :py:func:`simgrid.Actor.join()`.
+
+       .. example-tab:: examples/c/actor-join/actor-join.c
+
+          See also :cpp:func:`sg_actor_join`.
 
   - **Yielding to other actors**.
     The ```yield()``` function interrupts the execution of the current

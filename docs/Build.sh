@@ -47,6 +47,7 @@ echo
 echo "Undocumented examples:"
 for ex in $( (cd .. ; \
               find examples/s4u/ -name '*.cpp'; \
+              find examples/c/ -name '*.c'; \
               find examples/python -name '*.py'; \
              ) | sort )
 do
