@@ -1,7 +1,8 @@
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-pingpong app-token-ring 
-        async-waitall async-waitany 
+        async-waitall async-waitany
+        cloud-simple
         energy-exec
         io-disk-raw)
   add_executable       (${x}-c EXCLUDE_FROM_ALL ${x}/${x}.c)
@@ -27,6 +28,7 @@ foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-pingpong app-token-ring
         async-waitall async-waitany
+        cloud-simple
         energy-exec
         io-disk-raw)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms

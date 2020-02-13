@@ -1,6 +1,6 @@
 # C examples
 foreach(x async-wait
-          cloud-capping cloud-migration cloud-two-tasks cloud-simple
+          cloud-capping cloud-migration cloud-two-tasks
           get_sender host_on_off host_on_off_recv
           process-lifetime
           energy-ptask energy-pstate platform-properties
@@ -88,7 +88,7 @@ if(enable_msg)
   foreach(x 
     async-wait
     app-bittorrent app-chainsend
-    cloud-capping cloud-migration cloud-two-tasks cloud-simple
+    cloud-capping cloud-migration cloud-two-tasks
     energy-pstate
     host_on_off host_on_off_processes host_on_off_recv
     get_sender
