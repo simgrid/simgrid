@@ -2,6 +2,10 @@
 
 SimGrid (3.25.1) UNRELEASED (target: March 20 2020 or v3.26 on 3/26/20)
 
+C interface:
+ - Many MSG tests were converted to the new S4U's interface in C, that
+   was extended for that.
+
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG#43: xbt::random needs some care
  - FG#48: The Impossible Did Happen (yet again)
