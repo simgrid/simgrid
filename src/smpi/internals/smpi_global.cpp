@@ -640,3 +640,7 @@ void smpi_mpi_init() {
   if(smpi_init_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_init_sleep);
 }
+
+void SMPI_thread_create() {
+  TRACE_smpi_init(simgrid::s4u::this_actor::get_pid());
+}

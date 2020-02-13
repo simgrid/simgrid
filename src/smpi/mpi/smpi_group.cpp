@@ -62,6 +62,9 @@ s4u::Actor* Group::actor(int rank)
 int Group::rank(s4u::Actor* actor)
 {
   auto iterator = actor_to_rank_map_.find(actor);
+  //I'm not in the communicator ... but maybe my parent is ?
+  if (iterator == actor_to_rank_map_.end())
+    iterator = actor_to_rank_map_.find(s4u::Actor::by_pid(actor->get_ppid()).get());
   return (iterator == actor_to_rank_map_.end()) ? MPI_UNDEFINED : (*iterator).second;
 }
 

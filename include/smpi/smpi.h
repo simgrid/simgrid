@@ -1058,6 +1058,7 @@ XBT_PUBLIC void smpi_replay_run(const char* instance_id, int rank, double start_
 XBT_PUBLIC void SMPI_app_instance_register(const char* name, xbt_main_func_t code, int num_processes);
 XBT_PUBLIC void SMPI_init();
 XBT_PUBLIC void SMPI_finalize();
+XBT_PUBLIC void SMPI_thread_create();
 
 SG_END_DECL
 

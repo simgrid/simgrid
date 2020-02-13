@@ -33,16 +33,14 @@ static void thread_create_wrapper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED 
   struct threadwrap* t = (struct threadwrap*)sg_actor_self_data();
   XBT_INFO("new thread has parameter rank %d and global variable rank %d", ((struct param*)(t->param))->rank,
            the_global_rank);
-  sg_actor_self_data_set(t->father_data);
+  SMPI_thread_create();
   t->f(t->param);
-  sg_actor_self_data_set(NULL);
   free(t);
 }
 
 static void mpi_thread_create(const char* name, void* (*f)(void*), void* param)
 {
   struct threadwrap* threadwrap = (struct threadwrap*)malloc(sizeof(*threadwrap));
-  threadwrap->father_data       = sg_actor_self_data();
   threadwrap->f                 = f;
   threadwrap->param             = param;
   sg_actor_t actor              = sg_actor_init(name, sg_host_self());
@@ -65,13 +63,15 @@ void* req_wait(void* bar)
   struct param* param = (struct param*)bar;
   int rank;
   MPI_Status status;
-
+  char err_string[1024];
+  int length = 1024;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   XBT_INFO("%d has MPI rank %d and global variable rank %d", param->rank, rank, global_rank);
   XBT_INFO("%d waiting request", rank);
-  MPI_Wait(param->req, &status);
-  XBT_INFO("%d request done", rank);
+  int ret = MPI_Wait(param->req, &status);
+  MPI_Error_string(ret, err_string, &length);
+  XBT_INFO("%d request done, return %s", rank, err_string);
   XBT_INFO("%d still has MPI rank %d and global variable %d", param->rank, rank, global_rank);
   free(param);
   return NULL;
