@@ -27,8 +27,6 @@ namespace s4u {
 class XBT_PUBLIC Activity {
   friend Comm;
   friend Exec;
-  friend ExecSeq;
-  friend ExecPar;
   friend Io;
 
 protected:

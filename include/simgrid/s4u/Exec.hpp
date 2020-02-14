@@ -33,27 +33,33 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
   double priority_              = 1.0;
   double bound_                 = 0.0;
   double timeout_               = 0.0;
-
-protected:
-  Exec();
+  std::vector<double> flops_amounts_;
+  std::vector<double> bytes_amounts_;
+  std::vector<Host*> hosts_;
+  bool parallel_ = false;
 
 public:
+  Exec();
   virtual ~Exec() = default;
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
 
-  friend ExecSeq;
-  friend ExecPar;
 #endif
   static xbt::signal<void(Actor const&, Exec const&)> on_start;
   static xbt::signal<void(Actor const&, Exec const&)> on_completion;
 
-  Exec* start() override               = 0;
+  Exec* start() override;
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */
-  virtual double get_remaining_ratio() const = 0;
-  virtual ExecPtr set_host(Host* host) = 0;
+  double get_remaining() const;
+  double get_remaining_ratio() const;
+  ExecPtr set_host(Host* host);
+  ExecPtr set_hosts(const std::vector<Host*>& hosts);
+
+  ExecPtr set_flops_amount(double flops_amount);
+  ExecPtr set_flops_amounts(const std::vector<double>& flops_amounts);
+  ExecPtr set_bytes_amounts(const std::vector<double>& bytes_amounts);
 
   Exec* wait() override;
   Exec* wait_for(double timeout) override;
@@ -66,48 +72,14 @@ public:
   ExecPtr set_bound(double bound);
   ExecPtr set_priority(double priority);
   XBT_ATTRIB_DEPRECATED_v329("Please use exec_init(...)->wait_for(timeout)") ExecPtr set_timeout(double timeout);
+
   Exec* cancel() override;
   Host* get_host() const;
   unsigned int get_host_number() const;
   double get_start_time() const;
   double get_finish_time() const;
   double get_cost() const;
-};
-
-class XBT_PUBLIC ExecSeq : public Exec {
-  double flops_amount_ = 0.0;
-
-  explicit ExecSeq(sg_host_t host, double flops_amount);
-
-public:
-  friend XBT_PUBLIC ExecPtr this_actor::exec_init(double flops_amount);
-
-  ~ExecSeq() = default;
-
-  Exec* start() override;
-
-  ExecPtr set_host(Host* host) override;
-
-  double get_remaining() const override;
-  double get_remaining_ratio() const override;
-};
-
-class XBT_PUBLIC ExecPar : public Exec {
-  std::vector<s4u::Host*> hosts_;
-  std::vector<double> flops_amounts_;
-  std::vector<double> bytes_amounts_;
-  explicit ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                   const std::vector<double>& bytes_amounts);
-  ExecPtr set_host(Host*) override { /* parallel exec cannot be moved */ THROW_UNIMPLEMENTED; }
-
-public:
-  ~ExecPar() = default;
-  friend XBT_PUBLIC ExecPtr this_actor::exec_init(const std::vector<s4u::Host*>& hosts,
-                                                  const std::vector<double>& flops_amounts,
-                                                  const std::vector<double>& bytes_amounts);
-  double get_remaining() const override;
-  double get_remaining_ratio() const override;
-  Exec* start() override;
+  bool is_parallel() const { return parallel_; }
 };
 
 } // namespace s4u

@@ -74,6 +74,30 @@ ExecPtr Exec::set_timeout(double timeout) // XBT_ATTRIB_DEPRECATED_v329
   return this;
 }
 
+ExecPtr Exec::set_flops_amount(double flops_amount)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the flop_amount of an exec after its start");
+  flops_amounts_.assign(1, flops_amount);
+  Activity::set_remaining(flops_amounts_.front());
+  return this;
+}
+
+ExecPtr Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the flops_amounts of an exec after its start");
+  flops_amounts_ = flops_amounts;
+  parallel_      = true;
+  return this;
+}
+
+ExecPtr Exec::set_bytes_amounts(const std::vector<double>& bytes_amounts)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the bytes_amounts of an exec after its start");
+  bytes_amounts_ = bytes_amounts;
+  parallel_      = true;
+  return this;
+}
+
 /** @brief Retrieve the host on which this activity takes place.
  *  If it runs on more than one host, only the first host is returned.
  */
@@ -111,34 +135,10 @@ ExecPtr Exec::set_priority(double priority)
   return this;
 }
 
-///////////// SEQUENTIAL EXECUTIONS ////////
-ExecSeq::ExecSeq(sg_host_t host, double flops_amount) : Exec(), flops_amount_(flops_amount)
-{
-  Activity::set_remaining(flops_amount_);
-  boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host);
-}
-
-Exec* ExecSeq::start()
-{
-  kernel::actor::simcall([this] {
-    (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
-        .set_name(get_name())
-        .set_tracing_category(get_tracing_category())
-        .set_sharing_penalty(1. / priority_)
-        .set_bound(bound_)
-        .set_flops_amount(flops_amount_)
-        .start();
-  });
-  state_ = State::STARTED;
-  on_start(*Actor::self(), *this);
-  return this;
-}
-
-/** @brief Returns whether the state of the exec is finished */
 /** @brief Change the host on which this activity takes place.
  *
  * The activity cannot be terminated already (but it may be started). */
-ExecPtr ExecSeq::set_host(Host* host)
+ExecPtr Exec::set_host(Host* host)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTED,
              "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
@@ -148,54 +148,64 @@ ExecPtr ExecSeq::set_host(Host* host)
   return this;
 }
 
-double ExecSeq::get_remaining() const
+ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
 {
-  return kernel::actor::simcall(
-      [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
+  xbt_assert(state_ == State::INITED, "Cannot change the hosts of an exec once it's done (state: %d)", (int)state_);
+  hosts_    = hosts;
+  parallel_ = true;
+  return this;
+}
+
+///////////// SEQUENTIAL EXECUTIONS ////////
+Exec* Exec::start()
+{
+  if (is_parallel())
+    kernel::actor::simcall([this] {
+      (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
+          .set_hosts(hosts_)
+          .set_timeout(timeout_)
+          .set_flops_amounts(flops_amounts_)
+          .set_bytes_amounts(bytes_amounts_)
+          .start();
+    });
+  else
+    kernel::actor::simcall([this] {
+      (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
+          .set_name(get_name())
+          .set_tracing_category(get_tracing_category())
+          .set_sharing_penalty(1. / priority_)
+          .set_bound(bound_)
+          .set_flops_amount(flops_amounts_.front())
+          .start();
+    });
+  state_ = State::STARTED;
+  on_start(*Actor::self(), *this);
+  return this;
+}
+
+double Exec::get_remaining() const
+{
+  if (is_parallel()) {
+    XBT_WARN("Calling get_remaining() on a parallel execution is not allowed. Call get_remaining_ratio() instead.");
+    return get_remaining_ratio();
+  } else
+    return kernel::actor::simcall(
+        [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
 }
 
 /** @brief Returns the ratio of elements that are still to do
  *
  * The returned value is between 0 (completely done) and 1 (nothing done yet).
  */
-double ExecSeq::get_remaining_ratio() const
+double Exec::get_remaining_ratio() const
 {
-  return kernel::actor::simcall(
-      [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio(); });
+  if (is_parallel())
+    return kernel::actor::simcall(
+        [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_par_remaining_ratio(); });
+  else
+    return kernel::actor::simcall(
+        [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio(); });
 }
 
-///////////// PARALLEL EXECUTIONS ////////
-ExecPar::ExecPar(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                 const std::vector<double>& bytes_amounts)
-    : Exec(), hosts_(hosts), flops_amounts_(flops_amounts), bytes_amounts_(bytes_amounts)
-{
-}
-
-Exec* ExecPar::start()
-{
-  kernel::actor::simcall([this] {
-    (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
-        .set_hosts(hosts_)
-        .set_timeout(timeout_)
-        .set_flops_amounts(flops_amounts_)
-        .set_bytes_amounts(bytes_amounts_)
-        .start();
-  });
-  state_ = State::STARTED;
-  on_start(*Actor::self(), *this);
-  return this;
-}
-
-double ExecPar::get_remaining_ratio() const
-{
-  return kernel::actor::simcall(
-      [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_par_remaining_ratio(); });
-}
-
-double ExecPar::get_remaining() const
-{
-  XBT_WARN("Calling get_remaining() on a parallel execution is not allowed. Call get_remaining_ratio() instead.");
-  return get_remaining_ratio();
-}
 } // namespace s4u
 } // namespace simgrid

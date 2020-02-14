@@ -56,8 +56,6 @@ class Exec;
 using ExecPtr = boost::intrusive_ptr<Exec>;
 XBT_PUBLIC void intrusive_ptr_release(Exec* e);
 XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
-class ExecSeq; // FIXME: hide this class in implementation
-class ExecPar; // FIXME: hide this class in implementation
 
 class Host;
 
@@ -197,6 +195,7 @@ class VirtualMachineImpl;
 typedef simgrid::s4u::Actor s4u_Actor;
 typedef simgrid::s4u::Barrier s4u_Barrier;
 typedef simgrid::s4u::Comm s4u_Comm;
+typedef simgrid::s4u::Exec s4u_Exec;
 typedef simgrid::s4u::Host s4u_Host;
 typedef simgrid::s4u::Link s4u_Link;
 typedef simgrid::s4u::File s4u_File;
@@ -222,6 +221,7 @@ XBT_ATTRIB_DEPRECATED_v330("Please use kernel::activity::State") typedef simgrid
 typedef struct s4u_Actor s4u_Actor;
 typedef struct s4u_Barrier s4u_Barrier;
 typedef struct s4u_Comm s4u_Comm;
+typedef struct s4u_Exec s4u_Exec;
 typedef struct s4u_Host s4u_Host;
 typedef struct s4u_Link s4u_Link;
 typedef struct s4u_File s4u_File;
@@ -251,6 +251,8 @@ typedef s4u_Barrier* sg_bar_t;
 typedef const s4u_Barrier* const_sg_bar_t;
 typedef s4u_Comm* sg_comm_t;
 typedef const s4u_Comm* const_sg_comm_t;
+typedef s4u_Exec* sg_exec_t;
+typedef const s4u_Exec* const_sg_exec_t;
 typedef s4u_ConditionVariable* sg_cond_t;
 typedef const s4u_ConditionVariable* const_sg_cond_t;
 typedef s4u_Mailbox* sg_mailbox_t;

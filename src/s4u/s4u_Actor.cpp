@@ -361,7 +361,9 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
 
 ExecPtr exec_init(double flops_amount)
 {
-  return ExecPtr(new ExecSeq(get_host(), flops_amount));
+  ExecPtr exec = ExecPtr(new Exec());
+  exec->set_flops_amount(flops_amount)->set_host(get_host());
+  return exec;
 }
 
 ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
@@ -387,7 +389,9 @@ ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double
   xbt_assert(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
              "flops_amounts comprises infinite values!");
 
-  return ExecPtr(new ExecPar(hosts, flops_amounts, bytes_amounts));
+  ExecPtr exec = ExecPtr(new Exec());
+  exec->set_flops_amounts(flops_amounts)->set_bytes_amounts(bytes_amounts)->set_hosts(hosts);
+  return exec;
 }
 
 ExecPtr exec_async(double flops)
