@@ -52,7 +52,7 @@ public:
   Exec* start() override;
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */
-  double get_remaining() const;
+  double get_remaining() const override;
   double get_remaining_ratio() const;
   ExecPtr set_host(Host* host);
   ExecPtr set_hosts(const std::vector<Host*>& hosts);
