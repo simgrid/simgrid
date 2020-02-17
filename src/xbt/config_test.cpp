@@ -13,33 +13,25 @@
 
 XBT_PUBLIC_DATA simgrid::config::Config* simgrid_config;
 
-static void make_set()
+TEST_CASE("xbt::config: Configuration support", "config")
 {
   XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
   xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg), xbt_log_priority_critical);
+
+  auto temp      = simgrid_config;
   simgrid_config = nullptr;
   simgrid::config::declare_flag<int>("speed", "description", 0);
   simgrid::config::declare_flag<std::string>("peername", "description", "");
   simgrid::config::declare_flag<std::string>("user", "description", "");
-}
 
-TEST_CASE("xbt::config: Configuration support", "config")
-{
   SECTION("Alloc and free a config set")
   {
-    auto temp = simgrid_config;
-    make_set();
     INFO("Alloc and free a config set");
     simgrid::config::set_parse("peername:veloce user:bidule");
-    simgrid::config::finalize();
-    simgrid_config = temp;
   }
 
   SECTION("Data retrieving tests")
   {
-    auto temp = simgrid_config;
-    make_set();
-
     INFO("Get a single value");
     /* get_single_value */
     simgrid::config::set_parse("peername:toto:42 speed:42");
@@ -49,15 +41,10 @@ TEST_CASE("xbt::config: Configuration support", "config")
     INFO("Access to a non-existent entry");
 
     REQUIRE_THROWS_AS(simgrid::config::set_parse("color:blue"), std::out_of_range);
-
-    simgrid::config::finalize();
-    simgrid_config = temp;
   }
 
   SECTION("C++ flags")
   {
-    auto temp = simgrid_config;
-    make_set();
     INFO("C++ declaration of flags");
 
     simgrid::config::Flag<int> int_flag("int", "", 0);
@@ -73,8 +60,8 @@ TEST_CASE("xbt::config: Configuration support", "config")
     REQUIRE(double_flag == 8.0);   // Check double flag
     REQUIRE(bool_flag1);           // Check bool1 flag
     REQUIRE(not bool_flag2);       // Check bool2 flag
-
-    simgrid::config::finalize();
-    simgrid_config = temp;
   }
+
+  simgrid::config::finalize();
+  simgrid_config = temp;
 }
