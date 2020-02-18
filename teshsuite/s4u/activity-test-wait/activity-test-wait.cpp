@@ -3,9 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u.hpp"
+#define CATCH_CONFIG_RUNNER // we supply our own main()
 
-#include <cmath>
+#include "../../src/include/catch.hpp"
+
+#include "simgrid/s4u.hpp"
+#include <xbt/config.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
@@ -15,37 +18,34 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 std::vector<simgrid::s4u::Host*> all_hosts;
 
 /* Helper function easing the testing of actor's ending condition */
-static void assert_exit(bool exp_failed, double duration)
+static void assert_exit(bool exp_success, double duration)
 {
   double expected_time = simgrid::s4u::Engine::get_clock() + duration;
-  simgrid::s4u::this_actor::on_exit([exp_failed, expected_time](bool got_failed) {
-    xbt_assert(exp_failed == got_failed, "Exit failure status mismatch. Expected %d, got %d", exp_failed, got_failed);
-    xbt_assert(std::fabs(expected_time - simgrid::s4u::Engine::get_clock()) < 0.001, "Exit time mismatch. Expected %f",
-               expected_time);
+  simgrid::s4u::this_actor::on_exit([exp_success, expected_time](bool got_failed) {
+    INFO("Check exit status. Expected: " << exp_success);
+    REQUIRE(exp_success == not got_failed);
+    INFO("Check date at exit. Expected: " << expected_time);
+    REQUIRE(simgrid::s4u::Engine::get_clock() == Approx(expected_time));
     XBT_VERB("Checks on exit successful");
   });
 }
-/* Helper function in charge of running a test and doing some sanity checks afterward */
-static void run_test(const char* test_name, const std::function<void()>& test)
-{
-  simgrid::s4u::Actor::create(test_name, all_hosts[0], test);
-  simgrid::s4u::this_actor::sleep_for(10);
 
+/* Helper function in charge of doing some sanity checks after each test */
+static void assert_cleanup()
+{
   /* Check that no actor remain (but on host[0], where main_dispatcher lives */
   for (unsigned int i = 0; i < all_hosts.size(); i++) {
     std::vector<simgrid::s4u::ActorPtr> all_actors = all_hosts[i]->get_all_actors();
     unsigned int expected_count = (i == 0) ? 1 : 0; // host[0] contains main_dispatcher, all other are empty
     if (all_actors.size() != expected_count) {
-      XBT_CRITICAL("Host %s contains %zu actors but %u are expected (i=%u). Existing actors: ",
-                   all_hosts[i]->get_cname(), all_actors.size(), expected_count, i);
+      INFO("Host " << all_hosts[i]->get_cname() << " contains " << all_actors.size() << " actors but " << expected_count
+                   << " are expected (i=" << i << "). Existing actors: ");
       for (auto act : all_actors)
-        XBT_CRITICAL(" - %s", act->get_cname());
-      xbt_die("This is wrong");
+        UNSCOPED_INFO(" - " << act->get_cname());
+      FAIL("This is wrong");
     }
   }
-  xbt_assert("TODO: Check that all LMM are empty");
-  XBT_INFO("SUCCESS: %s", test_name);
-  XBT_INFO("#########################################################################################################");
+  // TODO: Check that all LMM are empty
 }
 
 /**
@@ -115,132 +115,166 @@ using waiter_type = decltype(waiter_wait);
 
 template <creator_type Create, tester_type Test> void test_trivial()
 {
-  XBT_INFO("%s: Launch an activity for 5s, and let it proceed before test", __func__);
+  XBT_INFO("Launch an activity for 5s, and let it proceed before test");
 
   simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], []() {
-    assert_exit(false, 6.);
+    assert_exit(true, 6.);
     simgrid::s4u::ActivityPtr activity = Create(5.0);
     simgrid::s4u::this_actor::sleep_for(6.0);
-    xbt_assert(Test(activity), "activity should be terminated now");
+    INFO("activity should be terminated now");
+    REQUIRE(Test(activity));
   });
   exec5->join();
 }
 
 template <creator_type Create, tester_type Test> void test_basic()
 {
-  XBT_INFO("%s: Launch an activity for 5s, and test while it proceeds", __func__);
+  XBT_INFO("Launch an activity for 5s, and test while it proceeds");
 
   simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], []() {
-    assert_exit(false, 6.);
+    assert_exit(true, 6.);
     simgrid::s4u::ActivityPtr activity = Create(5.0);
     for (int i = 0; i < 3; i++) {
-      xbt_assert(not Test(activity), "activity finished too soon (i = %d)!?", i);
+      INFO("activity should be still running (i = " << i << ")");
+      REQUIRE(not Test(activity));
       simgrid::s4u::this_actor::sleep_for(2.0);
     }
-    xbt_assert(Test(activity), "activity should be terminated now");
+    INFO("activity should be terminated now");
+    REQUIRE(Test(activity));
   });
   exec5->join();
 }
 
 template <creator_type Create, tester_type Test> void test_cancel()
 {
-  XBT_INFO("%s: Launch an activity for 5s, and cancel it after 2s", __func__);
+  XBT_INFO("Launch an activity for 5s, and cancel it after 2s");
 
   simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], []() {
-    assert_exit(false, 2.);
+    assert_exit(true, 2.);
     simgrid::s4u::ActivityPtr activity = Create(5.0);
     simgrid::s4u::this_actor::sleep_for(2.0);
     activity->cancel();
-    xbt_assert(Test(activity), "activity should be terminated now");
+    INFO("activity should be terminated now");
+    REQUIRE(Test(activity));
   });
   exec5->join();
 }
 
 template <creator_type Create, tester_type Test, waiter_type Wait> void test_failure_actor()
 {
-  XBT_INFO("%s: Launch an activity for 5s, and kill running actor after 2s", __func__);
+  XBT_INFO("Launch an activity for 5s, and kill running actor after 2s");
 
   simgrid::s4u::ActivityPtr activity;
   simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], [&activity]() {
-    assert_exit(true, 2.);
+    assert_exit(false, 2.);
     activity = Create(5.0);
     Wait(activity);
-    xbt_die("should not be here!");
+    FAIL("should not be here!");
   });
   simgrid::s4u::this_actor::sleep_for(2.0);
-  xbt_assert(not Test(activity), "activity finished too soon!?");
+  INFO("activity should be still running");
+  REQUIRE(not Test(activity));
   exec5->kill();
-  xbt_assert(Test(activity), "activity should be terminated now");
+  INFO("activity should be terminated now");
+  REQUIRE(Test(activity));
 }
 
 template <creator_type Create, tester_type Test, waiter_type Wait> void test_failure_host()
 {
-  XBT_INFO("%s: Launch an activity for 5s, and shutdown host 2s", __func__);
+  XBT_INFO("Launch an activity for 5s, and shutdown host 2s");
 
   simgrid::s4u::ActivityPtr activity;
   simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], [&activity]() {
-    assert_exit(true, 2.);
+    assert_exit(false, 2.);
     activity = Create(5.0);
     Wait(activity);
-    xbt_die("should not be here!");
+    FAIL("should not be here!");
   });
   simgrid::s4u::this_actor::sleep_for(2.0);
-  xbt_assert(not Test(activity), "activity finished too soon!?");
+  INFO("activity should be still running");
+  REQUIRE(not Test(activity));
   exec5->get_host()->turn_off();
   exec5->get_host()->turn_on();
-  xbt_assert(Test(activity), "activity should be terminated now");
+  INFO("activity should be terminated now");
+  REQUIRE(Test(activity));
 }
 
 //==========
 
 /* We need an extra actor here, so that it can sleep until the end of each test */
-static void main_dispatcher()
+#define RUN_SECTION(descr, ...) SECTION(descr) { simgrid::s4u::Actor::create(descr, all_hosts[0], __VA_ARGS__); }
+
+TEST_CASE("Activity test/wait: using <tester_test>")
 {
-  XBT_INFO("***** Using <tester_test> *****");
-  run_test("exec: run and test once", test_trivial<create_exec, tester_test>);
-  run_test("exec: run and test many", test_basic<create_exec, tester_test>);
-  run_test("exec: cancel and test", test_cancel<create_exec, tester_test>);
-  FAILING run_test("exec: actor failure and test / sleep", test_failure_actor<create_exec, tester_test, waiter_sleep6>);
-  FAILING run_test("exec: host failure and test / sleep", test_failure_host<create_exec, tester_test, waiter_sleep6>);
-  run_test("exec: actor failure and test / wait", test_failure_actor<create_exec, tester_test, waiter_wait>);
-  run_test("exec: host failure and test / wait", test_failure_host<create_exec, tester_test, waiter_wait>);
+  XBT_INFO("#####[ launch next test ]#####");
 
-  XBT_INFO("***** Using <tester_wait<0>> *****");
-  run_test("exec: run and wait<0> once", test_trivial<create_exec, tester_wait<0>>);
-  FAILING run_test("exec: run and wait<0> many", test_basic<create_exec, tester_wait<0>>);
-  run_test("exec: cancel and wait<0>", test_cancel<create_exec, tester_wait<0>>);
-  FAILING run_test("exec: actor failure and wait<0> / sleep", test_failure_actor<create_exec, tester_wait<0>, waiter_sleep6>);
-  FAILING run_test("exec: host failure and wait<0> / sleep", test_failure_host<create_exec, tester_wait<0>, waiter_sleep6>);
-  FAILING run_test("exec: actor failure and wait<0> / wait", test_failure_actor<create_exec, tester_wait<0>, waiter_wait>);
-  FAILING run_test("exec: host failure and wait<0> / wait", test_failure_host<create_exec, tester_wait<0>, waiter_wait>);
+  RUN_SECTION("exec: run and test once", test_trivial<create_exec, tester_test>);
+  RUN_SECTION("exec: run and test many", test_basic<create_exec, tester_test>);
+  RUN_SECTION("exec: cancel and test", test_cancel<create_exec, tester_test>);
+  FAILING{} RUN_SECTION("exec: actor failure and test / sleep", test_failure_actor<create_exec, tester_test, waiter_sleep6>);
+  FAILING RUN_SECTION("exec: host failure and test / sleep", test_failure_host<create_exec, tester_test, waiter_sleep6>);
+  RUN_SECTION("exec: actor failure and test / wait", test_failure_actor<create_exec, tester_test, waiter_wait>);
+  RUN_SECTION("exec: host failure and test / wait", test_failure_host<create_exec, tester_test, waiter_wait>);
 
-  XBT_INFO("***** Using <tester_wait<1>> *****");
-  run_test("exec: run and wait<1> once", test_trivial<create_exec, tester_wait<1>>);
-  FAILING run_test("exec: run and wait<1> many", test_basic<create_exec, tester_wait<1>>);
-  run_test("exec: cancel and wait<1>", test_cancel<create_exec, tester_wait<1>>);
-  FAILING run_test("exec: actor failure and wait<1> / sleep", test_failure_actor<create_exec, tester_wait<1>, waiter_sleep6>);
-  FAILING run_test("exec: host failure and wait<1> / sleep", test_failure_host<create_exec, tester_wait<1>, waiter_sleep6>);
-  FAILING run_test("exec: actor failure and wait<1> / wait", test_failure_actor<create_exec, tester_wait<1>, waiter_wait>);
-  FAILING run_test("exec: host failure and wait<1> / wait", test_failure_host<create_exec, tester_wait<1>, waiter_wait>);
+  simgrid::s4u::this_actor::sleep_for(10);
+  assert_cleanup();
+}
+
+TEST_CASE("Activity test/wait: using <tester_wait<0>>")
+{
+  XBT_INFO("#####[ launch next test ]#####");
+
+  RUN_SECTION("exec: run and wait<0> once", test_trivial<create_exec, tester_wait<0>>);
+  FAILING RUN_SECTION("exec: run and wait<0> many", test_basic<create_exec, tester_wait<0>>);
+  RUN_SECTION("exec: cancel and wait<0>", test_cancel<create_exec, tester_wait<0>>);
+  FAILING RUN_SECTION("exec: actor failure and wait<0> / sleep", test_failure_actor<create_exec, tester_wait<0>, waiter_sleep6>);
+  FAILING RUN_SECTION("exec: host failure and wait<0> / sleep", test_failure_host<create_exec, tester_wait<0>, waiter_sleep6>);
+  FAILING RUN_SECTION("exec: actor failure and wait<0> / wait", test_failure_actor<create_exec, tester_wait<0>, waiter_wait>);
+  FAILING RUN_SECTION("exec: host failure and wait<0> / wait", test_failure_host<create_exec, tester_wait<0>, waiter_wait>);
+
+  simgrid::s4u::this_actor::sleep_for(10);
+  assert_cleanup();
+}
+
+TEST_CASE("Activity test/wait: using <tester_wait<1>>")
+{
+  XBT_INFO("#####[ launch next test ]#####");
+
+  RUN_SECTION("exec: run and wait<1> once", test_trivial<create_exec, tester_wait<1>>);
+  FAILING RUN_SECTION("exec: run and wait<1> many", test_basic<create_exec, tester_wait<1>>);
+  RUN_SECTION("exec: cancel and wait<1>", test_cancel<create_exec, tester_wait<1>>);
+  FAILING RUN_SECTION("exec: actor failure and wait<1> / sleep", test_failure_actor<create_exec, tester_wait<1>, waiter_sleep6>);
+  FAILING RUN_SECTION("exec: host failure and wait<1> / sleep", test_failure_host<create_exec, tester_wait<1>, waiter_sleep6>);
+  FAILING RUN_SECTION("exec: actor failure and wait<1> / wait", test_failure_actor<create_exec, tester_wait<1>, waiter_wait>);
+  FAILING RUN_SECTION("exec: host failure and wait<1> / wait", test_failure_host<create_exec, tester_wait<1>, waiter_wait>);
+
+  simgrid::s4u::this_actor::sleep_for(10);
+  assert_cleanup();
 }
 
 int main(int argc, char* argv[])
 {
+  simgrid::config::set_value("help-nostop", true);
   simgrid::s4u::Engine e(&argc, argv);
 
-  const char* platf = argv[1];
-  if (argc <= 1) {
+  std::string platf;
+  if (argc > 1) {
+    platf   = argv[1];
+    argv[1] = argv[0];
+    argv++;
+    argc--;
+  } else {
     XBT_WARN("No platform file provided. Using './testing_platform.xml'");
     platf = "./testing_platform.xml";
   }
   e.load_platform(platf);
 
+  int status = 42;
   all_hosts = e.get_all_hosts();
-  simgrid::s4u::Actor::create("main_dispatcher", all_hosts[0], main_dispatcher);
+  simgrid::s4u::Actor::create("main_dispatcher", all_hosts[0],
+                              [&argc, &argv, &status]() { status = Catch::Session().run(argc, argv); });
 
   e.run();
-
   XBT_INFO("Simulation done");
-
-  return 0;
+  return status;
 }
