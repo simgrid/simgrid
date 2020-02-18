@@ -1,3 +1,4 @@
+! output sort
 $ ./cloud-sharing ${platfdir}/cluster_multi.xml
 >[node-0.1core.org:master:(1) 0.000000] [s4u_test/INFO] # TEST ON SINGLE-CORE PMs
 >[node-0.1core.org:master:(1) 0.000000] [s4u_test/INFO] ## Check computation on regular PMs
