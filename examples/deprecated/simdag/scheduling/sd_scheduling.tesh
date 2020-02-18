@@ -23,16 +23,17 @@ $ ${bindir:=.}/scheduling/sd_scheduling --log=sd_daxparse.thresh:critical ${srcd
 > [62.745225] [test/INFO] Schedule ID00016@mBackground on Host 27
 > [62.745241] [test/INFO] Schedule ID00017@mBackground on Host 26
 > [62.745347] [test/INFO] Schedule ID00020@mBackground on Host 30
-> [62.745447] [test/INFO] Schedule ID00018@mBackground on Host 27
-> [62.745463] [test/INFO] Schedule ID00019@mBackground on Host 32
-> [88.539205] [test/INFO] Schedule ID00021@mImgTbl on Host 27
-> [90.115680] [test/INFO] Schedule ID00022@mAdd on Host 27
-> [93.406367] [test/INFO] Schedule ID00023@mShrink on Host 27
-> [97.691739] [test/INFO] Schedule ID00024@mJPEG on Host 27
-> [98.184192] [test/INFO] Schedule end on Host 27
-> [98.184618] [test/INFO] Simulation Time: 98.184618
-> [98.184618] [test/INFO] ------------------- Produce the trace file---------------------------
-> [98.184618] [test/INFO] Producing a jedule output (if active) of the run into minmin_test.jed
+> [62.745454] [test/INFO] Schedule ID00018@mBackground on Host 27
+> [62.745469] [test/INFO] Schedule ID00019@mBackground on Host 32
+> [88.539211] [test/INFO] Schedule ID00021@mImgTbl on Host 27
+> [90.115687] [test/INFO] Schedule ID00022@mAdd on Host 27
+> [93.406373] [test/INFO] Schedule ID00023@mShrink on Host 27
+> [97.691746] [test/INFO] Schedule ID00024@mJPEG on Host 27
+> [98.184198] [test/INFO] Schedule end on Host 27
+> [98.184625] [test/INFO] Simulation Time: 98.184625
+> [98.184625] [test/INFO] ------------------- Produce the trace file---------------------------
+> [98.184625] [test/INFO] Producing a jedule output (if active) of the run into minmin_test.jed
+
 
 ! output ignore
 $ cmake -E remove -f ${srcdir:=.}/scheduling/sd_scheduling.jed 
