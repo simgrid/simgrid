@@ -11,10 +11,12 @@ foreach(x actor actor-autorestart
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
 
+# Fix build rules for activity-lifecycle (multi-file)
 foreach(x sleep exec comm test-wait)
   target_sources(activity-lifecycle PRIVATE activity-lifecycle/testing_${x}.cpp)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecycle/testing_${x}.cpp)
 endforeach()
+set_property(TARGET activity-lifecycle APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}") # for <catch.hpp>
 
 ## Add the tests.
 ## Some need to be run with all factories, some don't need tesh to run

@@ -6,7 +6,7 @@
 #ifndef ACTIVITY_LIFECYCLE_HPP
 #define ACTIVITY_LIFECYCLE_HPP
 
-#include "../../src/include/catch.hpp"
+#include <catch.hpp>
 
 #include <simgrid/s4u.hpp>
 #include <xbt/log.h>
