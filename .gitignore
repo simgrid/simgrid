@@ -280,7 +280,6 @@ teshsuite/s4u/actor/actor
 teshsuite/s4u/actor-autorestart/actor-autorestart
 teshsuite/s4u/actor-migration/actor-migration
 teshsuite/s4u/activity-lifecycle/activity-lifecycle
-teshsuite/s4u/activity-test-wait/activity-test-wait
 teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration
 teshsuite/s4u/cloud-sharing/cloud-sharing
 teshsuite/s4u/comm-pt2pt/comm-pt2pt

@@ -27,4 +27,6 @@ extern void assert_cleanup();
 #define BEGIN_SECTION(descr) SECTION(descr) { simgrid::s4u::Actor::create(descr, all_hosts[0], []()
 #define END_SECTION })
 
+#define RUN_SECTION(descr, ...) SECTION(descr) { simgrid::s4u::Actor::create(descr, all_hosts[0], __VA_ARGS__); }
+
 #endif // ACTIVITY_LIFECYCLE_HPP

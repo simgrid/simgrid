@@ -1,2 +1,0 @@
-! output display
-$ ${bindir:=.}/activity-test-wait ${srcdir:=.}/../activity-lifecycle/testing_platform.xml

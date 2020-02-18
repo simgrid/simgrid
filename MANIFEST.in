@@ -713,8 +713,7 @@ include teshsuite/s4u/activity-lifecycle/testing_comm.cpp
 include teshsuite/s4u/activity-lifecycle/testing_exec.cpp
 include teshsuite/s4u/activity-lifecycle/testing_platform.xml
 include teshsuite/s4u/activity-lifecycle/testing_sleep.cpp
-include teshsuite/s4u/activity-test-wait/activity-test-wait.cpp
-include teshsuite/s4u/activity-test-wait/activity-test-wait.tesh
+include teshsuite/s4u/activity-lifecycle/testing_test-wait.cpp
 include teshsuite/s4u/actor-autorestart/actor-autorestart.cpp
 include teshsuite/s4u/actor-autorestart/actor-autorestart.tesh
 include teshsuite/s4u/actor/actor.cpp
