@@ -9,7 +9,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 
 double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision:VALUE */
-double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:VALUE */
+double sg_surf_precision   = 0.000000001; /* Change this with --cfg=surf/precision:VALUE */
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
 
 namespace simgrid {
