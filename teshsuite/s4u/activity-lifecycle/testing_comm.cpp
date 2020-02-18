@@ -5,6 +5,18 @@
 
 #include "activity-lifecycle.hpp"
 
+// Normally, we should be able use Catch2's REQUIRE_THROWS_AS(...), but it generates errors with Address Sanitizer.
+// They're certainly false positive. Nevermind and use this simpler replacement.
+#define REQUIRE_NETWORK_FAILURE(...)                                                                                   \
+  do {                                                                                                                 \
+    try {                                                                                                              \
+      __VA_ARGS__;                                                                                                     \
+      FAIL("Expected exception NetworkFailureException not caught");                                                   \
+    } catch (simgrid::NetworkFailureException const&) {                                                                \
+      XBT_VERB("got expected NetworkFailureException");                                                                \
+    }                                                                                                                  \
+  } while (0)
+
 static void test_link_off_helper(double delay)
 {
   const double start = simgrid::s4u::Engine::get_clock();
@@ -16,13 +28,10 @@ static void test_link_off_helper(double delay)
       milestone[i] += start;
     for (int i = 0; i < 4; i++) {
       simgrid::s4u::this_actor::sleep_until(milestone[i]);
-      try {
-        XBT_VERB("get(%c)", 'A' + i);
+      REQUIRE_NETWORK_FAILURE({
+        INFO("get(" << ('A' + i) << ")");
         simgrid::s4u::Mailbox::by_name("mb")->get();
-        return;
-      } catch (simgrid::NetworkFailureException const&) {
-        XBT_VERB("got expected NetworkFailureException");
-      }
+      });
     }
     simgrid::s4u::this_actor::sleep_until(milestone[4]);
   });
@@ -40,13 +49,10 @@ static void test_link_off_helper(double delay)
     }
     for (int i = 2; i < 4; i++) {
       simgrid::s4u::this_actor::sleep_until(milestone[i]);
-      try {
-        XBT_VERB("put(%c)", 'A' + i);
+      REQUIRE_NETWORK_FAILURE({
+        INFO("put(" << ('A' + i) << ")");
         simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000);
-        return;
-      } catch (simgrid::NetworkFailureException const&) {
-        XBT_VERB("got expected NetworkFailureException");
-      }
+      });
     }
     simgrid::s4u::this_actor::sleep_until(milestone[4]);
   });
@@ -173,9 +179,10 @@ TEST_CASE("Activity lifecycle: comm activities")
 
     simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
       assert_exit(true, 2);
-      void* payload = nullptr;
-      REQUIRE_THROWS_AS(payload = simgrid::s4u::Mailbox::by_name("mb")->get(), simgrid::NetworkFailureException);
-      xbt_free(payload);
+      REQUIRE_NETWORK_FAILURE({
+        void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+        xbt_free(payload);
+      });
       recv_done = true;
     });
 
@@ -207,7 +214,7 @@ TEST_CASE("Activity lifecycle: comm activities")
           try {
             simgrid::s4u::Mailbox::by_name("mb")->get();
           } catch (simgrid::NetworkFailureException const&) {
-            // Shouldn't get in here
+            // Shouldn't get in here after the on_exit function
             in_catch_before_on_exit = not in_on_exit;
             in_catch_after_on_exit  = in_on_exit;
           }
@@ -219,7 +226,7 @@ TEST_CASE("Activity lifecycle: comm activities")
     simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], [&send_done]() {
       assert_exit(true, 1);
       int data = 42;
-      REQUIRE_THROWS_AS(simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000), simgrid::NetworkFailureException);
+      REQUIRE_NETWORK_FAILURE(simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000));
       send_done = true;
     });
 
@@ -274,16 +281,15 @@ TEST_CASE("Activity lifecycle: comm activities")
     simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", all_hosts[1], []() {
       assert_exit(true, 2);
       int* data;
-      std::vector<simgrid::s4u::CommPtr> pending_comms;
       simgrid::s4u::CommPtr comm = simgrid::s4u::Mailbox::by_name("mb")->get_async((void**)&data);
-      pending_comms.push_back(comm);
-      REQUIRE_THROWS_AS(simgrid::s4u::Comm::wait_any(&pending_comms), simgrid::NetworkFailureException);
+      std::vector<simgrid::s4u::CommPtr> pending_comms = {comm};
+      REQUIRE_NETWORK_FAILURE(simgrid::s4u::Comm::wait_any(&pending_comms));
     });
 
     simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], []() {
       assert_exit(true, 2);
       int data = 42;
-      REQUIRE_THROWS_AS(simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000), simgrid::NetworkFailureException);
+      REQUIRE_NETWORK_FAILURE(simgrid::s4u::Mailbox::by_name("mb")->put(&data, 100000));
     });
 
     simgrid::s4u::this_actor::sleep_for(2.0);

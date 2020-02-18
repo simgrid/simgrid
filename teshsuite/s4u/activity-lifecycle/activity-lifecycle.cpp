@@ -18,6 +18,7 @@ void assert_exit(bool exp_success, double duration)
 {
   double expected_time = simgrid::s4u::Engine::get_clock() + duration;
   simgrid::s4u::this_actor::on_exit([exp_success, expected_time](bool got_failed) {
+    XBT_VERB("Running checks on exit");
     INFO("Check exit status. Expected: " << exp_success);
     REQUIRE(exp_success == not got_failed);
     INFO("Check date at exit. Expected: " << expected_time);
