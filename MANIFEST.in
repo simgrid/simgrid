@@ -707,8 +707,12 @@ include teshsuite/python/corrupt-stack/corrupt-stack.py
 include teshsuite/python/corrupt-stack/corrupt-stack.tesh
 include teshsuite/python/corrupt-stack/corrupt-stack_d.xml
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.cpp
+include teshsuite/s4u/activity-lifecycle/activity-lifecycle.hpp
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
+include teshsuite/s4u/activity-lifecycle/testing_comm.cpp
+include teshsuite/s4u/activity-lifecycle/testing_exec.cpp
 include teshsuite/s4u/activity-lifecycle/testing_platform.xml
+include teshsuite/s4u/activity-lifecycle/testing_sleep.cpp
 include teshsuite/s4u/activity-test-wait/activity-test-wait.cpp
 include teshsuite/s4u/activity-test-wait/activity-test-wait.tesh
 include teshsuite/s4u/actor-autorestart/actor-autorestart.cpp

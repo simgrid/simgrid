@@ -11,6 +11,11 @@ foreach(x actor actor-autorestart
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
 
+foreach(x sleep exec comm)
+  target_sources(activity-lifecycle PRIVATE activity-lifecycle/testing_${x}.cpp)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecycle/testing_${x}.cpp)
+endforeach()
+
 ## Add the tests.
 ## Some need to be run with all factories, some don't need tesh to run
 foreach(x actor actor-autorestart
@@ -44,6 +49,6 @@ foreach(x ns3-simultaneous-send-rcv)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()
 
-set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecycle/activity-lifecycle.hpp PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     PARENT_SCOPE)
 set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecycle/testing_platform.xml PARENT_SCOPE)
