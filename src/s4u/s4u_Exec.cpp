@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/exec.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -209,3 +210,30 @@ double Exec::get_remaining_ratio() const
 
 } // namespace s4u
 } // namespace simgrid
+/* **************************** Public C interface *************************** */
+void sg_exec_set_bound(sg_exec_t exec, double bound)
+{
+  exec->set_bound(bound);
+}
+
+double sg_exec_get_remaining(sg_exec_t exec)
+{
+  return exec->get_remaining();
+}
+
+void sg_exec_start(sg_exec_t exec)
+{
+  exec->start();
+}
+
+void sg_exec_wait(sg_exec_t exec)
+{
+  exec->wait_for(-1);
+  exec->unref();
+}
+
+void sg_exec_wait_for(sg_exec_t exec, double timeout)
+{
+  exec->wait_for(timeout);
+  exec->unref();
+}

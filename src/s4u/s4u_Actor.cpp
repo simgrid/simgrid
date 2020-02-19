@@ -773,3 +773,17 @@ void sg_actor_on_exit(int_f_int_pvoid_t fun, void* data)
 {
   simgrid::s4u::this_actor::on_exit([fun, data](bool failed) { fun(failed ? 1 /*FAILURE*/ : 0 /*SUCCESS*/, data); });
 }
+
+sg_exec_t sg_actor_exec_init(double computation_amount)
+{
+  simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_init(computation_amount);
+  exec->add_ref();
+  return exec.get();
+}
+
+sg_exec_t sg_actor_exec_async(double computation_amount)
+{
+  simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_async(computation_amount);
+  exec->add_ref();
+  return exec.get();
+}
