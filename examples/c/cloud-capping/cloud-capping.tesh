@@ -1,4 +1,5 @@
-$ ${bindir:=.}/cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+! output sort
+$ ${bindir:=.}/cloud-capping-c ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:master_@Fafard) # 1. Put a single task on a PM. 
 > [  0.000000] (1:master_@Fafard) ### Test: with/without MSG_task_set_bound
 > [  0.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard
@@ -179,34 +180,34 @@ $ ${bindir:=.}/cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--log=
 > [52102.070722] (91:worker0@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)
 > [53002.070722] (1:master_@Fafard)  
 > [53002.070722] (1:master_@Fafard) # 11. Change a bound dynamically.
-> [53002.070722] (1:master_@Fafard) set bound of VM1 to 0.000000
-> [53102.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
-> [53102.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
-> [53102.070722] (1:master_@Fafard) set bound of VM1 to 7629600.000000
-> [53202.070722] (1:master_@Fafard) Task0@VM0: 68666400.000000 flops/s
-> [53202.070722] (1:master_@Fafard) Task1@VM1: 7629600.000000 flops/s
-> [53202.070722] (1:master_@Fafard) set bound of VM1 to 15259200.000000
-> [53302.070722] (1:master_@Fafard) Task0@VM0: 61036800.000000 flops/s
-> [53302.070722] (1:master_@Fafard) Task1@VM1: 15259200.000000 flops/s
-> [53302.070722] (1:master_@Fafard) set bound of VM1 to 22888800.000000
-> [53402.070722] (1:master_@Fafard) Task0@VM0: 53407200.000000 flops/s
-> [53402.070722] (1:master_@Fafard) Task1@VM1: 22888800.000000 flops/s
-> [53402.070722] (1:master_@Fafard) set bound of VM1 to 30518400.000000
-> [53502.070722] (1:master_@Fafard) Task0@VM0: 45777600.000000 flops/s
-> [53502.070722] (1:master_@Fafard) Task1@VM1: 30518400.000000 flops/s
-> [53502.070722] (1:master_@Fafard) set bound of VM1 to 38148000.000000
-> [53602.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
-> [53602.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
-> [53602.070722] (1:master_@Fafard) set bound of VM1 to 45777600.000000
-> [53702.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
-> [53702.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
-> [53702.070722] (1:master_@Fafard) set bound of VM1 to 53407200.000000
-> [53802.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
-> [53802.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
-> [53802.070722] (1:master_@Fafard) set bound of VM1 to 61036800.000000
-> [53902.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
-> [53902.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
-> [53902.070722] (1:master_@Fafard) set bound of VM1 to 68666400.000000
-> [54002.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
-> [54002.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
+> [53002.070722] (93:worker1@VM1) set bound of VM1 to 0.000000
+> [53102.070722] (93:worker1@VM1) Task1@VM1: 38148000 flops/s
+> [53102.070722] (92:worker0@VM0) Task0@VM0: 38148000 flops/s
+> [53103.070722] (93:worker1@VM1) set bound of VM1 to 7629600.000000
+> [53203.070722] (93:worker1@VM1) Task1@VM1: 8011080 flops/s
+> [53203.070722] (92:worker0@VM0) Task0@VM0: 69047880 flops/s
+> [53204.070722] (93:worker1@VM1) set bound of VM1 to 15259200.000000
+> [53304.070722] (93:worker1@VM1) Task1@VM1: 15335496 flops/s
+> [53304.070722] (92:worker0@VM0) Task0@VM0: 61723464 flops/s
+> [53305.070722] (93:worker1@VM1) set bound of VM1 to 22888800.000000
+> [53405.070722] (93:worker1@VM1) Task1@VM1: 23041392 flops/s
+> [53405.070722] (92:worker0@VM0) Task0@VM0: 54017568 flops/s
+> [53406.070722] (93:worker1@VM1) set bound of VM1 to 30518400.000000
+> [53506.070722] (93:worker1@VM1) Task1@VM1: 30747288 flops/s
+> [53506.070722] (92:worker0@VM0) Task0@VM0: 46311672 flops/s
+> [53507.070722] (93:worker1@VM1) set bound of VM1 to 38148000.000000
+> [53607.070722] (93:worker1@VM1) Task1@VM1: 38453184 flops/s
+> [53607.070722] (92:worker0@VM0) Task0@VM0: 38605776 flops/s
+> [53608.070722] (93:worker1@VM1) set bound of VM1 to 45777600.000000
+> [53708.070722] (93:worker1@VM1) Task1@VM1: 38529480 flops/s
+> [53708.070722] (92:worker0@VM0) Task0@VM0: 38529480 flops/s
+> [53709.070722] (93:worker1@VM1) set bound of VM1 to 53407200.000000
+> [53809.070722] (93:worker1@VM1) Task1@VM1: 38529480 flops/s
+> [53809.070722] (92:worker0@VM0) Task0@VM0: 38529480 flops/s
+> [53810.070722] (93:worker1@VM1) set bound of VM1 to 61036800.000000
+> [53910.070722] (93:worker1@VM1) Task1@VM1: 38529480 flops/s
+> [53910.070722] (92:worker0@VM0) Task0@VM0: 38529480 flops/s
+> [53911.070722] (93:worker1@VM1) set bound of VM1 to 68666400.000000
+> [54011.070722] (93:worker1@VM1) Task1@VM1: 38529480 flops/s
+> [54011.070722] (92:worker0@VM0) Task0@VM0: 38529480 flops/s
 > [56002.070722] (0:maestro@) Bye (simulation time 56002.1)

@@ -2,7 +2,7 @@ foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-pingpong app-token-ring 
         async-waitall async-waitany
-        cloud-simple
+        cloud-capping cloud-simple
         energy-exec
         io-disk-raw
         plugin-hostload)
@@ -29,7 +29,7 @@ foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-pingpong app-token-ring
         async-waitall async-waitany
-        cloud-simple
+        cloud-capping cloud-simple
         energy-exec
         io-disk-raw
         plugin-hostload)
