@@ -13,10 +13,11 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_migrate, "Messages specific for this example");
 
-static void worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void worker(int argc, char* argv[])
 {
+  xbt_assert(argc > 2);
   sg_host_t first  = sg_host_by_name(argv[1]);
-  sg_host_t second = sg_host_by_name(argv[2]);
+  const_sg_host_t second = sg_host_by_name(argv[2]);
 
   double flopAmount = sg_host_speed(first) * 5 + sg_host_speed(second) * 5;
 
