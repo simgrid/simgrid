@@ -614,7 +614,7 @@ void sg_actor_daemonize(sg_actor_t actor)
 }
 
 /** Returns whether or not this actor has been daemonized or not */
-int sg_actor_is_daemon(sg_actor_t actor)
+int sg_actor_is_daemon(const_sg_actor_t actor)
 {
   return actor->is_daemon();
 }
