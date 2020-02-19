@@ -82,13 +82,18 @@ Starting and Stoping Actors
           - the end of any actor: :cpp:member:`simgrid::s4u::Actor::on_termination()`
           - the destruction of any actor: :cpp:member:`simgrid::s4u::Actor::on_destruction()`
 
+       .. example-tab:: examples/c/actor-exiting/actor-exiting.c
+
+          This example shows how to attach a callback to the end of a specific actor with 
+          :cpp:func:`sg_actor_on_exit()`.
+
   - **Kill actors:**
     Actors can forcefully stop other actors.
-    
+
     .. tabs::
-    
+
        .. example-tab:: examples/s4u/actor-kill/s4u-actor-kill.cpp
-       
+
           See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
           :cpp:func:`simgrid::s4u::this_actor::exit`, :cpp:func:`simgrid::s4u::this_actor::on_exit`.
 
@@ -96,7 +101,7 @@ Starting and Stoping Actors
 
           See also :py:func:`simgrid.Actor.kill`, :py:func:`simgrid.Actor.kill_all`, :py:func:`simgrid.this_actor.exit`,
           :py:func:`simgrid.this_actor.on_exit`.
-	  
+
        .. example-tab:: examples/c/actor-kill/actor-kill.c
 
           See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
@@ -147,27 +152,36 @@ synchronization objects <s4u_ex_IPC>`.
        .. example-tab:: examples/s4u/actor-suspend/s4u-actor-suspend.cpp
 
           See also :cpp:func:`simgrid::s4u::this_actor::suspend()`,
-          :cpp:func:`simgrid::s4u::Actor::suspend()`, :cpp:func:`simgrid::s4u::Actor::resume()` and
+          :cpp:func:`simgrid::s4u::Actor::suspend()`, :cpp:func:`simgrid::s4u::Actor::resume()`, and
           :cpp:func:`simgrid::s4u::Actor::is_suspended()`.
 
        .. example-tab:: examples/python/actor-suspend/actor-suspend.py
 
           See also :py:func:`simgrid.this_actor.suspend()`,
-          :py:func:`simgrid.Actor.suspend()`, :py:func:`simgrid.Actor.resume()` and
+          :py:func:`simgrid.Actor.suspend()`, :py:func:`simgrid.Actor.resume()`, and
           :py:func:`simgrid.Actor.is_suspended()`.
 
+       .. example-tab:: examples/c/actor-suspend/actor-suspend.c
+
+          See also :cpp:func:`sg_actor_suspend()`, :cpp:func:`sg_actor_resume()`, and 
+          :cpp:func:`sg_actor_is_suspended()`.
+
   - **Migrating Actors:**
-    Actors can move or be moved from a host to another very easily.
+    Actors can move or be moved from a host to another very easily. It amount to setting them on a new host.
 
     .. tabs::
 
        .. example-tab:: examples/s4u/actor-migrate/s4u-actor-migrate.cpp
 
-          See also :cpp:func:`simgrid::s4u::this_actor::migrate()` and :cpp:func:`simgrid::s4u::Actor::migrate()`.
+          See also :cpp:func:`simgrid::s4u::this_actor::set_host()` and :cpp:func:`simgrid::s4u::Actor::set_host()`.
 
        .. example-tab:: examples/python/actor-migrate/actor-migrate.py
 
-          See also :py:func:`simgrid.this_actor.migrate()` and :py:func:`simgrid.Actor.migrate()`.
+          See also :py:func:`simgrid.this_actor.set_host()` and :py:func:`simgrid.Actor.set_host()`.
+
+       .. example-tab:: examples/c/actor-migrate/actor-migrate.c
+
+          See also :cpp:func:`sg_actor_set_host()`.
 
   - **Waiting for the termination of an actor:** (joining on it)
     You can block the current actor until the end of another actor.
@@ -200,6 +214,10 @@ synchronization objects <s4u_ex_IPC>`.
        .. example-tab:: examples/python/actor-yield/actor-yield.py
 
           See also :py:func:`simgrid.this_actor.yield_()`.
+
+       .. example-tab:: examples/c/actor-yield/actor-yield.c
+
+          See also :cpp:func:`sg_actor_yield()`.
 
 Traces Replay as a Workload
 ---------------------------
