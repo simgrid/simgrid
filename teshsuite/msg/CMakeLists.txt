@@ -6,7 +6,6 @@ foreach(x async-wait
           energy-ptask energy-pstate platform-properties
           io-file io-file-remote
           task-priority
-          plugin-hostload
           trace_integration)
   if(enable_msg)
     add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.c)
@@ -98,7 +97,6 @@ if(enable_msg)
     io-file io-file-remote
     platform-properties
     task-priority
-    plugin-hostload
     trace_integration)
     
     ADD_TESH_FACTORIES(tesh-msg-${x} "raw" 

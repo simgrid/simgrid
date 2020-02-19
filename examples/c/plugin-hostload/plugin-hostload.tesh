@@ -1,0 +1,21 @@
+#!/usr/bin/env tesh
+
+p This tests the HostLoad plugin (this allows the user to get the current load of a host and the computed flops)
+
+$ ${bindir:=.}/plugin-hostload-c ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:load_test@MyHost1) Initial peak speed: 1E+08 flop/s; number of flops computed so far: 0E+00 (should be 0) and current average load: 0.00000 (should be 0)
+> [  0.000000] (1:load_test@MyHost1) Sleep for 10 seconds
+> [ 10.000000] (1:load_test@MyHost1) Done sleeping 10.00s; peak speed: 1E+08 flop/s; number of flops computed so far: 0E+00 (nothing should have changed)
+> [ 10.000000] (1:load_test@MyHost1) Run a task of 2E+08 flops at current speed of 1E+08 flop/s
+> [ 10.500000] (2:change_speed@MyHost1) I slept until now, but now I'll change the speed of this host while the other process is still computing! This should slow the computation down.
+> [ 18.000000] (1:load_test@MyHost1) Done working on my task; this took 8.00s; current peak speed: 2E+07 flop/s (when I started the computation, the speed was set to 1E+08 flop/s); number of flops computed so far: 2.00E+08, average load as reported by the HostLoad plugin: 0.04167 (should be 0.04167)
+> [ 18.000000] (1:load_test@MyHost1) ========= Requesting pstate 1 (speed should be of 5E+07 flop/s and is of 5E+07 flop/s, average load is 0.04167)
+> [ 18.000000] (1:load_test@MyHost1) Run a task of 1E+08 flops
+> [ 20.000000] (1:load_test@MyHost1) Done working on my task; this took 2.00s; current peak speed: 5E+07 flop/s; number of flops computed so far: 3.00E+08
+> [ 20.000000] (1:load_test@MyHost1) ========= Requesting a reset of the computation and load counters
+> [ 20.000000] (1:load_test@MyHost1) After reset: 0E+00 flops computed; load is 0.00000
+> [ 20.000000] (1:load_test@MyHost1) Sleep for 4 seconds
+> [ 24.000000] (1:load_test@MyHost1) Done sleeping 4.00 s; peak speed: 5E+07 flop/s; number of flops computed so far: 0E+00
+> [ 24.000000] (1:load_test@MyHost1) Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 computed 0 flops so far and has an average load of 0.00000.
+> [ 34.000000] (1:load_test@MyHost1) Done sleeping 10.00 s; peak speed: 5E+07 flop/s; number of flops computed so far: 0E+00
+> [ 34.000000] (0:maestro@) Total simulation time: 34.00

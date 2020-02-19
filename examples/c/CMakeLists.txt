@@ -4,7 +4,8 @@ foreach(x
         async-waitall async-waitany
         cloud-simple
         energy-exec
-        io-disk-raw)
+        io-disk-raw
+        plugin-hostload)
   add_executable       (${x}-c EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}-c simgrid)
   set_target_properties(${x}-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -30,7 +31,8 @@ foreach(x
         async-waitall async-waitany
         cloud-simple
         energy-exec
-        io-disk-raw)
+        io-disk-raw
+        plugin-hostload)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                   --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/${x}
                   --cd ${CMAKE_HOME_DIRECTORY}/examples/c/${x}
