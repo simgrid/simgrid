@@ -419,6 +419,8 @@ write actions on the disk resources.
 
        .. example-tab:: examples/s4u/io-disk-raw/s4u-io-disk-raw.cpp
 
+       .. example-tab:: examples/c/io-disk-raw/io-disk-raw.c
+
        .. example-tab:: examples/platforms/hosts_with_disks.xml
 
           This shows how to declare disks in XML.
@@ -583,6 +585,8 @@ Energy Simulation
 
        .. example-tab:: examples/s4u/energy-exec/s4u-energy-exec.cpp
 
+       .. example-tab:: examples/c/energy-exec/energy-exec.c
+
   - **Consumption due to the network:**
     This example shows how to retrieve and display the energy consumed
     by the network during communications.
@@ -637,6 +641,8 @@ than the previous examples.
 
        .. example-tab:: examples/s4u/app-pingpong/s4u-app-pingpong.cpp
 
+       .. example-tab:: examples/c/app-pingpong/app-pingpong.c
+
   - **Token ring:**
     Shows how to implement a classical communication pattern, where a
     token is exchanged along a ring to reach every participant.
@@ -644,6 +650,8 @@ than the previous examples.
     .. tabs::
 
        .. example-tab:: examples/s4u/app-token-ring/s4u-app-token-ring.cpp
+
+       .. example-tab:: examples/c/app-token-ring/app-token-ring.c
 
   - **Master Workers:**
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
