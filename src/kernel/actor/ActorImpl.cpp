@@ -235,9 +235,12 @@ void ActorImpl::kill(ActorImpl* actor)
 
   actor->exit();
 
-  if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) ==
-          end(simix_global->actors_to_run) &&
-      actor != this) {
+  if (actor == this) {
+    XBT_DEBUG("Go on, this is a suicide,");
+  } else if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) !=
+             end(simix_global->actors_to_run)) {
+    XBT_DEBUG("Actor %s is already in the to_run list", actor->get_cname());
+  } else {
     XBT_DEBUG("Inserting %s in the to_run list", actor->get_cname());
     simix_global->actors_to_run.push_back(actor);
   }
