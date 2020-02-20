@@ -84,6 +84,11 @@ const char* sg_disk_name(const_sg_disk_t disk)
   return disk->get_cname();
 }
 
+sg_host_t sg_disk_get_host(const_sg_disk_t disk)
+{
+  return disk->get_host();
+}
+
 double sg_disk_read_bandwidth(const_sg_disk_t disk)
 {
   return disk->get_read_bandwidth();
