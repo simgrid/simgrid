@@ -4,24 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "broadcaster.h"
-#include "iterator.h"
-#include "messages.h"
-#include "peer.h"
-#include "simgrid/msg.h"
+#include "chainsend.h"
 
-/** @addtogroup MSG_examples
- *
- *  - <b>chainsend: MSG implementation of a file broadcasting system, similar to Kastafior (from Kadeploy).</b>.
- */
-
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chainsend, "Messages specific for chainsend");
+XBT_LOG_NEW_DEFAULT_CATEGORY(chainsend, "Messages specific for chainsend");
 
 int main(int argc, char* argv[])
 {
-  MSG_init(&argc, argv);
+  simgrid_init(&argc, argv);
 
-  MSG_create_environment(argv[1]);
+  simgrid_load_platform(argv[1]);
 
   /* Trace categories */
   TRACE_category_with_color("host0", "0 0 1");
@@ -35,14 +26,13 @@ int main(int argc, char* argv[])
   TRACE_category_with_color("host8", "0 1 0");
 
   /*   Application deployment */
-  MSG_function_register("broadcaster", broadcaster);
-  MSG_function_register("peer", peer);
+  simgrid_register_function("broadcaster", broadcaster);
+  simgrid_register_function("peer", peer);
 
-  MSG_launch_application(argv[2]);
+  simgrid_load_deployment(argv[2]);
 
-  msg_error_t res = MSG_main();
+  simgrid_run();
+  XBT_INFO("Total simulation time: %e", simgrid_get_clock());
 
-  XBT_INFO("Total simulation time: %e", MSG_get_clock());
-
-  return res != MSG_OK;
+  return 0;
 }
