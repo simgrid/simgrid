@@ -288,6 +288,10 @@ Communications on the Network
 
          See also :cpp:func:`simgrid::s4u::Comm::wait_all()`.
 
+      .. example-tab:: examples/c/async-waitall/async-waitall.c
+
+         See also :cpp:func:`sg_comm_wait_all()`.
+
       .. example-tab:: examples/python/async-waitall/async-waitall.py
 
          See also :py:func:`simgrid.Comm.wait_all()`.
@@ -396,6 +400,10 @@ Executions on the CPU
 
           See also :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
 
+       .. example-tab:: examples/c/exec-dvfs/exec-dvfs.c
+
+          See also :cpp:func:`sg_host_get_pstate_speed` and :cpp:func:`sg_host_set_pstate`.
+
        .. example-tab:: examples/python/exec-dvfs/exec-dvfs.py
 
           See also :py:func:`Host.get_pstate_speed` and :py:func:`Host.set_pstate`.
@@ -445,6 +453,8 @@ result in short reads and short write, as in reality.
     .. tabs::
 
        .. example-tab:: examples/s4u/io-file-remote/s4u-io-file-remote.cpp
+
+       .. example-tab:: examples/c/io-file-remote/io-file-remote.c
 
 .. _s4u_ex_IPC:
 
@@ -699,6 +709,17 @@ Data diffusion
 
        .. example-tab:: examples/s4u/app-chainsend/s4u-app-chainsend.cpp
 
+       .. group-tab:: C
+
+          .. showfile:: examples/c/app-chainsend/chainsend.c
+             :language: c
+
+          .. showfile:: examples/c/app-chainsend/broadcaster.c
+             :language: c
+
+          .. showfile:: examples/c/app-chainsend/peer.c
+             :language: c
+
 Distributed Hash Tables (DHT)
 -----------------------------
 
@@ -746,6 +767,8 @@ Simulating Clouds
     .. tabs::
 
        .. example-tab:: examples/s4u/cloud-simple/s4u-cloud-simple.cpp
+
+       .. example-tab:: examples/c/cloud-simple/cloud-simple.c
 
   - **Migrating VMs**
     This example shows how to migrate VMs between PMs.

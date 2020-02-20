@@ -43,7 +43,6 @@ static void host(int argc, char* argv[])
 
 int main(int argc, char** argv)
 {
-
   simgrid_init(&argc, argv);
   sg_storage_file_system_init();
   simgrid_load_platform(argv[1]);
