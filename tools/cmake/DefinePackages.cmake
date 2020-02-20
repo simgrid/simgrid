@@ -1170,7 +1170,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/simulacrum_7_hosts.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
-  examples/platforms/storage/remote_io.xml
   examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
   examples/platforms/small_platform.lua
