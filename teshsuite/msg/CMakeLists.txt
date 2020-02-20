@@ -3,7 +3,7 @@ foreach(x async-wait
           cloud-migration cloud-two-tasks
           get_sender host_on_off host_on_off_recv
           process-lifetime
-          energy-ptask energy-pstate platform-properties
+          energy-ptask platform-properties
           io-file io-file-remote
           task-priority
           trace_integration)
@@ -75,7 +75,6 @@ if(enable_msg)
     async-wait
     app-bittorrent
     cloud-migration cloud-two-tasks
-    energy-pstate
     host_on_off host_on_off_processes host_on_off_recv
     get_sender
     task_destroy_cancel task_listen_from task_progress 

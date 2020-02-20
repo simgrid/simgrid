@@ -57,6 +57,8 @@ include examples/c/cloud-simple/cloud-simple.c
 include examples/c/cloud-simple/cloud-simple.tesh
 include examples/c/energy-exec/energy-exec.c
 include examples/c/energy-exec/energy-exec.tesh
+include examples/c/exec-dvfs/exec-dvfs.c
+include examples/c/exec-dvfs/exec-dvfs.tesh
 include examples/c/io-disk-raw/io-disk-raw.c
 include examples/c/io-disk-raw/io-disk-raw.tesh
 include examples/c/plugin-hostload/plugin-hostload.c
@@ -644,8 +646,6 @@ include teshsuite/msg/cloud-migration/cloud-migration.c
 include teshsuite/msg/cloud-migration/cloud-migration.tesh
 include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.c
 include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.tesh
-include teshsuite/msg/energy-pstate/energy-pstate.c
-include teshsuite/msg/energy-pstate/energy-pstate.tesh
 include teshsuite/msg/energy-ptask/energy-ptask.c
 include teshsuite/msg/energy-ptask/energy-ptask.tesh
 include teshsuite/msg/get_sender/get_sender.c
