@@ -58,7 +58,7 @@ static void launch_worker(sg_host_t host, const char* pr_name, double computatio
   free(argv3);
 }
 
-static void worker_busy_loop(int argc, char* argv[])
+static void worker_busy_loop(XBT_ATTRIB_UNUSED int argc, char* argv[])
 {
   char* name              = argv[1];
   double speed            = xbt_str_parse_double(argv[2], "Invalid speed value");
