@@ -61,6 +61,9 @@ include examples/c/exec-dvfs/exec-dvfs.c
 include examples/c/exec-dvfs/exec-dvfs.tesh
 include examples/c/io-disk-raw/io-disk-raw.c
 include examples/c/io-disk-raw/io-disk-raw.tesh
+include examples/c/io-file-remote/io-file-remote.c
+include examples/c/io-file-remote/io-file-remote.tesh
+include examples/c/io-file-remote/io-file-remote_d.xml
 include examples/c/plugin-hostload/plugin-hostload.c
 include examples/c/plugin-hostload/plugin-hostload.tesh
 include examples/deprecated/java/app/bittorrent/Common.java
@@ -656,9 +659,6 @@ include teshsuite/msg/host_on_off_processes/host_on_off_processes.cpp
 include teshsuite/msg/host_on_off_processes/host_on_off_processes.tesh
 include teshsuite/msg/host_on_off_recv/host_on_off_recv.c
 include teshsuite/msg/host_on_off_recv/host_on_off_recv.tesh
-include teshsuite/msg/io-file-remote/io-file-remote.c
-include teshsuite/msg/io-file-remote/io-file-remote.tesh
-include teshsuite/msg/io-file-remote/io-file-remote_d.xml
 include teshsuite/msg/io-file/io-file.c
 include teshsuite/msg/io-file/io-file.tesh
 include teshsuite/msg/platform-properties/platform-properties.c

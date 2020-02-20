@@ -4,7 +4,7 @@ foreach(x async-wait
           get_sender host_on_off host_on_off_recv
           process-lifetime
           energy-ptask platform-properties
-          io-file io-file-remote
+          io-file
           task-priority
           trace_integration)
   if(enable_msg)
@@ -50,7 +50,6 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/io-file-remote_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/platform-properties_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/baseline_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/kill_d.xml
@@ -80,7 +79,7 @@ if(enable_msg)
     task_destroy_cancel task_listen_from task_progress 
     process-lifetime
     energy-ptask
-    io-file io-file-remote
+    io-file
     platform-properties
     task-priority
     trace_integration)
