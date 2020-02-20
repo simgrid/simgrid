@@ -777,6 +777,8 @@ Simulating Clouds
 
        .. example-tab:: examples/s4u/cloud-migration/s4u-cloud-migration.cpp
 
+       .. example-tab:: examples/c/cloud-migration/cloud-migration.c
+
 =======================
 Model-Checking Examples
 =======================

@@ -1,12 +1,12 @@
-$ ${bindir:=.}/cloud-migration ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/cloud-migration-c ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:master_@Fafard) Test: Migrate a VM with 1000 Mbytes RAM
 > [132.765801] (1:master_@Fafard) VM0 migrated: Fafard->Tremblay in 132.766 s
 > [132.765801] (1:master_@Fafard) Test: Migrate a VM with 100 Mbytes RAM
 > [146.111793] (1:master_@Fafard) VM0 migrated: Fafard->Tremblay in 13.346 s
 > [146.111793] (1:master_@Fafard) Test: Migrate two VMs at once from PM0 to PM1
-> [411.566271] (8:mig_wrk@Fafard) VM1 migrated: Fafard->Tremblay in 265.454 s
+> [411.566271] (7:mig_wrk@Fafard) VM1 migrated: Fafard->Tremblay in 265.454 s
 > [411.566271] (6:mig_wrk@Fafard) VM0 migrated: Fafard->Tremblay in 265.454 s
 > [10146.111793] (1:master_@Fafard) Test: Migrate two VMs at once to different PMs
-> [10362.620589] (14:mig_wrk@Fafard) VM1 migrated: Fafard->Bourassa in 216.509 s
+> [10362.620589] (13:mig_wrk@Fafard) VM1 migrated: Fafard->Bourassa in 216.509 s
 > [10411.547334] (12:mig_wrk@Fafard) VM0 migrated: Fafard->Tremblay in 265.436 s
 > [20146.111793] (0:maestro@) Bye (simulation time 20146.1)

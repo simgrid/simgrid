@@ -5,7 +5,7 @@ foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-pingpong app-token-ring 
         async-waitall async-waitany
-        cloud-capping cloud-simple
+        cloud-capping cloud-migration cloud-simple
         exec-dvfs
         energy-exec
         io-disk-raw io-file-remote
@@ -54,7 +54,7 @@ foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-chainsend app-pingpong app-token-ring
         async-waitall async-waitany
-        cloud-capping cloud-simple
+        cloud-capping cloud-migration cloud-simple
         exec-dvfs
         energy-exec
         io-disk-raw io-file-remote

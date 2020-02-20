@@ -53,6 +53,8 @@ include examples/c/async-waitany/async-waitany.tesh
 include examples/c/async-waitany/async-waitany_d.xml
 include examples/c/cloud-capping/cloud-capping.c
 include examples/c/cloud-capping/cloud-capping.tesh
+include examples/c/cloud-migration/cloud-migration.c
+include examples/c/cloud-migration/cloud-migration.tesh
 include examples/c/cloud-simple/cloud-simple.c
 include examples/c/cloud-simple/cloud-simple.tesh
 include examples/c/energy-exec/energy-exec.c
@@ -645,8 +647,6 @@ include teshsuite/msg/async-wait/async-wait2_d.xml
 include teshsuite/msg/async-wait/async-wait3_d.xml
 include teshsuite/msg/async-wait/async-wait4_d.xml
 include teshsuite/msg/async-wait/async-wait_d.xml
-include teshsuite/msg/cloud-migration/cloud-migration.c
-include teshsuite/msg/cloud-migration/cloud-migration.tesh
 include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.c
 include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.tesh
 include teshsuite/msg/energy-ptask/energy-ptask.c

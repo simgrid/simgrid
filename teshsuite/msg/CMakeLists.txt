@@ -1,6 +1,6 @@
 # C examples
 foreach(x async-wait
-          cloud-migration cloud-two-tasks
+          cloud-two-tasks
           get_sender host_on_off host_on_off_recv
           process-lifetime
           energy-ptask platform-properties
@@ -73,7 +73,7 @@ if(enable_msg)
   foreach(x 
     async-wait
     app-bittorrent
-    cloud-migration cloud-two-tasks
+    cloud-two-tasks
     host_on_off host_on_off_processes host_on_off_recv
     get_sender
     task_destroy_cancel task_listen_from task_progress 
