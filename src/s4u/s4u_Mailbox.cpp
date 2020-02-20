@@ -201,6 +201,13 @@ void* sg_mailbox_get(sg_mailbox_t mailbox)
   return mailbox->get();
 }
 
+sg_comm_t sg_mailbox_get_async(sg_mailbox_t mailbox, void** data)
+{
+  auto comm = mailbox->get_async(data);
+  comm->add_ref();
+  return comm.get();
+}
+
 void sg_mailbox_put(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes)
 {
   return mailbox->put(payload, simulated_size_in_bytes);
