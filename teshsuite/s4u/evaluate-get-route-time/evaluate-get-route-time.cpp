@@ -6,19 +6,18 @@
 
 /*
 for i in $(seq 1 20); do
-  teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time examples/platforms/cluster_backbone.xml 1 2> /tmp/null
+  teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time examples/platforms/cluster_backbone.xml 1
   sleep 1
 done
 */
 
 #include "simgrid/s4u.hpp"
+#include "xbt/random.hpp"
 #include "xbt/xbt_os_time.h"
 #include <stdio.h>
 
 int main(int argc, char** argv)
 {
-  int i;
-  int j;
   xbt_os_timer_t timer = xbt_os_timer_new();
 
   simgrid::s4u::Engine e(&argc, argv);
@@ -28,12 +27,12 @@ int main(int argc, char** argv)
   int host_count                         = e.get_host_count();
 
   /* Random number initialization */
-  srand(static_cast<int>(xbt_os_time()));
+  simgrid::xbt::random::set_mersenne_seed(static_cast<int>(xbt_os_time()));
 
   /* Take random i and j, with i != j */
   xbt_assert(host_count > 1);
-  i = rand() % host_count;
-  j = rand() % (host_count - 1);
+  int i = simgrid::xbt::random::uniform_int(0, host_count - 1);
+  int j = simgrid::xbt::random::uniform_int(0, host_count - 2);
   if (j >= i) // '>=' is not a bug: j is uniform on host_count-1 values, and shifted on need to maintain uniform random
     j++;
 
