@@ -176,11 +176,16 @@ void ActorImpl::cleanup()
 
   XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro.get());
 
-  /* Unregister from the kill timer if any */
+  /* Unregister associated timers if any */
   if (kill_timer != nullptr) {
     kill_timer->remove();
     kill_timer = nullptr;
   }
+  if (simcall.timeout_cb_) {
+    simcall.timeout_cb_->remove();
+    simcall.timeout_cb_ = nullptr;
+  }
+
   cleanup_from_simix();
 
   context_->set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops

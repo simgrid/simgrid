@@ -314,6 +314,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activi
     simcall->timeout_cb_ = NULL;
   } else {
     simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
+      simcall->timeout_cb_ = nullptr;
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       simcall_comm_waitany__set__result(simcall, -1);
       simcall->issuer_->simcall_answer();

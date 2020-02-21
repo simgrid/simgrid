@@ -24,6 +24,7 @@ void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kerne
     simcall->timeout_cb_ = nullptr;
   } else {
     simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall, execs, count]() {
+      simcall->timeout_cb_ = nullptr;
       for (size_t i = 0; i < count; i++) {
         // Remove the first occurrence of simcall:
         auto* exec = execs[i];
