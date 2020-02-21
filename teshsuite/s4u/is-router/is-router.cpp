@@ -6,21 +6,20 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "simgrid/simdag.h"
 
 #include <algorithm>
 #include <cstdio>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-  SD_init(&argc, argv);
-  SD_create_environment(argv[1]);
+  simgrid::s4u::Engine e(&argc, argv);
+  e.load_platform(argv[1]);
 
-  std::vector<sg_host_t> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-  std::printf("Host count: %zu, link number: %d\n", hosts.size(), sg_link_count());
+  std::vector<sg_host_t> hosts = e.get_all_hosts();
 
-  std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
-      simgrid::s4u::Engine::get_instance()->get_all_netpoints();
+  std::printf("Host count: %zu, link number: %zu\n", hosts.size(), e.get_link_count());
+  std::vector<simgrid::kernel::routing::NetPoint*> netpoints = e.get_all_netpoints();
+
   std::sort(netpoints.begin(), netpoints.end(),
             [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
@@ -28,7 +27,7 @@ int main(int argc, char **argv)
 
   for (const auto& host : hosts) {
     const simgrid::kernel::routing::NetPoint* nc = host->get_netpoint();
-    const char *type = "buggy";
+    const char* type                             = "buggy";
     if (nc->is_router())
       type = "router";
     if (nc->is_netzone())

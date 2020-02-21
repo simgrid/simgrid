@@ -4,29 +4,31 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-//for i in $(seq 1 100); do teshsuite/simdag/platforms/evaluate_get_route_time ../examples/platforms/cluster_backbone.xml 1 2> /tmp/null ; done
+/*
+for i in $(seq 1 20); do
+  teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time examples/platforms/cluster_backbone.xml 1 2> /tmp/null
+  sleep 1
+done
+*/
 
-
-#include <stdio.h>
-#include "simgrid/simdag.h"
+#include "simgrid/s4u.hpp"
 #include "xbt/xbt_os_time.h"
+#include <stdio.h>
 
-#define BILLION  1000000000L;
-
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   int i;
   int j;
   xbt_os_timer_t timer = xbt_os_timer_new();
 
-  SD_init(&argc, argv);
-  SD_create_environment(argv[1]);
+  simgrid::s4u::Engine e(&argc, argv);
+  e.load_platform(argv[1]);
 
-  sg_host_t *hosts = sg_host_list();
-  int host_count = sg_host_count();
+  std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
+  int host_count                         = e.get_host_count();
 
   /* Random number initialization */
-  srand( (int) (xbt_os_time()*1000) );
+  srand(static_cast<int>(xbt_os_time()));
 
   /* Take random i and j, with i != j */
   xbt_assert(host_count > 1);
@@ -35,20 +37,15 @@ int main(int argc, char **argv)
   if (j >= i) // '>=' is not a bug: j is uniform on host_count-1 values, and shifted on need to maintain uniform random
     j++;
 
-  const_sg_host_t h1 = hosts[i];
-  const_sg_host_t h2 = hosts[j];
-  printf("%d\tand\t%d\t\t",i,j);
-  xbt_dynar_t route = xbt_dynar_new(sizeof(SD_link_t), NULL);
+  printf("%d\tand\t%d\t\t", i, j);
+
+  std::vector<simgrid::s4u::Link*> route;
 
   xbt_os_cputimer_start(timer);
-  sg_host_route(h1, h2, route);
+  hosts[i]->route_to(hosts[j], route, nullptr);
   xbt_os_cputimer_stop(timer);
 
-  xbt_dynar_free(&route);
-
-  printf("%f\n", xbt_os_timer_elapsed(timer) );
-
-  xbt_free(hosts);
+  printf("%f\n", xbt_os_timer_elapsed(timer));
 
   return 0;
 }

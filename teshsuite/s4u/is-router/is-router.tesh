@@ -1,7 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/is-router ${srcdir}/teshsuite/simdag/platforms/test_of_is_router.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
+$ ${bindir:=.}/is-router ../../simdag/platforms/test_of_is_router.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > Host count: 10, link number: 1
 >    - Seen: "host01". Type: host
 >    - Seen: "host02". Type: host

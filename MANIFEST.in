@@ -709,6 +709,8 @@ include teshsuite/s4u/actor-autorestart/actor-autorestart.cpp
 include teshsuite/s4u/actor-autorestart/actor-autorestart.tesh
 include teshsuite/s4u/actor/actor.cpp
 include teshsuite/s4u/actor/actor.tesh
+include teshsuite/s4u/basic-link-test/basic-link-test.cpp
+include teshsuite/s4u/basic-link-test/basic-link-test.tesh
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.cpp
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.tesh
 include teshsuite/s4u/cloud-sharing/cloud-sharing.cpp
@@ -716,8 +718,12 @@ include teshsuite/s4u/cloud-sharing/cloud-sharing.tesh
 include teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
+include teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time.cpp
+include teshsuite/s4u/evaluate-parse-time/evaluate-parse-time.cpp
 include teshsuite/s4u/host-on-off/host-on-off.cpp
 include teshsuite/s4u/host-on-off/host-on-off.tesh
+include teshsuite/s4u/is-router/is-router.cpp
+include teshsuite/s4u/is-router/is-router.tesh
 include teshsuite/s4u/listen_async/listen_async.cpp
 include teshsuite/s4u/listen_async/listen_async.tesh
 include teshsuite/s4u/ns3-simultaneous-send-rcv/ns3-simultaneous-send-rcv.cpp
@@ -730,8 +736,6 @@ include teshsuite/s4u/wait-any-for/wait-any-for.cpp
 include teshsuite/s4u/wait-any-for/wait-any-for.tesh
 include teshsuite/simdag/availability/availability.c
 include teshsuite/simdag/availability/availability.tesh
-include teshsuite/simdag/basic-link-test/basic-link-test.c
-include teshsuite/simdag/basic-link-test/basic-link-test.tesh
 include teshsuite/simdag/basic-parsing-test/basic-parsing-test-bypass.tesh
 include teshsuite/simdag/basic-parsing-test/basic-parsing-test-sym-full.tesh
 include teshsuite/simdag/basic-parsing-test/basic-parsing-test.c
@@ -766,8 +770,6 @@ include teshsuite/simdag/comp-only-par/comp-only-par.c
 include teshsuite/simdag/comp-only-par/comp-only-par.tesh
 include teshsuite/simdag/comp-only-seq/comp-only-seq.c
 include teshsuite/simdag/comp-only-seq/comp-only-seq.tesh
-include teshsuite/simdag/evaluate-get-route-time/evaluate-get-route-time.c
-include teshsuite/simdag/evaluate-parse-time/evaluate-parse-time.c
 include teshsuite/simdag/flatifier/bogus_disk_attachment.tesh
 include teshsuite/simdag/flatifier/bogus_missing_gateway.tesh
 include teshsuite/simdag/flatifier/bogus_two_hosts_asymetric.tesh
@@ -775,8 +777,6 @@ include teshsuite/simdag/flatifier/flatifier.cpp
 include teshsuite/simdag/flatifier/flatifier.tesh
 include teshsuite/simdag/incomplete/incomplete.c
 include teshsuite/simdag/incomplete/incomplete.tesh
-include teshsuite/simdag/is-router/is-router.cpp
-include teshsuite/simdag/is-router/is-router.tesh
 include teshsuite/simdag/platforms/Dijkstra.xml
 include teshsuite/simdag/platforms/bob.trace
 include teshsuite/simdag/platforms/bogus_disk_attachment.xml
