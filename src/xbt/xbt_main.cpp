@@ -45,7 +45,6 @@ std::vector<std::string> cmdline; /* all we got in argv */
 int xbt_initialized = 0;
 simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
     "debug/clean-atexit",
-    {"clean-atexit"}, // XBT_ATTRIB_DEPRECATED_v327(option alias)
     "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.",
     true};
 
