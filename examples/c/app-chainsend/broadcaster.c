@@ -74,7 +74,7 @@ static void broadcaster_destroy(broadcaster_t bc)
 void broadcaster(int argc, char* argv[])
 {
   XBT_DEBUG("broadcaster");
-
+  xbt_assert(argc > 2);
   unsigned int host_count = xbt_str_parse_int(argv[1], "Invalid number of peers: %s");
 
   sg_mailbox_t* mailboxes = (sg_mailbox_t*)malloc(sizeof(sg_mailbox_t) * host_count);

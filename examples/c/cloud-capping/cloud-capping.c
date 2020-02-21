@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(cloud_capping, "Messages specific for this example");
 
-static void worker_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void worker_main(int argc, char* argv[])
 {
   xbt_assert(argc == 4);
   double computation_amount = xbt_str_parse_double(argv[1], "Invalid computation amount: %s");
@@ -58,8 +58,9 @@ static void launch_worker(sg_host_t host, const char* pr_name, double computatio
   free(argv3);
 }
 
-static void worker_busy_loop(XBT_ATTRIB_UNUSED int argc, char* argv[])
+static void worker_busy_loop(int argc, char* argv[])
 {
+  xbt_assert(argc > 2);
   char* name              = argv[1];
   double speed            = xbt_str_parse_double(argv[2], "Invalid speed value");
   double exec_remain_prev = 1e11;
