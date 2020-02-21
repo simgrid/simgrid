@@ -1,0 +1,13 @@
+
+$ ./host-on-off ${platfdir}/small_platform.xml
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Sending "task on"
+> [Jupiter:worker:(2) 0.824497] [s4u_test/INFO] Task "task on" done
+> [Tremblay:master:(1) 1.169155] [s4u_test/INFO] Sending "task off"
+> [Tremblay:master:(1) 2.169155] [s4u_test/INFO] Sending "task on without actor"
+> [Tremblay:master:(1) 3.169155] [s4u_test/INFO] Sending "task on with actor"
+> [Tremblay:master:(1) 3.338309] [s4u_test/INFO] Sending "finalize"
+> [Jupiter:worker:(3) 3.993652] [s4u_test/INFO] Task "task on with actor" done
+> [Tremblay:master:(1) 4.012666] [s4u_test/INFO] Goodbye now!
+> [Jupiter:worker:(3) 4.012666] [s4u_test/INFO] I'm done. See you!
+> [4.012666] [s4u_test/INFO] Simulation time 4.01267
+

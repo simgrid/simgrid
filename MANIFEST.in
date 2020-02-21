@@ -653,8 +653,6 @@ include teshsuite/msg/energy-ptask/energy-ptask.c
 include teshsuite/msg/energy-ptask/energy-ptask.tesh
 include teshsuite/msg/get_sender/get_sender.c
 include teshsuite/msg/get_sender/get_sender.tesh
-include teshsuite/msg/host_on_off/host_on_off.c
-include teshsuite/msg/host_on_off/host_on_off.tesh
 include teshsuite/msg/host_on_off_processes/host_on_off_processes.cpp
 include teshsuite/msg/host_on_off_processes/host_on_off_processes.tesh
 include teshsuite/msg/host_on_off_recv/host_on_off_recv.c
@@ -718,6 +716,8 @@ include teshsuite/s4u/cloud-sharing/cloud-sharing.tesh
 include teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
+include teshsuite/s4u/host-on-off/host-on-off.cpp
+include teshsuite/s4u/host-on-off/host-on-off.tesh
 include teshsuite/s4u/listen_async/listen_async.cpp
 include teshsuite/s4u/listen_async/listen_async.tesh
 include teshsuite/s4u/ns3-simultaneous-send-rcv/ns3-simultaneous-send-rcv.cpp
