@@ -4,6 +4,7 @@ SimGrid (3.25.1) UNRELEASED (target: March 20 2020 or v3.26 on 3/26/20)
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG#43: xbt::random needs some care
+ - FG#48: The Impossible Did Happen (yet again)
  - FG!24: Documentation and fix for xbt/random
  - GH#139: Allow pthread creation in SMPI
 
