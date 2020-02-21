@@ -59,6 +59,8 @@ include examples/c/cloud-simple/cloud-simple.c
 include examples/c/cloud-simple/cloud-simple.tesh
 include examples/c/energy-exec/energy-exec.c
 include examples/c/energy-exec/energy-exec.tesh
+include examples/c/energy-vm/energy-vm.c
+include examples/c/energy-vm/energy-vm.tesh
 include examples/c/exec-dvfs/exec-dvfs.c
 include examples/c/exec-dvfs/exec-dvfs.tesh
 include examples/c/io-disk-raw/io-disk-raw.c
@@ -215,8 +217,6 @@ include examples/deprecated/msg/dht-pastry/dht-pastry.c
 include examples/deprecated/msg/dht-pastry/dht-pastry.tesh
 include examples/deprecated/msg/dht-pastry/dht-pastry_d.xml
 include examples/deprecated/msg/dht-pastry/generate.py
-include examples/deprecated/msg/energy-vm/energy-vm.c
-include examples/deprecated/msg/energy-vm/energy-vm.tesh
 include examples/deprecated/msg/mc/bugged1.c
 include examples/deprecated/msg/mc/bugged1.tesh
 include examples/deprecated/msg/mc/bugged1_liveness.c

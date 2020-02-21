@@ -1,6 +1,6 @@
 # C examples
 foreach(x app-masterworker cloud-masterworker
-          dht-pastry energy-vm platform-failures 
+          dht-pastry platform-failures
           process-create 
           synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker
@@ -58,7 +58,6 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 if(enable_msg)
   foreach(x app-masterworker cloud-masterworker
             dht-pastry dht-kademlia platform-failures
-            energy-vm
             process-create 
             synchro-semaphore)
     ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
