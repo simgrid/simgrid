@@ -34,7 +34,7 @@ static void broadcaster_build_chain(broadcaster_t bc)
   }
 }
 
-static void broadcaster_send_file(broadcaster_t bc)
+static void broadcaster_send_file(const_broadcaster_t bc)
 {
   int nb_pending_sends = 0;
 

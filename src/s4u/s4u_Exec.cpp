@@ -216,7 +216,7 @@ void sg_exec_set_bound(sg_exec_t exec, double bound)
   exec->set_bound(bound);
 }
 
-double sg_exec_get_remaining(sg_exec_t exec)
+double sg_exec_get_remaining(const_sg_exec_t exec)
 {
   return exec->get_remaining();
 }

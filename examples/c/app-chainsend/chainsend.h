@@ -35,6 +35,7 @@ typedef struct s_broadcaster {
 } s_broadcaster_t;
 
 typedef s_broadcaster_t* broadcaster_t;
+typedef const s_broadcaster_t* const_broadcaster_t;
 void broadcaster(int argc, char* argv[]);
 
 /* Message struct */

@@ -13,7 +13,7 @@
 SG_BEGIN_DECL
 
 XBT_PUBLIC void sg_exec_set_bound(sg_exec_t exec, double bound);
-XBT_PUBLIC double sg_exec_get_remaining(sg_exec_t exec);
+XBT_PUBLIC double sg_exec_get_remaining(const_sg_exec_t exec);
 
 XBT_PUBLIC void sg_exec_start(sg_exec_t exec);
 XBT_PUBLIC void sg_exec_wait(sg_exec_t exec);

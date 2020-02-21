@@ -10,16 +10,16 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(chainsend_peer, "Messages specific for the peer");
 
 static void peer_join_chain(peer_t p)
 {
-  const chain_message_t msg = (chain_message_t)sg_mailbox_get(p->me);
-  p->prev                   = msg->prev_;
-  p->next                   = msg->next_;
-  p->total_pieces           = msg->num_pieces;
+  chain_message_t msg = (chain_message_t)sg_mailbox_get(p->me);
+  p->prev             = msg->prev_;
+  p->next             = msg->next_;
+  p->total_pieces     = msg->num_pieces;
   XBT_DEBUG("Peer %s got a 'BUILD_CHAIN' message (prev: %s / next: %s)", sg_mailbox_get_name(p->me),
             p->prev ? sg_mailbox_get_name(p->prev) : NULL, p->next ? sg_mailbox_get_name(p->next) : NULL);
   free(msg);
 }
 
-static void peer_forward_file(const peer_t p)
+static void peer_forward_file(peer_t p)
 {
   void* received;
   int done                = 0;

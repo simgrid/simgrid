@@ -10,13 +10,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void worker()
 {
-  std::string* payload;
+  const std::string* payload;
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("jupi");
 
   while (1) {
     try {
       payload = static_cast<std::string*>(mailbox->get());
-    } catch (simgrid::HostFailureException&) {
+    } catch (const simgrid::HostFailureException&) {
       XBT_DEBUG("The host has been turned off, this was expected");
       return;
     }
@@ -50,7 +50,7 @@ static void master()
   payload = new std::string("task off");
   try {
     mailbox->put_async(payload, 1E6)->wait_for(1);
-  } catch (simgrid::TimeoutException&) {
+  } catch (const simgrid::TimeoutException&) {
     delete payload;
   }
 
@@ -64,7 +64,7 @@ static void master()
   payload = new std::string("task on without actor");
   try {
     mailbox->put_async(payload, 1E6)->wait_for(1);
-  } catch (simgrid::TimeoutException&) {
+  } catch (const simgrid::TimeoutException&) {
     delete payload;
   }
 
@@ -74,7 +74,7 @@ static void master()
   payload = new std::string("task on with actor");
   try {
     mailbox->put_async(payload, 1E6)->wait_for(1);
-  } catch (simgrid::TimeoutException&) {
+  } catch (const simgrid::TimeoutException&) {
     delete payload;
   }
 
@@ -82,7 +82,7 @@ static void master()
   payload = new std::string("finalize");
   try {
     mailbox->put_async(payload, 0)->wait_for(1);
-  } catch (simgrid::TimeoutException&) {
+  } catch (const simgrid::TimeoutException&) {
     delete payload;
   }
 
