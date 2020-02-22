@@ -28,6 +28,6 @@ int main(int argc, char** argv)
     xbt_os_sleep(atoi(argv[2]));
   }
 
-  free(timer);
+  xbt_os_timer_free(timer);
   return 0;
 }
