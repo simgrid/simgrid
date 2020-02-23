@@ -499,7 +499,7 @@ intensive and take time, while being regular enough not to ruin
 simulation accuracy. Furthermore there should not be any MPI calls
 inside such parts of the code.
 
-Use for this part the `gemm_mpi.c
+Use for this part the `gemm_mpi.cpp
 <https://gitlab.com/PRACE-4IP/CodeVault/raw/master/hpc_kernel_samples/dense_linear_algebra/gemm/mpi/src/gemm_mpi.cpp>`_
 example, which is provided by the `PRACE Codevault repository
 <http://www.prace-ri.eu/prace-codevault/>`_.
@@ -507,12 +507,12 @@ example, which is provided by the `PRACE Codevault repository
 The computing part of this example is the matrix multiplication routine
 
 .. literalinclude:: /tuto_smpi/gemm_mpi.cpp
-   :language: c
+   :language: cpp
    :lines: 4-19
 
 .. code-block:: shell
 
-  $ smpicc -O3 gemm_mpi.cpp -o gemm
+  $ smpicxx -O3 gemm_mpi.cpp -o gemm
   $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/running-power:1000000000 ./gemm
 
 This should end quite quickly, as the size of each matrix is only 1000x1000. 
