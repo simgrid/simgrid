@@ -11,8 +11,8 @@ RUN echo "DOWNLOAD_URL: ${DLURL}" && \
     wget https://framagit.org/${DLURL} && \
     tar xf SimGrid-* && rm SimGrid-*tar.gz && \
     cd SimGrid-* && \
-    apt install -y g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev cmake dpkg-dev && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_java=ON -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
+    apt install -y g++ gcc git valgrind gfortran libboost-dev libboost-all-dev cmake dpkg-dev && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j4 && \
     mkdir debian/ && touch debian/control && dpkg-shlibdeps --ignore-missing-info lib/*.so -llib/ -O/tmp/deps && \
     make install && make clean && \
