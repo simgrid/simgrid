@@ -310,7 +310,7 @@ Debian and Ubuntu for example, you can get them as follows:
 
 .. code-block:: shell
 
-   sudo apt install simgrid pajeng make gcc g++ gfortran vite
+   sudo apt install simgrid pajeng make gcc g++ gfortran python3 vite
 
 For R analysis of the produced traces, you may want to install R,
 and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
