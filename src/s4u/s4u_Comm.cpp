@@ -255,6 +255,11 @@ Actor* Comm::get_sender() const
 } // namespace s4u
 } // namespace simgrid
 /* **************************** Public C interface *************************** */
+int sg_comm_test(sg_comm_t comm)
+{
+  return comm->test();
+}
+
 void sg_comm_wait_all(sg_comm_t* comms, size_t count)
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
