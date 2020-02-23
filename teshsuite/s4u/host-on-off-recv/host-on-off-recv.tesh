@@ -1,0 +1,6 @@
+$ ./host-on-off-recv ${platfdir}/small_platform.xml
+> [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Master starting
+> [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Worker receiving
+> [Tremblay:master:(1) 1.000000] [s4u_test/INFO] Turning off the worker host
+> [Tremblay:master:(1) 1.000000] [s4u_test/INFO] Master has finished
+> [1.000000] [s4u_test/INFO] Simulation time 1

@@ -655,8 +655,6 @@ include teshsuite/msg/get_sender/get_sender.c
 include teshsuite/msg/get_sender/get_sender.tesh
 include teshsuite/msg/host_on_off_processes/host_on_off_processes.cpp
 include teshsuite/msg/host_on_off_processes/host_on_off_processes.tesh
-include teshsuite/msg/host_on_off_recv/host_on_off_recv.c
-include teshsuite/msg/host_on_off_recv/host_on_off_recv.tesh
 include teshsuite/msg/io-file/io-file.c
 include teshsuite/msg/io-file/io-file.tesh
 include teshsuite/msg/platform-properties/platform-properties.c
@@ -720,6 +718,8 @@ include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
 include teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time.cpp
 include teshsuite/s4u/evaluate-parse-time/evaluate-parse-time.cpp
+include teshsuite/s4u/host-on-off-recv/host-on-off-recv.cpp
+include teshsuite/s4u/host-on-off-recv/host-on-off-recv.tesh
 include teshsuite/s4u/host-on-off/host-on-off.cpp
 include teshsuite/s4u/host-on-off/host-on-off.tesh
 include teshsuite/s4u/is-router/is-router.cpp
