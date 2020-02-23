@@ -13,7 +13,7 @@
 /* This example does not much: It just spans over-polite processes that yield a large amount
  * of time before ending.
  *
- * This serves as an example for the MSG_process_yield() function, with which a process can request
+ * This serves as an example for the sg_process_yield() function, with which a process can request
  * to be rescheduled after the other processes that are ready at the current timestamp.
  *
  * It can also be used to benchmark our context-switching mechanism.

@@ -117,7 +117,7 @@ static void test_one_task(sg_host_t hostA)
   const double computation_amount = cpu_speed * 10;
   const char* hostA_name          = sg_host_get_name(hostA);
 
-  XBT_INFO("### Test: with/without MSG_task_set_bound");
+  XBT_INFO("### Test: with/without sg_exec_set_bound");
 
   XBT_INFO("### Test: no bound for Task1@%s", hostA_name);
   launch_worker(hostA, "worker0", computation_amount, 0, 0);
