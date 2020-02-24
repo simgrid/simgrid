@@ -143,6 +143,10 @@ else()
 endif()
 if(enable_lto) # User wants LTO, and it seems usable. Go for it
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+  if(LTO_EXTRA_FLAG AND CMAKE_COMPILER_IS_GNUCC)
+    list(APPEND CMAKE_C_COMPILE_OPTIONS_IPO "-flto=${LTO_EXTRA_FLAG}")
+    list(APPEND CMAKE_CXX_COMPILE_OPTIONS_IPO "-flto=${LTO_EXTRA_FLAG}")
+  endif()
   # "Since version 4.9 gcc produces slim object files that only contain
   # the intermediate representation. In order to handle archives of
   # these objects you have to use the gcc wrappers:
