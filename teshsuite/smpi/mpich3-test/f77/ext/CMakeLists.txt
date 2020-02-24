@@ -12,6 +12,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   #  add_executable(allocmemf EXCLUDE_FROM_ALL allocmemf.f)
   add_executable(c2fmult    EXCLUDE_FROM_ALL c2fmult.c)
   add_executable(c2f2cf    EXCLUDE_FROM_ALL c2f2cf.f c2f2c.c)
+  set_property(TARGET c2f2cf PROPERTY INTERPROCEDURAL_OPTIMIZATION FALSE)
   #add_executable(ctypesinf EXCLUDE_FROM_ALL ctypesinf.f ctypesfromc.c)
   add_dependencies(tests c2f2cf c2fmult
                    #ctypesinf allocmemf
