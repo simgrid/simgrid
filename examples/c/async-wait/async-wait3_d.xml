@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <!-- The master actor (with some arguments) -->
+  <actor host="Tremblay" function="sender">
+    <argument value="3"/>       <!-- Number of tasks -->
+    <argument value="498E6"/> <!-- Communication size of tasks -->
+    <argument value="5"/>       <!-- Sleep_start_time -->
+    <argument value="0"/>       <!-- Time for test -->
+  </actor>
+  <!-- The receiver processes -->
+  <actor host="Ruby" function="receiver">
+    <argument value="1"/>       <!-- Sleep_start_time -->
+    <argument value="0"/>       <!-- Time for test -->
+  </actor>
+</platform>

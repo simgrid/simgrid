@@ -4,7 +4,7 @@
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-pingpong app-token-ring 
-        async-waitall async-waitany
+        async-wait async-waitall async-waitany
         cloud-capping cloud-migration cloud-simple
         exec-dvfs
         energy-exec energy-vm
@@ -45,6 +45,10 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/actor-yield_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/async-waitall_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/io-file-remote_d.xml
@@ -53,7 +57,7 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
         app-chainsend app-pingpong app-token-ring
-        async-waitall async-waitany
+        async-wait async-waitall async-waitany
         cloud-capping cloud-migration cloud-simple
         exec-dvfs
         energy-exec energy-vm

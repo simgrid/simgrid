@@ -1,6 +1,5 @@
 # C examples
-foreach(x async-wait
-          cloud-two-tasks
+foreach(x cloud-two-tasks
           get_sender
           process-lifetime
           energy-ptask platform-properties
@@ -46,10 +45,6 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
                                    PARENT_SCOPE)
 set(bin_files    ${bin_files}      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/generate.py                  PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/platform-properties_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/baseline_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/kill_d.xml
@@ -71,7 +66,6 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
 
 if(enable_msg)
   foreach(x 
-    async-wait
     app-bittorrent
     cloud-two-tasks
     host_on_off_processes
