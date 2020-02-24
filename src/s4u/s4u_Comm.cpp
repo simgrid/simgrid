@@ -257,7 +257,16 @@ Actor* Comm::get_sender() const
 /* **************************** Public C interface *************************** */
 int sg_comm_test(sg_comm_t comm)
 {
-  return comm->test();
+  bool finished = comm->test();
+  if (finished)
+    comm->unref();
+  return finished;
+}
+
+void sg_comm_wait(sg_comm_t comm)
+{
+  comm->wait_for(-1);
+  comm->unref();
 }
 
 void sg_comm_wait_all(sg_comm_t* comms, size_t count)
