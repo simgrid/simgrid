@@ -7,8 +7,8 @@ image: simgrid/build-deps
 pages:
 #  stage: test
   script:
-  - cmake -Denable_model-checking=OFF -Denable_documentation=ON -Denable_compile_optimizations=OFF -Denable_smpi=OFF -Dpython=ON .
-  - make -j4
+  - cmake -Denable_model-checking=OFF -Denable_documentation=ON -Denable_compile_optimizations=OFF -Denable_smpi=OFF -Dpython=ON -DLTO_EXTRA_FLAG="auto" .
+  - make -j$(nproc)
   - pip3 install --requirement docs/requirements.txt
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
@@ -31,8 +31,8 @@ ctest:
   except:
   - stable
   script:
-  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON .
-  - make VERBOSE=1 all tests && ctest --output-on-failure
+  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - make -j$(nproc) VERBOSE=1 all tests && ctest --output-on-failure
 
 pip:
   image: debian:testing
@@ -51,8 +51,8 @@ release:
   script:
   - apt-get --allow-releaseinfo-change update && apt install -y binutils-x86-64-linux-gnu wget unzip zip
   # Build the linux version of the jarfile without the boost dependency
-  - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF .
-  - make VERBOSE=1 dist simgrid simgrid-java_jar
+  - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
+  - make VERBOSE=1 -j$(nproc) dist simgrid simgrid-java_jar
   # Get the foreign architectures
   - wget https://ci.appveyor.com/api/projects/mquinson/simgrid/artifacts/simgrid.jar -O simgrid-windows.jar
   - export SGVER=`printf '#include "simgrid/config.h"\n#if SIMGRID_VERSION_PATCH\nSIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR.SIMGRID_VERSION_PATCH\n#else\nSIMGRID_VERSION_MAJOR.SIMGRID_VERSION_MINOR\n#endif'|gcc -E - -Iinclude|tail -1|sed 's/ //g'`
