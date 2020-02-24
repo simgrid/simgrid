@@ -4,7 +4,7 @@
   <!-- The sender actor (with some arguments) -->
   <actor host="Tremblay" function="sender">
     <argument value="3"/>       <!-- Number of messages -->
-    <argument value="498E6"/>  <!-- Message size -->
+    <argument value="482117300"/>  <!-- Message size -->
   </actor>
   <!-- The receiver actor -->
   <actor host="Ruby" function="receiver">

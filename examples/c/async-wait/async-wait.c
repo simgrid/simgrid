@@ -45,16 +45,8 @@ static void sender(int argc, char* argv[])
     }
   }
 
-  sg_comm_t comm = sg_mailbox_put_async(mailbox, xbt_strdup("finalize"), 0);
   XBT_INFO("Send 'finalize' to 'receiver'");
-
-  if (sleep_test_time > 0) {
-    while (sg_comm_test(comm) == 0) {
-      sg_actor_sleep_for(sleep_test_time);
-    }
-  } else {
-    sg_comm_wait(comm);
-  }
+  sg_mailbox_put(mailbox, xbt_strdup("finalize"), 0);
 }
 
 /* Receiver process expects 3 arguments: */

@@ -37,10 +37,9 @@ static void sender(int argc, char** argv)
     // It will be destroyed when this actor leaves the loop, ie before the receiver gets the data
     std::string* payload = new std::string(msg_content);
 
-    XBT_INFO("Send '%s' to '%s'", msg_content.c_str(), mbox->get_cname());
-
     /* Create a communication representing the ongoing communication and then */
     simgrid::s4u::CommPtr comm = mbox->put_async(payload, msg_size);
+    XBT_INFO("Send '%s' to '%s'", msg_content.c_str(), mbox->get_cname());
 
     if (sleep_test_time > 0) {   /* - "test_time" is set to 0, wait */
       while (not comm->test()) { /* - Call test() every "sleep_test_time" otherwise */

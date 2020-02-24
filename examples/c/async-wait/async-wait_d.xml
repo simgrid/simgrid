@@ -4,7 +4,7 @@
   <!-- The master actor (with some arguments) -->
   <actor host="Tremblay" function="sender">
     <argument value="3"/>     <!-- Number of messages -->
-    <argument value="498E6"/> <!-- message size -->
+    <argument value="482117300"/> <!-- message size -->
     <argument value="5"/>     <!-- Sleep_start_time -->
     <argument value="0.1"/>   <!-- Time for test -->
   </actor>
