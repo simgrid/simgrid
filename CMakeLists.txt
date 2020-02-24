@@ -20,7 +20,7 @@ set(libsimgrid-java_version "${release_version}")
 # Basic checks on cmake
 cmake_minimum_required(VERSION 3.5)
 #for lto, to avoid warning (should be removed when switching to requiring cmake >= 3.9)
-if(CMAKE_VERSION VERSION_MORE "3.9")
+if(CMAKE_VERSION VERSION_GREATER "3.9")
   cmake_policy(SET CMP0069 NEW)
 endif()
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
