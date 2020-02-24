@@ -53,7 +53,7 @@ cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_python=OFF \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_jedule=OFF -Denable_mallocators=OFF \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF \
-      -Denable_memcheck_xml=ON $WORKSPACE
+      -Denable_memcheck_xml=ON -DLTO_EXTRA_FLAG="auto" $WORKSPACE
 
 
 make -j$NUMPROC tests

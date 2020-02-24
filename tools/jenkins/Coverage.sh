@@ -59,7 +59,8 @@ cmake -Denable_documentation=OFF -Denable_lua=ON \
       -Denable_jedule=ON -Denable_mallocators=ON \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON \
       -Denable_smpi_papi=ON \
-      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
+      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON \
+      -Denable_coverage=ON -DLTO_EXTRA_FLAG="auto" $WORKSPACE
 
 #build with sonarqube scanner wrapper
 /home/ci/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs make -j$NUMPROC tests

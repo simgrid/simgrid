@@ -196,6 +196,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_jedule=OFF -Denable_lua=OFF ${MAY_DISABLE_SOURCE_CHANGE} \
   -Denable_java=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_msg=$(onoff test "$build_mode" = "ModelChecker") \
+  -DLTO_EXTRA_FLAG="auto" \
   $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 set +x
