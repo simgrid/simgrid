@@ -28,7 +28,8 @@ if(enable_compile_warnings)
     # 191: type qualifier is meaningless on cast type
     # 597: entity-kind "entity" will not be called for implicit or explicit conversions
     # 2330: argument of type "type" is incompatible with parameter of type "type" (dropping qualifiers)
-    set(warnCFLAGS "${warnCFLAGS} -wd1418 -wd191 -wd2196 -wd3179 -ww597 -ww2330")
+    # 11003: no IR in object file xxxx; was the source file compiled with xxxx
+    set(warnCFLAGS "${warnCFLAGS} -diag-disable=1418,191,2196,3179 -diag-warning=2330,597,11003")
   endif()
 
   set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
