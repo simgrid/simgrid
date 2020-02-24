@@ -58,12 +58,7 @@ set(LIBSIMGRID_JAVA_SO  ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED
 
 ## Here is how to build simgrid.jar
 ##
-if(CMAKE_VERSION VERSION_LESS "2.8.12")
-  set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
-  add_jar(simgrid-java_jar ${JMSG_JAVA_SRC})
-else()
-  add_jar(simgrid-java_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
-endif()
+add_jar(simgrid-java_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
 
 if(enable_lib_in_jar)
   add_dependencies(simgrid-java_jar simgrid-java)
