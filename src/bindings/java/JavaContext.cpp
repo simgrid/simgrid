@@ -65,7 +65,7 @@ void JavaContext::stop_hook()
 {
     JNIEnv* env = this->jenv_;
     env->DeleteGlobalRef(this->jprocess_);
-    XBT_ATTRIB_UNUSED jint error = __java_vm->DetachCurrentThread();
+    jint error = __java_vm->DetachCurrentThread();
     if (error != JNI_OK) {
       /* This is probably a Java thread, ie an actor not created from the XML (and thus from the C++),
        * but from Java with something like new Process().start().

@@ -350,7 +350,7 @@ void ETag_surfxml_include()
 
 /* Stag and Etag parse functions */
 void STag_surfxml_platform() {
-  XBT_ATTRIB_UNUSED double version = surf_parse_get_double(A_surfxml_platform_version);
+  double version = surf_parse_get_double(A_surfxml_platform_version);
 
   surf_parse_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
       "You're using an ancient XML file.\n"

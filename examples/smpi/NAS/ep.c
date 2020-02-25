@@ -15,7 +15,6 @@ int nprocs;
 int main(int argc, char **argv) {
   double dum[3] = {1.,1.,1.};
   double x1, x2, sx, sy, tm, an, gc;
-  XBT_ATTRIB_UNUSED double tt;
   double Mops;
   double epsilon=1.0E-8, a = 1220703125., s=271828183.;
   double t1, t2, t3, t4;
@@ -118,9 +117,7 @@ int main(int argc, char **argv) {
     t2 = randlc(&t1, &t1);
   }
   an = t1;
-  tt = s;
   gc = 0;
-  tt = 0.;
   sx = 0.;
   sy = 0.;
   for (i=0; i < nq ; i++) {

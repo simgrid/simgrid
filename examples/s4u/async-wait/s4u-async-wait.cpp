@@ -56,7 +56,7 @@ static void sender(int argc, char** argv)
 }
 
 /* Receiver actor expects 1 argument: its ID */
-static void receiver(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char** argv)
+static void receiver(int, char**)
 {
   double sleep_start_time = 1.0;
   double sleep_test_time  = 0.1;
