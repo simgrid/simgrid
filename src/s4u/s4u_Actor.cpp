@@ -799,6 +799,23 @@ sg_exec_t sg_actor_exec_init(double computation_amount)
   return exec.get();
 }
 
+sg_exec_t sg_actor_parallel_exec_init(int host_nb, const sg_host_t* host_list, double* flops_amount,
+                                      double* bytes_amount)
+{
+  std::vector<simgrid::s4u::Host*> hosts(host_list, host_list + host_nb);
+  std::vector<double> flops;
+  std::vector<double> bytes;
+  if (flops_amount != nullptr)
+    flops = std::vector<double>(flops_amount, flops_amount + host_nb);
+  if (bytes_amount != nullptr)
+    bytes = std::vector<double>(bytes_amount, bytes_amount + host_nb * host_nb);
+
+  simgrid::s4u::ExecPtr exec = simgrid::s4u::ExecPtr(new simgrid::s4u::Exec());
+  exec->set_flops_amounts(flops)->set_bytes_amounts(bytes)->set_hosts(hosts);
+  exec->add_ref();
+  return exec.get();
+}
+
 sg_exec_t sg_actor_exec_async(double computation_amount)
 {
   simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_async(computation_amount);

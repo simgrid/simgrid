@@ -73,6 +73,8 @@ XBT_PUBLIC void* sg_actor_data(const_sg_actor_t actor);
 XBT_PUBLIC void sg_actor_data_set(sg_actor_t actor, void* userdata);
 
 XBT_PUBLIC sg_exec_t sg_actor_exec_init(double computation_amount);
+XBT_PUBLIC sg_exec_t sg_actor_parallel_exec_init(int host_nb, const sg_host_t* host_list, double* flops_amount,
+                                                 double* bytes_amount);
 XBT_PUBLIC sg_exec_t sg_actor_exec_async(double computation_amount);
 SG_END_DECL
 
