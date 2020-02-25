@@ -10,7 +10,7 @@ if(APPLE)
 
   # add the current location of libsimgrid-java.dynlib as a location for libsimgrid.dynlib
   # (useful when unpacking the native libraries from the jarfile)
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}")
 endif()
 
 ###############################
@@ -34,7 +34,7 @@ if(enable_model-checking)
   set_property(TARGET simgrid-mc
                APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
   install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
-    RUNTIME DESTINATION bin/)
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
   add_dependencies(tests simgrid-mc)
 endif()
 
@@ -109,7 +109,7 @@ if(enable_smpi)
   set_target_properties(smpimain
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpimain # install that binary without breaking the rpath on Mac
-    RUNTIME DESTINATION lib/simgrid)
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/simgrid)
   add_dependencies(tests smpimain)
 
   add_executable(smpireplaymain src/smpi/smpi_replay_main.cpp)
@@ -118,7 +118,7 @@ if(enable_smpi)
   set_target_properties(smpireplaymain
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/simgrid)
   install(TARGETS smpireplaymain # install that binary without breaking the rpath on Mac
-    RUNTIME DESTINATION lib/simgrid)
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/simgrid)
   add_dependencies(tests smpireplaymain)
 
   if(SMPI_FORTRAN)

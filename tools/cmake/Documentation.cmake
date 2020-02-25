@@ -131,7 +131,7 @@ if(enable_documentation)
     ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpif90.1
     ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpiff.1
     ${CMAKE_HOME_DIRECTORY}/docs/manpages/smpirun.1
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1
+    DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
   )
 
 else(enable_documentation)

@@ -3,7 +3,7 @@
 #########################################
 
 # doc
-install(DIRECTORY "${CMAKE_BINARY_DIR}/doc/html/" DESTINATION doc/simgrid/html/ OPTIONAL)
+install(DIRECTORY "${CMAKE_BINARY_DIR}/doc/html/" DESTINATION ${CMAKE_INSTALL_DOCDIR}/html/ OPTIONAL)
 
 # binaries
 if(enable_smpi)
@@ -11,22 +11,22 @@ if(enable_smpi)
     ${CMAKE_BINARY_DIR}/bin/smpicc
     ${CMAKE_BINARY_DIR}/bin/smpicxx
     ${CMAKE_BINARY_DIR}/bin/smpirun
-    DESTINATION bin/)
+    DESTINATION ${CMAKE_INSTALL_BINDIR}/)
   if(SMPI_FORTRAN)
     install(PROGRAMS
       ${CMAKE_BINARY_DIR}/bin/smpif90
       ${CMAKE_BINARY_DIR}/bin/smpiff
-      DESTINATION bin/)
+      DESTINATION ${CMAKE_INSTALL_BINDIR}/)
     install(PROGRAMS
       ${CMAKE_BINARY_DIR}/include/smpi/mpi.mod
-      DESTINATION include/smpi/)
+      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/smpi/)
   endif()
 endif()
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION bin/)
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh DESTINATION ${CMAKE_INSTALL_BINDIR}/)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
-  DESTINATION bin/
+  DESTINATION ${CMAKE_INSTALL_BINDIR}/
   RENAME simgrid-colorizer)
 
 add_custom_target(simgrid-colorizer ALL
@@ -34,7 +34,7 @@ add_custom_target(simgrid-colorizer ALL
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl ${CMAKE_BINARY_DIR}/bin/colorize)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl
-  DESTINATION bin/
+  DESTINATION ${CMAKE_INSTALL_BINDIR}/
   RENAME simgrid_update_xml)
 
 add_custom_target(simgrid_update_xml ALL
@@ -42,7 +42,7 @@ add_custom_target(simgrid_update_xml ALL
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/simgrid_convert_TI_traces.py
-  DESTINATION bin/
+  DESTINATION ${CMAKE_INSTALL_BINDIR}/
   RENAME simgrid_convert_TI_traces)
 
 add_custom_target(simgrid_convert_TI_traces ALL
@@ -50,11 +50,11 @@ add_custom_target(simgrid_convert_TI_traces ALL
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/simgrid_convert_TI_traces.py ${CMAKE_BINARY_DIR}/bin/simgrid_convert_TI_traces)
 
 # libraries
-install(TARGETS simgrid DESTINATION lib/)
+install(TARGETS simgrid DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
 
 if(enable_java)
   set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_JAR}")
-  install(TARGETS simgrid-java   DESTINATION lib/)
+  install(TARGETS simgrid-java DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
   install(FILES ${SIMGRID_JAR_TO_INSTALL}
       DESTINATION java/
       RENAME simgrid.jar)
@@ -63,21 +63,25 @@ endif()
 # pkg-config files
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/pkg-config/simgrid.pc.in"
   "${PROJECT_BINARY_DIR}/simgrid.pc" @ONLY)
-install(FILES "${PROJECT_BINARY_DIR}/simgrid.pc" DESTINATION lib/pkgconfig/)
+install(FILES "${PROJECT_BINARY_DIR}/simgrid.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/)
 
 # include files
-foreach(file ${headers_to_install}  ${generated_headers_to_install})
+foreach(file ${headers_to_install} ${generated_headers_to_install})
   get_filename_component(location ${file} PATH)
   string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" location "${location}")
-  install(FILES ${file} DESTINATION ${location})
+  string(REGEX REPLACE "^include/" "" location "${location}")
+  string(REGEX REPLACE "^include$" "" location "${location}")
+  # message("installing '${file}' into '${CMAKE_INSTALL_INCLUDEDIR}/${location}'")
+  install(FILES ${file} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${location})
 endforeach()
 
 # example files
 foreach(file ${examples_to_install})
   string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
+  # message("DOC installing 'examples/${file}' into '${CMAKE_INSTALL_DOCDIR}/examples/${location}'")
   install(FILES "examples/${file}"
-    DESTINATION doc/simgrid/examples/${location})
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples/${location})
 endforeach(file ${examples_to_install})
 
 ###########################################
@@ -202,7 +206,7 @@ foreach(file ${source_to_pack})
   #message(${file})
   # This damn prefix is still set somewhere (seems to be in subdirs)
   string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" file "${file}")
-  
+
   # Prepare the list of files to include in the python sdist, one per line
   set(PYTHON_SOURCES "${PYTHON_SOURCES}\ninclude ${file}")
 

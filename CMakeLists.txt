@@ -26,7 +26,10 @@ endif()
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
 
-project(SimGrid C CXX)
+project(simgrid C CXX)
+
+# customizable installation directories
+include(GNUInstallDirs)
 
 ## Save compiler flags preset with environment variables CFLAGS or CXXFLAGS;
 ## they will used within smpicc, smpicxx.
@@ -550,10 +553,10 @@ file(READ ${CMAKE_HOME_DIRECTORY}/src/smpi/smpitools.sh SMPITOOLS_SH) # Definiti
 
 ### SMPI script used when simgrid is installed
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-set(includeflag "-I${CMAKE_INSTALL_PREFIX}/include -I${CMAKE_INSTALL_PREFIX}/include/smpi")
-set(includedir "${CMAKE_INSTALL_PREFIX}/include")
-set(libdir ${exec_prefix}/lib)
-set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${CMAKE_INSTALL_PREFIX}/lib")
+set(includeflag "-I${CMAKE_INSTALL_INCLUDEDIR} -I${CMAKE_INSTALL_INCLUDEDIR}/smpi")
+set(includedir "${CMAKE_INSTALL_INCLUDEDIR}")
+set(libdir "${CMAKE_INSTALL_LIBDIR}")
+set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${CMAKE_INSTALL_LIBDIR}")
 if(NS3_LIBRARY_PATH)
   set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${NS3_LIBRARY_PATH}")
 endif()
