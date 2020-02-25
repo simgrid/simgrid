@@ -7,10 +7,10 @@ $ ${bindir:=.}/s4u-async-wait ${platfdir}/small_platform_fatpipe.xml s4u-async-w
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 1.000000 , sleep_test_time : 0.100000
 > [  1.000000] (2:receiver@Ruby) Wait for my first message
 > [  5.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'
-> [  6.000000] (2:receiver@Ruby) I got a 'Message 0'.
 > [  6.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver'
-> [  7.000000] (2:receiver@Ruby) I got a 'Message 1'.
+> [  6.000000] (2:receiver@Ruby) I got a 'Message 0'.
 > [  7.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver'
+> [  7.000000] (2:receiver@Ruby) I got a 'Message 1'.
 > [  8.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver'
 > [  8.000000] (2:receiver@Ruby) I got a 'Message 2'.
 > [  8.100000] (2:receiver@Ruby) I got a 'finalize'.

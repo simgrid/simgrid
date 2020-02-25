@@ -4,10 +4,10 @@ p Tracing user variables for hosts
 $ ${bindir:=.}/trace-host-user-variables --cfg=tracing:yes --cfg=tracing/platform:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
-> [0.004078] [msg_test/INFO] Declared host variables:
-> [0.004078] [msg_test/INFO] HDD_capacity
-> [0.004078] [msg_test/INFO] HDD_utilization
-> [0.004078] [msg_test/INFO] Declared link variables:
+> [0.004124] [msg_test/INFO] Declared host variables:
+> [0.004124] [msg_test/INFO] HDD_capacity
+> [0.004124] [msg_test/INFO] HDD_utilization
+> [0.004124] [msg_test/INFO] Declared link variables:
 
 $ rm -f simgrid.trace
 
