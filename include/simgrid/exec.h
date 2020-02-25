@@ -21,4 +21,4 @@ XBT_PUBLIC void sg_exec_wait_for(sg_exec_t exec, double timeout);
 
 SG_END_DECL
 
-#endif /* INCLUDE_SIMGRID_COMM_H_ */
+#endif /* INCLUDE_SIMGRID_EXEC_H_ */

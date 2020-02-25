@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/exec.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
@@ -234,6 +235,11 @@ void sg_exec_wait(sg_exec_t exec)
 
 void sg_exec_wait_for(sg_exec_t exec, double timeout)
 {
-  exec->wait_for(timeout);
+  try {
+    exec->wait_for(timeout);
+  } catch (const simgrid::TimeoutException&) {
+    // FIXME: add better exception handling
+    XBT_DEBUG("Exec reached its timeout");
+  }
   exec->unref();
 }
