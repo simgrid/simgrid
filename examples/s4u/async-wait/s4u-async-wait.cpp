@@ -56,7 +56,7 @@ static void sender(int argc, char** argv)
 }
 
 /* Receiver actor expects 1 argument: its ID */
-static void receiver(int argc, char** argv)
+static void receiver(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char** argv)
 {
   double sleep_start_time = 1.0;
   double sleep_test_time  = 0.1;
@@ -79,7 +79,7 @@ static void receiver(int argc, char** argv)
       comm->wait();
     }
 
-    std::string* received = static_cast<std::string*>(payload);
+    const std::string* received = static_cast<std::string*>(payload);
     XBT_INFO("I got a '%s'.", received->c_str());
     if (*received == "finalize")
       cont = false; // If it's a finalize message, we're done.

@@ -52,7 +52,6 @@ static void worker()
 
 int main(int argc, char* argv[])
 {
-
   simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s small_platform.xml\n", argv[0], argv[0]);
 
