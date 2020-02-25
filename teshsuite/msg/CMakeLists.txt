@@ -2,7 +2,7 @@
 foreach(x cloud-two-tasks
           get_sender
           process-lifetime
-          energy-ptask platform-properties
+          platform-properties
           io-file
           task-priority
           trace_integration)
@@ -72,7 +72,6 @@ if(enable_msg)
     get_sender
     task_destroy_cancel task_listen_from task_progress 
     process-lifetime
-    energy-ptask
     io-file
     platform-properties
     task-priority

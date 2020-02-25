@@ -63,6 +63,8 @@ include examples/c/cloud-migration/cloud-migration.c
 include examples/c/cloud-migration/cloud-migration.tesh
 include examples/c/cloud-simple/cloud-simple.c
 include examples/c/cloud-simple/cloud-simple.tesh
+include examples/c/energy-exec-ptask/energy-exec-ptask.c
+include examples/c/energy-exec-ptask/energy-exec-ptask.tesh
 include examples/c/energy-exec/energy-exec.c
 include examples/c/energy-exec/energy-exec.tesh
 include examples/c/energy-vm/energy-vm.c
@@ -649,8 +651,6 @@ include teshsuite/msg/app-bittorrent/tracker.c
 include teshsuite/msg/app-bittorrent/tracker.h
 include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.c
 include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.tesh
-include teshsuite/msg/energy-ptask/energy-ptask.c
-include teshsuite/msg/energy-ptask/energy-ptask.tesh
 include teshsuite/msg/get_sender/get_sender.c
 include teshsuite/msg/get_sender/get_sender.tesh
 include teshsuite/msg/host_on_off_processes/host_on_off_processes.cpp
