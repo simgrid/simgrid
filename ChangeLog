@@ -2,6 +2,21 @@
 
 SimGrid (3.25.1) UNRELEASED (target: March 20 2020 or v3.26 on 3/26/20)
 
+Important user-visible changes:
+- Surf precision default value is now 1e-9, instead of 1e-5. This was changed as
+ several users had difficult to understand issues when using high bandwidth or 
+ small latency events. The new value was already the default for SMPI and 
+ should not cause too much performance hit. It can change some simulation 
+ timings if simulation was skipping a lot of small events (which was actually 
+ an issue of said simulation). The value can still be changed back using
+ --cfg=surf/precision:1e-5
+
+General:
+- LTO is now enabled for Intel/clang compilers.
+- LTO behavior on GCC can be parametrized using LTO_EXTRA_FLAG in cmake. 
+  Setting it to "auto" will use all available cores, while setting it to n will 
+  use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
+
 C interface:
  - Many MSG tests were converted to the new S4U's interface in C, that
    was extended for that.
