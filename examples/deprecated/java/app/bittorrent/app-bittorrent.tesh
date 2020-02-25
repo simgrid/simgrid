@@ -5,20 +5,20 @@
 
 $ ${javacmd:=java} -classpath ${classpath:=.} app/bittorrent/Main ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/app/bittorrent/bittorrent.xml
 > [0.000000] [java/INFO] Using regular java threads.
-> [5000.046836] [java/INFO] MSG_main finished; Terminating the simulation...
+> [5000.039030] [java/INFO] MSG_main finished; Terminating the simulation...
 > [node-0.simgrid.org:app.bittorrent.Tracker:(1) 0.000000] [java/INFO] Tracker launched.
 > [node-0.simgrid.org:app.bittorrent.Tracker:(1) 3000.000000] [java/INFO] Tracker is leaving
 > [node-1.simgrid.org:app.bittorrent.Peer:(2) 0.000000] [java/INFO] Hi, I'm joining the network with id 2
 > [node-1.simgrid.org:app.bittorrent.Peer:(2) 5000.007806] [java/INFO] Here is my current status: 1111111111
 > [node-2.simgrid.org:app.bittorrent.Peer:(3) 0.000000] [java/INFO] Hi, I'm joining the network with id 3
-> [node-2.simgrid.org:app.bittorrent.Peer:(3) 5000.023418] [java/INFO] Here is my current status: 1111111111
+> [node-2.simgrid.org:app.bittorrent.Peer:(3) 5000.031224] [java/INFO] Here is my current status: 1111111111
 > [node-3.simgrid.org:app.bittorrent.Peer:(4) 0.000000] [java/INFO] Hi, I'm joining the network with id 4
-> [node-3.simgrid.org:app.bittorrent.Peer:(4) 5000.023418] [java/INFO] Here is my current status: 1111111111
+> [node-3.simgrid.org:app.bittorrent.Peer:(4) 5000.039030] [java/INFO] Here is my current status: 1111111111
 > [node-4.simgrid.org:app.bittorrent.Peer:(5) 0.000000] [java/INFO] Hi, I'm joining the network with id 5
 > [node-4.simgrid.org:app.bittorrent.Peer:(5) 5000.007806] [java/INFO] Here is my current status: 1111111111
 > [node-5.simgrid.org:app.bittorrent.Peer:(6) 0.000000] [java/INFO] Hi, I'm joining the network with id 6
 > [node-5.simgrid.org:app.bittorrent.Peer:(6) 5000.023418] [java/INFO] Here is my current status: 1111111111
 > [node-6.simgrid.org:app.bittorrent.Peer:(7) 0.000000] [java/INFO] Hi, I'm joining the network with id 7
-> [node-6.simgrid.org:app.bittorrent.Peer:(7) 5000.046836] [java/INFO] Here is my current status: 1111111111
+> [node-6.simgrid.org:app.bittorrent.Peer:(7) 5000.039030] [java/INFO] Here is my current status: 1111111111
 > [node-7.simgrid.org:app.bittorrent.Peer:(8) 0.000000] [java/INFO] Hi, I'm joining the network with id 8
 > [node-7.simgrid.org:app.bittorrent.Peer:(8) 5000.031224] [java/INFO] Here is my current status: 1111111111
