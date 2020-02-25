@@ -25,7 +25,7 @@ static void worker(int argc, char* argv[])
            argv[2]);
 
   sg_actor_set_host(sg_actor_self(), first);
-  sg_actor_self_execute(flopAmount);
+  sg_actor_execute(flopAmount);
 
   XBT_INFO("I wake up on %s. Let's suspend a bit", sg_host_get_name(sg_host_self()));
 

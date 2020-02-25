@@ -29,7 +29,7 @@ static void lazy_guy(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   XBT_INFO("Waking up once for all!");
 
   XBT_INFO("Ok, let's do some work, then (for 10 sec on Boivin).");
-  sg_actor_self_execute(980.95e6);
+  sg_actor_execute(980.95e6);
 
   XBT_INFO("Mmmh, I'm done now. Goodbye.");
 }

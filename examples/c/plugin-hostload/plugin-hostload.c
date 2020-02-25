@@ -34,7 +34,7 @@ static void execute_load_test(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char
   // Run a task
   start = simgrid_get_clock();
   XBT_INFO("Run a task of %.0E flops at current speed of %.0E flop/s", 200e6, sg_host_speed(host));
-  sg_actor_self_execute(200e6);
+  sg_actor_execute(200e6);
 
   XBT_INFO("Done working on my task; this took %.2fs; current peak speed: %.0E flop/s (when I started the computation, "
            "the speed was set to %.0E flop/s); number of flops computed so "
@@ -54,7 +54,7 @@ static void execute_load_test(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char
   // Run a second task
   start = simgrid_get_clock();
   XBT_INFO("Run a task of %.0E flops", 100e6);
-  sg_actor_self_execute(100e6);
+  sg_actor_execute(100e6);
   XBT_INFO("Done working on my task; this took %.2fs; current peak speed: %.0E flop/s; number of flops computed so "
            "far: %.2E",
            simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_computed_flops(host));

@@ -739,9 +739,27 @@ sg_actor_t sg_actor_self()
   return simgrid::s4u::Actor::self();
 }
 
-void sg_actor_self_execute(double flops)
+void sg_actor_self_execute(double flops) // XBT_DEPRECATED_v330
 {
   simgrid::s4u::this_actor::execute(flops);
+}
+
+void sg_actor_execute(double flops)
+{
+  simgrid::s4u::this_actor::execute(flops);
+}
+
+void sg_actor_parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount)
+{
+  std::vector<simgrid::s4u::Host*> hosts(host_list, host_list + host_nb);
+  std::vector<double> flops;
+  std::vector<double> bytes;
+  if (flops_amount != nullptr)
+    flops = std::vector<double>(flops_amount, flops_amount + host_nb);
+  if (bytes_amount != nullptr)
+    bytes = std::vector<double>(bytes_amount, bytes_amount + host_nb * host_nb);
+
+  simgrid::s4u::this_actor::parallel_execute(hosts, flops, bytes);
 }
 
 /** @brief Take an extra reference on that actor to prevent it to be garbage-collected */

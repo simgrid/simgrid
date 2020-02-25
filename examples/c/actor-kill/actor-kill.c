@@ -25,7 +25,7 @@ static void victimA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv
   XBT_INFO("Suspending myself");
   sg_actor_suspend(sg_actor_self()); /* - First suspend itself */
   XBT_INFO("OK, OK. Let's work");    /* - Then is resumed and start to execute a task */
-  sg_actor_self_execute(1e9);
+  sg_actor_execute(1e9);
   XBT_INFO("Bye!"); /* - But will never reach the end of it */
 }
 

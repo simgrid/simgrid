@@ -23,7 +23,7 @@ static void dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   double current_peak = sg_host_speed(host);
   XBT_INFO("Current power peak=%f", current_peak);
 
-  sg_actor_self_execute(100E6);
+  sg_actor_execute(100E6);
 
   double task_time = simgrid_get_clock();
   XBT_INFO("Task1 simulation time: %e", task_time);
@@ -41,7 +41,7 @@ static void dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   current_peak = sg_host_speed(host);
   XBT_INFO("Current power peak=%f", current_peak);
 
-  sg_actor_self_execute(100E6);
+  sg_actor_execute(100E6);
 
   task_time = simgrid_get_clock() - task_time;
   XBT_INFO("Task2 simulation time: %e", task_time);

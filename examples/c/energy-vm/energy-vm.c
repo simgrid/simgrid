@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(energy_vm, "Messages of this example");
 
 static void worker_func(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
-  sg_actor_self_execute(300E6);
+  sg_actor_execute(300E6);
   XBT_INFO("This worker is done.");
 }
 

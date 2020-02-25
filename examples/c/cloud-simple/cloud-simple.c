@@ -21,7 +21,7 @@ static void computation_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* 
   const char* host_name = sg_host_get_name(sg_host_self());
 
   double clock_sta = simgrid_get_clock();
-  sg_actor_self_execute(1000000);
+  sg_actor_execute(1000000);
   double clock_end = simgrid_get_clock();
 
   XBT_INFO("%s:%s task executed %g", host_name, pr_name, clock_end - clock_sta);

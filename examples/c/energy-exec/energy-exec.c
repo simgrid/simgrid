@@ -31,7 +31,7 @@ static void dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   // Run a task
   start = simgrid_get_clock();
   XBT_INFO("Run a task of %.0E flops", 100E6);
-  sg_actor_self_execute(100E6);
+  sg_actor_execute(100E6);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW"
            " depending on load; Energy dissipated=%.0f J",
            simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_wattmin_at(host, sg_host_get_pstate(host)),
@@ -46,7 +46,7 @@ static void dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   // Run a second task
   start = simgrid_get_clock();
   XBT_INFO("Run a task of %.0E flops", 100E6);
-  sg_actor_self_execute(100E6);
+  sg_actor_execute(100E6);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
            simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_consumed_energy(host));
 

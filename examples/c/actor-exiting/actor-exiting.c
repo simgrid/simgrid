@@ -36,7 +36,7 @@ static void actor_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[]
   // Register a lambda function to be executed once it stops
   sg_actor_on_exit(&my_on_exit, NULL);
 
-  sg_actor_self_execute(1e9);
+  sg_actor_execute(1e9);
 }
 
 int main(int argc, char* argv[])

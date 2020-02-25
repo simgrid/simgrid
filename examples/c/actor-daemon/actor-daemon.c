@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(actor_daemon, "Messages specific for this example")
 static void worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Let's do some work (for 10 sec on Boivin).");
-  sg_actor_self_execute(980.95e6);
+  sg_actor_execute(980.95e6);
   XBT_INFO("I'm done now. I leave even if it makes the daemon die.");
 }
 
