@@ -21,6 +21,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   endforeach()
 
   add_executable(c2f2cwinf90 EXCLUDE_FROM_ALL c2f2cwinf90.f90 c2f902cwin.c)
+  set_property(TARGET c2f2cwinf90 PROPERTY INTERPROCEDURAL_OPTIMIZATION FALSE)
   add_dependencies(tests c2f2cwinf90)
   target_link_libraries(c2f2cwinf90 simgrid mtest_f90)
 endif()
