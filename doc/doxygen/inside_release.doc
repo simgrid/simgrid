@@ -86,9 +86,13 @@ Please apply the following checklist before releasing.
   - edit debian/control: s/simgrid3.XX/simgrid3.XY/ 
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Update the Docker images (after pushing to the git)
-  - cd tools/docker && make stable tuto-s4u tuto-smpi push
-  - Update the simgrid-template-s4u repository to test against this new release once the docker is uploaded
-    jed ~/Code/simgrid-template-s4u/.gitlab-ci.yml
+  - cd tools/docker && make stable.
+    The argument passing is somehow failing, so you'll need to copy/paste + execute manually this line:
+      docker build -f Dockerfile.stable --build-arg DLURL=?????  -t simgrid/stable:latest ...........
+  - Upload the stable docker image once built
+  - Once the new image is uploaded, trigger a rebuild of the images tuto-{s4u,smpi} on https://hub.docker.com
+    They use the dockerfiles in simgrid:tools/docker, and are built upon the simgrid/stable image
+  - Once the new images are built, trigger a rebuild of the simgrid-template-{s4u,smpi} repositories on framagit
 
 @subsection inside_release_c_postrelease Post-release cleanups
 
