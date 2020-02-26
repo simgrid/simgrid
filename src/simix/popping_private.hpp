@@ -108,11 +108,11 @@ SIMIX_MARSHAL(float, d)
 SIMIX_MARSHAL(double, d)
 SIMIX_MARSHAL(FPtr, fp)
 
-inline void unmarshal(type<void>, u_smx_scalar const& simcall)
+inline void unmarshal(type<void>, u_smx_scalar const& /*simcall*/)
 {
   /* Nothing to do for void data */
 }
-inline void unmarshal_raw(type<void>, u_smx_scalar const& simcall)
+inline void unmarshal_raw(type<void>, u_smx_scalar const& /*simcall*/)
 {
   /* Nothing to do for void data */
 }
@@ -177,7 +177,7 @@ template <class T> inline typename std::remove_reference<T>::type unmarshal_raw(
   return unmarshal(type<T>(), simcall);
 }
 
-template <std::size_t I> inline void marshal_args(smx_simcall_t simcall)
+template <std::size_t I> inline void marshal_args(smx_simcall_t /*simcall*/)
 {
   /* Nothing to do when no args */
 }
