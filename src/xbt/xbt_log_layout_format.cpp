@@ -75,7 +75,8 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
   int precision = -1;
   int length = -1;
 
-  for (char* q = static_cast<char*>(l->data) ; *q != '\0' ; q++) {
+  char* q = static_cast<char*>(l->data);
+  while (*q != '\0') {
     if (*q == '%') {
       q++;
       do {
@@ -169,6 +170,7 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
       *p = *q;
       check_overflow(1);
     }
+    q++;
   }
   *p = '\0';
 

@@ -50,11 +50,10 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     for (int j = 0; j < nb_cnst; j++)
       used[j] = 0;
     for (int j = 0; j < nb_elem; j++) {
-      int k = simgrid::xbt::random::uniform_int(0, nb_cnst - 1);
-      if (used[k]>=concurrency_share) {
-        j--;
-        continue;
-      }
+      int k;
+      do {
+        k = simgrid::xbt::random::uniform_int(0, nb_cnst - 1);
+      } while (used[k] >= concurrency_share);
       Sys->expand(cnst[k], var[i], simgrid::xbt::random::uniform_real(0.0, 1.5));
       Sys->expand_add(cnst[k], var[i], simgrid::xbt::random::uniform_real(0.0, 1.5));
       used[k]++;
