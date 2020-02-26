@@ -119,8 +119,8 @@ int main(int argc, char* argv[])
 
   XBT_INFO("There are %zu hosts in the environment", totalHosts);
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
-  for (unsigned int i = 0; i < hosts.size(); i++)
-    XBT_INFO("Host '%s' runs at %.0f flops/s", hosts[i]->get_cname(), hosts[i]->get_speed());
+  for (simgrid::s4u::Host const* host : hosts)
+    XBT_INFO("Host '%s' runs at %.0f flops/s", host->get_cname(), host->get_speed());
 
   e.load_deployment(argv[2]);
   e.run();

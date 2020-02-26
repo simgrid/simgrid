@@ -34,13 +34,13 @@ int main(int argc, char* argv[])
   std::thread crashers[crasher_amount];
 
   /* spawn threads */
-  for (int i = 0; i < crasher_amount; i++) {
-    crashers[i] = std::thread(crasher_thread, i);
-  }
+  int id = 0;
+  for (std::thread& thr : crashers)
+    thr = std::thread(crasher_thread, id++);
 
   /* wait for them */
-  for (int i = 0; i < crasher_amount; i++)
-    crashers[i].join();
+  for (std::thread& thr : crashers)
+    thr.join();
 
   return 0;
 }

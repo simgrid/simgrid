@@ -512,15 +512,13 @@ static void on_host_destruction(simgrid::s4u::Host const& host)
 
 static void on_simulation_end()
 {
-  std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-
   double total_energy      = 0.0; // Total energy consumption (whole platform)
   double used_hosts_energy = 0.0; // Energy consumed by hosts that computed something
-  for (size_t i = 0; i < hosts.size(); i++) {
-    if (dynamic_cast<simgrid::s4u::VirtualMachine*>(hosts[i]) == nullptr) { // Ignore virtual machines
-      double energy      = hosts[i]->extension<HostEnergy>()->get_consumed_energy();
+  for (simgrid::s4u::Host const* host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+    if (dynamic_cast<const simgrid::s4u::VirtualMachine*>(host) == nullptr) { // Ignore virtual machines
+      double energy = host->extension<HostEnergy>()->get_consumed_energy();
       total_energy += energy;
-      if (hosts[i]->extension<HostEnergy>()->host_was_used_)
+      if (host->extension<HostEnergy>()->host_was_used_)
         used_hosts_energy += energy;
     }
   }

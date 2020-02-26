@@ -116,11 +116,11 @@ void NetworkIBModel::computeIBfactors(IBNode* root)
   double num_comm_out    = root->ActiveCommsUp.size();
   double max_penalty_out = 0.0;
   // first, compute all outbound penalties to get their max
-  for (std::vector<ActiveComm*>::iterator it = root->ActiveCommsUp.begin(); it != root->ActiveCommsUp.end(); ++it) {
+  for (ActiveComm const* comm : root->ActiveCommsUp) {
     double my_penalty_out = 1.0;
 
     if (num_comm_out != 1) {
-      if ((*it)->destination->nbActiveCommsDown > 2) // number of comms sent to the receiving node
+      if (comm->destination->nbActiveCommsDown > 2) // number of comms sent to the receiving node
         my_penalty_out = num_comm_out * Bs * ys;
       else
         my_penalty_out = num_comm_out * Bs;
@@ -129,30 +129,30 @@ void NetworkIBModel::computeIBfactors(IBNode* root)
     max_penalty_out = std::max(max_penalty_out, my_penalty_out);
   }
 
-  for (std::vector<ActiveComm*>::iterator it = root->ActiveCommsUp.begin(); it != root->ActiveCommsUp.end(); ++it) {
+  for (ActiveComm* comm : root->ActiveCommsUp) {
     // compute inbound penalty
     double my_penalty_in = 1.0;
-    int nb_comms         = (*it)->destination->nbActiveCommsDown; // total number of incoming comms
+    int nb_comms         = comm->destination->nbActiveCommsDown; // total number of incoming comms
     if (nb_comms != 1)
-      my_penalty_in = ((*it)->destination->ActiveCommsDown)[root]        // number of comm sent to dest by root node
-                      * Be * (*it)->destination->ActiveCommsDown.size(); // number of different nodes sending to dest
+      my_penalty_in = (comm->destination->ActiveCommsDown)[root]        // number of comm sent to dest by root node
+                      * Be * comm->destination->ActiveCommsDown.size(); // number of different nodes sending to dest
 
     double penalty = std::max(my_penalty_in, max_penalty_out);
 
-    double rate_before_update = (*it)->action->get_bound();
+    double rate_before_update = comm->action->get_bound();
     // save initial rate of the action
-    if ((*it)->init_rate == -1)
-      (*it)->init_rate = rate_before_update;
+    if (comm->init_rate == -1)
+      comm->init_rate = rate_before_update;
 
-    double penalized_bw = num_comm_out ? (*it)->init_rate / penalty : (*it)->init_rate;
+    double penalized_bw = num_comm_out ? comm->init_rate / penalty : comm->init_rate;
 
     if (not double_equals(penalized_bw, rate_before_update, sg_surf_precision)) {
       XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,
-                (*it)->destination->id, (*it)->action, penalized_bw, (*it)->action->get_bound(), (*it)->init_rate);
-      get_maxmin_system()->update_variable_bound((*it)->action->get_variable(), penalized_bw);
+                comm->destination->id, comm->action, penalized_bw, comm->action->get_bound(), comm->init_rate);
+      get_maxmin_system()->update_variable_bound(comm->action->get_variable(), penalized_bw);
     } else {
-      XBT_DEBUG("%d->%d action %p penalty not updated : bw %f, initial rate %f", root->id, (*it)->destination->id,
-                (*it)->action, penalized_bw, (*it)->init_rate);
+      XBT_DEBUG("%d->%d action %p penalty not updated : bw %f, initial rate %f", root->id, comm->destination->id,
+                comm->action, penalized_bw, comm->init_rate);
     }
   }
   XBT_DEBUG("Finished computing IB penalties");
@@ -164,13 +164,13 @@ void NetworkIBModel::updateIBfactors_rec(IBNode* root, std::vector<bool>& update
     XBT_DEBUG("IB - Updating rec %d", root->id);
     computeIBfactors(root);
     updatedlist[root->id] = true;
-    for (std::vector<ActiveComm*>::iterator it = root->ActiveCommsUp.begin(); it != root->ActiveCommsUp.end(); ++it) {
-      if (not updatedlist[(*it)->destination->id])
-        updateIBfactors_rec((*it)->destination, updatedlist);
+    for (ActiveComm const* comm : root->ActiveCommsUp) {
+      if (not updatedlist[comm->destination->id])
+        updateIBfactors_rec(comm->destination, updatedlist);
     }
-    for (std::map<IBNode*, int>::iterator it = root->ActiveCommsDown.begin(); it != root->ActiveCommsDown.end(); ++it) {
-      if (not updatedlist[it->first->id])
-        updateIBfactors_rec(it->first, updatedlist);
+    for (std::map<IBNode*, int>::value_type const& comm : root->ActiveCommsDown) {
+      if (not updatedlist[comm.first->id])
+        updateIBfactors_rec(comm.first, updatedlist);
     }
   }
 }
@@ -187,12 +187,12 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
       to->ActiveCommsDown[from] -= 1;
 
     to->nbActiveCommsDown--;
-    for (std::vector<ActiveComm*>::iterator it = from->ActiveCommsUp.begin(); it != from->ActiveCommsUp.end(); ++it) {
-      if ((*it)->action == action) {
-        delete *it;
-        from->ActiveCommsUp.erase(it);
-        break;
-      }
+    std::vector<ActiveComm*>::iterator it =
+        std::find_if(begin(from->ActiveCommsUp), end(from->ActiveCommsUp),
+                     [action](const ActiveComm* comm) { return comm->action == action; });
+    if (it != std::end(from->ActiveCommsUp)) {
+      delete *it;
+      from->ActiveCommsUp.erase(it);
     }
     action->unref();
   } else {

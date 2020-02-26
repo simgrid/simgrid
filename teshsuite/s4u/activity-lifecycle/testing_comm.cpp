@@ -24,8 +24,8 @@ static void test_link_off_helper(double delay)
   simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", all_hosts[1], [&start]() {
     assert_exit(true, 9);
     double milestone[5] = {0.5, 3.5, 4.5, 7.5, 9.0};
-    for (int i = 0; i < 5; i++)
-      milestone[i] += start;
+    for (double& m : milestone)
+      m += start;
     for (int i = 0; i < 4; i++) {
       simgrid::s4u::this_actor::sleep_until(milestone[i]);
       REQUIRE_NETWORK_FAILURE({
@@ -40,8 +40,8 @@ static void test_link_off_helper(double delay)
     assert_exit(true, 9);
     int data            = 42;
     double milestone[5] = {1.5, 2.5, 5.5, 6.5, 9.0};
-    for (int i = 0; i < 5; i++)
-      milestone[i] += start;
+    for (double& m : milestone)
+      m += start;
     for (int i = 0; i < 2; i++) {
       simgrid::s4u::this_actor::sleep_until(milestone[i]);
       XBT_VERB("dsend(%c)", 'A' + i);

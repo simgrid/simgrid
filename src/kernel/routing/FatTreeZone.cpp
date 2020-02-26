@@ -30,11 +30,11 @@ FatTreeZone::FatTreeZone(NetZoneImpl* father, const std::string& name, resource:
 
 FatTreeZone::~FatTreeZone()
 {
-  for (unsigned int i = 0; i < this->nodes_.size(); i++) {
-    delete this->nodes_[i];
+  for (FatTreeNode const* node : this->nodes_) {
+    delete node;
   }
-  for (unsigned int i = 0; i < this->links_.size(); i++) {
-    delete this->links_[i];
+  for (FatTreeLink const* link : this->links_) {
+    delete link;
   }
 }
 
@@ -149,8 +149,8 @@ void FatTreeZone::seal()
     msgBuffer.str("");
     msgBuffer << "Nodes are : ";
 
-    for (unsigned int i = 0; i < this->nodes_.size(); i++) {
-      msgBuffer << this->nodes_[i]->id << "(" << this->nodes_[i]->level << "," << this->nodes_[i]->position << ") ";
+    for (FatTreeNode const* node : this->nodes_) {
+      msgBuffer << node->id << "(" << node->level << "," << node->position << ") ";
     }
     XBT_DEBUG("%s", msgBuffer.str().c_str());
   }
@@ -169,8 +169,8 @@ void FatTreeZone::seal()
   if (XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
     std::stringstream msgBuffer;
     msgBuffer << "Links are : ";
-    for (unsigned int i = 0; i < this->links_.size(); i++) {
-      msgBuffer << "(" << this->links_[i]->up_node_->id << "," << this->links_[i]->down_node_->id << ") ";
+    for (FatTreeLink const* link : this->links_) {
+      msgBuffer << "(" << link->up_node_->id << "," << link->down_node_->id << ") ";
     }
     XBT_DEBUG("%s", msgBuffer.str().c_str());
   }
@@ -380,11 +380,11 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
                                                      " levels but the child count vector (the first one) contains " +
                                                      std::to_string(tmp.size()) + " levels.");
 
-  for (size_t i = 0; i < tmp.size(); i++) {
+  for (std::string const& level : tmp) {
     try {
-      this->num_children_per_node_.push_back(std::stoi(tmp[i]));
+      this->num_children_per_node_.push_back(std::stoi(level));
     } catch (const std::invalid_argument&) {
-      surf_parse_error(std::string("Invalid child count: ") + tmp[i]);
+      surf_parse_error(std::string("Invalid child count: ") + level);
     }
   }
 
@@ -393,11 +393,11 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   surf_parse_assert(tmp.size() == this->levels_, std::string("You specified ") + std::to_string(this->levels_) +
                                                      " levels but the parent count vector (the second one) contains " +
                                                      std::to_string(tmp.size()) + " levels.");
-  for (size_t i = 0; i < tmp.size(); i++) {
+  for (std::string const& parent : tmp) {
     try {
-      this->num_parents_per_node_.push_back(std::stoi(tmp[i]));
+      this->num_parents_per_node_.push_back(std::stoi(parent));
     } catch (const std::invalid_argument&) {
-      surf_parse_error(std::string("Invalid parent count: ") + tmp[i]);
+      surf_parse_error(std::string("Invalid parent count: ") + parent);
     }
   }
 
@@ -406,11 +406,11 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   surf_parse_assert(tmp.size() == this->levels_, std::string("You specified ") + std::to_string(this->levels_) +
                                                      " levels but the port count vector (the third one) contains " +
                                                      std::to_string(tmp.size()) + " levels.");
-  for (size_t i = 0; i < tmp.size(); i++) {
+  for (std::string const& port : tmp) {
     try {
-      this->num_port_lower_level_.push_back(std::stoi(tmp[i]));
+      this->num_port_lower_level_.push_back(std::stoi(port));
     } catch (const std::invalid_argument&) {
-      throw std::invalid_argument(std::string("Invalid lower level port number:") + tmp[i]);
+      throw std::invalid_argument(std::string("Invalid lower level port number:") + port);
     }
   }
   this->cluster_ = cluster;
@@ -423,16 +423,16 @@ void FatTreeZone::generate_dot_file(const std::string& filename) const
   xbt_assert(file.is_open(), "Unable to open file %s", filename.c_str());
 
   file << "graph AsClusterFatTree {\n";
-  for (unsigned int i = 0; i < this->nodes_.size(); i++) {
-    file << this->nodes_[i]->id;
-    if (this->nodes_[i]->id < 0)
+  for (FatTreeNode const* node : this->nodes_) {
+    file << node->id;
+    if (node->id < 0)
       file << " [shape=circle];\n";
     else
       file << " [shape=hexagon];\n";
   }
 
-  for (unsigned int i = 0; i < this->links_.size(); i++) {
-    file << this->links_[i]->down_node_->id << " -- " << this->links_[i]->up_node_->id << ";\n";
+  for (FatTreeLink const* link : this->links_) {
+    file << link->down_node_->id << " -- " << link->up_node_->id << ";\n";
   }
   file << "}";
   file.close();
