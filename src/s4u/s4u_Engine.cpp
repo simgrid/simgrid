@@ -302,7 +302,6 @@ size_t Engine::get_actor_count()
 std::vector<ActorPtr> Engine::get_all_actors()
 {
   std::vector<ActorPtr> actor_list;
-  actor_list.push_back(simgrid::s4u::Actor::self());
   for (auto const& kv : simix_global->process_list) {
     actor_list.push_back(kv.second->iface());
   }
