@@ -134,8 +134,8 @@ Grab the last **stable release** from `FramaGit
 
 .. code-block:: shell
 
-   tar xf SimGrid-3-XX.tar.gz
-   cd SimGrid-*
+   tar xf simgrid-3-XX.tar.gz
+   cd simgrid-*
    cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
    make
    make install

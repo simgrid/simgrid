@@ -45,17 +45,17 @@ Please apply the following checklist before releasing.
   - Do not merge into 'stable' before appveyor and jenkins are done,
     or your jarfile will not contain the code you expect for win and mac.
 
-- Download the SimGrid-doc-3.X.Y (artefact of pipeline 'pages' on framagit)
+- Download the simgrid-doc-3.X.Y (artefact of pipeline 'pages' on framagit)
   Download the tgz and jar files (artefacts of the pipeline 'stable' on framagit)
 - Push the archive files (tar.gz and jar) on gforge
 - Tag the git repository v3.XX.X and push it to framagit and ghub
 - Document the tag on framagit and ghub
-  - Upload the files SimGrid-3.XX.tar.gz, simgrid-3_XX.jar and SimGrid-doc-3_XX.zip
+  - Upload the files simgrid-3.XX.tar.gz, simgrid-3_XX.jar and simgrid-doc-3_XX.zip
   - Add a link to the version of the ChangeLog that comes with this tag.
 - Update the website
   - emacs org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
   - jed .gitlab-ci.yml
-    - Change the link to the SimGrid-doc-3_XX.zip file 
+    - Change the link to the simgrid-doc-3_XX.zip file
     - Only keep 2 versions so that people don't find older ones in google
     - Change the link to latest
   - git commit -a && git push # Check that the pipeline goes well on framagit

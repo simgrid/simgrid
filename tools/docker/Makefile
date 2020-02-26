@@ -16,7 +16,7 @@ all: build-deps unstable tuto-s4u tuto-smpi
 stable:
 	# docker build -f Dockerfile.stable --build-arg DLURL=/simgrid/simgrid/uploads/0365f13697fb26eae8c20fc234c5af0e/SimGrid-3.25.tar.gz -t simgrid/stable:latest -t simgrid/stable:v3.25 . |tee stable.log
 	export last_tag=$$(wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/-/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'); \
-	export DLURL=$$(wget https://framagit.org/simgrid/simgrid/tags/$${last_tag} 2>/dev/null -O - | grep SimGrid- | perl -pe 's/.*?<a href="(\/simgrid[^ ]*tar.gz)".*/$1/'); \
+	export DLURL=$$(wget https://framagit.org/simgrid/simgrid/tags/$${last_tag} 2>/dev/null -O - | grep simgrid- | perl -pe 's/.*?<a href="(\/simgrid[^ ]*tar.gz)".*/$1/'); \
   echo "DLURL=$$DLURL";\
 	docker build -f Dockerfile.stable \
 	         --build-arg DLURL=$${DLURL} \

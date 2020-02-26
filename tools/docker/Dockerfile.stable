@@ -9,8 +9,8 @@ RUN echo "DOWNLOAD_URL: ${DLURL}" && \
     apt-get --allow-releaseinfo-change update && apt upgrade -y && apt install -y wget && \
     mkdir /source && cd /source && \
     wget https://framagit.org/${DLURL} && \
-    tar xf SimGrid-* && rm SimGrid-*tar.gz && \
-    cd SimGrid-* && \
+    tar xf simgrid-* && rm simgrid-*tar.gz && \
+    cd simgrid-* && \
     apt install -y g++ gcc git valgrind gfortran libboost-dev libboost-all-dev cmake dpkg-dev && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j4 && \
