@@ -177,7 +177,7 @@ template <class T> inline typename std::remove_reference<T>::type unmarshal_raw(
   return unmarshal(type<T>(), simcall);
 }
 
-template <std::size_t I> inline void marshal_args(smx_simcall_t /*simcall*/)
+template <std::size_t I> inline void marshal_args(const s_smx_simcall* /*simcall*/)
 {
   /* Nothing to do when no args */
 }
