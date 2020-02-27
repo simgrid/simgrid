@@ -47,11 +47,10 @@ int _sg_cfg_init_status = 0;
 static void sg_config_cmd_line(int *argc, char **argv)
 {
   bool shall_exit = false;
-  int i;
-  int j;
   bool parse_args = true; // Stop parsing the parameters once we found '--'
 
-  for (j = i = 1; i < *argc; i++) {
+  int j = 1;
+  for (int i = j; i < *argc; i++) {
     if (not strcmp("--", argv[i])) {
       parse_args = false;
       // Remove that '--' from the arguments

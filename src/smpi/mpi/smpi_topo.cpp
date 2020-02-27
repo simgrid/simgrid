@@ -111,7 +111,7 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
 
     // that should not segfault
     int j = 0;
-    for (int i = 0 ; j < newNDims ; i++) {
+    for (int i = 0; i < oldNDims; i++) {
       if(remain_dims[i]) {
         newDims[j] =dims_[i];
         newPeriodic[j] =periodic_[i];
