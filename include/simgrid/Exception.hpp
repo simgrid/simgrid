@@ -85,6 +85,8 @@ public:
       : std::runtime_error(std::move(message)), throwpoint_(std::move(throwpoint))
   {
   }
+  Exception(const Exception&)     = default;
+  Exception(Exception&&) noexcept = default;
   ~Exception(); // DO NOT define it here -- see Exception.cpp for a rationale
 
   /** Return the information about where the exception was thrown */
@@ -106,6 +108,8 @@ public:
       : Exception(std::move(throwpoint), std::move(message))
   {
   }
+  TimeoutException(const TimeoutException&)     = default;
+  TimeoutException(TimeoutException&&) noexcept = default;
 };
 
 XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::TimeoutException") typedef TimeoutException TimeoutError;
@@ -117,6 +121,8 @@ public:
       : Exception(std::move(throwpoint), std::move(message))
   {
   }
+  HostFailureException(const HostFailureException&)     = default;
+  HostFailureException(HostFailureException&&) noexcept = default;
 };
 
 /** Exception raised when a communication fails because of the network or because of the remote host */
@@ -126,6 +132,8 @@ public:
       : Exception(std::move(throwpoint), std::move(message))
   {
   }
+  NetworkFailureException(const NetworkFailureException&)     = default;
+  NetworkFailureException(NetworkFailureException&&) noexcept = default;
 };
 
 /** Exception raised when a storage fails */
@@ -135,6 +143,8 @@ public:
       : Exception(std::move(throwpoint), std::move(message))
   {
   }
+  StorageFailureException(const StorageFailureException&)     = default;
+  StorageFailureException(StorageFailureException&&) noexcept = default;
 };
 
 /** Exception raised when a VM fails */
@@ -144,6 +154,8 @@ public:
       : Exception(std::move(throwpoint), std::move(message))
   {
   }
+  VmFailureException(const VmFailureException&)     = default;
+  VmFailureException(VmFailureException&&) noexcept = default;
 };
 
 /** Exception raised when something got canceled before completion */
@@ -153,6 +165,8 @@ public:
       : Exception(std::move(throwpoint), std::move(message))
   {
   }
+  CancelException(const CancelException&)     = default;
+  CancelException(CancelException&&) noexcept = default;
 };
 
 /** Exception raised when something is going wrong during the simulation tracing */
@@ -162,6 +176,8 @@ public:
       : Exception(std::move(throwpoint), std::move(message))
   {
   }
+  TracingError(const TracingError&)     = default;
+  TracingError(TracingError&&) noexcept = default;
 };
 
 /** Exception raised when something is going wrong during the parsing of XML files */
@@ -171,6 +187,8 @@ public:
       : Exception(XBT_THROW_POINT, xbt::string_printf("Parse error at %s:%d: %s", file.c_str(), line, msg.c_str()))
   {
   }
+  ParseError(const ParseError&)     = default;
+  ParseError(ParseError&&) noexcept = default;
 };
 
 class XBT_PUBLIC ForcefulKillException {

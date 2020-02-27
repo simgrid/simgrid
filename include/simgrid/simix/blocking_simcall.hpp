@@ -80,6 +80,8 @@ class Future {
 public:
   Future() { /* Nothing to do*/}
   explicit Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}
+  Future(Future&&) noexcept = default;
+  Future& operator=(Future&&) noexcept = default;
 
   bool valid() const { return future_.valid(); }
   T get()

@@ -283,13 +283,9 @@ public:
 
   // Move type:
   Future(Future&) = delete;
-  Future& operator=(Future&) = delete;
-  Future(Future&& that) : state_(std::move(that.state_)) {}
-  Future& operator=(Future&& that)
-  {
-    state_ = std::move(that.state_);
-    return *this;
-  }
+  Future& operator=(const Future&) = delete;
+  Future(Future&&) noexcept        = default;
+  Future& operator=(Future&&) noexcept = default;
 
   /** Whether the future is valid:.
    *
@@ -451,9 +447,9 @@ public:
   // Move type
   Promise(Promise const&) = delete;
   Promise& operator=(Promise const&) = delete;
-  Promise(Promise&& that) : state_(std::move(that.state_)) { std::swap(future_get_, that.future_get_); }
+  Promise(Promise&& that) noexcept : state_(std::move(that.state_)) { std::swap(future_get_, that.future_get_); }
 
-  Promise& operator=(Promise&& that)
+  Promise& operator=(Promise&& that) noexcept
   {
     this->state_ = std::move(that.state_);
     this->future_get_ = that.future_get_;
@@ -508,8 +504,8 @@ public:
   // Move type
   Promise(Promise const&) = delete;
   Promise& operator=(Promise const&) = delete;
-  Promise(Promise&& that) : state_(std::move(that.state_)) { std::swap(future_get_, that.future_get_); }
-  Promise& operator=(Promise&& that)
+  Promise(Promise&& that) noexcept : state_(std::move(that.state_)) { std::swap(future_get_, that.future_get_); }
+  Promise& operator=(Promise&& that) noexcept
   {
     this->state_ = std::move(that.state_);
     this->future_get_ = that.future_get_;

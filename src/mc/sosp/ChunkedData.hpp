@@ -46,7 +46,7 @@ public:
     for (std::size_t const& pageno : pagenos_)
       store_->ref_page(pageno);
   }
-  ChunkedData(ChunkedData&& that) : pagenos_(std::move(that.pagenos_))
+  ChunkedData(ChunkedData&& that) noexcept : pagenos_(std::move(that.pagenos_))
   {
     std::swap(store_, that.store_);
     that.pagenos_.clear();
@@ -62,7 +62,7 @@ public:
     }
     return *this;
   }
-  ChunkedData& operator=(ChunkedData&& that)
+  ChunkedData& operator=(ChunkedData&& that) noexcept
   {
     this->clear();
     store_      = that.store_;

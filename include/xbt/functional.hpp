@@ -162,7 +162,7 @@ public:
 
   Task(Task const&) = delete;
 
-  Task(Task&& that)
+  Task(Task&& that) noexcept
   {
     if (that.vtable_ && that.vtable_->move)
       that.vtable_->move(buffer_, that.buffer_);
@@ -172,7 +172,7 @@ public:
     that.vtable_ = nullptr;
   }
   Task& operator=(Task const& that) = delete;
-  Task& operator=(Task&& that)
+  Task& operator=(Task&& that) noexcept
   {
     this->clear();
     if (that.vtable_ && that.vtable_->move)
