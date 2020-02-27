@@ -515,7 +515,7 @@ static void on_simulation_end()
   double total_energy      = 0.0; // Total energy consumption (whole platform)
   double used_hosts_energy = 0.0; // Energy consumed by hosts that computed something
   for (simgrid::s4u::Host const* host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
-    if (dynamic_cast<const simgrid::s4u::VirtualMachine*>(host) == nullptr) { // Ignore virtual machines
+    if (host && dynamic_cast<const simgrid::s4u::VirtualMachine*>(host) == nullptr) { // Ignore virtual machines
       double energy = host->extension<HostEnergy>()->get_consumed_energy();
       total_energy += energy;
       if (host->extension<HostEnergy>()->host_was_used_)
