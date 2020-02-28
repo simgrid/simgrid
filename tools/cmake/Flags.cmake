@@ -119,11 +119,7 @@ if(enable_lto) # User wants LTO. Try if we can do that
       endif()
     else()
       include(CheckIPOSupported)
-      set(ipoLANGS C CXX)
-      if(SMPI_FORTRAN)
-        set(ipoLANGS ${ipoLANGS} Fortran)
-      endif()
-      check_ipo_supported(RESULT ipo LANGUAGES ${ipoLANGS})
+      check_ipo_supported(RESULT ipo LANGUAGES C CXX)
       if(ipo)
         set(enable_lto ON)
       endif()
@@ -152,6 +148,16 @@ if(enable_lto) # User wants LTO, and it seems usable. Go for it
     list(APPEND CMAKE_C_COMPILE_OPTIONS_IPO "-flto=${LTO_EXTRA_FLAG}")
     list(APPEND CMAKE_CXX_COMPILE_OPTIONS_IPO "-flto=${LTO_EXTRA_FLAG}")
   endif()
+
+  # Activate fat-lto-objects in case LD and gfortran differ too much.
+  # Only test with GNU as it's the only case I know (clang+gfortran+lld)
+  execute_process(COMMAND ${CMAKE_LINKER} -v OUTPUT_VARIABLE LINKER_ID ERROR_VARIABLE LINKER_ID)
+  string(REGEX MATCH "GNU" LINKER_ID "${LINKER_ID}")
+  if(${CMAKE_Fortran_COMPILER_ID} MATCHES "GNU"
+     AND NOT "${LINKER_ID}" MATCHES "GNU")
+       list(APPEND CMAKE_Fortran_COMPILE_OPTIONS_IPO "-ffat-lto-objects")
+  endif()
+
   # "Since version 4.9 gcc produces slim object files that only contain
   # the intermediate representation. In order to handle archives of
   # these objects you have to use the gcc wrappers:
