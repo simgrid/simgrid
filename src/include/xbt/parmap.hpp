@@ -96,8 +96,7 @@ private:
 
   class PosixSynchro : public Synchro {
   public:
-    explicit PosixSynchro(Parmap<T>& parmap);
-    ~PosixSynchro();
+    explicit PosixSynchro(Parmap<T>& parmap) : Synchro(parmap) {}
     void master_signal() override;
     void master_wait() override;
     void worker_signal() override;
@@ -309,14 +308,6 @@ template <typename T> void Parmap<T>::worker_main(ThreadData* data)
   /* We are destroying the parmap */
   delete context;
   delete data;
-}
-
-template <typename T> Parmap<T>::PosixSynchro::PosixSynchro(Parmap<T>& parmap) : Synchro(parmap)
-{
-}
-
-template <typename T> Parmap<T>::PosixSynchro::~PosixSynchro()
-{
 }
 
 template <typename T> void Parmap<T>::PosixSynchro::master_signal()
