@@ -110,6 +110,7 @@ public:
   }
   TimeoutException(const TimeoutException&)     = default;
   TimeoutException(TimeoutException&&) noexcept = default;
+  ~TimeoutException();
 };
 
 XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::TimeoutException") typedef TimeoutException TimeoutError;
@@ -123,6 +124,7 @@ public:
   }
   HostFailureException(const HostFailureException&)     = default;
   HostFailureException(HostFailureException&&) noexcept = default;
+  ~HostFailureException();
 };
 
 /** Exception raised when a communication fails because of the network or because of the remote host */
@@ -134,6 +136,7 @@ public:
   }
   NetworkFailureException(const NetworkFailureException&)     = default;
   NetworkFailureException(NetworkFailureException&&) noexcept = default;
+  ~NetworkFailureException();
 };
 
 /** Exception raised when a storage fails */
@@ -145,6 +148,7 @@ public:
   }
   StorageFailureException(const StorageFailureException&)     = default;
   StorageFailureException(StorageFailureException&&) noexcept = default;
+  ~StorageFailureException();
 };
 
 /** Exception raised when a VM fails */
@@ -156,6 +160,7 @@ public:
   }
   VmFailureException(const VmFailureException&)     = default;
   VmFailureException(VmFailureException&&) noexcept = default;
+  ~VmFailureException();
 };
 
 /** Exception raised when something got canceled before completion */
@@ -167,6 +172,7 @@ public:
   }
   CancelException(const CancelException&)     = default;
   CancelException(CancelException&&) noexcept = default;
+  ~CancelException();
 };
 
 /** Exception raised when something is going wrong during the simulation tracing */
@@ -178,6 +184,7 @@ public:
   }
   TracingError(const TracingError&)     = default;
   TracingError(TracingError&&) noexcept = default;
+  ~TracingError();
 };
 
 /** Exception raised when something is going wrong during the parsing of XML files */
@@ -189,6 +196,7 @@ public:
   }
   ParseError(const ParseError&)     = default;
   ParseError(ParseError&&) noexcept = default;
+  ~ParseError();
 };
 
 class XBT_PUBLIC ForcefulKillException {

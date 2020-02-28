@@ -13,8 +13,16 @@ namespace simgrid {
 // Defining it here ensures that the exceptions are defined only in libsimgrid, but not in libsimgrid-java.
 // Doing otherwise naturally breaks things (at least on freebsd with clang).
 
-Exception::~Exception()                         = default;
-ForcefulKillException::~ForcefulKillException() = default;
+Exception::~Exception()                             = default;
+TimeoutException::~TimeoutException()               = default;
+HostFailureException::~HostFailureException()       = default;
+NetworkFailureException::~NetworkFailureException() = default;
+StorageFailureException::~StorageFailureException() = default;
+VmFailureException::~VmFailureException()           = default;
+CancelException::~CancelException()                 = default;
+TracingError::~TracingError()                       = default;
+ParseError::~ParseError()                           = default;
+ForcefulKillException::~ForcefulKillException()     = default;
 
 void ForcefulKillException::do_throw()
 {
