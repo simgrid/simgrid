@@ -20,8 +20,7 @@ static int universe_size = 0;
 
 class Instance {
 public:
-  Instance(const std::string& name, int max_no_processes, MPI_Comm comm)
-      : name_(name), size_(max_no_processes), comm_world_(comm)
+  Instance(int max_no_processes, MPI_Comm comm) : size_(max_no_processes), comm_world_(comm)
   {
     MPI_Group group = new simgrid::smpi::Group(size_);
     comm_world_     = new simgrid::smpi::Comm(group, nullptr, 0, -1);
@@ -32,7 +31,6 @@ public:
     universe_size += max_no_processes;
   }
 
-  const std::string name_;
   unsigned int size_;
   unsigned int finalized_ranks_ = 0;
   MPI_Comm comm_world_;
@@ -60,7 +58,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   if (code != nullptr) // When started with smpirun, we will not execute a function
     simgrid::s4u::Engine::get_instance()->register_function(name, code);
 
-  Instance instance(std::string(name), num_processes, MPI_COMM_NULL);
+  Instance instance(num_processes, MPI_COMM_NULL);
 
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
 }
