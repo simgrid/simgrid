@@ -22,6 +22,7 @@ C interface:
    was extended for that.
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
+ - FG#41: Add sg_actor_create C interface
  - FG#43: xbt::random needs some care
  - FG#48: The Impossible Did Happen (yet again)
  - FG!24: Documentation and fix for xbt/random
