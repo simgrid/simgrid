@@ -3,19 +3,19 @@
 SimGrid (3.25.1) UNRELEASED (target: March 20 2020 or v3.26 on 3/26/20)
 
 Important user-visible changes:
-- Surf precision default value is now 1e-9, instead of 1e-5. This was changed as
- several users had difficult to understand issues when using high bandwidth or 
- small latency events. The new value was already the default for SMPI and 
- should not cause too much performance hit. It can change some simulation 
- timings if simulation was skipping a lot of small events (which was actually 
- an issue of said simulation). The value can still be changed back using
- --cfg=surf/precision:1e-5
+ - Surf precision default value is now 1e-9, instead of 1e-5. This was changed as
+   several users had difficult to understand issues when using high bandwidth or
+   small latency events. The new value was already the default for SMPI and
+   should not cause too much performance hit. It can change some simulation
+   timings if simulation was skipping a lot of small events (which was actually
+   an issue of said simulation). The value can still be changed back using
+   --cfg=surf/precision:1e-5.
 
 General:
-- LTO is now enabled for Intel/clang compilers.
-- LTO behavior on GCC can be parametrized using LTO_EXTRA_FLAG in cmake. 
-  Setting it to "auto" will use all available cores, while setting it to n will 
-  use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
+ - LTO is now enabled for Intel/clang compilers.
+ - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.
+   Setting it to "auto" will use all available cores, while setting it to n will
+   use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
 
 C interface:
  - Many MSG tests were converted to the new S4U's interface in C, that
@@ -35,76 +35,74 @@ SimGrid (3.25) February 2. 2020 (aka 02 02 2020)
 The Palindrom Day Release.
 
 Important user-visible changes:
-- Improve the Python usability (stability and documentation).
-  - A nasty synchronization bug was ironed out, see also below.
-  - Python's doc was organized as a separate tree, now integrated with C++.
-  - C bindings of S4U were not part of the doc.
-  - The C++ doc was also improved as methods are now split by theme.
-- Further deprecate MSG: you now have to pass -Denable_msg=ON to cmake.
-  - This is mandatory to use the Java bindings.
-  - OFF by default; The plan is to completely remove MSG by 2020Q4 or 2021Q1.
-- SimDAG++: Automatic dependencies on S4U activities (experimental)
-  - Some features are already implemented but not all of them
-  - Cannot block an activity until it's scheduled on a resource
-  - No heterogeneous wait_any() that would mix Exec/Comm/Io activities.
-  - See examples/s4u/{io,exec,comm}-dependent for what's already there.
-
-
+ - Improve the Python usability (stability and documentation).
+   - A nasty synchronization bug was ironed out, see also below.
+   - Python's doc was organized as a separate tree, now integrated with C++.
+   - C bindings of S4U were not part of the doc.
+   - The C++ doc was also improved as methods are now split by theme.
+ - Further deprecate MSG: you now have to pass -Denable_msg=ON to cmake.
+   - This is mandatory to use the Java bindings.
+   - OFF by default; The plan is to completely remove MSG by 2020Q4 or 2021Q1.
+ - SimDAG++: Automatic dependencies on S4U activities (experimental)
+   - Some features are already implemented but not all of them
+   - Cannot block an activity until it's scheduled on a resource
+   - No heterogeneous wait_any() that would mix Exec/Comm/Io activities.
+   - See examples/s4u/{io,exec,comm}-dependent for what's already there.
 
 General:
-- Upgrade documented Java dependency to Java 8 (earlier versions don't work).
-- Drop support for Viva/Triva (old visualization tools), hence removed
-  TRACE_get_node_types() and TRACE_get_edge_types() functions.
+ - Upgrade documented Java dependency to Java 8 (earlier versions don't work).
+ - Drop support for Viva/Triva (old visualization tools), hence removed
+   TRACE_get_node_types() and TRACE_get_edge_types() functions.
 
 Python:
-- Require pybind11 version 2.4.
-- Greatly improve locking during context switches with Python.
-  - Declaring Python callbacks to this_actor::on_exit is now working.
-  - No more tests are failing currently, even on win32.
+ - Require pybind11 version 2.4.
+ - Greatly improve locking during context switches with Python.
+   - Declaring Python callbacks to this_actor::on_exit is now working.
+   - No more tests are failing currently, even on win32.
 
 S4U:
-- Actor: Merge signals on_migration_start/end into on_host_change
-- Actor: Rename migrate() into set_host()
-- Disk: Allow users to get the read and write nominal bandwidth values
-- Exec: Implement wait_for(timeout)
-- Io: Implement wait_for(timeout)
+ - Actor: Merge signals on_migration_start/end into on_host_change
+ - Actor: Rename migrate() into set_host()
+ - Disk: Allow users to get the read and write nominal bandwidth values
+ - Exec: Implement wait_for(timeout)
+ - Io: Implement wait_for(timeout)
 
 XML:
-- Parse errors now raise a simgrid::ParseError that you may want to catch.
+ - Parse errors now raise a simgrid::ParseError that you may want to catch.
 
 Kernel:
-- In simgrid::kernel::resource::Model, the methods next_occuring_event*() have
-  been renamed to fix a spelling error. As usual, the previous definitions are
-  kept with a deprecation warning. However, to avoid runtime errors, it is now
-  forbidden to override these deprecated methods in a derived class. Please use
-  the new names immediately if you need to override them.
+ - In simgrid::kernel::resource::Model, the methods next_occuring_event*() have
+   been renamed to fix a spelling error. As usual, the previous definitions are
+   kept with a deprecation warning. However, to avoid runtime errors, it is now
+   forbidden to override these deprecated methods in a derived class. Please use
+   the new names immediately if you need to override them.
 
 XBT:
-- Remove unused parameter 'free_ctn' for xbt_dict_set() and xbt_dict_set_ext().
-- Drop unused functions for dicts and dynars: xbt_dict_cursor_get_elm,
-  xbt_dict_get, xbt_dict_get_elm, xbt_dict_get_ext, xbt_dict_get_key,
-  xbt_dict_remove, xbt_dict_reset, xbt_dynar_compare, xbt_dynar_dump,
-  xbt_dynar_foreach_ptr, xbt_dynar_free_data, xbt_dynar_free_voidp,
-  xbt_dynar_init, xbt_dynar_insert_at_as, xbt_dynar_merge,
-  xbt_dynar_remove_n_at, xbt_dynar_replace, xbt_dynar_search, xbt_dynar_set.
-- New module: random, providing classical random numbers generators.
+ - Remove unused parameter 'free_ctn' for xbt_dict_set() and xbt_dict_set_ext().
+ - Drop unused functions for dicts and dynars: xbt_dict_cursor_get_elm,
+   xbt_dict_get, xbt_dict_get_elm, xbt_dict_get_ext, xbt_dict_get_key,
+   xbt_dict_remove, xbt_dict_reset, xbt_dynar_compare, xbt_dynar_dump,
+   xbt_dynar_foreach_ptr, xbt_dynar_free_data, xbt_dynar_free_voidp,
+   xbt_dynar_init, xbt_dynar_insert_at_as, xbt_dynar_merge,
+   xbt_dynar_remove_n_at, xbt_dynar_replace, xbt_dynar_search, xbt_dynar_set.
+ - New module: random, providing classical random numbers generators.
 
 SMPI:
-- New option : "smpi/auto-shared-malloc-thresh" which sets a value for
-  allocations' size above which they are considered "shared" by default (as if
-  they were performed through SMPI_SHARED_MALLOC macros).
-  Default = 0 = disabled feature.
-  Note : malloc, calloc and free are now overriden by smpicc/cxx by default.
-  This can cause some troubles if codes are already overriding these. If this
-  is the case, defining SMPI_NO_OVERRIDE_MALLOC in the compilation flags can
-  help, but will make this feature unusable.
-- Input check is now performed much more consistently and outputs precise
-  warnings for each error found
-- New supported calls : MPI_File_set_view, MPI_File_get_view
-- MPI I/O now only supports disks, as storage is discontinued.
-- MPI I/O allows opening files without specifying absolute path
-- Note : SMPI configuration options are now initialized by smpi_init_options()
-  call, which should be called if SMPI is not being used through smpirun.
+ - New option : "smpi/auto-shared-malloc-thresh" which sets a value for
+   allocations' size above which they are considered "shared" by default (as if
+   they were performed through SMPI_SHARED_MALLOC macros).
+   Default = 0 = disabled feature.
+   Note : malloc, calloc and free are now overriden by smpicc/cxx by default.
+   This can cause some troubles if codes are already overriding these. If this
+   is the case, defining SMPI_NO_OVERRIDE_MALLOC in the compilation flags can
+   help, but will make this feature unusable.
+ - Input check is now performed much more consistently and outputs precise
+   warnings for each error found
+ - New supported calls : MPI_File_set_view, MPI_File_get_view
+ - MPI I/O now only supports disks, as storage is discontinued.
+ - MPI I/O allows opening files without specifying absolute path
+ - Note : SMPI configuration options are now initialized by smpi_init_options()
+   call, which should be called if SMPI is not being used through smpirun.
 
 Fixed bugs (FG#.. -> framagit bugs; FG!.. -> framagit merge requests):
  - FG#9: Python bindings crashing
