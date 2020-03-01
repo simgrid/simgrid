@@ -36,7 +36,7 @@ teshsuite/simdag/platforms/simgrid.jed
 ### Libraries links 
 examples/lua/simgrid.so
 examples/lua/console/simgrid.so
-SimGrid-*.tar.gz
+[Ss]im[Gg]rid-*.tar.gz
 simgrid.jar
 ### Unit files
 src/simgrid_units_main.c
