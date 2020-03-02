@@ -72,9 +72,9 @@ always the first question we get. The more you use the framework,
 the better for us. 
 
 Make sure that your scientific publications using SimGrid actually
-cite the `right paper <https://simgrid.org/Publications.html>`_.
+cite the `right paper <https://simgrid.org/publications.html>`_.
 Also make sure that these citations are correctly listed on 
-`our list <https://simgrid.org/Usages.html>`_.
+`our list <https://simgrid.org/usages.html>`_.
 
 You can also **help us constituting an active and welcoming user
 community**. Subscribe to the mailing lists, and answer the
