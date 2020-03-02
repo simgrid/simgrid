@@ -71,6 +71,7 @@ pages:
     - public
   only:
   - master
+  - gitlab-ci
   dependencies:
   - ctest
   
