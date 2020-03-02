@@ -4,11 +4,23 @@ image: simgrid/build-deps
 # - build
 # - test
 
+ctest:
+#  stage: build
+  except:
+  - stable
+  script:
+  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - make -j$(nproc) VERBOSE=1 all tests && ctest -j$(nproc) --output-on-failure
+  artifacts:
+    paths:
+    - lib/
+    expire_in: 1 week
+
 pages:
 #  stage: test
   script:
-  - cmake -Denable_model-checking=OFF -Denable_documentation=ON -Denable_compile_optimizations=OFF -Denable_smpi=OFF -Dpython=ON -DLTO_EXTRA_FLAG="auto" .
-  - make -j$(nproc)
+#  - cmake -Denable_model-checking=OFF -Denable_documentation=ON -Denable_compile_optimizations=OFF -Denable_smpi=OFF -Dpython=ON -DLTO_EXTRA_FLAG="auto" .
+#  - make -j$(nproc)
   - pip3 install --requirement docs/requirements.txt
   - cd docs
   - LC_ALL=C.UTF-8 ./Build.sh
@@ -25,15 +37,9 @@ pages:
     - public
   only:
   - master
-
-ctest:
-#  stage: build
-  except:
-  - stable
-  script:
-  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
-  - make -j$(nproc) VERBOSE=1 all tests && ctest -j$(nproc) --output-on-failure
-
+  dependencies:
+  - ctest
+  
 pip:
   image: debian:testing
 #  stage: build
