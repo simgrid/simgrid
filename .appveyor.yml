@@ -6,7 +6,7 @@
 #                https://www.appveyor.com/docs/installed-software/
 
 image:
-  - Visual Studio 2015
+  - Visual Studio 2019
 #  - Ubuntu
 
 version: "{build}"
@@ -24,7 +24,7 @@ branches:
 
 environment:
   global:
-    BOOST_ROOT: C:\Libraries\boost_1_60_0
+    BOOST_ROOT: C:\Libraries\boost_1_71_0
 
 install:
 # Strawberry perl is the one to work with gcc; AppVeyor provides ActiveState perl, which is the one to work with visual.
@@ -34,9 +34,9 @@ install:
 # Lua
 #- choco install lua53
 # We need python v3
-- cmd: SET PATH=C:\Python37-x64;%PATH% # We need python v3
+- cmd: SET PATH=C:\Python38-x64;%PATH% # We need python v3
 # Use the mingw-w64 provided by Appveyor (must be placed before Perl in the path)
-- cmd: SET PATH=C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin\;%PATH%
+- cmd: SET PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\;%PATH%
 # Work around a bug on appveyor where the default sh is not the one I expect
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 # We need pybind11. SimGrid will pick it automatically if the subdir is here
