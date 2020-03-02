@@ -102,6 +102,11 @@ on which host each rank gets mapped of ``-trace`` to activate the
 tracing during the simulation. You can get the full list by running
 ``smpirun -help``
 
+Finally, you can pass :ref:`any valid SimGrid parameter <options>` to your
+program. In particular, you can pass ``--cfg=network/model:ns-3`` to
+switch to use :ref:`model_ns3`. These parameters should be placed after
+the name of your binary on the command line.
+
 ...............................
 Debugging your Code within SMPI
 ...............................
