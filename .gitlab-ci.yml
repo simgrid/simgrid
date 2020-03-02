@@ -1,42 +1,24 @@
 image: simgrid/build-deps
 
-#stages:
-# - build
-# - test
-
-pages:
-#  stage: test
-  script:
-  - cmake -Denable_model-checking=OFF -Denable_documentation=ON -Denable_compile_optimizations=OFF -Denable_smpi=OFF -Dpython=ON -DLTO_EXTRA_FLAG="auto" .
-  - make -j$(nproc)
-  - pip3 install --requirement docs/requirements.txt
-  - cd docs
-  - LC_ALL=C.UTF-8 ./Build.sh
-  - mv build/html ../public
-  # - The CSS contains a reference to a font or something, not something we gonna fix on our side
-  # - The javasphinx output does not exist in the git, so the "edit on FramaGit" link is broken.
-  #   I'd like to report this as a bug, but javasphinx seems abandonned upstream.
-  - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
-  # From time to time, we should check external links with the
-  # following, but it has a lot of false positive
-  # - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org --check-extern ../public
-  artifacts:
-    paths:
-    - public
-  only:
-  - master
+stages:
+ - build
+ - deploy
 
 ctest:
-#  stage: build
+  stage: build
   except:
   - stable
   script:
   - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - make -j$(nproc) VERBOSE=1 all tests && ctest -j$(nproc) --output-on-failure
+  artifacts:
+    paths:
+    - lib/
+    expire_in: 1 week
 
 pip:
   image: debian:testing
-#  stage: build
+  stage: build
   except:
   - stable
   script:
@@ -45,7 +27,7 @@ pip:
   - cd dist && tar xfz simgrid*.tar.gz && cd simgrid-*/ && python3 setup.py build
 
 release:
-#  stage: build
+  stage: build
   only:
   - stable
   script:
@@ -67,3 +49,28 @@ release:
     paths:
     - simgrid-*.jar
     - simgrid-*.tar.gz
+
+pages:
+  stage: deploy
+  script:
+#  - cmake -Denable_model-checking=OFF -Denable_documentation=ON -Denable_compile_optimizations=OFF -Denable_smpi=OFF -Dpython=ON -DLTO_EXTRA_FLAG="auto" .
+#  - make -j$(nproc)
+  - pip3 install --requirement docs/requirements.txt
+  - cd docs
+  - LC_ALL=C.UTF-8 ./Build.sh
+  - mv build/html ../public
+  # - The CSS contains a reference to a font or something, not something we gonna fix on our side
+  # - The javasphinx output does not exist in the git, so the "edit on FramaGit" link is broken.
+  #   I'd like to report this as a bug, but javasphinx seems abandonned upstream.
+  - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
+  # From time to time, we should check external links with the
+  # following, but it has a lot of false positive
+  # - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org --check-extern ../public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
+  dependencies:
+  - ctest
+  
