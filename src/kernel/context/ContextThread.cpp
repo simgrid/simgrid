@@ -24,6 +24,8 @@ namespace context {
 
 ThreadContextFactory::ThreadContextFactory() : ContextFactory()
 {
+  if (smx_context_stack_size != 8 * 1024 * 1024)
+    XBT_INFO("Stack size modifications are ignored by thread factory.");
   if (SIMIX_context_is_parallel())
     ParallelThreadContext::initialize();
 }

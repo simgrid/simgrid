@@ -49,6 +49,7 @@ UContext* UContextFactory::create_context(std::function<void()>&& code, actor::A
 UContext::UContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory)
     : SwappedContext(std::move(code), actor, factory)
 {
+  XBT_VERB("Creating a context of stack %uMb", smx_context_stack_size / 1024 / 1024);
   /* if the user provided a function for the actor then use it. If not, nothing to do for maestro. */
   if (has_code()) {
     getcontext(&this->uc_);

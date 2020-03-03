@@ -1,3 +1,5 @@
+
+! ignore .*Stack size modifications are ignored by thread factory.
 $ ${bindir:=.}/generic-simcalls --cfg=contexts/stack-size:96 ${srcdir:=.}/examples/platforms/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [test/INFO] Start
 > [0.000000] [test/INFO] kernel

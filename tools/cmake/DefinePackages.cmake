@@ -1019,6 +1019,7 @@ set(CMAKEFILES_TXT
   examples/deprecated/simdag/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
+  teshsuite/kernel/CMakeLists.txt
   teshsuite/lua/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt

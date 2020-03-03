@@ -782,10 +782,16 @@ stacks), leading to segfaults with corrupted stack traces.
 If you want to push the scalability limits of your code, you might
 want to reduce the ``contexts/stack-size`` item. Its default value is
 8192 (in KiB), while our Chord simulation works with stacks as small
-as 16 KiB, for example. This *setting is ignored* when using the
-thread factory. Instead, you should compile SimGrid and your
-application with ``-fsplit-stack``. Note that this compilation flag is
-not compatible with the model checker right now.
+as 16 KiB, for example. You can ensure that some actors have a specific
+size by simply changing the value of this configuration item before
+creating these actors. The :cpp:func:`simgrid::s4u::Engine::set_config` 
+functions are handy for that.
+
+This *setting is ignored* when using the thread factory (because there
+is no way to modify the stack size with C++ system threads). Instead,
+you should compile SimGrid and your application with
+``-fsplit-stack``. Note that this compilation flag is not compatible
+with the model checker right now.
 
 The operating system should only allocate memory for the pages of the
 stack which are actually used and you might not need to use this in
