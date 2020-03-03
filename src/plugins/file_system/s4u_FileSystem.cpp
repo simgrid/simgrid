@@ -93,49 +93,53 @@ File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::c
 
 File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpath_(fullpath)
 {
-  this->set_data(userdata);
-  // this cannot fail because we get a xbt_die if the mountpoint does not exist
-  if (not host->get_mounted_storages().empty()) {
-    local_storage_ = find_local_storage_on(host);
-  }
-  if (not host->get_disks().empty()) {
-    local_disk_ = find_local_disk_on(host);
-  }
-
-  // assign a file descriptor id to the newly opened File
-  FileDescriptorHostExt* ext = host->extension<simgrid::s4u::FileDescriptorHostExt>();
-  if (ext->file_descriptor_table == nullptr) {
-    ext->file_descriptor_table.reset(new std::vector<int>(sg_storage_max_file_descriptors));
-    std::iota(ext->file_descriptor_table->rbegin(), ext->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
-  }
-  xbt_assert(not ext->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
-  desc_id = ext->file_descriptor_table->back();
-  ext->file_descriptor_table->pop_back();
-
-  XBT_DEBUG("\tOpen file '%s'", path_.c_str());
-  std::map<std::string, sg_size_t>* content = nullptr;
-  if (local_storage_)
-    content = local_storage_->extension<FileSystemStorageExt>()->get_content();
-
-  if (local_disk_)
-    content = local_disk_->extension<FileSystemDiskExt>()->get_content();
-
-  // if file does not exist create an empty file
-  if (content) {
-    auto sz = content->find(path_);
-    if (sz != content->end()) {
-      size_ = sz->second;
-    } else {
-      size_ = 0;
-      content->insert({path_, size_});
-      XBT_DEBUG("File '%s' was not found, file created.", path_.c_str());
+  kernel::actor::simcall([this, &fullpath, host, userdata] {
+    this->set_data(userdata);
+    // this cannot fail because we get a xbt_die if the mountpoint does not exist
+    if (not host->get_mounted_storages().empty()) {
+      local_storage_ = find_local_storage_on(host);
     }
-  }
+    if (not host->get_disks().empty()) {
+      local_disk_ = find_local_disk_on(host);
+    }
+
+    // assign a file descriptor id to the newly opened File
+    FileDescriptorHostExt* ext = host->extension<simgrid::s4u::FileDescriptorHostExt>();
+    if (ext->file_descriptor_table == nullptr) {
+      ext->file_descriptor_table.reset(new std::vector<int>(sg_storage_max_file_descriptors));
+      std::iota(ext->file_descriptor_table->rbegin(), ext->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
+    }
+    xbt_assert(not ext->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
+    desc_id = ext->file_descriptor_table->back();
+    ext->file_descriptor_table->pop_back();
+
+    XBT_DEBUG("\tOpen file '%s'", path_.c_str());
+    std::map<std::string, sg_size_t>* content = nullptr;
+    if (local_storage_)
+      content = local_storage_->extension<FileSystemStorageExt>()->get_content();
+
+    if (local_disk_)
+      content = local_disk_->extension<FileSystemDiskExt>()->get_content();
+
+    // if file does not exist create an empty file
+    if (content) {
+      auto sz = content->find(path_);
+      if (sz != content->end()) {
+        size_ = sz->second;
+      } else {
+        size_ = 0;
+        content->insert({path_, size_});
+        XBT_DEBUG("File '%s' was not found, file created.", path_.c_str());
+      }
+    }
+  });
 }
 
 File::~File()
 {
-  Host::current()->extension<simgrid::s4u::FileDescriptorHostExt>()->file_descriptor_table->push_back(desc_id);
+  std::vector<int>* desc_table =
+      Host::current()->extension<simgrid::s4u::FileDescriptorHostExt>()->file_descriptor_table.get();
+  kernel::actor::simcall([this, desc_table] { desc_table->push_back(this->desc_id); });
 }
 
 void File::dump()
