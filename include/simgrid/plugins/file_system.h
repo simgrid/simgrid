@@ -171,8 +171,8 @@ public:
   }
   sg_size_t get_size() const { return size_; }
   sg_size_t get_used_size() const { return used_size_; }
-  void decr_used_size(sg_size_t size) { used_size_ -= size; }
-  void incr_used_size(sg_size_t size) { used_size_ += size; }
+  void decr_used_size(sg_size_t size);
+  void incr_used_size(sg_size_t size);
 };
 
 class XBT_PUBLIC FileSystemStorageExt {
@@ -189,8 +189,8 @@ public:
   std::map<std::string, sg_size_t>* get_content() { return content_.get(); }
   sg_size_t get_size() { return size_; }
   sg_size_t get_used_size() { return used_size_; }
-  void decr_used_size(sg_size_t size) { used_size_ -= size; }
-  void incr_used_size(sg_size_t size) { used_size_ += size; }
+  void decr_used_size(sg_size_t size);
+  void incr_used_size(sg_size_t size);
 };
 
 class XBT_PUBLIC FileDescriptorHostExt {

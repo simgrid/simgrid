@@ -551,6 +551,26 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std:
   delete fs;
   return parse_content;
 }
+
+void FileSystemStorageExt::decr_used_size(sg_size_t size)
+{
+  simgrid::kernel::actor::simcall([this, size] { used_size_ -= size; });
+}
+
+void FileSystemStorageExt::incr_used_size(sg_size_t size)
+{
+  simgrid::kernel::actor::simcall([this, size] { used_size_ += size; });
+}
+
+void FileSystemDiskExt::decr_used_size(sg_size_t size)
+{
+  simgrid::kernel::actor::simcall([this, size] { used_size_ -= size; });
+}
+
+void FileSystemDiskExt::incr_used_size(sg_size_t size)
+{
+  simgrid::kernel::actor::simcall([this, size] { used_size_ += size; });
+}
 }
 }
 
