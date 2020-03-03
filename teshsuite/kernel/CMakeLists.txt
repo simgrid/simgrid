@@ -10,6 +10,13 @@ endforeach()
 ## Add the tests.
 ## Some need to be run with all factories, some don't need tesh to run
 
-# Only with the raw contexts
+# This test should not be executed with thread contexts, as they ignore stack size changes
 ADD_TESH_FACTORIES(tesh-kern-context-stacksize "raw;boost;ucontext" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/context-stacksize --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/context-stacksize --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/kernel/context-stacksize ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/context-stacksize/context-stacksize.tesh)
+set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/context-stacksize/context-stacksize.tesh)
 
+
+
+# Pack the files in the archive
+set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
+set(tesh_files    ${tesh_files}     PARENT_SCOPE)
+set(xml_files     ${xml_files}      PARENT_SCOPE)

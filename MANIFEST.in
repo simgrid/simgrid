@@ -625,6 +625,8 @@ include teshsuite/java/semaphoregc/SemaphoreGC.java
 include teshsuite/java/semaphoregc/semaphoregc.tesh
 include teshsuite/java/sleephostoff/SleepHostOff.java
 include teshsuite/java/sleephostoff/sleephostoff.tesh
+include teshsuite/kernel/context-stacksize/context-stacksize.cpp
+include teshsuite/kernel/context-stacksize/context-stacksize.tesh
 include teshsuite/mc/dwarf-expression/dwarf-expression.cpp
 include teshsuite/mc/dwarf-expression/dwarf-expression.tesh
 include teshsuite/mc/dwarf/dwarf.cpp
@@ -2667,6 +2669,7 @@ include src/xbt/xbt_str_test.cpp
 include src/xbt/xbt_virtu.cpp
 include src/xbt_modinter.h
 include teshsuite/java/CMakeLists.txt
+include teshsuite/kernel/CMakeLists.txt
 include teshsuite/lua/CMakeLists.txt
 include teshsuite/lua/lua_platforms.tesh
 include teshsuite/mc/CMakeLists.txt
