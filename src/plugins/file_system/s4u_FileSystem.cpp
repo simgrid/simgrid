@@ -233,10 +233,12 @@ sg_size_t File::write_on_disk(sg_size_t size, bool write_inside)
     if (current_position_ > size_)
       size_ = current_position_;
   }
-  std::map<std::string, sg_size_t>* content = local_disk_->extension<FileSystemDiskExt>()->get_content();
+  kernel::actor::simcall([this] {
+    std::map<std::string, sg_size_t>* content = local_disk_->extension<FileSystemDiskExt>()->get_content();
 
-  content->erase(path_);
-  content->insert({path_, size_});
+    content->erase(path_);
+    content->insert({path_, size_});
+  });
 
   return write_size;
 }
@@ -271,10 +273,12 @@ sg_size_t File::write_on_storage(sg_size_t size, bool write_inside)
     if (current_position_ > size_)
       size_ = current_position_;
   }
-  std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
+  kernel::actor::simcall([this] {
+    std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
 
-  content->erase(path_);
-  content->insert({path_, size_});
+    content->erase(path_);
+    content->insert({path_, size_});
+  });
 
   return write_size;
 }
