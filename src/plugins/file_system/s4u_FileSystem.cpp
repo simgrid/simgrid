@@ -502,6 +502,8 @@ std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::st
   std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
 
   std::ifstream* fs = surf_ifsopen(filename);
+  xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
+             (boost::join(surf_path, ":")).c_str());
 
   std::string line;
   std::vector<std::string> tokens;
