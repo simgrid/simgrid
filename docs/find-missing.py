@@ -30,8 +30,6 @@ xml_files = [
     'build/xml/classsimgrid_1_1s4u_1_1ConditionVariable.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Disk.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Engine.xml',
-    'build/xml/classsimgrid_1_1s4u_1_1ExecPar.xml',
-    'build/xml/classsimgrid_1_1s4u_1_1ExecSeq.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Exec.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Host.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Io.xml',
