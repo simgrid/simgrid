@@ -401,6 +401,23 @@ void Engine::set_config(const std::string& str)
 {
   config::set_parse(str);
 }
+void Engine::set_config(const std::string& name, int value)
+{
+  config::set_value(name.c_str(), value);
+}
+void Engine::set_config(const std::string& name, double value)
+{
+  config::set_value(name.c_str(), value);
+}
+void Engine::set_config(const std::string& name, bool value)
+{
+  config::set_value(name.c_str(), value);
+}
+void Engine::set_config(const std::string& name, std::string value)
+{
+  config::set_value(name.c_str(), value);
+}
+
 } // namespace s4u
 } // namespace simgrid
 

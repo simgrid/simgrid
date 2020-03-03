@@ -760,14 +760,18 @@ Initialization
       .. autodoxymethod:: simgrid::s4u::Engine::is_initialized()
       .. autodoxymethod:: simgrid::s4u::Engine::shutdown()
       .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &str)
+      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, bool value)
+      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, double value)
+      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, int value)
+      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, std::string value)
 
       .. autodoxymethod:: simgrid::s4u::Engine::load_deployment(const std::string &deploy)
       .. autodoxymethod:: simgrid::s4u::Engine::load_platform(const std::string &platf)
       .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name)
       .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name, F code)
-      .. autodoxymethod:: simgrid::s4u::Engine::register_default(int(*code)(int, char **))
-      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, int(*code)(int, char **))
+      .. autodoxymethod:: simgrid::s4u::Engine::register_default(void(*code)(int, char **))
       .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, void(*code)(std::vector< std::string >))
+      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, void(*code)(int, char **))
 
    .. group-tab:: Python
    
