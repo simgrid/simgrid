@@ -67,7 +67,7 @@ with :cpp:func:`simgrid::s4u::Engine::set_config` or :cpp:func:`MSG_config`.
    int main(int argc, char *argv[]) {
      simgrid::s4u::Engine e(&argc, argv);
 
-     e->set_config("Item:Value");
+     e.set_config("Item:Value");
 
      // Rest of your code
    }
