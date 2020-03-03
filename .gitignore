@@ -261,6 +261,8 @@ examples/smpi/smpi_msg_masterslave/masterslave_mailbox_smpi
 examples/smpi/trace_call_location/smpi_trace_call_location
 examples/smpi/trace_simple/smpi_trace_simple
 examples/smpi/trace/smpi_trace
+teshsuite/kernel/context-defaults/context-defaults
+teshsuite/kernel/context-stacksize/context-stacksize
 teshsuite/java/semaphoregc/java-semaphoregc_compiled
 teshsuite/java/sleephostoff/java-sleephostoff_compiled
 teshsuite/mc/dwarf/dwarf
@@ -320,7 +322,6 @@ teshsuite/simdag/comp-only-par/comp-only-par
 teshsuite/simdag/comp-only-seq/comp-only-seq
 teshsuite/simdag/flatifier/flatifier
 teshsuite/simdag/incomplete/incomplete
-teshsuite/simix/check-defaults/check-defaults
 teshsuite/simix/generic-simcalls/generic-simcalls
 teshsuite/simix/stack-overflow/stack-overflow
 teshsuite/smpi/bug-17132/bug-17132

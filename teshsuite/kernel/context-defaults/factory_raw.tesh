@@ -1,2 +1,3 @@
-$ ${bindir:=.}/check-defaults
+$ ${bindir:=.}/context-defaults
 > [simix_context/VERBOSE] Using raw contexts. Because the glibc is just not good enough for us.
+> [simix_context/VERBOSE] Creating a context of stack 8Mb
