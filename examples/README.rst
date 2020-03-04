@@ -119,6 +119,10 @@ Starting and Stoping Actors
 
           This demonstrates the ``start_time`` and ``kill_time`` attribute of the :ref:`pf_tag_actor` tag.
 
+       .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
+
+          This file is not really interesting: the important matter is in the XML file.
+
   - **Daemonize actors:**
     Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
     actor into a daemon that will be automatically killed once the simulation is over.
@@ -278,6 +282,10 @@ Communications on the Network
 
          See also :py:func:`simgrid.Mailbox.put_async()` and :py:func:`simgrid.Comm.wait()`.
 
+      .. example-tab:: examples/c/async-wait/async-wait.c
+
+         See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm__wait()`.
+
  - **Waiting for all communications in a set:**
    The ``wait_all()`` function is useful when you want to block until
    all activities in a given set have completed. 
@@ -288,13 +296,13 @@ Communications on the Network
 
          See also :cpp:func:`simgrid::s4u::Comm::wait_all()`.
 
-      .. example-tab:: examples/c/async-waitall/async-waitall.c
-
-         See also :cpp:func:`sg_comm_wait_all()`.
-
       .. example-tab:: examples/python/async-waitall/async-waitall.py
 
          See also :py:func:`simgrid.Comm.wait_all()`.
+
+      .. example-tab:: examples/c/async-waitall/async-waitall.c
+
+         See also :cpp:func:`sg_comm_wait_all()`.
 
  - **Waiting for the first completed communication in a set:**
    The ``wait_any()`` function is useful
@@ -337,6 +345,11 @@ Executions on the CPU
        .. example-tab:: examples/python/exec-basic/exec-basic.py
 
           See also :py:func:`simgrid.this_actor.execute()`.
+
+       .. example-tab:: examples/c/exec-basic/exec-basic.c
+
+          See also :cpp:func:`void sg_actor_execute(double)`
+          and :cpp:func:`void sg_actor_execute_with_priority(double, double)`.
 
   - **Asynchronous execution:**
     You can start asynchronous executions, just like you would fire
