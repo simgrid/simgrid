@@ -1,7 +1,6 @@
 # C examples
 foreach(x cloud-two-tasks
           get_sender
-          process-lifetime
           platform-properties
           io-file
           task-priority
@@ -46,10 +45,6 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
 set(bin_files    ${bin_files}      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/generate.py                  PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/platform-properties_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/baseline_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/kill_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/start_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/start_kill_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/task-priority/task-priority_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp3.0-hbp4.0.xml
@@ -71,7 +66,6 @@ if(enable_msg)
     host_on_off_processes
     get_sender
     task_destroy_cancel task_listen_from task_progress 
-    process-lifetime
     io-file
     platform-properties
     task-priority

@@ -1,8 +1,0 @@
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-<platform version="4.1">
-  <!-- Just sleeps for 10 seconds and quits -->
-  <actor host="node-0.simgrid.org" function="sleeper">  
-    <argument value="10"/>
-  </actor>
-</platform>

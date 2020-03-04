@@ -27,6 +27,9 @@ include examples/c/actor-join/actor-join.c
 include examples/c/actor-join/actor-join.tesh
 include examples/c/actor-kill/actor-kill.c
 include examples/c/actor-kill/actor-kill.tesh
+include examples/c/actor-lifetime/actor-lifetime.c
+include examples/c/actor-lifetime/actor-lifetime.tesh
+include examples/c/actor-lifetime/actor-lifetime_d.xml
 include examples/c/actor-migrate/actor-migrate.c
 include examples/c/actor-migrate/actor-migrate.tesh
 include examples/c/actor-suspend/actor-suspend.c
@@ -667,12 +670,6 @@ include teshsuite/msg/io-file/io-file.tesh
 include teshsuite/msg/platform-properties/platform-properties.c
 include teshsuite/msg/platform-properties/platform-properties.tesh
 include teshsuite/msg/platform-properties/platform-properties_d.xml
-include teshsuite/msg/process-lifetime/baseline_d.xml
-include teshsuite/msg/process-lifetime/kill_d.xml
-include teshsuite/msg/process-lifetime/process-lifetime.c
-include teshsuite/msg/process-lifetime/process-lifetime.tesh
-include teshsuite/msg/process-lifetime/start_d.xml
-include teshsuite/msg/process-lifetime/start_kill_d.xml
 include teshsuite/msg/task-priority/task-priority.c
 include teshsuite/msg/task-priority/task-priority.tesh
 include teshsuite/msg/task-priority/task-priority_d.xml

@@ -2,7 +2,8 @@
 ######################################################################
 
 foreach(x
-        actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
+        actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-suspend 
+        actor-yield
         app-pingpong app-token-ring 
         async-wait async-waitall async-waitany
         cloud-capping cloud-migration cloud-simple
@@ -42,6 +43,7 @@ set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-ch
                                 PARENT_SCOPE)
 
 set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-create_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/actor-lifetime_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/actor-yield_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
@@ -55,7 +57,8 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                PARENT_SCOPE)
 
 foreach(x
-        actor-create actor-daemon actor-exiting actor-join actor-kill actor-migrate actor-suspend actor-yield
+        actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-suspend 
+        actor-yield
         app-chainsend app-pingpong app-token-ring
         async-wait async-waitall async-waitany
         cloud-capping cloud-migration cloud-simple

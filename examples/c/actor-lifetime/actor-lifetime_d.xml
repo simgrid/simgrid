@@ -1,0 +1,8 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <actor host="node-0.simgrid.org" function="sleeper"                              />
+  <actor host="node-0.simgrid.org" function="sleeper" start_time="2"               />
+  <actor host="node-1.simgrid.org" function="sleeper"                kill_time="3" />
+  <actor host="node-2.simgrid.org" function="sleeper" start_time="4" kill_time="7" />
+</platform>
