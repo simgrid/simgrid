@@ -1,4 +1,0 @@
-#!/usr/bin/env tesh
-
-p Start remote processes 
-$ ${bindir:=.}/process-create ${platfdir}/small_platform.xml

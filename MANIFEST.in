@@ -265,8 +265,6 @@ include examples/deprecated/msg/network-ns3/one_cluster_d.xml
 include examples/deprecated/msg/network-ns3/onelink_d.xml
 include examples/deprecated/msg/platform-failures/platform-failures.c
 include examples/deprecated/msg/platform-failures/platform-failures.tesh
-include examples/deprecated/msg/process-create/process-create.c
-include examples/deprecated/msg/process-create/process-create.tesh
 include examples/deprecated/msg/synchro-semaphore/synchro-semaphore.c
 include examples/deprecated/msg/synchro-semaphore/synchro-semaphore.tesh
 include examples/deprecated/msg/trace-categories/trace-categories.c
