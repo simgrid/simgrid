@@ -79,8 +79,7 @@ int main(int argc, char* argv[])
 
   free(hosts);
 
-  sg_actor_t actor = sg_actor_init("", sg_host_by_name("bob"));
-  sg_actor_start(actor, host, 0, NULL);
+  sg_actor_create("", sg_host_by_name("bob"), host, 0, NULL);
 
   simgrid_run();
 

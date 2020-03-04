@@ -34,22 +34,16 @@ static void dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   sg_vm_start(vm_host2);
 
   XBT_INFO("Create two tasks on Host1: both inside a VM");
-  sg_actor_t p11 = sg_actor_init("p11", (sg_host_t)vm_host1);
-  sg_actor_start(p11, worker_func, 0, NULL);
-  sg_actor_t p12 = sg_actor_init("p12", (sg_host_t)vm_host1);
-  sg_actor_start(p12, worker_func, 0, NULL);
+  sg_actor_create("p11", (sg_host_t)vm_host1, worker_func, 0, NULL);
+  sg_actor_create("p12", (sg_host_t)vm_host1, worker_func, 0, NULL);
 
   XBT_INFO("Create two tasks on Host2: one inside a VM, the other directly on the host");
-  sg_actor_t p21 = sg_actor_init("p21", (sg_host_t)vm_host2);
-  sg_actor_start(p21, worker_func, 0, NULL);
-  sg_actor_t p22 = sg_actor_init("p22", host2);
-  sg_actor_start(p22, worker_func, 0, NULL);
+  sg_actor_create("p21", (sg_host_t)vm_host2, worker_func, 0, NULL);
+  sg_actor_create("p22", host2, worker_func, 0, NULL);
 
   XBT_INFO("Create two tasks on Host3: both directly on the host");
-  sg_actor_t p31 = sg_actor_init("p31", host3);
-  sg_actor_start(p31, worker_func, 0, NULL);
-  sg_actor_t p32 = sg_actor_init("p32", host3);
-  sg_actor_start(p32, worker_func, 0, NULL);
+  sg_actor_create("p31", host3, worker_func, 0, NULL);
+  sg_actor_create("p32", host3, worker_func, 0, NULL);
 
   XBT_INFO("Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, "
            "so they run for 6 seconds)");
@@ -70,8 +64,7 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]);
 
-  sg_actor_t actor = sg_actor_init("dvfs", sg_host_by_name("MyHost1"));
-  sg_actor_start(actor, dvfs, 0, NULL);
+  sg_actor_create("dvfs", sg_host_by_name("MyHost1"), dvfs, 0, NULL);
 
   simgrid_run();
 

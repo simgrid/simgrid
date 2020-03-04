@@ -74,8 +74,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   simgrid_load_platform(argv[1]);
-  sg_actor_t actor = sg_actor_init("dvfs_test", sg_host_by_name("MyHost1"));
-  sg_actor_start(actor, dvfs, 0, NULL);
+  sg_actor_create("dvfs_test", sg_host_by_name("MyHost1"), dvfs, 0, NULL);
 
   simgrid_run();
 

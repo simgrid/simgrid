@@ -37,12 +37,10 @@ static void victimB_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv
 static void killer_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Hello!"); /* - First start a victim process */
-  sg_actor_t victimA = sg_actor_init("victim A", sg_host_by_name("Fafard"));
-  sg_actor_start(victimA, victimA_fun, 0, NULL);
+  sg_actor_t victimA = sg_actor_create("victim A", sg_host_by_name("Fafard"), victimA_fun, 0, NULL);
 
-  sg_actor_t victimB = sg_actor_init("victim B", sg_host_by_name("Jupiter"));
+  sg_actor_t victimB = sg_actor_create("victim B", sg_host_by_name("Jupiter"), victimB_fun, 0, NULL);
   sg_actor_ref(victimB); // We have to take that ref because victimB will end before we try to kill it
-  sg_actor_start(victimB, victimB_fun, 0, NULL);
 
   sg_actor_sleep_for(10.0);
 
@@ -60,8 +58,7 @@ static void killer_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
   sg_actor_sleep_for(1.0);
 
   XBT_INFO("Start a new actor, and kill it right away");
-  sg_actor_t victimC = sg_actor_init("victim C", sg_host_by_name("Jupiter"));
-  sg_actor_start(victimC, victimA_fun, 0, NULL);
+  sg_actor_t victimC = sg_actor_create("victim C", sg_host_by_name("Jupiter"), victimA_fun, 0, NULL);
   sg_actor_kill(victimC);
   sg_actor_sleep_for(1.0);
 
@@ -82,8 +79,7 @@ int main(int argc, char* argv[])
   simgrid_load_platform(argv[1]);
 
   /* - Create and deploy killer process, that will create the victim process  */
-  sg_actor_t killer = sg_actor_init("killer", sg_host_by_name("Tremblay"));
-  sg_actor_start(killer, killer_fun, 0, NULL);
+  sg_actor_create("killer", sg_host_by_name("Tremblay"), killer_fun, 0, NULL);
 
   simgrid_run();
 

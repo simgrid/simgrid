@@ -84,17 +84,15 @@ int main(int argc, char** argv)
    *
    * The easiest way to do so is to implement the behavior of your actor in a single function,
    * as we do here for the receiver actors. This function can take any kind of parameters, as
-   * long as the last parameters of Actor::create() match what your function expects.
+   * long as the last parameters of sg_actor_create() or sg_actor_start() match what your function expects.
    */
   int recv_argc           = 2;
   const char* recv_argv[] = {"receiver", "mb42", NULL};
-  sg_actor_t recv         = sg_actor_init("receiver", sg_host_by_name("Fafard"));
-  sg_actor_start(recv, receiver, recv_argc, recv_argv);
+  sg_actor_create("receiver", sg_host_by_name("Fafard"), receiver, recv_argc, recv_argv);
 
   int sender1_argc           = 3;
   const char* sender1_argv[] = {"sender", "GaBuZoMeu", "mb42", NULL};
-  sg_actor_t sender1         = sg_actor_init("sender1", sg_host_by_name("Tremblay"));
-  sg_actor_start(sender1, sender, sender1_argc, sender1_argv);
+  sg_actor_create("sender1", sg_host_by_name("Tremblay"), sender, sender1_argc, sender1_argv);
 
   int sender2_argc           = 3;
   const char* sender2_argv[] = {"sender", "GloubiBoulga", "mb42", NULL};

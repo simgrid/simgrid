@@ -42,8 +42,7 @@ static void monitor(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 
   int actor_argc           = 3;
   const char* actor_argv[] = {"worker", "Boivin", "Jacquelin", NULL};
-  sg_actor_t actor         = sg_actor_init("worker", sg_host_by_name("Fafard"));
-  sg_actor_start(actor, worker, actor_argc, actor_argv);
+  sg_actor_t actor         = sg_actor_create("worker", sg_host_by_name("Fafard"), worker, actor_argc, actor_argv);
 
   sg_actor_sleep_for(5);
 
@@ -63,8 +62,7 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]); /* - Load the platform description */
   /* - Create and deploy the emigrant and policeman processes */
-  sg_actor_t actor = sg_actor_init("monitor", sg_host_by_name("Boivin"));
-  sg_actor_start(actor, monitor, 0, NULL);
+  sg_actor_create("monitor", sg_host_by_name("Boivin"), monitor, 0, NULL);
 
   simgrid_run();
 

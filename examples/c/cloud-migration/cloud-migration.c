@@ -45,8 +45,7 @@ static void vm_migrate_async(const_sg_vm_t vm, const_sg_host_t dst_pm)
   const char* dst_pm_name = sg_host_get_name(dst_pm);
 
   const char* argv[] = {"mig_work", vm_name, dst_pm_name, NULL};
-  sg_actor_t actor   = sg_actor_init("mig_wrk", sg_host_self());
-  sg_actor_start(actor, migration_worker_main, 3, argv);
+  sg_actor_create("mig_wrk", sg_host_self(), migration_worker_main, 3, argv);
 }
 
 static void master_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
@@ -115,8 +114,7 @@ int main(int argc, char* argv[])
   /* load the platform file */
   simgrid_load_platform(argv[1]);
 
-  sg_actor_t actor = sg_actor_init("master_", sg_host_by_name("Fafard"));
-  sg_actor_start(actor, master_main, 0, NULL);
+  sg_actor_create("master_", sg_host_by_name("Fafard"), master_main, 0, NULL);
 
   simgrid_run();
   XBT_INFO("Bye (simulation time %g)", simgrid_get_clock());

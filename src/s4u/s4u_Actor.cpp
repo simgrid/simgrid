@@ -476,6 +476,12 @@ void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char
   actor->start(std::move(function));
 }
 
+sg_actor_t sg_actor_create(const char* name, sg_host_t host, xbt_main_func_t code, int argc, const char* const* argv)
+{
+  simgrid::kernel::actor::ActorCode function = simgrid::xbt::wrap_main(code, argc, argv);
+  return simgrid::s4u::Actor::init(name, host)->start(std::move(function)).get();
+}
+
 void sg_actor_exit()
 {
   simgrid::s4u::this_actor::exit();

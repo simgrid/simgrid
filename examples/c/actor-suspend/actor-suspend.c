@@ -38,8 +38,7 @@ static void lazy_guy(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 static void dream_master(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy process */
-  sg_actor_t lazy = sg_actor_init("Lazy", sg_host_self());
-  sg_actor_start(lazy, lazy_guy, 0, NULL);
+  sg_actor_t lazy = sg_actor_create("Lazy", sg_host_self(), lazy_guy, 0, NULL);
   XBT_INFO("Let's wait a little bit...");
   sg_actor_sleep_for(10.0); /* - Wait for 10 seconds */
   XBT_INFO("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
@@ -79,8 +78,7 @@ int main(int argc, char* argv[])
   simgrid_load_platform(argv[1]);
   simgrid_register_function("dream_master", dream_master);
 
-  sg_actor_t actor = sg_actor_init("dream_master", sg_host_by_name("Boivin"));
-  sg_actor_start(actor, dream_master, 0, NULL);
+  sg_actor_create("dream_master", sg_host_by_name("Boivin"), dream_master, 0, NULL);
 
   simgrid_run();
 

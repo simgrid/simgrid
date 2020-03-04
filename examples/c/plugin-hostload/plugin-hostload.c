@@ -97,11 +97,9 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   simgrid_load_platform(argv[1]);
-  sg_actor_t actor = sg_actor_init("load_test", sg_host_by_name("MyHost1"));
-  sg_actor_start(actor, execute_load_test, 0, NULL);
+  sg_actor_create("load_test", sg_host_by_name("MyHost1"), execute_load_test, 0, NULL);
 
-  sg_actor_t actor2 = sg_actor_init("change_speed", sg_host_by_name("MyHost1"));
-  sg_actor_start(actor2, change_speed, 0, NULL);
+  sg_actor_create("change_speed", sg_host_by_name("MyHost1"), change_speed, 0, NULL);
 
   simgrid_run();
 
