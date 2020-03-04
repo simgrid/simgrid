@@ -183,6 +183,68 @@ period and another one for the shutdown period.
 
 Of course, this is only one possible way to model these things. YMMV ;)
 
+.. _howto_parallel_links:
+
+Modeling parallel links
+***********************
+
+Most HPC topologies, such as fat-trees, allow parallel links (a 
+router A and a router B can be connected by more than one link).
+You might be tempted to model this configuration as follows :
+
+.. code-block:: xml
+
+    <router id="routerA"/>
+    <router id="routerB"/>
+
+    <link id="link1" bandwidth="10GBps" latency="2us"/>
+    <link id="link2" bandwidth="10GBps" latency="2us"/>
+
+    <route src="routerA" dst="routerB">
+        <link_ctn id="link1"/>
+    </route>
+    <route src="routerA" dst="routerB">
+        <link_ctn id="link2"/>
+    </route>
+
+But that will not work, since SimGrid doesn't allow several routes for 
+a single `{src ; dst}` pair. Instead, what you should do is :
+
+  - Use a single route with both links (so both will be traversed
+    each time a message is exchanged between router A and B)
+
+  - Double the bandwidth of one link, to model the total bandwidth of
+    both links used in parallel. This will make sure no combined 
+    communications between router A and B use more than the bandwidth 
+    of two links
+
+  - Assign the other link a `FATPIPE` sharing policy, which will allow 
+    several communications to use the full bandwidth of this link without
+    having to share it. This will model the fact that individual
+    communications can use at most this link's bandwidth
+
+  - Set the latency of one of the links to 0, so that latency is only 
+    accounted for once (since both link are traversed by each message)
+
+So the final platform for our example becomes :
+
+.. code-block:: xml
+
+    <router id="routerA"/>
+    <router id="routerB"/>
+
+    <!-- This link limits the total bandwidth of all parallel communications -->
+    <link id="link1" bandwidth="20GBps" latency="2us"/>
+
+    <!-- This link only limits the bandwidth of individual communications -->
+    <link id="link2" bandwidth="10GBps" latency="0us" sharing_policy="FATPIPE"/>
+
+    <!-- Each message traverses both links -->
+    <route src="routerA" dst="routerB">
+        <link_ctn id="link1"/>
+        <link_ctn id="link2"/>
+    </route>
+
 .. _understanding_lv08
 
 Understanding the default TCP model
