@@ -22,12 +22,13 @@ C interface:
    was extended for that.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
- (FG: issues on Framagit; GH: issues on GitHub; GF: issues on GForge)
- - GF#18137: Allow different stack sizes?
+ (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
  - FG#41: Add sg_actor_create C interface
  - FG#43: xbt::random needs some care
  - FG#48: The Impossible Did Happen (yet again)
  - FG!24: Documentation and fix for xbt/random
+ - GF#18137: Allow different stack sizes?
+ - GH#128: Parallelization of simulation with --cfg=contexts/nthreads
  - GH#139: Allow pthread creation in SMPI
  - GH#336: Packet-level simulation using SMPI?
 
