@@ -72,6 +72,8 @@ include examples/c/energy-exec/energy-exec.c
 include examples/c/energy-exec/energy-exec.tesh
 include examples/c/energy-vm/energy-vm.c
 include examples/c/energy-vm/energy-vm.tesh
+include examples/c/exec-basic/exec-basic.c
+include examples/c/exec-basic/exec-basic.tesh
 include examples/c/exec-dvfs/exec-dvfs.c
 include examples/c/exec-dvfs/exec-dvfs.tesh
 include examples/c/io-disk-raw/io-disk-raw.c
