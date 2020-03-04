@@ -421,7 +421,7 @@ void Engine::set_config(const std::string& name, bool value)
 {
   config::set_value(name.c_str(), value);
 }
-void Engine::set_config(const std::string& name, std::string value)
+void Engine::set_config(const std::string& name, const std::string& value)
 {
   config::set_value(name.c_str(), value);
 }

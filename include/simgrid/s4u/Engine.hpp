@@ -165,7 +165,7 @@ public:
   void set_config(const std::string& name, int value);
   void set_config(const std::string& name, bool value);
   void set_config(const std::string& name, double value);
-  void set_config(const std::string& name, std::string value);
+  void set_config(const std::string& name, const std::string& value);
 
   /** Callback fired when the platform is created (ie, the xml file parsed),
    * right before the actual simulation starts. */
