@@ -80,6 +80,7 @@ void IoImpl::post()
     state_ = State::TIMEOUT;
   }
 
+  clean_action();
   if (timeout_detector_) {
     timeout_detector_->unref();
     timeout_detector_ = nullptr;
