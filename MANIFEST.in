@@ -625,6 +625,11 @@ include teshsuite/java/semaphoregc/SemaphoreGC.java
 include teshsuite/java/semaphoregc/semaphoregc.tesh
 include teshsuite/java/sleephostoff/SleepHostOff.java
 include teshsuite/java/sleephostoff/sleephostoff.tesh
+include teshsuite/kernel/context-defaults/context-defaults.cpp
+include teshsuite/kernel/context-defaults/factory_boost.tesh
+include teshsuite/kernel/context-defaults/factory_raw.tesh
+include teshsuite/kernel/context-defaults/factory_thread.tesh
+include teshsuite/kernel/context-defaults/factory_ucontext.tesh
 include teshsuite/kernel/context-stacksize/context-stacksize.cpp
 include teshsuite/kernel/context-stacksize/context-stacksize.tesh
 include teshsuite/mc/dwarf-expression/dwarf-expression.cpp
@@ -812,11 +817,6 @@ include teshsuite/simdag/platforms/two_clusters_router_id.xml
 include teshsuite/simdag/platforms/two_hosts_multi_hop.xml
 include teshsuite/simdag/platforms/two_hosts_one_link.xml
 include teshsuite/simdag/platforms/two_hosts_one_link_splitduplex.xml
-include teshsuite/simix/check-defaults/check-defaults.cpp
-include teshsuite/simix/check-defaults/factory_boost.tesh
-include teshsuite/simix/check-defaults/factory_raw.tesh
-include teshsuite/simix/check-defaults/factory_thread.tesh
-include teshsuite/simix/check-defaults/factory_ucontext.tesh
 include teshsuite/simix/generic-simcalls/generic-simcalls.cpp
 include teshsuite/simix/generic-simcalls/generic-simcalls.tesh
 include teshsuite/simix/stack-overflow/stack-overflow.cpp
