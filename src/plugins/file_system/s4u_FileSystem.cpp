@@ -93,7 +93,7 @@ File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::c
 
 File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpath_(fullpath)
 {
-  kernel::actor::simcall([this, &fullpath, host, userdata] {
+  kernel::actor::simcall([this, &host, userdata] {
     this->set_data(userdata);
     // this cannot fail because we get a xbt_die if the mountpoint does not exist
     if (not host->get_mounted_storages().empty()) {
