@@ -754,6 +754,10 @@ void sg_actor_execute(double flops)
 {
   simgrid::s4u::this_actor::execute(flops);
 }
+void sg_actor_execute_with_priority(double flops, double priority)
+{
+  simgrid::s4u::this_actor::exec_init(flops)->set_priority(priority)->wait();
+}
 
 void sg_actor_parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount)
 {

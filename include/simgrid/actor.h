@@ -68,6 +68,7 @@ XBT_PUBLIC void* sg_actor_self_data();
 XBT_PUBLIC void sg_actor_self_data_set(void* data);
 XBT_ATTRIB_DEPRECATED_v330("Please use sg_actor_execute() instead") XBT_PUBLIC void sg_actor_self_execute(double flops);
 XBT_PUBLIC void sg_actor_execute(double flops);
+XBT_PUBLIC void sg_actor_execute_with_priority(double flops, double priority);
 void sg_actor_parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount);
 XBT_PUBLIC void sg_actor_ref(const_sg_actor_t actor);
 XBT_PUBLIC void sg_actor_unref(const_sg_actor_t actor);
