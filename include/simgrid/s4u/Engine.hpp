@@ -53,29 +53,31 @@ public:
   XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_function(
       const std::string& name, int (*code)(int, char**));
 
-  void register_function(const std::string& name, void (*code)(int, char**));
-  void register_function(const std::string& name, void (*code)(std::vector<std::string>));
+  void register_function(const std::string& name, std::function<void(int, char**)> code);
+  void register_function(const std::string& name, std::function<void(std::vector<std::string>)> code);
 
   XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_default(
       int (*code)(int, char**));
-  void register_default(void (*code)(int, char**));
+  void register_default(std::function<void(int, char**)> code);
   void register_default(const kernel::actor::ActorCodeFactory& factory);
 
   void register_function(const std::string& name, const kernel::actor::ActorCodeFactory& factory);
   template <class F> void register_actor(const std::string& name)
   {
-    register_function(name, [](std::vector<std::string> args) {
+    kernel::actor::ActorCodeFactory code_factory = [](std::vector<std::string> args) {
       return kernel::actor::ActorCode([args] {
         F code(std::move(args));
         code();
       });
-    });
+    };
+    register_function(name, std::move(code_factory));
   }
   template <class F> void register_actor(const std::string& name, F code)
   {
-    register_function(name, [code](std::vector<std::string> args) {
+    kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
       return kernel::actor::ActorCode([code, args] { code(std::move(args)); });
-    });
+    };
+    register_function(name, std::move(code_factory));
   }
 
   void load_deployment(const std::string& deploy);

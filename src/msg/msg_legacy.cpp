@@ -27,8 +27,10 @@ msg_error_t MSG_main()
 }
 void MSG_function_register(const char* name, int (*code)(int, char**))
 {
-  simgrid::s4u::Engine::get_instance()->register_function(
-      name, [code](std::vector<std::string> args) { return simgrid::xbt::wrap_main(code, std::move(args)); });
+  simgrid::kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
+    return simgrid::xbt::wrap_main(code, std::move(args));
+  };
+  simgrid::s4u::Engine::get_instance()->register_function(name, code_factory);
 }
 void MSG_function_register_default(int (*code)(int, char**))
 {
