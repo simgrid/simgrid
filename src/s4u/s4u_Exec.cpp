@@ -217,6 +217,11 @@ void sg_exec_set_bound(sg_exec_t exec, double bound)
   exec->set_bound(bound);
 }
 
+void sg_exec_set_host(sg_exec_t exec, sg_host_t new_host)
+{
+  exec->set_host(new_host);
+}
+
 double sg_exec_get_remaining(const_sg_exec_t exec)
 {
   return exec->get_remaining();
