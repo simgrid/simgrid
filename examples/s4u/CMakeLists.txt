@@ -3,6 +3,12 @@
 #################################################################################
 set(_actor-stacksize_factories "raw;boost;ucontext") # Threads ignore modifications of the stack size
 
+# The maestro-set example only works for threads and when not using windows.
+set(_maestro-set_factories "thread")
+if(WIN32)
+  set(_maestro-set_disable 1)
+endif()
+
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-chainsend app-pingpong app-token-ring
@@ -12,6 +18,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
+		 maestro-set
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-hostload
@@ -32,11 +39,16 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
   endif()
 #  message("Factories of ${example}: ${_${example}_factories}")
 
-  ADD_TESH_FACTORIES(s4u-${example} "${_${example}_factories}"
-                                    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
-				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
-				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+  if(NOT DEFINED _${example}_disabled)
+    ADD_TESH_FACTORIES(s4u-${example} "${_${example}_factories}"
+                                      --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
+				      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+				      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
+				      ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+  else()
+    message(STATUS "Example disabled on this system/architecture")
+    unset(_${example}_disabled)
+  endif()
 
   unset(_${example}_factories)
 endforeach()
@@ -159,26 +171,6 @@ if (NOT enable_memcheck AND NOT WIN32)
                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                             ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh)
 endif()
-
-# Examples accepting only thread factories
-##################################
-foreach (example maestro-set)
-  add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
-  target_link_libraries(s4u-${example} simgrid)
-  set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
-  add_dependencies(tests s4u-${example})
-
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
-
-  if(NOT WIN32)
-    ADD_TESH_FACTORIES(s4u-${example} "thread" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-                                               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-                                               ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
-  else()
-    message("Test maestro-set disabled on windows: this feature is not working")
-  endif()
-endforeach()
 
 # Add all extra files to the archive
 ####################################
