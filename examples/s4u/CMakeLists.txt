@@ -1,6 +1,15 @@
 
 # Regular examples: with only one source and tested with all factories by default
 #################################################################################
+### Define the examples' specificities
+
+set(_app-bittorrent_sources app-bittorrent/s4u-bittorrent.cpp app-bittorrent/s4u-bittorrent.hpp
+                            app-bittorrent/s4u-peer.cpp app-bittorrent/s4u-peer.hpp
+                            app-bittorrent/s4u-tracker.cpp app-bittorrent/s4u-tracker.hpp)
+set(_dht-chord_sources    dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord-node.cpp)
+set(_dht-kademlia_sources dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/node.cpp
+                          dht-kademlia/routing_table.cpp dht-kademlia/answer.cpp dht-kademlia/message.hpp)
+
 set(_actor-stacksize_factories "raw;boost;ucontext") # Threads ignore modifications of the stack size
 
 # The maestro-set example only works for threads and when not using windows.
@@ -16,12 +25,15 @@ foreach (example mc-failing-assert)
   set(_${example}_factories "ucontext;raw;boost")
 endforeach()
 
+# Deal with each example
+
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
-                 app-chainsend app-pingpong app-token-ring
+                 app-bittorrent app-chainsend app-pingpong app-token-ring
                  async-ready async-wait async-waitany async-waitall async-waituntil
                  comm-dependent
                  cloud-capping cloud-migration cloud-simple
+		 dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
@@ -33,8 +45,14 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-condition-variable synchro-mutex synchro-semaphore)
+
+  # Use default source file unless specified otherwise
+  if(NOT DEFINED _${example}_sources)
+    set(_${example}_sources ${example}/s4u-${example}.cpp)
+  endif()
+
   if(NOT DEFINED _${example}_disable)
-    add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
+    add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${_${example}_sources})
     add_dependencies     (tests s4u-${example})
     target_link_libraries(s4u-${example} simgrid)
     set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
@@ -51,19 +69,22 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 				      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
 				      ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
   else()
-    message(STATUS "Example ${example} disabled, thus not compiled")
+    message(STATUS "Example ${example} disabled, thus not compiled.")
     unset(_${example}_disabled)
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
+  foreach(file ${_${example}_sources})
+    set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
+  endforeach()
 
   unset(_${example}_factories)
+  unset(_${example}_sources)
 endforeach()
 
 
-# Multi-files examples
-######################
+# Specific examples
+###################
 
 # MASTERWORKERS EXAMPLE
 foreach(variant fun class) 
@@ -76,39 +97,9 @@ foreach(variant fun class)
 endforeach()
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers.tesh)
 
-# CHORD EXAMPLE
-add_executable       (s4u-dht-chord EXCLUDE_FROM_ALL dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord-node.cpp)
-target_link_libraries(s4u-dht-chord simgrid)
-set_target_properties(s4u-dht-chord PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-chord)
-add_dependencies(tests s4u-dht-chord)
-foreach (file s4u-dht-chord.cpp s4u-dht-chord-node.cpp s4u-dht-chord.hpp)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/${file})
-endforeach()
 
-# KADEMLIA EXAMPLE
-add_executable       (s4u-dht-kademlia EXCLUDE_FROM_ALL dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/node.cpp 
-                      dht-kademlia/routing_table.cpp dht-kademlia/answer.cpp)
-target_link_libraries(s4u-dht-kademlia simgrid)
-set_target_properties(s4u-dht-kademlia PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-kademlia)
-add_dependencies(tests s4u-dht-kademlia)
-foreach (file answer routing_table node s4u-dht-kademlia)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.cpp 
-                                     ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.hpp)
-endforeach()
-set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/message.hpp)
 
-# BITTORRENT EXAMPLE
-add_executable       (s4u-bittorrent EXCLUDE_FROM_ALL app-bittorrent/s4u-bittorrent.cpp app-bittorrent/s4u-peer.cpp
-                      app-bittorrent/s4u-tracker.cpp)
-target_link_libraries(s4u-bittorrent simgrid)
-set_target_properties(s4u-bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
-add_dependencies(tests s4u-bittorrent)
-foreach (file s4u-bittorrent s4u-peer s4u-tracker)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.cpp
-                                     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.hpp)
-endforeach()
-
-# The tests of DHT, along with the parallel variant
+# The tests the parallel variant of of DHTs
 
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   # Thread-local storage (TLS) is needed for parallel execution, but it doesn't
@@ -121,12 +112,6 @@ endif()
 foreach(example app-bittorrent app-masterworkers 
                 dht-chord dht-kademlia
                 )
-  ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
-                                    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
-				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
-				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
-
   ADD_TESH_FACTORIES(s4u-${example}-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
                                              --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
 	 			             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
@@ -161,11 +146,7 @@ endif()
 ####################################
 
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
-set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia.tesh
-                  PARENT_SCOPE)
+set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh           PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
