@@ -141,6 +141,15 @@ Starting and Stoping Actors
 
           See also :cpp:func:`sg_actor_daemonize` and :cpp:func:`sg_actor_is_daemon`.
 
+  - **Specify the stack size to use**
+    The stack size can be specified by default on the command line,
+    globally by changing the configuration with :cpp:func:`simgrid::s4u::Engine::set_config(std::string)`, 
+    or for a specific actor using :cpp:func:`simgrid::s4u::Actor::set_stacksize` before its start.
+    
+    .. tabs::
+
+       .. example-tab:: examples/s4u/actor-stacksize/s4u-actor-stacksize.cpp
+
 Inter-Actors Interactions
 -------------------------
 
