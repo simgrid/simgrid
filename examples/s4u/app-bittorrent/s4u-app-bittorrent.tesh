@@ -4,7 +4,7 @@ p Testing the Bittorrent implementation with S4U
 
 ! timeout 10
 ! output sort 19
-$ ${bindir:=.}/s4u-bittorrent ${platfdir}/cluster_backbone.xml s4u-app-bittorrent_d.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-app-bittorrent ${platfdir}/cluster_backbone.xml s4u-app-bittorrent_d.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [    0.000000] (1:tracker@node-0.simgrid.org) Tracker launched.
 > [    0.000000] (2:peer@node-1.simgrid.org) Hi, I'm joining the network with id 2
 > [    0.000000] (3:peer@node-2.simgrid.org) Hi, I'm joining the network with id 3
