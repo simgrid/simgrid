@@ -9,6 +9,13 @@ if(WIN32)
   set(_maestro-set_disable 1)
 endif()
 
+foreach (example mc-failing-assert)
+  if(NOT SIMGRID_HAVE_MC)
+    set(_${example}_disable 1)
+  endif()
+  set(_${example}_factories "ucontext;raw;boost")
+endforeach()
+
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-chainsend app-pingpong app-token-ring
@@ -19,61 +26,39 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
 		 maestro-set
+		 mc-failing-assert
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-hostload
                  replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-condition-variable synchro-mutex synchro-semaphore)
-  add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
-  add_dependencies     (tests s4u-${example})
-  target_link_libraries(s4u-${example} simgrid)
-  set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+  if(NOT DEFINED _${example}_disable)
+    add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
+    add_dependencies     (tests s4u-${example})
+    target_link_libraries(s4u-${example} simgrid)
+    set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
+    # Use default factories unless specified otherwise
+    if(NOT DEFINED _${example}_factories)
+      set(_${example}_factories "thread;ucontext;raw;boost")
+    endif()
+#    message("Factories of ${example}: ${_${example}_factories}")
 
-  # Use default factories unless specified otherwise
-  if(NOT DEFINED _${example}_factories)
-    set(_${example}_factories "thread;ucontext;raw;boost")
-  endif()
-#  message("Factories of ${example}: ${_${example}_factories}")
-
-  if(NOT DEFINED _${example}_disabled)
     ADD_TESH_FACTORIES(s4u-${example} "${_${example}_factories}"
                                       --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
 				      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
 				      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
 				      ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
   else()
-    message(STATUS "Example disabled on this system/architecture")
+    message(STATUS "Example ${example} disabled, thus not compiled")
     unset(_${example}_disabled)
   endif()
 
-  unset(_${example}_factories)
-endforeach()
-
-
-# Model-checking examples: with only one source and tested with all factories but thread
-######################################################################
-
-foreach (example mc-failing-assert)
-  if(SIMGRID_HAVE_MC)
-    add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
-    add_dependencies     (tests s4u-${example})
-    target_link_libraries(s4u-${example} simgrid)
-    set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
-
-  
-    ADD_TESH_FACTORIES(s4u-${example} "ucontext;raw;boost"
-                                      --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
-				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
-				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
-  endif()
-  
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
+
+  unset(_${example}_factories)
 endforeach()
 
 
