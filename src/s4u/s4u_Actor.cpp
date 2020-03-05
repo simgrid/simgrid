@@ -56,6 +56,15 @@ ActorPtr Actor::init(const std::string& name, s4u::Host* host)
   return actor->iface();
 }
 
+/** Set a non-default stack size for this context (in Kb)
+ *
+ * This must be done before starting the actor, and it won't work with the thread factory. */
+ActorPtr Actor::set_stacksize(unsigned stacksize)
+{
+  pimpl_->set_stacksize(stacksize * 1024);
+  return this;
+}
+
 ActorPtr Actor::start(const std::function<void()>& code)
 {
   simgrid::kernel::actor::simcall([this, &code] { pimpl_->start(code); });

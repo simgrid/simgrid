@@ -58,7 +58,7 @@ public:
   void set_wannadie(bool value = true) { iwannadie_ = value; }
   void operator()() { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
-  actor::ActorImpl* get_actor() { return this->actor_; }
+  actor::ActorImpl* get_actor() const { return this->actor_; }
 
   // Scheduling methods
   virtual void stop();

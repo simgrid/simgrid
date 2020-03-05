@@ -27,6 +27,7 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder {
   aid_t ppid_        = -1;
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
   bool auto_restart_ = false;
+  unsigned stacksize_; // set to default value in constructor
 
 public:
   xbt::string name_;
@@ -58,6 +59,8 @@ public:
   bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
   bool has_to_auto_restart() { return auto_restart_; }
   void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
+  void set_stacksize(unsigned stacksize) { stacksize_ = stacksize; }
+  unsigned get_stacksize() { return stacksize_; }
 
   std::unique_ptr<context::Context> context_; /* the context (uctx/raw/thread) that executes the user function */
 

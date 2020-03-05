@@ -40,14 +40,14 @@ private:
   SwappedContext* maestro_context_ = nullptr; // save maestro's context
 
   /* For the parallel execution, will be created lazily with the right parameters if needed (ie, in parallel) */
-  std::unique_ptr<simgrid::xbt::Parmap<smx_actor_t>> parmap_{nullptr};
+  std::unique_ptr<simgrid::xbt::Parmap<actor::ActorImpl*>> parmap_{nullptr};
 };
 
 class SwappedContext : public Context {
   friend void ::smx_ctx_wrapper(simgrid::kernel::context::SwappedContext*);
 
 public:
-  SwappedContext(std::function<void()>&& code, smx_actor_t get_actor, SwappedContextFactory* factory);
+  SwappedContext(std::function<void()>&& code, actor::ActorImpl* get_actor, SwappedContextFactory* factory);
   SwappedContext(const SwappedContext&) = delete;
   SwappedContext& operator=(const SwappedContext&) = delete;
   virtual ~SwappedContext();
@@ -58,12 +58,11 @@ public:
 
   void swap_into(SwappedContext* to);
 
-  unsigned char* get_stack() const { return stack_; }
-  // Return the address for the bottom of the stack.  Depending on the stack direction it may be the lower or higher
-  // address
-  unsigned char* get_stack_bottom() const { return PTH_STACKGROWTH == -1 ? stack_ + smx_context_stack_size : stack_; }
-
 protected:
+  unsigned char* get_stack() const { return stack_; }
+  unsigned char* get_stack_bottom() const; // Depending on the stack direction, its bottom (that Boost::make_fcontext
+                                           // needs) may be the lower or higher end
+
   // With ASan, after a context switch, check that the originating context is the expected one (see BoostContext)
   void verify_previous_context(const SwappedContext* context) const;
 

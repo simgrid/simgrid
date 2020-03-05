@@ -197,9 +197,9 @@ RawContext* RawContextFactory::create_context(std::function<void()>&& code, acto
 RawContext::RawContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory)
     : SwappedContext(std::move(code), actor, factory)
 {
-  XBT_VERB("Creating a context of stack %uMb", smx_context_stack_size / 1024 / 1024);
+  XBT_VERB("Creating a context of stack %uMb", actor->get_stacksize() / 1024 / 1024);
   if (has_code()) {
-    this->stack_top_ = raw_makecontext(get_stack(), smx_context_stack_size, smx_ctx_wrapper, this);
+    this->stack_top_ = raw_makecontext(get_stack(), actor->get_stacksize(), smx_ctx_wrapper, this);
   } else {
     if (MC_is_active())
       MC_ignore_heap(&stack_top_, sizeof(stack_top_));

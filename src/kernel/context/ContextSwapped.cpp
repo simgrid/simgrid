@@ -74,7 +74,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
     factory_.maestro_context_ = this;
 
   if (has_code()) {
-    xbt_assert((smx_context_stack_size & 0xf) == 0, "smx_context_stack_size should be multiple of 16");
+    xbt_assert((actor->get_stacksize() & 0xf) == 0, "Actor stack size should be multiple of 16");
     if (smx_context_guard_size > 0 && not MC_is_active()) {
 #if PTH_STACKGROWTH != -1
       xbt_die(
@@ -85,7 +85,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
        * Protected pages need to be put after the stack when PTH_STACKGROWTH == 1. */
 #endif
 
-      size_t size = smx_context_stack_size + smx_context_guard_size;
+      size_t size = actor->get_stacksize() + smx_context_guard_size;
 #if SIMGRID_HAVE_MC
       /* Cannot use posix_memalign when SIMGRID_HAVE_MC. Align stack by hand, and save the
        * pointer returned by xbt_malloc0. */
@@ -116,12 +116,12 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
 #endif
       this->stack_ = this->stack_ + smx_context_guard_size;
     } else {
-      this->stack_ = static_cast<unsigned char*>(xbt_malloc0(smx_context_stack_size));
+      this->stack_ = static_cast<unsigned char*>(xbt_malloc0(actor->get_stacksize()));
     }
 
 #if HAVE_VALGRIND_H
     if (RUNNING_ON_VALGRIND)
-      this->valgrind_stack_id_ = VALGRIND_STACK_REGISTER(this->stack_, this->stack_ + smx_context_stack_size);
+      this->valgrind_stack_id_ = VALGRIND_STACK_REGISTER(this->stack_, this->stack_ + actor->get_stacksize());
 #endif
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
     this->asan_stack_ = get_stack_bottom();
@@ -165,6 +165,12 @@ SwappedContext::~SwappedContext()
 #endif /* not windows */
 
   xbt_free(stack_);
+}
+
+unsigned char* SwappedContext::get_stack_bottom() const
+{
+  // Depending on the stack direction, its bottom (that make_fcontext needs) may be the lower or higher end
+  return PTH_STACKGROWTH == -1 ? stack_ + get_actor()->get_stacksize() : stack_;
 }
 
 void SwappedContext::stop()

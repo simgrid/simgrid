@@ -5,6 +5,7 @@
 
 #include "ContextBoost.hpp"
 #include "simgrid/Exception.hpp"
+#include "src/internal_config.h"
 #include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
@@ -24,14 +25,14 @@ BoostContext* BoostContextFactory::create_context(std::function<void()>&& code, 
 BoostContext::BoostContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory)
     : SwappedContext(std::move(code), actor, factory)
 {
-  XBT_VERB("Creating a context of stack %uMb", smx_context_stack_size / 1024 / 1024);
+  XBT_VERB("Creating a context of stack %uMb", actor->get_stacksize() / 1024 / 1024);
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
   if (has_code()) {
 #if BOOST_VERSION < 106100
-    this->fc_ = boost::context::make_fcontext(get_stack_bottom(), smx_context_stack_size, BoostContext::wrapper);
+    this->fc_ = boost::context::make_fcontext(get_stack_bottom(), actor->get_stacksize(), BoostContext::wrapper);
 #else
     this->fc_ =
-        boost::context::detail::make_fcontext(get_stack_bottom(), smx_context_stack_size, BoostContext::wrapper);
+        boost::context::detail::make_fcontext(get_stack_bottom(), actor->get_stacksize(), BoostContext::wrapper);
 #endif
   }
 }

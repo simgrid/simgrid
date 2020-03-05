@@ -54,8 +54,9 @@ ActorImpl* ActorImpl::self()
 
 ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std::move(name)), piface_(this)
 {
-  pid_           = maxpid++;
+  pid_            = maxpid++;
   simcall.issuer_ = this;
+  stacksize_      = smx_context_stack_size;
 }
 
 ActorImpl::~ActorImpl()
