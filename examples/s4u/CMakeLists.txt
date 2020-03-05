@@ -1,9 +1,10 @@
 
-# Regular examples: with only one source and tested with all factories
-######################################################################
+# Regular examples: with only one source and tested with all factories by default
+#################################################################################
+set(_actor-stacksize_factories "raw;boost;ucontext") # Threads ignore modifications of the stack size
 
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
-                 actor-lifetime actor-migrate actor-suspend actor-yield
+                 actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-chainsend app-pingpong app-token-ring
                  async-ready async-wait async-waitany async-waitall async-waituntil
                  comm-dependent
@@ -24,12 +25,20 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
-  
-  ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost"
+
+  # Use default factories unless specified otherwise
+  if(NOT DEFINED _${example}_factories)
+    set(_${example}_factories "thread;ucontext;raw;boost")
+  endif()
+#  message("Factories of ${example}: ${_${example}_factories}")
+
+  ADD_TESH_FACTORIES(s4u-${example} "${_${example}_factories}"
                                     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
 				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
 				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
 				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+
+  unset(_${example}_factories)
 endforeach()
 
 

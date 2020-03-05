@@ -3,7 +3,7 @@
 ! ignore .*Activating SYSV context factory
 ! ignore .*Using raw contexts. Because the glibc is just not good enough for us.
 
-$ ./context-stacksize --log=simix_context.thresh:verbose --log=no_loc ${platfdir}/small_platform.xml
+$ ${bindir:=.}/s4u-actor-stacksize --log=simix_context.thresh:verbose --log=no_loc ${platfdir}/small_platform.xml
 > [::(0) 0.000000] [simix_context/VERBOSE] Creating a context of stack 8Mb
 > [0.000000] [simix_context/VERBOSE] Creating a context of stack 8Mb
 > [0.000000] [simix_context/VERBOSE] Creating a context of stack 16Mb

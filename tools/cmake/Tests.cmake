@@ -62,7 +62,13 @@ MACRO(ADD_TESH_FACTORIES NAME FACTORIES)
         (${FACTORY} STREQUAL "raw" AND HAVE_RAW_CONTEXTS) OR
         (${FACTORY} STREQUAL "ucontext" AND HAVE_UCONTEXT_CONTEXTS))
       ADD_TESH("${NAME}-${FACTORY}" "--cfg" "contexts/factory:${FACTORY}" ${ARGR})
-    ENDIF()
+    endif()
+    if ((NOT ${FACTORY} STREQUAL "thread") AND 
+        (NOT ${FACTORY} STREQUAL "boost") AND
+	(NOT ${FACTORY} STREQUAL "raw") AND
+	(NOT ${FACTORY} STREQUAL "ucontext"))
+	message(FATAL_ERROR "Cannot add a tesh for an unknown factory: ${FACTORY}")
+    endif()
   ENDFOREACH()
 ENDMACRO()
 

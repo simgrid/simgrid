@@ -1,4 +1,4 @@
-foreach(x context-defaults context-stacksize)
+foreach(x context-defaults)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -13,10 +13,6 @@ endforeach()
 
 ## Add the tests.
 ## Some need to be run with all factories, some don't need tesh to run
-
-# This test should not be executed with thread contexts, as they ignore stack size changes
-ADD_TESH_FACTORIES(tesh-kernel-context-stacksize "raw;boost;ucontext" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/context-stacksize --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/context-stacksize --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/kernel/context-stacksize ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/context-stacksize/context-stacksize.tesh)
-set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/context-stacksize/context-stacksize.tesh)
 
 # Ensure that we have the right default setting for the context factory
 IF(HAVE_RAW_CONTEXTS)
