@@ -138,7 +138,9 @@ examples/c/cloud-simple/cloud-simple-c
 examples/c/energy-exec/energy-exec-c
 examples/c/energy-exec-ptask/energy-exec-ptask-c
 examples/c/energy-vm/energy-vm-c
+examples/c/exec-basic/exec-basic-c
 examples/c/exec-dvfs/exec-dvfs-c
+examples/c/exec-remote/exec-remote-c
 examples/c/io-disk-raw/io-disk-raw-c
 examples/c/io-file-remote/io-file-remote-c
 examples/c/plugin-hostload/plugin-hostload-c

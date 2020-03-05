@@ -76,6 +76,8 @@ include examples/c/exec-basic/exec-basic.c
 include examples/c/exec-basic/exec-basic.tesh
 include examples/c/exec-dvfs/exec-dvfs.c
 include examples/c/exec-dvfs/exec-dvfs.tesh
+include examples/c/exec-remote/exec-remote.c
+include examples/c/exec-remote/exec-remote.tesh
 include examples/c/io-disk-raw/io-disk-raw.c
 include examples/c/io-disk-raw/io-disk-raw.tesh
 include examples/c/io-file-remote/io-file-remote.c

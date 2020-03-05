@@ -391,6 +391,10 @@ Executions on the CPU
 
           See also :py:func:`simgrid.Exec.set_host()`.
 
+       .. example-tab:: examples/c/exec-remote/exec-remote.c
+
+          See also :cpp:func:`sg_exec_set_host()`.
+
   - **Parallel executions:**
     These objects are convenient abstractions of parallel
     computational kernels that span over several machines, such as a
