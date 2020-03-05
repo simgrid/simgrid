@@ -104,7 +104,7 @@ void Engine::register_default(int (*code)(int, char**)) // deprecated
 }
 
 /** Registers the main function of an actor that will be launched from the deployment file */
-void Engine::register_function(const std::string& name, std::function<void(int, char**)> code)
+void Engine::register_function(const std::string& name, const std::function<void(int, char**)>& code)
 {
   kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
     return xbt::wrap_main(code, std::move(args));
@@ -113,7 +113,7 @@ void Engine::register_function(const std::string& name, std::function<void(int, 
 }
 
 /** Registers the main function of an actor that will be launched from the deployment file */
-void Engine::register_function(const std::string& name, std::function<void(std::vector<std::string>)> code)
+void Engine::register_function(const std::string& name, const std::function<void(std::vector<std::string>)>& code)
 {
   kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
     return std::bind(std::move(code), std::move(args));
@@ -125,7 +125,7 @@ void Engine::register_function(const std::string& name, std::function<void(std::
  * It will be used as fallback when the function requested from the deployment file was not registered.
  * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
  */
-void Engine::register_default(std::function<void(int, char**)> code)
+void Engine::register_default(const std::function<void(int, char**)>& code)
 {
   register_default([code](std::vector<std::string> args) { return xbt::wrap_main(code, std::move(args)); });
 }
