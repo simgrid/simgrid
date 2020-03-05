@@ -356,6 +356,8 @@ include examples/s4u/actor-lifetime/s4u-actor-lifetime.tesh
 include examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml
 include examples/s4u/actor-migrate/s4u-actor-migrate.cpp
 include examples/s4u/actor-migrate/s4u-actor-migrate.tesh
+include examples/s4u/actor-stacksize/s4u-actor-stacksize.cpp
+include examples/s4u/actor-stacksize/s4u-actor-stacksize.tesh
 include examples/s4u/actor-suspend/s4u-actor-suspend.cpp
 include examples/s4u/actor-suspend/s4u-actor-suspend.tesh
 include examples/s4u/actor-yield/s4u-actor-yield.cpp
@@ -635,8 +637,6 @@ include teshsuite/kernel/context-defaults/factory_boost.tesh
 include teshsuite/kernel/context-defaults/factory_raw.tesh
 include teshsuite/kernel/context-defaults/factory_thread.tesh
 include teshsuite/kernel/context-defaults/factory_ucontext.tesh
-include teshsuite/kernel/context-stacksize/context-stacksize.cpp
-include teshsuite/kernel/context-stacksize/context-stacksize.tesh
 include teshsuite/mc/dwarf-expression/dwarf-expression.cpp
 include teshsuite/mc/dwarf-expression/dwarf-expression.tesh
 include teshsuite/mc/dwarf/dwarf.cpp

@@ -6,9 +6,11 @@
 set(_app-bittorrent_sources app-bittorrent/s4u-bittorrent.cpp app-bittorrent/s4u-bittorrent.hpp
                             app-bittorrent/s4u-peer.cpp app-bittorrent/s4u-peer.hpp
                             app-bittorrent/s4u-tracker.cpp app-bittorrent/s4u-tracker.hpp)
-set(_dht-chord_sources    dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord-node.cpp)
-set(_dht-kademlia_sources dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/node.cpp
-                          dht-kademlia/routing_table.cpp dht-kademlia/answer.cpp dht-kademlia/message.hpp)
+set(_dht-chord_sources    dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord.hpp dht-chord/s4u-dht-chord-node.cpp)
+set(_dht-kademlia_sources dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/s4u-dht-kademlia.hpp
+                          dht-kademlia/node.cpp dht-kademlia/node.hpp
+                          dht-kademlia/routing_table.cpp dht-kademlia/routing_table.hpp
+			  dht-kademlia/answer.cpp dht-kademlia/answer.hpp dht-kademlia/message.hpp)
 
 set(_actor-stacksize_factories "raw;boost;ucontext") # Threads ignore modifications of the stack size
 
