@@ -12,28 +12,29 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_io -p
 > (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (0@bob) Write in MPI_File /scratch/testfile, 4 bytes written, readsize 4 bytes, movesize 4
 > (0@bob) Position after write in MPI_File /scratch/testfile : 4
+> (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 4
+> (2@bob) Write in MPI_File /scratch/testfile, 4 bytes written, readsize 4 bytes, movesize 4
+> (2@bob) Position after write in MPI_File /scratch/testfile : 8
+> (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 8
+> (3@carl) Write in MPI_File /scratch/testfile, 4 bytes written, readsize 4 bytes, movesize 4
+> (3@carl) Position after write in MPI_File /scratch/testfile : 12
+> (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 12
+> (1@carl) Write in MPI_File /scratch/testfile, 4 bytes written, readsize 4 bytes, movesize 4
+> (1@carl) Position after write in MPI_File /scratch/testfile : 16
 > (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
-> (2@bob) Write in MPI_File /scratch/testfile, 4 bytes written, readsize 4 bytes, movesize 4
-> (2@bob) Position after write in MPI_File /scratch/testfile : 4
-> (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
-> (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
-> (3@carl) Write in MPI_File /scratch/testfile, 4 bytes written, readsize 4 bytes, movesize 4
-> (3@carl) Position after write in MPI_File /scratch/testfile : 4
-> (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 4
-> (1@carl) Write in MPI_File /scratch/testfile, 4 bytes written, readsize 4 bytes, movesize 4
-> (1@carl) Position after write in MPI_File /scratch/testfile : 8
 > (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (0@bob) Read in MPI_File /scratch/testfile, 4 bytes read, readsize 4 bytes, movesize 4
 > (0@bob) Position after read in MPI_File /scratch/testfile : 4
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 4
-> (2@bob) Read in MPI_File /scratch/testfile, 0 bytes read, readsize 4 bytes, movesize 4
-> (2@bob) Position after read in MPI_File /scratch/testfile : 4
-> (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 4
-> (3@carl) Read in MPI_File /scratch/testfile, 0 bytes read, readsize 4 bytes, movesize 4
-> (3@carl) Position after read in MPI_File /scratch/testfile : 4
-> (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 4
+> (2@bob) Read in MPI_File /scratch/testfile, 4 bytes read, readsize 4 bytes, movesize 4
+> (2@bob) Position after read in MPI_File /scratch/testfile : 8
+> (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 8
+> (3@carl) Read in MPI_File /scratch/testfile, 4 bytes read, readsize 4 bytes, movesize 4
+> (3@carl) Position after read in MPI_File /scratch/testfile : 12
+> (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 12
 > (1@carl) Read in MPI_File /scratch/testfile, 4 bytes read, readsize 4 bytes, movesize 4
-> (1@carl) Position after read in MPI_File /scratch/testfile : 8
+> (1@carl) Position after read in MPI_File /scratch/testfile : 16
+

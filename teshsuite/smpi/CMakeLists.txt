@@ -69,7 +69,7 @@ if(enable_smpi)
 
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
-	    type-hvector type-indexed type-struct type-vector bug-17132 timers io-simple io-simple-at io-all io-all-at  io-ordered topo-cart-sub) #io-shared
+	    type-hvector type-indexed type-struct type-vector bug-17132 timers io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub)
     ADD_TESH_FACTORIES(tesh-smpi-${x} "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/${x} ${x}.tesh)
   endforeach()
 

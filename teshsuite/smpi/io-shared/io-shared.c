@@ -46,9 +46,10 @@ int main( int argc, char *argv[] )
         fprintf( stderr, "Count not zero (%d) on write\n", count );fflush(stderr);
     }
 
+    MPI_Barrier(comm);
     MPI_File_seek_shared( fh, 0, MPI_SEEK_SET );
     MPI_Barrier(comm);
-    
+
     memset( &status, 0xff, sizeof(MPI_Status) );
     MPI_File_read_shared( fh, buf, 1, MPI_INT, &status );
     MPI_Get_count( &status, MPI_INT, &count );
