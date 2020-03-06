@@ -1,0 +1,15 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/exec-async-c ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:wait@Fafard) Execute 7.6296e+07 flops, should take 1 second.
+> [  0.000000] (2:monitor@Ginette) Execute 4.8492e+07 flops, should take 1 second.
+> [  0.000000] (3:cancel@Boivin) Execute 9.8095e+07 flops, should take 1 second.
+> [  0.000000] (2:monitor@Ginette) Remaining amount of flops: 4.8492e+07 (100%)
+> [  0.300000] (2:monitor@Ginette) Remaining amount of flops: 3.39444e+07 (70%)
+> [  0.500000] (3:cancel@Boivin) I changed my mind, cancel!
+> [  0.500000] (3:cancel@Boivin) Goodbye now!
+> [  0.600000] (2:monitor@Ginette) Remaining amount of flops: 1.93968e+07 (40%)
+> [  0.900000] (2:monitor@Ginette) Remaining amount of flops: 4.8492e+06 (10%)
+> [  1.000000] (1:wait@Fafard) Goodbye now!
+> [  1.200000] (2:monitor@Ginette) Goodbye now!
+> [  1.200000] (0:maestro@) Simulation time 1.2
