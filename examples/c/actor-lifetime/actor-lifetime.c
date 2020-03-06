@@ -21,7 +21,7 @@ static int my_onexit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ign
 }
 
 /* Just sleep until termination */
-static void sleeper(int argc, char* argv[])
+static void sleeper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   sg_actor_on_exit(my_onexit, NULL);
 
