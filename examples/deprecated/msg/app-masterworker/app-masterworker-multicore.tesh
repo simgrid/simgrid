@@ -7,30 +7,30 @@ $ ./app-masterworker/app-masterworker ${platfdir}/multicore_machine.xml ${srcdir
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'Full'
 > [  0.000000] (1:master@Tremblay) Got 6 workers and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Sending "Task_0" (of 20) to mailbox "worker-0"
-> [  0.002265] (1:master@Tremblay) Sending "Task_1" (of 20) to mailbox "worker-1"
-> [  0.004531] (1:master@Tremblay) Sending "Task_2" (of 20) to mailbox "worker-2"
-> [  0.006796] (1:master@Tremblay) Sending "Task_3" (of 20) to mailbox "worker-3"
-> [  0.009061] (1:master@Tremblay) Sending "Task_4" (of 20) to mailbox "worker-4"
-> [  0.011326] (1:master@Tremblay) Sending "Task_5" (of 20) to mailbox "worker-5"
-> [  0.013592] (1:master@Tremblay) Sending "Task_6" (of 20) to mailbox "worker-0"
-> [  0.514241] (1:master@Tremblay) Sending "Task_7" (of 20) to mailbox "worker-1"
-> [  0.516506] (1:master@Tremblay) Sending "Task_8" (of 20) to mailbox "worker-2"
-> [  0.518771] (1:master@Tremblay) Sending "Task_9" (of 20) to mailbox "worker-3"
-> [  0.521036] (1:master@Tremblay) Sending "Task_10" (of 20) to mailbox "worker-4"
-> [  0.523302] (1:master@Tremblay) Sending "Task_11" (of 20) to mailbox "worker-5"
-> [  0.525567] (1:master@Tremblay) Sending "Task_12" (of 20) to mailbox "worker-0"
-> [  1.026216] (1:master@Tremblay) Sending "Task_13" (of 20) to mailbox "worker-1"
-> [  1.028481] (1:master@Tremblay) Sending "Task_14" (of 20) to mailbox "worker-2"
-> [  1.030746] (1:master@Tremblay) Sending "Task_15" (of 20) to mailbox "worker-3"
-> [  1.033012] (1:master@Tremblay) Sending "Task_16" (of 20) to mailbox "worker-4"
-> [  1.035277] (1:master@Tremblay) Sending "Task_17" (of 20) to mailbox "worker-5"
-> [  1.037542] (1:master@Tremblay) Sending "Task_18" (of 20) to mailbox "worker-0"
-> [  1.538191] (1:master@Tremblay) Sending "Task_19" (of 20) to mailbox "worker-1"
-> [  1.540456] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [  2.048096] (2:worker@Tremblay) I'm done. See you!
-> [  2.050361] (3:worker@Tremblay) I'm done. See you!
-> [  2.050557] (4:worker@Tremblay) I'm done. See you!
-> [  2.050752] (5:worker@Tremblay) I'm done. See you!
-> [  2.050947] (6:worker@Tremblay) I'm done. See you!
-> [  2.051142] (7:worker@Tremblay) I'm done. See you!
-> [  2.051142] (0:maestro@) Simulation time 2.05114
+> [  0.000103] (1:master@Tremblay) Sending "Task_1" (of 20) to mailbox "worker-1"
+> [  0.000206] (1:master@Tremblay) Sending "Task_2" (of 20) to mailbox "worker-2"
+> [  0.000309] (1:master@Tremblay) Sending "Task_3" (of 20) to mailbox "worker-3"
+> [  0.000412] (1:master@Tremblay) Sending "Task_4" (of 20) to mailbox "worker-4"
+> [  0.000515] (1:master@Tremblay) Sending "Task_5" (of 20) to mailbox "worker-5"
+> [  0.000619] (1:master@Tremblay) Sending "Task_6" (of 20) to mailbox "worker-0"
+> [  0.509916] (1:master@Tremblay) Sending "Task_7" (of 20) to mailbox "worker-1"
+> [  0.510019] (1:master@Tremblay) Sending "Task_8" (of 20) to mailbox "worker-2"
+> [  0.510122] (1:master@Tremblay) Sending "Task_9" (of 20) to mailbox "worker-3"
+> [  0.510225] (1:master@Tremblay) Sending "Task_10" (of 20) to mailbox "worker-4"
+> [  0.510329] (1:master@Tremblay) Sending "Task_11" (of 20) to mailbox "worker-5"
+> [  0.510432] (1:master@Tremblay) Sending "Task_12" (of 20) to mailbox "worker-0"
+> [  1.019729] (1:master@Tremblay) Sending "Task_13" (of 20) to mailbox "worker-1"
+> [  1.019832] (1:master@Tremblay) Sending "Task_14" (of 20) to mailbox "worker-2"
+> [  1.019935] (1:master@Tremblay) Sending "Task_15" (of 20) to mailbox "worker-3"
+> [  1.020039] (1:master@Tremblay) Sending "Task_16" (of 20) to mailbox "worker-4"
+> [  1.020142] (1:master@Tremblay) Sending "Task_17" (of 20) to mailbox "worker-5"
+> [  1.020245] (1:master@Tremblay) Sending "Task_18" (of 20) to mailbox "worker-0"
+> [  1.529542] (1:master@Tremblay) Sending "Task_19" (of 20) to mailbox "worker-1"
+> [  1.529645] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
+> [  2.039252] (2:worker@Tremblay) I'm done. See you!
+> [  2.039355] (3:worker@Tremblay) I'm done. See you!
+> [  2.039355] (4:worker@Tremblay) I'm done. See you!
+> [  2.039355] (5:worker@Tremblay) I'm done. See you!
+> [  2.039355] (6:worker@Tremblay) I'm done. See you!
+> [  2.039355] (7:worker@Tremblay) I'm done. See you!
+> [  2.039355] (0:maestro@) Simulation time 2.03936
