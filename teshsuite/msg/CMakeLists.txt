@@ -3,7 +3,6 @@ foreach(x cloud-two-tasks
           get_sender
           platform-properties
           io-file
-          task-priority
           trace_integration)
   if(enable_msg)
     add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.c)
@@ -45,7 +44,6 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
 set(bin_files    ${bin_files}      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/generate.py                  PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/platform-properties_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/task-priority/task-priority_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp3.0-hbp4.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.5-hbp1.5.xml
@@ -68,7 +66,6 @@ if(enable_msg)
     task_destroy_cancel task_listen_from task_progress 
     io-file
     platform-properties
-    task-priority
     trace_integration)
     
     ADD_TESH_FACTORIES(tesh-msg-${x} "raw" 

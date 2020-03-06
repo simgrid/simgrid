@@ -674,9 +674,6 @@ include teshsuite/msg/io-file/io-file.tesh
 include teshsuite/msg/platform-properties/platform-properties.c
 include teshsuite/msg/platform-properties/platform-properties.tesh
 include teshsuite/msg/platform-properties/platform-properties_d.xml
-include teshsuite/msg/task-priority/task-priority.c
-include teshsuite/msg/task-priority/task-priority.tesh
-include teshsuite/msg/task-priority/task-priority_d.xml
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.cpp
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.tesh
 include teshsuite/msg/task_listen_from/task_listen_from.cpp
