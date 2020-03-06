@@ -47,7 +47,7 @@ int get_maxpid()
 
 ActorImpl* ActorImpl::self()
 {
-  context::Context* self_context = context::Context::self();
+  const context::Context* self_context = context::Context::self();
 
   return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }

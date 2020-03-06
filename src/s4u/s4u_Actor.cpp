@@ -41,7 +41,7 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
 // ***** Actor creation *****
 Actor* Actor::self()
 {
-  kernel::context::Context* self_context = kernel::context::Context::self();
+  const kernel::context::Context* self_context = kernel::context::Context::self();
   if (self_context == nullptr)
     return nullptr;
 
