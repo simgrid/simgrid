@@ -10,6 +10,12 @@ Important user-visible changes:
    timings if simulation was skipping a lot of small events (which was actually
    an issue of said simulation). The value can still be changed back using
    --cfg=surf/precision:1e-5.
+ - On some network models (L07, CM02, LV08), an implicit loopback link is created
+   for local communication. Default bandwidth was 500MMps and latency was 15µs,
+   which was rather bad. Default values have been changed to 10GBps and 0 latency.
+   Options network/loopback-lat and network/loopback-bw have been added to adapt
+   these values if needed. Network and routing models already providing separate
+   loopbacks (clusters and such) are not impacted by this change.
 
 General:
  - LTO is now enabled for Intel/clang compilers.
