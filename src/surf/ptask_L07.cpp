@@ -57,8 +57,10 @@ NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
     : NetworkModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
-  loopback_ = NetworkL07Model::create_link("__loopback__", std::vector<double>{498000000}, 0.000015,
-                                           s4u::Link::SharingPolicy::FATPIPE);
+  loopback_ = NetworkL07Model::create_link("__loopback__", 
+                                            std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
+                                            simgrid::config::get_value<double>("network/loopback-lat"),
+                                            s4u::Link::SharingPolicy::FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()

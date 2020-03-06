@@ -297,6 +297,16 @@ void sg_config_init(int *argc, char **argv)
       sg_weight_S_parameter, "network/weight-S", {"network/weight_S"},
       "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
+  simgrid::config::declare_flag<double>("network/loopback-lat",
+                                      "For network models with an implicit loopback link (L07, CM02, LV08), "
+                                      "latency of the loopback link. 0 by default",
+                                      0);
+
+  simgrid::config::declare_flag<double>("network/loopback-bw",
+                                      "For network models with an implicit loopback link (L07, CM02, LV08), "
+                                      "bandwidth of the loopback link. 10GBps by default",
+                                      10e9);
+
   /* Inclusion path */
   simgrid::config::declare_flag<std::string>("path", "Lookup path for inclusions in platform and deployment XML files",
                                              "", [](std::string const& path) {

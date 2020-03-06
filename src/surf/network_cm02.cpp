@@ -87,7 +87,9 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
   }
 
   set_maxmin_system(make_new_lmm_system(select));
-  loopback_ = NetworkCm02Model::create_link("__loopback__", std::vector<double>(1, 498000000), 0.000015,
+  loopback_ = NetworkCm02Model::create_link("__loopback__", 
+                                            std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
+                                            simgrid::config::get_value<double>("network/loopback-lat"),
                                             s4u::Link::SharingPolicy::FATPIPE);
 }
 
