@@ -491,6 +491,11 @@ sg_actor_t sg_actor_create(const char* name, sg_host_t host, xbt_main_func_t cod
   return simgrid::s4u::Actor::init(name, host)->start(std::move(function)).get();
 }
 
+void sg_actor_set_stacksize(sg_actor_t actor, unsigned size)
+{
+  actor->set_stacksize(size);
+}
+
 void sg_actor_exit()
 {
   simgrid::s4u::this_actor::exit();
