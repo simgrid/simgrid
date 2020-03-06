@@ -124,13 +124,13 @@ Existing Configuration Items
 - **network/bandwidth-factor:** :ref:`cfg=network/bandwidth-factor`
 - **network/crosstraffic:** :ref:`cfg=network/crosstraffic`
 - **network/latency-factor:** :ref:`cfg=network/latency-factor`
+- **network/loopback-lat:** :ref:`cfg=network/loopback`
+- **network/loopback-bw:** :ref:`cfg=network/loopback`
 - **network/maxmin-selective-update:** :ref:`Network Optimization Level <options_model_optim>`
 - **network/model:** :ref:`options_model_select`
 - **network/optim:** :ref:`Network Optimization Level <options_model_optim>`
 - **network/TCP-gamma:** :ref:`cfg=network/TCP-gamma`
 - **network/weight-S:** :ref:`cfg=network/weight-S`
-- **network/loopback-lat:** :ref:`options_model_loopback`
-- **network/loopback-bw:** :ref:`options_model_loopback`
 
 - **ns3/TcpModel:** :ref:`options_pls`
 - **path:** :ref:`cfg=path`
@@ -397,7 +397,7 @@ can be set to 0 (disable this feature) or 1 (enable it).
 
 Note that with the default host model this option is activated by default.
 
-.. _options_model_loopback:
+.. _cfg=network/loopback:
 
 Configuring loopback link
 ^^^^^^^^^^^^^^^^^^^^^^^^^
