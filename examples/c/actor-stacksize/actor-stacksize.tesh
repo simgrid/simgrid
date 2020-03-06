@@ -1,0 +1,22 @@
+
+! ignore .*Using Boost contexts. Welcome to the 21th century.
+! ignore .*Activating SYSV context factory
+! ignore .*Using raw contexts. Because the glibc is just not good enough for us.
+
+$ ${bindir:=.}/actor-stacksize-c --log=simix_context.thresh:verbose --log=no_loc ${platfdir}/small_platform.xml
+> [::(0) 0.000000] [simix_context/VERBOSE] Creating a context of stack 8Mb
+> [0.000000] [simix_context/VERBOSE] Creating a context of stack 8Mb
+> [0.000000] [simix_context/VERBOSE] Creating a context of stack 16Mb
+> [0.000000] [simix_context/VERBOSE] Creating a context of stack 16Mb
+> [0.000000] [simix_context/VERBOSE] Creating a context of stack 32Mb
+> [0.000000] [simix_context/VERBOSE] Creating a context of stack 32Mb
+> [0.000000] [simix_context/VERBOSE] Creating a context of stack 64Mb
+> [0.000000] [simix_context/VERBOSE] Creating a context of stack 32Mb
+> [Tremblay:actor:(1) 0.000000] [actor_stacksize/INFO] Hello
+> [Tremblay:actor:(2) 0.000000] [actor_stacksize/INFO] Hello
+> [Tremblay:actor:(3) 0.000000] [actor_stacksize/INFO] Hello
+> [Tremblay:actor:(4) 0.000000] [actor_stacksize/INFO] Hello
+> [Tremblay:actor:(5) 0.000000] [actor_stacksize/INFO] Hello
+> [Tremblay:actor:(6) 0.000000] [actor_stacksize/INFO] Hello
+> [Tremblay:actor:(7) 0.000000] [actor_stacksize/INFO] Hello
+> [0.000000] [actor_stacksize/INFO] Simulation time 0

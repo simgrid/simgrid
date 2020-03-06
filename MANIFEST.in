@@ -32,6 +32,8 @@ include examples/c/actor-lifetime/actor-lifetime.tesh
 include examples/c/actor-lifetime/actor-lifetime_d.xml
 include examples/c/actor-migrate/actor-migrate.c
 include examples/c/actor-migrate/actor-migrate.tesh
+include examples/c/actor-stacksize/actor-stacksize.c
+include examples/c/actor-stacksize/actor-stacksize.tesh
 include examples/c/actor-suspend/actor-suspend.c
 include examples/c/actor-suspend/actor-suspend.tesh
 include examples/c/actor-yield/actor-yield.c
