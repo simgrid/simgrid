@@ -170,7 +170,11 @@ SwappedContext::~SwappedContext()
 unsigned char* SwappedContext::get_stack_bottom() const
 {
   // Depending on the stack direction, its bottom (that make_fcontext needs) may be the lower or higher end
-  return PTH_STACKGROWTH == -1 ? stack_ + get_actor()->get_stacksize() : stack_;
+#if PTH_STACKGROWTH == 1
+  return stack_;
+#else
+  return stack_ + get_actor()->get_stacksize();
+#endif
 }
 
 void SwappedContext::stop()
