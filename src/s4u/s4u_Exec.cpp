@@ -232,19 +232,34 @@ void sg_exec_start(sg_exec_t exec)
   exec->start();
 }
 
-void sg_exec_wait(sg_exec_t exec)
+sg_error_t sg_exec_wait(sg_exec_t exec)
 {
-  exec->wait_for(-1);
+  sg_error_t status = SG_OK;
+  try {
+    exec->wait_for(-1);
+  } catch (const simgrid::TimeoutException&) {
+    status = SG_ERROR_TIMEOUT;
+  } catch (const simgrid::CancelException&) {
+    status = SG_ERROR_CANCELED;
+  } catch (const simgrid::HostFailureException&) {
+    status = SG_ERROR_HOST;
+  }
   exec->unref();
+  return status;
 }
 
-void sg_exec_wait_for(sg_exec_t exec, double timeout)
+sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
 {
+  sg_error_t status = SG_OK;
   try {
     exec->wait_for(timeout);
   } catch (const simgrid::TimeoutException&) {
-    // FIXME: add better exception handling
-    XBT_DEBUG("Exec reached its timeout");
+    status = SG_ERROR_TIMEOUT;
+  } catch (const simgrid::CancelException&) {
+    status = SG_ERROR_CANCELED;
+  } catch (const simgrid::HostFailureException&) {
+    status = SG_ERROR_HOST;
   }
   exec->unref();
+  return status;
 }

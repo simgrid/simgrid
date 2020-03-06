@@ -17,8 +17,8 @@ XBT_PUBLIC void sg_exec_set_host(sg_exec_t exec, sg_host_t new_host);
 XBT_PUBLIC double sg_exec_get_remaining(const_sg_exec_t exec);
 
 XBT_PUBLIC void sg_exec_start(sg_exec_t exec);
-XBT_PUBLIC void sg_exec_wait(sg_exec_t exec);
-XBT_PUBLIC void sg_exec_wait_for(sg_exec_t exec, double timeout);
+XBT_PUBLIC sg_error_t sg_exec_wait(sg_exec_t exec);
+XBT_PUBLIC sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout);
 
 SG_END_DECL
 

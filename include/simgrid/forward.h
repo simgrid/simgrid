@@ -8,6 +8,16 @@
 
 #include <xbt/base.h>
 
+typedef enum {
+  SG_OK,
+  SG_ERROR_CANCELED,
+  SG_ERROR_TIMEOUT,
+  SG_ERROR_HOST,
+  SG_ERROR_NETWORK,
+  SG_ERROR_STORAGE,
+  SG_ERROR_VM
+} sg_error_t;
+
 #ifdef __cplusplus
 
 #include <boost/intrusive_ptr.hpp>

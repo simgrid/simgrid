@@ -263,10 +263,38 @@ int sg_comm_test(sg_comm_t comm)
   return finished;
 }
 
-void sg_comm_wait(sg_comm_t comm)
+sg_error_t sg_comm_wait(sg_comm_t comm)
 {
-  comm->wait_for(-1);
+  sg_error_t status = SG_OK;
+
+  try {
+    comm->wait_for(-1);
+  } catch (const simgrid::TimeoutException&) {
+    status = SG_ERROR_TIMEOUT;
+  } catch (const simgrid::CancelException&) {
+    status = SG_ERROR_CANCELED;
+  } catch (const simgrid::NetworkFailureException&) {
+    status = SG_ERROR_NETWORK;
+  }
   comm->unref();
+  return status;
+}
+
+sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
+{
+  sg_error_t status = SG_OK;
+
+  try {
+    comm->wait_for(timeout);
+  } catch (const simgrid::TimeoutException&) {
+    status = SG_ERROR_TIMEOUT;
+  } catch (const simgrid::CancelException&) {
+    status = SG_ERROR_CANCELED;
+  } catch (const simgrid::NetworkFailureException&) {
+    status = SG_ERROR_NETWORK;
+  }
+  comm->unref();
+  return status;
 }
 
 void sg_comm_wait_all(sg_comm_t* comms, size_t count)

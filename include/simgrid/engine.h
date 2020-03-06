@@ -10,8 +10,10 @@
 #include <stddef.h>
 
 SG_BEGIN_DECL /* C interface */
-/** Initialize the SimGrid engine, taking the command line parameters of your main function. */
-XBT_PUBLIC void simgrid_init(int* argc, char** argv);
+
+    /** Initialize the SimGrid engine, taking the command line parameters of your main function. */
+    XBT_PUBLIC void
+    simgrid_init(int* argc, char** argv);
 
 /** Creates a new platform, including hosts, links, and the routing table.
  *
