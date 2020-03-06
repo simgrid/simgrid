@@ -227,14 +227,34 @@ double sg_exec_get_remaining(const_sg_exec_t exec)
   return exec->get_remaining();
 }
 
+double sg_exec_get_remaining_ratio(const_sg_exec_t exec)
+{
+  return exec->get_remaining_ratio();
+}
+
 void sg_exec_start(sg_exec_t exec)
 {
   exec->start();
 }
 
+void sg_exec_cancel(sg_exec_t exec)
+{
+  exec->cancel();
+  exec->unref();
+}
+
+int sg_exec_test(sg_exec_t exec)
+{
+  bool finished = exec->test();
+  if (finished)
+    exec->unref();
+  return finished;
+}
+
 sg_error_t sg_exec_wait(sg_exec_t exec)
 {
   sg_error_t status = SG_OK;
+
   try {
     exec->wait_for(-1);
   } catch (const simgrid::TimeoutException&) {
