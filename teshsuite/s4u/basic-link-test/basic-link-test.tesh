@@ -2,7 +2,7 @@
 
 $ ./basic-link-test ${srcdir:=.}/../../simdag/platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Link count: 12
-> [  0.000000] (0:maestro@) __loopback__: latency = 0.00002, bandwidth = 498000000.000000
+> [  0.000000] (0:maestro@) __loopback__: latency = 0.00000, bandwidth = 10000000000.000000
 > [  0.000000] (0:maestro@) bob_cluster_backbone: latency = 0.00050, bandwidth = 2250000000.000000
 > [  0.000000] (0:maestro@) bob_cluster_link_0_DOWN: latency = 0.00005, bandwidth = 125000000.000000
 > [  0.000000] (0:maestro@) bob_cluster_link_0_UP: latency = 0.00005, bandwidth = 125000000.000000
@@ -17,7 +17,7 @@ $ ./basic-link-test ${srcdir:=.}/../../simdag/platforms/one_cluster.xml "--log=r
 
 $ ./basic-link-test ${srcdir:=.}/../../simdag/platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Link count: 5
-> [  0.000000] (0:maestro@) __loopback__: latency = 0.00002, bandwidth = 498000000.000000
+> [  0.000000] (0:maestro@) __loopback__: latency = 0.00000, bandwidth = 10000000000.000000
 > [  0.000000] (0:maestro@) link1: latency = 0.00005, bandwidth = 125000000.000000
 > [  0.000000] (0:maestro@) link2: latency = 0.00005, bandwidth = 125000000.000000
 > [  0.000000] (0:maestro@) link3: latency = 0.00010, bandwidth = 80000000.000000

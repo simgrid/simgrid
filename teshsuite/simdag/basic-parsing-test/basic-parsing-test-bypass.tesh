@@ -69,8 +69,8 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/examples/platforms/bypassRoute.xm
 > Workstation number: 4, link number: 10
 > Route between AS_2_host1 and AS_2_host1
 >   Route size 1
->   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
->   Route latency = 0.000015, route bandwidth = 498000000.000000
+>   Link __loopback__: latency = 0.000000, bandwidth = 10000000000.000000
+>   Route latency = 0.000000, route bandwidth = 10000000000.000000
 > Route between AS_2_host1 and AS_2_host2
 >   Route size 3
 >   Link AS_2_link7: latency = 0.000500, bandwidth = 1250000000.000000
@@ -96,8 +96,8 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/examples/platforms/bypassRoute.xm
 >   Route latency = 0.001000, route bandwidth = 1250000000.000000
 > Route between AS_2_host2 and AS_2_host2
 >   Route size 1
->   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
->   Route latency = 0.000015, route bandwidth = 498000000.000000
+>   Link __loopback__: latency = 0.000000, bandwidth = 10000000000.000000
+>   Route latency = 0.000000, route bandwidth = 10000000000.000000
 > Route between AS_2_host2 and AS_2_host3
 >   Route size 2
 >   Link AS_2_link2: latency = 0.000500, bandwidth = 1250000000.000000
@@ -122,8 +122,8 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/examples/platforms/bypassRoute.xm
 >   Route latency = 0.001000, route bandwidth = 1250000000.000000
 > Route between AS_2_host3 and AS_2_host3
 >   Route size 1
->   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
->   Route latency = 0.000015, route bandwidth = 498000000.000000
+>   Link __loopback__: latency = 0.000000, bandwidth = 10000000000.000000
+>   Route latency = 0.000000, route bandwidth = 10000000000.000000
 > Route between AS_2_host3 and AS_1_host1
 >   Route size 4
 >   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
@@ -154,5 +154,5 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/examples/platforms/bypassRoute.xm
 >   Route latency = 0.002000, route bandwidth = 1250000000.000000
 > Route between AS_1_host1 and AS_1_host1
 >   Route size 1
->   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
->   Route latency = 0.000015, route bandwidth = 498000000.000000
+>   Link __loopback__: latency = 0.000000, bandwidth = 10000000000.000000
+>   Route latency = 0.000000, route bandwidth = 10000000000.000000

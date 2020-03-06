@@ -11,7 +11,7 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e
 >   <host id="bob4.hamburger.edu" speed="1000000000"/>
 >   <host id="bob6.hamburger.edu" speed="1000000000"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_backbone" bandwidth="2250000000" latency="0.000500000"/>
 >   <link id="bob_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
@@ -146,7 +146,7 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:
 >   <host id="bob4.hamburger.edu" speed="1000000000" core="6"/>
 >   <host id="bob6.hamburger.edu" speed="1000000000" core="6"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
@@ -283,7 +283,7 @@ $ ${bindir:=.}/flatifier ../platforms/host_attributes.xml "--log=root.fmt:[%10.6
 >     <prop id="memory" value="1000000000"/>
 >   </host>
 >   <host id="erin" speed="500000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <route src="alice" dst="alice">
 >   <link_ctn id="__loopback__"/>
 >   </route>
@@ -309,7 +309,7 @@ $ ${bindir:=.}/flatifier ../platforms/link_attributes.xml "--log=root.fmt:[%10.6
 > <platform version="4">
 > <AS id="AS0" routing="Full">
 >   <host id="bob" speed="500000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link2" bandwidth="125000000" latency="0.000050000" sharing_policy="FATPIPE"/>
 >   <link id="link3" bandwidth="80000000" latency="0.000100000"/>
@@ -329,7 +329,7 @@ $ ${bindir:=.}/flatifier ../platforms/three_hosts_non_symmetric_route.xml "--log
 >   <host id="alice" speed="500000000"/>
 >   <host id="bob" speed="1000000000"/>
 >   <host id="trudy" speed="250000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link2" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link3" bandwidth="125000000" latency="0.000050000"/>
@@ -375,7 +375,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%
 >   <host id="bob1.hamburger.edu" speed="1000000000"/>
 >   <router id="alicealice_cluster_router.crepe.fr"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="alice_cluster_backbone" bandwidth="2250000000" latency="0.000500000"/>
 >   <link id="alice_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="alice_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
@@ -506,7 +506,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%
 > <AS id="AS0" routing="Full">
 >   <host id="alice" speed="500000000"/>
 >   <host id="bob" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="link_alice" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link_bob" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="switch" bandwidth="125000000" latency="0.000050000" sharing_policy="FATPIPE"/>
@@ -533,7 +533,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%1
 > <AS id="AS0" routing="Full">
 >   <host id="alice" speed="500000000"/>
 >   <host id="bob" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
 >   <route src="alice" dst="alice">
 >   <link_ctn id="__loopback__"/>
@@ -562,7 +562,7 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassASroute.xml "--lo
 >   <router id="my_cluster_1_router"/>
 >   <router id="my_cluster_2_router"/>
 >   <router id="my_cluster_3_router"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="1250000000" latency="0.000500000"/>
 >   <link id="link2" bandwidth="1250000000" latency="0.000500000"/>
 >   <link id="link3" bandwidth="1250000000" latency="0.000500000"/>
@@ -703,7 +703,7 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--lo
 >   <host id="node-8.simgrid.org" speed="1000000000"/>
 >   <host id="node-9.simgrid.org" speed="1000000000"/>
 >   <router id="node-bob_cluster_router.simgrid.org"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_10_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_11_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>

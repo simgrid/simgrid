@@ -30,5 +30,5 @@ $ ${bindir:=.}/availability ../../../examples/platforms/simulacrum_7_hosts.xml  
 > [0.000000] [test/INFO] Scheduling ID00024@mJPEG to node: Host 30
 > [0.000000] [test/INFO] Scheduling end to node: Host 26
 > [0.000000] [test/INFO] DAX scheduled
-> [163.998635] [test/INFO] Simulation done.
+> [163.990688] [test/INFO] Simulation done.
 
