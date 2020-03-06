@@ -134,7 +134,7 @@ namespace smpi{
   int File::seek_shared(MPI_Offset offset, int whence){
     shared_mutex_->lock();
     seek(offset,whence);
-    *shared_file_pointer_=offset;
+    *shared_file_pointer_=file_->tell();
     shared_mutex_->unlock();
     return MPI_SUCCESS;
   }
@@ -219,9 +219,11 @@ namespace smpi{
 
   int File::write_shared(MPI_File fh, const void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
     fh->shared_mutex_->lock();
+    XBT_DEBUG("Write shared on %s - Shared ptr before : %lld",fh->file_->get_path(), *(fh->shared_file_pointer_));
     fh->seek(*(fh->shared_file_pointer_),MPI_SEEK_SET);
     write(fh, const_cast<void*>(buf), count, datatype, status);
     *(fh->shared_file_pointer_)=fh->file_->tell();
+    XBT_DEBUG("Write shared on %s - Shared ptr after : %lld",fh->file_->get_path(), *(fh->shared_file_pointer_));
     fh->shared_mutex_->unlock();
     return MPI_SUCCESS;
   }
