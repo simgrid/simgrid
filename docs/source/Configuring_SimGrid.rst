@@ -129,6 +129,8 @@ Existing Configuration Items
 - **network/optim:** :ref:`Network Optimization Level <options_model_optim>`
 - **network/TCP-gamma:** :ref:`cfg=network/TCP-gamma`
 - **network/weight-S:** :ref:`cfg=network/weight-S`
+- **network/loopback-lat:** :ref:`options_model_loopback`
+- **network/loopback-bw:** :ref:`options_model_loopback`
 
 - **ns3/TcpModel:** :ref:`options_pls`
 - **path:** :ref:`cfg=path`
@@ -394,6 +396,16 @@ This is activated through the ``network/crosstraffic`` item, that
 can be set to 0 (disable this feature) or 1 (enable it).
 
 Note that with the default host model this option is activated by default.
+
+.. _options_model_loopback:
+
+Configuring loopback link
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Several network model provide an implicit loopback link to account for local 
+communication on a host. By default it has a 10GBps bandwidth and a null latency.
+This can be changed with ``network/loopback-lat`` and ``network/loopback-bw`` 
+items.
 
 .. _cfg=smpi/async-small-thresh:
 
