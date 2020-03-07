@@ -217,6 +217,16 @@ void sg_exec_set_bound(sg_exec_t exec, double bound)
   exec->set_bound(bound);
 }
 
+const char* sg_exec_get_name(sg_exec_t exec)
+{
+  return exec->get_cname();
+}
+
+void sg_exec_set_name(sg_exec_t exec, const char* name)
+{
+  exec->set_name(name);
+}
+
 void sg_exec_set_host(sg_exec_t exec, sg_host_t new_host)
 {
   exec->set_host(new_host);
@@ -282,4 +292,25 @@ sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
   }
   exec->unref();
   return status;
+}
+
+int sg_exec_wait_any(sg_exec_t* execs, size_t count)
+{
+  return sg_exec_wait_any_for(execs, count, -1);
+}
+
+int sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout)
+{
+  std::vector<simgrid::s4u::ExecPtr> s4u_execs;
+  for (unsigned int i = 0; i < count; i++) {
+    s4u_execs.emplace_back(execs[i]);
+  }
+  int pos = simgrid::s4u::Exec::wait_any_for(&s4u_execs, timeout);
+  if (pos != -1)
+    s4u_execs[pos]->unref();
+  else
+    for (const auto& e : s4u_execs)
+      e->unref();
+
+  return pos;
 }
