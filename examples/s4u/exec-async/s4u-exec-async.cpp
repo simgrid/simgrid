@@ -33,7 +33,6 @@ static void monitor()
              100 * activity->get_remaining_ratio());
     simgrid::s4u::this_actor::sleep_for(0.3);
   }
-  activity->wait();
 
   XBT_INFO("Goodbye now!");
 }
