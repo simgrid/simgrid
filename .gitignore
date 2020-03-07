@@ -124,6 +124,7 @@ examples/c/actor-join/actor-join-c
 examples/c/actor-kill/actor-kill-c
 examples/c/actor-lifetime/actor-lifetime-c
 examples/c/actor-migrate/actor-migrate-c
+examples/c/actor-stacksize/actor-stacksize-c
 examples/c/actor-suspend/actor-suspend-c
 examples/c/actor-yield/actor-yield-c
 examples/c/app-chainsend/app-chainsend-c
@@ -141,6 +142,8 @@ examples/c/energy-vm/energy-vm-c
 examples/c/exec-basic/exec-basic-c
 examples/c/exec-dvfs/exec-dvfs-c
 examples/c/exec-remote/exec-remote-c
+examples/c/exec-async/exec-async-c
+examples/c/exec-waitany/exec-waitany-c
 examples/c/io-disk-raw/io-disk-raw-c
 examples/c/io-file-remote/io-file-remote-c
 examples/c/plugin-hostload/plugin-hostload-c
@@ -177,6 +180,7 @@ examples/s4u/actor-join/s4u-actor-join
 examples/s4u/actor-kill/s4u-actor-kill
 examples/s4u/actor-lifetime/s4u-actor-lifetime
 examples/s4u/actor-migrate/s4u-actor-migrate
+examples/s4u/actor-stacksize/s4u-actor-stacksize
 examples/s4u/actor-suspend/s4u-actor-suspend
 examples/s4u/actor-yield/s4u-actor-yield
 examples/s4u/app-bittorrent/s4u-bittorrent

@@ -7,7 +7,7 @@ foreach(x
         app-pingpong app-token-ring 
         async-wait async-waitall async-waitany
         cloud-capping cloud-migration cloud-simple
-        exec-async exec-basic exec-dvfs exec-remote
+        exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote
         plugin-hostload)
@@ -62,7 +62,7 @@ foreach(x
         app-chainsend app-pingpong app-token-ring
         async-wait async-waitall async-waitany
         cloud-capping cloud-migration cloud-simple
-        exec-async exec-basic exec-dvfs exec-remote
+        exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote
         plugin-hostload)
