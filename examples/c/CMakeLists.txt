@@ -10,6 +10,7 @@ foreach(x
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote
+        platform-failures
         plugin-hostload)
   add_executable       (${x}-c EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}-c simgrid)
@@ -65,6 +66,7 @@ foreach(x
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote
+        platform-failures
         plugin-hostload)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                   --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/${x}
