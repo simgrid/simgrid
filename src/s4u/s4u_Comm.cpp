@@ -322,5 +322,8 @@ int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
   int pos = simgrid::s4u::Comm::wait_any_for(&s4u_comms, timeout);
   if (pos != -1)
     s4u_comms[pos]->unref();
+  else
+    for (const auto& c : s4u_comms)
+      c->unref();
   return pos;
 }
