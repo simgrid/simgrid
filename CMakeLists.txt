@@ -856,6 +856,13 @@ if(enable_python)
                           LIBRARY_OUTPUT_NAME simgrid
                           CXX_VISIBILITY_PRESET "default"
                           INTERPROCEDURAL_OPTIMIZATION FALSE)
+    # LTO is disabled here from the python bindings because this makes a
+    # cmake warning about CMP0069 even when this policy is set. This
+    # problem may be in cmake, in pybind11 or even in our code, not sure.
+    # It may get eventually solved in cmake or pybind11. Or not.
+    # The sure thing is that our python bindings are in one file only,
+    # so there is no need for LTO here. Problem solved :)
+
     add_dependencies(tests python-bindings)
     set_property(TARGET python-bindings
                  APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
