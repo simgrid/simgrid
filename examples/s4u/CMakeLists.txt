@@ -162,7 +162,7 @@ endif()
 # Add all extra files to the archive
 ####################################
 
-set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
+set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp              PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.tesh             PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
