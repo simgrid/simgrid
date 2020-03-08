@@ -11,19 +11,6 @@ foreach(x cloud-two-tasks get_sender platform-properties io-file task_listen_fro
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 
-# CPP examples
-foreach(x host_on_off_processes)
-  if(enable_msg)
-    add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
-    target_link_libraries(${x}  simgrid)
-    set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-    add_dependencies(tests ${x})
-  endif()
-
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
-endforeach()
-
 if(enable_msg)
   add_executable       (bittorrent EXCLUDE_FROM_ALL app-bittorrent/bittorrent.c app-bittorrent/bittorrent-messages.c app-bittorrent/bittorrent-peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
   target_link_libraries(bittorrent simgrid)
@@ -42,7 +29,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
                                    PARENT_SCOPE)
 
 if(enable_msg)
-  foreach(x app-bittorrent cloud-two-tasks host_on_off_processes get_sender task_destroy_cancel task_listen_from
+  foreach(x app-bittorrent cloud-two-tasks get_sender task_destroy_cancel task_listen_from
           io-file platform-properties)
 
     ADD_TESH_FACTORIES(tesh-msg-${x} "raw"  --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms

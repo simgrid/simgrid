@@ -1,0 +1,65 @@
+
+$ ./host-on-off-actors ${platfdir}/small_platform.xml 1 --log=no_loc
+> [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO] Test 1:
+> [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO]   Create an actor on Jupiter
+> [Jupiter:actor_daemon:(2) 0.000000] [s4u_test/INFO]   Start daemon on Jupiter (76296000.000000)
+> [Jupiter:actor_daemon:(2) 0.000000] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemon:(2) 1.000000] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemon:(2) 2.000000] [s4u_test/INFO]   Execute daemon
+> [Tremblay:test_launcher:(1) 3.000000] [s4u_test/INFO]   Turn off Jupiter
+> [Jupiter:actor_daemon:(2) 3.000000] [s4u_test/INFO]   Execute daemon
+> [Tremblay:test_launcher:(1) 13.000000] [s4u_test/INFO] Test 1 seems ok, cool !(#Actors: 1, it should be 1; #tasks: 3)
+> [Tremblay:test_launcher:(1) 13.000000] [s4u_test/INFO]   Test done. See you!
+> [13.000000] [s4u_test/INFO] Simulation time 13
+
+! expect signal SIGIOT
+$ $VALGRIND_NO_LEAK_CHECK ./host-on-off-actors ${platfdir}/small_platform.xml 2 --log=no_loc
+> [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO] Test 2:
+> [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO]   Turn off Jupiter
+> [0.000000] [simix_process/WARNING] Cannot launch actor 'actor_daemon' on failed host 'Jupiter'
+> [Tremblay:test_launcher:(1) 0.000000] [xbt/CRITICAL] Could not launch a new actor on failed host Jupiter.
+
+$ ./host-on-off-actors ${platfdir}/small_platform.xml 4 --log=no_loc
+> [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO] Test 4 (turn off src during a communication) : Create an actor/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication
+> [Tremblay:commRX:(2) 10.000000] [s4u_test/INFO]   Start RX
+> [Jupiter:commTX:(3) 10.000000] [s4u_test/INFO]   Start TX
+> [Tremblay:test_launcher:(1) 10.000000] [s4u_test/INFO]   number of actors: 3
+> [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO]   Turn Jupiter off
+> [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO] Test 4 is ok.  (number of actors : 2, it should be 1 or 2 if RX has not been satisfied). An exception is raised when we turn off a node that has an actor sleeping
+> [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO]   Test done. See you!
+> [Tremblay:commRX:(2) 25.033047] [s4u_test/INFO]   Receive message: COMM
+> [Tremblay:commRX:(2) 25.033047] [s4u_test/INFO]   RX Done
+> [25.033047] [s4u_test/INFO] Simulation time 25.033
+
+$ ./host-on-off-actors ${platfdir}/small_platform.xml 5 --log=no_loc
+> [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO] Test 5 (turn off dest during a communication : Create an actor/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication
+> [Jupiter:commRX:(2) 10.000000] [s4u_test/INFO]   Start RX
+> [Tremblay:commTX:(3) 10.000000] [s4u_test/INFO]   Start TX
+> [Tremblay:test_launcher:(1) 10.000000] [s4u_test/INFO]   number of actors: 3
+> [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO]   Turn Jupiter off
+> [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO] Test 5 seems ok (number of actors: 2, it should be 2)
+> [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO]   Test done. See you!
+> [Tremblay:commTX:(3) 40.000000] [s4u_test/INFO]   TX done
+> [40.000000] [s4u_test/INFO] Simulation time 40
+
+$ ./host-on-off-actors ${platfdir}/small_platform.xml 6 --log=no_loc
+> [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO] Test 6: Turn on Jupiter, assign a VM on Jupiter, launch an actor inside the VM, and turn off the node
+> [vm0:actor_daemon:(2) 0.000000] [s4u_test/INFO]   Start daemon on vm0 (76296000.000000)
+> [vm0:actor_daemon:(2) 0.000000] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 0.000000] [s4u_test/INFO]   Start daemon on Jupiter (76296000.000000)
+> [Jupiter:actor_daemonJUPI:(3) 0.000000] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 1.000001] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 2.000002] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 3.000004] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 4.000005] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 5.000006] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 6.000007] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 7.000008] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 8.000009] [s4u_test/INFO]   Execute daemon
+> [Jupiter:actor_daemonJUPI:(3) 9.000011] [s4u_test/INFO]   Execute daemon
+> [Tremblay:test_launcher:(1) 10.000000] [s4u_test/INFO]   Turn Jupiter off
+> [Tremblay:test_launcher:(1) 10.000000] [s4u_test/INFO]   Shutdown vm0
+> [Tremblay:test_launcher:(1) 10.000000] [s4u_test/INFO]   Destroy vm0
+> [Tremblay:test_launcher:(1) 10.000000] [s4u_test/INFO] Test 6 is also weird: when the node Jupiter is turned off once again, the VM and its daemon are not killed. However, the issue regarding the shutdown of hosted VMs can be seen a feature not a bug ;)
+> [Tremblay:test_launcher:(1) 10.000000] [s4u_test/INFO]   Test done. See you!
+> [10.000000] [s4u_test/INFO] Simulation time 10
