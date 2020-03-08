@@ -1,8 +1,5 @@
 # C examples
-foreach(x cloud-two-tasks
-          get_sender
-          platform-properties
-          io-file)
+foreach(x cloud-two-tasks get_sender platform-properties io-file task_listen_from task_destroy_cancel)
   if(enable_msg)
     add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x} simgrid)
@@ -15,7 +12,7 @@ foreach(x cloud-two-tasks
 endforeach()
 
 # CPP examples
-foreach(x task_destroy_cancel task_listen_from task_progress host_on_off_processes)
+foreach(x task_progress host_on_off_processes)
   if(enable_msg)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
     target_link_libraries(${x}  simgrid)

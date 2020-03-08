@@ -3,16 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
 #include "simgrid/msg.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int master(int /*argc*/, char* /*argv*/ [])
+static int master(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   double task_comp_size = 5E7;
   double task_comm_size = 1E6;
-  double timeout = 1;
+  double timeout        = 1;
 
   msg_task_t task = MSG_task_create("normal", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending task: \"%s\"", MSG_task_get_name(task));
@@ -27,7 +26,7 @@ static int master(int /*argc*/, char* /*argv*/ [])
   XBT_INFO("Destroying task \"%s\" directly", MSG_task_get_name(task));
   MSG_task_destroy(task);
 
-  task = MSG_task_create("cancel", task_comp_size, task_comm_size, NULL);
+  task            = MSG_task_create("cancel", task_comp_size, task_comm_size, NULL);
   msg_comm_t comm = MSG_task_isend(task, "worker_mailbox");
   XBT_INFO("Canceling task \"%s\" during comm", MSG_task_get_name(task));
   MSG_task_cancel(task);
@@ -52,9 +51,9 @@ static int master(int /*argc*/, char* /*argv*/ [])
   return 0;
 }
 
-static int worker_main(int /*argc*/, char* /*argv*/ [])
+static int worker_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
-  msg_task_t task = (msg_task_t) MSG_process_get_data(MSG_process_self());
+  msg_task_t task = (msg_task_t)MSG_process_get_data(MSG_process_self());
   msg_error_t res;
   XBT_INFO("Start %s", MSG_task_get_name(task));
   res = MSG_task_execute(task);
@@ -63,21 +62,21 @@ static int worker_main(int /*argc*/, char* /*argv*/ [])
   return 0;
 }
 
-static int worker(int /*argc*/, char* /*argv*/ [])
+static int worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   while (1) {
-    msg_task_t task = NULL;
+    msg_task_t task           = NULL;
     XBT_ATTRIB_UNUSED int res = MSG_task_receive(&(task), "worker_mailbox");
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Handling task \"%s\"", MSG_task_get_name(task));
 
-    if (not strcmp(MSG_task_get_name(task), "finalize")) {
+    if (!strcmp(MSG_task_get_name(task), "finalize")) {
       XBT_INFO("Destroying task \"%s\"", MSG_task_get_name(task));
       MSG_task_destroy(task);
       break;
     }
 
-    if (not strcmp(MSG_task_get_name(task), "cancel")) {
+    if (!strcmp(MSG_task_get_name(task), "cancel")) {
       MSG_process_create("worker1", worker_main, task, MSG_host_self());
       MSG_process_sleep(0.1);
       XBT_INFO("Canceling task \"%s\"", MSG_task_get_name(task));
@@ -97,7 +96,7 @@ static int worker(int /*argc*/, char* /*argv*/ [])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
