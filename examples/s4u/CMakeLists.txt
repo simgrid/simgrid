@@ -10,7 +10,7 @@ set(_dht-chord_sources    dht-chord/s4u-dht-chord.cpp dht-chord/s4u-dht-chord.hp
 set(_dht-kademlia_sources dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/s4u-dht-kademlia.hpp
                           dht-kademlia/node.cpp dht-kademlia/node.hpp
                           dht-kademlia/routing_table.cpp dht-kademlia/routing_table.hpp
-			  dht-kademlia/answer.cpp dht-kademlia/answer.hpp dht-kademlia/message.hpp)
+                          dht-kademlia/answer.cpp dht-kademlia/answer.hpp dht-kademlia/message.hpp)
 
 set(_actor-stacksize_factories "raw;boost;ucontext") # Threads ignore modifications of the stack size
 
@@ -27,6 +27,13 @@ foreach (example mc-failing-assert)
   set(_${example}_factories "ucontext;raw;boost")
 endforeach()
 
+if(SIMGRID_HAVE_NS3)
+  add_executable       (s4u-network-ns3 EXCLUDE_FROM_ALL network-ns3/s4u-network-ns3.cpp)
+  target_link_libraries(s4u-network-ns3 simgrid)
+  set_target_properties(s4u-network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
+  add_dependencies(tests s4u-network-ns3)    
+endif()
+
 # Deal with each example
 
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
@@ -35,12 +42,12 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  async-ready async-wait async-waitany async-waitall async-waituntil
                  comm-dependent
                  cloud-capping cloud-migration cloud-simple
-		 dht-chord dht-kademlia
+                 dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
-		 maestro-set
-		 mc-failing-assert
+                 maestro-set
+                 mc-failing-assert
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-hostload
@@ -121,6 +128,14 @@ foreach(example app-bittorrent app-masterworkers
 				             ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
 
+# ns3-tests
+if(SIMGRID_HAVE_NS3)
+  ADD_TESH_FACTORIES(s4u-network-ns3 "thread;ucontext;raw;boost"
+                                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/s4u
+                                     --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u
+                                     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                     ${CMAKE_HOME_DIRECTORY}/examples/s4u/network-ns3/s4u-network-ns3.tesh)
+endif()
 # Examples not accepting factories
 ##################################
 
@@ -148,7 +163,8 @@ endif()
 ####################################
 
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
-set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh           PARENT_SCOPE)
+set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.tesh             PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
@@ -168,7 +184,13 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-io/s4u-replay-io_d.xml
-                  PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3hosts_2links_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3links-timer_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3links_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/crosstraffic_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/dogbone_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml                PARENT_SCOPE)
 set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py                     PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt

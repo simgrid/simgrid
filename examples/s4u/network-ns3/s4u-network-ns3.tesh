@@ -1,0 +1,56 @@
+#!/usr/bin/env tesh
+
+p In the ns-3 tests, the timings are not shown because the exact values may vary with your ns-3 version. 
+p We just want to check that the ns-3 bindings of SimGrid are working correctly, we don't want to thoroughly test ns-3.
+
+p 3hosts 2links
+
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/network-ns3/3hosts_2links_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [Jupiter:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
+
+p 6hosts 3links
+
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/network-ns3/3links_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [Jupiter:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from Tremblay to Jupiter
+> [Ginette:worker(4)] [s4u_test/INFO] FLOW[2] : Receive 10000 bytes from Fafard to Ginette
+> [Lovelace:worker(6)] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from Bourassa to Lovelace
+
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/network-ns3/3links-timer_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [Jupiter:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from Tremblay to Jupiter
+> [Ginette:worker(4)] [s4u_test/INFO] FLOW[2] : Receive 10000 bytes from Fafard to Ginette
+> [Lovelace:worker(6)] [s4u_test/INFO] FLOW[3] : Receive 10000 bytes from Bourassa to Lovelace
+> [Lovelace:worker(7)] [s4u_test/INFO] FLOW[4] : Receive 10000 bytes from Bourassa to Lovelace
+
+p One cluster
+
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/cluster_backbone.xml ${srcdir}/network-ns3/one_cluster_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [node-6.simgrid.org:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 100 bytes from node-2.simgrid.org to node-6.simgrid.org
+
+p Dogbone
+
+! timeout 10
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/dogbone.xml ${srcdir}/network-ns3/dogbone_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0)] [ns3/WARNING] Ignoring a route between S1 and C1 of length 3: Only routes of length 1 are considered with ns-3.
+> WARNING: You can ignore this warning if your hosts can still communicate when only considering routes of length 1.
+> WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently ignored.
+> [C1:worker(3)] [s4u_test/INFO] FLOW[0] : Receive 10000 bytes from S1 to C1
+> [C2:worker(4)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S2 to C2
+
+p 2hosts 1link
+
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/onelink.xml ${srcdir}/network-ns3/onelink_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [C1:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+
+p Crosstraffic TCP option DISABLED
+! output ignore 
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/network-ns3/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:0 
+
+p Crosstraffic TCP option ENABLED
+! output ignore
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/network-ns3/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:1
