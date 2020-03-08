@@ -15,6 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(exec_waitany, "Messages specific for this example")
 
 static void worker(int argc, char* argv[])
 {
+  xbt_assert(argc > 1);
   int with_timeout = !strcmp(argv[1], "true");
 
   /* Vector in which we store all pending executions*/
