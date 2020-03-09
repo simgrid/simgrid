@@ -74,14 +74,12 @@ static void worker(int argc, char* argv[])
   xbt_assert(argc == 2, "Expecting one parameter");
   long id                          = xbt_str_parse_int(argv[1], "Invalid argument %s");
   simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(id));
-  const double* payload            = nullptr;
-  double comp_size                 = -1;
   while (1) {
     try {
       XBT_INFO("Waiting a message on %s", mailbox->get_cname());
-      payload   = static_cast<double*>(mailbox->get());
+      const double* payload = static_cast<double*>(mailbox->get());
       xbt_assert(payload != nullptr, "mailbox->get() failed");
-      comp_size = *payload;
+      double comp_size = *payload;
       delete payload;
       if (comp_size < 0) { /* - Exit when -1.0 is received */
         XBT_INFO("I'm done. See you!");
