@@ -267,8 +267,9 @@ sg_error_t sg_comm_wait(sg_comm_t comm)
 {
   sg_error_t status = SG_OK;
 
+  simgrid::s4u::CommPtr comm_ptr(comm, false);
   try {
-    comm->wait_for(-1);
+    comm_ptr->wait_for(-1);
   } catch (const simgrid::TimeoutException&) {
     status = SG_ERROR_TIMEOUT;
   } catch (const simgrid::CancelException&) {
@@ -276,7 +277,6 @@ sg_error_t sg_comm_wait(sg_comm_t comm)
   } catch (const simgrid::NetworkFailureException&) {
     status = SG_ERROR_NETWORK;
   }
-  comm->unref();
   return status;
 }
 
