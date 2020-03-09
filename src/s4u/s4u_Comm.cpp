@@ -267,9 +267,9 @@ sg_error_t sg_comm_wait(sg_comm_t comm)
 {
   sg_error_t status = SG_OK;
 
-  simgrid::s4u::CommPtr comm_ptr(comm, false);
+  simgrid::s4u::CommPtr s4u_comm(comm, false);
   try {
-    comm_ptr->wait_for(-1);
+    s4u_comm->wait_for(-1);
   } catch (const simgrid::TimeoutException&) {
     status = SG_ERROR_TIMEOUT;
   } catch (const simgrid::CancelException&) {
@@ -284,8 +284,9 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
 {
   sg_error_t status = SG_OK;
 
+  simgrid::s4u::CommPtr s4u_comm(comm, false);
   try {
-    comm->wait_for(timeout);
+    s4u_comm->wait_for(timeout);
   } catch (const simgrid::TimeoutException&) {
     status = SG_ERROR_TIMEOUT;
   } catch (const simgrid::CancelException&) {
@@ -293,7 +294,6 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
   } catch (const simgrid::NetworkFailureException&) {
     status = SG_ERROR_NETWORK;
   }
-  comm->unref();
   return status;
 }
 
@@ -301,11 +301,9 @@ void sg_comm_wait_all(sg_comm_t* comms, size_t count)
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
   for (unsigned int i = 0; i < count; i++)
-    s4u_comms.emplace_back(comms[i]);
+    s4u_comms.emplace_back(comms[i], false);
 
   simgrid::s4u::Comm::wait_all(&s4u_comms);
-  for (unsigned int i = 0; i < count; i++)
-    s4u_comms[i]->unref();
 }
 
 int sg_comm_wait_any(sg_comm_t* comms, size_t count)
@@ -316,14 +314,13 @@ int sg_comm_wait_any(sg_comm_t* comms, size_t count)
 int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
-  for (unsigned int i = 0; i < count; i++) {
-    s4u_comms.emplace_back(comms[i]);
-  }
+  for (unsigned int i = 0; i < count; i++)
+    s4u_comms.emplace_back(comms[i], false);
+
   int pos = simgrid::s4u::Comm::wait_any_for(&s4u_comms, timeout);
-  if (pos != -1)
-    s4u_comms[pos]->unref();
-  else
-    for (const auto& c : s4u_comms)
-      c->unref();
+  for (unsigned i = 0; i < count; i++) {
+    if (pos != -1 && static_cast<unsigned>(pos) != i)
+      s4u_comms[i]->add_ref();
+  }
   return pos;
 }
