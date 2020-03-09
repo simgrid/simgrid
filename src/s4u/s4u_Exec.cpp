@@ -265,8 +265,9 @@ sg_error_t sg_exec_wait(sg_exec_t exec)
 {
   sg_error_t status = SG_OK;
 
+  simgrid::s4u::ExecPtr s4u_exec(exec, false);
   try {
-    exec->wait_for(-1);
+    s4u_exec->wait_for(-1);
   } catch (const simgrid::TimeoutException&) {
     status = SG_ERROR_TIMEOUT;
   } catch (const simgrid::CancelException&) {
@@ -274,15 +275,16 @@ sg_error_t sg_exec_wait(sg_exec_t exec)
   } catch (const simgrid::HostFailureException&) {
     status = SG_ERROR_HOST;
   }
-  exec->unref();
   return status;
 }
 
 sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
 {
   sg_error_t status = SG_OK;
+
+  simgrid::s4u::ExecPtr s4u_exec(exec, false);
   try {
-    exec->wait_for(timeout);
+    s4u_exec->wait_for(timeout);
   } catch (const simgrid::TimeoutException&) {
     status = SG_ERROR_TIMEOUT;
   } catch (const simgrid::CancelException&) {
@@ -290,7 +292,6 @@ sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
   } catch (const simgrid::HostFailureException&) {
     status = SG_ERROR_HOST;
   }
-  exec->unref();
   return status;
 }
 
@@ -302,15 +303,13 @@ int sg_exec_wait_any(sg_exec_t* execs, size_t count)
 int sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout)
 {
   std::vector<simgrid::s4u::ExecPtr> s4u_execs;
-  for (unsigned int i = 0; i < count; i++) {
-    s4u_execs.emplace_back(execs[i]);
-  }
-  int pos = simgrid::s4u::Exec::wait_any_for(&s4u_execs, timeout);
-  if (pos != -1)
-    s4u_execs[pos]->unref();
-  else
-    for (const auto& e : s4u_execs)
-      e->unref();
+  for (unsigned int i = 0; i < count; i++)
+    s4u_execs.emplace_back(execs[i], false);
 
+  int pos = simgrid::s4u::Exec::wait_any_for(&s4u_execs, timeout);
+  for (unsigned i = 0; i < count; i++) {
+    if (pos != -1 && static_cast<unsigned>(pos) != i)
+      s4u_execs[i]->add_ref();
+  }
   return pos;
 }
