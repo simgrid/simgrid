@@ -25,30 +25,33 @@ static void actor_daemon()
 static void commTX()
 {
   XBT_INFO("  Start TX");
-  simgrid::s4u::Mailbox::by_name("comm")->put_init(xbt_strdup("COMM"), 100000000)->detach();
+  std::string* payload = new std::string("COMM");
+  simgrid::s4u::Mailbox::by_name("comm")->put_init(payload, 100000000)->detach();
   // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
   try {
     simgrid::s4u::this_actor::sleep_for(30);
   } catch (const simgrid::HostFailureException&) {
     XBT_INFO("The host has died ... as expected.");
   }
+  delete payload;
+
   XBT_INFO("  TX done");
 }
 
 static void commRX()
 {
-  char* payload = nullptr;
+  const std::string* payload = nullptr;
   XBT_INFO("  Start RX");
   try {
-    payload = static_cast<char*>(simgrid::s4u::Mailbox::by_name("comm")->get());
-    XBT_INFO("  Receive message: %s", payload);
+    payload = static_cast<std::string*>(simgrid::s4u::Mailbox::by_name("comm")->get());
+    XBT_INFO("  Receive message: %s", payload->c_str());
   } catch (const simgrid::HostFailureException&) {
     XBT_INFO("  Receive message: HOST_FAILURE");
   } catch (const simgrid::NetworkFailureException&) {
     XBT_INFO("  Receive message: TRANSFER_FAILURE");
   }
 
-  xbt_free(payload);
+  delete payload;
   XBT_INFO("  RX Done");
 }
 
