@@ -90,7 +90,6 @@ static void worker(int argc, char* argv[])
 {
   xbt_assert(argc == 2);
   char mailbox_name[80];
-  double* payload;
   long id = xbt_str_parse_int(argv[1], "Invalid argument %s");
 
   snprintf(mailbox_name, 79, "worker-%ld", id);
@@ -98,6 +97,7 @@ static void worker(int argc, char* argv[])
 
   while (1) {
     XBT_INFO("Waiting a message on %s", mailbox_name);
+    double* payload;
     sg_comm_t comm     = sg_mailbox_get_async(mailbox, (void**)&payload);
     sg_error_t retcode = sg_comm_wait(comm);
     if (retcode == SG_OK) {
@@ -105,10 +105,11 @@ static void worker(int argc, char* argv[])
         free(payload);
         break;
       } else {
-        XBT_INFO("Start execution...");
-        sg_actor_execute(*payload);
-        XBT_INFO("Execution complete.");
+        double comp_size = *payload;
         free(payload);
+        XBT_INFO("Start execution...");
+        sg_actor_execute(comp_size);
+        XBT_INFO("Execution complete.");
       }
     } else if (retcode == SG_ERROR_NETWORK) {
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
