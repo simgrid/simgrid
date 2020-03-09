@@ -12,7 +12,7 @@ int tasks_done = 0;
 
 static void actor_daemon()
 {
-  simgrid::s4u::Host* host = simgrid::s4u::Host::current();
+  const simgrid::s4u::Host* host = simgrid::s4u::Host::current();
   XBT_INFO("  Start daemon on %s (%f)", host->get_cname(), host->get_speed());
   for (;;) {
     XBT_INFO("  Execute daemon");

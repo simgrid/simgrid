@@ -217,7 +217,7 @@ void sg_exec_set_bound(sg_exec_t exec, double bound)
   exec->set_bound(bound);
 }
 
-const char* sg_exec_get_name(sg_exec_t exec)
+const char* sg_exec_get_name(const_sg_exec_t exec)
 {
   return exec->get_cname();
 }
