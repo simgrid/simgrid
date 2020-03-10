@@ -93,6 +93,9 @@ include examples/c/io-file-remote/io-file-remote.tesh
 include examples/c/io-file-remote/io-file-remote_d.xml
 include examples/c/platform-failures/platform-failures.c
 include examples/c/platform-failures/platform-failures.tesh
+include examples/c/platform-properties/platform-properties.c
+include examples/c/platform-properties/platform-properties.tesh
+include examples/c/platform-properties/platform-properties_d.xml
 include examples/c/plugin-hostload/plugin-hostload.c
 include examples/c/plugin-hostload/plugin-hostload.tesh
 include examples/deprecated/java/app/bittorrent/Common.java
@@ -673,9 +676,6 @@ include teshsuite/msg/get_sender/get_sender.c
 include teshsuite/msg/get_sender/get_sender.tesh
 include teshsuite/msg/io-file/io-file.c
 include teshsuite/msg/io-file/io-file.tesh
-include teshsuite/msg/platform-properties/platform-properties.c
-include teshsuite/msg/platform-properties/platform-properties.tesh
-include teshsuite/msg/platform-properties/platform-properties_d.xml
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.c
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.tesh
 include teshsuite/msg/task_listen_from/task_listen_from.c

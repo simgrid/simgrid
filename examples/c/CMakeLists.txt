@@ -10,7 +10,7 @@ foreach(x
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote
-        platform-failures
+        platform-failures platform-properties
         plugin-hostload)
   add_executable       (${x}-c EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}-c simgrid)
@@ -55,6 +55,7 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/async-waitall_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/io-file-remote_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/platform-properties_d.xml
                                PARENT_SCOPE)
 
 foreach(x
@@ -66,7 +67,7 @@ foreach(x
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote
-        platform-failures
+        platform-failures platform-properties
         plugin-hostload)
   ADD_TESH(c-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                   --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/${x}

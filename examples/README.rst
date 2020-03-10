@@ -547,6 +547,13 @@ Interacting with the Platform
          - :cpp:func:`simgrid::s4u::Link::get_property()` and :cpp:func:`simgrid::s4u::Link::set_property()`
          - :cpp:func:`simgrid::s4u::NetZone::get_property()` and :cpp:func:`simgrid::s4u::NetZone::set_property()`
 
+      .. example-tab:: examples/c/platform-properties/platform-properties.c
+
+         - :cpp:func:`sg_actor_get_property()` and :cpp:func:`sg_actor_set_property()`
+         - :cpp:func:`sg_host_get_property()` and :cpp:func:sg_host_set_property()`
+         - :cpp:func:`sg_link_get_property()` and :cpp:func:`sg_link_set_property()`
+         - :cpp:func:`sg_link_get_property()` and :cpp:func:`sg_link_set_property()`
+
       .. group-tab:: XML
 
          **Deployment file:**
