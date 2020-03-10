@@ -262,6 +262,7 @@ include examples/deprecated/msg/mc/deploy_bugged2.xml
 include examples/deprecated/msg/mc/deploy_bugged2_liveness.xml
 include examples/deprecated/msg/mc/deploy_bugged3.xml
 include examples/deprecated/msg/mc/deploy_centralized_mutex.xml
+include examples/deprecated/msg/mc/platform.xml
 include examples/deprecated/msg/mc/promela_bugged1_liveness
 include examples/deprecated/msg/mc/promela_bugged2_liveness
 include examples/deprecated/msg/synchro-semaphore/synchro-semaphore.c
