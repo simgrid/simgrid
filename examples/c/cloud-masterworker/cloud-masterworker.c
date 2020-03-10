@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
   sg_host_t master_pm = pms[0];
 
   sg_host_t* worker_pms = (sg_host_t*)malloc(2 * sizeof(sg_host_t));
-  for (int i = 0; i < 2 + 1; i++)
+  for (int i = 0; i < 2; i++)
     worker_pms[i] = pms[i + 1];
 
   free(pms);
