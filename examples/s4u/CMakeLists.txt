@@ -27,6 +27,8 @@ foreach (example mc-failing-assert)
   set(_${example}_factories "ucontext;raw;boost")
 endforeach()
 
+set(_mc-electric-fence_disable 1)
+
 if(SIMGRID_HAVE_NS3)
   add_executable       (s4u-network-ns3 EXCLUDE_FROM_ALL network-ns3/s4u-network-ns3.cpp)
   target_link_libraries(s4u-network-ns3 simgrid)
@@ -47,7 +49,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
                  maestro-set
-                 mc-failing-assert
+                 mc-electric-fence mc-failing-assert
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-hostload
@@ -179,6 +181,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-boot/platform_boot.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/s4u-io-file-remote_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-electric-fence/platform.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/s4u-platform-properties_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-failures/s4u-platform-failures_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split_d.xml

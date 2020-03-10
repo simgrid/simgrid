@@ -5,18 +5,13 @@
     <host id="HostA" speed="137.333Mf"/>
     <host id="HostB" speed="98.095Mf"/>
     <host id="HostC" speed="98.095Mf"/>
-    <host id="HostD" speed="98.095Mf"/>
     <link id="1" bandwidth="3.430125MBps" latency="536.941us"/>
     <link id="2" bandwidth="3.430125MBps" latency="536.941us"/>
-    <link id="3" bandwidth="3.430125MBps" latency="536.941us"/>
     <route src="HostA" dst="HostB">
       <link_ctn id="1"/>
     </route>
     <route src="HostA" dst="HostC">
       <link_ctn id="2"/>
-    </route>
-    <route src="HostA" dst="HostD">
-      <link_ctn id="3"/>
     </route>
   </zone>
 </platform>

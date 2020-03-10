@@ -262,9 +262,6 @@ include examples/deprecated/msg/mc/deploy_bugged2.xml
 include examples/deprecated/msg/mc/deploy_bugged2_liveness.xml
 include examples/deprecated/msg/mc/deploy_bugged3.xml
 include examples/deprecated/msg/mc/deploy_centralized_mutex.xml
-include examples/deprecated/msg/mc/deploy_electric_fence.xml
-include examples/deprecated/msg/mc/electric_fence.c
-include examples/deprecated/msg/mc/platform.xml
 include examples/deprecated/msg/mc/promela_bugged1_liveness
 include examples/deprecated/msg/mc/promela_bugged2_liveness
 include examples/deprecated/msg/synchro-semaphore/synchro-semaphore.c
@@ -464,6 +461,9 @@ include examples/s4u/io-file-system/s4u-io-file-system.cpp
 include examples/s4u/io-file-system/s4u-io-file-system.tesh
 include examples/s4u/maestro-set/s4u-maestro-set.cpp
 include examples/s4u/maestro-set/s4u-maestro-set.tesh
+include examples/s4u/mc-electric-fence/platform.xml
+include examples/s4u/mc-electric-fence/s4u-mc-electric-fence.cpp
+include examples/s4u/mc-electric-fence/s4u-mc-electric-fence.tesh
 include examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/s4u/mc-failing-assert/s4u-mc-failing-assert.tesh
 include examples/s4u/network-ns3/3hosts_2links_d.xml
