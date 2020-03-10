@@ -150,6 +150,8 @@ Starting and Stoping Actors
 
        .. example-tab:: examples/s4u/actor-stacksize/s4u-actor-stacksize.cpp
 
+       .. example-tab:: examples/c/actor-stacksize/actor-stacksize.c
+
 Inter-Actors Interactions
 -------------------------
 
@@ -385,7 +387,17 @@ Executions on the CPU
           :py:func:`simgrid.Exec.get_remaining_ratio()`,
           :py:func:`simgrid.this_actor.exec_async()` and
           :py:func:`simgrid.Activity.cancel()`.
+ 
+       .. example-tab:: examples/c/exec-async/exec-async.c
 
+          See also :cpp:func:`sg_actor_exec_init()`,
+          :cpp:func:`sg_exec_start()`,
+          :cpp:func:`sg_exec_wait()`,
+          :cpp:func:`sg_exec_get_remaining()`,
+          :cpp:func:`sg_exec_get_remaining_ratio()`,
+          :cpp:func:`sg_actor_exec_async()` and
+          :cpp:func:`sg_exec_cancel()`,
+          
   - **Remote execution:**
     You can start executions on remote hosts, or even change the host
     on which they occur during their execution.
