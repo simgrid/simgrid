@@ -20,14 +20,12 @@ if(WIN32)
   set(_maestro-set_disable 1)
 endif()
 
-foreach (example mc-failing-assert)
+foreach (example mc-failing-assert mc-electric-fence)
   if(NOT SIMGRID_HAVE_MC)
     set(_${example}_disable 1)
   endif()
   set(_${example}_factories "ucontext;raw;boost")
 endforeach()
-
-set(_mc-electric-fence_disable 1)
 
 if(SIMGRID_HAVE_NS3)
   add_executable       (s4u-network-ns3 EXCLUDE_FROM_ALL network-ns3/s4u-network-ns3.cpp)
