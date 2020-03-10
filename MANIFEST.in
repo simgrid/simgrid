@@ -64,6 +64,8 @@ include examples/c/async-waitany/async-waitany.tesh
 include examples/c/async-waitany/async-waitany_d.xml
 include examples/c/cloud-capping/cloud-capping.c
 include examples/c/cloud-capping/cloud-capping.tesh
+include examples/c/cloud-masterworker/cloud-masterworker.c
+include examples/c/cloud-masterworker/cloud-masterworker.tesh
 include examples/c/cloud-migration/cloud-migration.c
 include examples/c/cloud-migration/cloud-migration.tesh
 include examples/c/cloud-simple/cloud-simple.c
@@ -220,8 +222,6 @@ include examples/deprecated/msg/app-masterworker/app-masterworker-vivaldi_d.xml
 include examples/deprecated/msg/app-masterworker/app-masterworker.c
 include examples/deprecated/msg/app-masterworker/app-masterworker.tesh
 include examples/deprecated/msg/app-masterworker/app-masterworker_d.xml
-include examples/deprecated/msg/cloud-masterworker/cloud-masterworker.c
-include examples/deprecated/msg/cloud-masterworker/cloud-masterworker.tesh
 include examples/deprecated/msg/dht-kademlia/answer.c
 include examples/deprecated/msg/dht-kademlia/answer.h
 include examples/deprecated/msg/dht-kademlia/common.h
@@ -470,6 +470,7 @@ include examples/s4u/network-ns3/crosstraffic_d.xml
 include examples/s4u/network-ns3/dogbone_d.xml
 include examples/s4u/network-ns3/one_cluster_d.xml
 include examples/s4u/network-ns3/onelink_d.xml
+include examples/s4u/network-ns3/s4u-network-ns3.cpp
 include examples/s4u/network-ns3/s4u-network-ns3.tesh
 include examples/s4u/platform-failures/s4u-platform-failures.cpp
 include examples/s4u/platform-failures/s4u-platform-failures.tesh

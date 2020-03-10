@@ -6,7 +6,7 @@ foreach(x
         actor-suspend actor-yield
         app-pingpong app-token-ring 
         async-wait async-waitall async-waitany
-        cloud-capping cloud-migration cloud-simple
+        cloud-capping cloud-masterworker cloud-migration cloud-simple
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote
@@ -62,7 +62,7 @@ foreach(x
         actor-suspend actor-yield
         app-chainsend app-pingpong app-token-ring
         async-wait async-waitall async-waitany
-        cloud-capping cloud-migration cloud-simple
+        cloud-capping  cloud-masterworker cloud-migration cloud-simple
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
         io-disk-raw io-file-remote

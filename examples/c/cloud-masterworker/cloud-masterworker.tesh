@@ -1,0 +1,56 @@
+#!/usr/bin/env tesh
+
+p Testing the Cloud API with a simple master/workers
+
+$ ${bindir:=.}/cloud-masterworker-c --log=no_loc ${platfdir}/cluster_backbone.xml
+> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] # Launch 2 VMs
+> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] create VM00 on PM(node-1.simgrid.org)
+> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] put an actor (WRK00) on VM00
+> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] create VM01 on PM(node-10.simgrid.org)
+> [VM00:WRK00:(2) 0.000000] [cloud_masterworker/INFO] WRK00 is listening on mailbox(MBOX:WRK00)
+> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] put an actor (WRK01) on VM01
+> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] # Send to 2 worker actors
+> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK00)
+> [VM01:WRK01:(3) 0.000000] [cloud_masterworker/INFO] WRK01 is listening on mailbox(MBOX:WRK01)
+> [VM00:WRK00:(2) 0.090280] [cloud_masterworker/INFO] WRK00 received from mailbox(MBOX:WRK00)
+> [node-0.simgrid.org:master:(1) 0.090280] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK01)
+> [VM00:WRK00:(2) 0.100280] [cloud_masterworker/INFO] WRK00 executed
+> [VM01:WRK01:(3) 0.180560] [cloud_masterworker/INFO] WRK01 received from mailbox(MBOX:WRK01)
+> [node-0.simgrid.org:master:(1) 0.180560] [cloud_masterworker/INFO] # Suspend all VMs
+> [node-0.simgrid.org:master:(1) 0.180560] [cloud_masterworker/INFO] suspend VM00
+> [node-0.simgrid.org:master:(1) 0.180560] [cloud_masterworker/INFO] suspend VM01
+> [node-0.simgrid.org:master:(1) 0.180560] [cloud_masterworker/INFO] # Wait a while
+> [node-0.simgrid.org:master:(1) 2.180560] [cloud_masterworker/INFO] # Resume all VMs
+> [node-0.simgrid.org:master:(1) 2.180560] [cloud_masterworker/INFO] # Sleep long enough for everyone to be done with previous batch of work
+> [VM01:WRK01:(3) 2.190560] [cloud_masterworker/INFO] WRK01 executed
+> [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] # Add one more actor on each VM
+> [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] put an actor (WRK02) on VM00
+> [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] put an actor (WRK03) on VM01
+> [VM00:WRK02:(4) 10.000000] [cloud_masterworker/INFO] WRK02 is listening on mailbox(MBOX:WRK02)
+> [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] # Send to 4 worker actors
+> [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK00)
+> [VM01:WRK03:(5) 10.000000] [cloud_masterworker/INFO] WRK03 is listening on mailbox(MBOX:WRK03)
+> [VM00:WRK00:(2) 10.090280] [cloud_masterworker/INFO] WRK00 received from mailbox(MBOX:WRK00)
+> [node-0.simgrid.org:master:(1) 10.090280] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK01)
+> [VM00:WRK00:(2) 10.100280] [cloud_masterworker/INFO] WRK00 executed
+> [VM01:WRK01:(3) 10.180560] [cloud_masterworker/INFO] WRK01 received from mailbox(MBOX:WRK01)
+> [node-0.simgrid.org:master:(1) 10.180560] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK02)
+> [VM01:WRK01:(3) 10.190560] [cloud_masterworker/INFO] WRK01 executed
+> [VM00:WRK02:(4) 10.270841] [cloud_masterworker/INFO] WRK02 received from mailbox(MBOX:WRK02)
+> [node-0.simgrid.org:master:(1) 10.270841] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK03)
+> [VM00:WRK02:(4) 10.280841] [cloud_masterworker/INFO] WRK02 executed
+> [VM01:WRK03:(5) 10.361121] [cloud_masterworker/INFO] WRK03 received from mailbox(MBOX:WRK03)
+> [node-0.simgrid.org:master:(1) 10.361121] [cloud_masterworker/INFO] # Migrate all VMs to PM(node-1.simgrid.org)
+> [VM01:WRK03:(5) 10.371121] [cloud_masterworker/INFO] WRK03 executed
+> [node-0.simgrid.org:master:(1) 28.561942] [cloud_masterworker/INFO] # Migrate all VMs to PM(node-10.simgrid.org)
+> [node-0.simgrid.org:master:(1) 46.319984] [cloud_masterworker/INFO] # Shutdown the half of worker actors gracefully. The remaining half will be forcibly killed.
+> [VM00:WRK00:(2) 46.327790] [cloud_masterworker/INFO] WRK00 received from mailbox(MBOX:WRK00)
+> [VM01:WRK01:(3) 46.335596] [cloud_masterworker/INFO] WRK01 received from mailbox(MBOX:WRK01)
+> [node-0.simgrid.org:master:(1) 46.335596] [cloud_masterworker/INFO] # Wait a while before effective shutdown.
+> [node-0.simgrid.org:master:(1) 48.335596] [cloud_masterworker/INFO] # Shutdown and destroy all the VMs. The remaining worker actors will be forcibly killed.
+> [node-0.simgrid.org:master:(1) 48.335596] [cloud_masterworker/INFO] shutdown VM00
+> [node-0.simgrid.org:master:(1) 48.335596] [cloud_masterworker/INFO] destroy VM00
+> [node-0.simgrid.org:master:(1) 48.335596] [cloud_masterworker/INFO] shutdown VM01
+> [node-0.simgrid.org:master:(1) 48.335596] [cloud_masterworker/INFO] destroy VM01
+> [node-0.simgrid.org:master:(1) 48.335596] [cloud_masterworker/INFO] # Goodbye now!
+> [48.335596] [cloud_masterworker/INFO] Bye (simulation time 48.3356)

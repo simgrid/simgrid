@@ -1,5 +1,5 @@
 # C examples
-foreach(x app-masterworker cloud-masterworker
+foreach(x app-masterworker
           dht-pastry
           synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker
@@ -41,9 +41,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   PARENT_SCOPE)
 
 if(enable_msg)
-  foreach(x app-masterworker cloud-masterworker
-            dht-pastry dht-kademlia
-            synchro-semaphore)
+  foreach(x app-masterworker dht-pastry dht-kademlia synchro-semaphore)
     ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
                                 --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
   			        --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x} 
