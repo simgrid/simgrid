@@ -29,8 +29,8 @@ static void peer(int argc, char** argv)
 {
   xbt_assert(argc == 5, "Expecting 4 parameters from the XML deployment file but got %d", argc);
   int my_id           = std::stoi(argv[1]); /* - my id */
-  long messages_count = std::stol(argv[2]); /* - number of tasks */
-  double msg_size     = std::stol(argv[3]); /* - communication cost in bytes */
+  long messages_count = std::stol(argv[2]); /* - number of message */
+  double msg_size     = std::stol(argv[3]); /* - message size in bytes */
   long peers_count    = std::stod(argv[4]); /* - number of peers */
 
   /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put into it */

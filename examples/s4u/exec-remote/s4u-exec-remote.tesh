@@ -2,11 +2,11 @@
 
 ! output sort 19
 $ ${bindir:=.}/s4u-exec-remote ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:test@Fafard) I'm a wizard! I can run a task on the Ginette host from the Fafard one! Look!
+> [  0.000000] (1:test@Fafard) I'm a wizard! I can run an activity on the Ginette host from the Fafard one! Look!
 > [  0.000000] (1:test@Fafard) It started. Running 48.492Mf takes exactly one second on Ginette (but not on Fafard).
 > [  0.100000] (1:test@Fafard) Loads in flops/s: Boivin=0; Fafard=0; Ginette=48492000
 > [  1.000000] (1:test@Fafard) Done!
-> [  1.000000] (1:test@Fafard) And now, harder. Start a remote task on Ginette and move it to Boivin after 0.5 sec
+> [  1.000000] (1:test@Fafard) And now, harder. Start a remote activity on Ginette and move it to Boivin after 0.5 sec
 > [  1.500000] (1:test@Fafard) Loads before the move: Boivin=0; Fafard=0; Ginette=48492000
 > [  1.600000] (1:test@Fafard) Loads after the move: Boivin=98095000; Fafard=0; Ginette=0
 > [  2.000000] (1:test@Fafard) Done!

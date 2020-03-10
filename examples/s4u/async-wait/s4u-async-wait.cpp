@@ -21,8 +21,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_wait, "Messages specific for this s4u exa
 static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 3, "Expecting 2 parameters from the XML deployment file but got %d", argc);
-  long messages_count  = std::stol(argv[1]); /* - number of tasks */
-  double msg_size         = std::stod(argv[2]); /* - communication cost in bytes */
+  long messages_count     = std::stol(argv[1]); /* - number of messages */
+  double msg_size         = std::stod(argv[2]); /* - message size in bytes */
   double sleep_start_time = 5.0;
   double sleep_test_time  = 0;
 

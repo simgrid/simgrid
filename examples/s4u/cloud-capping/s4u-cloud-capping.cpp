@@ -64,17 +64,17 @@ static void test_dynamic_change()
   simgrid::s4u::Actor::create("worker0", vm0, worker_busy_loop, "Task0", -1);
   simgrid::s4u::Actor::create("worker1", vm1, worker_busy_loop, "Task1", pm0->get_speed());
 
-  simgrid::s4u::this_actor::sleep_for(3000); // let the tasks end
+  simgrid::s4u::this_actor::sleep_for(3000); // let the activities end
   vm0->destroy();
   vm1->destroy();
 }
 
-static void test_one_task(simgrid::s4u::Host* host)
+static void test_one_activity(simgrid::s4u::Host* host)
 {
   const double cpu_speed          = host->get_speed();
   const double computation_amount = cpu_speed * 10;
 
-  XBT_INFO("### Test: with/without task set_bound");
+  XBT_INFO("### Test: with/without activity set_bound");
 
   XBT_INFO("### Test: no bound for Task1@%s", host->get_cname());
   simgrid::s4u::Actor::create("worker0", host, worker, computation_amount, false, 0);
@@ -102,7 +102,7 @@ static void test_one_task(simgrid::s4u::Host* host)
   simgrid::s4u::this_actor::sleep_for(1000);
 }
 
-static void test_two_tasks(simgrid::s4u::Host* hostA, simgrid::s4u::Host* hostB)
+static void test_two_activities(simgrid::s4u::Host* hostA, simgrid::s4u::Host* hostB)
 {
   const double cpu_speed = hostA->get_speed();
   xbt_assert(cpu_speed == hostB->get_speed());
@@ -157,23 +157,23 @@ static void master_main()
 {
   simgrid::s4u::Host* pm0 = simgrid::s4u::Host::by_name("Fafard");
 
-  XBT_INFO("# 1. Put a single task on a PM. ");
-  test_one_task(pm0);
+  XBT_INFO("# 1. Put a single activity on a PM. ");
+  test_one_activity(pm0);
   XBT_INFO(" ");
 
-  XBT_INFO("# 2. Put two tasks on a PM.");
-  test_two_tasks(pm0, pm0);
+  XBT_INFO("# 2. Put two activities on a PM.");
+  test_two_activities(pm0, pm0);
   XBT_INFO(" ");
 
   simgrid::s4u::VirtualMachine* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->start();
 
-  XBT_INFO("# 3. Put a single task on a VM. ");
-  test_one_task(vm0);
+  XBT_INFO("# 3. Put a single activity on a VM. ");
+  test_one_activity(vm0);
   XBT_INFO(" ");
 
-  XBT_INFO("# 4. Put two tasks on a VM.");
-  test_two_tasks(vm0, vm0);
+  XBT_INFO("# 4. Put two activities on a VM.");
+  test_two_activities(vm0, vm0);
   XBT_INFO(" ");
 
   vm0->destroy();
@@ -181,8 +181,8 @@ static void master_main()
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->start();
 
-  XBT_INFO("# 6. Put a task on a PM and a task on a VM.");
-  test_two_tasks(pm0, vm0);
+  XBT_INFO("# 6. Put an activity on a PM and an activity on a VM.");
+  test_two_activities(pm0, vm0);
   XBT_INFO(" ");
 
   vm0->destroy();
@@ -191,16 +191,16 @@ static void master_main()
   vm0->set_bound(pm0->get_speed() / 10);
   vm0->start();
 
-  XBT_INFO("# 7. Put a single task on the VM capped by 10%%.");
-  test_one_task(vm0);
+  XBT_INFO("# 7. Put a single activity on the VM capped by 10%%.");
+  test_one_activity(vm0);
   XBT_INFO(" ");
 
-  XBT_INFO("# 8. Put two tasks on the VM capped by 10%%.");
-  test_two_tasks(vm0, vm0);
+  XBT_INFO("# 8. Put two activities on the VM capped by 10%%.");
+  test_two_activities(vm0, vm0);
   XBT_INFO(" ");
 
-  XBT_INFO("# 9. Put a task on a PM and a task on the VM capped by 10%%.");
-  test_two_tasks(pm0, vm0);
+  XBT_INFO("# 9. Put an activity on a PM and an activity on the VM capped by 10%%.");
+  test_two_activities(pm0, vm0);
   XBT_INFO(" ");
 
   vm0->destroy();
@@ -214,12 +214,12 @@ static void master_main()
   XBT_INFO("# 10. Test migration");
   const double computation_amount = cpu_speed * 10;
 
-  XBT_INFO("# 10. (a) Put a task on a VM without any bound.");
+  XBT_INFO("# 10. (a) Put an activity on a VM without any bound.");
   simgrid::s4u::Actor::create("worker0", vm0, worker, computation_amount, false, 0);
   simgrid::s4u::this_actor::sleep_for(1000);
   XBT_INFO(" ");
 
-  XBT_INFO("# 10. (b) set 10%% bound to the VM, and then put a task on the VM.");
+  XBT_INFO("# 10. (b) set 10%% bound to the VM, and then put an activity on the VM.");
   vm0->set_bound(cpu_speed / 10);
   simgrid::s4u::Actor::create("worker0", vm0, worker, computation_amount, false, 0);
   simgrid::s4u::this_actor::sleep_for(1000);
@@ -230,7 +230,7 @@ static void master_main()
   MSG_vm_migrate(vm0, pm1);
   XBT_INFO(" ");
 
-  XBT_INFO("# 10. (d) Put a task again on the VM.");
+  XBT_INFO("# 10. (d) Put an activity again on the VM.");
   simgrid::s4u::Actor::create("worker0", vm0, worker, computation_amount, false, 0);
   simgrid::s4u::this_actor::sleep_for(1000);
   XBT_INFO(" ");

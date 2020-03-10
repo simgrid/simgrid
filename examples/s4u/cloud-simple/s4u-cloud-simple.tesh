@@ -1,33 +1,33 @@
 #!/usr/bin/env tesh
 
-p Testing a vm with two successive tasks
+p Testing a vm with two successive activities
 
 $ ${bindir:=.}/s4u-cloud-simple --log=no_loc ${platfdir:=.}/small_platform.xml
 > [Fafard:master_:(1) 0.000000] [s4u_test/INFO] ## Test 1 (started): check computation on normal PMs
-> [Fafard:master_:(1) 0.000000] [s4u_test/INFO] ### Put a task on a PM
-> [Fafard:compute:(2) 0.013107] [s4u_test/INFO] Fafard:compute task executed 0.0131068
-> [Fafard:master_:(1) 2.000000] [s4u_test/INFO] ### Put two tasks on a PM
-> [Fafard:compute:(4) 2.026214] [s4u_test/INFO] Fafard:compute task executed 0.0262137
-> [Fafard:compute:(3) 2.026214] [s4u_test/INFO] Fafard:compute task executed 0.0262137
-> [Fafard:master_:(1) 4.000000] [s4u_test/INFO] ### Put a task on each PM
-> [Tremblay:compute:(6) 4.010194] [s4u_test/INFO] Tremblay:compute task executed 0.0101942
-> [Fafard:compute:(5) 4.013107] [s4u_test/INFO] Fafard:compute task executed 0.0131068
+> [Fafard:master_:(1) 0.000000] [s4u_test/INFO] ### Put an activity on a PM
+> [Fafard:compute:(2) 0.013107] [s4u_test/INFO] Fafard:compute executed 0.0131068
+> [Fafard:master_:(1) 2.000000] [s4u_test/INFO] ### Put two activities on a PM
+> [Fafard:compute:(4) 2.026214] [s4u_test/INFO] Fafard:compute executed 0.0262137
+> [Fafard:compute:(3) 2.026214] [s4u_test/INFO] Fafard:compute executed 0.0262137
+> [Fafard:master_:(1) 4.000000] [s4u_test/INFO] ### Put an activity on each PM
+> [Tremblay:compute:(6) 4.010194] [s4u_test/INFO] Tremblay:compute executed 0.0101942
+> [Fafard:compute:(5) 4.013107] [s4u_test/INFO] Fafard:compute executed 0.0131068
 > [Fafard:master_:(1) 6.000000] [s4u_test/INFO] ## Test 1 (ended)
-> [Fafard:master_:(1) 6.000000] [s4u_test/INFO] ## Test 2 (started): check impact of running a task inside a VM (there is no degradation for the moment)
-> [Fafard:master_:(1) 6.000000] [s4u_test/INFO] ### Put a VM on a PM, and put a task to the VM
-> [VM0:compute:(7) 6.013107] [s4u_test/INFO] VM0:compute task executed 0.0131068
+> [Fafard:master_:(1) 6.000000] [s4u_test/INFO] ## Test 2 (started): check impact of running an activity inside a VM (there is no degradation for the moment)
+> [Fafard:master_:(1) 6.000000] [s4u_test/INFO] ### Put a VM on a PM, and put an activity to the VM
+> [VM0:compute:(7) 6.013107] [s4u_test/INFO] VM0:compute executed 0.0131068
 > [Fafard:master_:(1) 8.000000] [s4u_test/INFO] ## Test 2 (ended)
-> [Fafard:master_:(1) 8.000000] [s4u_test/INFO] ## Test 3 (started): check impact of running a task collocated with a VM (there is no VM noise for the moment)
-> [Fafard:master_:(1) 8.000000] [s4u_test/INFO] ### Put a VM on a PM, and put a task to the PM
-> [Fafard:compute:(8) 8.013107] [s4u_test/INFO] Fafard:compute task executed 0.0131068
+> [Fafard:master_:(1) 8.000000] [s4u_test/INFO] ## Test 3 (started): check impact of running an activity collocated with a VM (there is no VM noise for the moment)
+> [Fafard:master_:(1) 8.000000] [s4u_test/INFO] ### Put a VM on a PM, and put an activity to the PM
+> [Fafard:compute:(8) 8.013107] [s4u_test/INFO] Fafard:compute executed 0.0131068
 > [Fafard:master_:(1) 10.000000] [s4u_test/INFO] ## Test 3 (ended)
-> [Fafard:master_:(1) 10.000000] [s4u_test/INFO] ## Test 4 (started): compare the cost of running two tasks inside two different VMs collocated or not (for the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1
-> [Fafard:master_:(1) 10.000000] [s4u_test/INFO] ### Put two VMs on a PM, and put a task to each VM
-> [VM0:compute:(9) 10.026214] [s4u_test/INFO] VM0:compute task executed 0.0262137
-> [VM1:compute:(10) 10.026214] [s4u_test/INFO] VM1:compute task executed 0.0262137
-> [Fafard:master_:(1) 12.000000] [s4u_test/INFO] ### Put a VM on each PM, and put a task to each VM
-> [VM1:compute:(12) 12.010194] [s4u_test/INFO] VM1:compute task executed 0.0101942
-> [VM0:compute:(11) 12.013107] [s4u_test/INFO] VM0:compute task executed 0.0131068
+> [Fafard:master_:(1) 10.000000] [s4u_test/INFO] ## Test 4 (started): compare the cost of running two activities inside two different VMs collocated or not (for the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1
+> [Fafard:master_:(1) 10.000000] [s4u_test/INFO] ### Put two VMs on a PM, and put an activity to each VM
+> [VM0:compute:(9) 10.026214] [s4u_test/INFO] VM0:compute executed 0.0262137
+> [VM1:compute:(10) 10.026214] [s4u_test/INFO] VM1:compute executed 0.0262137
+> [Fafard:master_:(1) 12.000000] [s4u_test/INFO] ### Put a VM on each PM, and put an activity to each VM
+> [VM1:compute:(12) 12.010194] [s4u_test/INFO] VM1:compute executed 0.0101942
+> [VM0:compute:(11) 12.013107] [s4u_test/INFO] VM0:compute executed 0.0131068
 > [Fafard:master_:(1) 14.000000] [s4u_test/INFO] ## Test 4 (ended)
 > [Fafard:master_:(1) 14.000000] [s4u_test/INFO] ## Test 5  (started): Analyse network impact
 > [Fafard:master_:(1) 14.000000] [s4u_test/INFO] ### Make a connection between PM0 and PM1

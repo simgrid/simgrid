@@ -20,8 +20,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_waituntil, "Messages specific for this s4
 static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 4, "Expecting 3 parameters from the XML deployment file but got %d", argc);
-  long messages_count  = std::stol(argv[1]); /* - number of tasks */
-  double msg_size      = std::stol(argv[2]); /* - communication cost in bytes */
+  long messages_count  = std::stol(argv[1]); /* - number of messages */
+  double msg_size      = std::stol(argv[2]); /* - message size in bytes */
   long receivers_count = std::stod(argv[3]); /* - number of receivers */
 
   std::vector<simgrid::s4u::CommPtr> pending_comms;

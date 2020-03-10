@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* Parallel tasks are convenient abstractions of parallel computational kernels that span over several machines.
+/* Parallel activities are convenient abstractions of parallel computational kernels that span over several machines.
  * To create a new one, you have to provide several things:
- *   - a vector of hosts on which the task will execute
+ *   - a vector of hosts on which the activity will execute
  *   - a vector of values, the amount of computation for each of the hosts (in flops)
  *   - a matrix of values, the amount of communication between each pair of hosts (in bytes)
  *
@@ -28,7 +28,7 @@ static void runner()
   auto hosts         = simgrid::s4u::Engine::get_instance()->get_all_hosts();
   size_t hosts_count = hosts.size();
 
-  XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "
+  XBT_INFO("First, build a classical parallel activity, with 1 Gflop to execute on each node, "
            "and 10MB to exchange between each pair");
 
   std::vector<double> computation_amounts;
@@ -60,19 +60,19 @@ static void runner()
   }
 
   /* ------[ test 3 ]----------------- */
-  XBT_INFO("Then, build a parallel task involving only computations (of different amounts) and no communication");
+  XBT_INFO("Then, build a parallel activity involving only computations (of different amounts) and no communication");
   computation_amounts = {3e8, 6e8, 1e9}; // 300Mflop, 600Mflop, 1Gflop
   communication_amounts.clear();         // no comm
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
   /* ------[ test 4 ]----------------- */
-  XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");
+  XBT_INFO("Then, build a parallel activity with no computation nor communication (synchro only)");
   computation_amounts.clear();
   communication_amounts.clear();
   simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
   /* ------[ test 5 ]----------------- */
-  XBT_INFO("Then, Monitor the execution of a parallel task");
+  XBT_INFO("Then, Monitor the execution of a parallel activity");
   computation_amounts.assign(hosts_count, 1e6 /*1Mflop*/);
   communication_amounts = {0, 1e6, 0, 0, 0, 1e6, 1e6, 0, 0};
   simgrid::s4u::ExecPtr activity =

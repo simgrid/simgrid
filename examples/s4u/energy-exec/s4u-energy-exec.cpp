@@ -26,13 +26,13 @@ static void dvfs()
   // Execute something
   start             = simgrid::s4u::Engine::get_clock();
   double flopAmount = 100E6;
-  XBT_INFO("Run a task of %.0E flops", flopAmount);
+  XBT_INFO("Run a computation of %.0E flops", flopAmount);
   simgrid::s4u::this_actor::execute(flopAmount);
-  XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW"
-           " depending on load; Energy dissipated=%.0f J",
-           simgrid::s4u::Engine::get_clock() - start, host1->get_speed(),
-           sg_host_get_wattmin_at(host1, host1->get_pstate()), sg_host_get_wattmax_at(host1, host1->get_pstate()),
-           sg_host_get_consumed_energy(host1));
+  XBT_INFO(
+      "Computation done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW"
+      " depending on load; Energy dissipated=%.0f J",
+      simgrid::s4u::Engine::get_clock() - start, host1->get_speed(), sg_host_get_wattmin_at(host1, host1->get_pstate()),
+      sg_host_get_wattmax_at(host1, host1->get_pstate()), sg_host_get_consumed_energy(host1));
 
   // ========= Change power peak =========
   int pstate = 2;
@@ -40,11 +40,11 @@ static void dvfs()
   XBT_INFO("========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s)", pstate,
            host1->get_pstate_speed(pstate), host1->get_speed());
 
-  // Run another task
+  // Run another computation
   start = simgrid::s4u::Engine::get_clock();
-  XBT_INFO("Run a task of %.0E flops", flopAmount);
+  XBT_INFO("Run a computation of %.0E flops", flopAmount);
   simgrid::s4u::this_actor::execute(flopAmount);
-  XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
+  XBT_INFO("Computation done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
            simgrid::s4u::Engine::get_clock() - start, host1->get_speed(), sg_host_get_consumed_energy(host1));
 
   start = simgrid::s4u::Engine::get_clock();

@@ -20,9 +20,9 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_waitall, "Messages specific for this s4u example");
 
 class Sender {
-  long messages_count;  /* - number of tasks */
+  long messages_count;  /* - number of messages */
   long receivers_count; /* - number of receivers */
-  double msg_size;      /* - communication cost in bytes */
+  double msg_size;      /* - message size in bytes */
 
 public:
   explicit Sender(std::vector<std::string> args)

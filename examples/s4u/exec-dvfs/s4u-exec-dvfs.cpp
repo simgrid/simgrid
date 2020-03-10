@@ -17,11 +17,11 @@ static int dvfs()
 
   XBT_INFO("Current power peak=%f", host->get_speed());
 
-  // Run a task
+  // Run a Computation
   simgrid::s4u::this_actor::execute(workload);
 
-  double task_time = simgrid::s4u::Engine::get_clock();
-  XBT_INFO("Task1 duration: %.2f", task_time);
+  double exec_time = simgrid::s4u::Engine::get_clock();
+  XBT_INFO("Computation1 duration: %.2f", exec_time);
 
   // Change power peak
   int new_pstate = 2;
@@ -32,11 +32,11 @@ static int dvfs()
 
   XBT_INFO("Current power peak=%f", host->get_speed());
 
-  // Run a second task
+  // Run a second Computation
   simgrid::s4u::this_actor::execute(workload);
 
-  task_time = simgrid::s4u::Engine::get_clock() - task_time;
-  XBT_INFO("Task2 duration: %.2f", task_time);
+  exec_time = simgrid::s4u::Engine::get_clock() - exec_time;
+  XBT_INFO("Computation2 duration: %.2f", exec_time);
 
   // Verify that the default pstate is set to 0
   host = simgrid::s4u::Host::by_name_or_null("MyHost2");

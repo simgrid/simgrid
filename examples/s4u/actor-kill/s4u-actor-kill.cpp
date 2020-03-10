@@ -13,7 +13,7 @@ static void victimA_fun()
   XBT_INFO("Hello!");
   XBT_INFO("Suspending myself");
   simgrid::s4u::this_actor::suspend(); /* - Start by suspending itself */
-  XBT_INFO("OK, OK. Let's work");      /* - Then is resumed and start to execute a task */
+  XBT_INFO("OK, OK. Let's work");      /* - Then is resumed and start to execute some flops */
   simgrid::s4u::this_actor::execute(1e9);
   XBT_INFO("Bye!"); /* - But will never reach the end of it */
 }

@@ -22,8 +22,8 @@ static void master(int argc, char* argv[])
   XBT_DEBUG("Master started");
 
   /* data size */
-  double task_comm_size = std::stod(argv[1]);
-  int id                = std::stoi(argv[3]); // unique id to control statistics
+  double msg_size = std::stod(argv[1]);
+  int id          = std::stoi(argv[3]); // unique id to control statistics
 
   /* worker name */
   workernames[id] = xbt_strdup(argv[2]);
@@ -33,14 +33,14 @@ static void master(int argc, char* argv[])
   masternames[id] = simgrid::s4u::Host::current()->get_cname();
 
   double* payload = new double();
-  *payload        = task_comm_size;
+  *payload        = msg_size;
 
   count_finished++;
   timer_start = 1;
 
   /* time measurement */
   start_time = simgrid::s4u::Engine::get_clock();
-  mbox->put(payload, task_comm_size);
+  mbox->put(payload, msg_size);
 
   XBT_DEBUG("Finished");
 }

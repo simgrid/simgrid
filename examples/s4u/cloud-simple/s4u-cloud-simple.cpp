@@ -15,7 +15,7 @@ static void computation_fun()
   simgrid::s4u::this_actor::execute(1000000);
   double clock_end = simgrid::s4u::Engine::get_clock();
 
-  XBT_INFO("%s:%s task executed %g", simgrid::s4u::this_actor::get_host()->get_cname(),
+  XBT_INFO("%s:%s executed %g", simgrid::s4u::this_actor::get_host()->get_cname(),
            simgrid::s4u::this_actor::get_cname(), clock_end - clock_sta);
 }
 
@@ -75,25 +75,26 @@ static void master_main()
 
   XBT_INFO("## Test 1 (started): check computation on normal PMs");
 
-  XBT_INFO("### Put a task on a PM");
+  XBT_INFO("### Put an activity on a PM");
   launch_computation_worker(pm0);
   simgrid::s4u::this_actor::sleep_for(2);
 
-  XBT_INFO("### Put two tasks on a PM");
+  XBT_INFO("### Put two activities on a PM");
   launch_computation_worker(pm0);
   launch_computation_worker(pm0);
   simgrid::s4u::this_actor::sleep_for(2);
 
-  XBT_INFO("### Put a task on each PM");
+  XBT_INFO("### Put an activity on each PM");
   launch_computation_worker(pm0);
   launch_computation_worker(pm1);
   simgrid::s4u::this_actor::sleep_for(2);
 
   XBT_INFO("## Test 1 (ended)");
 
-  XBT_INFO("## Test 2 (started): check impact of running a task inside a VM (there is no degradation for the moment)");
+  XBT_INFO(
+      "## Test 2 (started): check impact of running an activity inside a VM (there is no degradation for the moment)");
 
-  XBT_INFO("### Put a VM on a PM, and put a task to the VM");
+  XBT_INFO("### Put a VM on a PM, and put an activity to the VM");
   simgrid::s4u::VirtualMachine* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->start();
   launch_computation_worker(vm0);
@@ -102,10 +103,10 @@ static void master_main()
 
   XBT_INFO("## Test 2 (ended)");
 
-  XBT_INFO(
-      "## Test 3 (started): check impact of running a task collocated with a VM (there is no VM noise for the moment)");
+  XBT_INFO("## Test 3 (started): check impact of running an activity collocated with a VM (there is no VM noise for "
+           "the moment)");
 
-  XBT_INFO("### Put a VM on a PM, and put a task to the PM");
+  XBT_INFO("### Put a VM on a PM, and put an activity to the PM");
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->start();
   launch_computation_worker(pm0);
@@ -113,10 +114,11 @@ static void master_main()
   vm0->destroy();
   XBT_INFO("## Test 3 (ended)");
 
-  XBT_INFO("## Test 4 (started): compare the cost of running two tasks inside two different VMs collocated or not (for"
-           " the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1");
+  XBT_INFO(
+      "## Test 4 (started): compare the cost of running two activities inside two different VMs collocated or not (for"
+      " the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1");
 
-  XBT_INFO("### Put two VMs on a PM, and put a task to each VM");
+  XBT_INFO("### Put two VMs on a PM, and put an activity to each VM");
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->start();
   simgrid::s4u::VirtualMachine* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm0, 1);
@@ -126,7 +128,7 @@ static void master_main()
   vm0->destroy();
   vm1->destroy();
 
-  XBT_INFO("### Put a VM on each PM, and put a task to each VM");
+  XBT_INFO("### Put a VM on each PM, and put an activity to each VM");
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm1 = new simgrid::s4u::VirtualMachine("VM1", pm1, 1);
   vm0->start();

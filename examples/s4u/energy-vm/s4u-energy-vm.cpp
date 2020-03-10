@@ -28,22 +28,22 @@ static void dvfs()
   simgrid::s4u::VirtualMachine* vm_host2 = new simgrid::s4u::VirtualMachine("vm_host2", host2, 1);
   vm_host2->start();
 
-  XBT_INFO("Create two tasks on Host1: both inside a VM");
+  XBT_INFO("Create two activities on Host1: both inside a VM");
   simgrid::s4u::Actor::create("p11", vm_host1, executor);
   simgrid::s4u::Actor::create("p12", vm_host1, executor);
 
-  XBT_INFO("Create two tasks on Host2: one inside a VM, the other directly on the host");
+  XBT_INFO("Create two activities on Host2: one inside a VM, the other directly on the host");
   simgrid::s4u::Actor::create("p21", vm_host2, executor);
   simgrid::s4u::Actor::create("p22", host2, executor);
 
-  XBT_INFO("Create two tasks on Host3: both directly on the host");
+  XBT_INFO("Create two activities on Host3: both directly on the host");
   simgrid::s4u::Actor::create("p31", host3, executor);
   simgrid::s4u::Actor::create("p32", host3, executor);
 
-  XBT_INFO("Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, "
+  XBT_INFO("Wait 5 seconds. The activities are still running (they run for 3 seconds, but 2 activities are co-located, "
            "so they run for 6 seconds)");
   simgrid::s4u::this_actor::sleep_for(5);
-  XBT_INFO("Wait another 5 seconds. The tasks stop at some point in between");
+  XBT_INFO("Wait another 5 seconds. The activities stop at some point in between");
   simgrid::s4u::this_actor::sleep_for(5);
 
   vm_host1->destroy();

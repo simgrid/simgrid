@@ -12,7 +12,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_token_ring, "Messages specific for this s4u example");
 
 class RelayRunner {
-  size_t task_comm_size = 1000000; /* The token is 1MB long*/
+  size_t token_size = 1000000; /* The token is 1MB long*/
   simgrid::s4u::Mailbox* my_mailbox;
   simgrid::s4u::Mailbox* neighbor_mailbox;
   unsigned int rank      = 0;
@@ -39,14 +39,14 @@ public:
       /* The root actor (rank 0) first sends the token then waits to receive it back */
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       std::string msg = "Token";
-      neighbor_mailbox->put(&msg, task_comm_size);
+      neighbor_mailbox->put(&msg, token_size);
       const std::string* res = static_cast<std::string*>(my_mailbox->get());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
     } else {
       std::string* res = static_cast<std::string*>(my_mailbox->get());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
-      neighbor_mailbox->put(res, task_comm_size);
+      neighbor_mailbox->put(res, token_size);
     }
   }
 };

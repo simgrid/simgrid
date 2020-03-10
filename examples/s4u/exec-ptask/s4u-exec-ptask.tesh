@@ -5,19 +5,19 @@ $ ${bindir:=.}/s4u-exec-ptask ${platfdir}/energy_platform.xml --cfg=host/model:p
 > [  0.000000] (0:maestro@) Configuration change: Set 'tracing' to 'yes'
 > [  0.000000] (0:maestro@) Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> [  0.000000] (1:test@MyHost1) First, build a classical parallel task, with 1 Gflop to execute on each node, and 10MB to exchange between each pair
+> [  0.000000] (1:test@MyHost1) First, build a classical parallel activity, with 1 Gflop to execute on each node, and 10MB to exchange between each pair
 > [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost1 speed_used 3333333.333333
 > [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost2 speed_used 3333333.333333
 > [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost3 speed_used 3333333.333333
 > [300.000000] (0:maestro@) UNCAT LINK [0.000000 - 300.000000] bus bandwidth_used 100000.000000
 > [300.000000] (1:test@MyHost1) We can do the same with a timeout of 10 seconds enabled.
 > [310.000000] (1:test@MyHost1) Caught the expected timeout exception.
-> [310.000000] (1:test@MyHost1) Then, build a parallel task involving only computations (of different amounts) and no communication
+> [310.000000] (1:test@MyHost1) Then, build a parallel activity involving only computations (of different amounts) and no communication
 > [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost1 speed_used 30000000.000000
 > [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost2 speed_used 60000000.000000
 > [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost3 speed_used 100000000.000000
-> [320.000000] (1:test@MyHost1) Then, build a parallel task with no computation nor communication (synchro only)
-> [320.000000] (1:test@MyHost1) Then, Monitor the execution of a parallel task
+> [320.000000] (1:test@MyHost1) Then, build a parallel activity with no computation nor communication (synchro only)
+> [320.000000] (1:test@MyHost1) Then, Monitor the execution of a parallel activity
 > [320.000000] (1:test@MyHost1) Remaining flop ratio: 100%
 > [325.000000] (1:test@MyHost1) Remaining flop ratio: 83%
 > [330.000000] (1:test@MyHost1) Remaining flop ratio: 67%
