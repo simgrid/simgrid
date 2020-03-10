@@ -16,7 +16,7 @@ public:
   explicit sleeper(std::vector<std::string> /*args*/)
   {
     simgrid::s4u::this_actor::on_exit([](bool /*failed*/) {
-      /* Executed on process termination, to display a message helping to understand the output */
+      /* Executed on actor termination, to display a message helping to understand the output */
       XBT_INFO("Exiting now (done sleeping or got killed).");
     });
   }
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]); /* Load the platform description */
   e.register_actor<sleeper>("sleeper");
-  e.load_deployment(argv[2]); /*  Deploy the sleeper processes with explicit start/kill times */
+  e.load_deployment(argv[2]); /*  Deploy the sleeper actors with explicit start/kill times */
 
   e.run(); /* - Run the simulation */
 

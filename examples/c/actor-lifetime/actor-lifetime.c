@@ -13,7 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
 
-/* Executed on process termination*/
+/* Executed on actor termination*/
 static int my_onexit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
 {
   XBT_INFO("Exiting now (done sleeping or got killed)."); /* - Just display an informative message (see tesh file) */
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]); /* - Load the platform description */
   simgrid_register_function("sleeper", sleeper);
-  simgrid_load_deployment(argv[2]); /* - Deploy the sleeper processes with explicit start/kill times */
+  simgrid_load_deployment(argv[2]); /* - Deploy the sleeper actors with explicit start/kill times */
 
   simgrid_run(); /* - Run the simulation */
 

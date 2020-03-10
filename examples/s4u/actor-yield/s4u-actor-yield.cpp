@@ -14,7 +14,7 @@
  * It can also be used to benchmark our context-switching mechanism.
  */
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_yield, "Messages specific for this s4u example");
-/* Main function of the Yielder process */
+/* Main function of the Yielder actor */
 class yielder {
   long number_of_yields;
 

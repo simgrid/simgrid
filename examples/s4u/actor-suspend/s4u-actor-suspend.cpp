@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_suspend, "Messages specific for this s4u example");
 
-/* The Lazy guy only wants to sleep, but can be awaken by the dream_master process. */
+/* The Lazy guy only wants to sleep, but can be awaken by the dream_master actor. */
 static void lazy_guy()
 {
   XBT_INFO("Nobody's watching me ? Let's go to sleep.");
@@ -31,7 +31,7 @@ static void lazy_guy()
 /* The Dream master: */
 static void dream_master()
 {
-  XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy process */
+  XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy actor */
   simgrid::s4u::ActorPtr lazy = simgrid::s4u::Actor::create("Lazy", simgrid::s4u::this_actor::get_host(), lazy_guy);
   XBT_INFO("Let's wait a little bit...");
   simgrid::s4u::this_actor::sleep_for(10); /* - Wait for 10 seconds */

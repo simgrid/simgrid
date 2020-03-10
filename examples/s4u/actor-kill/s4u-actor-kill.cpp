@@ -25,7 +25,7 @@ static void victimB_fun()
 
 static void killer()
 {
-  XBT_INFO("Hello!"); /* - First start a victim process */
+  XBT_INFO("Hello!"); /* - First start a victim actor */
   simgrid::s4u::ActorPtr victimA =
       simgrid::s4u::Actor::create("victim A", simgrid::s4u::Host::by_name("Fafard"), victimA_fun);
   simgrid::s4u::ActorPtr victimB =
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]); /* - Load the platform description */
-  /* - Create and deploy killer process, that will create the victim actors  */
+  /* - Create and deploy killer actor, that will create the victim actors  */
   simgrid::s4u::Actor::create("killer", simgrid::s4u::Host::by_name("Tremblay"), killer);
 
   e.run(); /* - Run the simulation */

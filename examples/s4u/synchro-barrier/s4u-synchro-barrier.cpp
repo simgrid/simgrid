@@ -16,16 +16,15 @@ static void worker(simgrid::s4u::BarrierPtr barrier)
     XBT_INFO("Bye");
 }
 
-/// Spawn process_count-1 workers and do a barrier with them
-static void master(int process_count)
+/// Spawn actor_count-1 workers and do a barrier with them
+static void master(int actor_count)
 {
-    simgrid::s4u::BarrierPtr barrier = simgrid::s4u::Barrier::create(process_count);
+  simgrid::s4u::BarrierPtr barrier = simgrid::s4u::Barrier::create(actor_count);
 
-    XBT_INFO("Spawning %d workers", process_count-1);
-    for (int i = 0; i < process_count-1; i++)
-    {
-        simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), worker, barrier);
-    }
+  XBT_INFO("Spawning %d workers", actor_count - 1);
+  for (int i = 0; i < actor_count - 1; i++) {
+    simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), worker, barrier);
+  }
 
     XBT_INFO("Waiting on the barrier");
     barrier->wait();
@@ -37,13 +36,13 @@ int main(int argc, char **argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
 
-  // Parameter: Number of processes in the barrier
-  xbt_assert(argc >= 2, "Usage: %s <process-count>\n", argv[0]);
-  int process_count = std::stoi(argv[1]);
-  xbt_assert(process_count > 0, "<process-count> must be greater than 0");
+  // Parameter: Number of actores in the barrier
+  xbt_assert(argc >= 2, "Usage: %s <actor-count>\n", argv[0]);
+  int actor_count = std::stoi(argv[1]);
+  xbt_assert(actor_count > 0, "<actor-count> must be greater than 0");
 
   e.load_platform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor::create("master", simgrid::s4u::Host::by_name("Tremblay"), master, process_count);
+  simgrid::s4u::Actor::create("master", simgrid::s4u::Host::by_name("Tremblay"), master, actor_count);
   e.run();
 
   return 0;

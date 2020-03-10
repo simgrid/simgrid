@@ -36,7 +36,7 @@ static void victimB_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv
 
 static void killer_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
-  XBT_INFO("Hello!"); /* - First start a victim process */
+  XBT_INFO("Hello!"); /* - First start a victim actor */
   sg_actor_t victimA = sg_actor_create("victim A", sg_host_by_name("Fafard"), victimA_fun, 0, NULL);
 
   sg_actor_t victimB = sg_actor_create("victim B", sg_host_by_name("Jupiter"), victimB_fun, 0, NULL);
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]);
 
-  /* - Create and deploy killer process, that will create the victim process  */
+  /* - Create and deploy killer actor, that will create the victim actor  */
   sg_actor_create("killer", sg_host_by_name("Tremblay"), killer_fun, 0, NULL);
 
   simgrid_run();

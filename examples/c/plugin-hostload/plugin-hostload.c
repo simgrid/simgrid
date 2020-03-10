@@ -85,7 +85,7 @@ static void change_speed(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* arg
   sg_host_t host = sg_host_by_name("MyHost1");
   sg_actor_sleep_for(10.5);
   XBT_INFO("I slept until now, but now I'll change the speed of this host "
-           "while the other process is still computing! This should slow the computation down.");
+           "while the other actor is still computing! This should slow the computation down.");
   sg_host_set_pstate(host, 2);
 }
 

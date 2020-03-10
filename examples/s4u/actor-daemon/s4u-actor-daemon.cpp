@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_daemon, "Messages specific for this s4u example");
 
-/* The worker process, working for a while before leaving */
+/* The worker actor, working for a while before leaving */
 static void worker()
 {
   XBT_INFO("Let's do some work (for 10 sec on Boivin).");
@@ -16,7 +16,7 @@ static void worker()
   XBT_INFO("I'm done now. I leave even if it makes the daemon die.");
 }
 
-/* The daemon, displaying a message every 3 seconds until all other processes stop */
+/* The daemon, displaying a message every 3 seconds until all other actors stop */
 static void my_daemon()
 {
   simgrid::s4u::Actor::self()->daemonize();
@@ -26,7 +26,7 @@ static void my_daemon()
     simgrid::s4u::this_actor::sleep_for(3.0);
   }
 
-  XBT_INFO("I will never reach that point: daemons are killed when regular processes are done");
+  XBT_INFO("I will never reach that point: daemons are killed when regular actors are done");
 }
 
 int main(int argc, char* argv[])

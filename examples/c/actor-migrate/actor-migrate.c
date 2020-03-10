@@ -46,11 +46,11 @@ static void monitor(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 
   sg_actor_sleep_for(5);
 
-  XBT_INFO("After 5 seconds, move the process to %s", sg_host_get_name(jacquelin));
+  XBT_INFO("After 5 seconds, move the actor to %s", sg_host_get_name(jacquelin));
   sg_actor_set_host(actor, jacquelin);
 
   sg_actor_sleep_until(15);
-  XBT_INFO("At t=15, move the process to %s and resume it.", sg_host_get_name(fafard));
+  XBT_INFO("At t=15, move the actor to %s and resume it.", sg_host_get_name(fafard));
   sg_actor_set_host(actor, fafard);
   sg_actor_resume(actor);
 }
@@ -61,7 +61,6 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   simgrid_load_platform(argv[1]); /* - Load the platform description */
-  /* - Create and deploy the emigrant and policeman processes */
   sg_actor_create("monitor", sg_host_by_name("Boivin"), monitor, 0, NULL);
 
   simgrid_run();

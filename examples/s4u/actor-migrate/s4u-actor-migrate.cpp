@@ -49,11 +49,11 @@ static void monitor()
 
   simgrid::s4u::this_actor::sleep_for(5);
 
-  XBT_INFO("After 5 seconds, move the process to %s", jacquelin->get_cname());
+  XBT_INFO("After 5 seconds, move the actor to %s", jacquelin->get_cname());
   actor->set_host(jacquelin);
 
   simgrid::s4u::this_actor::sleep_until(15);
-  XBT_INFO("At t=15, move the process to %s and resume it.", fafard->get_cname());
+  XBT_INFO("At t=15, move the actor to %s and resume it.", fafard->get_cname());
   actor->set_host(fafard);
   actor->resume();
 }

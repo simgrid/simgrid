@@ -13,7 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_suspend, "Messages specific for this example");
 
-/* The Lazy guy only wants to sleep, but can be awaken by the dream_master process. */
+/* The Lazy guy only wants to sleep, but can be awaken by the dream_master actor. */
 static void lazy_guy(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Nobody's watching me ? Let's go to sleep.");
@@ -37,7 +37,7 @@ static void lazy_guy(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 /* The Dream master: */
 static void dream_master(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
-  XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy process */
+  XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy actor */
   sg_actor_t lazy = sg_actor_create("Lazy", sg_host_self(), lazy_guy, 0, NULL);
   XBT_INFO("Let's wait a little bit...");
   sg_actor_sleep_for(10.0); /* - Wait for 10 seconds */

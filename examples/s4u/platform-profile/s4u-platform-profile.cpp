@@ -12,7 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_platform_profile, "Messages specific for this s4u example");
 
-/* Main function of the Yielder process */
+/* Main function of the Yielder actor */
 static void watcher()
 {
   const simgrid::s4u::Host* jupiter = simgrid::s4u::Host::by_name("Jupiter");

@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(async_wait, "Messages specific for this example");
 
-/* Main function of the Sender process */
+/* Main function of the Sender actor */
 static void sender(int argc, char* argv[])
 {
   xbt_assert(argc == 5, "The sender function expects 4 arguments from the XML deployment file");
@@ -49,7 +49,7 @@ static void sender(int argc, char* argv[])
   sg_mailbox_put(mailbox, xbt_strdup("finalize"), 0);
 }
 
-/* Receiver process expects 3 arguments: */
+/* Receiver actor expects 3 arguments: */
 static void receiver(int argc, char* argv[])
 {
   xbt_assert(argc == 3, "The relay_runner function does not accept any parameter from the XML deployment file");

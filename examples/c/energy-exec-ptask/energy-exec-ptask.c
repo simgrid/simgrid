@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]);
 
-  /* Pick a process, no matter which, from the platform file */
+  /* Pick the first host from the platform file */
   sg_host_t* all_hosts = sg_host_list();
   sg_host_t first_host = all_hosts[0];
   free(all_hosts);

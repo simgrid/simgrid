@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-int timer_start; // set as 1 in the master process
+int timer_start; // set as 1 in the master actor
 
 #define NTASKS 1500
 double start_time;

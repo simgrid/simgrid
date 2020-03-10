@@ -78,7 +78,7 @@ static void change_speed()
   s4u_Host* host = simgrid::s4u::Host::by_name("MyHost1");
   simgrid::s4u::this_actor::sleep_for(10.5);
   XBT_INFO("I slept until now, but now I'll change the speed of this host "
-      "while the other process is still computing! This should slow the computation down.");
+           "while the other actor is still computing! This should slow the computation down.");
   host->set_pstate(2);
 }
 

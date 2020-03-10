@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
   XBT_INFO("Number of hosts '%zu'", host_count);
   for (size_t i = 0; i < host_count; i++) {
-    /* - Give a unique rank to each host and create a @ref relay_runner process on each */
+    /* - Give a unique rank to each host and create a @ref relay_runner actor on each */
     char* name_host  = bprintf("%zu", i);
     sg_actor_create(name_host, hosts[i], relay_runner, 0, NULL);
     free(name_host);

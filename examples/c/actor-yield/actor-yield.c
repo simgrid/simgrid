@@ -10,18 +10,18 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 
-/* This example does not much: It just spans over-polite processes that yield a large amount
+/* This example does not much: It just spans over-polite actors that yield a large amount
  * of time before ending.
  *
- * This serves as an example for the sg_process_yield() function, with which a process can request
- * to be rescheduled after the other processes that are ready at the current timestamp.
+ * This serves as an example for the sg_actor_yield() function, with which an actor can request
+ * to be rescheduled after the other actors that are ready at the current timestamp.
  *
  * It can also be used to benchmark our context-switching mechanism.
  */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_yield, "Messages specific for this example");
 
-/* Main function of the Yielder process */
+/* Main function of the Yielder actor */
 static void yielder(int argc, char* argv[])
 {
   xbt_assert(argc == 2, "The sender function expects 1 arguments from the XML deployment file");
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
   simgrid_load_platform(argv[1]); /* - Load the platform description */
 
   simgrid_register_function("yielder", yielder);
-  simgrid_load_deployment(argv[2]); /* - Deploy the sender and receiver processes */
+  simgrid_load_deployment(argv[2]); /* - Deploy the sender and receiver actors */
 
   simgrid_run();
   return 0;

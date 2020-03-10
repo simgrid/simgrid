@@ -90,7 +90,7 @@ static void bob(std::vector<std::string> /*args*/)
   XBT_INFO("   Zone property: date -> %s", root->get_property("date"));
   XBT_INFO("   Zone property: author -> %s", root->get_property("author"));
 
-  /* Get the property list of current bob process */
+  /* Get the property list of current bob actor */
   const std::unordered_map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();
   const char* noexist = "UnknownProcessProp";
   XBT_ATTRIB_UNUSED const char* value;

@@ -8,7 +8,7 @@
     <argument value="1"/>       <!-- Sleep_start_time -->
     <argument value="0"/>       <!-- Time for test -->
   </actor>
-  <!-- The receiver processes -->
+  <!-- The receiver actor -->
   <actor host="Ruby" function="receiver">
     <argument value="5"/>       <!-- Sleep_start_time -->
     <argument value="0"/>       <!-- Time for test -->

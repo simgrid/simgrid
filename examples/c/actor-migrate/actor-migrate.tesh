@@ -4,8 +4,8 @@ p Testing the actor migration feature
 
 $ ${bindir:=.}/actor-migrate-c ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (worker@Fafard) Let's move to Boivin to execute 1177.14 Mflops (5sec on Boivin and 5sec on Jacquelin)
-> [  5.000000] (monitor@Boivin) After 5 seconds, move the process to Jacquelin
+> [  5.000000] (monitor@Boivin) After 5 seconds, move the actor to Jacquelin
 > [ 10.000000] (worker@Jacquelin) I wake up on Jacquelin. Let's suspend a bit
-> [ 15.000000] (monitor@Boivin) At t=15, move the process to Fafard and resume it.
+> [ 15.000000] (monitor@Boivin) At t=15, move the actor to Fafard and resume it.
 > [ 15.000000] (worker@Fafard) I wake up on Fafard
 > [ 15.000000] (worker@Fafard) Done

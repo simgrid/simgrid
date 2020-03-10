@@ -15,12 +15,12 @@ $ ${bindir:=.}/s4u-platform-failures --log=xbt_cfg.thres:critical --log=no_loc $
 > [  0.000000] (5:worker@Ginette) Waiting a message on worker-3
 > [  0.000000] (6:worker@Bourassa) Waiting a message on worker-4
 > [  0.010309] (1:master@Tremblay) Send a message to worker-1
-> [  1.000000] (0:maestro@) Restart processes on host Fafard
+> [  1.000000] (0:maestro@) Restart actors on host Fafard
 > [  1.000000] (7:worker@Fafard) Waiting a message on worker-2
 > [  1.000000] (1:master@Tremblay) Mmh. The communication with 'worker-1' failed. Nevermind. Let's keep going!
 > [  1.000000] (1:master@Tremblay) Send a message to worker-2
 > [  2.000000] (1:master@Tremblay) Mmh. The communication with 'worker-2' failed. Nevermind. Let's keep going!
-> [  2.000000] (0:maestro@) Restart processes on host Jupiter
+> [  2.000000] (0:maestro@) Restart actors on host Jupiter
 > [  2.000000] (1:master@Tremblay) Send a message to worker-3
 > [  2.000000] (8:worker@Jupiter) Waiting a message on worker-1
 > [  2.010309] (2:worker@Tremblay) Execution complete.
@@ -120,11 +120,11 @@ $ ${bindir:=.}/s4u-platform-failures --log=xbt_cfg.thres:critical --log=no_loc $
 > [  0.010825] (2:worker@Tremblay) Start execution...
 > [  0.010825] (1:master@Tremblay) Send to worker-0 completed
 > [  0.010825] (1:master@Tremblay) Send a message to worker-1
-> [  1.000000] (0:maestro@) Restart processes on host Fafard
+> [  1.000000] (0:maestro@) Restart actors on host Fafard
 > [  1.000000] (7:worker@Fafard) Waiting a message on worker-2
 > [  1.000000] (1:master@Tremblay) Mmh. The communication with 'worker-1' failed. Nevermind. Let's keep going!
 > [  1.000000] (1:master@Tremblay) Send a message to worker-2
-> [  2.000000] (0:maestro@) Restart processes on host Jupiter
+> [  2.000000] (0:maestro@) Restart actors on host Jupiter
 > [  2.000000] (8:worker@Jupiter) Waiting a message on worker-1
 > [  2.000000] (1:master@Tremblay) Mmh. The communication with 'worker-2' failed. Nevermind. Let's keep going!
 > [  2.000000] (1:master@Tremblay) Send a message to worker-3

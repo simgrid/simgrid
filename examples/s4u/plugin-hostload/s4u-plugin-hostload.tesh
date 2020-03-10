@@ -7,7 +7,7 @@ $ ${bindir:=.}/s4u-plugin-hostload ${platfdir}/energy_platform.xml "--log=root.f
 > [  0.000000] (1:load_test@MyHost1) Sleep for 10 seconds
 > [ 10.000000] (1:load_test@MyHost1) Done sleeping 10.00s; peak speed: 1E+08 flop/s; number of flops computed so far: 0E+00 (nothing should have changed)
 > [ 10.000000] (1:load_test@MyHost1) Run a task of 2E+08 flops at current speed of 1E+08 flop/s
-> [ 10.500000] (2:change_speed@MyHost1) I slept until now, but now I'll change the speed of this host while the other process is still computing! This should slow the computation down.
+> [ 10.500000] (2:change_speed@MyHost1) I slept until now, but now I'll change the speed of this host while the other actor is still computing! This should slow the computation down.
 > [ 18.000000] (1:load_test@MyHost1) Done working on my task; this took 8.00s; current peak speed: 2E+07 flop/s (when I started the computation, the speed was set to 1E+08 flop/s); number of flops computed so far: 2.00E+08, average load as reported by the HostLoad plugin: 0.04167 (should be 0.04167)
 > [ 18.000000] (1:load_test@MyHost1) ========= Requesting pstate 1 (speed should be of 5E+07 flop/s and is of 5E+07 flop/s, average load is 0.04167)
 > [ 18.000000] (1:load_test@MyHost1) Run a task of 1E+08 flops

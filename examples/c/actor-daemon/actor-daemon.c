@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_daemon, "Messages specific for this example");
 
-/* The worker process, working for a while before leaving */
+/* The worker actor, working for a while before leaving */
 static void worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Let's do some work (for 10 sec on Boivin).");
@@ -19,7 +19,7 @@ static void worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   XBT_INFO("I'm done now. I leave even if it makes the daemon die.");
 }
 
-/* The daemon, displaying a message every 3 seconds until all other processes stop */
+/* The daemon, displaying a message every 3 seconds until all other actors stop */
 static void my_daemon(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   sg_actor_daemonize(sg_actor_self());
@@ -29,7 +29,7 @@ static void my_daemon(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[]
     sg_actor_sleep_for(3.0);
   }
 
-  XBT_INFO("I will never reach that point: daemons are killed when regular processes are done");
+  XBT_INFO("I will never reach that point: daemons are killed when regular actors are done");
 }
 
 int main(int argc, char* argv[])

@@ -319,7 +319,7 @@ void CpuL07::apply_event(kernel::profile::Event* triggered, double value)
   } else if (triggered == state_event_) {
     if (value > 0) {
       if (not is_on()) {
-        XBT_VERB("Restart processes on host %s", get_host()->get_cname());
+        XBT_VERB("Restart actors on host %s", get_host()->get_cname());
         get_host()->turn_on();
       }
     } else

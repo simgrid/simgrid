@@ -374,7 +374,7 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
   } else if (event == state_event_) {
     if (value > 0) {
       if (not is_on()) {
-        XBT_VERB("Restart processes on host %s", get_host()->get_cname());
+        XBT_VERB("Restart actors on host %s", get_host()->get_cname());
         get_host()->turn_on();
       }
     } else {
