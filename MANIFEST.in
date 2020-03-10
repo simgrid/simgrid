@@ -288,8 +288,6 @@ include examples/deprecated/simdag/daxload/simple_dax_with_cycle.xml
 include examples/deprecated/simdag/daxload/smalldax.xml
 include examples/deprecated/simdag/fail/sd_fail.c
 include examples/deprecated/simdag/fail/sd_fail.tesh
-include examples/deprecated/simdag/properties/sd_properties.c
-include examples/deprecated/simdag/properties/sd_properties.tesh
 include examples/deprecated/simdag/ptg-dotload/ptg.dot
 include examples/deprecated/simdag/ptg-dotload/sd_ptg-dotload.c
 include examples/deprecated/simdag/ptg-dotload/sd_ptg-dotload.tesh
