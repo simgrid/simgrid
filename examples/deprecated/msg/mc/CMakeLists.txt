@@ -42,7 +42,8 @@ set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_visited.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.tesh                PARENT_SCOPE)
-set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness_visited.xml   PARENT_SCOPE)
+set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness_visited.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml                          PARENT_SCOPE)
 set(examples_src ${examples_src}                                                                    PARENT_SCOPE)
 set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged1_liveness
                                   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness
