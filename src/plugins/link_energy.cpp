@@ -153,7 +153,7 @@ static void on_communicate(const simgrid::kernel::resource::NetworkAction& actio
 {
   XBT_DEBUG("onCommunicate is called");
   for (simgrid::kernel::resource::LinkImpl* link : action.links()) {
-    if (link == nullptr)
+    if (link == nullptr || link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI)
       continue;
 
     XBT_DEBUG("Update link %s", link->get_cname());
@@ -169,6 +169,9 @@ static void on_simulation_end()
 
   double total_energy = 0.0; // Total dissipated energy (whole platform)
   for (const auto link : links) {
+    if (link == nullptr || link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI)
+      continue;
+
     double link_energy = link->extension<LinkEnergy>()->get_consumed_energy();
     total_energy += link_energy;
   }
@@ -194,13 +197,22 @@ void sg_link_energy_plugin_init()
 
   xbt_assert(sg_host_count() == 0, "Please call sg_link_energy_plugin_init() before initializing the platform.");
 
-  simgrid::s4u::Link::on_creation.connect([](simgrid::s4u::Link& link) { link.extension_set(new LinkEnergy(&link)); });
+  simgrid::s4u::Link::on_creation.connect([](simgrid::s4u::Link& link) {
+    if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
+      XBT_DEBUG("Wired Link created: %s", link.get_cname());
+      link.extension_set(new LinkEnergy(&link));
+    } else {
+      XBT_DEBUG("Not Wired link: %s", link.get_cname());
+    }
+  });
 
-  simgrid::s4u::Link::on_state_change.connect(
-      [](simgrid::s4u::Link const& link) { link.extension<LinkEnergy>()->update(); });
+  simgrid::s4u::Link::on_state_change.connect([](simgrid::s4u::Link const& link) {
+    if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI)
+      link.extension<LinkEnergy>()->update();
+  });
 
   simgrid::s4u::Link::on_destruction.connect([](simgrid::s4u::Link const& link) {
-    if (link.get_name() != "__loopback__")
+    if (link.get_name() != "__loopback__" && link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI)
       XBT_INFO("Energy consumption of link '%s': %f Joules", link.get_cname(),
                link.extension<LinkEnergy>()->get_consumed_energy());
   });
@@ -208,7 +220,7 @@ void sg_link_energy_plugin_init()
   simgrid::s4u::Link::on_communication_state_change.connect([](
       simgrid::kernel::resource::NetworkAction const& action, simgrid::kernel::resource::Action::State /* previous */) {
     for (simgrid::kernel::resource::LinkImpl* link : action.links()) {
-      if (link != nullptr)
+      if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI)
         link->get_iface()->extension<LinkEnergy>()->update();
     }
   });
