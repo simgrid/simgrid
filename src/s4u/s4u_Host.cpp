@@ -350,7 +350,7 @@ sg_host_t sg_host_by_name(const char* name)
   return simgrid::s4u::Host::by_name_or_null(name);
 }
 
-xbt_dynar_t sg_hosts_as_dynar()
+xbt_dynar_t sg_hosts_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
 {
   std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
 

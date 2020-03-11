@@ -27,7 +27,7 @@ XBT_PUBLIC size_t sg_host_count();
  * @remark The host order in the returned array is generally different from the host creation/declaration order in the
  *         XML platform (we use a hash table internally)
  */
-XBT_PUBLIC xbt_dynar_t sg_hosts_as_dynar();
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_list()") XBT_PUBLIC xbt_dynar_t sg_hosts_as_dynar();
 
 XBT_PUBLIC size_t sg_host_extension_create(void (*deleter)(void*));
 XBT_PUBLIC void* sg_host_extension_get(const_sg_host_t host, size_t rank);

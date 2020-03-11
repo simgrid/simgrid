@@ -301,7 +301,15 @@ sg_size_t MSG_storage_write(sg_storage_t storage, sg_size_t size)
 /* ************************** hosts *************************** */
 xbt_dynar_t MSG_hosts_as_dynar()
 {
-  return sg_hosts_as_dynar();
+  size_t host_count = sg_host_count();
+  sg_host_t* list   = sg_host_list();
+
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
+  for (size_t i = 0; i < host_count; i++)
+    xbt_dynar_push_as(res, sg_host_t, list[i]);
+  xbt_free(list);
+
+  return res;
 }
 size_t MSG_get_host_number()
 {
