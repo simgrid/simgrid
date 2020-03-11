@@ -166,9 +166,9 @@ void ActorImpl::cleanup()
   undaemonize();
 
   /* cancel non-blocking activities */
-  for (auto activity : comms)
-    boost::static_pointer_cast<activity::CommImpl>(activity)->cancel();
-  comms.clear();
+  for (auto activity : activities)
+    activity->cancel();
+  activities.clear();
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
 
@@ -211,7 +211,6 @@ void ActorImpl::exit()
     if (exec != nullptr) {
       exec->clean_action();
     } else if (comm != nullptr) {
-      comms.remove(waiting_synchro);
       // Remove first occurrence of &actor->simcall:
       auto i = boost::range::find(waiting_synchro->simcalls_, &simcall);
       if (i != waiting_synchro->simcalls_.end())
@@ -220,6 +219,7 @@ void ActorImpl::exit()
       activity::ActivityImplPtr(waiting_synchro)->finish();
     }
 
+    activities.remove(waiting_synchro);
     waiting_synchro = nullptr;
   }
 
@@ -427,12 +427,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
   /* cancel the blocking synchro if any */
   if (waiting_synchro) {
     waiting_synchro->cancel();
-
-    activity::CommImplPtr comm = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro);
-
-    if (comm != nullptr)
-      comms.remove(comm);
-
+    activities.remove(waiting_synchro);
     waiting_synchro = nullptr;
   }
 }

@@ -69,7 +69,7 @@ public:
   bool suspended_ = false;
 
   activity::ActivityImplPtr waiting_synchro = nullptr; /* the current blocking synchro if any */
-  std::list<activity::ActivityImplPtr> comms;          /* the current non-blocking communication synchros */
+  std::list<activity::ActivityImplPtr> activities;     /* the current non-blocking synchros */
   s_smx_simcall simcall;
   /* list of functions executed when the process dies */
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
