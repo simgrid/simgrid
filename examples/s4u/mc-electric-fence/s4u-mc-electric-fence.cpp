@@ -13,8 +13,6 @@
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u.hpp>
 
-#define N 2
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(electric_fence, "Example to check the soundness of DPOR");
 
 static void server()

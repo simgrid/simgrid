@@ -65,8 +65,6 @@ static void worker_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
 
 static void master_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
-  unsigned int i;
-
   sg_host_t* worker_pms = sg_actor_self_data();
 
   sg_vm_t* vms = (sg_vm_t*)malloc(2 * sizeof(sg_vm_t));
@@ -116,9 +114,9 @@ static void master_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
   sg_actor_sleep_for(10 - simgrid_get_clock());
 
   XBT_INFO("# Add one more actor on each VM");
-  for (unsigned int i = 0; i < 2; i++) {
-    char* vm_name = bprintf("VM%02u", i);
-    char* pr_name = bprintf("WRK%02u", i + 2);
+  for (int i = 0; i < 2; i++) {
+    char* vm_name = bprintf("VM%02d", i);
+    char* pr_name = bprintf("WRK%02d", i + 2);
 
     XBT_INFO("put an actor (%s) on %s", pr_name, vm_name);
     sg_actor_create(pr_name, (sg_host_t)vms[i], worker_fun, 0, NULL);
@@ -144,9 +142,9 @@ static void master_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
   }
 
   XBT_INFO("# Shutdown the half of worker actors gracefully. The remaining half will be forcibly killed.");
-  for (i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     char mbox_name[MAXMBOXLEN];
-    snprintf(mbox_name, MAXMBOXLEN, "MBOX:WRK%02u", i);
+    snprintf(mbox_name, MAXMBOXLEN, "MBOX:WRK%02d", i);
     sg_mailbox_t mbox = sg_mailbox_by_name(mbox_name);
     double* payload   = (double*)malloc(sizeof(double));
     *payload          = FINALIZE;
