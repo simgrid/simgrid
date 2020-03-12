@@ -20,18 +20,18 @@ using creator_type = decltype(create_exec);
 
 //========== Testers: test the completion of an activity
 
-// Calls exec->test() and returns its result
-static bool tester_test(const simgrid::s4u::ActivityPtr& exec)
+// Calls activity->test() and returns its result
+static bool tester_test(const simgrid::s4u::ActivityPtr& activity)
 {
-  return exec->test();
+  return activity->test();
 }
 
-// Calls exec->wait_for(Duration * 0.0125) and returns true when exec is terminated, just like test()
-template <int Duration> bool tester_wait(const simgrid::s4u::ActivityPtr& exec)
+// Calls activity->wait_for(Duration / 128.0) and returns true when activity is terminated, just like test()
+template <int Duration> bool tester_wait(const simgrid::s4u::ActivityPtr& activity)
 {
   bool ret;
   try {
-    exec->wait_for(Duration * 0.0125);
+    activity->wait_for(Duration / 128.0);
     XBT_DEBUG("wait_for() returned normally");
     ret = true;
   } catch (const simgrid::TimeoutException& e) {
@@ -55,10 +55,10 @@ static void waiter_sleep6(const simgrid::s4u::ActivityPtr&)
   XBT_DEBUG("wake up after 6s sleep");
 }
 
-// Wait for completion of exec
-static void waiter_wait(const simgrid::s4u::ActivityPtr& exec)
+// Wait for completion of activity
+static void waiter_wait(const simgrid::s4u::ActivityPtr& activity)
 {
-  exec->wait();
+  activity->wait();
   XBT_DEBUG("end of wait()");
 }
 
@@ -70,21 +70,21 @@ template <creator_type Create, tester_type Test> void test_trivial()
 {
   XBT_INFO("Launch an activity for 5s, and let it proceed before test");
 
-  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], []() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], []() {
     assert_exit(true, 6.);
     simgrid::s4u::ActivityPtr activity = Create(5.0);
     simgrid::s4u::this_actor::sleep_for(6.0);
     INFO("activity should be terminated now");
     REQUIRE(Test(activity));
   });
-  exec5->join();
+  actor->join();
 }
 
 template <creator_type Create, tester_type Test> void test_basic()
 {
   XBT_INFO("Launch an activity for 5s, and test while it proceeds");
 
-  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], []() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], []() {
     assert_exit(true, 6.);
     simgrid::s4u::ActivityPtr activity = Create(5.0);
     for (int i = 0; i < 3; i++) {
@@ -95,14 +95,14 @@ template <creator_type Create, tester_type Test> void test_basic()
     INFO("activity should be terminated now");
     REQUIRE(Test(activity));
   });
-  exec5->join();
+  actor->join();
 }
 
 template <creator_type Create, tester_type Test> void test_cancel()
 {
   XBT_INFO("Launch an activity for 5s, and cancel it after 2s");
 
-  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], []() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], []() {
     assert_exit(true, 2.);
     simgrid::s4u::ActivityPtr activity = Create(5.0);
     simgrid::s4u::this_actor::sleep_for(2.0);
@@ -110,7 +110,7 @@ template <creator_type Create, tester_type Test> void test_cancel()
     INFO("activity should be terminated now");
     REQUIRE(Test(activity));
   });
-  exec5->join();
+  actor->join();
 }
 
 template <creator_type Create, tester_type Test, waiter_type Wait> void test_failure_actor()
@@ -118,7 +118,7 @@ template <creator_type Create, tester_type Test, waiter_type Wait> void test_fai
   XBT_INFO("Launch an activity for 5s, and kill running actor after 2s");
 
   simgrid::s4u::ActivityPtr activity;
-  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], [&activity]() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], [&activity]() {
     assert_exit(false, 2.);
     activity = Create(5.0);
     Wait(activity);
@@ -127,7 +127,7 @@ template <creator_type Create, tester_type Test, waiter_type Wait> void test_fai
   simgrid::s4u::this_actor::sleep_for(2.0);
   INFO("activity should be still running");
   REQUIRE(not Test(activity));
-  exec5->kill();
+  actor->kill();
   INFO("activity should be terminated now");
   REQUIRE(Test(activity));
 }
@@ -137,7 +137,7 @@ template <creator_type Create, tester_type Test, waiter_type Wait> void test_fai
   XBT_INFO("Launch an activity for 5s, and shutdown host 2s");
 
   simgrid::s4u::ActivityPtr activity;
-  simgrid::s4u::ActorPtr exec5 = simgrid::s4u::Actor::create("exec5", all_hosts[1], [&activity]() {
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("actor", all_hosts[1], [&activity]() {
     assert_exit(false, 2.);
     activity = Create(5.0);
     Wait(activity);
@@ -146,8 +146,8 @@ template <creator_type Create, tester_type Test, waiter_type Wait> void test_fai
   simgrid::s4u::this_actor::sleep_for(2.0);
   INFO("activity should be still running");
   REQUIRE(not Test(activity));
-  exec5->get_host()->turn_off();
-  exec5->get_host()->turn_on();
+  actor->get_host()->turn_off();
+  actor->get_host()->turn_on();
   INFO("activity should be terminated now");
   REQUIRE(Test(activity));
 }
