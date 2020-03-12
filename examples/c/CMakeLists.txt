@@ -4,7 +4,7 @@
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
-        app-pingpong app-token-ring 
+        app-masterworker app-pingpong app-token-ring 
         async-wait async-waitall async-waitany
         cloud-capping cloud-masterworker cloud-migration cloud-simple
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
@@ -41,12 +41,17 @@ set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/cha
 
 set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
+                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore.tesh
+                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi.tesh
                                 PARENT_SCOPE)
 
 set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-create_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/actor-lifetime_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/actor-yield_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
@@ -61,7 +66,7 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
-        app-chainsend app-pingpong app-token-ring
+        app-chainsend app-masterworker app-pingpong app-token-ring
         async-wait async-waitall async-waitany
         cloud-capping  cloud-masterworker cloud-migration cloud-simple
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
@@ -74,3 +79,14 @@ foreach(x
                   --cd ${CMAKE_HOME_DIRECTORY}/examples/c/${x}
                   ${CMAKE_HOME_DIRECTORY}/examples/c/${x}/${x}.tesh)
 endforeach()
+
+ADD_TESH_FACTORIES(app-masterworker-multicore   "thread;ucontext;raw;boost" 
+                                                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/c/app-masterworker 
+                                                --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/app-masterworker
+                                                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                               ${CMAKE_HOME_DIRECTORY}/examples/c/app-masterworker/app-masterworker-multicore.tesh)
+ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost" 
+                                                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/c/app-masterworker 
+                                                --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/app-masterworker
+                                                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                                ${CMAKE_HOME_DIRECTORY}/examples/c/app-masterworker/app-masterworker-vivaldi.tesh)
