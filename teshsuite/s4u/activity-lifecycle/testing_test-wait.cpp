@@ -161,8 +161,8 @@ TEST_CASE("Activity test/wait: using <tester_test>")
   RUN_SECTION("exec: run and test once", test_trivial<create_exec, tester_test>);
   RUN_SECTION("exec: run and test many", test_basic<create_exec, tester_test>);
   RUN_SECTION("exec: cancel and test", test_cancel<create_exec, tester_test>);
-  // exec: actor failure and test / sleep
-  // exec: host failure and test / sleep
+  RUN_SECTION("exec: actor failure and test / sleep", test_failure_actor<create_exec, tester_test, waiter_sleep6>);
+  RUN_SECTION("exec: host failure and test / sleep", test_failure_host<create_exec, tester_test, waiter_sleep6>);
   RUN_SECTION("exec: actor failure and test / wait", test_failure_actor<create_exec, tester_test, waiter_wait>);
   RUN_SECTION("exec: host failure and test / wait", test_failure_host<create_exec, tester_test, waiter_wait>);
 
@@ -207,10 +207,6 @@ TEST_CASE("Activity test/wait: using <tester_wait<1>>")
 TEST_CASE("Activity test/wait: tests currently failing", "[.][failing]")
 {
   XBT_INFO("#####[ launch next failing test ]#####");
-
-  // with tester_test
-  RUN_SECTION("exec: actor failure and test / sleep", test_failure_actor<create_exec, tester_test, waiter_sleep6>);
-  RUN_SECTION("exec: host failure and test / sleep", test_failure_host<create_exec, tester_test, waiter_sleep6>);
 
   // with tester_wait<0>
   RUN_SECTION("exec: run and wait<0> many", test_basic<create_exec, tester_wait<0>>);
