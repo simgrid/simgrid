@@ -5,11 +5,10 @@
 
 #include "simgrid/msg.h"
 
-static int master(int argc, char *argv[])
+static int master(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
-  xbt_assert(argc == 5);
-  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
-  long workers_count = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
+  long number_of_tasks = 10;
+  long workers_count   = 1;
 
   for (int i = 0; i < number_of_tasks; i++) {
     msg_task_t task = NULL;
@@ -59,8 +58,7 @@ static int worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+  xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
@@ -70,9 +68,8 @@ int main(int argc, char *argv[])
   TRACE_category_with_color ("data", "0 0 1");    //blue
   TRACE_category_with_color ("finalize", "0 0 0");//black
 
-  MSG_function_register("master", master);
-  MSG_function_register("worker", worker);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("master", master, NULL, MSG_host_by_name("Tremblay"));
+  MSG_process_create("worker", worker, NULL, MSG_host_by_name("Fafard"));
 
   MSG_main();
   return 0;

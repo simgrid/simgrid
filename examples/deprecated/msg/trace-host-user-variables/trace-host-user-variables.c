@@ -41,8 +41,7 @@ static int trace_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+  xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
@@ -50,10 +49,7 @@ int main(int argc, char *argv[])
   TRACE_host_variable_declare("HDD_capacity");
   TRACE_host_variable_declare("HDD_utilization");
 
-  //register functions and launch deployment
-  MSG_function_register("master", trace_fun);
-  MSG_function_register("worker", trace_fun);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("master", trace_fun, NULL, MSG_host_by_name("Tremblay"));
 
   MSG_main();
 

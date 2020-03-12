@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 p Trace user variables associated to links of the platform file
-$ ${bindir:=.}/trace-route-user-variables --cfg=tracing:yes --cfg=tracing/platform:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
+$ ${bindir:=.}/trace-route-user-variables --cfg=tracing:yes --cfg=tracing/platform:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
 

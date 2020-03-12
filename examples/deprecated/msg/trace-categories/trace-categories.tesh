@@ -2,7 +2,7 @@
 
 p Tracing multiple categories master/worker application
 
-$ ${bindir:=.}/trace-categories --cfg=tracing:yes --cfg=tracing/filename:categories.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
+$ ${bindir:=.}/trace-categories --cfg=tracing:yes --cfg=tracing/filename:categories.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'categories.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'

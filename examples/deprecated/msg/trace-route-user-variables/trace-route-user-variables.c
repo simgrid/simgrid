@@ -50,8 +50,7 @@ static int trace_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+  xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
@@ -59,10 +58,12 @@ int main(int argc, char *argv[])
   TRACE_link_variable_declare("Link_Capacity");
   TRACE_link_variable_declare_with_color ("Link_Utilization", "0.9 0.1 0.1");
 
-  //register functions and launch deployment
-  MSG_function_register("master", trace_fun);
-  MSG_function_register("worker", trace_fun);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("master", trace_fun, NULL, MSG_host_by_name("Tremblay"));
+  MSG_process_create("worker", trace_fun, NULL, MSG_host_by_name("Tremblay"));
+  MSG_process_create("worker", trace_fun, NULL, MSG_host_by_name("Jupiter"));
+  MSG_process_create("worker", trace_fun, NULL, MSG_host_by_name("Fafard"));
+  MSG_process_create("worker", trace_fun, NULL, MSG_host_by_name("Ginette"));
+  MSG_process_create("worker", trace_fun, NULL, MSG_host_by_name("Bourassa"));
 
   MSG_main();
   return 0;
