@@ -17,6 +17,7 @@ namespace activity {
 class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::unique_ptr<resource::Action, std::function<void(resource::Action*)>> timeout_detector_{
       nullptr, [](resource::Action* a) { a->unref(); }};
+  actor::ActorImpl* actor_            = nullptr;
   double sharing_penalty_             = 1.0;
   double bound_                       = 0.0;
   std::vector<s4u::Host*> hosts_;
@@ -24,6 +25,8 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::vector<double> bytes_amounts_;
 
 public:
+  ExecImpl();
+
   ExecImpl& set_timeout(double timeout) override;
   ExecImpl& set_bound(double bound);
   ExecImpl& set_sharing_penalty(double sharing_penalty);

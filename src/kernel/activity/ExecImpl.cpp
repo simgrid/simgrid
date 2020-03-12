@@ -55,6 +55,15 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
+ExecImpl::ExecImpl()
+{
+  actor::ActorImpl* self = actor::ActorImpl::self();
+  if (self) {
+    actor_ = self;
+    self->activities.push_back(this);
+  }
+}
+
 ExecImpl& ExecImpl::set_host(s4u::Host* host)
 {
   hosts_.assign(1, host);
@@ -156,6 +165,10 @@ void ExecImpl::post()
 
   clean_action();
   timeout_detector_.reset();
+  if (actor_) {
+    actor_->activities.remove(this);
+    actor_ = nullptr;
+  }
   /* Answer all simcalls associated with the synchro */
   finish();
 }
