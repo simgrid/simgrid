@@ -24,10 +24,12 @@ answer_t answer_init(unsigned int destination_id)
 void answer_free(answer_t answer)
 {
   unsigned int i;
-  for (i = 0; i < answer->size; i++) {
-    node_contact_free(*(void**)xbt_dynar_get_ptr(answer->nodes, i));
+  if (answer) {
+    for (i = 0; i < answer->size; i++) {
+      node_contact_free(*(void**)xbt_dynar_get_ptr(answer->nodes, i));
+    }
+    xbt_dynar_free(&answer->nodes);
   }
-  xbt_dynar_free(&answer->nodes);
   xbt_free(answer);
 }
 

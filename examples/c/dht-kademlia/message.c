@@ -24,6 +24,7 @@ kademlia_message_t new_message(unsigned int sender_id, unsigned int destination_
 void free_message(void* message)
 {
   const kademlia_message_t msg = (kademlia_message_t)message;
-  free(msg->answer);
+  if (msg)
+    answer_free(msg->answer);
   free(msg);
 }

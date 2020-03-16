@@ -73,7 +73,7 @@ unsigned int join(node_t node, unsigned int id_known)
       } else {
         handle_find_node(node, msg);
       }
-      free(msg->answer);
+      answer_free(msg->answer);
       free(msg);
       node->receive_comm = NULL;
     } else {
@@ -260,7 +260,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
           timeout += simgrid_get_clock() - time_beginreceive;
           time_beginreceive = simgrid_get_clock();
         }
-        free(msg->answer);
+        answer_free(msg->answer);
         free(msg);
         node->receive_comm = NULL;
       } else {

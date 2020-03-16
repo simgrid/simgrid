@@ -58,11 +58,12 @@ static void node(int argc, char* argv[])
         const kademlia_message_t msg = (kademlia_message_t)(node->received_msg);
         if (msg) {
           handle_find_node(node, msg);
-          free(msg->answer);
+          answer_free(msg->answer);
           free(msg);
           node->receive_comm = NULL;
-        } else
+        } else {
           sg_actor_sleep_for(1);
+        }
       } else {
         /* We search for a pseudo random node */
         if (simgrid_get_clock() >= next_lookup_time) {
@@ -77,6 +78,9 @@ static void node(int argc, char* argv[])
   } else {
     XBT_INFO("I couldn't join the network :(");
   }
+  if (node->receive_comm)
+    sg_comm_unref(node->receive_comm);
+
   XBT_DEBUG("I'm leaving the network");
   XBT_INFO("%u/%u FIND_NODE have succeeded", node->find_node_success, node->find_node_success + node->find_node_failed);
   node_free(node);
