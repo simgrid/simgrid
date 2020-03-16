@@ -255,6 +255,11 @@ Actor* Comm::get_sender() const
 } // namespace s4u
 } // namespace simgrid
 /* **************************** Public C interface *************************** */
+void sg_comm_detach(sg_comm_t comm, void (*clean_function)(void*))
+{
+  comm = comm->detach(clean_function);
+}
+
 int sg_comm_test(sg_comm_t comm)
 {
   bool finished = comm->test();
