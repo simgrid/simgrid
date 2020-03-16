@@ -219,3 +219,10 @@ sg_comm_t sg_mailbox_put_async(sg_mailbox_t mailbox, void* payload, long simulat
   comm->add_ref();
   return comm.get();
 }
+
+sg_comm_t sg_mailbox_put_init(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes)
+{
+  auto comm = mailbox->put_init(payload, simulated_size_in_bytes);
+  comm->add_ref();
+  return comm.get();
+}
