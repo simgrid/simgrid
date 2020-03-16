@@ -210,7 +210,7 @@ sg_comm_t sg_mailbox_get_async(sg_mailbox_t mailbox, void** data)
 
 void sg_mailbox_put(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes)
 {
-  return mailbox->put(payload, simulated_size_in_bytes);
+  mailbox->put(payload, simulated_size_in_bytes);
 }
 
 sg_comm_t sg_mailbox_put_async(sg_mailbox_t mailbox, void* payload, long simulated_size_in_bytes)

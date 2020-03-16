@@ -257,9 +257,13 @@ Actor* Comm::get_sender() const
 /* **************************** Public C interface *************************** */
 void sg_comm_detach(sg_comm_t comm, void (*clean_function)(void*))
 {
-  comm = comm->detach(clean_function);
+  comm->detach(clean_function);
+  comm->unref();
 }
-
+void sg_comm_unref(sg_comm_t comm)
+{
+  comm->unref();
+}
 int sg_comm_test(sg_comm_t comm)
 {
   bool finished = comm->test();
