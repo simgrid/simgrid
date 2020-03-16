@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _KADEMLIA_EXAMPLES_COMMON
-#define _KADEMLIA_EXAMPLES_COMMON
+#ifndef _DHT_KADEMLIA_COMMON
+#define _DHT_KADEMLIA_COMMON
 
 #define MAX_JOIN_TRIALS 4
 
@@ -22,7 +22,6 @@
 #define MAILBOX_NAME_SIZE 16 /* (identifier_size / 4)  (hex encoded) */
 
 #define COMM_SIZE 1
-#define COMP_SIZE 0
 
 #define MAX_STEPS 10
 
@@ -30,5 +29,4 @@
 
 #define RANDOM_LOOKUP_NODE 0
 
-
-#endif                          /* _KADEMLIA_EXAMPLES_COMMON */
+#endif /* _DHT_KADEMLIA_COMMON */

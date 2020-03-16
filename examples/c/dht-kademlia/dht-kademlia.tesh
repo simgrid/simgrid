@@ -1,9 +1,9 @@
 #!/usr/bin/env tesh
 
-p Testing the Kademlia implementation with MSG
+p Testing the Kademlia implementation
 
 ! output sort 19
-$ ${bindir:=.}/dht-kademlia ${platfdir}/cluster_backbone.xml ${srcdir}/dht-kademlia_d.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"
+$ ${bindir:=.}/dht-kademlia-c ${platfdir}/cluster_backbone.xml ${srcdir}/dht-kademlia_d.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"
 > [  0.000000] ( 1:node@node-0.simgrid.org) Hi, I'm going to create the network with id 0
 > [  0.000000] ( 2:node@node-1.simgrid.org) Hi, I'm going to join the network with id 1
 > [  0.000000] ( 3:node@node-2.simgrid.org) Hi, I'm going to join the network with id 3

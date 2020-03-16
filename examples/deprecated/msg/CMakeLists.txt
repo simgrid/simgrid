@@ -13,30 +13,18 @@ foreach(x dht-pastry
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()
 
-if(enable_msg)
-  add_executable       (dht-kademlia EXCLUDE_FROM_ALL dht-kademlia/dht-kademlia.c dht-kademlia/node.c dht-kademlia/routing_table.c dht-kademlia/task.c dht-kademlia/answer.c)
-  target_link_libraries(dht-kademlia simgrid)
-  set_target_properties(dht-kademlia PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-kademlia)
-  add_dependencies(tests dht-kademlia)
-endif()
-foreach (file answer dht-kademlia node routing_table task)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
-endforeach()
-
-foreach (file dht-kademlia dht-pastry)
+foreach (file dht-pastry)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
-set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README.doc          PARENT_SCOPE)
-set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/generate.py                       PARENT_SCOPE)
-set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/common.h                        PARENT_SCOPE)
-set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia.tesh
-                                  PARENT_SCOPE)
-set(xml_files    ${xml_files}     PARENT_SCOPE)
+set(examples_src  ${examples_src}  PARENT_SCOPE)
+set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                  PARENT_SCOPE)
+set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/generate.py                      PARENT_SCOPE)
+set(tesh_files    ${tesh_files}    PARENT_SCOPE)
+set(xml_files     ${xml_files}     PARENT_SCOPE)
 
 if(enable_msg)
-  foreach(x dht-pastry dht-kademlia synchro-semaphore)
+  foreach(x dht-pastry synchro-semaphore)
     ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
                                 --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
                                 --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x} 
@@ -51,17 +39,4 @@ if(enable_msg)
                       --cd ${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
                       ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x}/${x}.tesh)
   endforeach()
-
-  if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-    # Thread-local storage (TLS) is needed for parallel execution, but it doesn't
-    # play well with Ucontexts on 64bit SunOS (at least on x86_64).
-    set(parallel-factories "thread;raw;boost")
-  else()
-    set(parallel-factories "thread;ucontext;raw;boost")
-  endif()
-  ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
-                                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/dht-kademlia
-                                               --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia
-                                               --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                               ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/dht-kademlia/dht-kademlia.tesh)
 endif(enable_msg)

@@ -28,8 +28,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
                                    PARENT_SCOPE)
 
 if(enable_msg)
-  foreach(x app-bittorrent cloud-two-tasks get_sender task_destroy_cancel task_listen_from
-          io-file)
+  foreach(x app-bittorrent cloud-two-tasks get_sender task_destroy_cancel task_listen_from io-file)
 
     ADD_TESH_FACTORIES(tesh-msg-${x} "raw"  --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                             --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/${x}

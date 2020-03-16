@@ -81,6 +81,7 @@ void Node::sendFindNode(unsigned int id, unsigned int destination)
   /* Gets the mailbox to send to */
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
   /* Build the task */
+
   Message* msg = new Message(id_, destination, simgrid::s4u::Mailbox::by_name(std::to_string(id_)),
                              simgrid::s4u::Host::current()->get_cname());
 
