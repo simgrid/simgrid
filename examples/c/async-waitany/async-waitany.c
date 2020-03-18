@@ -24,11 +24,11 @@ static void sender(int argc, char* argv[])
   long receivers_count = xbt_str_parse_int(argv[3], "Invalid amount of receivers: %s");
 
   /* Array in which we store all ongoing communications */
-  sg_comm_t* pending_comms = malloc(sizeof(sg_comm_t) * (messages_count + receivers_count));
+  sg_comm_t* pending_comms = xbt_malloc(sizeof(sg_comm_t) * (messages_count + receivers_count));
   int pending_comms_count  = 0;
 
   /* Make an array of the mailboxes to use */
-  sg_mailbox_t* mboxes = malloc(sizeof(sg_mailbox_t) * receivers_count);
+  sg_mailbox_t* mboxes = xbt_malloc(sizeof(sg_mailbox_t) * receivers_count);
   for (long i = 0; i < receivers_count; i++) {
     char mailbox_name[80];
     snprintf(mailbox_name, 79, "receiver-%ld", i);
