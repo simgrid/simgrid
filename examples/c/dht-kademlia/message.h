@@ -20,6 +20,7 @@ typedef struct s_kademlia_message {
 } s_kademlia_message_t;
 
 typedef s_kademlia_message_t* kademlia_message_t;
+const typedef s_kademlia_message_t* const_kademlia_message_t;
 
 // Task handling functions
 kademlia_message_t task_new_find_node(unsigned int sender_id, unsigned int destination_id, sg_mailbox_t mailbox,

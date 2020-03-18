@@ -102,7 +102,7 @@ unsigned int join(node_t node, unsigned int id_known)
  * @param id node we are querying
  * @param destination node we are trying to find.
  */
-void send_find_node(node_t node, unsigned int id, unsigned int destination)
+void send_find_node(const_node_t node, unsigned int id, unsigned int destination)
 {
   /* Gets the mailbox to send to */
   sg_mailbox_t mailbox = get_node_mailbox(id);
@@ -298,7 +298,7 @@ void random_lookup(node_t node)
 }
 
 /** @brief Handles the answer to an incoming "find_node" message */
-void handle_find_node(node_t node, kademlia_message_t msg)
+void handle_find_node(const_node_t node, const_kademlia_message_t msg)
 {
   routing_table_update(node, msg->sender_id);
   XBT_VERB("Received a FIND_NODE from %s (%s), he's trying to find %08x", sg_mailbox_get_name(msg->answer_to),
