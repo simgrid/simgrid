@@ -18,11 +18,21 @@ foreach(x
   add_dependencies(tests ${x}-c)
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 
 # Multi-files examples
 ######################
+# bittorrent example
+add_executable       (app-bittorrent-c EXCLUDE_FROM_ALL app-bittorrent/app-bittorrent.c app-bittorrent/bittorrent-peer.c app-bittorrent/tracker.c)
+target_link_libraries(app-bittorrent-c simgrid)
+set_target_properties(app-bittorrent-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
+add_dependencies(tests app-bittorrent-c)
+
+foreach (file app-bittorrent bittorrent-peer tracker)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
+endforeach()
+
 # Chainsend example
 
 add_executable       (app-chainsend-c EXCLUDE_FROM_ALL app-chainsend/chainsend.c app-chainsend/broadcaster.c 
@@ -32,9 +42,9 @@ set_target_properties(app-chainsend-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAK
 add_dependencies(tests app-chainsend-c)
 
 foreach (file chainsend broadcaster peer)
-  set(teshsuite_src  ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.c)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.c)
 endforeach()
-set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/chainsend.h)
+set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/chainsend.h)
 
 #DHT-Kademlia
 add_executable       (dht-kademlia-c EXCLUDE_FROM_ALL dht-kademlia/dht-kademlia.c dht-kademlia/node.c dht-kademlia/routing_table.c dht-kademlia/message.c dht-kademlia/answer.c)
@@ -49,18 +59,20 @@ endforeach()
 # Add all extra files to the archive
 ####################################
 
-set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
-set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
+set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent.tesh
+                                ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia.tesh
                                 PARENT_SCOPE)
-set(bin_files     ${bin_files} ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py                        PARENT_SCOPE)
+set(bin_files     ${bin_files} ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/generate.py                  
+                               ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py                        PARENT_SCOPE)
 set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/common.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia.c                  PARENT_SCOPE)
 set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-create_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/actor-lifetime_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/actor-yield_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore_d.xml
@@ -80,7 +92,7 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
-        app-chainsend app-masterworker app-pingpong app-token-ring
+        app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
         async-wait async-waitall async-waitany
         cloud-capping  cloud-masterworker cloud-migration cloud-simple
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
@@ -117,6 +129,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386"
 else()
     set(parallel-factories "thread;ucontext;raw;boost")
 endif()
+
+ADD_TESH_FACTORIES(c-app-bittorrent-parallel "raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} 
+                                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/app-bittorrent 
+                                             --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                                             --cd ${CMAKE_HOME_DIRECTORY}/examples/c/app-bittorrent app-bittorrent.tesh)
 
 ADD_TESH_FACTORIES(c-dht-kademlia-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
                                            --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/dht-kademlia
