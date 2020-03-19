@@ -18,7 +18,7 @@ class Bucket {
 public:
   std::deque<unsigned int> nodes; // Nodes in the bucket.
   unsigned int getId() const { return id_; }
-  explicit Bucket(unsigned int id) : id_(id) {}
+  explicit Bucket(unsigned int id) noexcept : id_(id) {}
 };
 
 /* Node routing table */
