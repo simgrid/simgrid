@@ -100,6 +100,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libssl",
     "libpsl",
     "libssh",
+    "libssh2",
     "libidn2",
     "libnghttp2",
     "libcurl",
