@@ -25,11 +25,6 @@ static int is_in_list(const_xbt_dynar_t peers, int id)
   return xbt_dynar_member(peers, &id);
 }
 
-/**
- * Tracker main function
- * @param argc number of arguments
- * @param argv arguments
- */
 void tracker(int argc, char* argv[])
 {
   // Checking arguments
@@ -106,37 +101,3 @@ tracker_answer_t tracker_answer_new(int interval)
   ;
   return ta;
 }
-
-/**
- * Build a new task for the tracker.
- * @param issuer_host_name Hostname of the issuer. For debugging purposes
- */
-// tracker_task_data_t tracker_task_data_new(const char* issuer_host_name, sg_mailbox_t mailbox, int peer_id, int
-// uploaded,
-//                                          int downloaded, int left)
-//{
-//  tracker_task_data_t task = xbt_new(s_tracker_task_data_t, 1);
-//
-//  task->type             = TRACKER_TASK_QUERY;
-//  task->issuer_host_name = issuer_host_name;
-//  task->mailbox          = mailbox;
-//  task->peer_id          = peer_id;
-//  task->uploaded         = uploaded;
-//  task->downloaded       = downloaded;
-//  task->left             = left;
-//
-//  task->peers = xbt_dynar_new(sizeof(int), NULL);
-//
-//  return task;
-//}
-//
-///**
-// * Free the data structure of a tracker task.
-// * @param task data to free
-// */
-// void tracker_task_data_free(tracker_task_data_t task)
-//{
-//  xbt_dynar_free(&task->peers);
-//  xbt_free(task);
-//}
-//

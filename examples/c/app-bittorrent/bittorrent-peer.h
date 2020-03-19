@@ -31,7 +31,6 @@ typedef s_connection_t* connection_t;
 typedef const s_connection_t* const_connection_t;
 
 connection_t connection_new(int id);
-void connection_free(void* data);
 void connection_add_speed_value(connection_t connection, double speed);
 int connection_has_piece(const_connection_t connection, unsigned int piece);
 

@@ -10,13 +10,7 @@
 #include <xbt/dynar.h>
 
 void tracker(int argc, char* argv[]);
-/**
- * Task types exchanged between a node and the tracker
- */
-typedef enum { TRACKER_TASK_QUERY, TRACKER_TASK_ANSWER } e_tracker_task_type_t;
-/**
- * Tasks exchanged between a tracker and peers.
- */
+/** Tasks exchanged between a tracker and peers. */
 typedef struct s_tracker_query {
   int peer_id;                 // peer id
   sg_mailbox_t return_mailbox; // mailbox where the tracker should answer

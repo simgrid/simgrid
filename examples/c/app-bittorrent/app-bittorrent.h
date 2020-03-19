@@ -73,16 +73,10 @@ typedef s_message_t* message_t;
 message_t message_new(e_message_type type, int peer_id, sg_mailbox_t return_mailbox);
 /** Builds a new "have/piece" message */
 message_t message_index_new(e_message_type type, int peer_id, sg_mailbox_t return_mailbox, int index);
-
 message_t message_other_new(e_message_type type, int peer_id, sg_mailbox_t return_mailbox, unsigned int bitfield);
-/** Builds a new bitfield message */
-message_t message_bitfield_new(int peer_id, sg_mailbox_t return_mailbox, unsigned int bitfield);
 /** Builds a new "request" message */
 message_t message_request_new(int peer_id, sg_mailbox_t return_mailbox, int piece, int block_index, int block_length);
 /** Build a new "piece" message */
 message_t message_piece_new(int peer_id, sg_mailbox_t return_mailbox, int index, int block_index, int block_length);
-
-/** Free a message task */
-void message_free(void*);
 
 #endif /* BITTORRENT_BITTORRENT_H_ */

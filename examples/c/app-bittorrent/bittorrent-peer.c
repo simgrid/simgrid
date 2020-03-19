@@ -64,7 +64,7 @@ static void peer_free(peer_t peer)
   connection_t connection;
   xbt_dict_cursor_t cursor;
   xbt_dict_foreach (peer->connected_peers, cursor, key, connection)
-    connection_free(connection);
+    xbt_free(connection);
 
   xbt_dict_free(&peer->connected_peers);
   xbt_dict_free(&peer->active_peers);
@@ -185,7 +185,7 @@ void send_message(const_peer_t peer, sg_mailbox_t mailbox, e_message_type type, 
 void send_bitfield(const_peer_t peer, sg_mailbox_t mailbox)
 {
   XBT_DEBUG("Sending a BITFIELD to %s", sg_mailbox_get_name(mailbox));
-  message_t message = message_bitfield_new(peer->id, peer->mailbox, peer->bitfield);
+  message_t message = message_other_new(MESSAGE_BITFIELD, peer->id, peer->mailbox, peer->bitfield);
   sg_comm_t comm    = sg_mailbox_put_init(mailbox, message, MESSAGE_BITFIELD_SIZE + BITS_TO_BYTES(FILE_PIECES));
   sg_comm_detach(comm, NULL);
 }
@@ -308,7 +308,7 @@ void leech(peer_t peer)
     if (sg_comm_test(peer->comm_received)) {
       peer->message = (message_t)data;
       handle_message(peer, peer->message);
-      message_free(peer->message);
+      xbt_free(peer->message);
       peer->comm_received = NULL;
     } else {
       // We don't execute the choke algorithm if we don't already have a piece
@@ -338,7 +338,7 @@ void seed(peer_t peer)
     if (sg_comm_test(peer->comm_received)) {
       peer->message = (message_t)data;
       handle_message(peer, peer->message);
-      message_free(data);
+      xbt_free(peer->message);
       peer->comm_received = NULL;
     } else {
       if (simgrid_get_clock() >= next_choked_update) {
@@ -814,12 +814,6 @@ void connection_add_speed_value(connection_t connection, double speed)
   connection->peer_speed = connection->peer_speed * 0.6 + speed * 0.4;
 }
 
-void connection_free(void* data)
-{
-  connection_t co = (connection_t)data;
-  xbt_free(co);
-}
-
 int connection_has_piece(const_connection_t connection, unsigned int piece)
 {
   return (connection->bitfield & 1U << piece);
@@ -844,13 +838,6 @@ message_t message_index_new(e_message_type type, int peer_id, sg_mailbox_t retur
   return message;
 }
 
-message_t message_bitfield_new(int peer_id, sg_mailbox_t return_mailbox, unsigned int bitfield)
-{
-  message_t message = message_new(MESSAGE_BITFIELD, peer_id, return_mailbox);
-  message->bitfield = bitfield;
-  return message;
-}
-
 message_t message_other_new(e_message_type type, int peer_id, sg_mailbox_t return_mailbox, unsigned int bitfield)
 {
   message_t message = message_new(type, peer_id, return_mailbox);
@@ -872,10 +859,4 @@ message_t message_piece_new(int peer_id, sg_mailbox_t return_mailbox, int piece,
   message->block_index  = block_index;
   message->block_length = block_length;
   return message;
-}
-
-void message_free(void* task)
-{
-  message_t message = (message_t)task;
-  xbt_free(message);
 }
