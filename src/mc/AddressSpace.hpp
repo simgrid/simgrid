@@ -57,7 +57,7 @@ public:
   }
   ReadOptions& operator^=(ReadOptions const& that)
   {
-    value_ &= that.value_;
+    value_ ^= that.value_;
     return *this;
   }
 
