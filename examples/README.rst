@@ -119,7 +119,11 @@ Starting and Stoping Actors
 
           This demonstrates the ``start_time`` and ``kill_time`` attribute of the :ref:`pf_tag_actor` tag.
 
-       .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
+       .. example-tab:: examples/python/actor-lifetime/actor-lifetime.py
+
+          This file is not really interesting: the important matter is in the XML file.
+
+      .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
 
           This file is not really interesting: the important matter is in the XML file.
 
@@ -589,6 +593,8 @@ Interacting with the Platform
 
       .. example-tab:: examples/s4u/platform-failures/s4u-platform-failures.cpp
 
+      .. example-tab:: examples/c/platform-failures/platform-failures.c
+
       .. group-tab:: XML
 
          .. showfile:: examples/platforms/small_platform_failures.xml
@@ -727,6 +733,11 @@ than the previous examples.
 
           .. showfile:: examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
              :language: cpp
+
+       .. group-tab:: C
+
+          .. showfile:: examples/c/app-masterworker/app-masterworker.c
+             :language: cpp
     
 Data diffusion
 --------------
@@ -745,6 +756,17 @@ Data diffusion
              :language: cpp
 
           .. showfile:: examples/s4u/app-bittorrent/s4u-tracker.cpp
+             :language: cpp
+
+       .. group-tab:: C
+
+          .. showfile:: examples/c/app-bittorrent/app-bittorrent.c
+             :language: cpp
+
+          .. showfile:: examples/c/app-bittorrent/bittorrent-peer.c
+             :language: cpp
+
+          .. showfile:: examples/c/app-bittorrent/tracker.c
              :language: cpp
 
   - **Chained Send:** 
@@ -798,6 +820,23 @@ Distributed Hash Tables (DHT)
              :language: cpp
 
           .. showfile:: examples/s4u/dht-kademlia/node.cpp
+             :language: cpp
+
+       .. group-tab:: C
+
+          .. showfile:: examples/c/dht-kademlia/dht-kademlia.c
+             :language: cpp
+
+          .. showfile:: examples/c/dht-kademlia/routing_table.c
+             :language: cpp
+
+          .. showfile:: examples/c/dht-kademlia/answer.c
+             :language: cpp
+
+          .. showfile:: examples/c/dht-kademlia/message.c
+             :language: cpp
+
+          .. showfile:: examples/c/dht-kademlia/node.c
              :language: cpp
 
 .. _s4u_ex_clouds:
