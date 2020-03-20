@@ -6,30 +6,12 @@
  @ingroup MSG_API
  @brief Find the MSG example fitting your needs from the extensive set provided in the archive.
 
-  - @ref msg_ex_basics
-  - @ref msg_ex_process
   - @ref msg_ex_tracing
     - @ref msg_ex_tracing_user_variables
-  - @ref msg_ex_models
-    - @ref msg_ex_ns3
 
 @warning MSG was deprecated in SimGrid v3.18. These examples should be
          converted to S4U in the next releases. You really should
          consider using S4U in your next project.
-
-@section msg_ex_basics Basic examples and features
-
- - <b>Master Workers</b>.
-   @ref examples/deprecated/msg/app-masterworker/app-masterworker.c\n
-   Another good old example, where one Master process has a bunch of
-   task to dispatch to a set of several Worker processes.
-
-@section msg_ex_process Acting on Processes
-
-  - <b>Creating processes</b>. 
-    @ref examples/deprecated/msg/process-create/process-create.c \n
-    Most processes are started from the deployment XML file, but they
-    can also be used with the @ref MSG_process_create() function.
 
 @section msg_ex_tracing Tracing and visualization features
 
@@ -93,27 +75,6 @@ They have to be run with the following options:
     given network path (identified by its source and destination
     hosts) instead of knowing the name of each specific link.
 
-@section msg_ex_models Models-related examples
-
-@subsection msg_ex_ns3 ns-3 as a SimGrid Network Model
-
-This example demonstrates how to use the bindings to the Network
-Simulator, as explained in @ref pls_ns3. The most
-interesting is probably not the C files since they are unchanged from
-the other simulations, but the associated files, such as the platform
-file to see how to declare a platform to be used with the ns-3 bindings
-of SimGrid and the tesh file to see how to actually start a simulation
-in these settings.
-  
-  - @ref examples/deprecated/msg/network-ns3/network-ns3.c. Simple ping-pong using
-    ns-3 instead of the SimGrid network models.
-
-TODO: merge the C files
-
-TODO: show the XML files instead if it's what is interesting. On a "XML example files" page that does not exist yet.
-
-*/
-
 // As a human, you can stop reading at this point. The rest is garbage:
 // 
 // Every example must be listed in the following, but it's not possible
@@ -123,9 +84,6 @@ TODO: show the XML files instead if it's what is interesting. On a "XML example 
 
 
 /**
-@example examples/deprecated/msg/app-masterworker/app-masterworker.c
-
-@example examples/deprecated/msg/process-create/process-create.c
 
 @example examples/deprecated/msg/trace-categories/trace-categories.c
 @example examples/deprecated/msg/trace-masterworker/trace-masterworker.c
@@ -133,8 +91,6 @@ TODO: show the XML files instead if it's what is interesting. On a "XML example 
 @example examples/deprecated/msg/trace-host-user-variables/trace-host-user-variables.c
 @example examples/deprecated/msg/trace-link-user-variables/trace-link-user-variables.c
 @example examples/deprecated/msg/trace-route-user-variables/trace-route-user-variables.c
-
-@example examples/deprecated/msg/network-ns3/network-ns3.c
 
 */
 

@@ -864,6 +864,27 @@ Simulating Clouds
        .. example-tab:: examples/c/cloud-migration/cloud-migration.c
 
 =======================
+Model-Related Examples
+=======================
+
+  - **ns-3 as a SimGrid Network Model**
+    This simple ping-pong example demonstrates how to use the bindings to the Network
+    Simulator. The most interesting is probably not the C++ files since
+    they are unchanged from the other simulations, but the associated files,
+    such as the platform file to see how to declare a platform to be used 
+    with the ns-3 bindings of SimGrid and the tesh file to see how to actually
+    start a simulation in these settings.
+
+    .. example-tab:: examples/s4u/network-ns3/s4u-network-ns3.cpp
+
+    .. group-tab:: XML
+
+         **Platform files:**
+
+         .. showfile:: examples/platforms/small_platform_one_link_routes.xml
+            :language: xml
+
+=======================
 Model-Checking Examples
 =======================
 
