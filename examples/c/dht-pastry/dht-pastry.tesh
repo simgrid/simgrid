@@ -1,8 +1,8 @@
 #!/usr/bin/env tesh
 
-p Testing the Pastry implementation with MSG
+p Testing the Pastry implementation
 
-$ ${bindir:=.}/dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir}/dht-pastry_d.xml --log=msg_pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/dht-pastry-c -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dht-pastry_d.xml --log=pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [ 20.007806] (1:node@node-0.simgrid.org) Task update from 366680 !!!
 > [ 20.007806] (1:node@node-0.simgrid.org) Node:
 > [ 20.007806] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 

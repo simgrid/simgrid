@@ -99,6 +99,10 @@ include examples/c/dht-kademlia/node.c
 include examples/c/dht-kademlia/node.h
 include examples/c/dht-kademlia/routing_table.c
 include examples/c/dht-kademlia/routing_table.h
+include examples/c/dht-pastry/dht-pastry.c
+include examples/c/dht-pastry/dht-pastry.tesh
+include examples/c/dht-pastry/dht-pastry_d.xml
+include examples/c/dht-pastry/generate.py
 include examples/c/energy-exec-ptask/energy-exec-ptask.c
 include examples/c/energy-exec-ptask/energy-exec-ptask.tesh
 include examples/c/energy-exec/energy-exec.c
@@ -249,10 +253,6 @@ include examples/deprecated/java/trace/pingpong/Receiver.java
 include examples/deprecated/java/trace/pingpong/Sender.java
 include examples/deprecated/java/trace/pingpong/trace-pingpong.tesh
 include examples/deprecated/msg/README.doc
-include examples/deprecated/msg/dht-pastry/dht-pastry.c
-include examples/deprecated/msg/dht-pastry/dht-pastry.tesh
-include examples/deprecated/msg/dht-pastry/dht-pastry_d.xml
-include examples/deprecated/msg/dht-pastry/generate.py
 include examples/deprecated/msg/mc/bugged1.c
 include examples/deprecated/msg/mc/bugged1.tesh
 include examples/deprecated/msg/mc/bugged1_liveness.c
