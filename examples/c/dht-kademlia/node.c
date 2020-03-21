@@ -117,7 +117,7 @@ void send_find_node(const_node_t node, unsigned int id, unsigned int destination
  * Sends to the best "KADEMLIA_ALPHA" nodes in the "node_list" array a "FIND_NODE" request, to ask them for their best
  * nodes
  */
-unsigned int send_find_node_to_best(node_t node, const_answer_t node_list)
+unsigned int send_find_node_to_best(const_node_t node, const_answer_t node_list)
 {
   unsigned int i           = 0;
   unsigned int j           = 0;

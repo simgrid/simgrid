@@ -65,7 +65,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
 void random_lookup(node_t node);
 
 void send_find_node(const_node_t node, unsigned int id, unsigned int destination);
-unsigned int send_find_node_to_best(node_t node, const_answer_t node_list);
+unsigned int send_find_node_to_best(const_node_t node, const_answer_t node_list);
 
 void handle_find_node(const_node_t node, const_kademlia_message_t data);
 

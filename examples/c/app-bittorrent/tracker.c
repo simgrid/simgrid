@@ -98,6 +98,6 @@ tracker_answer_t tracker_answer_new(int interval)
   tracker_answer_t ta = xbt_new(s_tracker_answer_t, 1);
   ta->interval        = interval;
   ta->peers           = xbt_dynar_new(sizeof(int), NULL);
-  ;
+
   return ta;
 }
