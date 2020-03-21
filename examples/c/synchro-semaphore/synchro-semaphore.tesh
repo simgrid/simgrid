@@ -3,7 +3,7 @@
 p Testing synchronization with semaphores
 
 ! output sort 19
-$ ${bindir:=.}/synchro-semaphore ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/synchro-semaphore-c ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:Alice@Fafard) Trying to acquire 1
 > [  0.000000] (1:Alice@Fafard) Acquired 1
 > [  0.900000] (2:Bob@Fafard) Trying to acquire 1

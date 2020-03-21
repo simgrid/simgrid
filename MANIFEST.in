@@ -127,6 +127,8 @@ include examples/c/platform-properties/platform-properties.tesh
 include examples/c/platform-properties/platform-properties_d.xml
 include examples/c/plugin-hostload/plugin-hostload.c
 include examples/c/plugin-hostload/plugin-hostload.tesh
+include examples/c/synchro-semaphore/synchro-semaphore.c
+include examples/c/synchro-semaphore/synchro-semaphore.tesh
 include examples/deprecated/java/app/bittorrent/Common.java
 include examples/deprecated/java/app/bittorrent/Connection.java
 include examples/deprecated/java/app/bittorrent/Main.java
@@ -273,8 +275,6 @@ include examples/deprecated/msg/mc/deploy_centralized_mutex.xml
 include examples/deprecated/msg/mc/platform.xml
 include examples/deprecated/msg/mc/promela_bugged1_liveness
 include examples/deprecated/msg/mc/promela_bugged2_liveness
-include examples/deprecated/msg/synchro-semaphore/synchro-semaphore.c
-include examples/deprecated/msg/synchro-semaphore/synchro-semaphore.tesh
 include examples/deprecated/msg/trace-categories/trace-categories.c
 include examples/deprecated/msg/trace-categories/trace-categories.tesh
 include examples/deprecated/msg/trace-host-user-variables/trace-host-user-variables.c

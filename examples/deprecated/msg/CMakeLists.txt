@@ -1,4 +1,4 @@
-foreach(x dht-pastry synchro-semaphore trace-categories trace-route-user-variables trace-link-user-variables 
+foreach(x dht-pastry trace-categories trace-route-user-variables trace-link-user-variables 
         trace-masterworker trace-process-migration trace-host-user-variables)
   if(enable_msg)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
@@ -17,7 +17,7 @@ set(tesh_files    ${tesh_files}    PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/dht-pastry_d.xml                 PARENT_SCOPE)
 
 if(enable_msg)
-  foreach(x dht-pastry synchro-semaphore)
+  foreach(x dht-pastry)
     ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
                                 --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
                                 --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x} 
