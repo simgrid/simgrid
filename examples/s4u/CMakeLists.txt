@@ -27,8 +27,8 @@ foreach (example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
   set(_${example}_factories "ucontext;raw;boost")
 endforeach()
 
+set(_mc-bugged1-liveness_disable 1) 
 if(SIMGRID_HAVE_MC)
-  set(_mc-bugged1-liveness_disable 1) 
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
     target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
@@ -127,10 +127,13 @@ if(SIMGRID_HAVE_MC)
   IF(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
     ADD_TESH(s4u-mc-bugged1-liveness-ucontext     --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u/mc-bugged1-liveness 
                                                   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-                                                  --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/ s4u-mc-bugged1-liveness.tesh)
+                                                  --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
+                                                  ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh)
+
     ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u/mc-bugged1-liveness 
                                                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-                                                      --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/ s4u-mc-bugged1-liveness-visited.tesh)
+                                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
+                                                       ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
     IF(HAVE_C_STACK_CLEANER)
       # This test checks if the stack cleaner is making a difference:
       ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
