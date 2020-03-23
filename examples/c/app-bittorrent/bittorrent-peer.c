@@ -138,7 +138,7 @@ int get_peers_from_tracker(const_peer_t peer)
   sg_comm_t comm_received = sg_mailbox_get_async(peer->mailbox, &message);
   res                     = sg_comm_wait_for(comm_received, GET_PEERS_TIMEOUT);
   if (res == SG_OK) {
-    const tracker_answer_t ta = (tracker_answer_t)message;
+    const tracker_answer_t ta = (const tracker_answer_t)message;
     // Add the peers the tracker gave us to our peer list.
     unsigned i;
     int peer_id;
