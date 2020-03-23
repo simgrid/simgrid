@@ -29,6 +29,13 @@ endforeach()
 
 set(_mc-bugged1-liveness_disable 1) 
 if(SIMGRID_HAVE_MC)
+   add_executable       (s4u-mc-bugged1-liveness  EXCLUDE_FROM_ALL mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
+   target_link_libraries(s4u-mc-bugged1-liveness  simgrid)
+   set_target_properties(s4u-mc-bugged1-liveness PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness)
+   add_dependencies(tests s4u-mc-bugged1-liveness)
+   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
+   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh)
+ 
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
     target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
