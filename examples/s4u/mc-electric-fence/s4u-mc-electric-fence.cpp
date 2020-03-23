@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
 
-  e.load_platform("platform.xml");
+  e.load_platform(argv[1]);
 
   simgrid::s4u::Actor::create("server", simgrid::s4u::Host::by_name("HostA"), server);
   simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("HostB"), client, 1);

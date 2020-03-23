@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-electric-fence platform.xml
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-electric-fence ${platfdir}/model_checker_platform.xml
 > [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
 > [HostB:client:(2) 0.000000] [electric_fence/INFO] Sent!
 > [HostA:server:(1) 0.000000] [electric_fence/INFO] OK

@@ -73,10 +73,10 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 #    message("Factories of ${example}: ${_${example}_factories}")
 
     ADD_TESH_FACTORIES(s4u-${example} "${_${example}_factories}"
-                                      --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
-				      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-				      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
-				      ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+                                      --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                      ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
   else()
     message(STATUS "Example ${example} disabled, thus not compiled.")
     unset(_${example}_disabled)
@@ -123,9 +123,9 @@ foreach(example app-bittorrent app-masterworkers
                 )
   ADD_TESH_FACTORIES(s4u-${example}-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
                                              --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
-	 			             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-				             --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
-				             ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+                                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                                             --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
+                                             ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
 
 # ns3-tests
@@ -179,7 +179,6 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-boot/platform_boot.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/s4u-io-file-remote_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-electric-fence/platform.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/s4u-platform-properties_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-failures/s4u-platform-failures_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split_d.xml

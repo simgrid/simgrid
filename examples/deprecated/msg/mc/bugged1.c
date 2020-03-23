@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
 
-  MSG_create_environment("platform.xml");
+  MSG_create_environment(argv[1]);
 
   MSG_function_register("server", server);
   MSG_function_register("client", client);
