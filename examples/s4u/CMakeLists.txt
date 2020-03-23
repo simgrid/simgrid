@@ -125,12 +125,12 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers
 # Model-checking liveness
 if(SIMGRID_HAVE_MC)
   IF(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
-    ADD_TESH(s4u-mc-bugged1-liveness-ucontext     --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u/mc-bugged1-liveness 
+    ADD_TESH(s4u-mc-bugged1-liveness-ucontext     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness 
                                                   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
                                                   --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
                                                   ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh)
 
-    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u/mc-bugged1-liveness 
+    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness 
                                                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
                                                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
                                                        ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
@@ -138,7 +138,7 @@ if(SIMGRID_HAVE_MC)
       # This test checks if the stack cleaner is making a difference:
       ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
                                                      ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/ 
-                                                     ${CMAKE_BINARY_DIR}/examples/s4u/mc-bugged1-liveness/)
+                                                     ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/)
     ENDIF()
   ENDIF()
 
