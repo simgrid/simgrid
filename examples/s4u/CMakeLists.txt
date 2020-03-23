@@ -20,7 +20,7 @@ if(WIN32)
   set(_maestro-set_disable 1)
 endif()
 
-foreach (example mc-failing-assert mc-electric-fence)
+foreach (example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
   if(NOT SIMGRID_HAVE_MC)
     set(_${example}_disable 1)
   endif()
@@ -31,7 +31,7 @@ if(SIMGRID_HAVE_NS3)
   add_executable       (s4u-network-ns3 EXCLUDE_FROM_ALL network-ns3/s4u-network-ns3.cpp)
   target_link_libraries(s4u-network-ns3 simgrid)
   set_target_properties(s4u-network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
-  add_dependencies(tests s4u-network-ns3)    
+  add_dependencies(tests s4u-network-ns3)
 endif()
 
 # Deal with each example
@@ -47,7 +47,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
                  maestro-set
-                 mc-electric-fence mc-failing-assert
+                 mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-hostload
