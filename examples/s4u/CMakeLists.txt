@@ -27,6 +27,22 @@ foreach (example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
   set(_${example}_factories "ucontext;raw;boost")
 endforeach()
 
+if(SIMGRID_HAVE_MC)
+  set(_mc-bugged1-liveness_disable 1) 
+  if(HAVE_C_STACK_CLEANER)
+    add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
+    target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
+    set_target_properties(s4u-mc-bugged1-liveness-cleaner-on  PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fstack-cleaner")
+    add_dependencies(tests s4u-mc-bugged1-liveness-cleaner-on)
+
+    add_executable       (s4u-mc-bugged1-liveness-cleaner-off EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
+    target_link_libraries(s4u-mc-bugged1-liveness-cleaner-off simgrid)
+    set_target_properties(s4u-mc-bugged1-liveness-cleaner-off PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fno-stack-cleaner")
+    add_dependencies(tests s4u-mc-bugged1-liveness-cleaner-off)
+  endif()
+
+endif()
+
 if(SIMGRID_HAVE_NS3)
   add_executable       (s4u-network-ns3 EXCLUDE_FROM_ALL network-ns3/s4u-network-ns3.cpp)
   target_link_libraries(s4u-network-ns3 simgrid)
@@ -47,7 +63,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
                  maestro-set
-                 mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
+                 mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-electric-fence mc-failing-assert
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-hostload
@@ -106,7 +122,27 @@ foreach(variant fun class)
 endforeach()
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers.tesh)
 
+# Model-checking liveness
+if(SIMGRID_HAVE_MC)
+  IF(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
+    ADD_TESH(s4u-mc-bugged1-liveness-ucontext     --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u/mc-bugged1-liveness 
+                                                  --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                                                  --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/ s4u-mc-bugged1-liveness.tesh)
+    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u/mc-bugged1-liveness 
+                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                                                      --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/ s4u-mc-bugged1-liveness-visited.tesh)
+    IF(HAVE_C_STACK_CLEANER)
+      # This test checks if the stack cleaner is making a difference:
+      ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
+                                                     ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/ 
+                                                     ${CMAKE_BINARY_DIR}/examples/s4u/mc-bugged1-liveness/)
+    ENDIF()
+  ENDIF()
 
+  if (enable_coverage)
+    SET_TESTS_PROPERTIES(mc-bugged1-liveness-visited-ucontext PROPERTIES RUN_SERIAL "TRUE")
+  endif()
+ENDIF()
 
 # The tests the parallel variant of of DHTs
 
@@ -164,6 +200,7 @@ endif()
 
 set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp              PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.tesh             PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
@@ -191,7 +228,9 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/dogbone_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml                PARENT_SCOPE)
-set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py                     PARENT_SCOPE)
+set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/promela_bugged1_liveness PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt

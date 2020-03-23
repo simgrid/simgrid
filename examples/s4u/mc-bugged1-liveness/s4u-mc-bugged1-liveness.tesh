@@ -3,7 +3,7 @@
 ! expect return 2
 ! timeout 20
 ! output ignore
-$ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${platfdir:=.}/small_platform.xml ${srcdir:=.}/deploy_bugged1_liveness.xml --log=xbt_cfg.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=contexts/stack-size:256 --cfg=model-check/property:promela_bugged1_liveness
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged1-liveness ${platfdir:=.}/small_platform.xml 0 --log=xbt_cfg.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=contexts/stack-size:256 --cfg=model-check/property:promela_bugged1_liveness
 > [  0.000000] (0:maestro@) Check the liveness property promela_bugged1_liveness
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (3:client@Fafard) Ask the request
