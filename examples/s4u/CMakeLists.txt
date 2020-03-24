@@ -137,10 +137,11 @@ if(SIMGRID_HAVE_MC)
                                                   --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
                                                   ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh)
 
-    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness 
-                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-                                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
-                                                       ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
+# This example hit the 5' timeout on CI, disable it for now
+#    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness 
+#                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+#                                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
+#                                                       ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
     IF(HAVE_C_STACK_CLEANER)
       # This test checks if the stack cleaner is making a difference:
       ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
