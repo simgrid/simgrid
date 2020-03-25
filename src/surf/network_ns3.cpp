@@ -245,8 +245,8 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
       action->src_->route_to(action->dst_, route, nullptr);
       for (auto const& link : route)
-        TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
-                                            (data_delta_sent) / delta, now - delta, delta);
+        instr::resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
+                                        (data_delta_sent) / delta, now - delta, delta);
 
       action->last_sent_ = sgFlow->sent_bytes_;
     }
@@ -255,7 +255,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
       socket_to_destroy.push_back(ns3_socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3_socket.c_str(), action);
       action->set_remains(0);
-      action->finish(kernel::resource::Action::State::FINISHED);
+      action->finish(Action::State::FINISHED);
     } else {
       XBT_DEBUG("Socket %p sent %u bytes out of %u (%u remaining)", ns3_socket.c_str(), sgFlow->sent_bytes_,
                 sgFlow->total_bytes_, sgFlow->remaining_);

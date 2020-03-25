@@ -42,7 +42,7 @@ Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see
 Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl())
 {
   xbt_assert(Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
-  TRACE_global_init();
+  instr::init();
   SIMIX_global_init(argc, argv);
 
   Engine::instance_ = this;

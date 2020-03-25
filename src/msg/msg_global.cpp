@@ -28,7 +28,7 @@ static void MSG_exit();
  */
 void MSG_init_nocheck(int* argc, char** argv)
 {
-  TRACE_global_init();
+  simgrid::instr::init();
 
   if (not msg_global) {
     simgrid::config::bind_flag(MSG_Global_t::debug_multiple_use, "msg/debug-multiple-use",

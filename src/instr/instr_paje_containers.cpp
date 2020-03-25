@@ -30,7 +30,7 @@ long long int instr_new_paje_id ()
 namespace simgrid {
 namespace instr {
 
-container_t Container::get_root()
+Container* Container::get_root()
 {
   return rootContainer;
 }
@@ -38,7 +38,7 @@ container_t Container::get_root()
 NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father)
     : Container::Container(name, "", father)
 {
-  netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
+  netpoint_ = s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
   xbt_assert(netpoint_, "Element '%s' not found", get_cname());
   if (father_) {
     std::string type_name = std::string("L") + std::to_string(level);
@@ -56,11 +56,11 @@ RouterContainer::RouterContainer(const std::string& name, Container* father)
 {
   xbt_assert(father, "Only the Root container has no father");
 
-  netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
+  netpoint_ = s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
   xbt_assert(netpoint_, "Element '%s' not found", get_cname());
 }
 
-HostContainer::HostContainer(simgrid::s4u::Host const& host, NetZoneContainer* father)
+HostContainer::HostContainer(s4u::Host const& host, NetZoneContainer* father)
     : Container::Container(host.get_name(), "HOST", father)
 {
   xbt_assert(father, "Only the Root container has no father");
@@ -88,9 +88,8 @@ Container::Container(const std::string& name, const std::string& type_name, Cont
 
   //register all kinds by name
   if (not allContainers.emplace(name_, this).second)
-    throw simgrid::TracingError(
-        XBT_THROW_POINT,
-        simgrid::xbt::string_printf("container %s already present in allContainers data structure", get_cname()));
+    throw TracingError(XBT_THROW_POINT,
+                       xbt::string_printf("container %s already present in allContainers data structure", get_cname()));
 
   XBT_DEBUG("Add container name '%s'", get_cname());
 }
@@ -212,23 +211,17 @@ void Container::log_destruction()
 
 StateType* Container::get_state(const std::string& name)
 {
-  StateType* ret = static_cast<StateType*>(type_->by_name(name));
-  ret->set_calling_container(this);
-  return ret;
+  return static_cast<StateType*>(type_->by_name(name)->set_calling_container(this));
 }
 
 LinkType* Container::get_link(const std::string& name)
 {
-  LinkType* ret = static_cast<LinkType*>(type_->by_name(name));
-  ret->set_calling_container(this);
-  return ret;
+  return static_cast<LinkType*>(type_->by_name(name)->set_calling_container(this));
 }
 
 VariableType* Container::get_variable(const std::string& name)
 {
-  VariableType* ret = static_cast<VariableType*>(type_->by_name(name));
-  ret->set_calling_container(this);
-  return ret;
+  return static_cast<VariableType*>(type_->by_name(name)->set_calling_container(this));
 }
 } // namespace instr
 } // namespace simgrid

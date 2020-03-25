@@ -46,7 +46,11 @@ public:
     return cont == children_.end() ? new T(name, this) : static_cast<T*>(cont->second.get());
   }
 
-  void set_calling_container(Container* container) { issuer_ = container; }
+  Type* set_calling_container(Container* container)
+  {
+    issuer_ = container;
+    return this;
+  }
 
   void log_definition(e_event_type event_type);
   void log_definition(Type* source, Type* dest);

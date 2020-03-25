@@ -29,5 +29,5 @@ void EntityValue::print()
   tracing_file << stream.str() << std::endl;
 }
 
-}
-}
+} // namespace instr
+} // namespace simgrid

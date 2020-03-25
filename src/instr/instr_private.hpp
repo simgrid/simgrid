@@ -29,6 +29,11 @@ typedef simgrid::instr::Container* container_t;
 
 namespace simgrid {
 namespace instr {
+void init();
+void define_callbacks();
+
+void resource_set_utilization(const char* type, const char* name, const char* resource, const std::string& category,
+                              double value, double now, double delta);
 
 /* Format of TRACING output.
  *   - paje is the regular format, that we all know
@@ -265,25 +270,18 @@ XBT_PUBLIC bool TRACE_smpi_is_computing();
 XBT_PUBLIC bool TRACE_smpi_is_sleeping();
 XBT_PUBLIC bool TRACE_smpi_view_internals();
 
-XBT_PRIVATE void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
-                                                     const std::string& category, double value, double now,
-                                                     double delta);
-
 /* instr_paje.c */
 XBT_PRIVATE long long int instr_new_paje_id();
-XBT_PRIVATE void instr_define_callbacks();
 void instr_new_variable_type(const std::string& new_typename, const std::string& color);
 void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
                                   const std::string& color);
 void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename);
 void instr_new_value_for_user_state_type(const std::string& new_typename, const char* value, const std::string& color);
 
-XBT_PRIVATE void TRACE_global_init();
 XBT_PRIVATE void TRACE_help();
 
 XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
 XBT_PRIVATE void dump_comment_file(const std::string& filename);
-XBT_PRIVATE void dump_comment(const std::string& comment);
 
 XBT_PRIVATE std::string TRACE_get_filename();
 

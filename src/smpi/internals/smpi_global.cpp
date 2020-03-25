@@ -536,7 +536,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   
   SMPI_switch_data_segment = &smpi_switch_data_segment;
   smpi_init_options();
-  TRACE_global_init();
+  simgrid::instr::init();
   SIMIX_global_init(&argc, argv);
 
   auto engine              = simgrid::s4u::Engine::get_instance();

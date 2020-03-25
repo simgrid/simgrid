@@ -18,12 +18,6 @@ extern std::ofstream tracing_file;
 
 static std::vector<simgrid::instr::PajeEvent*> buffer;
 
-void dump_comment(const std::string& comment)
-{
-  if (not comment.empty())
-    tracing_file << "# " << comment << std::endl;
-}
-
 void dump_comment_file(const std::string& filename)
 {
   if (filename.empty())

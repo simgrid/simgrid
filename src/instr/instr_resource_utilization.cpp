@@ -9,11 +9,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
 
-void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
-                                         const std::string& category, double value, double now, double delta)
+namespace simgrid {
+namespace instr {
+void resource_set_utilization(const char* type, const char* name, const char* resource, const std::string& category,
+                              double value, double now, double delta)
 {
   // only trace resource utilization if resource is known by tracing mechanism
-  container_t container = simgrid::instr::Container::by_name_or_null(resource);
+  container_t container = Container::by_name_or_null(resource);
   if (not container || not value)
     return;
 
@@ -30,3 +32,5 @@ void TRACE_surf_resource_set_utilization(const char* type, const char* name, con
     container->get_variable(name)->instr_event(now, delta, resource, value);
   }
 }
+} // namespace instr
+} // namespace simgrid
