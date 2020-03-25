@@ -660,8 +660,6 @@ include teshsuite/mc/random-bug/random-bug-nocrash.tesh
 include teshsuite/mc/random-bug/random-bug-replay.tesh
 include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
-include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.c
-include teshsuite/msg/cloud-two-tasks/cloud-two-tasks.tesh
 include teshsuite/msg/get_sender/get_sender.c
 include teshsuite/msg/get_sender/get_sender.tesh
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.c
@@ -692,6 +690,8 @@ include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.cpp
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.tesh
 include teshsuite/s4u/cloud-sharing/cloud-sharing.cpp
 include teshsuite/s4u/cloud-sharing/cloud-sharing.tesh
+include teshsuite/s4u/cloud-two-execs/cloud-two-execs.cpp
+include teshsuite/s4u/cloud-two-execs/cloud-two-execs.tesh
 include teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
