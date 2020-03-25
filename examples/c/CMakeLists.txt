@@ -10,7 +10,7 @@ foreach(x
         dht-pastry
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
-        io-disk-raw io-file-remote
+        io-disk-raw io-file-remote io-file-system
         platform-failures platform-properties
         plugin-hostload
         synchro-semaphore)
@@ -102,7 +102,7 @@ foreach(x
         dht-kademlia dht-pastry
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
         energy-exec energy-exec-ptask energy-vm
-        io-disk-raw io-file-remote
+        io-disk-raw io-file-remote io-file-system
         platform-failures platform-properties
         plugin-hostload
         synchro-semaphore)

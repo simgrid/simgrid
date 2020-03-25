@@ -1,4 +1,4 @@
-foreach(x cloud-two-tasks get_sender io-file task_listen_from task_destroy_cancel)
+foreach(x cloud-two-tasks get_sender task_listen_from task_destroy_cancel)
   if(enable_msg)
     add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x} simgrid)
@@ -14,7 +14,7 @@ set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     PARENT_SCOPE)
 
 if(enable_msg)
-  foreach(x cloud-two-tasks get_sender task_destroy_cancel task_listen_from io-file)
+  foreach(x cloud-two-tasks get_sender task_destroy_cancel task_listen_from)
 
     ADD_TESH_FACTORIES(tesh-msg-${x} "raw"  --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                             --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/${x}
