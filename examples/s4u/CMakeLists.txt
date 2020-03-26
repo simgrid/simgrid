@@ -150,9 +150,9 @@ if(SIMGRID_HAVE_MC)
     ENDIF()
   ENDIF()
 
-  if (enable_coverage)
-    SET_TESTS_PROPERTIES(mc-bugged1-liveness-visited-ucontext PROPERTIES RUN_SERIAL "TRUE")
-  endif()
+#  if (enable_coverage)
+#    SET_TESTS_PROPERTIES(mc-bugged1-liveness-visited-ucontext PROPERTIES RUN_SERIAL "TRUE")
+#  endif()
 ENDIF()
 
 # The tests the parallel variant of of DHTs
