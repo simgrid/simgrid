@@ -11,6 +11,11 @@
 #include "surf/surf.hpp"
 #include "xbt/virtu.h" /* xbt::cmdline */
 
+#include <sys/stat.h>
+#ifdef WIN32
+#include <direct.h> // _mkdir
+#endif
+
 #include <fstream>
 #include <string>
 #include <vector>
@@ -19,6 +24,8 @@ XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used fo
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 std::ofstream tracing_file;
+std::map<container_t, std::ofstream*> tracing_files; // TI specific
+double prefix = 0.0;                                 // TI specific
 
 constexpr char OPT_TRACING_BASIC[]             = "tracing/basic";
 constexpr char OPT_TRACING_COMMENT_FILE[]      = "tracing/comment-file";
@@ -227,6 +234,92 @@ namespace simgrid {
 namespace instr {
 
 static bool trace_active = false;
+/*************
+ * Callbacks *
+ *************/
+xbt::signal<void(Container&)> Container::on_creation;
+xbt::signal<void(Container&)> Container::on_destruction;
+
+static void on_container_creation_paje(Container& c)
+{
+  double timestamp = SIMIX_get_clock();
+  std::stringstream stream;
+
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_CreateContainer, timestamp);
+
+  stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_CreateContainer << " ";
+  stream << timestamp << " " << c.get_id() << " " << c.type_->get_id() << " " << c.father_->get_id() << " \"";
+  if (c.get_name().find("rank-") != 0)
+    stream << c.get_name() << "\"";
+  else
+    /* Subtract -1 because this is the process id and we transform it to the rank id */
+    stream << "rank-" << stoi(c.get_name().substr(5)) - 1 << "\"";
+
+  XBT_DEBUG("Dump %s", stream.str().c_str());
+  tracing_file << stream.str() << std::endl;
+}
+
+static void on_container_destruction_paje(Container& c)
+{
+  // obligation to dump previous events because they might reference the container that is about to be destroyed
+  TRACE_last_timestamp_to_dump = SIMIX_get_clock();
+  TRACE_paje_dump_buffer(true);
+
+  // trace my destruction, but not if user requests so or if the container is root
+  if (not TRACE_disable_destroy() && &c != Container::get_root()) {
+    std::stringstream stream;
+    double timestamp = SIMIX_get_clock();
+
+    XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_DestroyContainer, timestamp);
+
+    stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DestroyContainer << " ";
+    stream << timestamp << " " << c.type_->get_id() << " " << c.get_id();
+    XBT_DEBUG("Dump %s", stream.str().c_str());
+    tracing_file << stream.str() << std::endl;
+  }
+}
+
+static void on_container_creation_ti(Container& c)
+{
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_CreateContainer, SIMIX_get_clock());
+  // if we are in the mode with only one file
+  static std::ofstream* ti_unique_file = nullptr;
+
+  if (tracing_files.empty()) {
+    // generate unique run id with time
+    prefix = xbt_os_time();
+  }
+
+  if (not simgrid::config::get_value<bool>("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
+    std::string folder_name = simgrid::config::get_value<std::string>("tracing/filename") + "_files";
+    std::string filename    = folder_name + "/" + std::to_string(prefix) + "_" + c.get_name() + ".txt";
+#ifdef WIN32
+    _mkdir(folder_name.c_str());
+#else
+    mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+#endif
+    ti_unique_file = new std::ofstream(filename.c_str(), std::ofstream::out);
+    xbt_assert(not ti_unique_file->fail(), "Tracefile %s could not be opened for writing", filename.c_str());
+    tracing_file << filename << std::endl;
+  }
+  tracing_files.insert({&c, ti_unique_file});
+}
+
+static void on_container_destruction_ti(Container& c)
+{
+  // obligation to dump previous events because they might reference the container that is about to be destroyed
+  TRACE_last_timestamp_to_dump = SIMIX_get_clock();
+  TRACE_paje_dump_buffer(true);
+
+  if (not TRACE_disable_destroy() && &c != Container::get_root()) {
+    XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_DestroyContainer, SIMIX_get_clock());
+    if (not simgrid::config::get_value<bool>("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
+      tracing_files.at(&c)->close();
+      delete tracing_files.at(&c);
+    }
+    tracing_files.erase(&c);
+  }
+}
 
 static void on_simulation_start()
 {
@@ -244,6 +337,15 @@ static void on_simulation_start()
     /* init the tracing module to generate the right output */
     std::string format = config::get_value<std::string>("tracing/smpi/format");
     XBT_DEBUG("Tracing format %s", format.c_str());
+
+    /* Connect the callbacks associated to the creation/destruction of containers*/
+    if (format == "Paje") {
+      Container::on_creation.connect(on_container_creation_paje);
+      Container::on_destruction.connect(on_container_destruction_paje);
+    } else {
+      Container::on_creation.connect(on_container_creation_ti);
+      Container::on_destruction.connect(on_container_destruction_ti);
+    }
 
     /* open the trace file(s) */
     std::string filename = TRACE_get_filename();
