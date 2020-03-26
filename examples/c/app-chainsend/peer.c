@@ -58,13 +58,13 @@ static void peer_forward_file(peer_t p)
 
 static peer_t peer_init(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
-  peer_t p           = (peer_t)malloc(sizeof(s_peer_t));
+  peer_t p           = xbt_malloc(sizeof(s_peer_t));
   p->prev            = NULL;
   p->next            = NULL;
   p->received_pieces = 0;
   p->received_bytes  = 0;
-  p->pending_recvs   = (sg_comm_t*)malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
-  p->pending_sends   = (sg_comm_t*)malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
+  p->pending_recvs   = xbt_malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
+  p->pending_sends   = xbt_malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
 
   p->me = sg_mailbox_by_name(sg_host_self_get_name());
 

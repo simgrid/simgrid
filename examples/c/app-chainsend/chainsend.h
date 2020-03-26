@@ -28,7 +28,7 @@
 /* Broadcaster struct */
 typedef struct s_broadcaster {
   unsigned int host_count;
-  int piece_count;
+  unsigned int piece_count;
   sg_mailbox_t first;
   sg_mailbox_t* mailboxes;
   sg_comm_t* pending_sends;

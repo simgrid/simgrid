@@ -9,7 +9,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(broadcaster, "Messages specific for the broadcaster
 
 static chain_message_t chain_message_new(sg_mailbox_t prev, sg_mailbox_t next, const unsigned int num_pieces)
 {
-  chain_message_t msg = (chain_message_t)malloc(sizeof(s_chain_message_t));
+  chain_message_t msg = xbt_malloc(sizeof(s_chain_message_t));
   msg->prev_          = prev;
   msg->next_          = next;
   msg->num_pieces     = num_pieces;
@@ -50,13 +50,13 @@ static void broadcaster_send_file(const_broadcaster_t bc)
 
 static broadcaster_t broadcaster_init(sg_mailbox_t* mailboxes, unsigned int host_count, unsigned int piece_count)
 {
-  broadcaster_t bc = (broadcaster_t)malloc(sizeof(s_broadcaster_t));
+  broadcaster_t bc = xbt_malloc(sizeof(s_broadcaster_t));
 
   bc->first         = NULL;
   bc->host_count    = host_count;
   bc->piece_count   = piece_count;
   bc->mailboxes     = mailboxes;
-  bc->pending_sends = (sg_comm_t*)malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
+  bc->pending_sends = xbt_malloc(sizeof(sg_comm_t) * MAX_PENDING_COMMS);
 
   broadcaster_build_chain(bc);
 
@@ -77,7 +77,7 @@ void broadcaster(int argc, char* argv[])
   xbt_assert(argc > 2);
   unsigned int host_count = xbt_str_parse_int(argv[1], "Invalid number of peers: %s");
 
-  sg_mailbox_t* mailboxes = (sg_mailbox_t*)malloc(sizeof(sg_mailbox_t) * host_count);
+  sg_mailbox_t* mailboxes = xbt_malloc(sizeof(sg_mailbox_t) * host_count);
 
   for (unsigned int i = 1; i <= host_count; i++) {
     char* name = bprintf("node-%u.simgrid.org", i);

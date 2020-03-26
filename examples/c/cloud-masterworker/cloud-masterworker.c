@@ -28,7 +28,7 @@ static void send_tasks(int nb_workers)
   for (int i = 0; i < nb_workers; i++) {
     char mbox_name[MAXMBOXLEN];
     snprintf(mbox_name, MAXMBOXLEN, "MBOX:WRK%02d", i);
-    double* payload   = (double*)malloc(sizeof(double));
+    double* payload   = xbt_malloc(sizeof(double));
     *payload          = comp_size;
     sg_mailbox_t mbox = sg_mailbox_by_name(mbox_name);
 
@@ -67,7 +67,7 @@ static void master_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
 {
   sg_host_t* worker_pms = sg_actor_self_data();
 
-  sg_vm_t* vms = (sg_vm_t*)malloc(2 * sizeof(sg_vm_t));
+  sg_vm_t* vms = xbt_malloc(2 * sizeof(sg_vm_t));
 
   /* Launch VMs and worker actors. One VM per PM, and one worker actor per VM. */
   XBT_INFO("# Launch 2 VMs");
@@ -146,7 +146,7 @@ static void master_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
     char mbox_name[MAXMBOXLEN];
     snprintf(mbox_name, MAXMBOXLEN, "MBOX:WRK%02d", i);
     sg_mailbox_t mbox = sg_mailbox_by_name(mbox_name);
-    double* payload   = (double*)malloc(sizeof(double));
+    double* payload   = xbt_malloc(sizeof(double));
     *payload          = FINALIZE;
     sg_mailbox_put(mbox, payload, 0);
   }
@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
   /* the first pm is the master, the others are workers */
   sg_host_t master_pm = pms[0];
 
-  sg_host_t* worker_pms = (sg_host_t*)malloc(2 * sizeof(sg_host_t));
+  sg_host_t* worker_pms = xbt_malloc(2 * sizeof(sg_host_t));
   for (int i = 0; i < 2; i++)
     worker_pms[i] = pms[i + 1];
 

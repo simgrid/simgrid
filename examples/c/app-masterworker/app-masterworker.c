@@ -31,7 +31,7 @@ static void master(int argc, char* argv[])
   for (int i = 0; i < number_of_tasks; i++) { /* For each task to be executed: */
     char mailbox_name[80];
     char task_name[80];
-    double* payload = (double*)malloc(sizeof(double));
+    double* payload = xbt_malloc(sizeof(double));
     snprintf(mailbox_name, 79, "worker-%ld", i % workers_count); /* - Select a @ref worker in a round-robin way */
     snprintf(task_name, 79, "Task_%d", i);
 
@@ -48,7 +48,7 @@ static void master(int argc, char* argv[])
   for (int i = 0; i < workers_count; i++) { /* - Eventually tell all the workers to stop by sending a "finalize" task */
     char mailbox_name[80];
     snprintf(mailbox_name, 79, "worker-%ld", i % workers_count);
-    double* payload      = (double*)malloc(sizeof(double));
+    double* payload      = xbt_malloc(sizeof(double));
     sg_mailbox_t mailbox = sg_mailbox_by_name(mailbox_name);
     *payload             = FINALIZE;
     sg_mailbox_put(mailbox, payload, 0);

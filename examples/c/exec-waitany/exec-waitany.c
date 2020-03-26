@@ -19,7 +19,7 @@ static void worker(int argc, char* argv[])
   int with_timeout = !strcmp(argv[1], "true");
 
   /* Vector in which we store all pending executions*/
-  sg_exec_t* pending_execs = malloc(sizeof(sg_exec_t) * 3);
+  sg_exec_t* pending_execs = xbt_malloc(sizeof(sg_exec_t) * 3);
   int pending_execs_count  = 0;
 
   for (int i = 0; i < 3; i++) {
