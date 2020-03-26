@@ -146,7 +146,5 @@ double surf_solve(double max_date)
 
   simgrid::s4u::Engine::on_time_advance(time_delta);
 
-  TRACE_paje_dump_buffer(false);
-
   return time_delta;
 }
