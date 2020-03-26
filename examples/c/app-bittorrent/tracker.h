@@ -22,6 +22,7 @@ typedef struct s_tracker_answer {
   xbt_dynar_t peers; // the peer list the peer has asked for.
 } s_tracker_answer_t;
 typedef s_tracker_answer_t* tracker_answer_t;
+typedef const s_tracker_answer_t* const_tracker_answer_t;
 
 tracker_query_t tracker_query_new(int peer_id, sg_mailbox_t return_mailbox);
 tracker_answer_t tracker_answer_new(int interval);

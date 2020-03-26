@@ -360,7 +360,7 @@ void define_callbacks()
     kernel::routing::NetPoint::on_creation.connect(on_netpoint_creation);
   }
   s4u::NetZone::on_creation.connect(on_netzone_creation);
-  s4u::Engine::on_time_advance.connect([](double time_delta) { TRACE_paje_dump_buffer(false); });
+  s4u::Engine::on_time_advance.connect([](double /*time_delta*/) { TRACE_paje_dump_buffer(false); });
 
   kernel::resource::CpuAction::on_state_change.connect(on_action_state_change);
   s4u::Link::on_communication_state_change.connect(on_action_state_change);

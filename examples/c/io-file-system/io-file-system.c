@@ -17,7 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(io_file_system, "Messages specific for this io example");
 
-static void show_info(unsigned int disk_count, sg_disk_t* disks)
+static void show_info(unsigned int disk_count, const sg_disk_t* disks)
 {
   XBT_INFO("Storage info on %s:", sg_host_self_get_name());
 

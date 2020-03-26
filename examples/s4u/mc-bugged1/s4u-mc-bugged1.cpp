@@ -11,7 +11,7 @@
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u.hpp>
 
-#define N 3
+constexpr int N = 3;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 

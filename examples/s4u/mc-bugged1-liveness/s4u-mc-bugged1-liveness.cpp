@@ -47,7 +47,7 @@ static void garbage_stack(void)
 static void coordinator()
 {
   int CS_used = 0;
-  Message* m  = nullptr;
+  const Message* m = nullptr;
   std::queue<simgrid::s4u::Mailbox*> requests;
 
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
@@ -101,7 +101,7 @@ static void client(int id)
       XBT_INFO("Propositions changed : r=1, cs=0");
     }
 
-    Message* grant = static_cast<Message*>(my_mailbox->get());
+    const Message* grant = static_cast<Message*>(my_mailbox->get());
 
     if ((id == 1) && (grant->kind == Message::Kind::GRANT)) {
       cs = 1;

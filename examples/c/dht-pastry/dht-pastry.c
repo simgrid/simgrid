@@ -250,7 +250,6 @@ static void handle_message(node_t node, pastry_message_t message)
       err                = sg_comm_wait_for(comm, timeout);
       if (err == SG_ERROR_TIMEOUT) {
         XBT_DEBUG("Timeout expired when sending back the current node state to the joining node to %d", node->id);
-        message_free(message);
       }
       break;
     /* Join reply from all the node touched by the join  */
