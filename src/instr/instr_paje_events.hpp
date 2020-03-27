@@ -101,7 +101,7 @@ class NewEvent : public PajeEvent {
 
 public:
   NewEvent(double timestamp, Container* container, Type* type, EntityValue* value)
-      : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent), value(value)
+      : PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent), value(value)
   {
   }
   void print() override;

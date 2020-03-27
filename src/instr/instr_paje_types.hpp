@@ -53,8 +53,6 @@ public:
     issuer_ = container;
     return this;
   }
-
-  void log_definition(Type* source, Type* dest);
 };
 
 class ContainerType : public Type {
