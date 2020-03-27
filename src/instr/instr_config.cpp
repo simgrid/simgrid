@@ -235,6 +235,8 @@ static bool trace_active = false;
 xbt::signal<void(Container&)> Container::on_creation;
 xbt::signal<void(Container&)> Container::on_destruction;
 xbt::signal<void(EntityValue&)> EntityValue::on_creation;
+xbt::signal<void(Type&, e_event_type)> Type::on_creation;
+xbt::signal<void(LinkType&, Type&, Type&)> LinkType::on_creation;
 
 static void on_container_creation_paje(Container& c)
 {
@@ -329,6 +331,30 @@ static void on_entity_value_creation(EntityValue& value)
   tracing_file << stream.str() << std::endl;
 }
 
+static void on_type_creation(Type& type, e_event_type event_type)
+{
+  if (event_type == PAJE_DefineLinkType)
+    return; // this kind of type has to be handled differently
+
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(TRACE_precision());
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event_type, TRACE_precision(), 0.);
+  stream << event_type << " " << type.get_id() << " " << type.get_father()->get_id() << " " << type.get_name();
+  if (type.is_colored())
+    stream << " \"" << type.get_color() << "\"";
+  XBT_DEBUG("Dump %s", stream.str().c_str());
+  tracing_file << stream.str() << std::endl;
+}
+
+static void on_link_type_creation(Type& type, Type& source, Type& dest)
+{
+  std::stringstream stream;
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, PAJE_DefineLinkType, TRACE_precision(), 0.);
+  stream << PAJE_DefineLinkType << " " << type.get_id() << " " << type.get_father()->get_id();
+  stream << " " << source.get_id() << " " << dest.get_id() << " " << type.get_name();
+  XBT_DEBUG("Dump %s", stream.str().c_str());
+  tracing_file << stream.str() << std::endl;
+}
 static void on_simulation_start()
 {
   if (trace_active)
@@ -351,6 +377,8 @@ static void on_simulation_start()
       Container::on_creation.connect(on_container_creation_paje);
       Container::on_destruction.connect(on_container_destruction_paje);
       EntityValue::on_creation.connect(on_entity_value_creation);
+      Type::on_creation.connect(on_type_creation);
+      LinkType::on_creation.connect(on_link_type_creation);
     } else {
       Container::on_creation.connect(on_container_creation_ti);
       Container::on_destruction.connect(on_container_destruction_ti);

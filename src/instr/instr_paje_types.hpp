@@ -8,7 +8,6 @@
 
 #include "src/instr/instr_private.hpp"
 #include <memory>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -24,16 +23,19 @@ class Type {
   Type* father_;
 
 public:
+  static xbt::signal<void(Type&, e_event_type event_type)> on_creation;
   std::map<std::string, std::unique_ptr<Type>> children_;
   Container* issuer_ = nullptr;
-  std::stringstream stream_;
 
-  Type(const std::string& name, const std::string& alias, const std::string& color, Type* father);
+  Type(e_event_type event_type, const std::string& name, const std::string& alias, const std::string& color,
+       Type* father);
   virtual ~Type() = default;
 
+  long long int get_id() { return id_; }
   const std::string& get_name() const { return name_; }
   const char* get_cname() { return name_.c_str(); }
-  long long int get_id() { return id_; }
+  const std::string& get_color() const { return color_; }
+  Type* get_father() const { return father_; }
   bool is_colored() { return not color_.empty(); }
 
   Type* by_name(const std::string& name);
@@ -52,20 +54,22 @@ public:
     return this;
   }
 
-  void log_definition(e_event_type event_type);
   void log_definition(Type* source, Type* dest);
 };
 
 class ContainerType : public Type {
 public:
-  explicit ContainerType(const std::string& name) : Type(name, name, "", nullptr){};
-  ContainerType(const std::string& name, Type* father);
+  explicit ContainerType(const std::string& name) : Type(PAJE_DefineContainerType, name, name, "", nullptr){};
+  ContainerType(const std::string& name, Type* father) : Type(PAJE_DefineContainerType, name, name, "", father){};
 };
 
 class VariableType : public Type {
   std::vector<VariableEvent*> events_;
 public:
-  VariableType(const std::string& name, const std::string& color, Type* father);
+  VariableType(const std::string& name, const std::string& color, Type* father)
+      : Type(PAJE_DefineVariableType, name, name, color, father)
+  {
+  }
   void instr_event(double now, double delta, const char* resource, double value);
   void set_event(double timestamp, double value);
   void add_event(double timestamp, double value);
@@ -75,8 +79,10 @@ public:
 class ValueType : public Type {
 public:
   std::map<std::string, EntityValue> values_;
-  ValueType(const std::string& name, const std::string& alias, Type* father) : Type(name, alias, "", father){};
-  ValueType(const std::string& name, Type* father) : Type(name, name, "", father){};
+  ValueType(e_event_type event_type, const std::string& name, const std::string& alias, Type* father)
+      : Type(event_type, name, alias, "", father){};
+  ValueType(e_event_type event_type, const std::string& name, Type* father)
+      : Type(event_type, name, name, "", father){};
   virtual ~ValueType() = default;
   void add_entity_value(const std::string& name, const std::string& color);
   void add_entity_value(const std::string& name);
@@ -85,7 +91,12 @@ public:
 
 class LinkType : public ValueType {
 public:
-  LinkType(const std::string& name, const std::string& alias, Type* father);
+  static xbt::signal<void(LinkType&, Type&, Type&)> on_creation;
+  LinkType(const std::string& name, Type* source, Type* dest, const std::string& alias, Type* father)
+      : ValueType(PAJE_DefineLinkType, name, alias, father)
+  {
+    on_creation(*this, *source, *dest);
+  }
   void start_event(Container* startContainer, const std::string& value, const std::string& key);
   void start_event(Container* startContainer, const std::string& value, const std::string& key, int size);
   void end_event(Container* endContainer, const std::string& value, const std::string& key);
@@ -93,19 +104,19 @@ public:
 
 class EventType : public ValueType {
 public:
-  EventType(const std::string& name, Type* father);
+  EventType(const std::string& name, Type* father) : ValueType(PAJE_DefineEventType, name, father) {}
 };
 
 class StateType : public ValueType {
   std::vector<StateEvent*> events_;
 public:
-  StateType(const std::string& name, Type* father);
+  StateType(const std::string& name, Type* father) : ValueType(PAJE_DefineStateType, name, father) {}
   void set_event(const std::string& value_name);
   void push_event(const std::string& value_name);
   void push_event(const std::string& value_name, TIData* extra);
   void pop_event();
   void pop_event(TIData* extra);
 };
-}
-}
+} // namespace instr
+} // namespace simgrid
 #endif
