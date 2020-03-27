@@ -258,7 +258,6 @@ XBT_PRIVATE bool TRACE_actor_is_enabled();
 XBT_PRIVATE bool TRACE_vm_is_enabled();
 XBT_PRIVATE bool TRACE_disable_link();
 XBT_PRIVATE bool TRACE_disable_speed();
-XBT_PRIVATE bool TRACE_disable_destroy();
 XBT_PRIVATE bool TRACE_basic();
 XBT_PRIVATE bool TRACE_display_sizes();
 XBT_PRIVATE int TRACE_precision();

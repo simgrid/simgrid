@@ -166,11 +166,6 @@ bool TRACE_disable_speed()
   return trace_disable_power && trace_enabled;
 }
 
-bool TRACE_disable_destroy ()
-{
-  return trace_disable_destroy && trace_enabled;
-}
-
 bool TRACE_basic ()
 {
   return trace_basic && trace_enabled;
@@ -267,7 +262,7 @@ static void on_container_destruction_paje(Container& c)
   TRACE_paje_dump_buffer(true);
 
   // trace my destruction, but not if user requests so or if the container is root
-  if (not TRACE_disable_destroy() && &c != Container::get_root()) {
+  if (not trace_disable_destroy && &c != Container::get_root()) {
     std::stringstream stream;
     double timestamp = SIMIX_get_clock();
 
@@ -312,7 +307,7 @@ static void on_container_destruction_ti(Container& c)
   TRACE_last_timestamp_to_dump = SIMIX_get_clock();
   TRACE_paje_dump_buffer(true);
 
-  if (not TRACE_disable_destroy() && &c != Container::get_root()) {
+  if (not trace_disable_destroy && &c != Container::get_root()) {
     XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_DestroyContainer, SIMIX_get_clock());
     if (not simgrid::config::get_value<bool>("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
       tracing_files.at(&c)->close();
