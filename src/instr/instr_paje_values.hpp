@@ -19,12 +19,16 @@ class EntityValue {
   Type* father_;
 
 public:
+  static xbt::signal<void(EntityValue&)> on_creation;
   explicit EntityValue(const std::string& name, const std::string& color, Type* father);
-  const char* get_cname() { return name_.c_str(); }
-  long long int get_id() { return id_; }
-  void print();
+
+  long long int get_id() const { return id_; }
+  std::string get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
+  std::string get_color() const { return color_; }
+  Type* get_father() const { return father_; }
 };
-}
-}
+} // namespace instr
+} // namespace simgrid
 
 #endif

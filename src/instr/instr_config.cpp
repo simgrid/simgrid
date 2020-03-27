@@ -239,6 +239,7 @@ static bool trace_active = false;
  *************/
 xbt::signal<void(Container&)> Container::on_creation;
 xbt::signal<void(Container&)> Container::on_destruction;
+xbt::signal<void(EntityValue&)> EntityValue::on_creation;
 
 static void on_container_creation_paje(Container& c)
 {
@@ -321,6 +322,18 @@ static void on_container_destruction_ti(Container& c)
   }
 }
 
+static void on_entity_value_creation(EntityValue& value)
+{
+  std::stringstream stream;
+  XBT_DEBUG("%s: event_type=%u", __func__, PAJE_DefineEntityValue);
+  stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineEntityValue;
+  stream << " " << value.get_id() << " " << value.get_father()->get_id() << " " << value.get_name();
+  if (not value.get_color().empty())
+    stream << " \"" << value.get_color() << "\"";
+  XBT_DEBUG("Dump %s", stream.str().c_str());
+  tracing_file << stream.str() << std::endl;
+}
+
 static void on_simulation_start()
 {
   if (trace_active)
@@ -342,6 +355,7 @@ static void on_simulation_start()
     if (format == "Paje") {
       Container::on_creation.connect(on_container_creation_paje);
       Container::on_destruction.connect(on_container_destruction_paje);
+      EntityValue::on_creation.connect(on_entity_value_creation);
     } else {
       Container::on_creation.connect(on_container_creation_ti);
       Container::on_destruction.connect(on_container_destruction_ti);
