@@ -486,8 +486,6 @@ void instr_new_value_for_user_state_type(const std::string& type_name, const cha
   recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->type_);
 }
 
-#define GRAPHICATOR_SUPPORT_FUNCTIONS
-
 static void recursiveXBTGraphExtraction(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
                                         std::map<std::string, xbt_edge_t>* edges, const_sg_netzone_t netzone,
                                         container_t container)
