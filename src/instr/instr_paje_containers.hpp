@@ -32,7 +32,6 @@ public:
   Type* type_; /* Type of this container */
   Container* father_;
   std::map<std::string, Container*> children_;
-  kernel::routing::NetPoint* netpoint_ = nullptr;
 
   static Container* by_name_or_null(const std::string& name);
   static Container* by_name(const std::string& name);

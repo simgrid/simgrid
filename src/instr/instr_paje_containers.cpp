@@ -30,8 +30,7 @@ Container* Container::get_root()
 NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father)
     : Container::Container(name, "", father)
 {
-  netpoint_ = s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
-  xbt_assert(netpoint_, "Element '%s' not found", get_cname());
+  xbt_assert(s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()), "Element '%s' not found", get_cname());
   if (father_) {
     std::string type_name = std::string("L") + std::to_string(level);
     type_                 = father_->type_->by_name_or_create<ContainerType>(type_name);
@@ -47,18 +46,14 @@ RouterContainer::RouterContainer(const std::string& name, Container* father)
     : Container::Container(name, "ROUTER", father)
 {
   xbt_assert(father, "Only the Root container has no father");
-
-  netpoint_ = s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name());
-  xbt_assert(netpoint_, "Element '%s' not found", get_cname());
+  xbt_assert(s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()), "Element '%s' not found", get_cname());
 }
 
 HostContainer::HostContainer(s4u::Host const& host, NetZoneContainer* father)
     : Container::Container(host.get_name(), "HOST", father)
 {
   xbt_assert(father, "Only the Root container has no father");
-
-  netpoint_ = host.get_netpoint();
-  xbt_assert(netpoint_, "Element '%s' not found", host.get_cname());
+  xbt_assert(host.get_netpoint(), "Element '%s' not found", host.get_cname());
 }
 
 Container::Container(const std::string& name, const std::string& type_name, Container* father)
