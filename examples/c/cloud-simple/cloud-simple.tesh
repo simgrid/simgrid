@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/cloud-simple-c --log=no_loc ${platfdir}/small_platform.xml
+$ ${bindir:=.}/c-cloud-simple --log=no_loc ${platfdir}/small_platform.xml
 > [Fafard:master_:(1) 0.000000] [cloud_simple/INFO] ## Test 1 (started): check computation on normal PMs
 > [Fafard:master_:(1) 0.000000] [cloud_simple/INFO] ### Put a task on a PM
 > [Fafard:compute:(2) 0.013107] [cloud_simple/INFO] Fafard:compute task executed 0.0131068

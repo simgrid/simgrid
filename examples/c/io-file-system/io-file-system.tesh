@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/io-file-system-c ${platfdir}/hosts_with_disks.xml
+$ ${bindir:=.}/c-io-file-system ${platfdir}/hosts_with_disks.xml
 > [bob:host:(1) 0.000000] [io_file_system/INFO] Storage info on bob:
 > [bob:host:(1) 0.000000] [io_file_system/INFO]     Disk1 (/scratch) Used: 36933331; Free: 536833978669; Total: 536870912000.
 > [bob:host:(1) 0.000000] [io_file_system/INFO]     Disk2 (/) Used: 0; Free: 536870912000; Total: 536870912000.

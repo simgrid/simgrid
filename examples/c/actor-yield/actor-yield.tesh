@@ -1,5 +1,5 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/actor-yield-c ${platfdir}/small_platform_fatpipe.xml ${srcdir:=.}/actor-yield_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-actor-yield ${platfdir}/small_platform_fatpipe.xml ${srcdir:=.}/actor-yield_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:yielder@Tremblay) I yielded 10 times. Goodbye now!
 > [  0.000000] (2:yielder@Ruby) I yielded 15 times. Goodbye now!

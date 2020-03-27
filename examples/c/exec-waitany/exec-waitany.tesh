@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 ! output sort 19
-$ ${bindir:=.}/exec-waitany-c ${platfdir}/multicore_machine.xml "--log=root.fmt:[%10.6r]%e[%14P]%e%m%n"
+$ ${bindir:=.}/c-exec-waitany ${platfdir}/multicore_machine.xml "--log=root.fmt:[%10.6r]%e[%14P]%e%m%n"
 > [  0.000000] [        worker] Activity Exec-0 has started for 1 seconds
 > [  0.000000] [worker_timeout] Activity Exec-0 has started for 1 seconds
 > [  0.000000] [        worker] Activity Exec-1 has started for 8 seconds

@@ -2,7 +2,7 @@
 
 p Testing a simple master/worker example application
 
-$ ./app-masterworker/app-masterworker-c ${platfdir}/multicore_machine.xml ${srcdir:=.}/app-masterworker-multicore_d.xml --cfg=cpu/model:Cas01 --cfg=cpu/optim:Full "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ./app-masterworker/c-app-masterworker ${platfdir}/multicore_machine.xml ${srcdir:=.}/app-masterworker-multicore_d.xml --cfg=cpu/model:Cas01 --cfg=cpu/optim:Full "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'Full'
 > [  0.000000] (1:master@Tremblay) Got 6 workers and 20 tasks to process

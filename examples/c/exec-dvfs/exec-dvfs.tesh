@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/exec-dvfs-c ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-exec-dvfs ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:dvfs_test@MyHost1) Count of Processor states=3
 > [  0.000000] (1:dvfs_test@MyHost1) Current power peak=100000000.000000
 > [  0.000000] (2:dvfs_test@MyHost2) Count of Processor states=3
@@ -19,7 +19,7 @@ $ ${bindir:=.}/exec-dvfs-c ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.
 > [  6.000000] (2:dvfs_test@MyHost2) Current power peak=20000000.000000
 > [  6.000000] (0:maestro@) Total simulation time: 6.000000e+00
 
-$ ${bindir:=.}/exec-dvfs-c ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=host/model:ptask_L07
+$ ${bindir:=.}/c-exec-dvfs ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=host/model:ptask_L07
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (1:dvfs_test@MyHost1) Count of Processor states=3

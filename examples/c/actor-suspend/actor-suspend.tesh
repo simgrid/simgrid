@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 ! output sort 19
-$ ${bindir:=.}/actor-suspend-c ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/c-actor-suspend ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (dream_master@Boivin) Let's create a lazy guy.
 > [  0.000000] (Lazy@Boivin) Nobody's watching me ? Let's go to sleep.
 > [  0.000000] (dream_master@Boivin) Let's wait a little bit...

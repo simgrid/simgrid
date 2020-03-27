@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/io-file-remote-c ${platfdir}/hosts_with_disks.xml io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
+$ ${bindir:=.}/c-io-file-remote ${platfdir}/hosts_with_disks.xml io-file-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
 > [  0.000000] (0@     ) Init: alice: 12/511987 MiB used/free on 'Disk1@alice'
 > [  0.000000] (0@     ) Init: bob: 35/511964 MiB used/free on 'Disk1@bob'
 > [  0.000000] (0@     ) Init: bob: 0/512000 MiB used/free on 'Disk2@bob'

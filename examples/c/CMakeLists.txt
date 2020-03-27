@@ -14,10 +14,10 @@ foreach(x
         platform-failures platform-properties
         plugin-hostload
         synchro-semaphore)
-  add_executable       (${x}-c EXCLUDE_FROM_ALL ${x}/${x}.c)
-  target_link_libraries(${x}-c simgrid)
-  set_target_properties(${x}-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-  add_dependencies(tests ${x}-c)
+  add_executable       (c-${x} EXCLUDE_FROM_ALL ${x}/${x}.c)
+  target_link_libraries(c-${x} simgrid)
+  set_target_properties(c-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  add_dependencies(tests c-${x})
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
@@ -26,10 +26,10 @@ endforeach()
 # Multi-files examples
 ######################
 # bittorrent example
-add_executable       (app-bittorrent-c EXCLUDE_FROM_ALL app-bittorrent/app-bittorrent.c app-bittorrent/bittorrent-peer.c app-bittorrent/tracker.c)
-target_link_libraries(app-bittorrent-c simgrid)
-set_target_properties(app-bittorrent-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
-add_dependencies(tests app-bittorrent-c)
+add_executable       (c-app-bittorrent EXCLUDE_FROM_ALL app-bittorrent/app-bittorrent.c app-bittorrent/bittorrent-peer.c app-bittorrent/tracker.c)
+target_link_libraries(c-app-bittorrent simgrid)
+set_target_properties(c-app-bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
+add_dependencies(tests c-app-bittorrent)
 
 foreach (file app-bittorrent bittorrent-peer tracker)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
@@ -37,11 +37,11 @@ endforeach()
 
 # Chainsend example
 
-add_executable       (app-chainsend-c EXCLUDE_FROM_ALL app-chainsend/chainsend.c app-chainsend/broadcaster.c 
+add_executable       (c-app-chainsend EXCLUDE_FROM_ALL app-chainsend/chainsend.c app-chainsend/broadcaster.c 
                       app-chainsend/peer.c)
-target_link_libraries(app-chainsend-c simgrid)
-set_target_properties(app-chainsend-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-chainsend)
-add_dependencies(tests app-chainsend-c)
+target_link_libraries(c-app-chainsend simgrid)
+set_target_properties(c-app-chainsend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-chainsend)
+add_dependencies(tests c-app-chainsend)
 
 foreach (file chainsend broadcaster peer)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.c)
@@ -49,10 +49,10 @@ endforeach()
 set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/chainsend.h)
 
 #DHT-Kademlia
-add_executable       (dht-kademlia-c EXCLUDE_FROM_ALL dht-kademlia/dht-kademlia.c dht-kademlia/node.c dht-kademlia/routing_table.c dht-kademlia/message.c dht-kademlia/answer.c)
-target_link_libraries(dht-kademlia-c simgrid)
-set_target_properties(dht-kademlia-c PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-kademlia)
-add_dependencies(tests dht-kademlia-c)
+add_executable       (c-dht-kademlia EXCLUDE_FROM_ALL dht-kademlia/dht-kademlia.c dht-kademlia/node.c dht-kademlia/routing_table.c dht-kademlia/message.c dht-kademlia/answer.c)
+target_link_libraries(c-dht-kademlia simgrid)
+set_target_properties(c-dht-kademlia PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-kademlia)
+add_dependencies(tests c-dht-kademlia)
 
 foreach (file answer node routing_table message)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)

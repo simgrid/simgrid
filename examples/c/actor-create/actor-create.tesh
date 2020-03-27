@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/actor-create-c
+$ ${bindir:=.}/c-actor-create
 > [Tremblay:sender1:(2) 0.000000] [actor_create/INFO] Hello, I have something to send
 > [Jupiter:sender2:(3) 0.000000] [actor_create/INFO] Hello, I have something to send
 > [Fafard:sender:(4) 0.000000] [actor_create/INFO] Hello, I have something to send

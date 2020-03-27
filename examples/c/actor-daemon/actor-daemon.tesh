@@ -2,7 +2,7 @@
 
 p Testing the actor daemonization feature
 
-$ ${bindir:=.}/actor-daemon-c ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-actor-daemon ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:worker@Boivin) Let's do some work (for 10 sec on Boivin).
 > [  0.000000] (2:daemon@Tremblay) Hello from the infinite loop
 > [  3.000000] (2:daemon@Tremblay) Hello from the infinite loop

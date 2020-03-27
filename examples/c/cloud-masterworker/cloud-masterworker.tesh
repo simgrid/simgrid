@@ -2,7 +2,7 @@
 
 p Testing the Cloud API with a simple master/workers
 
-$ ${bindir:=.}/cloud-masterworker-c --log=no_loc ${platfdir}/cluster_backbone.xml
+$ ${bindir:=.}/c-cloud-masterworker --log=no_loc ${platfdir}/cluster_backbone.xml
 > [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] # Launch 2 VMs
 > [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] create VM00 on PM(node-1.simgrid.org)
 > [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] put an actor (WRK00) on VM00

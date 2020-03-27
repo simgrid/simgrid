@@ -1,4 +1,4 @@
-$ ${bindir:=.}/actor-join-c ${platfdir}/small_platform.xml
+$ ${bindir:=.}/c-actor-join ${platfdir}/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [actor_join/INFO] Start sleeper
 > [Tremblay:sleeper from master:(2) 0.000000] [actor_join/INFO] Sleeper started
 > [Tremblay:master:(1) 0.000000] [actor_join/INFO] Join the sleeper (timeout 2)
