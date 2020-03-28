@@ -5,3 +5,12 @@
 
 # __gnu_cxx::__to_xstring
 #interceptor_via_fun:__to_xstring
+
+# The following odr violations are reported by gcc-10. Alternatively these
+# warnings may be hidden with "ASAN_OPTIONS=detect_odr_violation=1".
+
+# size=16 '__tag' /usr/include/c++/10/bits/shared_ptr_base.h:510:48
+odr_violation:^__tag$
+
+# size=16 'stored_vtable' /usr/include/boost/function/function_template.hpp:933:32
+odr_violation:^stored_vtable$
