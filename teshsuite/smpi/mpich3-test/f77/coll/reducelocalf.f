@@ -6,24 +6,6 @@ C
 C
 C Test Fortran MPI_Reduce_local with MPI_OP_SUM and with user-defined operation.
 C
-      subroutine user_op( invec, outvec, count, datatype )
-      implicit none
-      include 'mpif.h'
-      integer invec(*), outvec(*)
-      integer count, datatype
-      integer ii
-
-      if (datatype .ne. MPI_INTEGER) then
-         write(6,*) 'Invalid datatype passed to user_op()'
-         return
-      endif
-      
-      do ii=1, count
-         outvec(ii) = invec(ii) * 2 + outvec(ii)
-      enddo
-
-      end
-
       program main
       implicit none
       include 'mpif.h'
@@ -93,5 +75,23 @@ C        Check if the result is correct
 
       call mtest_finalize(errs)
       call mpi_finalize(ierr)
+
+      end
+
+      subroutine user_op( invec, outvec, count, datatype )
+      implicit none
+      include 'mpif.h'
+      integer invec(*), outvec(*)
+      integer count, datatype
+      integer ii
+
+      if (datatype .ne. MPI_INTEGER) then
+         write(6,*) 'Invalid datatype passed to user_op()'
+         return
+      endif
+      
+      do ii=1, count
+         outvec(ii) = invec(ii) * 2 + outvec(ii)
+      enddo
 
       end
