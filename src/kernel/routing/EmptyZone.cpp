@@ -27,6 +27,6 @@ void EmptyZone::get_graph(const s_xbt_graph_t* /*graph*/, std::map<std::string, 
 {
   XBT_ERROR("No routing no graph");
 }
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
