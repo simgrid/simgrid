@@ -1724,7 +1724,7 @@ include tools/doxygen/fig2dev_postprocessor.pl
 include tools/doxygen/xbt_log_extract_hierarchy.pl
 include tools/fix-paje-trace.sh
 include tools/generate-dwarf-functions
-include tools/graphicator/graphicator.c
+include tools/graphicator/graphicator.cpp
 include tools/graphicator/graphicator.tesh
 include tools/normalize-pointers.py
 include tools/pkg-config/simgrid.pc.in

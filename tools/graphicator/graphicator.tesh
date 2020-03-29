@@ -4,4 +4,50 @@ $ ${bindir:=.}/graphicator ${srcdir:=.}/teshsuite/simdag/platforms/one_cluster.x
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
 
-$ rm test.dot
+$ cat test.dot
+> graph test {
+>   graph [overlap=scale]
+>   node [shape=box, style=filled]
+>   node [width=.3, height=.3, style=filled, color=skyblue]
+>
+>   "bobbob_cluster_router.hamburger.edu";
+>   "bob_cluster_backbone";
+>   "bob0.hamburger.edu";
+>   "bob_cluster_link_0_UP";
+>   "bob_cluster_link_0_DOWN";
+>   "bob2.hamburger.edu";
+>   "bob_cluster_link_2_UP";
+>   "bob_cluster_link_2_DOWN";
+>   "bob3.hamburger.edu";
+>   "bob_cluster_link_3_UP";
+>   "bob_cluster_link_3_DOWN";
+>   "bob4.hamburger.edu";
+>   "bob_cluster_link_4_UP";
+>   "bob_cluster_link_4_DOWN";
+>   "bob6.hamburger.edu";
+>   "bob_cluster_link_6_UP";
+>   "bob_cluster_link_6_DOWN";
+>   "bobbob_cluster_router.hamburger.edu" -- "bob_cluster_backbone";
+>   "bob0.hamburger.edu" -- "bob_cluster_link_0_UP";
+>   "bob_cluster_link_0_UP" -- "bob_cluster_backbone";
+>   "bob0.hamburger.edu" -- "bob_cluster_link_0_DOWN";
+>   "bob_cluster_link_0_DOWN" -- "bob_cluster_backbone";
+>   "bob2.hamburger.edu" -- "bob_cluster_link_2_UP";
+>   "bob_cluster_link_2_UP" -- "bob_cluster_backbone";
+>   "bob2.hamburger.edu" -- "bob_cluster_link_2_DOWN";
+>   "bob_cluster_link_2_DOWN" -- "bob_cluster_backbone";
+>   "bob3.hamburger.edu" -- "bob_cluster_link_3_UP";
+>   "bob_cluster_link_3_UP" -- "bob_cluster_backbone";
+>   "bob3.hamburger.edu" -- "bob_cluster_link_3_DOWN";
+>   "bob_cluster_link_3_DOWN" -- "bob_cluster_backbone";
+>   "bob4.hamburger.edu" -- "bob_cluster_link_4_UP";
+>   "bob_cluster_link_4_UP" -- "bob_cluster_backbone";
+>   "bob4.hamburger.edu" -- "bob_cluster_link_4_DOWN";
+>   "bob_cluster_link_4_DOWN" -- "bob_cluster_backbone";
+>   "bob6.hamburger.edu" -- "bob_cluster_link_6_UP";
+>   "bob_cluster_link_6_UP" -- "bob_cluster_backbone";
+>   "bob6.hamburger.edu" -- "bob_cluster_link_6_DOWN";
+>   "bob_cluster_link_6_DOWN" -- "bob_cluster_backbone";
+> }
+
+$ rm -f test.dot
