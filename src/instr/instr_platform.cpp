@@ -29,11 +29,6 @@ std::string instr_pid(simgrid::s4u::Actor const& proc)
   return std::string(proc.get_name()) + "-" + std::to_string(proc.get_pid());
 }
 
-static const char* instr_node_name(const s_xbt_node_t* node)
-{
-  return static_cast<char*>(xbt_graph_node_get_data(node));
-}
-
 static container_t lowestCommonAncestor(const simgrid::instr::Container* a1, const simgrid::instr::Container* a2)
 {
   // this is only an optimization (since most of a1 and a2 share the same parent)
@@ -222,16 +217,6 @@ void instr_new_value_for_user_state_type(const std::string& type_name, const cha
   recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->type_);
 }
 
-static void recursiveXBTGraphExtraction(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
-                                        std::map<std::string, xbt_edge_t>* edges, const_sg_netzone_t netzone)
-{
-  // bottom-up recursion
-  for (auto const& netzone_child : netzone->get_children())
-    recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child);
-
-  netzone->get_impl()->get_graph(graph, nodes, edges);
-}
-
 namespace simgrid {
 namespace instr {
 
@@ -240,7 +225,7 @@ void platform_graph_export_graphviz(const std::string& output_filename)
   xbt_graph_t g                            = xbt_graph_new_graph(0, nullptr);
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>();
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>();
-  recursiveXBTGraphExtraction(g, nodes, edges, s4u::Engine::get_instance()->get_netzone_root());
+  s4u::Engine::get_instance()->get_netzone_root()->extract_xbt_graph(g, nodes, edges);
 
   std::ofstream fs;
   fs.open(output_filename, std::ofstream::out);
@@ -257,11 +242,11 @@ void platform_graph_export_graphviz(const std::string& output_filename)
   fs << "  node [width=.3, height=.3, style=filled, color=skyblue]" << std::endl << std::endl;
 
   for (auto const& elm : *nodes)
-    fs << "  \"" << instr_node_name(elm.second) << "\";" << std::endl;
+    fs << "  \"" << elm.first << "\";" << std::endl;
 
   for (auto const& elm : *edges) {
-    const char* src_s = instr_node_name(elm.second->src);
-    const char* dst_s = instr_node_name(elm.second->dst);
+    const char* src_s = static_cast<char*>(elm.second->src->data);
+    const char* dst_s = static_cast<char*>(elm.second->dst->data);
     if (g->directed)
       fs << "  \"" << src_s << "\" -> \"" << dst_s << "\";" << std::endl;
     else

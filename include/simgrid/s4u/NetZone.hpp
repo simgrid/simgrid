@@ -7,8 +7,10 @@
 #define SIMGRID_S4U_NETZONE_HPP
 
 #include <simgrid/forward.h>
+#include <xbt/graph.h>
 #include <xbt/signal.hpp>
 
+#include <map>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -53,6 +55,8 @@ public:
   void set_property(const std::string& key, const std::string& value);
 
   std::vector<NetZone*> get_children() const;
+  void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
+                         std::map<std::string, xbt_edge_t>* edges);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
