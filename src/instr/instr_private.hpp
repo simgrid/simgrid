@@ -32,6 +32,8 @@ namespace instr {
 void init();
 void define_callbacks();
 
+void platform_graph_export_graphviz(const std::string& output_filename);
+
 void resource_set_utilization(const char* type, const char* name, const char* resource, const std::string& category,
                               double value, double now, double delta);
 
@@ -284,8 +286,5 @@ XBT_PRIVATE void dump_comment_file(const std::string& filename);
 
 XBT_PRIVATE std::string TRACE_get_filename();
 
-/* instr_platform */
-xbt_graph_t instr_routing_platform_graph();
-void instr_routing_platform_graph_export_graphviz(const s_xbt_graph_t* g, const char* filename);
 
 #endif

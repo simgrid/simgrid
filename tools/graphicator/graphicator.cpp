@@ -6,18 +6,13 @@
 
 #include "simgrid/instr.h"
 #include "simgrid/s4u.hpp"
-#include "xbt/graph.h"
 
 int main(int argc, char** argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
-
   xbt_assert(argc == 3, "Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
 
   e.load_platform(argv[1]);
-  int status = TRACE_platform_graph_export_graphviz(argv[2]);
-
-  xbt_assert(status != 0, "%s expects --cfg=tracing:yes --cfg=tracing/platform:yes", argv[0]);
-  e.run(); /* useless, except for correctly cleaning memory */
+  TRACE_platform_graph_export_graphviz(argv[2]);
   return 0;
 }

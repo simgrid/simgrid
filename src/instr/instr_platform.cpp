@@ -20,6 +20,8 @@
 #include "surf/surf.hpp"
 #include "xbt/graph.h"
 
+#include <fstream>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_routing, instr, "Tracing platform hierarchy");
 
 std::string instr_pid(simgrid::s4u::Actor const& proc)
@@ -153,12 +155,127 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, conta
 }
 
 /*
- * Callbacks
+ * user categories support
  */
+static void recursiveNewVariableType(const std::string& new_typename, const std::string& color,
+                                     simgrid::instr::Type* root)
+{
+  if (root->get_name() == "HOST" || root->get_name() == "VM")
+    root->by_name_or_create(std::string("p") + new_typename, color);
+
+  if (root->get_name() == "LINK")
+    root->by_name_or_create(std::string("b") + new_typename, color);
+
+  for (auto const& elm : root->children_) {
+    recursiveNewVariableType(new_typename, color, elm.second.get());
+  }
+}
+
+void instr_new_variable_type(const std::string& new_typename, const std::string& color)
+{
+  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::get_root()->type_);
+}
+
+static void recursiveNewUserVariableType(const std::string& father_type, const std::string& new_typename,
+                                         const std::string& color, simgrid::instr::Type* root)
+{
+  if (root->get_name() == father_type) {
+    root->by_name_or_create(new_typename, color);
+  }
+  for (auto const& elm : root->children_)
+    recursiveNewUserVariableType(father_type, new_typename, color, elm.second.get());
+}
+
+void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
+                                  const std::string& color)
+{
+  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::get_root()->type_);
+}
+
+static void recursiveNewUserStateType(const std::string& father_type, const std::string& new_typename,
+                                      simgrid::instr::Type* root)
+{
+  if (root->get_name() == father_type)
+    root->by_name_or_create<simgrid::instr::StateType>(new_typename);
+
+  for (auto const& elm : root->children_)
+    recursiveNewUserStateType(father_type, new_typename, elm.second.get());
+}
+
+void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename)
+{
+  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::get_root()->type_);
+}
+
+static void recursiveNewValueForUserStateType(const std::string& type_name, const char* val, const std::string& color,
+                                              simgrid::instr::Type* root)
+{
+  if (root->get_name() == type_name)
+    static_cast<simgrid::instr::StateType*>(root)->add_entity_value(val, color);
+
+  for (auto const& elm : root->children_)
+    recursiveNewValueForUserStateType(type_name, val, color, elm.second.get());
+}
+
+void instr_new_value_for_user_state_type(const std::string& type_name, const char* value, const std::string& color)
+{
+  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->type_);
+}
+
+static void recursiveXBTGraphExtraction(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
+                                        std::map<std::string, xbt_edge_t>* edges, const_sg_netzone_t netzone)
+{
+  // bottom-up recursion
+  for (auto const& netzone_child : netzone->get_children())
+    recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child);
+
+  netzone->get_impl()->get_graph(graph, nodes, edges);
+}
 
 namespace simgrid {
 namespace instr {
 
+void platform_graph_export_graphviz(const std::string& output_filename)
+{
+  xbt_graph_t g                            = xbt_graph_new_graph(0, nullptr);
+  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>();
+  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>();
+  recursiveXBTGraphExtraction(g, nodes, edges, s4u::Engine::get_instance()->get_netzone_root());
+
+  std::ofstream fs;
+  fs.open(output_filename, std::ofstream::out);
+  xbt_assert(not fs.fail(), "Failed to open %s", output_filename.c_str());
+
+  if (g->directed)
+    fs << "digraph test {" << std::endl;
+  else
+    fs << "graph test {" << std::endl;
+
+  fs << "  graph [overlap=scale]" << std::endl;
+
+  fs << "  node [shape=box, style=filled]" << std::endl;
+  fs << "  node [width=.3, height=.3, style=filled, color=skyblue]" << std::endl << std::endl;
+
+  for (auto const& elm : *nodes)
+    fs << "  \"" << instr_node_name(elm.second) << "\";" << std::endl;
+
+  for (auto const& elm : *edges) {
+    const char* src_s = instr_node_name(elm.second->src);
+    const char* dst_s = instr_node_name(elm.second->dst);
+    if (g->directed)
+      fs << "  \"" << src_s << "\" -> \"" << dst_s << "\";" << std::endl;
+    else
+      fs << "  \"" << src_s << "\" -- \"" << dst_s << "\";" << std::endl;
+  }
+  fs << "}" << std::endl;
+  fs.close();
+
+  xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, nullptr);
+  delete nodes;
+  delete edges;
+}
+
+/* Callbacks */
 static std::vector<NetZoneContainer*> currentContainer; /* push and pop, used only in creation */
 static void on_netzone_creation(s4u::NetZone const& netzone)
 {
@@ -417,132 +534,3 @@ void define_callbacks()
 }
 } // namespace instr
 } // namespace simgrid
-
-/*
- * user categories support
- */
-static void recursiveNewVariableType(const std::string& new_typename, const std::string& color,
-                                     simgrid::instr::Type* root)
-{
-  if (root->get_name() == "HOST" || root->get_name() == "VM")
-    root->by_name_or_create(std::string("p") + new_typename, color);
-
-  if (root->get_name() == "LINK")
-    root->by_name_or_create(std::string("b") + new_typename, color);
-
-  for (auto const& elm : root->children_) {
-    recursiveNewVariableType(new_typename, color, elm.second.get());
-  }
-}
-
-void instr_new_variable_type(const std::string& new_typename, const std::string& color)
-{
-  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::get_root()->type_);
-}
-
-static void recursiveNewUserVariableType(const std::string& father_type, const std::string& new_typename,
-                                         const std::string& color, simgrid::instr::Type* root)
-{
-  if (root->get_name() == father_type) {
-    root->by_name_or_create(new_typename, color);
-  }
-  for (auto const& elm : root->children_)
-    recursiveNewUserVariableType(father_type, new_typename, color, elm.second.get());
-}
-
-void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
-                                  const std::string& color)
-{
-  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::get_root()->type_);
-}
-
-static void recursiveNewUserStateType(const std::string& father_type, const std::string& new_typename,
-                                      simgrid::instr::Type* root)
-{
-  if (root->get_name() == father_type)
-    root->by_name_or_create<simgrid::instr::StateType>(new_typename);
-
-  for (auto const& elm : root->children_)
-    recursiveNewUserStateType(father_type, new_typename, elm.second.get());
-}
-
-void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename)
-{
-  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::get_root()->type_);
-}
-
-static void recursiveNewValueForUserStateType(const std::string& type_name, const char* val, const std::string& color,
-                                              simgrid::instr::Type* root)
-{
-  if (root->get_name() == type_name)
-    static_cast<simgrid::instr::StateType*>(root)->add_entity_value(val, color);
-
-  for (auto const& elm : root->children_)
-    recursiveNewValueForUserStateType(type_name, val, color, elm.second.get());
-}
-
-void instr_new_value_for_user_state_type(const std::string& type_name, const char* value, const std::string& color)
-{
-  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->type_);
-}
-
-static void recursiveXBTGraphExtraction(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
-                                        std::map<std::string, xbt_edge_t>* edges, const_sg_netzone_t netzone,
-                                        container_t container)
-{
-  if (not netzone->get_children().empty()) {
-    // bottom-up recursion
-    for (auto const& netzone_child : netzone->get_children()) {
-      container_t child_container = container->children_.at(netzone_child->get_name());
-      recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
-    }
-  }
-
-  netzone->get_impl()->get_graph(graph, nodes, edges);
-}
-
-xbt_graph_t instr_routing_platform_graph()
-{
-  xbt_graph_t ret                          = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>();
-  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>();
-  recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::get_instance()->get_netzone_root(),
-                              simgrid::instr::Container::get_root());
-  delete nodes;
-  delete edges;
-  return ret;
-}
-
-void instr_routing_platform_graph_export_graphviz(const s_xbt_graph_t* g, const char* filename)
-{
-  unsigned int cursor = 0;
-  xbt_node_t node     = nullptr;
-  xbt_edge_t edge     = nullptr;
-
-  FILE* file = fopen(filename, "w");
-  xbt_assert(file, "Failed to open %s \n", filename);
-
-  if (g->directed)
-    fprintf(file, "digraph test {\n");
-  else
-    fprintf(file, "graph test {\n");
-
-  fprintf(file, "  graph [overlap=scale]\n");
-
-  fprintf(file, "  node [shape=box, style=filled]\n");
-  fprintf(file, "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
-
-  xbt_dynar_foreach (g->nodes, cursor, node) {
-    fprintf(file, "  \"%s\";\n", instr_node_name(node));
-  }
-  xbt_dynar_foreach (g->edges, cursor, edge) {
-    const char* src_s = instr_node_name(edge->src);
-    const char* dst_s = instr_node_name(edge->dst);
-    if (g->directed)
-      fprintf(file, "  \"%s\" -> \"%s\";\n", src_s, dst_s);
-    else
-      fprintf(file, "  \"%s\" -- \"%s\";\n", src_s, dst_s);
-  }
-  fprintf(file, "}\n");
-  fclose(file);
-}

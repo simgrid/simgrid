@@ -314,7 +314,7 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
  *
  *  The graph topology will have the following properties: all hosts, links and routers of the platform file are mapped
  *  to graph nodes; routes are mapped to edges.
- *  The platform's AS are not represented in the output.
+ *  The platform's zones are not represented in the output.
  *
  *  @param filename The name of the file that will hold the graph.
  *
@@ -322,14 +322,7 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
  */
 int TRACE_platform_graph_export_graphviz (const char *filename)
 {
-  /* returns 1 if successful, 0 otherwise */
-  if (not TRACE_is_enabled())
-    return 0;
-  xbt_graph_t g = instr_routing_platform_graph();
-  if (g == nullptr)
-    return 0;
-  instr_routing_platform_graph_export_graphviz (g, filename);
-  xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, nullptr);
+  simgrid::instr::platform_graph_export_graphviz(filename);
   return 1;
 }
 

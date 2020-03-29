@@ -7,9 +7,5 @@ ADD_TESH(graphicator --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv bindir=${C
 
 install(TARGETS graphicator DESTINATION ${CMAKE_INSTALL_BINDIR}/)
 
-## Clean generated files
-get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/simgrid.trace;")
-
 set(tesh_files  ${tesh_files}  ${CMAKE_CURRENT_SOURCE_DIR}/graphicator.tesh  PARENT_SCOPE)
 set(tools_src   ${tools_src}   ${CMAKE_CURRENT_SOURCE_DIR}/graphicator.cpp   PARENT_SCOPE)
