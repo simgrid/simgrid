@@ -142,14 +142,14 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv* env, jclass)
 
   XBT_INFO("MSG_main finished; Terminating the simulation...");
   /* Cleanup java hosts */
-  xbt_dynar_t hosts = MSG_hosts_as_dynar();
-  for (unsigned long index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
-    auto const* msg_host = xbt_dynar_get_as(hosts, index, msg_host_t);
-    jobject jhost = (jobject) msg_host->extension(JAVA_HOST_LEVEL);
+  sg_host_t* hosts  = sg_host_list();
+  size_t host_count = sg_host_count();
+  for (size_t index = 0; index < host_count - 1; index++) {
+    jobject jhost = (jobject)hosts[index]->extension(JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);
   }
-  xbt_dynar_free(&hosts);
+  xbt_free(hosts);
 
   /* Cleanup java storages */
   for (auto const& elm : java_storage_map)

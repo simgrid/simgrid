@@ -299,7 +299,7 @@ sg_size_t MSG_storage_write(sg_storage_t storage, sg_size_t size)
 }
 
 /* ************************** hosts *************************** */
-xbt_dynar_t MSG_hosts_as_dynar()
+xbt_dynar_t MSG_hosts_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
 {
   size_t host_count = sg_host_count();
   sg_host_t* list   = sg_host_list();

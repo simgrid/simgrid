@@ -95,7 +95,7 @@ XBT_PUBLIC size_t MSG_get_host_number();
  * The host order in the returned array is generally different from the host creation/declaration order in the XML
  * platform (we use a hash table internally).
  */
-XBT_PUBLIC xbt_dynar_t MSG_hosts_as_dynar();
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_list()") XBT_PUBLIC xbt_dynar_t MSG_hosts_as_dynar();
 
 /** @brief Returns the name of this host */
 XBT_PUBLIC const char* MSG_host_get_name(const_sg_host_t host);
