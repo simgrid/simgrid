@@ -61,7 +61,7 @@ UContext::UContext(std::function<void()>&& code, actor::ActorImpl* actor, Swappe
 
     int ctx_addr[CTX_ADDR_LEN]{};
     UContext* arg = this;
-    memcpy(ctx_addr, &arg, sizeof this);
+    memcpy(ctx_addr, &arg, sizeof arg);
     makecontext(&this->uc_, (void (*)())sysv_ctx_wrapper, 2, ctx_addr[0], ctx_addr[1]);
 
 #if SIMGRID_HAVE_MC
