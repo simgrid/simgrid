@@ -8,8 +8,9 @@
 #ifndef MSG_VM_H
 #define MSG_VM_H
 
+#include "simgrid/host.h"
+#include "simgrid/vm.h"
 #include <jni.h>
-#include "simgrid/msg.h"
 
 SG_BEGIN_DECL
 
@@ -22,8 +23,8 @@ SG_BEGIN_DECL
 #endif
 /* end of eclipse-mandated pimple */
 
-void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm);
-msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm);
+void jvm_bind(JNIEnv* env, jobject jvm, sg_vm_t vm);
+sg_vm_t jvm_get_native(JNIEnv* env, jobject jvm);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv* env, jclass cls);
 

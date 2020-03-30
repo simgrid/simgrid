@@ -8,7 +8,6 @@
 #ifndef MSG_JFILE_H
 #define MSG_JFILE_H
 
-#include "simgrid/msg.h"
 #include "simgrid/plugins/file_system.h"
 #include <jni.h>
 

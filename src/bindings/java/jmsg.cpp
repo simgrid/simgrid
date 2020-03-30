@@ -84,7 +84,7 @@ void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv*, jclass)
 {
-  return (jdouble) MSG_get_clock();
+  return (jdouble)simgrid_get_clock();
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv* env, jclass, jobjectArray jargs)
@@ -173,7 +173,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv* env, j
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv* env, jclass)
 {
-  msg_netzone_t as = MSG_zone_get_root();
+  msg_netzone_t as = sg_zone_get_root();
   jobject jas      = jnetzone_new_instance(env);
   if (not jas) {
     jxbt_throw_jni(env, "java As instantiation failed");
@@ -238,7 +238,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_deployApplication(JNIEnv* env, j
   const char *deploymentFile = env->GetStringUTFChars(jdeploymentFile, 0);
 
   simgrid_register_default(java_main);
-  MSG_launch_application(deploymentFile);
+  simgrid_load_deployment(deploymentFile);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
@@ -263,8 +263,8 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
   // wait for the process's start time
   jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
   jdouble startTime = env->GetDoubleField(jprocess, jprocess_field_Process_startTime);
-  if (startTime > MSG_get_clock())
-    MSG_process_sleep(startTime - MSG_get_clock());
+  if (startTime > simgrid_get_clock())
+    simgrid::s4u::this_actor::sleep_for(startTime - simgrid_get_clock());
 
   //Execution of the "run" method.
   jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
@@ -304,14 +304,14 @@ static void java_main(int argc, char* argv[])
   for (int i = 1; i < argc; i++)
       env->SetObjectArrayElement(args,i - 1, env->NewStringUTF(argv[i]));
   //Retrieve the host for the process.
-  jstring jhostName = env->NewStringUTF(MSG_host_self()->get_cname());
+  jstring jhostName = env->NewStringUTF(simgrid::s4u::Host::current()->get_cname());
   jobject jhost = Java_org_simgrid_msg_Host_getByName(env, nullptr, jhostName);
   //creates the process
   jobject jprocess = env->NewObject(class_Process, constructor_Process, jhost, jname, args);
   xbt_assert((jprocess != nullptr), "Process allocation failed.");
   jprocess = env->NewGlobalRef(jprocess);
   //bind the process to the context
-  const_sg_actor_t process = MSG_process_self();
+  const_sg_actor_t process = sg_actor_self();
 
   context->jprocess_ = jprocess;
   /* sets the PID and the PPID of the process */

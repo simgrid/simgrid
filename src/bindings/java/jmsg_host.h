@@ -8,7 +8,7 @@
 #ifndef MSG_JHOST_H
 #define MSG_JHOST_H
 
-#include "simgrid/msg.h"
+#include "simgrid/host.h"
 #include "simgrid/plugins/file_system.h"
 #include <jni.h>
 
@@ -33,10 +33,10 @@ jobject jhost_ref(JNIEnv * env, jobject jhost);
 void jhost_unref(JNIEnv * env, jobject jhost);
 
 /** Binds a native instance to a java instance. */
-void jhost_bind(jobject jhost, msg_host_t host, JNIEnv * env);
+void jhost_bind(jobject jhost, sg_host_t host, JNIEnv* env);
 
 /** Extracts the native instance associated to a java instance. */
-msg_host_t jhost_get_native(JNIEnv * env, jobject jhost);
+sg_host_t jhost_get_native(JNIEnv* env, jobject jhost);
 
 /** Initialize the native world, called from the Java world at startup */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls);

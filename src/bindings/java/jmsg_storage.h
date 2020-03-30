@@ -8,7 +8,7 @@
 #ifndef MSG_JSTORAGE_H
 #define MSG_JSTORAGE_H
 
-#include "simgrid/msg.h"
+#include "simgrid/storage.h"
 #include <jni.h>
 
 SG_BEGIN_DECL
@@ -17,10 +17,10 @@ SG_BEGIN_DECL
 jobject jstorage_new_instance(JNIEnv * env);
 
 /** Binds a native instance to a java instance. */
-void jstorage_bind(jobject jstorage, msg_storage_t storage, JNIEnv * env);
+void jstorage_bind(jobject jstorage, sg_storage_t storage, JNIEnv* env);
 
 /** Extracts the native instance associated to a java instance. */
-msg_storage_t jstorage_get_native(JNIEnv * env, jobject jstorage);
+sg_storage_t jstorage_get_native(JNIEnv* env, jobject jstorage);
 
 /** Initialize the native world, called from the Java world at startup */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jclass cls);

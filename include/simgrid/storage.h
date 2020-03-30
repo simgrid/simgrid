@@ -10,6 +10,8 @@
 
 #include <simgrid/forward.h>
 #include <xbt/base.h>
+#include <xbt/dict.h>
+#include <xbt/dynar.h>
 
 /* C interface */
 SG_BEGIN_DECL

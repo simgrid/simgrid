@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h"
 #include "simgrid/plugins/file_system.h"
+#include "simgrid/storage.h"
 
 #include "include/xbt/signal.hpp"
 #include "jmsg.hpp"
@@ -39,7 +39,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jcla
              "Native initialization of msg/Storage failed. Please report that bug");
 }
 
-void jstorage_bind(jobject jstorage, msg_storage_t storage, JNIEnv * env) {
+void jstorage_bind(jobject jstorage, sg_storage_t storage, JNIEnv* env)
+{
   env->SetLongField(jstorage, jstorage_field_Storage_bind, (jlong) (uintptr_t) (storage));
 }
 
@@ -52,7 +53,7 @@ void jstorage_unref(JNIEnv * env, jobject jstorage) {
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls, jstring jname) {
-  msg_storage_t storage;
+  sg_storage_t storage;
   jobject jstorage = nullptr;
 
   /* get the C string from the java string */
@@ -61,7 +62,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, j
     return nullptr;
   }
   const char *name = env->GetStringUTFChars(jname, 0);
-  storage = MSG_storage_get_by_name(name);
+  storage          = sg_storage_get_by_name(name);
 
   if (not storage) { /* invalid name */
     jxbt_throw_storage_not_found(env, name);
@@ -110,7 +111,7 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getSize(JNIEnv * env,jobjec
     return -1;
   }
 
-  return (jlong) MSG_storage_get_size(storage);
+  return (jlong)sg_storage_get_size(storage);
 }
 
 JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv * env,jobject jstorage) {
@@ -121,7 +122,7 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv * env,jo
     return -1;
   }
 
-  return (jlong) MSG_storage_get_free_size(storage);
+  return (jlong)sg_storage_get_size_free(storage);
 }
 
 JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv * env,jobject jstorage) {
@@ -132,7 +133,7 @@ JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv * env,jo
     return -1;
   }
 
-  return (jlong) MSG_storage_get_used_size(storage);
+  return (jlong)sg_storage_get_size_used(storage);
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, jobject jstorage, jobject jname) {
@@ -144,7 +145,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, 
   }
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
 
-  const char *property = MSG_storage_get_property_value(storage, name);
+  const char* property = sg_storage_get_property_value(storage, name);
   if (not property) {
     return nullptr;
   }
@@ -157,7 +158,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, 
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject jname, jobject jvalue) {
-  msg_storage_t storage = jstorage_get_native(env, jstorage);
+  sg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (not storage) {
     jxbt_throw_notbound(env, "storage", jstorage);
@@ -179,7 +180,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobj
     jxbt_throw_notbound(env, "storage", jstorage);
     return nullptr;
   }
-  const char *host_name = MSG_storage_get_host(storage);
+  const char* host_name = sg_storage_get_host(storage);
   if (not host_name) {
     return nullptr;
   }
@@ -194,9 +195,9 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   jobjectArray jtable;
   jobject jstorage;
   jstring jname;
-  msg_storage_t storage;
+  sg_storage_t storage;
 
-  xbt_dynar_t table =  MSG_storages_as_dynar();
+  xbt_dynar_t table = sg_storages_as_dynar();
   int count = xbt_dynar_length(table);
 
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Storage");
@@ -213,11 +214,11 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   }
 
   for (index = 0; index < count; index++) {
-    storage = xbt_dynar_get_as(table,index,msg_storage_t);
+    storage = xbt_dynar_get_as(table, index, sg_storage_t);
     if (java_storage_map.find(storage) != java_storage_map.end()) {
       jstorage = java_storage_map.at(storage);
     } else {
-      jname = env->NewStringUTF(MSG_storage_get_name(storage));
+      jname    = env->NewStringUTF(sg_storage_get_name(storage));
       jstorage = Java_org_simgrid_msg_Storage_getByName(env, cls_arg, jname);
     }
 

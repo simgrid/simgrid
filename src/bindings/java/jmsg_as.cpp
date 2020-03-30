@@ -104,7 +104,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobje
   }
   const char *name = env->GetStringUTFChars(static_cast<jstring>(jname), 0);
 
-  const char* property = MSG_zone_get_property_value(as, name);
+  const char* property = sg_zone_get_property_value(as, name);
   if (not property) {
     return nullptr;
   }

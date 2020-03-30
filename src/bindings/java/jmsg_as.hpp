@@ -7,7 +7,7 @@
 
 #ifndef JMSG_AS_HPP
 #define JMSG_AS_HPP
-#include "simgrid/msg.h"
+#include "simgrid/zone.h"
 #include <jni.h>
 
 extern "C" {

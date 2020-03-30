@@ -18,14 +18,14 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 extern int JAVA_HOST_LEVEL;
 static jfieldID jvm_field_bind;
 
-void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm)
+void jvm_bind(JNIEnv* env, jobject jvm, sg_vm_t vm)
 {
   env->SetLongField(jvm, jvm_field_bind, (intptr_t)vm);
 }
 
-msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm)
+sg_vm_t jvm_get_native(JNIEnv* env, jobject jvm)
 {
-  return (msg_vm_t)(intptr_t)env->GetLongField(jvm, jvm_field_bind);
+  return (sg_vm_t)(intptr_t)env->GetLongField(jvm, jvm_field_bind);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cls)
@@ -37,43 +37,43 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cl
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isCreated(JNIEnv* env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  return MSG_vm_is_created(vm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
+  return sg_vm_is_created(vm);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv* env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  return MSG_vm_is_running(vm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
+  return sg_vm_is_running(vm);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isMigrating(JNIEnv* env, jobject jvm)
 {
   const_sg_vm_t vm = jvm_get_native(env, jvm);
-  return MSG_vm_is_migrating(vm);
+  return sg_vm_is_migrating(vm);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isSuspended(JNIEnv* env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  return MSG_vm_is_suspended(vm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
+  return sg_vm_is_suspended(vm);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jdouble bound)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_set_bound(vm, bound);
+  sg_vm_t vm = jvm_get_native(env, jvm);
+  sg_vm_set_bound(vm, bound);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jVm, jobject jHost, jstring jname,
                                                       jint coreAmount, jint jramsize, jint jmig_netspeed,
                                                       jint jdp_intensity)
 {
-  msg_host_t host = jhost_get_native(env, jHost);
+  sg_host_t host = jhost_get_native(env, jHost);
 
   const char* name = env->GetStringUTFChars(jname, 0);
-  msg_vm_t vm      = MSG_vm_create_migratable(host, name, static_cast<int>(coreAmount), static_cast<int>(jramsize),
-                                         static_cast<int>(jmig_netspeed), static_cast<int>(jdp_intensity));
+  sg_vm_t vm       = sg_vm_create_migratable(host, name, static_cast<int>(coreAmount), static_cast<int>(jramsize),
+                                       static_cast<int>(jmig_netspeed), static_cast<int>(jdp_intensity));
   env->ReleaseStringUTFChars(jname, name);
 
   jvm_bind(env, jVm, vm);
@@ -84,19 +84,18 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jVm, 
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass cls_arg)
 {
-  xbt_dynar_t hosts = MSG_hosts_as_dynar();
+  sg_host_t* hosts  = sg_host_list();
+  size_t host_count = sg_host_count();
   std::vector<jobject> vms;
 
-  unsigned int it;
-  msg_host_t h;
-  xbt_dynar_foreach (hosts, it, h) {
-    simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(h);
+  for (size_t i = 0; i < host_count; i++) {
+    simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(hosts[i]);
     if (vm != nullptr && vm->get_state() != simgrid::s4u::VirtualMachine::state::DESTROYED) {
       jobject jvm = static_cast<jobject>(vm->extension(JAVA_HOST_LEVEL));
       vms.push_back(jvm);
     }
   }
-  xbt_dynar_free(&hosts);
+  xbt_free(hosts);
 
   vms.shrink_to_fit();
   int count = vms.size();
@@ -120,28 +119,28 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass c
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeFinalize(JNIEnv *env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_destroy(vm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
+  sg_vm_destroy(vm);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_start(vm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
+  sg_vm_start(vm);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
   if (vm)
-    MSG_vm_shutdown(vm);
+    sg_vm_shutdown(vm);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_destroy(JNIEnv* env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env, jvm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
   if (vm) {
-    MSG_vm_destroy(vm);
+    sg_vm_destroy(vm);
     auto* vmList = &simgrid::vm::VirtualMachineImpl::allVms_;
     vmList->erase(std::remove(vmList->begin(), vmList->end(), vm), vmList->end());
   }
@@ -149,9 +148,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_destroy(JNIEnv* env, jobject jvm)
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeMigration(JNIEnv* env, jobject jvm, jobject jhost)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  msg_host_t host = jhost_get_native(env, jhost);
-  if (not simgrid::ForcefulKillException::try_n_catch([&vm, &host]() { MSG_vm_migrate(vm, host); })) {
+  sg_vm_t vm     = jvm_get_native(env, jvm);
+  sg_host_t host = jhost_get_native(env, jhost);
+  if (not simgrid::ForcefulKillException::try_n_catch([&vm, &host]() { sg_vm_migrate(vm, host); })) {
     XBT_VERB("Caught exception during migration");
     jxbt_throw_host_failure(env, "during migration");
   }
@@ -159,14 +158,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeMigration(JNIEnv* env, jobj
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_suspend(JNIEnv *env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_suspend(vm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
+  sg_vm_suspend(vm);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_resume(JNIEnv *env, jobject jvm)
 {
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_resume(vm);
+  sg_vm_t vm = jvm_get_native(env, jvm);
+  sg_vm_resume(vm);
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclass cls, jstring jname)
@@ -178,7 +177,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclas
   }
   const char* name = env->GetStringUTFChars(jname, 0);
   /* get the VM by name   (VMs are just special hosts, unfortunately) */
-  auto const* host = MSG_host_by_name(name);
+  auto const* host = sg_host_by_name(name);
 
   if (not host) { /* invalid name */
     jxbt_throw_host_not_found(env, name);
