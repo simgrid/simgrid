@@ -249,7 +249,12 @@ Mailbox* Comm::get_mailbox() const
 
 Actor* Comm::get_sender() const
 {
-  return sender_ ? sender_->ciface() : nullptr;
+  return kernel::actor::simcall([this] {
+    kernel::actor::ActorImplPtr sender = nullptr;
+    if (pimpl_)
+      sender = boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->src_actor_;
+    return sender ? sender->ciface() : nullptr;
+  });
 }
 
 } // namespace s4u
