@@ -44,6 +44,15 @@ bool Mailbox::listen()
   return not this->empty() || (pimpl_->permanent_receiver_ && not pimpl_->done_comm_queue_.empty());
 }
 
+aid_t Mailbox::listen_from()
+{
+  kernel::activity::CommImplPtr comm = front();
+  if (comm && comm->src_actor_)
+    return comm->src_actor_->get_pid();
+  else
+    return -1;
+}
+
 bool Mailbox::ready()
 {
   bool comm_ready = false;

@@ -45,6 +45,9 @@ public:
   /** Check if there is a communication going on in a mailbox. */
   bool listen();
 
+  /** Look if there is a communication going on in a mailbox and return the PID of the sender actor */
+  aid_t listen_from();
+
   /** Check if there is a communication ready to be consumed from a mailbox. */
   bool ready();
 

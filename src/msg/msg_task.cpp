@@ -637,13 +637,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t* task, const char* name, double rat
  */
 int MSG_task_listen_from(const char* alias)
 {
-  /* looks inside the rdv directly. Not clean. */
-  simgrid::kernel::activity::CommImplPtr comm = simgrid::s4u::Mailbox::by_name(alias)->front();
-
-  if (comm && comm->src_actor_)
-    return comm->src_actor_->get_pid();
-  else
-    return -1;
+  return simgrid::s4u::Mailbox::by_name(alias)->listen_from();
 }
 
 /** @brief Destroys the given task.
