@@ -1,5 +1,6 @@
 $ ./listen_async ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (test@Tremblay) Task listen works on regular mailboxes
+> [  0.000000] (test@Tremblay) Mailbox::listen_from() returns 1 (should return my pid, which is 1)
 > [  0.000195] (test@Tremblay) Data successfully received from regular mailbox
 > [  0.000195] (test@Tremblay) Task listen works on asynchronous mailboxes
 > [  0.000195] (test@Tremblay) Data successfully received from asynchronous mailbox

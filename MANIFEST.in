@@ -662,8 +662,6 @@ include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.c
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.tesh
-include teshsuite/msg/task_listen_from/task_listen_from.c
-include teshsuite/msg/task_listen_from/task_listen_from.tesh
 include teshsuite/python/borken-context/borken-context.py
 include teshsuite/python/borken-context/borken-context.tesh
 include teshsuite/python/borken-context/borken-context_d.xml

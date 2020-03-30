@@ -1,3 +1,0 @@
-$ ${bindir}/task_listen_from ${platfdir}/small_platform.xml
-> [Tremblay:tester:(1) 0.000000] [msg_test/INFO] MSG_task_listen_from returns() 1 (should return my pid, which is 1)
-> [Tremblay:tester:(1) 0.000000] [msg_test/INFO] MSG_task_listen returns()      1 (should return true, i.e. 1)

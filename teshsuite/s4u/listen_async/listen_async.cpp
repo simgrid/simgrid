@@ -21,6 +21,9 @@ static void server()
 
   xbt_assert(mailbox->listen()); // True (1)
   XBT_INFO("Task listen works on regular mailboxes");
+  XBT_INFO("Mailbox::listen_from() returns %ld (should return my pid, which is %ld)", mailbox->listen_from(),
+           simgrid::s4u::this_actor::get_pid());
+
   const std::string* res = static_cast<std::string*>(mailbox->get());
 
   xbt_assert(*res == "Some data", "Data received: %s", res->c_str());
