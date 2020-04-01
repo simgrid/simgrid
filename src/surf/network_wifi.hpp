@@ -26,6 +26,19 @@ class NetworkWifiLink : public LinkImpl {
   /** @brief A link can have several bandwith attach to it (mostly use by wifi model) */
   std::vector<Metric> bandwidths_;
 
+  /** @brief Should we use the decay model ? */
+  bool use_decay_model_=false;
+  /** @brief Wifi ns-3 802.11n average bit rate */
+  const double wifi_max_rate_=54*1e6 / 8;
+  /** @brief ns-3 802.11n minimum bit rate */
+  const double wifi_min_rate_=41.70837*1e6 / 8;
+  /** @brief Decay model calibration */
+  const int model_n_=5;
+  /** @brief Decay model calibration: bitrate when using model_n_ stations */
+  const double model_rate_=42.61438*1e6 / 8;
+  /** @brief Decay model bandwidths */
+  std::vector<Metric> decay_bandwidths_;
+
 public:
   NetworkWifiLink(NetworkCm02Model* model, const std::string& name, std::vector<double> bandwidths,
                   lmm::System* system);
@@ -38,6 +51,8 @@ public:
   void apply_event(kernel::profile::Event*, double) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
   void set_latency(double) override { THROW_UNIMPLEMENTED; }
+  void refresh_decay_bandwidths();
+  bool toggle_decay_model();
 };
 
 } // namespace resource

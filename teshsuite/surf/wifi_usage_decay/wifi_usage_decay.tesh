@@ -1,0 +1,47 @@
+#!/usr/bin/env tesh
+
+p Test WITH crosstraffic
+$ ${bindir:=.}/wifi_usage_decay ${platfdir}/wifi.xml --log=root.fmt=%m%n
+> TEST: Send from a station to a node on the wired network after the AP.
+> ----------------------------------------------------------------------
+> Since AP1 is the limiting link, we have the following constraint for AP1:
+> 1.05/r_STA1 * rho_STA1 <= 1   (1.05 instead of 1 because of cross-traffic)
+> However, decay model specify that for 2 stations, we have 54Mbps become 49.00487
+> We should thus have:
+>   mu = 1 / [ 1/1 * 1.05/49.00487Mbps ] = 46671305
+>   simulation_time = 1000*8 / mu = 0.0001714115 (rounded to 0.000171s in SimGrid)
+> Actual result: Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000171 seconds.
+>
+>
+> TEST: Send from a station to another station on the same AP.
+> ------------------------------------------------------------
+> We have the following constraint for AP1:
+> 1.05/r_STA1 * rho_STA1 + 1.05/r_STA2 * rho_2 <= 1     (1.05 instead of 1 because of cross-traffic)
+> However, decay model specify that for 2 stations, we have 54Mbps become 49.00487
+> We should thus have:
+>   mu = 1 / [ 1/2 * 1.05/49.00487Mbps + 1.05/49.00487Mbps ] = 46671305
+>   simulation_time = 1000*8 / [ mu / 2 ] = 0.0003428231s (rounded to 0.000343s in SimGrid)
+> Actual result: Sending 1000 bytes from 'Station 1' to 'Station 2' takes 0.000343 seconds.
+
+p Test WITHOUT crosstraffic
+$ ${bindir:=.}/wifi_usage_decay ${platfdir}/wifi.xml --log=root.fmt=%m%n --cfg=network/crosstraffic:0
+> Configuration change: Set 'network/crosstraffic' to '0'
+> TEST: Send from a station to a node on the wired network after the AP.
+> ----------------------------------------------------------------------
+> Since AP1 is the limiting link, we have the following constraint for AP1:
+> 1/r_STA1 * rho_STA1 <= 1  (there is no cross-traffic)
+> However, decay model specify that for 2 stations, we have 54Mbps become 49.00487
+> We should thus have:
+>   mu = 1 / [ 1/1 * 1/49.00487Mbps ] = 49004870
+>   simulation_time = 1000*8 / mu = 0.0001632491s (rounded to 0.000163s in SimGrid)
+> Actual result: Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000163 seconds.
+>
+>
+> TEST: Send from a station to another station on the same AP.
+> ------------------------------------------------------------
+> We have the following constraint for AP1:
+> 1/r_STA1 * rho_STA1 +    1/r_STA2 * rho_2 <= 1   (there is no cross-traffic)
+> However, decay model specify that for 2 stations, we have 54Mbps become 49.00487
+>   mu = 1 / [ 1/2 * 1/49.00487Mbps + 1/49.00487Mbps ] = 49004870
+>   simulation_time = 1000*8 / [ mu / 2 ] =  0.0003264982s (rounded to 0.000326s in SimGrid)
+> Actual result: Sending 1000 bytes from 'Station 1' to 'Station 2' takes 0.000326 seconds.
