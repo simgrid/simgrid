@@ -1697,6 +1697,8 @@ include teshsuite/surf/surf_usage2/surf_usage2.cpp
 include teshsuite/surf/surf_usage2/surf_usage2.tesh
 include teshsuite/surf/wifi_usage/wifi_usage.cpp
 include teshsuite/surf/wifi_usage/wifi_usage.tesh
+include teshsuite/surf/wifi_usage_decay/wifi_usage_decay.cpp
+include teshsuite/surf/wifi_usage_decay/wifi_usage_decay.tesh
 include teshsuite/xbt/cmdline/cmdline.c
 include teshsuite/xbt/cmdline/cmdline.tesh
 include teshsuite/xbt/log_large/log_large.c
