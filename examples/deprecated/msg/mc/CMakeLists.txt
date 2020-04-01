@@ -1,4 +1,4 @@
-foreach (x bugged3 centralized_mutex bugged2_liveness)
+foreach (x centralized_mutex bugged2_liveness)
   if(SIMGRID_HAVE_MC AND SIMGRID_HAVE_MSG)
     add_executable       (${x} EXCLUDE_FROM_ALL ${x}.c)
     target_link_libraries(${x} simgrid)
@@ -12,3 +12,4 @@ set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.
 set(xml_files    ${xml_files}                                                                       PARENT_SCOPE)
 set(examples_src ${examples_src}                                                                    PARENT_SCOPE)
 set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness              PARENT_SCOPE)
+ 
