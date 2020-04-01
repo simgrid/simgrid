@@ -341,8 +341,8 @@ XBT_PUBLIC msg_process_t MSG_process_attach(const char* name, void* data, msg_ho
 XBT_PUBLIC void MSG_process_detach();
 
 XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);
-XBT_PUBLIC xbt_dynar_t MSG_processes_as_dynar();
-XBT_PUBLIC int MSG_process_get_number();
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_actor_list()") XBT_PUBLIC xbt_dynar_t MSG_processes_as_dynar();
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_actor_count()") XBT_PUBLIC int MSG_process_get_number();
 
 XBT_PUBLIC void* MSG_process_get_data(const_sg_actor_t process);
 XBT_PUBLIC msg_error_t MSG_process_set_data(msg_process_t process, void* data);

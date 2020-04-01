@@ -218,9 +218,9 @@ void MSG_process_unref(const_sg_actor_t process)
   sg_actor_unref(process);
 }
 /** @brief Return the current number MSG processes. */
-int MSG_process_get_number()
+int MSG_process_get_number() // XBT_ATTRIB_DEPRECATED_v330
 {
-  return simgrid_get_actor_count();
+  return sg_actor_count();
 }
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()

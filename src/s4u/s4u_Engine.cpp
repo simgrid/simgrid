@@ -459,7 +459,8 @@ double simgrid_get_clock()
 {
   return simgrid::s4u::Engine::get_clock();
 }
-int simgrid_get_actor_count()
+
+int simgrid_get_actor_count() // XBT_ATTRIB_DEPRECATED_v330
 {
   return simgrid::s4u::Engine::get_instance()->get_actor_count();
 }

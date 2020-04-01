@@ -42,7 +42,7 @@ XBT_PUBLIC void simgrid_register_default(void (*code)(int, char**));
 /** Retrieve the simulation time (in seconds) */
 XBT_PUBLIC double simgrid_get_clock();
 /** Retrieve the number of actors in the simulation */
-XBT_PUBLIC int simgrid_get_actor_count();
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_actor_count()") XBT_PUBLIC int simgrid_get_actor_count();
 
 /** @brief Allow other libraries to react to the --help flag, too
  *

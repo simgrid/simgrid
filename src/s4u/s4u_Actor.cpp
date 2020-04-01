@@ -471,6 +471,23 @@ void migrate(Host* new_host) // deprecated
 } // namespace simgrid
 
 /* **************************** Public C interface *************************** */
+size_t sg_actor_count()
+{
+  return simgrid::s4u::Engine::get_instance()->get_actor_count();
+}
+
+sg_actor_t* sg_actor_list()
+{
+  simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
+  size_t actor_count      = e->get_actor_count();
+  xbt_assert(actor_count > 0, "There is no actor!");
+  std::vector<simgrid::s4u::ActorPtr> actors = e->get_all_actors();
+
+  sg_actor_t* res = xbt_new(sg_actor_t, actors.size());
+  for (size_t i = 0; i < actor_count; i++)
+    res[i] = actors[i].get();
+  return res;
+}
 
 sg_actor_t sg_actor_init(const char* name, sg_host_t host)
 {
