@@ -39,7 +39,7 @@ void jprocess_bind(jobject jprocess, const_sg_actor_t process, JNIEnv* env);
 jobject jprocess_from_native(const_sg_actor_t process);
 
 /** Extract the native instance from the java one */
-msg_process_t jprocess_to_native(jobject jprocess, JNIEnv* env);
+sg_actor_t jprocess_to_native(jobject jprocess, JNIEnv* env);
 
 /** Initialize the native world, called from the Java world at startup */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls);
