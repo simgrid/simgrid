@@ -84,10 +84,10 @@ int main(int argc, char *argv[])
 
   MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
-  MSG_create_environment("../msg_platform.xml");
+  MSG_create_environment(argv[1]);
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
-  MSG_launch_application("deploy_bugged2_liveness.xml");
+  MSG_launch_application(argv[2]);
   MSG_main();
 
   return 0;

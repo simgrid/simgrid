@@ -256,6 +256,7 @@ include examples/deprecated/java/trace/pingpong/Sender.java
 include examples/deprecated/java/trace/pingpong/trace-pingpong.tesh
 include examples/deprecated/msg/README.doc
 include examples/deprecated/msg/mc/bugged2_liveness.c
+include examples/deprecated/msg/mc/bugged2_liveness.tesh
 include examples/deprecated/msg/mc/centralized_mutex.c
 include examples/deprecated/msg/mc/centralized_mutex.tesh
 include examples/deprecated/msg/mc/deploy_bugged2_liveness.xml
