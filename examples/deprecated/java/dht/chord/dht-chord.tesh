@@ -4,7 +4,7 @@
 
 $ ${javacmd:=java} -classpath ${classpath:=.} dht/chord/Main ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/dht/chord/chord.xml
 > [0.000000] [java/INFO] Using regular java threads.
-> [1046.803210] [java/INFO] MSG_main finished; Terminating the simulation...
+> [1046.803210] [java/INFO] Terminating the simulation...
 > [node-1.simgrid.org:dht.chord.Node:(2) 0.000000] [java/INFO] Joining the ring with id 366680 knowing node 42
 > [node-2.simgrid.org:dht.chord.Node:(3) 0.000000] [java/INFO] Joining the ring with id 533744 knowing node 366680
 > [node-3.simgrid.org:dht.chord.Node:(4) 0.000000] [java/INFO] Joining the ring with id 1319738 knowing node 42

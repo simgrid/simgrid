@@ -8,7 +8,7 @@ $ ${javacmd:=java} -classpath ${classpath:=.} process/migration/Main ${srcdir:=.
 > [  0.000000] (2:emigrant@Boivin) Yeah, found something to do
 > [  1.000000] (1:policeman@Boivin) Wait a bit before migrating the emigrant.
 > [  3.000000] (2:emigrant@Boivin) Moving back to home after work
-> [  7.000000] (0:maestro@) MSG_main finished; Terminating the simulation...
+> [  7.000000] (0:maestro@) Terminating the simulation...
 > [  7.000000] (2:emigrant@Jacquelin) I've been moved on this new host:Jacquelin
 > [  7.000000] (2:emigrant@Jacquelin) Uh, nothing to do here. Stopping now
 > [  7.000000] (1:policeman@Boivin) I moved the emigrant

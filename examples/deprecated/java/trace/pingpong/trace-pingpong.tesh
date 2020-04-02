@@ -7,7 +7,7 @@ $ ${javacmd:=java} -classpath ${classpath:=.} trace/pingpong/Main ${srcdir:=.}/.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'simulation.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
-> [3.817809] [java/INFO] MSG_main finished; Terminating the simulation...
+> [3.817809] [java/INFO] Terminating the simulation...
 > [Boivin:Receiver:(2) 0.000000] [java/INFO] hello!
 > [Boivin:Receiver:(2) 0.000000] [java/INFO] try to get a task
 > [Boivin:Receiver:(2) 1.048882] [java/INFO] Got at time 1.0488818628325232

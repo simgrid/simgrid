@@ -5,7 +5,7 @@
 
 $ ${javacmd:=java} -classpath ${classpath:=.} app/bittorrent/Main ${srcdir:=.}/../../platforms/cluster_backbone.xml ${srcdir:=.}/app/bittorrent/bittorrent.xml
 > [0.000000] [java/INFO] Using regular java threads.
-> [5000.039030] [java/INFO] MSG_main finished; Terminating the simulation...
+> [5000.039030] [java/INFO] Terminating the simulation...
 > [node-0.simgrid.org:app.bittorrent.Tracker:(1) 0.000000] [java/INFO] Tracker launched.
 > [node-0.simgrid.org:app.bittorrent.Tracker:(1) 3000.000000] [java/INFO] Tracker is leaving
 > [node-1.simgrid.org:app.bittorrent.Peer:(2) 0.000000] [java/INFO] Hi, I'm joining the network with id 2
