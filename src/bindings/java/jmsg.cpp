@@ -117,7 +117,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv* env, jclass, jobjec
   argv[argc] = nullptr;
 
   int argc2 = argc;
-  simgrid_init(&argc2, argv.get());
+  MSG_init(&argc2, argv.get());
   xbt_assert(argc2 <= argc);
 
   for (int index = 1; index < argc2; index++)
