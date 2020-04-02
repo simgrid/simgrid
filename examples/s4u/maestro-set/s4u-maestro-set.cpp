@@ -65,6 +65,10 @@ int main(int argc, char* argv[])
 {
   root_id = std::this_thread::get_id();
 
+  /* Specify which code should be executed by maestro on another thread, once this current thread is affected to an
+   * actor by the subsequent sg_actor_attach(). This must be done before the creation of the engine. */
+  SIMIX_set_maestro(maestro, NULL);
+
   simgrid::s4u::Engine e(&argc, argv);
 
   if (argc != 2) {
@@ -74,9 +78,6 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  /* Specify which code should be executed by maestro on another thread, once this current thread is affected to an
-   * actor by the subsequent sg_actor_attach() */
-  SIMIX_set_maestro(maestro, NULL);
   /* Become one of the simulated process (must be done after the platform creation, or the host won't exist). */
   sg_actor_attach("sender", nullptr, simgrid::s4u::Host::by_name("Tremblay"), nullptr);
 
