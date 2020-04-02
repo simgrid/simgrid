@@ -8,7 +8,7 @@ foreach (x centralized_mutex bugged2_liveness)
   set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/deploy_${x}.xml)
 endforeach()
 
-set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.tesh
+set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/bugged2-liveness.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.tesh                PARENT_SCOPE)
 set(xml_files    ${xml_files}                                                                       PARENT_SCOPE)
 set(examples_src ${examples_src}                                                                    PARENT_SCOPE)
