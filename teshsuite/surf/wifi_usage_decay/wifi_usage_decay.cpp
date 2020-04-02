@@ -4,9 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
+#include "xbt/config.hpp"
 #include "xbt/log.h"
 
-#include "simgrid/msg.h"
 #include "src/surf/network_wifi.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(simulator, "[usage] wifi_usage <platform-file>");

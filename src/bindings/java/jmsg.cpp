@@ -1,5 +1,3 @@
-/* Java Wrappers to the MSG API.                                            */
-
 /* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,7 +10,6 @@
 #include <vector>
 
 #include "simgrid/Exception.hpp"
-#include "simgrid/msg.h"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/file_system.h"
 #include "simgrid/plugins/live_migration.h"
@@ -32,7 +29,6 @@
 #include "jxbt_utilities.hpp"
 
 #include "JavaContext.hpp"
-
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT
@@ -121,7 +117,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv* env, jclass, jobjec
   argv[argc] = nullptr;
 
   int argc2 = argc;
-  MSG_init(&argc2, argv.get());
+  simgrid_init(&argc2, argv.get());
   xbt_assert(argc2 <= argc);
 
   for (int index = 1; index < argc2; index++)
@@ -134,13 +130,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv* env, jclass, jobjec
 JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv* env, jclass)
 {
   /* Run everything */
-  XBT_DEBUG("Ready to run MSG_MAIN");
-  msg_error_t rv = MSG_main();
-  XBT_DEBUG("Done running MSG_MAIN");
-  jxbt_check_res("MSG_main()", rv, MSG_OK,
-                 xbt_strdup("unexpected error : MSG_main() failed .. please report this bug "));
-
-  XBT_INFO("MSG_main finished; Terminating the simulation...");
+  XBT_DEBUG("Ready to run");
+  simgrid_run();
+  XBT_DEBUG("Done running");
+  XBT_INFO("Terminating the simulation...");
   /* Cleanup java hosts */
   sg_host_t* hosts  = sg_host_list();
   size_t host_count = sg_host_count();
@@ -166,14 +159,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv* env, j
 {
   const char *platformFile = env->GetStringUTFChars(jplatformFile, 0);
 
-  MSG_create_environment(platformFile);
+  simgrid_load_platform(platformFile);
 
   env->ReleaseStringUTFChars(jplatformFile, platformFile);
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv* env, jclass)
 {
-  msg_netzone_t as = sg_zone_get_root();
+  sg_netzone_t as  = sg_zone_get_root();
   jobject jas      = jnetzone_new_instance(env);
   if (not jas) {
     jxbt_throw_jni(env, "java As instantiation failed");
@@ -311,13 +304,13 @@ static void java_main(int argc, char* argv[])
   xbt_assert((jprocess != nullptr), "Process allocation failed.");
   jprocess = env->NewGlobalRef(jprocess);
   //bind the process to the context
-  const_sg_actor_t process = sg_actor_self();
+  const_sg_actor_t actor = sg_actor_self();
 
   context->jprocess_ = jprocess;
   /* sets the PID and the PPID of the process */
-  env->SetIntField(jprocess, jprocess_field_Process_pid, static_cast<jint>(MSG_process_get_PID(process)));
-  env->SetIntField(jprocess, jprocess_field_Process_ppid, static_cast<jint>(MSG_process_get_PPID(process)));
-  jprocess_bind(jprocess, process, env);
+  env->SetIntField(jprocess, jprocess_field_Process_pid, static_cast<jint>(actor->get_pid()));
+  env->SetIntField(jprocess, jprocess_field_Process_ppid, static_cast<jint>(actor->get_ppid()));
+  jprocess_bind(jprocess, actor, env);
 
   run_jprocess(env, context->jprocess_);
 }
@@ -330,11 +323,12 @@ namespace context {
 void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::kernel::context::JavaContext* context =
-      static_cast<simgrid::kernel::context::JavaContext*>(simgrid::kernel::context::Context::self());
-  context->jprocess_                             = jprocess;
-  jprocess_bind(context->jprocess_, MSG_process_self(), env);
+  JavaContext* context = static_cast<JavaContext*>(Context::self());
+  context->jprocess_   = jprocess;
+  jprocess_bind(context->jprocess_, sg_actor_self(), env);
 
   run_jprocess(env, context->jprocess_);
 }
-}}}
+} // namespace context
+} // namespace kernel
+} // namespace simgrid

@@ -8,11 +8,12 @@
 #ifndef LUA_PRIVATE_HPP
 #define LUA_PRIVATE_HPP
 
-#include "simgrid/msg.h"
+#include "simgrid/host.h"
 #include "simgrid_lua.hpp"
+#include "xbt/log.h"
 
 void sglua_register_host_functions(lua_State* L);
-msg_host_t sglua_check_host(lua_State* L, int index);
+sg_host_t sglua_check_host(lua_State* L, int index);
 
 void sglua_register_platf_functions(lua_State* L);
 

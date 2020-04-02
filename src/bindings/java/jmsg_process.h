@@ -8,7 +8,7 @@
 #ifndef MSG_JPROCESS_H
 #define MSG_JPROCESS_H
 
-#include "simgrid/msg.h"
+#include "simgrid/actor.h"
 #include <jni.h>
 
 SG_BEGIN_DECL;
