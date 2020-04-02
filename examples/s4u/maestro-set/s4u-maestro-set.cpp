@@ -6,7 +6,7 @@
 /** @addtogroup S4U_examples
  *
  *  - <b>maestro-set/maestro-set.cpp: Switch the system thread hosting our maestro</b>.
- *    That's a very advanced example in which we move the maestro thread to another process.
+ *    That's a very advanced example in which we move the maestro context to another system thread.
  *    Not many users need it (maybe only one, actually), but this example is also a regression test.
  *
  *    This example is in C++ because we use C++11 threads to ensure that the feature is working as
@@ -65,7 +65,6 @@ int main(int argc, char* argv[])
 {
   root_id = std::this_thread::get_id();
 
-  SIMIX_set_maestro(maestro, NULL);
   simgrid::s4u::Engine e(&argc, argv);
 
   if (argc != 2) {
@@ -75,16 +74,19 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  /* Become one of the simulated process.
-   *
-   * This must be done after the creation of the platform because we are depending attaching to a host.*/
+  /* Specify which code should be executed by maestro on another thread, once this current thread is affected to an
+   * actor by the subsequent sg_actor_attach() */
+  SIMIX_set_maestro(maestro, NULL);
+  /* Become one of the simulated process (must be done after the platform creation, or the host won't exist). */
   sg_actor_attach("sender", nullptr, simgrid::s4u::Host::by_name("Tremblay"), nullptr);
-  ensure_root_tid();
 
-  // Execute the sender code:
+  ensure_root_tid(); // Only useful in this test: we ensure that simgrid is not broken and that this code is executed in
+                     // the correct system thread
+
+  // Execute the sender code. The root thread was actually turned into a regular actor
   sender();
 
-  sg_actor_detach(); // Become root thread again
+  sg_actor_detach(); // The root thread becomes maestro again (as proved by the output)
   XBT_INFO("Detached");
   ensure_root_tid();
 
