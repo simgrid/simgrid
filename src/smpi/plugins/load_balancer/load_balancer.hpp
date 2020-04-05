@@ -15,13 +15,13 @@ namespace loadbalancer {
 class XBT_PRIVATE Mapping {
 public:
   /** Each host can have an arbitrary number of actors -> multimap **/
-  typedef std::unordered_multimap<simgrid::s4u::Host*, simgrid::s4u::ActorPtr> host_to_actors_map_t;
+  typedef std::unordered_multimap<s4u::Host*, s4u::ActorPtr> host_to_actors_map_t;
   host_to_actors_map_t host_to_actors;
 
   /** Each actor gets assigned to exactly one host -> map **/
-  std::map<simgrid::s4u::ActorPtr, simgrid::s4u::Host*> actor_to_host;
+  std::map<s4u::ActorPtr, s4u::Host*> actor_to_host;
 
-  void assign(simgrid::s4u::ActorPtr actor, simgrid::s4u::Host* host)
+  void assign(s4u::ActorPtr actor, s4u::Host* host)
   {
     /* Remove "actor" from its old host -> get all elements that have the current host as key **/
     auto range = host_to_actors.equal_range(/* current host */actor_to_host[actor]);
@@ -36,14 +36,14 @@ public:
     host_to_actors.insert({host, actor});
   }
 
-  simgrid::s4u::Host* get_host(simgrid::s4u::ActorPtr actor) { return actor_to_host[actor]; }
+  s4u::Host* get_host(s4u::ActorPtr actor) { return actor_to_host[actor]; }
 
-  unsigned int count_actors(simgrid::s4u::Host* host)
+  unsigned int count_actors(s4u::Host* host)
   {
     return host_to_actors.count(host); // TODO This is linear in the size of the map. Maybe replace by constant lookup through another map?
   }
 
-  void for_each_actor(simgrid::s4u::Host* host, const std::function<void(simgrid::s4u::ActorPtr)>& callback)
+  void for_each_actor(s4u::Host* host, const std::function<void(s4u::ActorPtr)>& callback)
   {
     auto range = host_to_actors.equal_range(host);
     std::for_each(range.first, range.second,
@@ -58,16 +58,14 @@ class XBT_PRIVATE LoadBalancer
 
 public:
   void run();
-  void assign(simgrid::s4u::ActorPtr actor, simgrid::s4u::Host* host);
-  
-  /**
-   * FIXME These are functions used for testing and should be re-written or removed
-   */
-  simgrid::s4u::Host* get_mapping(simgrid::s4u::ActorPtr);
-  void record_actor_computation(simgrid::s4u::Actor const& actor, double load);
+  void assign(s4u::ActorPtr actor, s4u::Host* host);
+
+  /** FIXME These are functions used for testing and should be re-written or removed */
+  s4u::Host* get_mapping(s4u::ActorPtr);
+  void record_actor_computation(s4u::Actor const& actor, double load);
 };
 
-}
-}
-}
+} // namespace loadbalancer
+} // namespace plugin
+} // namespace simgrid
 #endif

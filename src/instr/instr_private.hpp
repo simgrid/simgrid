@@ -234,8 +234,8 @@ public:
 
   std::string display_size() override { return "NA"; }
 };
-}
-}
+} // namespace instr
+} // namespace simgrid
 
 XBT_PRIVATE std::string instr_pid(simgrid::s4u::Actor const& proc);
 
@@ -285,6 +285,5 @@ XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
 XBT_PRIVATE void dump_comment_file(const std::string& filename);
 
 XBT_PRIVATE std::string TRACE_get_filename();
-
 
 #endif
