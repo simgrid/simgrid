@@ -565,7 +565,6 @@ set(TRACING_SRC
   src/instr/instr_paje_trace.cpp
   src/instr/instr_paje_types.cpp
   src/instr/instr_paje_types.hpp
-  src/instr/instr_paje_values.cpp
   src/instr/instr_paje_values.hpp
   src/instr/instr_platform.cpp
   src/instr/instr_private.hpp

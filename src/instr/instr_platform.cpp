@@ -306,6 +306,7 @@ static void on_link_creation(s4u::Link const& link)
     latency->set_calling_container(container);
     latency->set_event(0, link.get_latency());
   }
+
   if (TRACE_uncategorized()) {
     container->type_->by_name_or_create("bandwidth_used", "0.5 0.5 0.5");
   }
@@ -389,7 +390,7 @@ static void on_platform_created()
   recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), filter);
   XBT_DEBUG("Graph extraction finished.");
   delete filter;
-  TRACE_paje_dump_buffer(true);
+  dump_buffer(true);
 }
 
 static void on_actor_creation(s4u::Actor const& actor)
@@ -462,7 +463,6 @@ void define_callbacks()
     kernel::routing::NetPoint::on_creation.connect(on_netpoint_creation);
   }
   s4u::NetZone::on_creation.connect(on_netzone_creation);
-  s4u::Engine::on_time_advance.connect([](double /*time_delta*/) { TRACE_paje_dump_buffer(false); });
 
   kernel::resource::CpuAction::on_state_change.connect(on_action_state_change);
   s4u::Link::on_communication_state_change.connect(on_action_state_change);

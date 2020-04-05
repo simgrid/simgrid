@@ -2149,7 +2149,6 @@ include src/instr/instr_paje_header.cpp
 include src/instr/instr_paje_trace.cpp
 include src/instr/instr_paje_types.cpp
 include src/instr/instr_paje_types.hpp
-include src/instr/instr_paje_values.cpp
 include src/instr/instr_paje_values.hpp
 include src/instr/instr_platform.cpp
 include src/instr/instr_private.hpp

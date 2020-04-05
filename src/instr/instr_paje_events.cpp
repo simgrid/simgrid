@@ -18,9 +18,9 @@ namespace instr {
 PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType)
     : container_(container), type_(type), timestamp_(timestamp), eventType_(eventType)
 {
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, trace_precision, timestamp_);
   if (trace_format == TraceFormat::Paje) {
-    stream_ << std::fixed << std::setprecision(TRACE_precision());
+    stream_ << std::fixed << std::setprecision(trace_precision);
     stream_ << eventType_ << " " << timestamp_ << " " << type_->get_id() << " " << container_->get_id();
   }
   insert_into_buffer();

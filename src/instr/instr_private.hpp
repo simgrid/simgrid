@@ -29,13 +29,12 @@ typedef simgrid::instr::Container* container_t;
 
 namespace simgrid {
 namespace instr {
-void init();
-void define_callbacks();
+namespace paje {
 
-void platform_graph_export_graphviz(const std::string& output_filename);
-
-void resource_set_utilization(const char* type, const char* name, const char* resource, const std::string& category,
-                              double value, double now, double delta);
+void dump_generator_version();
+void dump_comment_file(const std::string& filename);
+void dump_header(bool basic, bool display_sizes);
+} // namespace paje
 
 /* Format of TRACING output.
  *   - paje is the regular format, that we all know
@@ -45,6 +44,19 @@ void resource_set_utilization(const char* type, const char* name, const char* re
  */
 enum class TraceFormat { Paje, /*TimeIndependent*/ Ti };
 extern TraceFormat trace_format;
+extern int trace_precision;
+extern double last_timestamp_to_dump;
+
+long long int new_paje_id();
+
+void init();
+void define_callbacks();
+
+void platform_graph_export_graphviz(const std::string& output_filename);
+
+void resource_set_utilization(const char* type, const char* name, const char* resource, const std::string& category,
+                              double value, double now, double delta);
+void dump_buffer(bool force);
 
 class TIData {
   std::string name_;
@@ -96,8 +108,8 @@ public:
 
   virtual ~TIData() {}
 
-  const std::string& getName() const { return name_; }
-  double getAmount() { return amount_; }
+  const std::string& get_name() const { return name_; }
+  double get_amount() const { return amount_; }
   virtual std::string print()        = 0;
   virtual std::string display_size() = 0;
 };
@@ -105,7 +117,7 @@ public:
 class NoOpTIData : public TIData {
 public:
   explicit NoOpTIData(const std::string& name) : TIData(name){};
-  std::string print() override { return getName(); }
+  std::string print() override { return get_name(); }
   std::string display_size() override { return "NA"; }
 };
 
@@ -115,10 +127,10 @@ public:
   std::string print() override
   {
     std::stringstream stream;
-    stream << getName() << " " << getAmount();
+    stream << get_name() << " " << get_amount();
     return stream.str();
   }
-  std::string display_size() override { return std::to_string(getAmount()); }
+  std::string display_size() override { return std::to_string(get_amount()); }
 };
 
 class Pt2PtTIData : public TIData {
@@ -133,7 +145,7 @@ public:
   std::string print() override
   {
     std::stringstream stream;
-    stream << getName() << " " << endpoint << " ";
+    stream << get_name() << " " << endpoint << " ";
     stream << tag << " " << send_size << " " << send_type;
     return stream.str();
   }
@@ -148,11 +160,11 @@ public:
   std::string print() override
   {
     std::stringstream stream;
-    stream << getName() << " " << send_size << " ";
+    stream << get_name() << " " << send_size << " ";
     if (recv_size >= 0)
       stream << recv_size << " ";
-    if (getAmount() >= 0.0)
-      stream << getAmount() << " ";
+    if (get_amount() >= 0.0)
+      stream << get_amount() << " ";
     if (endpoint > 0 || (endpoint == 0 && not send_type.empty()))
       stream << endpoint << " ";
     stream << send_type << " " << recv_type;
@@ -176,7 +188,7 @@ public:
   std::string print() override
   {
     std::stringstream stream;
-    stream << getName() << " ";
+    stream << get_name() << " ";
     if (send_size >= 0)
       stream << send_size << " ";
     if (sendcounts != nullptr)
@@ -211,7 +223,7 @@ public:
   std::string print() override
   {
     std::stringstream stream;
-    stream << getName() << " " << src << " " << dest << " " << tag;
+    stream << get_name() << " " << src << " " << dest << " " << tag;
 
     return stream.str();
   }
@@ -227,7 +239,7 @@ public:
   std::string print() override
   {
     std::stringstream stream;
-    stream << getName() << " " << memory_consumption;
+    stream << get_name() << " " << memory_consumption;
 
     return stream.str();
   }
@@ -244,10 +256,6 @@ extern XBT_PRIVATE std::set<std::string> declared_marks;
 extern XBT_PRIVATE std::set<std::string> user_host_variables;
 extern XBT_PRIVATE std::set<std::string> user_vm_variables;
 extern XBT_PRIVATE std::set<std::string> user_link_variables;
-extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
-
-/* instr_paje_header.c */
-XBT_PRIVATE void TRACE_header(bool basic, bool size);
 
 /* from instr_config.c */
 XBT_PRIVATE bool TRACE_needs_platform();
@@ -260,9 +268,7 @@ XBT_PRIVATE bool TRACE_actor_is_enabled();
 XBT_PRIVATE bool TRACE_vm_is_enabled();
 XBT_PRIVATE bool TRACE_disable_link();
 XBT_PRIVATE bool TRACE_disable_speed();
-XBT_PRIVATE bool TRACE_basic();
 XBT_PRIVATE bool TRACE_display_sizes();
-XBT_PRIVATE int TRACE_precision();
 
 /* Public functions used in SMPI */
 XBT_PUBLIC bool TRACE_smpi_is_enabled();
@@ -272,7 +278,6 @@ XBT_PUBLIC bool TRACE_smpi_is_sleeping();
 XBT_PUBLIC bool TRACE_smpi_view_internals();
 
 /* instr_paje.c */
-XBT_PRIVATE long long int instr_new_paje_id();
 void instr_new_variable_type(const std::string& new_typename, const std::string& color);
 void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
                                   const std::string& color);
@@ -280,10 +285,5 @@ void instr_new_user_state_type(const std::string& father_type, const std::string
 void instr_new_value_for_user_state_type(const std::string& new_typename, const char* value, const std::string& color);
 
 XBT_PRIVATE void TRACE_help();
-
-XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
-XBT_PRIVATE void dump_comment_file(const std::string& filename);
-
-XBT_PRIVATE std::string TRACE_get_filename();
 
 #endif

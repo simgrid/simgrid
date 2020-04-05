@@ -13,14 +13,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing eve
 static container_t rootContainer = nullptr;    /* the root container */
 static std::map<std::string, container_t> allContainers; /* all created containers indexed by name */
 
-long long int instr_new_paje_id ()
+namespace simgrid {
+namespace instr {
+
+long long int new_paje_id()
 {
   static long long int type_id = 0;
   return type_id++;
 }
-
-namespace simgrid {
-namespace instr {
 
 Container* Container::get_root()
 {
@@ -136,5 +136,13 @@ VariableType* Container::get_variable(const std::string& name)
 {
   return static_cast<VariableType*>(type_->by_name(name)->set_calling_container(this));
 }
+
+EntityValue::EntityValue(const std::string& name, const std::string& color, Type* father)
+    : name_(name), color_(color), father_(father)
+{
+  id_ = simgrid::instr::new_paje_id();
+  on_creation(*this);
+}
+
 } // namespace instr
 } // namespace simgrid

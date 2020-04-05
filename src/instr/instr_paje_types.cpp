@@ -17,7 +17,7 @@ namespace instr {
 
 Type::Type(e_event_type event_type, const std::string& name, const std::string& alias, const std::string& color,
            Type* father)
-    : id_(instr_new_paje_id()), name_(name), color_(color), father_(father)
+    : id_(new_paje_id()), name_(name), color_(color), father_(father)
 {
   if (name_.empty() || alias.empty())
     throw TracingError(XBT_THROW_POINT, "can't create a new type with no name or alias");
