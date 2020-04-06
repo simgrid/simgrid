@@ -40,16 +40,21 @@ enum e_event_type : unsigned int {
 class PajeEvent {
   Container* container_;
   Type* type_;
-protected:
-  Container* get_container() { return container_; }
 public:
+  static xbt::signal<void(PajeEvent&)> on_creation;
+  static xbt::signal<void(PajeEvent&)> on_destruction;
+
   double timestamp_;
   e_event_type eventType_;
   std::stringstream stream_;
 
   PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType);
-  virtual ~PajeEvent() = default;
-  virtual void print();
+  virtual ~PajeEvent();
+
+  Container* get_container() const { return container_; }
+  Type* get_type() const { return type_; }
+
+  virtual void print() = 0;
   void insert_into_buffer();
 };
 
@@ -61,7 +66,7 @@ public:
       : PajeEvent::PajeEvent(container, type, timestamp, event_type), value_(value)
   {
   }
-  void print() override;
+  void print() override { stream_ << " " << value_; }
 };
 
 class StateEvent : public PajeEvent {
@@ -73,7 +78,10 @@ class StateEvent : public PajeEvent {
   std::unique_ptr<TIData> extra_;
 
 public:
+  static xbt::signal<void(StateEvent&)> on_destruction;
   StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra);
+  ~StateEvent() { on_destruction(*this); }
+  bool has_extra() { return extra_ != nullptr; }
   void print() override;
 };
 
@@ -106,6 +114,6 @@ public:
   }
   void print() override;
 };
-}
-}
+} // namespace instr
+} // namespace simgrid
 #endif

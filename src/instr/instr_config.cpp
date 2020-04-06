@@ -218,9 +218,12 @@ int trace_precision;
  *************/
 xbt::signal<void(Container&)> Container::on_creation;
 xbt::signal<void(Container&)> Container::on_destruction;
-xbt::signal<void(EntityValue&)> EntityValue::on_creation;
 xbt::signal<void(Type&, e_event_type)> Type::on_creation;
 xbt::signal<void(LinkType&, Type&, Type&)> LinkType::on_creation;
+xbt::signal<void(PajeEvent&)> PajeEvent::on_creation;
+xbt::signal<void(PajeEvent&)> PajeEvent::on_destruction;
+xbt::signal<void(StateEvent&)> StateEvent::on_destruction;
+xbt::signal<void(EntityValue&)> EntityValue::on_creation;
 
 static void on_container_creation_paje(Container& c)
 {
@@ -243,10 +246,6 @@ static void on_container_creation_paje(Container& c)
 
 static void on_container_destruction_paje(Container& c)
 {
-  // obligation to dump previous events because they might reference the container that is about to be destroyed
-  last_timestamp_to_dump = SIMIX_get_clock();
-  dump_buffer(true);
-
   // trace my destruction, but not if user requests so or if the container is root
   if (not trace_disable_destroy && &c != Container::get_root()) {
     std::stringstream stream;
@@ -289,12 +288,7 @@ static void on_container_creation_ti(Container& c)
 
 static void on_container_destruction_ti(Container& c)
 {
-  // obligation to dump previous events because they might reference the container that is about to be destroyed
-  last_timestamp_to_dump = SIMIX_get_clock();
-  dump_buffer(true);
-
   if (not trace_disable_destroy && &c != Container::get_root()) {
-    XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_DestroyContainer, SIMIX_get_clock());
     if (not simgrid::config::get_value<bool>("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
       tracing_files.at(&c)->close();
       delete tracing_files.at(&c);
@@ -313,6 +307,26 @@ static void on_entity_value_creation(EntityValue& value)
     stream << " \"" << value.get_color() << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());
   tracing_file << stream.str() << std::endl;
+}
+
+static void on_event_creation(PajeEvent& event)
+{
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event.eventType_, trace_precision, event.timestamp_);
+  event.stream_ << std::fixed << std::setprecision(trace_precision);
+  event.stream_ << event.eventType_ << " " << event.timestamp_ << " ";
+  event.stream_ << event.get_type()->get_id() << " " << event.get_container()->get_id();
+}
+
+static void on_event_destruction(PajeEvent& event)
+{
+  XBT_DEBUG("Dump %s", event.stream_.str().c_str());
+  tracing_file << event.stream_.str() << std::endl;
+}
+
+static void on_state_event_destruction(StateEvent& event)
+{
+  if (event.has_extra())
+    *tracing_files.at(event.get_container()) << event.stream_.str() << std::endl;
 }
 
 static void on_type_creation(Type& type, e_event_type event_type)
@@ -370,6 +384,8 @@ static void on_simulation_start()
     EntityValue::on_creation.connect(on_entity_value_creation);
     Type::on_creation.connect(on_type_creation);
     LinkType::on_creation.connect(on_link_type_creation);
+    PajeEvent::on_creation.connect(on_event_creation);
+    PajeEvent::on_destruction.connect(on_event_destruction);
 
     paje::dump_generator_version();
 
@@ -385,6 +401,7 @@ static void on_simulation_start()
     trace_format = TraceFormat::Ti;
     Container::on_creation.connect(on_container_creation_ti);
     Container::on_destruction.connect(on_container_destruction_ti);
+    StateEvent::on_destruction.connect(on_state_event_destruction);
   }
 
   trace_active = true;

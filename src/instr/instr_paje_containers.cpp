@@ -91,6 +91,10 @@ Container::~Container()
   // remove me from the allContainers data structure
   allContainers.erase(name_);
 
+  // obligation to dump previous events because they might reference the container that is about to be destroyed
+  last_timestamp_to_dump = SIMIX_get_clock();
+  dump_buffer(true);
+
   on_destruction(*this);
 }
 
