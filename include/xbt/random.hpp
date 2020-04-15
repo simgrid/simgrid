@@ -7,7 +7,10 @@
 #define SIMGRID_XBT_RANDOM_HPP
 
 #include "xbt/base.h"
+#include <fstream>
+#include <iostream>
 #include <random>
+#include <string>
 
 namespace simgrid {
 namespace xbt {
@@ -33,6 +36,24 @@ public:
    * @brief Sets the seed of the Mersenne-Twister RNG
    */
   void set_seed(int seed) { mt19937_gen.seed(seed); }
+
+  /**
+   * @brief Read the state of the Mersenne-Twister RNG from a file
+   */
+  void read_state(std::string filename)
+  {
+    std::ifstream file(filename);
+    file >> mt19937_gen;
+  }
+
+  /**
+   * @brief Write the state of the Mersenne-Twister RNG to a file
+   */
+  void write_state(std::string filename)
+  {
+    std::ofstream file(filename);
+    file << mt19937_gen;
+  }
 
   /**
    * @brief Draws an integer number uniformly in range [min, max] (min and max included)
@@ -110,6 +131,16 @@ void set_implem_std();
  * @brief Sets the seed of the Mersenne-Twister RNG
  */
 void set_mersenne_seed(int);
+
+/**
+ * @brief Read the state of the Mersenne-Twister RNG from a file
+ */
+void read_mersenne_state(std::string filename);
+
+/**
+ * @brief Write the state of the Mersenne-Twister RNG to a file
+ */
+void write_mersenne_state(std::string filename);
 
 /**
  * @brief Draws an integer number uniformly in range [min, max] (min and max included)

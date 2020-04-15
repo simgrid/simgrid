@@ -7,6 +7,7 @@
 #include "xbt/asserts.h"
 #include <limits>
 #include <memory>
+#include <string>
 
 namespace simgrid {
 namespace xbt {
@@ -90,6 +91,16 @@ void set_implem_std()
 void set_mersenne_seed(int seed)
 {
   default_random->set_seed(seed);
+}
+
+void read_mersenne_state(std::string filename)
+{
+  default_random->read_state(filename);
+}
+
+void write_mersenne_state(std::string filename)
+{
+  default_random->write_state(filename);
 }
 
 int uniform_int(int min, int max)
