@@ -40,4 +40,18 @@ TEST_CASE("xbt::random: Random Number Generation")
     REQUIRE_THAT(simgrid::xbt::random::uniform_real(0, 1), EpsilonApprox(distC(gen)));
     REQUIRE_THAT(simgrid::xbt::random::normal(0, 2), EpsilonApprox(distD(gen)));
   }
+
+  SECTION("XBT_RNG_std write to a file")
+  {
+    simgrid::xbt::random::set_implem_std();
+    simgrid::xbt::random::set_mersenne_seed(12345);
+
+    simgrid::xbt::random::exponential(25);
+    simgrid::xbt::random::write_mersenne_state("rdm_state_tmp.txt");
+    double resB = simgrid::xbt::random::uniform_real(10, 20);
+    double resC = simgrid::xbt::random::normal(0, 2);
+    simgrid::xbt::random::read_mersenne_state("rdm_state_tmp.txt");
+    REQUIRE_THAT(simgrid::xbt::random::uniform_real(10, 20), EpsilonApprox(resB));
+    REQUIRE_THAT(simgrid::xbt::random::normal(0, 2), EpsilonApprox(resC));
+  }
 }
