@@ -29,6 +29,6 @@ public:
   bool destinationFound() const;
   void addBucket(const kademlia::Bucket* bucket);
 };
-}
+} // namespace kademlia
 
 #endif

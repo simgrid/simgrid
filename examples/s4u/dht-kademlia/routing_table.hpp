@@ -16,7 +16,7 @@ namespace kademlia {
 class Bucket {
   unsigned int id_; // bucket id
 public:
-  std::deque<unsigned int> nodes; // Nodes in the bucket.
+  std::deque<unsigned int> nodes_; // Nodes in the bucket.
   unsigned int getId() const { return id_; }
   explicit Bucket(unsigned int id) noexcept : id_(id) {}
 };
@@ -24,15 +24,16 @@ public:
 /* Node routing table */
 class RoutingTable {
   unsigned int id_; // node id of the client's routing table
+  std::vector<Bucket> buckets_; // Node bucket list
 public:
-  std::vector<Bucket> buckets; // Node bucket list - 160 sized.
   explicit RoutingTable(unsigned int node_id);
   RoutingTable(const RoutingTable&) = delete;
   RoutingTable& operator=(const RoutingTable&) = delete;
   void print() const;
   Bucket* findBucket(unsigned int id);
+  const Bucket& getBucketAt(unsigned int pos) const { return buckets_[pos]; }
   bool contains(unsigned int node_id);
 };
-}
+} // namespace kademlia
 
 #endif

@@ -21,11 +21,14 @@ class Type {
   std::string name_;
   std::string color_;
   Type* father_;
+  std::map<std::string, std::unique_ptr<Type>> children_;
+  Container* issuer_ = nullptr;
+
+protected:
+  Container* get_issuer() const { return issuer_; }
 
 public:
   static xbt::signal<void(Type&, e_event_type event_type)> on_creation;
-  std::map<std::string, std::unique_ptr<Type>> children_;
-  Container* issuer_ = nullptr;
 
   Type(e_event_type event_type, const std::string& name, const std::string& alias, const std::string& color,
        Type* father);
@@ -36,6 +39,7 @@ public:
   const char* get_cname() { return name_.c_str(); }
   const std::string& get_color() const { return color_; }
   Type* get_father() const { return father_; }
+  const std::map<std::string, std::unique_ptr<Type>>& get_children() { return children_; }
   bool is_colored() { return not color_.empty(); }
 
   Type* by_name(const std::string& name);

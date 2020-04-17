@@ -96,10 +96,10 @@ DiskS19Action::DiskS19Action(Model* model, double cost, bool failed, DiskImpl* d
   model->get_maxmin_system()->expand(disk->get_constraint(), get_variable(), 1.0);
   switch (type) {
     case s4u::Io::OpType::READ:
-      model->get_maxmin_system()->expand(disk->constraint_read_, get_variable(), 1.0);
+      model->get_maxmin_system()->expand(disk->get_read_constraint(), get_variable(), 1.0);
       break;
     case s4u::Io::OpType::WRITE:
-      model->get_maxmin_system()->expand(disk->constraint_write_, get_variable(), 1.0);
+      model->get_maxmin_system()->expand(disk->get_write_constraint(), get_variable(), 1.0);
       break;
     default:
       THROW_UNIMPLEMENTED;

@@ -122,19 +122,19 @@ void Node::routingTableUpdate(unsigned int id)
   Bucket* bucket = table.findBucket(id);
 
   // check if the id is already in the bucket.
-  auto id_pos = std::find(bucket->nodes.begin(), bucket->nodes.end(), id);
+  auto id_pos = std::find(bucket->nodes_.begin(), bucket->nodes_.end(), id);
 
-  if (id_pos == bucket->nodes.end()) {
+  if (id_pos == bucket->nodes_.end()) {
     /* We check if the bucket is full or not. If it is, we evict an old element */
-    if (bucket->nodes.size() >= BUCKET_SIZE) {
-      bucket->nodes.pop_back();
+    if (bucket->nodes_.size() >= BUCKET_SIZE) {
+      bucket->nodes_.pop_back();
     }
-    bucket->nodes.push_front(id);
+    bucket->nodes_.push_front(id);
     XBT_VERB("I'm adding to my routing table %08x", id);
   } else {
     // We push the element to the front
-    bucket->nodes.erase(id_pos);
-    bucket->nodes.push_front(id);
+    bucket->nodes_.erase(id_pos);
+    bucket->nodes_.push_front(id);
     XBT_VERB("I'm updating %08x", id);
   }
 }
@@ -159,12 +159,12 @@ Answer* Node::findClosest(unsigned int destination_id)
   for (int i = 1; answer->getSize() < BUCKET_SIZE && ((bucket_id - i > 0) || (bucket_id + i < IDENTIFIER_SIZE)); i++) {
     /* We check the previous buckets */
     if (bucket_id - i >= 0) {
-      const Bucket* bucket_p = &table.buckets[bucket_id - i];
+      const Bucket* bucket_p = &table.getBucketAt(bucket_id - i);
       answer->addBucket(bucket_p);
     }
     /* We check the next buckets */
     if (bucket_id + i <= IDENTIFIER_SIZE) {
-      const Bucket* bucket_n = &table.buckets[bucket_id + i];
+      const Bucket* bucket_n = &table.getBucketAt(bucket_id + i);
       answer->addBucket(bucket_n);
     }
   }
@@ -280,7 +280,12 @@ void Node::handleFindNode(const Message* msg)
   // Sending the answer
   msg->answer_to_->put_init(answer, 1)->detach(kademlia::destroy);
 }
+
+void Node::displaySuccessRate()
+{
+  XBT_INFO("%u/%u FIND_NODE have succeeded", find_node_success, find_node_success + find_node_failed);
 }
+} // namespace kademlia
 /**@brief Returns an identifier which is in a specific bucket of a routing table
  * @param id id of the routing table owner
  * @param prefix id of the bucket where we want that identifier to be

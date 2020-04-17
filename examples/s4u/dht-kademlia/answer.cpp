@@ -65,9 +65,9 @@ void Answer::addBucket(const Bucket* bucket)
 {
   xbt_assert((bucket != nullptr), "Provided a NULL bucket");
 
-  for (auto const& id : bucket->nodes) {
+  for (auto const& id : bucket->nodes_) {
     unsigned int distance = id ^ destination_id_;
     nodes_.push_back(std::pair<unsigned int, unsigned int>(id, distance));
   }
 }
-}
+} // namespace kademlia

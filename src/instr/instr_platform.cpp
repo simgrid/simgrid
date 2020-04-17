@@ -161,7 +161,7 @@ static void recursiveNewVariableType(const std::string& new_typename, const std:
   if (root->get_name() == "LINK")
     root->by_name_or_create(std::string("b") + new_typename, color);
 
-  for (auto const& elm : root->children_) {
+  for (auto const& elm : root->get_children()) {
     recursiveNewVariableType(new_typename, color, elm.second.get());
   }
 }
@@ -177,7 +177,7 @@ static void recursiveNewUserVariableType(const std::string& father_type, const s
   if (root->get_name() == father_type) {
     root->by_name_or_create(new_typename, color);
   }
-  for (auto const& elm : root->children_)
+  for (auto const& elm : root->get_children())
     recursiveNewUserVariableType(father_type, new_typename, color, elm.second.get());
 }
 
@@ -193,7 +193,7 @@ static void recursiveNewUserStateType(const std::string& father_type, const std:
   if (root->get_name() == father_type)
     root->by_name_or_create<simgrid::instr::StateType>(new_typename);
 
-  for (auto const& elm : root->children_)
+  for (auto const& elm : root->get_children())
     recursiveNewUserStateType(father_type, new_typename, elm.second.get());
 }
 
@@ -208,7 +208,7 @@ static void recursiveNewValueForUserStateType(const std::string& type_name, cons
   if (root->get_name() == type_name)
     static_cast<simgrid::instr::StateType*>(root)->add_entity_value(val, color);
 
-  for (auto const& elm : root->children_)
+  for (auto const& elm : root->get_children())
     recursiveNewValueForUserStateType(type_name, val, color, elm.second.get());
 }
 

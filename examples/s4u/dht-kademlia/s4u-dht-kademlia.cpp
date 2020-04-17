@@ -75,7 +75,7 @@ static void node(int argc, char* argv[])
     XBT_INFO("I couldn't join the network :(");
   }
   XBT_DEBUG("I'm leaving the network");
-  XBT_INFO("%u/%u FIND_NODE have succeeded", node.find_node_success, node.find_node_success + node.find_node_failed);
+  node.displaySuccessRate();
 }
 
 /** @brief Main function */

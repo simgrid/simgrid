@@ -16,11 +16,11 @@ namespace kademlia {
 class Node {
   unsigned int id_;              // node id - 160 bits
   RoutingTable table;            // node routing table
+  unsigned int find_node_success = 0; // Number of find_node which have succeeded.
+  unsigned int find_node_failed  = 0; // Number of find_node which have failed.
 public:
   simgrid::s4u::CommPtr receive_comm = nullptr;
   void* received_msg             = nullptr;
-  unsigned int find_node_success = 0; // Number of find_node which have succeeded.
-  unsigned int find_node_failed  = 0; // Number of find_node which have failed.
   explicit Node(unsigned int node_id) : id_(node_id), table(node_id) {}
   Node(const Node&) = delete;
   Node& operator=(const Node&) = delete;
@@ -34,8 +34,9 @@ public:
   bool findNode(unsigned int id_to_find, bool count_in_stats);
   void randomLookup();
   void handleFindNode(const Message* msg);
+  void displaySuccessRate();
 };
-}
+} // namespace kademlia
 // identifier functions
 unsigned int get_id_in_prefix(unsigned int id, unsigned int prefix);
 unsigned int get_node_prefix(unsigned int id, unsigned int nb_bits);

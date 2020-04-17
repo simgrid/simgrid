@@ -12,7 +12,7 @@
 namespace kademlia {
 class Answer;
 class Message;
-}
+} // namespace kademlia
 
 constexpr double FIND_NODE_TIMEOUT        = 10.0;
 constexpr double FIND_NODE_GLOBAL_TIMEOUT = 50.0;

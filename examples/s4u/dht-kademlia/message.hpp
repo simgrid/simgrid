@@ -38,5 +38,5 @@ public:
   Message(const Message&) = delete;
   Message& operator=(const Message&) = delete;
 };
-}
+} // namespace kademlia
 #endif

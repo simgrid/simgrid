@@ -31,17 +31,17 @@ Type::Type(e_event_type event_type, const std::string& name, const std::string& 
 
 void StateType::set_event(const std::string& value_name)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_SetState, get_entity_value(value_name), nullptr));
+  events_.push_back(new StateEvent(get_issuer(), this, PAJE_SetState, get_entity_value(value_name), nullptr));
 }
 
 void StateType::push_event(const std::string& value_name, TIData* extra)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, get_entity_value(value_name), extra));
+  events_.push_back(new StateEvent(get_issuer(), this, PAJE_PushState, get_entity_value(value_name), extra));
 }
 
 void StateType::push_event(const std::string& value_name)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, get_entity_value(value_name), nullptr));
+  events_.push_back(new StateEvent(get_issuer(), this, PAJE_PushState, get_entity_value(value_name), nullptr));
 }
 
 void StateType::pop_event()
@@ -51,7 +51,7 @@ void StateType::pop_event()
 
 void StateType::pop_event(TIData* extra)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, extra));
+  events_.push_back(new StateEvent(get_issuer(), this, PAJE_PopState, nullptr, extra));
 }
 
 void VariableType::instr_event(double now, double delta, const char* resource, double value)
@@ -76,17 +76,17 @@ void VariableType::instr_event(double now, double delta, const char* resource, d
 
 void VariableType::set_event(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_SetVariable, value));
+  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PAJE_SetVariable, value));
 }
 
 void VariableType::add_event(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_AddVariable, value));
+  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PAJE_AddVariable, value));
 }
 
 void VariableType::sub_event(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_SubVariable, value));
+  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PAJE_SubVariable, value));
 }
 
 void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key)
@@ -96,12 +96,12 @@ void LinkType::start_event(Container* startContainer, const std::string& value, 
 
 void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key, int size)
 {
-  new LinkEvent(issuer_, this, PAJE_StartLink, startContainer, value, key, size);
+  new LinkEvent(get_issuer(), this, PAJE_StartLink, startContainer, value, key, size);
 }
 
 void LinkType::end_event(Container* endContainer, const std::string& value, const std::string& key)
 {
-  new LinkEvent(issuer_, this, PAJE_EndLink, endContainer, value, key, -1);
+  new LinkEvent(get_issuer(), this, PAJE_EndLink, endContainer, value, key, -1);
 }
 
 Type* Type::by_name(const std::string& name)
