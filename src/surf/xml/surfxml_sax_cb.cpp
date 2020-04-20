@@ -1001,7 +1001,7 @@ void surf_parse_open(const std::string& file)
 
   surf_file_to_parse = surf_fopen(file, "r");
   if (surf_file_to_parse == nullptr)
-    throw std::invalid_argument(std::string("Unable to open ')") + file + "' from '" + simgrid::xbt::Path().get_name() +
+    throw std::invalid_argument(std::string("Unable to open '") + file + "' from '" + simgrid::xbt::Path().get_name() +
                                 "'. Does this file exist?");
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse__switch_to_buffer(surf_input_buffer);
