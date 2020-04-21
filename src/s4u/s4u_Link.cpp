@@ -55,9 +55,19 @@ double Link::get_latency() const
   return this->pimpl_->get_latency();
 }
 
+void Link::set_latency(double value)
+{
+  kernel::actor::simcall([this, value] { pimpl_->set_latency(value); });
+}
+
 double Link::get_bandwidth() const
 {
   return this->pimpl_->get_bandwidth();
+}
+
+void Link::set_bandwidth(double value)
+{
+  kernel::actor::simcall([this, value] { pimpl_->set_bandwidth(value); });
 }
 
 Link::SharingPolicy Link::get_sharing_policy() const
@@ -127,9 +137,19 @@ double sg_link_bandwidth(const_sg_link_t link)
 {
   return link->get_bandwidth();
 }
+
+void sg_link_bandwidth_set(sg_link_t link, double value)
+{
+  return link->set_bandwidth(value);
+}
+
 double sg_link_latency(const_sg_link_t link)
 {
   return link->get_latency();
+}
+void sg_link_latency_set(sg_link_t link, double value)
+{
+  return link->set_latency(value);
 }
 void* sg_link_data(const_sg_link_t link)
 {

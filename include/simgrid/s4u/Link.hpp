@@ -54,9 +54,11 @@ public:
 
   /** @brief Get the bandwidth in bytes per second of current Link */
   double get_bandwidth() const;
+  void set_bandwidth(double value);
 
   /** @brief Get the latency in seconds of current Link */
   double get_latency() const;
+  void set_latency(double value);
 
   /** @brief Describes how the link is shared between flows */
   SharingPolicy get_sharing_policy() const;
