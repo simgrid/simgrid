@@ -388,7 +388,6 @@ static void on_actor_creation(s4u::Actor const& actor)
   state->add_entity_value("send", "0 0 1");
   state->add_entity_value("execute", "0 1 1");
   root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
-  root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
 
   actor.on_exit([container_name](bool failed) {
     if (failed)

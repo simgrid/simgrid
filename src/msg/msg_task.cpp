@@ -105,7 +105,7 @@ s4u::CommPtr Task::send_async(const std::string& alias, void_f_pvoid_t cleanup, 
   if (TRACE_actor_is_enabled()) {
     container_t process_container = instr::Container::by_name(instr_pid(*MSG_process_self()));
     std::string key               = std::string("p") + std::to_string(get_id());
-    instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->start_event(process_container, "SR", key);
+    instr::Container::get_root()->get_link("ACTOR_LINK")->start_event(process_container, "SR", key);
   }
 
   /* Prepare the task to send */
@@ -576,7 +576,7 @@ msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t* task, const char* 
     container_t process_container = simgrid::instr::Container::by_name(instr_pid(*MSG_process_self()));
 
     std::string key = std::string("p") + std::to_string((*task)->get_id());
-    simgrid::instr::Container::get_root()->get_link("ACTOR_TASK_LINK")->end_event(process_container, "SR", key);
+    simgrid::instr::Container::get_root()->get_link("ACTOR_LINK")->end_event(process_container, "SR", key);
   }
   return ret;
 }
