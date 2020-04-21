@@ -339,13 +339,6 @@ static void on_host_creation(s4u::Host const& host)
   }
 }
 
-static void on_host_speed_change(s4u::Host const& host)
-{
-  Container::by_name(host.get_name())
-      ->get_variable("speed")
-      ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
-}
-
 static void on_action_state_change(kernel::resource::Action const& action,
                                    kernel::resource::Action::State /* previous */)
 {
@@ -369,19 +362,6 @@ static void on_action_state_change(kernel::resource::Action const& action,
   }
 }
 
-static void on_link_bandwidth_change(s4u::Link const& link)
-{
-  Container::by_name(link.get_name())
-      ->get_variable("bandwidth")
-      ->set_event(surf_get_clock(), sg_bandwidth_factor * link.get_bandwidth());
-}
-
-static void on_netpoint_creation(kernel::routing::NetPoint const& netpoint)
-{
-  if (netpoint.is_router())
-    new RouterContainer(netpoint.get_name(), currentContainer.back());
-}
-
 static void on_platform_created()
 {
   currentContainer.clear();
@@ -395,10 +375,11 @@ static void on_platform_created()
 
 static void on_actor_creation(s4u::Actor const& actor)
 {
-  const Container* root = Container::get_root();
-  Container* container  = Container::by_name(actor.get_host()->get_name());
+  const Container* root      = Container::get_root();
+  Container* container       = Container::by_name(actor.get_host()->get_name());
+  std::string container_name = instr_pid(actor);
 
-  container->create_child(instr_pid(actor), "ACTOR");
+  container->create_child(container_name, "ACTOR");
   ContainerType* actor_type = container->type_->by_name_or_create<ContainerType>("ACTOR");
   StateType* state          = actor_type->by_name_or_create<StateType>("ACTOR_STATE");
   state->add_entity_value("suspend", "1 0 1");
@@ -409,7 +390,6 @@ static void on_actor_creation(s4u::Actor const& actor)
   root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
   root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
 
-  std::string container_name = instr_pid(actor);
   actor.on_exit([container_name](bool failed) {
     if (failed)
       // kill means that this actor no longer exists, let's destroy it
@@ -456,12 +436,24 @@ void define_callbacks()
   if (TRACE_needs_platform()) {
     s4u::Engine::on_platform_created.connect(on_platform_created);
     s4u::Host::on_creation.connect(on_host_creation);
-    s4u::Host::on_speed_change.connect(on_host_speed_change);
+    s4u::Host::on_speed_change.connect([](s4u::Host const& host) {
+      Container::by_name(host.get_name())
+          ->get_variable("speed")
+          ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
+    });
     s4u::Link::on_creation.connect(on_link_creation);
-    s4u::Link::on_bandwidth_change.connect(on_link_bandwidth_change);
+    s4u::Link::on_bandwidth_change.connect([](s4u::Link const& link) {
+      Container::by_name(link.get_name())
+          ->get_variable("bandwidth")
+          ->set_event(surf_get_clock(), sg_bandwidth_factor * link.get_bandwidth());
+    });
     s4u::NetZone::on_seal.connect([](s4u::NetZone const& /*netzone*/) { currentContainer.pop_back(); });
-    kernel::routing::NetPoint::on_creation.connect(on_netpoint_creation);
+    kernel::routing::NetPoint::on_creation.connect([](kernel::routing::NetPoint const& netpoint) {
+      if (netpoint.is_router())
+        new RouterContainer(netpoint.get_name(), currentContainer.back());
+    });
   }
+
   s4u::NetZone::on_creation.connect(on_netzone_creation);
 
   kernel::resource::CpuAction::on_state_change.connect(on_action_state_change);
