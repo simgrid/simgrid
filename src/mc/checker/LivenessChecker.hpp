@@ -22,7 +22,7 @@ class XBT_PRIVATE Pair {
 public:
   int num = 0;
   bool search_cycle = false;
-  std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
+  std::shared_ptr<State> graph_state    = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
   std::shared_ptr<const std::vector<int>> atomic_propositions;
   int requests = 0;
@@ -40,16 +40,14 @@ class XBT_PRIVATE VisitedPair {
 public:
   int num;
   int other_num = 0; /* Dot output for */
-  std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
+  std::shared_ptr<State> graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state;
   std::shared_ptr<const std::vector<int>> atomic_propositions;
   std::size_t heap_bytes_used = 0;
   int actors_count            = 0;
 
-  VisitedPair(
-    int pair_num, xbt_automaton_state_t automaton_state,
-    std::shared_ptr<const std::vector<int>> atomic_propositions,
-    std::shared_ptr<simgrid::mc::State> graph_state);
+  VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
+              std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> graph_state);
   ~VisitedPair() = default;
 };
 
@@ -64,8 +62,8 @@ public:
 
 private:
   std::shared_ptr<const std::vector<int>> get_proposition_values();
-  std::shared_ptr<VisitedPair> insert_acceptance_pair(simgrid::mc::Pair* pair);
-  int insert_visited_pair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair);
+  std::shared_ptr<VisitedPair> insert_acceptance_pair(Pair* pair);
+  int insert_visited_pair(std::shared_ptr<VisitedPair> visited_pair, Pair* pair);
   void show_acceptance_cycle(std::size_t depth);
   void replay();
   void remove_acceptance_pair(int pair_num);
@@ -85,7 +83,7 @@ private:
   std::string previous_request_;
 };
 
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

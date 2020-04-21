@@ -65,7 +65,8 @@ protected:
 XBT_PUBLIC Checker* createLivenessChecker(Session& session);
 XBT_PUBLIC Checker* createSafetyChecker(Session& session);
 XBT_PUBLIC Checker* createCommunicationDeterminismChecker(Session& session);
-}
-}
+
+} // namespace mc
+} // namespace simgrid
 
 #endif

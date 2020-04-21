@@ -20,8 +20,8 @@ namespace mc {
 class ActorInformation {
 public:
   /** MCed address of the process */
-  RemotePtr<simgrid::kernel::actor::ActorImpl> address{nullptr};
-  Remote<simgrid::kernel::actor::ActorImpl> copy;
+  RemotePtr<kernel::actor::ActorImpl> address{nullptr};
+  Remote<kernel::actor::ActorImpl> copy;
 
   /** Hostname (owned by `mc_modelchecker->hostnames`) */
   const char* hostname = nullptr;
@@ -105,11 +105,11 @@ public:
   void clear_bytes(RemotePtr<void> address, size_t len);
 
   // Debug information:
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info(RemotePtr<void> addr) const;
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_exec(RemotePtr<void> addr) const;
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_rw(RemotePtr<void> addr) const;
-  simgrid::mc::Frame* find_function(RemotePtr<void> ip) const;
-  const simgrid::mc::Variable* find_variable(const char* name) const;
+  std::shared_ptr<ObjectInformation> find_object_info(RemotePtr<void> addr) const;
+  std::shared_ptr<ObjectInformation> find_object_info_exec(RemotePtr<void> addr) const;
+  std::shared_ptr<ObjectInformation> find_object_info_rw(RemotePtr<void> addr) const;
+  Frame* find_function(RemotePtr<void> ip) const;
+  const Variable* find_variable(const char* name) const;
 
   // Heap access:
   xbt_mheap_t get_heap()
@@ -146,7 +146,7 @@ public:
 
   void ignore_global_variable(const char* name)
   {
-    for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : this->object_infos)
+    for (std::shared_ptr<ObjectInformation> const& info : this->object_infos)
       info->remove_global_variable(name);
   }
 
@@ -158,11 +158,11 @@ public:
   void unignore_heap(void* address, size_t size);
 
   void ignore_local_variable(const char* var_name, const char* frame_name);
-  std::vector<simgrid::mc::ActorInformation>& actors();
-  std::vector<simgrid::mc::ActorInformation>& dead_actors();
+  std::vector<ActorInformation>& actors();
+  std::vector<ActorInformation>& dead_actors();
 
   /** Get a local description of a remote SIMIX actor */
-  simgrid::mc::ActorInformation* resolve_actor_info(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> actor)
+  ActorInformation* resolve_actor_info(RemotePtr<kernel::actor::ActorImpl> actor)
   {
     xbt_assert(mc_model_checker != nullptr);
     if (not actor)
@@ -178,9 +178,9 @@ public:
   }
 
   /** Get a local copy of the SIMIX actor structure */
-  simgrid::kernel::actor::ActorImpl* resolve_actor(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> process)
+  kernel::actor::ActorImpl* resolve_actor(RemotePtr<kernel::actor::ActorImpl> process)
   {
-    simgrid::mc::ActorInformation* actor_info = this->resolve_actor_info(process);
+    ActorInformation* actor_info = this->resolve_actor_info(process);
     if (actor_info)
       return actor_info->copy.get_buffer();
     else
@@ -198,7 +198,7 @@ private:
   pid_t pid_ = -1;
   Channel channel_;
   bool running_ = false;
-  std::vector<simgrid::xbt::VmMap> memory_map_;
+  std::vector<xbt::VmMap> memory_map_;
   RemotePtr<void> maestro_stack_start_;
   RemotePtr<void> maestro_stack_end_;
   int memory_file = -1;
@@ -209,9 +209,9 @@ private:
 public:
   // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
-  std::vector<std::shared_ptr<simgrid::mc::ObjectInformation>> object_infos;
-  std::shared_ptr<simgrid::mc::ObjectInformation> libsimgrid_info;
-  std::shared_ptr<simgrid::mc::ObjectInformation> binary_info;
+  std::vector<std::shared_ptr<ObjectInformation>> object_infos;
+  std::shared_ptr<ObjectInformation> libsimgrid_info;
+  std::shared_ptr<ObjectInformation> binary_info;
 
   // Copies of MCed SMX data structures
   /** Copy of `simix_global->process_list`
@@ -278,7 +278,7 @@ public:
 /** Open a FD to a remote process memory (`/dev/$pid/mem`)
  */
 XBT_PRIVATE int open_vm(pid_t pid, int flags);
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

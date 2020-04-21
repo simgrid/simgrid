@@ -44,10 +44,10 @@ typedef std::vector<Dwarf_Op> DwarfExpression;
  */
 struct ExpressionContext {
   /** CPU state (registers) */
-  unw_cursor_t* cursor                           = nullptr;
-  void* frame_base                               = nullptr;
-  const simgrid::mc::AddressSpace* address_space = nullptr; /** Address space used to read memory */
-  simgrid::mc::ObjectInformation* object_info    = nullptr;
+  unw_cursor_t* cursor                  = nullptr;
+  void* frame_base                      = nullptr;
+  const mc::AddressSpace* address_space = nullptr; /** Address space used to read memory */
+  mc::ObjectInformation* object_info    = nullptr;
 };
 
 /** When an error happens in the execution of a DWARF expression */

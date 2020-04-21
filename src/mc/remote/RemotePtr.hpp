@@ -135,7 +135,7 @@ template <class T = void> inline RemotePtr<T> remote(uint64_t p)
 {
   return RemotePtr<T>(p);
 }
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

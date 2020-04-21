@@ -55,7 +55,7 @@ public:
 
   int get_socket() const { return socket_; }
 };
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

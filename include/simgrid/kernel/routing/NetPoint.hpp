@@ -24,7 +24,7 @@ namespace routing {
  *
  * @details This represents a position in the network. One can send information between two netpoints
  */
-class NetPoint : public simgrid::xbt::Extendable<NetPoint> {
+class NetPoint : public xbt::Extendable<NetPoint> {
 public:
   enum class Type { Host, Router, NetZone };
 
@@ -42,7 +42,7 @@ public:
   bool is_host() const { return component_type_ == Type::Host; }
   bool is_router() const { return component_type_ == Type::Router; }
 
-  static simgrid::xbt::signal<void(NetPoint&)> on_creation;
+  static xbt::signal<void(NetPoint&)> on_creation;
 
   bool operator<(const NetPoint& rhs) const { return name_ < rhs.name_; }
 

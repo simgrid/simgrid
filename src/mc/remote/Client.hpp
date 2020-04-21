@@ -51,7 +51,7 @@ public:
   static Client* initialize();
   static Client* get() { return instance_.get(); }
 };
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif
