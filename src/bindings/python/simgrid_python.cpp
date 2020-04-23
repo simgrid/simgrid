@@ -256,7 +256,13 @@ PYBIND11_MODULE(simgrid, m)
             // data.dec_ref(); // FIXME: why does it break python-actor-create?
             return data;
           },
-          py::call_guard<GilScopedRelease>(), "Blocking data reception");
+          py::call_guard<GilScopedRelease>(), "Blocking data reception")
+      .def("set_receiver",
+	 [](Mailbox* self, ActorPtr actor) {
+	   self->set_receiver(actor);
+	 },
+	 py::call_guard<GilScopedRelease>(),
+	 "Sets the actor as permanent receiver");
 
   /* Class Comm */
   py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm", "Communication")
