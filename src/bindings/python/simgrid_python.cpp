@@ -256,13 +256,7 @@ PYBIND11_MODULE(simgrid, m)
             // data.dec_ref(); // FIXME: why does it break python-actor-create?
             return data;
           },
-          py::call_guard<GilScopedRelease>(), "Blocking data reception")
-    .def("set_receiver",
-	 [](Mailbox* self, ActorPtr actor) {
-	   self->set_receiver(actor);
-	 },
-	 py::call_guard<GilScopedRelease>(),
-	 "Sets the actor as permanent receiver");
+          py::call_guard<GilScopedRelease>(), "Blocking data reception");
 
   /* Class Comm */
   py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm", "Communication")
@@ -292,16 +286,8 @@ PYBIND11_MODULE(simgrid, m)
           },
           "Amount of work remaining until completion from 0 (completely done) to 1 (nothing done "
           "yet).")
-      .def_property(
-          "host",
-          [](simgrid::s4u::ExecPtr self) {
-            simgrid::s4u::ExecSeqPtr seq = boost::dynamic_pointer_cast<simgrid::s4u::ExecSeq>(self);
-            if (seq != nullptr)
-              return seq->get_host();
-            xbt_throw_unimplemented(__FILE__, __LINE__,
-                                    "host of parallel executions is not implemented in python yet.");
-          },
-          &simgrid::s4u::Exec::set_host, "Host on which this execution runs.")
+      .def_property("host", &simgrid::s4u::Exec::get_host, &simgrid::s4u::Exec::set_host,
+                    "Host on which this execution runs. Only the first host is returned for parallel executions.")
       .def("test", &simgrid::s4u::Exec::test, py::call_guard<GilScopedRelease>(),
            "Test whether the execution is terminated.")
       .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<GilScopedRelease>(), "Cancel that execution.")
