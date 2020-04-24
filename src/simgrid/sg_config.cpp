@@ -342,11 +342,6 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::declare_flag<int>("contexts/nthreads", "Number of parallel threads used to execute user contexts", 1,
                                      &SIMIX_context_set_nthreads);
 
-  simgrid::config::declare_flag<int>("contexts/parallel-threshold",
-                                     "Minimal number of user contexts to be run in parallel (raw contexts only)", 2,
-                                     &SIMIX_context_set_parallel_threshold);
-  simgrid::config::alias("contexts/parallel-threshold", {"contexts/parallel_threshold"});
-
   /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H
   std::string default_synchro_mode = "futex";

@@ -27,6 +27,9 @@ C interface:
  - Many MSG tests were converted to the new S4U's interface in C, that
    was extended for that.
 
+Simix:
+ - Remove obsolete option --cfg=contexts/parallel-threshold.
+
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
  - FG#41: Add sg_actor_create C interface
@@ -562,7 +565,7 @@ Plugins:
  - Rename Energy plugin into host_energy
  - Rename Load plugin into host_load
 
-simix:
+Simix:
  - Add parameter --cfg=simix/breakpoint to raise a SIGTRAP at given time.
  - kill simix::onDeadlock() that was somewhat dupplicating s4u::on_deadlock()
  - Improve performance when handling timeouts of simix synchros.

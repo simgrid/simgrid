@@ -29,8 +29,6 @@ XBT_PUBLIC smx_actor_t SIMIX_process_from_PID(aid_t PID);
 XBT_PUBLIC int SIMIX_context_is_parallel();
 XBT_PUBLIC int SIMIX_context_get_nthreads();
 XBT_PUBLIC void SIMIX_context_set_nthreads(int nb_threads);
-XBT_PUBLIC int SIMIX_context_get_parallel_threshold();
-XBT_PUBLIC void SIMIX_context_set_parallel_threshold(int threshold);
 XBT_PUBLIC e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode();
 XBT_PUBLIC void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
 XBT_PUBLIC int SIMIX_is_maestro();

@@ -87,7 +87,6 @@ Existing Configuration Items
 - **contexts/factory:** :ref:`cfg=contexts/factory`
 - **contexts/guard-size:** :ref:`cfg=contexts/guard-size`
 - **contexts/nthreads:** :ref:`cfg=contexts/nthreads`
-- **contexts/parallel-threshold:** :ref:`cfg=contexts/parallel-threshold`
 - **contexts/stack-size:** :ref:`cfg=contexts/stack-size`
 - **contexts/synchro:** :ref:`cfg=contexts/synchro`
 
@@ -832,7 +831,6 @@ on other parts of the memory if their size is too small for the
 application.
 
 .. _cfg=contexts/nthreads:
-.. _cfg=contexts/parallel-threshold:
 .. _cfg=contexts/synchro:
 
 Running User Code in Parallel
@@ -849,17 +847,6 @@ launched, each of them handling the same number of user contexts at each
 run. To activate this, set the ``contexts/nthreads`` item to the amount
 of cores that you have in your computer (or lower than 1 to have the
 amount of cores auto-detected).
-
-Even if you asked several worker threads using the previous option,
-you can request to start the parallel execution (and pay the
-associated synchronization costs) only if the potential parallelism is
-large enough. For that, set the ``contexts/parallel-threshold``
-item to the minimal amount of user contexts needed to start the
-parallel execution. In any given simulation round, if that amount is
-not reached, the contexts will be run sequentially directly by the
-main thread (thus saving the synchronization costs). Note that this
-option is mainly useful when the grain of the user code is very fine,
-because our synchronization is now very efficient.
 
 When parallel execution is activated, you can choose the
 synchronization schema used with the ``contexts/synchro`` item,

@@ -50,7 +50,6 @@ static simgrid::config::Flag<std::string> context_factory_name(
 unsigned smx_context_stack_size;
 unsigned smx_context_guard_size;
 static int smx_parallel_contexts = 1;
-static int smx_parallel_threshold = 2;
 static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
 
 /**
@@ -149,32 +148,6 @@ void SIMIX_context_set_nthreads(int nb_threads) {
     XBT_INFO("Auto-setting contexts/nthreads to %d", nb_threads);
   }
   smx_parallel_contexts = nb_threads;
-}
-
-/**
- * @brief Returns the threshold above which user processes are run in parallel.
- *
- * If the number of threads is set to 1, there is no parallelism and this
- * threshold has no effect.
- *
- * @return when the number of user processes ready to run is above
- * this threshold, they are run in parallel
- */
-int SIMIX_context_get_parallel_threshold() {
-  return smx_parallel_threshold;
-}
-
-/**
- * @brief Sets the threshold above which user processes are run in parallel.
- *
- * If the number of threads is set to 1, there is no parallelism and this
- * threshold has no effect.
- *
- * @param threshold when the number of user processes ready to run is above
- * this threshold, they are run in parallel
- */
-void SIMIX_context_set_parallel_threshold(int threshold) {
-  smx_parallel_threshold = threshold;
 }
 
 /**
