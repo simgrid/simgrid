@@ -14,8 +14,6 @@
 XBT_PRIVATE container_t smpi_container(int rank);
 XBT_PRIVATE void TRACE_smpi_setup_container(int rank, const_sg_host_t host);
 
-XBT_PRIVATE void TRACE_smpi_computing_out(int rank);
-XBT_PRIVATE void TRACE_smpi_computing_in(int rank, double amount);
 XBT_PRIVATE void TRACE_smpi_sleeping_out(int rank);
 XBT_PRIVATE void TRACE_smpi_sleeping_in(int rank, double duration);
 XBT_PRIVATE void TRACE_smpi_comm_in(int rank, const char* operation, simgrid::instr::TIData* extra);

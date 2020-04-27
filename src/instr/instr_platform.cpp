@@ -492,6 +492,17 @@ void define_callbacks()
     s4u::Actor::on_host_change.connect(on_actor_host_change);
   }
 
+  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing()) {
+    s4u::Exec::on_start.connect([](simgrid::s4u::Actor const& actor, s4u::Exec const& exec) {
+      Container::by_name(std::string("rank-") + std::to_string(actor.get_pid()))
+          ->get_state("MPI_STATE")
+          ->push_event("computing", new CpuTIData("compute", exec.get_cost()));
+    });
+    s4u::Exec::on_completion.connect([](s4u::Actor const& actor, s4u::Exec const&) {
+      Container::by_name(std::string("rank-") + std::to_string(actor.get_pid()))->get_state("MPI_STATE")->pop_event();
+    });
+  }
+
   if (TRACE_vm_is_enabled()) {
     s4u::Host::on_creation.connect(on_vm_creation);
     s4u::VirtualMachine::on_start.connect([](s4u::VirtualMachine const& vm) {

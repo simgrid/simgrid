@@ -180,20 +180,6 @@ void TRACE_smpi_init(int rank, std::string calling_func)
 #endif
 }
 
-void TRACE_smpi_computing_in(int rank, double amount)
-{
-  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing())
-    smpi_container(rank)
-        ->get_state("MPI_STATE")
-        ->push_event("computing", new simgrid::instr::CpuTIData("compute", amount));
-}
-
-void TRACE_smpi_computing_out(int rank)
-{
-  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing())
-    smpi_container(rank)->get_state("MPI_STATE")->pop_event();
-}
-
 void TRACE_smpi_sleeping_in(int rank, double duration)
 {
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())

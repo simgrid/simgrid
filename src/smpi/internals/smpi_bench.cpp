@@ -47,27 +47,16 @@ void private_execute_flops(double flops) {
   smpi_switch_data_segment(simgrid::s4u::Actor::self());
 }
 
-void smpi_execute_flops(double flops) {
-  int rank     = simgrid::s4u::this_actor::get_pid();
-  TRACE_smpi_computing_in(rank, flops);
-
+void smpi_execute_flops(double flops)
+{
   private_execute_flops(flops);
-
-  TRACE_smpi_computing_out(rank);
 }
 
 void smpi_execute(double duration)
 {
   if (duration >= smpi_cfg_cpu_thresh()) {
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
-    double flops = duration * smpi_cfg_host_speed();
-    int rank     = simgrid::s4u::this_actor::get_pid();
-    TRACE_smpi_computing_in(rank, flops);
-
-    private_execute_flops(flops);
-
-    TRACE_smpi_computing_out(rank);
-
+    private_execute_flops(duration * smpi_cfg_host_speed());
   } else {
     XBT_DEBUG("Real computation took %g while option smpi/cpu-threshold is set to %g => ignore it", duration,
               smpi_cfg_cpu_thresh());
