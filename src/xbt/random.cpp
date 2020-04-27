@@ -36,7 +36,7 @@ bool Random::write_state(std::string filename)
   std::ofstream file(filename);
   if (file) {
     file << mt19937_gen;
-    return false;
+    return true;
   } else {
     XBT_WARN("Could not open %s and thus not read the RNG state.", filename.c_str());
     return false;
