@@ -642,5 +642,5 @@ void smpi_mpi_init() {
 }
 
 void SMPI_thread_create() {
-  TRACE_smpi_init(simgrid::s4u::this_actor::get_pid());
+  TRACE_smpi_init(simgrid::s4u::this_actor::get_pid(), __func__);
 }

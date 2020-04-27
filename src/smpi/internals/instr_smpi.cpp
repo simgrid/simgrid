@@ -146,7 +146,7 @@ void TRACE_smpi_setup_container(int rank, const_sg_host_t host)
   father->create_child(std::string("rank-") + std::to_string(rank), "MPI"); // This container is of type MPI
 }
 
-void TRACE_smpi_init(int rank)
+void TRACE_smpi_init(int rank, std::string calling_func)
 {
   if (not TRACE_smpi_is_enabled())
     return;
@@ -155,6 +155,17 @@ void TRACE_smpi_init(int rank)
 
   TRACE_smpi_setup_container(rank, sg_host_self());
   simgrid::s4u::this_actor::on_exit([self](bool) { smpi_container(self->get_pid())->remove_from_parent(); });
+
+  simgrid::instr::StateType* state = smpi_container(rank)->get_state("MPI_STATE");
+
+  state->add_entity_value(calling_func, instr_find_color(calling_func.c_str()));
+  state->push_event(calling_func, new simgrid::instr::NoOpTIData("init"));
+  state->pop_event();
+  if (TRACE_smpi_is_computing())
+    state->add_entity_value("computing", instr_find_color("computing"));
+  if (TRACE_smpi_is_sleeping())
+    state->add_entity_value("sleeping", instr_find_color("sleeping"));
+
 #if HAVE_PAPI
   const simgrid::instr::Container* container = smpi_container(rank);
   papi_counter_t counters = smpi_process()->papi_counters();
@@ -167,20 +178,6 @@ void TRACE_smpi_init(int rank)
     container->type_->by_name_or_create(it.first, "");
   }
 #endif
-}
-
-void TRACE_smpi_computing_init(int rank)
-{
- //first use, initialize the color in the trace
- if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing())
-   smpi_container(rank)->get_state("MPI_STATE")->add_entity_value("computing", instr_find_color("computing"));
-}
-
-void TRACE_smpi_sleeping_init(int rank)
-{
- //first use, initialize the color in the trace
- if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
-   smpi_container(rank)->get_state("MPI_STATE")->add_entity_value("sleeping", instr_find_color("sleeping"));
 }
 
 void TRACE_smpi_computing_in(int rank, double amount)

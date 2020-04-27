@@ -773,10 +773,7 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
 
   int my_proc_id = simgrid::s4u::this_actor::get_pid();
 
-  TRACE_smpi_init(my_proc_id);
-  TRACE_smpi_computing_init(my_proc_id);
-  TRACE_smpi_comm_in(my_proc_id, "smpi_replay_run_init", new simgrid::instr::NoOpTIData("init"));
-  TRACE_smpi_comm_out(my_proc_id);
+  TRACE_smpi_init(my_proc_id, "smpi_replay_run_init");
   xbt_replay_action_register("init", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::InitAction().execute(action); });
   xbt_replay_action_register("finalize", [](simgrid::xbt::ReplayAction const&) { /* nothing to do */ });
   xbt_replay_action_register("comm_size", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });
