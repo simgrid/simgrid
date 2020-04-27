@@ -47,11 +47,16 @@ TEST_CASE("xbt::random: Random Number Generation")
     simgrid::xbt::random::set_mersenne_seed(12345);
 
     simgrid::xbt::random::exponential(25);
-    simgrid::xbt::random::write_mersenne_state("rdm_state_tmp.txt");
+    bool writtenA = simgrid::xbt::random::write_mersenne_state("rdm_state_tmp.txt");
     double resB = simgrid::xbt::random::uniform_real(10, 20);
     double resC = simgrid::xbt::random::normal(0, 2);
-    simgrid::xbt::random::read_mersenne_state("rdm_state_tmp.txt");
+    bool writtenB = simgrid::xbt::random::read_mersenne_state("rdm_state_tmp.txt");
+    REQUIRE(writtenA);
+    REQUIRE(writtenB);
     REQUIRE_THAT(simgrid::xbt::random::uniform_real(10, 20), EpsilonApprox(resB));
     REQUIRE_THAT(simgrid::xbt::random::normal(0, 2), EpsilonApprox(resC));
+    if (writtenB) {
+      std::remove("rdm_state_tmp.txt");
+    }
   }
 }
