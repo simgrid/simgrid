@@ -22,25 +22,21 @@ namespace random {
 bool Random::read_state(std::string filename)
 {
   std::ifstream file(filename);
-  if (file) {
-    file >> mt19937_gen;
-    return true;
-  } else {
-    XBT_WARN("Could not open %s and thus not save the RNG state.", filename.c_str());
-    return false;
-  }
+  file >> mt19937_gen;
+  file.close();
+  if (file.fail())
+    XBT_WARN("Could not save the RNG state to file %s.", filename.c_str());
+  return not file.fail();
 }
 
 bool Random::write_state(std::string filename)
 {
   std::ofstream file(filename);
-  if (file) {
-    file << mt19937_gen;
-    return true;
-  } else {
-    XBT_WARN("Could not open %s and thus not read the RNG state.", filename.c_str());
-    return false;
-  }
+  file << mt19937_gen;
+  file.close();
+  if (file.fail())
+    XBT_WARN("Could not read the RNG state from file %s.", filename.c_str());
+  return not file.fail();
 }
 
 int StdRandom::uniform_int(int min, int max)
