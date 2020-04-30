@@ -40,12 +40,12 @@ public:
   /**
    * @brief Read the state of the Mersenne-Twister RNG from a file
    */
-  bool read_state(std::string filename);
+  bool read_state(const std::string& filename);
 
   /**
    * @brief Write the state of the Mersenne-Twister RNG to a file
    */
-  bool write_state(std::string filename);
+  bool write_state(const std::string& filename);
 
   /**
    * @brief Draws an integer number uniformly in range [min, max] (min and max included)
@@ -127,12 +127,12 @@ void set_mersenne_seed(int);
 /**
  * @brief Read the state of the Mersenne-Twister RNG from a file.
  */
-bool read_mersenne_state(std::string filename);
+bool read_mersenne_state(const std::string& filename);
 
 /**
  * @brief Write the state of the Mersenne-Twister RNG to a file.
  */
-bool write_mersenne_state(std::string filename);
+bool write_mersenne_state(const std::string& filename);
 
 /**
  * @brief Draws an integer number uniformly in range [min, max] (min and max included)

@@ -19,7 +19,7 @@ namespace simgrid {
 namespace xbt {
 namespace random {
 
-bool Random::read_state(std::string filename)
+bool Random::read_state(const std::string& filename)
 {
   std::ifstream file(filename);
   file >> mt19937_gen;
@@ -29,7 +29,7 @@ bool Random::read_state(std::string filename)
   return not file.fail();
 }
 
-bool Random::write_state(std::string filename)
+bool Random::write_state(const std::string& filename)
 {
   std::ofstream file(filename);
   file << mt19937_gen;
@@ -119,12 +119,12 @@ void set_mersenne_seed(int seed)
   default_random->set_seed(seed);
 }
 
-bool read_mersenne_state(std::string filename)
+bool read_mersenne_state(const std::string& filename)
 {
   return default_random->read_state(filename);
 }
 
-bool write_mersenne_state(std::string filename)
+bool write_mersenne_state(const std::string& filename)
 {
   return default_random->write_state(filename);
 }

@@ -146,7 +146,7 @@ void TRACE_smpi_setup_container(int rank, const_sg_host_t host)
   father->create_child(std::string("rank-") + std::to_string(rank), "MPI"); // This container is of type MPI
 }
 
-void TRACE_smpi_init(int rank, std::string calling_func)
+void TRACE_smpi_init(int rank, const std::string& calling_func)
 {
   if (not TRACE_smpi_is_enabled())
     return;

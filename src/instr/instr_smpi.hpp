@@ -20,7 +20,7 @@ XBT_PRIVATE void TRACE_smpi_comm_in(int rank, const char* operation, simgrid::in
 XBT_PRIVATE void TRACE_smpi_comm_out(int rank);
 XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
 XBT_PRIVATE void TRACE_smpi_recv(int src, int dst, int tag);
-XBT_PRIVATE void TRACE_smpi_init(int rank, std::string calling_func);
+XBT_PRIVATE void TRACE_smpi_init(int rank, const std::string& calling_func);
 
 /* SMPI + LB (load balancer) */
 XBT_PRIVATE void TRACE_smpi_process_change_host(int rank, const_sg_host_t new_host);
