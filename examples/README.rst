@@ -875,9 +875,11 @@ Model-Related Examples
     with the ns-3 bindings of SimGrid and the tesh file to see how to actually
     start a simulation in these settings.
 
-    .. example-tab:: examples/s4u/network-ns3/s4u-network-ns3.cpp
+    .. tabs::
 
-    .. group-tab:: XML
+      .. example-tab:: examples/s4u/network-ns3/s4u-network-ns3.cpp
+
+      .. group-tab:: XML
 
          **Platform files:**
 
