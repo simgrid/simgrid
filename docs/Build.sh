@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 #
 # Simplistic script to rebuild our documentation with sphinx-build
 
@@ -8,6 +8,7 @@
 if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
 
 set -e
+set -o pipefail
 
 if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
   echo "Doxygen not rerun: 'doxy' was not provided as an argument"
