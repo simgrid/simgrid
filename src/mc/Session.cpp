@@ -25,7 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 namespace simgrid {
 namespace mc {
 
-static void setup_child_environment(int socket)
+static void run_child_process(int socket, const std::function<void()>& code)
 {
   /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
    * env variable is set. If so, MC mode is assumed, and the client is setup from its side
@@ -52,6 +52,8 @@ static void setup_child_environment(int socket)
   int res = std::snprintf(buffer, sizeof(buffer), "%i", socket);
   xbt_assert((size_t)res < sizeof(buffer) && res != -1);
   setenv(MC_ENV_SOCKET_FD, buffer, 1);
+
+  code();
 }
 
 Session::Session(const std::function<void()>& code)
@@ -74,9 +76,8 @@ Session::Session(const std::function<void()>& code)
 
   if (pid == 0) { // Child
     ::close(sockets[1]);
-    setup_child_environment(sockets[0]);
-    code();
-    xbt_die("The model-checked process failed to exec(): %s", strerror(errno));
+    run_child_process(sockets[0], code);
+    DIE_IMPOSSIBLE;
   }
 
   // Parent (model-checker):

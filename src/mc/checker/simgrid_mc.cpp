@@ -61,6 +61,7 @@ int main(int argc, char** argv)
     xbt_assert(argv_copy[i] != nullptr,
                "Unable to find a binary to exec on the command line. Did you only pass config flags?");
     execvp(argv_copy[i], argv_copy + i);
+    xbt_die("The model-checked process failed to exec(): %s", strerror(errno));
   });
   delete[] argv_copy;
 
