@@ -2275,7 +2275,6 @@ include src/mc/mc_global.cpp
 include src/mc/mc_hash.cpp
 include src/mc/mc_hash.hpp
 include src/mc/mc_ignore.hpp
-include src/mc/mc_memory.cpp
 include src/mc/mc_mmu.hpp
 include src/mc/mc_private.hpp
 include src/mc/mc_record.cpp

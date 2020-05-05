@@ -28,9 +28,6 @@ SG_BEGIN_DECL
 XBT_ATTRIB_NORETURN XBT_PUBLIC void MC_run();
 XBT_PRIVATE void MC_automaton_load(const char *file);
 
-/********************************* Memory *************************************/
-XBT_PUBLIC void MC_memory_init(); /* Initialize the memory subsystem */
-
 SG_END_DECL
 
 #ifdef __cplusplus

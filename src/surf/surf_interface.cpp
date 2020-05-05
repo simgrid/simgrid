@@ -222,9 +222,6 @@ void surf_init(int *argc, char **argv)
   xbt_init(argc, argv);
 
   sg_config_init(argc, argv);
-
-  if (MC_is_active())
-    MC_memory_init();
 }
 
 void surf_exit()
