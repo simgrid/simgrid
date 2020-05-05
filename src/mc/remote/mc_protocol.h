@@ -14,12 +14,10 @@ SG_BEGIN_DECL
 
 // ***** Environment variables for passing context to the model-checked process
 
-/** Environment variable name set by `simgrid-mc` to enable MC support in the
- *  children MC processes
+/** Environment variable name used to pass the communication socket.
+ *
+ * It is set by `simgrid-mc` to enable MC support in the children processes
  */
-#define MC_ENV_VARIABLE "SIMGRID_MC"
-
-/** Environment variable name used to pass the communication socket */
 #define MC_ENV_SOCKET_FD "SIMGRID_MC_SOCKET_FD"
 
 // ***** Messages

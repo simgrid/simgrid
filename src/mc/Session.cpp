@@ -44,9 +44,6 @@ static void setup_child_environment(int socket)
   xbt_assert(fdflags != -1 && fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) != -1,
              "Could not remove CLOEXEC for socket");
 
-  // Set environment so that mmalloc gets used in application
-  setenv(MC_ENV_VARIABLE, "1", 1);
-
   // Disable lazy relocation in the model-checked process to prevent the application from
   // modifying its .got.plt during snapshot.
   setenv("LC_BIND_NOW", "1", 1);

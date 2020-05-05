@@ -117,7 +117,7 @@ XBT_ATTRIB_CONSTRUCTOR(101) static void mm_legacy_constructor()
   if (mm_initialized)
     return;
   mm_initializing = 1;
-  __malloc_use_mmalloc = getenv(MC_ENV_VARIABLE) ? 1 : 0;
+  __malloc_use_mmalloc = getenv(MC_ENV_SOCKET_FD) ? 1 : 0;
   if (__malloc_use_mmalloc) {
     __mmalloc_current_heap = mmalloc_preinit();
   } else {
