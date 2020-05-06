@@ -251,8 +251,9 @@ void Global::display_all_actor_status()
         synchro_description = "I/O";
 
       XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %p (%s) in state %d to finish", actor->get_pid(),
-               actor->get_cname(), actor->get_host()->get_cname(), synchro_description, actor->waiting_synchro.get(),
-               name, (int)actor->waiting_synchro->state_);
+               actor->get_cname(), actor->get_host()->get_cname(), synchro_description,
+               (xbt_log_no_loc ? (void*)0xDEADBEEF : actor->waiting_synchro.get()), name,
+               (int)actor->waiting_synchro->state_);
     } else {
       XBT_INFO("Actor %ld (%s@%s)", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname());
     }
@@ -548,19 +549,26 @@ void SIMIX_run()
 
     XBT_DEBUG("### time %f, #processes %zu, #to_run %zu", time, simix_global->process_list.size(),
               simix_global->actors_to_run.size());
+
+    if (time < 0. && simix_global->actors_to_run.empty() && not simix_global->process_list.empty()) {
+      if (simix_global->process_list.size() <= simix_global->daemons.size()) {
+        XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
+                     "once the simulation is over. Please fix your on_exit() functions.");
+      } else {
+        XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
+      }
+      simix_global->display_all_actor_status();
+      simgrid::s4u::Engine::on_deadlock();
+      for (auto const& kv : simix_global->process_list) {
+        XBT_DEBUG("Kill %s", kv.second->get_cname());
+        simix_global->maestro_->kill(kv.second);
+      }
+    }
   } while (time > -1.0 || not simix_global->actors_to_run.empty());
 
-  if (not simix_global->process_list.empty()) {
-    if (simix_global->process_list.size() <= simix_global->daemons.size()) {
-      XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
-                   "once the simulation is over. Please fix your on_exit() functions.");
-    } else {
-      XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
-    }
-    simix_global->display_all_actor_status();
-    simgrid::s4u::Engine::on_deadlock();
-    xbt_abort();
-  }
+  if (not simix_global->process_list.empty())
+    THROW_IMPOSSIBLE;
+
   simgrid::s4u::Engine::on_simulation_end();
 }
 

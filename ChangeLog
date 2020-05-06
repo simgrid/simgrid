@@ -17,6 +17,9 @@ Important user-visible changes:
    these values if needed. Network and routing models already providing separate
    loopbacks (clusters and such) are not impacted by this change.
 
+S4U:
+ - the on_exit() of each actor is also executed when the simulation deadlocks.
+
 General:
  - LTO is now enabled for Intel/clang compilers.
  - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.

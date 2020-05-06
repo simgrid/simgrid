@@ -181,7 +181,8 @@ public:
   /** Callback fired when the time jumps into the future */
   static xbt::signal<void(double)> on_time_advance;
 
-  /** Callback fired when the time cannot advance because of inter-actors deadlock */
+  /** Callback fired when the time cannot advance because of inter-actors deadlock. Note that the on_exit of each actor
+   * is also executed on deadlock. */
   static xbt::signal<void(void)> on_deadlock;
 
 private:

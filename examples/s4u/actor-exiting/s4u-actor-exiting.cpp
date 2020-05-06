@@ -40,12 +40,32 @@ static void actor_a()
   // Register a lambda function to be executed once it stops
   simgrid::s4u::this_actor::on_exit([](bool /*failed*/) { XBT_INFO("I stop now"); });
 
-  simgrid::s4u::this_actor::execute(1e9);
+  simgrid::s4u::this_actor::sleep_for(1);
 }
 
 static void actor_b()
 {
-  simgrid::s4u::this_actor::execute(2e9);
+  simgrid::s4u::this_actor::sleep_for(2);
+}
+
+static void actor_c()
+{
+  // Register a lambda function to be executed once it stops
+  simgrid::s4u::this_actor::on_exit([](bool failed) {
+    if (failed) {
+      XBT_INFO("I was killed!");
+      if (xbt_log_no_loc)
+        XBT_INFO("The backtrace would be displayed here if --log=no_loc would not have been passed");
+      else
+        xbt_backtrace_display_current();
+    } else
+      XBT_INFO("Exiting gracefully.");
+  });
+
+  simgrid::s4u::this_actor::sleep_for(3);
+  XBT_INFO("And now, induce a deadlock by waiting for a message that will never come\n\n");
+  simgrid::s4u::Mailbox::by_name("nobody")->get();
+  xbt_die("Receiving is not supposed to succeed when nobody is sending");
 }
 
 int main(int argc, char* argv[])
@@ -65,6 +85,7 @@ int main(int argc, char* argv[])
   /* Create some actors */
   simgrid::s4u::Actor::create("A", simgrid::s4u::Host::by_name("Tremblay"), actor_a);
   simgrid::s4u::Actor::create("B", simgrid::s4u::Host::by_name("Fafard"), actor_b);
+  simgrid::s4u::Actor::create("C", simgrid::s4u::Host::by_name("Ginette"), actor_c);
 
   e.run(); /* - Run the simulation */
 
