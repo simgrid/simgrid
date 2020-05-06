@@ -49,7 +49,7 @@ struct IgnoredHeapRegion {
   std::size_t size;
 };
 
-/** The Model-Checked process, seen from the MCer perspective
+/** The Application's process memory, seen from the MCer perspective
  *
  *  This class is mixing a lot of different responsibilities and is tied
  *  to SIMIX. It should probably be split into different classes.
@@ -60,11 +60,10 @@ struct IgnoredHeapRegion {
  *  - accessing the system state of the process (heap, …);
  *  - storing the SIMIX state of the process;
  *  - privatization;
- *  - communication with the model-checked process;
  *  - stack unwinding;
  *  - etc.
  */
-class RemoteClient final : public AddressSpace {
+class RemoteClientMemory final : public AddressSpace {
 private:
   // Those flags are used to track down which cached information
   // is still up to date and which information needs to be updated.
@@ -74,14 +73,14 @@ private:
   static constexpr int cache_simix_processes = 4;
 
 public:
-  RemoteClient(pid_t pid, int sockfd);
-  ~RemoteClient();
+  RemoteClientMemory(pid_t pid, int sockfd);
+  ~RemoteClientMemory();
   void init();
 
-  RemoteClient(RemoteClient const&) = delete;
-  RemoteClient(RemoteClient&&)      = delete;
-  RemoteClient& operator=(RemoteClient const&) = delete;
-  RemoteClient& operator=(RemoteClient&&) = delete;
+  RemoteClientMemory(RemoteClientMemory const&) = delete;
+  RemoteClientMemory(RemoteClientMemory&&)      = delete;
+  RemoteClientMemory& operator=(RemoteClientMemory const&) = delete;
+  RemoteClientMemory& operator=(RemoteClientMemory&&) = delete;
 
   // Read memory:
   void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
@@ -116,18 +115,18 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (not(this->cache_flags_ & RemoteClient::cache_heap))
+    if (not(this->cache_flags_ & RemoteClientMemory::cache_heap))
       this->refresh_heap();
     return this->heap.get();
   }
   const malloc_info* get_malloc_info()
   {
-    if (not(this->cache_flags_ & RemoteClient::cache_malloc))
+    if (not(this->cache_flags_ & RemoteClientMemory::cache_malloc))
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
 
-  void clear_cache() { this->cache_flags_ = RemoteClient::cache_none; }
+  void clear_cache() { this->cache_flags_ = RemoteClientMemory::cache_none; }
 
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
@@ -230,7 +229,7 @@ public:
 
 private:
   /** State of the cache (which variables are up to date) */
-  int cache_flags_ = RemoteClient::cache_none;
+  int cache_flags_ = RemoteClientMemory::cache_none;
 
 public:
   /** Address of the heap structure in the MCed process. */
@@ -274,8 +273,7 @@ public:
   void* unw_underlying_context;
 };
 
-/** Open a FD to a remote process memory (`/dev/$pid/mem`)
- */
+/** Open a FD to a remote process memory (`/dev/$pid/mem`) */
 XBT_PRIVATE int open_vm(pid_t pid, int flags);
 } // namespace mc
 } // namespace simgrid

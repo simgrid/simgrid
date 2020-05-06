@@ -25,15 +25,15 @@ class ModelChecker {
   std::set<std::string> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_{500};
-  std::unique_ptr<RemoteClient> process_;
+  std::unique_ptr<RemoteClientMemory> process_;
   Checker* checker_ = nullptr;
 
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
-  explicit ModelChecker(std::unique_ptr<RemoteClient> process);
+  explicit ModelChecker(std::unique_ptr<RemoteClientMemory> process);
 
-  RemoteClient& process() { return *process_; }
+  RemoteClientMemory& process() { return *process_; }
   PageStore& page_store()
   {
     return page_store_;
@@ -46,7 +46,7 @@ public:
 
   void start();
   void shutdown();
-  void resume(simgrid::mc::RemoteClient& process);
+  void resume(simgrid::mc::RemoteClientMemory& process);
   void handle_events(int fd, short events);
   void wait_for_requests();
   void handle_simcall(Transition const& transition);

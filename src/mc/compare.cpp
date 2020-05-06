@@ -220,7 +220,7 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
 
 static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot1, const Snapshot& snapshot2)
 {
-  const RemoteClient& process = mc_model_checker->process();
+  const RemoteClientMemory& process = mc_model_checker->process();
 
   /* Check busy blocks */
   size_t i1 = 1;
@@ -448,7 +448,7 @@ static bool heap_area_differ_without_type(StateComparator& state, const void* re
                                           const Snapshot& snapshot1, const Snapshot& snapshot2,
                                           HeapLocationPairs* previous, int size, int check_ignore)
 {
-  const RemoteClient& process = mc_model_checker->process();
+  const RemoteClientMemory& process = mc_model_checker->process();
   const Region* heap_region1  = MC_get_heap_region(snapshot1);
   const Region* heap_region2  = MC_get_heap_region(snapshot2);
 
@@ -734,7 +734,7 @@ static Type* get_offset_type(void* real_base_address, Type* type, int offset, in
 static bool heap_area_differ(StateComparator& state, const void* area1, const void* area2, const Snapshot& snapshot1,
                              const Snapshot& snapshot2, HeapLocationPairs* previous, Type* type, int pointer_level)
 {
-  const simgrid::mc::RemoteClient& process = mc_model_checker->process();
+  const simgrid::mc::RemoteClientMemory& process = mc_model_checker->process();
 
   ssize_t block1;
   ssize_t block2;
@@ -1202,7 +1202,7 @@ bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
   // TODO, make this a field of ModelChecker or something similar
   static StateComparator state_comparator;
 
-  const RemoteClient& process = mc_model_checker->process();
+  const RemoteClientMemory& process = mc_model_checker->process();
 
   if (s1->hash_ != s2->hash_) {
     XBT_VERB("(%d - %d) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_,

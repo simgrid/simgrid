@@ -84,17 +84,17 @@ public:
  */
 class AddressSpace {
 private:
-  RemoteClient* process_;
+  RemoteClientMemory* process_;
 
 public:
-  explicit AddressSpace(RemoteClient* process) : process_(process) {}
+  explicit AddressSpace(RemoteClientMemory* process) : process_(process) {}
   virtual ~AddressSpace() = default;
 
   /** The process of this address space
    *
    *  This is where we can get debug informations, memory layout, etc.
    */
-  simgrid::mc::RemoteClient* process() const { return process_; }
+  simgrid::mc::RemoteClientMemory* process() const { return process_; }
 
   /** Read data from the address space
    *

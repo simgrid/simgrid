@@ -10,7 +10,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
+#include "src/mc/remote/RemoteClientMemory.hpp"
 #include "xbt/automaton.hpp"
 #include "xbt/system_error.hpp"
 
@@ -32,7 +32,7 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process) : process_(std::move(process)) {}
+ModelChecker::ModelChecker(std::unique_ptr<RemoteClientMemory> process) : process_(std::move(process)) {}
 
 void ModelChecker::start()
 {
@@ -77,7 +77,7 @@ static const std::pair<const char*, const char*> ignored_local_variables[] = {
 
 void ModelChecker::setup_ignore()
 {
-  RemoteClient& process = this->process();
+  RemoteClientMemory& process = this->process();
   for (std::pair<const char*, const char*> const& var :
       ignored_local_variables)
     process.ignore_local_variable(var.first, var.second);
@@ -90,7 +90,7 @@ void ModelChecker::shutdown()
 {
   XBT_DEBUG("Shuting down model-checker");
 
-  RemoteClient* process = &this->process();
+  RemoteClientMemory* process = &this->process();
   if (process->running()) {
     XBT_DEBUG("Killing process");
     kill(process->pid(), SIGKILL);
@@ -98,7 +98,7 @@ void ModelChecker::shutdown()
   }
 }
 
-void ModelChecker::resume(RemoteClient& process)
+void ModelChecker::resume(RemoteClientMemory& process)
 {
   int res = process.get_channel().send(MC_MESSAGE_CONTINUE);
   if (res)
@@ -202,7 +202,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
     if (property_automaton == nullptr)
       property_automaton = xbt_automaton_new();
 
-    RemoteClient* process  = &this->process();
+    RemoteClientMemory* process = &this->process();
     RemotePtr<int> address = remote((int*)message.data);
     xbt::add_proposition(property_automaton, message.name, [process, address]() { return process->read(address); });
 

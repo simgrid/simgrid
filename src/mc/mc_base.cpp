@@ -16,7 +16,7 @@
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/Session.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
+#include "src/mc/remote/RemoteClientMemory.hpp"
 
 using simgrid::mc::remote;
 #endif

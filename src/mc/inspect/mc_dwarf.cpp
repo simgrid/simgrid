@@ -13,7 +13,7 @@
 #include "src/mc/inspect/Variable.hpp"
 #include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
+#include "src/mc/remote/RemoteClientMemory.hpp"
 
 #include <cinttypes>
 #include <cstdint>
@@ -1207,7 +1207,7 @@ std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<xbt::VmMa
 
 /*************************************************************************/
 
-void postProcessObjectInformation(const RemoteClient* process, ObjectInformation* info)
+void postProcessObjectInformation(const RemoteClientMemory* process, ObjectInformation* info)
 {
   for (auto& t : info->types) {
     Type* type    = &(t.second);

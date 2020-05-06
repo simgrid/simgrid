@@ -12,7 +12,7 @@
 #include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/inspect/Type.hpp"
 #include "src/mc/inspect/Variable.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
+#include "src/mc/remote/RemoteClientMemory.hpp"
 
 #include <cassert>
 #include <cstdlib>
@@ -21,7 +21,7 @@
 
 static std::default_random_engine rnd_engine;
 
-static simgrid::mc::RemoteClient* process;
+static simgrid::mc::RemoteClientMemory* process;
 
 static uintptr_t eval_binary_operation(simgrid::dwarf::ExpressionContext const& state, int op, uintptr_t a, uintptr_t b)
 {
@@ -145,7 +145,7 @@ static void test_deref(simgrid::dwarf::ExpressionContext const& state)
 
 int main()
 {
-  process = new simgrid::mc::RemoteClient(getpid(), -1);
+  process = new simgrid::mc::RemoteClientMemory(getpid(), -1);
   process->init();
 
   simgrid::dwarf::ExpressionContext state;

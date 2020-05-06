@@ -26,7 +26,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
                          std::shared_ptr<State> graph_state)
     : num(pair_num), automaton_state(automaton_state)
 {
-  RemoteClient* process = &(mc_model_checker->process());
+  RemoteClientMemory* process = &(mc_model_checker->process());
 
   this->graph_state = std::move(graph_state);
   if (this->graph_state->system_state_ == nullptr)

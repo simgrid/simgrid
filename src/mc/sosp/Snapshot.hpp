@@ -8,7 +8,7 @@
 
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
+#include "src/mc/remote/RemoteClientMemory.hpp"
 #include "src/mc/sosp/Region.hpp"
 
 // ***** MC Snapshot
@@ -60,7 +60,7 @@ namespace mc {
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   /* Initialization */
-  Snapshot(int num_state, RemoteClient* process = &mc_model_checker->process());
+  Snapshot(int num_state, RemoteClientMemory* process = &mc_model_checker->process());
   ~Snapshot() = default;
 
   /* Regular use */
@@ -74,7 +74,7 @@ public:
                    ReadOptions options = ReadOptions::none()) const override;
   Region* get_region(const void* addr) const;
   Region* get_region(const void* addr, Region* hinted_region) const;
-  void restore(RemoteClient* process);
+  void restore(RemoteClientMemory* process);
 
   // To be private
   int num_state_;
@@ -89,8 +89,8 @@ public:
 
 private:
   void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
-  void snapshot_regions(RemoteClient* process);
-  void snapshot_stacks(RemoteClient* process);
+  void snapshot_regions(RemoteClientMemory* process);
+  void snapshot_stacks(RemoteClientMemory* process);
 };
 } // namespace mc
 } // namespace simgrid

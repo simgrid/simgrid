@@ -630,8 +630,8 @@ set(MC_SRC
   src/mc/remote/Channel.hpp
   src/mc/remote/CheckerSide.cpp
   src/mc/remote/CheckerSide.hpp
-  src/mc/remote/RemoteClient.hpp
-  src/mc/remote/RemoteClient.cpp
+  src/mc/remote/RemoteClientMemory.hpp
+  src/mc/remote/RemoteClientMemory.cpp
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
   src/mc/remote/mc_protocol.cpp
