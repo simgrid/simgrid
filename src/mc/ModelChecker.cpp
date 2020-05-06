@@ -34,30 +34,11 @@ namespace mc {
 
 ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process) : process_(std::move(process)) {}
 
-ModelChecker::~ModelChecker()
-{
-  if (socket_event_ != nullptr)
-    event_free(socket_event_);
-  if (signal_event_ != nullptr)
-    event_free(signal_event_);
-  if (base_ != nullptr)
-    event_base_free(base_);
-}
-
 void ModelChecker::start()
 {
-  base_ = event_base_new();
-  event_callback_fn event_callback = [](evutil_socket_t fd, short events, void *arg)
-  {
+  event_loop_.start(process_->get_channel().get_socket(), [](evutil_socket_t fd, short events, void* arg) {
     ((ModelChecker *)arg)->handle_events(fd, events);
-  };
-  socket_event_ = event_new(base_, process_->get_channel().get_socket(), EV_READ | EV_PERSIST, event_callback, this);
-  event_add(socket_event_, NULL);
-  signal_event_ = event_new(base_,
-                            SIGCHLD,
-                            EV_SIGNAL|EV_PERSIST,
-                            event_callback, this);
-  event_add(signal_event_, NULL);
+  });
 
   XBT_DEBUG("Waiting for the model-checked process");
   int status;
@@ -257,9 +238,9 @@ void ModelChecker::handle_events(int fd, short events)
     ssize_t size = process_->get_channel().receive(buffer, sizeof(buffer), false);
     if (size == -1 && errno != EAGAIN)
       throw simgrid::xbt::errno_error();
-    if (not handle_message(buffer, size)) {
-      event_base_loopbreak(base_);
-    }
+
+    if (not handle_message(buffer, size))
+      event_loop_.break_loop();
   }
   else if (events == EV_SIGNAL) {
     on_signal(fd);
@@ -331,7 +312,7 @@ void ModelChecker::wait_for_requests()
 {
   this->resume(process());
   if (this->process().running())
-    event_base_dispatch(base_);
+    event_loop_.dispatch();
 }
 
 void ModelChecker::handle_simcall(Transition const& transition)
@@ -344,7 +325,7 @@ void ModelChecker::handle_simcall(Transition const& transition)
   this->process_->get_channel().send(m);
   this->process_->clear_cache();
   if (this->process_->running())
-    event_base_dispatch(base_);
+    event_loop_.dispatch();
 }
 
 bool ModelChecker::checkDeadlock()

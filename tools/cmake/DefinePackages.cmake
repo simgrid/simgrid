@@ -628,6 +628,8 @@ set(MC_SRC
   src/mc/remote/Channel.hpp
   src/mc/remote/Client.cpp
   src/mc/remote/Client.hpp
+  src/mc/remote/EventLoop.cpp
+  src/mc/remote/EventLoop.hpp
   src/mc/remote/RemoteClient.hpp
   src/mc/remote/RemoteClient.cpp
   src/mc/remote/RemotePtr.hpp

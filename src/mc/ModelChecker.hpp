@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_MODEL_CHECKER_HPP
 #define SIMGRID_MC_MODEL_CHECKER_HPP
 
+#include "src/mc/remote/EventLoop.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 #include "xbt/base.h"
 
@@ -13,17 +14,13 @@
 #include <set>
 #include <string>
 
-#include <event2/event.h>
-
 namespace simgrid {
 namespace mc {
 
 /** State of the model-checker (global variables for the model checker)
  */
 class ModelChecker {
-  struct event_base* base_    = nullptr;
-  struct event* socket_event_ = nullptr;
-  struct event* signal_event_ = nullptr;
+  EventLoop event_loop_;
   /** String pool for host names */
   std::set<std::string> hostnames_;
   // This is the parent snapshot of the current state:
@@ -35,7 +32,6 @@ public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
   explicit ModelChecker(std::unique_ptr<RemoteClient> process);
-  ~ModelChecker();
 
   RemoteClient& process() { return *process_; }
   PageStore& page_store()
