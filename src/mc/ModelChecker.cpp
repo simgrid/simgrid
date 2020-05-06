@@ -36,8 +36,8 @@ ModelChecker::ModelChecker(std::unique_ptr<RemoteClient> process) : process_(std
 
 void ModelChecker::start()
 {
-  event_loop_.start(process_->get_channel().get_socket(), [](evutil_socket_t fd, short events, void* arg) {
-    ((ModelChecker *)arg)->handle_events(fd, events);
+  event_loop_.start(process_->get_channel().get_socket(), [](evutil_socket_t sig, short events, void* arg) {
+    ((ModelChecker*)arg)->handle_events(sig, events);
   });
 
   XBT_DEBUG("Waiting for the model-checked process");
@@ -231,7 +231,7 @@ void ModelChecker::exit(int status)
   ::exit(status);
 }
 
-void ModelChecker::handle_events(int fd, short events)
+void ModelChecker::handle_events(int sig, short events)
 {
   if (events == EV_READ) {
     char buffer[MC_MESSAGE_LENGTH];
@@ -243,7 +243,8 @@ void ModelChecker::handle_events(int fd, short events)
       event_loop_.break_loop();
   }
   else if (events == EV_SIGNAL) {
-    on_signal(fd);
+    if (sig == SIGCHLD)
+      this->handle_waitpid();
   }
   else {
     xbt_die("Unexpected event");
@@ -300,12 +301,6 @@ void ModelChecker::handle_waitpid()
       }
     }
   }
-}
-
-void ModelChecker::on_signal(int signo)
-{
-  if (signo == SIGCHLD)
-    this->handle_waitpid();
 }
 
 void ModelChecker::wait_for_requests()

@@ -61,7 +61,6 @@ private:
   void setup_ignore();
   bool handle_message(const char* buffer, ssize_t size);
   void handle_waitpid();
-  void on_signal(int signo);
 
 public:
   unsigned long visited_states = 0;
