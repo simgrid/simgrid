@@ -1,3 +1,5 @@
+/* mc::RemoteClient: representative of the Client memory on the MC side */
+
 /* Copyright (c) 2008-2020. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it

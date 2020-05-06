@@ -1,3 +1,5 @@
+/* mc::remote::AppSide: the Application-side of the channel                 */
+
 /* Copyright (c) 2015-2020. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -17,14 +19,14 @@ namespace mc {
  *
  *  Send messages to the model-checker and handles message from it.
  */
-class XBT_PUBLIC Client {
+class XBT_PUBLIC AppSide {
 private:
   Channel channel_;
-  static std::unique_ptr<Client> instance_;
+  static std::unique_ptr<AppSide> instance_;
 
 public:
-  Client();
-  explicit Client(int fd) : channel_(fd) {}
+  AppSide();
+  explicit AppSide(int fd) : channel_(fd) {}
   void handle_messages();
 
 private:
@@ -48,8 +50,8 @@ public:
 
   // Singleton :/
   // TODO, remove the singleton antipattern.
-  static Client* initialize();
-  static Client* get() { return instance_.get(); }
+  static AppSide* initialize();
+  static AppSide* get() { return instance_.get(); }
 };
 } // namespace mc
 } // namespace simgrid

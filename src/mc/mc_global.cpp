@@ -16,7 +16,7 @@
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_safety.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/AppSide.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/backtrace.hpp"
 
@@ -79,7 +79,7 @@ void MC_run()
   simgrid::mc::processes_time.resize(simgrid::kernel::actor::get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
     simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
-  simgrid::mc::Client::get()->main_loop();
+  simgrid::mc::AppSide::get()->main_loop();
 }
 
 void MC_show_deadlock()

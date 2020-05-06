@@ -9,7 +9,7 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/AppSide.hpp"
 #include "xbt/asserts.h"
 
 /** @file mc_client_api.cpp
@@ -25,7 +25,7 @@ void MC_assert(int prop)
   xbt_assert(mc_model_checker == nullptr);
   if (not prop) {
     if (MC_is_active())
-      simgrid::mc::Client::get()->report_assertion_failure();
+      simgrid::mc::AppSide::get()->report_assertion_failure();
     if (MC_record_replay_is_active())
       xbt_die("MC assertion failed");
   }
@@ -45,7 +45,7 @@ void MC_ignore(void* addr, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->ignore_memory(addr, size);
+  simgrid::mc::AppSide::get()->ignore_memory(addr, size);
 }
 
 void MC_automaton_new_propositional_symbol(const char* /*id*/, int (*/*fct*/)())
@@ -62,7 +62,7 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->declare_symbol(name, value);
+  simgrid::mc::AppSide::get()->declare_symbol(name, value);
 }
 
 /** @brief Register a stack in the model checker
@@ -81,7 +81,7 @@ void MC_register_stack_area(void* stack, ucontext_t* context, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->declare_stack(stack, size, context);
+  simgrid::mc::AppSide::get()->declare_stack(stack, size, context);
 }
 
 void MC_ignore_global_variable(const char* /*name*/)
@@ -98,7 +98,7 @@ void MC_ignore_heap(void *address, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->ignore_heap(address, size);
+  simgrid::mc::AppSide::get()->ignore_heap(address, size);
 }
 
 void MC_unignore_heap(void* address, size_t size)
@@ -106,5 +106,5 @@ void MC_unignore_heap(void* address, size_t size)
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
     return;
-  simgrid::mc::Client::get()->unignore_heap(address, size);
+  simgrid::mc::AppSide::get()->unignore_heap(address, size);
 }

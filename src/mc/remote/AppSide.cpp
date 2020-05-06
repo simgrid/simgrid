@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/AppSide.hpp"
 #include "src/internal_config.h"
 #include <simgrid/modelchecker.h>
 
@@ -22,13 +22,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 namespace simgrid {
 namespace mc {
 
-std::unique_ptr<Client> Client::instance_;
+std::unique_ptr<AppSide> AppSide::instance_;
 
-Client* Client::initialize()
+AppSide* AppSide::initialize()
 {
-  // We are not in MC mode:
-  // TODO, handle this more gracefully.
-  if (not std::getenv(MC_ENV_SOCKET_FD))
+  if (not std::getenv(MC_ENV_SOCKET_FD)) // We are not in MC mode: don't initialize the MC world
     return nullptr;
 
   // Do not break if we are called multiple times:
@@ -50,7 +48,7 @@ Client* Client::initialize()
   xbt_assert(type == SOCK_SEQPACKET, "Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 
-  instance_.reset(new simgrid::mc::Client(fd));
+  instance_.reset(new simgrid::mc::AppSide(fd));
 
   // Wait for the model-checker:
   errno = 0;
@@ -68,7 +66,7 @@ Client* Client::initialize()
   return instance_.get();
 }
 
-void Client::handle_deadlock_check(const s_mc_message_t*)
+void AppSide::handle_deadlock_check(const s_mc_message_t*)
 {
   bool deadlock = false;
   if (not simix_global->process_list.empty()) {
@@ -84,11 +82,11 @@ void Client::handle_deadlock_check(const s_mc_message_t*)
   s_mc_message_int_t answer{MC_MESSAGE_DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
-void Client::handle_continue(const s_mc_message_t*)
+void AppSide::handle_continue(const s_mc_message_t*)
 {
   /* Nothing to do */
 }
-void Client::handle_simcall(const s_mc_message_simcall_handle_t* message)
+void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message)
 {
   smx_actor_t process = SIMIX_process_from_PID(message->pid);
   xbt_assert(process != nullptr, "Invalid pid %lu", message->pid);
@@ -97,7 +95,7 @@ void Client::handle_simcall(const s_mc_message_simcall_handle_t* message)
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
 }
 
-void Client::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg)
+void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg)
 {
   bool res = simgrid::mc::actor_is_enabled(SIMIX_process_from_PID(msg->aid));
   s_mc_message_int_t answer{MC_MESSAGE_ACTOR_ENABLED_REPLY, res};
@@ -108,7 +106,7 @@ void Client::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg)
   xbt_assert(received_size == sizeof(_type_), "Unexpected size for " _name_ " (%zd != %zu)", received_size,            \
              sizeof(_type_))
 
-void Client::handle_messages()
+void AppSide::handle_messages()
 {
   while (1) {
     XBT_DEBUG("Waiting messages from model-checker");
@@ -147,7 +145,7 @@ void Client::handle_messages()
   }
 }
 
-void Client::main_loop()
+void AppSide::main_loop()
 {
   while (1) {
     simgrid::mc::wait_for_requests();
@@ -156,14 +154,14 @@ void Client::main_loop()
   }
 }
 
-void Client::report_assertion_failure()
+void AppSide::report_assertion_failure()
 {
   if (channel_.send(MC_MESSAGE_ASSERTION_FAILED))
     xbt_die("Could not send assertion to model-checker");
   this->handle_messages();
 }
 
-void Client::ignore_memory(void* addr, std::size_t size)
+void AppSide::ignore_memory(void* addr, std::size_t size)
 {
   s_mc_message_ignore_memory_t message;
   message.type = MC_MESSAGE_IGNORE_MEMORY;
@@ -173,7 +171,7 @@ void Client::ignore_memory(void* addr, std::size_t size)
     xbt_die("Could not send IGNORE_MEMORY mesage to model-checker");
 }
 
-void Client::ignore_heap(void* address, std::size_t size)
+void AppSide::ignore_heap(void* address, std::size_t size)
 {
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
@@ -194,7 +192,7 @@ void Client::ignore_heap(void* address, std::size_t size)
     xbt_die("Could not send ignored region to MCer");
 }
 
-void Client::unignore_heap(void* address, std::size_t size)
+void AppSide::unignore_heap(void* address, std::size_t size)
 {
   s_mc_message_ignore_memory_t message;
   message.type = MC_MESSAGE_UNIGNORE_HEAP;
@@ -204,7 +202,7 @@ void Client::unignore_heap(void* address, std::size_t size)
     xbt_die("Could not send IGNORE_HEAP message to model-checker");
 }
 
-void Client::declare_symbol(const char* name, int* value)
+void AppSide::declare_symbol(const char* name, int* value)
 {
   s_mc_message_register_symbol_t message;
   message.type = MC_MESSAGE_REGISTER_SYMBOL;
@@ -217,7 +215,7 @@ void Client::declare_symbol(const char* name, int* value)
     xbt_die("Could send REGISTER_SYMBOL message to model-checker");
 }
 
-void Client::declare_stack(void* stack, size_t size, ucontext_t* context)
+void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context)
 {
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 

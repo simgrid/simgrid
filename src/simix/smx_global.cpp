@@ -21,7 +21,7 @@
 #include "src/surf/xml/platf.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/remote/Client.hpp"
+#include "src/mc/remote/AppSide.hpp"
 #endif
 
 
@@ -283,7 +283,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #if SIMGRID_HAVE_MC
   // The communication initialization is done ASAP.
   // We need to communicate  initialization of the different layers to the model-checker.
-  simgrid::mc::Client::initialize();
+  simgrid::mc::AppSide::initialize();
 #endif
 
   if (simix_global == nullptr) {
