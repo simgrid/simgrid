@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_SESSION_HPP
 #define SIMGRID_MC_SESSION_HPP
 
+#include "simgrid/forward.h"
 #include "src/mc/ModelChecker.hpp"
 
 #include <functional>
@@ -48,6 +49,7 @@ public:
   void log_state();
 
   void restore_initial_state();
+  bool actor_is_enabled(aid_t pid);
 };
 
 // Temporary :)

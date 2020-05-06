@@ -272,9 +272,6 @@ public:
   /** The corresponding context
    */
   void* unw_underlying_context;
-
-  /* Check whether the given actor is enabled */
-  bool actor_is_enabled(aid_t pid);
 };
 
 /** Open a FD to a remote process memory (`/dev/$pid/mem`)

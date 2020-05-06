@@ -7,7 +7,10 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-simgrid::mc::CheckerSide::~CheckerSide()
+namespace simgrid {
+namespace mc {
+
+CheckerSide::~CheckerSide()
 {
   if (socket_event_ != nullptr)
     event_free(socket_event_);
@@ -17,7 +20,7 @@ simgrid::mc::CheckerSide::~CheckerSide()
     event_base_free(base_);
 }
 
-void simgrid::mc::CheckerSide::start(int socket, void (*handler)(int, short, void*))
+void CheckerSide::start(int socket, void (*handler)(int, short, void*))
 {
   base_ = event_base_new();
 
@@ -28,12 +31,15 @@ void simgrid::mc::CheckerSide::start(int socket, void (*handler)(int, short, voi
   event_add(signal_event_, NULL);
 }
 
-void simgrid::mc::CheckerSide::dispatch()
+void CheckerSide::dispatch()
 {
   event_base_dispatch(base_);
 }
 
-void simgrid::mc::CheckerSide::break_loop()
+void CheckerSide::break_loop()
 {
   event_base_loopbreak(base_);
 }
+
+} // namespace mc
+} // namespace simgrid

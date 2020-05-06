@@ -625,15 +625,5 @@ void RemoteClient::dump_stack()
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
 }
-
-bool RemoteClient::actor_is_enabled(aid_t pid)
-{
-  s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
-  process()->get_channel().send(msg);
-  char buff[MC_MESSAGE_LENGTH];
-  ssize_t received = process()->get_channel().receive(buff, MC_MESSAGE_LENGTH, true);
-  xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
-  return ((s_mc_message_int_t*)buff)->value;
-}
 }
 }

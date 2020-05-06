@@ -50,6 +50,7 @@ public:
   void handle_events(int fd, short events);
   void wait_for_requests();
   void handle_simcall(Transition const& transition);
+
   XBT_ATTRIB_NORETURN void exit(int status);
 
   bool checkDeadlock();

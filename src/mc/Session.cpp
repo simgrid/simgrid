@@ -141,6 +141,16 @@ void Session::close()
   }
 }
 
+bool Session::actor_is_enabled(aid_t pid)
+{
+  s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
+  model_checker_->process().get_channel().send(msg);
+  char buff[MC_MESSAGE_LENGTH];
+  ssize_t received = model_checker_->process().get_channel().receive(buff, MC_MESSAGE_LENGTH, true);
+  xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
+  return ((s_mc_message_int_t*)buff)->value;
+}
+
 simgrid::mc::Session* session;
 
 }
