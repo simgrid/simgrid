@@ -19,24 +19,51 @@
 #include <simgrid/actor.h>
 #include <simgrid/engine.h>
 #include <simgrid/host.h>
+#include <simgrid/mailbox.h>
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_exiting, "Messages specific for this example");
 
-static int my_on_exit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
+static int A_on_exit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
 {
   XBT_INFO("I stop now");
   return 0;
 }
 
-static void actor_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void actorA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   // Register a lambda function to be executed once it stops
-  sg_actor_on_exit(&my_on_exit, NULL);
+  sg_actor_on_exit(&A_on_exit, NULL);
 
-  sg_actor_execute(1e9);
+  sg_actor_sleep_for(1);
+}
+static void actorB_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+{
+  sg_actor_sleep_for(2);
+}
+static int C_on_exit(int failed, XBT_ATTRIB_UNUSED void* ignored2)
+{
+  if (failed) {
+    XBT_INFO("I was killed!");
+    if (xbt_log_no_loc)
+      XBT_INFO("The backtrace would be displayed here if --log=no_loc would not have been passed");
+    else
+      xbt_backtrace_display_current();
+  } else
+    XBT_INFO("Exiting gracefully.");
+  return 0;
+}
+static void actorC_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+{
+  // Register a lambda function to be executed once it stops
+  sg_actor_on_exit(&C_on_exit, NULL);
+
+  sg_actor_sleep_for(3);
+  XBT_INFO("And now, induce a deadlock by waiting for a message that will never come\n\n");
+  sg_mailbox_get(sg_mailbox_by_name("nobody"));
+  xbt_die("Receiving is not supposed to succeed when nobody is sending");
 }
 
 int main(int argc, char* argv[])
@@ -46,7 +73,9 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]); /* - Load the platform description */
 
-  sg_actor_create("A", sg_host_by_name("Tremblay"), actor_fun, 0, NULL);
+  sg_actor_create("A", sg_host_by_name("Tremblay"), actorA_fun, 0, NULL);
+  sg_actor_create("B", sg_host_by_name("Fafard"), actorB_fun, 0, NULL);
+  sg_actor_create("C", sg_host_by_name("Ginette"), actorC_fun, 0, NULL);
 
   simgrid_run();
 
