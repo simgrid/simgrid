@@ -6,6 +6,8 @@
 #ifndef SIMGRID_MC_REMOTE_EVENTLOOP_HPP
 #define SIMGRID_MC_REMOTE_EVENTLOOP_HPP
 
+#include "src/mc/remote/Channel.hpp"
+
 #include <event2/event.h>
 #include <functional>
 
@@ -17,10 +19,16 @@ class CheckerSide {
   struct event* socket_event_ = nullptr;
   struct event* signal_event_ = nullptr;
 
+  Channel channel_;
+
 public:
+  explicit CheckerSide(int sockfd) : channel_(sockfd) {}
   ~CheckerSide();
 
-  void start(int socket, void (*handler)(int, short, void*));
+  Channel const& get_channel() const { return channel_; }
+  Channel& get_channel() { return channel_; }
+
+  void start(void (*handler)(int, short, void*));
   void dispatch();
   void break_loop();
 };

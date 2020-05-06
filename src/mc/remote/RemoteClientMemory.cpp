@@ -210,10 +210,7 @@ int open_vm(pid_t pid, int flags)
 
 // ***** Process
 
-RemoteClientMemory::RemoteClientMemory(pid_t pid, int sockfd)
-    : AddressSpace(this), pid_(pid), channel_(sockfd), running_(true)
-{
-}
+RemoteClientMemory::RemoteClientMemory(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
 
 void RemoteClientMemory::init()
 {

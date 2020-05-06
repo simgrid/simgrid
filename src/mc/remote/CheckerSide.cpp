@@ -20,11 +20,11 @@ CheckerSide::~CheckerSide()
     event_base_free(base_);
 }
 
-void CheckerSide::start(int socket, void (*handler)(int, short, void*))
+void CheckerSide::start(void (*handler)(int, short, void*))
 {
   base_ = event_base_new();
 
-  socket_event_ = event_new(base_, socket, EV_READ | EV_PERSIST, handler, this);
+  socket_event_ = event_new(base_, get_channel().get_socket(), EV_READ | EV_PERSIST, handler, this);
   event_add(socket_event_, NULL);
 
   signal_event_ = event_new(base_, SIGCHLD, EV_SIGNAL | EV_PERSIST, handler, this);

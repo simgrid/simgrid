@@ -8,9 +8,9 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
+#include "mc/datatypes.h"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/inspect/ObjectInformation.hpp"
-#include "src/mc/remote/Channel.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -73,7 +73,7 @@ private:
   static constexpr int cache_simix_processes = 4;
 
 public:
-  RemoteClientMemory(pid_t pid, int sockfd);
+  RemoteClientMemory(pid_t pid);
   ~RemoteClientMemory();
   void init();
 
@@ -127,9 +127,6 @@ public:
   }
 
   void clear_cache() { this->cache_flags_ = RemoteClientMemory::cache_none; }
-
-  Channel const& get_channel() const { return channel_; }
-  Channel& get_channel() { return channel_; }
 
   std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
@@ -197,7 +194,6 @@ private:
   void refresh_simix();
 
   pid_t pid_ = -1;
-  Channel channel_;
   bool running_ = false;
   std::vector<xbt::VmMap> memory_map_;
   RemotePtr<void> maestro_stack_start_;

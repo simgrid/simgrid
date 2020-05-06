@@ -116,7 +116,7 @@ int main(int argc, char** argv)
   const simgrid::mc::Variable* var;
   simgrid::mc::Type* type;
 
-  simgrid::mc::RemoteClientMemory process(getpid(), -1);
+  simgrid::mc::RemoteClientMemory process(getpid());
   process.init();
 
   test_global_variable(process, process.binary_info.get(), "some_local_variable", &some_local_variable, sizeof(int));

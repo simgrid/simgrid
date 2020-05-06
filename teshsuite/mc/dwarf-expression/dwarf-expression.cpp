@@ -145,7 +145,7 @@ static void test_deref(simgrid::dwarf::ExpressionContext const& state)
 
 int main()
 {
-  process = new simgrid::mc::RemoteClientMemory(getpid(), -1);
+  process = new simgrid::mc::RemoteClientMemory(getpid());
   process->init();
 
   simgrid::dwarf::ExpressionContext state;

@@ -85,8 +85,8 @@ Session::Session(const std::function<void()>& code)
 
   xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
 
-  auto process = std::unique_ptr<simgrid::mc::RemoteClientMemory>(new simgrid::mc::RemoteClientMemory(pid, sockets[1]));
-  model_checker_.reset(new simgrid::mc::ModelChecker(std::move(process)));
+  auto process = std::unique_ptr<simgrid::mc::RemoteClientMemory>(new simgrid::mc::RemoteClientMemory(pid));
+  model_checker_.reset(new simgrid::mc::ModelChecker(std::move(process), sockets[1]));
 
   mc_model_checker = model_checker_.get();
   model_checker_->start();
@@ -144,9 +144,9 @@ void Session::close()
 bool Session::actor_is_enabled(aid_t pid)
 {
   s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
-  model_checker_->process().get_channel().send(msg);
+  model_checker_->channel().send(msg);
   char buff[MC_MESSAGE_LENGTH];
-  ssize_t received = model_checker_->process().get_channel().receive(buff, MC_MESSAGE_LENGTH, true);
+  ssize_t received = model_checker_->channel().receive(buff, MC_MESSAGE_LENGTH, true);
   xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
   return ((s_mc_message_int_t*)buff)->value;
 }

@@ -32,13 +32,15 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<RemoteClientMemory> process) : process_(std::move(process)) {}
+ModelChecker::ModelChecker(std::unique_ptr<RemoteClientMemory> process, int sockfd)
+    : event_loop_(sockfd), process_(std::move(process))
+{
+}
 
 void ModelChecker::start()
 {
-  event_loop_.start(process_->get_channel().get_socket(), [](evutil_socket_t sig, short events, void* arg) {
-    ((ModelChecker*)arg)->handle_events(sig, events);
-  });
+  event_loop_.start(
+      [](evutil_socket_t sig, short events, void* arg) { ((ModelChecker*)arg)->handle_events(sig, events); });
 
   XBT_DEBUG("Waiting for the model-checked process");
   int status;
@@ -100,7 +102,7 @@ void ModelChecker::shutdown()
 
 void ModelChecker::resume(RemoteClientMemory& process)
 {
-  int res = process.get_channel().send(MC_MESSAGE_CONTINUE);
+  int res = event_loop_.get_channel().send(MC_MESSAGE_CONTINUE);
   if (res)
     throw xbt::errno_error();
   process.clear_cache();
@@ -235,7 +237,7 @@ void ModelChecker::handle_events(int sig, short events)
 {
   if (events == EV_READ) {
     char buffer[MC_MESSAGE_LENGTH];
-    ssize_t size = process_->get_channel().receive(buffer, sizeof(buffer), false);
+    ssize_t size = event_loop_.get_channel().receive(buffer, sizeof(buffer), false);
     if (size == -1 && errno != EAGAIN)
       throw simgrid::xbt::errno_error();
 
@@ -317,7 +319,7 @@ void ModelChecker::handle_simcall(Transition const& transition)
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = transition.pid_;
   m.value = transition.argument_;
-  this->process_->get_channel().send(m);
+  event_loop_.get_channel().send(m);
   this->process_->clear_cache();
   if (this->process_->running())
     event_loop_.dispatch();
@@ -325,10 +327,10 @@ void ModelChecker::handle_simcall(Transition const& transition)
 
 bool ModelChecker::checkDeadlock()
 {
-  int res = this->process().get_channel().send(MC_MESSAGE_DEADLOCK_CHECK);
+  int res = event_loop_.get_channel().send(MC_MESSAGE_DEADLOCK_CHECK);
   xbt_assert(res == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
-  ssize_t s = mc_model_checker->process().get_channel().receive(message);
+  ssize_t s = event_loop_.get_channel().receive(message);
   xbt_assert(s != -1, "Could not receive message");
   xbt_assert(s == sizeof(message) && message.type == MC_MESSAGE_DEADLOCK_CHECK_REPLY,
              "Received unexpected message %s (%i, size=%i) "

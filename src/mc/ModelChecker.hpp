@@ -31,9 +31,10 @@ class ModelChecker {
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
-  explicit ModelChecker(std::unique_ptr<RemoteClientMemory> process);
+  explicit ModelChecker(std::unique_ptr<RemoteClientMemory> process, int sockfd);
 
   RemoteClientMemory& process() { return *process_; }
+  Channel& channel() { return event_loop_.get_channel(); }
   PageStore& page_store()
   {
     return page_store_;
