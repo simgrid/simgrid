@@ -33,7 +33,7 @@ XBT_PUBLIC void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc,
 XBT_PUBLIC void sg_actor_set_stacksize(sg_actor_t actor, unsigned size);
 
 XBT_PUBLIC void sg_actor_exit();
-XBT_PUBLIC void sg_actor_on_exit(int_f_int_pvoid_t fun, void* data);
+XBT_PUBLIC void sg_actor_on_exit(void_f_int_pvoid_t fun, void* data);
 
 XBT_PUBLIC aid_t sg_actor_get_PID(const_sg_actor_t actor);
 XBT_PUBLIC aid_t sg_actor_get_PPID(const_sg_actor_t actor);

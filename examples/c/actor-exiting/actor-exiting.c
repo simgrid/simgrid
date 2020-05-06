@@ -26,10 +26,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_exiting, "Messages specific for this example");
 
-static int A_on_exit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
+static void A_on_exit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
 {
   XBT_INFO("I stop now");
-  return 0;
 }
 
 static void actorA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
@@ -43,7 +42,7 @@ static void actorB_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
 {
   sg_actor_sleep_for(2);
 }
-static int C_on_exit(int failed, XBT_ATTRIB_UNUSED void* ignored2)
+static void C_on_exit(int failed, XBT_ATTRIB_UNUSED void* ignored2)
 {
   if (failed) {
     XBT_INFO("I was killed!");
@@ -53,7 +52,6 @@ static int C_on_exit(int failed, XBT_ATTRIB_UNUSED void* ignored2)
       xbt_backtrace_display_current();
   } else
     XBT_INFO("Exiting gracefully.");
-  return 0;
 }
 static void actorC_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {

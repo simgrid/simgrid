@@ -20,6 +20,10 @@ Important user-visible changes:
 S4U:
  - the on_exit() of each actor is also executed when the simulation deadlocks.
 
+C binding:
+ - The return type of the sg_actor_on_exit() callbacks is now 'void'
+   (int value was previously ignored)
+
 General:
  - LTO is now enabled for Intel/clang compilers.
  - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.

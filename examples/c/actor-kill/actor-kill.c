@@ -12,10 +12,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_kill, "Messages specific for this example");
 
-static int victim_on_exit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
+static void victim_on_exit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
 {
   XBT_INFO("I have been killed!");
-  return 0;
 }
 
 static void victimA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])

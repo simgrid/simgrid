@@ -14,10 +14,9 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
 
 /* Executed on actor termination*/
-static int my_onexit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
+static void my_onexit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
 {
   XBT_INFO("Exiting now (done sleeping or got killed)."); /* - Just display an informative message (see tesh file) */
-  return 0;
 }
 
 /* Just sleep until termination */

@@ -55,7 +55,9 @@ int MSG_task_listen(const char* alias)
 /* ************************** Actors *************************** */
 void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data)
 {
-  sg_actor_on_exit(fun, data);
+  /* We can't use the sg_actor_on_exit, as the return type of the callback changed: the int in MSG is ignored and was
+   * removed in sg */
+  simgrid::s4u::this_actor::on_exit([fun, data](bool failed) { fun(failed ? 1 /*FAILURE*/ : 0 /*SUCCESS*/, data); });
 }
 
 int MSG_process_get_PID(const_sg_actor_t actor)
