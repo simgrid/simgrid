@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/EventLoop.hpp"
+#include <signal.h>
 #include <sys/wait.h>
 
 simgrid::mc::EventLoop::~EventLoop()
