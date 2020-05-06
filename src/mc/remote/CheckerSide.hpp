@@ -12,13 +12,13 @@
 namespace simgrid {
 namespace mc {
 
-class EventLoop {
+class CheckerSide {
   struct event_base* base_    = nullptr;
   struct event* socket_event_ = nullptr;
   struct event* signal_event_ = nullptr;
 
 public:
-  ~EventLoop();
+  ~CheckerSide();
 
   void start(int socket, void (*handler)(int, short, void*));
   void dispatch();

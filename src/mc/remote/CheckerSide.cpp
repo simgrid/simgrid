@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/remote/EventLoop.hpp"
+#include "src/mc/remote/CheckerSide.hpp"
 #include <signal.h>
 #include <sys/wait.h>
 
-simgrid::mc::EventLoop::~EventLoop()
+simgrid::mc::CheckerSide::~CheckerSide()
 {
   if (socket_event_ != nullptr)
     event_free(socket_event_);
@@ -17,7 +17,7 @@ simgrid::mc::EventLoop::~EventLoop()
     event_base_free(base_);
 }
 
-void simgrid::mc::EventLoop::start(int socket, void (*handler)(int, short, void*))
+void simgrid::mc::CheckerSide::start(int socket, void (*handler)(int, short, void*))
 {
   base_ = event_base_new();
 
@@ -28,12 +28,12 @@ void simgrid::mc::EventLoop::start(int socket, void (*handler)(int, short, void*
   event_add(signal_event_, NULL);
 }
 
-void simgrid::mc::EventLoop::dispatch()
+void simgrid::mc::CheckerSide::dispatch()
 {
   event_base_dispatch(base_);
 }
 
-void simgrid::mc::EventLoop::break_loop()
+void simgrid::mc::CheckerSide::break_loop()
 {
   event_base_loopbreak(base_);
 }

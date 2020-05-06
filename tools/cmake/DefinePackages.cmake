@@ -624,12 +624,12 @@ set(MC_SRC
   src/mc/inspect/mc_unw.cpp
   src/mc/inspect/mc_unw_vmread.cpp
 
-  src/mc/remote/Channel.cpp
-  src/mc/remote/Channel.hpp
   src/mc/remote/AppSide.cpp
   src/mc/remote/AppSide.hpp
-  src/mc/remote/EventLoop.cpp
-  src/mc/remote/EventLoop.hpp
+  src/mc/remote/Channel.cpp
+  src/mc/remote/Channel.hpp
+  src/mc/remote/CheckerSide.cpp
+  src/mc/remote/CheckerSide.hpp
   src/mc/remote/RemoteClient.hpp
   src/mc/remote/RemoteClient.cpp
   src/mc/remote/RemotePtr.hpp

@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_MODEL_CHECKER_HPP
 #define SIMGRID_MC_MODEL_CHECKER_HPP
 
-#include "src/mc/remote/EventLoop.hpp"
+#include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 #include "xbt/base.h"
 
@@ -20,7 +20,7 @@ namespace mc {
 /** State of the model-checker (global variables for the model checker)
  */
 class ModelChecker {
-  EventLoop event_loop_;
+  CheckerSide event_loop_;
   /** String pool for host names */
   std::set<std::string> hostnames_;
   // This is the parent snapshot of the current state:
