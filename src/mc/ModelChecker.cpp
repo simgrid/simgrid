@@ -269,12 +269,6 @@ void ModelChecker::handle_events(int fd, short events)
   }
 }
 
-void ModelChecker::loop()
-{
-  if (this->process().running())
-    event_base_dispatch(base_);
-}
-
 void ModelChecker::handle_waitpid()
 {
   XBT_DEBUG("Check for wait event");

@@ -85,11 +85,11 @@ Session::Session(const std::function<void()>& code)
 
   xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
 
-  std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(pid, sockets[1]));
+  auto process = std::unique_ptr<simgrid::mc::RemoteClient>(new simgrid::mc::RemoteClient(pid, sockets[1]));
   model_checker_.reset(new simgrid::mc::ModelChecker(std::move(process)));
 
   mc_model_checker = model_checker_.get();
-  mc_model_checker->start();
+  model_checker_->start();
 }
 
 Session::~Session()
@@ -101,7 +101,7 @@ Session::~Session()
 void Session::initialize()
 {
   xbt_assert(initial_snapshot_ == nullptr);
-  mc_model_checker->wait_for_requests();
+  model_checker_->wait_for_requests();
   initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0);
 }
 
@@ -113,12 +113,12 @@ void Session::execute(Transition const& transition)
 
 void Session::restore_initial_state()
 {
-  this->initial_snapshot_->restore(&mc_model_checker->process());
+  this->initial_snapshot_->restore(&model_checker_->process());
 }
 
 void Session::log_state()
 {
-  mc_model_checker->getChecker()->log_state();
+  model_checker_->getChecker()->log_state();
 
   if (not _sg_mc_dot_output_file.get().empty()) {
     fprintf(dot_output, "}\n");

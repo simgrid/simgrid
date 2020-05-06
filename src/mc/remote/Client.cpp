@@ -39,10 +39,7 @@ Client* Client::initialize()
 
   // Fetch socket from MC_ENV_SOCKET_FD:
   const char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
-  if (not fd_env)
-    xbt_die("No MC socket passed in the environment");
-  int fd =
-      xbt_str_parse_int(fd_env, bprintf("Variable %s should contain a number but contains '%%s'", MC_ENV_SOCKET_FD));
+  int fd = xbt_str_parse_int(fd_env, "Variable '" MC_ENV_SOCKET_FD "' should contain a number but contains '%s'");
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
   // Check the socket type/validity:
@@ -50,8 +47,7 @@ Client* Client::initialize()
   socklen_t socklen = sizeof(type);
   if (getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &socklen) != 0)
     xbt_die("Could not check socket type");
-  if (type != SOCK_SEQPACKET)
-    xbt_die("Unexpected socket type %i", type);
+  xbt_assert(type == SOCK_SEQPACKET, "Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 
   instance_.reset(new simgrid::mc::Client(fd));
@@ -95,8 +91,7 @@ void Client::handle_continue(const s_mc_message_t*)
 void Client::handle_simcall(const s_mc_message_simcall_handle_t* message)
 {
   smx_actor_t process = SIMIX_process_from_PID(message->pid);
-  if (not process)
-    xbt_die("Invalid pid %lu", (unsigned long)message->pid);
+  xbt_assert(process != nullptr, "Invalid pid %lu", message->pid);
   process->simcall_handle(message->value);
   if (channel_.send(MC_MESSAGE_WAITING))
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
@@ -109,6 +104,10 @@ void Client::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg)
   channel_.send(answer);
 }
 
+#define assert_msg_size(_name_, _type_)                                                                                \
+  xbt_assert(received_size == sizeof(_type_), "Unexpected size for " _name_ " (%zd != %zu)", received_size,            \
+             sizeof(_type_))
+
 void Client::handle_messages()
 {
   while (1) {
@@ -117,34 +116,27 @@ void Client::handle_messages()
     char message_buffer[MC_MESSAGE_LENGTH];
     ssize_t received_size = channel_.receive(&message_buffer, sizeof(message_buffer));
 
-    if (received_size < 0)
-      xbt_die("Could not receive commands from the model-checker");
+    xbt_assert(received_size >= 0, "Could not receive commands from the model-checker");
 
     const s_mc_message_t* message = (s_mc_message_t*)message_buffer;
     switch (message->type) {
       case MC_MESSAGE_DEADLOCK_CHECK:
-        xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zd != %zu)",
-                   received_size, sizeof(s_mc_message_t));
+        assert_msg_size("DEADLOCK_CHECK", s_mc_message_t);
         handle_deadlock_check(message);
         break;
 
       case MC_MESSAGE_CONTINUE:
-        xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for MESSAGE_CONTINUE (%zd != %zu)",
-                   received_size, sizeof(s_mc_message_t));
+        assert_msg_size("MESSAGE_CONTINUE", s_mc_message_t);
         handle_continue(message);
         return;
 
       case MC_MESSAGE_SIMCALL_HANDLE:
-        xbt_assert(received_size == sizeof(s_mc_message_simcall_handle_t),
-                   "Unexpected size for SIMCALL_HANDLE (%zd != %zu)", received_size,
-                   sizeof(s_mc_message_simcall_handle_t));
+        assert_msg_size("SIMCALL_HANDLE", s_mc_message_simcall_handle_t);
         handle_simcall((s_mc_message_simcall_handle_t*)message_buffer);
         break;
 
       case MC_MESSAGE_ACTOR_ENABLED:
-        xbt_assert(received_size == sizeof(s_mc_message_actor_enabled_t),
-                   "Unexpected size for ACTOR_ENABLED (%zd != %zu)", received_size,
-                   sizeof(s_mc_message_actor_enabled_t));
+        assert_msg_size("ACTOR_ENABLED", s_mc_message_actor_enabled_t);
         handle_actor_enabled((s_mc_message_actor_enabled_t*)message_buffer);
         break;
 
