@@ -95,21 +95,23 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
 {
   // HACK, type punning
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->process().read(temp_comm, comm_addr);
+  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
-  smx_actor_t src_proc   = mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
-  smx_actor_t dst_proc   = mc_model_checker->process().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
+  smx_actor_t src_proc =
+      mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
+  smx_actor_t dst_proc =
+      mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
   comm_pattern->src_proc = src_proc->get_pid();
   comm_pattern->dst_proc = dst_proc->get_pid();
   comm_pattern->src_host = MC_smx_actor_get_host_name(src_proc);
   comm_pattern->dst_host = MC_smx_actor_get_host_name(dst_proc);
   if (comm_pattern->data.size() == 0 && comm->src_buff_ != nullptr) {
     size_t buff_size;
-    mc_model_checker->process().read(&buff_size, remote(comm->dst_buff_size_));
+    mc_model_checker->get_remote_simulation().read(&buff_size, remote(comm->dst_buff_size_));
     comm_pattern->data.resize(buff_size);
-    mc_model_checker->process().read_bytes(comm_pattern->data.data(), comm_pattern->data.size(),
-                                           remote(comm->src_buff_));
+    mc_model_checker->get_remote_simulation().read_bytes(comm_pattern->data.data(), comm_pattern->data.size(),
+                                                         remote(comm->src_buff_));
   }
 }
 
@@ -183,14 +185,15 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
     pattern->comm_addr = static_cast<kernel::activity::CommImpl*>(simcall_comm_isend__getraw__result(request));
 
     Remote<kernel::activity::CommImpl> temp_synchro;
-    mc_model_checker->process().read(temp_synchro,
-                                     remote(static_cast<kernel::activity::CommImpl*>(pattern->comm_addr)));
+    mc_model_checker->get_remote_simulation().read(
+        temp_synchro, remote(static_cast<kernel::activity::CommImpl*>(pattern->comm_addr)));
     const kernel::activity::CommImpl* synchro = static_cast<kernel::activity::CommImpl*>(temp_synchro.get_buffer());
 
-    char* remote_name = mc_model_checker->process().read<char*>(RemotePtr<char*>(
+    char* remote_name = mc_model_checker->get_remote_simulation().read<char*>(RemotePtr<char*>(
         (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->name_ : &synchro->mbox_cpy->name_)));
-    pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
-    pattern->src_proc = mc_model_checker->process().resolve_actor(mc::remote(synchro->src_actor_.get()))->get_pid();
+    pattern->rdv      = mc_model_checker->get_remote_simulation().read_string(RemotePtr<char>(remote_name));
+    pattern->src_proc =
+        mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(synchro->src_actor_.get()))->get_pid();
     pattern->src_host = MC_smx_actor_get_host_name(issuer);
 
 #if HAVE_SMPI
@@ -202,7 +205,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
 
     if (synchro->src_buff_ != nullptr) {
       pattern->data.resize(synchro->src_buff_size_);
-      mc_model_checker->process().read_bytes(pattern->data.data(), pattern->data.size(), remote(synchro->src_buff_));
+      mc_model_checker->get_remote_simulation().read_bytes(pattern->data.data(), pattern->data.size(),
+                                                           remote(synchro->src_buff_));
     }
 #if HAVE_SMPI
     if(mpi_request.detached()){
@@ -229,15 +233,17 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
 #endif
 
     Remote<kernel::activity::CommImpl> temp_comm;
-    mc_model_checker->process().read(temp_comm, remote(static_cast<kernel::activity::CommImpl*>(pattern->comm_addr)));
+    mc_model_checker->get_remote_simulation().read(
+        temp_comm, remote(static_cast<kernel::activity::CommImpl*>(pattern->comm_addr)));
     const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
     char* remote_name;
-    mc_model_checker->process().read(
+    mc_model_checker->get_remote_simulation().read(
         &remote_name, remote(comm->get_mailbox() ? &xbt::string::to_string_data(comm->get_mailbox()->name_).data
                                                  : &xbt::string::to_string_data(comm->mbox_cpy->name_).data));
-    pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
-    pattern->dst_proc = mc_model_checker->process().resolve_actor(mc::remote(comm->dst_actor_.get()))->get_pid();
+    pattern->rdv = mc_model_checker->get_remote_simulation().read_string(RemotePtr<char>(remote_name));
+    pattern->dst_proc =
+        mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->dst_actor_.get()))->get_pid();
     pattern->dst_host = MC_smx_actor_get_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int) call_type);
@@ -334,7 +340,7 @@ void CommunicationDeterminismChecker::prepare()
   XBT_DEBUG("********* Start communication determinism verification *********");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  for (auto& actor : mc_model_checker->process().actors())
+  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
     if (mc::actor_is_enabled(actor.copy.get_buffer()))
       initial_state->add_interleaving_set(actor.copy.get_buffer());
 
@@ -357,7 +363,7 @@ void CommunicationDeterminismChecker::restoreState()
   /* Intermediate backtracking */
   State* last_state = stack_.back().get();
   if (last_state->system_state_) {
-    last_state->system_state_->restore(&mc_model_checker->process());
+    last_state->system_state_->restore(&mc_model_checker->get_remote_simulation());
     MC_restore_communications_pattern(last_state);
     return;
   }
@@ -461,7 +467,7 @@ void CommunicationDeterminismChecker::real_run()
 
       if (visited_state == nullptr) {
         /* Get enabled actors and insert them in the interleave set of the next state */
-        for (auto& actor : mc_model_checker->process().actors())
+        for (auto& actor : mc_model_checker->get_remote_simulation().actors())
           if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer()))
             next_state->add_interleaving_set(actor.copy.get_buffer());
 

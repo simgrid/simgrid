@@ -209,7 +209,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       size_t* remote_size = simcall_comm_irecv__get__dst_buff_size(req);
       size_t size         = 0;
       if (remote_size)
-        mc_model_checker->process().read_bytes(&size, sizeof(size), remote(remote_size));
+        mc_model_checker->get_remote_simulation().read_bytes(&size, sizeof(size), remote(remote_size));
 
       type     = "iRecv";
       char* p  = pointer_to_string(simcall_comm_irecv__get__dst_buff(req));
@@ -239,14 +239,16 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
         simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
         const simgrid::kernel::activity::CommImpl* act;
         if (use_remote_comm) {
-          mc_model_checker->process().read(temp_synchro,
-                                           remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
+          mc_model_checker->get_remote_simulation().read(
+              temp_synchro, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
           act = temp_synchro.get_buffer();
         } else
           act = remote_act;
 
-        smx_actor_t src_proc = mc_model_checker->process().resolve_actor(simgrid::mc::remote(act->src_actor_.get()));
-        smx_actor_t dst_proc = mc_model_checker->process().resolve_actor(simgrid::mc::remote(act->dst_actor_.get()));
+        smx_actor_t src_proc =
+            mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->src_actor_.get()));
+        smx_actor_t dst_proc =
+            mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->dst_actor_.get()));
         args                 = bprintf("comm=%s [(%ld)%s (%s)-> (%ld)%s (%s)]", p, src_proc ? src_proc->get_pid() : 0,
                        src_proc ? MC_smx_actor_get_host_name(src_proc) : "",
                        src_proc ? MC_smx_actor_get_name(src_proc) : "", dst_proc ? dst_proc->get_pid() : 0,
@@ -263,8 +265,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
       const simgrid::kernel::activity::CommImpl* act;
       if (use_remote_comm) {
-        mc_model_checker->process().read(temp_synchro,
-                                         remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
+        mc_model_checker->get_remote_simulation().read(
+            temp_synchro, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
         act = temp_synchro.get_buffer();
       } else
         act = remote_act;
@@ -278,8 +280,10 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
         type = "Test TRUE";
         p    = pointer_to_string(remote_act);
 
-        smx_actor_t src_proc = mc_model_checker->process().resolve_actor(simgrid::mc::remote(act->src_actor_.get()));
-        smx_actor_t dst_proc = mc_model_checker->process().resolve_actor(simgrid::mc::remote(act->dst_actor_.get()));
+        smx_actor_t src_proc =
+            mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->src_actor_.get()));
+        smx_actor_t dst_proc =
+            mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->dst_actor_.get()));
         args                 = bprintf("comm=%s [(%ld)%s (%s) -> (%ld)%s (%s)]", p, src_proc->get_pid(),
                        MC_smx_actor_get_name(src_proc), MC_smx_actor_get_host_name(src_proc), dst_proc->get_pid(),
                        MC_smx_actor_get_name(dst_proc), MC_smx_actor_get_host_name(dst_proc));
@@ -293,7 +297,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       size_t count = simcall_comm_waitany__get__count(req);
       if (count > 0) {
         simgrid::kernel::activity::CommImpl* remote_sync;
-        remote_sync = mc_model_checker->process().read(remote(simcall_comm_waitany__get__comms(req) + value));
+        remote_sync =
+            mc_model_checker->get_remote_simulation().read(remote(simcall_comm_waitany__get__comms(req) + value));
         char* p     = pointer_to_string(remote_sync);
         args        = bprintf("comm=%s (%d of %zu)", p, value + 1, count);
         xbt_free(p);
@@ -320,13 +325,13 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
         type = "Mutex TRYLOCK";
 
       simgrid::mc::Remote<simgrid::kernel::activity::MutexImpl> mutex;
-      mc_model_checker->process().read_bytes(mutex.get_buffer(), sizeof(mutex),
-                                             remote(req->call_ == SIMCALL_MUTEX_LOCK
-                                                        ? simcall_mutex_lock__get__mutex(req)
-                                                        : simcall_mutex_trylock__get__mutex(req)));
+      mc_model_checker->get_remote_simulation().read_bytes(mutex.get_buffer(), sizeof(mutex),
+                                                           remote(req->call_ == SIMCALL_MUTEX_LOCK
+                                                                      ? simcall_mutex_lock__get__mutex(req)
+                                                                      : simcall_mutex_trylock__get__mutex(req)));
       args = bprintf("locked = %d, owner = %d, sleeping = n/a", mutex.get_buffer()->is_locked(),
                      mutex.get_buffer()->get_owner() != nullptr
-                         ? (int)mc_model_checker->process()
+                         ? (int)mc_model_checker->get_remote_simulation()
                                .resolve_actor(simgrid::mc::remote(mutex.get_buffer()->get_owner()))
                                ->get_pid()
                          : -1);
@@ -368,11 +373,11 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
       break;
 
     case SIMCALL_COMM_WAITANY:
-      remote_act = mc_model_checker->process().read(remote(simcall_comm_testany__get__comms(req) + idx));
+      remote_act = mc_model_checker->get_remote_simulation().read(remote(simcall_comm_testany__get__comms(req) + idx));
       break;
 
     case SIMCALL_COMM_TESTANY:
-      remote_act = mc_model_checker->process().read(remote(simcall_comm_testany__get__comms(req) + idx));
+      remote_act = mc_model_checker->get_remote_simulation().read(remote(simcall_comm_testany__get__comms(req) + idx));
       break;
 
     default:
@@ -380,7 +385,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   }
 
   Remote<kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->process().read(temp_comm, remote(remote_act));
+  mc_model_checker->get_remote_simulation().read(temp_comm, remote(remote_act));
   const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
   return comm->src_actor_.get() && comm->dst_actor_.get();
 }
@@ -430,13 +435,14 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
       } else {
         kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__getraw__comm(req);
         Remote<kernel::activity::CommImpl> temp_comm;
-        mc_model_checker->process().read(temp_comm, remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
+        mc_model_checker->get_remote_simulation().read(temp_comm,
+                                                       remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
         const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
         const kernel::actor::ActorImpl* src_proc =
-            mc_model_checker->process().resolve_actor(mc::remote(comm->src_actor_.get()));
+            mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->src_actor_.get()));
         const kernel::actor::ActorImpl* dst_proc =
-            mc_model_checker->process().resolve_actor(mc::remote(comm->dst_actor_.get()));
+            mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->dst_actor_.get()));
         if (issuer->get_host())
           label =
               xbt::string_printf("[(%ld)%s] Wait [(%ld)->(%ld)]", issuer->get_pid(), MC_smx_actor_get_host_name(issuer),
@@ -450,7 +456,8 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
     case SIMCALL_COMM_TEST: {
       kernel::activity::ActivityImpl* remote_act = simcall_comm_test__getraw__comm(req);
       Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-      mc_model_checker->process().read(temp_comm, remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
+      mc_model_checker->get_remote_simulation().read(temp_comm,
+                                                     remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
       const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
       if (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr) {
         if (issuer->get_host())

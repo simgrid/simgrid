@@ -63,7 +63,7 @@ struct IgnoredHeapRegion {
  *  - stack unwinding;
  *  - etc.
  */
-class RemoteClientMemory final : public AddressSpace {
+class RemoteSimulation final : public AddressSpace {
 private:
   // Those flags are used to track down which cached information
   // is still up to date and which information needs to be updated.
@@ -73,14 +73,14 @@ private:
   static constexpr int cache_simix_processes = 4;
 
 public:
-  RemoteClientMemory(pid_t pid);
-  ~RemoteClientMemory();
+  RemoteSimulation(pid_t pid);
+  ~RemoteSimulation();
   void init();
 
-  RemoteClientMemory(RemoteClientMemory const&) = delete;
-  RemoteClientMemory(RemoteClientMemory&&)      = delete;
-  RemoteClientMemory& operator=(RemoteClientMemory const&) = delete;
-  RemoteClientMemory& operator=(RemoteClientMemory&&) = delete;
+  RemoteSimulation(RemoteSimulation const&) = delete;
+  RemoteSimulation(RemoteSimulation&&)      = delete;
+  RemoteSimulation& operator=(RemoteSimulation const&) = delete;
+  RemoteSimulation& operator=(RemoteSimulation&&) = delete;
 
   // Read memory:
   void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
@@ -115,18 +115,18 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (not(this->cache_flags_ & RemoteClientMemory::cache_heap))
+    if (not(this->cache_flags_ & RemoteSimulation::cache_heap))
       this->refresh_heap();
     return this->heap.get();
   }
   const malloc_info* get_malloc_info()
   {
-    if (not(this->cache_flags_ & RemoteClientMemory::cache_malloc))
+    if (not(this->cache_flags_ & RemoteSimulation::cache_malloc))
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
 
-  void clear_cache() { this->cache_flags_ = RemoteClientMemory::cache_none; }
+  void clear_cache() { this->cache_flags_ = RemoteSimulation::cache_none; }
 
   std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
@@ -193,7 +193,7 @@ private:
   void refresh_malloc_info();
   void refresh_simix();
 
-  pid_t pid_ = -1;
+  pid_t pid_    = -1;
   bool running_ = false;
   std::vector<xbt::VmMap> memory_map_;
   RemotePtr<void> maestro_stack_start_;
@@ -225,7 +225,7 @@ public:
 
 private:
   /** State of the cache (which variables are up to date) */
-  int cache_flags_ = RemoteClientMemory::cache_none;
+  int cache_flags_ = RemoteSimulation::cache_none;
 
 public:
   /** Address of the heap structure in the MCed process. */

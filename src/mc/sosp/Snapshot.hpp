@@ -8,7 +8,7 @@
 
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
-#include "src/mc/remote/RemoteClientMemory.hpp"
+#include "src/mc/remote/RemoteSimulation.hpp"
 #include "src/mc/sosp/Region.hpp"
 
 // ***** MC Snapshot
@@ -60,13 +60,13 @@ namespace mc {
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   /* Initialization */
-  Snapshot(int num_state, RemoteClientMemory* process = &mc_model_checker->process());
+  Snapshot(int num_state, RemoteSimulation* get_remote_simulation = &mc_model_checker->get_remote_simulation());
   ~Snapshot() = default;
 
   /* Regular use */
   bool on_heap(const void* address) const
   {
-    const s_xbt_mheap_t* heap = process()->get_heap();
+    const s_xbt_mheap_t* heap = get_remote_simulation()->get_heap();
     return address >= heap->heapbase && address < heap->breakval;
   }
 
@@ -74,7 +74,7 @@ public:
                    ReadOptions options = ReadOptions::none()) const override;
   Region* get_region(const void* addr) const;
   Region* get_region(const void* addr, Region* hinted_region) const;
-  void restore(RemoteClientMemory* process);
+  void restore(RemoteSimulation* get_remote_simulation);
 
   // To be private
   int num_state_;
@@ -89,8 +89,8 @@ public:
 
 private:
   void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
-  void snapshot_regions(RemoteClientMemory* process);
-  void snapshot_stacks(RemoteClientMemory* process);
+  void snapshot_regions(RemoteSimulation* get_remote_simulation);
+  void snapshot_stacks(RemoteSimulation* get_remote_simulation);
 };
 } // namespace mc
 } // namespace simgrid

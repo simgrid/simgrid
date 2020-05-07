@@ -111,7 +111,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
       simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> remote_act =
           remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(&actor->simcall)));
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_act;
-      mc_model_checker->process().read(temp_act, remote_act);
+      mc_model_checker->get_remote_simulation().read(temp_act, remote_act);
       const simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();
       if (act->src_actor_.get() && act->dst_actor_.get())
         state->transition_.argument_ = 0; // OK
@@ -155,9 +155,9 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
     case SIMCALL_COMM_WAITANY: {
       state->internal_req_.call_ = SIMCALL_COMM_WAIT;
       simgrid::kernel::activity::CommImpl* remote_comm;
-      remote_comm = mc_model_checker->process().read(
+      remote_comm = mc_model_checker->get_remote_simulation().read(
           remote(simcall_comm_waitany__get__comms(req) + state->transition_.argument_));
-      mc_model_checker->process().read(state->internal_comm_, remote(remote_comm));
+      mc_model_checker->get_remote_simulation().read(state->internal_comm_, remote(remote_comm));
       simcall_comm_wait__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
       simcall_comm_wait__set__timeout(&state->internal_req_, 0);
       break;
@@ -167,9 +167,9 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
       state->internal_req_.call_ = SIMCALL_COMM_TEST;
 
       if (state->transition_.argument_ > 0) {
-        simgrid::kernel::activity::CommImpl* remote_comm = mc_model_checker->process().read(
+        simgrid::kernel::activity::CommImpl* remote_comm = mc_model_checker->get_remote_simulation().read(
             remote(simcall_comm_testany__get__comms(req) + state->transition_.argument_));
-        mc_model_checker->process().read(state->internal_comm_, remote(remote_comm));
+        mc_model_checker->get_remote_simulation().read(state->internal_comm_, remote(remote_comm));
       }
 
       simcall_comm_test__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
@@ -177,15 +177,15 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
       break;
 
     case SIMCALL_COMM_WAIT:
-      mc_model_checker->process().read_bytes(&state->internal_comm_, sizeof(state->internal_comm_),
-                                             remote(simcall_comm_wait__getraw__comm(req)));
+      mc_model_checker->get_remote_simulation().read_bytes(&state->internal_comm_, sizeof(state->internal_comm_),
+                                                           remote(simcall_comm_wait__getraw__comm(req)));
       simcall_comm_wait__set__comm(&state->executed_req_, state->internal_comm_.get_buffer());
       simcall_comm_wait__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
       break;
 
     case SIMCALL_COMM_TEST:
-      mc_model_checker->process().read_bytes(&state->internal_comm_, sizeof(state->internal_comm_),
-                                             remote(simcall_comm_test__getraw__comm(req)));
+      mc_model_checker->get_remote_simulation().read_bytes(&state->internal_comm_, sizeof(state->internal_comm_),
+                                                           remote(simcall_comm_test__getraw__comm(req)));
       simcall_comm_test__set__comm(&state->executed_req_, state->internal_comm_.get_buffer());
       simcall_comm_test__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
       break;
@@ -200,7 +200,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
 
 smx_simcall_t MC_state_choose_request(simgrid::mc::State* state)
 {
-  for (auto& actor : mc_model_checker->process().actors()) {
+  for (auto& actor : mc_model_checker->get_remote_simulation().actors()) {
     /* Only consider the actors that were marked as interleaving by the checker algorithm */
     if (not state->actor_states_[actor.copy.get_buffer()->get_pid()].is_todo())
       continue;

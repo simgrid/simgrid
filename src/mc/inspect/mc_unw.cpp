@@ -12,7 +12,7 @@
 
 #include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/inspect/Frame.hpp"
-#include "src/mc/remote/RemoteClientMemory.hpp"
+#include "src/mc/remote/RemoteSimulation.hpp"
 
 #include <cstring>
 
@@ -223,7 +223,7 @@ unw_addr_space_t UnwindContext::createUnwindAddressSpace()
   return unw_create_addr_space(&UnwindContext::accessors, BYTE_ORDER);
 }
 
-void UnwindContext::initialize(simgrid::mc::RemoteClientMemory* process, unw_context_t* c)
+void UnwindContext::initialize(simgrid::mc::RemoteSimulation* process, unw_context_t* c)
 {
   this->address_space_ = process;
   this->process_      = process;

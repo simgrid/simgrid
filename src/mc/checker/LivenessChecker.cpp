@@ -26,14 +26,14 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
                          std::shared_ptr<State> graph_state)
     : num(pair_num), automaton_state(automaton_state)
 {
-  RemoteClientMemory* process = &(mc_model_checker->process());
+  RemoteSimulation* process = &(mc_model_checker->get_remote_simulation());
 
   this->graph_state = std::move(graph_state);
   if (this->graph_state->system_state_ == nullptr)
     this->graph_state->system_state_ = std::make_shared<Snapshot>(pair_num);
   this->heap_bytes_used = mmalloc_get_bytes_used_remote(process->get_heap()->heaplimit, process->get_malloc_info());
 
-  this->actors_count = mc_model_checker->process().actors().size();
+  this->actors_count = mc_model_checker->get_remote_simulation().actors().size();
 
   this->other_num = -1;
   this->atomic_propositions = std::move(atomic_propositions);
@@ -123,7 +123,7 @@ void LivenessChecker::replay()
   if(_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (pair->graph_state->system_state_) {
-      pair->graph_state->system_state_->restore(&mc_model_checker->process());
+      pair->graph_state->system_state_->restore(&mc_model_checker->get_remote_simulation());
       return;
     }
   }
@@ -273,7 +273,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   else
     next_pair->depth = 1;
   /* Get enabled actors and insert them in the interleave set of the next graph_state */
-  for (auto& actor : mc_model_checker->process().actors())
+  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
     if (mc::actor_is_enabled(actor.copy.get_buffer()))
       next_pair->graph_state->add_interleaving_set(actor.copy.get_buffer());
   next_pair->requests = next_pair->graph_state->interleave_size();

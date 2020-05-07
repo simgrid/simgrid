@@ -31,7 +31,7 @@ static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
  *  @param target       Local vector (to be filled with copies of `s_smx_actor_t`)
  *  @param remote_dynar Address of the process dynar in the remote list
  */
-static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteClientMemory* process,
+static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteSimulation* process,
                                                  std::vector<simgrid::mc::ActorInformation>& target,
                                                  simgrid::mc::RemotePtr<s_xbt_dynar_t> remote_dynar)
 {
@@ -57,9 +57,9 @@ static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteClient
 namespace simgrid {
 namespace mc {
 
-void RemoteClientMemory::refresh_simix()
+void RemoteSimulation::refresh_simix()
 {
-  if (this->cache_flags_ & RemoteClientMemory::cache_simix_processes)
+  if (this->cache_flags_ & RemoteSimulation::cache_simix_processes)
     return;
 
   // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
@@ -81,7 +81,7 @@ void RemoteClientMemory::refresh_simix()
   MC_process_refresh_simix_actor_dynar(this, this->smx_dead_actors_infos,
                                        remote(simix_global.get_buffer()->dead_actors_vector));
 
-  this->cache_flags_ |= RemoteClientMemory::cache_simix_processes;
+  this->cache_flags_ |= RemoteSimulation::cache_simix_processes;
 }
 
 }
@@ -104,10 +104,10 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req)
   auto address = simgrid::mc::remote(req->issuer_);
 
   // Lookup by address:
-  for (auto& actor : mc_model_checker->process().actors())
+  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
     if (actor.address == address)
       return actor.copy.get_buffer();
-  for (auto& actor : mc_model_checker->process().dead_actors())
+  for (auto& actor : mc_model_checker->get_remote_simulation().dead_actors())
     if (actor.address == address)
       return actor.copy.get_buffer();
 
@@ -119,7 +119,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
   if (mc_model_checker == nullptr)
     return actor->get_host()->get_cname();
 
-  const simgrid::mc::RemoteClientMemory* process = &mc_model_checker->process();
+  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
@@ -134,7 +134,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 
 const char* MC_smx_actor_get_name(smx_actor_t actor)
 {
-  const simgrid::mc::RemoteClientMemory* process = &mc_model_checker->process();
+  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
   if (mc_model_checker == nullptr)
     return actor->get_cname();
 
@@ -150,8 +150,8 @@ unsigned long MC_smx_get_maxpid()
 {
   unsigned long maxpid;
   const char* name = "simgrid::kernel::actor::maxpid";
-  if (mc_model_checker->process().find_variable(name) == nullptr)
+  if (mc_model_checker->get_remote_simulation().find_variable(name) == nullptr)
     name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
-  mc_model_checker->process().read_variable(name, &maxpid, sizeof(maxpid));
+  mc_model_checker->get_remote_simulation().read_variable(name, &maxpid, sizeof(maxpid));
   return maxpid;
 }

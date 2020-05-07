@@ -69,7 +69,7 @@ void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int v
 
     else {
       simgrid::kernel::activity::ActivityImpl* addr;
-      addr      = mc_model_checker->process().read(remote(simcall_comm_waitany__getraw__comms(req) + value));
+      addr = mc_model_checker->get_remote_simulation().read(remote(simcall_comm_waitany__getraw__comms(req) + value));
       comm_addr = remote(static_cast<simgrid::kernel::activity::CommImpl*>(addr));
       }
       checker->complete_comm_pattern(comm_addr, MC_smx_simcall_get_issuer(req)->get_pid(), backtracking);

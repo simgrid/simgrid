@@ -16,7 +16,7 @@ namespace mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-void Snapshot::snapshot_regions(RemoteClientMemory* process)
+void Snapshot::snapshot_regions(RemoteSimulation* process)
 {
   snapshot_regions_.clear();
 
@@ -71,7 +71,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
     else if (not current_variable.location_list.empty()) {
       dwarf::Location location = simgrid::dwarf::resolve(current_variable.location_list, current_variable.object_info,
                                                          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base,
-                                                         &mc_model_checker->process());
+                                                         &mc_model_checker->get_remote_simulation());
 
       if (not location.in_memory())
         xbt_die("Cannot handle non-address variable");
@@ -97,7 +97,7 @@ static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
 {
-  const RemoteClientMemory* process = &mc_model_checker->process();
+  const RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -149,7 +149,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_
   return result;
 }
 
-void Snapshot::snapshot_stacks(RemoteClientMemory* process)
+void Snapshot::snapshot_stacks(RemoteSimulation* process)
 {
   for (auto const& stack : process->stack_areas()) {
     s_mc_snapshot_stack_t st;
@@ -174,30 +174,31 @@ void Snapshot::snapshot_stacks(RemoteClientMemory* process)
 
 static void snapshot_handle_ignore(Snapshot* snapshot)
 {
-  xbt_assert(snapshot->process());
+  xbt_assert(snapshot->get_remote_simulation());
 
   // Copy the memory:
-  for (auto const& region : snapshot->process()->ignored_regions()) {
+  for (auto const& region : snapshot->get_remote_simulation()->ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
-    snapshot->process()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
+    snapshot->get_remote_simulation()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
     snapshot->ignored_data_.push_back(std::move(ignored_data));
   }
 
   // Zero the memory:
-  for (auto const& region : snapshot->process()->ignored_regions())
-    snapshot->process()->clear_bytes(remote(region.addr), region.size);
+  for (auto const& region : snapshot->get_remote_simulation()->ignored_regions())
+    snapshot->get_remote_simulation()->clear_bytes(remote(region.addr), region.size);
 }
 
 static void snapshot_ignore_restore(const simgrid::mc::Snapshot* snapshot)
 {
   for (auto const& ignored_data : snapshot->ignored_data_)
-    snapshot->process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(), remote(ignored_data.start));
+    snapshot->get_remote_simulation()->write_bytes(ignored_data.data.data(), ignored_data.data.size(),
+                                                   remote(ignored_data.start));
 }
 
-Snapshot::Snapshot(int num_state, RemoteClientMemory* process) : AddressSpace(process), num_state_(num_state)
+Snapshot::Snapshot(int num_state, RemoteSimulation* process) : AddressSpace(process), num_state_(num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
@@ -243,7 +244,7 @@ void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> addre
       return buffer;
     }
   } else
-    return this->process()->read_bytes(buffer, size, address, options);
+    return this->get_remote_simulation()->read_bytes(buffer, size, address, options);
 }
 /** @brief Find the snapshotted region from a pointer
  *
@@ -272,7 +273,7 @@ Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
     return get_region(addr);
 }
 
-void Snapshot::restore(RemoteClientMemory* process)
+void Snapshot::restore(RemoteSimulation* process)
 {
   XBT_DEBUG("Restore snapshot %i", num_state_);
 

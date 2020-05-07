@@ -147,7 +147,7 @@ void SafetyChecker::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      for (auto& remoteActor : mc_model_checker->process().actors()) {
+      for (auto& remoteActor : mc_model_checker->get_remote_simulation().actors()) {
         auto actor = remoteActor.copy.get_buffer();
         if (actor_is_enabled(actor)) {
           next_state->add_interleaving_set(actor);
@@ -246,7 +246,7 @@ void SafetyChecker::restore_state()
   /* Intermediate backtracking */
   const State* last_state = stack_.back().get();
   if (last_state->system_state_) {
-    last_state->system_state_->restore(&mc_model_checker->process());
+    last_state->system_state_->restore(&mc_model_checker->get_remote_simulation());
     return;
   }
 
@@ -288,7 +288,7 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
   XBT_DEBUG("Initial state");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  for (auto& actor : mc_model_checker->process().actors())
+  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
     if (actor_is_enabled(actor.copy.get_buffer())) {
       initial_state->add_interleaving_set(actor.copy.get_buffer());
       if (reductionMode_ != ReductionMode::none)
