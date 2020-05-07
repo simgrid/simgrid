@@ -413,7 +413,7 @@ Simulating Asynchronous Send
 
 (this configuration item is experimental and may change or disappear)
 
-It is possible to specify that messages below a certain size will be
+It is possible to specify that messages below a certain size (in bytes) will be
 sent as soon as the call to MPI_Send is issued, without waiting for
 the correspondant receive. This threshold can be configured through
 the ``smpi/async-small-thresh`` item. The default value is 0. This
@@ -515,10 +515,10 @@ In SMPI, this depends on the message size, that is compared against two threshol
 - if (:ref:`smpi/send-is-detached-thresh <cfg=smpi/send-is-detached-thresh>` < size) then
   MPI_Send returns only when the message has actually been sent over the network. This is known as the rendez-vous mode.
 
-The ``smpi/buffering`` option gives an easier interface to choose between these semantics. It can take two values:
+The ``smpi/buffering`` (only valid with MC) option gives an easier interface to choose between these semantics. It can take two values:
 
-- **zero:** means that buffering should be disabled. Blocking communications are actually blocking.
-- **infty:** means that buffering should be made infinite. Blocking communications are non-blocking.
+- **zero:** means that buffering should be disabled. All communications are actually blocking.
+- **infty:** means that buffering should be made infinite. All communications are non-blocking.
 
 .. _cfg=model-check/property:
 
@@ -1052,7 +1052,7 @@ The possible throughput of network links is often dependent on the
 message sizes, as protocols may adapt to different message sizes. With
 this option, a series of message sizes and factors are given, helping
 the simulation to be more realistic. For instance, the current default
-value means that messages with size 65472 and more will get a total of
+value means that messages with size 65472 bytes and more will get a total of
 MAX_BANDWIDTH*0.940694, messages of size 15424 to 65471 will get
 MAX_BANDWIDTH*0.697866, and so on (where MAX_BANDWIDTH denotes the
 bandwidth of the link).
@@ -1291,7 +1291,7 @@ values, for example ``1:3:2;10:5:1``.  The sections are divided by ";"
 so this example contains two sections.  Furthermore, each section
 consists of three values.
 
-1. The first value denotes the minimum size for this section to take effect;
+1. The first value denotes the minimum size in bytes for this section to take effect;
    read it as "if message size is greater than this value (and other section has a larger
    first value that is also smaller than the message size), use this".
    In the first section above, this value is "1".
