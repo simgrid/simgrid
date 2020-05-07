@@ -250,9 +250,9 @@ void Global::display_all_actor_status()
       if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(actor->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
-      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %p (%s) in state %d to finish", actor->get_pid(),
+      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %#zx (%s) in state %d to finish", actor->get_pid(),
                actor->get_cname(), actor->get_host()->get_cname(), synchro_description,
-               (xbt_log_no_loc ? (void*)0xDEADBEEF : actor->waiting_synchro.get()), name,
+               (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)actor->waiting_synchro.get()), name,
                (int)actor->waiting_synchro->state_);
     } else {
       XBT_INFO("Actor %ld (%s@%s)", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname());
