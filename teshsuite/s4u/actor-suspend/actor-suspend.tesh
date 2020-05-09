@@ -1,0 +1,10 @@
+$ ./actor-suspend ${platfdir}/small_platform.xml --log=no_loc
+> [Tremblay:Suspender:(1) 0.000000] [mwe/INFO] Suspend the receiver...
+> [Tremblay:Receiver:(2) 0.000000] [mwe/INFO] Starting.
+> [Tremblay:Suspender:(1) 0.000000] [mwe/INFO] Resume the receiver...
+> [Tremblay:Suspender:(1) 0.000000] [mwe/INFO] Sleeping 10 sec...
+> [Tremblay:Suspender:(1) 10.000000] [mwe/INFO] Done!
+> [10.000000] [simix_kernel/CRITICAL] Oops! Deadlock or code not perfectly clean.
+> [10.000000] [simix_kernel/INFO] 1 actors are still running, waiting for something.
+> [10.000000] [simix_kernel/INFO] Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
+> [10.000000] [simix_kernel/INFO] Actor 2 (Receiver@Tremblay): waiting for execution activity 0xdeadbeef (suspend) in state 3 to finish

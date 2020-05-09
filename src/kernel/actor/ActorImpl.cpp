@@ -297,6 +297,7 @@ void ActorImpl::yield()
     xbt_assert(exception_ == nullptr, "Gasp! This exception may be lost by subsequent calls.");
     suspended_ = false;
     suspend();
+    yield(); // Yield back to maestro without proceeding with my execution. I'll get resumed at some point
   }
 
   if (exception_ != nullptr) {
