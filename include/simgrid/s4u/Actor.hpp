@@ -50,7 +50,7 @@ class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
   kernel::actor::ActorImpl* const pimpl_;
 #endif
 
-  explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
+  explicit Actor(kernel::actor::ActorImpl* pimpl) : pimpl_(pimpl) {}
 
 public:
 #ifndef DOXYGEN

@@ -46,7 +46,7 @@ public:
 
   bool test();
   void wait_for(actor::ActorImpl* issuer, double timeout);
-  virtual ActivityImpl& set_timeout(double timeout) { THROW_UNIMPLEMENTED; }
+  virtual ActivityImpl& set_timeout(double) { THROW_UNIMPLEMENTED; }
 
   virtual void suspend();
   virtual void resume();
