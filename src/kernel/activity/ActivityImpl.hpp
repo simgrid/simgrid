@@ -36,6 +36,7 @@ enum class State {
 
 class XBT_PUBLIC ActivityImpl {
   std::atomic_int_fast32_t refcount_{0};
+  std::string name_ = "";
 
 public:
   virtual ~ActivityImpl();
@@ -43,6 +44,18 @@ public:
   State state_   = State::WAITING;      /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
+
+protected:
+  void inline set_name(const std::string& name)
+  {
+    // This is to keep name_ private while allowing ActivityImpl_T<??> to set it and then return a Ptr to qualified
+    // child type
+    name_ = name;
+  }
+
+public:
+  const std::string& get_name() { return name_; }
+  const char* get_cname() { return name_.c_str(); }
 
   bool test();
   void wait_for(actor::ActorImpl* issuer, double timeout);
@@ -68,19 +81,19 @@ public:
   static xbt::signal<void(ActivityImpl const&)> on_resumed;
 };
 
+/* This class exists to allow chained setters as in exec->set_name()->set_priority()->set_blah()
+ * The difficulty is that set_name() must return a qualified child class, not the generic ancestor
+ * But the getter is still in the ancestor to be usable on generic activities with no downcast */
 template <class AnyActivityImpl> class ActivityImpl_T : public ActivityImpl {
 private:
-  std::string name_             = "";
   std::string tracing_category_ = "";
 
 public:
   AnyActivityImpl& set_name(const std::string& name)
   {
-    name_ = name;
+    ActivityImpl::set_name(name);
     return static_cast<AnyActivityImpl&>(*this);
   }
-  const std::string& get_name() { return name_; }
-  const char* get_cname() { return name_.c_str(); }
 
   AnyActivityImpl& set_tracing_category(const std::string& category)
   {

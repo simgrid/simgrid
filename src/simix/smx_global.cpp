@@ -230,10 +230,6 @@ void Global::display_all_actor_status()
 
     if (actor->waiting_synchro_) {
       const char* synchro_description = "unknown";
-      // we don't care about the Activity type to get its name, use RawImpl
-      const char* name = boost::static_pointer_cast<kernel::activity::ActivityImpl_T<kernel::activity::RawImpl>>(
-                             actor->waiting_synchro_)
-                             ->get_cname();
 
       if (boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "execution";
@@ -252,8 +248,8 @@ void Global::display_all_actor_status()
 
       XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %#zx (%s) in state %d to finish", actor->get_pid(),
                actor->get_cname(), actor->get_host()->get_cname(), synchro_description,
-               (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)actor->waiting_synchro_.get()), name,
-               (int)actor->waiting_synchro_->state_);
+               (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)actor->waiting_synchro_.get()),
+               actor->waiting_synchro_->get_cname(), (int)actor->waiting_synchro_->state_);
     } else {
       XBT_INFO("Actor %ld (%s@%s)", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname());
     }
