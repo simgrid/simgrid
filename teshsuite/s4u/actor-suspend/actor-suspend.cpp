@@ -58,8 +58,8 @@ int main(int argc, char** argv)
   engine->load_platform(argv[1]);
   simgrid::s4u::Host* host = simgrid::s4u::Host::by_name("Tremblay");
 
-  auto suspender = simgrid::s4u::Actor::create("Suspender", host, Suspender());
-  receiver       = simgrid::s4u::Actor::create("Receiver", host, Receiver());
+  simgrid::s4u::Actor::create("Suspender", host, Suspender());
+  receiver = simgrid::s4u::Actor::create("Receiver", host, Receiver());
 
   engine->run();
 
