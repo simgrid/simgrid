@@ -22,11 +22,9 @@ public:
   void operator()()
   {
     XBT_INFO("Starting.");
-    simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("receiver");
-    void* data                     = (void*)2;
-    data                           = mailbox->get();
-    xbt_die("get() has returned (even though it shouldn't!) with a %s message",
-            (data == nullptr ? "null" : "non-null"));
+    auto mailbox = simgrid::s4u::Mailbox::by_name("receiver");
+    int data     = *(int*)mailbox->get();
+    XBT_INFO("Got %d at the end", data);
   }
 };
 
@@ -46,6 +44,12 @@ public:
 
     XBT_INFO("Sleeping 10 sec...");
     simgrid::s4u::this_actor::sleep_for(10);
+
+    XBT_INFO("Sending a message to the receiver...");
+    auto mailbox = simgrid::s4u::Mailbox::by_name("receiver");
+    int data     = 42;
+    mailbox->put(&data, 4);
+
     XBT_INFO("Done!");
   }
 };
