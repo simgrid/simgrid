@@ -33,10 +33,6 @@ class Suspender {
 public:
   void operator()()
   {
-
-    // If we sleep a bit here, this MWE works because the suspender is not trying to suspend someone executed later in
-    // the same scheduling round simgrid::s4u::this_actor::sleep_for(0.01);
-
     XBT_INFO("Suspend the receiver...");
     receiver->suspend();
     XBT_INFO("Resume the receiver...");

@@ -89,7 +89,7 @@ private:
   std::string tracing_category_ = "";
 
 public:
-  AnyActivityImpl& set_name(const std::string& name)
+  AnyActivityImpl& set_name(const std::string& name) /* Hides the function in the ancestor class */
   {
     ActivityImpl::set_name(name);
     return static_cast<AnyActivityImpl&>(*this);
