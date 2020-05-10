@@ -25,6 +25,11 @@ public:
   explicit CheckerSide(int sockfd) : channel_(sockfd) {}
   ~CheckerSide();
 
+  // No copy:
+  CheckerSide(CheckerSide const&) = delete;
+  CheckerSide& operator=(CheckerSide const&) = delete;
+  CheckerSide& operator=(CheckerSide&&) = delete;
+
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
 
