@@ -290,7 +290,7 @@ void ModelChecker::handle_waitpid()
 #ifdef __linux__
         ptrace(PTRACE_CONT, remote_simulation_->pid(), 0, WSTOPSIG(status));
 #elif defined BSD
-        ptrace(PT_CONTINUE, app_remote_mem_.pid(), (caddr_t)1, WSTOPSIG(status));
+        ptrace(PT_CONTINUE, remote_simulation_->pid(), (caddr_t)1, WSTOPSIG(status));
 #endif
         xbt_assert(errno == 0, "Could not PTRACE_CONT");
       }
