@@ -14,7 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(hostload_test, "Messages specific for this example");
 
-static void execute_load_test(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void execute_load_test(int argc, char* argv[])
 {
   sg_host_t host = sg_host_by_name("MyHost1");
 
@@ -80,7 +80,7 @@ static void execute_load_test(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char
            simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_computed_flops(host));
 }
 
-static void change_speed(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void change_speed(int argc, char* argv[])
 {
   sg_host_t host = sg_host_by_name("MyHost1");
   sg_actor_sleep_for(10.5);

@@ -12,7 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(exec_remote, "Messages specific for this example");
 
-static void wizard(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void wizard(int argc, char* argv[])
 {
   const_sg_host_t fafard = sg_host_by_name("Fafard");
   sg_host_t ginette      = sg_host_by_name("Ginette");

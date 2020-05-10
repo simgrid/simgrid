@@ -15,7 +15,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(cloud_simple, "Messages specific for this example");
 
-static void computation_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void computation_fun(int argc, char* argv[])
 {
   const char* pr_name   = sg_actor_get_name(sg_actor_self());
   const char* host_name = sg_host_get_name(sg_host_self());
@@ -80,7 +80,7 @@ static void launch_communication_worker(sg_host_t tx_host, sg_host_t rx_host)
   xbt_free(mbox);
 }
 
-static void master_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void master_main(int argc, char* argv[])
 {
   sg_host_t pm0 = sg_host_by_name("Fafard");
   sg_host_t pm1 = sg_host_by_name("Tremblay");

@@ -14,7 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(energy_exec_ptask, "Messages specific for this example");
 
-static void runner(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void runner(int argc, char* argv[])
 {
   /* Retrieve the list of all hosts as an array of hosts */
   int host_count   = sg_host_count();

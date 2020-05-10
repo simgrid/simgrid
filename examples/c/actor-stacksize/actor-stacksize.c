@@ -14,7 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_stacksize, "Messages specific for this example");
 
-static void actor(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void actor(int argc, char* argv[])
 {
   XBT_INFO("Hello");
 }

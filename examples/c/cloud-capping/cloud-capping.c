@@ -190,7 +190,7 @@ static void test_two_tasks(sg_host_t hostA, sg_host_t hostB)
   sg_actor_sleep_for(1000);
 }
 
-static void master_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void master_main(int argc, char* argv[])
 {
   sg_host_t pm0 = sg_host_by_name("Fafard");
   sg_host_t pm1 = sg_host_by_name("Fafard");

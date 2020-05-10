@@ -37,7 +37,7 @@ static void send_tasks(int nb_workers)
   }
 }
 
-static void worker_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void worker_fun(int argc, char* argv[])
 {
   const char* pr_name = sg_actor_self_get_name();
   char mbox_name[MAXMBOXLEN];
@@ -63,7 +63,7 @@ static void worker_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[
   }
 }
 
-static void master_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void master_fun(int argc, char* argv[])
 {
   sg_host_t* worker_pms = sg_actor_self_data();
 

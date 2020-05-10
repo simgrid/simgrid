@@ -35,7 +35,7 @@ static void worker(int argc, char* argv[])
   XBT_INFO("Done");
 }
 
-static void monitor(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void monitor(int argc, char* argv[])
 {
   sg_host_t jacquelin = sg_host_by_name("Jacquelin");
   sg_host_t fafard    = sg_host_by_name("Fafard");

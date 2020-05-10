@@ -56,7 +56,7 @@ static void peer_forward_file(peer_t p)
   sg_comm_wait_all(p->pending_sends, nb_pending_sends);
 }
 
-static peer_t peer_init(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static peer_t peer_init(int argc, char* argv[])
 {
   peer_t p           = xbt_malloc(sizeof(s_peer_t));
   p->prev            = NULL;

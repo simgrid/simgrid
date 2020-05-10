@@ -12,12 +12,12 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_kill, "Messages specific for this example");
 
-static void victim_on_exit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
+static void victim_on_exit(int ignored1, void* ignored2)
 {
   XBT_INFO("I have been killed!");
 }
 
-static void victimA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void victimA_fun(int argc, char* argv[])
 {
   sg_actor_on_exit(&victim_on_exit, NULL);
   XBT_INFO("Hello!");
@@ -28,12 +28,12 @@ static void victimA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv
   XBT_INFO("Bye!"); /* - But will never reach the end of it */
 }
 
-static void victimB_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void victimB_fun(int argc, char* argv[])
 {
   XBT_INFO("Terminate before being killed");
 }
 
-static void killer_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void killer_fun(int argc, char* argv[])
 {
   XBT_INFO("Hello!"); /* - First start a victim actor */
   sg_actor_t victimA = sg_actor_create("victim A", sg_host_by_name("Fafard"), victimA_fun, 0, NULL);

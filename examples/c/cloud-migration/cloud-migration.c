@@ -48,7 +48,7 @@ static void vm_migrate_async(const_sg_vm_t vm, const_sg_host_t dst_pm)
   sg_actor_create("mig_wrk", sg_host_self(), migration_worker_main, 3, argv);
 }
 
-static void master_main(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void master_main(int argc, char* argv[])
 {
   sg_host_t pm0       = sg_host_by_name("Fafard");
   sg_host_t pm1       = sg_host_by_name("Tremblay");

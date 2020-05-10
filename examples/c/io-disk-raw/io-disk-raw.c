@@ -17,7 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(disk, "Messages specific for this simulation");
 
-static void host(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void host(int argc, char* argv[])
 {
   const char* host_name = sg_host_get_name(sg_host_self());
 

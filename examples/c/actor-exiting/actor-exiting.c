@@ -26,23 +26,23 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_exiting, "Messages specific for this example");
 
-static void A_on_exit(XBT_ATTRIB_UNUSED int ignored1, XBT_ATTRIB_UNUSED void* ignored2)
+static void A_on_exit(int ignored1, void* ignored2)
 {
   XBT_INFO("I stop now");
 }
 
-static void actorA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void actorA_fun(int argc, char* argv[])
 {
   // Register a lambda function to be executed once it stops
   sg_actor_on_exit(&A_on_exit, NULL);
 
   sg_actor_sleep_for(1);
 }
-static void actorB_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void actorB_fun(int argc, char* argv[])
 {
   sg_actor_sleep_for(2);
 }
-static void C_on_exit(int failed, XBT_ATTRIB_UNUSED void* ignored2)
+static void C_on_exit(int failed, void* ignored2)
 {
   if (failed) {
     XBT_INFO("I was killed!");
@@ -53,7 +53,7 @@ static void C_on_exit(int failed, XBT_ATTRIB_UNUSED void* ignored2)
   } else
     XBT_INFO("Exiting gracefully.");
 }
-static void actorC_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void actorC_fun(int argc, char* argv[])
 {
   // Register a lambda function to be executed once it stops
   sg_actor_on_exit(&C_on_exit, NULL);

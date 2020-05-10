@@ -13,14 +13,14 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_join, "Messages specific for this example");
 
-static void sleeper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void sleeper(int argc, char* argv[])
 {
   XBT_INFO("Sleeper started");
   sg_actor_sleep_for(3);
   XBT_INFO("I'm done. See you!");
 }
 
-static void master(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void master(int argc, char* argv[])
 {
   sg_actor_t actor;
 

@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(exec_async, "Messages specific for this example");
 
 /* This actor simply waits for its task completion after starting it.
  * That's exactly equivalent to synchronous execution. */
-static void waiter(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void waiter(int argc, char* argv[])
 {
   double computation_amount = sg_host_speed(sg_host_self());
   XBT_INFO("Execute %g flops, should take 1 second.", computation_amount);
@@ -27,7 +27,7 @@ static void waiter(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 }
 
 /* This actor tests the ongoing execution until its completion, and don't wait before it's terminated. */
-static void monitor(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void monitor(int argc, char* argv[])
 {
   double computation_amount = sg_host_speed(sg_host_self());
   XBT_INFO("Execute %g flops, should take 1 second.", computation_amount);
@@ -44,7 +44,7 @@ static void monitor(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 }
 
 /* This actor cancels the ongoing execution after a while. */
-static void canceller(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void canceller(int argc, char* argv[])
 {
   double computation_amount = sg_host_speed(sg_host_self());
 

@@ -29,7 +29,7 @@ static void show_info(unsigned int disk_count, const sg_disk_t* disks)
   }
 }
 
-static void host(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void host(int argc, char* argv[])
 {
   unsigned int disk_count;
   sg_disk_t* disks;

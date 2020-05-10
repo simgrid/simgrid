@@ -54,24 +54,24 @@ static void test_host(const char* hostname)
   xbt_dict_free(&props);
 }
 
-static void alice(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void alice(int argc, char* argv[])
 { /* Dump what we have on the current host */
   test_host("host1");
 }
 
-static void carole(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void carole(int argc, char* argv[])
 {                        /* Dump what we have on a remote host */
   sg_actor_sleep_for(1); // Wait for alice to be done with its experiment
   test_host("host1");
 }
 
-static void david(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void david(int argc, char* argv[])
 {                        /* Dump what we have on a remote host */
   sg_actor_sleep_for(2); // Wait for alice and carole to be done with its experiment
   test_host("node-0.simgrid.org");
 }
 
-static void bob(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void bob(int argc, char* argv[])
 {
   /* this host also tests the properties of the AS*/
   const_sg_netzone_t root = sg_zone_get_root();
@@ -86,7 +86,7 @@ static void bob(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
   char* key;
   char* data;
   const char* noexist = "UnknownProcessProp";
-  XBT_ATTRIB_UNUSED const char* value;
+  const char* value;
 
   XBT_INFO("== Print the properties of the process");
   xbt_dict_foreach (props, cursor, key, data)

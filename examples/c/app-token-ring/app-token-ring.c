@@ -18,7 +18,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(app_token_ring, "Messages specific for this msg example");
 
 /* Main function of all actors used in this example */
-static void relay_runner(int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void relay_runner(int argc, char* argv[])
 {
   xbt_assert(argc == 0, "The relay_runner function does not accept any parameter from the XML deployment file");
 

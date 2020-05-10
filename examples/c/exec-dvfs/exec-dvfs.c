@@ -13,7 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
 
-static void dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void dvfs(int argc, char* argv[])
 {
   sg_host_t host = sg_host_self();
 

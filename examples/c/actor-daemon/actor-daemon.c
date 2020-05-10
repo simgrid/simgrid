@@ -12,7 +12,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_daemon, "Messages specific for this example");
 
 /* The worker actor, working for a while before leaving */
-static void worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void worker(int argc, char* argv[])
 {
   XBT_INFO("Let's do some work (for 10 sec on Boivin).");
   sg_actor_execute(980.95e6);
@@ -20,7 +20,7 @@ static void worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 }
 
 /* The daemon, displaying a message every 3 seconds until all other actors stop */
-static void my_daemon(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void my_daemon(int argc, char* argv[])
 {
   sg_actor_daemonize(sg_actor_self());
 

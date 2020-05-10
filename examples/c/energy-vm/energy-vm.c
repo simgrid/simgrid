@@ -14,13 +14,13 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(energy_vm, "Messages of this example");
 
-static void worker_func(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void worker_func(int argc, char* argv[])
 {
   sg_actor_execute(300E6);
   XBT_INFO("This worker is done.");
 }
 
-static void dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void dvfs(int argc, char* argv[])
 {
   sg_host_t host1 = sg_host_by_name("MyHost1");
   sg_host_t host2 = sg_host_by_name("MyHost2");

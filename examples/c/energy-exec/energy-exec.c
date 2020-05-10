@@ -14,7 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(energy_exec, "Messages specific for this example");
 
-static void dvfs(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
+static void dvfs(int argc, char* argv[])
 {
   sg_host_t host = sg_host_by_name("MyHost1");
 
