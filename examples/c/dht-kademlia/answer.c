@@ -23,11 +23,9 @@ answer_t answer_init(unsigned int destination_id)
 /** Destroys a node answer object. */
 void answer_free(answer_t answer)
 {
-  unsigned int i;
   if (answer) {
-    for (i = 0; i < answer->size; i++) {
+    for (unsigned int i = 0; i < answer->size; i++)
       node_contact_free(*(void**)xbt_dynar_get_ptr(answer->nodes, i));
-    }
     xbt_dynar_free(&answer->nodes);
   }
   xbt_free(answer);

@@ -73,7 +73,7 @@ private:
   static constexpr int cache_simix_processes = 4;
 
 public:
-  RemoteSimulation(pid_t pid);
+  explicit RemoteSimulation(pid_t pid);
   ~RemoteSimulation();
   void init();
 
