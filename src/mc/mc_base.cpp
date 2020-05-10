@@ -43,7 +43,7 @@ void wait_for_requests()
   while (not simix_global->actors_to_run.empty()) {
     simix_global->run_all_actors();
     for (smx_actor_t const& process : simix_global->actors_that_ran) {
-      const s_smx_simcall* req = &process->simcall;
+      const s_smx_simcall* req = &process->simcall_;
       if (req->call_ != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
         process->simcall_handle(0);
     }
@@ -78,7 +78,7 @@ bool actor_is_enabled(smx_actor_t actor)
 #endif
 
   // Now, we are in the client app, no need for remote memory reading.
-  smx_simcall_t req = &actor->simcall;
+  smx_simcall_t req = &actor->simcall_;
 
   if (req->inspector_ != nullptr)
     return req->inspector_->is_enabled();

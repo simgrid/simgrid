@@ -149,7 +149,7 @@ void LivenessChecker::replay()
         /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
         const smx_actor_t issuer = MC_smx_simcall_get_issuer(saved_req);
-        req = &issuer->simcall;
+        req                      = &issuer->simcall_;
 
         /* Debug information */
         XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,

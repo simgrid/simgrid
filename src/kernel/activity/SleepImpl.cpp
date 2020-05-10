@@ -58,7 +58,7 @@ void SleepImpl::finish()
     const s_smx_simcall* simcall = simcalls_.front();
     simcalls_.pop_front();
 
-    simcall->issuer_->waiting_synchro = nullptr;
+    simcall->issuer_->waiting_synchro_ = nullptr;
     if (simcall->issuer_->is_suspended()) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
       simcall->issuer_->suspended_ = false;

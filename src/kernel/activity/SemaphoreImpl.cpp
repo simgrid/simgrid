@@ -18,7 +18,7 @@ void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
   if (value_ <= 0) {
     RawImplPtr synchro = RawImplPtr(new RawImpl());
     synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
-    synchro->register_simcall(&issuer->simcall);
+    synchro->register_simcall(&issuer->simcall_);
     sleeping_.push_back(*issuer);
   } else {
     value_--;
@@ -32,7 +32,7 @@ void SemaphoreImpl::release()
   if (not sleeping_.empty()) {
     auto& actor = sleeping_.front();
     sleeping_.pop_front();
-    actor.waiting_synchro = nullptr;
+    actor.waiting_synchro_ = nullptr;
     actor.simcall_answer();
   } else {
     value_++;

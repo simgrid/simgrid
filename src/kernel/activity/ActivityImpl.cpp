@@ -24,7 +24,7 @@ ActivityImpl::~ActivityImpl()
 void ActivityImpl::register_simcall(smx_simcall_t simcall)
 {
   simcalls_.push_back(simcall);
-  simcall->issuer_->waiting_synchro = this;
+  simcall->issuer_->waiting_synchro_ = this;
 }
 
 void ActivityImpl::clean_action()
@@ -55,10 +55,10 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
   /* Associate this simcall to the synchro */
-  register_simcall(&issuer->simcall);
+  register_simcall(&issuer->simcall_);
 
   if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = SIMCALL_GET_MC_VALUE(issuer->simcall);
+    int idx = SIMCALL_GET_MC_VALUE(issuer->simcall_);
     if (idx == 0) {
       state_ = simgrid::kernel::activity::State::DONE;
     } else {

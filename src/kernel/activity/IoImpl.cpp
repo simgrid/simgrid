@@ -117,7 +117,7 @@ void IoImpl::finish()
         xbt_die("Internal error in IoImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
-    simcall->issuer_->waiting_synchro = nullptr;
+    simcall->issuer_->waiting_synchro_ = nullptr;
     simcall->issuer_->simcall_answer();
   }
 }

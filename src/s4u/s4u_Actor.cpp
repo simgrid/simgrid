@@ -118,7 +118,7 @@ void Actor::join(double timeout)
       issuer->simcall_answer();
     } else {
       kernel::activity::ActivityImplPtr sync = issuer->join(target, timeout);
-      sync->register_simcall(&issuer->simcall);
+      sync->register_simcall(&issuer->simcall_);
     }
   });
 }
@@ -155,11 +155,11 @@ void Actor::set_host(Host* new_host)
   const s4u::Host* previous_location = get_host();
 
   kernel::actor::simcall([this, new_host]() {
-    if (pimpl_->waiting_synchro != nullptr) {
+    if (pimpl_->waiting_synchro_ != nullptr) {
       // The actor is blocked on an activity. If it's an exec, migrate it too.
       // FIXME: implement the migration of other kinds of activities
       kernel::activity::ExecImplPtr exec =
-          boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(pimpl_->waiting_synchro);
+          boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(pimpl_->waiting_synchro_);
       xbt_assert(exec.get() != nullptr, "We can only migrate blocked actors when they are blocked on executions.");
       exec->migrate(new_host);
     }
@@ -327,7 +327,7 @@ void sleep_for(double duration)
         return;
       }
       kernel::activity::ActivityImplPtr sync = issuer->sleep(duration);
-      sync->register_simcall(&issuer->simcall);
+      sync->register_simcall(&issuer->simcall_);
     });
 
     Actor::on_wake_up(*issuer->ciface());

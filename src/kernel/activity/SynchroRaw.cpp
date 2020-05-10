@@ -103,7 +103,7 @@ void RawImpl::finish()
     default:
       THROW_IMPOSSIBLE;
   }
-  simcall->issuer_->waiting_synchro = nullptr;
+  simcall->issuer_->waiting_synchro_ = nullptr;
   simcall->issuer_->simcall_answer();
 }
 

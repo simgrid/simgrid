@@ -55,7 +55,7 @@ ActorImpl* ActorImpl::self()
 ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std::move(name)), piface_(this)
 {
   pid_            = maxpid++;
-  simcall.issuer_ = this;
+  simcall_.issuer_ = this;
   stacksize_      = smx_context_stack_size;
 }
 
@@ -166,25 +166,25 @@ void ActorImpl::cleanup()
   undaemonize();
 
   /* cancel non-blocking activities */
-  for (auto activity : activities)
+  for (auto activity : activities_)
     activity->cancel();
-  activities.clear();
+  activities_.clear();
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
 
   if (this == simix_global->maestro_) /* Do not cleanup maestro */
     return;
 
-  XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro.get());
+  XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro_.get());
 
   /* Unregister associated timers if any */
-  if (kill_timer != nullptr) {
-    kill_timer->remove();
-    kill_timer = nullptr;
+  if (kill_timer_ != nullptr) {
+    kill_timer_->remove();
+    kill_timer_ = nullptr;
   }
-  if (simcall.timeout_cb_) {
-    simcall.timeout_cb_->remove();
-    simcall.timeout_cb_ = nullptr;
+  if (simcall_.timeout_cb_) {
+    simcall_.timeout_cb_->remove();
+    simcall_.timeout_cb_ = nullptr;
   }
 
   cleanup_from_simix();
@@ -201,26 +201,26 @@ void ActorImpl::exit()
   exception_          = nullptr;
 
   /* destroy the blocking synchro if any */
-  if (waiting_synchro != nullptr) {
-    waiting_synchro->cancel();
-    waiting_synchro->state_ = activity::State::FAILED;
+  if (waiting_synchro_ != nullptr) {
+    waiting_synchro_->cancel();
+    waiting_synchro_->state_ = activity::State::FAILED;
 
-    activity::ExecImplPtr exec   = boost::dynamic_pointer_cast<activity::ExecImpl>(waiting_synchro);
-    activity::CommImplPtr comm   = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro);
+    activity::ExecImplPtr exec = boost::dynamic_pointer_cast<activity::ExecImpl>(waiting_synchro_);
+    activity::CommImplPtr comm = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro_);
 
     if (exec != nullptr) {
       exec->clean_action();
     } else if (comm != nullptr) {
       // Remove first occurrence of &actor->simcall:
-      auto i = boost::range::find(waiting_synchro->simcalls_, &simcall);
-      if (i != waiting_synchro->simcalls_.end())
-        waiting_synchro->simcalls_.remove(&simcall);
+      auto i = boost::range::find(waiting_synchro_->simcalls_, &simcall_);
+      if (i != waiting_synchro_->simcalls_.end())
+        waiting_synchro_->simcalls_.remove(&simcall_);
     } else {
-      activity::ActivityImplPtr(waiting_synchro)->finish();
+      activity::ActivityImplPtr(waiting_synchro_)->finish();
     }
 
-    activities.remove(waiting_synchro);
-    waiting_synchro = nullptr;
+    activities_.remove(waiting_synchro_);
+    waiting_synchro_ = nullptr;
   }
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
@@ -264,15 +264,15 @@ void ActorImpl::set_kill_time(double kill_time)
   if (kill_time <= SIMIX_get_clock())
     return;
   XBT_DEBUG("Set kill time %f for actor %s@%s", kill_time, get_cname(), host_->get_cname());
-  kill_timer = simix::Timer::set(kill_time, [this] {
+  kill_timer_ = simix::Timer::set(kill_time, [this] {
     this->exit();
-    kill_timer = nullptr;
+    kill_timer_ = nullptr;
   });
 }
 
 double ActorImpl::get_kill_time()
 {
-  return kill_timer ? kill_timer->get_date() : 0;
+  return kill_timer_ ? kill_timer_->get_date() : 0;
 }
 
 void ActorImpl::yield()
@@ -367,14 +367,14 @@ void ActorImpl::suspend()
   suspended_ = true;
 
   /* If the suspended actor is waiting on a sync, suspend its synchronization. */
-  if (waiting_synchro == nullptr) {
+  if (waiting_synchro_ == nullptr) {
     auto exec = new activity::ExecImpl();
     exec->set_name("suspend").set_host(host_).set_flops_amount(0.0).start();
-    waiting_synchro = activity::ExecImplPtr(exec);
+    waiting_synchro_ = activity::ExecImplPtr(exec);
 
-    waiting_synchro->simcalls_.push_back(&simcall);
+    waiting_synchro_->simcalls_.push_back(&simcall_);
   }
-  waiting_synchro->suspend();
+  waiting_synchro_->suspend();
 }
 
 void ActorImpl::resume()
@@ -391,8 +391,8 @@ void ActorImpl::resume()
   suspended_ = false;
 
   /* resume the synchronization that was blocking the resumed actor. */
-  if (waiting_synchro)
-    waiting_synchro->resume();
+  if (waiting_synchro_)
+    waiting_synchro_->resume();
 
   XBT_OUT();
 }
@@ -426,20 +426,20 @@ void ActorImpl::throw_exception(std::exception_ptr e)
     resume();
 
   /* cancel the blocking synchro if any */
-  if (waiting_synchro) {
-    waiting_synchro->cancel();
-    activities.remove(waiting_synchro);
-    waiting_synchro = nullptr;
+  if (waiting_synchro_) {
+    waiting_synchro_->cancel();
+    activities_.remove(waiting_synchro_);
+    waiting_synchro_ = nullptr;
   }
 }
 
 void ActorImpl::simcall_answer()
 {
   if (this != simix_global->maestro_) {
-    XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall.call_), (int)simcall.call_,
+    XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall_.call_), (int)simcall_.call_,
               get_cname(), this);
-    xbt_assert(simcall.call_ != SIMCALL_NONE);
-    simcall.call_ = SIMCALL_NONE;
+    xbt_assert(simcall_.call_ != SIMCALL_NONE);
+    simcall_.call_ = SIMCALL_NONE;
     xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
                    std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
                        end(simix_global->actors_to_run),
@@ -528,7 +528,7 @@ void create_maestro(const std::function<void()>& code)
     maestro->context_.reset(simix_global->context_factory->create_maestro(ActorCode(code), maestro));
   }
 
-  maestro->simcall.issuer_      = maestro;
+  maestro->simcall_.issuer_     = maestro;
   simix_global->maestro_        = maestro;
 }
 

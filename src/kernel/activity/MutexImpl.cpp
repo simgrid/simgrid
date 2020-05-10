@@ -23,8 +23,8 @@ void MutexImpl::lock(actor::ActorImpl* issuer)
     /* Somebody using the mutex, use a synchronization to get host failures */
     synchro = RawImplPtr(new RawImpl());
     (*synchro).set_host(issuer->get_host()).start();
-    synchro->simcalls_.push_back(&issuer->simcall);
-    issuer->waiting_synchro = synchro;
+    synchro->simcalls_.push_back(&issuer->simcall_);
+    issuer->waiting_synchro_ = synchro;
     sleeping_.push_back(*issuer);
   } else {
     /* mutex free */
@@ -71,7 +71,7 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
     /* Give the ownership to the first waiting actor */
     owner_ = &sleeping_.front();
     sleeping_.pop_front();
-    owner_->waiting_synchro = nullptr;
+    owner_->waiting_synchro_ = nullptr;
     owner_->simcall_answer();
   } else {
     /* nobody to wake up */

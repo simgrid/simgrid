@@ -60,7 +60,7 @@ ExecImpl::ExecImpl()
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
     actor_ = self;
-    self->activities.push_back(this);
+    self->activities_.push_back(this);
   }
 }
 
@@ -166,7 +166,7 @@ void ExecImpl::post()
   clean_action();
   timeout_detector_.reset();
   if (actor_) {
-    actor_->activities.remove(this);
+    actor_->activities_.remove(this);
     actor_ = nullptr;
   }
   /* Answer all simcalls associated with the synchro */
@@ -239,7 +239,7 @@ void ExecImpl::finish()
         xbt_die("Internal error in ExecImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
     }
 
-    simcall->issuer_->waiting_synchro = nullptr;
+    simcall->issuer_->waiting_synchro_ = nullptr;
     /* Fail the process if the host is down */
     if (simcall->issuer_->get_host()->is_on())
       simcall->issuer_->simcall_answer();

@@ -68,15 +68,15 @@ public:
   bool finished_  = false;
   bool suspended_ = false;
 
-  activity::ActivityImplPtr waiting_synchro = nullptr; /* the current blocking synchro if any */
-  std::list<activity::ActivityImplPtr> activities;     /* the current non-blocking synchros */
-  s_smx_simcall simcall;
+  activity::ActivityImplPtr waiting_synchro_ = nullptr; /* the current blocking synchro if any */
+  std::list<activity::ActivityImplPtr> activities_;     /* the current non-blocking synchros */
+  s_smx_simcall simcall_;
   /* list of functions executed when the process dies */
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
       std::make_shared<std::vector<std::function<void(bool)>>>();
 
   std::function<void()> code_;
-  simix::Timer* kill_timer = nullptr;
+  simix::Timer* kill_timer_ = nullptr;
 
 private:
   /* Refcounting */

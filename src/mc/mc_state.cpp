@@ -68,11 +68,11 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
     return nullptr; // Not executable in the application
 
   smx_simcall_t req = nullptr;
-  switch (actor->simcall.call_) {
+  switch (actor->simcall_.call_) {
     case SIMCALL_COMM_WAITANY:
       state->transition_.argument_ = -1;
-      while (procstate->times_considered < simcall_comm_waitany__get__count(&actor->simcall)) {
-        if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall, procstate->times_considered)) {
+      while (procstate->times_considered < simcall_comm_waitany__get__count(&actor->simcall_)) {
+        if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall_, procstate->times_considered)) {
           state->transition_.argument_ = procstate->times_considered;
           ++procstate->times_considered;
           break;
@@ -80,17 +80,17 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
         ++procstate->times_considered;
       }
 
-      if (procstate->times_considered >= simcall_comm_waitany__get__count(&actor->simcall))
+      if (procstate->times_considered >= simcall_comm_waitany__get__count(&actor->simcall_))
         procstate->set_done();
       if (state->transition_.argument_ != -1)
-        req = &actor->simcall;
+        req = &actor->simcall_;
       break;
 
     case SIMCALL_COMM_TESTANY: {
       unsigned start_count       = procstate->times_considered;
       state->transition_.argument_ = -1;
-      while (procstate->times_considered < simcall_comm_testany__get__count(&actor->simcall)) {
-        if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall, procstate->times_considered)) {
+      while (procstate->times_considered < simcall_comm_testany__get__count(&actor->simcall_)) {
+        if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall_, procstate->times_considered)) {
           state->transition_.argument_ = procstate->times_considered;
           ++procstate->times_considered;
           break;
@@ -98,18 +98,18 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
         ++procstate->times_considered;
       }
 
-      if (procstate->times_considered >= simcall_comm_testany__get__count(&actor->simcall))
+      if (procstate->times_considered >= simcall_comm_testany__get__count(&actor->simcall_))
         procstate->set_done();
 
       if (state->transition_.argument_ != -1 || start_count == 0)
-        req = &actor->simcall;
+        req = &actor->simcall_;
 
       break;
     }
 
     case SIMCALL_COMM_WAIT: {
       simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> remote_act =
-          remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(&actor->simcall)));
+          remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(&actor->simcall_)));
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_act;
       mc_model_checker->get_remote_simulation().read(temp_act, remote_act);
       const simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();
@@ -121,24 +121,24 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
       else
         state->transition_.argument_ = -1; // timeout
       procstate->set_done();
-      req = &actor->simcall;
+      req = &actor->simcall_;
       break;
     }
 
     case SIMCALL_MC_RANDOM: {
-      int min_value              = simcall_mc_random__get__min(&actor->simcall);
+      int min_value                = simcall_mc_random__get__min(&actor->simcall_);
       state->transition_.argument_ = procstate->times_considered + min_value;
       procstate->times_considered++;
-      if (state->transition_.argument_ == simcall_mc_random__get__max(&actor->simcall))
+      if (state->transition_.argument_ == simcall_mc_random__get__max(&actor->simcall_))
         procstate->set_done();
-      req = &actor->simcall;
+      req = &actor->simcall_;
       break;
     }
 
     default:
       procstate->set_done();
       state->transition_.argument_ = 0;
-      req                        = &actor->simcall;
+      req                          = &actor->simcall_;
       break;
   }
   if (not req)

@@ -78,7 +78,7 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = nullptr;
-    src_proc->activities.push_back(other_comm);
+    src_proc->activities_.push_back(other_comm);
   }
 
   /* Setup the communication synchro */
@@ -162,7 +162,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
       other_comm->state_ = simgrid::kernel::activity::State::READY;
       other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
     }
-    receiver->activities.push_back(other_comm);
+    receiver->activities_.push_back(other_comm);
   }
 
   /* Setup communication synchro */
@@ -699,18 +699,18 @@ void CommImpl::finish()
       }
     }
 
-    simcall->issuer_->waiting_synchro = nullptr;
-    simcall->issuer_->activities.remove(this);
+    simcall->issuer_->waiting_synchro_ = nullptr;
+    simcall->issuer_->activities_.remove(this);
     if (detached_) {
       if (simcall->issuer_ == src_actor_) {
         if (dst_actor_)
-          dst_actor_->activities.remove(this);
+          dst_actor_->activities_.remove(this);
       } else if (simcall->issuer_ == dst_actor_) {
         if (src_actor_)
-          src_actor_->activities.remove(this);
+          src_actor_->activities_.remove(this);
       } else {
-        dst_actor_->activities.remove(this);
-        src_actor_->activities.remove(this);
+        dst_actor_->activities_.remove(this);
+        src_actor_->activities_.remove(this);
       }
     }
   }

@@ -45,10 +45,10 @@ void ConditionVariableImpl::signal()
     sleeping_.pop_front();
 
     /* Destroy waiter's synchronization */
-    proc.waiting_synchro = nullptr;
+    proc.waiting_synchro_ = nullptr;
 
     /* Now transform the cond wait simcall into a mutex lock one */
-    smx_simcall_t simcall = &proc.simcall;
+    smx_simcall_t simcall = &proc.simcall_;
     MutexImpl* simcall_mutex;
     if (simcall->call_ == SIMCALL_COND_WAIT)
       simcall_mutex = simcall_cond_wait__get__mutex(simcall);
@@ -91,7 +91,7 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
 
   RawImplPtr synchro(new RawImpl());
   synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
-  synchro->register_simcall(&issuer->simcall);
+  synchro->register_simcall(&issuer->simcall_);
   sleeping_.push_back(*issuer);
 }
 

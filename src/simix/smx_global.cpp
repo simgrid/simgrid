@@ -228,32 +228,32 @@ void Global::display_all_actor_status()
   for (auto const& kv : process_list) {
     kernel::actor::ActorImpl* actor = kv.second;
 
-    if (actor->waiting_synchro) {
+    if (actor->waiting_synchro_) {
       const char* synchro_description = "unknown";
       // we don't care about the Activity type to get its name, use RawImpl
       const char* name = boost::static_pointer_cast<kernel::activity::ActivityImpl_T<kernel::activity::RawImpl>>(
-                             actor->waiting_synchro)
+                             actor->waiting_synchro_)
                              ->get_cname();
 
-      if (boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(actor->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "execution";
 
-      if (boost::dynamic_pointer_cast<kernel::activity::CommImpl>(actor->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<kernel::activity::CommImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "communication";
 
-      if (boost::dynamic_pointer_cast<kernel::activity::SleepImpl>(actor->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<kernel::activity::SleepImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "sleeping";
 
-      if (boost::dynamic_pointer_cast<kernel::activity::RawImpl>(actor->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<kernel::activity::RawImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "synchronization";
 
-      if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(actor->waiting_synchro) != nullptr)
+      if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "I/O";
 
       XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %#zx (%s) in state %d to finish", actor->get_pid(),
                actor->get_cname(), actor->get_host()->get_cname(), synchro_description,
-               (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)actor->waiting_synchro.get()), name,
-               (int)actor->waiting_synchro->state_);
+               (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)actor->waiting_synchro_.get()), name,
+               (int)actor->waiting_synchro_->state_);
     } else {
       XBT_INFO("Actor %ld (%s@%s)", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname());
     }
@@ -506,7 +506,7 @@ void SIMIX_run()
        */
 
       for (auto const& actor : simix_global->actors_that_ran) {
-        if (actor->simcall.call_ != SIMCALL_NONE) {
+        if (actor->simcall_.call_ != SIMCALL_NONE) {
           actor->simcall_handle(0);
         }
       }

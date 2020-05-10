@@ -351,13 +351,13 @@ bool simcall_io_test(const simgrid::kernel::activity::ActivityImplPtr& io) // XB
 
 void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t)
 {
-  simgrid::kernel::actor::ActorImpl::self()->simcall.inspector_ = t;
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = t;
   simcall_BODY_run_kernel(&code);
 }
 
 void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallInspector* t = nullptr)
 {
-  simgrid::kernel::actor::ActorImpl::self()->simcall.inspector_ = t;
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = t;
   simcall_BODY_run_blocking(&code);
 }
 
