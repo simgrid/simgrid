@@ -18,21 +18,34 @@ CMAKE_LINKARGS="-L@libdir@"
 
 list_set CXXFLAGS "-std=gnu++11" @SMPI_CXX_FLAGS@
 list_set LINKARGS
-if [ "@WIN32@" != "1" ]; then
+
+if [ "@CMAKE_C_COMPILER_ID@" = "Clang" -a "@HAVE_SANITIZER_ADDRESS@" = "TRUE" ]; then
+    LINKER_UNDEFINED_ERROR=""
+else
+    LINKER_UNDEFINED_ERROR="1"
+fi
+
+if [ "x@WIN32@" = "x1" ]; then
+    list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_main.h"
+    list_add LINKARGS "@libdir@\libsimgrid.dll"
+elif [ "x@APPLE@" = "x1" ]; then
     list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
     list_add CXXFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
        list_add LINKARGS "-shared"
-       if [ "@APPLE@" != "1" ]; then
-           list_add LINKARGS "-Wl,-z,defs"
-       fi
     else
-       echo "Warning: smpicxx pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
+       echo "Warning: smpicc pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
     fi
-    list_add LINKARGS "-lsimgrid"
+    list_add LINKARGS "-lsimgrid" ${LINKER_UNDEFINED_ERROR:+"-Wl,-undefined,error"}
 else
-    list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_main.h"
-    list_add LINKARGS "@libdir@\libsimgrid.dll"
+    list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
+    list_add CXXFLAGS "-fPIC"
+    if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
+       list_add LINKARGS "-shared"
+    else
+       echo "Warning: smpicc pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
+    fi
+    list_add LINKARGS "-lsimgrid" ${LINKER_UNDEFINED_ERROR:+"-Wl,-z,defs"}
 fi
 
 list_set CMDARGS

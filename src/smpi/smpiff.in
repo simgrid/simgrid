@@ -19,8 +19,10 @@ list_set FFLAGS @SMPI_Fortran_FLAGS@
 list_set LINKARGS "-lsimgrid" @SMPI_Fortran_LIBS@ "-lm"
 if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
    list_add LINKARGS "-shared"
-   if [ "@APPLE@" != "1" ]; then
+   if [ "x@APPLE@" != "x1" ]; then
        list_add LINKARGS "-Wl,-z,defs"
+   else
+       list_add LINKARGS "-Wl,-undefined,error"
    fi 
 else
    echo "Warning: smpiff pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
