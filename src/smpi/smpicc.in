@@ -32,7 +32,7 @@ elif [ "x@APPLE@" = "x1" ]; then
     list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
     list_add CFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
-       list_add LINKARGS "-shared"
+       list_add LINKARGS "-shared" "-Wl,-z,defs"
     else
        echo "Warning: smpicc pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
     fi
