@@ -89,8 +89,8 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
 }
 
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
-                             simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
-                             simgrid::kernel::routing::NetPoint* gw_dst,
+                             simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* /*gw_src*/,
+                             simgrid::kernel::routing::NetPoint* /*gw_dst*/,
                              std::vector<simgrid::kernel::resource::LinkImpl*> const& link_list)
 {
   if (link_list.size() == 1) {
@@ -243,7 +243,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
       std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
 
-      action->src_->route_to(action->dst_, route, nullptr);
+      action->get_src().route_to(&action->get_dst(), route, nullptr);
       for (auto const& link : route)
         instr::resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
                                         (data_delta_sent) / delta, now - delta, delta);
@@ -308,7 +308,7 @@ void LinkNS3::set_latency_profile(profile::Profile*)
  **********/
 
 NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
-    : NetworkAction(model, totalBytes, false), src_(src), dst_(dst)
+    : NetworkAction(model, *src, *dst, totalBytes, false)
 {
   // If there is no other started actions, we need to move NS-3 forward to be sync with SimGrid
   if (model->get_started_action_set()->size()==1){
@@ -354,7 +354,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   }
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 
-  s4u::Link::on_communicate(*this, src, dst);
+  s4u::Link::on_communicate(*this);
 }
 
 void NetworkNS3Action::suspend() {
@@ -424,7 +424,8 @@ void ns3_initialize(std::string TcpProtocol)
   }
 }
 
-void ns3_add_cluster(const char* id, double bw, double lat) {
+void ns3_add_cluster(const char* /*id*/, double bw, double lat)
+{
   ns3::NodeContainer Nodes;
 
   for (unsigned int i = number_of_clusters_nodes; i < Cluster_nodes.GetN(); i++) {

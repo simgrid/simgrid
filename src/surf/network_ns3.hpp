@@ -55,8 +55,6 @@ public:
 
   // private:
   double last_sent_ = 0;
-  s4u::Host* src_;
-  s4u::Host* dst_;
 };
 
 } // namespace resource
