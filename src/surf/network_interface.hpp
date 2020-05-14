@@ -200,8 +200,8 @@ public:
   double lat_current_ = {};
   double sharing_penalty_ = {};
   double rate_       = {};
-  s4u::Host& get_src() { return src_; }
-  s4u::Host& get_dst() { return dst_; }
+  s4u::Host& get_src() const { return src_; }
+  s4u::Host& get_dst() const { return dst_; }
 };
 } // namespace resource
 } // namespace kernel
