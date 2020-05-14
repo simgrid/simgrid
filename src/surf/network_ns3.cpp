@@ -365,7 +365,7 @@ void NetworkNS3Action::resume() {
   THROW_UNIMPLEMENTED;
 }
 
-std::list<LinkImpl*> NetworkNS3Action::links() const
+std::list<LinkImpl*> NetworkNS3Action::get_links() const
 {
   THROW_UNIMPLEMENTED;
 }

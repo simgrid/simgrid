@@ -50,7 +50,7 @@ public:
 
   void suspend() override;
   void resume() override;
-  std::list<LinkImpl*> links() const override;
+  std::list<LinkImpl*> get_links() const override;
   void update_remains_lazy(double now) override;
 
   // private:

@@ -187,7 +187,7 @@ public:
   NetworkAction(Model* model, double cost, bool failed, lmm::Variable* var) : Action(model, cost, failed, var){};
 
   void set_state(Action::State state) override;
-  virtual std::list<LinkImpl*> links() const;
+  virtual std::list<LinkImpl*> get_links() const;
 
   double latency_    = {};
   double lat_current_ = {};
