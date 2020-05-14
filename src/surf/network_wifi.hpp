@@ -68,8 +68,8 @@ public:
       , src_wifi_link_(src_wifi_link)
       , dst_wifi_link_(dst_wifi_link){};
 
-  NetworkWifiLink* get_src_link() { return src_wifi_link_; }
-  NetworkWifiLink* get_dst_link() { return dst_wifi_link_; }
+  NetworkWifiLink* get_src_link() const { return src_wifi_link_; }
+  NetworkWifiLink* get_dst_link() const { return dst_wifi_link_; }
 };
 
 } // namespace resource
