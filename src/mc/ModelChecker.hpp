@@ -48,7 +48,6 @@ public:
   void start();
   void shutdown();
   void resume(simgrid::mc::RemoteSimulation& get_remote_simulation);
-  void handle_events(int fd, short events);
   void wait_for_requests();
   void handle_simcall(Transition const& transition);
 

@@ -39,8 +39,23 @@ ModelChecker::ModelChecker(std::unique_ptr<RemoteSimulation> remote_simulation, 
 
 void ModelChecker::start()
 {
-  checker_side_.start(
-      [](evutil_socket_t sig, short events, void* arg) { ((ModelChecker*)arg)->handle_events(sig, events); });
+  checker_side_.start([](evutil_socket_t sig, short events, void* arg) {
+    auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
+    if (events == EV_READ) {
+      char buffer[MC_MESSAGE_LENGTH];
+      ssize_t size = mc->checker_side_.get_channel().receive(buffer, sizeof(buffer), false);
+      if (size == -1 && errno != EAGAIN)
+        throw simgrid::xbt::errno_error();
+
+      if (not mc->handle_message(buffer, size))
+        mc->checker_side_.break_loop();
+    } else if (events == EV_SIGNAL) {
+      if (sig == SIGCHLD)
+        mc->handle_waitpid();
+    } else {
+      xbt_die("Unexpected event");
+    }
+  });
 
   XBT_DEBUG("Waiting for the model-checked process");
   int status;
@@ -231,26 +246,6 @@ void ModelChecker::exit(int status)
   if (get_remote_simulation().running())
     kill(get_remote_simulation().pid(), SIGKILL);
   ::exit(status);
-}
-
-void ModelChecker::handle_events(int sig, short events)
-{
-  if (events == EV_READ) {
-    char buffer[MC_MESSAGE_LENGTH];
-    ssize_t size = checker_side_.get_channel().receive(buffer, sizeof(buffer), false);
-    if (size == -1 && errno != EAGAIN)
-      throw simgrid::xbt::errno_error();
-
-    if (not handle_message(buffer, size))
-      checker_side_.break_loop();
-  }
-  else if (events == EV_SIGNAL) {
-    if (sig == SIGCHLD)
-      this->handle_waitpid();
-  }
-  else {
-    xbt_die("Unexpected event");
-  }
 }
 
 void ModelChecker::handle_waitpid()
