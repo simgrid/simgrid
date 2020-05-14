@@ -71,7 +71,7 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
 
 Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double)
 {
-  auto* action = new NetworkConstantAction(this, size, sg_latency_factor);
+  auto* action = new NetworkConstantAction(this, *src, *dst, size, sg_latency_factor);
 
   s4u::Link::on_communicate(*action, src, dst);
   return action;
@@ -80,8 +80,9 @@ Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double
 /**********
  * Action *
  **********/
-NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, double size, double latency)
-    : NetworkAction(model_, size, false), initial_latency_(latency)
+NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size,
+                                             double latency)
+    : NetworkAction(model_, src, dst, size, false), initial_latency_(latency)
 {
   latency_ = latency;
   if (latency_ <= 0.0)

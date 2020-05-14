@@ -60,7 +60,8 @@ class NetworkCm02Action : public NetworkAction {
   friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:
-  NetworkCm02Action(Model* model, double cost, bool failed) : NetworkAction(model, cost, failed){};
+  NetworkCm02Action(Model* model, s4u::Host& src, s4u::Host& dst, double cost, bool failed)
+      : NetworkAction(model, src, dst, cost, failed){};
   virtual ~NetworkCm02Action() = default;
   void update_remains_lazy(double now) override;
 };

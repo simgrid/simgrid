@@ -186,7 +186,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
           std::any_of(back_route.begin(), back_route.end(), [](const LinkImpl* link) { return not link->is_on(); });
   }
 
-  auto* action              = new NetworkCm02Action(this, size, failed);
+  auto* action              = new NetworkCm02Action(this, *src, *dst, size, failed);
   action->sharing_penalty_  = latency;
   action->latency_ = latency;
   action->rate_ = rate;
