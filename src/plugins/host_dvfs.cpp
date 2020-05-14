@@ -304,12 +304,11 @@ public:
     });
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
-    simgrid::s4u::Link::on_communicate.connect(
-        [this](const kernel::resource::NetworkAction&, const s4u::Host* src, const s4u::Host* dst) {
-          if ((get_host() == src || get_host() == dst) && iteration_running) {
-            post_task();
-          }
-        });
+    simgrid::s4u::Link::on_communicate.connect([this](const kernel::resource::NetworkAction& act) {
+      if ((get_host() == &act.get_src() || get_host() == &act.get_dst()) && iteration_running) {
+        post_task();
+      }
+    });
   }
 
   std::string get_name() const override { return "Adagio"; }

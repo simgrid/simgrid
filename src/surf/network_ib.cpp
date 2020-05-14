@@ -41,12 +41,11 @@ static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkA
   ((NetworkIBModel*)surf_network_model)->active_comms.erase(&action);
 }
 
-static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& action, const simgrid::s4u::Host* src,
-                                    const simgrid::s4u::Host* dst)
+static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& action)
 {
   simgrid::kernel::resource::NetworkIBModel* ibModel = (simgrid::kernel::resource::NetworkIBModel*)surf_network_model;
-  simgrid::kernel::resource::IBNode* act_src         = &ibModel->active_nodes.at(src->get_name());
-  simgrid::kernel::resource::IBNode* act_dst         = &ibModel->active_nodes.at(dst->get_name());
+  simgrid::kernel::resource::IBNode* act_src         = &ibModel->active_nodes.at(action.get_src().get_name());
+  simgrid::kernel::resource::IBNode* act_dst         = &ibModel->active_nodes.at(action.get_dst().get_name());
 
   ibModel->active_comms[&action] = std::make_pair(act_src, act_dst);
   ibModel->updateIBfactors(&action, act_src, act_dst, 0);

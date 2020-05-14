@@ -287,7 +287,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   }
   XBT_OUT();
 
-  simgrid::s4u::Link::on_communicate(*action, src, dst);
+  simgrid::s4u::Link::on_communicate(*action);
   return action;
 }
 

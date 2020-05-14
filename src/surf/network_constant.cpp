@@ -73,7 +73,7 @@ Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double
 {
   auto* action = new NetworkConstantAction(this, *src, *dst, size, sg_latency_factor);
 
-  s4u::Link::on_communicate(*action, src, dst);
+  s4u::Link::on_communicate(*action);
   return action;
 }
 
