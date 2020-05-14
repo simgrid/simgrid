@@ -238,20 +238,33 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
                                     : action->rate_);
   }
 
+  NetworkWifiLink* src_wifi_link = nullptr;
+  NetworkWifiLink* dst_wifi_link = nullptr;
+  if (not route.empty() && route.at(0)->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+    src_wifi_link = static_cast<NetworkWifiLink*>(route.at(0));
+    double rate   = src_wifi_link->get_host_rate(src);
+    xbt_assert(rate != -1,
+               "The route from %s to %s begins with the WIFI link %s, but the host %s does not seem attached to that "
+               "WIFI link. Did you call link->set_host_rate()?",
+               src->get_cname(), dst->get_cname(), src_wifi_link->get_cname(), src->get_cname());
+    get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(), 1.0 / rate);
+  }
+  if (route.size() > 1 && route.at(route.size() - 1)->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+    dst_wifi_link = static_cast<NetworkWifiLink*>(route.at(route.size() - 1));
+    double rate   = dst_wifi_link->get_host_rate(dst);
+    xbt_assert(rate != -1,
+               "The route from %s to %s ends with the WIFI link %s, but the host %s does not seem attached to that "
+               "WIFI link. Did you call link->set_host_rate()?",
+               src->get_cname(), dst->get_cname(), dst_wifi_link->get_cname(), dst->get_cname());
+    get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(), 1.0 / rate);
+  }
+
   for (auto const& link : route) {
-    // Handle WIFI links
+    // WIFI links are handled manually just above, so skip them now
     if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-      NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
-
-      double wifi_rate = wifi_link->get_host_rate(src);
-      if (wifi_rate == -1.0)
-        wifi_rate = wifi_link->get_host_rate(dst);
-      xbt_assert(wifi_rate != -1.0,
-                 "None of the source (%s) or destination (%s) is connected to the Access Point '%s'. "
-                 "Please use set_host_rate() on all stations.",
-                 src->get_cname(), dst->get_cname(), link->get_cname());
-      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0 / wifi_rate);
-
+      xbt_assert(link == src_wifi_link || link == dst_wifi_link,
+                 "Wifi links can only occure at the beginning of the route (meaning that it's attached to the src) or "
+                 "at its end (meaning that it's attached to the dst");
     } else {
       get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
     }
@@ -259,28 +272,15 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (cfg_crosstraffic) {
     XBT_DEBUG("Crosstraffic active: adding backward flow using 5%% of the available bandwidth");
-    bool wifi_dst_assigned = false; // Used by wifi crosstraffic
-    for (auto const& link : back_route) {
-      if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-        NetworkWifiLink* wifi_link = static_cast<NetworkWifiLink*>(link);
-        /**
-         * For wifi links we should add 0.05/rate.
-         * However since we are using the "back_route" we should encounter in
-         * the first place the dst wifi link.
-         */
-        if (!wifi_dst_assigned && (wifi_link->get_host_rate(dst) != -1)) {
-          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(),
-                                      .05 / wifi_link->get_host_rate(dst));
-          wifi_dst_assigned = true;
-        } else {
-          get_maxmin_system()->expand(link->get_constraint(), action->get_variable(),
-                                      .05 / wifi_link->get_host_rate(src));
-        }
-      } else {
+    if (dst_wifi_link != nullptr)
+      get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(),
+                                  .05 / dst_wifi_link->get_host_rate(dst));
+    if (src_wifi_link != nullptr)
+      get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(),
+                                  .05 / src_wifi_link->get_host_rate(src));
+    for (auto const& link : back_route)
+      if (link->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI)
         get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
-      }
-    }
-
     // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     // (You would also have to change simgrid::kernel::lmm::Element::get_concurrency())
     // action->getVariable()->set_concurrency_share(2)
