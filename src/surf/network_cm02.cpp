@@ -186,7 +186,28 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
           std::any_of(back_route.begin(), back_route.end(), [](const LinkImpl* link) { return not link->is_on(); });
   }
 
-  auto* action              = new NetworkCm02Action(this, *src, *dst, size, failed);
+  NetworkWifiLink* src_wifi_link = nullptr;
+  NetworkWifiLink* dst_wifi_link = nullptr;
+  if (not route.empty() && route.at(0)->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+    src_wifi_link = static_cast<NetworkWifiLink*>(route.at(0));
+    xbt_assert(src_wifi_link->get_host_rate(src) != -1,
+               "The route from %s to %s begins with the WIFI link %s, but the host %s does not seem attached to that "
+               "WIFI link. Did you call link->set_host_rate()?",
+               src->get_cname(), dst->get_cname(), src_wifi_link->get_cname(), src->get_cname());
+  }
+  if (route.size() > 1 && route.at(route.size() - 1)->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+    dst_wifi_link = static_cast<NetworkWifiLink*>(route.at(route.size() - 1));
+    xbt_assert(dst_wifi_link->get_host_rate(dst) != -1,
+               "The route from %s to %s ends with the WIFI link %s, but the host %s does not seem attached to that "
+               "WIFI link. Did you call link->set_host_rate()?",
+               src->get_cname(), dst->get_cname(), dst_wifi_link->get_cname(), dst->get_cname());
+  }
+
+  NetworkCm02Action* action;
+  if (src_wifi_link == nullptr && dst_wifi_link == nullptr)
+    action = new NetworkCm02Action(this, *src, *dst, size, failed);
+  else
+    action = new NetworkWifiAction(this, *src, *dst, size, failed, src_wifi_link, dst_wifi_link);
   action->sharing_penalty_  = latency;
   action->latency_ = latency;
   action->rate_ = rate;
@@ -238,26 +259,12 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
                                     : action->rate_);
   }
 
-  NetworkWifiLink* src_wifi_link = nullptr;
-  NetworkWifiLink* dst_wifi_link = nullptr;
-  if (not route.empty() && route.at(0)->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-    src_wifi_link = static_cast<NetworkWifiLink*>(route.at(0));
-    double rate   = src_wifi_link->get_host_rate(src);
-    xbt_assert(rate != -1,
-               "The route from %s to %s begins with the WIFI link %s, but the host %s does not seem attached to that "
-               "WIFI link. Did you call link->set_host_rate()?",
-               src->get_cname(), dst->get_cname(), src_wifi_link->get_cname(), src->get_cname());
-    get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(), 1.0 / rate);
-  }
-  if (route.size() > 1 && route.at(route.size() - 1)->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-    dst_wifi_link = static_cast<NetworkWifiLink*>(route.at(route.size() - 1));
-    double rate   = dst_wifi_link->get_host_rate(dst);
-    xbt_assert(rate != -1,
-               "The route from %s to %s ends with the WIFI link %s, but the host %s does not seem attached to that "
-               "WIFI link. Did you call link->set_host_rate()?",
-               src->get_cname(), dst->get_cname(), dst_wifi_link->get_cname(), dst->get_cname());
-    get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(), 1.0 / rate);
-  }
+  if (src_wifi_link != nullptr)
+    get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(),
+                                1.0 / src_wifi_link->get_host_rate(src));
+  if (dst_wifi_link != nullptr)
+    get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(),
+                                1.0 / dst_wifi_link->get_host_rate(dst));
 
   for (auto const& link : route) {
     // WIFI links are handled manually just above, so skip them now

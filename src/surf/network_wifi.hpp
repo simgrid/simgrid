@@ -19,6 +19,8 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
+class XBT_PRIVATE NetworkWifiAction;
+
 class NetworkWifiLink : public LinkImpl {
   /** @brief Hold every rates association between host and links (host name, rates id) */
   std::map<xbt::string, int> host_rates_;
@@ -53,6 +55,21 @@ public:
   void set_latency(double) override { THROW_UNIMPLEMENTED; }
   void refresh_decay_bandwidths();
   bool toggle_decay_model();
+};
+
+class NetworkWifiAction : public NetworkCm02Action {
+  NetworkWifiLink* src_wifi_link_;
+  NetworkWifiLink* dst_wifi_link_;
+
+public:
+  NetworkWifiAction(Model* model, s4u::Host& src, s4u::Host& dst, double cost, bool failed,
+                    NetworkWifiLink* src_wifi_link, NetworkWifiLink* dst_wifi_link)
+      : NetworkCm02Action(model, src, dst, cost, failed)
+      , src_wifi_link_(src_wifi_link)
+      , dst_wifi_link_(dst_wifi_link){};
+
+  NetworkWifiLink* get_src_link() { return src_wifi_link_; }
+  NetworkWifiLink* get_dst_link() { return dst_wifi_link_; }
 };
 
 } // namespace resource
