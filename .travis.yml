@@ -66,7 +66,7 @@ jobs:
       - df -h
       - du -hc /tmp || true
     - os: osx
-      osx_image: xcode11.3
+      osx_image: xcode11.4
       script:
       - export LIBRARY_PATH=/usr/local/lib/gcc/9
       - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=ON -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON .

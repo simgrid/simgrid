@@ -184,10 +184,10 @@ do
       os="Ubuntu  <a href=\"https://docs.travis-ci.com/user/reference/bionic/\">18.04 bionic</a>"
     elif [ ${OS[$id]} == "osx" ]; then
       node="travis-mac (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
-      os="Mac OS X <a href=\"https://docs.travis-ci.com/user/reference/osx/\">Mojave (10.14)</a> "
+      os="Mac OS X <a href=\"https://docs.travis-ci.com/user/reference/osx/\">Catalina (10.15)</a> "
     elif [ ${OS[$id]} == "windows" ]; then
       node="travis-windows (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
-      os="Windows <a href=\"https://docs.travis-ci.com/user/reference/windows/\">10 v17134</a>"
+      os="Windows <a href=\"https://docs.travis-ci.com/user/reference/windows/\">Server 1809</a>"
     fi
     boost=$(get_boost)
     compiler=$(get_compiler)
