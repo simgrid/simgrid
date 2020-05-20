@@ -30,15 +30,15 @@ class NetworkWifiLink : public LinkImpl {
 
   /** @brief Should we use the decay model ? */
   bool use_decay_model_=false;
-  /** @brief Wifi ns-3 802.11n average bit rate */
-  const double wifi_max_rate_=54*1e6 / 8;
-  /** @brief ns-3 802.11n minimum bit rate */
-  const double wifi_min_rate_=41.70837*1e6 / 8;
-  /** @brief Decay model calibration */
+  /** @brief Wifi maximal bit rate according to the ns-3 802.11n standard */
+  const double wifi_max_rate_ = 54 * 1e6 / 8;
+  /** @brief minimum bit rate observed with ns3 during our calibration experiments */
+  const double wifi_min_rate_ = 41.70837 * 1e6 / 8;
+  /** @brief Amount of stations used in the reference point to rescale SimGrid predictions to fit ns-3 ones */
   const int model_n_=5;
-  /** @brief Decay model calibration: bitrate when using model_n_ stations */
+  /** @brief Bit rate observed on ns3 at the reference point used for rescaling */
   const double model_rate_=42.61438*1e6 / 8;
-  /** @brief Decay model bandwidths */
+  /** @brief The bandwidth to use for each SNR level, corrected with the decay rescale mechanism */
   std::vector<Metric> decay_bandwidths_;
 
 public:
