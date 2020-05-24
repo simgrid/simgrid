@@ -323,16 +323,15 @@ void Config::alias(const std::string& realname, const std::string& aliasname)
  */
 void Config::dump(const char *name, const char *indent)
 {
-  XBT_LOG_DEFAULT_CATEGORY(xbt_help);
   if (name)
-    XBT_VERB("%s>> Dumping of the config set '%s':", indent, name);
+    XBT_CVERB(xbt_help, "%s>> Dumping of the config set '%s':", indent, name);
 
   for (auto const& elm : options)
-    XBT_VERB("%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->get_type_name(),
-             elm.second->get_string_value().c_str());
+    XBT_CVERB(xbt_help, "%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->get_type_name(),
+              elm.second->get_string_value().c_str());
 
   if (name)
-    XBT_VERB("%s<< End of the config set '%s'", indent, name);
+    XBT_CVERB(xbt_help, "%s<< End of the config set '%s'", indent, name);
 }
 
 /** @brief Displays the declared aliases and their replacement */
