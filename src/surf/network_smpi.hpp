@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SIMGRID_SURF_NETWORK_SMPI_HPP
+#define SIMGRID_SURF_NETWORK_SMPI_HPP
+
 #include <xbt/base.h>
 
 #include "network_cm02.hpp"
@@ -24,3 +27,5 @@ public:
 } // namespace resource
 } // namespace kernel
 }
+
+#endif

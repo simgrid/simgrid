@@ -3,10 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <map>
+#ifndef SIMGRID_KERNEL_ENGINEIMPL_HPP
+#define SIMGRID_KERNEL_ENGINEIMPL_HPP
+
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/simix.hpp>
+
+#include <map>
 #include <string>
 #include <unordered_map>
 
@@ -48,3 +52,5 @@ public:
 
 } // namespace kernel
 } // namespace simgrid
+
+#endif

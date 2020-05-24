@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SIMGRID_SURF_CPUCAS01_HPP
+#define SIMGRID_SURF_CPUCAS01_HPP
+
 #include "cpu_interface.hpp"
 #include "xbt/base.h"
 
@@ -75,3 +78,5 @@ private:
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid
+
+#endif

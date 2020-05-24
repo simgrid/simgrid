@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SIMGRID_XBT_LOG_HPP
+#define SIMGRID_XBT_LOG_HPP
+
 #include <simgrid/Exception.hpp>
 #include <xbt/log.h>
 
@@ -22,3 +25,5 @@ XBT_PUBLIC void install_exception_handler();
 
 } // namespace xbt
 } // namespace simgrid
+
+#endif
