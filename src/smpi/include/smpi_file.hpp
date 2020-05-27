@@ -18,7 +18,7 @@ XBT_LOG_EXTERNAL_CATEGORY(smpi_pmpi);
 
 namespace simgrid{
 namespace smpi{
-class File{
+class File : public F2C{
   MPI_Comm comm_;
   int flags_;
   simgrid::s4u::File* file_;
@@ -60,6 +60,7 @@ class File{
   static int del(const char* filename, const Info* info);
   MPI_Errhandler errhandler();
   void set_errhandler( MPI_Errhandler errhandler);
+  static File* f2c(int id);
 };
 
   /* Read_all, Write_all : loosely based on */

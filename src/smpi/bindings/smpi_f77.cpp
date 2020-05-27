@@ -7,6 +7,7 @@
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_errhandler.hpp"
+#include "smpi_file.hpp"
 #include "smpi_op.hpp"
 #include "smpi_request.hpp"
 #include "smpi_win.hpp"
@@ -956,30 +957,6 @@ void mpi_open_port_ ( int* info, char *port_name, int* ierr){
 
 void mpi_close_port_ ( char *port_name, int* ierr){
  *ierr = MPI_Close_port( port_name);
-}
-
-void mpi_file_close_ ( int* file, int* ierr){
-  *ierr= MPI_File_close(reinterpret_cast<MPI_File*>(*file));
-}
-
-void mpi_file_delete_ ( char* filename, int* info, int* ierr){
-  *ierr= MPI_File_delete(filename, simgrid::smpi::Info::f2c(*info));
-}
-
-void mpi_file_open_ ( int* comm, char* filename, int* amode, int* info, int* fh, int* ierr){
-  *ierr= MPI_File_open(simgrid::smpi::Comm::f2c(*comm), filename, *amode, simgrid::smpi::Info::f2c(*info), reinterpret_cast<MPI_File*>(*fh));
-}
-
-void mpi_file_set_view_ ( int* fh, long long int* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr){
-  *ierr= MPI_File_set_view(reinterpret_cast<MPI_File>(*fh) , reinterpret_cast<MPI_Offset>(*offset), simgrid::smpi::Datatype::f2c(*etype), simgrid::smpi::Datatype::f2c(*filetype), datarep, simgrid::smpi::Info::f2c(*info));
-}
-
-void mpi_file_read_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_read(reinterpret_cast<MPI_File>(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
-}
-
-void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_write(reinterpret_cast<MPI_File>(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
 }
 
 void smpi_execute_flops_(double* flops){

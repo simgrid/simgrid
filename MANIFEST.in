@@ -2373,6 +2373,7 @@ include src/simix/smx_private.hpp
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp
 include src/smpi/bindings/smpi_f77_comm.cpp
+include src/smpi/bindings/smpi_f77_file.cpp
 include src/smpi/bindings/smpi_f77_request.cpp
 include src/smpi/bindings/smpi_f77_type.cpp
 include src/smpi/bindings/smpi_mpi.cpp

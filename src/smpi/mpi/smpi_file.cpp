@@ -316,5 +316,9 @@ namespace smpi{
     if (errhandler_ != MPI_ERRHANDLER_NULL)
       errhandler_->ref();
   }
+
+  File* File::f2c(int id){
+    return static_cast<File*>(F2C::f2c(id));
+  }
 }
 }
