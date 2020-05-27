@@ -13,27 +13,30 @@ extern "C" { // This should really use the C linkage to be usable from Fortran
 
 void mpi_send_init_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Send_init(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dst, *tag, simgrid::smpi::Comm::f2c(*comm), &req);
-  if(*ierr == MPI_SUCCESS) {
+  if(*ierr == MPI_SUCCESS && req != nullptr) {
     *request = req->add_f();
   }
 }
 
 void mpi_isend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Isend(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dst, *tag, simgrid::smpi::Comm::f2c(*comm), &req);
-  if(*ierr == MPI_SUCCESS) {
+  if(*ierr == MPI_SUCCESS && req != nullptr) {
     *request = req->add_f();
   }
 }
 
 void mpi_irsend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Irsend(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dst, *tag, simgrid::smpi::Comm::f2c(*comm), &req);
-  if(*ierr == MPI_SUCCESS) {
+  if(*ierr == MPI_SUCCESS && req != nullptr) {
     *request = req->add_f();
   }
 }
@@ -58,6 +61,7 @@ void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst, int* 
 
 void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   buf = static_cast<char *>( FORT_BOTTOM(buf));
   *ierr = MPI_Recv_init(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *src, *tag, simgrid::smpi::Comm::f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -67,9 +71,10 @@ void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag, in
 
 void mpi_irecv_(void *buf, int* count, int* datatype, int* src, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   buf = static_cast<char *>( FORT_BOTTOM(buf));
   *ierr = MPI_Irecv(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *src, *tag, simgrid::smpi::Comm::f2c(*comm), &req);
-  if(*ierr == MPI_SUCCESS) {
+  if(*ierr == MPI_SUCCESS && req != nullptr) {
     *request = req->add_f();
   }
 }
@@ -82,20 +87,21 @@ void mpi_recv_(void* buf, int* count, int* datatype, int* src, int* tag, int* co
 void mpi_sendrecv_replace_ (void *buf, int* count, int* datatype, int* dst, int* sendtag, int* src, int* recvtag,
                             int* comm, MPI_Status* status, int* ierr)
 {
- *ierr = MPI_Sendrecv_replace(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dst, *sendtag, *src,
- *recvtag, simgrid::smpi::Comm::f2c(*comm), FORT_STATUS_IGNORE(status));
+  *ierr = MPI_Sendrecv_replace(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dst, *sendtag, *src,
+  *recvtag, simgrid::smpi::Comm::f2c(*comm), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_ssend_ (void* buf, int* count, int* datatype, int* dest, int* tag, int* comm, int* ierr) {
- *ierr = MPI_Ssend(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm));
+  *ierr = MPI_Ssend(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm));
 }
 
 void mpi_ssend_init_ (void* buf, int* count, int* datatype, int* dest, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request tmp;
- *ierr = MPI_Ssend_init(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm), &tmp);
- if(*ierr == MPI_SUCCESS) {
-   *request = tmp->add_f();
- }
+  *request = MPI_FORTRAN_REQUEST_NULL;
+  *ierr = MPI_Ssend_init(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm), &tmp);
+  if(*ierr == MPI_SUCCESS && tmp != nullptr) {
+    *request = tmp->add_f();
+  }
 }
 
 void mpi_bsend_ (void* buf, int* count, int* datatype, int *dest, int* tag, int* comm, int* ierr) {
@@ -104,34 +110,38 @@ void mpi_bsend_ (void* buf, int* count, int* datatype, int *dest, int* tag, int*
 
 void mpi_bsend_init_ (void* buf, int* count, int* datatype, int *dest, int* tag, int* comm, int*  request, int* ierr) {
   MPI_Request tmp;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   *ierr = MPI_Bsend_init(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm), &tmp);
- if(*ierr == MPI_SUCCESS) {
-   *request = tmp->add_f();
- }
+  if(*ierr == MPI_SUCCESS && tmp != nullptr) {
+    *request = tmp->add_f();
+  }
 }
 
 void mpi_ibsend_ (void* buf, int* count, int* datatype, int *dest, int* tag, int* comm, int*  request, int* ierr) {
   MPI_Request tmp;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   *ierr = MPI_Ibsend(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm), &tmp);
- if(*ierr == MPI_SUCCESS) {
-   *request = tmp->add_f();
- }
+  if(*ierr == MPI_SUCCESS && tmp != nullptr) {
+    *request = tmp->add_f();
+  }
 }
 
 void mpi_issend_ (void* buf, int* count, int* datatype, int *dest, int* tag, int* comm, int*  request, int* ierr) {
   MPI_Request tmp;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   *ierr = MPI_Issend(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm), &tmp);
- if(*ierr == MPI_SUCCESS) {
-   *request = tmp->add_f();
- }
+  if(*ierr == MPI_SUCCESS && tmp != nullptr) {
+    *request = tmp->add_f();
+  }
 }
 
 void mpi_rsend_init_ (void* buf, int* count, int* datatype, int *dest, int* tag, int* comm, int*  request, int* ierr) {
   MPI_Request tmp;
+  *request = MPI_FORTRAN_REQUEST_NULL;
   *ierr = MPI_Rsend_init(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm), &tmp);
- if(*ierr == MPI_SUCCESS) {
-   *request = tmp->add_f();
- }
+  if(*ierr == MPI_SUCCESS && tmp != nullptr) {
+    *request = tmp->add_f();
+  }
 }
 
 void mpi_start_(int* request, int* ierr) {
