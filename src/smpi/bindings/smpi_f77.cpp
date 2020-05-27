@@ -71,6 +71,9 @@ void smpi_init_fortran_types()
 
     MPI_ERRORS_RETURN->add_f();
     MPI_ERRORS_ARE_FATAL->add_f();
+
+    MPI_LB->add_f();
+    MPI_UB->add_f();
   }
 }
 
