@@ -156,6 +156,7 @@ set(SMPI_SRC
   src/smpi/bindings/smpi_f77.cpp
   src/smpi/bindings/smpi_f77_coll.cpp
   src/smpi/bindings/smpi_f77_comm.cpp
+  src/smpi/bindings/smpi_f77_file.cpp
   src/smpi/bindings/smpi_f77_request.cpp
   src/smpi/bindings/smpi_f77_type.cpp
   src/smpi/colls/smpi_coll.cpp
