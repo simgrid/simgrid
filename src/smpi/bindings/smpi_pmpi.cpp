@@ -120,6 +120,7 @@ int PMPI_Abort(MPI_Comm /*comm*/, int /*errorcode*/)
 {
   smpi_bench_end();
   // FIXME: should kill all processes in comm instead
+  XBT_WARN("MPI_Abort was called, something went probably wrong in this simulation ! Killing this process");
   smx_actor_t actor = SIMIX_process_self();
   simgrid::kernel::actor::simcall([actor] { actor->exit(); });
   return MPI_SUCCESS;
