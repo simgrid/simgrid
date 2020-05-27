@@ -35,7 +35,7 @@ namespace smpi{
 
     size_t found=fullname.find('/');
     //in case no fullpath is provided ... just pick the first mountpoint.
-    if(found==std::string::npos){
+    if(found==std::string::npos || fullname.rfind("./", 1) != std::string::npos){
       auto disk = simgrid::s4u::Host::current()->get_disks().front();
       std::string mount;
       if (disk->get_host() != simgrid::s4u::Host::current())
@@ -43,8 +43,12 @@ namespace smpi{
       else
         mount = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_mount_point();
       XBT_DEBUG("No absolute path given for file opening, use '%s'", mount.c_str());
-      mount.append("/");
-      fullname.insert(0, mount);
+      if(fullname.rfind("./",1) != std::string::npos)
+        fullname.replace(fullname.begin(), fullname.begin() + 1, mount);
+      else{
+        mount.append("/");
+        fullname.insert(0, mount);
+      }
     }
 
     file_= new simgrid::s4u::File(fullname, nullptr);
