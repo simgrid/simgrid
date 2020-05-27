@@ -17,7 +17,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(mwe, "Minimum Working Example");
 simgrid::s4u::ActorPtr receiver;
 
 class Receiver {
-
 public:
   void operator()()
   {
@@ -29,7 +28,6 @@ public:
 };
 
 class Suspender {
-
 public:
   void operator()()
   {
@@ -52,7 +50,6 @@ public:
 
 int main(int argc, char** argv)
 {
-
   simgrid::s4u::Engine* engine = new simgrid::s4u::Engine(&argc, argv);
 
   engine->load_platform(argv[1]);

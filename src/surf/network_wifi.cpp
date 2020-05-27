@@ -76,7 +76,6 @@ void NetworkWifiLink::refresh_decay_bandwidths(){
     // Since decay model start at 0 we should use (nSTA-1)
     double new_peak=N0*exp(-lambda*(nSTA-1))+min_bw;
     new_bandwidths.push_back({new_peak, 1.0, nullptr});
-
   }
   decay_bandwidths_=new_bandwidths;
 }
