@@ -23,8 +23,6 @@ void Topo::setComm(MPI_Comm comm)
 {
   xbt_assert(not comm_);
   comm_ = comm;
-  if (comm_)
-    comm_->topo_ = this;
 }
 
 /*******************************************************************************
@@ -75,20 +73,21 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
       for (int i = 0 ; i < newSize ; i++) {
         newGroup->set_mapping(oldGroup->actor(i), i);
       }
-      *comm_cart = new  Comm(newGroup, this);
+      *comm_cart = new  Comm(newGroup, std::shared_ptr<Topo>(this));
     }
   } else {
     if(comm_cart != nullptr){
       if (rank == 0) {
         MPI_Group group = new Group(MPI_COMM_SELF->group());
-        *comm_cart      = new Comm(group, this);
+        *comm_cart      = new Comm(group, std::shared_ptr<Topo>(this));
       } else {
         *comm_cart = MPI_COMM_NULL;
       }
     }
   }
-  if(comm_cart != nullptr)
+  if(comm_cart != nullptr){
     setComm(*comm_cart);
+  }
 }
 
 Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
@@ -133,7 +132,9 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   } else {
     *newcomm = getComm()->split(color, getComm()->rank());
     res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, nullptr);
+    std::shared_ptr<Topo> topo=std::shared_ptr<Topo>(res);
     res->setComm(*newcomm);
+    (*newcomm)->set_topo(topo);
   }
   delete[] newDims;
   delete[] newPeriodic;

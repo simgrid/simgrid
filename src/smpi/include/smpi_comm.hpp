@@ -8,6 +8,7 @@
 
 #include <list>
 #include <string>
+#include <memory>
 #include "smpi_errhandler.hpp"
 #include "smpi_keyvals.hpp"
 #include "smpi_group.hpp"
@@ -20,7 +21,7 @@ class Comm : public F2C, public Keyval{
   friend Topo;
   MPI_Group group_;
   SMPI_Topo_type topoType_ = MPI_INVALID_TOPO;
-  MPI_Topology topo_; // to be replaced by an union
+  std::shared_ptr<Topo> topo_; // to be replaced by an union
   int refcount_          = 1;
   MPI_Comm leaders_comm_ = MPI_COMM_NULL; // inter-node communicator
   MPI_Comm intra_comm_   = MPI_COMM_NULL; // intra-node communicator. For MPI_COMM_WORLD this can't be used, as var is
@@ -47,6 +48,7 @@ public:
   int dup_with_info(MPI_Info info, MPI_Comm* newcomm);
   MPI_Group group();
   MPI_Topology topo() { return topo_; }
+  void set_topo(MPI_Topology topo){topo_=topo;}
   int size();
   int rank();
   int id();

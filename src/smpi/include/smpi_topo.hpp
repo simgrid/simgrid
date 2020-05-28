@@ -8,8 +8,9 @@
 
 #include "smpi_comm.hpp"
 #include "smpi_status.hpp"
+#include <memory>
 
-typedef SMPI_Topology *MPI_Topology;
+typedef std::shared_ptr<SMPI_Topology> MPI_Topology;
 
 namespace simgrid{
 namespace smpi{

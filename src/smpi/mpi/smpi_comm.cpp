@@ -297,7 +297,7 @@ MPI_Comm Comm::split(int color, int key)
       Request::recv(&group_out, 1, MPI_PTR, 0, system_tag, this, MPI_STATUS_IGNORE);
     } /* otherwise, exit with group_out == nullptr */
   }
-  return group_out!=nullptr ? new  Comm(group_out, nullptr) : MPI_COMM_NULL;
+  return group_out!=nullptr ? new  Comm(group_out, topo_) : MPI_COMM_NULL;
 }
 
 void Comm::ref(){
@@ -333,7 +333,6 @@ void Comm::unref(Comm* comm){
       simgrid::smpi::Info::unref(comm->info_);
     if (comm->errhandler_ != MPI_ERRHANDLER_NULL)
       simgrid::smpi::Errhandler::unref(comm->errhandler_);
-    delete comm->topo_; // there's no use count on topos
     delete comm;
   }
 }
