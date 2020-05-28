@@ -34,7 +34,7 @@ void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
 namespace simgrid {
 namespace simix {
-config::Flag<double> cfg_verbose_exit{"debug/verbose-exit", {"verbose-exit"}, "Display the actor status at exit", true};
+config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", {"verbose-exit"}, "Display the actor status at exit", true};
 } // namespace simix
 } // namespace simgrid
 
