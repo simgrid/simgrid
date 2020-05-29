@@ -31,7 +31,8 @@ public:
  ************/
 class LinkNS3 : public LinkImpl {
 public:
-  explicit LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, double latency);
+  explicit LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, double latency,
+                   s4u::Link::SharingPolicy policy);
   ~LinkNS3();
 
   void apply_event(profile::Event* event, double value) override;
