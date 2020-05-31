@@ -22,7 +22,7 @@ $HEADER
 namespace {
 const std::unordered_map<int, const char*> tagname_map = {
     {0x00, "DW_TAG_invalid"},
-$(cat "$1" | grep DW_TAG_ | sed 's/.*\(DW_TAG_[^ ]*\) = \(0x[0-9a-f]*\).*/    {\2, "\1"},/')
+$(grep DW_TAG_ -- "$1" | sed 's/.*\(DW_TAG_[^ ]*\) = \(0x[0-9a-f]*\).*/    {\2, "\1"},/')
 };
 }
 
@@ -50,7 +50,7 @@ $HEADER
 
 namespace {
 const std::unordered_map<int, const char*> attrname_map = {
-$(cat "$1" | grep DW_AT_ | sed 's/.*\(DW_AT_[^ ]*\) = \(0x[0-9a-f]*\).*/    {\2, "\1"},/')
+$(grep DW_AT_ -- "$1" | sed 's/.*\(DW_AT_[^ ]*\) = \(0x[0-9a-f]*\).*/    {\2, "\1"},/')
 };
 }
 

@@ -14,7 +14,7 @@ die() {
 
 assert() {
   if ! eval "$1"; then
-    die "Assertion failed: $@"
+    die "Assertion failed: $*"
   fi
 }
 

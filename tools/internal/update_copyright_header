@@ -35,7 +35,7 @@ get_dates() {
               s/[, ]\+/\n/g
               p
             }' "$file" \
-    | while read date; do
+    | while read -r date; do
         case "$date" in
             "")
                 ;;
@@ -54,9 +54,9 @@ format_dates() {
     local first
     local last
     local next
-    read first
+    read -r first
     last=$first
-    while read next; do
+    while read -r next; do
         if [ $next -eq $((last + 1)) ]; then
             last=$next
         else
