@@ -496,8 +496,9 @@ void Request::start()
 
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     real_size_=size_;
+    size_t payload_size_ = size_ + 16;//MPI enveloppe size (tag+dest+communicator)
     action_   = simcall_comm_isend(
-        simgrid::s4u::Actor::by_pid(src_)->get_impl(), mailbox->get_impl(), size_, -1.0, buf, real_size_, &match_send,
+        simgrid::s4u::Actor::by_pid(src_)->get_impl(), mailbox->get_impl(), payload_size_, -1.0, buf, real_size_, &match_send,
         &xbt_free_f, // how to free the userdata if a detached send fails
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this,
         // detach if msg size < eager/rdv switch limit
