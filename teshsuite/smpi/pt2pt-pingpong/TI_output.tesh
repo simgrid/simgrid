@@ -39,7 +39,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -no-privatize -replay ./out_in_t
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
-> [Jupiter:1:(2) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
+> [Jupiter:1:(2) 0.016806] [smpi_replay/INFO] Simulation time 0.016806
 
 ! output sort
 $ sh -c "cat ./out_ti.txt_files/*"
@@ -130,7 +130,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -no-privatize -replay ./out_in_t
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
-> [Jupiter:1:(2) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
+> [Jupiter:1:(2) 0.016806] [smpi_replay/INFO] Simulation time 0.016806
 
 $ rm -rf ./out_ti.txt_files
 $ rm -rf ./out_in_ti.txt_files

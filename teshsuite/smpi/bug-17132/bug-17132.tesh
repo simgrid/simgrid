@@ -1,3 +1,3 @@
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 16 -platform ../../../examples/platforms/small_platform.xml -hostfile ../hostfile ${bindir:=.}/bug-17132 --cfg=smpi/simulate-computation:no --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > You requested to use 16 ranks, but there is only 5 processes in your hostfile...
-> Walltime = 0.476791
+> Walltime = 0.478832

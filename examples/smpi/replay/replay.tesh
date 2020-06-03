@@ -10,21 +10,21 @@ $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 0.000000] [smpi_replay/VERBOSE] 0 bcast 5e4 0.000000
-> [Jupiter:1:(2) 0.015036] [smpi_replay/VERBOSE] 1 bcast 5e4 0.015036
-> [Fafard:2:(3) 0.015676] [smpi_replay/VERBOSE] 2 bcast 5e4 0.015676
-> [Jupiter:1:(2) 2.636405] [smpi_replay/VERBOSE] 1 compute 2e8 2.621369
+> [Jupiter:1:(2) 0.015039] [smpi_replay/VERBOSE] 1 bcast 5e4 0.015039
+> [Fafard:2:(3) 0.015678] [smpi_replay/VERBOSE] 2 bcast 5e4 0.015678
+> [Jupiter:1:(2) 2.636409] [smpi_replay/VERBOSE] 1 compute 2e8 2.621369
 > [Tremblay:0:(1) 5.097100] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
 > [Tremblay:0:(1) 5.097100] [smpi_replay/VERBOSE] 0 bcast 5e4 0.000000
-> [Jupiter:1:(2) 5.112136] [smpi_replay/VERBOSE] 1 bcast 5e4 2.475730
-> [Fafard:2:(3) 6.569099] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
-> [Fafard:2:(3) 6.584775] [smpi_replay/VERBOSE] 2 bcast 5e4 0.015676
-> [Jupiter:1:(2) 7.733505] [smpi_replay/VERBOSE] 1 compute 2e8 2.621369
+> [Jupiter:1:(2) 5.112139] [smpi_replay/VERBOSE] 1 bcast 5e4 2.475730
+> [Fafard:2:(3) 6.569102] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Fafard:2:(3) 6.584781] [smpi_replay/VERBOSE] 2 bcast 5e4 0.015678
+> [Jupiter:1:(2) 7.733508] [smpi_replay/VERBOSE] 1 compute 2e8 2.621369
 > [Tremblay:0:(1) 10.194200] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
-> [Fafard:2:(3) 13.138198] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
-> [Jupiter:1:(2) 14.286929] [smpi_replay/VERBOSE] 1 reduce 5e4 5e8 6.553424
-> [Tremblay:0:(1) 18.250974] [smpi_replay/VERBOSE] 0 reduce 5e4 5e8 8.056774
-> [Fafard:2:(3) 19.691622] [smpi_replay/VERBOSE] 2 reduce 5e4 5e8 6.553424
-> [Fafard:2:(3) 19.691622] [smpi_replay/INFO] Simulation time 19.691622
+> [Fafard:2:(3) 13.138204] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Jupiter:1:(2) 14.286932] [smpi_replay/VERBOSE] 1 reduce 5e4 5e8 6.553424
+> [Tremblay:0:(1) 18.250982] [smpi_replay/VERBOSE] 0 reduce 5e4 5e8 8.056783
+> [Fafard:2:(3) 19.691628] [smpi_replay/VERBOSE] 2 reduce 5e4 5e8 6.553424
+> [Fafard:2:(3) 19.691628] [smpi_replay/INFO] Simulation time 19.691628
 
 $ rm -f replay/one_trace
 
@@ -34,7 +34,7 @@ p The same with tracing activated
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=replay.thresh:critical --log=no_loc  --cfg=tracing:yes --cfg=tracing/smpi:yes --cfg=tracing/smpi/computing:yes  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay  --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [Fafard:2:(3) 19.691622] [smpi_replay/INFO] Simulation time 19.691622
+> [Fafard:2:(3) 19.691628] [smpi_replay/INFO] Simulation time 19.691628
 
 $ rm -f replay/one_trace
 
@@ -171,46 +171,46 @@ $ tail -n +3 ./simgrid.trace
 > 12 0.000000 2 1 7
 > 5 9 2 action_reduce "0 1 0"
 > 5 10 2 smpi_replay_run_finalize "0 1 0"
-> 13 0.015036 2 2
-> 12 0.015036 2 2 7
-> 13 0.015676 2 3
-> 12 0.015676 2 3 7
-> 13 2.636405 2 2
-> 12 2.636405 2 2 8
+> 13 0.015039 2 2
+> 12 0.015039 2 2 7
+> 13 0.015678 2 3
+> 12 0.015678 2 3 7
+> 13 2.636409 2 2
+> 12 2.636409 2 2 8
 > 13 5.097100 2 1
 > 12 5.097100 2 1 8
 > 13 5.097100 2 1
 > 12 5.097100 2 1 7
-> 13 5.112136 2 2
-> 12 5.112136 2 2 7
-> 13 6.569099 2 3
-> 12 6.569099 2 3 8
-> 13 6.584775 2 3
-> 12 6.584775 2 3 7
-> 13 7.733505 2 2
-> 12 7.733505 2 2 9
-> 12 7.733505 2 2 7
+> 13 5.112139 2 2
+> 12 5.112139 2 2 7
+> 13 6.569102 2 3
+> 12 6.569102 2 3 8
+> 13 6.584781 2 3
+> 12 6.584781 2 3 7
+> 13 7.733508 2 2
+> 12 7.733508 2 2 9
+> 12 7.733508 2 2 7
 > 13 10.194200 2 1
 > 12 10.194200 2 1 9
-> 13 13.138198 2 3
-> 12 13.138198 2 3 9
-> 12 13.138198 2 3 7
-> 12 13.153874 2 1 7
-> 13 14.286929 2 2
-> 13 14.286929 2 2
-> 12 14.286929 2 2 10
-> 13 14.286929 2 2
-> 7 14.286929 1 2
-> 13 18.250974 2 1
-> 13 18.250974 2 1
-> 12 18.250974 2 1 10
-> 13 18.250974 2 1
-> 7 18.250974 1 1
-> 13 19.691622 2 3
-> 13 19.691622 2 3
-> 12 19.691622 2 3 10
-> 13 19.691622 2 3
-> 7 19.691622 1 3
+> 13 13.138204 2 3
+> 12 13.138204 2 3 9
+> 12 13.138204 2 3 7
+> 12 13.153883 2 1 7
+> 13 14.286932 2 2
+> 13 14.286932 2 2
+> 12 14.286932 2 2 10
+> 13 14.286932 2 2
+> 7 14.286932 1 2
+> 13 18.250982 2 1
+> 13 18.250982 2 1
+> 12 18.250982 2 1 10
+> 13 18.250982 2 1
+> 7 18.250982 1 1
+> 13 19.691628 2 3
+> 13 19.691628 2 3
+> 12 19.691628 2 3 10
+> 13 19.691628 2 3
+> 7 19.691628 1 3
 
 $ rm -f ./simgrid.trace
 
@@ -221,15 +221,15 @@ p Another test of trace replay with SMPI (one trace per process)
 $ mkfile ./split_traces_tesh
 
 $ ../../smpi_script/bin/smpirun -no-privatize -replay ./split_traces_tesh --log=smpi_replay.thresh:verbose --log=no_loc  -np 2 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 0.167158] [smpi_replay/VERBOSE] 0 send 1 0 1e6 0.167158
-> [Jupiter:1:(2) 0.167158] [smpi_replay/VERBOSE] 1 recv 0 0 1e6 0.167158
-> [Jupiter:1:(2) 13.274005] [smpi_replay/VERBOSE] 1 compute 1e9 13.106847
-> [Jupiter:1:(2) 13.274005] [smpi_replay/VERBOSE] 1 isend 0 1 1e6 0.000000
-> [Jupiter:1:(2) 13.274005] [smpi_replay/VERBOSE] 1 irecv 0 2 1e6 0.000000
-> [Tremblay:0:(1) 13.441162] [smpi_replay/VERBOSE] 0 recv 1 1 1e6 13.274005
-> [Jupiter:1:(2) 13.608320] [smpi_replay/VERBOSE] 1 wait 0 1 2 0.334315
-> [Tremblay:0:(1) 13.608320] [smpi_replay/VERBOSE] 0 send 1 2 1e6 0.167158
-> [Jupiter:1:(2) 13.608320] [smpi_replay/INFO] Simulation time 13.608320
+> [Tremblay:0:(1) 0.167160] [smpi_replay/VERBOSE] 0 send 1 0 1e6 0.167160
+> [Jupiter:1:(2) 0.167160] [smpi_replay/VERBOSE] 1 recv 0 0 1e6 0.167160
+> [Jupiter:1:(2) 13.274007] [smpi_replay/VERBOSE] 1 compute 1e9 13.106847
+> [Jupiter:1:(2) 13.274007] [smpi_replay/VERBOSE] 1 isend 0 1 1e6 0.000000
+> [Jupiter:1:(2) 13.274007] [smpi_replay/VERBOSE] 1 irecv 0 2 1e6 0.000000
+> [Tremblay:0:(1) 13.441167] [smpi_replay/VERBOSE] 0 recv 1 1 1e6 13.274007
+> [Jupiter:1:(2) 13.608327] [smpi_replay/VERBOSE] 1 wait 0 1 2 0.334320
+> [Tremblay:0:(1) 13.608327] [smpi_replay/VERBOSE] 0 send 1 2 1e6 0.167160
+> [Jupiter:1:(2) 13.608327] [smpi_replay/INFO] Simulation time 13.608327
 
 $ rm -f ./split_traces_tesh
 
@@ -239,15 +239,15 @@ p Test of barrier replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 1.518421] [smpi_replay/VERBOSE] 0 send 1 0 1e7 1.518421
-> [Jupiter:1:(2) 1.518421] [smpi_replay/VERBOSE] 1 recv 0 0 1e7 1.518421
-> [Tremblay:0:(1) 1.520397] [smpi_replay/VERBOSE] 0 barrier 0.001976
-> [Jupiter:1:(2) 1.521858] [smpi_replay/VERBOSE] 1 barrier 0.003438
-> [Fafard:2:(3) 1.522373] [smpi_replay/VERBOSE] 2 barrier 1.522373
-> [Tremblay:0:(1) 2.520397] [smpi_replay/VERBOSE] 0 compute 98095000 1.000000
-> [Jupiter:1:(2) 2.521858] [smpi_replay/VERBOSE] 1 compute 76296000 1.000000
-> [Fafard:2:(3) 2.522373] [smpi_replay/VERBOSE] 2 compute 76296000 1.000000
-> [Fafard:2:(3) 2.522373] [smpi_replay/INFO] Simulation time 2.522373
+> [Tremblay:0:(1) 1.518423] [smpi_replay/VERBOSE] 0 send 1 0 1e7 1.518423
+> [Jupiter:1:(2) 1.518423] [smpi_replay/VERBOSE] 1 recv 0 0 1e7 1.518423
+> [Tremblay:0:(1) 1.522406] [smpi_replay/VERBOSE] 0 barrier 0.003983
+> [Jupiter:1:(2) 1.525354] [smpi_replay/VERBOSE] 1 barrier 0.006931
+> [Fafard:2:(3) 1.526390] [smpi_replay/VERBOSE] 2 barrier 1.526390
+> [Tremblay:0:(1) 2.522406] [smpi_replay/VERBOSE] 0 compute 98095000 1.000000
+> [Jupiter:1:(2) 2.525354] [smpi_replay/VERBOSE] 1 compute 76296000 1.000000
+> [Fafard:2:(3) 2.526390] [smpi_replay/VERBOSE] 2 compute 76296000 1.000000
+> [Fafard:2:(3) 2.526390] [smpi_replay/INFO] Simulation time 2.526390
 
 $ rm -f replay/one_trace
 
@@ -261,19 +261,19 @@ $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=rep
 > [Jupiter:1:(2) 6.553424] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
 > [Jupiter:1:(2) 6.553524] [smpi_replay/VERBOSE] 1 test 0 1 0 0.000100
 > [Tremblay:0:(1) 10.194200] [smpi_replay/VERBOSE] 0 compute 1e9 10.194200
-> [Tremblay:0:(1) 10.361357] [smpi_replay/VERBOSE] 0 send 1 0 1e6 0.167158
+> [Tremblay:0:(1) 10.361360] [smpi_replay/VERBOSE] 0 send 1 0 1e6 0.167160
 > [Jupiter:1:(2) 13.106947] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
 > [Jupiter:1:(2) 13.106947] [smpi_replay/VERBOSE] 1 wait 0 1 0 0.000000
-> [Tremblay:0:(1) 20.555557] [smpi_replay/VERBOSE] 0 compute 1e9 10.194200
+> [Tremblay:0:(1) 20.555559] [smpi_replay/VERBOSE] 0 compute 1e9 10.194200
 > [Fafard:2:(3) 26.213694] [smpi_replay/VERBOSE] 2 compute 2e9 26.213694
 > [Fafard:2:(3) 26.213694] [smpi_replay/VERBOSE] 2 irecv 1 1 1e6 0.000000
-> [Jupiter:1:(2) 26.403860] [smpi_replay/VERBOSE] 1 send 2 1 1e6 13.296913
+> [Jupiter:1:(2) 26.403862] [smpi_replay/VERBOSE] 1 send 2 1 1e6 13.296915
 > [Fafard:2:(3) 29.490406] [smpi_replay/VERBOSE] 2 compute 2.5e8 3.276712
 > [Fafard:2:(3) 29.490606] [smpi_replay/VERBOSE] 2 test 1 2 1 0.000200
 > [Fafard:2:(3) 32.767318] [smpi_replay/VERBOSE] 2 compute 2.5e8 3.276712
 > [Fafard:2:(3) 32.767318] [smpi_replay/VERBOSE] 2 wait 1 2 1 0.000000
 > [Fafard:2:(3) 32.767318] [smpi_replay/VERBOSE] 2 isend 0 2 1e6 0.000000
-> [Tremblay:0:(1) 32.923014] [smpi_replay/VERBOSE] 0 recv 2 2 1e6 12.367458
+> [Tremblay:0:(1) 32.923016] [smpi_replay/VERBOSE] 0 recv 2 2 1e6 12.367457
 > [Fafard:2:(3) 39.320741] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
 > [Fafard:2:(3) 39.320741] [smpi_replay/INFO] Simulation time 39.320741
 
@@ -285,13 +285,13 @@ p Test of AllReduce replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 5.112775] [smpi_replay/VERBOSE] 0 allreduce 5e4 5e8 5.112775
-> [Jupiter:1:(2) 6.584135] [smpi_replay/VERBOSE] 1 allreduce 5e4 5e8 6.584135
-> [Fafard:2:(3) 6.584775] [smpi_replay/VERBOSE] 2 allreduce 5e4 5e8 6.584775
-> [Tremblay:0:(1) 10.209875] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
-> [Jupiter:1:(2) 13.137559] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
-> [Fafard:2:(3) 13.138198] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
-> [Fafard:2:(3) 13.138198] [smpi_replay/INFO] Simulation time 13.138198
+> [Tremblay:0:(1) 5.112778] [smpi_replay/VERBOSE] 0 allreduce 5e4 5e8 5.112778
+> [Jupiter:1:(2) 6.584141] [smpi_replay/VERBOSE] 1 allreduce 5e4 5e8 6.584141
+> [Fafard:2:(3) 6.584781] [smpi_replay/VERBOSE] 2 allreduce 5e4 5e8 6.584781
+> [Tremblay:0:(1) 10.209878] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
+> [Jupiter:1:(2) 13.137565] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
+> [Fafard:2:(3) 13.138204] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Fafard:2:(3) 13.138204] [smpi_replay/INFO] Simulation time 13.138204
 
 $ rm -f replay/one_trace
 
@@ -301,12 +301,10 @@ p Test of AllToAll replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 0.004041] [smpi_replay/VERBOSE] 0 alltoall 500 500 0.004041
-> [Fafard:2:(3) 0.006920] [smpi_replay/VERBOSE] 2 alltoall 500 500 0.006920
-> [Jupiter:1:(2) 0.006920] [smpi_replay/VERBOSE] 1 alltoall 500 500 0.006920
-> [Jupiter:1:(2) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
-
-
+> [Tremblay:0:(1) 0.004047] [smpi_replay/VERBOSE] 0 alltoall 500 500 0.004047
+> [Fafard:2:(3) 0.006927] [smpi_replay/VERBOSE] 2 alltoall 500 500 0.006927
+> [Jupiter:1:(2) 0.006927] [smpi_replay/VERBOSE] 1 alltoall 500 500 0.006927
+> [Jupiter:1:(2) 0.006927] [smpi_replay/INFO] Simulation time 0.006927
 
 $ rm -f replay/one_trace
 
@@ -316,11 +314,10 @@ p Test of AllToAllv replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 0.004000] [smpi_replay/VERBOSE] 0 alltoallv 100 1 40 30 1000 1 80 100 0.004000
-> [Jupiter:1:(2) 0.006935] [smpi_replay/VERBOSE] 1 alltoallv 1000 80 1 40 1000 40 1 30 0.006935
-> [Fafard:2:(3) 0.006936] [smpi_replay/VERBOSE] 2 alltoallv 1000 100 30 1 1000 30 40 1 0.006936
-> [Fafard:2:(3) 0.006936] [smpi_replay/INFO] Simulation time 0.006936
-
+> [Tremblay:0:(1) 0.004004] [smpi_replay/VERBOSE] 0 alltoallv 100 1 40 30 1000 1 80 100 0.004004
+> [Jupiter:1:(2) 0.006939] [smpi_replay/VERBOSE] 1 alltoallv 1000 80 1 40 1000 40 1 30 0.006939
+> [Fafard:2:(3) 0.006941] [smpi_replay/VERBOSE] 2 alltoallv 1000 100 30 1 1000 30 40 1 0.006941
+> [Fafard:2:(3) 0.006941] [smpi_replay/INFO] Simulation time 0.006941
 $ rm -f replay/one_trace
 
 p Test of AllGatherv replay with SMPI (one trace for all processes)
@@ -329,11 +326,11 @@ p Test of AllGatherv replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 4 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 1.397261] [smpi_replay/VERBOSE] 0 allgatherv 275427 275427 275427 275427 204020 0 0 1.397261
-> [Ginette:3:(4) 1.760421] [smpi_replay/VERBOSE] 3 allgatherv 204020 275427 275427 275427 204020 0 0 1.760421
-> [Fafard:2:(3) 1.941986] [smpi_replay/VERBOSE] 2 allgatherv 275427 275427 275427 275427 204020 0 0 1.941986
-> [Jupiter:1:(2) 1.941986] [smpi_replay/VERBOSE] 1 allgatherv 275427 275427 275427 275427 204020 0 0 1.941986
-> [Jupiter:1:(2) 1.941986] [smpi_replay/INFO] Simulation time 1.941986
+> [Tremblay:0:(1) 1.397272] [smpi_replay/VERBOSE] 0 allgatherv 275427 275427 275427 275427 204020 0 0 1.397272
+> [Ginette:3:(4) 1.760434] [smpi_replay/VERBOSE] 3 allgatherv 204020 275427 275427 275427 204020 0 0 1.760434
+> [Fafard:2:(3) 1.942001] [smpi_replay/VERBOSE] 2 allgatherv 275427 275427 275427 275427 204020 0 0 1.942001
+> [Jupiter:1:(2) 1.942001] [smpi_replay/VERBOSE] 1 allgatherv 275427 275427 275427 275427 204020 0 0 1.942001
+> [Jupiter:1:(2) 1.942001] [smpi_replay/INFO] Simulation time 1.942001
 
 $ rm -f replay/one_trace
 
@@ -346,13 +343,13 @@ $ mkfile replay/one_trace
 $ ../../smpi_script/bin/smpirun -no-privatize -replay replay/one_trace --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc  -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [Fafard:2:(3) 0.000000] [smpi_replay/VERBOSE] 2 irecv 1 1 3000 0.000000
 > [Fafard:2:(3) 0.000000] [smpi_replay/VERBOSE] 2 isend 0 2 3000 0.000000
+> [Fafard:2:(3) 0.006224] [smpi_replay/VERBOSE] 2 waitall 0.006224
+> [Fafard:2:(3) 0.006224] [smpi_replay/INFO] Simulation time 0.006224
 > [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 isend 0 0 2000 0.000000
 > [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 isend 2 1 3000 0.000000
 > [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 waitall 0.000000
 > [Tremblay:0:(1) 0.000000] [smpi_replay/VERBOSE] 0 irecv 1 0 2000 0.000000
 > [Tremblay:0:(1) 0.000000] [smpi_replay/VERBOSE] 0 irecv 2 2 3000 0.000000
-> [Tremblay:0:(1) 0.003787] [smpi_replay/VERBOSE] 0 waitall 0.003787
-> [Fafard:2:(3) 0.006220] [smpi_replay/VERBOSE] 2 waitall 0.006220
-> [Fafard:2:(3) 0.006220] [smpi_replay/INFO] Simulation time 0.006220
+> [Tremblay:0:(1) 0.003790] [smpi_replay/VERBOSE] 0 waitall 0.003790
 
 $ rm -f replay/one_trace

@@ -10,5 +10,5 @@ $ ./replay_multiple description_file ${srcdir:=.}/../../platforms/small_platform
 > [0.000000] [smpi_config/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.  Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.
 > [0.000000] [msg_test/INFO] Initializing instance 1 of size 32
 > [0.000000] [msg_test/INFO] Initializing instance 2 of size 32
-> [Ginette:2:(34) 37334.768684] [smpi_replay/INFO] Simulation time 10479.011957
-> [37334.768684] [msg_test/INFO] Simulation time 37334.8
+> [Ginette:2:(34) 37334.835108] [smpi_replay/INFO] Simulation time 10479.078382
+> [37334.835108] [msg_test/INFO] Simulation time 37334.8

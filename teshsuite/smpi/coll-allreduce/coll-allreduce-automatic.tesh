@@ -19,22 +19,22 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll 
 > [rank 13] -> Ginette
 > [rank 14] -> Ginette
 > [rank 15] -> Ginette
-> [  0.475378] (5:4@Jupiter) The quickest allreduce was redbcast on rank 4 and took 0.007485
-> [  0.475378] (6:5@Jupiter) The quickest allreduce was redbcast on rank 5 and took 0.007515
-> [  0.475378] (7:6@Jupiter) The quickest allreduce was redbcast on rank 6 and took 0.007515
-> [  0.475378] (8:7@Jupiter) The quickest allreduce was redbcast on rank 7 and took 0.007546
-> [  0.475591] (13:12@Ginette) The quickest allreduce was mvapich2 on rank 12 and took 0.007247
-> [  0.475591] (14:13@Ginette) The quickest allreduce was mvapich2 on rank 13 and took 0.007278
-> [  0.475591] (15:14@Ginette) The quickest allreduce was mvapich2 on rank 14 and took 0.007278
-> [  0.475591] (16:15@Ginette) The quickest allreduce was ompi on rank 15 and took 0.007263
-> [  0.476982] (2:1@Tremblay) The quickest allreduce was redbcast on rank 1 and took 0.006006
-> [  0.476982] (3:2@Tremblay) The quickest allreduce was redbcast on rank 2 and took 0.006006
-> [  0.476982] (4:3@Tremblay) The quickest allreduce was redbcast on rank 3 and took 0.006037
-> [  0.478133] (10:9@Fafard) The quickest allreduce was mvapich2 on rank 9 and took 0.006492
-> [  0.478133] (11:10@Fafard) The quickest allreduce was mvapich2 on rank 10 and took 0.006492
-> [  0.478133] (12:11@Fafard) The quickest allreduce was mvapich2 on rank 11 and took 0.006523
-> [  0.478133] (9:8@Fafard) The quickest allreduce was mvapich2 on rank 8 and took 0.006462
-> [  0.482118] (1:0@Tremblay) For rank 0, the quickest was redbcast : 0.005991 , but global was mvapich2 : 0.008672 at max
+> [  0.515984] (5:4@Jupiter) The quickest allreduce was redbcast on rank 4 and took 0.008017
+> [  0.515984] (6:5@Jupiter) The quickest allreduce was redbcast on rank 5 and took 0.008048
+> [  0.515984] (7:6@Jupiter) The quickest allreduce was redbcast on rank 6 and took 0.008048
+> [  0.515984] (8:7@Jupiter) The quickest allreduce was redbcast on rank 7 and took 0.008078
+> [  0.516103] (2:1@Tremblay) The quickest allreduce was redbcast on rank 1 and took 0.008013
+> [  0.516103] (3:2@Tremblay) The quickest allreduce was redbcast on rank 2 and took 0.008013
+> [  0.516103] (4:3@Tremblay) The quickest allreduce was redbcast on rank 3 and took 0.008044
+> [  0.516709] (13:12@Ginette) The quickest allreduce was mvapich2 on rank 12 and took 0.005970
+> [  0.516709] (14:13@Ginette) The quickest allreduce was mvapich2 on rank 13 and took 0.006001
+> [  0.516709] (15:14@Ginette) The quickest allreduce was mvapich2 on rank 14 and took 0.006001
+> [  0.516709] (16:15@Ginette) The quickest allreduce was ompi on rank 15 and took 0.005970
+> [  0.519260] (10:9@Fafard) The quickest allreduce was mvapich2 on rank 9 and took 0.005977
+> [  0.519260] (11:10@Fafard) The quickest allreduce was mvapich2 on rank 10 and took 0.005977
+> [  0.519260] (12:11@Fafard) The quickest allreduce was mvapich2 on rank 11 and took 0.006007
+> [  0.519260] (9:8@Fafard) The quickest allreduce was mvapich2 on rank 8 and took 0.005946
+> [  0.523253] (1:0@Tremblay) For rank 0, the quickest was redbcast : 0.008013 , but global was mvapich2 : 0.009198 at max
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ]
 > [1] sndbuf=[16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
 > [2] sndbuf=[32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 ]
