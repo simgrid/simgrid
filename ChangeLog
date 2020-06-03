@@ -16,9 +16,23 @@ Important user-visible changes:
    Options network/loopback-lat and network/loopback-bw have been added to adapt
    these values if needed. Network and routing models already providing separate
    loopbacks (clusters and such) are not impacted by this change.
+ - SMPI now adds 16 bytes of header to each message sent, in order to simulate
+   metadata that are added to each MPI message by MPI libraries (tag,
+   src/dest, and communicator information). This may change simulation times
+   for very small message sizes, but should be more realistic.
 
 S4U:
  - the on_exit() of each actor is also executed when the simulation deadlocks.
+
+SMPI:
+ - Update proxy apps coverage of new ECP apps: 60+ apps now tested nightly on 
+   https://framagit.org/simgrid/SMPI-proxy-apps
+ - MPI/IO: supports names starting with "./"
+ - Fortran: many MPI/IO bindings, support for MPI_UB/LB, C MPI_INT/FLOAT/DOUBLE
+   datatypes.
+ - smpicc/cxx/ff/f90 now will actually perform definition checks at link time. When
+   building shared libraries, this may cause issues, so environment variable
+   SMPI_NO_UNDEFINED_CHECK can be added to disable this.
 
 C binding:
  - The return type of the sg_actor_on_exit() callbacks is now 'void'
