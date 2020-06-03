@@ -134,6 +134,7 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "on_exit",
           [](py::object fun) {
+            fun.inc_ref(); // FIXME: why is this needed for tests like actor-kill and actor-lifetime?
             simgrid::s4u::this_actor::on_exit([fun](bool /*failed*/) {
               GilScopedAcquire py_context; // need a new context for callback
               try {
