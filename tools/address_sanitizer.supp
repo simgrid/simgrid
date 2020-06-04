@@ -9,6 +9,11 @@
 # The following odr violations are reported by gcc-10. Alternatively these
 # warnings may be hidden with "ASAN_OPTIONS=detect_odr_violation=1".
 
+# size=8 'data' /usr/include/boost/type_traits/integral_constant.hpp:82:28
+odr_violation:^data$
+# size=8 'pdata' /usr/include/boost/type_traits/integral_constant.hpp:83:29
+odr_violation:^pdata$
+
 # size=16 '__tag' /usr/include/c++/10/bits/shared_ptr_base.h:510:48
 odr_violation:^__tag$
 
