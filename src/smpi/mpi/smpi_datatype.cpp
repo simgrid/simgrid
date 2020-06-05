@@ -161,6 +161,7 @@ Datatype::Datatype(Datatype* datatype, int* ret)
       }
     }
   }
+  contents_ = new Datatype_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
 }
 
 Datatype::~Datatype()
@@ -177,7 +178,7 @@ Datatype::~Datatype()
   }
 
   cleanup_attr<Datatype>();
-
+  delete contents_;
   xbt_free(name_);
 }
 
@@ -271,6 +272,45 @@ int Datatype::unpack(const void* inbuf, int insize, int* position, void* outbuf,
     return MPI_ERR_OTHER;
   Datatype::copy(static_cast<const char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, this);
   *position += outcount * size_;
+  return MPI_SUCCESS;
+}
+
+int Datatype::get_contents (int max_integers, int max_addresses,
+                            int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses,
+                            MPI_Datatype *array_of_datatypes)
+{
+  if(contents_==nullptr)
+    return MPI_ERR_ARG;
+  if(max_integers<contents_->number_of_integers_)
+    return MPI_ERR_COUNT;
+  for(int i=0; i<contents_->number_of_integers_; i++){
+    array_of_integers[i]=contents_->integers_[i];
+  }
+  if(max_addresses<contents_->number_of_addresses_)
+    return MPI_ERR_COUNT;
+  for(int i=0; i<contents_->number_of_addresses_; i++){
+    array_of_addresses[i]=contents_->addresses_[i];
+  }
+  if(max_datatypes<contents_->number_of_datatypes_)
+    return MPI_ERR_COUNT;
+  for(int i=0; i<contents_->number_of_datatypes_; i++){
+    array_of_datatypes[i]=contents_->datatypes_[i];
+    contents_->datatypes_[i]->ref();
+  }
+  return MPI_SUCCESS;
+}
+
+int Datatype::get_envelope (int* num_integers, int* num_addresses,
+                            int* num_datatypes, int* combiner)
+{
+  if(contents_==nullptr){
+    *combiner = MPI_COMBINER_NAMED;
+  }else{
+    *num_integers = contents_->number_of_integers_;
+    *num_addresses = contents_->number_of_addresses_;
+    *num_datatypes = contents_->number_of_datatypes_;
+    *combiner = contents_->combiner_;
+  }
   return MPI_SUCCESS;
 }
 
@@ -371,6 +411,8 @@ int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatyp
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
     *new_type = new Datatype(count * block_length * old_type->size(), 0, ((count -1) * stride + block_length)*
                          old_type->size(), DT_FLAG_CONTIGUOUS);
+    int ints[3] = {count, block_length, stride};
+    (*new_type)->contents_ = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints, 0, nullptr, 1, &old_type);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -395,6 +437,8 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
     *new_type = new Datatype(count * block_length * old_type->size(), 0, count * block_length * old_type->size(), DT_FLAG_CONTIGUOUS);
+    int ints[2] = {count, block_length};
+    (*new_type)->contents_ = new Datatype_contents(MPI_COMBINER_HVECTOR, 2, ints, 1, &stride, 1, &old_type);
     retval=MPI_SUCCESS;
   }
   return retval;

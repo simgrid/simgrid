@@ -368,6 +368,27 @@ typedef SMPI_Request* MPI_Request;
 typedef SMPI_Errhandler* MPI_Errhandler;
 #define MPI_ERRHANDLER_NULL ((MPI_Errhandler)NULL)
 
+typedef enum SMPI_Combiner_enum{
+  MPI_COMBINER_NAMED,
+  MPI_COMBINER_DUP,
+  MPI_COMBINER_CONTIGUOUS,
+  MPI_COMBINER_VECTOR,
+  MPI_COMBINER_HVECTOR_INTEGER,
+  MPI_COMBINER_HVECTOR,
+  MPI_COMBINER_INDEXED,
+  MPI_COMBINER_HINDEXED_INTEGER,
+  MPI_COMBINER_HINDEXED,
+  MPI_COMBINER_INDEXED_BLOCK,
+  MPI_COMBINER_STRUCT_INTEGER,
+  MPI_COMBINER_STRUCT,
+  MPI_COMBINER_SUBARRAY,
+  MPI_COMBINER_DARRAY,
+  MPI_COMBINER_F90_REAL,
+  MPI_COMBINER_F90_COMPLEX,
+  MPI_COMBINER_F90_INTEGER,
+  MPI_COMBINER_RESIZED,
+  MPI_COMBINER_HINDEXED_BLOCK
+}SMPI_Combiner_enum;
 
 typedef enum SMPI_Topo_type {
   MPI_GRAPH=1,
@@ -817,7 +838,11 @@ MPI_CALL(XBT_PUBLIC int, MPI_Comm_call_errhandler, (MPI_Comm comm, int errorcode
 MPI_CALL(XBT_PUBLIC int, MPI_Win_set_errhandler, (MPI_Win win, MPI_Errhandler errhandler));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_get_errhandler, (MPI_Win win, MPI_Errhandler* errhandler));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_create_errhandler, (MPI_Win_errhandler_fn * function, MPI_Errhandler* errhandler));
-MPI_CALL(XBT_PUBLIC int, MPI_Win_call_errhandler, (MPI_Win win, int errorcode));MPI_CALL(XBT_PUBLIC int, MPI_Type_get_envelope,
+MPI_CALL(XBT_PUBLIC int, MPI_Win_call_errhandler, (MPI_Win win, int errorcode));
+MPI_CALL(XBT_PUBLIC int, MPI_Type_get_contents,
+         (MPI_Datatype datatype, int max_integers, int max_addresses, int max_datatypes, int* array_of_integers,
+          MPI_Aint* array_of_addresses, MPI_Datatype* array_of_datatypes));
+MPI_CALL(XBT_PUBLIC int, MPI_Type_get_envelope,
          (MPI_Datatype datatype, int* num_integers, int* num_addresses, int* num_datatypes, int* combiner));
 MPI_CALL(XBT_PUBLIC int, MPI_File_call_errhandler, (MPI_File fh, int errorcode));
 MPI_CALL(XBT_PUBLIC int, MPI_File_create_errhandler,
@@ -826,27 +851,6 @@ MPI_CALL(XBT_PUBLIC int, MPI_File_set_errhandler, (MPI_File file, MPI_Errhandler
 MPI_CALL(XBT_PUBLIC int, MPI_File_get_errhandler, (MPI_File file, MPI_Errhandler* errhandler));
 //FIXME: these are not yet implemented
 
-typedef enum MPIR_Combiner_enum{
-  MPI_COMBINER_NAMED,
-  MPI_COMBINER_DUP,
-  MPI_COMBINER_CONTIGUOUS,
-  MPI_COMBINER_VECTOR,
-  MPI_COMBINER_HVECTOR_INTEGER,
-  MPI_COMBINER_HVECTOR,
-  MPI_COMBINER_INDEXED,
-  MPI_COMBINER_HINDEXED_INTEGER,
-  MPI_COMBINER_HINDEXED,
-  MPI_COMBINER_INDEXED_BLOCK,
-  MPI_COMBINER_STRUCT_INTEGER,
-  MPI_COMBINER_STRUCT,
-  MPI_COMBINER_SUBARRAY,
-  MPI_COMBINER_DARRAY,
-  MPI_COMBINER_F90_REAL,
-  MPI_COMBINER_F90_COMPLEX,
-  MPI_COMBINER_F90_INTEGER,
-  MPI_COMBINER_RESIZED,
-  MPI_COMBINER_HINDEXED_BLOCK
-}MPIR_Combiner_enum;
 
 typedef void* MPI_Message;
 #define MPI_DUP_FN 1
@@ -887,9 +891,6 @@ MPI_CALL(XBT_PUBLIC int, MPI_Irsend,
          (const void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request));
 MPI_CALL(XBT_PUBLIC int, MPI_Get_elements, (MPI_Status * status, MPI_Datatype datatype, int* elements));
 MPI_CALL(XBT_PUBLIC int, MPI_Pcontrol, (const int level, ...));
-MPI_CALL(XBT_PUBLIC int, MPI_Type_get_contents,
-         (MPI_Datatype datatype, int max_integers, int max_addresses, int max_datatypes, int* array_of_integers,
-          MPI_Aint* array_of_addresses, MPI_Datatype* array_of_datatypes));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_create_darray,
          (int size, int rank, int ndims, int* array_of_gsizes, int* array_of_distribs, int* array_of_dargs,
           int* array_of_psizes, int order, MPI_Datatype oldtype, MPI_Datatype* newtype));

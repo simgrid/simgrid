@@ -97,7 +97,7 @@ int builtin_float_test(void)
 
     err = MPI_Type_get_envelope(MPI_FLOAT, &nints, &nadds, &ntypes, &combiner);
 
-    if (combiner != MPI_COMBINER_NAMED)
+    if (combiner != MPI_COMBINER_NAMED || err != MPI_SUCCESS)
         errs++;
     if (verbose && combiner != MPI_COMBINER_NAMED)
         fprintf(stderr, "combiner = %s; should be named\n", combiner_to_string(combiner));
@@ -307,7 +307,7 @@ int optimizable_vector_of_basics_test(void)
     /* decode */
     err = MPI_Type_get_envelope(parent_type, &nints, &nadds, &ntypes, &combiner);
 
-    if (nints != 3)
+    if (nints != 3 || err != MPI_SUCCESS)
         errs++;
     if (nadds != 0)
         errs++;
@@ -389,7 +389,7 @@ int indexed_of_basics_test(void)
     /* decode */
     err = MPI_Type_get_envelope(parent_type, &nints, &nadds, &ntypes, &combiner);
 
-    if (nints != 7)
+    if (nints != 7 || err != MPI_SUCCESS)
         errs++;
     if (nadds != 0)
         errs++;

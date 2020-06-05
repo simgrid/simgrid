@@ -13,9 +13,38 @@
 namespace simgrid{
 namespace smpi{
 
+
+Datatype_contents::Datatype_contents(int combiner,
+                    int number_of_integers, const int* integers,
+                    int number_of_addresses, const MPI_Aint* addresses,
+                    int number_of_datatypes, const MPI_Datatype* datatypes)
+: combiner_(combiner), number_of_integers_(number_of_integers), 
+  number_of_addresses_(number_of_addresses), 
+  number_of_datatypes_(number_of_datatypes)
+{
+  integers_=new int[number_of_integers_];
+  for(int i=0; i<number_of_integers_; i++){
+    integers_[i]=integers[i];
+  }
+  addresses_=new MPI_Aint[number_of_addresses_];
+  for(int i=0; i<number_of_addresses_; i++){
+    addresses_[i]=addresses[i];
+  }
+  datatypes_=new MPI_Datatype[number_of_datatypes_];
+  for(int i=0; i<number_of_datatypes_; i++){
+    datatypes_[i]=datatypes[i];
+  }
+};
+Datatype_contents::~Datatype_contents(){
+  delete[] integers_;
+  delete[] addresses_;
+  delete[] datatypes_;
+}
+
 Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type)
     : Datatype(size, lb, ub, flags), block_count_(block_count), old_type_(old_type)
 {
+  contents_ = new Datatype_contents(MPI_COMBINER_CONTIGUOUS, 1, &size, 0, nullptr, 1, &old_type);
   old_type_->ref();
 }
 
@@ -41,6 +70,8 @@ void Type_Contiguous::unserialize(const void* contiguous_buf, void* noncontiguou
 }
 
 Type_Hvector::Type_Hvector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int block_length, MPI_Aint stride, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_length_(block_length), block_stride_(stride), old_type_(old_type){
+  int ints[2] = {count, block_length};
+  contents_ = new Datatype_contents(MPI_COMBINER_HVECTOR, 2, ints, 1, &stride, 1, &old_type);
   old_type->ref();
 }
 Type_Hvector::~Type_Hvector(){
@@ -89,6 +120,9 @@ Type_Vector::Type_Vector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
                          MPI_Datatype old_type)
     : Type_Hvector(size, lb, ub, flags, count, block_length, stride * old_type->get_extent(), old_type)
 {
+  delete contents_;
+  int ints[3] = {count, block_length, stride};
+  contents_ = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints, 0, nullptr, 1, &old_type);
 }
 
 Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
@@ -99,6 +133,12 @@ Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int 
     , block_indices_(new MPI_Aint[count])
     , old_type_(old_type)
 {
+  int* ints = new int[count+1];
+  ints[0]=count;
+  for(int i=1;i<=count;i++)
+    ints[i]=block_lengths[i];
+  contents_ = new Datatype_contents(MPI_COMBINER_HINDEXED, count+1, ints, count, block_indices, 1, &old_type);
+  delete[] ints;
   old_type_->ref();
   for (int i = 0; i < count; i++) {
     block_lengths_[i] = block_lengths[i];
@@ -179,6 +219,15 @@ Type_Indexed::Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int co
                            const int* block_indices, MPI_Datatype old_type)
     : Type_Hindexed(size, lb, ub, flags, count, block_lengths, block_indices, old_type, old_type->get_extent())
 {
+  delete contents_;
+  int* ints = new int[2*count+1];
+  ints[0]=count;
+  for(int i=1;i<=count;i++)
+    ints[i]=block_lengths[i-1];
+  for(int i=count+1;i<=2*count;i++)
+    ints[i]=block_indices[i-count-1];
+  contents_ = new Datatype_contents(MPI_COMBINER_INDEXED, 2*count+1, ints, 0, nullptr, 1, &old_type);
+  delete[] ints;
 }
 
 Type_Struct::Type_Struct(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
@@ -189,6 +238,11 @@ Type_Struct::Type_Struct(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
     , block_indices_(new MPI_Aint[count])
     , old_types_(new MPI_Datatype[count])
 {
+  int* ints = new int[count+1];
+  ints[0]=count;
+  for(int i=1;i<=count;i++)
+    ints[i]=block_lengths[i];
+  contents_ = new Datatype_contents(MPI_COMBINER_INDEXED, count+1, ints, count, block_indices, count, old_types);
   for (int i = 0; i < count; i++) {
     block_lengths_[i]=block_lengths[i];
     block_indices_[i]=block_indices[i];

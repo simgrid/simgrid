@@ -75,6 +75,21 @@ struct integer128_t {
 
 namespace simgrid{
 namespace smpi{
+class Datatype_contents {
+  public:
+  int combiner_;
+  int number_of_integers_;
+  int* integers_;
+  int number_of_addresses_;
+  MPI_Aint* addresses_;
+  int number_of_datatypes_;
+  MPI_Datatype* datatypes_;
+  Datatype_contents(int combiner, 
+                    int number_of_integers, const int* integers, 
+                    int number_of_addresses, const MPI_Aint* addresses, 
+                    int number_of_datatypes, const MPI_Datatype* datatypes);
+  ~Datatype_contents();
+};
 
 class Datatype : public F2C, public Keyval{
   char* name_ = nullptr;
@@ -92,6 +107,7 @@ class Datatype : public F2C, public Keyval{
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
+  Datatype_contents* contents_ = nullptr;
 
   Datatype(int id, int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(char* name, int id, int size, MPI_Aint lb, MPI_Aint ub, int flags);
@@ -131,7 +147,11 @@ public:
   static int keyval_free(int* keyval);
   int pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, const Comm* comm);
   int unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, const Comm* comm);
-
+  int get_contents(int max_integers, int max_addresses, 
+                   int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses, 
+                   MPI_Datatype *array_of_datatypes);
+  int get_envelope(int* num_integers, int* num_addresses, 
+                   int* num_datatypes, int* combiner);
   static int create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, MPI_Datatype* new_type);
   static int create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type);
   static int create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type);

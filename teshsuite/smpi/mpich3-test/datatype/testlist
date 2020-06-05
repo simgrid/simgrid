@@ -1,5 +1,4 @@
-#needs PMPI_Type_get_envelope, PMPI_Type_get_contents
-#contents 1
+contents 1
 gaddress 1
 #complex games with negative extents...
 #lbub 1
