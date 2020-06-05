@@ -41,7 +41,12 @@ trap 'cleanup' EXIT
 filter_and_compile() {
     list_add TMPFILES "${TMPFILE}"
     #replace "program main_name by subroutine user_main (and the end clause as well)"
-    sed 's/^\([[:space:]]*\)\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][^a-zA-Z0-9]*\([a-zA-Z0-9_]*\)/\1\2subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
+    if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
+      sed 's/^\([[:space:]]*\)\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][^a-zA-Z0-9]*\([a-zA-Z0-9_]*\)/\1\2subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
+      SRCFILE="${TMPFILE}"
+    else
+      SRCFILE="${ARG}"
+    fi
     SRCFILE="${TMPFILE}"
     list_add CMDLINE "${SRCFILE}"
 }
