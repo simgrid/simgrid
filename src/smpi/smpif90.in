@@ -47,7 +47,6 @@ filter_and_compile() {
     else
       SRCFILE="${ARG}"
     fi
-    SRCFILE="${TMPFILE}"
     list_add CMDLINE "${SRCFILE}"
 }
 
