@@ -309,6 +309,9 @@ int Datatype::get_envelope (int* num_integers, int* num_addresses,
                             int* num_datatypes, int* combiner)
 {
   if(contents_==nullptr){
+    *num_integers = 0;
+    *num_addresses = 0;
+    *num_datatypes = 0;
     *combiner = MPI_COMBINER_NAMED;
   }else{
     *num_integers = contents_->number_of_integers_;
