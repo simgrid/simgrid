@@ -75,8 +75,11 @@ int main(int argc, char **argv)
                     continue;
                 }
                 partner = np - 1;
-                MPI_Send(MPI_BOTTOM, counts[j], offsettype, partner, tag, comm);
+		MPI_Datatype dup;
+                MPI_Type_dup(offsettype, &dup);
+		MPI_Send(MPI_BOTTOM, counts[j], dup, partner, tag, comm);
                 MPI_Type_free(&offsettype);
+                MPI_Type_free(&dup);
             }
             else if (rank == np - 1) {
                 partner = 0;
@@ -101,7 +104,9 @@ int main(int argc, char **argv)
                     MPI_Type_free(&offsettype);
                     continue;
                 }
-                MPI_Recv(MPI_BOTTOM, counts[j], offsettype, partner, tag, comm, &status);
+                MPI_Datatype dup;
+		MPI_Type_dup(offsettype, &dup);
+                MPI_Recv(MPI_BOTTOM, counts[j], dup, partner, tag, comm, &status);
                 /* Test for correctness */
                 MPI_Get_count(&status, types[j], &count);
                 if (count != counts[j]) {
@@ -136,6 +141,7 @@ int main(int argc, char **argv)
                     err++;
                 }
                 MPI_Type_free(&offsettype);
+                MPI_Type_free(&dup);
             }
         }
         MTestFreeComm(&comm);

@@ -77,7 +77,7 @@ int PMPI_Type_ub(MPI_Datatype datatype, MPI_Aint * disp)
 int PMPI_Type_dup(MPI_Datatype datatype, MPI_Datatype *newtype){
   int retval = MPI_SUCCESS;
   CHECK_MPI_NULL(1, MPI_DATATYPE_NULL, MPI_ERR_TYPE, datatype)
-  *newtype = new simgrid::smpi::Datatype(datatype, &retval);
+  *newtype = datatype->clone();
   //error when duplicating, free the new datatype
   if(retval!=MPI_SUCCESS){
     simgrid::smpi::Datatype::unref(*newtype);

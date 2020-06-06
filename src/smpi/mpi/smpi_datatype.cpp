@@ -182,6 +182,11 @@ Datatype::~Datatype()
   xbt_free(name_);
 }
 
+MPI_Datatype Datatype::clone(){
+  int ret = MPI_SUCCESS;
+  return new Datatype(this, &ret);
+}
+
 void Datatype::ref()
 {
   refcount_++;
