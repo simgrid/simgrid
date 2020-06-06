@@ -136,7 +136,7 @@ Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int 
   int* ints = new int[count+1];
   ints[0]=count;
   for(int i=1;i<=count;i++)
-    ints[i]=block_lengths[i];
+    ints[i]=block_lengths[i-1];
   contents_ = new Datatype_contents(MPI_COMBINER_HINDEXED, count+1, ints, count, block_indices, 1, &old_type);
   delete[] ints;
   old_type_->ref();
@@ -241,8 +241,9 @@ Type_Struct::Type_Struct(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
   int* ints = new int[count+1];
   ints[0]=count;
   for(int i=1;i<=count;i++)
-    ints[i]=block_lengths[i];
+    ints[i]=block_lengths[i-1];
   contents_ = new Datatype_contents(MPI_COMBINER_INDEXED, count+1, ints, count, block_indices, count, old_types);
+  delete[] ints;
   for (int i = 0; i < count; i++) {
     block_lengths_[i]=block_lengths[i];
     block_indices_[i]=block_indices[i];
