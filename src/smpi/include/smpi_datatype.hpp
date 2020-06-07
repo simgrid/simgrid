@@ -130,6 +130,7 @@ public:
   void ref();
   static void unref(MPI_Datatype datatype);
   void commit();
+  int copy_attrs(Datatype* datatype);
   bool is_valid();
   bool is_basic();
   static const char* encode(const Datatype* dt) { return dt->id.c_str(); }
@@ -142,7 +143,7 @@ public:
   void set_name(const char* name);
   static int copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                   MPI_Datatype recvtype);
-  virtual MPI_Datatype clone();
+  virtual int clone(MPI_Datatype* type);
   virtual void serialize(const void* noncontiguous, void* contiguous, int count);
   virtual void unserialize(const void* contiguous, void* noncontiguous, int count, MPI_Op op);
   static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,

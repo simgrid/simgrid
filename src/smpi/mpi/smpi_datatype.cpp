@@ -130,38 +130,7 @@ Datatype::Datatype(char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, in
 Datatype::Datatype(Datatype* datatype, int* ret)
     : size_(datatype->size_), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_)
 {
-  flags_ &= ~DT_FLAG_PREDEFINED;
-  *ret = MPI_SUCCESS;
-    
-  if (not datatype->attributes()->empty()) {
-    int flag=0;
-    void* value_out;
-    for (auto const& it : *(datatype->attributes())) {
-      smpi_key_elem elem = keyvals_.at(it.first);
-      if (elem != nullptr){
-        if( elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN && 
-            elem->copy_fn.type_copy_fn != MPI_TYPE_DUP_FN)
-          *ret = elem->copy_fn.type_copy_fn(datatype, it.first, elem->extra_state, it.second, &value_out, &flag);
-        else if ( elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN &&
-                  (*(int*)*elem->copy_fn.type_copy_fn_fort) != 1){
-          value_out=(int*)xbt_malloc(sizeof(int));
-          elem->copy_fn.type_copy_fn_fort(datatype, it.first, elem->extra_state, it.second, value_out, &flag,ret);
-        }
-        if (*ret != MPI_SUCCESS) {
-          break;
-        }
-        if(elem->copy_fn.type_copy_fn == MPI_TYPE_DUP_FN || 
-          ((elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) && (*(int*)*elem->copy_fn.type_copy_fn_fort == 1))){
-          elem->refcount++;
-          attributes()->insert({it.first, it.second});
-        } else if (flag){
-          elem->refcount++;
-          attributes()->insert({it.first, value_out});
-        }
-      }
-    }
-  }
-  contents_ = new Datatype_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
+  *ret = this->copy_attrs(datatype);
 }
 
 Datatype::~Datatype()
@@ -182,9 +151,46 @@ Datatype::~Datatype()
   xbt_free(name_);
 }
 
-MPI_Datatype Datatype::clone(){
+int Datatype::copy_attrs(Datatype* datatype){
+  flags_ &= ~DT_FLAG_PREDEFINED;
   int ret = MPI_SUCCESS;
-  return new Datatype(this, &ret);
+    
+  if (not datatype->attributes()->empty()) {
+    int flag=0;
+    void* value_out;
+    for (auto const& it : *(datatype->attributes())) {
+      smpi_key_elem elem = keyvals_.at(it.first);
+      if (elem != nullptr){
+        if( elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN && 
+            elem->copy_fn.type_copy_fn != MPI_TYPE_DUP_FN)
+          ret = elem->copy_fn.type_copy_fn(datatype, it.first, elem->extra_state, it.second, &value_out, &flag);
+        else if ( elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN &&
+                  (*(int*)*elem->copy_fn.type_copy_fn_fort) != 1){
+          value_out=(int*)xbt_malloc(sizeof(int));
+          elem->copy_fn.type_copy_fn_fort(datatype, it.first, elem->extra_state, it.second, value_out, &flag, &ret);
+        }
+        if (ret != MPI_SUCCESS) {
+          break;
+        }
+        if(elem->copy_fn.type_copy_fn == MPI_TYPE_DUP_FN || 
+          ((elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) && (*(int*)*elem->copy_fn.type_copy_fn_fort == 1))){
+          elem->refcount++;
+          attributes()->insert({it.first, it.second});
+        } else if (flag){
+          elem->refcount++;
+          attributes()->insert({it.first, value_out});
+        }
+      }
+    }
+  }
+  contents_ = new Datatype_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
+  return ret;
+}
+
+int Datatype::clone(MPI_Datatype* type){
+  int ret;
+  *type = new Datatype(this, &ret);
+  return ret;
 }
 
 void Datatype::ref()

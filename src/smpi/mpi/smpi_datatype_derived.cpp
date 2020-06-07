@@ -53,9 +53,11 @@ Type_Contiguous::~Type_Contiguous()
   Datatype::unref(old_type_);
 }
 
-Type_Contiguous* Type_Contiguous::clone()
+int Type_Contiguous::clone(MPI_Datatype* type)
 {
-  return new Type_Contiguous(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->old_type_);
+  *type = new Type_Contiguous(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->old_type_);
+  (*type)->copy_attrs(this);
+  return MPI_SUCCESS;
 }
 
 void Type_Contiguous::serialize(const void* noncontiguous_buf, void* contiguous_buf, int count)
@@ -83,9 +85,11 @@ Type_Hvector::~Type_Hvector(){
   Datatype::unref(old_type_);
 }
 
-Type_Hvector* Type_Hvector::clone()
+int Type_Hvector::clone(MPI_Datatype* type)
 {
-  return new Type_Hvector(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_length_, this->block_stride_, this->old_type_);
+  *type = new Type_Hvector(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_length_, this->block_stride_, this->old_type_);
+  (*type)->copy_attrs(this);
+  return MPI_SUCCESS;
 }
 
 void Type_Hvector::serialize(const void* noncontiguous_buf, void *contiguous_buf,
@@ -135,9 +139,11 @@ Type_Vector::Type_Vector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
   contents_ = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints, 0, nullptr, 1, &old_type);
 }
 
-Type_Vector* Type_Vector::clone()
+int Type_Vector::clone(MPI_Datatype* type)
 {
-  return new Type_Vector(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_length_, this->block_stride_, this->old_type_);
+  *type = new Type_Vector(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_length_, this->block_stride_, this->old_type_);
+  (*type)->copy_attrs(this);
+  return MPI_SUCCESS;
 }
 
 Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
@@ -176,9 +182,11 @@ Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int 
   }
 }
 
-Type_Hindexed* Type_Hindexed::clone()
+int Type_Hindexed::clone(MPI_Datatype* type)
 {
-  return new Type_Hindexed(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_lengths_, this->block_indices_, this->old_type_);
+  *type = new Type_Hindexed(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_lengths_, this->block_indices_, this->old_type_);
+  (*type)->copy_attrs(this);
+  return MPI_SUCCESS;
 }
 
 Type_Hindexed::~Type_Hindexed()
@@ -250,9 +258,11 @@ Type_Indexed::Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int co
   delete[] ints;
 }
 
-Type_Indexed* Type_Indexed::clone()
-{
-  return new Type_Indexed(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_lengths_, (int*)(this->block_indices_), this->old_type_);
+int Type_Indexed::clone(MPI_Datatype* type)
+{ 
+  *type = new Type_Indexed(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_lengths_, (int*)(this->block_indices_), this->old_type_);
+  (*type)->copy_attrs(this);
+  return MPI_SUCCESS;
 }
 
 Type_Struct::Type_Struct(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, const int* block_lengths,
@@ -288,9 +298,11 @@ Type_Struct::~Type_Struct(){
   }
 }
 
-Type_Struct* Type_Struct::clone()
+int Type_Struct::clone(MPI_Datatype* type)
 {
-  return new Type_Struct(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_lengths_, this->block_indices_, this->old_types_);
+  *type = new Type_Struct(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_lengths_, this->block_indices_, this->old_types_);
+  (*type)->copy_attrs(this);
+  return MPI_SUCCESS;
 }
 
 void Type_Struct::serialize(const void* noncontiguous_buf, void *contiguous_buf,
