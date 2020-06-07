@@ -44,7 +44,7 @@ Datatype_contents::~Datatype_contents(){
 Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type)
     : Datatype(size, lb, ub, flags), block_count_(block_count), old_type_(old_type)
 {
-  contents_ = new Datatype_contents(MPI_COMBINER_CONTIGUOUS, 1, &size, 0, nullptr, 1, &old_type);
+  contents_ = new Datatype_contents(MPI_COMBINER_CONTIGUOUS, 1, &block_count, 0, nullptr, 1, &old_type);
   old_type_->ref();
 }
 
