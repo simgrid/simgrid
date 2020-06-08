@@ -68,6 +68,7 @@ public:
   void print_request(const char* message);
   void start();
   void cancel();
+  void init_buffer(int count);
   void ref();
   void set_nbc_requests(MPI_Request* reqs, int size);
   int get_nbc_requests_size();

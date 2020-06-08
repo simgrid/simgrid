@@ -36,22 +36,6 @@ namespace smpi{
 Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op)
     : buf_(const_cast<void*>(buf)), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags), op_(op)
 {
-  void *old_buf = nullptr;
-// FIXME Handle the case of a partial shared malloc.
-  if ((((flags & MPI_REQ_RECV) != 0) && ((flags & MPI_REQ_ACCUMULATE) != 0)) || (datatype->flags() & DT_FLAG_DERIVED)) {
-    // This part handles the problem of non-contiguous memory
-    old_buf = const_cast<void*>(buf);
-    if (count==0){
-      buf_ = nullptr;
-    }else {
-      buf_ = xbt_malloc(count*datatype->size());
-      if ((datatype->flags() & DT_FLAG_DERIVED) && ((flags & MPI_REQ_SEND) != 0)) {
-        datatype->serialize(old_buf, buf_, count);
-      }
-    }
-  }
-  // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
-  old_buf_  = old_buf;
   size_ = datatype->size() * count;
   datatype->ref();
   comm_->ref();
@@ -72,6 +56,7 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int
   generalized_funcs=nullptr;
   nbc_requests_=nullptr;
   nbc_requests_size_=0;
+  init_buffer(count);
 }
 
 void Request::ref(){
@@ -137,6 +122,25 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
     return true;
   }
   return false;
+}
+
+void Request::init_buffer(int count){
+  void *old_buf = nullptr;
+// FIXME Handle the case of a partial shared malloc.
+  // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
+  if ((((flags_ & MPI_REQ_RECV) != 0) && ((flags_ & MPI_REQ_ACCUMULATE) != 0)) || (old_type_->flags() & DT_FLAG_DERIVED)) {
+    // This part handles the problem of non-contiguous memory
+    old_buf = const_cast<void*>(buf_);
+    if (count==0){
+      buf_ = nullptr;
+    }else {
+      buf_ = xbt_malloc(count*old_type_->size());
+      if ((old_type_->flags() & DT_FLAG_DERIVED) && ((flags_ & MPI_REQ_SEND) != 0)) {
+        old_type_->serialize(old_buf, buf_, count);
+      }
+    }
+  }
+  old_buf_  = old_buf;
 }
 
 bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
@@ -355,6 +359,11 @@ void Request::start()
   s4u::Mailbox* mailbox;
 
   xbt_assert(action_ == nullptr, "Cannot (re-)start unfinished communication");
+  //reinitialize temporary buffer for persistent requests
+  if(real_size_ > 0 && flags_ & MPI_REQ_FINISHED){
+    buf_ = old_buf_;
+    init_buffer(real_size_/old_type_->size());
+  }
   flags_ &= ~MPI_REQ_PREPARED;
   flags_ &= ~MPI_REQ_FINISHED;
   this->ref();
@@ -846,13 +855,18 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
           // This part handles the problem of non-contiguous memory the unserialization at the reception
           if ((req->flags_ & MPI_REQ_RECV) && datatype->size() != 0)
             datatype->unserialize(req->buf_, req->old_buf_, req->real_size_/datatype->size() , req->op_);
-          xbt_free(req->buf_);
+          if(req->flags_ & MPI_REQ_NON_PERSISTENT){
+            xbt_free(req->buf_);
+            req->buf_=nullptr;
+          }
         } else if (req->flags_ & MPI_REQ_RECV) { // apply op on contiguous buffer for accumulate
           if (datatype->size() != 0) {
             int n = req->real_size_ / datatype->size();
             req->op_->apply(req->buf_, req->old_buf_, &n, datatype);
           }
-          xbt_free(req->buf_);
+          if(req->flags_ & MPI_REQ_NON_PERSISTENT)
+            xbt_free(req->buf_);
+            req->buf_=nullptr;
         }
       }
     }
