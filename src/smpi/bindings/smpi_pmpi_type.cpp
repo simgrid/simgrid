@@ -17,6 +17,7 @@ int PMPI_Type_free(MPI_Datatype * datatype)
     return MPI_ERR_TYPE;
   } else {
     simgrid::smpi::Datatype::unref(*datatype);
+    *datatype=MPI_DATATYPE_NULL;
     return MPI_SUCCESS;
   }
 }
