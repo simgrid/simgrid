@@ -29,9 +29,9 @@ if [ "x@WIN32@" = "x1" ]; then
     list_add CFLAGS "-include" "@includedir@/smpi/smpi_main.h"
     list_add LINKARGS "@libdir@\libsimgrid.dll"
 elif [ "x@APPLE@" = "x1" ]; then
-    list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
     list_add CFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
+       list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
        list_add LINKARGS "-shared"
     else
        echo "Warning: smpicc pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
@@ -40,9 +40,9 @@ elif [ "x@APPLE@" = "x1" ]; then
       list_add LINKARGS "-lsimgrid" ${LINKER_UNDEFINED_ERROR:+"-Wl,-undefined,error"}
     fi
 else
-    list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
     list_add CFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
+       list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
        list_add LINKARGS "-shared"
     else
        echo "Warning: smpicc pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
