@@ -855,18 +855,15 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
           // This part handles the problem of non-contiguous memory the unserialization at the reception
           if ((req->flags_ & MPI_REQ_RECV) && datatype->size() != 0)
             datatype->unserialize(req->buf_, req->old_buf_, req->real_size_/datatype->size() , req->op_);
-          if(req->flags_ & MPI_REQ_NON_PERSISTENT){
-            xbt_free(req->buf_);
-            req->buf_=nullptr;
-          }
+          xbt_free(req->buf_);
+          req->buf_=nullptr;
         } else if (req->flags_ & MPI_REQ_RECV) { // apply op on contiguous buffer for accumulate
           if (datatype->size() != 0) {
             int n = req->real_size_ / datatype->size();
             req->op_->apply(req->buf_, req->old_buf_, &n, datatype);
           }
-          if(req->flags_ & MPI_REQ_NON_PERSISTENT)
-            xbt_free(req->buf_);
-            req->buf_=nullptr;
+          xbt_free(req->buf_);
+          req->buf_=nullptr;
         }
       }
     }
