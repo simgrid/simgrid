@@ -9,6 +9,7 @@
 #include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
 #include <string>
+#include <vector>
 
 constexpr unsigned DT_FLAG_DESTROYED   = 0x0001; /**< user destroyed but some other layers still have a reference */
 constexpr unsigned DT_FLAG_COMMITED    = 0x0002; /**< ready to be used for a send/recv operation */
@@ -78,19 +79,13 @@ namespace smpi{
 class Datatype_contents {
   public:
   int combiner_;
-  int number_of_integers_;
-  int* integers_;
-  int number_of_addresses_;
-  MPI_Aint* addresses_;
-  int number_of_datatypes_;
-  MPI_Datatype* datatypes_;
+  std::vector<int> integers_;
+  std::vector<MPI_Aint> addresses_;
+  std::vector<MPI_Datatype> datatypes_;
   Datatype_contents(int combiner, 
                     int number_of_integers, const int* integers, 
                     int number_of_addresses, const MPI_Aint* addresses, 
                     int number_of_datatypes, const MPI_Datatype* datatypes);
-  Datatype_contents(const Datatype_contents&) = delete;
-  Datatype_contents& operator=(const Datatype_contents&) = delete;
-  ~Datatype_contents();
 };
 
 class Datatype : public F2C, public Keyval{

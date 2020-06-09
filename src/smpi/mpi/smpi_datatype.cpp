@@ -11,6 +11,8 @@
 #include "src/instr/instr_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
+#include <algorithm>
+#include <functional>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
@@ -292,22 +294,16 @@ int Datatype::get_contents (int max_integers, int max_addresses,
 {
   if(contents_==nullptr)
     return MPI_ERR_ARG;
-  if(max_integers<contents_->number_of_integers_)
+  if (static_cast<unsigned>(max_integers) < contents_->integers_.size())
     return MPI_ERR_COUNT;
-  for(int i=0; i<contents_->number_of_integers_; i++){
-    array_of_integers[i]=contents_->integers_[i];
-  }
-  if(max_addresses<contents_->number_of_addresses_)
+  std::copy(begin(contents_->integers_), end(contents_->integers_), array_of_integers);
+  if (static_cast<unsigned>(max_addresses) < contents_->addresses_.size())
     return MPI_ERR_COUNT;
-  for(int i=0; i<contents_->number_of_addresses_; i++){
-    array_of_addresses[i]=contents_->addresses_[i];
-  }
-  if(max_datatypes<contents_->number_of_datatypes_)
+  std::copy(begin(contents_->addresses_), end(contents_->addresses_), array_of_addresses);
+  if (static_cast<unsigned>(max_datatypes) < contents_->datatypes_.size())
     return MPI_ERR_COUNT;
-  for(int i=0; i<contents_->number_of_datatypes_; i++){
-    array_of_datatypes[i]=contents_->datatypes_[i];
-    contents_->datatypes_[i]->ref();
-  }
+  std::copy(begin(contents_->datatypes_), end(contents_->datatypes_), array_of_datatypes);
+  std::for_each(begin(contents_->datatypes_), end(contents_->datatypes_), std::mem_fn(&Datatype::ref));
   return MPI_SUCCESS;
 }
 
@@ -320,9 +316,9 @@ int Datatype::get_envelope (int* num_integers, int* num_addresses,
     *num_datatypes = 0;
     *combiner = MPI_COMBINER_NAMED;
   }else{
-    *num_integers = contents_->number_of_integers_;
-    *num_addresses = contents_->number_of_addresses_;
-    *num_datatypes = contents_->number_of_datatypes_;
+    *num_integers  = contents_->integers_.size();
+    *num_addresses = contents_->addresses_.size();
+    *num_datatypes = contents_->datatypes_.size();
     *combiner = contents_->combiner_;
   }
   return MPI_SUCCESS;
