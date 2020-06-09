@@ -282,11 +282,11 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
 LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, double latency,
                  s4u::Link::SharingPolicy policy)
-    : LinkImpl(model, name, nullptr)
+    : LinkImpl(model, name, nullptr), sharing_policy_(policy)
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
-  sharing_policy_ = policy;
+
   /* If wifi, create the wifizone now. If not, don't do anything: the links will be created in routeCreate_cb */
 
   s4u::Link::on_creation(*this->get_iface());

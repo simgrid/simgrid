@@ -33,10 +33,18 @@ extern void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*
 namespace simgrid{
 namespace smpi{
 
-Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op)
-    : buf_(const_cast<void*>(buf)), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags), op_(op)
+Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm,
+                 unsigned flags, MPI_Op op)
+    : buf_(const_cast<void*>(buf))
+    , old_type_(datatype)
+    , size_(datatype->size() * count)
+    , src_(src)
+    , dst_(dst)
+    , tag_(tag)
+    , comm_(comm)
+    , flags_(flags)
+    , op_(op)
 {
-  size_ = datatype->size() * count;
   datatype->ref();
   comm_->ref();
   if(op != MPI_REPLACE && op != MPI_OP_NULL)
