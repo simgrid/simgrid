@@ -14,7 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
 
-extern std::string& surf_parsed_filename;
+extern std::string surf_parsed_filename;
 extern int surf_parse_lineno;
 
 std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
