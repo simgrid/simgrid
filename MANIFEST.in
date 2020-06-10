@@ -2061,6 +2061,7 @@ include include/xbt/mallocator.h
 include include/xbt/misc.h
 include include/xbt/module.h
 include include/xbt/parmap.h
+include include/xbt/parse_units.hpp
 include include/xbt/random.hpp
 include include/xbt/range.hpp
 include include/xbt/replay.hpp
@@ -2655,6 +2656,7 @@ include src/xbt/xbt_log_layout_simple.cpp
 include src/xbt/xbt_main.cpp
 include src/xbt/xbt_os_file.cpp
 include src/xbt/xbt_os_time.c
+include src/xbt/xbt_parse_units.cpp
 include src/xbt/xbt_replay.cpp
 include src/xbt/xbt_str.cpp
 include src/xbt/xbt_str_test.cpp
