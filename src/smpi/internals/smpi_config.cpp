@@ -2,12 +2,14 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include "mc/mc.h"
+#include "smpi_config.hpp"
 #include "include/xbt/config.hpp"
+#include "mc/mc.h"
 #include "private.hpp"
 #include "smpi_coll.hpp"
-#include "smpi_config.hpp"
 #include "src/simix/smx_private.hpp"
+#include "xbt/parse_units.hpp"
+
 #include <cfloat> /* DBL_MAX */
 #include <boost/algorithm/string.hpp> /* trim */
 #include <boost/tokenizer.hpp>
@@ -31,13 +33,19 @@ constexpr bool HAVE_WORKING_MMAP = true;
 bool _smpi_options_initialized=false;
 SharedMallocType _smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 SmpiPrivStrategies _smpi_cfg_privatization = SmpiPrivStrategies::NONE;
+double _smpi_cfg_host_speed;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_config, smpi, "Logging specific to SMPI (config)");
 
-simgrid::config::Flag<double> _smpi_cfg_host_speed{
-  "smpi/host-speed", "Speed of the host running the simulation (in flop/s). "
-  "Used to bench the operations.",  20000.0,
-  [](const double& val) { xbt_assert(val > 0.0, "Invalid value (%f) for 'smpi/host-speed': it must be positive.", val); }};
+simgrid::config::Flag<std::string> _smpi_cfg_host_speed_string{
+    "smpi/host-speed",
+    "Speed of the host running the simulation (in flop/s). "
+    "Used to bench the operations.",
+    "20000f", [](const std::string& str) {
+      _smpi_cfg_host_speed = xbt_parse_get_speed("smpi/host-speed", 1, str.c_str(), "option", "smpi/host-speed");
+      xbt_assert(_smpi_cfg_host_speed > 0.0, "Invalid value (%s) for 'smpi/host-speed': it must be positive.",
+                 _smpi_cfg_host_speed_string.get().c_str());
+    }};
 
 simgrid::config::Flag<bool> _smpi_cfg_simulate_computation{
   "smpi/simulate-computation", "Whether the computational part of the simulated application should be simulated.",

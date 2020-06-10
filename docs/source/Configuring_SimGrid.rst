@@ -963,10 +963,11 @@ a ``MPI_Send()``, SMPI will automatically benchmark the duration of
 this code, and create an execution task within the simulator to take
 this into account. For that, the actual duration is measured on the
 host machine and then scaled to the power of the corresponding
-simulated machine. The variable ``smpi/host-speed`` allows one to specify
-the computational speed of the host machine (in flop/s) to use when
-scaling the execution times. It defaults to 20000, but you really want
-to adjust it to get accurate simulation results.
+simulated machine. The variable ``smpi/host-speed`` allows one to
+specify the computational speed of the host machine (in flop/s by
+default) to use when scaling the execution times. It defaults to 20kf
+(i.e., 20000 flop/s), but you really want to adjust it to get accurate
+simulation results.
 
 When the code consists of numerous consecutive MPI calls, the
 previous mechanism feeds the simulation kernel with numerous tiny

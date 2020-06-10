@@ -11,7 +11,7 @@
 
 XBT_PRIVATE void smpi_check_options();
 /********************************** Configuration of SMPI **************************************/
-extern XBT_PRIVATE simgrid::config::Flag<double> _smpi_cfg_host_speed;
+extern XBT_PRIVATE simgrid::config::Flag<std::string> _smpi_cfg_host_speed_string;
 extern XBT_PRIVATE simgrid::config::Flag<bool> _smpi_cfg_simulate_computation;
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _smpi_cfg_shared_malloc_string;
 extern XBT_PRIVATE simgrid::config::Flag<double> _smpi_cfg_cpu_thresh;
