@@ -383,7 +383,8 @@ void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage
             storage->id.c_str(), stype->model.c_str(), stype->id.c_str(), storage->content.c_str(),
             storage->properties);
 
-  auto s = surf_storage_model->createStorage(storage->id, stype->id, storage->content, storage->attach);
+  auto s = surf_storage_model->createStorage(storage->filename, storage->lineno, storage->id, stype->id,
+                                             storage->content, storage->attach);
 
   if (storage->properties) {
     s->set_properties(*storage->properties);

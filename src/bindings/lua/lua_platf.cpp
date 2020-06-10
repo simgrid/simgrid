@@ -11,6 +11,7 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.hpp"
 #include "src/surf/xml/platf_private.hpp"
+#include "xbt/parse_units.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -79,6 +80,9 @@ int console_close(lua_State*)
 
 int console_add_backbone(lua_State *L) {
   simgrid::kernel::routing::LinkCreationArgs link;
+  lua_Debug ar;
+  lua_getstack(L, 1, &ar);
+  lua_getinfo(L, "Sl", &ar);
 
   link.properties = nullptr;
 
@@ -94,14 +98,16 @@ int console_add_backbone(lua_State *L) {
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'bandwidth' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  link.bandwidths.push_back(surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of backbone", link.id.c_str()));
+  link.bandwidths.push_back(xbt_parse_get_bandwidth(ar.short_src, ar.currentline, lua_tostring(L, -1),
+                                                    "bandwidth of backbone", link.id.c_str()));
   lua_pop(L, 1);
 
   lua_pushstring(L, "lat");
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'lat' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  link.latency = surf_parse_get_time(lua_tostring(L, -1), "latency of backbone", link.id.c_str());
+  link.latency =
+      xbt_parse_get_time(ar.short_src, ar.currentline, lua_tostring(L, -1), "latency of backbone", link.id.c_str());
   lua_pop(L, 1);
 
   lua_pushstring(L, "sharing_policy");
@@ -151,6 +157,9 @@ int console_add_host___link(lua_State *L) {
 int console_add_host(lua_State *L) {
   simgrid::kernel::routing::HostCreationArgs host;
   int type;
+  lua_Debug ar;
+  lua_getstack(L, 1, &ar);
+  lua_getinfo(L, "Sl", &ar);
 
   // we get values from the table passed as argument
   lua_ensure(lua_istable(L, -1),
@@ -172,7 +181,8 @@ int console_add_host(lua_State *L) {
   if (type == LUA_TNUMBER)
     host.speed_per_pstate.push_back(lua_tointeger(L, -1));
   else // LUA_TSTRING
-    host.speed_per_pstate.push_back(surf_parse_get_speed(lua_tostring(L, -1), "speed of host", host.id));
+    host.speed_per_pstate.push_back(
+        xbt_parse_get_speed(ar.short_src, ar.currentline, lua_tostring(L, -1), "speed of host", host.id));
   lua_pop(L, 1);
 
   // get core
@@ -209,6 +219,9 @@ int console_add_host(lua_State *L) {
 
 int  console_add_link(lua_State *L) {
   simgrid::kernel::routing::LinkCreationArgs link;
+  lua_Debug ar;
+  lua_getstack(L, 1, &ar);
+  lua_getinfo(L, "Sl", &ar);
 
   const char* policy;
 
@@ -230,7 +243,8 @@ int  console_add_link(lua_State *L) {
   if (type == LUA_TNUMBER)
     link.bandwidths.push_back(lua_tonumber(L, -1));
   else // LUA_TSTRING
-    link.bandwidths.push_back(surf_parse_get_bandwidth(lua_tostring(L, -1), "bandwidth of link", link.id.c_str()));
+    link.bandwidths.push_back(xbt_parse_get_bandwidth(ar.short_src, ar.currentline, lua_tostring(L, -1),
+                                                      "bandwidth of link", link.id.c_str()));
   lua_pop(L, 1);
 
   //get latency value
@@ -241,7 +255,8 @@ int  console_add_link(lua_State *L) {
   if (type == LUA_TNUMBER)
     link.latency = lua_tonumber(L, -1);
   else // LUA_TSTRING
-    link.latency = surf_parse_get_time(lua_tostring(L, -1), "latency of link", link.id.c_str());
+    link.latency =
+        xbt_parse_get_time(ar.short_src, ar.currentline, lua_tostring(L, -1), "latency of link", link.id.c_str());
   lua_pop(L, 1);
 
   /*Optional Arguments  */

@@ -5,12 +5,17 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_utils.hpp"
+
+#include "src/surf/xml/platf_private.hpp"
 #include "xbt/log.h"
+#include "xbt/parse_units.hpp"
 #include "xbt/sysdep.h"
 #include <boost/tokenizer.hpp>
-#include "src/surf/xml/platf_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
+
+extern std::string& surf_parsed_filename;
+extern int surf_parse_lineno;
 
 std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
 {
@@ -49,7 +54,8 @@ std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
         }
       } else {
         try {
-          fact.values.push_back(surf_parse_get_time((*factor_iter).c_str(), "smpi factor", ""));
+          fact.values.push_back(
+              xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, (*factor_iter).c_str(), "smpi factor", ""));
         } catch (const std::invalid_argument&) {
           throw std::invalid_argument(std::string("Invalid factor value ") + std::to_string(iteration) + " in chunk " +
                                       std::to_string(smpi_factor.size() + 1) + ": " + *factor_iter);

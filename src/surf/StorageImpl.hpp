@@ -48,7 +48,8 @@ public:
   StorageModel& operator=(const StorageModel&) = delete;
   ~StorageModel();
 
-  virtual StorageImpl* createStorage(const std::string& id, const std::string& type_id, const std::string& content_name,
+  virtual StorageImpl* createStorage(std::string& filename, int lineno, const std::string& id,
+                                     const std::string& type_id, const std::string& content_name,
                                      const std::string& attach) = 0;
 };
 

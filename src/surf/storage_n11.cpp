@@ -10,6 +10,7 @@
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "surf/surf.hpp"
+#include "xbt/parse_units.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 
@@ -49,15 +50,16 @@ StorageN11Model::StorageN11Model()
   all_existing_models.push_back(this);
 }
 
-StorageImpl* StorageN11Model::createStorage(const std::string& id, const std::string& type_id,
-                                            const std::string& content_name, const std::string& attach)
+StorageImpl* StorageN11Model::createStorage(std::string& filename, int lineno, const std::string& id,
+                                            const std::string& type_id, const std::string& content_name,
+                                            const std::string& attach)
 {
   const StorageType* storage_type = storage_types.at(type_id);
 
-  double Bread =
-      surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);
-  double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
-                                           "property Bwrite, storage", type_id);
+  double Bread  = xbt_parse_get_bandwidth(filename, lineno, storage_type->model_properties->at("Bread").c_str(),
+                                         "property Bread, storage", type_id);
+  double Bwrite = xbt_parse_get_bandwidth(filename, lineno, storage_type->model_properties->at("Bwrite").c_str(),
+                                          "property Bwrite, storage", type_id);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
             Bread);

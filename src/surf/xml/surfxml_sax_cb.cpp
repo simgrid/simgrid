@@ -14,8 +14,8 @@
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 #include "xbt/file.hpp"
+#include "xbt/parse_units.hpp"
 
-#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <string>
@@ -27,7 +27,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
 
-static std::string surf_parsed_filename; // Currently parsed file (for the error messages)
+std::string surf_parsed_filename; // Currently parsed file (for the error messages)
 std::vector<simgrid::kernel::resource::LinkImpl*>
     parsed_link_list; /* temporary store of current link list of a route */
 std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary store of current disk list of a host */
@@ -94,10 +94,8 @@ int surf_parse_get_int(const std::string& s)
   }
 }
 
-namespace {
-
 /* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
-std::vector<int>* explodesRadical(const std::string& radicals)
+static std::vector<int>* explodesRadical(const std::string& radicals)
 {
   std::vector<int>* exploded = new std::vector<int>();
 
@@ -127,143 +125,6 @@ std::vector<int>* explodesRadical(const std::string& radicals)
   return exploded;
 }
 
-class unit_scale : public std::unordered_map<std::string, double> {
-public:
-  using std::unordered_map<std::string, double>::unordered_map;
-  // tuples are : <unit, value for unit, base (2 or 10), true if abbreviated>
-  explicit unit_scale(std::initializer_list<std::tuple<const std::string, double, int, bool>> generators);
-};
-
-unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, double, int, bool>> generators)
-{
-  for (const auto& gen : generators) {
-    const std::string& unit = std::get<0>(gen);
-    double value            = std::get<1>(gen);
-    const int base          = std::get<2>(gen);
-    const bool abbrev       = std::get<3>(gen);
-    double mult;
-    std::vector<std::string> prefixes;
-    switch (base) {
-      case 2:
-        mult     = 1024.0;
-        prefixes = abbrev ? std::vector<std::string>{"Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"}
-                          : std::vector<std::string>{"kibi", "mebi", "gibi", "tebi", "pebi", "exbi", "zebi", "yobi"};
-        break;
-      case 10:
-        mult     = 1000.0;
-        prefixes = abbrev ? std::vector<std::string>{"k", "M", "G", "T", "P", "E", "Z", "Y"}
-                          : std::vector<std::string>{"kilo", "mega", "giga", "tera", "peta", "exa", "zeta", "yotta"};
-        break;
-      default:
-        THROW_IMPOSSIBLE;
-    }
-    emplace(unit, value);
-    for (const auto& prefix : prefixes) {
-      value *= mult;
-      emplace(prefix + unit, value);
-    }
-  }
-}
-
-/* Note: no warning is issued for unit-less values when `name' is empty. */
-double surf_parse_get_value_with_unit(const char* string, const unit_scale& units, const char* entity_kind,
-                                      const std::string& name, const char* error_msg, const char* default_unit)
-{
-  char* endptr;
-  errno = 0;
-  double res      = strtod(string, &endptr);
-  const char* ptr = endptr; // for const-correctness
-  if (errno == ERANGE)
-    surf_parse_error(std::string("value out of range: ") + string);
-  if (ptr == string)
-    surf_parse_error(std::string("cannot parse number:") + string);
-  if (ptr[0] == '\0') {
-    // Ok, 0 can be unit-less
-    if (res != 0 && not name.empty())
-      XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
-    ptr = default_unit;
-  }
-  auto u = units.find(ptr);
-  if (u == units.end())
-    surf_parse_error(std::string("unknown unit: ") + ptr);
-  return res * u->second;
-}
-}
-
-double surf_parse_get_time(const char* string, const char* entity_kind, const std::string& name)
-{
-  static const unit_scale units{std::make_pair("w", 7 * 24 * 60 * 60),
-                                std::make_pair("d", 24 * 60 * 60),
-                                std::make_pair("h", 60 * 60),
-                                std::make_pair("m", 60),
-                                std::make_pair("s", 1.0),
-                                std::make_pair("ms", 1e-3),
-                                std::make_pair("us", 1e-6),
-                                std::make_pair("ns", 1e-9),
-                                std::make_pair("ps", 1e-12)};
-  return surf_parse_get_value_with_unit(string, units, entity_kind, name,
-      "Append 's' to your time to get seconds", "s");
-}
-
-double surf_parse_get_size(const char* string, const char* entity_kind, const std::string& name)
-{
-  static const unit_scale units{std::make_tuple("b", 0.125, 2, true), std::make_tuple("b", 0.125, 10, true),
-                                std::make_tuple("B", 1.0, 2, true), std::make_tuple("B", 1.0, 10, true)};
-  return surf_parse_get_value_with_unit(string, units, entity_kind, name,
-      "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
-}
-
-double surf_parse_get_bandwidth(const char* string, const char* entity_kind, const std::string& name)
-{
-  static const unit_scale units{std::make_tuple("bps", 0.125, 2, true), std::make_tuple("bps", 0.125, 10, true),
-                                std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
-  return surf_parse_get_value_with_unit(string, units, entity_kind, name,
-      "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
-}
-
-std::vector<double> surf_parse_get_bandwidths(const char* string, const char* entity_kind, const std::string& name)
-{
-  static const unit_scale units{std::make_tuple("bps", 0.125, 2, true), std::make_tuple("bps", 0.125, 10, true),
-                                std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
-
-  std::vector<double> bandwidths;
-  std::vector<std::string> tokens;
-  boost::split(tokens, string, boost::is_any_of(";"));
-  for (auto token : tokens) {
-    bandwidths.push_back(surf_parse_get_value_with_unit(
-        token.c_str(), units, entity_kind, name,
-        "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps"));
-  }
-
-  return bandwidths;
-}
-
-double surf_parse_get_speed(const char* string, const char* entity_kind, const std::string& name)
-{
-  static const unit_scale units{std::make_tuple("f", 1.0, 10, true), std::make_tuple("flops", 1.0, 10, false)};
-  return surf_parse_get_value_with_unit(string, units, entity_kind, name,
-      "Append 'f' or 'flops' to your speed to get flop per second", "f");
-}
-
-static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* entity_kind, const std::string& id)
-{
-  std::vector<double> speed_per_pstate;
-
-  if (strchr(speeds, ',') == nullptr){
-    double speed = surf_parse_get_speed(speeds, entity_kind, id);
-    speed_per_pstate.push_back(speed);
-  } else {
-    std::vector<std::string> pstate_list;
-    boost::split(pstate_list, speeds, boost::is_any_of(","));
-    for (auto speed_str : pstate_list) {
-      boost::trim(speed_str);
-      double speed = surf_parse_get_speed(speed_str.c_str(), entity_kind, id);
-      speed_per_pstate.push_back(speed);
-      XBT_DEBUG("Speed value: %f", speed);
-    }
-  }
-  return speed_per_pstate;
-}
 
 /*
  * All the callback lists that can be overridden anywhere.
@@ -293,6 +154,8 @@ void ETag_surfxml_storage()
   storage.properties = property_sets.back();
   property_sets.pop_back();
 
+  storage.filename     = surf_parsed_filename;
+  storage.lineno       = surf_parse_lineno;
   storage.id           = A_surfxml_storage_id;
   storage.type_id      = A_surfxml_storage_typeId;
   storage.content      = A_surfxml_storage_content;
@@ -319,8 +182,8 @@ void ETag_surfxml_storage___type()
   storage_type.content = A_surfxml_storage___type_content;
   storage_type.id      = A_surfxml_storage___type_id;
   storage_type.model   = A_surfxml_storage___type_model;
-  storage_type.size =
-      surf_parse_get_size(A_surfxml_storage___type_size, "size of storage type", storage_type.id.c_str());
+  storage_type.size    = surf_parse_get_size(surf_parsed_filename, surf_parse_lineno, A_surfxml_storage___type_size,
+                                          "size of storage type", storage_type.id.c_str());
   sg_platf_new_storage_type(&storage_type);
 }
 
@@ -418,7 +281,8 @@ void ETag_surfxml_host()    {
 
   host.id = A_surfxml_host_id;
 
-  host.speed_per_pstate = surf_parse_get_all_speeds(A_surfxml_host_speed, "speed of host", host.id);
+  host.speed_per_pstate =
+      xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_surfxml_host_speed, "speed of host", host.id);
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
@@ -450,8 +314,10 @@ void ETag_surfxml_disk() {
   property_sets.pop_back();
 
   disk.id       = A_surfxml_disk_id;
-  disk.read_bw  = surf_parse_get_bandwidth(A_surfxml_disk_read___bw, "read_bw of disk ", disk.id);
-  disk.write_bw = surf_parse_get_bandwidth(A_surfxml_disk_write___bw, "write_bw of disk ", disk.id);
+  disk.read_bw  = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_disk_read___bw,
+                                         "read_bw of disk ", disk.id);
+  disk.write_bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_disk_write___bw,
+                                          "write_bw of disk ", disk.id);
 
   parsed_disk_list.push_back(sg_platf_new_disk(&disk));
 }
@@ -479,20 +345,29 @@ void ETag_surfxml_cluster(){
   cluster.prefix      = A_surfxml_cluster_prefix;
   cluster.suffix      = A_surfxml_cluster_suffix;
   cluster.radicals    = explodesRadical(A_surfxml_cluster_radical);
-  cluster.speeds      = surf_parse_get_all_speeds(A_surfxml_cluster_speed, "speed of cluster", cluster.id);
+  cluster.speeds      = xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_speed,
+                                            "speed of cluster", cluster.id);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
-  cluster.bw          = surf_parse_get_bandwidth(A_surfxml_cluster_bw, "bw of cluster", cluster.id);
-  cluster.lat         = surf_parse_get_time(A_surfxml_cluster_lat, "lat of cluster", cluster.id);
+  cluster.bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_bw, "bw of cluster",
+                                       cluster.id);
+  cluster.lat =
+      xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_lat, "lat of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_bb___bw,""))
-    cluster.bb_bw = surf_parse_get_bandwidth(A_surfxml_cluster_bb___bw, "bb_bw of cluster", cluster.id);
+    cluster.bb_bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_bb___bw,
+                                            "bb_bw of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_bb___lat,""))
-    cluster.bb_lat = surf_parse_get_time(A_surfxml_cluster_bb___lat, "bb_lat of cluster", cluster.id);
+    cluster.bb_lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_bb___lat,
+                                        "bb_lat of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_limiter___link,""))
-    cluster.limiter_link = surf_parse_get_bandwidth(A_surfxml_cluster_limiter___link, "limiter_link of cluster", cluster.id);
+    cluster.limiter_link =
+        xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_limiter___link,
+                                "limiter_link of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_loopback___bw,""))
-    cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw, "loopback_bw of cluster", cluster.id);
+    cluster.loopback_bw = xbt_parse_get_bandwidth(
+        surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_loopback___bw, "loopback_bw of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
-    cluster.loopback_lat = surf_parse_get_time(A_surfxml_cluster_loopback___lat, "loopback_lat of cluster", cluster.id);
+    cluster.loopback_lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_loopback___lat,
+                                              "loopback_lat of cluster", cluster.id);
 
   switch(AX_surfxml_cluster_topology){
   case A_surfxml_cluster_topology_FLAT:
@@ -553,9 +428,12 @@ void STag_surfxml_cabinet(){
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
   cabinet.suffix  = A_surfxml_cabinet_suffix;
-  cabinet.speed    = surf_parse_get_speed(A_surfxml_cabinet_speed, "speed of cabinet", cabinet.id.c_str());
-  cabinet.bw       = surf_parse_get_bandwidth(A_surfxml_cabinet_bw, "bw of cabinet", cabinet.id.c_str());
-  cabinet.lat      = surf_parse_get_time(A_surfxml_cabinet_lat, "lat of cabinet", cabinet.id.c_str());
+  cabinet.speed   = xbt_parse_get_speed(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_speed,
+                                      "speed of cabinet", cabinet.id.c_str());
+  cabinet.bw  = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_bw, "bw of cabinet",
+                                       cabinet.id.c_str());
+  cabinet.lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_lat, "lat of cabinet",
+                                   cabinet.id.c_str());
   cabinet.radicals = explodesRadical(A_surfxml_cabinet_radical);
 
   sg_platf_new_cabinet(&cabinet);
@@ -565,9 +443,12 @@ void STag_surfxml_peer(){
   simgrid::kernel::routing::PeerCreationArgs peer;
 
   peer.id          = std::string(A_surfxml_peer_id);
-  peer.speed       = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id.c_str());
-  peer.bw_in       = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id.c_str());
-  peer.bw_out      = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id.c_str());
+  peer.speed       = xbt_parse_get_speed(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_speed, "speed of peer",
+                                   peer.id.c_str());
+  peer.bw_in = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_bw___in, "bw_in of peer",
+                                       peer.id.c_str());
+  peer.bw_out      = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_bw___out,
+                                        "bw_out of peer", peer.id.c_str());
   peer.coord       = A_surfxml_peer_coordinates;
   peer.speed_trace = nullptr;
   if (A_surfxml_peer_availability___file[0] != '\0') {
@@ -598,11 +479,13 @@ void ETag_surfxml_link(){
   property_sets.pop_back();
 
   link.id                  = std::string(A_surfxml_link_id);
-  link.bandwidths          = surf_parse_get_bandwidths(A_surfxml_link_bandwidth, "bandwidth of link", link.id.c_str());
+  link.bandwidths          = xbt_parse_get_bandwidths(surf_parsed_filename, surf_parse_lineno, A_surfxml_link_bandwidth,
+                                             "bandwidth of link", link.id.c_str());
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0]
                              ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_bandwidth___file)
                              : nullptr;
-  link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id.c_str());
+  link.latency = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_link_latency, "latency of link",
+                                    link.id.c_str());
   link.latency_trace       = A_surfxml_link_latency___file[0]
                            ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_latency___file)
                            : nullptr;
@@ -672,9 +555,10 @@ void ETag_surfxml_backbone(){
 
   link.properties = nullptr;
   link.id = std::string(A_surfxml_backbone_id);
-  link.bandwidths.push_back(
-      surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str()));
-  link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id.c_str());
+  link.bandwidths.push_back(xbt_parse_get_bandwidth(
+      surf_parsed_filename, surf_parse_lineno, A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str()));
+  link.latency    = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_backbone_latency,
+                                    "latency of backbone", link.id.c_str());
   link.policy     = simgrid::s4u::Link::SharingPolicy::SHARED;
 
   sg_platf_new_link(&link);

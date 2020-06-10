@@ -194,6 +194,7 @@ public:
       : Exception(XBT_THROW_POINT, xbt::string_printf("Parse error at %s:%d: %s", file.c_str(), line, msg.c_str()))
   {
   }
+  ParseError(const std::string& msg) : Exception(XBT_THROW_POINT, xbt::string_printf("Parse error: %s", msg.c_str())) {}
   ParseError(const ParseError&)     = default;
   ParseError(ParseError&&) noexcept = default;
   ~ParseError();

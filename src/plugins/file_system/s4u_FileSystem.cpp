@@ -9,6 +9,7 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "xbt/config.hpp"
+#include "xbt/parse_units.hpp"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
@@ -483,8 +484,9 @@ int File::remote_move(sg_host_t host, const char* fullpath)
 FileSystemDiskExt::FileSystemDiskExt(const Disk* ptr)
 {
   const char* size_str    = ptr->get_property("size");
+  std::string dummyfile;
   if (size_str)
-    size_ = surf_parse_get_size(size_str, "disk size", ptr->get_name());
+    size_ = surf_parse_get_size(dummyfile, -1, size_str, "disk size", ptr->get_name());
 
   const char* current_mount_str = ptr->get_property("mount");
   if (current_mount_str)

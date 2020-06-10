@@ -295,6 +295,7 @@ set(XBT_SRC
   src/xbt/xbt_main.cpp
   src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_time.c
+  src/xbt/xbt_parse_units.cpp
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
   src/xbt/xbt_virtu.cpp
@@ -778,6 +779,7 @@ set(headers_to_install
   include/xbt/module.h
   include/xbt/PropertyHolder.hpp
   include/xbt/parmap.h
+  include/xbt/parse_units.hpp
   include/xbt/range.hpp
   include/xbt/random.hpp
   include/xbt/replay.hpp
