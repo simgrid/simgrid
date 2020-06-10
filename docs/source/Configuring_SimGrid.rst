@@ -965,9 +965,14 @@ this into account. For that, the actual duration is measured on the
 host machine and then scaled to the power of the corresponding
 simulated machine. The variable ``smpi/host-speed`` allows one to
 specify the computational speed of the host machine (in flop/s by
-default) to use when scaling the execution times. It defaults to 20kf
-(i.e., 20000 flop/s), but you really want to adjust it to get accurate
-simulation results.
+default) to use when scaling the execution times.
+
+The default value is ``smpi/host-speed=20kf`` (= 20,000 flop/s). This
+is probably underestimated for most machines, leading SimGrid to
+overestimate the amount of flops in the execution blocks that are
+automatically injected in the simulator. As a result, the execution
+time of the whole application will probably be overestimated until you
+use a realistic value.
 
 When the code consists of numerous consecutive MPI calls, the
 previous mechanism feeds the simulation kernel with numerous tiny
