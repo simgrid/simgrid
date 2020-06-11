@@ -217,7 +217,7 @@ if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
   foreach (test ${umpire_tests_passing})
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30")
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display" APPEND)
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../smpi_script/bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/host-speed:1e9 --cfg=smpi/coll-selector:ompi \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
+    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../smpi_script/bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/host-speed:1Gf --cfg=smpi/coll-selector:ompi \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
   endforeach()
 
   foreach (test ${umpire_tests_deadlock} ${umpire_tests_problematic} )
