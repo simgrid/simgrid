@@ -673,7 +673,7 @@ int main(int argc,char **argv ){
   if(timer_on != 0 && dg->numNodes+1>timers_tot){
     timer_on=0;
     if(my_rank==0)
-    fprintf(stderr,"Not enough timers. Node timeing is off. \n");
+    fprintf(stderr,"Not enough timers. Node timing is off. \n");
   }
   if(dg->numNodes && dg->numNodes>comm_size){
     if(my_rank==0){

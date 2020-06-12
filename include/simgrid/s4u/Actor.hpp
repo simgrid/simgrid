@@ -105,7 +105,7 @@ public:
   static ActorPtr create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
   /** Create an actor, but don't start it yet.
    *
-   * This is usefull to set some properties or extension before actually starting it */
+   * This is useful to set some properties or extension before actually starting it */
   static ActorPtr init(const std::string& name, s4u::Host* host);
   ActorPtr set_stacksize(unsigned stacksize);
   /** Start a previously initialized actor */

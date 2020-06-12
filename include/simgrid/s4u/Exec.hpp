@@ -19,7 +19,7 @@ namespace s4u {
  * @rst
  * Most of them are created with :cpp:func:`simgrid::s4u::this_actor::exec_init()` or
  * :cpp:func:`simgrid::s4u::Host::execute()`, and represent a classical (sequential) execution. This can be used to
- * simulate some computation occuring in another thread when the calling actor is not blocked during the execution.
+ * simulate some computation occurring in another thread when the calling actor is not blocked during the execution.
  *
  * You can also use :cpp:func:`simgrid::s4u::this_actor::parallel_execute()` to create *parallel* executions. These
  * objects represent distributed computations involving computations on several hosts and communications between them.

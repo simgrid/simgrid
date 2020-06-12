@@ -80,7 +80,7 @@ public class Node extends Process {
         Msg.debug("Caught exception: " + e);
       }
     }
-    Msg.info(findNodeSuccedded + "/"  + (findNodeSuccedded + findNodeFailed) + " FIND_NODE have succedded.");
+    Msg.info(findNodeSuccedded + "/"  + (findNodeSuccedded + findNodeFailed) + " FIND_NODE have succeeded.");
   }
 
   /**
@@ -218,7 +218,7 @@ public class Node extends Process {
       if (counts) {
         findNodeSuccedded++;
       }
-      Msg.debug("Find node on " + destination + " succedded");
+      Msg.debug("Find node on " + destination + " succeeded");
     } else {
       Msg.debug("Find node on " + destination + " failed");
       Msg.debug("Queried " + queries + " nodes to find "  + destination);
@@ -259,7 +259,7 @@ public class Node extends Process {
   }
 
   /**
-   * @brief Handles an incomming task
+   * @brief Handles an incoming task
    * @param task The task we need to handle
    */
   public void handleTask(Task task) {

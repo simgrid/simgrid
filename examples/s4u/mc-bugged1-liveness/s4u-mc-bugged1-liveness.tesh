@@ -8,11 +8,11 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged1-liveness ${pl
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (3:client@Fafard) Ask the request
 > [  0.000000] (2:client@Boivin) Propositions changed : r=1, cs=0
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
+> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediately
 > [  0.000000] (3:client@Fafard) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (3:client@Fafard) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
+> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediately
 > [  0.000000] (0:maestro@) Pair 22 already reached (equal to pair 10) !
 > [  0.000000] (0:maestro@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:maestro@) |             ACCEPTANCE CYCLE            |

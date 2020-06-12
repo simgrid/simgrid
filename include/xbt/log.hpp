@@ -12,7 +12,7 @@
 namespace simgrid {
 namespace xbt {
 
-/** Display informations about an exception
+/** Display information about an exception
  *
  *  We display: the exception type, name, attached backtraces (if any) and
  *  the nested exception (if any).

@@ -60,7 +60,7 @@ static void coordinator()
         requests.push(m->return_mailbox);
       } else {
         if (m->return_mailbox->get_name() != "1") {
-          XBT_INFO("CS idle. Grant immediatly");
+          XBT_INFO("CS idle. Grant immediately");
           m->return_mailbox->put(new Message(Message::Kind::GRANT, mbox), 1000);
           CS_used = 1;
         }

@@ -28,12 +28,12 @@ to simulate.
 Actors: the Active Entities
 ===========================
 
-Starting and Stoping Actors
+Starting and Stopping Actors
 ---------------------------
 
   - **Creating actors:**
     Most actors are started from the deployment XML file, because this
-    is a :ref:`better scientific habbit <howto_science>`, but you can
+    is a :ref:`better scientific habit <howto_science>`, but you can
     also create them directly from your code.
 
     .. tabs::
@@ -106,7 +106,7 @@ Starting and Stoping Actors
 
           See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
 
-  - **Controling the actor life cycle from the XML:**
+  - **Controlling the actor life cycle from the XML:**
     You can specify a start time and a kill time in the deployment file.
 
     .. tabs::
@@ -679,7 +679,7 @@ options to see the task executions:
 
   - **Platform Tracing:**
     This program is a toy example just loading the platform, so that
-    you can play with the platform visualization. Recommanded options:
+    you can play with the platform visualization. Recommended options:
     ``--cfg=tracing:yes --cfg=tracing/categorized:yes``
 
     .. tabs::

@@ -3,7 +3,7 @@
 <platform version="4.1">
   <zone id="AS0" routing="Full">
     <!-- Multiple pstate processor capacities can be defined as a list of powers specified for a given host -->
-    <!-- Attribute 'pstate' specifies the initialy selected pstate (here, the lowest pstate corresponds to the highest
+    <!-- Attribute 'pstate' specifies the initially selected pstate (here, the lowest pstate corresponds to the highest
          processor speed) -->
     <host core="4" id="MyHost1" pstate="0" speed="100.0Mf,50.0Mf,20.0Mf">
       <!--  List of Idle:Epsilon:AllCores (in Watts) corresponding to the speed consumed when the processor is idle,
