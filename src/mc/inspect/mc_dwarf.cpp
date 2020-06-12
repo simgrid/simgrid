@@ -59,7 +59,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit);
 
 /** @brief Process a DIE
  *
- *  @param info the resulting object fot the library/binary file (output)
+ *  @param info the resulting object for the library/binary file (output)
  *  @param die  the current DIE
  *  @param unit the DIE of the compile unit of the current DIE
  *  @param frame containing frame if any
@@ -74,7 +74,7 @@ static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf
 
 /** @brief Calls MC_dwarf_handle_die on all children of the given die
  *
- *  @param info the resulting object fot the library/binary file (output)
+ *  @param info the resulting object for the library/binary file (output)
  *  @param die  the current DIE
  *  @param unit the DIE of the compile unit of the current DIE
  *  @param frame containing frame if any
@@ -84,7 +84,7 @@ static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf
 
 /** @brief Handle a variable (DW_TAG_variable or other)
  *
- *  @param info the resulting object fot the library/binary file (output)
+ *  @param info the resulting object for the library/binary file (output)
  *  @param die  the current DIE
  *  @param unit the DIE of the compile unit of the current DIE
  *  @param frame containing frame if any
@@ -1024,7 +1024,7 @@ static std::string find_by_build_id(std::vector<char> id)
   return std::string();
 }
 
-/** @brief Populate the debugging informations of the given ELF object
+/** @brief Populate the debugging information of the given ELF object
  *
  *  Read the DWARf information of the EFFL object and populate the
  *  lists of types, variables, functions.
@@ -1058,7 +1058,7 @@ static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
   dwarf_end(dwarf);
 
   // If there was no DWARF in the file, try to find it in a separate file.
-  // Different methods might be used to store the DWARF informations:
+  // Different methods might be used to store the DWARF information:
   //  * GNU NT_GNU_BUILD_ID
   //  * .gnu_debuglink
   // See https://sourceware.org/gdb/onlinedocs/gdb/Separate-Debug-Files.html
@@ -1190,7 +1190,7 @@ static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 namespace simgrid {
 namespace mc {
 
-/** @brief Finds informations about a given shared object/executable */
+/** @brief Finds information about a given shared object/executable */
 std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<xbt::VmMap> const& maps, const char* name)
 {
   std::shared_ptr<ObjectInformation> result = std::make_shared<ObjectInformation>();

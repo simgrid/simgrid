@@ -620,7 +620,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     MPI_Request savedreq = *request;
     if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & MPI_REQ_FINISHED)
     && not(savedreq->flags() & MPI_REQ_GENERALIZED))
-      savedreq->ref();//don't erase te handle in Request::wait, we'll need it later
+      savedreq->ref();//don't erase the handle in Request::wait, we'll need it later
     else
       savedreq = MPI_REQUEST_NULL;
 

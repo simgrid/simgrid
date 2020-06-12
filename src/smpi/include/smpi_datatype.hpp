@@ -20,7 +20,7 @@ constexpr unsigned DT_FLAG_PREDEFINED  = 0x0040; /**< cannot be removed: initial
 constexpr unsigned DT_FLAG_NO_GAPS     = 0x0080; /**< no gaps around the datatype */
 constexpr unsigned DT_FLAG_DATA        = 0x0100; /**< data or control structure */
 constexpr unsigned DT_FLAG_ONE_SIDED   = 0x0200; /**< datatype can be used for one sided operations */
-constexpr unsigned DT_FLAG_UNAVAILABLE = 0x0400; /**< datatypes unavailable on the build (OS or compiler dependant) */
+constexpr unsigned DT_FLAG_UNAVAILABLE = 0x0400; /**< datatypes unavailable on the build (OS or compiler dependent) */
 constexpr unsigned DT_FLAG_DERIVED     = 0x0800; /**< is the datatype derived ? */
 /*
  * We should make the difference here between the predefined contiguous and non contiguous

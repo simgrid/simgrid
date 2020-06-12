@@ -64,7 +64,7 @@ void NetworkWifiLink::refresh_decay_bandwidths(){
     
   std::vector<Metric> new_bandwidths;
   for (auto bandwidth : bandwidths_){
-    // Instanciate decay model relatively to the actual bandwidth
+    // Instantiate decay model relatively to the actual bandwidth
     double max_bw=bandwidth.peak;
     double min_bw=bandwidth.peak-(wifi_max_rate_-wifi_min_rate_);
     double model_rate=bandwidth.peak-(wifi_max_rate_-model_rate_);

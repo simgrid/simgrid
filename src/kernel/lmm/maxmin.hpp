@@ -313,7 +313,7 @@ public:
   Constraint* get_constraint(unsigned num) const { return num < cnsts_.size() ? cnsts_[num].constraint : nullptr; }
 
   /**
-   * @brief Get the weigth of the numth constraint associated to the variable
+   * @brief Get the weight of the numth constraint associated to the variable
    * @param num The rank of constraint we want to get
    * @return The numth constraint
    */

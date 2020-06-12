@@ -28,7 +28,7 @@ allgather__NTSLR_NB(const void *sbuf, int scount, MPI_Datatype stype,
   MPI_Request* rrequest_array = new MPI_Request[size];
   MPI_Request* srequest_array = new MPI_Request[size];
 
-  // irregular case use default MPI fucntions
+  // irregular case use default MPI functions
   if (scount * sextent != rcount * rextent) {
     XBT_WARN("MPI_allgather_NTSLR_NB use default MPI_allgather.");
     allgather__default(sbuf, scount, stype, rbuf, rcount, rtype, comm);

@@ -30,7 +30,7 @@ int allreduce_smp_binomial_pipeline_segment_size = 4096;
 */
 
 /*
-This fucntion performs all-reduce operation as follow. ** in a pipeline fashion **
+This function performs all-reduce operation as follow. ** in a pipeline fashion **
 1) binomial_tree reduce inside each SMP node
 2) binomial_tree reduce intra-communication between root of each SMP node
 3) binomial_tree bcast intra-communication between root of each SMP node

@@ -168,7 +168,7 @@ void AppSide::ignore_memory(void* addr, std::size_t size)
   message.addr = (std::uintptr_t)addr;
   message.size = size;
   if (channel_.send(message))
-    xbt_die("Could not send IGNORE_MEMORY mesage to model-checker");
+    xbt_die("Could not send IGNORE_MEMORY message to model-checker");
 }
 
 void AppSide::ignore_heap(void* address, std::size_t size)

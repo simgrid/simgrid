@@ -475,7 +475,7 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
     arg_size = status.count;
   }
 
-  bool is_recv = false; // Help analyzers understanding that status is not used unintialized
+  bool is_recv = false; // Help analyzers understanding that status is not used uninitialized
   if (get_name() == "recv") {
     is_recv = true;
     Request::recv(nullptr, arg_size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD, &status);

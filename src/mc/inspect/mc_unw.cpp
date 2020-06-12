@@ -183,7 +183,7 @@ int UnwindContext::access_reg(unw_addr_space_t /*as*/, unw_regnum_t regnum, unw_
   return 0;
 }
 
-/** Find informations about a function (libunwind method)
+/** Find information about a function (libunwind method)
  */
 int UnwindContext::get_proc_name(unw_addr_space_t /*as*/, unw_word_t addr, char* bufp, size_t buf_len, unw_word_t* offp,
                                  void* arg) noexcept

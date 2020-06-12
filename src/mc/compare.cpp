@@ -252,7 +252,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
       continue;
     }
 
-    xbt_assert(heapinfo1->type >= 0, "Unkown mmalloc block type: %d", heapinfo1->type);
+    xbt_assert(heapinfo1->type >= 0, "Unknown mmalloc block type: %d", heapinfo1->type);
 
     void* addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
 
@@ -359,7 +359,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
             continue;
           }
 
-          xbt_assert(heapinfo2b->type >= 0, "Unkown mmalloc block type: %d", heapinfo2b->type);
+          xbt_assert(heapinfo2b->type >= 0, "Unknown mmalloc block type: %d", heapinfo2b->type);
 
           for (size_t j2 = 0; j2 < (size_t)(BLOCKSIZE >> heapinfo2b->type); j2++) {
             if (i2 == i1 && j2 == j1)

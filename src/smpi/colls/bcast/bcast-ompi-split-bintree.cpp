@@ -72,7 +72,7 @@ int bcast__ompi_split_bintree( void* buffer,
     int segindex, i, lr, pair;
     int segcount[2];       /* Number ompi_request_wait_allof elements sent with each segment */
     uint32_t counts[2];
-    int num_segments[2];   /* Number of segmenets */
+    int num_segments[2];   /* Number of segments */
     int sendcount[2];      /* the same like segcount, except for the last segment */
     size_t realsegsize[2];
     char *tmpbuf[2];
@@ -211,7 +211,7 @@ int bcast__ompi_split_bintree( void* buffer,
           Request::send(tmpbuf[lr], segcount[lr], datatype, tree->tree_next[i], COLL_TAG_BCAST, comm);
         } /* end of for each child */
 
-        /* upate the base request */
+        /* update the base request */
         base_req = new_req;
         /* go to the next buffer (ie. the one corresponding to the next recv) */
         tmpbuf[lr] += realsegsize[lr];

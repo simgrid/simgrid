@@ -63,7 +63,7 @@ static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> co
   case xbt_automaton_exp_label::AUT_ONE:
     return true;
   default:
-    xbt_die("Unexpected vaue for automaton");
+    xbt_die("Unexpected value for automaton");
   }
 }
 

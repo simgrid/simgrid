@@ -149,7 +149,7 @@ void mfree(struct mdesc *mdp, void *ptr)
 
   default:
     if (type < 0) {
-      fprintf(stderr, "Unkown mmalloc block type.\n");
+      fprintf(stderr, "Unknown mmalloc block type.\n");
       abort();
     }
 

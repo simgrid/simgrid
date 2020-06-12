@@ -126,7 +126,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   default: /* Fragment -> ??; type=logarithm to base two of the fragment size.  */
 
     if (type < 0) {
-      fprintf(stderr, "Unkown mmalloc block type.\n");
+      fprintf(stderr, "Unknown mmalloc block type.\n");
       abort();
     }
 

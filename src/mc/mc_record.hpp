@@ -5,7 +5,7 @@
 
 /** \file mc_record.hpp
  *
- *  This file contains the MC replay/record functionnality.
+ *  This file contains the MC replay/record functionality.
  *  The recorded path is written in the log output and can be replayed with MC disabled
  *  (even with an non-MC build) using `--cfg=model-check/replay:$replayPath`.
  *

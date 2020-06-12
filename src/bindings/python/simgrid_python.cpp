@@ -199,7 +199,7 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulated host")
       .def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
-      .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the cound of defined pstate levels")
+      .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
       .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
       .def_property(
           "pstate", &Host::get_pstate,

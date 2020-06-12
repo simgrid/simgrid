@@ -137,7 +137,7 @@ allgather__ompi_neighborexchange(const void *sbuf, int scount,
       - Rest of the steps:
         update recv_data_from according to offset, and
         exchange two blocks with appropriate neighbor.
-        the send location becomes previous receve location.
+        the send location becomes previous receive location.
    */
    tmprecv = (char*)rbuf + neighbor[0] * rcount * rext;
    tmpsend = (char*)rbuf + rank * rcount * rext;

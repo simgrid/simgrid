@@ -175,7 +175,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
       va_start(ev->ap, fmt);
       done = cat->layout->do_layout(cat->layout, ev, fmt);
       va_end(ev->ap);
-      ev->buffer = nullptr; // Calm down, static analyzers, this pointer to local array wont leak out of the scope.
+      ev->buffer = nullptr; // Calm down, static analyzers, this pointer to local array won't leak out of the scope.
       if (done) {
         appender->do_append(appender, buff);
       } else {

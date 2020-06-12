@@ -63,7 +63,7 @@ void LoadBalancer::run()
   // after a host got another actor assigned (or moved from).
   // We can't use std::priorityQueue here because we modify *two* elements: The top element, which
   // we can access and which has the lowest load, gets a new actor assigned. 
-  // However, the host loosing that actor must be updated as well. 
+  // However, the host losing that actor must be updated as well. 
   // std::priorityQueue is immutable and hence doesn't work for us.
   //
   // This heap contains the least loaded host at the top

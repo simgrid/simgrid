@@ -88,7 +88,7 @@
  *        [02b]          [12b]         [22b]
  *
  *        COMPUTATION PHASE 0 (a)
- *         Step 0: rank r sends block ra to rank (r+1) and receives bloc (r-1)a
+ *         Step 0: rank r sends block ra to rank (r+1) and receives block (r-1)a
  *                 from rank (r-1) [with wraparound].
  *    #     0              1             2
  *        [00a]        [00a+10a]       [20a]
@@ -98,7 +98,7 @@
  *      [22a+02a]        [12a]         [22a]
  *        [02b]          [12b]         [22b]
  *
- *         Step 1: rank r sends block (r-1)a to rank (r+1) and receives bloc
+ *         Step 1: rank r sends block (r-1)a to rank (r+1) and receives block
  *                 (r-2)a from rank (r-1) [with wraparound].
  *    #     0              1             2
  *        [00a]        [00a+10a]   [00a+10a+20a]
@@ -109,7 +109,7 @@
  *        [02b]          [12b]         [22b]
  *
  *        COMPUTATION PHASE 1 (b)
- *         Step 0: rank r sends block rb to rank (r+1) and receives bloc (r-1)b
+ *         Step 0: rank r sends block rb to rank (r+1) and receives block (r-1)b
  *                 from rank (r-1) [with wraparound].
  *    #     0              1             2
  *        [00a]        [00a+10a]       [20a]
@@ -119,7 +119,7 @@
  *      [22a+02a]        [12a]         [22a]
  *      [22b+02b]        [12b]         [22b]
  *
- *         Step 1: rank r sends block (r-1)b to rank (r+1) and receives bloc
+ *         Step 1: rank r sends block (r-1)b to rank (r+1) and receives block
  *                 (r-2)b from rank (r-1) [with wraparound].
  *    #     0              1             2
  *        [00a]        [00a+10a]   [00a+10a+20a]
