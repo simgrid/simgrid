@@ -26,7 +26,7 @@ to mix several interfaces in the same simulation.
  - In some cases, you may want to replay an execution trace in the simulator. This
    trace lists the events of your application or of your workload, and
    your application is decomposed as a list of event handlers that are
-   fired according to the trace. SimGrid comes with a build-in support
+   fired according to the trace. SimGrid comes with a built-in support
    for MPI traces (with solutions to import traces captured by several
    MPI profilers). You can reuse this mechanism for any kind of trace
    that you want to replay, for example to study how a P2P DHT overlay

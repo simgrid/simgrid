@@ -276,7 +276,7 @@ Network Zone (:cpp:class:`msg_file_t`) and associated functions.
 Java bindings
 *************
 
-This section describes jMSG, the Java API to Simgrid. This API mimicks 
+This section describes jMSG, the Java API to Simgrid. This API mimics 
 :ref:`MSG <MSG_doc>`, which is a simple yet somehow realistic interface.
 The full reference documentation is provided at the end of this page.
 

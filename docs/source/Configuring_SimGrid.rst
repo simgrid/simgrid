@@ -415,7 +415,7 @@ Simulating Asynchronous Send
 
 It is possible to specify that messages below a certain size (in bytes) will be
 sent as soon as the call to MPI_Send is issued, without waiting for
-the correspondant receive. This threshold can be configured through
+the correspondent receive. This threshold can be configured through
 the ``smpi/async-small-thresh`` item. The default value is 0. This
 behavior can also be manually set for mailboxes, by setting the
 receiving mode of the mailbox with a call to
@@ -444,7 +444,7 @@ Configuring the Storage model
 
 .. _cfg=storage/max_file_descriptors:
 
-File Descriptor Cound per Host
+File Descriptor Count per Host
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Option** ``storage/max_file_descriptors`` **Default:** 1024
@@ -530,7 +530,7 @@ Specifying a liveness property
 If you want to specify liveness properties, you have to pass them on
 the command line, specifying the name of the file containing the
 property, as formatted by the `ltl2ba <https://github.com/utwente-fmt/ltl2ba>`_ program.
-Note that ltl2ba is not part of SimGrid and must be installed separatly.
+Note that ltl2ba is not part of SimGrid and must be installed separately.
 
 .. code-block:: shell
 
@@ -719,7 +719,7 @@ MC-related options, keep non-MC-related ones and add
 Currently, if the path is of the form ``X;Y;Z``, each number denotes
 the actor's pid that is selected at each indecision point. If it's of
 the form ``X/a;Y/b``, the X and Y are the selected pids while the a
-and b are the return values of their simcalls. In the previouse
+and b are the return values of their simcalls. In the previous
 example, ``1/3;1/4``, you can see from the full output that the actor
 1 is doing MC_RANDOM simcalls, so the 3 and 4 simply denote the values
 that these simcall return.
@@ -1390,7 +1390,7 @@ for each shared block.
 With the ``global`` algorithm, each call to SMPI_SHARED_MALLOC()
 returns a new address, but it only points to a shadow block: its memory
 area is mapped on a 1 MiB file on disk. If the returned block is of size
-N MiB, then the same file is mapped N times to cover the whole bloc.
+N MiB, then the same file is mapped N times to cover the whole block.
 At the end, no matter how many times you call SMPI_SHARED_MALLOC, this will
 only consume 1 MiB in memory.
 

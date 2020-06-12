@@ -1,5 +1,5 @@
 This file lists the symbols ignored in the documentation.
-It follows the RST syntact but is completely ignored by sphinx. 
+It follows the RST syntax but is completely ignored by sphinx. 
 It is only used by find-missing, that will not report any definition linked here as missing.
 
 # These ones trigger a bug in autodoxy, that get confused with the const in the function parameter

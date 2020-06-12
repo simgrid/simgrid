@@ -72,7 +72,7 @@ per year, numbered 3.24 or 3.25. Backward compatibility is ensured for
 one year: Code compiling without warning on 3.24 will still compile
 with 3.28, but maybe with some deprecation warnings. You should update
 your SimGrid installation at least once a year and fix those
-deprecation warnings: the compatiblity wrappers are usually removed
+deprecation warnings: the compatibility wrappers are usually removed
 after 4 versions. Another approach is to never update your SimGrid
 installation, but we don't provide any support to old versions.
 
