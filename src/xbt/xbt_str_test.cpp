@@ -50,7 +50,7 @@ TEST_CASE("xbt::str: String Handling", "xbt_str")
     test_split_quoted("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u", {"toto", "tutu"});
     test_split_quoted("Protected space", "toto\\ tutu", {"toto tutu"});
     test_split_quoted("Several spaces", "toto   tutu", {"toto", "tutu"});
-    test_split_quoted("LTriming", "  toto tatu", {"toto", "tatu"});
+    test_split_quoted("LTrimming", "  toto tatu", {"toto", "tatu"});
     test_split_quoted("Trimming", "  toto   tutu  ", {"toto", "tutu"});
     test_split_quoted("Single quotes", "'toto tutu' tata", {"toto tutu", "tata"});
     test_split_quoted("Double quotes", "\"toto tutu\" tata", {"toto tutu", "tata"});
