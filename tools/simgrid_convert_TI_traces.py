@@ -10,7 +10,7 @@ IRecv call arbitrarily.
 This new that includes tags field that links MPI_wait calls to the
 MPI_ISend or MPI_IRecv associated to this wait.
 
-This script reproduce the old behavior of simgrid because informations are
+This script reproduce the old behavior of simgrid because information are
 missing to add the tags properly. It also lower case all the mpi calls.
 
 It takes in input (as argument or in stdin) the trace list file that is only a

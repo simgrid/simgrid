@@ -799,7 +799,7 @@ set(source_of_generated_headers
   src/internal_config.h.in
   include/smpi/mpif.h.in)
 
-### depend of some variables setted upper
+### depend of some variables set upper
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
   set(SIMIX_SRC    ${SIMIX_SRC} src/kernel/context/ContextUnix.hpp
                                 src/kernel/context/ContextUnix.cpp)

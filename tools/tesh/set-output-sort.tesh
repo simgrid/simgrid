@@ -71,7 +71,7 @@ p This tests whether TESH correctly sorts command output
 < > c
 < > d
 $ ${bindir:=.}/tesh --ignore-jenkins
-> Ignore all cruft seen on SimGrid's continous integration servers
+> Ignore all cruft seen on SimGrid's continuous integration servers
 > Test suite from stdin
 > [(stdin):1] Test sorting and filtering of output
 > [(stdin):3] true

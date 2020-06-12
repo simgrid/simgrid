@@ -179,7 +179,7 @@ if(WIN32)
   unset(CMAKE_INCLUDE_WIN)
 endif()
 
-# library dependency cannot start with a space (CMP0004), so initialize it with something that is never desactivated.
+# library dependency cannot start with a space (CMP0004), so initialize it with something that is never deactivated.
 set(SIMGRID_DEP "-lm") 
 
 ### Determine the assembly flavor that we need today
