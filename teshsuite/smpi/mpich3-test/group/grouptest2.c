@@ -7,7 +7,7 @@
 
 /*
    Test the group routines
-   (some tested elsewere)
+   (some tested elsewhere)
 
 MPI_Group_compare
 MPI_Group_excl

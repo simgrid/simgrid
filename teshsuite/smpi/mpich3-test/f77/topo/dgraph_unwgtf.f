@@ -154,7 +154,7 @@ C     the nearest neighbors that within a ring.
 
 C now create one with MPI_WEIGHTS_EMPTY
 C NOTE that MPI_WEIGHTS_EMPTY was added in MPI-3 and does not 
-C appear before then.  Incluing this test means that this test cannot
+C appear before then.  Including this test means that this test cannot
 C be compiled if the MPI version is less than 3 (see the testlist file)
 
       degs(1) = 0;

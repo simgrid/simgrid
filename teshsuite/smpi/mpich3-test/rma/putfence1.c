@@ -61,7 +61,7 @@ static inline int test(MPI_Comm comm, int rank, int source, int dest,
     else if (rank == dest) {
         MPI_Win_fence(0, win);
         /* This should have the same effect, in terms of
-         * transfering data, as a send/recv pair */
+         * transferring data, as a send/recv pair */
         err = MTestCheckRecv(0, recvtype);
         if (err) {
             if (errs < 10) {

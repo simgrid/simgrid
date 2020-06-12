@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 // This is the MWE of https://framagit.org/simgrid/simgrid/-/issues/50
-// The problem was occuring when suspending an actor that will be executed later in the same scheduling round
+// The problem was occurring when suspending an actor that will be executed later in the same scheduling round
 
 #include <iostream>
 #include <simgrid/s4u.hpp>

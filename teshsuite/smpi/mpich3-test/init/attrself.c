@@ -97,7 +97,7 @@ int checkAttrs(MPI_Comm comm, int n, int lkey[], int attrval[])
         }
         else if (val_p != &attrval[i]) {
             lerrs++;
-            fprintf(stderr, "Atribute value for key %d not correct\n", i);
+            fprintf(stderr, "Attribute value for key %d not correct\n", i);
         }
     }
 
