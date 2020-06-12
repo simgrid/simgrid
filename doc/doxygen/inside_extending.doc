@@ -34,7 +34,7 @@ the classes of the corresponding interfaces.
 
 For instance, if you want to add a new cup model called `Plop`, create two files
 cpu_plop.hpp and cpu_plop_cpp which contains classes CpuPlopModel, CpuPlop and
-CpuPlopAction implementating respectively the interfaces CpuModel, Cpu and
+CpuPlopAction implementing respectively the interfaces CpuModel, Cpu and
 CpuAction. You also need to define a initializing function like this:
 
 ~~~~
@@ -101,7 +101,7 @@ void sg_my_network_plugin_init() {
 }
 ~~~~
 
-Then you need to add an entry in surf_interface.cpp refering to your
+Then you need to add an entry in surf_interface.cpp referring to your
 initialization function.
 
 ~~~~
@@ -145,13 +145,13 @@ The workflow of a simcall is the following:
    - If the simcall is not marked as "blocking" in its definition,
      call `ActorImpl::simcall_answer()` that adds back the issuer
      process to the list of processes to run in the next scheduling round.
-     It is thus the responsability of the blocking simcalls to call
+     It is thus the responsibility of the blocking simcalls to call
      `ActorImpl::simcall_answer()` themselves in their handler.
 
 Note that empty HANDLERs can be omitted. These functions usually do
 some parameter checking, or retrieve some information about the
 simcall issuer, but when there no need for such things, the handler
-can be omited. In that case, we directly call the function
+can be omitted. In that case, we directly call the function
 `simcall_<name>(<args>)`.
 
 To simplify the simcall creation, a python script generates most of
@@ -204,7 +204,7 @@ in.
 For simcalls which might block, `kernel_sync()` can be used. It takes a
 C++ callback and executes it immediately in maestro. This C++ callback is
 expected to return a `simgrid::kernel::Future<T>` reprensenting the operation
-in the kernal. When the operations completes, the user process is waken up
+in the kernel. When the operations completes, the user process is waken up
 with the result:
 
 ~~~

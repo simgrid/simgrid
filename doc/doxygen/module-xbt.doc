@@ -40,7 +40,7 @@
      /** @defgroup XBT_ex     Exception support (C++) */
      /** @defgroup XBT_ex_c   Exception support (C)   */
      /** @defgroup XBT_log    Logging support */
-     /** @defgroup XBT_error  Assert macro familly */
+     /** @defgroup XBT_error  Assert macro family */
      /** @defgroup XBT_config Configuration support */
      /** @defgroup XBT_mallocator Mallocators */
 /** @} */

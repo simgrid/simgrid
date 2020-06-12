@@ -47,7 +47,7 @@ This is not the way it goes in SimGrid: the network routing is defined
 in a global and compact way instead. This eases the modeling of very
 large systems, and allows highly optimized datastructures and
 algorithms in the simulator. The proposed description mechanism is
-thus much more convinient and efficient. In addition, it is more
+thus much more convenient and efficient. In addition, it is more
 expressive than the classical solution based on forwarding tables on
 each host and router. 
 
@@ -104,7 +104,7 @@ in other languages). Until then, please head to @ref platform.
 @defgroup SURF_API SURF
 @brief Internal kernel of all the simulators used in SimGrid, and associated models.
 
-SURF provides the core functionnalities to simulate a virtual
+SURF provides the core functionalities to simulate a virtual
 platform. It is very low-level and is not intended to be used by end
 users, but rather to serve as a basis for higher-level simulators. Its
 interfaces are not frozen (and probably never will be), and the
