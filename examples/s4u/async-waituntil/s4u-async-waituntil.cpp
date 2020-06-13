@@ -21,8 +21,8 @@ static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 4, "Expecting 3 parameters from the XML deployment file but got %d", argc);
   long messages_count  = std::stol(argv[1]); /* - number of messages */
-  double msg_size      = std::stol(argv[2]); /* - message size in bytes */
-  long receivers_count = std::stod(argv[3]); /* - number of receivers */
+  double msg_size      = std::stod(argv[2]); /* - message size in bytes */
+  long receivers_count = std::stol(argv[3]); /* - number of receivers */
 
   std::vector<simgrid::s4u::CommPtr> pending_comms;
 

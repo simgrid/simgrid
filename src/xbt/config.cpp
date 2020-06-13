@@ -97,7 +97,7 @@ template <class T> class ConfigType;
 template <> class ConfigType<int> {
 public:
   static constexpr const char* type_name = "int";
-  static inline double parse(const char* value)
+  static inline int parse(const char* value)
   {
     return parse_long(value);
   }
