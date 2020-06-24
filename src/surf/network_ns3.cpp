@@ -54,7 +54,7 @@ static ns3::Ipv4InterfaceContainer interfaces;
 /* wifi globals */
 static ns3::WifiHelper wifi;
 static ns3::YansWifiPhyHelper wifiPhy = ns3::YansWifiPhyHelper::Default ();
-static ns3::YansWifiChannelHelper wifiChannel;
+static ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default ();
 static ns3::WifiMacHelper wifiMac;
 static ns3::MobilityHelper mobility;
 static int mobility_delta = 10;
@@ -524,19 +524,19 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
 
   if (policy == simgrid::s4u::Link::SharingPolicy::WIFI) {
 //      wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211n_2_4GHZ);
-      wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211ac);
+//      wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211ac);
 
       wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
 
-      wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel",
-                                      "Exponent", ns3::DoubleValue (3.0),
-                                      "ReferenceLoss", ns3::DoubleValue (40.0459));
+//      wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel",
+//                                      "Exponent", ns3::DoubleValue (3.0),
+//                                      "ReferenceLoss", ns3::DoubleValue (40.0459));
 
       wifiPhy.SetChannel (wifiChannel.Create ());
 
-      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                    "ControlMode", ns3::StringValue ("VhtMcs0"),
-                                    "DataMode", ns3::StringValue ("VhtMcs9"));
+//      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+//                                    "ControlMode", ns3::StringValue ("VhtMcs0"),
+//                                    "DataMode", ns3::StringValue ("VhtMcs9"));
 
       mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
@@ -556,7 +556,7 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
 //      positionAllocS->Add(ns3::Vector(5, mobility_base, 0.0));
       positionAllocS->Add(ns3::Vector(-5, 0, 0.0));
       positionAllocS->Add(ns3::Vector(5, 0, 0.0));
-      mobility_base += mobility_delta;
+//      mobility_base += mobility_delta;
       mobility.SetPositionAllocator(positionAllocS);
       mobility.Install(a);
       mobility.Install(b);
