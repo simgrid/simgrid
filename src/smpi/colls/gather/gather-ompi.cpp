@@ -104,7 +104,7 @@ int gather__ompi_binomial(const void* sbuf, int scount, MPI_Datatype sdtype, voi
     } else if (!(vrank % 2)) {
       /* other non-leaf nodes, allocate temp buffer for data received from
        * children, the most we need is half of the total data elements due
-       * to the property of binimoal tree */
+       * to the property of binomial tree */
       tempbuf = smpi_get_tmp_sendbuffer(strue_extent + (scount * size - 1) * sextent);
       if (NULL == tempbuf) {
         err  = MPI_ERR_OTHER;
