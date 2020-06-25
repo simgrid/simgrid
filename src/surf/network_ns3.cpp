@@ -69,7 +69,6 @@ simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPoin
 
 NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 {
-  XBT_INFO("NetPointNs3");
   stack.Install(ns3_node_);
   nodes.Add(ns3_node_);
   node_num = number_of_nodes++;
@@ -106,7 +105,6 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                              simgrid::kernel::routing::NetPoint* /*gw_dst*/,
                              std::vector<simgrid::kernel::resource::LinkImpl*> const& link_list)
 {
-  XBT_INFO("ROUTE_CREATION");
   if (link_list.size() == 1) {
     auto* link = static_cast<simgrid::kernel::resource::LinkNS3*>(link_list[0]);
 
@@ -192,7 +190,6 @@ NetworkNS3Model::~NetworkNS3Model() {
 LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                                        s4u::Link::SharingPolicy policy)
 {
-  XBT_INFO("create_link");
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
   return new LinkNS3(this, name, bandwidths[0], latency, policy);
 }
@@ -298,34 +295,10 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
                  s4u::Link::SharingPolicy policy)
     : LinkImpl(model, name, nullptr)
 {
-  XBT_INFO("LinkNS3");
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
   sharing_policy_ = policy;
 
-  /* If wifi, create the wifizone now. If not, don't do anything: the links will be created in routeCreate_cb */
-  if (policy == s4u::Link::SharingPolicy::WIFI) {
-//        ns3::NodeContainer ap_nodes;
-//        ap_nodes.Create(1);
-
-//        phy.SetChannel (channel.Create ());
-
-//        wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
-
-//        mac.SetType ("ns3::ApWifiMac");
-//        ns3::NetDeviceContainer apDevices;
-//        apDevices = wifi.Install (phy, mac, ap_nodes);
-
-//        mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-//        mobility.Install (ap_nodes);
-
-//        stack.Install(ap_nodes);
-
-//        ns3::Ipv4AddressHelper address;
-//        std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
-//        address.SetBase(addr.c_str(), "255.255.0.0");
-//        interfaces.Add(address.Assign(apDevices));
-  }
   s4u::Link::on_creation(*this->get_iface());
 }
 
@@ -511,8 +484,6 @@ static std::string transformIpv4Address(ns3::Ipv4Address from)
 void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double lat,
                           simgrid::s4u::Link::SharingPolicy policy)
 {
-
-  XBT_INFO("ns3_add_direct_route");
   ns3::Ipv4AddressHelper address;
   ns3::NetDeviceContainer netA;
 
@@ -523,47 +494,34 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
   ns3::Ptr<ns3::Node> b = dst->ns3_node_;
 
   if (policy == simgrid::s4u::Link::SharingPolicy::WIFI) {
-//      wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211n_2_4GHZ);
-//      wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211ac);
+      wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
+      ns3::Config::Set("/NodeList//DeviceList//$ns3::WifiNetDevice/Phy/ChannelWidth",ns3::UintegerValue (40));
 
       wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
 
-//      wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel",
-//                                      "Exponent", ns3::DoubleValue (3.0),
-//                                      "ReferenceLoss", ns3::DoubleValue (40.0459));
-
       wifiPhy.SetChannel (wifiChannel.Create ());
 
-//      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-//                                    "ControlMode", ns3::StringValue ("VhtMcs0"),
-//                                    "DataMode", ns3::StringValue ("VhtMcs9"));
+      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                    "ControlMode", ns3::StringValue ("HtMcs3"),
+                                    "DataMode", ns3::StringValue ("HtMcs3"));
 
       mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
-      ns3::Ssid ssid = ns3::Ssid (std::to_string(number_of_networks) + "_" + std::to_string(number_of_links));
-
-      wifiMac.SetType("ns3::ApWifiMac",
-                  "Ssid", ns3::SsidValue (ssid));
+      wifiMac.SetType("ns3::ApWifiMac");
       netA.Add(wifi.Install (wifiPhy, wifiMac, a));
 
       wifiMac.SetType ("ns3::StaWifiMac",
-                   "Ssid", ns3::SsidValue (ssid),
                    "ActiveProbing", ns3::BooleanValue (false));
       netA.Add(wifi.Install (wifiPhy, wifiMac, b));
 
       ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator> ();
-//      positionAllocS->Add(ns3::Vector(-5, mobility_base, 0.0));
-//      positionAllocS->Add(ns3::Vector(5, mobility_base, 0.0));
       positionAllocS->Add(ns3::Vector(-5, 0, 0.0));
       positionAllocS->Add(ns3::Vector(5, 0, 0.0));
-//      mobility_base += mobility_delta;
       mobility.SetPositionAllocator(positionAllocS);
       mobility.Install(a);
       mobility.Install(b);
-
   } else {
     ns3::PointToPointHelper pointToPoint;
-
     XBT_DEBUG("\tAdd PTP from %d to %d bw:'%f Bps' lat:'%fs'", srcNum, dstNum, bw, lat);
     pointToPoint.SetDeviceAttribute("DataRate",
                                     ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
