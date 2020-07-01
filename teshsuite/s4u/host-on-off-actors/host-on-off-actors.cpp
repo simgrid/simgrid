@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 int tasks_done = 0;
 
-static void actor_daemon()
+XBT_ATTRIB_NORETURN static void actor_daemon()
 {
   const simgrid::s4u::Host* host = simgrid::s4u::Host::current();
   XBT_INFO("  Start daemon on %s (%f)", host->get_cname(), host->get_speed());
