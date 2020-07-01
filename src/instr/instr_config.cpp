@@ -297,7 +297,7 @@ static void on_container_destruction_ti(Container& c)
   }
 }
 
-static void on_entity_value_creation(EntityValue& value)
+static void on_entity_value_creation(const EntityValue& value)
 {
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u", __func__, PAJE_DefineEntityValue);
@@ -317,7 +317,7 @@ static void on_event_creation(PajeEvent& event)
   event.stream_ << event.get_type()->get_id() << " " << event.get_container()->get_id();
 }
 
-static void on_event_destruction(PajeEvent& event)
+static void on_event_destruction(const PajeEvent& event)
 {
   XBT_DEBUG("Dump %s", event.stream_.str().c_str());
   tracing_file << event.stream_.str() << std::endl;
