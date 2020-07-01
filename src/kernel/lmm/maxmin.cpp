@@ -514,7 +514,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           cnst.usage_ = elem.consumption_weight / elem.variable->sharing_penalty_;
 
         elem.make_active();
-        resource::Action* action = static_cast<resource::Action*>(elem.variable->id_);
+        resource::Action* action = elem.variable->id_;
         if (modified_set_ && not action->is_within_modified_set())
           modified_set_->push_back(*action);
       }

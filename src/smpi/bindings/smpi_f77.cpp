@@ -217,7 +217,8 @@ void mpi_win_get_name_(int* win, char* name, int* len, int* ierr)
 void mpi_win_allocate_(MPI_Aint* size, int* disp_unit, int* info, int* comm, void* base, int* win, int* ierr)
 {
   MPI_Win tmp;
-  *ierr =  MPI_Win_allocate( *size, *disp_unit, simgrid::smpi::Info::f2c(*info), simgrid::smpi::Comm::f2c(*comm),static_cast<void*>(base),&tmp);
+  *ierr =
+      MPI_Win_allocate(*size, *disp_unit, simgrid::smpi::Info::f2c(*info), simgrid::smpi::Comm::f2c(*comm), base, &tmp);
  if(*ierr == MPI_SUCCESS) {
    *win = tmp->add_f();
  }

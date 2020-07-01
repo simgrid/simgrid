@@ -80,7 +80,7 @@ double xbt_os_time(void)
   return (double) (time(NULL));
 #endif                          /* HAVE_GETTIMEOFDAY? */
 
-  return (double) (tv.tv_sec + tv.tv_usec / 1000000.0);
+  return tv.tv_sec + tv.tv_usec / 1000000.0;
 }
 
 void xbt_os_sleep(double sec)

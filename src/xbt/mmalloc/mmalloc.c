@@ -282,7 +282,9 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
     block         = MALLOC_SEARCH_START;
     while (mdp->heapinfo[block].free_block.size < blocks) {
       if (mdp->heapinfo[block].type >=0) { // Don't trust xbt_die and friends in malloc-level library, you fool!
-        fprintf(stderr,"Internal error: found a free block not marked as such (block=%lu type=%lu). Please report this bug.\n",(unsigned long)block,(unsigned long)mdp->heapinfo[block].type);
+        fprintf(stderr,
+                "Internal error: found a free block not marked as such (block=%zu type=%d). Please report this bug.\n",
+                block, mdp->heapinfo[block].type);
         abort();
       }
 

@@ -238,7 +238,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       linkUp   = simgrid::s4u::Link::by_name_or_null(tmp_link);
       linkDown = simgrid::s4u::Link::by_name_or_null(tmp_link);
 
-      auto* as_cluster = static_cast<ClusterZone*>(current_as);
+      ClusterZone* as_cluster = current_as;
       as_cluster->private_links_.insert({as_cluster->node_pos(rankId), {linkUp->get_impl(), linkDown->get_impl()}});
     }
 
@@ -667,7 +667,7 @@ void sg_platf_new_Zone_seal()
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();
   simgrid::s4u::NetZone::on_seal(*current_routing->get_iface());
-  current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->get_father());
+  current_routing = current_routing->get_father();
 }
 
 /** @brief Add a link connecting a host to the rest of its AS (which must be cluster or vivaldi) */

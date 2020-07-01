@@ -295,7 +295,7 @@ void CpuL07::on_speed_change()
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), speed_.peak * speed_.scale);
   while ((var = get_constraint()->get_variable(&elem))) {
-    const kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
+    const kernel::resource::Action* action = var->get_id();
 
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
   }

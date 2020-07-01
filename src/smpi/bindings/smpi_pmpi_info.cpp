@@ -81,7 +81,7 @@ int PMPI_Info_get_valuelen( MPI_Info info, const char *key, int *valuelen, int *
 MPI_Info PMPI_Info_f2c(MPI_Fint info){
   if(info==-1)
     return MPI_INFO_NULL;
-  return static_cast<MPI_Info>(simgrid::smpi::Info::f2c(info));
+  return simgrid::smpi::Info::f2c(info);
 }
 
 MPI_Fint PMPI_Info_c2f(MPI_Info info){

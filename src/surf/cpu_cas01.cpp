@@ -145,7 +145,7 @@ void CpuCas01::apply_event(profile::Event* event, double value)
       get_host()->turn_off();
 
       while ((var = cnst->get_variable(&elem))) {
-        auto* action = static_cast<Action*>(var->get_id());
+        Action* action = var->get_id();
 
         if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED ||
             action->get_state() == Action::State::IGNORED) {

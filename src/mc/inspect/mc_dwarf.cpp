@@ -790,7 +790,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
 
   // TODO, support DW_AT_ranges
   uint64_t low_pc     = MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
-  frame.range.begin() = low_pc ? (std::uint64_t)base + low_pc : 0;
+  frame.range.begin() = low_pc ? base + low_pc : 0;
   if (low_pc) {
     // DW_AT_high_pc:
     Dwarf_Attribute attr;
@@ -955,7 +955,7 @@ static std::vector<char> get_build_id(Elf* elf)
           memcmp((char*)data->d_buf + name_pos, "GNU", sizeof("GNU")) == 0) {
         XBT_DEBUG("Found GNU/NT_GNU_BUILD_ID note");
         char* start = (char*)data->d_buf + desc_pos;
-        char* end   = (char*)start + nhdr.n_descsz;
+        char* end   = start + nhdr.n_descsz;
         return std::vector<char>(start, end);
       }
     }

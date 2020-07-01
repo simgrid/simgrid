@@ -291,8 +291,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  kernel::resource::CpuAction* new_cpu_action =
-      static_cast<kernel::resource::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->core_amount_));
+  kernel::resource::CpuAction* new_cpu_action = destination->pimpl_cpu->execution_start(0, this->core_amount_);
 
   if (action_->get_remains_no_update() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());

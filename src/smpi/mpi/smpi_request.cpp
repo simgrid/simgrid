@@ -138,7 +138,7 @@ void Request::init_buffer(int count){
   // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
   if ((((flags_ & MPI_REQ_RECV) != 0) && ((flags_ & MPI_REQ_ACCUMULATE) != 0)) || (old_type_->flags() & DT_FLAG_DERIVED)) {
     // This part handles the problem of non-contiguous memory
-    old_buf = const_cast<void*>(buf_);
+    old_buf = buf_;
     if (count==0){
       buf_ = nullptr;
     }else {
@@ -1055,8 +1055,8 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
       wait(&requests[c],pstat);
       index = c;
     } else {
-      index = waitany(count, (MPI_Request*)requests, pstat);
-      
+      index = waitany(count, requests, pstat);
+
       if (index == MPI_UNDEFINED)
         break;
 
@@ -1090,7 +1090,7 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   int index = 0;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-  index = waitany(incount, (MPI_Request*)requests, pstat);
+  index             = waitany(incount, requests, pstat);
   if(index==MPI_UNDEFINED) return MPI_UNDEFINED;
   if(status != MPI_STATUSES_IGNORE) {
     status[count] = *pstat;
@@ -1119,7 +1119,7 @@ MPI_Request Request::f2c(int id)
 {
   char key[KEY_SIZE];
   if(id==MPI_FORTRAN_REQUEST_NULL)
-    return static_cast<MPI_Request>(MPI_REQUEST_NULL);
+    return MPI_REQUEST_NULL;
   return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key(key,id)));
 }
 

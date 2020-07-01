@@ -283,7 +283,7 @@ unsigned long long smpi_rastro_timestamp ()
   unsigned long long sec = static_cast<unsigned long long>(now);
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();
   smpi_bench_begin();
-  return static_cast<unsigned long long>(sec) * smpi_rastro_resolution() + pre;
+  return sec * smpi_rastro_resolution() + pre;
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/

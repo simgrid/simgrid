@@ -21,7 +21,7 @@ MPI_Errhandler Errhandler::f2c(int id) {
     char key[KEY_SIZE];
     return static_cast<MPI_Errhandler>(F2C::f2c_lookup()->at(get_key(key, id)));
   } else {
-    return static_cast<MPI_Errhandler>(MPI_ERRHANDLER_NULL);
+    return MPI_ERRHANDLER_NULL;
   }
 }
 

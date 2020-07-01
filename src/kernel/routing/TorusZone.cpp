@@ -33,7 +33,7 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     int current_dimension = dimensions_[j]; // which dimension are we currently in?
                                             // we need to iterate over all dimensions and create all links there
     // The other node the link connects
-    int neighbor_rank_id = ((static_cast<int>(rank) / dim_product) % current_dimension == current_dimension - 1)
+    int neighbor_rank_id = ((rank / dim_product) % current_dimension == current_dimension - 1)
                                ? rank - (current_dimension - 1) * dim_product
                                : rank + dim_product;
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)

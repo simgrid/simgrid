@@ -669,7 +669,7 @@ int PMPI_Win_free_keyval(int* keyval) {
 MPI_Win PMPI_Win_f2c(MPI_Fint win){
   if(win==-1)
     return MPI_WIN_NULL;
-  return static_cast<MPI_Win>(simgrid::smpi::Win::f2c(win));
+  return simgrid::smpi::Win::f2c(win);
 }
 
 MPI_Fint PMPI_Win_c2f(MPI_Win win){

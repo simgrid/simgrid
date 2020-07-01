@@ -22,9 +22,9 @@ static inline simgrid::kernel::activity::CommImpl* MC_get_comm(smx_simcall_t r)
 {
   switch (r->call_) {
     case SIMCALL_COMM_WAIT:
-      return static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(r));
+      return simcall_comm_wait__getraw__comm(r);
     case SIMCALL_COMM_TEST:
-      return static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_test__getraw__comm(r));
+      return simcall_comm_test__getraw__comm(r);
     default:
       return nullptr;
   }
@@ -225,8 +225,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     }
 
     case SIMCALL_COMM_WAIT: {
-      simgrid::kernel::activity::CommImpl* remote_act =
-          static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
+      simgrid::kernel::activity::CommImpl* remote_act = simcall_comm_wait__getraw__comm(req);
       char* p;
       if (value == -1) {
         type = "WaitTimeout";
@@ -239,8 +238,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
         simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
         const simgrid::kernel::activity::CommImpl* act;
         if (use_remote_comm) {
-          mc_model_checker->get_remote_simulation().read(
-              temp_synchro, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
+          mc_model_checker->get_remote_simulation().read(temp_synchro, remote(remote_act));
           act = temp_synchro.get_buffer();
         } else
           act = remote_act;
@@ -260,13 +258,11 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     }
 
     case SIMCALL_COMM_TEST: {
-      simgrid::kernel::activity::CommImpl* remote_act =
-          static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_test__getraw__comm(req));
+      simgrid::kernel::activity::CommImpl* remote_act = simcall_comm_test__getraw__comm(req);
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
       const simgrid::kernel::activity::CommImpl* act;
       if (use_remote_comm) {
-        mc_model_checker->get_remote_simulation().read(
-            temp_synchro, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
+        mc_model_checker->get_remote_simulation().read(temp_synchro, remote(remote_act));
         act = temp_synchro.get_buffer();
       } else
         act = remote_act;

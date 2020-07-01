@@ -788,7 +788,7 @@ int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status)
 MPI_Request PMPI_Request_f2c(MPI_Fint request){
   if(request==-1)
     return MPI_REQUEST_NULL;
-  return static_cast<MPI_Request>(simgrid::smpi::Request::f2c(request));
+  return simgrid::smpi::Request::f2c(request);
 }
 
 MPI_Fint PMPI_Request_c2f(MPI_Request request) {
