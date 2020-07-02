@@ -122,7 +122,7 @@ public:
   ~File();
 
   /** Retrieves the path to the file */
-  const char* get_path() { return fullpath_.c_str(); }
+  const char* get_path() const { return fullpath_.c_str(); }
 
   /** Simulates a local read action. Returns the size of data actually read */
   sg_size_t read(sg_size_t size);
@@ -135,17 +135,17 @@ public:
   /** Retrieves the previously stored data */
   XBT_ATTRIB_DEPRECATED_v329("Please use get_data()") void* get_userdata() { return get_data(); }
 
-  sg_size_t size();
+  sg_size_t size() const;
   void seek(sg_offset_t pos);             /** Sets the file head to the given position. */
   void seek(sg_offset_t pos, int origin); /** Sets the file head to the given position from a given origin. */
-  sg_size_t tell();                       /** Retrieves the current file position */
+  sg_size_t tell() const;                 /** Retrieves the current file position */
 
   /** Rename a file. WARNING: It is forbidden to move the file to another mount point */
-  void move(const std::string& fullpath);
+  void move(const std::string& fullpath) const;
   int remote_copy(sg_host_t host, const char* fullpath);
   int remote_move(sg_host_t host, const char* fullpath);
 
-  int unlink(); /** Remove a file from the contents of a disk */
+  int unlink() const; /** Remove a file from the contents of a disk */
   void dump();
 };
 
@@ -163,7 +163,7 @@ public:
   FileSystemDiskExt& operator=(const FileSystemDiskExt&) = delete;
   std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
   std::map<std::string, sg_size_t>* get_content() const { return content_.get(); }
-  const char* get_mount_point() { return mount_point_.c_str(); }
+  const char* get_mount_point() const { return mount_point_.c_str(); }
   const char* get_mount_point(s4u::Host* remote_host) { return remote_mount_points_[remote_host].c_str(); }
   void add_remote_mount(Host* host, const std::string& mount_point)
   {
@@ -187,8 +187,8 @@ public:
   FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
   std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
   std::map<std::string, sg_size_t>* get_content() { return content_.get(); }
-  sg_size_t get_size() { return size_; }
-  sg_size_t get_used_size() { return used_size_; }
+  sg_size_t get_size() const { return size_; }
+  sg_size_t get_used_size() const { return used_size_; }
   void decr_used_size(sg_size_t size);
   void incr_used_size(sg_size_t size);
 };

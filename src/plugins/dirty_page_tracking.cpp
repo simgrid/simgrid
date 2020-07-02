@@ -23,19 +23,19 @@ class DirtyPageTrackingExt {
 public:
   void start_tracking();
   void stop_tracking() { dp_tracking_ = false; }
-  bool is_tracking() { return dp_tracking_; }
+  bool is_tracking() const { return dp_tracking_; }
   void track(kernel::activity::ExecImpl const* exec, double amount) { dp_objs_.insert({exec, amount}); }
   void untrack(kernel::activity::ExecImpl const* exec) { dp_objs_.erase(exec); }
   double get_stored_remains(kernel::activity::ExecImpl const* exec) { return dp_objs_.at(exec); }
   void update_dirty_page_count(double delta) { dp_updated_by_deleted_tasks_ += delta; }
   double computed_flops_lookup();
-  double get_intensity() { return dp_intensity_; }
+  double get_intensity() const { return dp_intensity_; }
   void set_intensity(double intensity) { dp_intensity_ = intensity; }
-  double get_working_set_memory() { return working_set_memory_; }
+  double get_working_set_memory() const { return working_set_memory_; }
   void set_working_set_memory(sg_size_t size) { working_set_memory_ = size; }
   void set_migration_speed(double speed) { mig_speed_ = speed; }
-  double get_migration_speed() { return mig_speed_; }
-  double get_max_downtime() { return max_downtime_; }
+  double get_migration_speed() const { return mig_speed_; }
+  double get_max_downtime() const { return max_downtime_; }
 
   static simgrid::xbt::Extension<VirtualMachineImpl, DirtyPageTrackingExt> EXTENSION_ID;
   virtual ~DirtyPageTrackingExt() = default;

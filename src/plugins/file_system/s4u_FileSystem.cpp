@@ -297,7 +297,7 @@ sg_size_t File::write(sg_size_t size, bool write_inside)
   return 0;
 }
 
-sg_size_t File::size()
+sg_size_t File::size() const
 {
   return size_;
 }
@@ -324,12 +324,12 @@ void File::seek(sg_offset_t offset, int origin)
   }
 }
 
-sg_size_t File::tell()
+sg_size_t File::tell() const
 {
   return current_position_;
 }
 
-void File::move(const std::string& fullpath)
+void File::move(const std::string& fullpath) const
 {
   /* Check if the new full path is on the same mount point */
   if (fullpath.compare(0, mount_point_.length(), mount_point_) == 0) {
@@ -355,7 +355,7 @@ void File::move(const std::string& fullpath)
   }
 }
 
-int File::unlink()
+int File::unlink() const
 {
   /* Check if the file is on local storage */
   std::map<std::string, sg_size_t>* content = nullptr;

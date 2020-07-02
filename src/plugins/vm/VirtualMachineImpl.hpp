@@ -48,7 +48,7 @@ public:
   /** @brief Change the physical host on which the given VM is running */
   virtual void set_physical_host(s4u::Host* dest);
   /** @brief Get the physical host on which the given VM is running */
-  s4u::Host* get_physical_host() { return physical_host_; }
+  s4u::Host* get_physical_host() const { return physical_host_; }
 
   sg_size_t get_ramsize() const { return ramsize_; }
   void set_ramsize(sg_size_t ramsize) { ramsize_ = ramsize; }
@@ -56,8 +56,8 @@ public:
   s4u::VirtualMachine::state get_state() const { return vm_state_; }
   void set_state(s4u::VirtualMachine::state state) { vm_state_ = state; }
 
-  unsigned int get_core_amount() { return core_amount_; }
-  kernel::resource::Action* get_action() { return action_; }
+  unsigned int get_core_amount() const { return core_amount_; }
+  kernel::resource::Action* get_action() const { return action_; }
 
   virtual void set_bound(double bound);
 
