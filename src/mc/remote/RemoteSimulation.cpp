@@ -454,13 +454,13 @@ void* RemoteSimulation::read_bytes(void* buffer, std::size_t size, RemotePtr<voi
  *  @param len      data size
  *  @param address  target process memory address (target)
  */
-void RemoteSimulation::write_bytes(const void* buffer, size_t len, RemotePtr<void> address)
+void RemoteSimulation::write_bytes(const void* buffer, size_t len, RemotePtr<void> address) const
 {
   if (pwrite_whole(this->memory_file, buffer, len, (size_t)address.address()) < 0)
     xbt_die("Write to process %lli failed", (long long)this->pid_);
 }
 
-void RemoteSimulation::clear_bytes(RemotePtr<void> address, size_t len)
+void RemoteSimulation::clear_bytes(RemotePtr<void> address, size_t len) const
 {
   pthread_once(&zero_buffer_flag, zero_buffer_init);
   while (len) {
@@ -575,7 +575,7 @@ void RemoteSimulation::unignore_heap(void* address, size_t size)
   }
 }
 
-void RemoteSimulation::ignore_local_variable(const char* var_name, const char* frame_name)
+void RemoteSimulation::ignore_local_variable(const char* var_name, const char* frame_name) const
 {
   if (frame_name != nullptr && strcmp(frame_name, "*") == 0)
     frame_name = nullptr;
@@ -595,7 +595,7 @@ std::vector<simgrid::mc::ActorInformation>& RemoteSimulation::dead_actors()
   return smx_dead_actors_infos;
 }
 
-void RemoteSimulation::dump_stack()
+void RemoteSimulation::dump_stack() const
 {
   unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, BYTE_ORDER);
   if (as == nullptr) {

@@ -61,7 +61,7 @@ public:
   void log_state() override;
 
 private:
-  std::shared_ptr<const std::vector<int>> get_proposition_values();
+  std::shared_ptr<const std::vector<int>> get_proposition_values() const;
   std::shared_ptr<VisitedPair> insert_acceptance_pair(Pair* pair);
   int insert_visited_pair(std::shared_ptr<VisitedPair> visited_pair, Pair* pair);
   void show_acceptance_cycle(std::size_t depth);

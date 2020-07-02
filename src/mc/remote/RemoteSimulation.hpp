@@ -102,8 +102,8 @@ public:
   using AddressSpace::read_string;
 
   // Write memory:
-  void write_bytes(const void* buffer, size_t len, RemotePtr<void> address);
-  void clear_bytes(RemotePtr<void> address, size_t len);
+  void write_bytes(const void* buffer, size_t len, RemotePtr<void> address) const;
+  void clear_bytes(RemotePtr<void> address, size_t len) const;
 
   // Debug information:
   std::shared_ptr<ObjectInformation> find_object_info(RemotePtr<void> addr) const;
@@ -142,7 +142,7 @@ public:
 
   void terminate() { running_ = false; }
 
-  void ignore_global_variable(const char* name)
+  void ignore_global_variable(const char* name) const
   {
     for (std::shared_ptr<ObjectInformation> const& info : this->object_infos)
       info->remove_global_variable(name);
@@ -155,7 +155,7 @@ public:
   void ignore_heap(IgnoredHeapRegion const& region);
   void unignore_heap(void* address, size_t size);
 
-  void ignore_local_variable(const char* var_name, const char* frame_name);
+  void ignore_local_variable(const char* var_name, const char* frame_name) const;
   std::vector<ActorInformation>& actors();
   std::vector<ActorInformation>& dead_actors();
 
@@ -185,7 +185,7 @@ public:
       return nullptr;
   }
 
-  void dump_stack();
+  void dump_stack() const;
 
 private:
   void init_memory_map_info();

@@ -105,18 +105,18 @@ void Session::initialize()
   initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0);
 }
 
-void Session::execute(Transition const& transition)
+void Session::execute(Transition const& transition) const
 {
   model_checker_->handle_simcall(transition);
   model_checker_->wait_for_requests();
 }
 
-void Session::restore_initial_state()
+void Session::restore_initial_state() const
 {
   this->initial_snapshot_->restore(&model_checker_->get_remote_simulation());
 }
 
-void Session::log_state()
+void Session::log_state() const
 {
   model_checker_->getChecker()->log_state();
 
@@ -141,7 +141,7 @@ void Session::close()
   }
 }
 
-bool Session::actor_is_enabled(aid_t pid)
+bool Session::actor_is_enabled(aid_t pid) const
 {
   s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
   model_checker_->channel().send(msg);

@@ -273,7 +273,7 @@ Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
     return get_region(addr);
 }
 
-void Snapshot::restore(RemoteSimulation* process)
+void Snapshot::restore(RemoteSimulation* process) const
 {
   XBT_DEBUG("Restore snapshot %i", num_state_);
 

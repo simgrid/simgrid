@@ -70,7 +70,7 @@ static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> co
 Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs)
 {}
 
-std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values()
+std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values() const
 {
   std::vector<int> values;
   unsigned int cursor = 0;
