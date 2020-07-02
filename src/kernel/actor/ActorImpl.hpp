@@ -56,11 +56,11 @@ public:
   aid_t get_pid() const { return pid_; }
   aid_t get_ppid() const { return ppid_; }
   void set_ppid(aid_t ppid) { ppid_ = ppid; }
-  bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
-  bool has_to_auto_restart() { return auto_restart_; }
+  bool is_daemon() const { return daemon_; } /** Whether this actor has been daemonized */
+  bool has_to_auto_restart() const { return auto_restart_; }
   void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
   void set_stacksize(unsigned stacksize) { stacksize_ = stacksize; }
-  unsigned get_stacksize() { return stacksize_; }
+  unsigned get_stacksize() const { return stacksize_; }
 
   std::unique_ptr<context::Context> context_; /* the context (uctx/raw/thread) that executes the user function */
 
@@ -83,7 +83,7 @@ private:
   std::atomic_int_fast32_t refcount_{0};
 
 public:
-  int get_refcount() { return refcount_; }
+  int get_refcount() const { return refcount_; }
   friend void intrusive_ptr_add_ref(ActorImpl* actor)
   {
     // This whole memory consistency semantic drives me nuts.
@@ -117,7 +117,7 @@ public:
   s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
   s4u::Actor* ciface() { return &piface_; }
 
-  ActorImplPtr init(const std::string& name, s4u::Host* host);
+  ActorImplPtr init(const std::string& name, s4u::Host* host) const;
   ActorImpl* start(const ActorCode& code);
 
   static ActorImplPtr create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
@@ -127,12 +127,12 @@ public:
   static void detach();
   void cleanup();
   void exit();
-  void kill(ActorImpl* actor);
-  void kill_all();
+  void kill(ActorImpl* actor) const;
+  void kill_all() const;
 
   void yield();
   void daemonize();
-  bool is_suspended() { return suspended_; }
+  bool is_suspended() const { return suspended_; }
   s4u::Actor* restart();
   void suspend();
   void resume();

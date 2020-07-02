@@ -39,7 +39,7 @@ EngineImpl::~EngineImpl()
       kv.second->destroy();
 }
 
-void EngineImpl::load_deployment(const std::string& file)
+void EngineImpl::load_deployment(const std::string& file) const
 {
   sg_platf_exit();
   sg_platf_init();

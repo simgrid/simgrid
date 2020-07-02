@@ -227,7 +227,7 @@ void ActorImpl::exit()
   this->throw_exception(std::make_exception_ptr(ForcefulKillException(host_->is_on() ? "exited" : "host failed")));
 }
 
-void ActorImpl::kill(ActorImpl* actor)
+void ActorImpl::kill(ActorImpl* actor) const
 {
   xbt_assert(actor != simix_global->maestro_, "Killing maestro is a rather bad idea");
   if (actor->finished_) {
@@ -252,7 +252,7 @@ void ActorImpl::kill(ActorImpl* actor)
   }
 }
 
-void ActorImpl::kill_all()
+void ActorImpl::kill_all() const
 {
   for (auto const& kv : simix_global->process_list)
     if (kv.second != this)
@@ -454,7 +454,7 @@ void ActorImpl::set_host(s4u::Host* dest)
   dest->pimpl_->add_actor(this);
 }
 
-ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host)
+ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
 {
   ActorImpl* actor = new ActorImpl(xbt::string(name), host);
   actor->set_ppid(this->pid_);
