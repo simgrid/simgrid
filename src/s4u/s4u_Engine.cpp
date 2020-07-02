@@ -82,7 +82,7 @@ double Engine::get_clock()
  * See also: :ref:`platform`.
  * \endrst
  */
-void Engine::load_platform(const std::string& platf)
+void Engine::load_platform(const std::string& platf) const
 {
   double start = xbt_os_time();
   parse_platform_file(platf);
@@ -151,12 +151,12 @@ void Engine::load_deployment(const std::string& deploy)
 }
 
 /** Returns the amount of hosts in the platform */
-size_t Engine::get_host_count()
+size_t Engine::get_host_count() const
 {
   return pimpl->hosts_.size();
 }
 
-std::vector<Host*> Engine::get_all_hosts()
+std::vector<Host*> Engine::get_all_hosts() const
 {
   std::vector<Host*> res;
   for (auto const& kv : pimpl->hosts_)
@@ -164,7 +164,7 @@ std::vector<Host*> Engine::get_all_hosts()
   return res;
 }
 
-std::vector<Host*> Engine::get_filtered_hosts(const std::function<bool(Host*)>& filter)
+std::vector<Host*> Engine::get_filtered_hosts(const std::function<bool(Host*)>& filter) const
 {
   std::vector<Host*> hosts;
   for (auto const& kv : pimpl->hosts_) {
@@ -189,7 +189,7 @@ void Engine::host_unregister(const std::string& name)
  *
  *  @throw std::invalid_argument if the searched host does not exist.
  */
-Host* Engine::host_by_name(const std::string& name)
+Host* Engine::host_by_name(const std::string& name) const
 {
   if (pimpl->hosts_.find(name) == pimpl->hosts_.end())
     throw std::invalid_argument(std::string("Host not found: '") + name + std::string("'"));
@@ -197,7 +197,7 @@ Host* Engine::host_by_name(const std::string& name)
 }
 
 /** @brief Find a host from its name (or nullptr if that host does not exist) */
-Host* Engine::host_by_name_or_null(const std::string& name)
+Host* Engine::host_by_name_or_null(const std::string& name) const
 {
   auto host = pimpl->hosts_.find(name);
   return host == pimpl->hosts_.end() ? nullptr : host->second;
@@ -207,7 +207,7 @@ Host* Engine::host_by_name_or_null(const std::string& name)
  *
  *  @throw std::invalid_argument if the searched link does not exist.
  */
-Link* Engine::link_by_name(const std::string& name)
+Link* Engine::link_by_name(const std::string& name) const
 {
   if (pimpl->links_.find(name) == pimpl->links_.end())
     throw std::invalid_argument(std::string("Link not found: ") + name);
@@ -216,7 +216,7 @@ Link* Engine::link_by_name(const std::string& name)
 }
 
 /** @brief Find an link from its name (or nullptr if that link does not exist) */
-Link* Engine::link_by_name_or_null(const std::string& name)
+Link* Engine::link_by_name_or_null(const std::string& name) const
 {
   auto link = pimpl->links_.find(name);
   return link == pimpl->links_.end() ? nullptr : link->second->get_iface();
@@ -233,13 +233,13 @@ void Engine::link_unregister(const std::string& name)
 }
 
 /** @brief Returns the amount of storages in the platform */
-size_t Engine::get_storage_count()
+size_t Engine::get_storage_count() const
 {
   return pimpl->storages_.size();
 }
 
 /** @brief Returns the list of all storages found in the platform */
-std::vector<Storage*> Engine::get_all_storages()
+std::vector<Storage*> Engine::get_all_storages() const
 {
   std::vector<Storage*> res;
   for (auto const& kv : pimpl->storages_)
@@ -251,7 +251,7 @@ std::vector<Storage*> Engine::get_all_storages()
  *
  *  @throw std::invalid_argument if the searched storage does not exist.
  */
-Storage* Engine::storage_by_name(const std::string& name)
+Storage* Engine::storage_by_name(const std::string& name) const
 {
   if (pimpl->storages_.find(name) == pimpl->storages_.end())
     throw std::invalid_argument(std::string("Storage not found: ") + name);
@@ -260,7 +260,7 @@ Storage* Engine::storage_by_name(const std::string& name)
 }
 
 /** @brief Find a storage from its name (or nullptr if that storage does not exist) */
-Storage* Engine::storage_by_name_or_null(const std::string& name)
+Storage* Engine::storage_by_name_or_null(const std::string& name) const
 {
   auto storage = pimpl->storages_.find(name);
   return storage == pimpl->storages_.end() ? nullptr : storage->second->get_iface();
@@ -277,13 +277,13 @@ void Engine::storage_unregister(const std::string& name)
 }
 
 /** @brief Returns the amount of links in the platform */
-size_t Engine::get_link_count()
+size_t Engine::get_link_count() const
 {
   return pimpl->links_.size();
 }
 
 /** @brief Returns the list of all links found in the platform */
-std::vector<Link*> Engine::get_all_links()
+std::vector<Link*> Engine::get_all_links() const
 {
   std::vector<Link*> res;
   for (auto const& kv : pimpl->links_)
@@ -291,7 +291,7 @@ std::vector<Link*> Engine::get_all_links()
   return res;
 }
 
-std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& filter)
+std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& filter) const
 {
   std::vector<Link*> filtered_list;
   for (auto const& kv : pimpl->links_) {
@@ -302,12 +302,12 @@ std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& 
   return filtered_list;
 }
 
-size_t Engine::get_actor_count()
+size_t Engine::get_actor_count() const
 {
   return simix_global->process_list.size();
 }
 
-std::vector<ActorPtr> Engine::get_all_actors()
+std::vector<ActorPtr> Engine::get_all_actors() const
 {
   std::vector<ActorPtr> actor_list;
   for (auto const& kv : simix_global->process_list) {
@@ -316,7 +316,7 @@ std::vector<ActorPtr> Engine::get_all_actors()
   return actor_list;
 }
 
-std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter)
+std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const
 {
   std::vector<ActorPtr> actor_list;
   for (auto const& kv : simix_global->process_list) {
@@ -326,7 +326,7 @@ std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(Actor
   return actor_list;
 }
 
-void Engine::run()
+void Engine::run() const
 {
   /* Clean IO before the run */
   fflush(stdout);
@@ -340,7 +340,7 @@ void Engine::run()
 }
 
 /** @brief Retrieve the root netzone, containing all others */
-s4u::NetZone* Engine::get_netzone_root()
+s4u::NetZone* Engine::get_netzone_root() const
 {
   return pimpl->netzone_root_->get_iface();
 }
@@ -366,19 +366,19 @@ static NetZone* netzone_by_name_recursive(NetZone* current, const std::string& n
 }
 
 /** @brief Retrieve the NetZone of the given name (or nullptr if not found) */
-NetZone* Engine::netzone_by_name_or_null(const std::string& name)
+NetZone* Engine::netzone_by_name_or_null(const std::string& name) const
 {
   return netzone_by_name_recursive(get_netzone_root(), name);
 }
 
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
-kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& name)
+kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& name) const
 {
   auto netp = pimpl->netpoints_.find(name);
   return netp == pimpl->netpoints_.end() ? nullptr : netp->second;
 }
 
-std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints()
+std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints() const
 {
   std::vector<kernel::routing::NetPoint*> res;
   for (auto const& kv : pimpl->netpoints_)

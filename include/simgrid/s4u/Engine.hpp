@@ -41,14 +41,14 @@ public:
   static void shutdown();
 
   /** Run the simulation after initialization */
-  void run();
+  void run() const;
 
   /** @brief Retrieve the simulation time (in seconds) */
   static double get_clock();
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* get_instance();
 
-  void load_platform(const std::string& platf);
+  void load_platform(const std::string& platf) const;
 
   XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_function(
       const std::string& name, int (*code)(int, char**));
@@ -103,44 +103,44 @@ protected:
 
 public:
   /** Returns the amount of hosts existing in the platform. */
-  size_t get_host_count();
+  size_t get_host_count() const;
   /** Returns a vector of all hosts found in the platform.
    *
    * The order is generally different from the creation/declaration order in the XML platform because we use a hash
    * table internally.
    */
-  std::vector<Host*> get_all_hosts();
-  std::vector<Host*> get_filtered_hosts(const std::function<bool(Host*)>& filter);
-  Host* host_by_name(const std::string& name);
-  Host* host_by_name_or_null(const std::string& name);
+  std::vector<Host*> get_all_hosts() const;
+  std::vector<Host*> get_filtered_hosts(const std::function<bool(Host*)>& filter) const;
+  Host* host_by_name(const std::string& name) const;
+  Host* host_by_name_or_null(const std::string& name) const;
 
-  size_t get_link_count();
-  std::vector<Link*> get_all_links();
-  std::vector<Link*> get_filtered_links(const std::function<bool(Link*)>& filter);
-  Link* link_by_name(const std::string& name);
-  Link* link_by_name_or_null(const std::string& name);
+  size_t get_link_count() const;
+  std::vector<Link*> get_all_links() const;
+  std::vector<Link*> get_filtered_links(const std::function<bool(Link*)>& filter) const;
+  Link* link_by_name(const std::string& name) const;
+  Link* link_by_name_or_null(const std::string& name) const;
 
-  size_t get_actor_count();
-  std::vector<ActorPtr> get_all_actors();
-  std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter);
+  size_t get_actor_count() const;
+  std::vector<ActorPtr> get_all_actors() const;
+  std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const;
 
 #ifndef DOXYGEN
-  size_t get_storage_count();
-  std::vector<Storage*> get_all_storages();
-  Storage* storage_by_name(const std::string& name);
-  Storage* storage_by_name_or_null(const std::string& name);
+  size_t get_storage_count() const;
+  std::vector<Storage*> get_all_storages() const;
+  Storage* storage_by_name(const std::string& name) const;
+  Storage* storage_by_name_or_null(const std::string& name) const;
 #endif
 
-  std::vector<kernel::routing::NetPoint*> get_all_netpoints();
-  kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name);
+  std::vector<kernel::routing::NetPoint*> get_all_netpoints() const;
+  kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name) const;
 
-  NetZone* get_netzone_root();
+  NetZone* get_netzone_root() const;
   void set_netzone_root(const NetZone* netzone);
 
-  NetZone* netzone_by_name_or_null(const std::string& name);
+  NetZone* netzone_by_name_or_null(const std::string& name) const;
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
-  template <class T> std::vector<T*> get_filtered_netzones()
+  template <class T> std::vector<T*> get_filtered_netzones() const
   {
     static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
                   "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");

@@ -294,17 +294,17 @@ std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()
   return *mounts_;
 }
 
-ExecPtr Host::exec_async(double flops)
+ExecPtr Host::exec_async(double flops) const
 {
   return this_actor::exec_init(flops);
 }
 
-void Host::execute(double flops)
+void Host::execute(double flops) const
 {
   execute(flops, 1.0 /* priority */);
 }
 
-void Host::execute(double flops, double priority)
+void Host::execute(double flops, double priority) const
 {
   this_actor::exec_init(flops)->set_priority(1 / priority)->start()->wait();
 }
