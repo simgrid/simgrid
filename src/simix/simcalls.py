@@ -130,17 +130,17 @@ class Simcall(object):
     def case(self):
         res = []
         indent = '    '
-        args = ["simgrid::simix::unmarshal<%s>(simcall.args_[%d])" % (arg.rettype(), i)
+        args = ["simgrid::simix::unmarshal<%s>(simcall_.args_[%d])" % (arg.rettype(), i)
                 for i, arg in enumerate(self.args)]
         res.append(indent + 'case SIMCALL_%s:' % (self.name.upper()))
         if self.need_handler:
-            call = "simcall_HANDLER_%s(&simcall%s%s)" % (self.name,
+            call = "simcall_HANDLER_%s(&simcall_%s%s)" % (self.name,
                                                         ", " if args else "",
                                                         ', '.join(args))
         else:
             call = "SIMIX_%s(%s)" % (self.name, ', '.join(args))
         if self.call_kind == 'Func':
-            res.append(indent + "  simgrid::simix::marshal<%s>(simcall.result_, %s);" % (self.res.rettype(), call))
+            res.append(indent + "  simgrid::simix::marshal<%s>(simcall_.result_, %s);" % (self.res.rettype(), call))
         else:
             res.append(indent + "  " + call + ";")
         if self.call_kind != 'Blck':
@@ -159,7 +159,7 @@ class Simcall(object):
         res.append('  if (0) /* Go to that function to follow the code flow through the simcall barrier */')
         if self.need_handler:
             res.append('    simcall_HANDLER_%s(%s);' % (self.name,
-                                                        ', '.join(["&SIMIX_process_self()->simcall"] + [arg.name for arg in self.args])))
+                                                        ', '.join(["&SIMIX_process_self()->simcall_"] + [arg.name for arg in self.args])))
         else:
             res.append('    SIMIX_%s(%s);' % (self.name,
                                               ', '.join(arg.name for arg in self.args)))
@@ -341,12 +341,12 @@ if __name__ == '__main__':
     fd.write(
         'void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {\n')
     fd.write(
-        '  XBT_DEBUG("Handling simcall %p: %s", &simcall, SIMIX_simcall_name(simcall.call_));\n')
-    fd.write('  SIMCALL_SET_MC_VALUE(simcall, value);\n')
+        '  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_.call_));\n')
+    fd.write('  SIMCALL_SET_MC_VALUE(simcall_, value);\n')
     fd.write(
         '  if (context_->wannadie())\n')
     fd.write('    return;\n')
-    fd.write('  switch (simcall.call_) {\n')
+    fd.write('  switch (simcall_.call_) {\n')
 
     handle(fd, Simcall.case, simcalls, simcalls_dict)
 
@@ -382,15 +382,15 @@ template<class R, class... T>
 inline static R simcall(e_smx_simcall_t call, T const&... t)
 {
   smx_actor_t self = SIMIX_process_self();
-  simgrid::simix::marshal(&self->simcall, call, t...);
+  simgrid::simix::marshal(&self->simcall_, call, t...);
   if (self != simix_global->maestro_) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall.call_),
-              (int)self->simcall.call_);
+    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall_.call_),
+              (int)self->simcall_.call_);
     self->yield();
   } else {
     self->simcall_handle(0);
   }
-  return simgrid::simix::unmarshal<R>(self->simcall.result_);
+  return simgrid::simix::unmarshal<R>(self->simcall_.result_);
 }
 ''')
     handle(fd, Simcall.body, simcalls, simcalls_dict)
