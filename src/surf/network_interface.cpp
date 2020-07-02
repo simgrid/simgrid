@@ -151,7 +151,7 @@ void LinkImpl::turn_off()
   }
 }
 
-void LinkImpl::on_bandwidth_change()
+void LinkImpl::on_bandwidth_change() const
 {
   s4u::Link::on_bandwidth_change(this->piface_);
 }

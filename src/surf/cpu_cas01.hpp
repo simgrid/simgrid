@@ -69,7 +69,7 @@ public:
   CpuCas01Action(const CpuCas01Action&) = delete;
   CpuCas01Action& operator=(const CpuCas01Action&) = delete;
   ~CpuCas01Action() override;
-  int requested_core();
+  int requested_core() const;
 
 private:
   int requested_core_ = 1;

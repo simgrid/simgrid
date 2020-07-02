@@ -53,7 +53,7 @@ public:
   explicit HostImpl(s4u::Host* host);
   virtual ~HostImpl();
 
-  std::vector<s4u::Disk*> get_disks();
+  std::vector<s4u::Disk*> get_disks() const;
   void set_disks(const std::vector<kernel::resource::DiskImpl*>& disks, s4u::Host* host);
   void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& disk_name);
@@ -65,10 +65,10 @@ public:
 
   s4u::Host* get_iface() { return piface_; }
 
-  void turn_on();
+  void turn_on() const;
   void turn_off(kernel::actor::ActorImpl* issuer);
   std::vector<s4u::ActorPtr> get_all_actors();
-  size_t get_actor_count();
+  size_t get_actor_count() const;
   void add_actor(kernel::actor::ActorImpl* actor) { actor_list_.push_back(*actor); }
   void remove_actor(kernel::actor::ActorImpl* actor) { xbt::intrusive_erase(actor_list_, *actor); }
   void add_actor_at_boot(kernel::actor::ProcessArg* arg) { actors_at_boot_.emplace_back(arg); }
