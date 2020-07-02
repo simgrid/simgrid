@@ -269,9 +269,9 @@ public:
   }
 
   // Debug:
-  void dump(const char *name, const char *indent);
-  void show_aliases();
-  void help();
+  void dump(const char* name, const char* indent) const;
+  void show_aliases() const;
+  void help() const;
 
 protected:
   ConfigurationElement* get_dict_element(const std::string& name);
@@ -321,7 +321,7 @@ void Config::alias(const std::string& realname, const std::string& aliasname)
  * @param name The name to give to this config set
  * @param indent what to write at the beginning of each line (right number of spaces)
  */
-void Config::dump(const char *name, const char *indent)
+void Config::dump(const char* name, const char* indent) const
 {
   if (name)
     XBT_CVERB(xbt_help, "%s>> Dumping of the config set '%s':", indent, name);
@@ -335,14 +335,14 @@ void Config::dump(const char *name, const char *indent)
 }
 
 /** @brief Displays the declared aliases and their replacement */
-void Config::show_aliases()
+void Config::show_aliases() const
 {
   for (auto const& elm : aliases)
     XBT_HELP("   %-40s %s", elm.first.c_str(), elm.second->get_key().c_str());
 }
 
 /** @brief Displays the declared options and their description */
-void Config::help()
+void Config::help() const
 {
   for (auto const& elm : options) {
     simgrid::config::ConfigurationElement* variable = elm.second.get();

@@ -29,7 +29,7 @@ bool Random::read_state(const std::string& filename)
   return not file.fail();
 }
 
-bool Random::write_state(const std::string& filename)
+bool Random::write_state(const std::string& filename) const
 {
   std::ofstream file(filename);
   file << mt19937_gen;
