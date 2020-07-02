@@ -115,26 +115,26 @@ public:
   Datatype& operator=(const Datatype&) = delete;
   virtual ~Datatype();
 
-  char* name() { return name_; }
-  size_t size() { return size_; }
-  MPI_Aint lb() { return lb_; }
-  MPI_Aint ub() { return ub_; }
-  int flags() { return flags_; }
-  int refcount() { return refcount_; }
+  char* name() const { return name_; }
+  size_t size() const { return size_; }
+  MPI_Aint lb() const { return lb_; }
+  MPI_Aint ub() const { return ub_; }
+  int flags() const { return flags_; }
+  int refcount() const { return refcount_; }
 
   void ref();
   static void unref(MPI_Datatype datatype);
   void commit();
   int copy_attrs(Datatype* datatype);
-  bool is_valid();
-  bool is_basic();
+  bool is_valid() const;
+  bool is_basic() const;
   static const char* encode(const Datatype* dt) { return dt->id.c_str(); }
   static MPI_Datatype decode(const std::string& datatype_id);
-  bool is_replayable();
+  bool is_replayable() const;
   void addflag(int flag);
-  int extent(MPI_Aint* lb, MPI_Aint* extent);
-  MPI_Aint get_extent() { return ub_ - lb_; };
-  void get_name(char* name, int* length);
+  int extent(MPI_Aint* lb, MPI_Aint* extent) const;
+  MPI_Aint get_extent() const { return ub_ - lb_; };
+  void get_name(char* name, int* length) const;
   void set_name(const char* name);
   static int copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                   MPI_Datatype recvtype);
@@ -146,11 +146,9 @@ public:
   static int keyval_free(int* keyval);
   int pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, const Comm* comm);
   int unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, const Comm* comm);
-  int get_contents(int max_integers, int max_addresses, 
-                   int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses, 
-                   MPI_Datatype *array_of_datatypes);
-  int get_envelope(int* num_integers, int* num_addresses, 
-                   int* num_datatypes, int* combiner);
+  int get_contents(int max_integers, int max_addresses, int max_datatypes, int* array_of_integers,
+                   MPI_Aint* array_of_addresses, MPI_Datatype* array_of_datatypes) const;
+  int get_envelope(int* num_integers, int* num_addresses, int* num_datatypes, int* combiner) const;
   static int create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, MPI_Datatype* new_type);
   static int create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type);
   static int create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type);

@@ -165,7 +165,7 @@ bool Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
   return match_common(req, ref, req);
 }
 
-void Request::print_request(const char *message)
+void Request::print_request(const char* message) const
 {
   XBT_VERB("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
        message, this, buf_, size_, src_, dst_, tag_, flags_);
@@ -1197,13 +1197,14 @@ void Request::set_nbc_requests(MPI_Request* reqs, int size){
   }
 }
 
-int Request::get_nbc_requests_size(){
+int Request::get_nbc_requests_size() const
+{
   return nbc_requests_size_;
 }
 
-MPI_Request* Request::get_nbc_requests(){
+MPI_Request* Request::get_nbc_requests() const
+{
   return nbc_requests_;
 }
-
 }
 }

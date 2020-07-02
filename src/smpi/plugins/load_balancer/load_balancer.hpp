@@ -36,9 +36,9 @@ public:
     host_to_actors.insert({host, actor});
   }
 
-  s4u::Host* get_host(s4u::ActorPtr actor) { return actor_to_host[actor]; }
+  s4u::Host* get_host(s4u::ActorPtr actor) const { return actor_to_host.at(actor); }
 
-  unsigned int count_actors(s4u::Host* host)
+  unsigned int count_actors(s4u::Host* host) const
   {
     return host_to_actors.count(host); // TODO This is linear in the size of the map. Maybe replace by constant lookup through another map?
   }

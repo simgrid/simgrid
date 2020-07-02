@@ -103,12 +103,14 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::get_position(MPI_Offset* offset){
+  int File::get_position(MPI_Offset* offset) const
+  {
     *offset=file_->tell();
     return MPI_SUCCESS;
   }
 
-  int File::get_position_shared(MPI_Offset* offset){
+  int File::get_position_shared(MPI_Offset* offset) const
+  {
     shared_mutex_->lock();
     *offset=*shared_file_pointer_;
     shared_mutex_->unlock();
@@ -263,7 +265,7 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::get_view(MPI_Offset* /*disp*/, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep)
+  int File::get_view(MPI_Offset* /*disp*/, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep) const
   {
     *etype=etype_;
     *filetype=filetype_;
@@ -271,11 +273,13 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::size(){
+  int File::size() const
+  {
     return file_->size();
   }
 
-  int File::flags(){
+  int File::flags() const
+  {
     return flags_;
   }
 
@@ -301,7 +305,8 @@ namespace smpi{
       info_->ref();
   }
 
-  MPI_Comm File::comm(){
+  MPI_Comm File::comm() const
+  {
     return comm_;
   }
 

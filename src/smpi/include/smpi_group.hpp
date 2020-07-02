@@ -37,7 +37,7 @@ public:
   int rank(s4u::Actor* process);
   void ref();
   static void unref(MPI_Group group);
-  int size() { return size_; }
+  int size() const { return size_; }
   int compare(MPI_Group group2);
   int incl(int n, const int* ranks, MPI_Group* newgroup);
   int excl(int n, const int* ranks, MPI_Group* newgroup);

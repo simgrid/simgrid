@@ -238,7 +238,8 @@ int Topo_Cart::shift(int direction, int disp, int* rank_source, int* rank_dest)
   return MPI_SUCCESS;
 }
 
-int Topo_Cart::dim_get(int *ndims) {
+int Topo_Cart::dim_get(int* ndims) const
+{
   *ndims =ndims_;
   return MPI_SUCCESS;
 }
