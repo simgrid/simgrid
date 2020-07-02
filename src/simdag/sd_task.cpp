@@ -40,7 +40,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   task->state= SD_NOT_SCHEDULED;
   sd_global->initial_tasks.insert(task);
 
-  task->marked = 0;
+  task->marked       = false;
   task->start_time = -1.0;
   task->finish_time = -1.0;
   task->surf_action = nullptr;

@@ -364,7 +364,7 @@ MPI_Comm Comm::find_intra_comm(int * leader){
     }
   }
   *leader=min_index;
-  return new  Comm(group_intra, nullptr, 1);
+  return new Comm(group_intra, nullptr, true);
 }
 
 void Comm::init_smp(){
@@ -431,7 +431,7 @@ void Comm::init_smp(){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
       leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
-    leader_comm = new  Comm(leaders_group, nullptr,1);
+    leader_comm = new Comm(leaders_group, nullptr, true);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
 
@@ -441,7 +441,7 @@ void Comm::init_smp(){
       leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
-      leader_comm = new  Comm(leaders_group, nullptr,1);
+      leader_comm = new Comm(leaders_group, nullptr, true);
       this->set_leaders_comm(leader_comm);
     }else{
       leader_comm=this->get_leaders_comm();

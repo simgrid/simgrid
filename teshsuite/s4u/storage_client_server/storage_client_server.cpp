@@ -126,7 +126,7 @@ static void server()
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_host()->get_cname());
 
   XBT_INFO("Server waiting for transfers ...");
-  while (1) {
+  while (true) {
     const std::string* msg = static_cast<std::string*>(mailbox->get());
     if (*msg == "finalize") { // Shutdown ...
       delete msg;

@@ -156,7 +156,7 @@ class Simcall(object):
                                                       self.name,
                                                       ', '.join('%s %s' % (arg.rettype(), arg.name) for arg in self.args)))
         res.append('{')
-        res.append('  if (0) /* Go to that function to follow the code flow through the simcall barrier */')
+        res.append('  if (false) /* Go to that function to follow the code flow through the simcall barrier */')
         if self.need_handler:
             res.append('    simcall_HANDLER_%s(%s);' % (self.name,
                                                         ', '.join(["&SIMIX_process_self()->simcall_"] + [arg.name for arg in self.args])))

@@ -424,7 +424,7 @@ std::string RemoteSimulation::read_string(RemotePtr<char> address) const
   std::vector<char> res(128);
   off_t off = 0;
 
-  while (1) {
+  while (true) {
     ssize_t c = pread(this->memory_file, res.data() + off, res.size() - off, (off_t)address.address() + off);
     if (c == -1 && errno == EINTR)
       continue;

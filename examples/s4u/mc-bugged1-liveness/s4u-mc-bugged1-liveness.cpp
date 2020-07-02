@@ -52,7 +52,7 @@ static void coordinator()
 
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
 
-  while (1) {
+  while (true) {
     m = static_cast<Message*>(mbox->get());
     if (m->kind == Message::Kind::REQUEST) {
       if (CS_used) {
@@ -91,7 +91,7 @@ static void client(int id)
 
   simgrid::s4u::Mailbox* my_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
 
-  while (1) {
+  while (true) {
     XBT_INFO("Ask the request");
     simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::REQUEST, my_mailbox), 1000);
 

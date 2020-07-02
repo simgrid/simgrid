@@ -108,7 +108,7 @@ void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) cons
 
 void AppSide::handle_messages()
 {
-  while (1) {
+  while (true) {
     XBT_DEBUG("Waiting messages from model-checker");
 
     char message_buffer[MC_MESSAGE_LENGTH];
@@ -147,7 +147,7 @@ void AppSide::handle_messages()
 
 void AppSide::main_loop()
 {
-  while (1) {
+  while (true) {
     simgrid::mc::wait_for_requests();
     xbt_assert(channel_.send(MC_MESSAGE_WAITING) == 0, "Could not send WAITING message to model-checker");
     this->handle_messages();

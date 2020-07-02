@@ -82,7 +82,7 @@ double surf_solve(double max_date)
 
   XBT_DEBUG("Looking for next trace event");
 
-  while (1) { // Handle next occurring events until none remains
+  while (true) { // Handle next occurring events until none remains
     double next_event_date = simgrid::kernel::profile::future_evt_set.next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
