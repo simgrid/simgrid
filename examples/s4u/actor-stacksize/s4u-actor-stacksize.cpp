@@ -24,12 +24,12 @@ int main(int argc, char* argv[])
 
   // You can use set_config(string) to pass a size that will be parsed. That value will be used for any subsequent
   // actors
-  e.set_config("contexts/stack-size:16384");
+  simgrid::s4u::Engine::set_config("contexts/stack-size:16384");
   simgrid::s4u::Actor::create("actor", simgrid::s4u::Host::by_name("Tremblay"), actor);
   simgrid::s4u::Actor::create("actor", simgrid::s4u::Host::by_name("Tremblay"), actor);
 
   // You can use set_config(key, value) for the same effect.
-  e.set_config("contexts/stack-size", 32 * 1024);
+  simgrid::s4u::Engine::set_config("contexts/stack-size", 32 * 1024);
   simgrid::s4u::Actor::create("actor", simgrid::s4u::Host::by_name("Tremblay"), actor);
   simgrid::s4u::Actor::create("actor", simgrid::s4u::Host::by_name("Tremblay"), actor);
 
