@@ -81,7 +81,7 @@ public:
   int remoteFindSuccessor(int ask_to, int id);
 
   void notify(int predecessor_candidate_id);
-  void remoteNotify(int notify_id, int predecessor_candidate_id);
+  void remoteNotify(int notify_id, int predecessor_candidate_id) const;
   void stabilize();
   void handleMessage(ChordMessage* message);
 

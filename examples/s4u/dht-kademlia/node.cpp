@@ -76,7 +76,7 @@ bool Node::join(unsigned int known_id)
   * @param id node we are querying
   * @param destination node we are trying to find.
   */
-void Node::sendFindNode(unsigned int id, unsigned int destination)
+void Node::sendFindNode(unsigned int id, unsigned int destination) const
 {
   /* Gets the mailbox to send to */
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
@@ -94,7 +94,7 @@ void Node::sendFindNode(unsigned int id, unsigned int destination)
   * Sends to the best "KADEMLIA_ALPHA" nodes in the "node_list" array a "FIND_NODE" request, to ask them for their best
   * nodes
   */
-unsigned int Node::sendFindNodeToBest(const Answer* node_list)
+unsigned int Node::sendFindNodeToBest(const Answer* node_list) const
 {
   unsigned int i           = 0;
   unsigned int j           = 0;
@@ -281,7 +281,7 @@ void Node::handleFindNode(const Message* msg)
   msg->answer_to_->put_init(answer, 1)->detach(kademlia::destroy);
 }
 
-void Node::displaySuccessRate()
+void Node::displaySuccessRate() const
 {
   XBT_INFO("%u/%u FIND_NODE have succeeded", find_node_success, find_node_success + find_node_failed);
 }

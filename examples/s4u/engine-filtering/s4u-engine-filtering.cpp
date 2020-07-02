@@ -29,7 +29,7 @@ static bool filter_speed_more_than_50Mf(const simgrid::s4u::Host* host)
  */
 class SingleCore {
 public:
-  bool operator()(const simgrid::s4u::Host* host) { return host->get_core_count() == 1; }
+  bool operator()(const simgrid::s4u::Host* host) const { return host->get_core_count() == 1; }
 };
 
 /* This functor is a bit more complex, as it saves the current state when created.

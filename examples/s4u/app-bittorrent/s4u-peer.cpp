@@ -159,7 +159,7 @@ void Peer::sendRequestTo(Connection* remote_peer, unsigned int piece)
   }
 }
 
-std::string Peer::getStatus()
+std::string Peer::getStatus() const
 {
   std::string res;
   for (unsigned i = 0; i < FILE_PIECES; i++)
@@ -167,7 +167,7 @@ std::string Peer::getStatus()
   return res;
 }
 
-bool Peer::hasFinished()
+bool Peer::hasFinished() const
 {
   return bitfield_ == (1U << FILE_PIECES) - 1U;
 }
@@ -193,7 +193,7 @@ void Peer::updatePiecesCountFromBitfield(unsigned int bitfield)
       pieces_count[i]++;
 }
 
-unsigned int Peer::countPieces(unsigned int bitfield)
+unsigned int Peer::countPieces(unsigned int bitfield) const
 {
   unsigned int count = 0U;
   unsigned int n     = bitfield;
@@ -204,7 +204,7 @@ unsigned int Peer::countPieces(unsigned int bitfield)
   return count;
 }
 
-int Peer::nbInterestedPeers()
+int Peer::nbInterestedPeers() const
 {
   int nb = 0;
   for (auto const& kv : connected_peers)
@@ -629,7 +629,7 @@ void Peer::updateBitfieldBlocks(int piece, int block_index, int block_length)
     bitfield_blocks |= (1ULL << static_cast<unsigned int>(piece * PIECES_BLOCKS + i));
 }
 
-bool Peer::hasCompletedPiece(unsigned int piece)
+bool Peer::hasCompletedPiece(unsigned int piece) const
 {
   for (unsigned int i = 0; i < PIECES_BLOCKS; i++)
     if (not(bitfield_blocks & 1ULL << (piece * PIECES_BLOCKS + i)))
@@ -637,7 +637,7 @@ bool Peer::hasCompletedPiece(unsigned int piece)
   return true;
 }
 
-int Peer::getFirstMissingBlockFrom(int piece)
+int Peer::getFirstMissingBlockFrom(int piece) const
 {
   for (unsigned int i = 0; i < PIECES_BLOCKS; i++)
     if (not(bitfield_blocks & 1ULL << (piece * PIECES_BLOCKS + i)))
@@ -646,7 +646,7 @@ int Peer::getFirstMissingBlockFrom(int piece)
 }
 
 /** Returns a piece that is partially downloaded and stored by the remote peer if any -1 otherwise. */
-int Peer::partiallyDownloadedPiece(const Connection* remote_peer)
+int Peer::partiallyDownloadedPiece(const Connection* remote_peer) const
 {
   for (unsigned int i = 0; i < FILE_PIECES; i++)
     if (remotePeerHasMissingPiece(remote_peer, i) && isNotDownloadingPiece(i) && getFirstMissingBlockFrom(i) > 0)

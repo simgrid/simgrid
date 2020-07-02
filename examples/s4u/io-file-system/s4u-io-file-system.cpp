@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
 class MyHost {
 public:
-  void show_info(std::vector<simgrid::s4u::Disk*> const& disks)
+  void show_info(std::vector<simgrid::s4u::Disk*> const& disks) const
   {
     XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->get_cname());
 
@@ -24,7 +24,7 @@ public:
     }
   }
 
-  void operator()()
+  void operator()() const
   {
     std::vector<simgrid::s4u::Disk*> const& disks = simgrid::s4u::Host::current()->get_disks();
 

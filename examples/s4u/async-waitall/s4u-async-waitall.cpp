@@ -32,7 +32,7 @@ public:
     msg_size        = std::stod(args[2]);
     receivers_count = std::stol(args[3]);
   }
-  void operator()()
+  void operator()() const
   {
     // sphinx-doc: init-begin (this line helps the doc to build; ignore it)
     /* Vector in which we store all ongoing communications */

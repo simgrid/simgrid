@@ -18,7 +18,7 @@ simgrid::s4u::ActorPtr receiver;
 
 class Receiver {
 public:
-  void operator()()
+  void operator()() const
   {
     XBT_INFO("Starting.");
     auto mailbox = simgrid::s4u::Mailbox::by_name("receiver");
@@ -29,7 +29,7 @@ public:
 
 class Suspender {
 public:
-  void operator()()
+  void operator()() const
   {
     XBT_INFO("Suspend the receiver...");
     receiver->suspend();

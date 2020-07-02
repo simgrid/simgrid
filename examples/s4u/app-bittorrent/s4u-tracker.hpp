@@ -17,8 +17,8 @@ class TrackerQuery {
 public:
   explicit TrackerQuery(int peer_id, simgrid::s4u::Mailbox* return_mailbox)
       : peer_id(peer_id), return_mailbox(return_mailbox){};
-  int getPeerId() { return peer_id; }
-  simgrid::s4u::Mailbox* getReturnMailbox() { return return_mailbox; }
+  int getPeerId() const { return peer_id; }
+  simgrid::s4u::Mailbox* getReturnMailbox() const { return return_mailbox; }
 };
 
 class TrackerAnswer {
@@ -27,7 +27,7 @@ class TrackerAnswer {
 public:
   explicit TrackerAnswer(int /*interval*/) /*: interval(interval)*/ {}
   void addPeer(int peer) { peers.insert(peer); }
-  const std::set<int>& getPeers() { return peers; }
+  const std::set<int>& getPeers() const { return peers; }
 };
 
 class Tracker {
