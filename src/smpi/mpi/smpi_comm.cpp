@@ -532,7 +532,8 @@ void Comm::remove_rma_win(MPI_Win win){
   rma_wins_.remove(win);
 }
 
-void Comm::finish_rma_calls(){
+void Comm::finish_rma_calls() const
+{
   for (auto const& it : rma_wins_) {
     if(it->rank()==this->rank()){//is it ours (for MPI_COMM_WORLD)?
       int finished = it->finish_comms();

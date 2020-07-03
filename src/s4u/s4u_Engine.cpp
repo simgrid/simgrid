@@ -145,7 +145,7 @@ void Engine::register_function(const std::string& name, const kernel::actor::Act
  * See also: :ref:`deploy`.
  * \endrst
  */
-void Engine::load_deployment(const std::string& deploy)
+void Engine::load_deployment(const std::string& deploy) const
 {
   pimpl->load_deployment(deploy);
 }

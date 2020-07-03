@@ -106,7 +106,7 @@ void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) cons
   xbt_assert(received_size == sizeof(_type_), "Unexpected size for " _name_ " (%zd != %zu)", received_size,            \
              sizeof(_type_))
 
-void AppSide::handle_messages()
+void AppSide::handle_messages() const
 {
   while (true) {
     XBT_DEBUG("Waiting messages from model-checker");
@@ -154,7 +154,7 @@ void AppSide::main_loop()
   }
 }
 
-void AppSide::report_assertion_failure()
+void AppSide::report_assertion_failure() const
 {
   if (channel_.send(MC_MESSAGE_ASSERTION_FAILED))
     xbt_die("Could not send assertion to model-checker");

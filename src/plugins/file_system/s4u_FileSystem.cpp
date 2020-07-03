@@ -143,7 +143,7 @@ File::~File()
   kernel::actor::simcall([this, desc_table] { desc_table->push_back(this->desc_id); });
 }
 
-void File::dump()
+void File::dump() const
 {
   if (local_storage_)
     XBT_INFO("File Descriptor information:\n"

@@ -96,7 +96,7 @@ void intrusive_ptr_release(const Actor* actor)
 {
   intrusive_ptr_release(actor->pimpl_);
 }
-int Actor::get_refcount()
+int Actor::get_refcount() const
 {
   return pimpl_->get_refcount();
 }
@@ -234,7 +234,7 @@ void Actor::resume()
   s4u::Actor::on_resume(*this);
 }
 
-bool Actor::is_suspended()
+bool Actor::is_suspended() const
 {
   return pimpl_->is_suspended();
 }

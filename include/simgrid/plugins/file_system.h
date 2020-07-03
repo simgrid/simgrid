@@ -146,7 +146,7 @@ public:
   int remote_move(sg_host_t host, const char* fullpath);
 
   int unlink() const; /** Remove a file from the contents of a disk */
-  void dump();
+  void dump() const;
 };
 
 class XBT_PUBLIC FileSystemDiskExt {

@@ -736,7 +736,7 @@ int Win::finish_comms(int rank){
   return size;
 }
 
-int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
+int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr) const
 {
   const Win* target_win = rank != MPI_PROC_NULL ? connected_wins_[rank] : nullptr;
   for (int i = 0; not target_win && i < comm_->size(); i++) {

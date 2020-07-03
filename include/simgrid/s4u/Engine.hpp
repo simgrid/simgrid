@@ -80,7 +80,7 @@ public:
     register_function(name, std::move(code_factory));
   }
 
-  void load_deployment(const std::string& deploy);
+  void load_deployment(const std::string& deploy) const;
 
 protected:
 #ifndef DOXYGEN

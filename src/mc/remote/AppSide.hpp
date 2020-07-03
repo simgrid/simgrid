@@ -27,7 +27,7 @@ private:
 public:
   AppSide();
   explicit AppSide(int fd) : channel_(fd) {}
-  void handle_messages();
+  void handle_messages() const;
 
 private:
   void handle_deadlock_check(const s_mc_message_t* msg) const;
@@ -39,7 +39,7 @@ public:
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
   XBT_ATTRIB_NORETURN void main_loop();
-  void report_assertion_failure();
+  void report_assertion_failure() const;
   void ignore_memory(void* addr, std::size_t size) const;
   void ignore_heap(void* addr, std::size_t size) const;
   void unignore_heap(void* addr, std::size_t size) const;
