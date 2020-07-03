@@ -110,7 +110,8 @@ int Win::detach(const void* /*base*/)
   return MPI_SUCCESS;
 }
 
-void Win::get_name(char* name, int* length){
+void Win::get_name(char* name, int* length) const
+{
   if(name_==nullptr){
     *length=0;
     name=nullptr;
@@ -136,23 +137,28 @@ MPI_Info Win::info()
   return info_;
 }
 
-int Win::rank(){
+int Win::rank() const
+{
   return rank_;
 }
 
-MPI_Aint Win::size(){
+MPI_Aint Win::size() const
+{
   return size_;
 }
 
-void* Win::base(){
+void* Win::base() const
+{
   return base_;
 }
 
-int Win::disp_unit(){
+int Win::disp_unit() const
+{
   return disp_unit_;
 }
 
-int Win::dynamic(){
+int Win::dynamic() const
+{
   return dynamic_;
 }
 
@@ -730,7 +736,7 @@ int Win::finish_comms(int rank){
   return size;
 }
 
-int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
+int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr) const
 {
   const Win* target_win = rank != MPI_PROC_NULL ? connected_wins_[rank] : nullptr;
   for (int i = 0; not target_win && i < comm_->size(); i++) {

@@ -35,7 +35,7 @@ public:
     simgrid::xbt::replay_runner(actor_name, trace_filename);
   }
 
-  void operator()()
+  void operator()() const
   {
     // Nothing to do here
   }

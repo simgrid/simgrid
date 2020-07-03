@@ -25,15 +25,18 @@ MPI_Errhandler Errhandler::f2c(int id) {
   }
 }
 
-void Errhandler::call(MPI_Comm comm, int errorcode){
+void Errhandler::call(MPI_Comm comm, int errorcode) const
+{
   comm_func_(&comm, &errorcode);
 }
 
-void Errhandler::call(MPI_Win win, int errorcode){
+void Errhandler::call(MPI_Win win, int errorcode) const
+{
   win_func_(&win, &errorcode);
 }
 
-void Errhandler::call(MPI_File file, int errorcode){
+void Errhandler::call(MPI_File file, int errorcode) const
+{
   file_func_(&file, &errorcode);
 }
 

@@ -74,19 +74,19 @@ void ActorExt::finalize()
 }
 
 /** @brief Check if a process is finalized */
-int ActorExt::finalized()
+int ActorExt::finalized() const
 {
   return (state_ == SmpiProcessState::FINALIZED);
 }
 
 /** @brief Check if a process is partially initialized already */
-int ActorExt::initializing()
+int ActorExt::initializing() const
 {
   return (state_ == SmpiProcessState::INITIALIZING);
 }
 
 /** @brief Check if a process is initialized */
-int ActorExt::initialized()
+int ActorExt::initialized() const
 {
   // TODO cheinrich: Check if we still need this. This should be a global condition, not for a
   // single process ... ?
@@ -106,7 +106,7 @@ void ActorExt::set_replaying(bool value)
     replaying_ = value;
 }
 
-bool ActorExt::replaying()
+bool ActorExt::replaying() const
 {
   return replaying_;
 }
@@ -131,23 +131,23 @@ void ActorExt::set_privatized_region(smpi_privatization_region_t region)
   privatized_region_ = region;
 }
 
-smpi_privatization_region_t ActorExt::privatized_region()
+smpi_privatization_region_t ActorExt::privatized_region() const
 {
   return privatized_region_;
 }
 
-MPI_Comm ActorExt::comm_world()
+MPI_Comm ActorExt::comm_world() const
 {
   return comm_world_ == nullptr ? MPI_COMM_NULL : *comm_world_;
 }
 
-s4u::MutexPtr ActorExt::mailboxes_mutex()
+s4u::MutexPtr ActorExt::mailboxes_mutex() const
 {
   return mailboxes_mutex_;
 }
 
 #if HAVE_PAPI
-int ActorExt::papi_event_set()
+int ActorExt::papi_event_set() const
 {
   return papi_event_set_;
 }
@@ -168,7 +168,7 @@ void ActorExt::simulated_start()
   simulated_ = SIMIX_get_clock();
 }
 
-double ActorExt::simulated_elapsed()
+double ActorExt::simulated_elapsed() const
 {
   return SIMIX_get_clock() - simulated_;
 }
@@ -205,7 +205,7 @@ void ActorExt::set_sampling(int s)
   sampling_ = s;
 }
 
-int ActorExt::sampling()
+int ActorExt::sampling() const
 {
   return sampling_;
 }
@@ -243,7 +243,7 @@ void ActorExt::init()
   XBT_DEBUG("<%ld> SMPI process has been initialized: %p", ext->actor_->get_pid(), ext->actor_);
 }
 
-int ActorExt::get_optind()
+int ActorExt::get_optind() const
 {
   return optind_;
 }

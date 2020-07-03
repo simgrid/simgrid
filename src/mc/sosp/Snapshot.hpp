@@ -74,7 +74,7 @@ public:
                    ReadOptions options = ReadOptions::none()) const override;
   Region* get_region(const void* addr) const;
   Region* get_region(const void* addr, Region* hinted_region) const;
-  void restore(RemoteSimulation* get_remote_simulation);
+  void restore(RemoteSimulation* get_remote_simulation) const;
 
   // To be private
   int num_state_;

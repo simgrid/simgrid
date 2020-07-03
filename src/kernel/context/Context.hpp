@@ -56,7 +56,7 @@ public:
 
   bool wannadie() const { return iwannadie_; }
   void set_wannadie(bool value = true) { iwannadie_ = value; }
-  void operator()() { code_(); }
+  void operator()() const { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
   actor::ActorImpl* get_actor() const { return this->actor_; }
 

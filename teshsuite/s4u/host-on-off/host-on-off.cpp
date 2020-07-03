@@ -13,7 +13,7 @@ static void worker()
   const std::string* payload;
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("jupi");
 
-  while (1) {
+  while (true) {
     try {
       payload = static_cast<std::string*>(mailbox->get());
     } catch (const simgrid::HostFailureException&) {

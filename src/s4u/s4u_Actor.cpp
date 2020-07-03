@@ -96,7 +96,7 @@ void intrusive_ptr_release(const Actor* actor)
 {
   intrusive_ptr_release(actor->pimpl_);
 }
-int Actor::get_refcount()
+int Actor::get_refcount() const
 {
   return pimpl_->get_refcount();
 }
@@ -234,7 +234,7 @@ void Actor::resume()
   s4u::Actor::on_resume(*this);
 }
 
-bool Actor::is_suspended()
+bool Actor::is_suspended() const
 {
   return pimpl_->is_suspended();
 }
@@ -478,7 +478,7 @@ size_t sg_actor_count()
 
 sg_actor_t* sg_actor_list()
 {
-  simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
+  const simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
   size_t actor_count      = e->get_actor_count();
   xbt_assert(actor_count > 0, "There is no actor!");
   std::vector<simgrid::s4u::ActorPtr> actors = e->get_all_actors();

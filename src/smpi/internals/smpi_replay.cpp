@@ -90,17 +90,14 @@ private:
 
 public:
     RequestStorage() {}
-    int size()
-    {
-      return store.size();
-    }
+    int size() const { return store.size(); }
 
     req_storage_t& get_store()
     {
       return store;
     }
 
-    void get_requests(std::vector<MPI_Request>& vec)
+    void get_requests(std::vector<MPI_Request>& vec) const
     {
       for (auto const& pair : store) {
         auto& req = pair.second;
@@ -118,7 +115,7 @@ public:
       return (it == store.end()) ? MPI_REQUEST_NULL : it->second;
     }
 
-    void remove(MPI_Request req)
+    void remove(const Request* req)
     {
       if (req == MPI_REQUEST_NULL) return;
 

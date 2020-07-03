@@ -38,7 +38,7 @@ FatTreeZone::~FatTreeZone()
   }
 }
 
-bool FatTreeZone::is_in_sub_tree(FatTreeNode* root, FatTreeNode* node)
+bool FatTreeZone::is_in_sub_tree(FatTreeNode* root, FatTreeNode* node) const
 {
   XBT_DEBUG("Is %d(%u,%u) in the sub tree of %d(%u,%u) ?", node->id, node->level, node->position, root->id, root->level,
             root->position);
@@ -200,7 +200,7 @@ int FatTreeZone::connect_node_to_parents(FatTreeNode* node)
   return connectionsNumber;
 }
 
-bool FatTreeZone::are_related(FatTreeNode* parent, FatTreeNode* child)
+bool FatTreeZone::are_related(FatTreeNode* parent, FatTreeNode* child) const
 {
   std::stringstream msgBuffer;
 

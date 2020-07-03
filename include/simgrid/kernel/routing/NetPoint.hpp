@@ -32,7 +32,7 @@ public:
   ~NetPoint() = default;
 
   // Our rank in the vertices_ array of the netzone that contains us.
-  unsigned int id() { return id_; }
+  unsigned int id() const { return id_; }
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   /** @brief the NetZone in which this NetPoint is included */

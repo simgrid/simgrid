@@ -32,7 +32,7 @@ Region::Region(RegionType region_type, void* start_addr, size_t size)
  *
  *  @param region     Target region
  */
-void Region::restore()
+void Region::restore() const
 {
   xbt_assert(((start().address()) & (xbt_pagesize - 1)) == 0, "Not at the beginning of a page");
   xbt_assert(simgrid::mc::mmu::chunk_count(size()) == get_chunks().page_count());

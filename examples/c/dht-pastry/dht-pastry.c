@@ -395,6 +395,7 @@ static void handle_message(node_t node, pastry_message_t message)
       /* Update routing table */
       for (i = shl(node->id, message->state->id); i < LEVELS_COUNT; i++) {
         for (j = 0; j < LEVEL_SIZE; j++) {
+          // FIXME: this is a no-op!
           if (node->routing_table[i][j] == -1 && message->state->routing_table[i][j] == -1)
             node->routing_table[i][j] = message->state->routing_table[i][j];
         }

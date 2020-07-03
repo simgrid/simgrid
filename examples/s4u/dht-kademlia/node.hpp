@@ -24,17 +24,17 @@ public:
   explicit Node(unsigned int node_id) : id_(node_id), table(node_id) {}
   Node(const Node&) = delete;
   Node& operator=(const Node&) = delete;
-  unsigned int getId() { return id_; }
+  unsigned int getId() const { return id_; }
 
   bool join(unsigned int known_id);
-  void sendFindNode(unsigned int id, unsigned int destination);
-  unsigned int sendFindNodeToBest(const Answer* node_list);
+  void sendFindNode(unsigned int id, unsigned int destination) const;
+  unsigned int sendFindNodeToBest(const Answer* node_list) const;
   void routingTableUpdate(unsigned int id);
   Answer* findClosest(unsigned int destination_id);
   bool findNode(unsigned int id_to_find, bool count_in_stats);
   void randomLookup();
   void handleFindNode(const Message* msg);
-  void displaySuccessRate();
+  void displaySuccessRate() const;
 };
 } // namespace kademlia
 // identifier functions

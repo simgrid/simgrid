@@ -188,12 +188,12 @@ public:
    * It is not a problem if the actor is not located on the called host.
    * The actor will not be migrated in this case. Such remote execution are easy in simulation.
    */
-  void execute(double flops);
+  void execute(double flops) const;
   /** Start an asynchronous computation on that host (possibly remote) */
-  ExecPtr exec_async(double flops_amounts);
+  ExecPtr exec_async(double flops_amounts) const;
 
   /** Block the calling actor on an execution located on the called host (with explicit priority) */
-  void execute(double flops, double priority);
+  void execute(double flops, double priority) const;
 
 private:
   xbt::string name_{"noname"};

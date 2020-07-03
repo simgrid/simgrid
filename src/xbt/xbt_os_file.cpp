@@ -33,14 +33,14 @@ simgrid::xbt::Path::Path()
 #endif
 }
 
-std::string simgrid::xbt::Path::get_dir_name()
+std::string simgrid::xbt::Path::get_dir_name() const
 {
   std::string p(path_);
   const char* res = dirname(&p[0]);
   return std::string(res, strlen(res));
 }
 
-std::string simgrid::xbt::Path::get_base_name()
+std::string simgrid::xbt::Path::get_base_name() const
 {
   std::string p(path_);
   const char* res = basename(&p[0]);

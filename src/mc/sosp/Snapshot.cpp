@@ -104,7 +104,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_
 
   // TODO, check condition check (unw_init_local==0 means end of frame)
 
-  while (1) {
+  while (true) {
     s_mc_stack_frame_t stack_frame;
 
     stack_frame.unw_cursor = c;
@@ -273,7 +273,7 @@ Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
     return get_region(addr);
 }
 
-void Snapshot::restore(RemoteSimulation* process)
+void Snapshot::restore(RemoteSimulation* process) const
 {
   XBT_DEBUG("Restore snapshot %i", num_state_);
 

@@ -20,7 +20,7 @@ public:
       XBT_INFO("Exiting now (done sleeping or got killed).");
     });
   }
-  void operator()()
+  void operator()() const
   {
     XBT_INFO("Hello! I go to sleep.");
     simgrid::s4u::this_actor::sleep_for(10);

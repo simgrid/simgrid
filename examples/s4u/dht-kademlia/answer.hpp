@@ -23,7 +23,7 @@ public:
   unsigned int getDestinationId() const { return destination_id_; }
   size_t getSize() const { return nodes_.size(); }
   const std::vector<std::pair<unsigned int, unsigned int>>& getNodes() const { return nodes_; }
-  void print();
+  void print() const;
   unsigned int merge(const Answer* a);
   void trim();
   bool destinationFound() const;

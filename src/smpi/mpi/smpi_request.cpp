@@ -165,7 +165,7 @@ bool Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
   return match_common(req, ref, req);
 }
 
-void Request::print_request(const char *message)
+void Request::print_request(const char* message) const
 {
   XBT_VERB("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
        message, this, buf_, size_, src_, dst_, tag_, flags_);
@@ -429,7 +429,7 @@ void Request::start()
     if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
       mut->unlock();
   } else { /* the RECV flag was not set, so this is a send */
-    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
+    const simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     xbt_assert(process, "Actor pid=%d is gone??", dst_);
     int rank = src_;
     if (TRACE_smpi_view_internals()) {
@@ -1026,7 +1026,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
   return index;
 }
 
-static int sort_accumulates(MPI_Request a, MPI_Request b)
+static int sort_accumulates(const Request* a, const Request* b)
 {
   return (a->tag() > b->tag());
 }
@@ -1197,13 +1197,14 @@ void Request::set_nbc_requests(MPI_Request* reqs, int size){
   }
 }
 
-int Request::get_nbc_requests_size(){
+int Request::get_nbc_requests_size() const
+{
   return nbc_requests_size_;
 }
 
-MPI_Request* Request::get_nbc_requests(){
+MPI_Request* Request::get_nbc_requests() const
+{
   return nbc_requests_;
 }
-
 }
 }

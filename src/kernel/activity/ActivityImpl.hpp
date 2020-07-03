@@ -54,8 +54,8 @@ protected:
   }
 
 public:
-  const std::string& get_name() { return name_; }
-  const char* get_cname() { return name_.c_str(); }
+  const std::string& get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
 
   bool test();
   void wait_for(actor::ActorImpl* issuer, double timeout);
@@ -100,7 +100,7 @@ public:
     tracing_category_ = category;
     return static_cast<AnyActivityImpl&>(*this);
   }
-  const std::string& get_tracing_category() { return tracing_category_; }
+  const std::string& get_tracing_category() const { return tracing_category_; }
 };
 
 } // namespace activity

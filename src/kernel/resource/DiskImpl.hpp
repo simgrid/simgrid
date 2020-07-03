@@ -68,8 +68,8 @@ public:
   s4u::Host* get_host() const { return host_; }
   void set_host(s4u::Host* host) { host_ = host; }
 
-  double get_read_bandwidth() { return read_bw_; }
-  double get_write_bandwidth() { return write_bw_; }
+  double get_read_bandwidth() const { return read_bw_; }
+  double get_write_bandwidth() const { return write_bw_; }
   lmm::Constraint* get_read_constraint() const { return constraint_read_; }
   lmm::Constraint* get_write_constraint() const { return constraint_write_; }
 

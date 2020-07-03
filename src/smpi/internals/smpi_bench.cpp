@@ -103,7 +103,7 @@ void smpi_bench_begin()
 double smpi_adjust_comp_speed(){
   double speedup=1;
   if (smpi_cfg_comp_adjustment_file()[0] != '\0') {
-    smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
+    const smpi_trace_call_location_t* loc                      = smpi_process()->call_location();
     std::string key                                            = loc->get_composed_key();
     std::unordered_map<std::string, double>::const_iterator it = location2speedup.find(key);
     if (it != location2speedup.end()) {

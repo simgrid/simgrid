@@ -227,10 +227,12 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
 {
   add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
-  new_edge(src->id(), dst->id(), new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1));
+  new_edge(src->id(), dst->id(),
+           new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, true));
 
   if (symmetrical == true)
-    new_edge(dst->id(), src->id(), new_extended_route(hierarchy_, dst, src, gw_dst, gw_src, link_list, symmetrical, 0));
+    new_edge(dst->id(), src->id(),
+             new_extended_route(hierarchy_, dst, src, gw_dst, gw_src, link_list, symmetrical, false));
 }
 
 void DijkstraZone::new_edge(int src_id, int dst_id, RouteCreationArgs* route)

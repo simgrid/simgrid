@@ -41,7 +41,7 @@ bool compare_hosts::operator()(s4u::Host* const a, s4u::Host* const b) const
 
 void LoadBalancer::run()
 {
-  s4u::Engine* engine = s4u::Engine::get_instance();
+  const s4u::Engine* engine = s4u::Engine::get_instance();
   std::vector<s4u::Host*> available_hosts =
       engine->get_filtered_hosts([](const s4u::Host* host) { return host->is_on(); });
   xbt_assert(available_hosts.size() > 0, "No hosts available; are they all switched off?");

@@ -83,9 +83,12 @@ public:
   /* The pair is {link_up, link_down} */
   std::unordered_map<unsigned int, std::pair<kernel::resource::LinkImpl*, kernel::resource::LinkImpl*>> private_links_;
 
-  unsigned int node_pos(int id) { return id * num_links_per_node_; }
-  unsigned int node_pos_with_loopback(int id) { return node_pos(id) + (has_loopback_ ? 1 : 0); }
-  unsigned int node_pos_with_loopback_limiter(int id) { return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0); }
+  unsigned int node_pos(int id) const { return id * num_links_per_node_; }
+  unsigned int node_pos_with_loopback(int id) const { return node_pos(id) + (has_loopback_ ? 1 : 0); }
+  unsigned int node_pos_with_loopback_limiter(int id) const
+  {
+    return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0);
+  }
 
   void* loopback_                = nullptr;
   kernel::resource::LinkImpl* backbone_ = nullptr;

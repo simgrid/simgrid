@@ -294,7 +294,7 @@ template <typename T> void Parmap<T>::worker_main(ThreadData* data)
   XBT_CDEBUG(xbt_parmap, "New worker thread created");
 
   /* Worker's main loop */
-  while (1) {
+  while (true) {
     round++; // New scheduling round
     parmap.synchro->worker_wait(round);
     if (parmap.destroying)

@@ -144,7 +144,7 @@ public:
   void turn_on() override;
   void turn_off() override;
 
-  void on_bandwidth_change();
+  void on_bandwidth_change() const;
 
   virtual void
   set_bandwidth_profile(kernel::profile::Profile* profile); /*< setup the profile file with bandwidth events

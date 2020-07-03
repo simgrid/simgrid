@@ -63,7 +63,7 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(const Actor* actor);
 #endif
   /** Retrieve the amount of references on that object. Useful to debug the automatic refcounting */
-  int get_refcount();
+  int get_refcount() const;
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
@@ -157,7 +157,7 @@ public:
   void resume();
 
   /** Returns true if the actor is suspended. */
-  bool is_suspended();
+  bool is_suspended() const;
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void set_auto_restart(bool autorestart);

@@ -40,19 +40,19 @@ public:
   static Mailbox* by_name(const std::string& name);
 
   /** Returns whether the mailbox contains queued communications */
-  bool empty();
+  bool empty() const;
 
   /** Check if there is a communication going on in a mailbox. */
-  bool listen();
+  bool listen() const;
 
   /** Look if there is a communication going on in a mailbox and return the PID of the sender actor */
-  aid_t listen_from();
+  aid_t listen_from() const;
 
   /** Check if there is a communication ready to be consumed from a mailbox. */
-  bool ready();
+  bool ready() const;
 
   /** Gets the first element in the queue (without dequeuing it), or nullptr if none is there */
-  kernel::activity::CommImplPtr front();
+  kernel::activity::CommImplPtr front() const;
 
   /** Declare that the specified actor is a permanent receiver on that mailbox
    *
@@ -75,7 +75,7 @@ public:
   void set_receiver(ActorPtr actor);
 
   /** Return the actor declared as permanent receiver, or nullptr if none **/
-  ActorPtr get_receiver();
+  ActorPtr get_receiver() const;
 
   /** Creates (but don't start) a data transmission to that mailbox */
   CommPtr put_init();

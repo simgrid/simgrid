@@ -103,12 +103,14 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::get_position(MPI_Offset* offset){
+  int File::get_position(MPI_Offset* offset) const
+  {
     *offset=file_->tell();
     return MPI_SUCCESS;
   }
 
-  int File::get_position_shared(MPI_Offset* offset){
+  int File::get_position_shared(MPI_Offset* offset) const
+  {
     shared_mutex_->lock();
     *offset=*shared_file_pointer_;
     shared_mutex_->unlock();
@@ -143,7 +145,7 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::read(MPI_File fh, void* /*buf*/, int count, MPI_Datatype datatype, MPI_Status* status)
+  int File::read(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype, MPI_Status* status)
   {
     //get position first as we may be doing non contiguous reads and it will probably be updated badly
     MPI_Offset position = fh->file_->tell();
@@ -171,7 +173,8 @@ namespace smpi{
   /* address="Berlin, Heidelberg",*/
   /* pages="84--93"*/
   /* }*/
-  int File::read_shared(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::read_shared(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status)
+  {
     fh->shared_mutex_->lock();
     fh->seek(*(fh->shared_file_pointer_),MPI_SEEK_SET);
     read(fh, buf, count, datatype, status);
@@ -180,7 +183,8 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::read_ordered(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::read_ordered(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status)
+  {
     //0 needs to get the shared pointer value
     MPI_Offset val;
     if(fh->comm_->rank()==0){
@@ -203,7 +207,7 @@ namespace smpi{
     return ret;
   }
 
-  int File::write(MPI_File fh, void* /*buf*/, int count, MPI_Datatype datatype, MPI_Status* status)
+  int File::write(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype, MPI_Status* status)
   {
     //get position first as we may be doing non contiguous reads and it will probably be updated badly
     MPI_Offset position = fh->file_->tell();
@@ -221,7 +225,8 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::write_shared(MPI_File fh, const void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::write_shared(MPI_File fh, const void* buf, int count, const Datatype* datatype, MPI_Status* status)
+  {
     fh->shared_mutex_->lock();
     XBT_DEBUG("Write shared on %s - Shared ptr before : %lld",fh->file_->get_path(), *(fh->shared_file_pointer_));
     fh->seek(*(fh->shared_file_pointer_),MPI_SEEK_SET);
@@ -232,7 +237,8 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::write_ordered(MPI_File fh, const void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  int File::write_ordered(MPI_File fh, const void* buf, int count, const Datatype* datatype, MPI_Status* status)
+  {
     //0 needs to get the shared pointer value
     MPI_Offset val;
     if(fh->comm_->rank()==0){
@@ -263,7 +269,7 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::get_view(MPI_Offset* /*disp*/, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep)
+  int File::get_view(MPI_Offset* /*disp*/, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep) const
   {
     *etype=etype_;
     *filetype=filetype_;
@@ -271,11 +277,13 @@ namespace smpi{
     return MPI_SUCCESS;
   }
 
-  int File::size(){
+  int File::size() const
+  {
     return file_->size();
   }
 
-  int File::flags(){
+  int File::flags() const
+  {
     return flags_;
   }
 
@@ -301,7 +309,8 @@ namespace smpi{
       info_->ref();
   }
 
-  MPI_Comm File::comm(){
+  MPI_Comm File::comm() const
+  {
     return comm_;
   }
 

@@ -144,7 +144,7 @@ kernel::resource::CpuAction* HostL07Model::execute_parallel(const std::vector<s4
 
 L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host*>& host_list,
                      const double* flops_amount, const double* bytes_amount, double rate)
-    : CpuAction(model, 1, 0), computationAmount_(flops_amount), communicationAmount_(bytes_amount), rate_(rate)
+    : CpuAction(model, 1.0, false), computationAmount_(flops_amount), communicationAmount_(bytes_amount), rate_(rate)
 {
   size_t link_nb      = 0;
   size_t used_host_nb = 0; /* Only the hosts with something to compute (>0 flops) are counted) */

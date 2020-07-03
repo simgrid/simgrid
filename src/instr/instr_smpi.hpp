@@ -33,7 +33,7 @@ public:
   std::string previous_filename;
   int previous_linenumber;
 
-  std::string get_composed_key()
+  std::string get_composed_key() const
   {
     return previous_filename + ':' + std::to_string(previous_linenumber) + ':' + filename + ':' +
            std::to_string(linenumber);

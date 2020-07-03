@@ -156,13 +156,13 @@ public:
   ~HostEnergy();
 
   double get_current_watts_value();
-  double get_current_watts_value(double cpu_load);
+  double get_current_watts_value(double cpu_load) const;
   double get_consumed_energy();
-  double get_watt_idle_at(int pstate);
-  double get_watt_min_at(int pstate);
-  double get_watt_max_at(int pstate);
-  double get_power_range_slope_at(int pstate);
-  double get_last_update_time() { return last_updated_; }
+  double get_watt_idle_at(int pstate) const;
+  double get_watt_min_at(int pstate) const;
+  double get_watt_max_at(int pstate) const;
+  double get_power_range_slope_at(int pstate) const;
+  double get_last_update_time() const { return last_updated_; }
   void update();
 };
 
@@ -228,28 +228,28 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr)
 
 HostEnergy::~HostEnergy() = default;
 
-double HostEnergy::get_watt_idle_at(int pstate)
+double HostEnergy::get_watt_idle_at(int pstate) const
 {
   xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
              host_->get_cname());
   return power_range_watts_list_[pstate].idle_;
 }
 
-double HostEnergy::get_watt_min_at(int pstate)
+double HostEnergy::get_watt_min_at(int pstate) const
 {
   xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
              host_->get_cname());
   return power_range_watts_list_[pstate].epsilon_;
 }
 
-double HostEnergy::get_watt_max_at(int pstate)
+double HostEnergy::get_watt_max_at(int pstate) const
 {
   xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
              host_->get_cname());
   return power_range_watts_list_[pstate].max_;
 }
 
-double HostEnergy::get_power_range_slope_at(int pstate)
+double HostEnergy::get_power_range_slope_at(int pstate) const
 {
   xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
              host_->get_cname());
@@ -292,7 +292,7 @@ double HostEnergy::get_current_watts_value()
  *
  * Whether the host is ON or OFF is not taken into account.
  */
-double HostEnergy::get_current_watts_value(double cpu_load)
+double HostEnergy::get_current_watts_value(double cpu_load) const
 {
   xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
              host_->get_cname());

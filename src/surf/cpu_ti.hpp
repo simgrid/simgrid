@@ -29,9 +29,9 @@ class CpuTiProfile {
 public:
   explicit CpuTiProfile(const profile::Profile* profile);
 
-  double integrate_simple(double a, double b);
-  double integrate_simple_point(double a);
-  double solve_simple(double a, double amount);
+  double integrate_simple(double a, double b) const;
+  double integrate_simple_point(double a) const;
+  double solve_simple(double a, double amount) const;
 
   std::vector<double> time_points_;
   std::vector<double> integral_;
@@ -50,9 +50,9 @@ public:
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
 
-  double integrate(double a, double b);
-  double solve(double a, double amount);
-  double get_power_scale(double a);
+  double integrate(double a, double b) const;
+  double solve(double a, double amount) const;
+  double get_power_scale(double a) const;
 
 private:
   Type type_ = Type::FIXED;

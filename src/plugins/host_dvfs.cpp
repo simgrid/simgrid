@@ -414,7 +414,7 @@ static void on_host_added(simgrid::s4u::Host& host)
       }
     }();
 
-    while (1) {
+    while (true) {
       // Sleep *before* updating; important for startup (i.e., t = 0).
       // In the beginning, we want to go with the pstates specified in the platform file
       // (so we sleep first)

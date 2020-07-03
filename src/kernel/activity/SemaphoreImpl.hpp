@@ -30,11 +30,11 @@ public:
 
   void acquire(actor::ActorImpl* issuer, double timeout);
   void release();
-  bool would_block() { return (value_ == 0); }
+  bool would_block() const { return (value_ == 0); }
   void remove_sleeping_actor(actor::ActorImpl& actor) { xbt::intrusive_erase(sleeping_, actor); }
 
-  unsigned int get_capacity() { return value_; }
-  bool is_used() { return not sleeping_.empty(); }
+  unsigned int get_capacity() const { return value_; }
+  bool is_used() const { return not sleeping_.empty(); }
 
   friend void intrusive_ptr_add_ref(SemaphoreImpl* sem)
   {

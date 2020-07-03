@@ -37,7 +37,7 @@ public:
     msg_size        = std::stod(args[2]);
     receivers_count = std::stol(args[3]);
   }
-  void operator()()
+  void operator()() const
   {
     /* Vector in which we store all ongoing communications */
     std::vector<simgrid::s4u::CommPtr> pending_comms;

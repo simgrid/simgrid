@@ -74,7 +74,7 @@ static void worker(int argc, char* argv[])
   xbt_assert(argc == 2, "Expecting one parameter");
   long id                          = xbt_str_parse_int(argv[1], "Invalid argument %s");
   simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(id));
-  while (1) {
+  while (true) {
     try {
       XBT_INFO("Waiting a message on %s", mailbox->get_cname());
       const double* payload = static_cast<double*>(mailbox->get());

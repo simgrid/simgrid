@@ -161,7 +161,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   xbt_assert(static_cast<size_t>(ev->priority) < sizeof(xbt_log_priority_names)/sizeof(xbt_log_priority_names[0]),
              "Priority %d is greater than the biggest allowed value", ev->priority);
 
-  while (1) {
+  while (true) {
     const s_xbt_log_appender_t* appender = cat->appender;
 
     if (appender != nullptr) {
@@ -182,7 +182,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
         /* The static buffer was too small, use a dynamically expanded one */
         ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
         ev->buffer      = static_cast<char*>(xbt_malloc(ev->buffer_size));
-        while (1) {
+        while (true) {
           va_start(ev->ap, fmt);
           done = cat->layout->do_layout(cat->layout, ev, fmt);
           va_end(ev->ap);

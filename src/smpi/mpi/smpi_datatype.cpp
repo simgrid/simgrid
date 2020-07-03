@@ -224,16 +224,17 @@ void Datatype::commit()
   flags_ |= DT_FLAG_COMMITED;
 }
 
-bool Datatype::is_valid(){
+bool Datatype::is_valid() const
+{
   return (flags_ & DT_FLAG_COMMITED);
 }
 
-bool Datatype::is_basic()
+bool Datatype::is_basic() const
 {
   return (flags_ & DT_FLAG_BASIC);
 }
 
-bool Datatype::is_replayable()
+bool Datatype::is_replayable() const
 {
   return (simgrid::instr::trace_format == simgrid::instr::TraceFormat::Ti) &&
          ((this == MPI_BYTE) || (this == MPI_DOUBLE) || (this == MPI_INT) || (this == MPI_CHAR) ||
@@ -249,13 +250,15 @@ void Datatype::addflag(int flag){
   flags_ &= flag;
 }
 
-int Datatype::extent(MPI_Aint * lb, MPI_Aint * extent){
+int Datatype::extent(MPI_Aint* lb, MPI_Aint* extent) const
+{
   *lb = lb_;
   *extent = ub_ - lb_;
   return MPI_SUCCESS;
 }
 
-void Datatype::get_name(char* name, int* length){
+void Datatype::get_name(char* name, int* length) const
+{
   if(name_!=nullptr){
     *length = strlen(name_);
     strncpy(name, name_, *length+1);
@@ -288,9 +291,8 @@ int Datatype::unpack(const void* inbuf, int insize, int* position, void* outbuf,
   return MPI_SUCCESS;
 }
 
-int Datatype::get_contents (int max_integers, int max_addresses,
-                            int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses,
-                            MPI_Datatype *array_of_datatypes)
+int Datatype::get_contents(int max_integers, int max_addresses, int max_datatypes, int* array_of_integers,
+                           MPI_Aint* array_of_addresses, MPI_Datatype* array_of_datatypes) const
 {
   if(contents_==nullptr)
     return MPI_ERR_ARG;
@@ -307,8 +309,7 @@ int Datatype::get_contents (int max_integers, int max_addresses,
   return MPI_SUCCESS;
 }
 
-int Datatype::get_envelope (int* num_integers, int* num_addresses,
-                            int* num_datatypes, int* combiner)
+int Datatype::get_envelope(int* num_integers, int* num_addresses, int* num_datatypes, int* combiner) const
 {
   if(contents_==nullptr){
     *num_integers = 0;

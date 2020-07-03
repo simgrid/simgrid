@@ -29,7 +29,7 @@ static bool filter_speed_more_than_50Mf(const simgrid::s4u::Host* host)
  */
 class SingleCore {
 public:
-  bool operator()(const simgrid::s4u::Host* host) { return host->get_core_count() == 1; }
+  bool operator()(const simgrid::s4u::Host* host) const { return host->get_core_count() == 1; }
 };
 
 /* This functor is a bit more complex, as it saves the current state when created.
@@ -39,7 +39,7 @@ class FrequencyChanged {
   std::map<simgrid::s4u::Host*, int> host_list;
 
 public:
-  explicit FrequencyChanged(simgrid::s4u::Engine& e)
+  explicit FrequencyChanged(const simgrid::s4u::Engine& e)
   {
     std::vector<simgrid::s4u::Host*> list = e.get_all_hosts();
     for (auto& host : list) {

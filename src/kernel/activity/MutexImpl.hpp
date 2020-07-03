@@ -30,7 +30,7 @@ public:
   void lock(actor::ActorImpl* issuer);
   bool try_lock(actor::ActorImpl* issuer);
   void unlock(actor::ActorImpl* issuer);
-  bool is_locked() { return locked_; }
+  bool is_locked() const { return locked_; }
 
   MutexImpl* ref();
   void unref();
