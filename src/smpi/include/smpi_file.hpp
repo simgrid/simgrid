@@ -49,13 +49,14 @@ class File : public F2C{
   int get_view(MPI_Offset* disp, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep) const;
   MPI_Info info();
   void set_info( MPI_Info info);
-  static int read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
-  static int read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
-  static int read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
-  static int write(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
-  static int write_shared(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
-  static int write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
-  template <int (*T)(MPI_File, void *, int, MPI_Datatype, MPI_Status *)> int op_all(void *buf, int count,MPI_Datatype datatype, MPI_Status *status);
+  static int read(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status);
+  static int read_shared(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status);
+  static int read_ordered(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status);
+  static int write(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status);
+  static int write_shared(MPI_File fh, const void* buf, int count, const Datatype* datatype, MPI_Status* status);
+  static int write_ordered(MPI_File fh, const void* buf, int count, const Datatype* datatype, MPI_Status* status);
+  template <int (*T)(MPI_File, void*, int, const Datatype*, MPI_Status*)>
+  int op_all(void* buf, int count, const Datatype* datatype, MPI_Status* status);
   static int close(MPI_File *fh);
   static int del(const char* filename, const Info* info);
   MPI_Errhandler errhandler();
@@ -71,8 +72,9 @@ class File : public F2C{
   /* issue_date = {Winter 1996},*/
   /* pages = {301--317},*/
   /* }*/ 
-  template <int (*T)(MPI_File, void *, int, MPI_Datatype, MPI_Status *)>
-  int File::op_all(void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  template <int (*T)(MPI_File, void*, int, const Datatype*, MPI_Status*)>
+  int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* status)
+  {
     //get min and max offsets from everyone.
     int size =  comm_->size();
     int rank = comm_-> rank();

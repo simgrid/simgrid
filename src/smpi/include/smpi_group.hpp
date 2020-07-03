@@ -29,7 +29,7 @@ class Group : public F2C{
 public:
   Group() = default;
   explicit Group(int size) : size_(size), rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
-  explicit Group(Group* origin);
+  explicit Group(const Group* origin);
 
   void set_mapping(s4u::Actor* actor, int rank);
   int rank(int index);

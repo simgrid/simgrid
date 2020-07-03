@@ -73,7 +73,7 @@ void HostImpl::turn_on() const
 }
 
 /** Kill all actors hosted here */
-void HostImpl::turn_off(kernel::actor::ActorImpl* issuer)
+void HostImpl::turn_off(const kernel::actor::ActorImpl* issuer)
 {
   for (auto& actor : actor_list_) {
     XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),

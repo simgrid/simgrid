@@ -115,7 +115,7 @@ public:
       return (it == store.end()) ? MPI_REQUEST_NULL : it->second;
     }
 
-    void remove(MPI_Request req)
+    void remove(const Request* req)
     {
       if (req == MPI_REQUEST_NULL) return;
 

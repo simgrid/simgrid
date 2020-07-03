@@ -1026,7 +1026,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
   return index;
 }
 
-static int sort_accumulates(MPI_Request a, MPI_Request b)
+static int sort_accumulates(const Request* a, const Request* b)
 {
   return (a->tag() > b->tag());
 }

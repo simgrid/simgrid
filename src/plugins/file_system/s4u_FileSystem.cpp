@@ -702,7 +702,7 @@ void sg_file_close(const_sg_file_t fd)
 /** Retrieves the path to the file
  * @ingroup plugin_filesystem
  */
-const char* sg_file_get_name(sg_file_t fd)
+const char* sg_file_get_name(const_sg_file_t fd)
 {
   xbt_assert((fd != nullptr), "Invalid file descriptor");
   return fd->get_path();
@@ -711,7 +711,7 @@ const char* sg_file_get_name(sg_file_t fd)
 /** Retrieves the size of the file
  * @ingroup plugin_filesystem
  */
-sg_size_t sg_file_get_size(sg_file_t fd)
+sg_size_t sg_file_get_size(const_sg_file_t fd)
 {
   return fd->size();
 }
@@ -752,12 +752,12 @@ void sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin)
   fd->seek(offset, origin);
 }
 
-sg_size_t sg_file_tell(sg_file_t fd)
+sg_size_t sg_file_tell(const_sg_file_t fd)
 {
   return fd->tell();
 }
 
-void sg_file_move(sg_file_t fd, const char* fullpath)
+void sg_file_move(const_sg_file_t fd, const char* fullpath)
 {
   fd->move(fullpath);
 }

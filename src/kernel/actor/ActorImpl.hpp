@@ -121,7 +121,8 @@ public:
   ActorImpl* start(const ActorCode& code);
 
   static ActorImplPtr create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
-                             const std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor);
+                             const std::unordered_map<std::string, std::string>* properties,
+                             const ActorImpl* parent_actor);
   static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host,
                              const std::unordered_map<std::string, std::string>* properties);
   static void detach();

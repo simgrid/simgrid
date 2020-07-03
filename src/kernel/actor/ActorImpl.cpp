@@ -494,7 +494,8 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
 }
 
 ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
-                               const std::unordered_map<std::string, std::string>* properties, ActorImpl* parent_actor)
+                               const std::unordered_map<std::string, std::string>* properties,
+                               const ActorImpl* parent_actor)
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
 

@@ -29,14 +29,14 @@ XBT_PUBLIC sg_size_t sg_file_read(sg_file_t fd, sg_size_t size);
 XBT_PUBLIC sg_size_t sg_file_write(sg_file_t fd, sg_size_t size);
 XBT_PUBLIC void sg_file_close(const_sg_file_t fd);
 
-XBT_PUBLIC const char* sg_file_get_name(sg_file_t fd);
-XBT_PUBLIC sg_size_t sg_file_get_size(sg_file_t fd);
+XBT_PUBLIC const char* sg_file_get_name(const_sg_file_t fd);
+XBT_PUBLIC sg_size_t sg_file_get_size(const_sg_file_t fd);
 XBT_PUBLIC void sg_file_dump(sg_file_t fd);
 XBT_PUBLIC void* sg_file_get_data(const_sg_file_t fd);
 XBT_PUBLIC void sg_file_set_data(sg_file_t fd, void* data);
 XBT_PUBLIC void sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin);
-XBT_PUBLIC sg_size_t sg_file_tell(sg_file_t fd);
-XBT_PUBLIC void sg_file_move(sg_file_t fd, const char* fullpath);
+XBT_PUBLIC sg_size_t sg_file_tell(const_sg_file_t fd);
+XBT_PUBLIC void sg_file_move(const_sg_file_t fd, const char* fullpath);
 XBT_PUBLIC void sg_file_unlink(sg_file_t fd);
 XBT_PUBLIC int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath);
 XBT_PUBLIC int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath);

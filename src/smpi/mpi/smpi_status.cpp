@@ -37,7 +37,7 @@ void Status::set_elements(MPI_Status* status, const Datatype*, int count)
   status->count=count;
 }
 
-int Status::get_count(const MPI_Status * status, MPI_Datatype datatype)
+int Status::get_count(const MPI_Status* status, const Datatype* datatype)
 {
   return status->count / datatype->size();
 }

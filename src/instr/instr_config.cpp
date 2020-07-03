@@ -225,7 +225,7 @@ xbt::signal<void(PajeEvent&)> PajeEvent::on_destruction;
 xbt::signal<void(StateEvent&)> StateEvent::on_destruction;
 xbt::signal<void(EntityValue&)> EntityValue::on_creation;
 
-static void on_container_creation_paje(Container& c)
+static void on_container_creation_paje(const Container& c)
 {
   double timestamp = SIMIX_get_clock();
   std::stringstream stream;
@@ -244,7 +244,7 @@ static void on_container_creation_paje(Container& c)
   tracing_file << stream.str() << std::endl;
 }
 
-static void on_container_destruction_paje(Container& c)
+static void on_container_destruction_paje(const Container& c)
 {
   // trace my destruction, but not if user requests so or if the container is root
   if (not trace_disable_destroy && &c != Container::get_root()) {
@@ -323,13 +323,13 @@ static void on_event_destruction(const PajeEvent& event)
   tracing_file << event.stream_.str() << std::endl;
 }
 
-static void on_state_event_destruction(StateEvent& event)
+static void on_state_event_destruction(const StateEvent& event)
 {
   if (event.has_extra())
     *tracing_files.at(event.get_container()) << event.stream_.str() << std::endl;
 }
 
-static void on_type_creation(Type& type, e_event_type event_type)
+static void on_type_creation(const Type& type, e_event_type event_type)
 {
   if (event_type == PAJE_DefineLinkType)
     return; // this kind of type has to be handled differently
@@ -344,7 +344,7 @@ static void on_type_creation(Type& type, e_event_type event_type)
   tracing_file << stream.str() << std::endl;
 }
 
-static void on_link_type_creation(Type& type, Type& source, Type& dest)
+static void on_link_type_creation(const Type& type, const Type& source, const Type& dest)
 {
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, PAJE_DefineLinkType, trace_precision, 0.);

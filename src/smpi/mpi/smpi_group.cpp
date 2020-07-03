@@ -14,7 +14,7 @@ MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
 namespace simgrid{
 namespace smpi{
 
-Group::Group(Group* origin)
+Group::Group(const Group* origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     size_              = origin->size();
