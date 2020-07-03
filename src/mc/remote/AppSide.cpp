@@ -145,7 +145,7 @@ void AppSide::handle_messages() const
   }
 }
 
-void AppSide::main_loop()
+void AppSide::main_loop() const
 {
   while (true) {
     simgrid::mc::wait_for_requests();

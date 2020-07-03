@@ -716,7 +716,7 @@ sg_size_t sg_file_get_size(const_sg_file_t fd)
   return fd->size();
 }
 
-void sg_file_dump(sg_file_t fd)
+void sg_file_dump(const_sg_file_t fd)
 {
   fd->dump();
 }
