@@ -1,0 +1,20 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <zone id="world" routing="Full">
+    <zone id="WIFI zone" routing="Cluster">
+    
+        <link id="AP1" sharing_policy="WIFI" bandwidth="54Mbps" latency="0ms">
+          <prop id="wifi_watt_values" value="0:1:1:0"/>
+	  <prop id="control_duration" value="0"/>
+        </link>
+        <host id="Station 1" speed="100.0Mf,50.0Mf,20.0Mf" />
+          <host_link id="Station 1" up="AP1" down="AP1"/>
+	<host id="Station 2" speed="100.0Mf,50.0Mf,20.0Mf" />
+          <host_link id="Station 2" up="AP1" down="AP1"/>
+	<router id="router"/>
+
+    </zone>
+  </zone>
+</platform>	
+    
