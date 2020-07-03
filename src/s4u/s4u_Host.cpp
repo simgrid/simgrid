@@ -319,7 +319,7 @@ size_t sg_host_count()
 }
 sg_host_t* sg_host_list()
 {
-  simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
+  const simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
   size_t host_count       = e->get_host_count();
   xbt_assert(host_count > 0, "There is no host!");
   std::vector<simgrid::s4u::Host*> hosts = e->get_all_hosts();

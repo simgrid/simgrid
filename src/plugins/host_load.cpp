@@ -218,7 +218,7 @@ void sg_host_load_plugin_init()
 
   // If SimGrid is already initialized, we need to attach an extension to each existing host
   if (simgrid::s4u::Engine::is_initialized()) {
-    simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
+    const simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
     for (auto& host : e->get_all_hosts()) {
       host->extension_set(new HostLoad(host));
     }

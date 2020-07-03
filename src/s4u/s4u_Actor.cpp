@@ -478,7 +478,7 @@ size_t sg_actor_count()
 
 sg_actor_t* sg_actor_list()
 {
-  simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
+  const simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
   size_t actor_count      = e->get_actor_count();
   xbt_assert(actor_count > 0, "There is no actor!");
   std::vector<simgrid::s4u::ActorPtr> actors = e->get_all_actors();

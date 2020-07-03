@@ -429,7 +429,7 @@ void Request::start()
     if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
       mut->unlock();
   } else { /* the RECV flag was not set, so this is a send */
-    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
+    const simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     xbt_assert(process, "Actor pid=%d is gone??", dst_);
     int rank = src_;
     if (TRACE_smpi_view_internals()) {

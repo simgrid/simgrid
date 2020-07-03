@@ -94,7 +94,7 @@ static const std::pair<const char*, const char*> ignored_local_variables[] = {
 
 void ModelChecker::setup_ignore()
 {
-  RemoteSimulation& process = this->get_remote_simulation();
+  const RemoteSimulation& process = this->get_remote_simulation();
   for (std::pair<const char*, const char*> const& var :
       ignored_local_variables)
     process.ignore_local_variable(var.first, var.second);

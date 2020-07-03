@@ -158,7 +158,7 @@ static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, st
 
   for (auto const& host_name : hostgroup) {
     xbt_assert( host_name != nullptr );
-    jed_container_t parent_cont = host2_simgrid_parent_container.at(host_name);
+    const simgrid::jedule::Container* parent_cont = host2_simgrid_parent_container.at(host_name);
     unsigned int id             = parent_cont->get_id_by_name(host_name);
     id_list.push_back(id);
   }

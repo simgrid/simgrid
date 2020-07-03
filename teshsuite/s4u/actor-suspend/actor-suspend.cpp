@@ -50,7 +50,7 @@ public:
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine* engine = new simgrid::s4u::Engine(&argc, argv);
+  const simgrid::s4u::Engine* engine = new simgrid::s4u::Engine(&argc, argv);
 
   engine->load_platform(argv[1]);
   simgrid::s4u::Host* host = simgrid::s4u::Host::by_name("Tremblay");
