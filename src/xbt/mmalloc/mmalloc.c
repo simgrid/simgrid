@@ -250,7 +250,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       result = mmalloc(mdp, BLOCKSIZE); // does not return NULL
       block = BLOCK(result);
 
-      mdp->heapinfo[block].type = log;
+      mdp->heapinfo[block].type = (int)log;
       /* Link all fragments but the first as free, and add the block to the swag of blocks containing free frags  */
       size_t i;
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {

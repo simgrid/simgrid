@@ -11,7 +11,7 @@
 // Set the elements between buf[start] and buf[stop-1] to (i+value)%256
 static void set(uint8_t *buf, size_t start, size_t stop, uint8_t value) {
   for(size_t i = start; i < stop; i++) {
-    buf[i] = (i+value)%256;
+    buf[i] = (uint8_t)((i + value) % 256);
   }
 }
 
