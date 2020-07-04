@@ -17,7 +17,7 @@ static void set(uint8_t *buf, size_t start, size_t stop, uint8_t value) {
 }
 
 // Return the number of times that an element is equal to (i+value)%256 between buf[start] and buf[stop-1].
-static int count_all(const uint8_t* buf, size_t start, size_t stop, uint8_t value)
+static size_t count_all(const uint8_t* buf, size_t start, size_t stop, uint8_t value)
 {
   size_t occ = 0;
   for(size_t i = start ; i < stop ; i++) {
