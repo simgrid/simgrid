@@ -329,9 +329,9 @@ int xbt_automaton_exp_label_compare(const_xbt_automaton_exp_label_t l1, const_xb
 
 int xbt_automaton_propositional_symbols_compare_value(const_xbt_dynar_t s1, const_xbt_dynar_t s2)
 {
-  unsigned int nb_elem = xbt_dynar_length(s1);
+  unsigned long nb_elem = xbt_dynar_length(s1);
 
-  for (unsigned int cursor = 0; cursor < nb_elem; cursor++) {
+  for (unsigned long cursor = 0; cursor < nb_elem; cursor++) {
     const int* iptr1 = xbt_dynar_get_ptr(s1, cursor);
     const int* iptr2 = xbt_dynar_get_ptr(s2, cursor);
     if(*iptr1 != *iptr2)

@@ -54,7 +54,7 @@ static void initialize_heapinfo_heapinfo(const s_xbt_mheap_t* mdp)
 {
   // Update heapinfo about the heapinfo pages (!):
   xbt_assert((uintptr_t) mdp->heapinfo % BLOCKSIZE == 0);
-  int block = BLOCK(mdp->heapinfo);
+  size_t block   = BLOCK(mdp->heapinfo);
   size_t nblocks = mdp->heapsize * sizeof(malloc_info) / BLOCKSIZE;
   // Mark them as free:
   for (size_t j=0; j!=nblocks; ++j) {
