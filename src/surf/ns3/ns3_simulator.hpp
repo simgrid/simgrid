@@ -11,6 +11,7 @@
 
 #include <ns3/node.h>
 #include <ns3/tcp-socket-factory.h>
+#include "ns3/wifi-module.h"
 
 #include <cstdint>
 
@@ -25,7 +26,7 @@ public:
 
 XBT_PUBLIC void ns3_initialize(std::string TcpProtocol);
 XBT_PUBLIC void ns3_simulator(double max_seconds);
-XBT_PUBLIC void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double lat,
+XBT_PUBLIC void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double lat, std::string link_name,
                                      simgrid::s4u::Link::SharingPolicy policy);
 XBT_PUBLIC void ns3_add_cluster(const char* id, double bw, double lat);
 
@@ -50,5 +51,37 @@ static inline std::string transform_socket_ptr(ns3::Ptr<ns3::Socket> local_socke
   sstream << local_socket;
   return sstream.str();
 }
+
+class XBT_PRIVATE WifiZone {
+public:
+  WifiZone(std::string name_, simgrid::s4u::Host* host_, ns3::Ptr<ns3::Node> ap_node_,
+           ns3::Ptr<ns3::YansWifiChannel> channel_, int network_, int link_);
+
+  const char* get_cname();
+  simgrid::s4u::Host* get_host();
+  ns3::Ptr<ns3::Node> get_ap_node();
+  ns3::Ptr<ns3::YansWifiChannel> get_channel();
+  int get_network();
+  int get_link();
+  int get_n_sta_nodes();
+
+  void set_ap_node(ns3::Ptr<ns3::Node> ap_node_);
+  void set_network(int network_);
+  void set_link(int link_);
+  void add_sta_node();
+  static bool is_ap(ns3::Ptr<ns3::Node> ap);
+
+  static WifiZone* by_name(std::string name);
+
+private:
+  std::string name;
+  simgrid::s4u::Host* host;
+  ns3::Ptr<ns3::Node> ap_node;
+  ns3::Ptr<ns3::YansWifiChannel> channel;
+  int network;
+  int link;
+  int n_sta_nodes;
+  static std::unordered_map<std::string, WifiZone*> wifi_zones;
+};
 
 #endif
