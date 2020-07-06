@@ -2,7 +2,7 @@
 
 p Test1 sg_comm_test() with Sleep_sender > Sleep_receiver
 
-$ ${bindir:=.}/c-async-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/async-wait_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-wait_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 5.000000 , sleep_test_time : 0.100000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 1.000000 , sleep_test_time : 0.100000
 > [  1.000000] (2:receiver@Ruby) Wait for my first message
@@ -17,7 +17,7 @@ $ ${bindir:=.}/c-async-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=
 
 p Test2 sg_comm_test() with Sleep_sender < Sleep_receiver
 
-$ ${bindir:=.}/c-async-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/async-wait2_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-wait2_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 1.000000 , sleep_test_time : 0.100000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 5.000000 , sleep_test_time : 0.100000
 > [  1.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'
@@ -32,7 +32,7 @@ $ ${bindir:=.}/c-async-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=
 
 p Test1 sg_comm_wait() with Sleep_sender > Sleep_receiver
 
-$ ${bindir:=.}/c-async-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/async-wait3_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-wait3_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 5.000000 , sleep_test_time : 0.000000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 1.000000 , sleep_test_time : 0.000000
 > [  1.000000] (2:receiver@Ruby) Wait for my first message
@@ -47,7 +47,7 @@ $ ${bindir:=.}/c-async-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=
 
 p Test2 sg_comm_wait() with Sleep_sender < Sleep_receiver
 
-$ ${bindir:=.}/c-async-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/async-wait4_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-wait4_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 1.000000 , sleep_test_time : 0.000000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 5.000000 , sleep_test_time : 0.000000
 > [  1.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'

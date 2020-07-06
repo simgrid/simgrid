@@ -62,7 +62,7 @@ endif()
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-pingpong app-token-ring
-                 async-ready async-wait async-waitany async-waitall async-waituntil
+                 comm-ready comm-wait comm-waitany comm-waitall comm-waituntil
                  comm-dependent
                  cloud-capping cloud-migration cloud-simple
                  dht-chord dht-kademlia
@@ -218,11 +218,11 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-ready/s4u-async-ready_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waituntil/s4u-async-waituntil_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/s4u-comm-wait_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitany/s4u-comm-waitany_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitall/s4u-comm-waitall_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-ready/s4u-comm-ready_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-waituntil/s4u-comm-waituntil_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-boot/platform_boot.xml

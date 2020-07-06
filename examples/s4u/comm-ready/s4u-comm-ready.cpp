@@ -33,7 +33,8 @@ static void peer(int argc, char** argv)
   double msg_size     = std::stol(argv[3]); /* - message size in bytes */
   long peers_count    = std::stod(argv[4]); /* - number of peers */
 
-  /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put into it */
+  /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put
+   * into it */
   simgrid::s4u::Mailbox* my_mbox = simgrid::s4u::Mailbox::by_name(std::string("peer-") + std::to_string(my_id));
   my_mbox->set_receiver(simgrid::s4u::Actor::self());
 
@@ -43,10 +44,11 @@ static void peer(int argc, char** argv)
   for (int i = 0; i < messages_count; i++) {
     for (int peer_id = 0; peer_id < peers_count; peer_id++) {
       if (peer_id != my_id) {
-        std::string mboxName          = std::string("peer-") + std::to_string(peer_id);
-        simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
-        std::string msgName           = std::string("Message ") + std::to_string(i) + std::string(" from peer ") + std::to_string(my_id);
-        std::string* payload          = new std::string(msgName); // copy the data we send:
+        std::string mboxName        = std::string("peer-") + std::to_string(peer_id);
+        simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+        std::string msgName =
+            std::string("Message ") + std::to_string(i) + std::string(" from peer ") + std::to_string(my_id);
+        std::string* payload = new std::string(msgName); // copy the data we send:
         // 'msgName' is not a stable storage location
         XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
         /* Create a communication representing the ongoing communication */
@@ -58,23 +60,27 @@ static void peer(int argc, char** argv)
   /* Start sending messages to let peers know that they should stop */
   for (int peer_id = 0; peer_id < peers_count; peer_id++) {
     if (peer_id != my_id) {
-      std::string mboxName          = std::string("peer-") + std::to_string(peer_id);
-      simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
-      std::string* payload          = new std::string("finalize"); // Make a copy of the data we will send
+      std::string mboxName        = std::string("peer-") + std::to_string(peer_id);
+      simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+      std::string* payload        = new std::string("finalize"); // Make a copy of the data we will send
       pending_comms.push_back(mbox->put_async(payload, msg_size));
       XBT_INFO("Send 'finalize' to 'peer-%d'", peer_id);
     }
   }
   XBT_INFO("Done dispatching all messages");
 
-  /* Retrieve all the messages other peers have been sending to me until I receive all the corresponding "Finalize" messages */
+  /* Retrieve all the messages other peers have been sending to me until I receive all the corresponding "Finalize"
+   * messages */
   int pending_finalize_messages = peers_count - 1;
   while (pending_finalize_messages > 0) {
     if (my_mbox->ready()) {
-      double start          = simgrid::s4u::Engine::get_clock();
+      double start                = simgrid::s4u::Engine::get_clock();
       const std::string* received = static_cast<std::string*>(my_mbox->get());
-      double waiting_time   = simgrid::s4u::Engine::get_clock() - start;
-      xbt_assert(waiting_time == 0, "Expecting the waiting time to be 0 because the communication was supposedly ready, but got %f instead", waiting_time);
+      double waiting_time         = simgrid::s4u::Engine::get_clock() - start;
+      xbt_assert(
+          waiting_time == 0,
+          "Expecting the waiting time to be 0 because the communication was supposedly ready, but got %f instead",
+          waiting_time);
       XBT_INFO("I got a '%s'.", received->c_str());
       if (*received == "finalize") {
         pending_finalize_messages--;
@@ -92,8 +98,7 @@ static void peer(int argc, char** argv)
   XBT_INFO("Goodbye now!");
 }
 
-
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 

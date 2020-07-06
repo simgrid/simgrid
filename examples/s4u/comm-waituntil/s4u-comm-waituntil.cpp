@@ -6,7 +6,7 @@
 /* This example shows how to use simgrid::s4u::Activity::wait_until() and
  * simgrid::s4u::Activity::wait_for() on a given communication.
  *
- * It is very similar to the async-wait example, but the sender initially
+ * It is very similar to the comm-wait example, but the sender initially
  * does some waits that are too short before doing an infinite wait.
  */
 
@@ -15,7 +15,7 @@
 #include <iostream>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_waituntil, "Messages specific for this s4u example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_waituntil, "Messages specific for this s4u example");
 
 static void sender(int argc, char** argv)
 {
@@ -28,10 +28,10 @@ static void sender(int argc, char** argv)
 
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
-    std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
-    simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
-    std::string msgName           = std::string("Message ") + std::to_string(i);
-    std::string* payload          = new std::string(msgName); // copy the data we send:
+    std::string mboxName        = std::string("receiver-") + std::to_string(i % receivers_count);
+    simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+    std::string msgName         = std::string("Message ") + std::to_string(i);
+    std::string* payload        = new std::string(msgName); // copy the data we send:
 
     // 'msgName' is not a stable storage location
     XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
@@ -43,9 +43,9 @@ static void sender(int argc, char** argv)
 
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
-    std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
-    simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
-    std::string* payload          = new std::string("finalize"); // Make a copy of the data we will send
+    std::string mboxName        = std::string("receiver-") + std::to_string(i % receivers_count);
+    simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+    std::string* payload        = new std::string("finalize"); // Make a copy of the data we will send
 
     simgrid::s4u::CommPtr comm = mbox->put_async(payload, 0);
     pending_comms.push_back(comm);

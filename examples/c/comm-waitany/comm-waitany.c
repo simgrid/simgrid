@@ -6,22 +6,21 @@
 #include "simgrid/actor.h"
 #include "simgrid/comm.h"
 #include "simgrid/engine.h"
-#include "simgrid/host.h"
+#include "simgrid/forward.h"
 #include "simgrid/mailbox.h"
-
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
 
 #include <stdio.h> /* snprintf */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitall, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(comm_waitany, "Messages specific for this example");
 
 static void sender(int argc, char* argv[])
 {
-  xbt_assert(argc == 4, "This function expects 3 parameters from the XML deployment file");
+  xbt_assert(argc == 4, "Expecting 3 parameters from the XML deployment file but got %d", argc);
   long messages_count  = xbt_str_parse_int(argv[1], "Invalid message count: %s");
-  long message_size    = xbt_str_parse_int(argv[2], "Invalid message size: %s");
+  long msg_size        = xbt_str_parse_int(argv[2], "Invalid message size: %s");
   long receivers_count = xbt_str_parse_int(argv[3], "Invalid amount of receivers: %s");
 
   /* Array in which we store all ongoing communications */
@@ -43,10 +42,10 @@ static void sender(int argc, char* argv[])
     snprintf(msg_content, 79, "Message %d", i);
     sg_mailbox_t mbox = mboxes[i % receivers_count];
     XBT_INFO("Send '%s' to '%s'", msg_content, sg_mailbox_get_name(mbox));
-    /* Create a communication representing the ongoing communication, and store it in pending_comms */
-    pending_comms[pending_comms_count++] = sg_mailbox_put_async(mbox, xbt_strdup(msg_content), message_size);
-  }
 
+    /* Create a communication representing the ongoing communication, and store it in pending_comms */
+    pending_comms[pending_comms_count++] = sg_mailbox_put_async(mbox, xbt_strdup(msg_content), msg_size);
+  }
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
     XBT_INFO("Send 'finalize' to 'receiver-%d'", i);
@@ -57,8 +56,22 @@ static void sender(int argc, char* argv[])
 
   XBT_INFO("Done dispatching all messages");
 
-  /* Now that all message exchanges were initiated, wait for their completion in one single call */
-  sg_comm_wait_all(pending_comms, pending_comms_count);
+  /* Now that all message exchanges were initiated, wait for their completion, in order of termination.
+   *
+   * This loop waits for first terminating message with wait_any() and remove it from the array (with a memmove),
+   *  until all comms are terminated.
+   * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
+   */
+  while (pending_comms_count != 0) {
+    int changed_pos = sg_comm_wait_any(pending_comms, pending_comms_count);
+    memmove(pending_comms + changed_pos, pending_comms + changed_pos + 1,
+            sizeof(sg_comm_t) * (pending_comms_count - changed_pos - 1));
+    pending_comms_count--;
+
+    if (changed_pos != 0)
+      XBT_INFO("Remove the %dth pending comm: it terminated earlier than another comm that was initiated first.",
+               changed_pos);
+  }
 
   free(pending_comms);
   free(mboxes);
@@ -73,7 +86,7 @@ static void receiver(int argc, char* argv[])
   char mailbox_name[80];
   snprintf(mailbox_name, 79, "receiver-%d", id);
   sg_mailbox_t mbox = sg_mailbox_by_name(mailbox_name);
-  XBT_INFO("Wait for my first message");
+  XBT_INFO("Wait for my first message on '%s'", mailbox_name);
   while (1) {
     char* received = (char*)sg_mailbox_get(mbox);
     XBT_INFO("I got a '%s'.", received);
@@ -83,6 +96,8 @@ static void receiver(int argc, char* argv[])
     }
     xbt_free(received);
   }
+
+  XBT_INFO("I'm done. See you!");
 }
 
 int main(int argc, char* argv[])
@@ -100,6 +115,7 @@ int main(int argc, char* argv[])
   simgrid_load_deployment(argv[2]);
 
   simgrid_run();
+  XBT_INFO("Simulation time %g", simgrid_get_clock());
 
   return 0;
 }

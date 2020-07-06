@@ -289,15 +289,15 @@ Communications on the Network
 
    .. tabs::
 
-      .. example-tab:: examples/s4u/async-wait/s4u-async-wait.cpp
+      .. example-tab:: examples/s4u/comm-wait/s4u-comm-wait.cpp
 
          See also :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`.
 
-      .. example-tab:: examples/python/async-wait/async-wait.py
+      .. example-tab:: examples/python/comm-wait/comm-wait.py
 
          See also :py:func:`simgrid.Mailbox.put_async()` and :py:func:`simgrid.Comm.wait()`.
 
-      .. example-tab:: examples/c/async-wait/async-wait.c
+      .. example-tab:: examples/c/comm-wait/comm-wait.c
 
          See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm__wait()`.
 
@@ -307,15 +307,15 @@ Communications on the Network
    
    .. tabs::
 
-      .. example-tab:: examples/s4u/async-waitall/s4u-async-waitall.cpp
+      .. example-tab:: examples/s4u/comm-waitall/s4u-comm-waitall.cpp
 
          See also :cpp:func:`simgrid::s4u::Comm::wait_all()`.
 
-      .. example-tab:: examples/python/async-waitall/async-waitall.py
+      .. example-tab:: examples/python/comm-waitall/comm-waitall.py
 
          See also :py:func:`simgrid.Comm.wait_all()`.
 
-      .. example-tab:: examples/c/async-waitall/async-waitall.c
+      .. example-tab:: examples/c/comm-waitall/comm-waitall.c
 
          See also :cpp:func:`sg_comm_wait_all()`.
 
@@ -326,15 +326,15 @@ Communications on the Network
    
    .. tabs::
 
-      .. example-tab:: examples/s4u/async-waitany/s4u-async-waitany.cpp
+      .. example-tab:: examples/s4u/comm-waitany/s4u-comm-waitany.cpp
 
          See also :cpp:func:`simgrid::s4u::Comm::wait_any()`.
 
-      .. example-tab:: examples/python/async-waitany/async-waitany.py
+      .. example-tab:: examples/python/comm-waitany/comm-waitany.py
 
          See also :py:func:`simgrid.Comm.wait_any()`.
 	 
-      .. example-tab:: examples/c/async-waitany/async-waitany.c
+      .. example-tab:: examples/c/comm-waitany/comm-waitany.c
 
          See also :cpp:func:`sg_comm_wait_any`.
      

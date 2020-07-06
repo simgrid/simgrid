@@ -98,7 +98,7 @@ public:
   }
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 

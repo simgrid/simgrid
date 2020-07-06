@@ -16,7 +16,7 @@
 #include <iostream>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_wait, "Messages specific for this s4u example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_wait, "Messages specific for this s4u example");
 
 static void sender(int argc, char** argv)
 {
@@ -87,7 +87,7 @@ static void receiver(int, char**)
   }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 

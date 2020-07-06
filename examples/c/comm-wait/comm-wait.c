@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(async_wait, "Messages specific for this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(comm_wait, "Messages specific for this example");
 
 /* Main function of the Sender actor */
 static void sender(int argc, char* argv[])
