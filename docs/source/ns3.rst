@@ -24,8 +24,8 @@ Enabling ns-3 in SimGrid
 ========================
 
 SimGrid must be recompiled with the ``enable_ns3`` option activated in cmake.
-Optionally, use ``NS3_HINT`` to hint cmake about the path on disk
-where ns-3 is installed.
+Optionally, use ``NS3_HINT`` to tell cmake where ns3 is installed on
+your disk.
 
 .. code-block:: shell
 
