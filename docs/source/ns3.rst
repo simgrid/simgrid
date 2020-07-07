@@ -18,27 +18,14 @@ SimGrid requires ns-3 version 3.26 or higher, and you probably want the most
 recent version of both SimGrid and ns-3. While the Debian package of SimGrid
 don't have the ns-3 bindings activated, you can still use the packaged version
 of ns-3 by grabbing the ``libns3-dev ns3`` packages. Alternatively, you can
-install ns-3 from scratch as follows:
-
-.. code-block:: shell
-
-  # Download the source
-  wget http://www.nsnam.org/release/ns-allinone-3.29.tar.bz2
-  tar -xf ns-allinone-3.29.tar.bz2
-  cd ns-allinone-3.29/ns-3.29/
-  # Configure, build and install
-  ./waf configure --prefix="/opt/ns3" # or give another path if you prefer
-  ./waf
-  ./waf install
-
-For more information, please refer to the ns-3 documentation
-(`official website <http://www.nsnam.org>`_).
+install ns-3 from scratch (see the `ns-3 documentation <http://www.nsnam.org>`_).
 
 Enabling ns-3 in SimGrid
 ========================
 
 SimGrid must be recompiled with the ``enable_ns3`` option activated in cmake.
-Optionally, use ``NS3_HINT`` to hint cmake about where to find ns-3.
+Optionally, use ``NS3_HINT`` to hint cmake about the path on disk
+where ns-3 is installed.
 
 .. code-block:: shell
 
@@ -80,21 +67,23 @@ Platform files compatibility
 Any route longer than one will be ignored when using ns-3. They are
 harmless, but you still need to connect your hosts using one-hop routes.
 The best solution is to add routers to split your route. Here is an
-example of invalid platform:
+example of an invalid platform:
 
 .. code-block:: shell
 
    <platform>
-     <host id="alice" speed="1Gf" />
-     <host id="bob"   speed="1Gf" />
+     <zone id="zone0" routing="Full">
+       <host id="alice" speed="1Gf" />
+       <host id="bob"   speed="1Gf" />
   
-     <link id="l1" bw="1Mbps" />
-     <link id="l2" bw="1Mbps" />
+       <link id="l1" bw="1Mbps" />
+       <link id="l2" bw="1Mbps" />
 
-     <route src="alice" dst="bob">
-       <link_ctn id="l1"/>            <!-- !!!! INVALID WITH ns-3    !!!! -->
-       <link_ctn id="l2"/>            <!-- !!!! length=2 IS TOO MUCH !!!! -->
-     </route>
+       <route src="alice" dst="bob">
+         <link_ctn id="l1"/>            <!-- !!!! INVALID WITH ns-3    !!!! -->
+         <link_ctn id="l2"/>            <!-- !!!! length=2 IS TOO MUCH !!!! -->
+       </route>
+     </zone>
    </platform>
   
 This can be reformulated as follows to make it usable with the ns-3 binding.
@@ -104,21 +93,23 @@ ns-3 automatically routes from point to point.
 .. code-block:: shell
 
    <platform>
-     <host id="alice" speed="1Gf" />
-     <host id="bob"   speed="1Gf" />
+     <zone id="zone0" routing="Full">
+       <host id="alice" speed="1Gf" />
+       <host id="bob"   speed="1Gf" />
 
-     <router id="r1" /> <!-- routers are compute-less hosts -->
+       <router id="r1" /> <!-- routers are compute-less hosts -->
 
-     <link id="l1" bw="1Mbps" />
-     <link id="l2" bw="1Mbps" />
+       <link id="l1" bw="1Mbps" />
+       <link id="l2" bw="1Mbps" />
 
-     <route src="alice" dst="r1">
-       <link_ctn id="l1"/> 
-     </route>
+       <route src="alice" dst="r1">
+         <link_ctn id="l1"/> 
+       </route>
   
-     <route src="r1" dst="bob">
-       <link_ctn id="l2"/> 
-     </route>
+       <route src="r1" dst="bob">
+         <link_ctn id="l2"/> 
+       </route>
+     </zone>
    </platform>
 
 Once your platform is OK, just change the :ref:`network/model
@@ -131,7 +122,7 @@ is unchanged.
 
 Many other files from the ``examples/platform directory`` are usable with the
 ns-3 model, such as `examples/platforms/dogbone.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/dogbone.xml>`_.
-Check the file  `examples/deprecated/msg/network-ns3/network-ns3.tesh <https://framagit.org/simgrid/simgrid/tree/master/examples/deprecated/msg/network-ns3/network-ns3.tesh>`_
+Check the file  `examples/s4u/network-ns3/network-ns3.tesh <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/network-ns3/network-ns3.tesh>`_
 to see which ones are used in our regression tests.
 
 Limitations
@@ -151,7 +142,7 @@ platform. However, there are some known caveats:
 Our goal is to keep the ns-3 plugin of SimGrid as easy (and hopefully readable)
 as possible. If the current state does not fit your needs, you should modify
 this plugin, and/or create your own plugin from the existing one. If you come up
-with interesting improvements, please contribute them back
+with interesting improvements, please contribute them back.
 
 Troubleshooting
 ===============
