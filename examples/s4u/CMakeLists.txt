@@ -62,7 +62,7 @@ endif()
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-pingpong app-token-ring
-                 comm-ready comm-wait comm-waitany comm-waitall comm-waituntil
+                 comm-ready comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
                  comm-dependent
                  cloud-capping cloud-migration cloud-simple
                  dht-chord dht-kademlia

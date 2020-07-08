@@ -44,6 +44,10 @@ Io* Io::start()
           .start();
     }
   });
+
+  if (suspended_)
+    pimpl_->suspend();
+
   state_ = State::STARTED;
   return this;
 }

@@ -1708,6 +1708,17 @@ Activities life cycle
       .. autodoxymethod:: simgrid::s4u::Activity::wait_until(double time_limit)
       .. autodoxymethod:: simgrid::s4u::Activity::vetoable_start()
 
+Suspending and resuming an activity
+-----------------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Activity::suspend
+      .. autodoxymethod:: simgrid::s4u::Activity::resume
+      .. autodoxymethod:: simgrid::s4u::Activity::is_suspended
+
 .. _API_s4u_Comm:
 
 =============

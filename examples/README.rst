@@ -301,6 +301,21 @@ Communications on the Network
 
          See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm__wait()`.
 
+ - **Suspending communications:**
+   The ``suspend()`` and ``resume()`` functions allow to block the
+   progression of a given communication for a while and then unblock it.
+   ``is_suspended()`` can be used to retrieve whether the activity is
+   currently blocked or not.
+   
+   .. tabs::
+
+      .. example-tab:: examples/s4u/comm-suspend/s4u-comm-suspend.cpp
+
+         See also :cpp:func:`simgrid::s4u::Activity::suspend()`
+	 :cpp:func:`simgrid::s4u::Activity::resume()` and
+	 :cpp:func:`simgrid::s4u::Activity::is_suspended()`.
+
+	 
  - **Waiting for all communications in a set:**
    The ``wait_all()`` function is useful when you want to block until
    all activities in a given set have completed. 
