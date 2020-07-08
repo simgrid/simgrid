@@ -58,11 +58,6 @@ static int number_of_links = 1;
 static int number_of_networks = 1;
 
 /* wifi globals */
-
-/* This vector store the tuple for the different wifi zones:
- * zone name, ptr to AP node, channel, network, link, nb station nodes
-*/
-static std::vector <std::tuple <std::string, ns3::Ptr<ns3::Node>, ns3::Ptr <ns3::YansWifiChannel>, int, int, int> > wifi_zones;
 static ns3::WifiHelper wifi;
 static ns3::YansWifiPhyHelper wifiPhy = ns3::YansWifiPhyHelper::Default ();
 static ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default ();
