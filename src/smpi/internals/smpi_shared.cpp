@@ -184,7 +184,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
                                 "to allow big allocations.\n",
              size >> 20);
   if(use_huge_page)
-    mem = (void*)ALIGN_UP((int64_t)allocated_ptr, (int64_t)HUGE_PAGE_SIZE);
+    mem = (void*)ALIGN_UP((int64_t)allocated_ptr, HUGE_PAGE_SIZE);
   else
     mem = allocated_ptr;
 
@@ -235,8 +235,8 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
     if(i_block < nb_shared_blocks-1)
       xbt_assert(stop_offset < shared_block_offsets[2*i_block+2],
               "stop_offset (%zu) should be lower than its successor start offset (%zu)", stop_offset, shared_block_offsets[2*i_block+2]);
-    size_t start_block_offset = ALIGN_UP((int64_t)start_offset, (int64_t)smpi_shared_malloc_blocksize);
-    size_t stop_block_offset = ALIGN_DOWN((int64_t)stop_offset, (int64_t)smpi_shared_malloc_blocksize);
+    size_t start_block_offset = ALIGN_UP((int64_t)start_offset, smpi_shared_malloc_blocksize);
+    size_t stop_block_offset = ALIGN_DOWN((int64_t)stop_offset, smpi_shared_malloc_blocksize);
     for (size_t offset = start_block_offset; offset < stop_block_offset; offset += smpi_shared_malloc_blocksize) {
       XBT_DEBUG("\t\tglobal shared allocation, mmap block offset %zx", offset);
       void* pos = (void*)((unsigned long)mem + offset);
@@ -248,8 +248,8 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
                              "and that the directory you are passing is mounted correctly (mount /path/to/huge -t hugetlbfs -o rw,mode=0777).",
                  strerror(errno));
     }
-    size_t low_page_start_offset = ALIGN_UP((int64_t)start_offset, (int64_t)PAGE_SIZE);
-    size_t low_page_stop_offset = (int64_t)start_block_offset < ALIGN_DOWN((int64_t)stop_offset, (int64_t)PAGE_SIZE) ? start_block_offset : ALIGN_DOWN((int64_t)stop_offset, (int64_t)PAGE_SIZE);
+    size_t low_page_start_offset = ALIGN_UP((int64_t)start_offset, PAGE_SIZE);
+    size_t low_page_stop_offset = (int64_t)start_block_offset < ALIGN_DOWN((int64_t)stop_offset, PAGE_SIZE) ? start_block_offset : ALIGN_DOWN((int64_t)stop_offset, (int64_t)PAGE_SIZE);
     if(low_page_start_offset < low_page_stop_offset) {
       XBT_DEBUG("\t\tglobal shared allocation, mmap block start");
       void* pos = (void*)((unsigned long)mem + low_page_start_offset);
@@ -263,7 +263,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
     }
     if(low_page_stop_offset <= stop_block_offset) {
       XBT_DEBUG("\t\tglobal shared allocation, mmap block stop");
-      size_t high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN((int64_t)stop_offset, (int64_t)PAGE_SIZE);
+      size_t high_page_stop_offset = stop_offset == size ? size : ALIGN_DOWN((int64_t)stop_offset, PAGE_SIZE);
       if(high_page_stop_offset > stop_block_offset) {
         void* pos = (void*)((unsigned long)mem + stop_block_offset);
         const void* res = mmap(pos, high_page_stop_offset - stop_block_offset, PROT_READ | PROT_WRITE,
