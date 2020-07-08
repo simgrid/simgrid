@@ -1404,6 +1404,15 @@ Dynamic profiles
       .. autodoxymethod:: simgrid::s4u::Link::set_latency_profile(kernel::profile::Profile *profile)
       .. autodoxymethod:: simgrid::s4u::Link::set_state_profile(kernel::profile::Profile *profile)
 
+WIFI links
+----------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Link::set_host_wifi_rate(s4u::Host* host, int level)
+
 Signals
 -------
 
