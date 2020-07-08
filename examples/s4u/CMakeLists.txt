@@ -218,6 +218,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-suspend/s4u-comm-suspend_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/s4u-comm-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitany/s4u-comm-waitany_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitall/s4u-comm-waitall_d.xml

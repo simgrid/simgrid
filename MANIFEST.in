@@ -384,6 +384,9 @@ include examples/s4u/comm-dependent/s4u-comm-dependent.tesh
 include examples/s4u/comm-ready/s4u-comm-ready.cpp
 include examples/s4u/comm-ready/s4u-comm-ready.tesh
 include examples/s4u/comm-ready/s4u-comm-ready_d.xml
+include examples/s4u/comm-suspend/s4u-comm-suspend.cpp
+include examples/s4u/comm-suspend/s4u-comm-suspend.tesh
+include examples/s4u/comm-suspend/s4u-comm-suspend_d.xml
 include examples/s4u/comm-wait/s4u-comm-wait.cpp
 include examples/s4u/comm-wait/s4u-comm-wait.tesh
 include examples/s4u/comm-wait/s4u-comm-wait_d.xml
