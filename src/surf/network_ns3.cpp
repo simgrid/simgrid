@@ -79,59 +79,16 @@ NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 }
 
 WifiZone::WifiZone(std::string name_, simgrid::s4u::Host* host_, ns3::Ptr<ns3::Node> ap_node_,
-                   ns3::Ptr<ns3::YansWifiChannel> channel_, int network_, int link_) :
-    name(name_), host(host_), ap_node(ap_node_), channel(channel_), network(network_), link(link_){
+                   ns3::Ptr<ns3::YansWifiChannel> channel_, int mcs_, int nss_, int network_, int link_) :
+    name(name_), host(host_), ap_node(ap_node_), channel(channel_), mcs(mcs_), nss(nss_),
+    network(network_), link(link_) {
     n_sta_nodes = 0;
     wifi_zones[name_] = this;
 }
 
-const char* WifiZone::get_cname() {
-    return name.c_str();
-}
-
-simgrid::s4u::Host* WifiZone::get_host(){
-    return host;
-}
-
-ns3::Ptr<ns3::Node> WifiZone::get_ap_node() {
-    return ap_node;
-}
-
-ns3::Ptr<ns3::YansWifiChannel> WifiZone::get_channel() {
-    return channel;
-}
-
-int WifiZone::get_network() {
-    return network;
-}
-
-int WifiZone::get_link() {
-    return link;
-}
-
-int WifiZone::get_n_sta_nodes() {
-    return n_sta_nodes;
-}
-
-void WifiZone::set_ap_node(ns3::Ptr<ns3::Node> ap_node_) {
-    ap_node = ap_node_;
-}
-
-void WifiZone::set_network(int network_) {
-    network = network_;
-}
-
-void WifiZone::set_link(int link_) {
-    link = link_;
-}
-
-void WifiZone::add_sta_node() {
-    n_sta_nodes++;
-}
-
-bool WifiZone::is_ap(ns3::Ptr<ns3::Node> ap){
+bool WifiZone::is_ap(ns3::Ptr<ns3::Node> node){
     for (std::pair<std::string, WifiZone*> zone : wifi_zones)
-        if (zone.second->get_ap_node() == ap)
+        if (zone.second->get_ap_node() == node)
             return true;
     return false;
 }
@@ -151,14 +108,16 @@ std::unordered_map<std::string, WifiZone*> WifiZone::wifi_zones;
 
 static void initialize_ns3_wifi() {
     wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
-    wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                              "ControlMode", ns3::StringValue ("HtMcs0"),
-                              "DataMode", ns3::StringValue ("HtMcs3"));
 
-    std::vector <simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-    for (auto host : hosts)
-        if (host->get_property("cell"))
-          new WifiZone(host->get_property("cell"), host, nullptr, wifiChannel.Create (), 0, 0);
+    for (auto host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+        const char* wifi_link = host->get_property("wifi_link");
+        const char* wifi_mcs = host->get_property("wifi_mcs");
+        const char* wifi_nss = host->get_property("wifi_nss");
+
+        if (wifi_link)
+          new WifiZone(wifi_link, host, host->get_netpoint()->extension<NetPointNs3>()->ns3_node_,
+                       wifiChannel.Create (), wifi_mcs ? atoi(wifi_mcs) : 3, wifi_nss ? atoi(wifi_nss) : 1, 0, 0);
+    }
 }
 
 /*************
@@ -205,6 +164,9 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     // create link ns3
     auto* host_src = src->extension<NetPointNs3>();
     auto* host_dst = dst->extension<NetPointNs3>();
+
+    host_src->set_name(src->get_name());
+    host_dst->set_name(dst->get_name());
 
     xbt_assert(host_src != nullptr, "Network element %s does not seem to be ns-3-ready", src->get_cname());
     xbt_assert(host_dst != nullptr, "Network element %s does not seem to be ns-3-ready", dst->get_cname());
@@ -395,13 +357,20 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
 
       ns3::NetDeviceContainer netA;
       WifiZone* zone = WifiZone::by_name(name);
-      xbt_assert(zone != 0, "Link name '%s' does not match the 'cell' property of a host.", name.c_str());
-      NetPointNs3* netpoint_ns3 = zone->get_host()->get_netpoint()->extension<NetPointNs3>();
+      xbt_assert(zone != 0, "Link name '%s' does not match the 'wifi_link' property of a host.", name.c_str());
+      NetPointNs3* netpoint_ns3 = zone->get_host()->get_netpoint()->extension<NetPointNs3>();     
 
-      zone->set_ap_node(netpoint_ns3->ns3_node_);
+      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                    "ControlMode", ns3::StringValue ("HtMcs0"),
+                                    "DataMode", ns3::StringValue ("HtMcs" + std::to_string(zone->get_mcs())));
 
       wifiPhy.SetChannel (zone->get_channel());
+      wifiPhy.Set("Antennas", ns3::UintegerValue(zone->get_nss()));
+      wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
+      wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
+
       wifiMac.SetType("ns3::ApWifiMac");
+
       netA.Add(wifi.Install (wifiPhy, wifiMac, zone->get_ap_node()));
 
       ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator> ();
@@ -633,15 +602,25 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
 
       WifiZone* zone = WifiZone::by_name(link_name);
 
+      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                    "ControlMode", ns3::StringValue ("HtMcs0"),
+                                    "DataMode", ns3::StringValue ("HtMcs" + std::to_string(zone->get_mcs())));
+
       wifiPhy.SetChannel (zone->get_channel());
+      wifiPhy.Set("Antennas", ns3::UintegerValue(zone->get_nss()));
+      wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
+      wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
 
       wifiMac.SetType ("ns3::StaWifiMac");
+
       netA.Add(wifi.Install (wifiPhy, wifiMac, staNode));
 
       ns3::Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue (40));
 
+      NetPointNs3* sta_netpointNs3 = WifiZone::is_ap(src->ns3_node_) ? dst : src;
+      const char* wifi_distance = simgrid::s4u::Host::by_name(sta_netpointNs3->name_)->get_property("wifi_distance");
       ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator> ();
-      positionAllocS->Add(ns3::Vector(10, 0, 0));
+      positionAllocS->Add(ns3::Vector( wifi_distance ? atof(wifi_distance) : 10.0 , 0, 0));
       mobility.SetPositionAllocator(positionAllocS);
       mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       mobility.Install(staNode);
