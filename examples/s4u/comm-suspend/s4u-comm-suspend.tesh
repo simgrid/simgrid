@@ -1,0 +1,11 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-comm-suspend ${platfdir}/small_platform.xml s4u-comm-suspend_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) Suspend the communication before it starts (remaining: 13194230 bytes) and wait a second.
+> [  0.000000] (2:receiver@Jupiter) Wait for the message.
+> [  1.000000] (1:sender@Tremblay) Now, start the communication (remaining: 13194230 bytes) and wait another second.
+> [  2.000000] (1:sender@Tremblay) There is still 6660438 bytes to transfer in this communication. Suspend it for one second.
+> [  2.000000] (1:sender@Tremblay) Now there is 6660438 bytes to transfer. Resume it and wait for its completion.
+> [  3.000000] (2:receiver@Jupiter) I got 'Sent message'.
+> [  3.000000] (1:sender@Tremblay) There is 0.000000 bytes to transfer after the communication completion.
+> [  3.000000] (1:sender@Tremblay) Suspending a completed activity is a no-op.

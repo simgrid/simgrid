@@ -245,7 +245,7 @@ void Actor::set_kill_time(double kill_time)
 }
 
 /** @brief Get the kill time of an actor(or 0 if unset). */
-double Actor::get_kill_time()
+double Actor::get_kill_time() const
 {
   return pimpl_->get_kill_time();
 }
@@ -624,7 +624,7 @@ void sg_actor_resume(sg_actor_t actor)
  *
  * This checks whether an actor is suspended or not by inspecting the task on which it was waiting for the completion.
  */
-int sg_actor_is_suspended(sg_actor_t actor)
+int sg_actor_is_suspended(const_sg_actor_t actor)
 {
   return actor->is_suspended();
 }

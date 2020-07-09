@@ -11,8 +11,8 @@
 
 int main(int argc, char ** argv)
 {
-  size_t M = 8*1024;
-  size_t N = 32*1024;
+  const int M = 8 * 1024;
+  const int N = 32 * 1024;
 
   MPI_Init(&argc, &argv);
 

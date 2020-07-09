@@ -1404,6 +1404,15 @@ Dynamic profiles
       .. autodoxymethod:: simgrid::s4u::Link::set_latency_profile(kernel::profile::Profile *profile)
       .. autodoxymethod:: simgrid::s4u::Link::set_state_profile(kernel::profile::Profile *profile)
 
+WIFI links
+----------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Link::set_host_wifi_rate(s4u::Host* host, int level)
+
 Signals
 -------
 
@@ -1707,6 +1716,17 @@ Activities life cycle
       .. autodoxymethod:: simgrid::s4u::Activity::wait_for
       .. autodoxymethod:: simgrid::s4u::Activity::wait_until(double time_limit)
       .. autodoxymethod:: simgrid::s4u::Activity::vetoable_start()
+
+Suspending and resuming an activity
+-----------------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Activity::suspend
+      .. autodoxymethod:: simgrid::s4u::Activity::resume
+      .. autodoxymethod:: simgrid::s4u::Activity::is_suspended
 
 .. _API_s4u_Comm:
 

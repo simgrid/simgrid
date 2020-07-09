@@ -1195,7 +1195,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/two_hosts_platform_with_availability_included.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
-  examples/platforms/wifi_decay_2STA.xml
   examples/platforms/wifi.xml
   )
 

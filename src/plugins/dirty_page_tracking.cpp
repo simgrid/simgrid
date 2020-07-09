@@ -31,7 +31,7 @@ public:
   double computed_flops_lookup();
   double get_intensity() const { return dp_intensity_; }
   void set_intensity(double intensity) { dp_intensity_ = intensity; }
-  double get_working_set_memory() const { return working_set_memory_; }
+  sg_size_t get_working_set_memory() const { return working_set_memory_; }
   void set_working_set_memory(sg_size_t size) { working_set_memory_ = size; }
   void set_migration_speed(double speed) { mig_speed_ = speed; }
   double get_migration_speed() const { return mig_speed_; }

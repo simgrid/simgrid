@@ -21,8 +21,13 @@ Important user-visible changes:
    src/dest, and communicator information). This may change simulation times
    for very small message sizes, but should be more realistic.
 
+Documentation:
+ - New examples: wifi networks, and communication suspend
+
 S4U:
  - the on_exit() of each actor is also executed when the simulation deadlocks.
+ - New functions: s4u::Activity:: suspend(), resume() and is_suspended()
+   An example is provided for s4u::Comm but it should work with Exec and Io.
 
 SMPI:
  - Update proxy apps coverage of new ECP apps: 60+ apps now tested nightly on 
@@ -60,12 +65,14 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - FG!24: Documentation and fix for xbt/random
  - FG!35: Add a modeling hint for parallel links in doc
  - FG!36: [xbt/random] Read/Write the state of the RNG
+ - FG#54: How to suspend a comm?
  - GF#18137: Allow different stack sizes?
  - GH#128: Parallelization of simulation with --cfg=contexts/nthreads
  - GH#139: Allow pthread creation in SMPI
  - GH#336: Packet-level simulation using SMPI?
  - GH!337: Fix link_energy plugin for wifi platforms
  - GH!339: Add Mailbox set_receiver method to python binding
+ - GH!344: Cast hugepages macros parameters to int64
 
 ----------------------------------------------------------------------------
 

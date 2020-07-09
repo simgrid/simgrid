@@ -31,7 +31,7 @@ XBT_PUBLIC void sg_file_close(const_sg_file_t fd);
 
 XBT_PUBLIC const char* sg_file_get_name(const_sg_file_t fd);
 XBT_PUBLIC sg_size_t sg_file_get_size(const_sg_file_t fd);
-XBT_PUBLIC void sg_file_dump(sg_file_t fd);
+XBT_PUBLIC void sg_file_dump(const_sg_file_t fd);
 XBT_PUBLIC void* sg_file_get_data(const_sg_file_t fd);
 XBT_PUBLIC void sg_file_set_data(sg_file_t fd, void* data);
 XBT_PUBLIC void sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin);

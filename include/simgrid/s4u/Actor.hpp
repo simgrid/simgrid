@@ -178,7 +178,7 @@ public:
   /** Sets the time at which that actor should be killed */
   void set_kill_time(double time);
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
-  double get_kill_time();
+  double get_kill_time() const;
 
   /** @brief Moves the actor to another host
    *

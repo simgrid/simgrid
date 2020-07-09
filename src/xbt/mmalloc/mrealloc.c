@@ -79,7 +79,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     /* Full blocks -> Full blocks; see if we can hold it in place. */
     blocks = BLOCKIFY(size);
     if (blocks < mdp->heapinfo[block].busy_block.size) {
-      int it;
+      size_t it;
       /* The new size is smaller; return excess memory to the free list. */
       for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++){
         mdp->heapinfo[it].type = MMALLOC_TYPE_UNFRAGMENTED; // FIXME that should be useless, type should already be 0 here
@@ -134,7 +134,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       /* The new size is the same kind of fragment.  */
 
       result = ptr;
-      int frag_nb = RESIDUAL(result, BLOCKSIZE) >> type;
+      uintptr_t frag_nb                                 = RESIDUAL(result, BLOCKSIZE) >> type;
       mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = requested_size;
       mdp->heapinfo[block].busy_frag.ignore[frag_nb] = 0;
 

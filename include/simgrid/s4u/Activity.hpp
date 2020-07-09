@@ -76,12 +76,12 @@ public:
    * This function is optional: you can call wait() even if you didn't call start()
    */
   virtual Activity* start() = 0;
-  /** Blocks until the activity is terminated */
+  /** Blocks the current actor until the activity is terminated */
   virtual Activity* wait() = 0;
-  /** Blocks until the activity is terminated, or until the timeout is elapsed
+  /** Blocks the current actor until the activity is terminated, or until the timeout is elapsed\n
    *  Raises: timeout exception.*/
   virtual Activity* wait_for(double timeout) = 0;
-  /** Blocks until the activity is terminated, or until the time limit is reached
+  /** Blocks the current actor until the activity is terminated, or until the time limit is reached\n
    * Raises: timeout exception. */
   void wait_until(double time_limit);
 
@@ -92,6 +92,13 @@ public:
   void set_state(Activity::State state) { state_ = state; }
   /** Tests whether the given activity is terminated yet. */
   virtual bool test();
+
+  /** Blocks the progression of this activity until it gets resumed */
+  virtual Activity* suspend();
+  /** Unblock the progression of this activity if it was suspended previously */
+  virtual Activity* resume();
+  /** Whether or not the progression of this activity is blocked */
+  bool is_suspended() { return suspended_; }
 
   virtual const char* get_cname() const       = 0;
   virtual const std::string& get_name() const = 0;
@@ -127,6 +134,7 @@ private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   Activity::State state_                   = Activity::State::INITED;
   double remains_                          = 0;
+  bool suspended_                          = false;
   std::vector<ActivityPtr> successors_;
   std::set<ActivityPtr> dependencies_;
   std::atomic_int_fast32_t refcount_{0};

@@ -180,6 +180,10 @@ Exec* Exec::start()
           .set_flops_amount(flops_amounts_.front())
           .start();
     });
+
+  if (suspended_)
+    pimpl_->suspend();
+
   state_ = State::STARTED;
   on_start(*Actor::self(), *this);
   return this;

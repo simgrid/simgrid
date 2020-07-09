@@ -138,6 +138,10 @@ Comm* Comm::start()
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
   }
+
+  if (suspended_)
+    pimpl_->suspend();
+
   state_ = State::STARTED;
   return this;
 }

@@ -80,7 +80,7 @@ double xbt_os_time(void)
   return (double) (time(NULL));
 #endif                          /* HAVE_GETTIMEOFDAY? */
 
-  return tv.tv_sec + tv.tv_usec / 1000000.0;
+  return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
 }
 
 void xbt_os_sleep(double sec)
@@ -91,14 +91,14 @@ void xbt_os_sleep(double sec)
 
 #elif HAVE_NANOSLEEP
   struct timespec ts;
-  ts.tv_sec = sec;
-  ts.tv_nsec = (sec - floor(sec)) * 1e9;
+  ts.tv_sec  = (time_t)sec;
+  ts.tv_nsec = (long)((sec - floor(sec)) * 1e9);
   nanosleep (&ts, NULL);
 #else                           /* don't have nanosleep. Use select to sleep less than one second */
   struct timeval timeout;
 
-  timeout.tv_sec = (unsigned long) (sec);
-  timeout.tv_usec = (sec - floor(sec)) * 1000000;
+  timeout.tv_sec  = (long)sec;
+  timeout.tv_usec = (long)(sec - floor(sec)) * 1e6);
 
   select(0, NULL, NULL, NULL, &timeout);
 #endif
