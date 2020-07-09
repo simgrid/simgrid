@@ -150,7 +150,7 @@ void Peer::sendRequestTo(Connection* remote_peer, unsigned int piece)
   xbt_assert(remote_peer->hasPiece(piece));
   int block_index = getFirstMissingBlockFrom(piece);
   if (block_index != -1) {
-    int block_length = std::min(BLOCKS_REQUESTED, PIECES_BLOCKS - block_index);
+    int block_length = static_cast<int>(std::min(BLOCKS_REQUESTED, PIECES_BLOCKS - block_index));
     XBT_DEBUG("Sending a REQUEST to %s for piece %u (%d,%d)", remote_peer->mailbox_->get_cname(), piece, block_index,
               block_length);
     remote_peer->mailbox_
@@ -553,7 +553,7 @@ void Peer::updateChokedPeers()
       do {
         // We choose a random peer to unchoke.
         std::unordered_map<int, Connection>::iterator chosen_peer_it = connected_peers.begin();
-        std::advance(chosen_peer_it, random.uniform_int(0, connected_peers.size() - 1));
+        std::advance(chosen_peer_it, random.uniform_int(0, static_cast<int>(connected_peers.size() - 1)));
         chosen_peer = &chosen_peer_it->second;
         if (not chosen_peer->interested || not chosen_peer->choked_upload)
           chosen_peer = nullptr;

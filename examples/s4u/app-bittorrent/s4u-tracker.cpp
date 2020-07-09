@@ -46,7 +46,7 @@ void Tracker::operator()()
       // Sending back peers to the requesting peer
       TrackerAnswer* ta = new TrackerAnswer(TRACKER_QUERY_INTERVAL);
       std::set<int>::iterator next_peer;
-      int nb_known_peers = known_peers.size();
+      int nb_known_peers = static_cast<int>(known_peers.size());
       int max_tries      = std::min(MAXIMUM_PEERS, nb_known_peers);
       int tried          = 0;
       while (tried < max_tries) {

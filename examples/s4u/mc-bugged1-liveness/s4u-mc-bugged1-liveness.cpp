@@ -87,7 +87,7 @@ static void coordinator()
 
 static void client(int id)
 {
-  int my_pid = simgrid::s4u::this_actor::get_pid();
+  aid_t my_pid = simgrid::s4u::this_actor::get_pid();
 
   simgrid::s4u::Mailbox* my_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
 
@@ -117,7 +117,7 @@ static void client(int id)
 
     simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::RELEASE, my_mailbox), 1000);
 
-    simgrid::s4u::this_actor::sleep_for(my_pid);
+    simgrid::s4u::this_actor::sleep_for(static_cast<double>(my_pid));
 
     if (id == 1) {
       cs = 0;

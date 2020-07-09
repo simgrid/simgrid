@@ -22,7 +22,7 @@ static void sender(int argc, char** argv)
 {
   xbt_assert(argc == 3, "Expecting 2 parameters from the XML deployment file but got %d", argc);
   long messages_count     = std::stol(argv[1]); /* - number of messages */
-  double msg_size         = std::stod(argv[2]); /* - message size in bytes */
+  long msg_size           = std::stol(argv[2]); /* - message size in bytes */
   double sleep_start_time = 5.0;
   double sleep_test_time  = 0;
 

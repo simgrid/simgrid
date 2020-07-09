@@ -17,9 +17,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_energyconsumption, "Messages specific for t
 static void sender(std::vector<std::string> args)
 {
   xbt_assert(args.size() == 2, "The master function expects 2 arguments.");
-  int flow_amount  = std::stoi(args.at(0));
-  double comm_size = std::stod(args.at(1));
-  XBT_INFO("Send %.0f bytes, in %d flows", comm_size, flow_amount);
+  int flow_amount = std::stoi(args.at(0));
+  long comm_size  = std::stol(args.at(1));
+  XBT_INFO("Send %ld bytes, in %d flows", comm_size, flow_amount);
 
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::string("message"));
 
@@ -28,7 +28,7 @@ static void sender(std::vector<std::string> args)
 
   if (flow_amount == 1) {
     /* - Send the task to the @ref worker */
-    char* payload = bprintf("%f", comm_size);
+    char* payload = bprintf("%ld", comm_size);
     mailbox->put(payload, comm_size);
   } else {
     // Start all comms in parallel, and wait for all completions in one shot

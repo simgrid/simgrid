@@ -22,14 +22,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_waitall, "Messages specific for this s4u 
 class Sender {
   long messages_count;  /* - number of messages */
   long receivers_count; /* - number of receivers */
-  double msg_size;      /* - message size in bytes */
+  long msg_size;        /* - message size in bytes */
 
 public:
   explicit Sender(std::vector<std::string> args)
   {
     xbt_assert(args.size() == 4, "Expecting 3 parameters from the XML deployment file but got %zu", args.size());
     messages_count  = std::stol(args[1]);
-    msg_size        = std::stod(args[2]);
+    msg_size        = std::stol(args[2]);
     receivers_count = std::stol(args[3]);
   }
   void operator()() const

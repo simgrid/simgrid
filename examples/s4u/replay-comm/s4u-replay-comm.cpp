@@ -52,11 +52,11 @@ public:
 
   static void send(simgrid::xbt::ReplayAction& action)
   {
-    double size                 = std::stod(action[3]);
-    std::string* payload        = new std::string(action[3]);
-    double clock                = simgrid::s4u::Engine::get_clock();
+    long size                 = static_cast<long>(std::stod(action[3]));
+    std::string* payload      = new std::string(action[3]);
+    double clock              = simgrid::s4u::Engine::get_clock();
     simgrid::s4u::Mailbox* to = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_name() + "_" + action[2]);
-    ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME.c_str(), size,
+    ACT_DEBUG("Entering Send: %s (size: %ld) -- Actor %s on mailbox %s", NAME.c_str(), size,
               simgrid::s4u::this_actor::get_cname(), to->get_cname());
     to->put(payload, size);
     delete payload;
