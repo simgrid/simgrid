@@ -69,7 +69,7 @@ static void sender(int argc, char* argv[])
 static void receiver(int argc, char* argv[])
 {
   xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
-  int id = xbt_str_parse_int(argv[1], "ID should be numerical, not %s");
+  int id = (int)xbt_str_parse_int(argv[1], "ID should be numerical, not %s");
   char mailbox_name[80];
   snprintf(mailbox_name, 79, "receiver-%d", id);
   sg_mailbox_t mbox = sg_mailbox_by_name(mailbox_name);

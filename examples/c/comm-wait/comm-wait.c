@@ -21,7 +21,7 @@ static void sender(int argc, char* argv[])
 {
   xbt_assert(argc == 5, "The sender function expects 4 arguments from the XML deployment file");
   long messages_count     = xbt_str_parse_int(argv[1], "Invalid amount of messages: %s");  /* - number of messages */
-  double message_size     = xbt_str_parse_double(argv[2], "Invalid message size: %s");     /* - communication cost */
+  long message_size       = xbt_str_parse_int(argv[2], "Invalid message size: %s");        /* - communication cost */
   double sleep_start_time = xbt_str_parse_double(argv[3], "Invalid sleep start time: %s"); /* - start time */
   double sleep_test_time  = xbt_str_parse_double(argv[4], "Invalid test time: %s");        /* - test time */
 

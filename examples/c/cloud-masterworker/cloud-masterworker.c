@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(cloud_masterworker, "Messages specific for this exa
 #define FINALIZE 221297 /* a magic number to tell people to stop working */
 
 const double comp_size = 10000000;
-const double comm_size = 10000000;
+const long comm_size   = 10000000;
 
 static void send_tasks(int nb_workers)
 {
