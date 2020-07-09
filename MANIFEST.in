@@ -427,6 +427,8 @@ include examples/s4u/energy-link/s4u-energy-link.cpp
 include examples/s4u/energy-link/s4u-energy-link.tesh
 include examples/s4u/energy-vm/s4u-energy-vm.cpp
 include examples/s4u/energy-vm/s4u-energy-vm.tesh
+include examples/s4u/energy-wifi/s4u-energy-wifi.cpp
+include examples/s4u/energy-wifi/s4u-energy-wifi.tesh
 include examples/s4u/engine-filtering/s4u-engine-filtering.cpp
 include examples/s4u/engine-filtering/s4u-engine-filtering.tesh
 include examples/s4u/exec-async/s4u-exec-async.cpp
@@ -1945,6 +1947,7 @@ include examples/platforms/two_hosts_profiles.xml
 include examples/platforms/two_peers.xml
 include examples/platforms/vivaldi.xml
 include examples/platforms/wifi.xml
+include examples/platforms/wifi_energy.xml
 include examples/python/CMakeLists.txt
 include examples/python/actor-create/actor-create_d.xml
 include examples/python/actor-lifetime/actor-lifetime_d.xml
@@ -2327,6 +2330,7 @@ include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
 include src/plugins/host_load.cpp
 include src/plugins/link_energy.cpp
+include src/plugins/link_energy_wifi.cpp
 include src/plugins/vm/VirtualMachineImpl.cpp
 include src/plugins/vm/VirtualMachineImpl.hpp
 include src/plugins/vm/VmHostExt.cpp
