@@ -99,7 +99,7 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
             check_overflow(1);
             break;
           case '.': /* precision specifier */
-            precision = strtol(q + 1, &q, 10);
+            precision = static_cast<int>(strtol(q + 1, &q, 10));
             continue; /* conversion specifier still not found, continue reading */
           case '0':
           case '1':
@@ -111,7 +111,7 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
           case '7':
           case '8':
           case '9': /* length modifier */
-            length = strtol(q, &q, 10);
+            length = static_cast<int>(strtol(q, &q, 10));
             continue; /* conversion specifier still not found, continue reading */
           case 'c':   /* category name; LOG4J compliant
                          should accept a precision postfix to show the hierarchy */

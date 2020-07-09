@@ -99,7 +99,12 @@ public:
   static constexpr const char* type_name = "int";
   static inline int parse(const char* value)
   {
-    return parse_long(value);
+    long val = parse_long(value);
+    if (val < INT_MIN)
+      throw std::range_error("underflow");
+    if (val > INT_MAX)
+      throw std::range_error("overflow");
+    return static_cast<int>(val);
   }
 };
 template <> class ConfigType<double> {

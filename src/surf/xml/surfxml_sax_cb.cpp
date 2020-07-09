@@ -182,8 +182,9 @@ void ETag_surfxml_storage___type()
   storage_type.content = A_surfxml_storage___type_content;
   storage_type.id      = A_surfxml_storage___type_id;
   storage_type.model   = A_surfxml_storage___type_model;
-  storage_type.size    = surf_parse_get_size(surf_parsed_filename, surf_parse_lineno, A_surfxml_storage___type_size,
-                                          "size of storage type", storage_type.id.c_str());
+  storage_type.size =
+      static_cast<sg_size_t>(surf_parse_get_size(surf_parsed_filename, surf_parse_lineno, A_surfxml_storage___type_size,
+                                                 "size of storage type", storage_type.id.c_str()));
   sg_platf_new_storage_type(&storage_type);
 }
 

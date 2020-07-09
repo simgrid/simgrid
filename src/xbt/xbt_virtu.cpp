@@ -12,7 +12,7 @@
 int xbt_getpid()
 {
   const simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
-  return self == nullptr ? 0 : self->get_pid();
+  return self == nullptr ? 0 : static_cast<int>(self->get_pid());
 }
 
 const char* xbt_procname(void)
