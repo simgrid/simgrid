@@ -75,7 +75,7 @@ static int test_parmap_extended(e_xbt_parmap_mode_t mode)
     parmap.apply(fun_get_id, data);
 
     std::sort(begin(a), end(a));
-    unsigned count = std::distance(begin(a), std::unique(begin(a), end(a)));
+    unsigned count = static_cast<unsigned>(std::distance(begin(a), std::unique(begin(a), end(a))));
     if (count != num_workers) {
       XBT_CRITICAL("only %u/%u threads did some work", count, num_workers);
       ret = 1;

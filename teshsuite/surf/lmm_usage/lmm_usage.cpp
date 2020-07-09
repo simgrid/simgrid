@@ -147,7 +147,7 @@ static void test3()
   /* Link constraints and variables */
   for (int i = 0; i < 15; i++)
     for (int j = 0; j < 16; j++)
-      if (A[i][j])
+      if (A[i][j] != 0.0)
         Sys->expand(tmp_cnst[i], tmp_var[j], 1.0);
 
   Sys->solve();

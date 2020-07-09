@@ -9,9 +9,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this msg example")
 
 static void sendpid()
 {
-  simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name("mailbox");
-  int pid                          = simgrid::s4u::this_actor::get_pid();
-  double comm_size                 = 100000;
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
+  int pid                        = static_cast<int>(simgrid::s4u::this_actor::get_pid());
+  long comm_size                 = 100000;
   simgrid::s4u::this_actor::on_exit([pid](bool /*failed*/) { XBT_INFO("Process \"%d\" killed.", pid); });
 
   XBT_INFO("Sending pid of \"%d\".", pid);
