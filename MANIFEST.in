@@ -480,6 +480,8 @@ include examples/s4u/network-ns3/one_cluster_d.xml
 include examples/s4u/network-ns3/onelink_d.xml
 include examples/s4u/network-ns3/s4u-network-ns3.cpp
 include examples/s4u/network-ns3/s4u-network-ns3.tesh
+include examples/s4u/network-wifi/s4u-network-wifi.cpp
+include examples/s4u/network-wifi/s4u-network-wifi.tesh
 include examples/s4u/platform-failures/s4u-platform-failures.cpp
 include examples/s4u/platform-failures/s4u-platform-failures.tesh
 include examples/s4u/platform-failures/s4u-platform-failures_d.xml

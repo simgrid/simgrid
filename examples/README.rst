@@ -900,6 +900,35 @@ Model-Related Examples
 
          .. showfile:: examples/platforms/small_platform_one_link_routes.xml
             :language: xml
+	    
+  - **wifi links**
+  
+    This demonstrates how to declare a wifi link in your platform and
+    how to use it in your simulation. The basics is to have a link
+    which sharing policy is set to `WIFI`. Such links can have more
+    than one bandwidth value (separated by commas), corresponding to
+    the several SNR level of your wifi link.
+    
+    In this case, SimGrid automatically switches to validated
+    performance models of wifi networks, where the time is shared
+    between users instead of the bandwidth for wired links (the
+    corresponding publication is currently being written).
+    
+    If your wifi link provides more than one SNR level, you can switch
+    the level of a given host using
+    :cpp:func:`simgrid::s4u::Link::set_host_wifi_rate`. By default,
+    the first level is used.
+
+    .. tabs::
+
+      .. example-tab:: examples/s4u/network-wifi/s4u-network-wifi.cpp
+
+      .. group-tab:: XML
+
+         **Platform files:**
+
+         .. showfile:: examples/platforms/wifi.xml
+            :language: xml
 
 =======================
 Model-Checking Examples

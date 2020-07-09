@@ -71,6 +71,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
                  maestro-set
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-electric-fence mc-failing-assert
+		 network-wifi
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-hostload

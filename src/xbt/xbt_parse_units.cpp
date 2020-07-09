@@ -119,7 +119,7 @@ std::vector<double> xbt_parse_get_bandwidths(const std::string& filename, int li
 
   std::vector<double> bandwidths;
   std::vector<std::string> tokens;
-  boost::split(tokens, string, boost::is_any_of(";"));
+  boost::split(tokens, string, boost::is_any_of(";,"));
   for (auto token : tokens) {
     bandwidths.push_back(surf_parse_get_value_with_unit(
         filename, lineno, token.c_str(), units, entity_kind, name,
