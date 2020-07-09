@@ -72,7 +72,7 @@ void run_ping_test(const char* src, const char* dest, int data_size)
              simgrid::s4u::this_actor::get_host()->get_cname(), dest, end_time - start_time);
   });
   simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name(dest), [mailbox]() { mailbox->get(); });
-  auto* ap1 = simgrid::s4u::Link::by_name("AP1");
+  const auto* ap1 = simgrid::s4u::Link::by_name("AP1");
   ap1->set_host_wifi_rate(simgrid::s4u::Host::by_name(src), 0);
   ap1->set_host_wifi_rate(simgrid::s4u::Host::by_name(dest), 0);
   simgrid::s4u::this_actor::sleep_for(10);

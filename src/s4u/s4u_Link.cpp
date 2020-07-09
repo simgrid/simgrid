@@ -76,7 +76,7 @@ Link::SharingPolicy Link::get_sharing_policy() const
   return this->pimpl_->get_sharing_policy();
 }
 
-void Link::set_host_wifi_rate(s4u::Host* host, int level)
+void Link::set_host_wifi_rate(const s4u::Host* host, int level) const
 {
   xbt_assert(pimpl_->get_sharing_policy() == Link::SharingPolicy::WIFI, "Link %s does not seem to be a wifi link.",
              get_cname());

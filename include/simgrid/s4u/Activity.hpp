@@ -98,7 +98,7 @@ public:
   /** Unblock the progression of this activity if it was suspended previously */
   virtual Activity* resume();
   /** Whether or not the progression of this activity is blocked */
-  bool is_suspended() { return suspended_; }
+  bool is_suspended() const { return suspended_; }
 
   virtual const char* get_cname() const       = 0;
   virtual const std::string& get_name() const = 0;

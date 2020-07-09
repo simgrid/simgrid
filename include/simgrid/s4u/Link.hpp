@@ -74,7 +74,7 @@ public:
    * location of hosts into account, or even to model mobility in your SimGrid simulation.
    *
    * Note that this function asserts that the link is actually a wifi link */
-  void set_host_wifi_rate(s4u::Host* host, int level);
+  void set_host_wifi_rate(const s4u::Host* host, int level) const;
 
   /** @brief Returns the current load (in bytes per second) */
   double get_usage() const;
