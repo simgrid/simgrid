@@ -142,8 +142,8 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 }
 
 // Align functions, from http://stackoverflow.com/questions/4840410/how-to-align-a-pointer-in-c
-#define ALIGN_UP(n, align) ((static_cast<int64_t>(n) + static_cast<int64_t>(align) - 1) & -static_cast<int64_t>(align))
-#define ALIGN_DOWN(n, align) (static_cast<int64_t>(n) & -static_cast<int64_t>(align))
+#define ALIGN_UP(n, align) (((int64_t)(n) + (int64_t)(align) - 1) & -(int64_t)(align))
+#define ALIGN_DOWN(n, align) ((int64_t)(n) & -(int64_t)(align))
 
 constexpr unsigned PAGE_SIZE      = 0x1000;
 constexpr unsigned HUGE_PAGE_SIZE = 1U << 21;
