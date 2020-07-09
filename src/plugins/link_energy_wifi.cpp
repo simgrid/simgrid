@@ -48,7 +48,7 @@ public:
   /**
    * Update the energy consumed when link_ is destroyed
    */
-  void updateDestroy();
+  void update_destroy();
 
   /**
    * Fetches energy consumption values from the platform file.
@@ -60,26 +60,30 @@ public:
    */
   void init_watts_range_list();
 
-  double getConsumedEnergy(void) { return eDyn_ + eStat_; }
-  double getEdyn(void) {return eDyn_; }
-  double getEstat(void) {return eStat_; }
-  double getDurTxRx(void){return durTxRx;}
-  double getDurIdle(void){return durIdle;}
-  
-  void setpIdle(double value) { pIdle_ = value; }
-  void setpTx(double value) { pTx_ = value; }
-  void setpRx(double value) { pRx_ = value; }
-  void setpSleep(double value) { pSleep_ = value; }
-  
-  
+  double get_consumed_energy(void) { return eDyn_ + eStat_; }
+  /** Get the dynamic part of the energy for this link */
+  double get_energy_dynamic(void) { return eDyn_; }
+  double get_energy_static(void) { return eStat_; }
+  double get_duration_comm(void) { return dur_TxRx_; }
+  double get_duration_idle(void) { return dur_idle_; }
+
+  /** Set the power consumed by this link while idle */
+  void set_power_idle(double value) { pIdle_ = value; }
+  /** Set the power consumed by this link while transmitting */
+  void set_power_tx(double value) { pTx_ = value; }
+  /** Set the power consumed by this link while receiving */
+  void set_power_rx(double value) { pRx_ = value; }
+  /** Set the power consumed by this link while sleeping */
+  void set_power_sleep(double value) { pSleep_ = value; }
+
 private:
   // associative array keeping size of data already sent for a given flow (required for interleaved actions)
   std::map<simgrid::kernel::resource::NetworkWifiAction*, std::pair<int, double>> flowTmp{};
 
   // WiFi link the plugin instance is attached to
   s4u::Link* link_{};
-  
-  // dynamic energy (active durations consumption)
+
+  // dynamic energy accumulated since the simulation start (active durations consumption)
   double eDyn_{0.0};
   // static energy (no activity consumption)
   double eStat_{0.0};
@@ -95,32 +99,34 @@ private:
   double pSleep_{0.10};
 
   // constant taking beacons into account (can be specified by the user)
-  double controlDuration_{0.0036};
+  double control_duration_{0.0036};
 
   // Measurements for report
-  double durTxRx{0};
-  double durIdle{0};
+  double dur_TxRx_{0}; // Duration of transmission
+  double dur_idle_{0}; // Duration of idle time
   bool valuesInit_{false};
 };
 
 xbt::Extension<s4u::Link, LinkEnergyWifi> LinkEnergyWifi::EXTENSION_ID;
 
-void LinkEnergyWifi::updateDestroy() {
+void LinkEnergyWifi::update_destroy()
+{
   simgrid::kernel::resource::NetworkWifiLink* wifi_link =
     static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
   double duration = surf_get_clock() - prev_update_;
   prev_update_    = surf_get_clock();
 
-  durIdle += duration;
+  dur_idle_ += duration;
 
   // add IDLE energy usage, as well as beacons consumption since previous update
-  eDyn_ += duration * controlDuration_ * wifi_link->get_host_count() * pRx_;
-  eStat_ += (duration - (duration * controlDuration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
+  eDyn_ += duration * control_duration_ * wifi_link->get_host_count() * pRx_;
+  eStat_ += (duration - (duration * control_duration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
 
   XBT_DEBUG("finish eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
 }
 
-void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction& action) {
+void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
+{
   init_watts_range_list();
 
   double duration = surf_get_clock() - prev_update_;
@@ -188,7 +194,7 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction& acti
   XBT_DEBUG("durUsage: %f", durUsage);
 
   // beacons cost
-  eDyn_ += duration * controlDuration_ * wifi_link->get_host_count() * pRx_;
+  eDyn_ += duration * control_duration_ * wifi_link->get_host_count() * pRx_;
 
   /**
    * Same principle as ns3:
@@ -201,16 +207,14 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction& acti
     eStat_ += (duration - durUsage) * pIdle_ * (wifi_link->get_host_count() + 1);
     XBT_DEBUG("eDyn +=  %f * ((%d * %f) + %f) | eDyn = %f (durusage =%f)", durUsage, wifi_link->get_host_count(), pRx_,
               pTx_, eDyn_, durUsage);
-    durTxRx+=duration;
+    dur_TxRx_ += duration;
   }else{
-    durIdle+=duration;
-    eStat_ += (duration - (duration * controlDuration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
+    dur_idle_ += duration;
+    eStat_ += (duration - (duration * control_duration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
   }
 
   XBT_DEBUG("eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
 }
-  
-
 
 void LinkEnergyWifi::init_watts_range_list()
 {
@@ -225,7 +229,7 @@ void LinkEnergyWifi::init_watts_range_list()
   const char* beacons_factor = this->link_->get_property("control_duration");
   if(beacons_factor != nullptr) {
     try {
-      controlDuration_ = std::stod(beacons_factor);
+      control_duration_ = std::stod(beacons_factor);
     } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid beacons factor value for link ") + this->link_->get_cname());
     }
@@ -307,14 +311,12 @@ void sg_wifi_energy_plugin_init()
   simgrid::s4u::Link::on_destruction.connect([](simgrid::s4u::Link const& link) {
     // output energy values if WiFi link
     if (link.get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
-      link.extension<LinkEnergyWifi>()->updateDestroy();
-      XBT_INFO("Link %s destroyed, consumed: %f J dyn: %f stat: %f durIdle: %f durTxRx: %f", link.get_cname(),
-        link.extension<LinkEnergyWifi>()->getConsumedEnergy(),
-        link.extension<LinkEnergyWifi>()->getEdyn(),
-        link.extension<LinkEnergyWifi>()->getEstat(),
-	      link.extension<LinkEnergyWifi>()->getDurIdle(),
-	      link.extension<LinkEnergyWifi>()->getDurTxRx()
-	    );
+      link.extension<LinkEnergyWifi>()->update_destroy();
+      XBT_INFO(
+          "Link %s destroyed, consumed: %f J dyn: %f stat: %f durIdle: %f durTxRx: %f", link.get_cname(),
+          link.extension<LinkEnergyWifi>()->get_consumed_energy(),
+          link.extension<LinkEnergyWifi>()->get_energy_dynamic(), link.extension<LinkEnergyWifi>()->get_energy_static(),
+          link.extension<LinkEnergyWifi>()->get_duration_idle(), link.extension<LinkEnergyWifi>()->get_duration_comm());
     }
   });
 
