@@ -1,0 +1,13 @@
+#!/usr/bin/env tesh
+
+p Testing the mechanism for computing link energy consumption (using CM02 as a network model)
+
+$ ${bindir:=.}/s4u-energy-wifi ${platfdir}/wifi_energy.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to 'no'
+> [  0.000000] (0:maestro@) Activating the wifi_energy plugin.
+> [  0.000000] (2:act1@Station 2) RECEIVING on mb MailBoxRCV
+> [  5.000000] (1:act0@Station 1) SENDING 1 msg of size 6750000 to MailBoxRCV
+> [  7.000000] (2:act1@Station 2) received all messages
+> [  7.000000] (1:act0@Station 1) finished sending
+> [  7.000000] (0:maestro@) Link AP1 destroyed, consumed: 6.000000 J dyn: 6.000000 stat: 0.000000 durIdle: 5.000000 durTxRx: 2.000000

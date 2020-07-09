@@ -280,10 +280,10 @@ using simgrid::plugin::LinkEnergyWifi;
 
 void sg_wifi_energy_plugin_init()
 {
-  XBT_DEBUG("Initialization wifi_energy plugin");
-
   if (LinkEnergyWifi::EXTENSION_ID.valid())
     return;
+
+  XBT_INFO("Activating the wifi_energy plugin.");
   LinkEnergyWifi::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkEnergyWifi>();
 
   /**

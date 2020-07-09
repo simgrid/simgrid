@@ -11,13 +11,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
-#include "xbt/log.h"
-
-//#include <exception>
-//#include <iostream>
-//#include <random>
-//#include <sstream>
-//#include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test_wifi, "Wifi energy demo");
 
@@ -49,9 +42,7 @@ static void receiver()
 
 int main(int argc, char** argv)
 {
-  // engine
   simgrid::s4u::Engine engine(&argc, argv);
-  XBT_INFO("Activating the SimGrid link energy plugin");
   sg_wifi_energy_plugin_init();
   engine.load_platform(argv[1]);
 
