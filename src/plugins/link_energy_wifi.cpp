@@ -17,6 +17,7 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <map>
 
 SIMGRID_REGISTER_PLUGIN(link_energy_wifi, "Energy wifi test", &sg_wifi_energy_plugin_init);
 /** @degroup plugin_link_energy_wifi Plugin WiFi energy
@@ -29,8 +30,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_energy_wifi, surf, "Logging specific to the
 namespace simgrid {
 namespace plugin {
 
-//class __attribute__ ((visibility("hidden")))LinkEnergyWifi {
-class LinkEnergyWifi {
+class XBT_PRIVATE LinkEnergyWifi {
 
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergyWifi> EXTENSION_ID;
@@ -74,7 +74,7 @@ public:
   
 private:
   // associative array keeping size of data already sent for a given flow (required for interleaved actions)
-  std::map<simgrid::kernel::resource::NetworkWifiAction *, std::pair<int, double>> flowTmp{};
+  std::map<simgrid::kernel::resource::NetworkWifiAction*, std::pair<int, double>> flowTmp{};
 
   // WiFi link the plugin instance is attached to
   s4u::Link* link_{};
@@ -114,10 +114,10 @@ void LinkEnergyWifi::updateDestroy() {
   durIdle += duration;
 
   // add IDLE energy usage, as well as beacons consumption since previous update
-  eDyn_ += duration*controlDuration_*wifi_link->get_nb_hosts_on_link()*pRx_;
-  eStat_ += (duration-(duration*controlDuration_)) * pIdle_ * (wifi_link->get_nb_hosts_on_link()+1);
+  eDyn_ += duration * controlDuration_ * wifi_link->get_host_count() * pRx_;
+  eStat_ += (duration - (duration * controlDuration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
 
-  XBT_DEBUG("finish eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_nb_hosts_on_link(), eStat_);
+  XBT_DEBUG("finish eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
 }
 
 void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction& action) {
@@ -188,7 +188,7 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction& acti
   XBT_DEBUG("durUsage: %f", durUsage);
 
   // beacons cost
-  eDyn_+=duration*controlDuration_*wifi_link->get_nb_hosts_on_link()*pRx_;
+  eDyn_ += duration * controlDuration_ * wifi_link->get_host_count() * pRx_;
 
   /**
    * Same principle as ns3:
@@ -197,16 +197,17 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction& acti
    * P_{tot} = P_{dyn}+P_{stat}
    */
   if(link_->get_usage()){
-    eDyn_ += /*duration * */durUsage * ((wifi_link->get_nb_hosts_on_link()*pRx_)+pTx_);
-    eStat_ += (duration-durUsage)* pIdle_ * (wifi_link->get_nb_hosts_on_link()+1);
-    XBT_DEBUG("eDyn +=  %f * ((%d * %f) + %f) | eDyn = %f (durusage =%f)", durUsage, wifi_link->get_nb_hosts_on_link(), pRx_, pTx_, eDyn_, durUsage);
+    eDyn_ += /*duration * */ durUsage * ((wifi_link->get_host_count() * pRx_) + pTx_);
+    eStat_ += (duration - durUsage) * pIdle_ * (wifi_link->get_host_count() + 1);
+    XBT_DEBUG("eDyn +=  %f * ((%d * %f) + %f) | eDyn = %f (durusage =%f)", durUsage, wifi_link->get_host_count(), pRx_,
+              pTx_, eDyn_, durUsage);
     durTxRx+=duration;
   }else{
     durIdle+=duration;
-    eStat_ += (duration-(duration*controlDuration_)) * pIdle_ * (wifi_link->get_nb_hosts_on_link()+1);
+    eStat_ += (duration - (duration * controlDuration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
   }
 
-  XBT_DEBUG("eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_nb_hosts_on_link(), eStat_);
+  XBT_DEBUG("eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
 }
   
 

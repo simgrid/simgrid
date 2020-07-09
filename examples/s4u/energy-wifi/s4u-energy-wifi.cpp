@@ -1,49 +1,25 @@
 /**
-  * Test the wifi energy plugin 
-  * Desactivate cross-factor to get round values
-  * Launche with: ./test test_platform_2STA.xml --cfg=plugin:link_energy_wifi --cfg=network/crosstraffic:0 
-  */
+ * Test the wifi energy plugin
+ * Desactivate cross-factor to get round values
+ * Launch with: ./test test_platform_2STA.xml --cfg=plugin:link_energy_wifi --cfg=network/crosstraffic:0
+ */
 
-#include "simgrid/s4u.hpp"
-#include "xbt/log.h"
-#include "simgrid/msg.h"
-#include "simgrid/s4u/Activity.hpp"
 #include "simgrid/plugins/energy.h"
-#include "src/surf/network_wifi.hpp"
+#include "simgrid/s4u/Activity.hpp"
+#include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Link.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
+#include "xbt/log.h"
 
-#include <exception>
-#include <iostream>
-#include <random>
-#include <sstream>
-#include <string>
+//#include <exception>
+//#include <iostream>
+//#include <random>
+//#include <sstream>
+//#include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(experience, "Wifi exp");
-static void sender();
-static void receiver();
-
-int main(int argc, char **argv)
-{
-  // engine
-  simgrid::s4u::Engine engine(&argc, argv);
-  XBT_INFO("Activating the SimGrid link energy plugin");
-  sg_wifi_energy_plugin_init();
-  engine.load_platform(argv[1]);
-
-  // setup WiFi bandwidths
-  simgrid::kernel::resource::NetworkWifiLink *l = (simgrid::kernel::resource::NetworkWifiLink *)simgrid::s4u::Link::by_name(
-                                                      "AP1")
-                                                      ->get_impl();
-  l->set_host_rate(simgrid::s4u::Host::by_name("Station 1"), 0);
-  l->set_host_rate(simgrid::s4u::Host::by_name("Station 2"), 0);
-
-  // create the two actors for the test
-  simgrid::s4u::Actor::create("act0", simgrid::s4u::Host::by_name("Station 1"), sender);
-  simgrid::s4u::Actor::create("act1", simgrid::s4u::Host::by_name("Station 2"), receiver);
-
-  engine.run();
-
-  return 0;
-}
+XBT_LOG_NEW_DEFAULT_CATEGORY(test_wifi, "Wifi energy demo");
 
 static void sender()
 {
@@ -69,4 +45,26 @@ static void receiver()
   myBox->get();
 
   XBT_INFO("received all messages");
+}
+
+int main(int argc, char** argv)
+{
+  // engine
+  simgrid::s4u::Engine engine(&argc, argv);
+  XBT_INFO("Activating the SimGrid link energy plugin");
+  sg_wifi_energy_plugin_init();
+  engine.load_platform(argv[1]);
+
+  // setup WiFi bandwidths
+  auto* l = simgrid::s4u::Link::by_name("AP1");
+  l->set_host_wifi_rate(simgrid::s4u::Host::by_name("Station 1"), 0);
+  l->set_host_wifi_rate(simgrid::s4u::Host::by_name("Station 2"), 0);
+
+  // create the two actors for the test
+  simgrid::s4u::Actor::create("act0", simgrid::s4u::Host::by_name("Station 1"), sender);
+  simgrid::s4u::Actor::create("act1", simgrid::s4u::Host::by_name("Station 2"), receiver);
+
+  engine.run();
+
+  return 0;
 }

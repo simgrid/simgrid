@@ -66,7 +66,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  comm-dependent
                  cloud-capping cloud-migration cloud-simple
                  dht-chord dht-kademlia
-                 energy-exec energy-boot energy-link energy-vm energy-exec-ptask
+                 energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
                  maestro-set
