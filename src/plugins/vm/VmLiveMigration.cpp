@@ -115,7 +115,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
 
   double clock_end    = s4u::Engine::get_clock();
   double duration     = clock_end - clock_sta;
-  double actual_speed = size / duration;
+  double actual_speed = static_cast<double>(size) / duration;
 
   if (stage == 2)
     XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f)", stage, stage2_round, size, duration,
@@ -134,7 +134,7 @@ void MigrationTx::operator()()
   double host_speed       = vm_->get_pm()->get_speed();
   const sg_size_t ramsize = vm_->get_ramsize();
   const double dp_rate =
-      host_speed ? (sg_vm_get_migration_speed(vm_) * sg_vm_get_dirty_page_intensity(vm_)) / host_speed : 1;
+      host_speed != 0.0 ? (sg_vm_get_migration_speed(vm_) * sg_vm_get_dirty_page_intensity(vm_)) / host_speed : 1;
   const sg_size_t dp_cap = sg_vm_get_working_set_memory(vm_);
   const double mig_speed = sg_vm_get_migration_speed(vm_);
   double max_downtime    = sg_vm_get_max_downtime(vm_);

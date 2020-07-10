@@ -69,7 +69,7 @@ int Container::get_child_position(const Container* child) const
 {
   auto it = std::find_if(begin(children_), end(children_),
                          [&child](const std::unique_ptr<Container>& c) { return c.get() == child; });
-  return it == end(children_) ? -1 : std::distance(begin(children_), it);
+  return it == end(children_) ? -1 : static_cast<int>(std::distance(begin(children_), it));
 }
 
 std::vector<int> Container::get_hierarchy()
@@ -96,7 +96,7 @@ std::string Container::get_hierarchy_as_string()
 
   std::vector<int> heir_list = this->get_hierarchy();
 
-  unsigned int length = heir_list.size();
+  unsigned int length = static_cast<unsigned int>(heir_list.size());
   unsigned int i = 0;
   for (auto const& id : heir_list) {
     output += std::to_string(id);
@@ -113,7 +113,7 @@ void Container::print_resources(FILE* jed_file)
   unsigned int i=0;
   xbt_assert(not this->resource_list.empty());
 
-  unsigned int res_nb = this->resource_list.size();
+  unsigned int res_nb = static_cast<unsigned int>(this->resource_list.size());
   std::string resid   = this->get_hierarchy_as_string();
 
   fprintf(jed_file, "      <rset id=\"%s\" nb=\"%u\" names=\"", resid.c_str(), res_nb);
@@ -162,7 +162,7 @@ static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, st
     unsigned int id             = parent_cont->get_id_by_name(host_name);
     id_list.push_back(id);
   }
-  unsigned int nb_ids = id_list.size();
+  unsigned int nb_ids = static_cast<unsigned int>(id_list.size());
   std::sort(id_list.begin(), id_list.end());
 
   if( nb_ids > 0 ) {

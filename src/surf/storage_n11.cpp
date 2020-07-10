@@ -78,7 +78,7 @@ void StorageN11Model::update_actions_state(double /*now*/, double delta)
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     auto& action = *it;
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
-    action.update_remains(lrint(action.get_variable()->get_value() * delta));
+    action.update_remains(rint(action.get_variable()->get_value() * delta));
     action.update_max_duration(delta);
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
@@ -103,17 +103,17 @@ StorageN11::StorageN11(StorageModel* model, const std::string& name, lmm::System
 
 StorageAction* StorageN11::io_start(sg_size_t size, s4u::Io::OpType type)
 {
-  return new StorageN11Action(get_model(), size, not is_on(), this, type);
+  return new StorageN11Action(get_model(), static_cast<double>(size), not is_on(), this, type);
 }
 
 StorageAction* StorageN11::read(sg_size_t size)
 {
-  return new StorageN11Action(get_model(), size, not is_on(), this, s4u::Io::OpType::READ);
+  return new StorageN11Action(get_model(), static_cast<double>(size), not is_on(), this, s4u::Io::OpType::READ);
 }
 
 StorageAction* StorageN11::write(sg_size_t size)
 {
-  return new StorageN11Action(get_model(), size, not is_on(), this, s4u::Io::OpType::WRITE);
+  return new StorageN11Action(get_model(), static_cast<double>(size), not is_on(), this, s4u::Io::OpType::WRITE);
 }
 
 /**********

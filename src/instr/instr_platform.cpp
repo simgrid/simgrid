@@ -53,8 +53,8 @@ static container_t lowestCommonAncestor(const simgrid::instr::Container* a1, con
 
   // find the lowest ancestor
   p     = nullptr;
-  int i = ancestors_a1.size() - 1;
-  int j = ancestors_a2.size() - 1;
+  int i = static_cast<int>(ancestors_a1.size()) - 1;
+  int j = static_cast<int>(ancestors_a2.size()) - 1;
   while (i >= 0 && j >= 0) {
     container_t a1p = ancestors_a1.at(i);
     const simgrid::instr::Container* a2p = ancestors_a2.at(j);
@@ -286,7 +286,8 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
   }
 
   if (TRACE_needs_platform()) {
-    NetZoneContainer* container = new NetZoneContainer(id, currentContainer.size(), currentContainer.back());
+    unsigned level              = static_cast<unsigned>(currentContainer.size());
+    NetZoneContainer* container = new NetZoneContainer(id, level, currentContainer.back());
     currentContainer.push_back(container);
   }
 }
@@ -342,9 +343,9 @@ static void on_host_creation(s4u::Host const& host)
 static void on_action_state_change(kernel::resource::Action const& action,
                                    kernel::resource::Action::State /* previous */)
 {
-  int n = action.get_variable()->get_number_of_constraint();
+  unsigned n = static_cast<unsigned>(action.get_variable()->get_number_of_constraint());
 
-  for (int i = 0; i < n; i++) {
+  for (unsigned i = 0; i < n; i++) {
     double value = action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i);
     /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
     kernel::resource::Resource* resource = action.get_variable()->get_constraint(i)->get_id();

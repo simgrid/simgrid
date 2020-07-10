@@ -179,7 +179,7 @@ int console_add_host(lua_State *L) {
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'speed' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
   if (type == LUA_TNUMBER)
-    host.speed_per_pstate.push_back(lua_tointeger(L, -1));
+    host.speed_per_pstate.push_back(lua_tonumber(L, -1));
   else // LUA_TSTRING
     host.speed_per_pstate.push_back(
         xbt_parse_get_speed(ar.short_src, ar.currentline, lua_tostring(L, -1), "speed of host", host.id));
@@ -191,7 +191,7 @@ int console_add_host(lua_State *L) {
   if (not lua_isnumber(L, -1))
     host.core_amount = 1; // Default value
   else
-    host.core_amount = lua_tonumber(L, -1);
+    host.core_amount = static_cast<int>(lua_tointeger(L, -1));
   if (host.core_amount == 0)
     host.core_amount = 1;
   lua_pop(L, 1);

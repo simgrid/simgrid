@@ -172,7 +172,7 @@ static void print_line(const char* option, const char* desc, const char* longdes
 {
   std::string str = std::string("--cfg=") + option + " ";
 
-  int len = str.size();
+  int len = static_cast<int>(str.size());
   XBT_HELP("%s%*.*s %s", str.c_str(), 30 - len, 30 - len, "", desc);
   if (longdesc != nullptr) {
     XBT_HELP("%s\n", longdesc);

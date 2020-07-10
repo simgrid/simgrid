@@ -253,7 +253,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
   elem.constraint         = cnst;
   elem.variable           = var;
 
-  if (var->sharing_penalty_) {
+  if (var->sharing_penalty_ != 0.0) {
     elem.constraint->enabled_element_set_.push_front(elem);
     elem.increase_concurrency();
   } else
@@ -283,7 +283,7 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
       std::find_if(begin(var->cnsts_), end(var->cnsts_), [&cnst](Element const& x) { return x.constraint == cnst; });
   if (elem_it != end(var->cnsts_)) {
     Element& elem = *elem_it;
-    if (var->sharing_penalty_)
+    if (var->sharing_penalty_ != 0.0)
       elem.decrease_concurrency();
 
     if (cnst->sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE)
@@ -292,7 +292,7 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
       elem.consumption_weight = std::max(elem.consumption_weight, value);
 
     // We need to check that increasing value of the element does not cross the concurrency limit
-    if (var->sharing_penalty_) {
+    if (var->sharing_penalty_ != 0.0) {
       if (cnst->get_concurrency_slack() < elem.get_concurrency()) {
         double penalty = var->sharing_penalty_;
         disable_var(var);
@@ -939,8 +939,8 @@ double Constraint::get_usage() const
 
 int Constraint::get_variable_amount() const
 {
-  return std::count_if(std::begin(enabled_element_set_), std::end(enabled_element_set_),
-                       [](const Element& elem) { return elem.consumption_weight > 0; });
+  return static_cast<int>(std::count_if(std::begin(enabled_element_set_), std::end(enabled_element_set_),
+                                        [](const Element& elem) { return elem.consumption_weight > 0; }));
 }
 
 } // namespace lmm

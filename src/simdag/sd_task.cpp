@@ -371,7 +371,7 @@ xbt_dynar_t SD_task_get_children(const_SD_task_t task)
  */
 int SD_task_get_workstation_count(const_SD_task_t task)
 {
-  return task->allocation->size();
+  return static_cast<int>(task->allocation->size());
 }
 
 /**
@@ -591,10 +591,10 @@ int SD_task_dependency_exists(const_SD_task_t src, SD_task_t dst)
     if (dst) {
       return (src->successors->find(dst) != src->successors->end() || src->outputs->find(dst) != src->outputs->end());
     } else {
-      return src->successors->size() + src->outputs->size();
+      return static_cast<int>(src->successors->size() + src->outputs->size());
     }
   } else {
-    return dst->predecessors->size() + dst->inputs->size();
+    return static_cast<int>(dst->predecessors->size() + dst->inputs->size());
   }
 }
 
@@ -916,7 +916,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 
   /* Iterate over all inputs and outputs to say where I am located (and start them if runnable) */
   for (auto const& input : *task->inputs) {
-    int src_nb = input->allocation->size();
+    int src_nb = static_cast<int>(input->allocation->size());
     int dst_nb = count;
     if (input->allocation->empty())
       XBT_VERB("Sender side of '%s' not scheduled. Set receiver side to '%s''s allocation", input->name, task->name);
@@ -936,7 +936,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 
   for (auto const& output : *task->outputs) {
     int src_nb = count;
-    int dst_nb = output->allocation->size();
+    int dst_nb = static_cast<int>(output->allocation->size());
     if (output->allocation->empty())
       XBT_VERB("Receiver side of '%s' not scheduled. Set sender side to '%s''s allocation", output->name, task->name);
 
