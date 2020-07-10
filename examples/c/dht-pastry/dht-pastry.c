@@ -82,7 +82,7 @@ unsigned int domain_mask = 0;
 static int domain(unsigned int a, unsigned int level)
 {
   if (domain_mask == 0)
-    domain_mask = (1u << DOMAIN_SIZE) - 1;
+    domain_mask = (1U << DOMAIN_SIZE) - 1;
   unsigned int shift = (LEVELS_COUNT - level - 1) * DOMAIN_SIZE;
   return (a >> shift) & domain_mask;
 }
