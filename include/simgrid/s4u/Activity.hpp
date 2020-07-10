@@ -67,9 +67,7 @@ public:
   Activity& operator=(Activity const&) = delete;
 #endif
 
-  enum class State { INITED = 0, STARTING, STARTED, CANCELED,
-      // ERRORED, // FIXME: state has never been used
-      FINISHED };
+  enum class State { INITED = 0, STARTING, STARTED, CANCELED, FINISHED };
 
   /** Starts a previously created activity.
    *
