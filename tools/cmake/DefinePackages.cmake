@@ -1012,7 +1012,7 @@ set(CMAKEFILES_TXT
   examples/s4u/CMakeLists.txt
   examples/smpi/CMakeLists.txt
   examples/smpi/NAS/CMakeLists.txt
-  examples/smpi/smpi_s4u_masterslave/CMakeLists.txt
+  examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
   examples/smpi/replay_multiple/CMakeLists.txt
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
   examples/python/CMakeLists.txt

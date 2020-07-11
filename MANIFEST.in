@@ -634,9 +634,9 @@ include examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive
 include examples/smpi/replay_multiple_manual_deploy/workload_compute_simple
 include examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time
 include examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources
-include examples/smpi/smpi_s4u_masterslave/deployment_masterslave_mailbox_smpi.xml
-include examples/smpi/smpi_s4u_masterslave/masterslave_mailbox_smpi.cpp
-include examples/smpi/smpi_s4u_masterslave/s4u_smpi.tesh
+include examples/smpi/smpi_s4u_masterworker/deployment_masterworker_mailbox_smpi.xml
+include examples/smpi/smpi_s4u_masterworker/masterworker_mailbox_smpi.cpp
+include examples/smpi/smpi_s4u_masterworker/s4u_smpi.tesh
 include examples/smpi/trace/trace.c
 include examples/smpi/trace/trace.tesh
 include examples/smpi/trace_call_location/adjust
@@ -1958,7 +1958,7 @@ include examples/smpi/mc/non_deterministic.tesh
 include examples/smpi/mc/only_send_deterministic.tesh
 include examples/smpi/replay_multiple/CMakeLists.txt
 include examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
-include examples/smpi/smpi_s4u_masterslave/CMakeLists.txt
+include examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
 include include/simgrid/Exception.hpp
 include include/simgrid/actor.h
 include include/simgrid/barrier.h

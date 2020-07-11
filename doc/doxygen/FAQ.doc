@@ -109,7 +109,7 @@ int sender()
   m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
                                   calloc(1,sizeof(double)));
   *((double*) task->data) = MSG_get_clock();
-  MSG_task_put(task, slaves[i % slaves_count], PORT_22);
+  MSG_task_put(task, workers[i % workers_count], PORT_22);
   XBT_INFO("Send completed");
   return 0;
 }

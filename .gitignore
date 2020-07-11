@@ -273,7 +273,7 @@ examples/smpi/replay_multiple_manual_deploy/workload_mixed2
 examples/smpi/replay_multiple_manual_deploy/workload_nojob
 examples/smpi/replay/one_trace
 examples/smpi/replay/smpi_replay
-examples/smpi/smpi_msg_masterslave/masterslave_mailbox_smpi
+examples/smpi/smpi_s4u_masterworker/masterworker_mailbox_smpi
 examples/smpi/trace_call_location/smpi_trace_call_location
 examples/smpi/trace_simple/smpi_trace_simple
 examples/smpi/trace/smpi_trace
