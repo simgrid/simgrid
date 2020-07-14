@@ -30,7 +30,6 @@ else
    echo "Warning: smpiff pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
 fi
 list_set TMPFILES
-main_name=main
 
 cleanup () {
     eval $(list_get TMPFILES)
@@ -42,9 +41,9 @@ filter_and_compile_f77() {
     list_add TMPFILES "${TMPFILE}"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
       #replace "program main_name by subroutine user_main (and the end clause as well)"
-      if [ $TRACE_CALL_LOCATION -gt 0 ]; then
-        echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > ${TMPFILE}
-        echo "#line 1 \"${ARG}\"" >> ${TMPFILE}
+      if [ "$TRACE_CALL_LOCATION" -gt 0 ]; then
+        echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > "${TMPFILE}"
+        echo "#line 1 \"${ARG}\"" >> "${TMPFILE}"
       fi
       sed 's/^[[:space:]]\{6\}[[:space:]]*\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][^a-zA-Z0-9]*\([a-zA-Z0-9_]*\)/      \1subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
       SRCFILE="${TMPFILE}"
@@ -56,9 +55,9 @@ filter_and_compile_f77() {
 filter_and_compile_f90() {
     list_add TMPFILES "${TMPFILE}"
     #replace "program main_name by subroutine user_main (and the end clause as well)"
-    if [ $TRACE_CALL_LOCATION -gt 0 ]; then
-      echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > ${TMPFILE}
-      echo "#line 1 \"${ARG}\"" >> ${TMPFILE}
+    if [ "$TRACE_CALL_LOCATION" -gt 0 ]; then
+      echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > "${TMPFILE}"
+      echo "#line 1 \"${ARG}\"" >> "${TMPFILE}"
     fi
     sed 's/^\([[:space:]]*\)\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][^a-zA-Z0-9]*\([a-zA-Z0-9_]*\)/\1\2subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
     SRCFILE="${TMPFILE}"
@@ -79,25 +78,25 @@ while [ $# -gt 0 ]; do
             list_add CMDLINE "-c"
             ;;
         *.f)
-            FILENAME=`basename ${ARG}`
+            FILENAME=$(basename "${ARG}")
             TMPFILE=$(mymktemp "${ARG}" ".f")
             ORIGFILE="${FILENAME%.f}"
             filter_and_compile_f77
             ;;
         *.F)$
-            FILENAME=`basename ${ARG}`
+            FILENAME=$(basename "${ARG}")
             TMPFILE=$(mymktemp "${ARG}" ".F")
             ORIGFILE="${FILENAME%.F}"
             filter_and_compile_f77
             ;;
         *.f90)
-            FILENAME=`basename ${ARG}`
+            FILENAME=$(basename "${ARG}")
             TMPFILE=$(mymktemp "${ARG}" ".f90")
             ORIGFILE="${FILENAME%.f90}"
             filter_and_compile_f90
             ;;
         *.F90)$
-            FILENAME=`basename ${ARG}`
+            FILENAME=$(basename "${ARG}")
             TMPFILE=$(mymktemp "${ARG}" ".F90")
             ORIGFILE="${FILENAME%.F90}"
             filter_and_compile_f90
@@ -139,11 +138,11 @@ if [ $NEEDS_OUTPUT -ne 0 ]; then
 fi
 
 list_add_not_empty CMDLINE ${INCLUDEARGS}
-list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
+list_add_not_empty CMDLINE "${CMAKE_LINKARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
-if [ "x$VERBOSE" = x1 -o "x$show" = x1 ] ; then
+if [ "x$VERBOSE" = x1 ] || [ "x$show" = x1 ] ; then
   echo "$@"
   [ "x$show" = x1 ] && exit 0
 fi
