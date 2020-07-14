@@ -79,27 +79,27 @@ unset pid
 trapped_signals="HUP INT QUIT ILL ABRT SEGV FPE ALRM TERM USR1 USR2 BUS"
 
 die () {
-    printf '[%s] ** error: %s. Aborting.\n' "$(basename $0)" "$*" >&2
+    printf '[%s] ** error: %s. Aborting.\n' "$(basename "$0")" "$*" >&2
     exit 1
 }
 
 smpirun_cleanup()
 {
   if [ -z "${KEEP}" ] ; then
-      if [ -z "${PLATFORM}" -a -n "$PLATFORMTMP" ]; then
-        rm -f ${PLATFORMTMP}
+      if [ -z "${PLATFORM}" ] && [ -n "$PLATFORMTMP" ]; then
+        rm -f "${PLATFORMTMP}"
         PLATFORMTMP=""
       fi
-      if [ ${HOSTFILETMP} = 1 -a -n "$HOSTFILE" ] ; then
-          rm -f ${HOSTFILE}
+      if [ ${HOSTFILETMP} = 1 ] && [ -n "$HOSTFILE" ] ; then
+          rm -f "${HOSTFILE}"
           HOSTFILE=""
       fi
-      if [ ${UNROLLEDHOSTFILETMP} = 1 -a -n "$UNROLLEDHOSTFILE" ] ; then
-          rm -f ${UNROLLEDHOSTFILE}
+      if [ "${UNROLLEDHOSTFILETMP}" = 1 ] && [ -n "$UNROLLEDHOSTFILE" ] ; then
+          rm -f "${UNROLLEDHOSTFILE}"
           UNROLLEDHOSTFILE=""
       fi
-      if [ -n ${APPLICATIONTMP} ]; then
-        rm -f ${APPLICATIONTMP}
+      if [ -n "${APPLICATIONTMP}" ]; then
+        rm -f "${APPLICATIONTMP}"
         APPLICATIONTMP=""
       fi
   fi
@@ -111,14 +111,14 @@ smpirun_trap() {
 
   # Cleanup and kill the child process:
   smpirun_cleanup
-  if ! [ -z "$pid" ]; then
-    kill -TERM $pid
+  if [ -n "$pid" ]; then
+    kill -TERM "$pid"
   fi
   unset pid
 
   # Raise the same signal again (remove the traps first):
-  trap - $trapped_signals
-  kill -$sig $$
+  trap - "$trapped_signals"
+  kill -"$sig" $$
 
   # This should never happen:
   kill -ABRT $$
@@ -126,7 +126,7 @@ smpirun_trap() {
 }
 
 for s in $trapped_signals; do
-  trap "smpirun_trap $s" $s
+  trap 'smpirun_trap $s' "$s"
 done
 
 while true; do
@@ -325,12 +325,12 @@ for elem in tree.findall(".//cluster"):
                 print(prefix + str(i) + suffix)
         else:
             print(prefix + r + suffix)
-            ' < ${PLATFORM} > ${HOSTFILE}
+            ' < "${PLATFORM}" > "${HOSTFILE}"
 fi
 UNROLLEDHOSTFILETMP=0
 
 # parse if our lines are terminated by :num_process
-if grep -q ':' $HOSTFILE ; then
+if grep -q ':' "$HOSTFILE" ; then
     UNROLLEDHOSTFILETMP=1
     UNROLLEDHOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
     @PYTHON_EXECUTABLE@ -c '
@@ -344,17 +344,17 @@ for line in sys.stdin:
             print(m.group(1))
     else:
         print(line.strip())
-' < ${HOSTFILE}  > ${UNROLLEDHOSTFILE}
+' < "${HOSTFILE}"  > "${UNROLLEDHOSTFILE}"
     if [ ${HOSTFILETMP} = 1 ] ; then
-        rm ${HOSTFILE}
+        rm "${HOSTFILE}"
         HOSTFILETMP=0
     fi
     HOSTFILE=$UNROLLEDHOSTFILE
 fi
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
-hostfile_procs=$(grep -c "[a-zA-Z0-9]" $HOSTFILE)
-if [ ${hostfile_procs} = 0 ] ; then
+hostfile_procs=$(grep -c "[a-zA-Z0-9]" "$HOSTFILE")
+if [ "${hostfile_procs}" = 0 ] ; then
     die "the hostfile '${HOSTFILE}' is empty"
 fi
 
@@ -363,7 +363,7 @@ if [ -z "${NUMPROCS}" ] ; then
     NUMPROCS=$hostfile_procs
 fi
 
-if [ ${NUMPROCS} -gt ${hostfile_procs} ] ; then
+if [ "${NUMPROCS}" -gt "${hostfile_procs}" ] ; then
     echo "You requested to use ${NUMPROCS} ranks, but there is only ${hostfile_procs} processes in your hostfile..." >&2
 fi
 
@@ -371,7 +371,7 @@ fi
 if [ -z "${PLATFORM}" ]; then
     PLATFORMTMP="$(mktemp smpitmp-platfXXXXXX)"
 
-    cat > ${PLATFORMTMP} <<PLATFORMHEAD
+    cat > "${PLATFORMTMP}" <<PLATFORMHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
@@ -379,28 +379,30 @@ if [ -z "${PLATFORM}" ]; then
 PLATFORMHEAD
 
     i=${NUMPROCS}
-    while [ $i -gt 0 ]; do
-        echo "  <host id=\"host$i\" speed=\"${SPEED}\"/>" >> ${PLATFORMTMP}
-        echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
-        echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
+    while [ "$i" -gt 0 ]; do
+        {
+        echo "  <host id=\"host$i\" speed=\"${SPEED}\"/>"
+        echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>"
+        echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>"
+        } >> "${PLATFORMTMP}"
         i=$((i - 1))
     done
 
     i=${NUMPROCS}
-    while [ $i -gt 0 ]; do
+    while [ "$i" -gt 0 ]; do
         j=${NUMPROCS}
-        while [ $j -gt 0 ]; do
-            if [ $i -eq $j ]; then
-                echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"loop$i\"/></route>" >> ${PLATFORMTMP}
+        while [ "$j" -gt 0 ]; do
+            if [ "$i" -eq "$j" ]; then
+                echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"loop$i\"/></route>" >> "${PLATFORMTMP}"
             else
-                echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"link$i\"/><link_ctn id=\"link$j\"/></route>" >> ${PLATFORMTMP}
+                echo "  <route src=\"host$i\" dst=\"host$j\"><link_ctn id=\"link$i\"/><link_ctn id=\"link$j\"/></route>" >> "${PLATFORMTMP}"
             fi
             j=$((j - 1))
         done
         i=$((i - 1))
     done
 
-    cat >> ${PLATFORMTMP} <<PLATFORMFOOT
+    cat >> "${PLATFORMTMP}" <<PLATFORMFOOT
 </zone>
 </platform>
 PLATFORMFOOT
@@ -413,21 +415,21 @@ fi
 APPLICATIONTMP="$(mktemp smpitmp-appXXXXXX)"
 #APPLICATIONTMP="app.xml"
 
-cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
+cat > "${APPLICATIONTMP}" <<APPLICATIONHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
-if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
-    hostnames=$(cat ${HOSTFILE} | tr '\n\r' '  ')
+if [ -n "${HOSTFILE}" ] && [ -f "${HOSTFILE}" ]; then
+    hostnames=$(< "${HOSTFILE}" tr '\n\r' '  ')
 fi
 
 if [ -n "${APP_TRACES}" ]; then
     if [ -f "${APP_TRACES}" ]; then
-        hosttraces=$(cat ${APP_TRACES} | tr '\n\r' '  ' )
-        NUMTRACES=$(cat ${APP_TRACES} | wc -l)
+        hosttraces=$(< "${APP_TRACES}" tr '\n\r' '  ' )
+        NUMTRACES=$(< "${APP_TRACES}" wc -l)
         REPLAY=1
     else
         printf "File not found: %s\n" "${APP_TRACES:-\${APP_TRACES\}}" >&2
@@ -447,13 +449,13 @@ if [ -n "${HAVE_SEQ}" ]; then
     SEQ=$(${HAVE_SEQ} 0 $(( NUMPROCS - 1)))
 else
     cnt=0
-    while [ $cnt -lt ${NUMPROCS} ] ; do
+    while [ $cnt -lt "${NUMPROCS}" ] ; do
         SEQ="$SEQ $cnt"
         cnt=$((cnt + 1));
     done
 fi
 
-set -- $hostnames
+set -- "$hostnames"
 
 ##---- generate <actor> tags------------------------------
 #prepare arguments at once
@@ -474,21 +476,21 @@ do
 
     echo "  <actor host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->
     <prop id=\"instance_id\" value=\"smpirun\"/>
-    <prop id=\"rank\" value=\"$i\"/>" >> ${APPLICATIONTMP}
+    <prop id=\"rank\" value=\"$i\"/>" >> "${APPLICATIONTMP}"
     if [ ${REPLAY} = 1 ]; then
-        echo "    <prop id=\"smpi_replay\" value=\"true\"/>" >> ${APPLICATIONTMP}
-        if  [ ${NUMTRACES} -gt 1 ]; then
-            echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f$j)\"/>" >> ${APPLICATIONTMP}
+        echo "    <prop id=\"smpi_replay\" value=\"true\"/>" >> "${APPLICATIONTMP}"
+        if  [ "${NUMTRACES}" -gt 1 ]; then
+            echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f$j)\"/>" >> "${APPLICATIONTMP}"
         else
-            echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
+            echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f1)\"/>" >> "${APPLICATIONTMP}"
         fi
     else
-    echo ${XML_ARGS} >> ${APPLICATIONTMP}
+    echo "${XML_ARGS}" >> "${APPLICATIONTMP}"
     fi
-    echo "  </actor>" >> ${APPLICATIONTMP}
+    echo "  </actor>" >> "${APPLICATIONTMP}"
 done
 
-cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
+cat >> "${APPLICATIONTMP}" <<APPLICATIONFOOT
 </platform>
 APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
@@ -527,8 +529,8 @@ fi
 
 # Do not remove, this variable may be used by user code (e.g. StarPU)
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
-if [ -n "${KEEP}" -a -z "${QUIET}" ] ; then
-    echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+if [ -n "${KEEP}" ] && [ -z "${QUIET}" ] ; then
+    echo "${EXEC}" ${PRIVATIZE} "${TRACEOPTIONS}" "${SIMOPTS}" "${PLATFORMTMP}" "${APPLICATIONTMP}"
     if [ ${HOSTFILETMP} = 1 ] ; then
         echo "Generated hostfile ${HOSTFILE} kept."
     fi
@@ -548,7 +550,7 @@ fi
 # * The FD 3 is used to temporarily store FD 1. This is because the shell connects FD 1 to /dev/null when the command
 #   is launched in the background: this can be overridden in bash but not in standard bourne shell.
 exec 3<&0
-${WRAPPER} "@SMPIMAIN@" ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP} <&3 3>&- &
+${WRAPPER} "@SMPIMAIN@" "${EXEC}" ${PRIVATIZE} "${TRACEOPTIONS}" "${SIMOPTS}" "${PLATFORMTMP}" "${APPLICATIONTMP}" <&3 3>&- &
 pid=$!
 exec 3>&-
 wait $pid
@@ -564,8 +566,8 @@ pid=""
 # Keep temporary files on failures to help debugging
 #
 if [ ${status} -ne 0 ] ; then
-    if [ -z "${KEEP}" -a -z "${QUIET}" ]; then
-        echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+    if [ -z "${KEEP}" ] && [ -z "${QUIET}" ]; then
+        echo "${EXEC}" ${PRIVATIZE} "${TRACEOPTIONS}" "${SIMOPTS}" "${PLATFORMTMP}" "${APPLICATIONTMP}"
         if [ ${HOSTFILETMP} = 1 ] ; then
             echo "Generated hostfile ${HOSTFILE} kept."
         fi
