@@ -39,7 +39,7 @@ fi
 pkg_check() {
   for pkg
   do
-    if command -v $pkg
+    if command -v "$pkg"
     then
        echo "$pkg is installed. Good."
     else
@@ -52,7 +52,7 @@ pkg_check xsltproc
 
 ### Cleanup previous runs
 
-! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
+[ -n "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
 do_cleanup() {
@@ -70,7 +70,7 @@ do_cleanup "$WORKSPACE/build"
 
 NUMPROC="$(nproc)" || NUMPROC=1
 
-cd $WORKSPACE/build
+cd "$WORKSPACE"/build
 
 ctest -D ExperimentalStart || true
 
@@ -79,14 +79,14 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=OFF \
       -Denable_jedule=ON -Denable_mallocators=OFF \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=OFF \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=OFF\
-      -Denable_fortran=OFF -Denable_python=OFF -DLTO_EXTRA_FLAG="auto" ${SANITIZER_OPTIONS} $WORKSPACE
+      -Denable_fortran=OFF -Denable_python=OFF -DLTO_EXTRA_FLAG="auto" "${SANITIZER_OPTIONS}" "$WORKSPACE"
 
 make -j$NUMPROC tests
 ctest --no-compress-output -D ExperimentalTest || true
 
 if [ -f Testing/TAG ] ; then
-   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$(head -n 1 < Testing/TAG)/Test.xml > CTestResults_${SANITIZER}.xml
-   mv CTestResults_${SANITIZER}.xml $WORKSPACE
+   xsltproc "$WORKSPACE"/tools/jenkins/ctest2junit.xsl Testing/"$(head -n 1 < Testing/TAG)"/Test.xml > CTestResults_"${SANITIZER}".xml
+   mv CTestResults_"${SANITIZER}".xml "$WORKSPACE"
 fi
 
 make clean

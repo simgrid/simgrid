@@ -6,7 +6,7 @@ get_boost(){
     then
       BOOST=$(grep -m 1 "Found Boost:" ./consoleText | sed  "s/.*-- Found Boost:.*found suitable version \"\([a-zA-Z0-9\.]*\)\",.*/\1/g")
     fi
-  echo $BOOST
+  echo "$BOOST"
 }
 
 get_compiler(){
@@ -23,7 +23,7 @@ get_cmake(){
 
 get_ns3(){
   found=$(grep -c "ns-3 found" ./consoleText)
-  if [ $found != 0 ]; then
+  if [ "$found" != 0 ]; then
     echo "✔"
   else
     echo ""
@@ -32,7 +32,7 @@ get_ns3(){
 
 get_python(){
   found=$(grep -c "Compile Python bindings .....: ON" ./consoleText)
-  if [ $found != 0 ]; then
+  if [ "$found" != 0 ]; then
     grep -m 1 "Found PythonInterp" ./consoleText| sed "s/.*-- Found PythonInterp.*found suitable version \"\([a-zA-Z0-9\.]*\)\",.*/\1/g"
   else
     echo ""
@@ -44,7 +44,7 @@ if [ -f consoleText ]; then
 fi
 
 
-if [ -z $BUILD_URL ]; then
+if [ -z "$BUILD_URL" ]; then
   BUILD_URL="https://ci.inria.fr/simgrid/job/SimGrid/lastBuild"
 fi
 
@@ -66,7 +66,7 @@ function compareVersion(v1, v2) {
         v1[i] = parseInt(v1[i], 10);
         v2[i] = parseInt(v2[i], 10);
         if (v1[i] > v2[i]) return 1;
-        if (v1[i] < v2[i]) return -1;        
+        if (v1[i] < v2[i]) return -1;
     }
     return v1.length == v2.length ? 0: (v1.length < v2.length ? -1 : 1);
 }</script>
@@ -148,44 +148,44 @@ do
     color1=""
     color2=""
     #in case of success, replace blue by green in status balls
-    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DDebug%2Cnode%3D${node} -O status  >/dev/null 2>&1
+    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DDebug%2Cnode%3D"${node}" -O status  >/dev/null 2>&1
     status=$(cat status)
-    if [ $status == "Success" ]; then
+    if [ "$status" == "Success" ]; then
       color1="&color=green"
     fi
     rm status
     statusmc="<img src=https://ci.inria.fr/simgrid/images/24x24/grey.png>"
-    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DModelChecker%2Cnode%3D${node} -O status >/dev/null 2>&1
+    wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DModelChecker%2Cnode%3D"${node}" -O status >/dev/null 2>&1
     status=$(cat status)
-    if [ $status ]; then 
-      if [ $status == "Success" ]; then
+    if [ "$status" ]; then
+      if [ "$status" == "Success" ]; then
         color2="&color=green"
       fi
       statusmc="<a href=\"build_mode=ModelChecker,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=ModelChecker,node=${node}/badge/icon?style=ball-24x24${color2}\"/>"
     fi
     rm status
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class="matrix-cell" style="text-align:center"><a href="build_mode=Debug,node=${node}/"><img src="https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}"/></td><td class="matrix-cell" style="text-align:center">${statusmc}</td></tr>"
+    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><a href=\"build_mode=Debug,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}\"/></td><td class=\"matrix-cell\" style=\"text-align:center\">${statusmc}</td></tr>"
     rm consoleText
 done
 
 
 #Travis - get ID of the last jobs with the API
 BUILD_NUM=$(curl -s 'https://api.travis-ci.org/repos/simgrid/simgrid/builds?limit=1' | grep -o '^\[{"id":[0-9]*,' | grep -o '[0-9]' | tr -d '\n')
-BUILDS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/${BUILD_NUM} | grep -o '{"id":[0-9]*,' | grep -o '[0-9]*'| tail -n 3))
-OS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/${BUILD_NUM} | grep -o '"os":"[a-z]*",' | sed  's/"os":"\([a-z]*\)",/\1/g'| tail -n 3))
+BUILDS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/"${BUILD_NUM}" | grep -o '{"id":[0-9]*,' | grep -o '[0-9]*'| tail -n 3))
+OS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/"${BUILD_NUM}" | grep -o '"os":"[a-z]*",' | sed  's/"os":"\([a-z]*\)",/\1/g'| tail -n 3))
 
 for id in "${!BUILDS[@]}"
 do
-    wget --quiet https://api.travis-ci.org/v3/job/${BUILDS[$id]}/log.txt -O ./consoleText >/dev/null 2>&1
+    wget --quiet https://api.travis-ci.org/v3/job/"${BUILDS[$id]}"/log.txt -O ./consoleText >/dev/null 2>&1
     sed -i -e "s/\r//g" ./consoleText
 
-    if [ ${OS[$id]} == "linux" ]; then
+    if [ "${OS[$id]}" == "linux" ]; then
       node="travis-linux (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
       os="Ubuntu  <a href=\"https://docs.travis-ci.com/user/reference/bionic/\">18.04 bionic</a>"
-    elif [ ${OS[$id]} == "osx" ]; then
+    elif [ "${OS[$id]}" == "osx" ]; then
       node="travis-mac (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
       os="Mac OS X <a href=\"https://docs.travis-ci.com/user/reference/osx/\">Catalina (10.15)</a> "
-    elif [ ${OS[$id]} == "windows" ]; then
+    elif [ "${OS[$id]}" == "windows" ]; then
       node="travis-windows (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
       os="Windows <a href=\"https://docs.travis-ci.com/user/reference/windows/\">Server 1809</a>"
     fi
@@ -206,9 +206,9 @@ done
 
 #Appveyor - get ID of the last job with the API
 BUILD_ID=$(curl -s "https://ci.appveyor.com/api/projects/mquinson/simgrid" | grep -o '\[{"jobId":"[a-zA-Z0-9]*",' | sed "s/\[{\"jobId\":\"//" | sed "s/\",//")
-wget --quiet https://ci.appveyor.com/api/buildjobs/$BUILD_ID/log -O ./consoleText >/dev/null 2>&1
+wget --quiet https://ci.appveyor.com/api/buildjobs/"$BUILD_ID"/log -O ./consoleText >/dev/null 2>&1
 sed -i -e "s/\r//g" ./consoleText
-node="<a href="https://ci.appveyor.com/project/mquinson/simgrid">appveyor</a>"
+node="<a href=\"https://ci.appveyor.com/project/mquinson/simgrid\">appveyor</a>"
 os="Windows Server 2012 - VS2015 + mingw64 5.3.0"
 boost=$(get_boost)
 compiler=$(get_compiler)

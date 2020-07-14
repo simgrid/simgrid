@@ -31,7 +31,7 @@ die () {
   shift
   [ $# -gt 0 ] || set -- "Error - Halting"
   echo "$@" >&2
-  exit $status
+  exit "$status"
 }
 
 # Get an ON/OFF string from a command:
@@ -134,13 +134,13 @@ ulimit -c 0 || true
 echo "XX"
 echo "XX Get out of the tree"
 echo "XX"
-if [ -d $WORKSPACE/build ]
+if [ -d "$WORKSPACE"/build ]
 then
   # Windows cannot remove the directory if it's still used by the previous build
-  rm -rf $WORKSPACE/build || sleep 10 && rm -rf $WORKSPACE/build || sleep 10 && rm -rf $WORKSPACE/build
+  rm -rf "$WORKSPACE"/build || sleep 10 && rm -rf "$WORKSPACE"/build || sleep 10 && rm -rf "$WORKSPACE"/build
 fi
-mkdir $WORKSPACE/build
-cd $WORKSPACE/build
+mkdir "$WORKSPACE"/build
+cd "$WORKSPACE"/build
 
 have_NS3="no"
 if dpkg -l libns3-dev 2>&1|grep -q "ii  libns3-dev" ; then
@@ -153,25 +153,25 @@ PATH="$WORKSPACE/build/lib:$PATH"
 
 echo "XX"
 echo "XX Build the archive out of the tree"
-echo "XX   pwd: "$(pwd)
+echo "XX   pwd: $(pwd)"
 echo "XX"
 
-cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
+cmake -G"$GENERATOR" -Denable_documentation=OFF "$WORKSPACE"
 make dist -j $NUMBER_OF_PROCESSORS
 SIMGRID_VERSION=$(cat VERSION)
 
 echo "XX"
 echo "XX Open the resulting archive"
 echo "XX"
-gunzip ${SIMGRID_VERSION}.tar.gz
-tar xf ${SIMGRID_VERSION}.tar
-mkdir ${WORKSPACE}/build/${SIMGRID_VERSION}/build
-cd ${WORKSPACE}/build/${SIMGRID_VERSION}/build
+gunzip "${SIMGRID_VERSION}".tar.gz
+tar xf "${SIMGRID_VERSION}".tar
+mkdir "${WORKSPACE}"/build/"${SIMGRID_VERSION}"/build
+cd "${WORKSPACE}"/build/"${SIMGRID_VERSION}"/build
 SRCFOLDER="${WORKSPACE}/build/${SIMGRID_VERSION}"
 
 echo "XX"
 echo "XX Configure and build SimGrid"
-echo "XX   pwd: "$(pwd)
+echo "XX   pwd: $(pwd)"
 echo "XX"
 set -x
 
@@ -197,7 +197,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_java=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_msg=$(onoff test "$build_mode" = "ModelChecker") \
   -DLTO_EXTRA_FLAG="auto" \
-  $SRCFOLDER
+  "$SRCFOLDER"
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 set +x
 
@@ -210,7 +210,7 @@ echo "XX"
 
 ctest -T test --output-on-failure --no-compress-output || true
 
-if test -n "$INSTALL" && [ ${branch_name} = "origin/master" ] ; then
+if test -n "$INSTALL" && [ "${branch_name}" = "origin/master" ] ; then
   echo "XX"
   echo "XX Test done. Install everything since it's a regular build, not on a Windows."
   echo "XX"
