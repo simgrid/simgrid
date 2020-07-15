@@ -473,21 +473,22 @@ do
     if [ ${MAPOPT} = 1 ]; then
       echo "[rank $i] -> $host"
     fi
-
+    {
     echo "  <actor host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->
     <prop id=\"instance_id\" value=\"smpirun\"/>
-    <prop id=\"rank\" value=\"$i\"/>" >> "${APPLICATIONTMP}"
+    <prop id=\"rank\" value=\"$i\"/>"
     if [ ${REPLAY} = 1 ]; then
-        echo "    <prop id=\"smpi_replay\" value=\"true\"/>" >> "${APPLICATIONTMP}"
+        echo "    <prop id=\"smpi_replay\" value=\"true\"/>"
         if  [ "${NUMTRACES}" -gt 1 ]; then
-            echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f$j)\"/>" >> "${APPLICATIONTMP}"
+            echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f$j)\"/>"
         else
-            echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f1)\"/>" >> "${APPLICATIONTMP}"
+            echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f1)\"/>"
         fi
     else
-    echo "${XML_ARGS}" >> "${APPLICATIONTMP}"
+    echo "${XML_ARGS}"
     fi
-    echo "  </actor>" >> "${APPLICATIONTMP}"
+    echo "  </actor>"
+    }    >> "${APPLICATIONTMP}"
 done
 
 cat >> "${APPLICATIONTMP}" <<APPLICATIONFOOT
