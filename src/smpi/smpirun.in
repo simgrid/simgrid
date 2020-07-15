@@ -455,7 +455,7 @@ else
     done
 fi
 
-set -- "$hostnames"
+set -- $hostnames
 
 ##---- generate <actor> tags------------------------------
 #prepare arguments at once
@@ -550,7 +550,7 @@ fi
 # * The FD 3 is used to temporarily store FD 1. This is because the shell connects FD 1 to /dev/null when the command
 #   is launched in the background: this can be overridden in bash but not in standard bourne shell.
 exec 3<&0
-${WRAPPER} "@SMPIMAIN@" "${EXEC}" ${PRIVATIZE} "${TRACEOPTIONS}" "${SIMOPTS}" "${PLATFORMTMP}" "${APPLICATIONTMP}" <&3 3>&- &
+${WRAPPER} "@SMPIMAIN@" "${EXEC}" ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} "${PLATFORMTMP}" "${APPLICATIONTMP}" <&3 3>&- &
 pid=$!
 exec 3>&-
 wait $pid
