@@ -136,7 +136,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
         hosttrace=$(tr '\n\r' '  ' < $(echo "$line"|cut -d' ' -f2))
         NUMPROCSMINE=$(wc -l < $(echo "$line"|cut -d' ' -f2))
         
-        if [ "$NUMPROCSMINE" != $(echo "$line"|cut -d' ' -f3) ];
+        if [ $NUMPROCSMINE != $(echo "$line"|cut -d' ' -f3) ];
         then
           echo "declared num of processes for instance $instance : $(echo "$line"|cut -d' ' -f3) is not the same as the one in the replay files : $NUMPROCSMINE. Please check consistency of these information"
           exit 1

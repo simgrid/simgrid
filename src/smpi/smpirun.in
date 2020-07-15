@@ -14,7 +14,6 @@ DEFAULT_LOOPBACK_BANDWIDTH="498000000Bps"
 DEFAULT_LOOPBACK_LATENCY="0.000004s"
 DEFAULT_NETWORK_BANDWIDTH="$((26 * 1024 * 1024))Bps"
 DEFAULT_NETWORK_LATENCY="0.000005s"
-DEFAULT_NUMPROCS="4"
 DEFAULT_SPEED="100flops"
 
 LOOPBACK_BANDWIDTH="${DEFAULT_LOOPBACK_BANDWIDTH}"
@@ -117,7 +116,7 @@ smpirun_trap() {
   unset pid
 
   # Raise the same signal again (remove the traps first):
-  trap - "$trapped_signals"
+  trap - $trapped_signals
   kill -"$sig" $$
 
   # This should never happen:
@@ -126,7 +125,7 @@ smpirun_trap() {
 }
 
 for s in $trapped_signals; do
-  trap 'smpirun_trap $s' "$s"
+  trap "smpirun_trap $s" "$s"
 done
 
 while true; do
