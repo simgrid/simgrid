@@ -23,6 +23,7 @@ static void sender(int argc, char* argv[])
   long messages_count  = xbt_str_parse_int(argv[1], "Invalid message count: %s");
   long message_size    = xbt_str_parse_int(argv[2], "Invalid message size: %s");
   long receivers_count = xbt_str_parse_int(argv[3], "Invalid amount of receivers: %s");
+  xbt_assert(receivers_count > 0);
 
   /* Array in which we store all ongoing communications */
   sg_comm_t* pending_comms = xbt_malloc(sizeof(sg_comm_t) * (messages_count + receivers_count));
@@ -38,9 +39,9 @@ static void sender(int argc, char* argv[])
   }
 
   /* Start dispatching all messages to receivers, in a round robin fashion */
-  for (int i = 0; i < messages_count; i++) {
+  for (long i = 0; i < messages_count; i++) {
     char msg_content[80];
-    snprintf(msg_content, 79, "Message %d", i);
+    snprintf(msg_content, 79, "Message %ld", i);
     sg_mailbox_t mbox = mboxes[i % receivers_count];
     XBT_INFO("Send '%s' to '%s'", msg_content, sg_mailbox_get_name(mbox));
     /* Create a communication representing the ongoing communication, and store it in pending_comms */
@@ -48,8 +49,8 @@ static void sender(int argc, char* argv[])
   }
 
   /* Start sending messages to let the workers know that they should stop */
-  for (int i = 0; i < receivers_count; i++) {
-    XBT_INFO("Send 'finalize' to 'receiver-%d'", i);
+  for (long i = 0; i < receivers_count; i++) {
+    XBT_INFO("Send 'finalize' to 'receiver-%ld'", i);
     char* end_msg                        = xbt_strdup("finalize");
     sg_mailbox_t mbox                    = mboxes[i % receivers_count];
     pending_comms[pending_comms_count++] = sg_mailbox_put_async(mbox, end_msg, 0);
