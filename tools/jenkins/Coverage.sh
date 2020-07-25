@@ -105,7 +105,7 @@ if [ -f Testing/TAG ] ; then
 
   #generate PVS-studio report
   EXCLUDEDPATH="-e $WORKSPACE/src/include/catch.hpp -e $WORKSPACE/teshsuite/smpi/mpich3-test/ -e $WORKSPACE/teshsuite/smpi/isp/ -e *_dtd.c -e *_dtd.h -e *yy.c -e  $WORKSPACE/src/xbt/automaton/ -e $WORKSPACE/src/smpi/colls/ -e $WORKSPACE/examples/smpi/NAS/ -e $WORKSPACE/examples/smpi/gemm/gemm.c -e $WORKSPACE/src/msg/ -e $WORKSPACE/include/msg/ -e $WORKSPACE/examples/deprecated/ -e $WORKSPACE/teshsuite/msg/"
-  pvs-studio-analyzer analyze -f "$BUILDFOLDER"/compile_commands.json -o "$WORKSPACE"/pvs.log "$EXCLUDEDPATH" -j$NUMPROC
+  pvs-studio-analyzer analyze -f "$BUILDFOLDER"/compile_commands.json -o "$WORKSPACE"/pvs.log $EXCLUDEDPATH -j$NUMPROC
   #disable V1042 (copyleft), V521 (commas in catch.hpp)
   plog-converter -t xml -o "$WORKSPACE"/pvs.plog -d V1042,V521 "$WORKSPACE"/pvs.log
 
