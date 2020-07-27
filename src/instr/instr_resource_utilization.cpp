@@ -21,7 +21,7 @@ void resource_set_utilization(const char* type, const char* name, const char* re
 
   // trace uncategorized resource utilization
   if (TRACE_uncategorized()){
-    XBT_DEBUG("UNCAT %s [%f - %f] %s %s %f", type, now, now + delta, resource, name, value);
+    XBT_VERB("UNCAT %s [%f - %f] %s %s %f", type, now, now + delta, resource, name, value);
     container->get_variable(name)->instr_event(now, delta, resource, value);
   }
 

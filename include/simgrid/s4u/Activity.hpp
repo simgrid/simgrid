@@ -37,7 +37,7 @@ protected:
   {
     while (not successors_.empty()) {
       ActivityPtr b = successors_.back();
-      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
+      XBT_CVERB(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
       b->dependencies_.erase(this);
       if (b->dependencies_.empty()) {
         b->vetoable_start();
@@ -57,7 +57,7 @@ public:
   {
     state_ = State::STARTING;
     if (dependencies_.empty()) {
-      XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
+      XBT_CVERB(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
       start();
     }
   }
