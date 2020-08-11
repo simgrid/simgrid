@@ -290,6 +290,9 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
   /* update net_elm with that of the destination physical host */
   piface_->set_netpoint(destination->get_netpoint());
 
+  /* Adapt the speed, pstate and other physical characteristics to the one of our new physical CPU */
+  piface_->pimpl_cpu->reset_vcpu(destination->pimpl_cpu);
+
   physical_host_ = destination;
 
   /* Update vcpu's action for the new pm */

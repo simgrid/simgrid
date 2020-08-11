@@ -56,8 +56,10 @@ class CpuAction;
 class XBT_PUBLIC Cpu : public Resource {
   int core_count_ = 1;
   s4u::Host* host_;
-  int pstate_ = 0;                             /*< Current pstate (index in the speed_per_pstate_)*/
-  const std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related) */
+  int pstate_ = 0;                       /*< Current pstate (index in the speed_per_pstate_)*/
+  std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related). Not 'const' because VCPU
+                                            get modified on migration */
+  friend simgrid::vm::VirtualMachineImpl; // Resets the VCPU
 
 public:
   /**
@@ -127,6 +129,13 @@ public:
 protected:
   /** @brief Take speed changes (either load or max) into account */
   virtual void on_speed_change();
+
+  /** Reset most characteristics of this CPU to the one of that CPU.
+   *
+   * Used to reset a VCPU when its VM migrates to another host, so it only resets the fields that should be in this
+   *case.
+   **/
+  virtual void reset_vcpu(Cpu* that);
 
 public:
   /** @brief Get the available speed ratio, between 0 and 1.
