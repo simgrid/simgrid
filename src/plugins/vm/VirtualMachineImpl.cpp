@@ -139,6 +139,9 @@ double VMModel::next_occurring_event(double now)
 
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
+    if (ws_vm->get_state() == s4u::VirtualMachine::state::SUSPENDED) // Ignore suspended VMs
+      continue;
+
     const kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
 
     // solved_value below is X1 in comment above: what this VM got in the sharing on the PM
