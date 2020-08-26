@@ -1396,6 +1396,8 @@ On/Off
 Dynamic profiles
 ----------------
 
+See :ref:`howto_churn` for more details.
+
 .. tabs::
 
    .. group-tab:: C++
