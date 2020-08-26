@@ -147,7 +147,7 @@ Starting and Stopping Actors
 
   - **Specify the stack size to use**
     The stack size can be specified by default on the command line,
-    globally by changing the configuration with :cpp:func:`simgrid::s4u::Engine::set_config(std::string)`, 
+    globally by changing the configuration with :cpp:func:`simgrid::s4u::Engine::set_config`,
     or for a specific actor using :cpp:func:`simgrid::s4u::Actor::set_stacksize` before its start.
     
     .. tabs::

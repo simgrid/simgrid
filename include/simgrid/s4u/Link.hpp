@@ -52,12 +52,14 @@ public:
   /** @brief Retrieves the name of that link as a C string */
   const char* get_cname() const;
 
-  /** @brief Get the bandwidth in bytes per second of current Link */
+  /** Get the bandwidth of the current Link (in bytes per second) */
   double get_bandwidth() const;
+  /** Set the bandwidth of the current Link (in bytes per second) */
   void set_bandwidth(double value);
 
-  /** @brief Get the latency in seconds of current Link */
+  /** Get the latency of the current Link (in seconds) */
   double get_latency() const;
+  /** Set the latency of the current Link (in seconds) */
   void set_latency(double value);
 
   /** @brief Describes how the link is shared between flows */

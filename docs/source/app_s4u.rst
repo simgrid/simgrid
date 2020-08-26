@@ -1365,6 +1365,16 @@ Querying info
       .. autodoxymethod:: sg_link_latency(const_sg_link_t link)
       .. autodoxymethod:: sg_link_name(const_sg_link_t link)
 
+Modifying characteristics
+-------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. autodoxymethod:: simgrid::s4u::Link::set_bandwidth(double value)
+      .. autodoxymethod:: simgrid::s4u::Link::set_latency(double value)
+
 User data and properties
 ------------------------
 
@@ -1413,7 +1423,7 @@ WIFI links
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Link::set_host_wifi_rate(s4u::Host* host, int level)
+      .. autodoxymethod:: simgrid::s4u::Link::set_host_wifi_rate(const s4u::Host* host, int level) const
 
 Signals
 -------
