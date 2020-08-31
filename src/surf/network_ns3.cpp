@@ -58,6 +58,7 @@ simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPoin
 NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 {
   stack.Install(ns3_node_);
+  Cluster_nodes.Add(ns3_node_);
   nodes.Add(ns3_node_);
   node_num = number_of_nodes++;
 }
@@ -438,8 +439,8 @@ void ns3_add_cluster(const char* /*id*/, double bw, double lat)
   }
   number_of_clusters_nodes = Cluster_nodes.GetN();
 
-  XBT_DEBUG("Add router %u to cluster", nodes.GetN() - Nodes.GetN() - 1);
-  Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
+  // XBT_DEBUG("Add router %u to cluster", nodes.GetN() - Nodes.GetN() - 1);
+  // Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
 
   xbt_assert(Nodes.GetN() <= 65000, "Cluster with ns-3 is limited to 65000 nodes");
   ns3::CsmaHelper csma;
