@@ -84,7 +84,39 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
   }
 
   //Create link backbone
-  ns3_add_cluster(cluster.id.c_str(), cluster.bb_bw, cluster.bb_lat);
+  ns3::NodeContainer Nodes;
+
+  for (unsigned int i = number_of_clusters_nodes; i < Cluster_nodes.GetN(); i++) {
+    Nodes.Add(Cluster_nodes.Get(i));
+    XBT_DEBUG("Add node %u to cluster", i);
+  }
+  number_of_clusters_nodes = Cluster_nodes.GetN();
+
+  // XBT_DEBUG("Add router %u to cluster", nodes.GetN() - Nodes.GetN() - 1);
+  // Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
+
+  xbt_assert(Nodes.GetN() <= 65000, "Cluster with ns-3 is limited to 65000 nodes");
+  ns3::CsmaHelper csma;
+  csma.SetChannelAttribute("DataRate",
+                           ns3::DataRateValue(ns3::DataRate(cluster.bb_bw * 8))); // ns-3 takes bps, but we provide Bps
+  csma.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(cluster.bb_lat)));
+  ns3::NetDeviceContainer devices = csma.Install(Nodes);
+  XBT_DEBUG("Create CSMA");
+
+  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
+  XBT_DEBUG("Assign IP Addresses %s to CSMA.", addr.c_str());
+  ns3::Ipv4AddressHelper ipv4;
+  ipv4.SetBase(addr.c_str(), "255.255.0.0");
+  interfaces.Add(ipv4.Assign(devices));
+
+  if (number_of_links == 255) {
+    xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
+    number_of_links = 1;
+    number_of_networks++;
+  } else {
+    number_of_links++;
+  }
+  XBT_DEBUG("Number of nodes in Cluster_nodes: %u", Cluster_nodes.GetN());
 }
 
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
@@ -425,42 +457,6 @@ void ns3_initialize(std::string TcpProtocol)
   } else {
     xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
   }
-}
-
-void ns3_add_cluster(const char* /*id*/, double bw, double lat)
-{
-  ns3::NodeContainer Nodes;
-
-  for (unsigned int i = number_of_clusters_nodes; i < Cluster_nodes.GetN(); i++) {
-    Nodes.Add(Cluster_nodes.Get(i));
-    XBT_DEBUG("Add node %u to cluster", i);
-  }
-  number_of_clusters_nodes = Cluster_nodes.GetN();
-
-  // XBT_DEBUG("Add router %u to cluster", nodes.GetN() - Nodes.GetN() - 1);
-  // Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
-
-  xbt_assert(Nodes.GetN() <= 65000, "Cluster with ns-3 is limited to 65000 nodes");
-  ns3::CsmaHelper csma;
-  csma.SetChannelAttribute("DataRate", ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
-  csma.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
-  ns3::NetDeviceContainer devices = csma.Install(Nodes);
-  XBT_DEBUG("Create CSMA");
-
-  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
-  XBT_DEBUG("Assign IP Addresses %s to CSMA.", addr.c_str());
-  ns3::Ipv4AddressHelper ipv4;
-  ipv4.SetBase(addr.c_str(), "255.255.0.0");
-  interfaces.Add(ipv4.Assign (devices));
-
-  if(number_of_links == 255){
-    xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
-    number_of_links = 1;
-    number_of_networks++;
-  }else{
-    number_of_links++;
-  }
-  XBT_DEBUG("Number of nodes in Cluster_nodes: %u", Cluster_nodes.GetN());
 }
 
 static std::string transformIpv4Address(ns3::Ipv4Address from)

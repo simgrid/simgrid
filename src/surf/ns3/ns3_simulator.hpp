@@ -27,7 +27,6 @@ XBT_PUBLIC void ns3_initialize(std::string TcpProtocol);
 XBT_PUBLIC void ns3_simulator(double max_seconds);
 XBT_PUBLIC void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double lat,
                                      simgrid::s4u::Link::SharingPolicy policy);
-XBT_PUBLIC void ns3_add_cluster(const char* id, double bw, double lat);
 
 class XBT_PRIVATE SgFlow {
 public:
