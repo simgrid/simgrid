@@ -14,7 +14,7 @@
 
 #include <cstdint>
 
-class NetPointNs3 {
+class XBT_PRIVATE NetPointNs3 {
 public:
   static simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> EXTENSION_ID;
 
@@ -23,10 +23,10 @@ public:
   std::string ipv4_address_;
 };
 
-XBT_PUBLIC void ns3_initialize(std::string TcpProtocol);
-XBT_PUBLIC void ns3_simulator(double max_seconds);
-XBT_PUBLIC void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst,
-                                     double bw, double lat, simgrid::s4u::Link::SharingPolicy policy);
+XBT_PRIVATE void ns3_initialize(std::string TcpProtocol);
+XBT_PRIVATE void ns3_simulator(double max_seconds);
+XBT_PRIVATE void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst,
+                                      double bw, double lat, simgrid::s4u::Link::SharingPolicy policy);
 
 class XBT_PRIVATE SgFlow {
 public:
@@ -41,7 +41,7 @@ public:
   simgrid::kernel::resource::NetworkNS3Action* action_;
 };
 
-void start_flow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number);
+XBT_PRIVATE void start_flow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number);
 
 static inline std::string transform_socket_ptr(ns3::Ptr<ns3::Socket> local_socket)
 {
