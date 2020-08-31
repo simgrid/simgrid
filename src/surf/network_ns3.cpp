@@ -378,7 +378,6 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
     port_number = 1025;
     XBT_WARN("Too many connections! Port number is saturated. Trying to use the oldest ports.");
   }
-  xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 
   s4u::Link::on_communicate(*this);
 }
