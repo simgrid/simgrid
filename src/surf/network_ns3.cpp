@@ -44,7 +44,6 @@ extern std::map<std::string, SgFlow*> flow_from_sock;
 extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
-static ns3::NodeContainer nodes;
 static ns3::NodeContainer Cluster_nodes;
 static ns3::Ipv4InterfaceContainer interfaces;
 
@@ -59,7 +58,6 @@ NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 {
   stack.Install(ns3_node_);
   Cluster_nodes.Add(ns3_node_);
-  nodes.Add(ns3_node_);
   node_num = number_of_nodes++;
 }
 
