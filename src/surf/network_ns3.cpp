@@ -34,8 +34,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network ns-3 module");
 
-std::vector<std::string> IPV4addr;
-
 /*****************
  * Crude globals *
  *****************/
@@ -149,8 +147,6 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
 /* Create the ns3 topology based on routing strategy */
 static void postparse_cb()
 {
-  IPV4addr.shrink_to_fit();
-
   ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
   ns3::GlobalRouteManager::InitializeRoutes();
 }
@@ -191,10 +187,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   s4u::Engine::on_platform_created.connect(&postparse_cb);
   s4u::NetZone::on_route_creation.connect(&routeCreation_cb);
-}
-
-NetworkNS3Model::~NetworkNS3Model() {
-  IPV4addr.clear();
 }
 
 LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
@@ -353,9 +345,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
   ns3::Ptr<ns3::Node> dst_node = dst->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
 
-  xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
-             dst->get_netpoint()->get_cname());
-  std::string& addr = IPV4addr[node2];
+  std::string& addr = dst->get_netpoint()->extension<NetPointNs3>()->ipv4_address_;
   xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
              dst->get_netpoint()->get_cname());
 
@@ -485,13 +475,8 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
   XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
   auto addresses = address.Assign(netA);
 
-  if (IPV4addr.size() <= (unsigned)srcNum)
-    IPV4addr.resize(srcNum + 1);
-  IPV4addr[srcNum] = transformIpv4Address(addresses.GetAddress(0));
-
-  if (IPV4addr.size() <= (unsigned)dstNum)
-    IPV4addr.resize(dstNum + 1);
-  IPV4addr[dstNum] = transformIpv4Address(addresses.GetAddress(1));
+  src->ipv4_address_ = transformIpv4Address(addresses.GetAddress(0));
+  dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(1));
 
   if (number_of_links == 255){
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");

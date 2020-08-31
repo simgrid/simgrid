@@ -21,6 +21,7 @@ public:
   explicit NetPointNs3();
   int node_num;
   ns3::Ptr<ns3::Node> ns3_node_;
+  std::string ipv4_address_;
 };
 
 XBT_PUBLIC void ns3_initialize(std::string TcpProtocol);
