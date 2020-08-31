@@ -44,11 +44,9 @@ extern std::map<std::string, SgFlow*> flow_from_sock;
 extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
-static ns3::NodeContainer Cluster_nodes;
 static ns3::Ipv4InterfaceContainer interfaces;
 
 static int number_of_nodes = 0;
-static int number_of_clusters_nodes = 0;
 static int number_of_links = 1;
 static int number_of_networks = 1;
 
@@ -57,7 +55,6 @@ simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPoin
 NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 {
   stack.Install(ns3_node_);
-  Cluster_nodes.Add(ns3_node_);
   node_num = number_of_nodes++;
 }
 
@@ -67,6 +64,8 @@ NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 
 static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs const& cluster)
 {
+  ns3::NodeContainer Nodes;
+
   for (int const& i : *cluster.radicals) {
     // Routers don't create a router on the other end of the private link by themselves.
     // We just need this router to be given an ID so we create a temporary NetPointNS3 so that it gets one
@@ -81,19 +80,12 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
     ns3_add_direct_route(host_src, host_dst, cluster.bw, cluster.lat, cluster.sharing_policy);
 
     delete host_dst;
+
+    // Also add the host to the list of hosts that will be connected to the backbone
+    Nodes.Add(host_src->ns3_node_);
   }
 
-  //Create link backbone
-  ns3::NodeContainer Nodes;
-
-  for (unsigned int i = number_of_clusters_nodes; i < Cluster_nodes.GetN(); i++) {
-    Nodes.Add(Cluster_nodes.Get(i));
-    XBT_DEBUG("Add node %u to cluster", i);
-  }
-  number_of_clusters_nodes = Cluster_nodes.GetN();
-
-  // XBT_DEBUG("Add router %u to cluster", nodes.GetN() - Nodes.GetN() - 1);
-  // Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
+  // Create link backbone
 
   xbt_assert(Nodes.GetN() <= 65000, "Cluster with ns-3 is limited to 65000 nodes");
   ns3::CsmaHelper csma;
@@ -116,7 +108,6 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
   } else {
     number_of_links++;
   }
-  XBT_DEBUG("Number of nodes in Cluster_nodes: %u", Cluster_nodes.GetN());
 }
 
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
