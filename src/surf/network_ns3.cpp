@@ -44,7 +44,6 @@ extern std::map<std::string, SgFlow*> flow_from_sock;
 extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
-static ns3::Ipv4InterfaceContainer interfaces;
 
 static int number_of_nodes = 0;
 static int number_of_links = 1;
@@ -99,7 +98,7 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
   XBT_DEBUG("Assign IP Addresses %s to CSMA.", addr.c_str());
   ns3::Ipv4AddressHelper ipv4;
   ipv4.SetBase(addr.c_str(), "255.255.0.0");
-  interfaces.Add(ipv4.Assign(devices));
+  ipv4.Assign(devices);
 
   if (number_of_links == 255) {
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
@@ -484,15 +483,15 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
   std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
   address.SetBase(addr.c_str(), "255.255.0.0");
   XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
-  interfaces.Add(address.Assign (netA));
+  auto addresses = address.Assign(netA);
 
   if (IPV4addr.size() <= (unsigned)srcNum)
     IPV4addr.resize(srcNum + 1);
-  IPV4addr[srcNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
+  IPV4addr[srcNum] = transformIpv4Address(addresses.GetAddress(0));
 
   if (IPV4addr.size() <= (unsigned)dstNum)
     IPV4addr.resize(dstNum + 1);
-  IPV4addr[dstNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
+  IPV4addr[dstNum] = transformIpv4Address(addresses.GetAddress(1));
 
   if (number_of_links == 255){
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
