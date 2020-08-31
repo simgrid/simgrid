@@ -19,15 +19,14 @@ public:
   static simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> EXTENSION_ID;
 
   explicit NetPointNs3();
-  int node_num;
   ns3::Ptr<ns3::Node> ns3_node_;
   std::string ipv4_address_;
 };
 
 XBT_PUBLIC void ns3_initialize(std::string TcpProtocol);
 XBT_PUBLIC void ns3_simulator(double max_seconds);
-XBT_PUBLIC void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double lat,
-                                     simgrid::s4u::Link::SharingPolicy policy);
+XBT_PUBLIC void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst,
+                                     double bw, double lat, simgrid::s4u::Link::SharingPolicy policy);
 
 class XBT_PRIVATE SgFlow {
 public:

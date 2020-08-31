@@ -43,7 +43,6 @@ extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
 
-static int number_of_nodes = 0;
 static int number_of_links = 1;
 static int number_of_networks = 1;
 
@@ -52,7 +51,6 @@ simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPoin
 NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 {
   stack.Install(ns3_node_);
-  node_num = number_of_nodes++;
 }
 
 /*************
@@ -64,22 +62,16 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
   ns3::NodeContainer Nodes;
 
   for (int const& i : *cluster.radicals) {
-    // Routers don't create a router on the other end of the private link by themselves.
-    // We just need this router to be given an ID so we create a temporary NetPointNS3 so that it gets one
-    auto* host_dst = new NetPointNs3();
-
     // Create private link
     std::string host_id = cluster.prefix + std::to_string(i) + cluster.suffix;
-    auto* host_src      = simgrid::s4u::Host::by_name(host_id)->get_netpoint()->extension<NetPointNs3>();
-    xbt_assert(host_src, "Cannot find a ns-3 host of name %s", host_id.c_str());
+    auto* src           = simgrid::s4u::Host::by_name(host_id)->get_netpoint();
+    auto* dst           = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(cluster.router_id);
+    xbt_assert(dst != nullptr, "No router named %s", cluster.router_id.c_str());
 
-    // Any ns-3 route is symmetrical
-    ns3_add_direct_route(host_src, host_dst, cluster.bw, cluster.lat, cluster.sharing_policy);
-
-    delete host_dst;
+    ns3_add_direct_route(src, dst, cluster.bw, cluster.lat, cluster.sharing_policy); // Any ns-3 route is symmetrical
 
     // Also add the host to the list of hosts that will be connected to the backbone
-    Nodes.Add(host_src->ns3_node_);
+    Nodes.Add(src->extension<NetPointNs3>()->ns3_node_);
   }
 
   // Create link backbone
@@ -122,14 +114,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
     XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->get_cname(), link->get_bandwidth(), link->get_latency());
 
-    // create link ns3
-    auto* host_src = src->extension<NetPointNs3>();
-    auto* host_dst = dst->extension<NetPointNs3>();
-
-    xbt_assert(host_src != nullptr, "Network element %s does not seem to be ns-3-ready", src->get_cname());
-    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be ns-3-ready", dst->get_cname());
-
-    ns3_add_direct_route(host_src, host_dst, link->get_bandwidth(), link->get_latency(), link->get_sharing_policy());
+    ns3_add_direct_route(src, dst, link->get_bandwidth(), link->get_latency(), link->get_sharing_policy());
   } else {
     static bool warned_about_long_routes = false;
 
@@ -181,7 +166,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   routing::NetPoint::on_creation.connect([](routing::NetPoint& pt) {
     pt.extension_set<NetPointNs3>(new NetPointNs3());
-    XBT_VERB("SimGrid's %s is known as node %d within ns-3", pt.get_cname(), pt.extension<NetPointNs3>()->node_num);
+    XBT_VERB("Declare SimGrid's %s within ns-3", pt.get_cname());
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
 
@@ -339,9 +324,6 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   static int port_number = 1025; // Port number is limited from 1025 to 65 000
 
-  unsigned int node1 = src->get_netpoint()->extension<NetPointNs3>()->node_num;
-  unsigned int node2 = dst->get_netpoint()->extension<NetPointNs3>()->node_num;
-
   ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
   ns3::Ptr<ns3::Node> dst_node = dst->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
 
@@ -349,7 +331,8 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
              dst->get_netpoint()->get_cname());
 
-  XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
+  XBT_DEBUG("ns3: Create flow of %.0f Bytes from %s to %s with Interface %s", totalBytes, src->get_cname(),
+            dst->get_cname(), addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
   ns3::ApplicationContainer apps = sink.Install(dst_node);
 
@@ -445,29 +428,30 @@ static std::string transformIpv4Address(ns3::Ipv4Address from)
   return sstream.str();
 }
 
-void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double lat,
-                          simgrid::s4u::Link::SharingPolicy policy)
+void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst, double bw,
+                          double lat, simgrid::s4u::Link::SharingPolicy policy)
 {
   ns3::Ipv4AddressHelper address;
   ns3::NetDeviceContainer netA;
 
-  int srcNum = src->node_num;
-  int dstNum = dst->node_num;
+  // create link ns3
+  auto* host_src = src->extension<NetPointNs3>();
+  auto* host_dst = dst->extension<NetPointNs3>();
 
-  ns3::Ptr<ns3::Node> a = src->ns3_node_;
-  ns3::Ptr<ns3::Node> b = dst->ns3_node_;
+  xbt_assert(host_src != nullptr, "Network element %s does not seem to be ns-3-ready", src->get_cname());
+  xbt_assert(host_dst != nullptr, "Network element %s does not seem to be ns-3-ready", dst->get_cname());
 
   if (policy == simgrid::s4u::Link::SharingPolicy::WIFI) {
     /* Install a ns3::WifiHelper */
   } else {
     ns3::PointToPointHelper pointToPoint;
 
-    XBT_DEBUG("\tAdd PTP from %d to %d bw:'%f Bps' lat:'%fs'", srcNum, dstNum, bw, lat);
+    XBT_DEBUG("\tAdd PTP from %s to %s bw:'%f Bps' lat:'%fs'", src->get_cname(), dst->get_cname(), bw, lat);
     pointToPoint.SetDeviceAttribute("DataRate",
                                     ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
     pointToPoint.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
 
-    netA.Add(pointToPoint.Install(a, b));
+    netA.Add(pointToPoint.Install(host_src->ns3_node_, host_dst->ns3_node_));
   }
 
   std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
@@ -475,8 +459,8 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
   XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
   auto addresses = address.Assign(netA);
 
-  src->ipv4_address_ = transformIpv4Address(addresses.GetAddress(0));
-  dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(1));
+  host_src->ipv4_address_ = transformIpv4Address(addresses.GetAddress(0));
+  host_dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(1));
 
   if (number_of_links == 255){
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");

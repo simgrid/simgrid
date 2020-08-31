@@ -274,12 +274,9 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   // Add a router.
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
-  if (cluster->router_id.empty()) {
-    std::string newid   = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
-    current_as->router_ = sg_platf_new_router(newid, NULL);
-  } else {
-    current_as->router_ = sg_platf_new_router(cluster->router_id, NULL);
-  }
+  if (cluster->router_id.empty())
+    cluster->router_id = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
+  current_as->router_ = sg_platf_new_router(cluster->router_id, NULL);
 
   //Make the backbone
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
