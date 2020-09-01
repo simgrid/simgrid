@@ -129,13 +129,6 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
   }
 }
 
-/* Create the ns3 topology based on routing strategy */
-static void postparse_cb()
-{
-  ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
-  ns3::GlobalRouteManager::InitializeRoutes();
-}
-
 /*********
  * Model *
  *********/
@@ -162,15 +155,33 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   NetPointNs3::EXTENSION_ID = routing::NetPoint::extension_create<NetPointNs3>();
 
-  ns3_initialize(ns3_tcp_model.get());
+  ns3::Config::SetDefault("ns3::TcpSocket::SegmentSize", ns3::UintegerValue(1000));
+  ns3::Config::SetDefault("ns3::TcpSocket::DelAckCount", ns3::UintegerValue(1));
+  ns3::Config::SetDefault("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue(false));
+
+  auto TcpProtocol = ns3_tcp_model.get();
+  if (TcpProtocol == "default") {
+    /* nothing to do */
+
+  } else if (TcpProtocol == "Reno" || TcpProtocol == "NewReno" || TcpProtocol == "Tahoe") {
+    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
+    ns3::Config::SetDefault("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::Tcp" + TcpProtocol));
+
+  } else {
+    xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
+  }
 
   routing::NetPoint::on_creation.connect([](routing::NetPoint& pt) {
     pt.extension_set<NetPointNs3>(new NetPointNs3());
     XBT_VERB("Declare SimGrid's %s within ns-3", pt.get_cname());
   });
-  routing::on_cluster_creation.connect(&clusterCreation_cb);
 
-  s4u::Engine::on_platform_created.connect(&postparse_cb);
+  s4u::Engine::on_platform_created.connect([]() {
+    /* Create the ns3 topology based on routing strategy */
+    ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
+    ns3::GlobalRouteManager::InitializeRoutes();
+  });
+  routing::on_cluster_creation.connect(&clusterCreation_cb);
   s4u::NetZone::on_route_creation.connect(&routeCreation_cb);
 }
 
@@ -387,38 +398,6 @@ void ns3_simulator(double maxSeconds)
 
   if(maxSeconds > 0.0)
     id.Cancel();
-}
-
-// initialize the ns-3 interface and environment
-void ns3_initialize(std::string TcpProtocol)
-{
-  //  tcpModel are:
-  //  "ns3::TcpNewReno"
-  //  "ns3::TcpReno"
-  //  "ns3::TcpTahoe"
-
-  ns3::Config::SetDefault ("ns3::TcpSocket::SegmentSize", ns3::UintegerValue (1000));
-  ns3::Config::SetDefault ("ns3::TcpSocket::DelAckCount", ns3::UintegerValue (1));
-  ns3::Config::SetDefault ("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue (false));
-
-  if (TcpProtocol == "default") {
-    /* nothing to do */
-
-  } else if (TcpProtocol == "Reno") {
-    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
-    ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpReno"));
-
-  } else if (TcpProtocol == "NewReno") {
-    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
-    ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpNewReno"));
-
-  } else if (TcpProtocol == "Tahoe") {
-    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
-    ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpTahoe"));
-
-  } else {
-    xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
-  }
 }
 
 static std::string transformIpv4Address(ns3::Ipv4Address from)
