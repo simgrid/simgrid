@@ -247,8 +247,8 @@ at a given point of time).
 
 A big difference with TCP sockets or MPI communications is that
 communications do not start right away after a
-:cpp:func:`Mailbox::put() <simgrid::s4u::Mailbox::put()>`, but wait
-for the corresponding :cpp:func:`Mailbox::get() <simgrid::s4u::Mailbox::get()>`.
+:cpp:func:`Mailbox::put() <simgrid::s4u::Mailbox::put>`, but wait
+for the corresponding :cpp:func:`Mailbox::get() <simgrid::s4u::Mailbox::get>`.
 You can change this by :ref:`declaring a receiving actor <s4u_receiving_actor>`.
 
 A big difference with twitter hashtags is that SimGrid does not
@@ -260,8 +260,8 @@ A big difference with the ZeroMQ queues is that you cannot filter
 on the data you want to get from the mailbox. To model such settings
 in SimGrid, you'd have one mailbox per potential topic, and subscribe
 to each topic individually with a 
-:cpp:func:`get_async() <simgrid::s4u::Mailbox::get_async()>` on each mailbox.
-Then, use :cpp:func:`Comm::wait_any() <simgrid::s4u::Comm::wait_any()>` 
+:cpp:func:`get_async() <simgrid::s4u::Mailbox::get_async>` on each mailbox.
+Then, use :cpp:func:`Comm::wait_any() <simgrid::s4u::Comm::wait_any>` 
 to get the first message on any of the mailbox you are subscribed onto.
 
 The mailboxes are not located on the network, and you can access
@@ -488,7 +488,7 @@ Querying info
       .. autodoxymethod:: simgrid::s4u::Actor::get_host
       .. autodoxymethod:: simgrid::s4u::Actor::set_host
 
-      .. autodoxymethod:: simgrid::s4u::Actor::get_refcount()
+      .. autodoxymethod:: simgrid::s4u::Actor::get_refcount
       .. autodoxymethod:: simgrid::s4u::Actor::get_impl
 
    .. group-tab:: Python
@@ -521,7 +521,7 @@ Suspending and resuming actors
 
       .. autodoxymethod:: simgrid::s4u::Actor::suspend()
       .. autodoxymethod:: simgrid::s4u::Actor::resume()
-      .. autodoxymethod:: simgrid::s4u::Actor::is_suspended()
+      .. autodoxymethod:: simgrid::s4u::Actor::is_suspended
 
    .. group-tab:: Python
 
@@ -533,7 +533,7 @@ Suspending and resuming actors
 
       .. autodoxymethod:: sg_actor_suspend(sg_actor_t actor)
       .. autodoxymethod:: sg_actor_resume(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_is_suspended(sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_is_suspended(const_sg_actor_t actor)
 
 Specifying when actors should terminate
 ---------------------------------------
@@ -545,7 +545,7 @@ Specifying when actors should terminate
       .. autodoxymethod:: simgrid::s4u::Actor::kill()
       .. autodoxymethod:: simgrid::s4u::Actor::kill_all()
       .. autodoxymethod:: simgrid::s4u::Actor::set_kill_time(double time)
-      .. autodoxymethod:: simgrid::s4u::Actor::get_kill_time()
+      .. autodoxymethod:: simgrid::s4u::Actor::get_kill_time
 
       .. autodoxymethod:: simgrid::s4u::Actor::restart()
       .. autodoxymethod:: simgrid::s4u::Actor::daemonize()
@@ -601,7 +601,7 @@ Signals
 
       .. autodoxyvar:: simgrid::s4u::Actor::on_creation
       .. autodoxyvar:: simgrid::s4u::Actor::on_suspend
-      .. cpp:var:: xbt::signal<void(const Actor&, const Host & previous_location)> Actor::on_host_change
+      .. cpp:var:: xbt::signal<void(const simgrid::s4u::Actor&, const simgrid::s4u::Host & previous_location)> Actor::on_host_change
 
          Signal fired when an actor is migrated from one host to another.
 
@@ -709,8 +709,8 @@ the execution, or start an asynchronous activity.
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::this_actor::exec_async(double flops_amounts)
-      .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(const std::vector< s4u::Host *> &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. autodoxymethod:: simgrid::s4u::this_actor::exec_async
+      .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
       .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(double flops_amounts)
       .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop)
       .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop, double priority)
@@ -763,10 +763,10 @@ Initialization
       .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, bool value)
       .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, double value)
       .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, int value)
-      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, std::string value)
+      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, const std::string &value)
 
-      .. autodoxymethod:: simgrid::s4u::Engine::load_deployment(const std::string &deploy)
-      .. autodoxymethod:: simgrid::s4u::Engine::load_platform(const std::string &platf)
+      .. autodoxymethod:: simgrid::s4u::Engine::load_deployment
+      .. autodoxymethod:: simgrid::s4u::Engine::load_platform
       .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name)
       .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name, F code)
       .. autodoxymethod:: simgrid::s4u::Engine::register_default(void(*code)(int, char **))
@@ -796,7 +796,7 @@ Run the simulation
    .. group-tab:: C++
 
       .. autodoxymethod:: simgrid::s4u::Engine::get_clock()
-      .. autodoxymethod:: simgrid::s4u::Engine::run()
+      .. autodoxymethod:: simgrid::s4u::Engine::run
 
    .. group-tab:: Python
    
@@ -815,9 +815,9 @@ Retrieving actors
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_actor_count()
-      .. autodoxymethod:: simgrid::s4u::Engine::get_all_actors()
-      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_actors(const std::function< bool(ActorPtr)> &filter)
+      .. autodoxymethod:: simgrid::s4u::Engine::get_actor_count
+      .. autodoxymethod:: simgrid::s4u::Engine::get_all_actors
+      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_actors
 
    .. group-tab:: C
 
@@ -830,11 +830,11 @@ Retrieving hosts
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_all_hosts()
-      .. autodoxymethod:: simgrid::s4u::Engine::get_host_count()
-      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_hosts(const std::function< bool(Host *)> &filter)
-      .. autodoxymethod:: simgrid::s4u::Engine::host_by_name(const std::string &name)
-      .. autodoxymethod:: simgrid::s4u::Engine::host_by_name_or_null(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Engine::get_all_hosts
+      .. autodoxymethod:: simgrid::s4u::Engine::get_host_count
+      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_hosts
+      .. autodoxymethod:: simgrid::s4u::Engine::host_by_name
+      .. autodoxymethod:: simgrid::s4u::Engine::host_by_name_or_null
 
    .. group-tab:: Python
 
@@ -851,11 +851,11 @@ Retrieving links
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_all_links()
-      .. autodoxymethod:: simgrid::s4u::Engine::get_link_count()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_all_links
+      .. autodoxymethod:: simgrid::s4u::Engine::get_link_count
       .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_links
-      .. autodoxymethod:: simgrid::s4u::Engine::link_by_name(const std::string &name)
-      .. autodoxymethod:: simgrid::s4u::Engine::link_by_name_or_null(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Engine::link_by_name
+      .. autodoxymethod:: simgrid::s4u::Engine::link_by_name_or_null
 
 Interacting with the routing
 ----------------------------
@@ -864,12 +864,12 @@ Interacting with the routing
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_all_netpoints()
-      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_netzones()
+      .. autodoxymethod:: simgrid::s4u::Engine::get_all_netpoints
+      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_netzones
       .. autodoxymethod:: simgrid::s4u::Engine::get_instance()
-      .. autodoxymethod:: simgrid::s4u::Engine::get_netzone_root()
-      .. autodoxymethod:: simgrid::s4u::Engine::netpoint_by_name_or_null(const std::string &name)
-      .. autodoxymethod:: simgrid::s4u::Engine::netzone_by_name_or_null(const std::string &name)
+      .. autodoxymethod:: simgrid::s4u::Engine::get_netzone_root
+      .. autodoxymethod:: simgrid::s4u::Engine::netpoint_by_name_or_null
+      .. autodoxymethod:: simgrid::s4u::Engine::netzone_by_name_or_null
       .. autodoxymethod:: simgrid::s4u::Engine::set_netzone_root(const NetZone *netzone)
 
 Signals
@@ -924,8 +924,8 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_cname() const
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_name() const
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_cname
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_name
 
    .. group-tab:: Python
 
@@ -957,15 +957,15 @@ Receiving data
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Mailbox::empty()
-      .. autodoxymethod:: simgrid::s4u::Mailbox::front()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::empty
+      .. autodoxymethod:: simgrid::s4u::Mailbox::front
       .. autodoxymethod:: simgrid::s4u::Mailbox::get()
       .. autodoxymethod:: simgrid::s4u::Mailbox::get(double timeout)
       .. autodoxymethod:: simgrid::s4u::Mailbox::get_async(void **data)
       .. autodoxymethod:: simgrid::s4u::Mailbox::get_init()
       .. autodoxymethod:: simgrid::s4u::Mailbox::iprobe(int type, bool(*match_fun)(void *, void *, kernel::activity::CommImpl *), void *data)
-      .. autodoxymethod:: simgrid::s4u::Mailbox::listen()
-      .. autodoxymethod:: simgrid::s4u::Mailbox::ready()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::listen
+      .. autodoxymethod:: simgrid::s4u::Mailbox::ready
 
    .. group-tab:: Python
 
@@ -984,7 +984,7 @@ See :ref:`s4u_receiving_actor`.
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_receiver()
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_receiver
       .. autodoxymethod:: simgrid::s4u::Mailbox::set_receiver(ActorPtr actor)
 
    .. group-tab:: C
@@ -1248,9 +1248,9 @@ Execution
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::exec_async(double flops_amounts)
-      .. autodoxymethod:: simgrid::s4u::Host::execute(double flops)
-      .. autodoxymethod:: simgrid::s4u::Host::execute(double flops, double priority)
+      .. autodoxymethod:: simgrid::s4u::Host::exec_async
+      .. autodoxymethod:: simgrid::s4u::Host::execute(double flops) const
+      .. autodoxymethod:: simgrid::s4u::Host::execute(double flops, double priority) const
 
 Platform and routing
 --------------------
@@ -1261,8 +1261,8 @@ Platform and routing
 
       .. autodoxymethod:: simgrid::s4u::Host::get_englobing_zone()
       .. autodoxymethod:: simgrid::s4u::Host::get_netpoint() const
-      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link *> &links, double *latency) const
-      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl *> &links, double *latency) const
+      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
+      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency) const
       .. autodoxymethod:: simgrid::s4u::Host::sendto(Host *dest, double byte_amount)
       .. autodoxymethod:: simgrid::s4u::Host::sendto_async(Host *dest, double byte_amount)
 
@@ -1423,7 +1423,7 @@ WIFI links
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Link::set_host_wifi_rate(const s4u::Host* host, int level) const
+      .. autodoxymethod:: simgrid::s4u::Link::set_host_wifi_rate
 
 Signals
 -------
@@ -1540,9 +1540,9 @@ Routing data
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::NetZone::add_bypass_route(kernel::routing::NetPoint *src, kernel::routing::NetPoint *dst, kernel::routing::NetPoint *gw_src, kernel::routing::NetPoint *gw_dst, std::vector< kernel::resource::LinkImpl *> &link_list, bool symmetrical)
+      .. autodoxymethod:: simgrid::s4u::NetZone::add_bypass_route
       .. autodoxymethod:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
-      .. autodoxymethod:: simgrid::s4u::NetZone::add_route(kernel::routing::NetPoint *src, kernel::routing::NetPoint *dst, kernel::routing::NetPoint *gw_src, kernel::routing::NetPoint *gw_dst, std::vector< kernel::resource::LinkImpl *> &link_list, bool symmetrical)
+      .. autodoxymethod:: simgrid::s4u::NetZone::add_route
       .. autodoxymethod:: simgrid::s4u::NetZone::get_children() const
       .. autodoxymethod:: simgrid::s4u::NetZone::get_father()
 

@@ -29,7 +29,7 @@ Actors: the Active Entities
 ===========================
 
 Starting and Stopping Actors
----------------------------
+----------------------------
 
   - **Creating actors:**
     Most actors are started from the deployment XML file, because this
