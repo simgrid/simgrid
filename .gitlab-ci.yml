@@ -69,5 +69,5 @@ pages:
     - public
   only:
   - master
-  needs: ["ctest"]
+  needs: [] #["ctest"]
   
