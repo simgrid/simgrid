@@ -7,7 +7,7 @@
 # Python needs to find simgrid on my machine, but not ctest -- sorry for the hack
 if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
 
-set -e
+set -ex
 set -o pipefail
 
 if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
