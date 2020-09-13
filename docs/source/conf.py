@@ -67,6 +67,37 @@ breathe_default_project = "simgrid"
 
 # Setup the autodoxy extension
 doxygen_xml = os.path.join(os.path.dirname(__file__), "..", "build", "xml")
+autodoxy_requalified_identifiers =  [ # The first element will be substituted into the second one if it's starting an element or preceded by a space
+    ("ActorPtr", "simgrid::s4u::ActorPtr"),
+    ("Actor", "simgrid::s4u::Actor"),
+    ("CommPtr", "simgrid::s4u::CommPtr"),
+    ("Disk", "simgrid::s4u::Disk"),
+    ("ExecPtr", "simgrid::s4u::ExecPtr"),
+    ("Host", "simgrid::s4u::Host"),
+    ("s4u::Host", "simgrid::s4u::Host"),
+    ("Engine", "simgrid::s4u::Engine"),
+    ("Link", "simgrid::s4u::Link"),
+    ("Mailbox", "simgrid::s4u::Mailbox"),
+    ("Mutex", "simgrid::s4u::Mutex"),
+    ("s4u::Mutex", "simgrid::s4u::Mutex"),
+    ("NetZone", "simgrid::s4u::NetZone"),
+    ("Semaphore", "simgrid::s4u::Semaphore"),
+  ]
+
+# Generate a warning for all a cross-reference (such as :func:`myfunc`) that cannot be found
+nitpicky = True
+nitpick_ignore = [
+  ('cpp:identifier', 'boost'),
+  ('cpp:identifier', 'kernel'),
+  ('cpp:identifier', 'simgrid'),
+  ('cpp:identifier', 'simgrid::s4u'),
+  ('cpp:identifier', 'this_actor'),
+  ('cpp:identifier', 's4u'),
+  ('cpp:identifier', 'size_t'),
+  ('cpp:identifier', 'uint64_t'),
+  ('cpp:identifier', 'xbt'),
+  ('cpp:identifier', 'xbt::string'),
+]
 
 # For cross-ref generation
 primary_domain = 'cpp'
@@ -151,4 +182,3 @@ html_css_files = [
 
 # -- Other options
 
-nitpicky = True # Generate a warning for all a cross-reference (such as :func:`myfunc`) that cannot be found

@@ -44,10 +44,7 @@ EOF
   echo "javasphinx relaunched"
 fi
 
-PYTHONPATH=../lib:source/_ext/javasphinx sphinx-build -M html source build ${SPHINXOPTS} 2>&1 \
-  | grep -v 'WARNING: cpp:identifier reference target not found: simgrid$' \
-  | grep -v 'WARNING: cpp:identifier reference target not found: simgrid::s4u$' \
-  | grep -v 'WARNING: cpp:identifier reference target not found: boost' 
+PYTHONPATH=../lib:source/_ext/javasphinx sphinx-build -M html source build ${SPHINXOPTS} 2>&1
 
 set +x
 
