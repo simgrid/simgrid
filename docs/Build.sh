@@ -21,7 +21,17 @@ if [ "x$1" != 'xjava' ] && [ -e source/java ] ; then
   echo "javasphinx not rerun: 'java' was not provided as an argument"
 else
   rm -rf source/java
-  javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
+  
+  # Use that script without installing javasphinx: javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
+  PYTHONPATH=${PYTHONPATH}:source/_ext/javasphinx python3 - --force -o source/java/ ../src/bindings/java/org/simgrid/msg <<EOF
+import re
+import sys
+from javasphinx.apidoc import main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
+EOF
+
   rm -f source/java/packages.rst # api_generated/source_java_packages.rst
   rm -f source/java/org/simgrid/msg/package-index.rst # api_generated/source_java_org_simgrid_msg_package-index.rst
   for f in source/java/org/simgrid/msg/* ; do
