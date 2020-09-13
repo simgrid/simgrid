@@ -54,7 +54,8 @@ pages:
   stage: deploy
   script:
   - pip3 install --requirement docs/requirements.txt
-  - cd docs
+  - cd docs/source/_ext/javasphinx; python3 setup.py build; python3 setup.py install
+  - cd ../../..
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
   # - The CSS contains a reference to a font or something, not something we gonna fix on our side
