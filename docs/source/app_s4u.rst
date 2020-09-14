@@ -635,7 +635,7 @@ Querying info
       .. autodoxymethod:: simgrid::s4u::this_actor::is_maestro()
 
       .. autodoxymethod:: simgrid::s4u::this_actor::get_host()
-      .. autodoxymethod:: simgrid::s4u::this_actor::set_host(Host *new_host)
+      .. autodoxymethod:: simgrid::s4u::this_actor::set_host(simgrid::s4u::Host *new_host)
 
    .. group-tab:: Python
 
