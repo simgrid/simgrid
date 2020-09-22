@@ -896,6 +896,20 @@ set(DOC_SOURCES
   docs/source/_ext/showfile.css
   docs/source/_ext/showfile.js
   docs/source/_ext/showfile.py
+  docs/source/_ext/javasphinx/LICENSE
+  docs/source/_ext/javasphinx/MANIFEST.in
+  docs/source/_ext/javasphinx/README.md
+  docs/source/_ext/javasphinx/doc/conf.py
+  docs/source/_ext/javasphinx/doc/index.rst
+  docs/source/_ext/javasphinx/javasphinx/__init__.py
+  docs/source/_ext/javasphinx/javasphinx/apidoc.py
+  docs/source/_ext/javasphinx/javasphinx/compiler.py
+  docs/source/_ext/javasphinx/javasphinx/domain.py
+  docs/source/_ext/javasphinx/javasphinx/extdoc.py
+  docs/source/_ext/javasphinx/javasphinx/formatter.py
+  docs/source/_ext/javasphinx/javasphinx/htmlrst.py
+  docs/source/_ext/javasphinx/javasphinx/util.py
+  docs/source/_ext/javasphinx/setup.py
   docs/source/_static/css/custom.css
   docs/source/_templates/breadcrumbs.html
 
