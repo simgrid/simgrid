@@ -607,8 +607,8 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
       wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
 
       wifiMac.SetType ("ns3::StaWifiMac",
-                       "Ssid", ns3::SsidValue(link_name));
-                       //~ "ActiveProbing", ns3::BooleanValue(false));
+                       "Ssid", ns3::SsidValue(link_name),
+                       "ActiveProbing", ns3::BooleanValue(false));
 
       netA.Add(wifi.Install (wifiPhy, wifiMac, staNode));
 
