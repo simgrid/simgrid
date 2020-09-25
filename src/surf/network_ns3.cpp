@@ -103,6 +103,7 @@ std::unordered_map<std::string, WifiZone*> WifiZone::wifi_zones;
 
 static void initialize_ns3_wifi() {
     wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
+
     for (auto host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
         const char* wifi_link = host->get_property("wifi_link");
         const char* wifi_mcs = host->get_property("wifi_mcs");
@@ -606,8 +607,8 @@ void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double 
       wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
 
       wifiMac.SetType ("ns3::StaWifiMac",
-                       "Ssid", ns3::SsidValue(link_name),
-                       "ActiveProbing", ns3::BooleanValue(false));
+                       "Ssid", ns3::SsidValue(link_name));
+                       //~ "ActiveProbing", ns3::BooleanValue(false));
 
       netA.Add(wifi.Install (wifiPhy, wifiMac, staNode));
 
