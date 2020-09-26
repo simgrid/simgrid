@@ -26,6 +26,8 @@
 
 + contrib/.*
 
++ \.github/.*
+
 + tools/appveyor-irc-notify\.py
 + tools/docker/.*
 + tools/git-hooks/.*
