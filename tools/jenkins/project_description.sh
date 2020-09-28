@@ -22,12 +22,13 @@ get_cmake(){
 }
 
 get_ns3(){
-  found=$(grep -c "ns-3 found" ./consoleText)
-  if [ "$found" != 0 ]; then
-    echo "✔"
-  else
-    echo ""
-  fi
+  grep -m 1 "ns-3 found (v3.[0-9]*; incl:"|sed "s/.*-- ns-3 found .v\(3.[0-9]*\); incl:.*/\1/g"
+#  found=$(grep -c "ns-3 found" ./consoleText)
+#  if [ "$found" != 0 ]; then
+#    echo "✔"
+#  else
+#    echo ""
+#  fi
 }
 
 get_python(){
