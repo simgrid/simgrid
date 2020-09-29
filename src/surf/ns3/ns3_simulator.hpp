@@ -24,7 +24,7 @@ public:
   std::string ipv4_address_;
 };
 
-XBT_PRIVATE void ns3_initialize(std::string TcpProtocol);
+XBT_PRIVATE void ns3_initialize(const std::string& TcpProtocol);
 XBT_PRIVATE void ns3_simulator(double max_seconds);
 XBT_PRIVATE void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst,
                                       double bw, double lat, const std::string& link_name,
@@ -54,7 +54,7 @@ static inline std::string transform_socket_ptr(ns3::Ptr<ns3::Socket> local_socke
 
 class XBT_PRIVATE WifiZone {
 public:
-  WifiZone(std::string name_, simgrid::s4u::Host* host_, ns3::Ptr<ns3::Node> ap_node_,
+  WifiZone(const std::string& name_, simgrid::s4u::Host* host_, ns3::Ptr<ns3::Node> ap_node_,
            ns3::Ptr<ns3::YansWifiChannel> channel_, int mcs_, int nss_, int network_, int link_);
 
   const char* get_cname() { return name.c_str(); }
@@ -72,7 +72,7 @@ public:
   void add_sta_node() { n_sta_nodes++; }
 
   static bool is_ap(ns3::Ptr<ns3::Node> node);
-  static WifiZone* by_name(std::string name);
+  static WifiZone* by_name(const std::string& name);
 
 private:
   std::string name;

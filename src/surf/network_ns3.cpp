@@ -70,7 +70,7 @@ NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
   stack.Install(ns3_node_);
 }
 
-WifiZone::WifiZone(std::string name_, simgrid::s4u::Host* host_, ns3::Ptr<ns3::Node> ap_node_,
+WifiZone::WifiZone(const std::string& name_, simgrid::s4u::Host* host_, ns3::Ptr<ns3::Node> ap_node_,
                    ns3::Ptr<ns3::YansWifiChannel> channel_, int mcs_, int nss_, int network_, int link_)
     : name(name_)
     , host(host_)
@@ -93,7 +93,7 @@ bool WifiZone::is_ap(ns3::Ptr<ns3::Node> node)
   return false;
 }
 
-WifiZone* WifiZone::by_name(std::string name)
+WifiZone* WifiZone::by_name(const std::string& name)
 {
   WifiZone* zone;
   try {
