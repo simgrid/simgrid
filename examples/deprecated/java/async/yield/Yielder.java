@@ -17,7 +17,7 @@ public class Yielder extends Process {
   public void main(String[] args) {
     int yieldsCount = Integer.parseInt(args[0]);
     for (int i=0; i<yieldsCount; i++)
-    	yield();
+        Process.yield();
     Msg.info("Yielded "+yieldsCount+". Good bye now!");
   }
 }
