@@ -407,7 +407,7 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
     zone->set_network(number_of_networks);
     zone->set_link(number_of_links);
 
-    netpoint_ns3->ipv4_address_ = transformIpv4Address(addresses.GetAddress(addresses.GetN() - 1));
+    netpoint_ns3->ipv4_address_ = transformIpv4Address(addresses.GetAddress(1));
 
     if (number_of_links == 255) {
       xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
@@ -572,7 +572,7 @@ void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kern
     zone->add_sta_node();
     XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
     auto addresses          = address.Assign(netA);
-    host_dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(addresses.GetN() - 1));
+    host_dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(1));
   } else {
     ns3::PointToPointHelper pointToPoint;
 
