@@ -54,13 +54,14 @@ pages:
   stage: deploy
   script:
   - pip3 install --requirement docs/requirements.txt
-  - cd docs
+  - cd docs/source/_ext/javasphinx; python3 setup.py build; python3 setup.py install
+  - cd ../../..
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
   # - The CSS contains a reference to a font or something, not something we gonna fix on our side
   # - The javasphinx output does not exist in the git, so the "edit on FramaGit" link is broken.
   #   I'd like to report this as a bug, but javasphinx seems abandonned upstream.
-  - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
+#not installed   - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
   # From time to time, we should check external links with the
   # following, but it has a lot of false positive
   # - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org --check-extern ../public

@@ -531,7 +531,7 @@ if __name__ == '__main__':
     group1.add_argument(
         '--ignore-jenkins',
         action='store_true',
-        help='ignore all cruft generated on SimGrid continous integration servers')
+        help='ignore all cruft generated on SimGrid continuous integration servers')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
     group1.add_argument(
         '--keep',
@@ -545,7 +545,7 @@ if __name__ == '__main__':
         os.chdir(options.cd)
 
     if options.ignore_jenkins:
-        print("Ignore all cruft seen on SimGrid's continous integration servers")
+        print("Ignore all cruft seen on SimGrid's continuous integration servers")
         # Note: regexps should match at the beginning of lines
         TeshState().ignore_regexps_common = [
             re.compile(r"profiling:"),

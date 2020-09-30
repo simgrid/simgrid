@@ -24,9 +24,9 @@ public:
   /** @brief Returns the full path name */
   const std::string& get_name() const { return path_; }
   /** @brief Returns the directory component of a path (reimplementation of POSIX dirname) */
-  std::string get_dir_name();
+  std::string get_dir_name() const;
   /** @brief Returns the file component of a path (reimplementation of POSIX basename) */
-  std::string get_base_name();
+  std::string get_base_name() const;
 
 private:
   std::string path_;

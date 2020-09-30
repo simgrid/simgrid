@@ -198,7 +198,7 @@ endif()
 set(CMAKE_C_FLAGS   "${warnCFLAGS} ${CMAKE_C_FLAGS}   ${optCFLAGS}")
 set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
-# Try to make Mac a bit more complient to open source standards
+# Try to make Mac a bit more compliant to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE")
 endif()

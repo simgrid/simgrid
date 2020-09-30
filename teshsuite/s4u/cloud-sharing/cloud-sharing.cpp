@@ -310,9 +310,9 @@ static void run_test(const std::string& chooser)
     XBT_INFO("### Put a VM on a PM, put one task to the PM and three tasks to the VM");
     vm0 = new simgrid::s4u::VirtualMachine("VM0", pm2, 2);
     run_test_process("( [ooo]2 X )2", pm2, flop_amount * 2 / 3);
-    run_test_process("( [Xoo]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
-    run_test_process("( [oXo]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
-    run_test_process("( [ooX]2 o )2", vm0, flop_amount * (2. / 3 * 2) / 3); // VM_share/3
+    run_test_process("( [Xoo]2 o )2", vm0, (flop_amount * 4 / 3) / 3); // VM_share/3
+    run_test_process("( [oXo]2 o )2", vm0, (flop_amount * 4 / 3) / 3); // VM_share/3
+    run_test_process("( [ooX]2 o )2", vm0, (flop_amount * 4 / 3) / 3); // VM_share/3
     simgrid::s4u::this_actor::sleep_for(2);
     test_energy_consumption(chooser,2);
     vm0->destroy();
@@ -480,9 +480,9 @@ static void run_test(const std::string& chooser)
   } else if (chooser == "( [ooo]2 ooo )4") {
     XBT_INFO("### Put a VM on a PM, and put three tasks to the PM and three tasks to the VM");
     vm0 = new simgrid::s4u::VirtualMachine("VM0", pm4, 2);
-    run_test_process("( [Xoo]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3); // The VM has 8/5 of the PM
-    run_test_process("( [oXo]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3);
-    run_test_process("( [ooX]2 ooo )4", vm0, flop_amount * (8. / 5) * 1 / 3);
+    run_test_process("( [Xoo]2 ooo )4", vm0, (flop_amount * 8 / 5) / 3); // The VM has 8/5 of the PM
+    run_test_process("( [oXo]2 ooo )4", vm0, (flop_amount * 8 / 5) / 3);
+    run_test_process("( [ooX]2 ooo )4", vm0, (flop_amount * 8 / 5) / 3);
 
     run_test_process("( [ooo]2 Xoo )4", pm4, flop_amount * 4 / 5);
     run_test_process("( [ooo]2 oXo )4", pm4, flop_amount * 4 / 5);

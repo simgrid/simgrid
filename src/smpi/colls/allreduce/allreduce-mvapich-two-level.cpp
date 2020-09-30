@@ -164,7 +164,7 @@ int allreduce__mvapich2_two_level(const void *sendbuf,
         }
     }
 
-    /* Broadcasting the mesage from leader to the rest */
+    /* Broadcasting the message from leader to the rest */
     /* Note: shared memory broadcast could improve the performance */
     mpi_errno = colls::bcast(recvbuf, count, datatype, 0, shmem_comm);
 

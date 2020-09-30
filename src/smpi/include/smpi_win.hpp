@@ -53,20 +53,20 @@ public:
   ~Win();
   int attach (void *base, MPI_Aint size);
   int detach (const void *base);
-  void get_name( char* name, int* length);
+  void get_name(char* name, int* length) const;
   void get_group( MPI_Group* group);
   void set_name(const char* name);
-  int rank();
-  int dynamic();
+  int rank() const;
+  int dynamic() const;
   int start(MPI_Group group, int assert);
   int post(MPI_Group group, int assert);
   int complete();
   MPI_Info info();
   void set_info( MPI_Info info);
   int wait();
-  MPI_Aint size();
-  void* base();
-  int disp_unit();
+  MPI_Aint size() const;
+  void* base() const;
+  int disp_unit() const;
   int fence(int assert);
   int put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request=nullptr);
@@ -91,7 +91,7 @@ public:
   int flush_local_all();
   int finish_comms();
   int finish_comms(int rank);
-  int shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr);
+  int shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr) const;
   MPI_Errhandler errhandler();
   void set_errhandler( MPI_Errhandler errhandler);
 };

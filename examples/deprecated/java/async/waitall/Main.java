@@ -5,7 +5,7 @@
 
 package async.waitall;
 
-/** This example demonstrates the use of the asynchrounous communications
+/** This example demonstrates the use of the asynchronous communications
  * 
  *  Task.isend() and Task.irecv() are used to start the communications in non-blocking mode.
  *  

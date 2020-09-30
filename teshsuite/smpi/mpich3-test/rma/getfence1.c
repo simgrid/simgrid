@@ -52,7 +52,7 @@ static inline int test(MPI_Comm comm, int rank, int source, int dest,
         MPI_Win_set_errhandler(win, MPI_ERRORS_RETURN);
 
         /* This should have the same effect, in terms of
-         * transfering data, as a send/recv pair */
+         * transferring data, as a send/recv pair */
         err = MPI_Get(recvtype->buf, recvtype->count,
                       recvtype->datatype, source, 0, sendtype->count, sendtype->datatype, win);
         if (err) {

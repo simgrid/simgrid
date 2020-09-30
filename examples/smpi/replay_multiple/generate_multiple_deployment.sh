@@ -80,47 +80,47 @@ HOSTFILETMP=0
 if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
     HOSTFILE="$(mktemp tmphostXXXXXX)"
-    perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
+    perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' "${PLATFORM}" > "${HOSTFILE}"
 fi
 UNROLLEDHOSTFILETMP=0
 
 #parse if our lines are terminated by :num_process
-multiple_processes=$(grep -c ":" $HOSTFILE)
+multiple_processes=$(grep -c ":" "$HOSTFILE")
 if [ "${multiple_processes}" -gt 0 ] ; then
     UNROLLEDHOSTFILETMP=1
     UNROLLEDHOSTFILE="$(mktemp tmphostXXXXXX)"
-    perl -ne ' do{ for ( 1 .. $2 ) { print "$1\n" } } if /(.*?):(\d+).*/'  ${HOSTFILE}  > ${UNROLLEDHOSTFILE}
+    perl -ne ' do{ for ( 1 .. $2 ) { print "$1\n" } } if /(.*?):(\d+).*/'  "${HOSTFILE}"  > "${UNROLLEDHOSTFILE}"
     if [ ${HOSTFILETMP} = 1 ] ; then
-        rm ${HOSTFILE}
+        rm "${HOSTFILE}"
         HOSTFILETMP=0
     fi
     HOSTFILE=$UNROLLEDHOSTFILE
 fi
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
-hostfile_procs=$(grep -c "[a-zA-Z0-9]" $HOSTFILE)
-if [ ${hostfile_procs} = 0 ] ; then
-   echo "[$(basename $0)] ** error: the hostfile '${HOSTFILE}' is empty. Aborting." >&2
+hostfile_procs=$(grep -c "[a-zA-Z0-9]" "$HOSTFILE")
+if [ "${hostfile_procs}" = 0 ] ; then
+   echo "[$(basename "$0")] ** error: the hostfile '${HOSTFILE}' is empty. Aborting." >&2
    exit 1
 fi
 
 ##-------------------------------- DEFAULT APPLICATION --------------------------------------
 
-APPLICATIONTMP=$(echo ${PROC_ARGS}|cut -d' ' -f2 -s)
+APPLICATIONTMP=$(echo "${PROC_ARGS}"|cut -d' ' -f2 -s)
 
-cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
+cat > "${APPLICATIONTMP}" <<APPLICATIONHEAD
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
-if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
-    hostnames=$(tr '\n\r' '  ' < ${HOSTFILE})
-    NUMHOSTS=$(wc -l < ${HOSTFILE})
+if [ -n "${HOSTFILE}" ] && [ -f "${HOSTFILE}" ]; then
+    hostnames=$(tr '\n\r' '  ' < "${HOSTFILE}")
+    NUMHOSTS=$(wc -l < "${HOSTFILE}")
 fi
 
-DESCRIPTIONFILE=$(echo $PROC_ARGS|cut -d' ' -f1)
+DESCRIPTIONFILE=$(echo "$PROC_ARGS"|cut -d' ' -f1)
 
 if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
     IFS_OLD=$IFS
@@ -168,45 +168,46 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
 	    if [ -n "${HOSTFILE}" ]; then
 		j=$(( NUMPROCS % NUMHOSTS + 1))
             fi
-            hostname=$(echo $hostnames|cut -d' ' -f$j)
+            hostname=$(echo "$hostnames"|cut -d' ' -f$j)
             if [ -z "${hostname}" ]; then
 		host="host"$($j)
             else
 		host="${hostname}"
             fi
-        
-            echo "  <actor host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
-            echo "    <argument value=\"${instance}\"/> <!-- instance -->" >> ${APPLICATIONTMP}
-            echo "    <argument value=\"${i}\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-            echo "    <argument value=\"$(echo $hosttrace|cut -d' ' -f$((i+1)))\"/>" >> ${APPLICATIONTMP}
+            {
+            echo "  <actor host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->"
+            echo "    <argument value=\"${instance}\"/> <!-- instance -->"
+            echo "    <argument value=\"${i}\"/> <!-- rank -->"
+            echo "    <argument value=\"$(echo "$hosttrace"|cut -d' ' -f$((i+1)))\"/>"
 	    
-            echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
-            echo "  </actor>" >> ${APPLICATIONTMP}
+            echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->"
+            echo "  </actor>"
+            } >> "${APPLICATIONTMP}"
             NUMPROCS=$(( NUMPROCS + 1))
         done
         # return IFS back to newline for "for" loop
         IFS_OLD=$IFS
         IFS=$(printf '\n_'); IFS=${IFS%_} # protect trailing \n
-    done < ${DESCRIPTIONFILE}
+    done < "${DESCRIPTIONFILE}"
 
     # return delimiter to previous value
     IFS=$IFS_OLD
     IFS_OLD=
 else
-    printf "File not found: %s\n", ${DESCRIPTIONFILE} >&2
+    printf "File not found: %s\n", "${DESCRIPTIONFILE}" >&2
     exit 1
 fi
 
-cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
+cat >> "${APPLICATIONTMP}" <<APPLICATIONFOOT
 </platform>
 APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 
 if [ ${HOSTFILETMP} = 1 ] ; then
-    rm ${HOSTFILE}
+    rm "${HOSTFILE}"
 fi
 if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
-    rm ${UNROLLEDHOSTFILE}
+    rm "${UNROLLEDHOSTFILE}"
 fi
 
 exit 0

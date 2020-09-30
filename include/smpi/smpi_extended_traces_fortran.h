@@ -551,6 +551,10 @@
 #define MPI_WIN_CREATE_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_create_errhandler
 #define mpi_win_call_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_call_errhandler
 #define MPI_WIN_CALL_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Win_call_errhandler
+#define mpi_type_get_contents smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_contents
+#define MPI_TYPE_GET_CONTENTS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_contents
+#define mpi_type_get_envelope smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_envelope
+#define MPI_TYPE_GET_ENVELOPE smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_envelope
 #define mpi_file_call_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_call_errhandler
 #define MPI_FILE_CALL_ERRHANDLER smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_call_errhandler
 #define mpi_file_create_errhandler smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_File_create_errhandler
@@ -607,8 +611,6 @@
 #define MPI_GET_ELEMENTS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Get_elements
 #define mpi_pcontrol smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pcontrol
 #define MPI_PCONTROL smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pcontrol
-#define mpi_type_get_contents smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_contents
-#define MPI_TYPE_GET_CONTENTS smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_get_contents
 #define mpi_type_create_darray smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_darray
 #define MPI_TYPE_CREATE_DARRAY smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Type_create_darray
 #define mpi_pack_external_size smpi_trace_set_call_location(__FILE__,__LINE__); call MPI_Pack_external_size

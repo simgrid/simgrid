@@ -211,6 +211,16 @@ informative messages.
    :append: $$$
    :dedent: 2
 
+Each example included in the SimGrid distribution comes with a `tesh`
+file that presents how to start the example once compiled, along with
+the expected output. These files are used for the automatic testing of
+the framework, but can be used to see the examples' output without
+compiling them. See e.g. the file
+`examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh <https://framagit.org/simgrid/simgrid/-/blob/master/examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh>`_.
+Lines starting with `$` are the commands to execute;
+lines starting with `>` are the expected output of each command while
+lines starting with `!` are configuration items for the test runner.
+
 
 Improve it Yourself
 -------------------

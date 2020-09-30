@@ -1,8 +1,8 @@
 p Workload with two mixed jobs (at the same time but not on the same resources)
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/workload_mixed2_same_time --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
-> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/workload_mixed2_same_time --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='mixed.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='mixed.txt', size=2, start=0, alloc='2,3'
 > [   0.000000] (workload@Bourassa) Launching the job executor of job 0 (app 'job0')

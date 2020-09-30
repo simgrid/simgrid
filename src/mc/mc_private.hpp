@@ -16,7 +16,7 @@ namespace simgrid {
 namespace mc {
 
 struct DerefAndCompareByActorsCountAndUsedHeap {
-  template <class X, class Y> bool operator()(X const& a, Y const& b)
+  template <class X, class Y> bool operator()(X const& a, Y const& b) const
   {
     return std::make_pair(a->actors_count, a->heap_bytes_used) < std::make_pair(b->actors_count, b->heap_bytes_used);
   }

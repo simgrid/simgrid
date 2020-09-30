@@ -578,7 +578,7 @@ int main( int argc, char **argv )
              1220703125.00 ),   /* Random number gen mult */
              1220703125.00 );   /* Random number gen mult */
 
-/*  Do one interation for free (i.e., untimed) to guarantee initialization of
+/*  Do one iteration for free (i.e., untimed) to guarantee initialization of
     all data and code pages and respective tables */
   rank(gd, 1 );
 

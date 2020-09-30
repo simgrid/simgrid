@@ -103,7 +103,7 @@ void smpi_bench_begin()
 double smpi_adjust_comp_speed(){
   double speedup=1;
   if (smpi_cfg_comp_adjustment_file()[0] != '\0') {
-    smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
+    const smpi_trace_call_location_t* loc                      = smpi_process()->call_location();
     std::string key                                            = loc->get_composed_key();
     std::unordered_map<std::string, double>::const_iterator it = location2speedup.find(key);
     if (it != location2speedup.end()) {
@@ -283,7 +283,7 @@ unsigned long long smpi_rastro_timestamp ()
   unsigned long long sec = static_cast<unsigned long long>(now);
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();
   smpi_bench_begin();
-  return static_cast<unsigned long long>(sec) * smpi_rastro_resolution() + pre;
+  return sec * smpi_rastro_resolution() + pre;
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/

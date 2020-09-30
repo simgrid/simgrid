@@ -295,6 +295,7 @@ set(XBT_SRC
   src/xbt/xbt_main.cpp
   src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_time.c
+  src/xbt/xbt_parse_units.cpp
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
   src/xbt/xbt_virtu.cpp
@@ -778,6 +779,7 @@ set(headers_to_install
   include/xbt/module.h
   include/xbt/PropertyHolder.hpp
   include/xbt/parmap.h
+  include/xbt/parse_units.hpp
   include/xbt/range.hpp
   include/xbt/random.hpp
   include/xbt/replay.hpp
@@ -797,7 +799,7 @@ set(source_of_generated_headers
   src/internal_config.h.in
   include/smpi/mpif.h.in)
 
-### depend of some variables setted upper
+### depend of some variables set upper
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
   set(SIMIX_SRC    ${SIMIX_SRC} src/kernel/context/ContextUnix.hpp
                                 src/kernel/context/ContextUnix.cpp)
@@ -894,6 +896,20 @@ set(DOC_SOURCES
   docs/source/_ext/showfile.css
   docs/source/_ext/showfile.js
   docs/source/_ext/showfile.py
+  docs/source/_ext/javasphinx/LICENSE
+  docs/source/_ext/javasphinx/MANIFEST.in
+  docs/source/_ext/javasphinx/README.md
+  docs/source/_ext/javasphinx/doc/conf.py
+  docs/source/_ext/javasphinx/doc/index.rst
+  docs/source/_ext/javasphinx/javasphinx/__init__.py
+  docs/source/_ext/javasphinx/javasphinx/apidoc.py
+  docs/source/_ext/javasphinx/javasphinx/compiler.py
+  docs/source/_ext/javasphinx/javasphinx/domain.py
+  docs/source/_ext/javasphinx/javasphinx/extdoc.py
+  docs/source/_ext/javasphinx/javasphinx/formatter.py
+  docs/source/_ext/javasphinx/javasphinx/htmlrst.py
+  docs/source/_ext/javasphinx/javasphinx/util.py
+  docs/source/_ext/javasphinx/setup.py
   docs/source/_static/css/custom.css
   docs/source/_templates/breadcrumbs.html
 
@@ -1010,7 +1026,7 @@ set(CMAKEFILES_TXT
   examples/s4u/CMakeLists.txt
   examples/smpi/CMakeLists.txt
   examples/smpi/NAS/CMakeLists.txt
-  examples/smpi/smpi_s4u_masterslave/CMakeLists.txt
+  examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
   examples/smpi/replay_multiple/CMakeLists.txt
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
   examples/python/CMakeLists.txt
@@ -1193,7 +1209,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/two_hosts_platform_with_availability_included.xml
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
-  examples/platforms/wifi_decay_2STA.xml
   examples/platforms/wifi.xml
   )
 

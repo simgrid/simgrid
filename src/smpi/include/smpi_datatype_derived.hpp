@@ -33,7 +33,6 @@ public:
   MPI_Aint block_stride_;
   MPI_Datatype old_type_;
 
-public:
   Type_Hvector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int block_length, MPI_Aint block_stride,
                MPI_Datatype old_type);
   Type_Hvector(const Type_Hvector&) = delete;
@@ -58,7 +57,6 @@ public:
   MPI_Aint* block_indices_;
   MPI_Datatype old_type_;
 
-public:
   Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, const int* block_lengths,
                 const MPI_Aint* block_indices, MPI_Datatype old_type);
   Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, const int* block_lengths, const int* block_indices,

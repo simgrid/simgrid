@@ -198,7 +198,7 @@ printf "\nThe following differences were found between the code to commit "
 printf "and the clang-format rules:\n\n"
 cat "${patch}"
 
-printf "\nYou can apply these changes and readd the files with:\n"
+printf "\nYou can apply these changes and read the files with:\n"
 printf "  git apply ${patch} &&  git apply --cached ${patch}\n"
 printf "(call this command from the root directory of your repository)\n"
 printf "\n\n\n"

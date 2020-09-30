@@ -22,7 +22,7 @@ onoff() {
 
 ### Cleanup previous runs
 
-! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
+[ -n "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
 do_cleanup() {
@@ -40,39 +40,39 @@ do_cleanup "$WORKSPACE/build"
 
 NUMPROC="$(nproc)" || NUMPROC=1
 
-cd $WORKSPACE/build
+cd "$WORKSPACE"/build
 
 #we can't just receive ON or OFF as values as display is bad in the resulting jenkins matrix
 
-if [ $1 = "JAVA" ]
+if [ "$1" = "JAVA" ]
 then
   buildjava="ON"
 else
   buildjava="OFF"
 fi
 
-if [ $2 = "MC" ]
+if [ "$2" = "MC" ]
 then
   buildmc="ON"
 else
   buildmc="OFF"
 fi
 
-if [ $3 = "SMPI" ]
+if [ "$3" = "SMPI" ]
 then
   buildsmpi="ON"
 else
   buildsmpi="OFF"
 fi
 
-if [ $4 = "DEBUG" ]
+if [ "$4" = "DEBUG" ]
 then
   builddebug="ON"
 else
   builddebug="OFF"
 fi
 
-if [ $5 = "MSG" ]
+if [ "$5" = "MSG" ]
 then
   buildmsg="ON"
 else
@@ -91,9 +91,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=${buildjava} -Den
       -Denable_jedule=ON -Denable_mallocators=ON -Denable_debug=${builddebug} \
       -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=OFF \
-      -Denable_ns3=$(onoff test "$buildmc" != "ON") -Denable_coverage=OFF -DLTO_EXTRA_FLAG="auto" $WORKSPACE
+      -Denable_ns3=$(onoff test "$buildmc" != "ON") -Denable_coverage=OFF -DLTO_EXTRA_FLAG="auto" "$WORKSPACE"
 
 make -j$NUMPROC tests
 make clean
-
-

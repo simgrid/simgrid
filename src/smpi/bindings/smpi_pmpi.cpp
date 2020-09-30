@@ -232,7 +232,7 @@ int PMPI_Keyval_free(int* keyval) {
 MPI_Errhandler PMPI_Errhandler_f2c(MPI_Fint errhan){
   if(errhan==-1)
     return MPI_ERRHANDLER_NULL;
-  return static_cast<MPI_Errhandler>(simgrid::smpi::Errhandler::f2c(errhan));
+  return simgrid::smpi::Errhandler::f2c(errhan);
 }
 
 MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhan){

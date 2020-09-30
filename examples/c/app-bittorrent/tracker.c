@@ -58,7 +58,7 @@ void tracker(int argc, char* argv[])
       // Sending peers to the requesting peer
       tracker_answer_t ta = tracker_answer_new(TRACKER_QUERY_INTERVAL);
       int next_peer;
-      int peers_length = xbt_dynar_length(peers_list);
+      int peers_length = (int)xbt_dynar_length(peers_list);
       for (int i = 0; i < MAXIMUM_PEERS && i < peers_length; i++) {
         do {
           next_peer = xbt_dynar_get_as(peers_list, rand() % peers_length, int);

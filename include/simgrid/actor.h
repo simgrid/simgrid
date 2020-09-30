@@ -44,7 +44,7 @@ XBT_PUBLIC const char* sg_actor_get_property_value(const_sg_actor_t actor, const
 XBT_PUBLIC xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor);
 XBT_PUBLIC void sg_actor_suspend(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_resume(sg_actor_t actor);
-XBT_PUBLIC int sg_actor_is_suspended(sg_actor_t actor);
+XBT_PUBLIC int sg_actor_is_suspended(const_sg_actor_t actor);
 XBT_PUBLIC sg_actor_t sg_actor_restart(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart);
 XBT_PUBLIC void sg_actor_daemonize(sg_actor_t actor);

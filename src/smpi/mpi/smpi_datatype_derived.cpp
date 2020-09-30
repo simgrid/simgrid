@@ -13,32 +13,13 @@
 namespace simgrid{
 namespace smpi{
 
-
-Datatype_contents::Datatype_contents(int combiner,
-                    int number_of_integers, const int* integers,
-                    int number_of_addresses, const MPI_Aint* addresses,
-                    int number_of_datatypes, const MPI_Datatype* datatypes)
-: combiner_(combiner), number_of_integers_(number_of_integers), 
-  number_of_addresses_(number_of_addresses), 
-  number_of_datatypes_(number_of_datatypes)
+Datatype_contents::Datatype_contents(int combiner, int number_of_integers, const int* integers, int number_of_addresses,
+                                     const MPI_Aint* addresses, int number_of_datatypes, const MPI_Datatype* datatypes)
+    : combiner_(combiner)
+    , integers_(integers, integers + number_of_integers)
+    , addresses_(addresses, addresses + number_of_addresses)
+    , datatypes_(datatypes, datatypes + number_of_datatypes)
 {
-  integers_=new int[number_of_integers_];
-  for(int i=0; i<number_of_integers_; i++){
-    integers_[i]=integers[i];
-  }
-  addresses_=new MPI_Aint[number_of_addresses_];
-  for(int i=0; i<number_of_addresses_; i++){
-    addresses_[i]=addresses[i];
-  }
-  datatypes_=new MPI_Datatype[number_of_datatypes_];
-  for(int i=0; i<number_of_datatypes_; i++){
-    datatypes_[i]=datatypes[i];
-  }
-};
-Datatype_contents::~Datatype_contents(){
-  delete[] integers_;
-  delete[] addresses_;
-  delete[] datatypes_;
 }
 
 Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type)

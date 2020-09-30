@@ -52,18 +52,33 @@ public:
   /** @brief Retrieves the name of that link as a C string */
   const char* get_cname() const;
 
-  /** @brief Get the bandwidth in bytes per second of current Link */
+  /** Get the bandwidth of the current Link (in bytes per second) */
   double get_bandwidth() const;
+  /** Set the bandwidth of the current Link (in bytes per second) */
   void set_bandwidth(double value);
 
-  /** @brief Get the latency in seconds of current Link */
+  /** Get the latency of the current Link (in seconds) */
   double get_latency() const;
+  /** Set the latency of the current Link (in seconds) */
   void set_latency(double value);
 
   /** @brief Describes how the link is shared between flows */
   SharingPolicy get_sharing_policy() const;
 
-  /** @brief Returns the current load (in flops per second) */
+  /** @brief Set the level of communication speed of the given host on this wifi link.
+   *
+   * The bandwidth of a wifi link for a given host depends on its SNR (signal to noise ratio),
+   * which ultimately depends on the distance between the host and the station and the material between them.
+   *
+   * This is modeled in SimGrid by providing several bandwidths to wifi links, one per SNR level (just provide
+   * comma-separated values in the XML file). By default, the first level in the list is used, but you can use the
+   * current function to specify that a given host uses another level of bandwidth. This can be used to take the
+   * location of hosts into account, or even to model mobility in your SimGrid simulation.
+   *
+   * Note that this function asserts that the link is actually a wifi link */
+  void set_host_wifi_rate(const s4u::Host* host, int level) const;
+
+  /** @brief Returns the current load (in bytes per second) */
   double get_usage() const;
 
   /** @brief Check if the Link is used (at least one flow uses the link) */

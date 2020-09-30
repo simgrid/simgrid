@@ -72,6 +72,14 @@ Cpu::Cpu(Model* model, s4u::Host* host, lmm::Constraint* constraint, const std::
   xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->get_cname());
 }
 
+void Cpu::reset_vcpu(Cpu* that)
+{
+  this->pstate_ = that->pstate_;
+  this->speed_  = that->speed_;
+  this->speed_per_pstate_.clear();
+  this->speed_per_pstate_.assign(that->speed_per_pstate_.begin(), that->speed_per_pstate_.end());
+}
+
 int Cpu::get_pstate_count() const
 {
   return speed_per_pstate_.size();

@@ -24,7 +24,7 @@ int main(int argc, char** argv)
   e.load_platform(argv[1]);
 
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
-  int host_count                         = e.get_host_count();
+  int host_count                         = static_cast<int>(e.get_host_count());
 
   /* Random number initialization */
   simgrid::xbt::random::set_mersenne_seed(static_cast<int>(xbt_os_time()));

@@ -53,36 +53,36 @@ public:
   ActorExt& operator=(const ActorExt&) = delete;
   ~ActorExt();
   void finalize();
-  int finalized();
-  int initializing();
-  int initialized();
+  int finalized() const;
+  int initializing() const;
+  int initialized() const;
   void mark_as_initialized();
   void set_replaying(bool value);
-  bool replaying();
+  bool replaying() const;
   void set_tracing_category(const std::string& category) { tracing_category_ = category; }
-  const std::string& get_tracing_category() { return tracing_category_; }
+  const std::string& get_tracing_category() const { return tracing_category_; }
   smpi_trace_call_location_t* call_location();
   void set_privatized_region(smpi_privatization_region_t region);
-  smpi_privatization_region_t privatized_region();
-  s4u::Mailbox* mailbox() { return mailbox_; }
-  s4u::Mailbox* mailbox_small() { return mailbox_small_; }
-  s4u::MutexPtr mailboxes_mutex();
+  smpi_privatization_region_t privatized_region() const;
+  s4u::Mailbox* mailbox() const { return mailbox_; }
+  s4u::Mailbox* mailbox_small() const { return mailbox_small_; }
+  s4u::MutexPtr mailboxes_mutex() const;
 #if HAVE_PAPI
-  int papi_event_set();
+  int papi_event_set() const;
   papi_counter_t& papi_counters();
 #endif
   xbt_os_timer_t timer();
   void simulated_start();
-  double simulated_elapsed();
-  MPI_Comm comm_world();
+  double simulated_elapsed() const;
+  MPI_Comm comm_world() const;
   MPI_Comm comm_self();
   MPI_Comm comm_intra();
   void set_comm_intra(MPI_Comm comm);
   void set_sampling(int s);
-  int sampling();
+  int sampling() const;
   static void init();
   s4u::ActorPtr get_actor();
-  int get_optind();
+  int get_optind() const;
   void set_optind(int optind);
   MPI_Info info_env();
   void bsend_buffer(void** buf, int* size);

@@ -45,7 +45,7 @@ public:
   /**
    * @brief Write the state of the Mersenne-Twister RNG to a file
    */
-  bool write_state(const std::string& filename);
+  bool write_state(const std::string& filename) const;
 
   /**
    * @brief Draws an integer number uniformly in range [min, max] (min and max included)

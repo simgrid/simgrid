@@ -48,7 +48,7 @@ public:
   FutureStateBase(FutureStateBase const&) = delete;
   FutureStateBase& operator=(FutureStateBase const&) = delete;
 
-  XBT_PUBLIC void schedule(simgrid::xbt::Task<void()>&& job);
+  XBT_PUBLIC void schedule(simgrid::xbt::Task<void()>&& job) const;
 
   void set_exception(std::exception_ptr exception)
   {
@@ -522,13 +522,13 @@ public:
     future_get_ = true;
     return Future<void>(state_);
   }
-  void set_value()
+  void set_value() const
   {
     if (state_ == nullptr)
       throw std::future_error(std::future_errc::no_state);
     state_->set_value();
   }
-  void set_exception(std::exception_ptr exception)
+  void set_exception(std::exception_ptr exception) const
   {
     if (state_ == nullptr)
       throw std::future_error(std::future_errc::no_state);

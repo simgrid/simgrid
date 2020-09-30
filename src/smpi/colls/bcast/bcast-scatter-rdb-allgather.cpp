@@ -72,7 +72,7 @@ static int scatter_for_bcast(
     }
 
     /* This process is responsible for all processes that have bits
-       set from the LSB upto (but not including) mask.  Because of
+       set from the LSB up to (but not including) mask.  Because of
        the "not including", we start by shifting mask back down
        one. */
 

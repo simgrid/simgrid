@@ -23,7 +23,7 @@ namespace mc {
 /** @brief Storage for snapshot memory pages
  *
  * The first (lower) layer of the per-page snapshot mechanism is a page store:
- * its responsibility is to store immutable sharable reference-counted memory
+ * its responsibility is to store immutable shareable reference-counted memory
  * pages independently of the snapshotting logic. Snapshot management and
  * representation is handled to an higher layer. READMORE
  *
@@ -146,16 +146,16 @@ public:
   // Debug/test methods
 
   /** @brief Get the number of references for a page */
-  std::size_t get_ref(std::size_t pageno);
+  std::size_t get_ref(std::size_t pageno) const;
 
   /** @brief Get the number of used pages */
-  std::size_t size();
+  std::size_t size() const;
 
   /** @brief Get the capacity of the page store
    *
    *  The capacity is expanded by a system call (mremap).
    * */
-  std::size_t capacity();
+  std::size_t capacity() const;
 };
 
 XBT_ALWAYS_INLINE void PageStore::unref_page(std::size_t pageno)
@@ -174,17 +174,17 @@ XBT_ALWAYS_INLINE void* PageStore::get_page(std::size_t pageno) const
   return (void*)simgrid::mc::mmu::join(pageno, (std::uintptr_t)this->memory_);
 }
 
-XBT_ALWAYS_INLINE std::size_t PageStore::get_ref(std::size_t pageno)
+XBT_ALWAYS_INLINE std::size_t PageStore::get_ref(std::size_t pageno) const
 {
   return this->page_counts_[pageno];
 }
 
-XBT_ALWAYS_INLINE std::size_t PageStore::size()
+XBT_ALWAYS_INLINE std::size_t PageStore::size() const
 {
   return this->top_index_ - this->free_pages_.size();
 }
 
-XBT_ALWAYS_INLINE std::size_t PageStore::capacity()
+XBT_ALWAYS_INLINE std::size_t PageStore::capacity() const
 {
   return this->capacity_;
 }

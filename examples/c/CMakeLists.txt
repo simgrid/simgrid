@@ -5,7 +5,7 @@ foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
         app-masterworker app-pingpong app-token-ring 
-        async-wait async-waitall async-waitany
+        comm-wait comm-waitall comm-waitany
         cloud-capping cloud-masterworker cloud-migration cloud-simple
         dht-pastry
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
@@ -81,12 +81,12 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
-                               ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait_d.xml
-                               ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
-                               ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
-                               ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
-                               ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/async-waitall_d.xml
-                               ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait2_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait3_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait4_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitall/comm-waitall_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitany/comm-waitany_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/dht-pastry_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/io-file-remote_d.xml
@@ -97,7 +97,7 @@ foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
         app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
-        async-wait async-waitall async-waitany
+        comm-wait comm-waitall comm-waitany
         cloud-capping  cloud-masterworker cloud-migration cloud-simple
         dht-kademlia dht-pastry
         exec-async exec-basic exec-dvfs exec-remote exec-waitany

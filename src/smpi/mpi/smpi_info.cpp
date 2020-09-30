@@ -21,7 +21,8 @@ void Info::unref(Info* info){
   }
 }
 
-int Info::get(const char *key, int valuelen, char *value, int *flag){
+int Info::get(const char* key, int valuelen, char* value, int* flag) const
+{
   *flag=false;
   auto val = map_.find(key);
   if (val != map_.end()) {
@@ -42,12 +43,14 @@ int Info::remove(const char *key){
     return MPI_SUCCESS;
 }
 
-int Info::get_nkeys(int *nkeys){
+int Info::get_nkeys(int* nkeys) const
+{
   *nkeys = map_.size();
   return MPI_SUCCESS;
 }
 
-int Info::get_nthkey(int n, char *key){
+int Info::get_nthkey(int n, char* key) const
+{
   int num=0;
   for (auto const& elm : map_) {
     if (num == n) {
@@ -59,7 +62,8 @@ int Info::get_nthkey(int n, char *key){
   return MPI_ERR_ARG;
 }
 
-int Info::get_valuelen(const char *key, int *valuelen, int *flag){
+int Info::get_valuelen(const char* key, int* valuelen, int* flag) const
+{
   *flag=false;
   auto val = map_.find(key);
   if (val != map_.end()) {

@@ -43,7 +43,7 @@ public class Task {
 	 *				If 0, then it cannot be executed with the execute() method.
 	 *				This value has to be &ge; 0.
 	 *
-	 * @param bytesAmount		A value of amount of data (in bytes) needed to transfert this task.
+	 * @param bytesAmount		A value of amount of data (in bytes) needed to transfer this task.
 	 *				If 0, then it cannot be transferred with the get() and put() methods.
 	 *				This value has to be &ge; 0.
 	 */
@@ -93,7 +93,7 @@ public class Task {
 	 * @param flopsAmount    A value of the processing amount (in flop) needed
 	 *                        to process the task. If 0, then it cannot be executed
 	 *                        with the execute() method. This value has to be >= 0.
-	 * @param bytesAmount        A value of amount of data (in bytes) needed to transfert
+	 * @param bytesAmount        A value of amount of data (in bytes) needed to transfer
 	 *                        this task. If 0, then it cannot be transferred this task.
 	 *                        If 0, then it cannot be transferred with the get() and put()
 	 *                        methods. This value has to be >= 0.

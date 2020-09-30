@@ -16,9 +16,9 @@ static void master(std::vector<std::string> args)
 {
   xbt_assert(args.size() > 4, "The master function expects at least 3 arguments");
 
-  long tasks_count          = std::stol(args[1]);
-  double compute_cost       = std::stod(args[2]);
-  double communication_cost = std::stod(args[3]);
+  long tasks_count        = std::stol(args[1]);
+  double compute_cost     = std::stod(args[2]);
+  long communication_cost = std::stol(args[3]);
   std::vector<simgrid::s4u::Mailbox*> workers;
   for (unsigned int i = 4; i < args.size(); i++)
     workers.push_back(simgrid::s4u::Mailbox::by_name(args[i]));

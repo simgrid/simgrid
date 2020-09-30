@@ -45,11 +45,11 @@ public:
   void close();
 
   void initialize();
-  void execute(Transition const& transition);
-  void log_state();
+  void execute(Transition const& transition) const;
+  void log_state() const;
 
-  void restore_initial_state();
-  bool actor_is_enabled(aid_t pid);
+  void restore_initial_state() const;
+  bool actor_is_enabled(aid_t pid) const;
 };
 
 // Temporary :)

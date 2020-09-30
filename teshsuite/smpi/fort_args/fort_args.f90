@@ -1,4 +1,4 @@
-! Check that getarg does somethig sensible.
+! Check that getarg does something sensible.
 program getarg_1
   use mpi
   CHARACTER*10 ARGS, ARGS2

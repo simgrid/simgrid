@@ -238,7 +238,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   if (action->latency_ > 0) {
     action->set_variable(get_maxmin_system()->variable_new(action, 0.0, -1.0, constraints_per_variable));
     if (is_update_lazy()) {
-      // add to the heap the event when the latency is payed
+      // add to the heap the event when the latency is paid
       double date = action->latency_ + action->get_last_update();
 
       ActionHeap::Type type = route.empty() ? ActionHeap::Type::normal : ActionHeap::Type::latency;
@@ -270,7 +270,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     // WIFI links are handled manually just above, so skip them now
     if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
       xbt_assert(link == src_wifi_link || link == dst_wifi_link,
-                 "Wifi links can only occure at the beginning of the route (meaning that it's attached to the src) or "
+                 "Wifi links can only occur at the beginning of the route (meaning that it's attached to the src) or "
                  "at its end (meaning that it's attached to the dst");
     } else {
       get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);

@@ -33,10 +33,18 @@ extern void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*
 namespace simgrid{
 namespace smpi{
 
-Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op)
-    : buf_(const_cast<void*>(buf)), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags), op_(op)
+Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm,
+                 unsigned flags, MPI_Op op)
+    : buf_(const_cast<void*>(buf))
+    , old_type_(datatype)
+    , size_(datatype->size() * count)
+    , src_(src)
+    , dst_(dst)
+    , tag_(tag)
+    , comm_(comm)
+    , flags_(flags)
+    , op_(op)
 {
-  size_ = datatype->size() * count;
   datatype->ref();
   comm_->ref();
   if(op != MPI_REPLACE && op != MPI_OP_NULL)
@@ -130,7 +138,7 @@ void Request::init_buffer(int count){
   // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
   if ((((flags_ & MPI_REQ_RECV) != 0) && ((flags_ & MPI_REQ_ACCUMULATE) != 0)) || (old_type_->flags() & DT_FLAG_DERIVED)) {
     // This part handles the problem of non-contiguous memory
-    old_buf = const_cast<void*>(buf_);
+    old_buf = buf_;
     if (count==0){
       buf_ = nullptr;
     }else {
@@ -157,7 +165,7 @@ bool Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
   return match_common(req, ref, req);
 }
 
-void Request::print_request(const char *message)
+void Request::print_request(const char* message) const
 {
   XBT_VERB("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
        message, this, buf_, size_, src_, dst_, tag_, flags_);
@@ -421,7 +429,7 @@ void Request::start()
     if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
       mut->unlock();
   } else { /* the RECV flag was not set, so this is a send */
-    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
+    const simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     xbt_assert(process, "Actor pid=%d is gone??", dst_);
     int rank = src_;
     if (TRACE_smpi_view_internals()) {
@@ -1018,7 +1026,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
   return index;
 }
 
-static int sort_accumulates(MPI_Request a, MPI_Request b)
+static int sort_accumulates(const Request* a, const Request* b)
 {
   return (a->tag() > b->tag());
 }
@@ -1047,8 +1055,8 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
       wait(&requests[c],pstat);
       index = c;
     } else {
-      index = waitany(count, (MPI_Request*)requests, pstat);
-      
+      index = waitany(count, requests, pstat);
+
       if (index == MPI_UNDEFINED)
         break;
 
@@ -1082,7 +1090,7 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   int index = 0;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-  index = waitany(incount, (MPI_Request*)requests, pstat);
+  index             = waitany(incount, requests, pstat);
   if(index==MPI_UNDEFINED) return MPI_UNDEFINED;
   if(status != MPI_STATUSES_IGNORE) {
     status[count] = *pstat;
@@ -1111,7 +1119,7 @@ MPI_Request Request::f2c(int id)
 {
   char key[KEY_SIZE];
   if(id==MPI_FORTRAN_REQUEST_NULL)
-    return static_cast<MPI_Request>(MPI_REQUEST_NULL);
+    return MPI_REQUEST_NULL;
   return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key(key,id)));
 }
 
@@ -1189,13 +1197,14 @@ void Request::set_nbc_requests(MPI_Request* reqs, int size){
   }
 }
 
-int Request::get_nbc_requests_size(){
+int Request::get_nbc_requests_size() const
+{
   return nbc_requests_size_;
 }
 
-MPI_Request* Request::get_nbc_requests(){
+MPI_Request* Request::get_nbc_requests() const
+{
   return nbc_requests_;
 }
-
 }
 }

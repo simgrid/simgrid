@@ -24,6 +24,10 @@ endforeach()
 set(tesh_files     ${tesh_files}                                                               PARENT_SCOPE)
 set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/maxmin_bench/maxmin_bench.cpp  PARENT_SCOPE)
 
-foreach(x small medium large)
-  ADD_TESH(tesh-surf-maxmin-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench_${x}.tesh)
-endforeach()
+ADD_TESH(tesh-surf-maxmin-large --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench_large.tesh)
+
+if(enable_debug)
+  foreach(x small medium)
+    ADD_TESH(tesh-surf-maxmin-${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench_${x}.tesh)
+  endforeach()
+endif()

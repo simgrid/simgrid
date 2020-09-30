@@ -176,7 +176,7 @@ create.base.plot <- function() {
 ##'
 ##' Used to add raw data or summary statistics to the plot of a distribution.
 ##' The height of Y is arbitrary, and can be set to optimize visualization.
-##' If SE estimates are available, tehse wil be plotted
+##' If SE estimates are available, these will be plotted
 ##' @name plot.data
 ##' @title Add data to plot
 ##' @param trait.data data to be plotted

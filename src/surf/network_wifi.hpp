@@ -25,7 +25,7 @@ class NetworkWifiLink : public LinkImpl {
   /** @brief Hold every rates association between host and links (host name, rates id) */
   std::map<xbt::string, int> host_rates_;
 
-  /** @brief A link can have several bandwith attach to it (mostly use by wifi model) */
+  /** @brief A link can have several bandwidths attached to it (mostly use by wifi model) */
   std::vector<Metric> bandwidths_;
 
   /** @brief Should we use the decay model ? */

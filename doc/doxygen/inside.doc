@@ -2,8 +2,8 @@
 
 This page describes the software infrastructure behind the SimGrid
 project. This is not the components' organisation (described in @ref
-uhood_arch) but informations on how to extend the framework, how the
-automatic tests are run, and so on. These informations are split on
+uhood_arch) but information on how to extend the framework, how the
+automatic tests are run, and so on. These information are split on
 several pages, as follows:
 
  - @ref uhood_tech_inside
@@ -69,10 +69,10 @@ ln -s $(realpath tools/git-hooks/clang-format.pre-commit) .git/hooks/pre-commit
 @endverbatim
 
 This will add an extra verification before integrating any commit that
-you could prepare. If your code does not respects our formating code,
+you could prepare. If your code does not respects our formatting code,
 git will say so, and provide a ready to use patch that you can apply
 to improve your commit. Just carefully read the error message you get
-to find the exact command with git-apply to fix your formating.
+to find the exact command with git-apply to fix your formatting.
 
 If you find that for a specific commit, the formatter does a very bad
 job, then add --no-verify to your git commit command line.

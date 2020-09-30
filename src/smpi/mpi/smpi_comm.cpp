@@ -125,26 +125,26 @@ MPI_Group Comm::group()
   return group_;
 }
 
-int Comm::size()
+int Comm::size() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->size();
   return group_->size();
 }
 
-int Comm::rank()
+int Comm::rank() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->rank();
   return group_->rank(s4u::Actor::self());
 }
 
-int Comm::id()
+int Comm::id() const
 {
   return id_;
 }
 
-void Comm::get_name (char* name, int* len)
+void Comm::get_name(char* name, int* len) const
 {
   if (this == MPI_COMM_UNINITIALIZED){
     smpi_process()->comm_world()->get_name(name, len);
@@ -179,45 +179,49 @@ void Comm::set_leaders_comm(MPI_Comm leaders){
   leaders_comm_=leaders;
 }
 
-int* Comm::get_non_uniform_map(){
+int* Comm::get_non_uniform_map() const
+{
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->get_non_uniform_map();
   return non_uniform_map_;
 }
 
-int* Comm::get_leaders_map(){
+int* Comm::get_leaders_map() const
+{
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->get_leaders_map();
   return leaders_map_;
 }
 
-MPI_Comm Comm::get_leaders_comm(){
+MPI_Comm Comm::get_leaders_comm() const
+{
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->get_leaders_comm();
   return leaders_comm_;
 }
 
-MPI_Comm Comm::get_intra_comm(){
+MPI_Comm Comm::get_intra_comm() const
+{
   if (this == MPI_COMM_UNINITIALIZED || this==MPI_COMM_WORLD)
     return smpi_process()->comm_intra();
   else return intra_comm_;
 }
 
-bool Comm::is_uniform()
+bool Comm::is_uniform() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_uniform();
   return is_uniform_ != 0;
 }
 
-bool Comm::is_blocked()
+bool Comm::is_blocked() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_blocked();
   return is_blocked_ != 0;
 }
 
-bool Comm::is_smp_comm()
+bool Comm::is_smp_comm() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_smp_comm();
@@ -360,7 +364,7 @@ MPI_Comm Comm::find_intra_comm(int * leader){
     }
   }
   *leader=min_index;
-  return new  Comm(group_intra, nullptr, 1);
+  return new Comm(group_intra, nullptr, true);
 }
 
 void Comm::init_smp(){
@@ -427,7 +431,7 @@ void Comm::init_smp(){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
       leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
-    leader_comm = new  Comm(leaders_group, nullptr,1);
+    leader_comm = new Comm(leaders_group, nullptr, true);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
 
@@ -437,7 +441,7 @@ void Comm::init_smp(){
       leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
-      leader_comm = new  Comm(leaders_group, nullptr,1);
+      leader_comm = new Comm(leaders_group, nullptr, true);
       this->set_leaders_comm(leader_comm);
     }else{
       leader_comm=this->get_leaders_comm();
@@ -528,7 +532,8 @@ void Comm::remove_rma_win(MPI_Win win){
   rma_wins_.remove(win);
 }
 
-void Comm::finish_rma_calls(){
+void Comm::finish_rma_calls() const
+{
   for (auto const& it : rma_wins_) {
     if(it->rank()==this->rank()){//is it ours (for MPI_COMM_WORLD)?
       int finished = it->finish_comms();

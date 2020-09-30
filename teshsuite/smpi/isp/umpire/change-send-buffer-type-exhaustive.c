@@ -105,7 +105,7 @@ main (int argc, char **argv)
 
   MPI_Type_extent (newtype[0], &basic_extent);
   if (basic_extent != sizeof (test_basic_struct_t)) {
-    fprintf (stderr, "(%d): Unexpect extent for struct\n");
+    fprintf (stderr, "(%d): Unexpected extent for struct\n");
     MPI_Abort (MPI_COMM_WORLD, 666);
   }
 

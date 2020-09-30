@@ -19,7 +19,7 @@ CMAKE_LINKARGS="-L@libdir@"
 list_set CXXFLAGS "-std=gnu++11" @SMPI_CXX_FLAGS@
 list_set LINKARGS
 
-if [ "@CMAKE_C_COMPILER_ID@" = "Clang" -a "@HAVE_SANITIZER_ADDRESS@" = "TRUE" ]; then
+if [ "@CMAKE_C_COMPILER_ID@" = "Clang" ] && [ "@HAVE_SANITIZER_ADDRESS@" = "TRUE" ]; then
     LINKER_UNDEFINED_ERROR=""
 else
     LINKER_UNDEFINED_ERROR="1"
@@ -63,7 +63,7 @@ while [ $# -gt 0 ]; do
             list_add CMDARGS "-c"
             ;;
         *.c)
-            SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
+            SRCFILE="$(readlink -f "${ARG}" 2>/dev/null)"
             if [ -z "$SRCFILE" ] ; then
                 SRCFILE="$ARG"
             fi
@@ -93,12 +93,12 @@ done
 list_set CMDLINE "${CXX}"
 list_add_not_empty CMDLINE "${CXXFLAGS}"
 list_add_not_empty CMDLINE ${INCLUDEARGS}
-list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
+list_add_not_empty CMDLINE "${CMAKE_LINKARGS}"
 list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
-if [ "x$VERBOSE" = x1 -o "x$show" = x1 ] ; then
+if [ "x$VERBOSE" = x1 ] || [ "x$show" = x1 ] ; then
   echo "$@"
   [ "x$show" = x1 ] && exit 0
 fi

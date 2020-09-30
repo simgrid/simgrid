@@ -46,8 +46,12 @@ double NetworkWifiLink::get_host_rate(const s4u::Host* host)
     return -1;
 
   int rate_id = host_rates_it->second;
-  xbt_assert(rate_id >= 0 && rate_id < (int)bandwidths_.size(), "Host '%s' has an invalid rate '%d' on wifi link '%s'",
-             host->get_name().c_str(), rate_id, this->get_cname());
+  xbt_assert(rate_id >= 0,
+             "Negative host wifi rate levels are invalid but host '%s' uses %d as a rate level on link '%s'",
+             host->get_cname(), rate_id, this->get_cname());
+  xbt_assert(rate_id < (int)bandwidths_.size(),
+             "Link '%s' only has %zu wifi rate levels, so the provided level %d is invalid for host '%s'.",
+             this->get_cname(), bandwidths_.size(), rate_id, host->get_cname());
 
   Metric rate = use_decay_model_ ? decay_bandwidths_[rate_id] : bandwidths_[rate_id];
   return rate.peak * rate.scale;
@@ -60,11 +64,11 @@ s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy()
 
 void NetworkWifiLink::refresh_decay_bandwidths(){
   // Compute number of STAtion on the Access Point
-  int nSTA=host_rates_.size();
-    
+  int nSTA = static_cast<int>(host_rates_.size());
+
   std::vector<Metric> new_bandwidths;
   for (auto bandwidth : bandwidths_){
-    // Instanciate decay model relatively to the actual bandwidth
+    // Instantiate decay model relatively to the actual bandwidth
     double max_bw=bandwidth.peak;
     double min_bw=bandwidth.peak-(wifi_max_rate_-wifi_min_rate_);
     double model_rate=bandwidth.peak-(wifi_max_rate_-model_rate_);

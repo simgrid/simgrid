@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 static void smpi_replay(int argc, char* argv[])
 {
   const char* instance_id    = argv[1];
-  int rank                   = xbt_str_parse_int(argv[2], "Cannot parse rank '%s'");
+  int rank                   = (int)xbt_str_parse_int(argv[2], "Cannot parse rank '%s'");
   const char* trace_filename = argv[3];
   double start_delay_flops   = 0;
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
 
     const char** line_char= xbt_dynar_to_array(elems);
     instance_id = line_char[0];
-    int instance_size     = xbt_str_parse_int(line_char[2], "Invalid size: %s");
+    int instance_size     = (int)xbt_str_parse_int(line_char[2], "Invalid size: %s");
 
     XBT_INFO("Initializing instance %s of size %d", instance_id, instance_size);
     SMPI_app_instance_register(instance_id, smpi_replay,instance_size);

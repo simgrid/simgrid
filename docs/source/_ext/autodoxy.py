@@ -358,6 +358,13 @@ class DoxygenClassDocumenter(DoxygenDocumenter):
         # Uncomment to view the generated rst for the class.
         # print('\n'.join(self.directive.result))
 
+autodoxy_requalified_identifiers = []
+def fix_namespaces(str):
+    for unqualified,fullyqualif in autodoxy_requalified_identifiers:
+        p = re.compile("(^| ){:s}".format(unqualified))
+        str = p.sub(' {:s}'.format(fullyqualif), str)
+    return str
+
 class DoxygenMethodDocumenter(DoxygenDocumenter):
     objtype = 'doxymethod'
     directivetype = 'function'
@@ -450,7 +457,8 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             rtype = rtype_el.text
 
  #       print("rtype: {}".format(rtype))
-        signame = (rtype and (rtype + ' ') or '') + self.klassname + "::"+ self.objname
+        signame = fix_namespaces((rtype and (rtype + ' ') or '') + self.klassname + "::"+ self.objname )
+#        print("signame: '{}'".format(signame))
         return self.format_template_name() + signame
 
     def format_template_name(self):
@@ -462,7 +470,8 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
         return ret
 
     def format_signature(self):
-        args = self.object.find('argsstring').text
+        args = fix_namespaces(self.object.find('argsstring').text)
+#        print ("signature: {}".format(args))
         return args
 
     def document_members(self, all_members=False):
@@ -532,7 +541,7 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
 
 #        print("rtype: {}".format(rtype))
         signame = (rtype and (rtype + ' ') or '') + self.klassname + "::" + self.objname
-        return self.format_template_name() + signame
+        return fix_namespaces(self.format_template_name() + signame)
 
     def get_doc(self, encoding=None): # This method is called with 1 parameter in Sphinx 2.x and 2 parameters in Sphinx 1.x
         detaileddescription = self.object.find('detaileddescription')
@@ -577,6 +586,9 @@ def set_doxygen_xml(app):
         for node in root:
             setup.DOXYGEN_ROOT.append(node)
 
+    if app.config.autodoxy_requalified_identifiers is not None:
+        global autodoxy_requalified_identifiers
+        autodoxy_requalified_identifiers = app.config.autodoxy_requalified_identifiers
 
 def get_doxygen_root():
     """Get the root element of the doxygen XML document.
@@ -599,6 +611,7 @@ def setup(app):
     app.add_autodocumenter(DoxygenMethodDocumenter)
     app.add_autodocumenter(DoxygenVariableDocumenter)
     app.add_config_value("doxygen_xml", "", True)
+    app.add_config_value("autodoxy_requalified_identifiers", [], True)
 
 #    app.add_directive('autodoxysummary', DoxygenAutosummary)
 #    app.add_directive('autodoxyenum', DoxygenAutoEnum)

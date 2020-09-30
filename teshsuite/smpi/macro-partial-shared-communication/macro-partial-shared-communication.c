@@ -12,12 +12,12 @@
 // Set the elements between buf[start] and buf[stop-1] to (i+value)%256
 static void set(uint8_t *buf, size_t start, size_t stop, uint8_t value) {
   for(size_t i = start; i < stop; i++) {
-    buf[i] = (i+value)%256;
+    buf[i] = (uint8_t)((i + value) % 256);
   }
 }
 
 // Return the number of times that an element is equal to (i+value)%256 between buf[start] and buf[stop-1].
-static int count_all(const uint8_t* buf, size_t start, size_t stop, uint8_t value)
+static size_t count_all(const uint8_t* buf, size_t start, size_t stop, uint8_t value)
 {
   size_t occ = 0;
   for(size_t i = start ; i < stop ; i++) {
@@ -64,15 +64,15 @@ int main(int argc, char *argv[])
     for(int i = 0; i < nb_blocks-1; i++) {
       size_t start = shared_blocks[2*i+1];
       size_t stop = shared_blocks[2*i+2];
-      set(buf, start, stop, rank);
+      set(buf, start, stop, (uint8_t)rank);
     }
   }
   // Then, even processes send their buffer to their successor
   if(rank%2 == 0) {
-    MPI_Send(buf, mem_size, MPI_UINT8_T, rank+1, 0, MPI_COMM_WORLD);
+    MPI_Send(buf, (int)mem_size, MPI_UINT8_T, rank + 1, 0, MPI_COMM_WORLD);
   }
   else {
-    MPI_Recv(buf, mem_size, MPI_UINT8_T, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(buf, (int)mem_size, MPI_UINT8_T, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
 
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     for(int i = 0; i < nb_blocks-1; i++) {
       size_t start = shared_blocks[2*i+1];
       size_t stop = shared_blocks[2*i+2];
-      int comm = check_all(buf, start, stop, rank-1);
+      int comm     = check_all(buf, start, stop, (uint8_t)(rank - 1));
       printf("[%d] The result of the (normal) communication check for block (0x%zx, 0x%zx) is: %d\n", rank, start, stop, comm);
     }
     memset(buf, rank, mem_size);
@@ -92,10 +92,10 @@ int main(int argc, char *argv[])
   // Then, even processes send a sub-part of their buffer their successor
   // Note that the last block should not be copied entirely
   if(rank%2 == 0) {
-    MPI_Send(buf+0x10000, mem_size-0xa00000, MPI_UINT8_T, rank+1, 0, MPI_COMM_WORLD);
+    MPI_Send(buf + 0x10000, (int)(mem_size - 0xa00000), MPI_UINT8_T, rank + 1, 0, MPI_COMM_WORLD);
   }
   else {
-    MPI_Recv(buf+0x10000, mem_size-0xa00000, MPI_UINT8_T, rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(buf + 0x10000, (int)(mem_size - 0xa00000), MPI_UINT8_T, rank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
 
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     for(int i = 0; i < nb_blocks-1; i++) {
       size_t start = shared_blocks[2*i+1];
       size_t stop = shared_blocks[2*i+2];
-      int comm = check_all(buf, start, stop, rank-1);
+      int comm     = check_all(buf, start, stop, (uint8_t)(rank - 1));
       printf("[%d] The result of the (shifted) communication check for block (0x%zx, 0x%zx) is: %d\n", rank, start, stop, comm);
     }
   }

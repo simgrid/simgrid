@@ -29,7 +29,7 @@ class Group : public F2C{
 public:
   Group() = default;
   explicit Group(int size) : size_(size), rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
-  explicit Group(Group* origin);
+  explicit Group(const Group* origin);
 
   void set_mapping(s4u::Actor* actor, int rank);
   int rank(int index);
@@ -37,7 +37,7 @@ public:
   int rank(s4u::Actor* process);
   void ref();
   static void unref(MPI_Group group);
-  int size() { return size_; }
+  int size() const { return size_; }
   int compare(MPI_Group group2);
   int incl(int n, const int* ranks, MPI_Group* newgroup);
   int excl(int n, const int* ranks, MPI_Group* newgroup);

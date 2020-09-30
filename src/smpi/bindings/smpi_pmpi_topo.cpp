@@ -91,7 +91,7 @@ int PMPI_Cartdim_get(MPI_Comm comm, int* ndims) {
   CHECK_COMM(1)
   CHECK_NULL(1, MPI_ERR_TOPOLOGY, comm->topo())
   CHECK_NULL(2, MPI_ERR_ARG, ndims)
-  MPIR_Cart_Topology topo = static_cast<MPIR_Cart_Topology>(comm->topo().get());
+  const simgrid::smpi::Topo_Cart* topo = static_cast<MPIR_Cart_Topology>(comm->topo().get());
   if (topo==nullptr) {
     return MPI_ERR_ARG;
   }

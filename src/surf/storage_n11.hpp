@@ -29,8 +29,8 @@ class XBT_PRIVATE StorageN11Action;
 class StorageN11Model : public StorageModel {
 public:
   StorageN11Model();
-  StorageImpl* createStorage(const std::string& id, const std::string& type_id, const std::string& content_name,
-                             const std::string& attach) override;
+  StorageImpl* createStorage(std::string& filename, int lineno, const std::string& id, const std::string& type_id,
+                             const std::string& content_name, const std::string& attach) override;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 };

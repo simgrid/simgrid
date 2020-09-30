@@ -29,7 +29,7 @@ bool Random::read_state(const std::string& filename)
   return not file.fail();
 }
 
-bool Random::write_state(const std::string& filename)
+bool Random::write_state(const std::string& filename) const
 {
   std::ofstream file(filename);
   file << mt19937_gen;
@@ -73,7 +73,7 @@ int XbtRandom::uniform_int(int min, int max)
   do {
     value = mt19937_gen();
   } while (value >= decltype(mt19937_gen)::max() - decltype(mt19937_gen)::max() % range);
-  return value % range + min;
+  return static_cast<int>(value % range + min);
 }
 
 double XbtRandom::uniform_real(double min, double max)
@@ -84,7 +84,7 @@ double XbtRandom::uniform_real(double min, double max)
   do {
     numerator = mt19937_gen() - decltype(mt19937_gen)::min();
   } while (numerator == divisor);
-  return min + (max - min) * numerator / divisor;
+  return min + (max - min) * static_cast<double>(numerator) / divisor;
 }
 
 double XbtRandom::exponential(double lambda)

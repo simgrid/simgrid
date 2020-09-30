@@ -54,7 +54,7 @@ static void initialize_heapinfo_heapinfo(const s_xbt_mheap_t* mdp)
 {
   // Update heapinfo about the heapinfo pages (!):
   xbt_assert((uintptr_t) mdp->heapinfo % BLOCKSIZE == 0);
-  int block = BLOCK(mdp->heapinfo);
+  size_t block   = BLOCK(mdp->heapinfo);
   size_t nblocks = mdp->heapsize * sizeof(malloc_info) / BLOCKSIZE;
   // Mark them as free:
   for (size_t j=0; j!=nblocks; ++j) {
@@ -250,7 +250,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       result = mmalloc(mdp, BLOCKSIZE); // does not return NULL
       block = BLOCK(result);
 
-      mdp->heapinfo[block].type = log;
+      mdp->heapinfo[block].type = (int)log;
       /* Link all fragments but the first as free, and add the block to the swag of blocks containing free frags  */
       size_t i;
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {
@@ -282,7 +282,9 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
     block         = MALLOC_SEARCH_START;
     while (mdp->heapinfo[block].free_block.size < blocks) {
       if (mdp->heapinfo[block].type >=0) { // Don't trust xbt_die and friends in malloc-level library, you fool!
-        fprintf(stderr,"Internal error: found a free block not marked as such (block=%lu type=%lu). Please report this bug.\n",(unsigned long)block,(unsigned long)mdp->heapinfo[block].type);
+        fprintf(stderr,
+                "Internal error: found a free block not marked as such (block=%zu type=%d). Please report this bug.\n",
+                block, mdp->heapinfo[block].type);
         abort();
       }
 

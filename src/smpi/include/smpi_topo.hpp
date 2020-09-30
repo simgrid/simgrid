@@ -39,7 +39,7 @@ public:
   int get(int maxdims, int* dims, int* periods, int* coords);
   int rank(const int* coords, int* rank);
   int shift(int direction, int disp, int* rank_source, int* rank_dest);
-  int dim_get(int* ndims);
+  int dim_get(int* ndims) const;
   static int Dims_create(int nnodes, int ndims, int dims[]);
 };
 

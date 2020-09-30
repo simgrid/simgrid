@@ -11,7 +11,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(kademlia_node);
 namespace kademlia {
 
 /** @brief Prints a answer_t, for debugging purposes */
-void Answer::print()
+void Answer::print() const
 {
   XBT_INFO("Searching %08x, size %zu", destination_id_, nodes_.size());
   unsigned int i = 0;

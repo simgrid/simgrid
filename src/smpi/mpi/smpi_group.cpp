@@ -14,7 +14,7 @@ MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
 namespace simgrid{
 namespace smpi{
 
-Group::Group(Group* origin)
+Group::Group(const Group* origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     size_              = origin->size();
@@ -322,7 +322,7 @@ MPI_Group Group::f2c(int id) {
     char key[KEY_SIZE];
     return static_cast<MPI_Group>(F2C::f2c_lookup()->at(get_key(key, id)));
   } else {
-    return static_cast<MPI_Group>(MPI_GROUP_NULL);
+    return MPI_GROUP_NULL;
   }
 }
 

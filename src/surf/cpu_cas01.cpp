@@ -108,7 +108,7 @@ void CpuCas01::on_speed_change()
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
                                                             get_core_count() * speed_.scale * speed_.peak);
   while ((var = get_constraint()->get_variable(&elem))) {
-    auto* action = static_cast<CpuCas01Action*>(var->get_id());
+    const CpuCas01Action* action = static_cast<CpuCas01Action*>(var->get_id());
 
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
                                                             action->requested_core() * speed_.scale * speed_.peak);
@@ -145,7 +145,7 @@ void CpuCas01::apply_event(profile::Event* event, double value)
       get_host()->turn_off();
 
       while ((var = cnst->get_variable(&elem))) {
-        auto* action = static_cast<Action*>(var->get_id());
+        Action* action = var->get_id();
 
         if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED ||
             action->get_state() == Action::State::IGNORED) {
@@ -218,7 +218,7 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
 {
 }
 
-int CpuCas01Action::requested_core()
+int CpuCas01Action::requested_core() const
 {
   return requested_core_;
 }

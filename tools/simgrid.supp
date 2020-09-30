@@ -159,6 +159,14 @@
    obj:/usr/lib/x86_64-linux-gnu/libunwind.so.*
    ...
 }
+{
+   ignore unwind cruft
+   Memcheck:Param
+   write(buf)
+   ...
+   fun:_ULx86_64_step
+   obj:/usr/lib/x86_64-linux-gnu/libunwind.so.*
+}
 
 {
    ignore unwind invalid reads

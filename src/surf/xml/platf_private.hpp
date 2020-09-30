@@ -123,6 +123,8 @@ public:
 
 class StorageCreationArgs {
 public:
+  std::string filename;
+  int lineno;
   std::string id;
   std::string type_id;
   std::string content;

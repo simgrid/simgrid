@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(energy_exec_ptask, "Messages specific for this exam
 static void runner(int argc, char* argv[])
 {
   /* Retrieve the list of all hosts as an array of hosts */
-  int host_count   = sg_host_count();
+  int host_count   = (int)sg_host_count();
   sg_host_t* hosts = sg_host_list();
 
   XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "

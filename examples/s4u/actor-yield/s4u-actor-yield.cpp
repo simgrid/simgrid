@@ -19,8 +19,8 @@ class yielder {
   long number_of_yields;
 
 public:
-  explicit yielder(std::vector<std::string> args) { number_of_yields = std::stod(args[1]); }
-  void operator()()
+  explicit yielder(std::vector<std::string> args) { number_of_yields = std::stol(args[1]); }
+  void operator()() const
   {
     for (int i = 0; i < number_of_yields; i++)
       simgrid::s4u::this_actor::yield();

@@ -79,7 +79,7 @@ void peer(int argc, char* argv[])
   xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
 
   // Build peer object
-  peer_t peer = peer_init(xbt_str_parse_int(argv[1], "Invalid ID: %s"), argc == 4 ? 1 : 0);
+  peer_t peer = peer_init((int)xbt_str_parse_int(argv[1], "Invalid ID: %s"), argc == 4 ? 1 : 0);
 
   // Retrieve deadline
   peer->deadline = xbt_str_parse_double(argv[2], "Invalid deadline: %s");

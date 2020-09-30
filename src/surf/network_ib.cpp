@@ -110,7 +110,7 @@ NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
   }
 }
 
-void NetworkIBModel::computeIBfactors(IBNode* root)
+void NetworkIBModel::computeIBfactors(IBNode* root) const
 {
   double num_comm_out    = root->ActiveCommsUp.size();
   double max_penalty_out = 0.0;
@@ -157,7 +157,7 @@ void NetworkIBModel::computeIBfactors(IBNode* root)
   XBT_DEBUG("Finished computing IB penalties");
 }
 
-void NetworkIBModel::updateIBfactors_rec(IBNode* root, std::vector<bool>& updatedlist)
+void NetworkIBModel::updateIBfactors_rec(IBNode* root, std::vector<bool>& updatedlist) const
 {
   if (not updatedlist[root->id]) {
     XBT_DEBUG("IB - Updating rec %d", root->id);
@@ -174,7 +174,7 @@ void NetworkIBModel::updateIBfactors_rec(IBNode* root, std::vector<bool>& update
   }
 }
 
-void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode* to, int remove)
+void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode* to, int remove) const
 {
   if (from == to) // disregard local comms (should use loopback)
     return;

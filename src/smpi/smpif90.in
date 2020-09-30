@@ -30,7 +30,6 @@ else
    echo "Warning: smpif90 pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
 fi
 list_set TMPFILES
-main_name=main
 
 cleanup () {
     eval $(list_get TMPFILES)
@@ -64,13 +63,13 @@ while [ $# -gt 0 ]; do
             list_add CMDLINE "-c"
             ;;
         *.f90)
-            FILENAME=`basename ${ARG}`
+            FILENAME=$(basename "${ARG}")
             TMPFILE=$(mymktemp "${ARG}" ".f90")
             ORIGFILE="${FILENAME%.f90}"
             filter_and_compile
             ;;
         *.F90)
-            FILENAME=`basename ${ARG}`
+            FILENAME=$(basename "${ARG}")
             TMPFILE=$(mymktemp "${ARG}" ".F90")
             ORIGFILE="${FILENAME%.F90}"
             filter_and_compile
@@ -106,11 +105,11 @@ if [ $NEEDS_OUTPUT -ne 0 ]; then
 fi
 
 list_add_not_empty CMDLINE ${INCLUDEARGS}
-list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
+list_add_not_empty CMDLINE "${CMAKE_LINKARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
-if [ "x$VERBOSE" = x1 -o "x$show" = x1 ] ; then
+if [ "x$VERBOSE" = x1 ] || [ "x$show" = x1 ] ; then
   echo "$@"
   [ "x$show" = x1 ] && exit 0
 fi

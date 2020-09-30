@@ -204,7 +204,7 @@ XBT_PUBLIC const char* MSG_process_get_property_value(const_sg_actor_t process, 
 
 XBT_PUBLIC void MSG_process_suspend(msg_process_t process);
 XBT_PUBLIC void MSG_process_resume(msg_process_t process);
-XBT_PUBLIC int MSG_process_is_suspended(msg_process_t process);
+XBT_PUBLIC int MSG_process_is_suspended(const_sg_actor_t process);
 XBT_PUBLIC void MSG_process_restart(msg_process_t process);
 /** @brief Sets the "auto-restart" flag of the process.
  *

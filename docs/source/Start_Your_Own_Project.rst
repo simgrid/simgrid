@@ -192,6 +192,6 @@ Sometimes, the compilation only spits very few "undefined reference"
 errors. A possible cause is that the system selected an old version of
 the SimGrid library somewhere on your disk.
 
-Dicover which version is used with ``ldd name-of-yoursimulator``.
+Discover which version is used with ``ldd name-of-yoursimulator``.
 Once you've found the obsolete copy of SimGrid, just erase it, and
 recompile and relaunch your program.

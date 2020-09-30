@@ -12,7 +12,7 @@
 
 
 /*
-This fucntion performs all-reduce operation as follow.
+This function performs all-reduce operation as follow.
 1) binomial_tree reduce inside each SMP node
 2) reduce-scatter -inter between root of each SMP node
 3) allgather - inter between root of each SMP node

@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
                     MPI_Group_free(&neighbors);
                     MPI_Win_wait(win);
                     /* This should have the same effect, in terms of
-                     * transfering data, as a send/recv pair */
+                     * transferring data, as a send/recv pair */
                     err = MTestCheckRecv(0, &recvtype);
                     if (err) {
                         errs += errs;

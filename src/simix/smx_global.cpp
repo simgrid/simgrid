@@ -198,7 +198,7 @@ void Global::run_all_actors()
 }
 
 /** Wake up all actors waiting for a Surf action to finish */
-void Global::wake_all_waiting_actors()
+void Global::wake_all_waiting_actors() const
 {
   for (auto const& model : all_existing_models) {
     kernel::resource::Action* action;
@@ -220,7 +220,7 @@ void Global::wake_all_waiting_actors()
   }
 }
 
-void Global::display_all_actor_status()
+void Global::display_all_actor_status() const
 {
   XBT_INFO("%zu actors are still running, waiting for something.", process_list.size());
   /*  List the actors and their state */

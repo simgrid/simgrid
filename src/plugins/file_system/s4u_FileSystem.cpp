@@ -9,6 +9,7 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "xbt/config.hpp"
+#include "xbt/parse_units.hpp"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
@@ -142,7 +143,7 @@ File::~File()
   kernel::actor::simcall([this, desc_table] { desc_table->push_back(this->desc_id); });
 }
 
-void File::dump()
+void File::dump() const
 {
   if (local_storage_)
     XBT_INFO("File Descriptor information:\n"
@@ -296,7 +297,7 @@ sg_size_t File::write(sg_size_t size, bool write_inside)
   return 0;
 }
 
-sg_size_t File::size()
+sg_size_t File::size() const
 {
   return size_;
 }
@@ -323,12 +324,12 @@ void File::seek(sg_offset_t offset, int origin)
   }
 }
 
-sg_size_t File::tell()
+sg_size_t File::tell() const
 {
   return current_position_;
 }
 
-void File::move(const std::string& fullpath)
+void File::move(const std::string& fullpath) const
 {
   /* Check if the new full path is on the same mount point */
   if (fullpath.compare(0, mount_point_.length(), mount_point_) == 0) {
@@ -354,7 +355,7 @@ void File::move(const std::string& fullpath)
   }
 }
 
-int File::unlink()
+int File::unlink() const
 {
   /* Check if the file is on local storage */
   std::map<std::string, sg_size_t>* content = nullptr;
@@ -483,8 +484,9 @@ int File::remote_move(sg_host_t host, const char* fullpath)
 FileSystemDiskExt::FileSystemDiskExt(const Disk* ptr)
 {
   const char* size_str    = ptr->get_property("size");
+  std::string dummyfile;
   if (size_str)
-    size_ = surf_parse_get_size(size_str, "disk size", ptr->get_name());
+    size_ = surf_parse_get_size(dummyfile, -1, size_str, "disk size", ptr->get_name());
 
   const char* current_mount_str = ptr->get_property("mount");
   if (current_mount_str)
@@ -700,7 +702,7 @@ void sg_file_close(const_sg_file_t fd)
 /** Retrieves the path to the file
  * @ingroup plugin_filesystem
  */
-const char* sg_file_get_name(sg_file_t fd)
+const char* sg_file_get_name(const_sg_file_t fd)
 {
   xbt_assert((fd != nullptr), "Invalid file descriptor");
   return fd->get_path();
@@ -709,12 +711,12 @@ const char* sg_file_get_name(sg_file_t fd)
 /** Retrieves the size of the file
  * @ingroup plugin_filesystem
  */
-sg_size_t sg_file_get_size(sg_file_t fd)
+sg_size_t sg_file_get_size(const_sg_file_t fd)
 {
   return fd->size();
 }
 
-void sg_file_dump(sg_file_t fd)
+void sg_file_dump(const_sg_file_t fd)
 {
   fd->dump();
 }
@@ -750,12 +752,12 @@ void sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin)
   fd->seek(offset, origin);
 }
 
-sg_size_t sg_file_tell(sg_file_t fd)
+sg_size_t sg_file_tell(const_sg_file_t fd)
 {
   return fd->tell();
 }
 
-void sg_file_move(sg_file_t fd, const char* fullpath)
+void sg_file_move(const_sg_file_t fd, const char* fullpath)
 {
   fd->move(fullpath);
 }

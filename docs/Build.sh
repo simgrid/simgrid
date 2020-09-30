@@ -7,7 +7,7 @@
 # Python needs to find simgrid on my machine, but not ctest -- sorry for the hack
 if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
 
-set -e
+set -ex
 set -o pipefail
 
 if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
@@ -21,7 +21,17 @@ if [ "x$1" != 'xjava' ] && [ -e source/java ] ; then
   echo "javasphinx not rerun: 'java' was not provided as an argument"
 else
   rm -rf source/java
-  javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
+  
+  # Use that script without installing javasphinx: javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
+  PYTHONPATH=${PYTHONPATH}:source/_ext/javasphinx python3 - --force -o source/java/ ../src/bindings/java/org/simgrid/msg <<EOF
+import re
+import sys
+from javasphinx.apidoc import main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main())
+EOF
+
   rm -f source/java/packages.rst # api_generated/source_java_packages.rst
   rm -f source/java/org/simgrid/msg/package-index.rst # api_generated/source_java_org_simgrid_msg_package-index.rst
   for f in source/java/org/simgrid/msg/* ; do
@@ -34,10 +44,7 @@ else
   echo "javasphinx relaunched"
 fi
 
-PYTHONPATH=../lib sphinx-build -M html source build ${SPHINXOPTS} 2>&1 \
-  | grep -v 'WARNING: cpp:identifier reference target not found: simgrid$' \
-  | grep -v 'WARNING: cpp:identifier reference target not found: simgrid::s4u$' \
-  | grep -v 'WARNING: cpp:identifier reference target not found: boost' 
+PYTHONPATH=../lib:source/_ext/javasphinx sphinx-build -M html source build ${SPHINXOPTS} 2>&1
 
 set +x
 

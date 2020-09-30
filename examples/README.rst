@@ -28,12 +28,12 @@ to simulate.
 Actors: the Active Entities
 ===========================
 
-Starting and Stoping Actors
----------------------------
+Starting and Stopping Actors
+----------------------------
 
   - **Creating actors:**
     Most actors are started from the deployment XML file, because this
-    is a :ref:`better scientific habbit <howto_science>`, but you can
+    is a :ref:`better scientific habit <howto_science>`, but you can
     also create them directly from your code.
 
     .. tabs::
@@ -106,7 +106,7 @@ Starting and Stoping Actors
 
           See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
 
-  - **Controling the actor life cycle from the XML:**
+  - **Controlling the actor life cycle from the XML:**
     You can specify a start time and a kill time in the deployment file.
 
     .. tabs::
@@ -147,7 +147,7 @@ Starting and Stoping Actors
 
   - **Specify the stack size to use**
     The stack size can be specified by default on the command line,
-    globally by changing the configuration with :cpp:func:`simgrid::s4u::Engine::set_config(std::string)`, 
+    globally by changing the configuration with :cpp:func:`simgrid::s4u::Engine::set_config`,
     or for a specific actor using :cpp:func:`simgrid::s4u::Actor::set_stacksize` before its start.
     
     .. tabs::
@@ -289,33 +289,48 @@ Communications on the Network
 
    .. tabs::
 
-      .. example-tab:: examples/s4u/async-wait/s4u-async-wait.cpp
+      .. example-tab:: examples/s4u/comm-wait/s4u-comm-wait.cpp
 
          See also :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`.
 
-      .. example-tab:: examples/python/async-wait/async-wait.py
+      .. example-tab:: examples/python/comm-wait/comm-wait.py
 
          See also :py:func:`simgrid.Mailbox.put_async()` and :py:func:`simgrid.Comm.wait()`.
 
-      .. example-tab:: examples/c/async-wait/async-wait.c
+      .. example-tab:: examples/c/comm-wait/comm-wait.c
 
          See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm__wait()`.
 
+ - **Suspending communications:**
+   The ``suspend()`` and ``resume()`` functions allow to block the
+   progression of a given communication for a while and then unblock it.
+   ``is_suspended()`` can be used to retrieve whether the activity is
+   currently blocked or not.
+   
+   .. tabs::
+
+      .. example-tab:: examples/s4u/comm-suspend/s4u-comm-suspend.cpp
+
+         See also :cpp:func:`simgrid::s4u::Activity::suspend()`
+	 :cpp:func:`simgrid::s4u::Activity::resume()` and
+	 :cpp:func:`simgrid::s4u::Activity::is_suspended()`.
+
+	 
  - **Waiting for all communications in a set:**
    The ``wait_all()`` function is useful when you want to block until
    all activities in a given set have completed. 
    
    .. tabs::
 
-      .. example-tab:: examples/s4u/async-waitall/s4u-async-waitall.cpp
+      .. example-tab:: examples/s4u/comm-waitall/s4u-comm-waitall.cpp
 
          See also :cpp:func:`simgrid::s4u::Comm::wait_all()`.
 
-      .. example-tab:: examples/python/async-waitall/async-waitall.py
+      .. example-tab:: examples/python/comm-waitall/comm-waitall.py
 
          See also :py:func:`simgrid.Comm.wait_all()`.
 
-      .. example-tab:: examples/c/async-waitall/async-waitall.c
+      .. example-tab:: examples/c/comm-waitall/comm-waitall.c
 
          See also :cpp:func:`sg_comm_wait_all()`.
 
@@ -326,15 +341,15 @@ Communications on the Network
    
    .. tabs::
 
-      .. example-tab:: examples/s4u/async-waitany/s4u-async-waitany.cpp
+      .. example-tab:: examples/s4u/comm-waitany/s4u-comm-waitany.cpp
 
          See also :cpp:func:`simgrid::s4u::Comm::wait_any()`.
 
-      .. example-tab:: examples/python/async-waitany/async-waitany.py
+      .. example-tab:: examples/python/comm-waitany/comm-waitany.py
 
          See also :py:func:`simgrid.Comm.wait_any()`.
 	 
-      .. example-tab:: examples/c/async-waitany/async-waitany.c
+      .. example-tab:: examples/c/comm-waitany/comm-waitany.c
 
          See also :cpp:func:`sg_comm_wait_any`.
      
@@ -679,7 +694,7 @@ options to see the task executions:
 
   - **Platform Tracing:**
     This program is a toy example just loading the platform, so that
-    you can play with the platform visualization. Recommanded options:
+    you can play with the platform visualization. Recommended options:
     ``--cfg=tracing:yes --cfg=tracing/categorized:yes``
 
     .. tabs::
@@ -884,6 +899,35 @@ Model-Related Examples
          **Platform files:**
 
          .. showfile:: examples/platforms/small_platform_one_link_routes.xml
+            :language: xml
+	    
+  - **wifi links**
+  
+    This demonstrates how to declare a wifi link in your platform and
+    how to use it in your simulation. The basics is to have a link
+    which sharing policy is set to `WIFI`. Such links can have more
+    than one bandwidth value (separated by commas), corresponding to
+    the several SNR level of your wifi link.
+    
+    In this case, SimGrid automatically switches to validated
+    performance models of wifi networks, where the time is shared
+    between users instead of the bandwidth for wired links (the
+    corresponding publication is currently being written).
+    
+    If your wifi link provides more than one SNR level, you can switch
+    the level of a given host using
+    :cpp:func:`simgrid::s4u::Link::set_host_wifi_rate`. By default,
+    the first level is used.
+
+    .. tabs::
+
+      .. example-tab:: examples/s4u/network-wifi/s4u-network-wifi.cpp
+
+      .. group-tab:: XML
+
+         **Platform files:**
+
+         .. showfile:: examples/platforms/wifi.xml
             :language: xml
 
 =======================

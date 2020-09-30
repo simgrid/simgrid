@@ -197,7 +197,7 @@ int find_model_description(const std::vector<surf_model_description_t>& table, c
   auto pos = std::find_if(table.begin(), table.end(),
                           [&name](const surf_model_description_t& item) { return item.name == name; });
   if (pos != table.end())
-    return std::distance(table.begin(), pos);
+    return static_cast<int>(std::distance(table.begin(), pos));
 
   if (table.empty())
     xbt_die("No model is valid! This is a bug.");

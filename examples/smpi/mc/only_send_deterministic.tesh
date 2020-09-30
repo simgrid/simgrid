@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 ! timeout 60
-$ ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning -hostfile ${srcdir:=.}/hostfile_only_send_deterministic  -platform ${srcdir:=.}/../../platforms/cluster_backbone.xml --cfg=model-check/communications-determinism:1 --cfg=smpi/buffering:zero --cfg=smpi/host-speed:1e9 ./smpi_only_send_deterministic
+$ ../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning -hostfile ${srcdir:=.}/hostfile_only_send_deterministic  -platform ${srcdir:=.}/../../platforms/cluster_backbone.xml --cfg=model-check/communications-determinism:1 --cfg=smpi/buffering:zero --cfg=smpi/host-speed:1Gf ./smpi_only_send_deterministic
 > [0.000000] [mc_comm_determinism/INFO] Check communication determinism
 > [0.000000] [mc_comm_determinism/INFO] *******************************************************
 > [0.000000] [mc_comm_determinism/INFO] **** Only-send-deterministic communication pattern ****

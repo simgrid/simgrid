@@ -131,9 +131,10 @@ simgrid::s4u::Host* VirtualMachine::get_pm() const
   return pimpl_vm_->get_physical_host();
 }
 
-void VirtualMachine::set_pm(simgrid::s4u::Host* pm)
+VirtualMachine* VirtualMachine::set_pm(simgrid::s4u::Host* pm)
 {
   kernel::actor::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
+  return this;
 }
 
 VirtualMachine::state VirtualMachine::get_state()
@@ -146,9 +147,10 @@ size_t VirtualMachine::get_ramsize() const
   return pimpl_vm_->get_ramsize();
 }
 
-void VirtualMachine::set_ramsize(size_t ramsize)
+VirtualMachine* VirtualMachine::set_ramsize(size_t ramsize)
 {
   pimpl_vm_->set_ramsize(ramsize);
+  return this;
 }
 /** @brief Set a CPU bound for a given VM.
  *  @ingroup msg_VMs
@@ -176,9 +178,10 @@ void VirtualMachine::set_ramsize(size_t ramsize)
  * 2. Note that bound == 0 means no bound (i.e., unlimited). But, if a host has multiple CPU cores, the CPU share of a
  *    computation task (or a VM) never exceeds the capacity of a CPU core.
  */
-void VirtualMachine::set_bound(double bound)
+VirtualMachine* VirtualMachine::set_bound(double bound)
 {
   kernel::actor::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
+  return this;
 }
 
 } // namespace simgrid

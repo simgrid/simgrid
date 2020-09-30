@@ -252,7 +252,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
       continue;
     }
 
-    xbt_assert(heapinfo1->type >= 0, "Unkown mmalloc block type: %d", heapinfo1->type);
+    xbt_assert(heapinfo1->type >= 0, "Unknown mmalloc block type: %d", heapinfo1->type);
 
     void* addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
 
@@ -359,7 +359,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
             continue;
           }
 
-          xbt_assert(heapinfo2b->type >= 0, "Unkown mmalloc block type: %d", heapinfo2b->type);
+          xbt_assert(heapinfo2b->type >= 0, "Unknown mmalloc block type: %d", heapinfo2b->type);
 
           for (size_t j2 = 0; j2 < (size_t)(BLOCKSIZE >> heapinfo2b->type); j2++) {
             if (i2 == i1 && j2 == j1)
@@ -873,8 +873,8 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
 
   } else if ((heapinfo1->type > 0) && (heapinfo2->type > 0)) {      /* Fragmented block */
     // Fragment number:
-    ssize_t frag1 = ((uintptr_t)(ADDR2UINT(area1) % (BLOCKSIZE))) >> heapinfo1->type;
-    ssize_t frag2 = ((uintptr_t)(ADDR2UINT(area2) % (BLOCKSIZE))) >> heapinfo2->type;
+    ssize_t frag1 = (ADDR2UINT(area1) % BLOCKSIZE) >> heapinfo1->type;
+    ssize_t frag2 = (ADDR2UINT(area2) % BLOCKSIZE) >> heapinfo2->type;
 
     // Process address of the fragment_:
     void* real_addr_frag1 = (void*)((char*)real_addr_block1 + (frag1 << heapinfo1->type));
@@ -1147,8 +1147,7 @@ static bool global_variables_differ(simgrid::mc::StateComparator& state,
     // If the variable is not in this object, skip it:
     // We do not expect to find a pointer to something which is not reachable
     // by the global variables.
-    if ((char *) current_var.address < (char *) object_info->start_rw
-        || (char *) current_var.address > (char *) object_info->end_rw)
+    if ((char*)current_var.address < object_info->start_rw || (char*)current_var.address > object_info->end_rw)
       continue;
 
     const simgrid::mc::Type* bvariable_type = current_var.type;

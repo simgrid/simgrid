@@ -23,7 +23,8 @@ static std::default_random_engine rnd_engine;
 
 static simgrid::mc::RemoteSimulation* process;
 
-static uintptr_t eval_binary_operation(simgrid::dwarf::ExpressionContext const& state, int op, uintptr_t a, uintptr_t b)
+static uintptr_t eval_binary_operation(simgrid::dwarf::ExpressionContext const& state, uint8_t op, uintptr_t a,
+                                       uintptr_t b)
 {
   Dwarf_Op ops[15];
   ops[0].atom = DW_OP_const8u;

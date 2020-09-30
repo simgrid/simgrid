@@ -236,7 +236,7 @@ The most common setting is to control which logging event will get
 displayed by setting a threshold to each category through the
 <tt>threshold</tt> keyword.
 
-For example, @verbatim --log=root.threshold:debug@endverbatim will make
+For example, @verbatim --log=root.thresh:debug@endverbatim will make
 SimGrid <b>extremely</b> verbose while @verbatim
 --log=root.thres:critical@endverbatim should shut it almost
 completely off.
@@ -245,7 +245,7 @@ Note that the <tt>threshold</tt> keyword can be abbreviated here. For example,
 all the following notations have the same result.
 @verbatim
 --log=root.threshold:debug
---log=root.threshol:debug
+--log=root.threshold:debug
 --log=root.thresho:debug
 --log=root.thresh:debug
 --log=root.thres:debug
@@ -261,7 +261,7 @@ The full list of recognized thresholds is the following:
  - trace: enter and return of some functions
  - debug: crufty output
  - verbose: verbose output for the user wanting more
- - info: output about the regular functionning
+ - info: output about the regular functioning
  - warning: minor issue encountered
  - error: issue encountered
  - critical: major issue encountered 

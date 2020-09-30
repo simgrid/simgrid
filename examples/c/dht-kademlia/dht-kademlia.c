@@ -27,12 +27,12 @@ static void node(int argc, char* argv[])
   double deadline;
   xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
   /* Node initialization */
-  unsigned int id = strtoul(argv[1], NULL, 0);
+  unsigned int id = (unsigned int)strtoul(argv[1], NULL, 0);
   node_t node     = node_init(id);
 
   if (argc == 4) {
     XBT_INFO("Hi, I'm going to join the network with id %s", sg_mailbox_get_name(node->mailbox));
-    unsigned int id_known = strtoul(argv[2], NULL, 0);
+    unsigned int id_known = (unsigned int)strtoul(argv[2], NULL, 0);
     join_success          = join(node, id_known);
     deadline              = strtod(argv[3], NULL);
   } else {

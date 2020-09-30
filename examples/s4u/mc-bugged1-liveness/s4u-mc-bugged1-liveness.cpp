@@ -52,7 +52,7 @@ static void coordinator()
 
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
 
-  while (1) {
+  while (true) {
     m = static_cast<Message*>(mbox->get());
     if (m->kind == Message::Kind::REQUEST) {
       if (CS_used) {
@@ -60,7 +60,7 @@ static void coordinator()
         requests.push(m->return_mailbox);
       } else {
         if (m->return_mailbox->get_name() != "1") {
-          XBT_INFO("CS idle. Grant immediatly");
+          XBT_INFO("CS idle. Grant immediately");
           m->return_mailbox->put(new Message(Message::Kind::GRANT, mbox), 1000);
           CS_used = 1;
         }
@@ -87,11 +87,11 @@ static void coordinator()
 
 static void client(int id)
 {
-  int my_pid = simgrid::s4u::this_actor::get_pid();
+  aid_t my_pid = simgrid::s4u::this_actor::get_pid();
 
   simgrid::s4u::Mailbox* my_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
 
-  while (1) {
+  while (true) {
     XBT_INFO("Ask the request");
     simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::REQUEST, my_mailbox), 1000);
 
@@ -117,7 +117,7 @@ static void client(int id)
 
     simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::RELEASE, my_mailbox), 1000);
 
-    simgrid::s4u::this_actor::sleep_for(my_pid);
+    simgrid::s4u::this_actor::sleep_for(static_cast<double>(my_pid));
 
     if (id == 1) {
       cs = 0;

@@ -23,7 +23,7 @@ public:
   Instance(int max_no_processes, MPI_Comm comm) : size_(max_no_processes), comm_world_(comm)
   {
     MPI_Group group = new simgrid::smpi::Group(size_);
-    comm_world_     = new simgrid::smpi::Comm(group, nullptr, 0, -1);
+    comm_world_     = new simgrid::smpi::Comm(group, nullptr, false, -1);
     //  FIXME : using MPI_Attr_put with MPI_UNIVERSE_SIZE is forbidden and we make it a no-op (which triggers a warning
     //  as MPI_ERR_ARG is returned). Directly calling Comm::attr_put breaks for now, as MPI_UNIVERSE_SIZE,is <0
     //  instance.comm_world->attr_put<simgrid::smpi::Comm>(MPI_UNIVERSE_SIZE, reinterpret_cast<void*>(instance.size));

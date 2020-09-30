@@ -30,10 +30,7 @@ public:
   {
     state_ = (state_ << 5) + state_ + x;
   }
-  hash_type value()
-  {
-    return state_;
-  }
+  hash_type value() const { return state_; }
 };
 
 }

@@ -23,7 +23,7 @@ DragonflyZone::DragonflyZone(NetZoneImpl* father, const std::string& name, resou
 {
 }
 
-void DragonflyZone::rankId_to_coords(int rankId, unsigned int coords[4])
+void DragonflyZone::rankId_to_coords(int rankId, unsigned int coords[4]) const
 {
   // coords : group, chassis, blade, node
   coords[0] = rankId / (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
@@ -133,7 +133,7 @@ void DragonflyZone::generate_routers()
 }
 
 void DragonflyZone::create_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
-                                resource::LinkImpl** linkdown)
+                                resource::LinkImpl** linkdown) const
 {
   *linkup   = nullptr;
   *linkdown = nullptr;

@@ -160,7 +160,7 @@ void xbt_dynar_free(xbt_dynar_t* dynar)
  */
 unsigned long xbt_dynar_length(const_xbt_dynar_t dynar)
 {
-  return (dynar ? (unsigned long) dynar->used : (unsigned long) 0);
+  return (dynar ? dynar->used : 0UL);
 }
 
 /**@brief check if a dynar is empty
@@ -399,7 +399,7 @@ void xbt_dynar_map(const_xbt_dynar_t dynar, void_f_pvoid_t op)
   _sanity_check_dynar(dynar);
 
   for (i = 0; i < used; i++) {
-    char* elm = (char*) data + i * elmsize;
+    char* elm = data + i * elmsize;
     op(elm);
   }
 }

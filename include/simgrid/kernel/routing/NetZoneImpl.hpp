@@ -81,7 +81,7 @@ protected:
    *
    * @param src where from
    * @param dst where to
-   * @param into Container into which the traversed links and gateway informations should be pushed
+   * @param into Container into which the traversed links and gateway information should be pushed
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
   virtual void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) = 0;

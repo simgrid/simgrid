@@ -37,7 +37,7 @@ protected:
   {
     while (not successors_.empty()) {
       ActivityPtr b = successors_.back();
-      XBT_CDEBUG(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
+      XBT_CVERB(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
       b->dependencies_.erase(this);
       if (b->dependencies_.empty()) {
         b->vetoable_start();
@@ -57,7 +57,7 @@ public:
   {
     state_ = State::STARTING;
     if (dependencies_.empty()) {
-      XBT_CDEBUG(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
+      XBT_CVERB(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
       start();
     }
   }
@@ -67,21 +67,19 @@ public:
   Activity& operator=(Activity const&) = delete;
 #endif
 
-  enum class State { INITED = 0, STARTING, STARTED, CANCELED,
-      // ERRORED, // FIXME: state has never been used
-      FINISHED };
+  enum class State { INITED = 0, STARTING, STARTED, CANCELED, FINISHED };
 
   /** Starts a previously created activity.
    *
    * This function is optional: you can call wait() even if you didn't call start()
    */
   virtual Activity* start() = 0;
-  /** Blocks until the activity is terminated */
+  /** Blocks the current actor until the activity is terminated */
   virtual Activity* wait() = 0;
-  /** Blocks until the activity is terminated, or until the timeout is elapsed
+  /** Blocks the current actor until the activity is terminated, or until the timeout is elapsed\n
    *  Raises: timeout exception.*/
   virtual Activity* wait_for(double timeout) = 0;
-  /** Blocks until the activity is terminated, or until the time limit is reached
+  /** Blocks the current actor until the activity is terminated, or until the time limit is reached\n
    * Raises: timeout exception. */
   void wait_until(double time_limit);
 
@@ -92,6 +90,13 @@ public:
   void set_state(Activity::State state) { state_ = state; }
   /** Tests whether the given activity is terminated yet. */
   virtual bool test();
+
+  /** Blocks the progression of this activity until it gets resumed */
+  virtual Activity* suspend();
+  /** Unblock the progression of this activity if it was suspended previously */
+  virtual Activity* resume();
+  /** Whether or not the progression of this activity is blocked */
+  bool is_suspended() const { return suspended_; }
 
   virtual const char* get_cname() const       = 0;
   virtual const std::string& get_name() const = 0;
@@ -127,6 +132,7 @@ private:
   kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   Activity::State state_                   = Activity::State::INITED;
   double remains_                          = 0;
+  bool suspended_                          = false;
   std::vector<ActivityPtr> successors_;
   std::set<ActivityPtr> dependencies_;
   std::atomic_int_fast32_t refcount_{0};

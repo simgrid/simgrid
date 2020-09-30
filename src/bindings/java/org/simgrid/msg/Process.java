@@ -14,12 +14,12 @@ import java.util.Arrays;
  * declared in the deployment file (XML format).
  * To create your own process you must inherit your own process from this
  * class and override the method "main()". For example if you want to use
- * a process named Slave proceed as it :
+ * a process named Worker proceed as it :
  *
  * (1) import the class Process of the package simgrid.msg
  * import simgrid.msg.Process;
  *
- * public class Slave extends simgrid.msg.Process {
+ * public class Worker extends simgrid.msg.Process {
  *
  *  (2) Override the method function
  *
@@ -30,9 +30,9 @@ import java.util.Arrays;
  *  \endverbatim
  * }
  * The name of your process must be declared in the deployment file of your simulation.
- * For the example, for the previous process Slave this file must contains a line :
- * &lt;process host="Maxims" function="Slave"/&gt;, where Maxims is the host of the process
- * Slave. All the process of your simulation are automatically launched and managed by Msg.
+ * For the example, for the previous process Worker this file must contains a line :
+ * &lt;process host="Maxims" function="Worker"/&gt;, where Maxims is the host of the process
+ * Worker. All the process of your simulation are automatically launched and managed by Msg.
  * A process use tasks to simulate communications or computations with another process.
  * For more information see Task. For more information on host concept
  * see Host.

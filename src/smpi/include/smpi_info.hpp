@@ -26,11 +26,11 @@ public:
   void ref();
   static void unref(MPI_Info info);
   void set(const char* key, const char* value) { map_[key] = value; }
-  int get(const char* key, int valuelen, char* value, int* flag);
+  int get(const char* key, int valuelen, char* value, int* flag) const;
   int remove(const char* key);
-  int get_nkeys(int* nkeys);
-  int get_nthkey(int n, char* key);
-  int get_valuelen(const char* key, int* valuelen, int* flag);
+  int get_nkeys(int* nkeys) const;
+  int get_nthkey(int n, char* key) const;
+  int get_valuelen(const char* key, int* valuelen, int* flag) const;
   static Info* f2c(int id);
 };
 

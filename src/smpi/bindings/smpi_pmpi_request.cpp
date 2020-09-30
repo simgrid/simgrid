@@ -138,7 +138,7 @@ int PMPI_Startall(int count, MPI_Request * requests)
       TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Startall"));
       if (not TRACE_smpi_view_internals())
         for (int i = 0; i < count; i++) {
-          MPI_Request req = requests[i];
+          const simgrid::smpi::Request* req = requests[i];
           if (req->flags() & MPI_REQ_SEND)
             TRACE_smpi_send(my_proc_id, my_proc_id, getPid(req->comm(), req->dst()), req->tag(), req->size());
         }
@@ -147,7 +147,7 @@ int PMPI_Startall(int count, MPI_Request * requests)
 
       if (not TRACE_smpi_view_internals())
         for (int i = 0; i < count; i++) {
-          MPI_Request req = requests[i];
+          const simgrid::smpi::Request* req = requests[i];
           if (req->flags() & MPI_REQ_RECV)
             TRACE_smpi_recv(getPid(req->comm(), req->src()), my_proc_id, req->tag());
         }
@@ -588,10 +588,9 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
 }
 
 // TODO: cheinrich: Move declaration to other file? Rename this function - it's used for PMPI_Wait*?
-static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status);
 static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status)
 {
-  MPI_Request req = *request;
+  const simgrid::smpi::Request* req = *request;
   if (req != MPI_REQUEST_NULL) { // Received requests become null
     int src_traced = req->src();
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
@@ -620,7 +619,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     MPI_Request savedreq = *request;
     if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & MPI_REQ_FINISHED)
     && not(savedreq->flags() & MPI_REQ_GENERALIZED))
-      savedreq->ref();//don't erase te handle in Request::wait, we'll need it later
+      savedreq->ref();//don't erase the handle in Request::wait, we'll need it later
     else
       savedreq = MPI_REQUEST_NULL;
 
@@ -788,7 +787,7 @@ int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status)
 MPI_Request PMPI_Request_f2c(MPI_Fint request){
   if(request==-1)
     return MPI_REQUEST_NULL;
-  return static_cast<MPI_Request>(simgrid::smpi::Request::f2c(request));
+  return simgrid::smpi::Request::f2c(request);
 }
 
 MPI_Fint PMPI_Request_c2f(MPI_Request request) {

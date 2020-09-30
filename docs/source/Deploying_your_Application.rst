@@ -20,7 +20,7 @@ study on your :ref:`simulated platform <platform>`, i.e. to specify which actor
 should be started on which host. You can do so directly in your program (as
 shown in :ref:`these examples <s4u_ex_actors>`), or using an XML deployment
 file. Unless you have a good reason, you should keep your application apart
-from the deployment as it will :ref:`ease your experimental campain afterward
+from the deployment as it will :ref:`ease your experimental campaign afterward
 <howto_science>`.
 
 Deploying actors from XML is easy: it only involves 3 tags: :ref:`pf_tag_actor`,

@@ -34,7 +34,7 @@ public:
   EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();
 
-  void load_deployment(const std::string& file);
+  void load_deployment(const std::string& file) const;
   void register_function(const std::string& name, const actor::ActorCodeFactory& code);
   void register_default(const actor::ActorCodeFactory& code);
 

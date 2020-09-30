@@ -52,9 +52,9 @@ public:
   Peer& operator=(const Peer&) = delete;
   void operator()();
 
-  std::string getStatus();
-  bool hasFinished();
-  int nbInterestedPeers();
+  std::string getStatus() const;
+  bool hasFinished() const;
+  int nbInterestedPeers() const;
   bool isInterestedBy(const Connection* remote_peer) const;
   bool isInterestedByFree(const Connection* remote_peer) const;
   void updateActivePeersSet(Connection* remote_peer);
@@ -62,19 +62,19 @@ public:
   void updateChokedPeers();
 
   bool hasNotPiece(unsigned int piece) const { return not(bitfield_ & 1U << piece); }
-  bool remotePeerHasMissingPiece(const Connection* remote_peer, unsigned int piece)
+  bool remotePeerHasMissingPiece(const Connection* remote_peer, unsigned int piece) const
   {
     return hasNotPiece(piece) && remote_peer->hasPiece(piece);
   }
-  bool hasCompletedPiece(unsigned int piece);
-  unsigned int countPieces(unsigned int bitfield);
+  bool hasCompletedPiece(unsigned int piece) const;
+  unsigned int countPieces(unsigned int bitfield) const;
   /** Check that a piece is not currently being download by the peer. */
   bool isNotDownloadingPiece(unsigned int piece) const { return not(current_pieces & 1U << piece); }
-  int partiallyDownloadedPiece(const Connection* remote_peer);
+  int partiallyDownloadedPiece(const Connection* remote_peer) const;
   void updatePiecesCountFromBitfield(unsigned int bitfield);
   void removeCurrentPiece(Connection* remote_peer, unsigned int current_piece);
   void updateBitfieldBlocks(int piece, int block_index, int block_length);
-  int getFirstMissingBlockFrom(int piece);
+  int getFirstMissingBlockFrom(int piece) const;
   int selectPieceToDownload(const Connection* remote_peer);
   void requestNewPieceTo(Connection* remote_peer);
 

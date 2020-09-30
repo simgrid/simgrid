@@ -47,12 +47,12 @@ public:
   int dup(MPI_Comm* newcomm);
   int dup_with_info(MPI_Info info, MPI_Comm* newcomm);
   MPI_Group group();
-  MPI_Topology topo() { return topo_; }
+  MPI_Topology topo() const { return topo_; }
   void set_topo(MPI_Topology topo){topo_=topo;}
-  int size();
-  int rank();
-  int id();
-  void get_name(char* name, int* len);
+  int size() const;
+  int rank() const;
+  int id() const;
+  void get_name(char* name, int* len) const;
   void set_name(const char* name);
   MPI_Info info();
   void set_info( MPI_Info info);
@@ -60,14 +60,14 @@ public:
   void set_errhandler( MPI_Errhandler errhandler);
   void set_leaders_comm(MPI_Comm leaders);
   void set_intra_comm(MPI_Comm leaders) { intra_comm_ = leaders; };
-  int* get_non_uniform_map();
-  int* get_leaders_map();
-  MPI_Comm get_leaders_comm();
-  MPI_Comm get_intra_comm();
+  int* get_non_uniform_map() const;
+  int* get_leaders_map() const;
+  MPI_Comm get_leaders_comm() const;
+  MPI_Comm get_intra_comm() const;
   MPI_Comm find_intra_comm(int* leader);
-  bool is_uniform();
-  bool is_blocked();
-  bool is_smp_comm();
+  bool is_uniform() const;
+  bool is_blocked() const;
+  bool is_smp_comm() const;
   MPI_Comm split(int color, int key);
   void cleanup_smp();
   void ref();
@@ -85,7 +85,7 @@ public:
 
   void add_rma_win(MPI_Win win);
   void remove_rma_win(MPI_Win win);
-  void finish_rma_calls();
+  void finish_rma_calls() const;
   MPI_Comm split_type(int type, int key, const Info* info);
 };
 

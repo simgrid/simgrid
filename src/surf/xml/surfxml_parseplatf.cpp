@@ -61,7 +61,7 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
 void parse_platform_file(const std::string& file)
 {
   const char* cfile = file.c_str();
-  int len           = strlen(cfile);
+  size_t len        = strlen(cfile);
   bool is_lua       = len > 3 && file[len - 3] == 'l' && file[len - 2] == 'u' && file[len - 1] == 'a';
 
   sg_platf_init();

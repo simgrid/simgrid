@@ -109,7 +109,7 @@ public:
   Timer(double date, simgrid::xbt::Task<void()>&& callback) : date(date), callback(std::move(callback)) {}
 
   simgrid::xbt::Task<void()> callback;
-  double get_date() { return date; }
+  double get_date() const { return date; }
   void remove();
 
   template <class F> static inline Timer* set(double date, F callback)

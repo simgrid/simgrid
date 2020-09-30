@@ -9,7 +9,7 @@ This document is the FAQ of the MSG interface. Some entries are a bit aging and 
 You are at the right place... To understand what you can do or
 cannot do with SimGrid, you should read the
 <a href="https://simgrid.org/tutorials.html">tutorial
-slides</a> from the SimGrid's website. You may find more uptodate
+slides</a> from the SimGrid's website. You may find more up-to-date
 material on the
 <a href="http://people.irisa.fr/Martin.Quinson/blog/SimGrid/">blog of
 Martin Quinson</a>. 
@@ -91,7 +91,7 @@ condition variables or a SimGrid semaphore, as described in @ref
 msg_synchro (in Java, only semaphores are available). But actually,
 many synchronization patterns can be encoded with communication on
 mailboxes. Typically, if you need one process to notify another one,
-you could use a condition variable or a semphore, but sending a
+you could use a condition variable or a semaphore, but sending a
 message to a specific mailbox does the trick in most cases.
 
 @subsubsection faq_MIA_communication_time How can I get the *real* communication time?
@@ -109,7 +109,7 @@ int sender()
   m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
                                   calloc(1,sizeof(double)));
   *((double*) task->data) = MSG_get_clock();
-  MSG_task_put(task, slaves[i % slaves_count], PORT_22);
+  MSG_task_put(task, workers[i % workers_count], PORT_22);
   XBT_INFO("Send completed");
   return 0;
 }

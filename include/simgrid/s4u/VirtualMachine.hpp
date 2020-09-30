@@ -49,10 +49,10 @@ public:
   void destroy() override;
 
   Host* get_pm() const;
-  void set_pm(Host* pm);
+  VirtualMachine* set_pm(Host* pm);
   size_t get_ramsize() const;
-  void set_ramsize(size_t ramsize);
-  void set_bound(double bound);
+  VirtualMachine* set_ramsize(size_t ramsize);
+  VirtualMachine* set_bound(double bound);
 
   VirtualMachine::state get_state();
   static xbt::signal<void(VirtualMachine const&)> on_start;

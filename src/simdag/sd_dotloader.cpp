@@ -213,7 +213,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
             if (previous_task && not SD_task_dependency_exists(previous_task, cur_task))
               SD_task_dependency_add(previous_task, cur_task);
 
-            SD_task_schedulel(cur_task, 1, hosts[std::stod(elm.first)]);
+            SD_task_schedulel(cur_task, 1, hosts[std::stoi(elm.first)]);
             previous_task = cur_task;
           }
         }

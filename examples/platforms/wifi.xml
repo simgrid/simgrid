@@ -6,7 +6,7 @@
 
     <zone id="WIFI zone" routing="Cluster">
         <!-- First declare the Access Point (ie, the wifi media) -->
-        <link id="AP1" sharing_policy="WIFI" bandwidth="54Mbps" latency="0ms" />
+        <link id="AP1" sharing_policy="WIFI" bandwidth="54Mbps,36Mbps,24Mbps" latency="0ms" />
 
         <!-- Two stations in the wifi zone -->
         <host id="Station 1" speed="100.0Mf,50.0Mf,20.0Mf" />

@@ -22,7 +22,7 @@ C
       call mtest_init( ierr )
 
 C
-C     For upto 6 dimensions, test with periodicity in 0 through all
+C     For up to 6 dimensions, test with periodicity in 0 through all
 C     dimensions.  The test is computed by both:
 C         get info about the created communicator
 C         apply cart shift

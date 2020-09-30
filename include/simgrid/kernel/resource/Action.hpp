@@ -31,7 +31,7 @@ class XBT_PUBLIC ActionHeap : public heap_type {
 
 public:
   enum class Type {
-    latency = 100, /* this is a heap entry to warn us when the latency is payed */
+    latency = 100, /* this is a heap entry to warn us when the latency is paid */
     max_duration,  /* this is a heap entry to warn us when the max_duration limit (timeout) is reached */
     normal,        /* this is a normal heap entry stating the date to finish transmitting */
     unset

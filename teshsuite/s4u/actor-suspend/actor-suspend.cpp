@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 // This is the MWE of https://framagit.org/simgrid/simgrid/-/issues/50
-// The problem was occuring when suspending an actor that will be executed later in the same scheduling round
+// The problem was occurring when suspending an actor that will be executed later in the same scheduling round
 
 #include <iostream>
 #include <simgrid/s4u.hpp>
@@ -18,7 +18,7 @@ simgrid::s4u::ActorPtr receiver;
 
 class Receiver {
 public:
-  void operator()()
+  void operator()() const
   {
     XBT_INFO("Starting.");
     auto mailbox = simgrid::s4u::Mailbox::by_name("receiver");
@@ -29,7 +29,7 @@ public:
 
 class Suspender {
 public:
-  void operator()()
+  void operator()() const
   {
     XBT_INFO("Suspend the receiver...");
     receiver->suspend();
@@ -50,7 +50,7 @@ public:
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine* engine = new simgrid::s4u::Engine(&argc, argv);
+  const simgrid::s4u::Engine* engine = new simgrid::s4u::Engine(&argc, argv);
 
   engine->load_platform(argv[1]);
   simgrid::s4u::Host* host = simgrid::s4u::Host::by_name("Tremblay");

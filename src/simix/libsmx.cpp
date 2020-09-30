@@ -97,8 +97,8 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
     /* the model-checker wants two separate simcalls */
     simgrid::kernel::activity::ActivityImplPtr comm =
         nullptr; /* MC needs the comm to be set to nullptr during the simcall */
-    comm = simcall_comm_isend(sender, mbox, task_size, rate,
-        src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, 0);
+    comm = simcall_comm_isend(sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, nullptr, copy_data_fun,
+                              data, false);
     simcall_comm_wait(comm.get(), timeout);
     comm = nullptr;
   }

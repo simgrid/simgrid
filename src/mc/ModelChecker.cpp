@@ -94,7 +94,7 @@ static const std::pair<const char*, const char*> ignored_local_variables[] = {
 
 void ModelChecker::setup_ignore()
 {
-  RemoteSimulation& process = this->get_remote_simulation();
+  const RemoteSimulation& process = this->get_remote_simulation();
   for (std::pair<const char*, const char*> const& var :
       ignored_local_variables)
     process.ignore_local_variable(var.first, var.second);
@@ -105,7 +105,7 @@ void ModelChecker::setup_ignore()
 
 void ModelChecker::shutdown()
 {
-  XBT_DEBUG("Shuting down model-checker");
+  XBT_DEBUG("Shutting down model-checker");
 
   RemoteSimulation* process = &this->get_remote_simulation();
   if (process->running()) {
@@ -169,7 +169,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
   case MC_MESSAGE_IGNORE_HEAP:
     {
     s_mc_message_ignore_heap_t message;
-    xbt_assert(size == sizeof(message), "Broken messsage");
+    xbt_assert(size == sizeof(message), "Broken message");
     memcpy(&message, buffer, sizeof(message));
 
     IgnoredHeapRegion region;
@@ -184,7 +184,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
   case MC_MESSAGE_UNIGNORE_HEAP:
     {
     s_mc_message_ignore_memory_t message;
-    xbt_assert(size == sizeof(message), "Broken messsage");
+    xbt_assert(size == sizeof(message), "Broken message");
     memcpy(&message, buffer, sizeof(message));
     get_remote_simulation().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
     break;
@@ -193,7 +193,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
   case MC_MESSAGE_IGNORE_MEMORY:
     {
     s_mc_message_ignore_memory_t message;
-    xbt_assert(size == sizeof(message), "Broken messsage");
+    xbt_assert(size == sizeof(message), "Broken message");
     memcpy(&message, buffer, sizeof(message));
     this->get_remote_simulation().ignore_region(message.addr, message.size);
     break;
@@ -202,7 +202,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
   case MC_MESSAGE_STACK_REGION:
     {
     s_mc_message_stack_region_t message;
-    xbt_assert(size == sizeof(message), "Broken messsage");
+    xbt_assert(size == sizeof(message), "Broken message");
     memcpy(&message, buffer, sizeof(message));
     this->get_remote_simulation().stack_areas().push_back(message.stack_region);
     }

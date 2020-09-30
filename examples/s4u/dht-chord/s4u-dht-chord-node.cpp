@@ -364,7 +364,7 @@ void Node::notify(int predecessor_candidate_id)
 }
 
 /* Notifies a remote node that its predecessor may have changed. */
-void Node::remoteNotify(int notify_id, int predecessor_candidate_id)
+void Node::remoteNotify(int notify_id, int predecessor_candidate_id) const
 {
   ChordMessage* message = new ChordMessage(NOTIFY);
   message->request_id   = predecessor_candidate_id;

@@ -23,7 +23,7 @@ static void master(int argc, char* argv[])
   xbt_assert(argc == 5, "The master function expects 4 arguments from the XML deployment file");
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");       /* - Number of tasks      */
   double comp_size     = xbt_str_parse_double(argv[2], "Invalid computational size: %s"); /* - Compute cost    */
-  double comm_size     = xbt_str_parse_double(argv[3], "Invalid communication size: %s"); /* - Communication size */
+  long comm_size       = xbt_str_parse_int(argv[3], "Invalid communication size: %s");    /* - Communication size */
   long workers_count   = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");     /* - Number of workers    */
 
   XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);

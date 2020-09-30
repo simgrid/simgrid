@@ -68,7 +68,7 @@ int main(int argc, char** argv)
 
   MPI_Barrier(MPI_COMM_WORLD);
 
-  /* Set dims[] values to descibe a grid of nbNodes and DIM dimensions*/
+  /* Set dims[] values to describe a grid of nbNodes and DIM dimensions*/
   MPI_Cart_create(MPI_COMM_WORLD, DIM, dims, periods, reorder, &gridComm);
 
   if (gridComm == MPI_COMM_NULL)
