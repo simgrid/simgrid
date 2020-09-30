@@ -1,0 +1,81 @@
+name: SimGrid complete jar file generation
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.config.os }}-latest
+    strategy:
+        matrix:
+          config:
+          - { name: "Windows MingW", os: windows, cc: "gcc", cxx: "g++", generator: "MinGW Makefiles", cmake_extra_options: "-Denable_lto=OFF" }
+          - { name: "Ubuntu gcc", os: ubuntu, cc: "gcc", cxx: "g++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
+          - { name: "MacOS clang", os: macos, cc: "clang", cxx: "clang++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
+    steps:
+    - uses: actions/checkout@v2
+     # install dependencies
+    - name: Init options
+      run: |
+          echo "::set-env name=CC::${{ matrix.config.cc }}"
+          echo "::set-env name=CXX::${{ matrix.config.cxx }}"
+    - name: Install boost on ubuntu
+      if: matrix.config.os == 'ubuntu'
+      run: sudo apt-get update && sudo apt-get install -yq libboost-dev
+    - name: Install boost on macos
+      if: matrix.config.os == 'macos'
+      run: brew install boost
+    - name: Install boost and gcc on windows
+      if: matrix.config.os == 'windows'
+      run: |
+        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+        scoop install gcc --global
+        echo "::set-env name=BOOST_ROOT::$env:BOOST_ROOT_1_72_0"
+        echo "::set-env name=BOOST_INCLUDEDIR::$env:BOOST_ROOT\boost\include"
+        echo "::set-env name=BOOST_LIBRARYDIR::$env:BOOST_ROOT\lib"
+    - name: Build jar with Cmake
+      run: |
+          mkdir build
+          cd build
+          cmake -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF ${{ matrix.config.cmake_extra_options }} -G "${{ matrix.config.generator }}" ..
+          make -j2 simgrid-java_jar
+    - name: Upload jar
+      uses: actions/upload-artifact@v2
+      with:
+          name: jar-${{ matrix.config.os }}
+          path: build/simgrid.jar
+
+  create_jar:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download all jars from ubuntu
+        uses: actions/download-artifact@v2
+      - name: Build final jar
+        run: |
+           patch=$(grep -r set\(SIMGRID_VERSION_PATCH ./CMakeLists.txt | sed 's/.*"\([[:digit:]]\+\)".*/\1/g')
+           major=$(grep -r set\(SIMGRID_VERSION_MAJOR ./CMakeLists.txt | sed 's/.*"\([[:digit:]]\+\)".*/\1/g')
+           minor=$(grep -r set\(SIMGRID_VERSION_MINOR ./CMakeLists.txt | sed 's/.*"\([[:digit:]]\+\)".*/\1/g')
+           if [ $patch -ne 0 ]; then
+             version="$major.$minor.$patch"
+           else
+             version="$major.$minor"
+           fi
+           mkdir content
+           cd content
+           for j in  ubuntu macos windows ; do unzip -n ../jar-$j/simgrid.jar ; done
+           strip NATIVE/*/*/*.so
+           x86_64-linux-gnu-strip NATIVE/*/*/lib*dll
+           zip -r ../simgrid-${version}.jar *
+      - name: Upload jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: jar-final
+          path: simgrid-*.jar
+      - name: cleanup artifacts
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: |
+            jar-ubuntu
+            jar-windows
+            jar-macos

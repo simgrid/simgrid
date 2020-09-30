@@ -87,12 +87,12 @@ static void xbt_preinit()
   GetSystemInfo(&si);
   xbt_pagesize = si.dwPageSize;
 #elif HAVE_SYSCONF
-  xbt_pagesize = sysconf(_SC_PAGESIZE);
+  xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
 #else
 # error Cannot get page size.
 #endif
 
-  xbt_pagebits = log2(xbt_pagesize);
+  xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
 
 #ifdef _TWO_DIGIT_EXPONENT
   /* Even printf behaves differently on Windows... */

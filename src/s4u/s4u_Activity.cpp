@@ -42,9 +42,35 @@ bool Activity::test()
   return false;
 }
 
+Activity* Activity::suspend()
+{
+  if (suspended_)
+    return this; // Already suspended
+  suspended_ = true;
+
+  if (state_ == State::STARTED)
+    pimpl_->suspend();
+
+  return this;
+}
+
+Activity* Activity::resume()
+{
+  if (not suspended_)
+    return this; // nothing to restore when it's not suspended
+
+  if (state_ == State::STARTED)
+    pimpl_->resume();
+
+  return this;
+}
+
 double Activity::get_remaining() const
 {
-  return remains_;
+  if (state_ == State::INITED || state_ == State::STARTING)
+    return remains_;
+  else
+    return pimpl_->get_remaining();
 }
 
 Activity* Activity::set_remaining(double remains)

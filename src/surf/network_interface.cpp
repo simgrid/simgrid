@@ -142,7 +142,7 @@ void LinkImpl::turn_off()
     const kernel::lmm::Element* elem = nullptr;
     double now                       = surf_get_clock();
     while ((var = get_constraint()->get_variable(&elem))) {
-      Action* action = static_cast<Action*>(var->get_id());
+      Action* action = var->get_id();
       if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {
         action->set_finish_time(now);
         action->set_state(Action::State::FAILED);
@@ -151,7 +151,7 @@ void LinkImpl::turn_off()
   }
 }
 
-void LinkImpl::on_bandwidth_change()
+void LinkImpl::on_bandwidth_change() const
 {
   s4u::Link::on_bandwidth_change(this->piface_);
 }

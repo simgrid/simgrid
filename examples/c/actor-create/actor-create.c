@@ -7,7 +7,7 @@
  *
  * The first step is to declare the code of your actors (what they do exactly does not matter to this example) and then
  * you ask SimGrid to start your actors. There is three ways of doing so:
- *  - Directly, by instantiating your actor as paramter to Actor::create()
+ *  - Directly, by instantiating your actor as parameter to Actor::create()
  *  - By first registering your actors before instantiating it;
  *  - Through the deployment file.
  *

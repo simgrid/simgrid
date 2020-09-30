@@ -1,5 +1,5 @@
 foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield actor-lifetime
-                async-wait async-waitall async-waitany
+                comm-wait comm-waitall comm-waitany
                 exec-async exec-basic exec-dvfs exec-remote)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
@@ -19,6 +19,6 @@ endforeach()
 set(examples_src  ${examples_src}                                                      PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   examples/python/actor-create/actor-create_d.xml
                                   examples/python/actor-lifetime/actor-lifetime_d.xml
-                                  examples/python/async-wait/async-wait_d.xml
-                                  examples/python/async-waitall/async-waitall_d.xml
-                                  examples/python/async-waitany/async-waitany_d.xml    PARENT_SCOPE)
+                                  examples/python/comm-wait/comm-wait_d.xml
+                                  examples/python/comm-waitall/comm-waitall_d.xml
+                                  examples/python/comm-waitany/comm-waitany_d.xml    PARENT_SCOPE)

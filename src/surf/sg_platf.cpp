@@ -238,7 +238,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       linkUp   = simgrid::s4u::Link::by_name_or_null(tmp_link);
       linkDown = simgrid::s4u::Link::by_name_or_null(tmp_link);
 
-      auto* as_cluster = static_cast<ClusterZone*>(current_as);
+      ClusterZone* as_cluster = current_as;
       as_cluster->private_links_.insert({as_cluster->node_pos(rankId), {linkUp->get_impl(), linkDown->get_impl()}});
     }
 
@@ -274,12 +274,9 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   // Add a router.
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
-  if (cluster->router_id.empty()) {
-    std::string newid   = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
-    current_as->router_ = sg_platf_new_router(newid, NULL);
-  } else {
-    current_as->router_ = sg_platf_new_router(cluster->router_id, NULL);
-  }
+  if (cluster->router_id.empty())
+    cluster->router_id = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
+  current_as->router_ = sg_platf_new_router(cluster->router_id, NULL);
 
   //Make the backbone
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
@@ -383,7 +380,8 @@ void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage
             storage->id.c_str(), stype->model.c_str(), stype->id.c_str(), storage->content.c_str(),
             storage->properties);
 
-  auto s = surf_storage_model->createStorage(storage->id, stype->id, storage->content, storage->attach);
+  auto s = surf_storage_model->createStorage(storage->filename, storage->lineno, storage->id, stype->id,
+                                             storage->content, storage->attach);
 
   if (storage->properties) {
     s->set_properties(*storage->properties);
@@ -666,13 +664,13 @@ void sg_platf_new_Zone_seal()
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();
   simgrid::s4u::NetZone::on_seal(*current_routing->get_iface());
-  current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->get_father());
+  current_routing = current_routing->get_father();
 }
 
 /** @brief Add a link connecting a host to the rest of its AS (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
 {
-  simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
+  const simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get a host_link.");

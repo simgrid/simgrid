@@ -55,7 +55,7 @@ HostImpl::~HostImpl()
  *
  * Weird things will happen if you turn on a host that is already on. S4U is fool-proof, not this.
  */
-void HostImpl::turn_on()
+void HostImpl::turn_on() const
 {
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
@@ -73,7 +73,7 @@ void HostImpl::turn_on()
 }
 
 /** Kill all actors hosted here */
-void HostImpl::turn_off(kernel::actor::ActorImpl* issuer)
+void HostImpl::turn_off(const kernel::actor::ActorImpl* issuer)
 {
   for (auto& actor : actor_list_) {
     XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
@@ -98,12 +98,12 @@ std::vector<s4u::ActorPtr> HostImpl::get_all_actors()
     res.push_back(actor.ciface());
   return res;
 }
-size_t HostImpl::get_actor_count()
+size_t HostImpl::get_actor_count() const
 {
   return actor_list_.size();
 }
 
-std::vector<s4u::Disk*> HostImpl::get_disks()
+std::vector<s4u::Disk*> HostImpl::get_disks() const
 {
   std::vector<s4u::Disk*> disks;
   for (auto const& d : disks_)

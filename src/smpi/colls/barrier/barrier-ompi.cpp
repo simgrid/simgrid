@@ -24,7 +24,7 @@
 #include "../colls_private.hpp"
 
 /*
- * Barrier is ment to be a synchronous operation, as some BTLs can mark
+ * Barrier is meant to be a synchronous operation, as some BTLs can mark
  * a request done before its passed to the NIC and progress might not be made
  * elsewhere we cannot allow a process to exit the barrier until its last
  * [round of] sends are completed.

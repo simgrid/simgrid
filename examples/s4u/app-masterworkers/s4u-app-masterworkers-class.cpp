@@ -12,9 +12,9 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this s4u example");
 
 class Master {
-  long tasks_count                 = 0;
-  double compute_cost              = 0;
-  double communicate_cost          = 0;
+  long tasks_count      = 0;
+  double compute_cost   = 0;
+  long communicate_cost = 0;
   std::vector<simgrid::s4u::Mailbox*> workers;
 
 public:
@@ -24,7 +24,7 @@ public:
 
     tasks_count      = std::stol(args[1]);
     compute_cost     = std::stod(args[2]);
-    communicate_cost = std::stod(args[3]);
+    communicate_cost = std::stol(args[3]);
     for (unsigned int i = 4; i < args.size(); i++)
       workers.push_back(simgrid::s4u::Mailbox::by_name(args[i]));
 

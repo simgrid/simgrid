@@ -61,7 +61,7 @@ It is important to keep your tests fast. We run them very very often,
 and you should strive to make them as fast as possible, to not bother
 the other developers. Do not hesitate to stress test your code, but
 make sure that it runs reasonably fast, or nobody will run "ctest"
-before commiting code.
+before committing code.
 
 @section inside_tests_add_integration Adding integration tests
 
@@ -89,10 +89,10 @@ To add a new integration test, you thus have 3 things to do:
    details.@n
    Tesh is sometimes annoying as you have to ensure that the expected
    output will always be exactly the same. In particular, your should
-   not output machine dependent informations such as absolute data
-   path, nor memory adresses as they would change on each run. Several
+   not output machine dependent information such as absolute data
+   path, nor memory addresses as they would change on each run. Several
    steps can be used here, such as the obfucation of the memory
-   adresses unless the verbose logs are displayed (using the
+   addresses unless the verbose logs are displayed (using the
    #XBT_LOG_ISENABLED() macro), or the modification of the log formats
    to hide the timings when they depend on the host machine.@n
    The script located in <project/directory>/tools/tesh/generate_tesh can
@@ -130,7 +130,7 @@ ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh
 As usual, you must run "make distcheck" after modifying the cmake files,
 to ensure that you did not forget any files in the distributed archive.
 
-@section inside_tests_ci Continous Integration
+@section inside_tests_ci Continuous Integration
 
 We use several systems to automatically test SimGrid with a large set
 of parameters, across as many platforms as possible. 

@@ -29,7 +29,8 @@ static void overriding_send(simgrid::xbt::ReplayAction& args)
 int main(int argc, char* argv[])
 {
   const char* instance_id = simgrid::s4u::Actor::self()->get_property("instance_id");
-  const int rank          = xbt_str_parse_int(simgrid::s4u::Actor::self()->get_property("rank"), "Cannot parse rank");
+  const int rank =
+      static_cast<int>(xbt_str_parse_int(simgrid::s4u::Actor::self()->get_property("rank"), "Cannot parse rank"));
   const char* trace_filename = argv[1];
   double start_delay_flops   = 0;
 

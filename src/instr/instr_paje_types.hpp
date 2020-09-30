@@ -34,13 +34,13 @@ public:
        Type* father);
   virtual ~Type() = default;
 
-  long long int get_id() { return id_; }
+  long long int get_id() const { return id_; }
   const std::string& get_name() const { return name_; }
-  const char* get_cname() { return name_.c_str(); }
+  const char* get_cname() const { return name_.c_str(); }
   const std::string& get_color() const { return color_; }
   Type* get_father() const { return father_; }
-  const std::map<std::string, std::unique_ptr<Type>>& get_children() { return children_; }
-  bool is_colored() { return not color_.empty(); }
+  const std::map<std::string, std::unique_ptr<Type>>& get_children() const { return children_; }
+  bool is_colored() const { return not color_.empty(); }
 
   Type* by_name(const std::string& name);
   LinkType* by_name_or_create(const std::string& name, Type* source, Type* dest);

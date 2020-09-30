@@ -50,7 +50,7 @@ CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
  * @param b      End of interval
  * @return the integrate value. -1 if an error occurs.
  */
-double CpuTiTmgr::integrate(double a, double b)
+double CpuTiTmgr::integrate(double a, double b) const
 {
   if ((a < 0.0) || (a > b)) {
     xbt_die("Error, invalid integration interval [%.2f,%.2f]. "
@@ -90,7 +90,7 @@ double CpuTiTmgr::integrate(double a, double b)
  * @param a  Initial point
  * @param b  Final point
  */
-double CpuTiProfile::integrate_simple(double a, double b)
+double CpuTiProfile::integrate_simple(double a, double b) const
 {
   return integrate_simple_point(b) - integrate_simple_point(a);
 }
@@ -99,7 +99,7 @@ double CpuTiProfile::integrate_simple(double a, double b)
  * @brief Auxiliary function to compute the integral at point a.
  * @param a        point
  */
-double CpuTiProfile::integrate_simple_point(double a)
+double CpuTiProfile::integrate_simple_point(double a) const
 {
   double integral = 0;
   double a_aux = a;
@@ -126,7 +126,7 @@ double CpuTiProfile::integrate_simple_point(double a)
  * @param amount  Amount to be executed
  * @return  End time
  */
-double CpuTiTmgr::solve(double a, double amount)
+double CpuTiTmgr::solve(double a, double amount) const
 {
   /* Fix very small negative numbers */
   if ((a < 0.0) && (a > -EPSILON)) {
@@ -182,7 +182,7 @@ double CpuTiTmgr::solve(double a, double amount)
  * @param amount  Amount of flops
  * @return The date when amount is available.
  */
-double CpuTiProfile::solve_simple(double a, double amount)
+double CpuTiProfile::solve_simple(double a, double amount) const
 {
   double integral_a = integrate_simple_point(a);
   int ind           = binary_search(integral_, integral_a + amount);
@@ -200,7 +200,7 @@ double CpuTiProfile::solve_simple(double a, double amount)
  * @param a        Time
  * @return CPU speed scale
  */
-double CpuTiTmgr::get_power_scale(double a)
+double CpuTiTmgr::get_power_scale(double a) const
 {
   double reduced_a          = a - floor(a / last_time_) * last_time_;
   int point                       = CpuTiProfile::binary_search(profile_->time_points_, reduced_a);

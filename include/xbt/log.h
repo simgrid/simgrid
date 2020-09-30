@@ -46,7 +46,7 @@ typedef enum {
   xbt_log_priority_trace = 1,          /**< enter and return of some functions */
   xbt_log_priority_debug = 2,          /**< crufty output  */
   xbt_log_priority_verbose = 3,        /**< verbose output for the user wanting more */
-  xbt_log_priority_info = 4,           /**< output about the regular functionning */
+  xbt_log_priority_info = 4,           /**< output about the regular functioning */
   xbt_log_priority_warning = 5,        /**< minor issue encountered */
   xbt_log_priority_error = 6,          /**< issue encountered */
   xbt_log_priority_critical = 7,       /**< major issue encountered */

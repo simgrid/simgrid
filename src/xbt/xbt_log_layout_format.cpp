@@ -30,18 +30,19 @@ static constexpr const char* ERRMSG =
   } else                                                                \
     return 0
 
-#define set_sz_from_precision()                                         \
-  if (1) {                                                              \
-    sz = rem_size;                                                      \
-    if (precision != -1) {                                              \
-      if (precision < sz)                                               \
-        sz = precision + 1;     /* +1 for the final '\0' */             \
-      precision = -1;                                                   \
-    }                                                                   \
-  } else (void)0
+#define set_sz_from_precision()                                                                                        \
+  if (true) {                                                                                                          \
+    sz = rem_size;                                                                                                     \
+    if (precision != -1) {                                                                                             \
+      if (precision < sz)                                                                                              \
+        sz = precision + 1; /* +1 for the final '\0' */                                                                \
+      precision = -1;                                                                                                  \
+    }                                                                                                                  \
+  } else                                                                                                               \
+    (void)0
 
 #define show_it(data, letter)                                                                                          \
-  if (1) {                                                                                                             \
+  if (true) {                                                                                                          \
     int len;                                                                                                           \
     int wd;                                                                                                            \
     if (length == -1) {                                                                                                \
@@ -58,13 +59,14 @@ static constexpr const char* ERRMSG =
     }                                                                                                                  \
     check_overflow(len);                                                                                               \
   } else                                                                                                               \
-  (void)0
+    (void)0
 
-#define show_string(data)                                               \
-  if (1) {                                                              \
-    const char *show_string_data = (data);                              \
-    show_it(show_string_data ? show_string_data : "(null)", "s");       \
-  } else (void)0
+#define show_string(data)                                                                                              \
+  if (true) {                                                                                                          \
+    const char* show_string_data = (data);                                                                             \
+    show_it(show_string_data ? show_string_data : "(null)", "s");                                                      \
+  } else                                                                                                               \
+    (void)0
 #define show_int(data) show_it((data), "d")
 #define show_double(data) show_it((data), "f")
 
@@ -97,7 +99,7 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
             check_overflow(1);
             break;
           case '.': /* precision specifier */
-            precision = strtol(q + 1, &q, 10);
+            precision = static_cast<int>(strtol(q + 1, &q, 10));
             continue; /* conversion specifier still not found, continue reading */
           case '0':
           case '1':
@@ -109,7 +111,7 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
           case '7':
           case '8':
           case '9': /* length modifier */
-            length = strtol(q, &q, 10);
+            length = static_cast<int>(strtol(q, &q, 10));
             continue; /* conversion specifier still not found, continue reading */
           case 'c':   /* category name; LOG4J compliant
                          should accept a precision postfix to show the hierarchy */
@@ -165,7 +167,7 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
             xbt_abort();
         }
         break; /* done, continue normally */
-      } while (1);
+      } while (true);
     } else {
       *p = *q;
       check_overflow(1);

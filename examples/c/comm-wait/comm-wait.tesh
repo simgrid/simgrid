@@ -1,0 +1,61 @@
+#!/usr/bin/env tesh
+
+p Test1 sg_comm_test() with Sleep_sender > Sleep_receiver
+
+$ ${bindir:=.}/c-comm-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-wait_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) sleep_start_time : 5.000000 , sleep_test_time : 0.100000
+> [  0.000000] (2:receiver@Ruby) sleep_start_time : 1.000000 , sleep_test_time : 0.100000
+> [  1.000000] (2:receiver@Ruby) Wait for my first message
+> [  5.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'
+> [  6.000000] (2:receiver@Ruby) I got a 'Message 0'.
+> [  6.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver'
+> [  7.000000] (2:receiver@Ruby) I got a 'Message 1'.
+> [  7.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver'
+> [  8.000000] (2:receiver@Ruby) I got a 'Message 2'.
+> [  8.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver'
+> [  8.100000] (2:receiver@Ruby) I got a 'finalize'.
+
+p Test2 sg_comm_test() with Sleep_sender < Sleep_receiver
+
+$ ${bindir:=.}/c-comm-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-wait2_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) sleep_start_time : 1.000000 , sleep_test_time : 0.100000
+> [  0.000000] (2:receiver@Ruby) sleep_start_time : 5.000000 , sleep_test_time : 0.100000
+> [  1.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'
+> [  5.000000] (2:receiver@Ruby) Wait for my first message
+> [  6.000000] (2:receiver@Ruby) I got a 'Message 0'.
+> [  6.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver'
+> [  7.000000] (2:receiver@Ruby) I got a 'Message 1'.
+> [  7.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver'
+> [  8.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver'
+> [  8.000000] (2:receiver@Ruby) I got a 'Message 2'.
+> [  8.100000] (2:receiver@Ruby) I got a 'finalize'.
+
+p Test1 sg_comm_wait() with Sleep_sender > Sleep_receiver
+
+$ ${bindir:=.}/c-comm-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-wait3_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) sleep_start_time : 5.000000 , sleep_test_time : 0.000000
+> [  0.000000] (2:receiver@Ruby) sleep_start_time : 1.000000 , sleep_test_time : 0.000000
+> [  1.000000] (2:receiver@Ruby) Wait for my first message
+> [  5.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'
+> [  6.000000] (2:receiver@Ruby) I got a 'Message 0'.
+> [  6.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver'
+> [  7.000000] (2:receiver@Ruby) I got a 'Message 1'.
+> [  7.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver'
+> [  8.000000] (2:receiver@Ruby) I got a 'Message 2'.
+> [  8.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver'
+> [  8.001951] (2:receiver@Ruby) I got a 'finalize'.
+
+p Test2 sg_comm_wait() with Sleep_sender < Sleep_receiver
+
+$ ${bindir:=.}/c-comm-wait ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-wait4_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) sleep_start_time : 1.000000 , sleep_test_time : 0.000000
+> [  0.000000] (2:receiver@Ruby) sleep_start_time : 5.000000 , sleep_test_time : 0.000000
+> [  1.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'
+> [  5.000000] (2:receiver@Ruby) Wait for my first message
+> [  6.000000] (2:receiver@Ruby) I got a 'Message 0'.
+> [  6.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver'
+> [  7.000000] (2:receiver@Ruby) I got a 'Message 1'.
+> [  7.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver'
+> [  8.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver'
+> [  8.000000] (2:receiver@Ruby) I got a 'Message 2'.
+> [  8.001951] (2:receiver@Ruby) I got a 'finalize'.

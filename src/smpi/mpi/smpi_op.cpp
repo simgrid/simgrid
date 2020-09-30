@@ -238,7 +238,7 @@ CREATE_MPI_OP(MPI_NO_OP, no_func)
 namespace simgrid{
 namespace smpi{
 
-void Op::apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype)
+void Op::apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype) const
 {
   if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables

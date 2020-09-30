@@ -1,4 +1,4 @@
-/* Handle Fortan - C conversion for MPI Types*/
+/* Handle Fortran - C conversion for MPI Types*/
 
 /* Copyright (c) 2010-2020. The SimGrid Team.
  * All rights reserved.                                                     */

@@ -89,8 +89,7 @@ bool actor_is_enabled(smx_actor_t actor)
 
     case SIMCALL_COMM_WAIT: {
       /* FIXME: check also that src and dst processes are not suspended */
-      const kernel::activity::CommImpl* act =
-          static_cast<kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
+      const kernel::activity::CommImpl* act = simcall_comm_wait__getraw__comm(req);
 
       if (act->src_timeout_ || act->dst_timeout_) {
         /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),

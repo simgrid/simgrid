@@ -21,7 +21,7 @@ static void scheduleDAX(const_xbt_dynar_t dax)
   SD_task_t task;
 
   sg_host_t *hosts = sg_host_list();
-  int totalHosts = sg_host_count();
+  size_t totalHosts = sg_host_count();
   qsort((void *) hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
 
   xbt_dynar_foreach(dax, cursor, task) {

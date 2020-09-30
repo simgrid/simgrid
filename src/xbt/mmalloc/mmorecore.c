@@ -79,7 +79,7 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
     /* We are deallocating memory.  If the amount requested would cause us to try to deallocate back past the base of
      * the mmap'd region then die verbosely.  Otherwise, deallocate the memory and return the old break value. */
     if (((char*)mdp->breakval) + size >= (char*)mdp->base) {
-      result        = (void*)mdp->breakval;
+      result        = mdp->breakval;
       mdp->breakval = (char*)mdp->breakval + size;
       moveto = PAGE_ALIGN(mdp->breakval);
       munmap(moveto, (size_t)(((char*)mdp->top) - ((char*)moveto)) - 1);
@@ -134,11 +134,11 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
         mdp->base = mdp->breakval = mapto;
 
       mdp->top      = PAGE_ALIGN((char*)mdp->breakval + size);
-      result = (void *) mdp->breakval;
+      result        = mdp->breakval;
       mdp->breakval = (char*)mdp->breakval + size;
     } else {
       /* Memory is already mapped, we only need to increase the breakval: */
-      result = (void *) mdp->breakval;
+      result        = mdp->breakval;
       mdp->breakval = (char*)mdp->breakval + size;
     }
   }

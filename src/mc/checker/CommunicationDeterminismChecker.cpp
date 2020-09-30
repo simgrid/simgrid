@@ -127,12 +127,12 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
 
     if (diff != NONE_DIFF) {
       if (comm->type == PatternCommunicationType::send) {
-        this->send_deterministic = 0;
+        this->send_deterministic = false;
         if (this->send_diff != nullptr)
           xbt_free(this->send_diff);
         this->send_diff = print_determinism_result(diff, process, comm, list.index_comm + 1);
       } else {
-        this->recv_deterministic = 0;
+        this->recv_deterministic = false;
         if (this->recv_diff != nullptr)
           xbt_free(this->recv_diff);
         this->recv_diff = print_determinism_result(diff, process, comm, list.index_comm + 1);
@@ -185,9 +185,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
     pattern->comm_addr = static_cast<kernel::activity::CommImpl*>(simcall_comm_isend__getraw__result(request));
 
     Remote<kernel::activity::CommImpl> temp_synchro;
-    mc_model_checker->get_remote_simulation().read(
-        temp_synchro, remote(static_cast<kernel::activity::CommImpl*>(pattern->comm_addr)));
-    const kernel::activity::CommImpl* synchro = static_cast<kernel::activity::CommImpl*>(temp_synchro.get_buffer());
+    mc_model_checker->get_remote_simulation().read(temp_synchro, remote(pattern->comm_addr));
+    const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
 
     char* remote_name = mc_model_checker->get_remote_simulation().read<char*>(RemotePtr<char*>(
         (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->name_ : &synchro->mbox_cpy->name_)));
@@ -233,8 +232,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
 #endif
 
     Remote<kernel::activity::CommImpl> temp_comm;
-    mc_model_checker->get_remote_simulation().read(
-        temp_comm, remote(static_cast<kernel::activity::CommImpl*>(pattern->comm_addr)));
+    mc_model_checker->get_remote_simulation().read(temp_comm, remote(pattern->comm_addr));
     const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
     char* remote_name;

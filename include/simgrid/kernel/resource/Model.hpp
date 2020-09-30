@@ -34,7 +34,7 @@ public:
 
   virtual ~Model();
 
-  bool is_update_lazy() { return update_algorithm_ == UpdateAlgo::LAZY; }
+  bool is_update_lazy() const { return update_algorithm_ == UpdateAlgo::LAZY; }
 
   /** @brief Get the set of [actions](@ref Action) in *inited* state */
   Action::StateSet* get_inited_action_set() { return &inited_action_set_; }

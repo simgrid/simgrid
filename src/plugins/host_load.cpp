@@ -68,7 +68,7 @@ public:
   explicit HostLoad(simgrid::s4u::Host& ptr) = delete;
   explicit HostLoad(simgrid::s4u::Host&& ptr) = delete;
 
-  double get_current_load();
+  double get_current_load() const;
   /** Get the the average load since last reset(), as a ratio
    *
    * That's the ratio (amount of flops that were actually computed) / (amount of flops that could have been computed at full speed)
@@ -168,7 +168,7 @@ void HostLoad::update()
  * But still, if you call this function between the two events (in the simulator course), it
  * returns 0 although there is no time (in the simulated time) where this value is valid.
  */
-double HostLoad::get_current_load()
+double HostLoad::get_current_load() const
 {
   // We don't need to call update() here because it is called every time an action terminates or starts
   return current_flops_ / (host_->get_speed() * host_->get_core_count());
@@ -218,7 +218,7 @@ void sg_host_load_plugin_init()
 
   // If SimGrid is already initialized, we need to attach an extension to each existing host
   if (simgrid::s4u::Engine::is_initialized()) {
-    simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
+    const simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
     for (auto& host : e->get_all_hosts()) {
       host->extension_set(new HostLoad(host));
     }

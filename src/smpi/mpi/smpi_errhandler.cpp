@@ -21,19 +21,22 @@ MPI_Errhandler Errhandler::f2c(int id) {
     char key[KEY_SIZE];
     return static_cast<MPI_Errhandler>(F2C::f2c_lookup()->at(get_key(key, id)));
   } else {
-    return static_cast<MPI_Errhandler>(MPI_ERRHANDLER_NULL);
+    return MPI_ERRHANDLER_NULL;
   }
 }
 
-void Errhandler::call(MPI_Comm comm, int errorcode){
+void Errhandler::call(MPI_Comm comm, int errorcode) const
+{
   comm_func_(&comm, &errorcode);
 }
 
-void Errhandler::call(MPI_Win win, int errorcode){
+void Errhandler::call(MPI_Win win, int errorcode) const
+{
   win_func_(&win, &errorcode);
 }
 
-void Errhandler::call(MPI_File file, int errorcode){
+void Errhandler::call(MPI_File file, int errorcode) const
+{
   file_func_(&file, &errorcode);
 }
 

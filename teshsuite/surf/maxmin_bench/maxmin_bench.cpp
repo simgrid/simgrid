@@ -19,7 +19,7 @@
 double date;
 
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
-                 float rate_no_limit, int max_share, int mode)
+                 double rate_no_limit, int max_share, int mode)
 {
   simgrid::kernel::lmm::Constraint** cnst = new simgrid::kernel::lmm::Constraint*[nb_cnst];
   simgrid::kernel::lmm::Variable** var = new simgrid::kernel::lmm::Variable*[nb_var];
@@ -44,7 +44,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   for (int i = 0; i < nb_var; i++) {
     var[i] = Sys->variable_new(NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
-    int concurrency_share = 1 + simgrid::xbt::random::uniform_int(0, max_share - 1);
+    short concurrency_share = static_cast<short>(1 + simgrid::xbt::random::uniform_int(0, max_share - 1));
     var[i]->set_concurrency_share(concurrency_share);
 
     for (int j = 0; j < nb_cnst; j++)
@@ -105,9 +105,9 @@ int main(int argc, char **argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
 
-  float rate_no_limit=0.2;
-  float acc_date=0;
-  float acc_date2=0;
+  double rate_no_limit = 0.2;
+  double acc_date      = 0.0;
+  double acc_date2     = 0.0;
   int testclass;
 
   if(argc<3) {
@@ -167,8 +167,8 @@ int main(int argc, char **argv)
     acc_date2+=date*date;
   }
 
-  float mean_date= acc_date/(float)testcount;
-  float stdev_date= sqrt(acc_date2/(float)testcount-mean_date*mean_date);
+  double mean_date  = acc_date / static_cast<double>(testcount);
+  double stdev_date = sqrt(acc_date2 / static_cast<double>(testcount) - mean_date * mean_date);
 
   fprintf(stderr, "%ix One shot execution time for a total of %u constraints, "
                   "%u variables with %u active constraint each, concurrency in [%i,%i] and max concurrency share %u\n",

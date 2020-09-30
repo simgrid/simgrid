@@ -189,7 +189,7 @@ same timestamp. Here is a SimGrid example:
     ! output sort 19
     $ ./some_simgrid_simulator --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
 
-This approach may seem surprizing at the first glance but it does its job:
+This approach may seem surprising at the first glance but it does its job:
 
 =over 4
 
@@ -213,7 +213,7 @@ usable by others, who knows?
 
 =head2 Ignoring some output
 
-Some outputed lines can be ignored by setting the ignore command followed
+Some outputted lines can be ignored by setting the ignore command followed
 by a regular expression:
 
     ! ignore .*0x[0-9A-F]+\.
@@ -224,7 +224,7 @@ by a regular expression:
 
 =head2 Colored and formatted text
 
-Tesh removes ANSI/VT100 control sequences from outputed text to make easier the writing of tests.
+Tesh removes ANSI/VT100 control sequences from outputted text to make easier the writing of tests.
 
     $ printf "I \033[0;31mlove\033[0m tesh\n"
     > I love tesh

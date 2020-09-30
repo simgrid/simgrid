@@ -59,9 +59,9 @@ protected:
   virtual RouteCreationArgs* new_extended_route(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
                                                 NetPoint* gw_dst, std::vector<resource::LinkImpl*>& link_list,
                                                 bool symmetrical, bool change_order);
-  void get_route_check_params(NetPoint* src, NetPoint* dst);
+  void get_route_check_params(NetPoint* src, NetPoint* dst) const;
   void add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                              const std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
+                              const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) const;
 };
 } // namespace routing
 } // namespace kernel

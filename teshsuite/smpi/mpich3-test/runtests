@@ -724,7 +724,7 @@ sub AddMPIProgram {
 
     if ($ResultTest ne "") {
 	# This test really needs to be run manually, with this test
-	# Eventually, we can update this to include handleing in checktests.
+	# Eventually, we can update this to include handling in checktests.
 	print STDERR "Run $curdir/$programname with $np processes and use $ResultTest to check the results\n";
 	return;
     }

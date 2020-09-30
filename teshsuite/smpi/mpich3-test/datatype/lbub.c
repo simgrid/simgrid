@@ -1135,7 +1135,7 @@ int int_with_negextent_test(void)
             fprintf(stderr, "  MPI_Type_struct of %s failed.\n", typemapstring);
         if (verbose)
             MTestPrintError(err);
-        /* No point in contiuing */
+        /* No point in continuing */
         return errs;
     }
 

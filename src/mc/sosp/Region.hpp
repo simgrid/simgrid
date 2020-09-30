@@ -60,7 +60,7 @@ public:
   bool contain(RemotePtr<void> p) const { return p >= start() && p < end(); }
 
   /** @brief Restore a region from a snapshot */
-  void restore();
+  void restore() const;
 
   /** @brief Read memory that was snapshotted in this region
    *

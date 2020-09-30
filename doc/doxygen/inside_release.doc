@@ -122,7 +122,7 @@ Release numbering semantic:
   - 3.X.Y where Y is odd: git current status between two releases
     - No expectations on such versions
   - Example
-    - 3.22.4: unannounced/losely documented stable release
+    - 3.22.4: unannounced/loosely documented stable release
     - 3.22.5: git status somewhere between the release of 3.22.4 and the next one
     - 3.23: Documented and announced stable release
     

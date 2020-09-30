@@ -288,8 +288,8 @@ on such a simple example:
   - When data is transferred from A to B, some TCP ACK messages travel in the
     opposite direction. To reflect the impact of this `cross-traffic`, SimGrid
     simulates a flow from B to A that represents an additional bandwidth
-    consumption of `0.05`. The route from B to A is implicity declared in the
-    platfrom file and uses the same link `link1` as if the two hosts were
+    consumption of `0.05`. The route from B to A is implicitly declared in the
+    platform file and uses the same link `link1` as if the two hosts were
     connected through a communication bus. The bandwidth share allocated to the
     flow from A to B is then the available bandwidth of `link1` (i.e., 97% of
     the nominal bandwidth of 1Mb/s) divided by 1.05 (i.e., the total consumption).

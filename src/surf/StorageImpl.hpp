@@ -48,7 +48,8 @@ public:
   StorageModel& operator=(const StorageModel&) = delete;
   ~StorageModel();
 
-  virtual StorageImpl* createStorage(const std::string& id, const std::string& type_id, const std::string& content_name,
+  virtual StorageImpl* createStorage(std::string& filename, int lineno, const std::string& id,
+                                     const std::string& type_id, const std::string& content_name,
                                      const std::string& attach) = 0;
 };
 
@@ -82,7 +83,7 @@ public:
   ~StorageImpl() override;
 
   s4u::Storage* get_iface() { return &piface_; }
-  const char* get_type() { return typeId_.c_str(); }
+  const char* get_type() const { return typeId_.c_str(); }
   lmm::Constraint* get_read_constraint() const { return constraint_read_; }
   lmm::Constraint* get_write_constraint() const { return constraint_write_; }
   /** @brief Check if the Storage is used (if an action currently uses its resources) */

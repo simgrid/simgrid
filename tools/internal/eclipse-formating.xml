@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<!-- This file is an eclipse configuration file, to setup the code formater.
+<!-- This file is an eclipse configuration file, to setup the code formatter.
      Open the properties of your SimGrid project, "C/C++ General" -> "Formatter"
      Then, enable project-specific settings, and import this file. -->
 

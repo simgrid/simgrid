@@ -96,7 +96,7 @@ void intrusive_ptr_release(const Actor* actor)
 {
   intrusive_ptr_release(actor->pimpl_);
 }
-int Actor::get_refcount()
+int Actor::get_refcount() const
 {
   return pimpl_->get_refcount();
 }
@@ -234,7 +234,7 @@ void Actor::resume()
   s4u::Actor::on_resume(*this);
 }
 
-bool Actor::is_suspended()
+bool Actor::is_suspended() const
 {
   return pimpl_->is_suspended();
 }
@@ -245,7 +245,7 @@ void Actor::set_kill_time(double kill_time)
 }
 
 /** @brief Get the kill time of an actor(or 0 if unset). */
-double Actor::get_kill_time()
+double Actor::get_kill_time() const
 {
   return pimpl_->get_kill_time();
 }
@@ -478,7 +478,7 @@ size_t sg_actor_count()
 
 sg_actor_t* sg_actor_list()
 {
-  simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
+  const simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
   size_t actor_count      = e->get_actor_count();
   xbt_assert(actor_count > 0, "There is no actor!");
   std::vector<simgrid::s4u::ActorPtr> actors = e->get_all_actors();
@@ -624,7 +624,7 @@ void sg_actor_resume(sg_actor_t actor)
  *
  * This checks whether an actor is suspended or not by inspecting the task on which it was waiting for the completion.
  */
-int sg_actor_is_suspended(sg_actor_t actor)
+int sg_actor_is_suspended(const_sg_actor_t actor)
 {
   return actor->is_suspended();
 }

@@ -51,7 +51,7 @@ class ObjectInformation {
 public:
   ObjectInformation() = default;
 
-  // Not copyable:
+  // Not copiable:
   ObjectInformation(ObjectInformation const&) = delete;
   ObjectInformation& operator=(ObjectInformation const&) = delete;
 
@@ -156,7 +156,7 @@ public:
 XBT_PRIVATE std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<simgrid::xbt::VmMap> const& maps,
                                                                        const char* name);
 
-/** Augment the current module with informations about the other ones */
+/** Augment the current module with information about the other ones */
 XBT_PRIVATE void postProcessObjectInformation(const simgrid::mc::RemoteSimulation* process,
                                               simgrid::mc::ObjectInformation* info);
 } // namespace mc

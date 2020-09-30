@@ -101,7 +101,7 @@ static int l_host_number(lua_State * L)
  */
 static int l_host_at(lua_State * L)
 {
-  int index = luaL_checkinteger(L, 1);
+  lua_Integer index            = luaL_checkinteger(L, 1);
   std::vector<sg_host_t> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
   sg_host_t host               = hosts[index - 1]; // lua indexing start by 1 (lua[1] <=> C[0])
   lua_newtable(L);              /* create a table, put the userdata on top of it */

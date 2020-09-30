@@ -235,7 +235,7 @@ int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int 
     */
     else {
 
-        /* If the number of segments is less than a maximum number of oustanding
+        /* If the number of segments is less than a maximum number of outstanding
            requests or there is no limit on the maximum number of outstanding
            requests, we send data to the parent using blocking send */
         if ((0 == max_outstanding_reqs) ||

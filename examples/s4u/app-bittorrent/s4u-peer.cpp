@@ -150,7 +150,7 @@ void Peer::sendRequestTo(Connection* remote_peer, unsigned int piece)
   xbt_assert(remote_peer->hasPiece(piece));
   int block_index = getFirstMissingBlockFrom(piece);
   if (block_index != -1) {
-    int block_length = std::min(BLOCKS_REQUESTED, PIECES_BLOCKS - block_index);
+    int block_length = static_cast<int>(std::min(BLOCKS_REQUESTED, PIECES_BLOCKS - block_index));
     XBT_DEBUG("Sending a REQUEST to %s for piece %u (%d,%d)", remote_peer->mailbox_->get_cname(), piece, block_index,
               block_length);
     remote_peer->mailbox_
@@ -159,7 +159,7 @@ void Peer::sendRequestTo(Connection* remote_peer, unsigned int piece)
   }
 }
 
-std::string Peer::getStatus()
+std::string Peer::getStatus() const
 {
   std::string res;
   for (unsigned i = 0; i < FILE_PIECES; i++)
@@ -167,7 +167,7 @@ std::string Peer::getStatus()
   return res;
 }
 
-bool Peer::hasFinished()
+bool Peer::hasFinished() const
 {
   return bitfield_ == (1U << FILE_PIECES) - 1U;
 }
@@ -193,7 +193,7 @@ void Peer::updatePiecesCountFromBitfield(unsigned int bitfield)
       pieces_count[i]++;
 }
 
-unsigned int Peer::countPieces(unsigned int bitfield)
+unsigned int Peer::countPieces(unsigned int bitfield) const
 {
   unsigned int count = 0U;
   unsigned int n     = bitfield;
@@ -204,7 +204,7 @@ unsigned int Peer::countPieces(unsigned int bitfield)
   return count;
 }
 
-int Peer::nbInterestedPeers()
+int Peer::nbInterestedPeers() const
 {
   int nb = 0;
   for (auto const& kv : connected_peers)
@@ -553,7 +553,7 @@ void Peer::updateChokedPeers()
       do {
         // We choose a random peer to unchoke.
         std::unordered_map<int, Connection>::iterator chosen_peer_it = connected_peers.begin();
-        std::advance(chosen_peer_it, random.uniform_int(0, connected_peers.size() - 1));
+        std::advance(chosen_peer_it, random.uniform_int(0, static_cast<int>(connected_peers.size() - 1)));
         chosen_peer = &chosen_peer_it->second;
         if (not chosen_peer->interested || not chosen_peer->choked_upload)
           chosen_peer = nullptr;
@@ -629,7 +629,7 @@ void Peer::updateBitfieldBlocks(int piece, int block_index, int block_length)
     bitfield_blocks |= (1ULL << static_cast<unsigned int>(piece * PIECES_BLOCKS + i));
 }
 
-bool Peer::hasCompletedPiece(unsigned int piece)
+bool Peer::hasCompletedPiece(unsigned int piece) const
 {
   for (unsigned int i = 0; i < PIECES_BLOCKS; i++)
     if (not(bitfield_blocks & 1ULL << (piece * PIECES_BLOCKS + i)))
@@ -637,7 +637,7 @@ bool Peer::hasCompletedPiece(unsigned int piece)
   return true;
 }
 
-int Peer::getFirstMissingBlockFrom(int piece)
+int Peer::getFirstMissingBlockFrom(int piece) const
 {
   for (unsigned int i = 0; i < PIECES_BLOCKS; i++)
     if (not(bitfield_blocks & 1ULL << (piece * PIECES_BLOCKS + i)))
@@ -646,7 +646,7 @@ int Peer::getFirstMissingBlockFrom(int piece)
 }
 
 /** Returns a piece that is partially downloaded and stored by the remote peer if any -1 otherwise. */
-int Peer::partiallyDownloadedPiece(const Connection* remote_peer)
+int Peer::partiallyDownloadedPiece(const Connection* remote_peer) const
 {
   for (unsigned int i = 0; i < FILE_PIECES; i++)
     if (remotePeerHasMissingPiece(remote_peer, i) && isNotDownloadingPiece(i) && getFirstMissingBlockFrom(i) > 0)

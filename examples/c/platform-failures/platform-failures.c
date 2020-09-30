@@ -25,7 +25,7 @@ static void master(int argc, char* argv[])
   xbt_assert(argc == 5);
   long number_of_tasks  = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
-  double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
+  long task_comm_size   = xbt_str_parse_int(argv[3], "Invalid communication size: %s");
   long workers_count    = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
 
   XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);

@@ -13,7 +13,7 @@
 namespace simgrid {
 namespace kernel {
 
-void FutureStateBase::schedule(simgrid::xbt::Task<void()>&& job)
+void FutureStateBase::schedule(simgrid::xbt::Task<void()>&& job) const
 {
   simix_global->tasks.push_back(std::move(job));
 }

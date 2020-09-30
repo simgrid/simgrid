@@ -6,10 +6,10 @@ $ ${javacmd:=java} -classpath ${classpath:=.} dht/kademlia/Main ${srcdir:=.}/../
 > [0.000000] [java/INFO] Using regular java threads.
 > [900.000000] [java/INFO] Terminating the simulation...
 > [node-0.simgrid.org:dht.kademlia.Node:(1) 0.000000] [java/INFO] Hi, I'm going to create the network with the id 0!
-> [node-0.simgrid.org:dht.kademlia.Node:(1) 900.000000] [java/INFO] 8/8 FIND_NODE have succedded.
+> [node-0.simgrid.org:dht.kademlia.Node:(1) 900.000000] [java/INFO] 8/8 FIND_NODE have succeeded.
 > [node-1.simgrid.org:dht.kademlia.Node:(2) 0.000000] [java/INFO] Hi, I'm going to join the network with the id 1!
-> [node-1.simgrid.org:dht.kademlia.Node:(2) 900.000000] [java/INFO] 8/8 FIND_NODE have succedded.
+> [node-1.simgrid.org:dht.kademlia.Node:(2) 900.000000] [java/INFO] 8/8 FIND_NODE have succeeded.
 > [node-2.simgrid.org:dht.kademlia.Node:(3) 0.000000] [java/INFO] Hi, I'm going to join the network with the id 2!
-> [node-2.simgrid.org:dht.kademlia.Node:(3) 900.000000] [java/INFO] 8/8 FIND_NODE have succedded.
+> [node-2.simgrid.org:dht.kademlia.Node:(3) 900.000000] [java/INFO] 8/8 FIND_NODE have succeeded.
 > [node-3.simgrid.org:dht.kademlia.Node:(4) 0.000000] [java/INFO] Hi, I'm going to join the network with the id 4!
-> [node-3.simgrid.org:dht.kademlia.Node:(4) 900.000000] [java/INFO] 8/8 FIND_NODE have succedded.
+> [node-3.simgrid.org:dht.kademlia.Node:(4) 900.000000] [java/INFO] 8/8 FIND_NODE have succeeded.

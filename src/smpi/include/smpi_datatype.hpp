@@ -9,6 +9,7 @@
 #include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
 #include <string>
+#include <vector>
 
 constexpr unsigned DT_FLAG_DESTROYED   = 0x0001; /**< user destroyed but some other layers still have a reference */
 constexpr unsigned DT_FLAG_COMMITED    = 0x0002; /**< ready to be used for a send/recv operation */
@@ -20,7 +21,7 @@ constexpr unsigned DT_FLAG_PREDEFINED  = 0x0040; /**< cannot be removed: initial
 constexpr unsigned DT_FLAG_NO_GAPS     = 0x0080; /**< no gaps around the datatype */
 constexpr unsigned DT_FLAG_DATA        = 0x0100; /**< data or control structure */
 constexpr unsigned DT_FLAG_ONE_SIDED   = 0x0200; /**< datatype can be used for one sided operations */
-constexpr unsigned DT_FLAG_UNAVAILABLE = 0x0400; /**< datatypes unavailable on the build (OS or compiler dependant) */
+constexpr unsigned DT_FLAG_UNAVAILABLE = 0x0400; /**< datatypes unavailable on the build (OS or compiler dependent) */
 constexpr unsigned DT_FLAG_DERIVED     = 0x0800; /**< is the datatype derived ? */
 /*
  * We should make the difference here between the predefined contiguous and non contiguous
@@ -78,19 +79,13 @@ namespace smpi{
 class Datatype_contents {
   public:
   int combiner_;
-  int number_of_integers_;
-  int* integers_;
-  int number_of_addresses_;
-  MPI_Aint* addresses_;
-  int number_of_datatypes_;
-  MPI_Datatype* datatypes_;
+  std::vector<int> integers_;
+  std::vector<MPI_Aint> addresses_;
+  std::vector<MPI_Datatype> datatypes_;
   Datatype_contents(int combiner, 
                     int number_of_integers, const int* integers, 
                     int number_of_addresses, const MPI_Aint* addresses, 
                     int number_of_datatypes, const MPI_Datatype* datatypes);
-  Datatype_contents(const Datatype_contents&) = delete;
-  Datatype_contents& operator=(const Datatype_contents&) = delete;
-  ~Datatype_contents();
 };
 
 class Datatype : public F2C, public Keyval{
@@ -120,26 +115,26 @@ public:
   Datatype& operator=(const Datatype&) = delete;
   virtual ~Datatype();
 
-  char* name() { return name_; }
-  size_t size() { return size_; }
-  MPI_Aint lb() { return lb_; }
-  MPI_Aint ub() { return ub_; }
-  int flags() { return flags_; }
-  int refcount() { return refcount_; }
+  char* name() const { return name_; }
+  size_t size() const { return size_; }
+  MPI_Aint lb() const { return lb_; }
+  MPI_Aint ub() const { return ub_; }
+  int flags() const { return flags_; }
+  int refcount() const { return refcount_; }
 
   void ref();
   static void unref(MPI_Datatype datatype);
   void commit();
   int copy_attrs(Datatype* datatype);
-  bool is_valid();
-  bool is_basic();
+  bool is_valid() const;
+  bool is_basic() const;
   static const char* encode(const Datatype* dt) { return dt->id.c_str(); }
   static MPI_Datatype decode(const std::string& datatype_id);
-  bool is_replayable();
+  bool is_replayable() const;
   void addflag(int flag);
-  int extent(MPI_Aint* lb, MPI_Aint* extent);
-  MPI_Aint get_extent() { return ub_ - lb_; };
-  void get_name(char* name, int* length);
+  int extent(MPI_Aint* lb, MPI_Aint* extent) const;
+  MPI_Aint get_extent() const { return ub_ - lb_; };
+  void get_name(char* name, int* length) const;
   void set_name(const char* name);
   static int copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                   MPI_Datatype recvtype);
@@ -151,11 +146,9 @@ public:
   static int keyval_free(int* keyval);
   int pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, const Comm* comm);
   int unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, const Comm* comm);
-  int get_contents(int max_integers, int max_addresses, 
-                   int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses, 
-                   MPI_Datatype *array_of_datatypes);
-  int get_envelope(int* num_integers, int* num_addresses, 
-                   int* num_datatypes, int* combiner);
+  int get_contents(int max_integers, int max_addresses, int max_datatypes, int* array_of_integers,
+                   MPI_Aint* array_of_addresses, MPI_Datatype* array_of_datatypes) const;
+  int get_envelope(int* num_integers, int* num_addresses, int* num_datatypes, int* combiner) const;
   static int create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, MPI_Datatype* new_type);
   static int create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type);
   static int create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type);

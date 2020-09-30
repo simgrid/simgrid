@@ -7,6 +7,7 @@
 #include "xbt/replay.hpp"
 #include "xbt/str.h"
 #include <boost/algorithm/string/join.hpp>
+#include <cinttypes>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay_comm, "Messages specific for this msg example");
@@ -35,7 +36,7 @@ public:
     simgrid::xbt::replay_runner(actor_name, trace_filename);
   }
 
-  void operator()()
+  void operator()() const
   {
     // Nothing to do here
   }
@@ -52,11 +53,11 @@ public:
 
   static void send(simgrid::xbt::ReplayAction& action)
   {
-    double size                 = std::stod(action[3]);
-    std::string* payload        = new std::string(action[3]);
-    double clock                = simgrid::s4u::Engine::get_clock();
+    uint64_t size             = static_cast<uint64_t>(std::stod(action[3]));
+    std::string* payload      = new std::string(action[3]);
+    double clock              = simgrid::s4u::Engine::get_clock();
     simgrid::s4u::Mailbox* to = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_name() + "_" + action[2]);
-    ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME.c_str(), size,
+    ACT_DEBUG("Entering Send: %s (size: %" PRIu64 ") -- Actor %s on mailbox %s", NAME.c_str(), size,
               simgrid::s4u::this_actor::get_cname(), to->get_cname());
     to->put(payload, size);
     delete payload;

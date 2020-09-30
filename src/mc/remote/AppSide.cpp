@@ -66,7 +66,7 @@ AppSide* AppSide::initialize()
   return instance_.get();
 }
 
-void AppSide::handle_deadlock_check(const s_mc_message_t*)
+void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 {
   bool deadlock = false;
   if (not simix_global->process_list.empty()) {
@@ -82,11 +82,11 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*)
   s_mc_message_int_t answer{MC_MESSAGE_DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
-void AppSide::handle_continue(const s_mc_message_t*)
+void AppSide::handle_continue(const s_mc_message_t*) const
 {
   /* Nothing to do */
 }
-void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message)
+void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message) const
 {
   smx_actor_t process = SIMIX_process_from_PID(message->pid);
   xbt_assert(process != nullptr, "Invalid pid %lu", message->pid);
@@ -95,7 +95,7 @@ void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message)
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
 }
 
-void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg)
+void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const
 {
   bool res = simgrid::mc::actor_is_enabled(SIMIX_process_from_PID(msg->aid));
   s_mc_message_int_t answer{MC_MESSAGE_ACTOR_ENABLED_REPLY, res};
@@ -106,9 +106,9 @@ void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg)
   xbt_assert(received_size == sizeof(_type_), "Unexpected size for " _name_ " (%zd != %zu)", received_size,            \
              sizeof(_type_))
 
-void AppSide::handle_messages()
+void AppSide::handle_messages() const
 {
-  while (1) {
+  while (true) {
     XBT_DEBUG("Waiting messages from model-checker");
 
     char message_buffer[MC_MESSAGE_LENGTH];
@@ -145,33 +145,33 @@ void AppSide::handle_messages()
   }
 }
 
-void AppSide::main_loop()
+void AppSide::main_loop() const
 {
-  while (1) {
+  while (true) {
     simgrid::mc::wait_for_requests();
     xbt_assert(channel_.send(MC_MESSAGE_WAITING) == 0, "Could not send WAITING message to model-checker");
     this->handle_messages();
   }
 }
 
-void AppSide::report_assertion_failure()
+void AppSide::report_assertion_failure() const
 {
   if (channel_.send(MC_MESSAGE_ASSERTION_FAILED))
     xbt_die("Could not send assertion to model-checker");
   this->handle_messages();
 }
 
-void AppSide::ignore_memory(void* addr, std::size_t size)
+void AppSide::ignore_memory(void* addr, std::size_t size) const
 {
   s_mc_message_ignore_memory_t message;
   message.type = MC_MESSAGE_IGNORE_MEMORY;
   message.addr = (std::uintptr_t)addr;
   message.size = size;
   if (channel_.send(message))
-    xbt_die("Could not send IGNORE_MEMORY mesage to model-checker");
+    xbt_die("Could not send IGNORE_MEMORY message to model-checker");
 }
 
-void AppSide::ignore_heap(void* address, std::size_t size)
+void AppSide::ignore_heap(void* address, std::size_t size) const
 {
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
@@ -184,7 +184,7 @@ void AppSide::ignore_heap(void* address, std::size_t size)
     message.fragment = -1;
     heap->heapinfo[message.block].busy_block.ignore++;
   } else {
-    message.fragment = ((uintptr_t)(ADDR2UINT(address) % (BLOCKSIZE))) >> heap->heapinfo[message.block].type;
+    message.fragment = (ADDR2UINT(address) % BLOCKSIZE) >> heap->heapinfo[message.block].type;
     heap->heapinfo[message.block].busy_frag.ignore[message.fragment]++;
   }
 
@@ -192,7 +192,7 @@ void AppSide::ignore_heap(void* address, std::size_t size)
     xbt_die("Could not send ignored region to MCer");
 }
 
-void AppSide::unignore_heap(void* address, std::size_t size)
+void AppSide::unignore_heap(void* address, std::size_t size) const
 {
   s_mc_message_ignore_memory_t message;
   message.type = MC_MESSAGE_UNIGNORE_HEAP;
@@ -202,7 +202,7 @@ void AppSide::unignore_heap(void* address, std::size_t size)
     xbt_die("Could not send IGNORE_HEAP message to model-checker");
 }
 
-void AppSide::declare_symbol(const char* name, int* value)
+void AppSide::declare_symbol(const char* name, int* value) const
 {
   s_mc_message_register_symbol_t message;
   message.type = MC_MESSAGE_REGISTER_SYMBOL;
@@ -215,7 +215,7 @@ void AppSide::declare_symbol(const char* name, int* value)
     xbt_die("Could send REGISTER_SYMBOL message to model-checker");
 }
 
-void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context)
+void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
 {
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 

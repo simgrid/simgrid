@@ -24,13 +24,13 @@ We provide an uniform interface to them:
 - the Maestro object and the corresponding S4U object have the same lifetime
   (and share the same reference count).
 
-The ability to manipulate thge objects thought pointers and have the ability
+The ability to manipulate the objects through pointers and have the ability
 to use explicit reference count management is useful for creating C wrappers
 to the S4U and should play nicely with other language bindings (such as
 SWIG-based ones).
 
 Some objects currently live for the whole duration of the simulation and do
-not have refertence counts. We still provide dummy `intrusive_ptr_add_ref(p)`,
+not have reference counts. We still provide dummy `intrusive_ptr_add_ref(p)`,
 `intrusive_ptr_release(p)` and `FooPtr` for consistency.
 
 In many cases, we try to have a API which is consistent with the API or
@@ -203,7 +203,7 @@ The current implementation of the model-checker uses two distinct processes:
 
  - the SimGrid model-checker (`simgrid-mc`) itself lives in the parent process;
 
- - it spaws a child process for the SimGrid simulator/maestro and the simulated
+ - it spawns a child process for the SimGrid simulator/maestro and the simulated
    processes.
 
 They communicate using a `AF_UNIX` `SOCK_SEQPACKET` socket and exchange messages
@@ -218,7 +218,7 @@ process using the following techniques:
 - the model-cheker `ptrace()`s the model-checked process and is thus able to
   know the state of the model-checked process if it crashes;
 
-- DWARF debug informations are used to unwind the stack and identify local
+- DWARF debug information are used to unwind the stack and identify local
   variables;
 
 - a custom heap is enabled in the model-checked process which allows the model
@@ -245,11 +245,11 @@ Additional helper class include:
 
 [ELF](http://refspecs.linuxbase.org/elf/elf.pdf) is a standard executable file
 and dynamic libraries file format.
-[DWARF](http://dwarfstd.org/) is a standard for debug informations.
+[DWARF](http://dwarfstd.org/) is a standard for debug information.
 Both are used on GNU/Linux systems and exploited by the model-checker to
 understand the model-checked process:
 
- - `ObjectInformation` represents the informations about a given ELF module
+ - `ObjectInformation` represents the information about a given ELF module
    (executable or shared-object);
 
  - `Frame` represents a subprogram scope (either a subprogram or a scope within

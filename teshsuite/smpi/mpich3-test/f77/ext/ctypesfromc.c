@@ -64,7 +64,7 @@ static mpi_names_t mpi_names[] = {
     { MPI_LONG_LONG, "MPI_LONG_LONG" },
     { MPI_UNSIGNED_LONG_LONG, "MPI_UNSIGNED_LONG_LONG" },
     { MPI_LONG_DOUBLE_INT, "MPI_LONG_DOUBLE_INT" },
-    { 0, (char *)0 },  /* Sentinal used to indicate the last element */
+    { 0, (char *)0 },  /* Sentinel used to indicate the last element */
 };
 
 /*

@@ -48,7 +48,7 @@ void DiskS19Model::update_actions_state(double /*now*/, double delta)
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     auto& action = *it;
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
-    action.update_remains(lrint(action.get_variable()->get_value() * delta));
+    action.update_remains(rint(action.get_variable()->get_value() * delta));
     action.update_max_duration(delta);
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
@@ -70,17 +70,17 @@ DiskS19::DiskS19(DiskModel* model, const std::string& name, lmm::System* maxminS
 
 DiskAction* DiskS19::io_start(sg_size_t size, s4u::Io::OpType type)
 {
-  return new DiskS19Action(get_model(), size, not is_on(), this, type);
+  return new DiskS19Action(get_model(), static_cast<double>(size), not is_on(), this, type);
 }
 
 DiskAction* DiskS19::read(sg_size_t size)
 {
-  return new DiskS19Action(get_model(), size, not is_on(), this, s4u::Io::OpType::READ);
+  return new DiskS19Action(get_model(), static_cast<double>(size), not is_on(), this, s4u::Io::OpType::READ);
 }
 
 DiskAction* DiskS19::write(sg_size_t size)
 {
-  return new DiskS19Action(get_model(), size, not is_on(), this, s4u::Io::OpType::WRITE);
+  return new DiskS19Action(get_model(), static_cast<double>(size), not is_on(), this, s4u::Io::OpType::WRITE);
 }
 
 /**********

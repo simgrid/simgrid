@@ -96,7 +96,7 @@ void MSG_process_resume(sg_actor_t actor)
 {
   sg_actor_resume(actor);
 }
-int MSG_process_is_suspended(sg_actor_t actor)
+int MSG_process_is_suspended(const_sg_actor_t actor)
 {
   return sg_actor_is_suspended(actor);
 }

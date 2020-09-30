@@ -111,7 +111,7 @@ c-99.me
     is set to ``Cluster``.
 
 The ``&lt;cabinet /&gt;`` tag is, like the @ref pf_tag_cluster "&lt;cluster&gt;" tag,
-a meta-tag. This means that it is simply a shortcut for creating a set of (homogenous) hosts and links quickly;
+a meta-tag. This means that it is simply a shortcut for creating a set of (homogeneous) hosts and links quickly;
 unsurprisingly, this tag was introduced to setup cabinets in data centers quickly. Unlike
 &lt;cluster&gt;, however, the &lt;cabinet&gt; assumes that you create the backbone
 and routers yourself; see our examples below.
@@ -159,7 +159,7 @@ The hosts generated in the above example are named host-1.cluster, host-2.cluste
 etc.
 
 
-@subsection pf_ne Network equipments
+@subsection pf_ne Network equipment
 
 There are two tags at all times available to represent network entities and
 several other tags that are available only in certain contexts.
@@ -514,7 +514,7 @@ router1 must belong to zone1 and router2 must belong to zone2.
 
 The purpose of this entity is to define a route between two
 NetZones. Recall that all zones form a tree, so to connect two
-sibiling zones, you must give such a zoneRoute specifying the source
+sibling zones, you must give such a zoneRoute specifying the source
 and destination zones, along with the gateway in each zone (ie, the
 point to reach within that zone to reach the netzone), and the list of
 links in the ancestor zone to go from one zone to another.
@@ -780,7 +780,7 @@ you say that the file trace must be used by the entity.
 | Attribute name  | Mandatory | Values                 | Description                                                                                       |
 | --------------- | --------- | ---------------------- | -----------                                                                                       |
 | id              | yes       | String                 | Identifier of this trace; this is the name you pass on to @c trace_connect.                       |
-| file            | no        | String                 | Filename of the file that contains the information - the path must follow the style of your OS. You can omit this, but then you must specifiy the values inside of &lt;trace&gt; and &lt;/trace&gt; - see the example below. |
+| file            | no        | String                 | Filename of the file that contains the information - the path must follow the style of your OS. You can omit this, but then you must specify the values inside of &lt;trace&gt; and &lt;/trace&gt; - see the example below. |
 | trace_periodicity | yes | String | This is the same as for @ref pf_tag_host "hosts" (see there for details) |
 
 Here is an example  of trace when no file name is provided:

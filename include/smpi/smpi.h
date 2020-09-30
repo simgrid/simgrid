@@ -309,7 +309,7 @@ XBT_PUBLIC_DATA const MPI_Datatype MPI_COUNT;
 #define MPI_LOGICAL MPI_LONG
 #endif
 
-#define MPI_Fint int
+typedef int MPI_Fint;
 
 #define MPI_COMPLEX MPI_C_FLOAT_COMPLEX
 #define MPI_DOUBLE_COMPLEX MPI_C_DOUBLE_COMPLEX

@@ -20,8 +20,8 @@
 #include <ns3/application-container.h>
 #include <ns3/event-id.h>
 
-#include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"
+#include "ns3/wifi-module.h"
 
 #include "network_ns3.hpp"
 #include "ns3/ns3_simulator.hpp"
@@ -37,9 +37,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network ns-3 module");
 
-std::vector<std::string> IPV4addr;
-static std::string transformIpv4Address(ns3::Ipv4Address from);
-
 /*****************
  * Crude globals *
  *****************/
@@ -48,71 +45,80 @@ extern std::map<std::string, SgFlow*> flow_from_sock;
 extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
-static ns3::NodeContainer nodes;
-static ns3::NodeContainer Cluster_nodes;
-static ns3::Ipv4InterfaceContainer interfaces;
 
-static int number_of_nodes = 0;
-static int number_of_clusters_nodes = 0;
 static int number_of_links = 1;
 static int number_of_networks = 1;
 
 /* wifi globals */
 static ns3::WifiHelper wifi;
-static ns3::YansWifiPhyHelper wifiPhy = ns3::YansWifiPhyHelper::Default ();
-static ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default ();
+static ns3::YansWifiPhyHelper wifiPhy         = ns3::YansWifiPhyHelper::Default();
+static ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default();
 static ns3::WifiMacHelper wifiMac;
 static ns3::MobilityHelper mobility;
 
 simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPointNs3::EXTENSION_ID;
 
+static std::string transformIpv4Address(ns3::Ipv4Address from)
+{
+  std::stringstream sstream;
+  sstream << from;
+  return sstream.str();
+}
+
 NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
 {
   stack.Install(ns3_node_);
-  nodes.Add(ns3_node_);
-  node_num = number_of_nodes++;
 }
 
 WifiZone::WifiZone(std::string name_, simgrid::s4u::Host* host_, ns3::Ptr<ns3::Node> ap_node_,
-                   ns3::Ptr<ns3::YansWifiChannel> channel_, int mcs_, int nss_, int network_, int link_) :
-    name(name_), host(host_), ap_node(ap_node_), channel(channel_), mcs(mcs_), nss(nss_),
-    network(network_), link(link_) {
-    n_sta_nodes = 0;
-    wifi_zones[name_] = this;
+                   ns3::Ptr<ns3::YansWifiChannel> channel_, int mcs_, int nss_, int network_, int link_)
+    : name(name_)
+    , host(host_)
+    , ap_node(ap_node_)
+    , channel(channel_)
+    , mcs(mcs_)
+    , nss(nss_)
+    , network(network_)
+    , link(link_)
+{
+  n_sta_nodes       = 0;
+  wifi_zones[name_] = this;
 }
 
-bool WifiZone::is_ap(ns3::Ptr<ns3::Node> node){
-    for (std::pair<std::string, WifiZone*> zone : wifi_zones)
-        if (zone.second->get_ap_node() == node)
-            return true;
-    return false;
+bool WifiZone::is_ap(ns3::Ptr<ns3::Node> node)
+{
+  for (std::pair<std::string, WifiZone*> zone : wifi_zones)
+    if (zone.second->get_ap_node() == node)
+      return true;
+  return false;
 }
 
-WifiZone* WifiZone::by_name(std::string name) {
-    WifiZone* zone;
-    try {
-        zone = wifi_zones.at(name);
-    }
-    catch (const std::out_of_range& oor) {
-        return nullptr;
-    }
-    return zone;
+WifiZone* WifiZone::by_name(std::string name)
+{
+  WifiZone* zone;
+  try {
+    zone = wifi_zones.at(name);
+  } catch (const std::out_of_range& oor) {
+    return nullptr;
+  }
+  return zone;
 }
 
 std::unordered_map<std::string, WifiZone*> WifiZone::wifi_zones;
 
-static void initialize_ns3_wifi() {
-    wifi.SetStandard (ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
+static void initialize_ns3_wifi()
+{
+  wifi.SetStandard(ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
 
-    for (auto host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
-        const char* wifi_link = host->get_property("wifi_link");
-        const char* wifi_mcs = host->get_property("wifi_mcs");
-        const char* wifi_nss = host->get_property("wifi_nss");
+  for (auto host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
+    const char* wifi_link = host->get_property("wifi_link");
+    const char* wifi_mcs  = host->get_property("wifi_mcs");
+    const char* wifi_nss  = host->get_property("wifi_nss");
 
-        if (wifi_link)
-          new WifiZone(wifi_link, host, host->get_netpoint()->extension<NetPointNs3>()->ns3_node_,
-                       wifiChannel.Create(), wifi_mcs ? atoi(wifi_mcs) : 3, wifi_nss ? atoi(wifi_nss) : 1, 0, 0);
-    }
+    if (wifi_link)
+      new WifiZone(wifi_link, host, host->get_netpoint()->extension<NetPointNs3>()->ns3_node_, wifiChannel.Create(),
+                   wifi_mcs ? atoi(wifi_mcs) : 3, wifi_nss ? atoi(wifi_nss) : 1, 0, 0);
+  }
 }
 
 /*************
@@ -121,24 +127,45 @@ static void initialize_ns3_wifi() {
 
 static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs const& cluster)
 {
-  for (int const& i : *cluster.radicals) {
-    // Routers don't create a router on the other end of the private link by themselves.
-    // We just need this router to be given an ID so we create a temporary NetPointNS3 so that it gets one
-    auto* host_dst = new NetPointNs3();
+  ns3::NodeContainer Nodes;
 
+  for (int const& i : *cluster.radicals) {
     // Create private link
     std::string host_id = cluster.prefix + std::to_string(i) + cluster.suffix;
-    auto* host_src      = simgrid::s4u::Host::by_name(host_id)->get_netpoint()->extension<NetPointNs3>();
-    xbt_assert(host_src, "Cannot find a ns-3 host of name %s", host_id.c_str());
+    auto* src           = simgrid::s4u::Host::by_name(host_id)->get_netpoint();
+    auto* dst           = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(cluster.router_id);
+    xbt_assert(dst != nullptr, "No router named %s", cluster.router_id.c_str());
 
-    // Any ns-3 route is symmetrical
-    ns3_add_direct_route(host_src, host_dst, cluster.bw, cluster.lat, cluster.id, cluster.sharing_policy);
+    ns3_add_direct_route(src, dst, cluster.bw, cluster.lat, cluster.id,
+                         cluster.sharing_policy); // Any ns-3 route is symmetrical
 
-    delete host_dst;
+    // Also add the host to the list of hosts that will be connected to the backbone
+    Nodes.Add(src->extension<NetPointNs3>()->ns3_node_);
   }
 
-  //Create link backbone
-  ns3_add_cluster(cluster.id.c_str(), cluster.bb_bw, cluster.bb_lat);
+  // Create link backbone
+
+  xbt_assert(Nodes.GetN() <= 65000, "Cluster with ns-3 is limited to 65000 nodes");
+  ns3::CsmaHelper csma;
+  csma.SetChannelAttribute("DataRate",
+                           ns3::DataRateValue(ns3::DataRate(cluster.bb_bw * 8))); // ns-3 takes bps, but we provide Bps
+  csma.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(cluster.bb_lat)));
+  ns3::NetDeviceContainer devices = csma.Install(Nodes);
+  XBT_DEBUG("Create CSMA");
+
+  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
+  XBT_DEBUG("Assign IP Addresses %s to CSMA.", addr.c_str());
+  ns3::Ipv4AddressHelper ipv4;
+  ipv4.SetBase(addr.c_str(), "255.255.0.0");
+  ipv4.Assign(devices);
+
+  if (number_of_links == 255) {
+    xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
+    number_of_links = 1;
+    number_of_networks++;
+  } else {
+    number_of_links++;
+  }
 }
 
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
@@ -156,17 +183,8 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
     XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->get_cname(), link->get_bandwidth(), link->get_latency());
 
-    // create link ns3
-    auto* host_src = src->extension<NetPointNs3>();
-    auto* host_dst = dst->extension<NetPointNs3>();
-
-    host_src->set_name(src->get_name());
-    host_dst->set_name(dst->get_name());
-
-    xbt_assert(host_src != nullptr, "Network element %s does not seem to be ns-3-ready", src->get_cname());
-    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be ns-3-ready", dst->get_cname());
-
-    ns3_add_direct_route(host_src, host_dst, link->get_bandwidth(), link->get_latency(), link->get_name(), link->get_sharing_policy());
+    ns3_add_direct_route(src, dst, link->get_bandwidth(), link->get_latency(), link->get_name(),
+                         link->get_sharing_policy());
   } else {
     static bool warned_about_long_routes = false;
 
@@ -179,14 +197,6 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                src->get_cname(), dst->get_cname(), link_list.size());
     warned_about_long_routes = true;
   }
-}
-
-/* Create the ns3 topology based on routing strategy */
-static void postparse_cb()
-{
-  IPV4addr.shrink_to_fit();
-  ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
-  ns3::GlobalRouteManager::InitializeRoutes();
 }
 
 /*********
@@ -215,20 +225,34 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   NetPointNs3::EXTENSION_ID = routing::NetPoint::extension_create<NetPointNs3>();
 
-  ns3_initialize(ns3_tcp_model.get());
+  ns3::Config::SetDefault("ns3::TcpSocket::SegmentSize", ns3::UintegerValue(1000));
+  ns3::Config::SetDefault("ns3::TcpSocket::DelAckCount", ns3::UintegerValue(1));
+  ns3::Config::SetDefault("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue(false));
+
+  auto TcpProtocol = ns3_tcp_model.get();
+  if (TcpProtocol == "default") {
+    /* nothing to do */
+
+  } else if (TcpProtocol == "Reno" || TcpProtocol == "NewReno" || TcpProtocol == "Tahoe") {
+    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
+    ns3::Config::SetDefault("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::Tcp" + TcpProtocol));
+
+  } else {
+    xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
+  }
 
   routing::NetPoint::on_creation.connect([](routing::NetPoint& pt) {
     pt.extension_set<NetPointNs3>(new NetPointNs3());
-    XBT_VERB("SimGrid's %s is known as node %d within ns-3", pt.get_cname(), pt.extension<NetPointNs3>()->node_num);
+    XBT_VERB("Declare SimGrid's %s within ns-3", pt.get_cname());
+  });
+
+  s4u::Engine::on_platform_created.connect([]() {
+    /* Create the ns3 topology based on routing strategy */
+    ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
+    ns3::GlobalRouteManager::InitializeRoutes();
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
-
-  s4u::Engine::on_platform_created.connect(&postparse_cb);
   s4u::NetZone::on_route_creation.connect(&routeCreation_cb);
-}
-
-NetworkNS3Model::~NetworkNS3Model() {
-  IPV4addr.clear();
 }
 
 LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
@@ -337,63 +361,60 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
 LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, double latency,
                  s4u::Link::SharingPolicy policy)
-    : LinkImpl(model, name, nullptr)
+    : LinkImpl(model, name, nullptr), sharing_policy_(policy)
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
-  sharing_policy_ = policy;
+
+  /* If wifi, create the wifizone now. If not, don't do anything: the links will be created in routeCreate_cb */
 
   if (policy == simgrid::s4u::Link::SharingPolicy::WIFI) {
-      static bool wifi_init = false;
-      if (!wifi_init) {
-          initialize_ns3_wifi();
-          wifi_init = true;
-      }
+    static bool wifi_init = false;
+    if (!wifi_init) {
+      initialize_ns3_wifi();
+      wifi_init = true;
+    }
 
-      ns3::NetDeviceContainer netA;
-      WifiZone* zone = WifiZone::by_name(name);
-      xbt_assert(zone != 0, "Link name '%s' does not match the 'wifi_link' property of a host.", name.c_str());
+    ns3::NetDeviceContainer netA;
+    WifiZone* zone = WifiZone::by_name(name);
+    xbt_assert(zone != 0, "Link name '%s' does not match the 'wifi_link' property of a host.", name.c_str());
+    NetPointNs3* netpoint_ns3 = zone->get_host()->get_netpoint()->extension<NetPointNs3>();
 
-      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                    "ControlMode", ns3::StringValue ("HtMcs0"),
-                                    "DataMode", ns3::StringValue ("HtMcs" + std::to_string(zone->get_mcs())));
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "ControlMode", ns3::StringValue("HtMcs0"), "DataMode",
+                                 ns3::StringValue("HtMcs" + std::to_string(zone->get_mcs())));
 
-      wifiPhy.SetChannel (zone->get_channel());
-      wifiPhy.Set("Antennas", ns3::UintegerValue(zone->get_nss()));
-      wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
-      wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
-      wifiMac.SetType("ns3::ApWifiMac",
-                      "Ssid", ns3::SsidValue(name));
+    wifiPhy.SetChannel(zone->get_channel());
+    wifiPhy.Set("Antennas", ns3::UintegerValue(zone->get_nss()));
+    wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
+    wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
 
-      netA.Add(wifi.Install (wifiPhy, wifiMac, zone->get_ap_node()));
+    wifiMac.SetType("ns3::ApWifiMac");
 
-      ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator> ();
-      positionAllocS->Add(ns3::Vector(0, 0, 0));
-      mobility.SetPositionAllocator(positionAllocS);
-      mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-      mobility.Install(zone->get_ap_node());
+    netA.Add(wifi.Install(wifiPhy, wifiMac, zone->get_ap_node()));
 
-      ns3::Ipv4AddressHelper address;
-      std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
-      address.SetBase(addr.c_str(), "255.255.0.0");
-      XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
-      interfaces.Add(address.Assign (netA));
-      zone->set_network(number_of_networks);
-      zone->set_link(number_of_links);
+    ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator>();
+    positionAllocS->Add(ns3::Vector(0, 0, 0));
+    mobility.SetPositionAllocator(positionAllocS);
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(zone->get_ap_node());
 
-      NetPointNs3* netpoint_ns3 = zone->get_host()->get_netpoint()->extension<NetPointNs3>(); 
-      int nodeNum = netpoint_ns3->node_num;
-      if (IPV4addr.size() <= (unsigned)nodeNum)
-        IPV4addr.resize(nodeNum + 1);
-      IPV4addr[nodeNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
+    ns3::Ipv4AddressHelper address;
+    std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
+    address.SetBase(addr.c_str(), "255.255.0.0");
+    XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
+    auto addresses = address.Assign(netA);
+    zone->set_network(number_of_networks);
+    zone->set_link(number_of_links);
 
-      if (number_of_links == 255){
-        xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
-        number_of_links = 1;
-        number_of_networks++;
-      } else {
-        number_of_links++;
-      }
+    netpoint_ns3->ipv4_address_ = transformIpv4Address(addresses.GetAddress(addresses.GetN() - 1));
+
+    if (number_of_links == 255) {
+      xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
+      number_of_links = 1;
+      number_of_networks++;
+    } else {
+      number_of_links++;
+    }
   }
   s4u::Link::on_creation(*this->get_iface());
 }
@@ -432,19 +453,15 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   static int port_number = 1025; // Port number is limited from 1025 to 65 000
 
-  unsigned int node1 = src->get_netpoint()->extension<NetPointNs3>()->node_num;
-  unsigned int node2 = dst->get_netpoint()->extension<NetPointNs3>()->node_num;
-
   ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
   ns3::Ptr<ns3::Node> dst_node = dst->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
 
-  xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
-             dst->get_netpoint()->get_cname());
-  std::string& addr = IPV4addr[node2];
+  std::string& addr = dst->get_netpoint()->extension<NetPointNs3>()->ipv4_address_;
   xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
              dst->get_netpoint()->get_cname());
 
-  XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
+  XBT_DEBUG("ns3: Create flow of %.0f Bytes from %s to %s with Interface %s", totalBytes, src->get_cname(),
+            dst->get_cname(), addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
   ns3::ApplicationContainer apps = sink.Install(dst_node);
 
@@ -462,7 +479,6 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
     port_number = 1025;
     XBT_WARN("Too many connections! Port number is saturated. Trying to use the oldest ports.");
   }
-  xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 
   s4u::Link::on_communicate(*this);
 }
@@ -502,162 +518,82 @@ void ns3_simulator(double maxSeconds)
     id.Cancel();
 }
 
-// initialize the ns-3 interface and environment
-void ns3_initialize(std::string TcpProtocol)
-{
-  //  tcpModel are:
-  //  "ns3::TcpNewReno"
-  //  "ns3::TcpReno"
-  //  "ns3::TcpTahoe"
-
-  ns3::Config::SetDefault ("ns3::TcpSocket::SegmentSize", ns3::UintegerValue (1000));
-  ns3::Config::SetDefault ("ns3::TcpSocket::DelAckCount", ns3::UintegerValue (1));
-  ns3::Config::SetDefault ("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue (false));
-
-  if (TcpProtocol == "default") {
-    /* nothing to do */
-
-  } else if (TcpProtocol == "Reno") {
-    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
-    ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpReno"));
-
-  } else if (TcpProtocol == "NewReno") {
-    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
-    ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpNewReno"));
-
-  } else if (TcpProtocol == "Tahoe") {
-    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
-    ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpTahoe"));
-
-  } else {
-    xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
-  }
-}
-
-void ns3_add_cluster(const char* /*id*/, double bw, double lat)
-{
-  ns3::NodeContainer Nodes;
-
-  for (unsigned int i = number_of_clusters_nodes; i < Cluster_nodes.GetN(); i++) {
-    Nodes.Add(Cluster_nodes.Get(i));
-    XBT_DEBUG("Add node %u to cluster", i);
-  }
-  number_of_clusters_nodes = Cluster_nodes.GetN();
-
-  XBT_DEBUG("Add router %u to cluster", nodes.GetN() - Nodes.GetN() - 1);
-  Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
-
-  xbt_assert(Nodes.GetN() <= 65000, "Cluster with ns-3 is limited to 65000 nodes");
-  ns3::CsmaHelper csma;
-  csma.SetChannelAttribute("DataRate", ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
-  csma.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
-  ns3::NetDeviceContainer devices = csma.Install(Nodes);
-  XBT_DEBUG("Create CSMA");
-
-  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
-  XBT_DEBUG("Assign IP Addresses %s to CSMA.", addr.c_str());
-  ns3::Ipv4AddressHelper ipv4;
-  ipv4.SetBase(addr.c_str(), "255.255.0.0");
-  interfaces.Add(ipv4.Assign (devices));
-
-  if(number_of_links == 255){
-    xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
-    number_of_links = 1;
-    number_of_networks++;
-  }else{
-    number_of_links++;
-  }
-  XBT_DEBUG("Number of nodes in Cluster_nodes: %u", Cluster_nodes.GetN());
-}
-
-static std::string transformIpv4Address(ns3::Ipv4Address from)
-{
-  std::stringstream sstream;
-  sstream << from ;
-  return sstream.str();
-}
-
-void ns3_add_direct_route(NetPointNs3* src, NetPointNs3* dst, double bw, double lat, std::string link_name,
-                          simgrid::s4u::Link::SharingPolicy policy)
+void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst, double bw,
+                          double lat, const std::string& link_name, simgrid::s4u::Link::SharingPolicy policy)
 {
   ns3::Ipv4AddressHelper address;
   ns3::NetDeviceContainer netA;
 
-  int srcNum = src->node_num;
-  int dstNum = dst->node_num;
+  // create link ns3
+  auto* host_src = src->extension<NetPointNs3>();
+  auto* host_dst = dst->extension<NetPointNs3>();
 
-  ns3::Ptr<ns3::Node> a = src->ns3_node_;
-  ns3::Ptr<ns3::Node> b = dst->ns3_node_;
+  xbt_assert(host_src != nullptr, "Network element %s does not seem to be ns-3-ready", src->get_cname());
+  xbt_assert(host_dst != nullptr, "Network element %s does not seem to be ns-3-ready", dst->get_cname());
 
   if (policy == simgrid::s4u::Link::SharingPolicy::WIFI) {
-      xbt_assert(WifiZone::is_ap(a) != WifiZone::is_ap(b), "A wifi route can only exist between an access point node and a station node.");
+    auto a = host_src->ns3_node_;
+    auto b = host_dst->ns3_node_;
+    xbt_assert(WifiZone::is_ap(a) != WifiZone::is_ap(b),
+               "A wifi route can only exist between an access point node and a station node.");
 
-      ns3::Ptr<ns3::Node> apNode = WifiZone::is_ap(a) ? a : b;
-      ns3::Ptr<ns3::Node> staNode = apNode == a ? b : a;
+    ns3::Ptr<ns3::Node> apNode  = WifiZone::is_ap(a) ? a : b;
+    ns3::Ptr<ns3::Node> staNode = apNode == a ? b : a;
 
-      WifiZone* zone = WifiZone::by_name(link_name);
+    WifiZone* zone = WifiZone::by_name(link_name);
 
-      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                    "ControlMode", ns3::StringValue ("HtMcs0"),
-                                    "DataMode", ns3::StringValue ("HtMcs" + std::to_string(zone->get_mcs())));
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "ControlMode", ns3::StringValue("HtMcs0"), "DataMode",
+                                 ns3::StringValue("HtMcs" + std::to_string(zone->get_mcs())));
 
-      wifiPhy.SetChannel (zone->get_channel());
-      wifiPhy.Set("Antennas", ns3::UintegerValue(zone->get_nss()));
-      wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
-      wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
+    wifiPhy.SetChannel(zone->get_channel());
+    wifiPhy.Set("Antennas", ns3::UintegerValue(zone->get_nss()));
+    wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
+    wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
 
-      wifiMac.SetType ("ns3::StaWifiMac",
-                       "Ssid", ns3::SsidValue(link_name),
-                       "ActiveProbing", ns3::BooleanValue(false));
+    wifiMac.SetType("ns3::StaWifiMac");
 
-      netA.Add(wifi.Install (wifiPhy, wifiMac, staNode));
+    netA.Add(wifi.Install(wifiPhy, wifiMac, staNode));
 
-      ns3::Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue (40));
+    ns3::Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue(40));
 
-      NetPointNs3* sta_netpointNs3 = WifiZone::is_ap(src->ns3_node_) ? dst : src;
-      const char* wifi_distance = simgrid::s4u::Host::by_name(sta_netpointNs3->name_)->get_property("wifi_distance");
-      ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator> ();
-      positionAllocS->Add(ns3::Vector( wifi_distance ? atof(wifi_distance) : 10.0 , 0, 0));
-      mobility.SetPositionAllocator(positionAllocS);
-      mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-      mobility.Install(staNode);
+    NetPointNs3* sta_netpointNs3 = WifiZone::is_ap(host_src->ns3_node_) ? host_src : host_dst;
+    const char* wifi_distance    = simgrid::s4u::Host::by_name(sta_netpointNs3->name_)->get_property("wifi_distance");
+    ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator>();
+    positionAllocS->Add(ns3::Vector(wifi_distance ? atof(wifi_distance) : 10.0, 0, 0));
+    mobility.SetPositionAllocator(positionAllocS);
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(staNode);
 
-      std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", zone->get_network(), zone->get_link());
-      address.SetBase(addr.c_str(), "255.255.0.0", ("0.0.0." + std::to_string(zone->get_n_sta_nodes() + 2)).c_str());
-      zone->add_sta_node();
-      XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
-      interfaces.Add(address.Assign (netA));
-      if (IPV4addr.size() <= (unsigned)dstNum)
-        IPV4addr.resize(dstNum + 1);
-      IPV4addr[dstNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
+    std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", zone->get_network(), zone->get_link());
+    address.SetBase(addr.c_str(), "255.255.0.0", ("0.0.0." + std::to_string(zone->get_n_sta_nodes() + 2)).c_str());
+    zone->add_sta_node();
+    XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
+    auto addresses          = address.Assign(netA);
+    host_dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(addresses.GetN() - 1));
   } else {
     ns3::PointToPointHelper pointToPoint;
-    XBT_DEBUG("\tAdd PTP from %d to %d bw:'%f Bps' lat:'%fs'", srcNum, dstNum, bw, lat);
+
+    XBT_DEBUG("\tAdd PTP from %s to %s bw:'%f Bps' lat:'%fs'", src->get_cname(), dst->get_cname(), bw, lat);
     pointToPoint.SetDeviceAttribute("DataRate",
                                     ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
     pointToPoint.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
 
-    netA.Add(pointToPoint.Install(a, b));
+    netA.Add(pointToPoint.Install(host_src->ns3_node_, host_dst->ns3_node_));
 
     std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
     address.SetBase(addr.c_str(), "255.255.0.0");
     XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
-    interfaces.Add(address.Assign (netA));
+    auto addresses = address.Assign(netA);
 
-    if (IPV4addr.size() <= (unsigned)srcNum)
-        IPV4addr.resize(srcNum + 1);
-    IPV4addr[srcNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
+    host_src->ipv4_address_ = transformIpv4Address(addresses.GetAddress(0));
+    host_dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(1));
 
-    if (IPV4addr.size() <= (unsigned)dstNum)
-        IPV4addr.resize(dstNum + 1);
-    IPV4addr[dstNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
-
-    if (number_of_links == 255){
-        xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
-        number_of_links = 1;
-        number_of_networks++;
+    if (number_of_links == 255) {
+      xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
+      number_of_links = 1;
+      number_of_networks++;
     } else {
-        number_of_links++;
+      number_of_links++;
     }
   }
 }

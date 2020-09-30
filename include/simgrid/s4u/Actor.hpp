@@ -63,7 +63,7 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(const Actor* actor);
 #endif
   /** Retrieve the amount of references on that object. Useful to debug the automatic refcounting */
-  int get_refcount();
+  int get_refcount() const;
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
@@ -105,7 +105,7 @@ public:
   static ActorPtr create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
   /** Create an actor, but don't start it yet.
    *
-   * This is usefull to set some properties or extension before actually starting it */
+   * This is useful to set some properties or extension before actually starting it */
   static ActorPtr init(const std::string& name, s4u::Host* host);
   ActorPtr set_stacksize(unsigned stacksize);
   /** Start a previously initialized actor */
@@ -157,7 +157,7 @@ public:
   void resume();
 
   /** Returns true if the actor is suspended. */
-  bool is_suspended();
+  bool is_suspended() const;
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void set_auto_restart(bool autorestart);
@@ -178,7 +178,7 @@ public:
   /** Sets the time at which that actor should be killed */
   void set_kill_time(double time);
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
-  double get_kill_time();
+  double get_kill_time() const;
 
   /** @brief Moves the actor to another host
    *

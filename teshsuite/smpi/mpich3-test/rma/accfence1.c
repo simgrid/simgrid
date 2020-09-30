@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
                 else if (rank == dest) {
                     MPI_Win_fence(0, win);
                     /* This should have the same effect, in terms of
-                     * transfering data, as a send/recv pair */
+                     * transferring data, as a send/recv pair */
                     err = MTestCheckRecv(0, &recvtype);
                     if (err) {
                         errs += err;

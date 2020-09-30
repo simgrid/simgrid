@@ -1,0 +1,27 @@
+#!/usr/bin/env tesh
+
+p Testing Comm.wait_any()
+
+! output sort 19
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-waitany.py ${platfdir}/small_platform.xml comm-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'Mailbox(receiver-0)'
+> [  0.000000] (2:receiver@Fafard) Wait for my first message
+> [  0.000000] (3:receiver@Jupiter) Wait for my first message
+> [  0.000000] (1:sender@Tremblay) Send 'Message 1' to 'Mailbox(receiver-1)'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 2' to 'Mailbox(receiver-0)'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 3' to 'Mailbox(receiver-1)'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 4' to 'Mailbox(receiver-0)'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 5' to 'Mailbox(receiver-1)'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'Mailbox(receiver-0)'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'Mailbox(receiver-1)'
+> [  0.000000] (1:sender@Tremblay) Done dispatching all messages
+> [  0.158397] (2:receiver@Fafard) I got a 'Message 0'.
+> [  0.169155] (3:receiver@Jupiter) I got a 'Message 1'.
+> [  0.316794] (2:receiver@Fafard) I got a 'Message 2'.
+> [  0.338309] (3:receiver@Jupiter) I got a 'Message 3'.
+> [  0.475190] (2:receiver@Fafard) I got a 'Message 4'.
+> [  0.500898] (2:receiver@Fafard) I got a 'finalize'.
+> [  0.500898] (1:sender@Tremblay) Remove the 1th pending comm: it terminated earlier than another comm that was initiated first.
+> [  0.507464] (3:receiver@Jupiter) I got a 'Message 5'.
+> [  0.526478] (3:receiver@Jupiter) I got a 'finalize'.
+> [  0.526478] (1:sender@Tremblay) Goodbye now!

@@ -23,12 +23,12 @@ static void node(int argc, char* argv[])
   double deadline;
   xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
   /* Node initialization */
-  unsigned int node_id = strtoul(argv[1], nullptr, 0);
+  unsigned int node_id = static_cast<unsigned int>(strtoul(argv[1], nullptr, 0));
   kademlia::Node node(node_id);
 
   if (argc == 4) {
     XBT_INFO("Hi, I'm going to join the network with id %u", node.getId());
-    unsigned int known_id = strtoul(argv[2], NULL, 0);
+    unsigned int known_id = static_cast<unsigned int>(strtoul(argv[2], NULL, 0));
     join_success          = node.join(known_id);
     deadline              = std::stod(argv[3]);
   } else {

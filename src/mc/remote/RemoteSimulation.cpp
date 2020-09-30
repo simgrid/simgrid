@@ -47,13 +47,19 @@ static const std::vector<std::string> filtered_libraries = {
     "libboost_system",
     "libboost_thread",
     "libboost_timer",
+    "libbrotlicommon",
+    "libbrotlidec",
     "libbz2",
     "libc",
     "libc++",
     "libcdt",
     "libcgraph",
+    "libcom_err",
+    "libcrypt",
     "libcrypto",
+    "libcurl",
     "libcxxrt",
+    "libdebuginfod",
     "libdl",
     "libdw",
     "libelf",
@@ -63,53 +69,48 @@ static const std::vector<std::string> filtered_libraries = {
     "libflangrti",
     "libgcc_s",
     "libgfortran",
+    "libgssapi_krb5",
+    "libidn2",
     "libimf",
     "libintlc",
     "libirng",
+    "libk5crypto",
+    "libkeyutils",
+    "libkrb5",
+    "libkrb5support", /*odd behaviour on fedora rawhide ... remove these when fixed*/
+    "liblber",
+    "libldap",
     "liblua5.1",
     "liblua5.3",
     "liblzma",
     "libm",
+    "libnghttp2",
     "libomp",
     "libpapi",
     "libpcre2",
     "libpfm",
     "libpgmath",
+    "libpsl",
     "libpthread",
     "libquadmath",
+    "libresolv",
     "librt",
+    "libsasl2",
+    "libselinux",
+    "libssh",
+    "libssh2",
+    "libssl",
     "libstdc++",
     "libsvml",
     "libtsan",  /* gcc sanitizers */
     "libubsan", /* gcc sanitizers */
+    "libunistring",
     "libunwind",
     "libunwind-ptrace",
     "libunwind-x86",
     "libunwind-x86_64",
     "libz",
-    "libkrb5support", /*odd behaviour on fedora rawhide ... remove these when fixed*/
-    "libkeyutils",
-    "libunistring",
-    "libbrotlidec",
-    "liblber",
-    "libldap",
-    "libcom_err",
-    "libk5crypto",
-    "libkrb5",
-    "libgssapi_krb5",
-    "libssl",
-    "libpsl",
-    "libssh",
-    "libssh2",
-    "libidn2",
-    "libnghttp2",
-    "libcurl",
-    "libdebuginfod",
-    "libbrotlicommon",
-    "libsasl2",
-    "libresolv",
-    "libcrypt",
-    "libselinux"};
+    "libzstd"};
 
 static bool is_simgrid_lib(const std::string& libname)
 {
@@ -424,7 +425,7 @@ std::string RemoteSimulation::read_string(RemotePtr<char> address) const
   std::vector<char> res(128);
   off_t off = 0;
 
-  while (1) {
+  while (true) {
     ssize_t c = pread(this->memory_file, res.data() + off, res.size() - off, (off_t)address.address() + off);
     if (c == -1 && errno == EINTR)
       continue;
@@ -454,13 +455,13 @@ void* RemoteSimulation::read_bytes(void* buffer, std::size_t size, RemotePtr<voi
  *  @param len      data size
  *  @param address  target process memory address (target)
  */
-void RemoteSimulation::write_bytes(const void* buffer, size_t len, RemotePtr<void> address)
+void RemoteSimulation::write_bytes(const void* buffer, size_t len, RemotePtr<void> address) const
 {
   if (pwrite_whole(this->memory_file, buffer, len, (size_t)address.address()) < 0)
     xbt_die("Write to process %lli failed", (long long)this->pid_);
 }
 
-void RemoteSimulation::clear_bytes(RemotePtr<void> address, size_t len)
+void RemoteSimulation::clear_bytes(RemotePtr<void> address, size_t len) const
 {
   pthread_once(&zero_buffer_flag, zero_buffer_init);
   while (len) {
@@ -575,7 +576,7 @@ void RemoteSimulation::unignore_heap(void* address, size_t size)
   }
 }
 
-void RemoteSimulation::ignore_local_variable(const char* var_name, const char* frame_name)
+void RemoteSimulation::ignore_local_variable(const char* var_name, const char* frame_name) const
 {
   if (frame_name != nullptr && strcmp(frame_name, "*") == 0)
     frame_name = nullptr;
@@ -595,7 +596,7 @@ std::vector<simgrid::mc::ActorInformation>& RemoteSimulation::dead_actors()
   return smx_dead_actors_infos;
 }
 
-void RemoteSimulation::dump_stack()
+void RemoteSimulation::dump_stack() const
 {
   unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, BYTE_ORDER);
   if (as == nullptr) {

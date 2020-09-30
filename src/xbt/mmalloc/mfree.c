@@ -82,8 +82,10 @@ void mfree(struct mdesc *mdp, void *ptr)
       /* Mark all my ex-blocks as free */
       for (it=0; it<mdp->heapinfo[block].busy_block.size; it++) {
         if (mdp->heapinfo[block+it].type < 0) {
-          fprintf(stderr,"Internal Error: Asked to free a block already marked as free (block=%lu it=%d type=%lu). Please report this bug.\n",
-                  (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].type);
+          fprintf(stderr,
+                  "Internal Error: Asked to free a block already marked as free (block=%zu it=%d type=%d). "
+                  "Please report this bug.\n",
+                  block, it, mdp->heapinfo[block].type);
           abort();
         }
         mdp->heapinfo[block+it].type = MMALLOC_TYPE_FREE;
@@ -101,8 +103,10 @@ void mfree(struct mdesc *mdp, void *ptr)
       /* Mark all my ex-blocks as free */
       for (it=0; it<mdp->heapinfo[block].free_block.size; it++) {
         if (mdp->heapinfo[block+it].type <0) {
-          fprintf(stderr,"Internal error: Asked to free a block already marked as free (block=%lu it=%d/%lu type=%lu). Please report this bug.\n",
-                  (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].free_block.size,(unsigned long)mdp->heapinfo[block].type);
+          fprintf(stderr,
+                  "Internal error: Asked to free a block already marked as free (block=%zu it=%d/%zu type=%d). "
+                  "Please report this bug.\n",
+                  block, it, mdp->heapinfo[block].free_block.size, mdp->heapinfo[block].type);
           abort();
         }
         mdp->heapinfo[block+it].type = MMALLOC_TYPE_FREE;
@@ -149,7 +153,7 @@ void mfree(struct mdesc *mdp, void *ptr)
 
   default:
     if (type < 0) {
-      fprintf(stderr, "Unkown mmalloc block type.\n");
+      fprintf(stderr, "Unknown mmalloc block type.\n");
       abort();
     }
 
@@ -189,7 +193,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp -> heapstats.chunks_free -= BLOCKSIZE >> type;
       mdp -> heapstats.bytes_free -= BLOCKSIZE;
 
-      mfree((void *) mdp, (void *) ADDRESS(block));
+      mfree(mdp, ADDRESS(block));
     } else if (mdp->heapinfo[block].busy_frag.nfree != 0) {
       /* If some fragments of this block are free, you know what? I'm already happy. */
       ++mdp->heapinfo[block].busy_frag.nfree;

@@ -34,17 +34,17 @@ Mailbox* Mailbox::by_name(const std::string& name)
   return &mbox->piface_;
 }
 
-bool Mailbox::empty()
+bool Mailbox::empty() const
 {
   return pimpl_->comm_queue_.empty();
 }
 
-bool Mailbox::listen()
+bool Mailbox::listen() const
 {
   return not this->empty() || (pimpl_->permanent_receiver_ && not pimpl_->done_comm_queue_.empty());
 }
 
-aid_t Mailbox::listen_from()
+aid_t Mailbox::listen_from() const
 {
   kernel::activity::CommImplPtr comm = front();
   if (comm && comm->src_actor_)
@@ -53,7 +53,7 @@ aid_t Mailbox::listen_from()
     return -1;
 }
 
-bool Mailbox::ready()
+bool Mailbox::ready() const
 {
   bool comm_ready = false;
   if (not pimpl_->comm_queue_.empty()) {
@@ -65,7 +65,7 @@ bool Mailbox::ready()
   return comm_ready;
 }
 
-kernel::activity::CommImplPtr Mailbox::front()
+kernel::activity::CommImplPtr Mailbox::front() const
 {
   return pimpl_->comm_queue_.empty() ? nullptr : pimpl_->comm_queue_.front();
 }
@@ -76,7 +76,7 @@ void Mailbox::set_receiver(ActorPtr actor)
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
-ActorPtr Mailbox::get_receiver()
+ActorPtr Mailbox::get_receiver() const
 {
   if (pimpl_->permanent_receiver_ == nullptr)
     return ActorPtr();

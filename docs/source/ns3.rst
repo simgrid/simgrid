@@ -8,6 +8,13 @@ You can use the well-known `ns-3 packet-level network simulator
 validity of your simulation. Just install ns-3 and recompile SimGrid
 accordingly.
 
+The SimGrid/ns-3 binding only contains features that are common to both systems.
+Not all ns-3 models are available from SimGrid (only the TCP and WiFi ones are),
+while not all SimGrid platform files can be used in conjunction ns-3 (routes
+must be of length 1). Also, the platform built in ns-3 from the SimGrid
+description is very basic.
+
+
 Compiling the ns-3/SimGrid binding
 **********************************
 
@@ -18,27 +25,14 @@ SimGrid requires ns-3 version 3.26 or higher, and you probably want the most
 recent version of both SimGrid and ns-3. While the Debian package of SimGrid
 don't have the ns-3 bindings activated, you can still use the packaged version
 of ns-3 by grabbing the ``libns3-dev ns3`` packages. Alternatively, you can
-install ns-3 from scratch as follows:
-
-.. code-block:: shell
-
-  # Download the source
-  wget http://www.nsnam.org/release/ns-allinone-3.29.tar.bz2
-  tar -xf ns-allinone-3.29.tar.bz2
-  cd ns-allinone-3.29/ns-3.29/
-  # Configure, build and install
-  ./waf configure --prefix="/opt/ns3" # or give another path if you prefer
-  ./waf
-  ./waf install
-
-For more information, please refer to the ns-3 documentation
-(`official website <http://www.nsnam.org>`_).
+install ns-3 from scratch (see the `ns-3 documentation <http://www.nsnam.org>`_).
 
 Enabling ns-3 in SimGrid
 ========================
 
 SimGrid must be recompiled with the ``enable_ns3`` option activated in cmake.
-Optionally, use ``NS3_HINT`` to hint cmake about where to find ns-3.
+Optionally, use ``NS3_HINT`` to tell cmake where ns3 is installed on
+your disk.
 
 .. code-block:: shell
 
@@ -50,7 +44,9 @@ If your local copy defines the variable ``SIMGRID_HAVE_NS3`` to 1, then ns-3
 was correctly detected. Otherwise, explore ``CMakeFiles/CMakeOutput.log`` and
 ``CMakeFiles/CMakeError.log`` to diagnose the problem.
 
-Test your installation after compilation as follows:
+Test that ns-3 was successfully integrated with the following (from your SimGrid
+build directory). It will run all SimGrid tests that are related to the ns-3
+integration. If no test is run at all, you probably forgot to enable ns-3 in cmake.
 
 .. code-block:: shell
 
@@ -69,181 +65,146 @@ version of either SimGrid or ns-3, try upgrading everything.
 Using ns-3 from SimGrid
 ***********************
 
-The SimGrid/ns-3 binding only contains features that are common to both
-systems. Also, the platform built in ns-3 from the
-SimGrid description is very basic.
-
 Platform files compatibility
 ============================
 
 Any route longer than one will be ignored when using ns-3. They are
 harmless, but you still need to connect your hosts using one-hop routes.
 The best solution is to add routers to split your route. Here is an
-example of invalid platform:
+example of an invalid platform:
 
-.. code-block:: shell
+.. code-block:: xml
 
-	<?xml version='1.0'?><!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-	<platform version="4.1">
-		<AS id="AS0" routing="Floyd">
+   <?xml version='1.0'?>
+   <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+   <platform version="4.1">
+     <zone id="zone0" routing="Floyd">
+       <host id="alice" speed="1Gf" />
+       <host id="bob"   speed="1Gf" />
+  
+       <link id="l1" bandwidth="1Mbps" latency="5ms" />
+       <link id="l2" bandwidth="1Mbps" latency="5ms" />
 
-			<host id="alice" speed="1Gf" />
-			<host id="bob"   speed="1Gf" />
-	
-			<link id="l1" bandwidth="1Mbps" latency="5ms" />
-			<link id="l2" bandwidth="1Mbps" latency="5ms" />
-	
-			<route src="alice" dst="bob">
-				<link_ctn id="l1"/>            <!-- !!!! INVALID WITH ns-3    !!!! -->
-				<link_ctn id="l2"/>            <!-- !!!! length=2 IS TOO MUCH !!!! -->
-			</route>
-		</AS>
-	</platform>
-
+       <route src="alice" dst="bob">
+         <link_ctn id="l1"/>            <!-- !!!! IGNORED WHEN USED WITH ns-3       !!!! -->
+         <link_ctn id="l2"/>            <!-- !!!! ROUTES MUST CONTAIN ONE LINK ONLY !!!! -->
+       </route>
+     </zone>
+   </platform>
+  
 This can be reformulated as follows to make it usable with the ns-3 binding.
-There is no direct connection from alice to bob, but that's OK because
-ns-3 automatically routes from point to point.
+There is no direct connection from alice to bob, but that's OK because ns-3
+automatically routes from point to point (using
+``ns3::Ipv4GlobalRoutingHelper::PopulateRoutingTables``).
 
-.. code-block:: shell
+.. code-block:: xml
 
-	<?xml version='1.0'?><!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-	<platform version="4.1">
-		<AS id="AS0" routing="Floyd">
+   <?xml version='1.0'?>
+   <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+   <platform version="4.1">
+     <zone id="zone0" routing="Full">
+       <host id="alice" speed="1Gf" />
+       <host id="bob"   speed="1Gf" />
 
-			<host id="alice" speed="1Gf"/>
-			<host id="bob"   speed="1Gf"/>
+       <router id="r1" /> <!-- routers are compute-less hosts -->
 
-			<router id="r1"/>	<!-- routers are compute-less hosts -->
+       <link id="l1" bandwidth="1Mbps" latency="5ms"/>
+       <link id="l2" bandwidth="1Mbps" latency="5ms"/>
 
-			<link id="l1" bandwidth="1Mbps" latency="5ms"/>
-			<link id="l2" bandwidth="1Mbps" latency="5ms"/>
-
-			<route src="alice" dst="r1">
-				<link_ctn id="l1"/> 
-			</route>
-
-			<route src="r1" dst="bob">
-				<link_ctn id="l2"/> 
-			</route>
-		</AS>
-	</platform>
+       <route src="alice" dst="r1">
+         <link_ctn id="l1"/> 
+       </route>
+  
+       <route src="r1" dst="bob">
+         <link_ctn id="l2"/> 
+       </route>
+     </zone>
+   </platform>
 
 Once your platform is OK, just change the :ref:`network/model
-<options_model_select>`_ configuration option to "ns-3" as follows. The rest
-is unchanged.
+<options_model_select>` configuration option to `ns-3` as follows. The other
+options can be used as usual.
 
 .. code-block:: shell
 
    ./network-ns3 --cfg=network/model:ns-3 (other parameters)
 
-Many other files from the ``examples/platform directory`` are usable with the
-ns-3 model.
+Many other files from the ``examples/platform`` directory are usable with the
+ns-3 model, such as `examples/platforms/dogbone.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/dogbone.xml>`_.
+Check the file  `examples/s4u/network-ns3/network-ns3.tesh <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/network-ns3/network-ns3.tesh>`_
+to see which ones are used in our regression tests.
 
-Build a wifi-compatible platform
-===================================
+WiFi platforms
+--------------
 
-We describe here a simple platform allowing ns3 wifi communication
-between two simgrid hosts.
+In SimGrid, WiFi networks are modeled as regular links with a specific
+attribute, and these links are then added to routes between hosts. The main
+difference When using ns-3 WiFi networks is that the network performance is not
+given by the link bandwidth and latency but by the access point WiFi
+characteristics, and the distance between the access point and the hosts (called
+station in the WiFi world).
 
-First, here are the mandatory information necessary to create a
-simgrid platform:
+So, to declare a new WiFi network, simply declare a link with the ``WiFi``
+sharing policy as you would do in a pure SimGrid simulation (you must still
+provide the ``bandwidth`` and ``latency`` attributes even if they are ignored,
+because they are mandatory to the SimGrid XML parser).
 
-.. code-block:: shell
+.. code-block:: xml
 
-	<?xml version='1.0'?><!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-	<platform version="4.1">
-		<AS id="AS0" routing="Floyd">
+	 <link id="net0" bandwidth="0" latency="0" sharing_policy="WIFI"/>
 
-Then, we create our access point and station hosts:
+To declare that a given host is connected to this WiFi zone, use the
+``wifi_link`` property of that host. The property value must be the link id that
+you want to use as a WiFi zone. This is not needed when using pure SimGrid wifi,
+only when using ns-3 wifi, because the wifi performance is :ref:`configured <ns3_wifi_perf>`.
 
-.. code-block:: shell
+.. code-block:: xml
 
-			<host id="alice" speed="1Gf"/>
-			<host id="bob"   speed="1Gf"/>
+   <host id="alice" speed="1Gf">
+     <prop id="wifi_link" value="net0"/>
+   </host>
 
-We must specify that alice will be our access point. To do that we
-simply add the property ``wifi_link`` to the host ``alice``: 
+To connect the station node to the access point node, simply create a route
+between them:
 
-.. code-block:: shell
+.. code-block:: xml
 
-			<host id="alice" speed="1Gf">
-				<prop id="wifi_link" value="net0"/>
-			</host>
+   <route src="alice" dst="bob">
+     <link_ctn id="net0" />
+   </route>
 
-			<host id="bob"   speed="1Gf"/>
+.. _ns3_wifi_perf:
 
-The value ``net0`` of this property defines the name of the wifi network
-generated. To generate this wifi network we create a wifi link:
+WiFi network performance
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: shell``
 
-			<link id="net0" bandwidth="0" latency="0" sharing_policy="WIFI"/>
+The performance of a wifi network is controlled by 3 property that can be added
+to the an host connected to the wifi zone:
 
-The important information here are:
-	* The id of the link, ``net0``, must match the network name defined by the property ``wifi_link`` of the access point node
-	* The sharing policy must be set to ``WIFI``
+ * ``wifi_mcs`` (`Modulation and Coding Scheme <https://en.wikipedia.org/wiki/Link_adaptation>`_)
+   Roughly speaking, it defines the speed at which the access point is
+   exchanging data with all stations. It depends on its model and configuration,
+   and the possible values are listed for example on Wikipedia.
+   |br| By default, ``wifi_mcs=3``.
+ * ``wifi_nss`` (Number of Spatial Streams, or `number of antennas <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Number_of_antennas>`_)
+   defines the amount of simultaneous data streams that the AP can sustain.
+   Not all value of MCS and NSS are valid nor compatible (cf. `802.11n standard <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates>`_).
+   |br| By default, ``wifi_nss=1``.
+ * ``wifi_distance`` is the distance from the station to the access point. Each
+   station can have a specific value.
+   |br| By default, ``wifi_distance=10``.
 
-Note: bandwidth and latency are mandatory by simgrid to create a link but are NOT used to create a wifi network. Instead the
-wifi network capabilities are defined by its MCS, NSS and distance from access point to station. Those properties are described in section :ref:`Optional access point node properties <optional_prop>`_
+Here is an example of host changing all these values:
 
-To connect the station node to the access point node, we
-create a route between the hosts:
+.. code-block:: xml
 
-.. code-block:: shell
-
-			<route src="alice" dst="bob">
-				<link_ctn id="net0" />
-			</route>
-
-Finally, we end the xml file with the missing closing tags:
-
-.. code-block:: shell
-
-		</AS>
-	</platform>
-
-.. _optional_prop:
-
-Optional access point node properties
---------------------------------------
-
-The MCS (`Modulation and Coding Scheme <https://en.wikipedia.org/wiki/Link_adaptation>`_) can be set with the property ``wifi_mcs``:
-
-.. code-block:: shell
-
-			 <host id="alice" speed="1Gf">
-				<prop id="wifi_link" value="net0"/>
-				<prop id="wifi_mcs" value="5"/>
-			</host>
-
-Its default value is 3.
-
-The NSS (Number of Spatial Streams, also known as the `number of antennas <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Number_of_antennas>`_) can be set with the property ``wifi_nss``:
-
-.. code-block:: shell
-
-			<host id="alice" speed="1Gf">
-				<prop id="wifi_link" value="net0"/>
-				<prop id="wifi_nss" value="2"/>
-			</host>
-			
-Its default value is 1.
-
-Note: not all value of MCS and NSS are valid nor compatible. Check `802.11n standard <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates>`_ for more information.
-
-Optional station node properties
----------------------------------
-
-The distance in meter at which the station is placed from the access point can
-be set with the property ``wifi_distance``.
-
-.. code-block:: shell
-
-			<host id="alice" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0">
-				<prop id="wifi_distance" value="30" />
-			</host>
-
-Its default value is 10. 
+   <host id="alice" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0">
+     <prop id="wifi_link" value="net0"/>
+     <prop id="wifi_mcs" value="5"/>
+     <prop id="wifi_nss" value="2"/>
+     <prop id="wifi_distance" value="30" />
+   </host>
 
 Limitations
 ===========
@@ -251,10 +212,12 @@ Limitations
 A ns-3 platform is automatically created from the provided SimGrid
 platform. However, there are some known caveats:
 
-	* The default values (e.g., TCP parameters) are the ns-3 default values.
-	* ns-3 networks are routed using the shortest path algorithm, using
-		``ns3::Ipv4GlobalRoutingHelper::PopulateRoutingTables``.
-
+  * The default values (e.g., TCP parameters) are the ns-3 default values.
+  * ns-3 networks are routed using the shortest path algorithm, using ``ns3::Ipv4GlobalRoutingHelper::PopulateRoutingTables``.
+  * End hosts cannot have more than one interface card. So, your SimGrid hosts
+    should be connected to the platform through only one link. Otherwise, your
+    SimGrid host will be considered as a router (FIXME: is it still true?).
+	     
 Our goal is to keep the ns-3 plugin of SimGrid as easy (and hopefully readable)
 as possible. If the current state does not fit your needs, you should modify
 this plugin, and/or create your own plugin from the existing one. If you come up
@@ -268,3 +231,7 @@ is sending data that is not routable in your platform. Make sure that you only
 use routes of length 1, and that any host is connected to the platform.
 Arguably, SimGrid could detect this situation and report it, but unfortunately,
 this is still to be done.
+
+.. |br| raw:: html
+
+   <br />

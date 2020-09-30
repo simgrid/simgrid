@@ -64,7 +64,7 @@ int main(int argc, char **argv){
           xbt_dynar_push(requests, &recv_buff);
         }else{
           if(recv_buff != size - 1){
-            printf("CS idle. Grant immediatly.\n");
+            printf("CS idle. Grant immediately.\n");
             MPI_Send(&rank, 1, MPI_INT, recv_buff, GRANT_TAG, MPI_COMM_WORLD);
             CS_used = 1;
           }

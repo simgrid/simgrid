@@ -65,7 +65,7 @@ LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Att
 {
   LocationList locations;
   std::ptrdiff_t offset = 0;
-  while (1) {
+  while (true) {
     Dwarf_Addr base;
     Dwarf_Addr start;
     Dwarf_Addr end;

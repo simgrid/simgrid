@@ -25,7 +25,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sr
                                            void* data, double timeout)
 {
   simgrid::kernel::activity::ActivityImplPtr comm = simcall_HANDLER_comm_isend(
-      simcall, src, mbox, task_size, rate, src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, 0);
+      simcall, src, mbox, task_size, rate, src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, false);
   SIMCALL_SET_MC_VALUE(*simcall, 0);
   simcall_HANDLER_comm_wait(simcall, static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
 }

@@ -55,7 +55,7 @@ public:
   void update();
 
 private:
-  double get_power();
+  double get_power() const;
 
   s4u::Link* link_{};
 
@@ -123,7 +123,7 @@ void LinkEnergy::init_watts_range_list()
   }
 }
 
-double LinkEnergy::get_power()
+double LinkEnergy::get_power() const
 {
   if (!inited_)
     return 0.0;

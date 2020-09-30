@@ -56,23 +56,23 @@ class Request : public F2C {
 public:
   Request() = default;
   Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op = MPI_REPLACE);
-  MPI_Comm comm() { return comm_; }
-  size_t size() { return size_; }
-  size_t real_size() { return real_size_; }
-  int src() { return src_; }
-  int dst() { return dst_; }
-  int tag() { return tag_; }
-  int flags() { return flags_; }
-  bool detached() { return detached_; }
-  MPI_Datatype type() { return old_type_; }
-  void print_request(const char* message);
+  MPI_Comm comm() const { return comm_; }
+  size_t size() const { return size_; }
+  size_t real_size() const { return real_size_; }
+  int src() const { return src_; }
+  int dst() const { return dst_; }
+  int tag() const { return tag_; }
+  int flags() const { return flags_; }
+  bool detached() const { return detached_; }
+  MPI_Datatype type() const { return old_type_; }
+  void print_request(const char* message) const;
   void start();
   void cancel();
   void init_buffer(int count);
   void ref();
   void set_nbc_requests(MPI_Request* reqs, int size);
-  int get_nbc_requests_size();
-  MPI_Request* get_nbc_requests();
+  int get_nbc_requests_size() const;
+  MPI_Request* get_nbc_requests() const;
   static void finish_wait(MPI_Request* request, MPI_Status* status);
   static void unref(MPI_Request* request);
   static int wait(MPI_Request* req, MPI_Status* status);

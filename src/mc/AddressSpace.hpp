@@ -92,7 +92,7 @@ public:
 
   /** The process of this address space
    *
-   *  This is where we can get debug informations, memory layout, etc.
+   *  This is where we can get debug information, memory layout, etc.
    */
   simgrid::mc::RemoteSimulation* get_remote_simulation() const { return remote_simulation_; }
 

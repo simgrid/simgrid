@@ -75,7 +75,7 @@ public:
     msg  = args[1];
     mbox = args[2];
   }
-  void operator()() /* This is the main code of the actor */
+  void operator()() const /* This is the main code of the actor */
   {
     XBT_INFO("Hello s4u, I have something to send");
     simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mbox);

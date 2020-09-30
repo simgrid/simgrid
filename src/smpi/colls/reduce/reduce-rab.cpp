@@ -378,8 +378,8 @@ Benchmark results on CRAY T3E
       otherwise the new protocol is used (see variable Ldb).
    3) These lines show the bandwidth (= buffer length / execution time)
       for both protocols.
-   4) This line shows that the limit is choosen well if the ratio is
-      between 0.95 (loosing 5% for buffer length near and >=limit)
+   4) This line shows that the limit is chosen well if the ratio is
+      between 0.95 (losing 5% for buffer length near and >=limit)
       and 1.10 (not gaining 10% for buffer length near and <limit).
    5) This line shows that the new protocol is 2..7 times faster
       for long counts.

@@ -109,7 +109,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
 
     case SIMCALL_COMM_WAIT: {
       simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> remote_act =
-          remote(static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(&actor->simcall_)));
+          remote(simcall_comm_wait__getraw__comm(&actor->simcall_));
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_act;
       mc_model_checker->get_remote_simulation().read(temp_act, remote_act);
       const simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();

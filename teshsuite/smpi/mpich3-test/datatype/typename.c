@@ -124,7 +124,7 @@ mpi_names_t mpi_names[] = {
     /* added in MPI 3 */
     { MPI_COUNT, "MPI_COUNT" },
 #endif
-    { 0, (char *)0 },  /* Sentinal used to indicate the last element */
+    { 0, (char *)0 },  /* Sentinel used to indicate the last element */
 };
 
     char name[MPI_MAX_OBJECT_NAME];

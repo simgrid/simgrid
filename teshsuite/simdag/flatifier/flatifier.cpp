@@ -42,7 +42,7 @@ static void create_environment(xbt_os_timer_t parse_time, const char *platformFi
 
 static void dump_hosts()
 {
-  unsigned int totalHosts = sg_host_count();
+  unsigned int totalHosts = static_cast<unsigned int>(sg_host_count());
   sg_host_t* hosts        = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
             [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
@@ -110,7 +110,7 @@ static void dump_routers()
 
 static void dump_routes()
 {
-  unsigned int totalHosts = sg_host_count();
+  unsigned int totalHosts = static_cast<unsigned int>(sg_host_count());
   sg_host_t* hosts        = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
             [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });

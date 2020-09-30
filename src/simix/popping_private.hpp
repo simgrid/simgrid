@@ -48,8 +48,8 @@ struct s_smx_simcall {
   smx_timer_t timeout_cb_                   = nullptr; // Callback to timeouts
   simgrid::mc::SimcallInspector* inspector_ = nullptr; // makes that simcall observable by the MC
   int mc_value_                             = 0;
-  u_smx_scalar args_[11]                    = {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}};
-  u_smx_scalar result_                      = {0};
+  u_smx_scalar args_[11]                    = {};
+  u_smx_scalar result_                      = {};
 };
 
 #define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall).mc_value_ = (value))

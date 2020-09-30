@@ -63,14 +63,14 @@ static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> co
   case xbt_automaton_exp_label::AUT_ONE:
     return true;
   default:
-    xbt_die("Unexpected vaue for automaton");
+    xbt_die("Unexpected value for automaton");
   }
 }
 
 Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs)
 {}
 
-std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values()
+std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values() const
 {
   std::vector<int> values;
   unsigned int cursor = 0;
@@ -408,8 +408,8 @@ void LivenessChecker::run()
     // For each enabled transition in the property automaton, push a
     // (application_state, automaton_state) pair to the exploration stack:
     for (int i = xbt_dynar_length(current_pair->automaton_state->out) - 1; i >= 0; i--) {
-      const xbt_automaton_transition* transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(
-          current_pair->automaton_state->out, i, xbt_automaton_transition_t);
+      const xbt_automaton_transition* transition_succ =
+          xbt_dynar_get_as(current_pair->automaton_state->out, i, xbt_automaton_transition_t);
       if (evaluate_label(transition_succ->label, *prop_values))
         exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ->dst, prop_values));
      }

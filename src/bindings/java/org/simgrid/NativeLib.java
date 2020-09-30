@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 /** Helper class loading the native functions of SimGrid that we use for downcalls
  *
- * Almost all org.simgrid.msg.* classes contain a static bloc (thus executed when the class is loaded)
+ * Almost all org.simgrid.msg.* classes contain a static block (thus executed when the class is loaded)
  * containing a call to this.
  */
 public final class NativeLib {

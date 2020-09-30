@@ -43,7 +43,7 @@ int main(int argc, char **argv){
           printf("CS already used. Queue the request.\n");
           xbt_dynar_push(requests, &recv_buff);
         }else{
-          printf("CS idle. Grant immediatly.\n");
+          printf("CS idle. Grant immediately.\n");
           MPI_Send(&rank, 1, MPI_INT, recv_buff, GRANT_TAG, MPI_COMM_WORLD);
           CS_used = 1;
         }

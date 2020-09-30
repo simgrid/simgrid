@@ -39,7 +39,7 @@ typedef std::vector<Dwarf_Op> DwarfExpression;
 /** Context of evaluation of a DWARF expression
  *
  *  Some DWARF instructions need to read the CPU registers,
- *  the process memory, etc. All those informations are gathered in
+ *  the process memory, etc. All those information are gathered in
  *  the evaluation context.
  */
 struct ExpressionContext {

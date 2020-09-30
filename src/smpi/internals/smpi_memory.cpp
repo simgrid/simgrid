@@ -192,7 +192,7 @@ void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
 #if HAVE_PRIVATIZATION
   // FIXME, cross-process support (mmap across process when necessary)
   XBT_DEBUG("Switching data frame to the one of process %ld", actor->get_pid());
-  simgrid::smpi::ActorExt* process = smpi_process_remote(actor);
+  const simgrid::smpi::ActorExt* process = smpi_process_remote(actor);
   int current                     = process->privatized_region()->file_descriptor;
   const void* tmp = mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_RW, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_data_exe_start))

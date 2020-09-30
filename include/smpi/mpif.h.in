@@ -290,4 +290,9 @@
 
       double precision MPI_WTIME
       double precision MPI_WTICK
+
+      external smpi_execute_flops
+      external smpi_execute_flops_benched
+      external smpi_execute
+      external smpi_execute_benched
 @MODULE_MPIF_OUT@
