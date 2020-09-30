@@ -519,7 +519,7 @@ void ns3_simulator(double maxSeconds)
 }
 
 void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst, double bw,
-                          double lat, std::string link_name, simgrid::s4u::Link::SharingPolicy policy)
+                          double lat, const std::string& link_name, simgrid::s4u::Link::SharingPolicy policy)
 {
   ns3::Ipv4AddressHelper address;
   ns3::NetDeviceContainer netA;

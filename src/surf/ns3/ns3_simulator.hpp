@@ -30,7 +30,7 @@ public:
 XBT_PRIVATE void ns3_initialize(std::string TcpProtocol);
 XBT_PRIVATE void ns3_simulator(double max_seconds);
 XBT_PRIVATE void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst,
-                                      double bw, double lat, std::string link_name,
+                                      double bw, double lat, const std::string& link_name,
                                       simgrid::s4u::Link::SharingPolicy policy);
 
 class XBT_PRIVATE SgFlow {
