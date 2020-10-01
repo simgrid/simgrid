@@ -19,10 +19,7 @@ class XBT_PRIVATE NetPointNs3 {
 public:
   static simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> EXTENSION_ID;
 
-  void set_name(std::string name) { name_ = name; }
-
   explicit NetPointNs3();
-  std::string name_;
   ns3::Ptr<ns3::Node> ns3_node_;
   std::string ipv4_address_;
 };
