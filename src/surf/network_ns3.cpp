@@ -388,7 +388,8 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
     wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
     wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
 
-    wifiMac.SetType("ns3::ApWifiMac");
+    wifiMac.SetType("ns3::ApWifiMac",
+                    "Ssid", ns3::SsidValue(name));
 
     netA.Add(wifi.Install(wifiPhy, wifiMac, zone->get_ap_node()));
 
@@ -550,14 +551,16 @@ void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kern
     wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
     wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(zone->get_nss()));
 
-    wifiMac.SetType("ns3::StaWifiMac");
+    wifiMac.SetType ("ns3::StaWifiMac",
+                     "Ssid", ns3::SsidValue(link_name),
+                     "ActiveProbing", ns3::BooleanValue(false));
 
     netA.Add(wifi.Install(wifiPhy, wifiMac, staNode));
 
     ns3::Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue(40));
 
-    NetPointNs3* sta_netpointNs3 = WifiZone::is_ap(host_src->ns3_node_) ? host_src : host_dst;
-    const char* wifi_distance    = simgrid::s4u::Host::by_name(sta_netpointNs3->name_)->get_property("wifi_distance");
+    simgrid::kernel::routing::NetPoint* sta_netpoint = WifiZone::is_ap(host_src->ns3_node_) ? dst : src;
+    const char* wifi_distance    = simgrid::s4u::Host::by_name(sta_netpoint->get_name())->get_property("wifi_distance");
     ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator>();
     positionAllocS->Add(ns3::Vector(wifi_distance ? atof(wifi_distance) : 10.0, 0, 0));
     mobility.SetPositionAllocator(positionAllocS);
