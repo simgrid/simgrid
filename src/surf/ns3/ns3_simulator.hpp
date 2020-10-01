@@ -24,7 +24,6 @@ public:
   std::string ipv4_address_;
 };
 
-XBT_PRIVATE void ns3_initialize(const std::string& TcpProtocol);
 XBT_PRIVATE void ns3_simulator(double max_seconds);
 XBT_PRIVATE void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst,
                                       double bw, double lat, const std::string& link_name,
