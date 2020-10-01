@@ -24,7 +24,7 @@ NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource:
   xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
 
-  netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone, father);
+  netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone, father_);
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 
