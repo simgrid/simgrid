@@ -261,7 +261,7 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::stri
   CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
   send_size  = parse_double(action[2]);
   disps      = std::vector<int>(comm_size, 0);
-  recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+  recvcounts = std::make_shared<std::vector<int>>(comm_size);
 
   if (name == "gatherv") {
     root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
@@ -336,7 +336,7 @@ void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::str
   CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
   recv_size  = parse_double(action[2 + comm_size]);
   disps      = std::vector<int>(comm_size, 0);
-  sendcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+  sendcounts = std::make_shared<std::vector<int>>(comm_size);
 
   if (action.size() > 5 + comm_size)
     datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
@@ -362,7 +362,7 @@ void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std
   comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size + 1, 1)
   comp_size  = parse_double(action[2 + comm_size]);
-  recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+  recvcounts = std::make_shared<std::vector<int>>(comm_size);
   if (action.size() > 3 + comm_size)
     datatype1 = simgrid::smpi::Datatype::decode(action[3 + comm_size]);
 
@@ -384,8 +384,8 @@ void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::st
   */
   comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, 2 * comm_size + 2, 2)
-  sendcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
-  recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+  sendcounts = std::make_shared<std::vector<int>>(comm_size);
+  recvcounts = std::make_shared<std::vector<int>>(comm_size);
   senddisps  = std::vector<int>(comm_size, 0);
   recvdisps  = std::vector<int>(comm_size, 0);
 

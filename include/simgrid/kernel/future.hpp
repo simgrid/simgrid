@@ -485,7 +485,7 @@ public:
   }
 
 private:
-  std::shared_ptr<FutureState<T>> state_{new FutureState<T>()};
+  std::shared_ptr<FutureState<T>> state_ = std::make_shared<FutureState<T>>();
   bool future_get_ = false;
 };
 
@@ -536,7 +536,7 @@ public:
   }
 
 private:
-  std::shared_ptr<FutureState<void>> state_{new FutureState<void>()};
+  std::shared_ptr<FutureState<void>> state_ = std::make_shared<FutureState<void>>();
   bool future_get_ = false;
 };
 
