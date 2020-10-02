@@ -12,7 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#ifdef SG_HAVE_CPP14
+#if __cplusplus >= 201402L
 #include "src/include/xxhash.hpp"
 #endif
 #include "src/mc/mc_mmu.hpp"
@@ -34,7 +34,7 @@ namespace mc {
  */
 static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 {
-#ifdef SG_HAVE_CPP14
+#ifdef __cplusplus >= 201402L
   return xxh::xxhash<64>(data, xbt_pagesize);
 #else
   const std::uint64_t* values = (const uint64_t*)data;

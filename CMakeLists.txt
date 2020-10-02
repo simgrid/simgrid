@@ -795,9 +795,7 @@ endif()
 
 if (enable_model-checking AND (NOT ("cxx_std_14" IN_LIST known_features)))
   message(WARNING "C++14 not found. The model-checker will use a slow hash function. You should upgrade your compiler")
-  set(SG_HAVE_CPP14 0)
 else()
-  set(SG_HAVE_CPP14 1)
   set_property(TARGET simgrid PROPERTY CXX_STANDARD 14)    
 endif()
 
