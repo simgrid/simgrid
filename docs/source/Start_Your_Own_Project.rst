@@ -32,7 +32,7 @@ your project. It builds two simulators from a given set of source files.
    cmake_minimum_required(VERSION 2.8.8)
    project(MyFirstSimulator)
 
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
    find_package(SimGrid REQUIRED)
@@ -121,7 +121,7 @@ Develop in C++ with Eclipse
 If you wish to develop your plugin or modify SimGrid using
 Eclipse. You have to run cmake and import it as a Makefile project.
 
-Next you have to activate C++11 in your build settings, add -std=c++11
+Next you have to activate C++14 in your build settings, add -std=c++14
 in the CDT GCC Built-in compiler settings.
 
 .. image:: /img/eclipseScreenShot.png

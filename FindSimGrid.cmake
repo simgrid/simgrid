@@ -119,7 +119,7 @@ if (SimGrid_FOUND AND NOT CMAKE_VERSION VERSION_LESS 2.8.12)
   )
   # We need C++14, so check for it just in case the user removed it since compiling SimGrid
   if (NOT CMAKE_VERSION VERSION_LESS 3.8)
-    # 3.8+ allows us to simply require C++11 (or higher)
+    # 3.8+ allows us to simply require C++14 (or higher)
     set_property(TARGET SimGrid::SimGrid PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_14)
   elseif (NOT CMAKE_VERSION VERSION_LESS 3.1)
     # 3.1+ is similar but for certain features. We pick just one

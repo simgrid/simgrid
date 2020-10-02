@@ -97,7 +97,7 @@ Getting the Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 C++ compiler (either g++, clang, or icc).
-  We use the C++11 standard, and older compilers tend to fail on
+  We use the C++14 standard, and older compilers tend to fail on
   us. It seems that g++ 5.0 or higher is required nowadays (because of
   boost).  SimGrid compiles well with `clang` or `icc` too.
 Python 3.
