@@ -85,24 +85,26 @@ ActorPtr Mailbox::get_receiver() const
 
 CommPtr Mailbox::put_init()
 {
-  CommPtr res   = CommPtr(new s4u::Comm());
+  CommPtr res   = CommPtr(new Comm());
   res->sender_  = kernel::actor::ActorImpl::self();
   res->mailbox_ = this;
   return res;
 }
-s4u::CommPtr Mailbox::put_init(void* data, uint64_t simulated_size_in_bytes)
+
+CommPtr Mailbox::put_init(void* data, uint64_t simulated_size_in_bytes)
 {
-  s4u::CommPtr res = put_init();
+  CommPtr res = put_init();
   res->set_remaining(simulated_size_in_bytes);
   res->src_buff_      = data;
   res->src_buff_size_ = sizeof(void*);
   return res;
 }
-s4u::CommPtr Mailbox::put_async(void* payload, uint64_t simulated_size_in_bytes)
+
+CommPtr Mailbox::put_async(void* payload, uint64_t simulated_size_in_bytes)
 {
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
-  s4u::CommPtr res = put_init(payload, simulated_size_in_bytes);
+  CommPtr res = put_init(payload, simulated_size_in_bytes);
   res->vetoable_start();
   return res;
 }
@@ -128,16 +130,17 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes, double timeou
   c->wait_for(timeout);
 }
 
-s4u::CommPtr Mailbox::get_init()
+CommPtr Mailbox::get_init()
 {
-  CommPtr res    = CommPtr(new s4u::Comm());
+  CommPtr res    = CommPtr(new Comm());
   res->receiver_ = kernel::actor::ActorImpl::self();
   res->mailbox_  = this;
   return res;
 }
-s4u::CommPtr Mailbox::get_async(void** data)
+
+CommPtr Mailbox::get_async(void** data)
 {
-  s4u::CommPtr res = get_init();
+  CommPtr res = get_init();
   res->set_dst_data(data, sizeof(*data));
   res->vetoable_start();
   return res;
