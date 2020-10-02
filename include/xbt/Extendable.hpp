@@ -48,7 +48,7 @@ template<class T>
 class Extendable {
 private:
   static std::vector<void(*)(void*)> deleters_;
-  std::vector<void*> extensions_{(deleters_.size() > 0 ? deleters_.size() : 1), nullptr};
+  std::vector<void*> extensions_{std::max<decltype(deleters_.size())>(1, deleters_.size()), nullptr};
 
 public:
   static size_t extension_create(void (*deleter)(void*))

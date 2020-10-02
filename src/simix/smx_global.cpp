@@ -330,7 +330,7 @@ void SIMIX_clean()
   }
 
 #if HAVE_SMPI
-  if (simix_global->process_list.size() > 0) {
+  if (not simix_global->process_list.empty()) {
     if(smpi_process()->initialized()){
       xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
     }else{

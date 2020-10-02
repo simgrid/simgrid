@@ -106,7 +106,7 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   comm_pattern->dst_proc = dst_proc->get_pid();
   comm_pattern->src_host = MC_smx_actor_get_host_name(src_proc);
   comm_pattern->dst_host = MC_smx_actor_get_host_name(dst_proc);
-  if (comm_pattern->data.size() == 0 && comm->src_buff_ != nullptr) {
+  if (comm_pattern->data.empty() && comm->src_buff_ != nullptr) {
     size_t buff_size;
     mc_model_checker->get_remote_simulation().read(&buff_size, remote(comm->dst_buff_size_));
     comm_pattern->data.resize(buff_size);
