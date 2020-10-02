@@ -25,9 +25,8 @@ routing_table_t routing_table_init(unsigned int node_id)
 /** @brief Frees the routing table */
 void routing_table_free(routing_table_t table)
 {
-  unsigned int i;
   // Free the buckets.
-  for (i = 0; i <= IDENTIFIER_SIZE; i++) {
+  for (unsigned int i = 0; i <= IDENTIFIER_SIZE; i++) {
     xbt_dynar_free(&table->buckets[i].nodes);
   }
   xbt_free(table->buckets);
@@ -37,13 +36,13 @@ void routing_table_free(routing_table_t table)
 /**@brief prints the routing table, to debug stuff. */
 void routing_table_print(const_routing_table_t table)
 {
-  unsigned int j;
-  unsigned int value;
   XBT_INFO("Routing table of %08x:", table->id);
 
   for (unsigned int i = 0; i <= IDENTIFIER_SIZE; i++) {
     if (!xbt_dynar_is_empty(table->buckets[i].nodes)) {
       XBT_INFO("Bucket number %u: ", i);
+      unsigned int j;
+      unsigned int value;
       xbt_dynar_foreach (table->buckets[i].nodes, j, value) {
         XBT_INFO("Element %u: %08x", j, value);
       }

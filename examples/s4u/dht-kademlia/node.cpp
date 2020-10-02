@@ -23,7 +23,6 @@ static void destroy(void* message)
 bool Node::join(unsigned int known_id)
 {
   const Answer* node_list;
-  unsigned int i;
   bool got_answer = false;
 
   /* Add the guy we know to our routing table and ourselves. */
@@ -59,7 +58,7 @@ bool Node::join(unsigned int known_id)
   /* Second step: Send a FIND_NODE to a a random node in buckets */
   unsigned int bucket_id = table.findBucket(known_id)->getId();
   xbt_assert(bucket_id <= IDENTIFIER_SIZE);
-  for (i = 0; ((bucket_id > i) || (bucket_id + i) <= IDENTIFIER_SIZE) && i < JOIN_BUCKETS_QUERIES; i++) {
+  for (unsigned int i = 0; ((bucket_id > i) || (bucket_id + i) <= IDENTIFIER_SIZE) && i < JOIN_BUCKETS_QUERIES; i++) {
     if (bucket_id > i) {
       unsigned int id_in_bucket = get_id_in_prefix(id_, bucket_id - i);
       findNode(id_in_bucket, false);

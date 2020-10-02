@@ -11,7 +11,6 @@ int main( int argc, char *argv[] )
     int errs = 0;
     int size;
     int rank;
-    int i;
     int* buf;
     int count;
     MPI_File fh;
@@ -61,7 +60,8 @@ int main( int argc, char *argv[] )
 
     MPI_Barrier( comm );
 
-    for (i=0; i<size; i++) buf[i] = -1;
+    for (int i = 0; i < size; i++)
+      buf[i] = -1;
     MPI_File_read_at_all( fh, sizeof(int)*rank, buf, 10, MPI_INT, &status );
     // if (buf[0] != rank) {
         // errs++;

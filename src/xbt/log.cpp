@@ -437,18 +437,15 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
 static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, const char* name)
 {
-  xbt_log_category_t child;
-  xbt_log_category_t res;
-
   XBT_DEBUG("Search '%s' into '%s' (firstChild='%s'; nextSibling='%s')", name,
          cat->name, (cat->firstChild ? cat->firstChild->name : "none"),
          (cat->nextSibling ? cat->nextSibling->name : "none"));
   if (strcmp(cat->name, name) == 0)
     return cat;
 
-  for (child = cat->firstChild; child != nullptr; child = child->nextSibling) {
+  for (xbt_log_category_t child = cat->firstChild; child != nullptr; child = child->nextSibling) {
     XBT_DEBUG("Dig into %s", child->name);
-    res = _xbt_log_cat_searchsub(child, name);
+    xbt_log_category_t res = _xbt_log_cat_searchsub(child, name);
     if (res)
       return res;
   }

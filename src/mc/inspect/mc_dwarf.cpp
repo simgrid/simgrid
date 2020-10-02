@@ -396,8 +396,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die* die, Dwarf_Die* unit)
 
   int result = 1;
   Dwarf_Die child;
-  int res;
-  for (res = dwarf_child(die, &child); res == 0; res = dwarf_siblingof(&child, &child)) {
+  for (int res = dwarf_child(die, &child); res == 0; res = dwarf_siblingof(&child, &child)) {
     int child_tag = dwarf_tag(&child);
     if (child_tag == DW_TAG_subrange_type || child_tag == DW_TAG_enumeration_type)
       result *= MC_dwarf_subrange_element_count(&child, unit);
@@ -487,10 +486,9 @@ static void MC_dwarf_fill_member_location(const simgrid::mc::Type* type, simgrid
 static void MC_dwarf_add_members(const simgrid::mc::ObjectInformation* /*info*/, Dwarf_Die* die,
                                  const Dwarf_Die* /*unit*/, simgrid::mc::Type* type)
 {
-  int res;
   Dwarf_Die child;
   xbt_assert(type->members.empty());
-  for (res = dwarf_child(die, &child); res == 0; res = dwarf_siblingof(&child, &child)) {
+  for (int res = dwarf_child(die, &child); res == 0; res = dwarf_siblingof(&child, &child)) {
     int tag = dwarf_tag(&child);
     if (tag == DW_TAG_member || tag == DW_TAG_inheritance) {
       // Skip declarations:
@@ -853,8 +851,7 @@ static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf
 {
   // For each child DIE:
   Dwarf_Die child;
-  int res;
-  for (res = dwarf_child(die, &child); res == 0; res = dwarf_siblingof(&child, &child))
+  for (int res = dwarf_child(die, &child); res == 0; res = dwarf_siblingof(&child, &child))
     MC_dwarf_handle_die(info, &child, unit, frame, ns);
 }
 

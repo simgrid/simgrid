@@ -645,8 +645,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
     min_usage = -1;
     min_bound = -1;
     saturated_constraints.clear();
-    int pos;
-    for (pos = 0; pos < cnst_light_num; pos++) {
+    for (int pos = 0; pos < cnst_light_num; pos++) {
       xbt_assert(not cnst_light_tab[pos].cnst->active_element_set_.empty(),
                  "Cannot saturate more a constraint that has"
                  " no active element! You may want to change the maxmin precision (--cfg=maxmin/precision:<new_value>)"

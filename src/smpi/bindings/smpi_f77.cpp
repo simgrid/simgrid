@@ -405,8 +405,7 @@ void mpi_info_get_(int* info, char* key, int* valuelen, char* value, int* flag, 
   xbt_free(tkey);
   if(*flag!=0){
     int replace=0;
-    int i=0;
-    for (i=0; i<*valuelen; i++){
+    for (int i = 0; i < *valuelen; i++) {
       if(value[i]=='\0')
         replace=1;
       if(replace)
@@ -902,8 +901,7 @@ void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
 
 void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen){
   *ierr = MPI_Info_get_nthkey( simgrid::smpi::Info::f2c(*info), *n, key);
-  unsigned int i = 0;
-  for (i=strlen(key); i<keylen; i++)
+  for (unsigned int i = strlen(key); i < keylen; i++)
     key[i]=' ';
 }
 

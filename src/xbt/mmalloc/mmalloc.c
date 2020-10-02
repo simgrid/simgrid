@@ -70,9 +70,6 @@ static void initialize_heapinfo_heapinfo(const s_xbt_mheap_t* mdp)
  * properly, we need to make the align function publicly visible, too  */
 static void initialize(xbt_mheap_t mdp)
 {
-  int i;
-  malloc_info mi; /* to compute the offset of the swag hook */
-
   // Update mdp meta-data:
   mdp->heapsize = HEAP / BLOCKSIZE;
   mdp->heapinfo = (malloc_info *)
@@ -89,9 +86,9 @@ static void initialize(xbt_mheap_t mdp)
 
   initialize_heapinfo_heapinfo(mdp);
 
-  for (i=0;i<BLOCKLOG;i++) {
-      xbt_swag_init(&(mdp->fraghead[i]),
-                    xbt_swag_offset(mi, freehook));
+  for (int i = 0; i < BLOCKLOG; i++) {
+    malloc_info mi; /* to compute the offset of the swag hook */
+    xbt_swag_init(&(mdp->fraghead[i]), xbt_swag_offset(mi, freehook));
   }
 }
 
@@ -109,8 +106,6 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 
   /* Check if we need to grow the info table (in a multiplicative manner)  */
   if ((size_t) BLOCK((char *) result + size) > mdp->heapsize) {
-    int it;
-
     size_t newsize = mdp->heapsize;
     while ((size_t) BLOCK((char *) result + size) > newsize)
       newsize *= 2;
@@ -140,7 +135,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 
     /* mark the space previously occupied by the block info as free by first marking it
      * as occupied in the regular way, and then freing it */
-    for (it=0; it<BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++){
+    for (int it = 0; it < BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++) {
       newinfo[BLOCK(oldinfo)+it].type = MMALLOC_TYPE_UNFRAGMENTED;
       newinfo[BLOCK(oldinfo)+it].busy_block.ignore = 0;
     }

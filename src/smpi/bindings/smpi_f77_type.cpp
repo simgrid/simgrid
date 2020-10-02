@@ -186,10 +186,9 @@ void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,
 
 void mpi_type_struct_ (int* count, int* blocklens, int* indices, int* old_types, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  int i=0;
   MPI_Datatype* types = static_cast<MPI_Datatype*>(xbt_malloc(*count*sizeof(MPI_Datatype)));
   MPI_Aint* indices_aint=new MPI_Aint[*count];
-  for(i=0; i< *count; i++){
+  for (int i = 0; i < *count; i++) {
     indices_aint[i]=indices[i];
     types[i] = simgrid::smpi::Datatype::f2c(old_types[i]);
   }
@@ -203,9 +202,8 @@ void mpi_type_struct_ (int* count, int* blocklens, int* indices, int* old_types,
 
 void mpi_type_create_struct_(int* count, int* blocklens, MPI_Aint* indices, int*  old_types, int*  newtype, int* ierr){
   MPI_Datatype tmp;
-  int i=0;
   MPI_Datatype* types = static_cast<MPI_Datatype*>(xbt_malloc(*count*sizeof(MPI_Datatype)));
-  for(i=0; i< *count; i++){
+  for (int i = 0; i < *count; i++) {
     types[i] = simgrid::smpi::Datatype::f2c(old_types[i]);
   }
   *ierr = MPI_Type_create_struct(*count, blocklens, indices, types, &tmp);

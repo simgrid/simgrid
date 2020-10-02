@@ -617,12 +617,11 @@ int Win::lock(int lock_type, int rank, int /*assert*/)
 }
 
 int Win::lock_all(int assert){
-  int i=0;
   int retval = MPI_SUCCESS;
-  for (i=0; i<comm_->size();i++){
-      int ret = this->lock(MPI_LOCK_SHARED, i, assert);
-      if(ret != MPI_SUCCESS)
-        retval = ret;
+  for (int i = 0; i < comm_->size(); i++) {
+    int ret = this->lock(MPI_LOCK_SHARED, i, assert);
+    if (ret != MPI_SUCCESS)
+      retval = ret;
   }
   return retval;
 }
@@ -644,9 +643,8 @@ int Win::unlock(int rank){
 }
 
 int Win::unlock_all(){
-  int i=0;
   int retval = MPI_SUCCESS;
-  for (i=0; i<comm_->size();i++){
+  for (int i = 0; i < comm_->size(); i++) {
     int ret = this->unlock(i);
     if (ret != MPI_SUCCESS)
       retval = ret;

@@ -125,11 +125,10 @@ xbt_mallocator_t xbt_mallocator_new(int size, pvoid_f_void_t new_f, void_f_pvoid
  */
 void xbt_mallocator_free(xbt_mallocator_t m)
 {
-  int i;
   xbt_assert(m != NULL, "Invalid parameter");
 
   XBT_VERB("Frees mallocator %p (size:%d/%d)", m, m->current_size, m->max_size);
-  for (i = 0; i < m->current_size; i++) {
+  for (int i = 0; i < m->current_size; i++) {
     m->free_f(m->objects[i]);
   }
   xbt_free(m->objects);
@@ -159,9 +158,8 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
     if (m->current_size <= 0) {
       /* No object is ready yet. Create a bunch of them to try to group the
        * mallocs on the same memory pages (to help the cache lines) */
-      int i;
       int amount = MIN(m->max_size / 2, 1000);
-      for (i = 0; i < amount; i++)
+      for (int i = 0; i < amount; i++)
         m->objects[i] = m->new_f();
       m->current_size = amount;
     }

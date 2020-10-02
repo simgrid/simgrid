@@ -170,7 +170,6 @@ void routing_table_update(const_node_t node, unsigned int id)
  */
 answer_t find_closest(const_node_t node, unsigned int destination_id)
 {
-  int i;
   answer_t answer = answer_init(destination_id);
   /* We find the corresponding bucket for the id */
   const_bucket_t bucket = routing_table_find_bucket(node->table, destination_id);
@@ -182,7 +181,7 @@ answer_t find_closest(const_node_t node, unsigned int destination_id)
   /* However, if we don't have enough elements in our bucket, we NEED to include at least "BUCKET_SIZE" elements
    * (if, of course, we know at least "BUCKET_SIZE" elements. So we're going to look unsigned into the other buckets.
    */
-  for (i = 1; answer->size < BUCKET_SIZE && ((bucket_id - i > 0) || (bucket_id + i < IDENTIFIER_SIZE)); i++) {
+  for (int i = 1; answer->size < BUCKET_SIZE && ((bucket_id - i > 0) || (bucket_id + i < IDENTIFIER_SIZE)); i++) {
     /* We check the previous buckets */
     if (bucket_id - i >= 0) {
       const_bucket_t bucket_p = &node->table->buckets[bucket_id - i];

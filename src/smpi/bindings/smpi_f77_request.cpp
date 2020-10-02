@@ -152,10 +152,9 @@ void mpi_start_(int* request, int* ierr) {
 
 void mpi_startall_(int* count, int* requests, int* ierr) {
   MPI_Request* reqs;
-  int i;
 
   reqs = xbt_new(MPI_Request, *count);
-  for(i = 0; i < *count; i++) {
+  for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
   *ierr = MPI_Startall(*count, reqs);
@@ -174,10 +173,9 @@ void mpi_wait_(int* request, MPI_Status* status, int* ierr) {
 
 void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int* ierr) {
   MPI_Request* reqs;
-  int i;
 
   reqs = xbt_new(MPI_Request, *count);
-  for(i = 0; i < *count; i++) {
+  for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
   *ierr = MPI_Waitany(*count, reqs, index, status);
@@ -258,10 +256,9 @@ void mpi_testall_ (int* count, int * requests,  int *flag, MPI_Status * statuses
 void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status* status, int* ierr)
 {
   MPI_Request* reqs;
-  int i;
 
   reqs = xbt_new(MPI_Request, *count);
-  for(i = 0; i < *count; i++) {
+  for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
   *ierr = MPI_Testany(*count, reqs, index, flag, FORT_STATUS_IGNORE(status));

@@ -300,9 +300,7 @@ void xbt_dynar_remove_at(xbt_dynar_t dynar, int idx, void* object)
  */
 signed int xbt_dynar_search_or_negative(const_xbt_dynar_t dynar, const void* elem)
 {
-  unsigned long it;
-
-  for (it = 0; it < dynar->used; it++)
+  for (unsigned long it = 0; it < dynar->used; it++)
     if (not memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
       return it;
     }
@@ -317,9 +315,7 @@ signed int xbt_dynar_search_or_negative(const_xbt_dynar_t dynar, const void* ele
  */
 int xbt_dynar_member(const_xbt_dynar_t dynar, const void* elem)
 {
-  unsigned long it;
-
-  for (it = 0; it < dynar->used; it++)
+  for (unsigned long it = 0; it < dynar->used; it++)
     if (not memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
       return 1;
     }
@@ -394,11 +390,10 @@ void xbt_dynar_map(const_xbt_dynar_t dynar, void_f_pvoid_t op)
   char *const data = (char *) dynar->data;
   const unsigned long elmsize = dynar->elmsize;
   const unsigned long used = dynar->used;
-  unsigned long i;
 
   _sanity_check_dynar(dynar);
 
-  for (i = 0; i < used; i++) {
+  for (unsigned long i = 0; i < used; i++) {
     char* elm = data + i * elmsize;
     op(elm);
   }

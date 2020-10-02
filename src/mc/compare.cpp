@@ -1015,7 +1015,6 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
   const simgrid::mc::Type* subtype;
   const simgrid::mc::Type* subsubtype;
   int elm_size;
-  int i;
 
   xbt_assert(type != nullptr);
   switch (type->type) {
@@ -1060,7 +1059,7 @@ static bool areas_differ_with_type(simgrid::mc::StateComparator& state, const vo
         default:
           return false;
       }
-      for (i = 0; i < type->element_count; i++) {
+      for (int i = 0; i < type->element_count; i++) {
         size_t off = i * elm_size;
         if (areas_differ_with_type(state, (const char*)real_area1 + off, snapshot1, region1,
                                    (const char*)real_area2 + off, snapshot2, region2, type->subtype, pointer_level))
