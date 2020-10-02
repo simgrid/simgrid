@@ -35,7 +35,7 @@ Comm::~Comm()
 
 int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
 {
-  std::unique_ptr<kernel::activity::CommImpl* []> rcomms(new kernel::activity::CommImpl*[comms->size()]);
+  auto rcomms = std::make_unique<kernel::activity::CommImpl*[]>(comms->size());
   std::transform(begin(*comms), end(*comms), rcomms.get(),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   int changed_pos = simcall_comm_waitany(rcomms.get(), comms->size(), timeout);
@@ -198,7 +198,7 @@ Comm* Comm::wait_for(double timeout)
 
 int Comm::test_any(const std::vector<CommPtr>* comms)
 {
-  std::unique_ptr<kernel::activity::CommImpl* []> rcomms(new kernel::activity::CommImpl*[comms->size()]);
+  auto rcomms = std::make_unique<kernel::activity::CommImpl*[]>(comms->size());
   std::transform(begin(*comms), end(*comms), rcomms.get(),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   int changed_pos = simcall_comm_testany(rcomms.get(), comms->size());

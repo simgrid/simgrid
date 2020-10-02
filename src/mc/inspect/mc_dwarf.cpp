@@ -658,10 +658,10 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::Ob
     // No location: do not add it ?
     return nullptr;
 
-  std::unique_ptr<simgrid::mc::Variable> variable = std::unique_ptr<simgrid::mc::Variable>(new simgrid::mc::Variable());
-  variable->id                                    = dwarf_dieoffset(die);
-  variable->global                                = frame == nullptr; // Can be override base on DW_AT_location
-  variable->object_info                           = info;
+  auto variable         = std::make_unique<simgrid::mc::Variable>();
+  variable->id          = dwarf_dieoffset(die);
+  variable->global      = frame == nullptr; // Can be override base on DW_AT_location
+  variable->object_info = info;
 
   const char* name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (name)

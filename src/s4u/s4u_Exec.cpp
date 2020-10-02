@@ -42,7 +42,7 @@ Exec* Exec::wait_for(double timeout)
 
 int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
 {
-  std::unique_ptr<kernel::activity::ExecImpl* []> rexecs(new kernel::activity::ExecImpl*[execs->size()]);
+  auto rexecs = std::make_unique<kernel::activity::ExecImpl*[]>(execs->size());
   std::transform(begin(*execs), end(*execs), rexecs.get(),
                  [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
 

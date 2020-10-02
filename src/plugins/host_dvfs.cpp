@@ -386,31 +386,25 @@ static void on_host_added(simgrid::s4u::Host& host)
       boost::algorithm::to_lower(dvfs_governor);
     }
 
-    auto governor = [&dvfs_governor, &daemon_proc]() {
+    auto governor = [&dvfs_governor, &daemon_proc]() -> std::unique_ptr<simgrid::plugin::dvfs::Governor> {
       if (dvfs_governor == "conservative") {
-        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Conservative(daemon_proc->get_host()));
+        return std::make_unique<simgrid::plugin::dvfs::Conservative>(daemon_proc->get_host());
       } else if (dvfs_governor == "ondemand") {
-        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::OnDemand(daemon_proc->get_host()));
+        return std::make_unique<simgrid::plugin::dvfs::OnDemand>(daemon_proc->get_host());
       }
 #if HAVE_SMPI
       else if (dvfs_governor == "adagio") {
-        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Adagio(daemon_proc->get_host()));
+        return std::make_unique<simgrid::plugin::dvfs::Adagio>(daemon_proc->get_host());
       }
 #endif
       else if (dvfs_governor == "performance") {
-        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Performance(daemon_proc->get_host()));
+        return std::make_unique<simgrid::plugin::dvfs::Performance>(daemon_proc->get_host());
       } else if (dvfs_governor == "powersave") {
-        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Powersave(daemon_proc->get_host()));
+        return std::make_unique<simgrid::plugin::dvfs::Powersave>(daemon_proc->get_host());
       } else {
         XBT_CRITICAL("No governor specified for host %s, falling back to Performance",
                      daemon_proc->get_host()->get_cname());
-        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Performance(daemon_proc->get_host()));
+        return std::make_unique<simgrid::plugin::dvfs::Performance>(daemon_proc->get_host());
       }
     }();
 

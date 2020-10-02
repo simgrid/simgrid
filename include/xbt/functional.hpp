@@ -40,7 +40,7 @@ public:
     std::vector<std::string> args = *args_;
     if (not args.empty()) {
       char noarg[] = {'\0'};
-      std::unique_ptr<char* []> argv(new char*[argc + 1]);
+      auto argv    = std::make_unique<char*[]>(argc + 1);
       for (int i = 0; i != argc; ++i)
         argv[i] = args[i].empty() ? noarg : &args[i].front();
       argv[argc] = nullptr;

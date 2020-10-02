@@ -47,8 +47,7 @@ void VisitedStates::prune()
 std::unique_ptr<simgrid::mc::VisitedState>
 VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snapshots)
 {
-  std::unique_ptr<simgrid::mc::VisitedState> new_state =
-    std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState(state_number));
+  auto new_state             = std::make_unique<simgrid::mc::VisitedState>(state_number);
   graph_state->system_state_ = new_state->system_state;
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)", new_state->system_state.get(),
             new_state->num, graph_state->num_);

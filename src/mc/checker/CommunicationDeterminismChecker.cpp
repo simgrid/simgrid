@@ -176,7 +176,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
   const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[issuer->get_pid()];
   const std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer->get_pid()];
 
-  std::unique_ptr<PatternCommunication> pattern(new PatternCommunication());
+  auto pattern   = std::make_unique<PatternCommunication>();
   pattern->index = initial_pattern.index_comm + incomplete_pattern.size();
 
   if (call_type == MC_CALL_TYPE_SEND) {
@@ -333,7 +333,7 @@ void CommunicationDeterminismChecker::prepare()
   initial_communications_pattern.resize(maxpid);
   incomplete_communications_pattern.resize(maxpid);
 
-  std::unique_ptr<State> initial_state(new State(++expanded_states_count_));
+  auto initial_state = std::make_unique<State>(++expanded_states_count_);
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
@@ -451,7 +451,7 @@ void CommunicationDeterminismChecker::real_run()
       mc_model_checker->wait_for_requests();
 
       /* Create the new expanded state */
-      std::unique_ptr<State> next_state(new State(++expanded_states_count_));
+      auto next_state = std::make_unique<State>(++expanded_states_count_);
 
       /* If comm determinism verification, we cannot stop the exploration if some communications are not finished (at
        * least, data are transferred). These communications  are incomplete and they cannot be analyzed and compared

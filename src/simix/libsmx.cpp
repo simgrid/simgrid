@@ -184,7 +184,7 @@ simcall_comm_iprobe(smx_mailbox_t mbox, int type, bool (*match_fun)(void*, void*
 unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count,
                                   double timeout) // XBT_ATTRIB_DEPRECATED_v330
 {
-  std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(new simgrid::kernel::activity::CommImpl*[count]);
+  auto rcomms = std::make_unique<simgrid::kernel::activity::CommImpl*[]>(count);
   std::transform(comms, comms + count, rcomms.get(), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
@@ -203,7 +203,7 @@ int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], siz
 {
   if (count == 0)
     return -1;
-  std::unique_ptr<simgrid::kernel::activity::CommImpl* []> rcomms(new simgrid::kernel::activity::CommImpl*[count]);
+  auto rcomms = std::make_unique<simgrid::kernel::activity::CommImpl*[]>(count);
   std::transform(comms, comms + count, rcomms.get(), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });

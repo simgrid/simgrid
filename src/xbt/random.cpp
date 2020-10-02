@@ -103,7 +103,7 @@ double XbtRandom::normal(double mean, double sd)
   return z0 * sd + mean;
 }
 
-static std::unique_ptr<Random> default_random(new XbtRandom);
+static std::unique_ptr<Random> default_random = std::make_unique<XbtRandom>();
 
 void set_implem_xbt()
 {

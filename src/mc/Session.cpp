@@ -85,7 +85,7 @@ Session::Session(const std::function<void()>& code)
 
   xbt_assert(mc_model_checker == nullptr, "Did you manage to start the MC twice in this process?");
 
-  auto process = std::unique_ptr<simgrid::mc::RemoteSimulation>(new simgrid::mc::RemoteSimulation(pid));
+  auto process = std::make_unique<simgrid::mc::RemoteSimulation>(pid);
   model_checker_.reset(new simgrid::mc::ModelChecker(std::move(process), sockets[1]));
 
   mc_model_checker = model_checker_.get();
