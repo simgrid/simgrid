@@ -7,7 +7,6 @@
 #define XBT_FUNCTIONAL_HPP
 
 #include <xbt/sysdep.h>
-#include <xbt/utility.hpp>
 
 #include <cstddef>
 #include <cstdlib>
@@ -64,8 +63,8 @@ template <class F> inline std::function<void()> wrap_main(F code, int argc, cons
 
 namespace bits {
 template <class F, class Tuple, std::size_t... I>
-constexpr auto apply(F&& f, Tuple&& t, simgrid::xbt::index_sequence<I...>)
-  -> decltype(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...))
+constexpr auto apply(F&& f, Tuple&& t, std::index_sequence<I...>)
+    -> decltype(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...))
 {
   return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
 }
@@ -81,20 +80,13 @@ constexpr auto apply(F&& f, Tuple&& t, simgrid::xbt::index_sequence<I...>)
  *  @endcode
  **/
 template <class F, class Tuple>
-constexpr auto apply(F&& f, Tuple&& t)
-  -> decltype(simgrid::xbt::bits::apply(
-    std::forward<F>(f),
-    std::forward<Tuple>(t),
-    simgrid::xbt::make_index_sequence<
-      std::tuple_size<typename std::decay<Tuple>::type>::value
-    >()))
+constexpr auto apply(F&& f, Tuple&& t) -> decltype(
+    simgrid::xbt::bits::apply(std::forward<F>(f), std::forward<Tuple>(t),
+                              std::make_index_sequence<std::tuple_size<typename std::decay<Tuple>::type>::value>()))
 {
   return simgrid::xbt::bits::apply(
-    std::forward<F>(f),
-    std::forward<Tuple>(t),
-    simgrid::xbt::make_index_sequence<
-      std::tuple_size<typename std::decay<Tuple>::type>::value
-    >());
+      std::forward<F>(f), std::forward<Tuple>(t),
+      std::make_index_sequence<std::tuple_size<typename std::decay<Tuple>::type>::value>());
 }
 
 template<class T> class Task;

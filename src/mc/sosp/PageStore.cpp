@@ -12,9 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#if __cplusplus >= 201402L
 #include "src/include/xxhash.hpp"
-#endif
 #include "src/mc/mc_mmu.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 
@@ -34,18 +32,7 @@ namespace mc {
  */
 static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 {
-#ifdef __cplusplus >= 201402L
   return xxh::xxhash<64>(data, xbt_pagesize);
-#else
-  const std::uint64_t* values = (const uint64_t*)data;
-  std::size_t n               = xbt_pagesize / sizeof(uint64_t);
-
-  // This djb2:
-  std::uint64_t hash = 5381;
-  for (std::size_t i = 0; i != n; ++i)
-    hash = ((hash << 5) + hash) + values[i];
-  return hash;
-#endif
 }
 
 // ***** snapshot_page_manager

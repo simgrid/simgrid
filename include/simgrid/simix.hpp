@@ -11,6 +11,7 @@
 #include <xbt/functional.hpp>
 #include <xbt/future.hpp>
 #include <xbt/signal.hpp>
+#include <xbt/utility.hpp>
 
 #include <boost/heap/fibonacci_heap.hpp>
 #include <string>
