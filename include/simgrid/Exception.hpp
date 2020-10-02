@@ -92,7 +92,7 @@ public:
   /** Return the information about where the exception was thrown */
   xbt::ThrowPoint const& throw_point() const { return throwpoint_; }
 
-  std::string const resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
+  std::string resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
 
   /** Allow to carry a value (used by waitall/waitany) */
   int value = 0;
