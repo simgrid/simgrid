@@ -76,14 +76,14 @@ std::vector<int> Container::get_hierarchy()
 {
   if (parent_ == nullptr) {
     int top_level = 0;
-    std::vector<int> heir_list = {top_level};
-    return heir_list;
+    std::vector<int> hier_list = {top_level};
+    return hier_list;
   } else if (parent_->has_children()) {
     int child_nb = parent_->get_child_position(this);
     xbt_assert(child_nb > -1);
-    std::vector<int> heir_list = parent_->get_hierarchy();
-    heir_list.insert(heir_list.begin(), child_nb);
-    return heir_list;
+    std::vector<int> hier_list = parent_->get_hierarchy();
+    hier_list.insert(hier_list.begin(), child_nb);
+    return hier_list;
   } else {
     // we are in the last level
     return parent_->get_hierarchy();
@@ -94,11 +94,11 @@ std::string Container::get_hierarchy_as_string()
 {
   std::string output("");
 
-  std::vector<int> heir_list = this->get_hierarchy();
+  std::vector<int> hier_list = this->get_hierarchy();
 
-  unsigned int length = static_cast<unsigned int>(heir_list.size());
+  unsigned int length = static_cast<unsigned int>(hier_list.size());
   unsigned int i = 0;
-  for (auto const& id : heir_list) {
+  for (auto const& id : hier_list) {
     output += std::to_string(id);
     if( i != length-1 ) {
       output += ".";
