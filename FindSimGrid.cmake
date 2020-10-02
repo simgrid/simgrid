@@ -45,7 +45,7 @@
 #      (code to use with SimGrid v3.19+)
 #    #endif
 #
-#  Since SimGrid header files require C++11, so we set CMAKE_CXX_STANDARD to 11.
+#  Since SimGrid header files require C++14, so we set CMAKE_CXX_STANDARD to 14.
 #    Change this variable in your own file if you need a later standard.
 
 # 
@@ -58,7 +58,7 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_path(SimGrid_INCLUDE_DIR
@@ -117,22 +117,28 @@ if (SimGrid_FOUND AND NOT CMAKE_VERSION VERSION_LESS 2.8.12)
     INTERFACE_COMPILE_FEATURES cxx_alias_templates
     IMPORTED_LOCATION ${SimGrid_LIBRARY}
   )
-  # We need C++11, so check for it just in case the user removed it since compiling SimGrid
+  # We need C++14, so check for it just in case the user removed it since compiling SimGrid
   if (NOT CMAKE_VERSION VERSION_LESS 3.8)
     # 3.8+ allows us to simply require C++11 (or higher)
-    set_property(TARGET SimGrid::SimGrid PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_11)
+    set_property(TARGET SimGrid::SimGrid PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_14)
   elseif (NOT CMAKE_VERSION VERSION_LESS 3.1)
     # 3.1+ is similar but for certain features. We pick just one
-    set_property(TARGET SimGrid::SimGrid PROPERTY INTERFACE_COMPILE_FEATURES cxx_alias_templates)
+    set_property(TARGET SimGrid::SimGrid PROPERTY INTERFACE_COMPILE_FEATURES cxx_attribute_deprecated)
   else ()
-    # Old CMake can't do much. Just check the CXX_FLAGS and inform the user when a C++11 feature does not work
+    # Old CMake can't do much. Just check the CXX_FLAGS and inform the user when a C++14 feature does not work
     include(CheckCXXSourceCompiles)
     set(CMAKE_REQUIRED_FLAGS "${CMAKE_CXX_FLAGS}")
-    check_cxx_source_compiles("using Foo = int; int main(){}" _SIMGRID_CXX11_ENABLED)
-    if (NOT _SIMGRID_CXX11_ENABLED)
-        message(WARNING "C++11 is required to use SimGrid. Enable it with e.g. -std=c++11")
+    check_cxx_source_compiles("
+#if __cplusplus < 201402L
+#error
+#else
+int main(){}
+#endif
+" _SIMGRID_CXX14_ENABLED)
+    if (NOT _SIMGRID_CXX14_ENABLED)
+        message(WARNING "C++14 is required to use SimGrid. Enable it with e.g. -std=c++14")
     endif ()
-    unset(_SIMGRID_CXX11_ENABLED CACHE)
+    unset(_SIMGRID_CXX14_ENABLED CACHE)
   endif ()
 endif ()
 

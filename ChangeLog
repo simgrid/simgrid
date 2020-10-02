@@ -25,7 +25,7 @@ S4U:
  - the on_exit() of each actor is also executed when the simulation deadlocks.
 
 SMPI:
- - Update proxy apps coverage of new ECP apps: 60+ apps now tested nightly on 
+ - Update proxy apps coverage of new ECP apps: 60+ apps now tested nightly on
    https://framagit.org/simgrid/SMPI-proxy-apps
  - MPI/IO: supports names starting with "./"
  - Fortran: many MPI/IO bindings, support for MPI_UB/LB, C MPI_INT/FLOAT/DOUBLE
@@ -39,6 +39,7 @@ C binding:
    (int value was previously ignored)
 
 General:
+ - Require a compiler with C++14 support.
  - LTO is now enabled for Intel/clang compilers.
  - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.
    Setting it to "auto" will use all available cores, while setting it to n will

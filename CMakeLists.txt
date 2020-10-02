@@ -51,15 +51,15 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 
 if (CMAKE_COMPILER_IS_GNUCC)    
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")
     message(FATAL_ERROR
-            "SimGrid needs at least g++ version 4.7 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
-            "You need a sufficient support of c++11 to compile SimGrid.")
+            "SimGrid needs at least g++ version 5.0 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
+            "You need a sufficient support of c++14 to compile SimGrid.")
   endif()
 endif()
 
-## We need a decent support of the C++11 and C11 standards
-set(CMAKE_CXX_STANDARD 11)
+## We need a decent support of the C++14 and C11 standards
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_C_STANDARD 11)
@@ -427,8 +427,6 @@ if (enable_model-checking AND enable_ns3)
   message(FATAL_ERROR "Cannot activate both model-checking and ns-3 bindings: ns-3 pulls too much dependencies for the MC to work")
 endif()
 
-get_property(known_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
-
 if(enable_smpi)
   SET(HAVE_SMPI 1)
   if(WIN32)
@@ -793,47 +791,32 @@ if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
 endif()
 
-if (enable_model-checking AND (NOT ("cxx_std_14" IN_LIST known_features)))
-  message(WARNING "C++14 not found. The model-checker will use a slow hash function. You should upgrade your compiler")
-else()
-  set_property(TARGET simgrid PROPERTY CXX_STANDARD 14)    
-endif()
-
 # Python binding (with pybind11)
 ################
-# Our usage of pybind11::overload_cast mandates C++14
 if((NOT DEFINED enable_python) OR enable_python)
-  if("cxx_std_14" IN_LIST known_features)
+  if(EXISTS ${CMAKE_HOME_DIRECTORY}/pybind11) # Try to use a local copy of pybind11, if any
+    message(STATUS "Use the internal copy of pybind11.")
+    add_subdirectory(${CMAKE_HOME_DIRECTORY}/pybind11)
+    set(pybind11_FOUND ON)
 
-    if(EXISTS ${CMAKE_HOME_DIRECTORY}/pybind11) # Try to use a local copy of pybind11, if any
-      message(STATUS "Use the internal copy of pybind11 (using C++14).")
-      add_subdirectory(${CMAKE_HOME_DIRECTORY}/pybind11)
-      set(pybind11_FOUND ON)
-
-      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/pybind11/tools/)
-      set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
-      find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
-
-    else()
-      find_package(pybind11 CONFIG)
-      message(STATUS "Pybind11 version: ${pybind11_VERSION}")
-      if (pybind11_VERSION VERSION_LESS 2.4)
-        message(STATUS "SimGrid needs at least v2.4 of pybind11. Disabling the Python bindings.")
-        set(pybind11_FOUND OFF)
-      endif()
-    endif()
-
-    if(NOT PYTHONLIBS_FOUND)
-      message(STATUS "Python libs not found. Turn pybind11 off.")
-
-      set(pybind11_FOUND OFF)
-    endif()
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/pybind11/tools/)
+    set(Python_ADDITIONAL_VERSIONS 3.7 3.6 3.5 3.4)
+    find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
 
   else()
-    message(STATUS "No support for C++14 detected, don't even search for pybind11.")
+    find_package(pybind11 CONFIG)
+    message(STATUS "Pybind11 version: ${pybind11_VERSION}")
+    if (pybind11_VERSION VERSION_LESS 2.4)
+      message(STATUS "SimGrid needs at least v2.4 of pybind11. Disabling the Python bindings.")
+      set(pybind11_FOUND OFF)
+    endif()
+  endif()
+
+  if(NOT PYTHONLIBS_FOUND)
+    message(STATUS "Python libs not found. Turn pybind11 off.")
+
     set(pybind11_FOUND OFF)
   endif()
-  unset(known_features)
 endif()
 
 option(enable_python "Whether the Python bindings are activated." ${pybind11_FOUND}) # ON by default if dependencies are met
@@ -845,7 +828,7 @@ endif()
 
 if(enable_python)
   if(pybind11_FOUND)
-    message(STATUS "Found pybind11, with C++14.")
+    message(STATUS "Found pybind11.")
     if(NOT enable_lto)
       set(pybind11_options NO_EXTRAS)
     endif()
