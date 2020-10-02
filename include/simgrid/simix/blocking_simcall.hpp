@@ -56,7 +56,7 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
       [&result, self, &code] {
         try {
           auto future = code();
-          future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+          future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>> value) {
             simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(std::move(value)));
             simgrid::simix::unblock(self);
           });
@@ -94,7 +94,7 @@ public:
         [this, &result, self] {
           try {
             // When the kernel future is ready...
-            this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+            this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>> value) {
               // ... wake up the process with the result of the kernel future.
               simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(std::move(value)));
               simgrid::simix::unblock(self);
@@ -125,7 +125,7 @@ public:
         [this, &exception, self] {
           try {
             // When the kernel future is ready...
-            this->future_.then_([this, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
+            this->future_.then_([this, self](std::shared_ptr<simgrid::kernel::FutureState<T>> value) {
               // ...store it the simix kernel and wake up.
               this->future_ = simgrid::kernel::Future<T>(std::move(value));
               simgrid::simix::unblock(self);
