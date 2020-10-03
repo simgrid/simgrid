@@ -13,6 +13,7 @@ exclude_paths:
   - 'tools/**.py'
   - 'examples/smpi/NAS/*'
   - 'src/include/catch.hpp'
+  - 'src/include/xxhash.hpp'
   - 'src/smpi/colls/**/*'
   - 'src/xbt/automaton/parserPromela.tab.*'
   - 'teshsuite/smpi/isp/**'
