@@ -101,7 +101,7 @@ static void client(int id)
       XBT_INFO("Propositions changed : r=1, cs=0");
     }
 
-    const Message* grant = static_cast<Message*>(my_mailbox->get());
+    const auto* grant = static_cast<Message*>(my_mailbox->get());
 
     if ((id == 1) && (grant->kind == Message::Kind::GRANT)) {
       cs = 1;

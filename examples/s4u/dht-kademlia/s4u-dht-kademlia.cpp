@@ -52,7 +52,7 @@ static void node(int argc, char* argv[])
 
       if (node.receive_comm->test()) {
         // There has been a message, we need to handle it !
-        const kademlia::Message* msg = static_cast<kademlia::Message*>(node.received_msg);
+        const auto* msg = static_cast<kademlia::Message*>(node.received_msg);
         if (msg) {
           node.handleFindNode(msg);
           delete msg->answer_;

@@ -20,7 +20,7 @@ static void sender(int argc, char**)
 
   // Copy the data we send: the 'msg_content' variable is not a stable storage location.
   // It will be destroyed when this actor leaves the loop, ie before the receiver gets the data
-  std::string* payload = new std::string("Sent message");
+  auto* payload = new std::string("Sent message");
 
   /* Create a communication representing the ongoing communication and then */
   simgrid::s4u::CommPtr comm = mbox->put_init(payload, 13194230);
@@ -49,7 +49,7 @@ static void receiver(int, char**)
   XBT_INFO("Wait for the message.");
   void* payload = mbox->get();
 
-  const std::string* received = static_cast<std::string*>(payload);
+  const auto* received = static_cast<std::string*>(payload);
   XBT_INFO("I got '%s'.", received->c_str());
 
   delete received;

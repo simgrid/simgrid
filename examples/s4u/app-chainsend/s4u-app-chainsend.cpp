@@ -47,7 +47,7 @@ public:
 
   void joinChain()
   {
-    const ChainMessage* msg = static_cast<ChainMessage*>(me->get());
+    const auto* msg   = static_cast<ChainMessage*>(me->get());
     prev              = msg->prev_;
     next              = msg->next_;
     total_pieces      = msg->num_pieces;
@@ -139,7 +139,7 @@ static void peer()
 {
   XBT_DEBUG("peer");
 
-  Peer* p = new Peer();
+  auto* p = new Peer();
 
   double start_time = simgrid::s4u::Engine::get_clock();
   p->joinChain();
@@ -158,7 +158,7 @@ static void broadcaster(int hostcount, unsigned int piece_count)
 {
   XBT_DEBUG("broadcaster");
 
-  Broadcaster* bc = new Broadcaster(hostcount, piece_count);
+  auto* bc = new Broadcaster(hostcount, piece_count);
   bc->buildChain();
   bc->sendFile();
 

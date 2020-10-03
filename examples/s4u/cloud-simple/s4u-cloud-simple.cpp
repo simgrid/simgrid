@@ -33,7 +33,7 @@ struct s_payload {
 static void communication_tx_fun(std::vector<std::string> args)
 {
   simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(args.at(0));
-  s_payload* payload            = new s_payload;
+  auto* payload                 = new s_payload;
   payload->tx_actor_name        = simgrid::s4u::Actor::self()->get_cname();
   payload->tx_host              = simgrid::s4u::this_actor::get_host();
   payload->clock_sta            = simgrid::s4u::Engine::get_clock();
@@ -47,7 +47,7 @@ static void communication_rx_fun(std::vector<std::string> args)
   const char* host_name         = simgrid::s4u::this_actor::get_host()->get_cname();
   simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(args.at(0));
 
-  const s_payload* payload  = static_cast<struct s_payload*>(mbox->get());
+  const auto* payload       = static_cast<struct s_payload*>(mbox->get());
   double clock_end          = simgrid::s4u::Engine::get_clock();
 
   XBT_INFO("%s:%s to %s:%s => %g sec", payload->tx_host->get_cname(), payload->tx_actor_name, host_name, actor_name,
@@ -95,7 +95,7 @@ static void master_main()
       "## Test 2 (started): check impact of running an activity inside a VM (there is no degradation for the moment)");
 
   XBT_INFO("### Put a VM on a PM, and put an activity to the VM");
-  simgrid::s4u::VirtualMachine* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  auto* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->start();
   launch_computation_worker(vm0);
   simgrid::s4u::this_actor::sleep_for(2);
@@ -121,7 +121,7 @@ static void master_main()
   XBT_INFO("### Put two VMs on a PM, and put an activity to each VM");
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->start();
-  simgrid::s4u::VirtualMachine* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm0, 1);
+  auto* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm0, 1);
   launch_computation_worker(vm0);
   launch_computation_worker(vm1);
   simgrid::s4u::this_actor::sleep_for(2);

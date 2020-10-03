@@ -52,7 +52,7 @@ static void receiver(std::vector<std::string> args)
     void* res = mailbox->get();
     xbt_free(res);
   } else {
-    void** data= new void*[flow_amount];
+    auto* data = new void*[flow_amount];
 
     // Start all comms in parallel, and wait for their completion in one shot
     std::vector<simgrid::s4u::CommPtr> comms;

@@ -9,8 +9,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_dependent, "Messages specific for this s4u
 
 static void sender(simgrid::s4u::Mailbox* mailbox)
 {
-  double* computation_amount = new double();
-  *computation_amount        = simgrid::s4u::this_actor::get_host()->get_speed();
+  auto* computation_amount   = new double(simgrid::s4u::this_actor::get_host()->get_speed());
   simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_init(2 * (*computation_amount));
   simgrid::s4u::CommPtr comm = mailbox->put_init(computation_amount, 7e6);
 

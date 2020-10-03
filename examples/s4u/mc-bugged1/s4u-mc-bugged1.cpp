@@ -35,8 +35,7 @@ static void server()
 
 static void client(int id)
 {
-  int* payload = new int();
-  *payload     = id;
+  auto* payload = new int(id);
   simgrid::s4u::Mailbox::by_name("mymailbox")->put(payload, 10000);
 
   XBT_INFO("Sent!");

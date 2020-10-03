@@ -35,7 +35,7 @@ static void sender(int argc, char** argv)
     std::string msg_content = std::string("Message ") + std::to_string(i);
     // Copy the data we send: the 'msg_content' variable is not a stable storage location.
     // It will be destroyed when this actor leaves the loop, ie before the receiver gets the data
-    std::string* payload = new std::string(msg_content);
+    auto* payload = new std::string(msg_content);
 
     /* Create a communication representing the ongoing communication and then */
     simgrid::s4u::CommPtr comm = mbox->put_async(payload, msg_size);
@@ -79,7 +79,7 @@ static void receiver(int, char**)
       comm->wait();
     }
 
-    const std::string* received = static_cast<std::string*>(payload);
+    const auto* received = static_cast<std::string*>(payload);
     XBT_INFO("I got a '%s'.", received->c_str());
     if (*received == "finalize")
       cont = false; // If it's a finalize message, we're done.

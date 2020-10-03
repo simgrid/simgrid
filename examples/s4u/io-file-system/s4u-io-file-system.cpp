@@ -32,7 +32,7 @@ public:
 
     // Open an non-existing file to create it
     std::string filename     = "/scratch/tmp/data.txt";
-    simgrid::s4u::File* file = new simgrid::s4u::File(filename, nullptr);
+    auto* file               = new simgrid::s4u::File(filename, nullptr);
 
     sg_size_t write = file->write(200000); // Write 200,000 bytes
     XBT_INFO("Create a %llu bytes file named '%s' on /scratch", write, filename.c_str());
@@ -57,7 +57,7 @@ public:
 
     // Test attaching some user data to the file
     file->set_data(new std::string("777"));
-    const std::string* file_data = static_cast<std::string*>(file->get_data());
+    const auto* file_data = static_cast<std::string*>(file->get_data());
     XBT_INFO("User data attached to the file: %s", file_data->c_str());
     delete file_data;
 

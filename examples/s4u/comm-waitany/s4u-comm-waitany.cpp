@@ -52,7 +52,7 @@ public:
       std::string msg_content = std::string("Message ") + std::to_string(i);
       // Copy the data we send: the 'msg_content' variable is not a stable storage location.
       // It will be destroyed when this actor leaves the loop, ie before the receiver gets it
-      std::string* payload = new std::string(msg_content);
+      auto* payload = new std::string(msg_content);
 
       XBT_INFO("Send '%s' to '%s'", msg_content.c_str(), mboxes[i % receivers_count]->get_cname());
 
@@ -102,7 +102,7 @@ public:
   {
     XBT_INFO("Wait for my first message");
     for (bool cont = true; cont;) {
-      const std::string* received = static_cast<std::string*>(mbox->get());
+      const auto* received = static_cast<std::string*>(mbox->get());
       XBT_INFO("I got a '%s'.", received->c_str());
       cont = (*received != "finalize"); // If it's a finalize message, we're done
       // Receiving the message was all we were supposed to do

@@ -57,7 +57,7 @@ public:
     std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
-    simgrid::s4u::File* file = new simgrid::s4u::File(file_name, NULL);
+    auto* file = new simgrid::s4u::File(file_name, NULL);
 
     opened_files.insert({full_name, file});
 

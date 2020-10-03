@@ -104,7 +104,7 @@ void Node::leave()
 void Node::notifyAndQuit()
 {
   // send the PREDECESSOR_LEAVING to our successor
-  ChordMessage* pred_msg = new ChordMessage(PREDECESSOR_LEAVING);
+  auto* pred_msg         = new ChordMessage(PREDECESSOR_LEAVING);
   pred_msg->request_id   = pred_id_;
   pred_msg->answer_to    = mailbox_;
 
@@ -118,7 +118,7 @@ void Node::notifyAndQuit()
 
   if (pred_id_ != -1 && pred_id_ != id_) {
     // send the SUCCESSOR_LEAVING to our predecessor (only if I have one that is not me)
-    ChordMessage* succ_msg = new ChordMessage(SUCCESSOR_LEAVING);
+    auto* succ_msg         = new ChordMessage(SUCCESSOR_LEAVING);
     succ_msg->request_id   = fingers_[0];
     succ_msg->answer_to    = mailbox_;
     XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
@@ -208,7 +208,7 @@ void Node::checkPredecessor()
   simgrid::s4u::Mailbox* mailbox        = simgrid::s4u::Mailbox::by_name(std::to_string(pred_id_));
   simgrid::s4u::Mailbox* return_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_is_alive");
 
-  ChordMessage* message = new ChordMessage(PREDECESSOR_ALIVE);
+  auto* message         = new ChordMessage(PREDECESSOR_ALIVE);
   message->request_id   = pred_id_;
   message->answer_to    = return_mailbox;
 
@@ -248,7 +248,7 @@ int Node::remoteGetPredecessor(int ask_to)
   simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
   simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_pred");
 
-  ChordMessage* message = new ChordMessage(GET_PREDECESSOR);
+  auto* message         = new ChordMessage(GET_PREDECESSOR);
   message->request_id   = id_;
   message->answer_to    = return_mailbox;
 
@@ -269,7 +269,7 @@ int Node::remoteGetPredecessor(int ask_to)
 
   try {
     comm->wait_for(timeout);
-    const ChordMessage* answer = static_cast<ChordMessage*>(data);
+    const auto* answer = static_cast<ChordMessage*>(data);
     XBT_DEBUG("Received the answer to my 'Get Predecessor' request: the predecessor of node %d is %d", ask_to,
               answer->answer_id);
     predecessor_id = answer->answer_id;
@@ -320,7 +320,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
   simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_succ");
 
-  ChordMessage* message = new ChordMessage(FIND_SUCCESSOR);
+  auto* message         = new ChordMessage(FIND_SUCCESSOR);
   message->request_id   = id_;
   message->answer_to    = return_mailbox;
 
@@ -366,7 +366,7 @@ void Node::notify(int predecessor_candidate_id)
 /* Notifies a remote node that its predecessor may have changed. */
 void Node::remoteNotify(int notify_id, int predecessor_candidate_id) const
 {
-  ChordMessage* message = new ChordMessage(NOTIFY);
+  auto* message         = new ChordMessage(NOTIFY);
   message->request_id   = predecessor_candidate_id;
   message->answer_to    = nullptr;
 
@@ -510,7 +510,7 @@ void Node::operator()()
 
     if (comm_completed) {
       if (data != nullptr) {
-        ChordMessage* message = static_cast<ChordMessage*>(data);
+        auto* message = static_cast<ChordMessage*>(data);
         handleMessage(message);
         data = nullptr;
       }

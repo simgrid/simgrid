@@ -78,7 +78,7 @@ bool Peer::getPeersFromTracker()
 {
   simgrid::s4u::Mailbox* tracker_mailbox = simgrid::s4u::Mailbox::by_name(TRACKER_MAILBOX);
   // Build the task to send to the tracker
-  TrackerQuery* peer_request = new TrackerQuery(id, mailbox_);
+  auto* peer_request = new TrackerQuery(id, mailbox_);
   try {
     XBT_DEBUG("Sending a peer request to the tracker.");
     tracker_mailbox->put(peer_request, TRACKER_COMM_SIZE, GET_PEERS_TIMEOUT);
@@ -89,7 +89,7 @@ bool Peer::getPeersFromTracker()
   }
 
   try {
-    TrackerAnswer* answer = static_cast<TrackerAnswer*>(mailbox_->get(GET_PEERS_TIMEOUT));
+    auto* answer = static_cast<TrackerAnswer*>(mailbox_->get(GET_PEERS_TIMEOUT));
     // Add the peers the tracker gave us to our peer list.
     for (auto const& peer_id : answer->getPeers())
       if (id != peer_id)
@@ -106,7 +106,7 @@ void Peer::sendHandshakeToAllPeers()
 {
   for (auto const& kv : connected_peers) {
     const Connection& remote_peer = kv.second;
-    Message* handshake      = new Message(MESSAGE_HANDSHAKE, id, mailbox_);
+    auto* handshake               = new Message(MESSAGE_HANDSHAKE, id, mailbox_);
     remote_peer.mailbox_->put_init(handshake, MESSAGE_HANDSHAKE_SIZE)->detach();
     XBT_DEBUG("Sending a HANDSHAKE to %d", remote_peer.id);
   }

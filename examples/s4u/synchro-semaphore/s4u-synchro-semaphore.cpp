@@ -42,7 +42,7 @@ static void consumer()
 
 int main(int argc, char **argv)
 {
-  std::vector<std::string> args = std::vector<std::string>({"one", "two", "three", ""});
+  std::vector<std::string> args({"one", "two", "three", ""});
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
   simgrid::s4u::Actor::create("producer", simgrid::s4u::Host::by_name("Tremblay"), producer, &args);

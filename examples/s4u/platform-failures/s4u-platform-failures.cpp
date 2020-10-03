@@ -36,7 +36,7 @@ static void master(int argc, char* argv[])
 
   for (int i = 0; i < number_of_tasks; i++) {
     mailbox         = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(i % workers_count));
-    double* payload = new double(comp_size);
+    auto* payload   = new double(comp_size);
     try {
       XBT_INFO("Send a message to %s", mailbox->get_cname());
       mailbox->put(payload, comm_size, 10.0);
@@ -54,7 +54,7 @@ static void master(int argc, char* argv[])
   for (int i = 0; i < workers_count; i++) {
     /* - Eventually tell all the workers to stop by sending a "finalize" task */
     mailbox         = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(i));
-    double* payload = new double(-1.0);
+    auto* payload   = new double(-1.0);
     try {
       mailbox->put(payload, 0, 1.0);
     } catch (const simgrid::TimeoutException&) {
@@ -77,7 +77,7 @@ static void worker(int argc, char* argv[])
   while (true) {
     try {
       XBT_INFO("Waiting a message on %s", mailbox->get_cname());
-      const double* payload = static_cast<double*>(mailbox->get());
+      const auto* payload = static_cast<double*>(mailbox->get());
       xbt_assert(payload != nullptr, "mailbox->get() failed");
       double comp_size = *payload;
       delete payload;

@@ -48,7 +48,7 @@ static void peer(int argc, char** argv)
         simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
         std::string msgName =
             std::string("Message ") + std::to_string(i) + std::string(" from peer ") + std::to_string(my_id);
-        std::string* payload = new std::string(msgName); // copy the data we send:
+        auto* payload = new std::string(msgName); // copy the data we send:
         // 'msgName' is not a stable storage location
         XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
         /* Create a communication representing the ongoing communication */
@@ -62,7 +62,7 @@ static void peer(int argc, char** argv)
     if (peer_id != my_id) {
       std::string mboxName        = std::string("peer-") + std::to_string(peer_id);
       simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
-      std::string* payload        = new std::string("finalize"); // Make a copy of the data we will send
+      auto* payload               = new std::string("finalize"); // Make a copy of the data we will send
       pending_comms.push_back(mbox->put_async(payload, msg_size));
       XBT_INFO("Send 'finalize' to 'peer-%d'", peer_id);
     }
@@ -75,7 +75,7 @@ static void peer(int argc, char** argv)
   while (pending_finalize_messages > 0) {
     if (my_mbox->ready()) {
       double start                = simgrid::s4u::Engine::get_clock();
-      const std::string* received = static_cast<std::string*>(my_mbox->get());
+      const auto* received        = static_cast<std::string*>(my_mbox->get());
       double waiting_time         = simgrid::s4u::Engine::get_clock() - start;
       xbt_assert(
           waiting_time == 0,

@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(kademlia_node, "Messages specific for this example"
 namespace kademlia {
 static void destroy(void* message)
 {
-  const Message* msg = static_cast<Message*>(message);
+  const auto* msg = static_cast<Message*>(message);
   delete msg->answer_;
   delete msg;
 }
@@ -40,7 +40,7 @@ bool Node::join(unsigned int known_id)
       XBT_DEBUG("Received an answer from the node I know.");
       got_answer = true;
       // retrieve the node list and ping them.
-      const Message* msg = static_cast<Message*>(received_msg);
+      const auto* msg = static_cast<Message*>(received_msg);
       node_list    = msg->answer_;
       if (node_list) {
         for (auto const& contact : node_list->getNodes())
@@ -81,8 +81,8 @@ void Node::sendFindNode(unsigned int id, unsigned int destination) const
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
   /* Build the task */
 
-  Message* msg = new Message(id_, destination, simgrid::s4u::Mailbox::by_name(std::to_string(id_)),
-                             simgrid::s4u::Host::current()->get_cname());
+  auto* msg = new Message(id_, destination, simgrid::s4u::Mailbox::by_name(std::to_string(id_)),
+                          simgrid::s4u::Host::current()->get_cname());
 
   /* Send the task */
   mailbox->put_init(msg, 1)->detach(kademlia::destroy);
@@ -144,7 +144,7 @@ void Node::routingTableUpdate(unsigned int id)
   */
 Answer* Node::findClosest(unsigned int destination_id)
 {
-  Answer* answer = new Answer(destination_id);
+  auto* answer = new Answer(destination_id);
   /* We find the corresponding bucket for the id */
   const Bucket* bucket = table.findBucket(destination_id);
   int bucket_id  = bucket->getId();
@@ -205,7 +205,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
         receive_comm = mailbox->get_async(&received_msg);
 
       if (receive_comm->test()) {
-        const Message* msg = static_cast<Message*>(received_msg);
+        const auto* msg = static_cast<Message*>(received_msg);
         // Check if what we have received is what we are looking for.
         if (msg->answer_ && msg->answer_->getDestinationId() == id_to_find) {
           routingTableUpdate(msg->sender_id_);
@@ -273,7 +273,7 @@ void Node::handleFindNode(const Message* msg)
   XBT_VERB("Received a FIND_NODE from %s (%s), he's trying to find %08x", msg->answer_to_->get_cname(),
            msg->issuer_host_name_.c_str(), msg->destination_id_);
   // Building the answer to the request
-  Message* answer =
+  auto* answer =
       new Message(id_, msg->destination_id_, findClosest(msg->destination_id_),
                   simgrid::s4u::Mailbox::by_name(std::to_string(id_)), simgrid::s4u::Host::current()->get_cname());
   // Sending the answer

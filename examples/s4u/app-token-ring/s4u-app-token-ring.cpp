@@ -40,10 +40,10 @@ public:
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       std::string msg = "Token";
       neighbor_mailbox->put(&msg, token_size);
-      const std::string* res = static_cast<std::string*>(my_mailbox->get());
+      const auto* res = static_cast<std::string*>(my_mailbox->get());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
     } else {
-      std::string* res = static_cast<std::string*>(my_mailbox->get());
+      auto* res = static_cast<std::string*>(my_mailbox->get());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       neighbor_mailbox->put(res, token_size);

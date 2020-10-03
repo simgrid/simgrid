@@ -31,7 +31,7 @@ static void sender(int argc, char** argv)
     std::string mboxName        = std::string("receiver-") + std::to_string(i % receivers_count);
     simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
     std::string msgName         = std::string("Message ") + std::to_string(i);
-    std::string* payload        = new std::string(msgName); // copy the data we send:
+    auto* payload               = new std::string(msgName); // copy the data we send:
 
     // 'msgName' is not a stable storage location
     XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
@@ -45,7 +45,7 @@ static void sender(int argc, char** argv)
   for (int i = 0; i < receivers_count; i++) {
     std::string mboxName        = std::string("receiver-") + std::to_string(i % receivers_count);
     simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
-    std::string* payload        = new std::string("finalize"); // Make a copy of the data we will send
+    auto* payload               = new std::string("finalize"); // Make a copy of the data we will send
 
     simgrid::s4u::CommPtr comm = mbox->put_async(payload, 0);
     pending_comms.push_back(comm);
@@ -71,7 +71,7 @@ static void receiver(int argc, char** argv)
 
   XBT_INFO("Wait for my first message");
   for (bool cont = true; cont;) {
-    const std::string* received = static_cast<std::string*>(mbox->get());
+    const auto* received = static_cast<std::string*>(mbox->get());
     XBT_INFO("I got a '%s'.", received->c_str());
     if (*received == "finalize")
       cont = false; // If it's a finalize message, we're done.

@@ -79,8 +79,7 @@ static int sleeper_process(const int* param)
 static void pop_some_processes(int nb_processes, simgrid::s4u::Host* host)
 {
   for (int i = 0; i < nb_processes; ++i) {
-    int* param = new int;
-    *param     = i + 1;
+    auto* param = new int(i + 1);
     simgrid::s4u::Actor::create("meh", host, sleeper_process, param);
   }
 }

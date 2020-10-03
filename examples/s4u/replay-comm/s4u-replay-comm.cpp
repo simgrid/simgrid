@@ -53,8 +53,8 @@ public:
 
   static void send(simgrid::xbt::ReplayAction& action)
   {
-    uint64_t size             = static_cast<uint64_t>(std::stod(action[3]));
-    std::string* payload      = new std::string(action[3]);
+    auto size                 = static_cast<uint64_t>(std::stod(action[3]));
+    auto* payload             = new std::string(action[3]);
     double clock              = simgrid::s4u::Engine::get_clock();
     simgrid::s4u::Mailbox* to = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_name() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %" PRIu64 ") -- Actor %s on mailbox %s", NAME.c_str(), size,

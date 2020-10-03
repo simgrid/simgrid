@@ -36,7 +36,7 @@ void Tracker::operator()()
     if (comm->test()) {
       // Retrieve the data sent by the peer.
       xbt_assert(received != nullptr);
-      TrackerQuery* tq = static_cast<TrackerQuery*>(received);
+      auto* tq = static_cast<TrackerQuery*>(received);
 
       // Add the peer to our peer list, if not already known.
       if (known_peers.find(tq->getPeerId()) == known_peers.end()) {
@@ -44,7 +44,7 @@ void Tracker::operator()()
       }
 
       // Sending back peers to the requesting peer
-      TrackerAnswer* ta = new TrackerAnswer(TRACKER_QUERY_INTERVAL);
+      auto* ta = new TrackerAnswer(TRACKER_QUERY_INTERVAL);
       std::set<int>::iterator next_peer;
       int nb_known_peers = static_cast<int>(known_peers.size());
       int max_tries      = std::min(MAXIMUM_PEERS, nb_known_peers);

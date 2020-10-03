@@ -40,7 +40,7 @@ static void ensure_other_tid()
 static void sender()
 {
   ensure_root_tid();
-  std::string* payload = new std::string("some message");
+  auto* payload = new std::string("some message");
   simgrid::s4u::Mailbox::by_name("some mailbox")->put((void*)payload, 10e8);
 }
 
@@ -48,7 +48,7 @@ static void receiver()
 {
   ensure_other_tid();
 
-  const std::string* payload = static_cast<std::string*>(simgrid::s4u::Mailbox::by_name("some mailbox")->get());
+  const auto* payload = static_cast<std::string*>(simgrid::s4u::Mailbox::by_name("some mailbox")->get());
   XBT_INFO("Task received");
   delete payload;
 }
