@@ -74,7 +74,7 @@ public:
                  std::map<std::string, xbt_edge_t>* edges) override;
 
   virtual void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position);
-  virtual void parse_specific_arguments(ClusterCreationArgs* cluster)
+  virtual void parse_specific_arguments(ClusterCreationArgs*)
   {
     /* this routing method does not require any specific argument */
   }

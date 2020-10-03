@@ -126,9 +126,8 @@ static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* 
   simgrid::kernel::resource::LinkImpl* l =
       surf_network_model->create_link(link_name, link->bandwidths, link->latency, link->policy);
 
-  if (link->properties) {
+  if (link->properties)
     l->set_properties(*link->properties);
-  }
 
   if (link->latency_trace)
     l->set_latency_profile(link->latency_trace);

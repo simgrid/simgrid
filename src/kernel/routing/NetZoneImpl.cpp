@@ -374,7 +374,7 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
   /* Not in the same netzone, no bypass. We'll have to find our path between the netzones recursively */
 
   common_ancestor->get_local_route(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
-  xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",
+  xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "Bad gateways for route from '%s' to '%s'.",
              src->get_cname(), dst->get_cname());
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
