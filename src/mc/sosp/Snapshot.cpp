@@ -227,7 +227,7 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
   else if (type == RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  Region* region = new Region(type, start_addr, size);
+  auto* region = new Region(type, start_addr, size);
   region->object_info(object_info);
   snapshot_regions_.push_back(std::unique_ptr<Region>(std::move(region)));
 }

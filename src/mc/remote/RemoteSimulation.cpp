@@ -146,7 +146,7 @@ static std::string get_lib_name(const std::string& pathname)
 
 static ssize_t pread_whole(int fd, void* buf, size_t count, off_t offset)
 {
-  char* buffer       = (char*)buf;
+  auto* buffer       = static_cast<char*>(buf);
   ssize_t real_count = count;
   while (count) {
     ssize_t res = pread(fd, buffer, count, offset);
@@ -166,7 +166,7 @@ static ssize_t pread_whole(int fd, void* buf, size_t count, off_t offset)
 
 static ssize_t pwrite_whole(int fd, const void* buf, size_t count, off_t offset)
 {
-  const char* buffer = (const char*)buf;
+  const auto* buffer = static_cast<const char*>(buf);
   ssize_t real_count = count;
   while (count) {
     ssize_t res = pwrite(fd, buffer, count, offset);

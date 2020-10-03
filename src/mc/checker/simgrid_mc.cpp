@@ -22,7 +22,7 @@
 static inline
 char** argvdup(int argc, char** argv)
 {
-  char** argv_copy = new char*[argc + 1];
+  auto* argv_copy = new char*[argc + 1];
   std::memcpy(argv_copy, argv, sizeof(char*) * argc);
   argv_copy[argc] = nullptr;
   return argv_copy;

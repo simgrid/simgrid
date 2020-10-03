@@ -15,7 +15,7 @@ static void MC_patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& de
 {
   dest.clear();
   for (simgrid::mc::PatternCommunication const& comm : source) {
-    simgrid::mc::PatternCommunication* copy_comm = new simgrid::mc::PatternCommunication(comm.dup());
+    auto* copy_comm = new simgrid::mc::PatternCommunication(comm.dup());
     dest.push_back(copy_comm);
   }
 }
@@ -50,8 +50,7 @@ void MC_state_copy_index_communications_pattern(simgrid::mc::State* state)
 void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, int backtracking)
 {
   // HACK, do not rely on the Checker implementation outside of it
-  simgrid::mc::CommunicationDeterminismChecker* checker =
-    (simgrid::mc::CommunicationDeterminismChecker*) mc_model_checker->getChecker();
+  auto* checker = static_cast<simgrid::mc::CommunicationDeterminismChecker*>(mc_model_checker->getChecker());
 
   switch(call_type) {
   case MC_CALL_TYPE_NONE:

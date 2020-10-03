@@ -242,10 +242,10 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
       snapshot2.read<malloc_info*>(RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address));
 
   while (i1 < state.heaplimit) {
-    const malloc_info* heapinfo1 =
-        (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info));
-    const malloc_info* heapinfo2 =
-        (const malloc_info*)heap_region2->read(&heapinfo_temp2, &heapinfos2[i1], sizeof(malloc_info));
+    const auto* heapinfo1 =
+        static_cast<malloc_info*>(heap_region1->read(&heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info)));
+    const auto* heapinfo2 =
+        static_cast<malloc_info*>(heap_region2->read(&heapinfo_temp2, &heapinfos2[i1], sizeof(malloc_info)));
 
     if (heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type == MMALLOC_TYPE_HEAPINFO) {      /* Free block */
       i1 ++;
@@ -295,8 +295,8 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
           continue;
         }
 
-        const malloc_info* heapinfo2b =
-            (const malloc_info*)heap_region2->read(&heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info));
+        const auto* heapinfo2b =
+            static_cast<malloc_info*>(heap_region2->read(&heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info)));
 
         if (heapinfo2b->type != MMALLOC_TYPE_UNFRAGMENTED) {
           i2++;
@@ -331,7 +331,7 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
         if (state.equals_to_<1>(i1, j1).valid_)
           continue;
 
-        void* addr_frag1 = (void*)((char*)addr_block1 + (j1 << heapinfo1->type));
+        void* addr_frag1 = (char*)addr_block1 + (j1 << heapinfo1->type);
 
         size_t i2 = 1;
         bool equal = false;
@@ -345,8 +345,8 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
         }
 
         while (i2 < state.heaplimit && not equal) {
-          const malloc_info* heapinfo2b =
-              (const malloc_info*)heap_region2->read(&heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info));
+          const auto* heapinfo2b =
+              static_cast<malloc_info*>(heap_region2->read(&heapinfo_temp2b, &heapinfos2[i2], sizeof(malloc_info)));
 
           if (heapinfo2b->type == MMALLOC_TYPE_FREE || heapinfo2b->type == MMALLOC_TYPE_HEAPINFO) {
             i2 ++;
@@ -391,8 +391,8 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
 
   /* All blocks/fragments are equal to another block/fragment_ ? */
   for (size_t i = 1; i < state.heaplimit; i++) {
-    const malloc_info* heapinfo1 =
-        (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
+    const auto* heapinfo1 =
+        static_cast<malloc_info*>(heap_region1->read(&heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info)));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo1->busy_block.busy_size > 0 &&
         not state.equals_to_<1>(i, 0).valid_) {
@@ -410,8 +410,8 @@ static bool mmalloc_heap_differ(StateComparator& state, const Snapshot& snapshot
   }
 
   for (size_t i = 1; i < state.heaplimit; i++) {
-    const malloc_info* heapinfo2 =
-        (const malloc_info*)heap_region2->read(&heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
+    const auto* heapinfo2 =
+        static_cast<malloc_info*>(heap_region2->read(&heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info)));
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED && i1 == state.heaplimit && heapinfo2->busy_block.busy_size > 0 &&
         not state.equals_to_<2>(i, 0).valid_) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
@@ -810,10 +810,10 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
   const Region* heap_region1 = MC_get_heap_region(snapshot1);
   const Region* heap_region2 = MC_get_heap_region(snapshot2);
 
-  const malloc_info* heapinfo1 =
-      (const malloc_info*)heap_region1->read(&heapinfo_temp1, &heapinfos1[block1], sizeof(malloc_info));
-  const malloc_info* heapinfo2 =
-      (const malloc_info*)heap_region2->read(&heapinfo_temp2, &heapinfos2[block2], sizeof(malloc_info));
+  const auto* heapinfo1 =
+      static_cast<malloc_info*>(heap_region1->read(&heapinfo_temp1, &heapinfos1[block1], sizeof(malloc_info)));
+  const auto* heapinfo2 =
+      static_cast<malloc_info*>(heap_region2->read(&heapinfo_temp2, &heapinfos2[block2], sizeof(malloc_info)));
 
   if ((heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type==MMALLOC_TYPE_HEAPINFO)
     && (heapinfo2->type == MMALLOC_TYPE_FREE || heapinfo2->type ==MMALLOC_TYPE_HEAPINFO)) {
@@ -877,8 +877,8 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
     ssize_t frag2 = (ADDR2UINT(area2) % BLOCKSIZE) >> heapinfo2->type;
 
     // Process address of the fragment_:
-    void* real_addr_frag1 = (void*)((char*)real_addr_block1 + (frag1 << heapinfo1->type));
-    void* real_addr_frag2 = (void*)((char*)real_addr_block2 + (frag2 << heapinfo2->type));
+    void* real_addr_frag1 = (char*)real_addr_block1 + (frag1 << heapinfo1->type);
+    void* real_addr_frag2 = (char*)real_addr_block2 + (frag2 << heapinfo2->type);
 
     // Check the size of the fragments against the size of the type:
     if (type_size != -1) {

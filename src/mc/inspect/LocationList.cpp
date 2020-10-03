@@ -79,7 +79,7 @@ LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Att
     else if (offset == -1)
       xbt_die("Error while loading location list");
 
-    std::uint64_t base_address = (std::uint64_t)info.base_address();
+    auto base_address = reinterpret_cast<std::uint64_t>(info.base_address());
 
     LocationListEntry::range_type range;
     if (start == 0)

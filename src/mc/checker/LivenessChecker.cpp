@@ -82,9 +82,8 @@ std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values(
 
 std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc::Pair* pair)
 {
-  std::shared_ptr<VisitedPair> new_pair = std::make_shared<VisitedPair>(
-    pair->num, pair->automaton_state, pair->atomic_propositions,
-    pair->graph_state);
+  auto new_pair =
+      std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
   auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(), DerefAndCompareByActorsCountAndUsedHeap());
 
@@ -264,7 +263,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
                                                    std::shared_ptr<const std::vector<int>> propositions)
 {
   expanded_pairs_count_++;
-  std::shared_ptr<Pair> next_pair = std::make_shared<Pair>(expanded_pairs_count_);
+  auto next_pair                  = std::make_shared<Pair>(expanded_pairs_count_);
   next_pair->automaton_state      = state;
   next_pair->graph_state          = std::make_shared<State>(++expanded_states_count_);
   next_pair->atomic_propositions  = std::move(propositions);

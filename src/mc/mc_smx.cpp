@@ -21,7 +21,7 @@ static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
   simgrid::mc::ActorInformation temp;
   std::size_t offset = (char*)temp.copy.get_buffer() - (char*)&temp;
 
-  simgrid::mc::ActorInformation* process_info = (simgrid::mc::ActorInformation*)((char*)actor - offset);
+  auto* process_info = reinterpret_cast<simgrid::mc::ActorInformation*>((char*)actor - offset);
   return process_info;
 }
 
@@ -40,7 +40,7 @@ static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteSimula
   s_xbt_dynar_t dynar;
   process->read_bytes(&dynar, sizeof(dynar), remote_dynar);
 
-  smx_actor_t* data = static_cast<smx_actor_t*>(::operator new(dynar.elmsize * dynar.used));
+  auto* data = static_cast<smx_actor_t*>(::operator new(dynar.elmsize * dynar.used));
   process->read_bytes(data, dynar.elmsize * dynar.used, simgrid::mc::RemotePtr<void>(dynar.data));
 
   // Load each element of the vector from the MCed process:

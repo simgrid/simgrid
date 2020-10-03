@@ -45,7 +45,7 @@ std::unique_ptr<simgrid::mc::RemoteSimulation> snap_test_helper::process = nullp
 
 void snap_test_helper::init_memory(void* mem, size_t size)
 {
-  char* dest = (char*)mem;
+  auto* dest = static_cast<char*>(mem);
   for (size_t i = 0; i < size; ++i) {
     dest[i] = simgrid::xbt::random::uniform_int(0, 0xff);
   }
@@ -71,11 +71,11 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 
   // Init memory and take snapshots:
   init_memory(source, byte_size);
-  simgrid::mc::Region* region0 = new simgrid::mc::Region(simgrid::mc::RegionType::Data, source, byte_size);
+  auto* region0 = new simgrid::mc::Region(simgrid::mc::RegionType::Data, source, byte_size);
   for (int i = 0; i < n; i += 2) {
     init_memory((char*)source + i * xbt_pagesize, xbt_pagesize);
   }
-  simgrid::mc::Region* region = new simgrid::mc::Region(simgrid::mc::RegionType::Data, source, byte_size);
+  auto* region = new simgrid::mc::Region(simgrid::mc::RegionType::Data, source, byte_size);
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   INFO("Could not allocate destination memory");

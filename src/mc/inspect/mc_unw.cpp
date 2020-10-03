@@ -172,8 +172,8 @@ void* UnwindContext::get_reg(unw_context_t* context, unw_regnum_t regnum) noexce
 int UnwindContext::access_reg(unw_addr_space_t /*as*/, unw_regnum_t regnum, unw_word_t* valp, int write,
                               void* arg) noexcept
 {
-  simgrid::mc::UnwindContext* as_context = (simgrid::mc::UnwindContext*)arg;
-  unw_context_t* context                 = &as_context->unwind_context_;
+  auto* as_context       = static_cast<simgrid::mc::UnwindContext*>(arg);
+  unw_context_t* context = &as_context->unwind_context_;
   if (write)
     return -UNW_EREADONLYREG;
   const greg_t* preg = (greg_t*)get_reg(context, regnum);

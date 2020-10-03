@@ -688,9 +688,9 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::Ob
 
         if (len == 1 && expr[0].atom == DW_OP_addr) {
           variable->global  = true;
-          uintptr_t offset  = (uintptr_t)expr[0].number;
-          uintptr_t base    = (uintptr_t)info->base_address();
-          variable->address = (void*)(base + offset);
+          auto offset       = static_cast<uintptr_t>(expr[0].number);
+          auto base         = reinterpret_cast<uintptr_t>(info->base_address());
+          variable->address = reinterpret_cast<void*>(base + offset);
         } else
           variable->location_list = {
               simgrid::dwarf::LocationListEntry(simgrid::dwarf::DwarfExpression(expr, expr + len))};
@@ -784,7 +784,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
   // See DWARF4 spec 7.5
-  std::uint64_t base = (std::uint64_t)info->base_address();
+  auto base = reinterpret_cast<std::uint64_t>(info->base_address());
 
   // TODO, support DW_AT_ranges
   uint64_t low_pc     = MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
@@ -1190,8 +1190,8 @@ namespace mc {
 /** @brief Finds information about a given shared object/executable */
 std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<xbt::VmMap> const& maps, const char* name)
 {
-  std::shared_ptr<ObjectInformation> result = std::make_shared<ObjectInformation>();
-  result->file_name                         = name;
+  auto result       = std::make_shared<ObjectInformation>();
+  result->file_name = name;
   simgrid::mc::find_object_address(maps, result.get());
   MC_load_dwarf(result.get());
   MC_post_process_variables(result.get());
