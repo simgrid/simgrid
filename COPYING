@@ -251,3 +251,9 @@ License: NON COMMERCIAL
  Commercialization of this product is prohibited without notifying the
  Department of Energy (DOE) or Lawrence Livermore National Laboratory
  (LLNL).
+
+Files: src/include/xxhash.hpp
+Copyright:
+  Copyright (C) 2012-2018, Yann Collet.
+  Copyright (C) 2017-2018, Piotr Pliszka.
+License: BSD 2-Clause
