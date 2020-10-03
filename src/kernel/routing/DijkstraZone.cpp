@@ -57,7 +57,7 @@ void DijkstraZone::seal()
       }
 
       if (not found) {
-        RouteCreationArgs* route = new simgrid::kernel::routing::RouteCreationArgs();
+        auto* route = new simgrid::kernel::routing::RouteCreationArgs();
         route->link_list.push_back(network_model_->loopback_);
         xbt_graph_new_edge(route_graph_.get(), node, node, route);
       }
@@ -68,7 +68,7 @@ void DijkstraZone::seal()
   const_xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_.get());
 
   xbt_dynar_foreach (nodes, cursor, node) {
-    GraphNodeData* data = static_cast<GraphNodeData*>(xbt_graph_node_get_data(node));
+    auto* data          = static_cast<GraphNodeData*>(xbt_graph_node_get_data(node));
     data->graph_id_     = cursor;
   }
 }

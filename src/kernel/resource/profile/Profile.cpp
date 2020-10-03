@@ -35,7 +35,7 @@ Profile::~Profile() = default;
  * and get an iterator over the integrated trace  */
 Event* Profile::schedule(FutureEvtSet* fes, resource::Resource* resource)
 {
-  Event* event    = new Event();
+  auto* event     = new Event();
   event->profile  = this;
   event->idx      = 0;
   event->resource = resource;
@@ -71,7 +71,7 @@ DatedValue Profile::next(Event* event)
 Profile* Profile::from_string(const std::string& name, const std::string& input, double periodicity)
 {
   int linecount                                    = 0;
-  simgrid::kernel::profile::Profile* profile       = new simgrid::kernel::profile::Profile();
+  auto* profile                                    = new simgrid::kernel::profile::Profile();
   simgrid::kernel::profile::DatedValue* last_event = &(profile->event_list.back());
 
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name.c_str());

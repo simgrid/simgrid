@@ -51,7 +51,7 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
 
 void BoostContext::swap_into_for_real(SwappedContext* to_)
 {
-  BoostContext* to = static_cast<BoostContext*>(to_);
+  auto* to = static_cast<BoostContext*>(to_);
 #if BOOST_VERSION < 106100
   boost::context::jump_fcontext(&this->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
 #else

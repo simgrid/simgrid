@@ -52,7 +52,7 @@ static xbt_dict_t new_fixture()
 static void search_ext(const_xbt_dict_t head, const char* key, const char* data)
 {
   INFO("Search " << STR(key));
-  char* found = (char*)xbt_dict_get_or_null(head, key);
+  auto* found = static_cast<char*>(xbt_dict_get_or_null(head, key));
   INFO("Found " << STR(found));
   if (data) {
     REQUIRE(found); // data do not match expectations: found null while searching for data
@@ -271,7 +271,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
       xbt_dict_t head = xbt_dict_new_homogeneous(free);
       for (int j = 0; j < 1000; j++) {
         const char* data = nullptr;
-        char* key  = (char*)xbt_malloc(SIZEOFKEY);
+        auto* key        = static_cast<char*>(xbt_malloc(SIZEOFKEY));
 
         do {
           for (int k = 0; k < SIZEOFKEY - 1; k++) {
@@ -295,7 +295,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     xbt_dict_t head = xbt_dict_new_homogeneous(&free);
     INFO("Fill " << NB_ELM << " elements, with keys being the number of element");
     for (int j = 0; j < NB_ELM; j++) {
-      char* key = (char*)xbt_malloc(10);
+      auto* key = static_cast<char*>(xbt_malloc(10));
 
       snprintf(key, 10, "%d", j);
       xbt_dict_set(head, key, key);
@@ -305,7 +305,7 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     INFO("There is " << countelems(head) << " elements");
 
     INFO("Search my " << NB_ELM << " elements 20 times");
-    char* key = (char*)xbt_malloc(10);
+    auto* key = static_cast<char*>(xbt_malloc(10));
     for (int i = 0; i < 20; i++) {
       for (int j = 0; j < NB_ELM; j++) {
         snprintf(key, 10, "%d", j);

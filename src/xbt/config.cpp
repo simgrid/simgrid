@@ -265,7 +265,7 @@ public:
   {
     xbt_assert(options.find(name) == options.end(), "Refusing to register the config element '%s' twice.",
                name.c_str());
-    TypedConfigurationElement<T>* variable = new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
+    auto* variable = new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
     XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name.c_str(), variable->get_description().c_str(),
               variable->get_type_name(), variable, this);
     options[name].reset(variable);

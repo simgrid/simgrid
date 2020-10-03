@@ -462,7 +462,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
   }
 
   /* Create file on remote host, write it and close it */
-  File* fd = new File(fullpath, dst_host, nullptr);
+  auto* fd = new File(fullpath, dst_host, nullptr);
   if (local_storage_) {
     sg_size_t write_size = fd->local_storage_->write(read_size);
     fd->local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
@@ -509,7 +509,7 @@ std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::st
   if (filename.empty())
     return nullptr;
 
-  std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
+  auto* parse_content = new std::map<std::string, sg_size_t>();
 
   std::ifstream* fs = surf_ifsopen(filename);
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
@@ -538,7 +538,7 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std:
   if (filename.empty())
     return nullptr;
 
-  std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
+  auto* parse_content = new std::map<std::string, sg_size_t>();
 
   std::ifstream* fs = surf_ifsopen(filename);
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
@@ -839,8 +839,7 @@ xbt_dict_t sg_storage_get_content(const_sg_storage_t storage)
   xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);
 
   for (auto const& entry : *content) {
-    sg_size_t* psize = new sg_size_t;
-    *psize           = entry.second;
+    auto* psize = new sg_size_t(entry.second);
     xbt_dict_set(content_as_dict, entry.first.c_str(), psize);
   }
   return content_as_dict;

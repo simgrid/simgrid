@@ -59,7 +59,7 @@ double NetworkModel::next_occurring_event_full(double now)
   double minRes = Model::next_occurring_event_full(now);
 
   for (Action const& action : *get_started_action_set()) {
-    const NetworkAction& net_action = static_cast<const NetworkAction&>(action);
+    const auto& net_action = static_cast<const NetworkAction&>(action);
     if (net_action.latency_ > 0)
       minRes = (minRes < 0) ? net_action.latency_ : std::min(minRes, net_action.latency_);
   }
@@ -190,7 +190,7 @@ std::list<LinkImpl*> NetworkAction::get_links() const
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
     Resource* resource = get_variable()->get_constraint(i)->get_id();
-    LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
+    auto* link         = dynamic_cast<LinkImpl*>(resource);
     if (link != nullptr)
       retlist.push_back(link);
   }

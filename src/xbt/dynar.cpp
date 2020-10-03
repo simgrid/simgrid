@@ -59,7 +59,7 @@ static inline void _xbt_dynar_expand(xbt_dynar_t dynar, unsigned long nb)
 
 static inline void* _xbt_dynar_elm(const_xbt_dynar_t dynar, unsigned long idx)
 {
-  char *const data = (char *) dynar->data;
+  auto* const data            = static_cast<char*>(dynar->data);
   const unsigned long elmsize = dynar->elmsize;
 
   return data + idx * elmsize;
@@ -387,7 +387,7 @@ void xbt_dynar_shift(xbt_dynar_t dynar, void* dst)
  */
 void xbt_dynar_map(const_xbt_dynar_t dynar, void_f_pvoid_t op)
 {
-  char *const data = (char *) dynar->data;
+  auto* const data            = static_cast<char*>(dynar->data);
   const unsigned long elmsize = dynar->elmsize;
   const unsigned long used = dynar->used;
 

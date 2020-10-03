@@ -152,7 +152,7 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<Engine>(m, "Engine", "Simulation Engine")
       .def(py::init([](std::vector<std::string> args) {
         static char noarg[] = {'\0'};
-        int argc            = static_cast<int>(args.size());
+        auto argc           = static_cast<int>(args.size());
         auto argv           = std::make_unique<char*[]>(argc + 1);
         for (int i = 0; i != argc; ++i)
           argv[i] = args[i].empty() ? noarg : &args[i].front();

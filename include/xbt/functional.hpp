@@ -184,7 +184,7 @@ private:
     const static TaskVtable vtable {
       // Call:
       [](TaskUnion& buffer, Args... args) {
-        F* src = reinterpret_cast<F*>(&buffer);
+        auto* src = reinterpret_cast<F*>(&buffer);
         F code = std::move(*src);
         src->~F();
         // NOTE: std::forward<Args>(args)... is correct.
@@ -194,13 +194,13 @@ private:
       std::is_trivially_destructible<F>::value ?
       static_cast<destroy_function>(nullptr) :
       [](TaskUnion& buffer) {
-        F* code = reinterpret_cast<F*>(&buffer);
+        auto* code = reinterpret_cast<F*>(&buffer);
         code->~F();
       },
       // Move:
       [](TaskUnion& dst, TaskUnion& src) {
-        F* src_code = reinterpret_cast<F*>(&src);
-        F* dst_code = reinterpret_cast<F*>(&dst);
+        auto* src_code = reinterpret_cast<F*>(&src);
+        auto* dst_code = reinterpret_cast<F*>(&dst);
         new(dst_code) F(std::move(*src_code));
         src_code->~F();
       }

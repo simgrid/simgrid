@@ -72,7 +72,7 @@ double HostL07Model::next_occurring_event(double now)
 {
   double min = HostModel::next_occurring_event_full(now);
   for (kernel::resource::Action const& action : *get_started_action_set()) {
-    const L07Action& net_action = static_cast<const L07Action&>(action);
+    const auto& net_action = static_cast<const L07Action&>(action);
     if (net_action.get_latency() > 0 && (min < 0 || net_action.get_latency() < min)) {
       min = net_action.get_latency();
       XBT_DEBUG("Updating min with %p (start %f): %f", &net_action, net_action.get_start_time(), min);
@@ -86,7 +86,7 @@ double HostL07Model::next_occurring_event(double now)
 void HostL07Model::update_actions_state(double /*now*/, double delta)
 {
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
-    L07Action& action = static_cast<L07Action&>(*it);
+    auto& action = static_cast<L07Action&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (action.get_latency() > 0) {
       if (action.get_latency() > delta) {
@@ -212,8 +212,8 @@ L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host
 kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   std::vector<s4u::Host*> host_list = {src, dst};
-  const double* flops_amount        = new double[2]();
-  double* bytes_amount = new double[4]();
+  const auto* flops_amount          = new double[2]();
+  auto* bytes_amount                = new double[4]();
 
   bytes_amount[1] = size;
 
@@ -263,7 +263,7 @@ kernel::resource::CpuAction* CpuL07::execution_start(double size)
 {
   std::vector<s4u::Host*> host_list = {get_host()};
 
-  double* flops_amount = new double[host_list.size()]();
+  auto* flops_amount = new double[host_list.size()]();
   flops_amount[0] = size;
 
   kernel::resource::CpuAction* res =
@@ -274,7 +274,7 @@ kernel::resource::CpuAction* CpuL07::execution_start(double size)
 
 kernel::resource::CpuAction* CpuL07::sleep(double duration)
 {
-  L07Action *action = static_cast<L07Action*>(execution_start(1.0));
+  auto* action = static_cast<L07Action*>(execution_start(1.0));
   action->set_max_duration(duration);
   action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
   get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), 0.0);

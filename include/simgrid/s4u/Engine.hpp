@@ -198,7 +198,7 @@ XBT_PRIVATE void get_filtered_netzones_recursive(const s4u::NetZone* current, st
                 "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");
   for (auto const& elem : current->get_children()) {
     get_filtered_netzones_recursive(elem, whereto);
-    T* elem_impl = dynamic_cast<T*>(elem->get_impl());
+    auto* elem_impl = dynamic_cast<T*>(elem->get_impl());
     if (elem_impl != nullptr)
       whereto->push_back(elem_impl);
   }

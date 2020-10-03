@@ -21,7 +21,7 @@ namespace xbt {
  */
 template <class F> xbt_automaton_propositional_symbol_t add_proposition(const_xbt_automaton_t a, const char* id, F f)
 {
-  F* callback = new F(std::move(f));
+  auto* callback = new F(std::move(f));
   return xbt_automaton_propositional_symbol_new_callback(
     a, id,
     [](void* callback) -> int { return (*(F*)callback)(); },

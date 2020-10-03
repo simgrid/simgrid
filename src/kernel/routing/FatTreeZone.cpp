@@ -264,7 +264,7 @@ void FatTreeZone::generate_switches()
   int k = 0;
   for (unsigned int i = 0; i < this->levels_; i++) {
     for (unsigned int j = 0; j < this->nodes_by_level_[i + 1]; j++) {
-      FatTreeNode* newNode = new FatTreeNode(this->cluster_, --k, i + 1, j);
+      auto* newNode = new FatTreeNode(this->cluster_, --k, i + 1, j);
       XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
       newNode->children.resize(this->num_children_per_node_[i] * this->num_port_lower_level_[i]);
       if (i != this->levels_ - 1) {

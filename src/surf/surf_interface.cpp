@@ -147,7 +147,7 @@ std::ifstream* surf_ifsopen(const std::string& name)
 {
   xbt_assert(not name.empty());
 
-  std::ifstream* fs = new std::ifstream();
+  auto* fs = new std::ifstream();
   if (is_absolute_file_path(name)) { /* don't mess with absolute file names */
     fs->open(name.c_str(), std::ifstream::in);
   }

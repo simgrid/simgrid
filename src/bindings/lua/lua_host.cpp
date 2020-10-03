@@ -27,7 +27,7 @@ sg_host_t sglua_check_host(lua_State * L, int index)
 {
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, HOST_FIELDNAME);
-  sg_host_t *pi = (sg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
+  auto* pi = static_cast<sg_host_t*>(luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME));
   lua_pop(L, 1);
   xbt_assert(pi != nullptr, "luaL_checkudata() returned nullptr");
   sg_host_t ht = *pi;
@@ -54,7 +54,7 @@ static int l_host_get_by_name(lua_State * L)
   lua_ensure(host, "No host name '%s' found.", name);
 
   lua_newtable(L);                        /* table */
-  sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t)); /* table userdatum */
+  auto* lua_host = static_cast<sg_host_t*>(lua_newuserdata(L, sizeof(sg_host_t))); /* table userdatum */
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME); /* table userdatum metatable */
   lua_setmetatable(L, -2);                /* table userdatum */
@@ -105,7 +105,7 @@ static int l_host_at(lua_State * L)
   std::vector<sg_host_t> hosts = simgrid::s4u::Engine::get_instance()->get_all_hosts();
   sg_host_t host               = hosts[index - 1]; // lua indexing start by 1 (lua[1] <=> C[0])
   lua_newtable(L);              /* create a table, put the userdata on top of it */
-  sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t));
+  auto* lua_host = static_cast<sg_host_t*>(lua_newuserdata(L, sizeof(sg_host_t)));
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
   lua_setmetatable(L, -2);

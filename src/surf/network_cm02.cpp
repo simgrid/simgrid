@@ -130,7 +130,7 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
 void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
 {
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
-    NetworkCm02Action& action = static_cast<NetworkCm02Action&>(*it);
+    auto& action = static_cast<NetworkCm02Action&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     XBT_DEBUG("Something happened to action %p", &action);
     double deltap = delta;

@@ -31,8 +31,8 @@ xbt_node_t new_xbt_graph_node(const s_xbt_graph_t* graph, const char* name, std:
 xbt_edge_t new_xbt_graph_edge(const s_xbt_graph_t* graph, xbt_node_t s, xbt_node_t d,
                               std::map<std::string, xbt_edge_t>* edges)
 {
-  const char* sn   = static_cast<const char*>(xbt_graph_node_get_data(s));
-  const char* dn   = static_cast<const char*>(xbt_graph_node_get_data(d));
+  const auto* sn   = static_cast<const char*>(xbt_graph_node_get_data(s));
+  const auto* dn   = static_cast<const char*>(xbt_graph_node_get_data(d));
   std::string name = std::string(sn) + dn;
 
   auto elm = edges->find(name);
@@ -68,7 +68,7 @@ void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt
       if (my_src == my_dst)
         continue;
 
-      RouteCreationArgs* route = new RouteCreationArgs();
+      auto* route = new RouteCreationArgs();
 
       get_local_route(my_src, my_dst, route, nullptr);
 
@@ -120,7 +120,7 @@ RouteCreationArgs* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoin
                                                   std::vector<resource::LinkImpl*>& link_list, bool /* symmetrical */,
                                                   bool change_order)
 {
-  RouteCreationArgs* result = new RouteCreationArgs();
+  auto* result = new RouteCreationArgs();
 
   xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
              "The hierarchy of this netzone is neither BASIC nor RECURSIVE, I'm lost here.");

@@ -175,7 +175,7 @@ Constraint::Constraint(resource::Resource* id_value, double bound_value) : bound
 
 Constraint* System::constraint_new(resource::Resource* id, double bound_value)
 {
-  Constraint* cnst = new Constraint(id, bound_value);
+  auto* cnst = new Constraint(id, bound_value);
   insert_constraint(cnst);
   return cnst;
 }
@@ -195,7 +195,7 @@ Variable* System::variable_new(resource::Action* id, double sharing_penalty, dou
   XBT_IN("(sys=%p, id=%p, penalty=%f, bound=%f, num_cons =%zu)", this, id, sharing_penalty, bound,
          number_of_constraints);
 
-  Variable* var = static_cast<Variable*>(xbt_mallocator_get(variable_mallocator_));
+  auto* var = static_cast<Variable*>(xbt_mallocator_get(variable_mallocator_));
   var->initialize(id, sharing_penalty, bound, number_of_constraints, visited_counter_ - 1);
   if (sharing_penalty > 0)
     variable_set.push_front(*var);
@@ -428,7 +428,7 @@ static void format_element_list(const ElemList& elem_list, s4u::Link::SharingPol
 
 void System::print() const
 {
-  std::string buf = std::string("MAX-MIN ( ");
+  std::string buf = "MAX-MIN ( ";
 
   /* Printing Objective */
   for (Variable const& var : variable_set)

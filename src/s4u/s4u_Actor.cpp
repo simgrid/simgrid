@@ -129,7 +129,7 @@ void Actor::set_auto_restart(bool autorestart)
     xbt_assert(autorestart && not pimpl_->has_to_auto_restart()); // FIXME: handle all cases
     pimpl_->set_auto_restart(autorestart);
 
-    kernel::actor::ProcessArg* arg = new kernel::actor::ProcessArg(pimpl_->get_host(), pimpl_);
+    auto* arg = new kernel::actor::ProcessArg(pimpl_->get_host(), pimpl_);
     XBT_DEBUG("Adding %s to the actors_at_boot_ list of Host %s", arg->name.c_str(), arg->host->get_cname());
     pimpl_->get_host()->pimpl_->add_actor_at_boot(arg);
   });
@@ -370,7 +370,7 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
 
 ExecPtr exec_init(double flops_amount)
 {
-  ExecPtr exec = ExecPtr(new Exec());
+  ExecPtr exec(new Exec());
   exec->set_flops_amount(flops_amount)->set_host(get_host());
   return exec;
 }
@@ -398,7 +398,7 @@ ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double
   xbt_assert(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
              "flops_amounts comprises infinite values!");
 
-  ExecPtr exec = ExecPtr(new Exec());
+  ExecPtr exec(new Exec());
   exec->set_flops_amounts(flops_amounts)->set_bytes_amounts(bytes_amounts)->set_hosts(hosts);
   return exec;
 }
@@ -851,7 +851,7 @@ sg_exec_t sg_actor_parallel_exec_init(int host_nb, const sg_host_t* host_list, d
   if (bytes_amount != nullptr)
     bytes = std::vector<double>(bytes_amount, bytes_amount + host_nb * host_nb);
 
-  simgrid::s4u::ExecPtr exec = simgrid::s4u::ExecPtr(new simgrid::s4u::Exec());
+  simgrid::s4u::ExecPtr exec(new simgrid::s4u::Exec());
   exec->set_flops_amounts(flops)->set_bytes_amounts(bytes)->set_hosts(hosts);
   exec->add_ref();
   return exec.get();

@@ -89,7 +89,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
 #if SIMGRID_HAVE_MC
       /* Cannot use posix_memalign when SIMGRID_HAVE_MC. Align stack by hand, and save the
        * pointer returned by xbt_malloc0. */
-      unsigned char* alloc = static_cast<unsigned char*>(xbt_malloc0(size + xbt_pagesize));
+      auto* alloc          = static_cast<unsigned char*>(xbt_malloc0(size + xbt_pagesize));
       stack_               = alloc - (reinterpret_cast<uintptr_t>(alloc) & (xbt_pagesize - 1)) + xbt_pagesize;
       reinterpret_cast<unsigned char**>(stack_)[-1] = alloc;
 #elif !defined(_WIN32)
@@ -223,7 +223,7 @@ void SwappedContextFactory::run_all()
     //   - So, resume() is only launched from the parmap for the first job of each minion.
     parmap_->apply(
         [](const actor::ActorImpl* process) {
-          SwappedContext* context = static_cast<SwappedContext*>(process->context_.get());
+          auto* context = static_cast<SwappedContext*>(process->context_.get());
           context->resume();
         },
         simix_global->actors_to_run);
@@ -247,7 +247,7 @@ void SwappedContextFactory::run_all()
  */
 void SwappedContext::resume()
 {
-  SwappedContext* old = static_cast<SwappedContext*>(self());
+  auto* old = static_cast<SwappedContext*>(self());
   if (SIMIX_context_is_parallel()) {
     // Save my current soul (either maestro, or one of the minions) in a thread-specific area
     worker_context_ = old;

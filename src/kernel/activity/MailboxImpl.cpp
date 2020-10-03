@@ -42,7 +42,7 @@ MailboxImpl* MailboxImpl::by_name_or_create(const std::string& name)
   /* two processes may have pushed the same mbox_create simcall at the same time */
   auto m = mailboxes.find(name);
   if (m == mailboxes.end()) {
-    MailboxImpl* mbox = new MailboxImpl(name);
+    auto* mbox = new MailboxImpl(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name.c_str());
     mailboxes[name] = mbox;
     return mbox;

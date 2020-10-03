@@ -162,7 +162,7 @@ bind_flag(T& value, const char* name, const char* description, std::map<T, std::
                      found = true;
                  }
                  if (not found || std::string(val) == "help") {
-                   std::string mesg = std::string("\n");
+                   std::string mesg = "\n";
                    if (std::string(val) == "help")
                      mesg += std::string("Possible values for option ") + name + ":\n";
                    else

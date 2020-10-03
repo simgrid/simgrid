@@ -36,7 +36,7 @@ HostImpl::~HostImpl()
 {
   /* All actors should be gone when the host is turned off (by the end of the simulation). */
   if (not actor_list_.empty()) {
-    std::string msg = std::string("Shutting down host, but it's not empty:");
+    std::string msg = "Shutting down host, but it's not empty:";
     for (auto const& actor : actor_list_)
       msg += "\n\t" + std::string(actor.get_name());
 
@@ -145,7 +145,7 @@ std::vector<const char*> HostImpl::get_attached_storages()
 }
 std::unordered_map<std::string, s4u::Storage*>* HostImpl::get_mounted_storages()
 {
-  std::unordered_map<std::string, s4u::Storage*>* mounts = new std::unordered_map<std::string, s4u::Storage*>();
+  auto* mounts = new std::unordered_map<std::string, s4u::Storage*>();
   for (auto const& m : storage_) {
     mounts->insert({m.first, m.second->get_iface()});
   }

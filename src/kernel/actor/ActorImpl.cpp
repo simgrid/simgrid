@@ -85,7 +85,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
     throw HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.");
   }
 
-  ActorImpl* actor = new ActorImpl(xbt::string(name), host);
+  auto* actor = new ActorImpl(xbt::string(name), host);
   /* Actor data */
   actor->set_user_data(data);
   actor->code_ = nullptr;
@@ -456,7 +456,7 @@ void ActorImpl::set_host(s4u::Host* dest)
 
 ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
 {
-  ActorImpl* actor = new ActorImpl(xbt::string(name), host);
+  auto* actor = new ActorImpl(xbt::string(name), host);
   actor->set_ppid(this->pid_);
 
   intrusive_ptr_add_ref(actor);
@@ -520,7 +520,7 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
 void create_maestro(const std::function<void()>& code)
 {
   /* Create maestro actor and initialize it */
-  ActorImpl* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
+  auto* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
 
   if (not code) {
     maestro->context_.reset(simix_global->context_factory->create_context(ActorCode(), maestro));

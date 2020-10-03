@@ -73,8 +73,8 @@ void MigrationRx::operator()()
     instr::Container::get_root()->get_link("VM_LINK")->end_event(msg, "M", key);
   }
   // Inform the SRC that the migration has been correctly performed
-  std::string* payload = new std::string("__mig_stage4:");
-  *payload             = *payload + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" + dst_pm_->get_cname() + ")";
+  auto* payload = new std::string("__mig_stage4:");
+  *payload      = *payload + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" + dst_pm_->get_cname() + ")";
 
   mbox_ctl->put(payload, 0);
 
@@ -83,7 +83,7 @@ void MigrationRx::operator()()
 
 static sg_size_t get_updated_size(double computed, double dp_rate, sg_size_t dp_cap)
 {
-  sg_size_t updated_size = static_cast<sg_size_t>(computed * dp_rate);
+  auto updated_size = static_cast<sg_size_t>(computed * dp_rate);
   XBT_DEBUG("updated_size %llu dp_rate %f", updated_size, dp_rate);
   if (updated_size > dp_cap) {
     updated_size = dp_cap;
@@ -95,7 +95,7 @@ static sg_size_t get_updated_size(double computed, double dp_rate, sg_size_t dp_
 sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_round, double mig_speed, double timeout)
 {
   sg_size_t sent   = size;
-  std::string* msg = new std::string("__mig_stage");
+  auto* msg        = new std::string("__mig_stage");
   *msg             = *msg + std::to_string(stage) + ":" + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" +
          dst_pm_->get_cname() + ")";
 
@@ -107,7 +107,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
   try {
     comm->wait_for(timeout);
   } catch (const Exception&) {
-    sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());
+    auto remaining = static_cast<sg_size_t>(comm->get_remaining());
     XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
     sent -= remaining;
     delete msg;
@@ -298,7 +298,7 @@ simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, co
 
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
 
-  sg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
+  auto* vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
   sg_vm_set_dirty_page_intensity(vm, dp_intensity / 100.0);
   sg_vm_set_working_set_memory(vm, vm->get_ramsize() * 0.9); // assume working set memory is 90% of ramsize
   sg_vm_set_migration_speed(vm, mig_netspeed * 1024 * 1024.0);

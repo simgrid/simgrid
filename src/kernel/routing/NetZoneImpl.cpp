@@ -68,7 +68,7 @@ int NetZoneImpl::get_host_count() const
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate,
                                     int coreAmount, const std::map<std::string, std::string>* props)
 {
-  s4u::Host* res = new s4u::Host(name);
+  auto* res = new s4u::Host(name);
 
   if (hierarchy_ == RoutingMode::unset)
     hierarchy_ = RoutingMode::base;
@@ -118,7 +118,7 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
   }
 
   /* Build a copy that will be stored in the dict */
-  BypassRoute* newRoute = new BypassRoute(gw_src, gw_dst);
+  auto* newRoute = new BypassRoute(gw_src, gw_dst);
   for (auto const& link : link_list)
     newRoute->links.push_back(link);
 

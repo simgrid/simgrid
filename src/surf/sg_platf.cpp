@@ -103,7 +103,7 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
-  simgrid::kernel::routing::NetPoint* netpoint =
+  auto* netpoint =
       new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
   XBT_DEBUG("Router '%s' has the id %u", netpoint->get_cname(), netpoint->id());
 
@@ -176,7 +176,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       break;
   }
   sg_platf_new_Zone_begin(&zone);
-  simgrid::kernel::routing::ClusterZone* current_as = static_cast<ClusterZone*>(routing_get_current());
+  auto* current_as = static_cast<ClusterZone*>(routing_get_current());
   current_as->parse_specific_arguments(cluster);
   if (cluster->properties != nullptr)
     for (auto const& elm : *cluster->properties)
@@ -301,8 +301,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
 void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb)
 {
-  simgrid::kernel::routing::ClusterZone* cluster =
-      dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
+  auto* cluster = dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
   xbt_assert(cluster, "Only hosts from Cluster can get a backbone.");
   xbt_assert(nullptr == cluster->backbone_, "Cluster %s already has a backbone link!", cluster->get_cname());
@@ -394,9 +393,9 @@ void sg_platf_new_storage_type(const simgrid::kernel::routing::StorageTypeCreati
   xbt_assert(storage_types.find(storage_type->id) == storage_types.end(),
              "Reading a storage type, processing unit \"%s\" already exists", storage_type->id.c_str());
 
-  simgrid::kernel::resource::StorageType* stype = new simgrid::kernel::resource::StorageType(
-      storage_type->id, storage_type->model, storage_type->content, storage_type->properties,
-      storage_type->model_properties, storage_type->size);
+  auto* stype = new simgrid::kernel::resource::StorageType(storage_type->id, storage_type->model, storage_type->content,
+                                                           storage_type->properties, storage_type->model_properties,
+                                                           storage_type->size);
 
   XBT_DEBUG("Create a storage type id '%s' with model '%s', content '%s'", storage_type->id.c_str(),
             storage_type->model.c_str(), storage_type->content.c_str());
@@ -461,7 +460,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   simgrid::kernel::actor::ActorCode code = factory(std::move(actor->args));
   std::shared_ptr<std::unordered_map<std::string, std::string>> properties(actor->properties);
 
-  simgrid::kernel::actor::ProcessArg* arg =
+  auto* arg =
       new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
 
   host->pimpl_->add_actor_at_boot(arg);
@@ -499,7 +498,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
 void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
 {
-  simgrid::kernel::routing::VivaldiZone* as = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
+  auto* as = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(as, "<peer> tag can only be used in Vivaldi netzones.");
 
   std::vector<double> speed_per_pstate;

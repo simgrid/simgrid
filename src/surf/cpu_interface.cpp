@@ -196,7 +196,7 @@ std::list<Cpu*> CpuAction::cpus() const
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
     Resource* resource = get_variable()->get_constraint(i)->get_id();
-    Cpu* cpu           = dynamic_cast<Cpu*>(resource);
+    auto* cpu          = dynamic_cast<Cpu*>(resource);
     if (cpu != nullptr)
       retlist.push_back(cpu);
   }

@@ -167,7 +167,7 @@ template <typename T> Parmap<T>::Parmap(unsigned num_workers, e_xbt_parmap_mode_
   this->workers[0] = nullptr;
 
   for (unsigned i = 1; i < num_workers; i++) {
-    ThreadData* data = new ThreadData(*this, i);
+    auto* data       = new ThreadData(*this, i);
     this->workers[i] = new std::thread(worker_main, data);
 
     /* Bind the worker to a core if possible */

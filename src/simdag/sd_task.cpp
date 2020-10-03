@@ -501,7 +501,7 @@ void SD_task_dump(const_SD_task_t task)
 /** @brief Dumps the task in dotty formalism into the FILE* passed as second argument */
 void SD_task_dotty(const_SD_task_t task, void* out)
 {
-  FILE *fout = static_cast<FILE*>(out);
+  auto* fout = static_cast<FILE*>(out);
   fprintf(fout, "  T%p [label=\"%.20s\"", task, task->name);
   switch (task->kind) {
   case SD_TASK_COMM_E2E:
@@ -962,7 +962,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 void SD_task_schedulel(SD_task_t task, int count, ...)
 {
   va_list ap;
-  sg_host_t* list = new sg_host_t[count];
+  auto* list = new sg_host_t[count];
   va_start(ap, count);
   for (int i=0; i<count; i++)
     list[i] = va_arg(ap, sg_host_t);

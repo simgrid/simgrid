@@ -97,7 +97,7 @@ int surf_parse_get_int(const std::string& s)
 /* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
 static std::vector<int>* explodesRadical(const std::string& radicals)
 {
-  std::vector<int>* exploded = new std::vector<int>();
+  auto* exploded = new std::vector<int>();
 
   // Make all hosts
   std::vector<std::string> radical_elements;

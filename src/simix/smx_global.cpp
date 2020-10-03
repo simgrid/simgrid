@@ -136,7 +136,7 @@ namespace simix {
 
 Timer* Timer::set(double date, xbt::Task<void()>&& callback)
 {
-  Timer* timer   = new Timer(date, std::move(callback));
+  auto* timer    = new Timer(date, std::move(callback));
   timer->handle_ = simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }

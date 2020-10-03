@@ -89,7 +89,7 @@ static void open_append2_file(xbt_log_append2_file_t data){
 
 static void append2_file(const s_xbt_log_appender_t* this_, const char* str)
 {
-  xbt_log_append2_file_t d = (xbt_log_append2_file_t)this_->data;
+  auto* d = static_cast<xbt_log_append2_file_t>(this_->data);
   xbt_assert(d->file);
   if (ftell(d->file) >= d->limit) {
     open_append2_file(d);
@@ -103,7 +103,7 @@ static void append2_file(const s_xbt_log_appender_t* this_, const char* str)
 
 static void free_append2_(const s_xbt_log_appender_t* this_)
 {
-  xbt_log_append2_file_t data = static_cast<xbt_log_append2_file_t>(this_->data);
+  auto* data = static_cast<xbt_log_append2_file_t>(this_->data);
   if (data->file)
     fclose(data->file);
   xbt_free(data->filename);

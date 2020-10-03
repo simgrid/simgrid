@@ -34,7 +34,7 @@ public:
 protected:
   template <class T, class... Args> T* new_context(Args&&... args)
   {
-    T* context = new T(std::forward<Args>(args)...);
+    auto* context = new T(std::forward<Args>(args)...);
     context->declare_context(sizeof(T));
     return context;
   }

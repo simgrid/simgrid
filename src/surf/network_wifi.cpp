@@ -64,7 +64,7 @@ s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy()
 
 void NetworkWifiLink::refresh_decay_bandwidths(){
   // Compute number of STAtion on the Access Point
-  int nSTA = static_cast<int>(host_rates_.size());
+  size_t nSTA = host_rates_.size();
 
   std::vector<Metric> new_bandwidths;
   for (auto bandwidth : bandwidths_){

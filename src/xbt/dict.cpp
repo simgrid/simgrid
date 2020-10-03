@@ -89,7 +89,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   const unsigned oldsize = dict->table_size + 1;
   unsigned newsize = oldsize * 2;
 
-  xbt_dictelm_t* newtable = (xbt_dictelm_t*)xbt_realloc((char*)dict->table, newsize * sizeof(xbt_dictelm_t));
+  auto* newtable = static_cast<xbt_dictelm_t*>(xbt_realloc((char*)dict->table, newsize * sizeof(xbt_dictelm_t)));
   memset(&newtable[oldsize], 0, oldsize * sizeof(xbt_dictelm_t)); /* zero second half */
   newsize--;
   dict->table_size = newsize;

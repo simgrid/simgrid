@@ -134,9 +134,9 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, conta
     }
   }
 
-  xbt_graph_t graph                        = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>();
-  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>();
+  auto* graph = xbt_graph_new_graph(0, nullptr);
+  auto* nodes = new std::map<std::string, xbt_node_t>();
+  auto* edges = new std::map<std::string, xbt_edge_t>();
 
   netzone->get_impl()->get_graph(graph, nodes, edges);
   for (auto elm : *edges) {
@@ -222,9 +222,9 @@ namespace instr {
 
 void platform_graph_export_graphviz(const std::string& output_filename)
 {
-  xbt_graph_t g                            = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>();
-  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>();
+  auto* g     = xbt_graph_new_graph(0, nullptr);
+  auto* nodes = new std::map<std::string, xbt_node_t>();
+  auto* edges = new std::map<std::string, xbt_edge_t>();
   s4u::Engine::get_instance()->get_netzone_root()->extract_xbt_graph(g, nodes, edges);
 
   std::ofstream fs;
@@ -266,7 +266,7 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
 {
   std::string id = netzone.get_name();
   if (Container::get_root() == nullptr) {
-    NetZoneContainer* root = new NetZoneContainer(id, 0, nullptr);
+    auto* root = new NetZoneContainer(id, 0, nullptr);
     xbt_assert(Container::get_root() == root);
 
     if (TRACE_smpi_is_enabled()) {
@@ -286,8 +286,8 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
   }
 
   if (TRACE_needs_platform()) {
-    unsigned level              = static_cast<unsigned>(currentContainer.size());
-    NetZoneContainer* container = new NetZoneContainer(id, level, currentContainer.back());
+    auto level      = static_cast<unsigned>(currentContainer.size());
+    auto* container = new NetZoneContainer(id, level, currentContainer.back());
     currentContainer.push_back(container);
   }
 }
@@ -297,7 +297,7 @@ static void on_link_creation(s4u::Link const& link)
   if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
     return;
 
-  Container* container = new Container(link.get_name(), "LINK", currentContainer.back());
+  auto* container = new Container(link.get_name(), "LINK", currentContainer.back());
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     VariableType* bandwidth = container->type_->by_name_or_create("bandwidth", "");
@@ -343,7 +343,7 @@ static void on_host_creation(s4u::Host const& host)
 static void on_action_state_change(kernel::resource::Action const& action,
                                    kernel::resource::Action::State /* previous */)
 {
-  unsigned n = static_cast<unsigned>(action.get_variable()->get_number_of_constraint());
+  auto n = static_cast<unsigned>(action.get_variable()->get_number_of_constraint());
 
   for (unsigned i = 0; i < n; i++) {
     double value = action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i);
@@ -366,7 +366,7 @@ static void on_action_state_change(kernel::resource::Action const& action,
 static void on_platform_created()
 {
   currentContainer.clear();
-  std::set<std::string>* filter = new std::set<std::string>();
+  auto* filter = new std::set<std::string>();
   XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), filter);
   XBT_DEBUG("Graph extraction finished.");

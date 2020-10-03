@@ -499,8 +499,8 @@ int console_AS_open(lua_State *L) {
 
  /* Build a Lua representation of the new AS on the stack */
  lua_newtable(L);
- simgrid::kernel::routing::NetZoneImpl** lua_as = (simgrid::kernel::routing::NetZoneImpl**)lua_newuserdata(
-     L, sizeof(simgrid::kernel::routing::NetZoneImpl*)); /* table userdatum */
+ auto* lua_as = static_cast<simgrid::kernel::routing::NetZoneImpl**>(
+     lua_newuserdata(L, sizeof(simgrid::kernel::routing::NetZoneImpl*))); /* table userdatum */
  *lua_as = new_as;
  luaL_getmetatable(L, PLATF_MODULE_NAME); /* table userdatum metatable */
  lua_setmetatable(L, -2);                 /* table userdatum */

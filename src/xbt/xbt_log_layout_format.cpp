@@ -77,7 +77,7 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
   int precision = -1;
   int length = -1;
 
-  char* q = static_cast<char*>(l->data);
+  auto* q = static_cast<char*>(l->data);
   while (*q != '\0') {
     if (*q == '%') {
       q++;
