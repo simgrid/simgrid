@@ -63,21 +63,20 @@ double CpuTiTmgr::integrate(double a, double b) const
     return (b - a) * value_;
   }
 
-  int a_index;
+  double a_index;
   if (fabs(ceil(a / last_time_) - a / last_time_) < EPSILON)
-    a_index = 1 + static_cast<int>(ceil(a / last_time_));
+    a_index = 1 + ceil(a / last_time_);
   else
-    a_index = static_cast<int>(ceil(a / last_time_));
-
-  int b_index = static_cast<int>(floor(b / last_time_));
+    a_index = ceil(a / last_time_);
+  double b_index = floor(b / last_time_);
 
   if (a_index > b_index) {      /* Same chunk */
-    return profile_->integrate_simple(a - (a_index - 1) * last_time_, b - (b_index)*last_time_);
+    return profile_->integrate_simple(a - (a_index - 1) * last_time_, b - b_index * last_time_);
   }
 
   double first_chunk  = profile_->integrate_simple(a - (a_index - 1) * last_time_, last_time_);
   double middle_chunk = (b_index - a_index) * total_;
-  double last_chunk   = profile_->integrate_simple(0.0, b - (b_index)*last_time_);
+  double last_chunk   = profile_->integrate_simple(0.0, b - b_index * last_time_);
 
   XBT_DEBUG("first_chunk=%.2f  middle_chunk=%.2f  last_chunk=%.2f\n", first_chunk, middle_chunk, last_chunk);
 
@@ -154,11 +153,11 @@ double CpuTiTmgr::solve(double a, double amount) const
 
   XBT_DEBUG("amount %f total %f", amount, total_);
   /* Reduce the problem to one where amount <= trace_total */
-  int quotient = static_cast<int>(floor(amount / total_));
+  double quotient       = floor(amount / total_);
   double reduced_amount = (total_) * ((amount / total_) - floor(amount / total_));
   double reduced_a      = a - (last_time_) * static_cast<int>(floor(a / last_time_));
 
-  XBT_DEBUG("Quotient: %d reduced_amount: %f reduced_a: %f", quotient, reduced_amount, reduced_a);
+  XBT_DEBUG("Quotient: %g reduced_amount: %f reduced_a: %f", quotient, reduced_amount, reduced_a);
 
   /* Now solve for new_amount which is <= trace_total */
   double reduced_b;
@@ -172,7 +171,7 @@ double CpuTiTmgr::solve(double a, double amount) const
   }
 
   /* Re-map to the original b and amount */
-  return (last_time_) * static_cast<int>(floor(a / last_time_)) + (quotient * last_time_) + reduced_b;
+  return last_time_ * floor(a / last_time_) + (quotient * last_time_) + reduced_b;
 }
 
 /**
