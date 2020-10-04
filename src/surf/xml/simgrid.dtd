@@ -112,7 +112,7 @@ To upgrade your files, use the tool simgrid_update_xml
 	   |((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
 	     (route|trace|trace_connect|bypassRoute)*)))>
 <!ATTLIST AS id CDATA #REQUIRED>
-<!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
+<!ATTLIST AS routing CDATA #REQUIRED>
 
 <!-- A zone is either an internal node that contains other zones, 
      or a  leaf containing hosts and other leaf-like elements -->
@@ -123,7 +123,7 @@ To upgrade your files, use the tool simgrid_update_xml
 	   |((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,
 	     (route|trace|trace_connect|bypassRoute)*)))>
 <!ATTLIST zone id CDATA #REQUIRED>
-<!ATTLIST zone routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
+<!ATTLIST zone routing CDATA #REQUIRED>
 
 <!ELEMENT storage_type ((model_prop|prop)*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>

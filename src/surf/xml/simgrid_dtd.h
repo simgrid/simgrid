@@ -116,7 +116,8 @@ XBT_PUBLIC void ETag_surfxml_zoneRoute(void);
 /* XML application data. */
 typedef int AT_surfxml_AS_id;
 #define AU_surfxml_AS_id NULL
-typedef enum { AU_surfxml_AS_routing, A_surfxml_AS_routing_Full,A_surfxml_AS_routing_Floyd,A_surfxml_AS_routing_Dijkstra,A_surfxml_AS_routing_DijkstraCache,A_surfxml_AS_routing_None,A_surfxml_AS_routing_Vivaldi,A_surfxml_AS_routing_Cluster,A_surfxml_AS_routing_ClusterTorus,A_surfxml_AS_routing_ClusterFatTree,A_surfxml_AS_routing_ClusterDragonfly } AT_surfxml_AS_routing;
+typedef int AT_surfxml_AS_routing;
+#define AU_surfxml_AS_routing NULL
 typedef int AT_surfxml_ASroute_dst;
 #define AU_surfxml_ASroute_dst NULL
 typedef int AT_surfxml_ASroute_gw___dst;
@@ -352,7 +353,8 @@ typedef int AT_surfxml_trace___connect_trace;
 #define AU_surfxml_trace___connect_trace NULL
 typedef int AT_surfxml_zone_id;
 #define AU_surfxml_zone_id NULL
-typedef enum { AU_surfxml_zone_routing, A_surfxml_zone_routing_Full,A_surfxml_zone_routing_Floyd,A_surfxml_zone_routing_Dijkstra,A_surfxml_zone_routing_DijkstraCache,A_surfxml_zone_routing_None,A_surfxml_zone_routing_Vivaldi,A_surfxml_zone_routing_Cluster,A_surfxml_zone_routing_ClusterTorus,A_surfxml_zone_routing_ClusterFatTree,A_surfxml_zone_routing_ClusterDragonfly } AT_surfxml_zone_routing;
+typedef int AT_surfxml_zone_routing;
+#define AU_surfxml_zone_routing NULL
 typedef int AT_surfxml_zoneRoute_dst;
 #define AU_surfxml_zoneRoute_dst NULL
 typedef int AT_surfxml_zoneRoute_gw___dst;
@@ -371,7 +373,7 @@ XBT_PUBLIC_DATA AT_surfxml_AS_id AX_surfxml_AS_id;
 #define A_surfxml_AS_id (surfxml_bufferstack + AX_surfxml_AS_id)
 XBT_PUBLIC_DATA short int surfxml_AS_id_isset;
 XBT_PUBLIC_DATA AT_surfxml_AS_routing AX_surfxml_AS_routing;
-#define A_surfxml_AS_routing AX_surfxml_AS_routing
+#define A_surfxml_AS_routing (surfxml_bufferstack + AX_surfxml_AS_routing)
 XBT_PUBLIC_DATA short int surfxml_AS_routing_isset;
 XBT_PUBLIC_DATA AT_surfxml_ASroute_dst AX_surfxml_ASroute_dst;
 #define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
@@ -743,7 +745,7 @@ XBT_PUBLIC_DATA AT_surfxml_zone_id AX_surfxml_zone_id;
 #define A_surfxml_zone_id (surfxml_bufferstack + AX_surfxml_zone_id)
 XBT_PUBLIC_DATA short int surfxml_zone_id_isset;
 XBT_PUBLIC_DATA AT_surfxml_zone_routing AX_surfxml_zone_routing;
-#define A_surfxml_zone_routing AX_surfxml_zone_routing
+#define A_surfxml_zone_routing (surfxml_bufferstack + AX_surfxml_zone_routing)
 XBT_PUBLIC_DATA short int surfxml_zone_routing_isset;
 XBT_PUBLIC_DATA AT_surfxml_zoneRoute_dst AX_surfxml_zoneRoute_dst;
 #define A_surfxml_zoneRoute_dst (surfxml_bufferstack + AX_surfxml_zoneRoute_dst)

@@ -158,16 +158,16 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   zone.id = cluster->id;
   switch (cluster->topology) {
     case simgrid::kernel::routing::ClusterTopology::TORUS:
-      zone.routing = A_surfxml_AS_routing_ClusterTorus;
+      zone.routing = "ClusterTorus";
       break;
     case simgrid::kernel::routing::ClusterTopology::DRAGONFLY:
-      zone.routing = A_surfxml_AS_routing_ClusterDragonfly;
+      zone.routing = "ClusterDragonfly";
       break;
     case simgrid::kernel::routing::ClusterTopology::FAT_TREE:
-      zone.routing = A_surfxml_AS_routing_ClusterFatTree;
+      zone.routing = "ClusterFatTree";
       break;
     default:
-      zone.routing = A_surfxml_AS_routing_Cluster;
+      zone.routing = "Cluster";
       break;
   }
   sg_platf_new_Zone_begin(&zone);
@@ -586,40 +586,28 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
   simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
   simgrid::kernel::resource::NetworkModel* netmodel =
       current_routing == nullptr ? surf_network_model : current_routing->network_model_;
-  switch (zone->routing) {
-    case A_surfxml_AS_routing_Cluster:
+  if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
       new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id, netmodel);
-      break;
-    case A_surfxml_AS_routing_ClusterDragonfly:
+  } else if (strcasecmp(zone->routing.c_str(),"ClusterDragonfly") == 0) {
       new_zone = new simgrid::kernel::routing::DragonflyZone(current_routing, zone->id, netmodel);
-      break;
-    case A_surfxml_AS_routing_ClusterTorus:
+  } else if (strcasecmp(zone->routing.c_str(),"ClusterTorus") == 0) {
       new_zone = new simgrid::kernel::routing::TorusZone(current_routing, zone->id, netmodel);
-      break;
-    case A_surfxml_AS_routing_ClusterFatTree:
+  } else if (strcasecmp(zone->routing.c_str(),"ClusterFatTree") == 0) {
       new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id, netmodel);
-      break;
-    case A_surfxml_AS_routing_Dijkstra:
+  } else if (strcasecmp(zone->routing.c_str(),"Dijkstra") == 0) {
       new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, false);
-      break;
-    case A_surfxml_AS_routing_DijkstraCache:
+  } else if (strcasecmp(zone->routing.c_str(),"DijkstraCache") == 0) {
       new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, true);
-      break;
-    case A_surfxml_AS_routing_Floyd:
+  } else if (strcasecmp(zone->routing.c_str(),"Floyd") == 0) {
       new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id, netmodel);
-      break;
-    case A_surfxml_AS_routing_Full:
+  } else if (strcasecmp(zone->routing.c_str(),"Full") == 0) {
       new_zone = new simgrid::kernel::routing::FullZone(current_routing, zone->id, netmodel);
-      break;
-    case A_surfxml_AS_routing_None:
+  } else if (strcasecmp(zone->routing.c_str(),"None") == 0) {
       new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id, netmodel);
-      break;
-    case A_surfxml_AS_routing_Vivaldi:
+  } else if (strcasecmp(zone->routing.c_str(),"Vivaldi") == 0) {
       new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id, netmodel);
-      break;
-    default:
+  } else {
       xbt_die("Not a valid model!");
-      break;
   }
 
   if (current_routing == nullptr) { /* it is the first one */

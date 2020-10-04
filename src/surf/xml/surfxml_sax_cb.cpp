@@ -749,7 +749,7 @@ void STag_surfxml_zone()
   property_sets.push_back(new std::unordered_map<std::string, std::string>());
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
-  zone.routing = static_cast<int>(A_surfxml_zone_routing);
+  zone.routing = A_surfxml_zone_routing;
   sg_platf_new_Zone_begin(&zone);
 }
 

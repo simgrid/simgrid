@@ -187,7 +187,7 @@ public:
 class ZoneCreationArgs {
 public:
   std::string id;
-  int routing;
+  std::string routing;
 };
 
 extern XBT_PRIVATE xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
