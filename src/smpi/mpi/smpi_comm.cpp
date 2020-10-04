@@ -61,7 +61,7 @@ int Comm::dup(MPI_Comm* newcomm){
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(s4u::Actor::self());
   }
-  MPI_Group cp = new  Group(this->group());
+  auto* cp     = new Group(this->group());
   (*newcomm)   = new  Comm(cp, this->topo());
   int ret      = MPI_SUCCESS;
 
@@ -355,7 +355,7 @@ MPI_Comm Comm::find_intra_comm(int * leader){
     }
   }
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
-  MPI_Group group_intra = new  Group(intra_comm_size);
+  auto* group_intra = new Group(intra_comm_size);
   int i = 0;
   for (auto& actor : actor_list) {
     if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) {
@@ -390,9 +390,8 @@ void Comm::init_smp(){
   // identify neighbors in comm
   MPI_Comm comm_intra = find_intra_comm(&leader);
 
-
-  int* leaders_map = new int[comm_size];
-  int* leader_list = new int[comm_size];
+  auto* leaders_map = new int[comm_size];
+  auto* leader_list = new int[comm_size];
   std::fill_n(leaders_map, comm_size, 0);
   std::fill_n(leader_list, comm_size, -1);
 
@@ -424,7 +423,7 @@ void Comm::init_smp(){
   xbt_assert(leader_group_size > 0);
   std::sort(leader_list, leader_list + leader_group_size);
 
-  MPI_Group leaders_group = new  Group(leader_group_size);
+  auto* leaders_group = new Group(leader_group_size);
 
   MPI_Comm leader_comm = MPI_COMM_NULL;
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){

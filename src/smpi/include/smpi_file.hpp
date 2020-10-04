@@ -82,8 +82,8 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   MPI_Offset max_offset =
       min_offset +
       count * datatype->get_extent(); // cheating, as we don't care about exact data location, we can skip extent
-  MPI_Offset* min_offsets = new MPI_Offset[size];
-  MPI_Offset* max_offsets = new MPI_Offset[size];
+  auto* min_offsets = new MPI_Offset[size];
+  auto* max_offsets = new MPI_Offset[size];
   simgrid::smpi::colls::allgather(&min_offset, 1, MPI_OFFSET, min_offsets, 1, MPI_OFFSET, comm_);
   simgrid::smpi::colls::allgather(&max_offset, 1, MPI_OFFSET, max_offsets, 1, MPI_OFFSET, comm_);
   MPI_Offset min = min_offset;
@@ -122,10 +122,10 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   MPI_Offset my_chunk_start = (max - min + 1) / size * rank;
   MPI_Offset my_chunk_end   = ((max - min + 1) / size * (rank + 1));
   XBT_CDEBUG(smpi_pmpi, "my chunks to read : %lld:%lld", my_chunk_start, my_chunk_end);
-  int* send_sizes = new int[size];
-  int* recv_sizes = new int[size];
-  int* send_disps = new int[size];
-  int* recv_disps = new int[size];
+  auto* send_sizes = new int[size];
+  auto* recv_sizes = new int[size];
+  auto* send_disps = new int[size];
+  auto* recv_disps = new int[size];
   int total_sent  = 0;
   for (int i = 0; i < size; i++) {
     send_sizes[i] = 0;

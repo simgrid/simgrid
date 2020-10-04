@@ -276,9 +276,9 @@ void mpi_win_get_attr_(int* win, int* type_keyval, MPI_Aint* attribute_val, int*
 
 void mpi_win_set_attr_(int* win, int* type_keyval, MPI_Aint* att, int* ierr)
 {
-  MPI_Aint* val = (MPI_Aint*)xbt_malloc(sizeof(MPI_Aint));
-  *val          = *att;
-  *ierr = MPI_Win_set_attr(simgrid::smpi::Win::f2c(*win), *type_keyval, val);
+  auto* val = static_cast<MPI_Aint*>(xbt_malloc(sizeof(MPI_Aint)));
+  *val      = *att;
+  *ierr     = MPI_Win_set_attr(simgrid::smpi::Win::f2c(*win), *type_keyval, val);
 }
 
 void mpi_win_delete_attr_(int* win, int* comm_keyval, int* ierr)
@@ -820,9 +820,9 @@ void mpi_attr_delete_ (int* comm, int* keyval, int* ierr) {
 }
 
 void mpi_attr_put_ (int* comm, int* keyval, int* attr_value, int* ierr) {
- int* val = (int*)xbt_malloc(sizeof(int));
- *val=*attr_value;
- *ierr = MPI_Attr_put(simgrid::smpi::Comm::f2c(*comm), *keyval, val);
+  auto* val = static_cast<int*>(xbt_malloc(sizeof(int)));
+  *val      = *attr_value;
+  *ierr     = MPI_Attr_put(simgrid::smpi::Comm::f2c(*comm), *keyval, val);
 }
 
 void mpi_keyval_create_ (void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr) {

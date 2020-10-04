@@ -78,8 +78,8 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
   } else {
     if(comm_cart != nullptr){
       if (rank == 0) {
-        MPI_Group group = new Group(MPI_COMM_SELF->group());
-        *comm_cart      = new Comm(group, std::shared_ptr<Topo>(this));
+        auto* group = new Group(MPI_COMM_SELF->group());
+        *comm_cart  = new Comm(group, std::shared_ptr<Topo>(this));
       } else {
         *comm_cart = MPI_COMM_NULL;
       }
@@ -131,8 +131,8 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
     res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, newcomm);
   } else {
     *newcomm = getComm()->split(color, getComm()->rank());
-    res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, nullptr);
-    std::shared_ptr<Topo> topo=std::shared_ptr<Topo>(res);
+    auto topo = std::make_shared<Topo_Cart>(getComm(), newNDims, newDims, newPeriodic, 0, nullptr);
+    res       = topo.get();
     res->setComm(*newcomm);
     (*newcomm)->set_topo(topo);
   }
@@ -207,7 +207,7 @@ int Topo_Cart::shift(int direction, int disp, int* rank_source, int* rank_dest)
     return MPI_ERR_DIMS;
   }
 
-  int* position = new int[ndims_];
+  auto* position = new int[ndims_];
   this->coords(getComm()->rank(), ndims_, position);
   position[direction] += disp;
 
@@ -360,7 +360,7 @@ static int assignnodes(int ndim, int nfactor, const int* pfacts, int** pdims)
   }
 
   /* Allocate and initialize the bins */
-  int *bins = new int[ndim];
+  auto* bins = new int[ndim];
 
   *pdims = bins;
   int *p = bins;

@@ -64,9 +64,9 @@ void mpi_type_get_attr_ (int* type, int* type_keyval, int *attribute_val, int* f
 }
 
 void mpi_type_set_attr_ (int* type, int* type_keyval, int *attribute_val, int* ierr){
- int* val = (int*)xbt_malloc(sizeof(int));
- *val=*attribute_val;
- *ierr = MPI_Type_set_attr ( simgrid::smpi::Datatype::f2c(*type), *type_keyval, val);
+  auto* val = static_cast<int*>(xbt_malloc(sizeof(int)));
+  *val      = *attribute_val;
+  *ierr     = MPI_Type_set_attr(simgrid::smpi::Datatype::f2c(*type), *type_keyval, val);
 }
 
 void mpi_type_delete_attr_ (int* type, int* type_keyval, int* ierr){
@@ -132,7 +132,7 @@ void mpi_type_create_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* 
 
 void mpi_type_hindexed_ (int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  MPI_Aint* indices_aint=new MPI_Aint[*count];
+  auto* indices_aint = new MPI_Aint[*count];
   for(int i=0; i<*count; i++)
     indices_aint[i]=indices[i];
   *ierr = MPI_Type_hindexed(*count, blocklens, indices_aint, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
@@ -186,8 +186,8 @@ void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,
 
 void mpi_type_struct_ (int* count, int* blocklens, int* indices, int* old_types, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  MPI_Datatype* types = static_cast<MPI_Datatype*>(xbt_malloc(*count*sizeof(MPI_Datatype)));
-  MPI_Aint* indices_aint=new MPI_Aint[*count];
+  auto* types        = static_cast<MPI_Datatype*>(xbt_malloc(*count * sizeof(MPI_Datatype)));
+  auto* indices_aint = new MPI_Aint[*count];
   for (int i = 0; i < *count; i++) {
     indices_aint[i]=indices[i];
     types[i] = simgrid::smpi::Datatype::f2c(old_types[i]);
@@ -202,7 +202,7 @@ void mpi_type_struct_ (int* count, int* blocklens, int* indices, int* old_types,
 
 void mpi_type_create_struct_(int* count, int* blocklens, MPI_Aint* indices, int*  old_types, int*  newtype, int* ierr){
   MPI_Datatype tmp;
-  MPI_Datatype* types = static_cast<MPI_Datatype*>(xbt_malloc(*count*sizeof(MPI_Datatype)));
+  auto* types = static_cast<MPI_Datatype*>(xbt_malloc(*count * sizeof(MPI_Datatype)));
   for (int i = 0; i < *count; i++) {
     types[i] = simgrid::smpi::Datatype::f2c(old_types[i]);
   }

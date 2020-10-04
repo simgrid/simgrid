@@ -98,7 +98,7 @@ namespace smpi{
   int File::del(const char* filename, const Info*)
   {
     //get the file with MPI_MODE_DELETE_ON_CLOSE and then close it
-    File* f = new File(MPI_COMM_SELF,filename,MPI_MODE_DELETE_ON_CLOSE|MPI_MODE_RDWR, nullptr);
+    auto* f = new File(MPI_COMM_SELF, filename, MPI_MODE_DELETE_ON_CLOSE | MPI_MODE_RDWR, nullptr);
     close(&f);
     return MPI_SUCCESS;
   }

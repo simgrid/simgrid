@@ -38,8 +38,7 @@ void TRACE_migration_call(int rank, simgrid::instr::TIData* extra)
   if(smpi_process()->replaying()) {//When replaying, we register an event.
     smpi_container(rank)->get_state("MIGRATE_STATE")->add_entity_value(operation);
 
-    simgrid::instr::EventType* type =
-      static_cast<simgrid::instr::EventType*>(smpi_container(rank)->type_->by_name(operation));
+    auto* type = static_cast<simgrid::instr::EventType*>(smpi_container(rank)->type_->by_name(operation));
     new simgrid::instr::NewEvent(smpi_process()->simulated_elapsed(), smpi_container(rank), type,
                                  type->get_entity_value(operation));
   } else {

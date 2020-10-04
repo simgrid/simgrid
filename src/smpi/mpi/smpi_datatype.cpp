@@ -377,14 +377,14 @@ int Datatype::copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
 //Default serialization method : memcpy.
 void Datatype::serialize(const void* noncontiguous_buf, void* contiguous_buf, int count)
 {
-  char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
-  const char* noncontiguous_buf_char = static_cast<const char*>(noncontiguous_buf)+lb_;
+  auto* contiguous_buf_char          = static_cast<char*>(contiguous_buf);
+  const auto* noncontiguous_buf_char = static_cast<const char*>(noncontiguous_buf) + lb_;
   memcpy(contiguous_buf_char, noncontiguous_buf_char, count*size_);
 }
 
 void Datatype::unserialize(const void* contiguous_buf, void *noncontiguous_buf, int count, MPI_Op op){
-  const char* contiguous_buf_char = static_cast<const char*>(contiguous_buf);
-  char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb_;
+  const auto* contiguous_buf_char = static_cast<const char*>(contiguous_buf);
+  auto* noncontiguous_buf_char    = static_cast<char*>(noncontiguous_buf) + lb_;
   int n=count;
   if(op!=MPI_OP_NULL)
     op->apply( contiguous_buf_char, noncontiguous_buf_char, &n, this);

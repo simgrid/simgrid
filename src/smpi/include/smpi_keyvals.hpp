@@ -64,7 +64,7 @@ class Keyval{
 template <typename T>
 int Keyval::keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& delete_fn, int* keyval, void* extra_state)
 {
-  smpi_key_elem value = new s_smpi_key_elem_t;
+  auto* value = new s_smpi_key_elem_t;
 
   value->copy_fn=copy_fn;
   value->delete_fn=delete_fn;

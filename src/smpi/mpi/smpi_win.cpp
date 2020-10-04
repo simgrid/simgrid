@@ -228,7 +228,7 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
   if(target_count*target_datatype->get_extent()>recv_win->size_)
     return MPI_ERR_ARG;
 
-  void* recv_addr = static_cast<void*> ( static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
+  void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
 
   if (target_rank != comm_->rank()) { // This is not for myself, so we need to send messages
     XBT_DEBUG("Entering MPI_Put to remote rank %d", target_rank);
@@ -348,7 +348,7 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   if(target_count*target_datatype->get_extent()>recv_win->size_)
     return MPI_ERR_ARG;
 
-  void* recv_addr = static_cast<void*>(static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
+  void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
   // As the tag will be used for ordering of the operations, subtract count from it (to avoid collisions with other
   // SMPI tags, SMPI_RMA_TAG is set below all the other ones we use)

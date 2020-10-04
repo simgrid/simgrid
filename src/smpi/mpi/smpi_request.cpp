@@ -153,15 +153,15 @@ void Request::init_buffer(int count){
 
 bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 {
-  MPI_Request ref = static_cast<MPI_Request>(a);
-  MPI_Request req = static_cast<MPI_Request>(b);
+  auto ref = static_cast<MPI_Request>(a);
+  auto req = static_cast<MPI_Request>(b);
   return match_common(req, req, ref);
 }
 
 bool Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 {
-  MPI_Request ref = static_cast<MPI_Request>(a);
-  MPI_Request req = static_cast<MPI_Request>(b);
+  auto ref = static_cast<MPI_Request>(a);
+  auto req = static_cast<MPI_Request>(b);
   return match_common(req, ref, req);
 }
 
@@ -766,9 +766,9 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   static int nsleeps = 1;
   double speed        = s4u::this_actor::get_host()->get_speed();
   double maxrate      = smpi_cfg_iprobe_cpu_usage();
-  MPI_Request request = new Request(nullptr, 0, MPI_CHAR,
-                                    source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
-                                    simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV);
+  auto request        = new Request(nullptr, 0, MPI_CHAR,
+                             source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
+                             simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV);
   if (smpi_iprobe_sleep > 0) {
     /** Compute the number of flops we will sleep **/
     s4u::this_actor::exec_init(/*nsleeps: See comment above */ nsleeps *

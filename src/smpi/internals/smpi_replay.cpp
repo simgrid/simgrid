@@ -824,7 +824,7 @@ void smpi_replay_main(int rank, const char* trace_filename)
   unsigned int count_requests = storage[simgrid::s4u::this_actor::get_pid()].size();
   XBT_DEBUG("There are %ud elements in reqq[*]", count_requests);
   if (count_requests > 0) {
-    MPI_Request* requests= new MPI_Request[count_requests];
+    auto* requests = new MPI_Request[count_requests];
     unsigned int i=0;
 
     for (auto const& pair : storage[simgrid::s4u::this_actor::get_pid()].get_store()) {

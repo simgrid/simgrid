@@ -262,7 +262,7 @@ static void smpi_init_papi()
       // first. Hence, we start at ++(events.begin())!
       for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); ++events_it) {
         int event_code   = PAPI_NULL;
-        char* event_name = const_cast<char*>((*events_it).c_str());
+        auto* event_name = const_cast<char*>((*events_it).c_str());
         if (PAPI_event_name_to_code(event_name, &event_code) != PAPI_OK) {
           XBT_CRITICAL("Could not find PAPI event '%s'. Skipping.", event_name);
           continue;
@@ -297,7 +297,7 @@ template <typename F>
 static int smpi_run_entry_point(const F& entry_point, const std::string& executable_path, std::vector<std::string> args)
 {
   // copy C strings, we need them writable
-  std::vector<char*>* args4argv = new std::vector<char*>(args.size());
+  auto* args4argv = new std::vector<char*>(args.size());
   std::transform(begin(args), end(args), begin(*args4argv), [](const std::string& s) { return xbt_strdup(s.c_str()); });
 
   // set argv[0] to executable_path
@@ -342,7 +342,7 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
 // TODO, remove the number of functions involved here
 static smpi_entry_point_type smpi_resolve_function(void* handle)
 {
-  smpi_fortran_entry_point_type entry_point_fortran = (smpi_fortran_entry_point_type)dlsym(handle, "user_main_");
+  auto* entry_point_fortran = reinterpret_cast<smpi_fortran_entry_point_type>(dlsym(handle, "user_main_"));
   if (entry_point_fortran != nullptr) {
     return [entry_point_fortran](int, char**) {
       entry_point_fortran();
@@ -350,7 +350,7 @@ static smpi_entry_point_type smpi_resolve_function(void* handle)
     };
   }
 
-  smpi_c_entry_point_type entry_point = (smpi_c_entry_point_type)dlsym(handle, "main");
+  auto* entry_point = reinterpret_cast<smpi_c_entry_point_type>(dlsym(handle, "main"));
   if (entry_point != nullptr) {
     return entry_point;
   }
@@ -379,7 +379,7 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
 #endif
   // If this point is reached, sendfile() actually is not available.  Copy file by hand.
   const int bufsize = 1024 * 1024 * 4;
-  char* buf         = new char[bufsize];
+  auto* buf         = new char[bufsize];
   while (int got = read(fdin, buf, bufsize)) {
     if (got == -1) {
       xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
@@ -404,7 +404,7 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
 #if not defined(__APPLE__) && not defined(__HAIKU__)
 static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 {
-  char* libname = (char*)(data);
+  auto* libname    = static_cast<char*>(data);
   const char *path = info->dlpi_name;
   if(strstr(path, libname)){
     strncpy(libname, path, 512);

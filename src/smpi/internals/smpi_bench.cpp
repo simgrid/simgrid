@@ -129,7 +129,7 @@ void smpi_bench_end()
   if (not smpi_cfg_papi_events_file().empty()) {
     papi_counter_t& counter_data        = smpi_process()->papi_counters();
     int event_set                       = smpi_process()->papi_event_set();
-    std::vector<long long> event_values = std::vector<long long>(counter_data.size());
+    std::vector<long long> event_values(counter_data.size());
 
     if (PAPI_stop(event_set, &event_values[0]) != PAPI_OK) { // Error
       XBT_CRITICAL("Could not stop PAPI counters.\n");
@@ -162,7 +162,7 @@ void smpi_bench_end()
     const papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
-      simgrid::instr::VariableType* variable = static_cast<simgrid::instr::VariableType*>(container->type_->by_name(pair.first));
+      auto* variable = static_cast<simgrid::instr::VariableType*>(container->type_->by_name(pair.first));
       variable->set_event(SIMIX_get_clock(), pair.second);
     }
   }
