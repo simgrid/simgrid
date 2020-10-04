@@ -96,13 +96,13 @@ std::string Container::get_hierarchy_as_string()
 
   std::vector<int> hier_list = this->get_hierarchy();
 
-  unsigned int length = static_cast<unsigned int>(hier_list.size());
-  unsigned int i = 0;
+  bool sep = false;
   for (auto const& id : hier_list) {
+    if (sep)
+      output += '.';
+    else
+      sep = true;
     output += std::to_string(id);
-    if( i != length-1 ) {
-      output += ".";
-    }
   }
 
   return output;
@@ -110,20 +110,19 @@ std::string Container::get_hierarchy_as_string()
 
 void Container::print_resources(FILE* jed_file)
 {
-  unsigned int i=0;
   xbt_assert(not this->resource_list.empty());
 
-  unsigned int res_nb = static_cast<unsigned int>(this->resource_list.size());
-  std::string resid   = this->get_hierarchy_as_string();
+  std::string resid = this->get_hierarchy_as_string();
 
-  fprintf(jed_file, "      <rset id=\"%s\" nb=\"%u\" names=\"", resid.c_str(), res_nb);
+  fprintf(jed_file, "      <rset id=\"%s\" nb=\"%zu\" names=\"", resid.c_str(), this->resource_list.size());
+  bool sep = false;
   for (auto const& res : this->resource_list) {
+    if (sep)
+      putc('|', jed_file);
+    else
+      sep = true;
     const char * res_name = sg_host_get_name(res);
     fprintf(jed_file, "%s", res_name);
-    if( i != res_nb-1 ) {
-      fprintf(jed_file, "|");
-    }
-    i++;
   }
   fprintf(jed_file, "\" />\n");
 }
