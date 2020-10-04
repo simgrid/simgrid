@@ -333,7 +333,8 @@ void CommunicationDeterminismChecker::prepare()
   initial_communications_pattern.resize(maxpid);
   incomplete_communications_pattern.resize(maxpid);
 
-  auto initial_state = std::make_unique<State>(++expanded_states_count_);
+  ++expanded_states_count_;
+  auto initial_state = std::make_unique<State>(expanded_states_count_);
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
@@ -451,7 +452,8 @@ void CommunicationDeterminismChecker::real_run()
       mc_model_checker->wait_for_requests();
 
       /* Create the new expanded state */
-      auto next_state = std::make_unique<State>(++expanded_states_count_);
+      ++expanded_states_count_;
+      auto next_state = std::make_unique<State>(expanded_states_count_);
 
       /* If comm determinism verification, we cannot stop the exploration if some communications are not finished (at
        * least, data are transferred). These communications  are incomplete and they cannot be analyzed and compared

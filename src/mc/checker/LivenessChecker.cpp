@@ -262,10 +262,11 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
 std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt_automaton_state_t state,
                                                    std::shared_ptr<const std::vector<int>> propositions)
 {
-  expanded_pairs_count_++;
+  ++expanded_pairs_count_;
+  ++expanded_states_count_;
   auto next_pair                  = std::make_shared<Pair>(expanded_pairs_count_);
   next_pair->automaton_state      = state;
-  next_pair->graph_state          = std::make_shared<State>(++expanded_states_count_);
+  next_pair->graph_state          = std::make_shared<State>(expanded_states_count_);
   next_pair->atomic_propositions  = std::move(propositions);
   if (current_pair)
     next_pair->depth = current_pair->depth + 1;

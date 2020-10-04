@@ -135,7 +135,8 @@ void SafetyChecker::run()
     this->get_session().execute(state->transition_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = std::make_unique<State>(++expanded_states_count_);
+    ++expanded_states_count_;
+    auto next_state = std::make_unique<State>(expanded_states_count_);
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -282,7 +283,8 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
 
   XBT_DEBUG("Starting the safety algorithm");
 
-  auto initial_state = std::make_unique<State>(++expanded_states_count_);
+  ++expanded_states_count_;
+  auto initial_state = std::make_unique<State>(expanded_states_count_);
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
