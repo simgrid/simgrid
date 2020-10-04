@@ -65,8 +65,27 @@ int NetZoneImpl::get_host_count() const
   return count;
 }
 
+s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
+                                    s4u::Link::SharingPolicy policy,
+                                    const std::unordered_map<std::string, std::string>* props)
+{
+  static double last_warned_latency = sg_surf_precision;
+  if (latency != 0.0 && latency < last_warned_latency) {
+    XBT_WARN("Latency for link %s is smaller than surf/precision (%g < %g)."
+             " For more accuracy, consider setting \"--cfg=surf/precision:%g\".",
+             name.c_str(), latency, sg_surf_precision, latency);
+    last_warned_latency = latency;
+  }
+
+  simgrid::kernel::resource::LinkImpl* l = surf_network_model->create_link(name, bandwidths, latency, policy);
+
+  if (props)
+    l->set_properties(*props);
+
+  return l->get_iface();
+}
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate,
-                                    int coreAmount, const std::map<std::string, std::string>* props)
+                                    int coreAmount, const std::unordered_map<std::string, std::string>* props)
 {
   auto* res = new s4u::Host(name);
 

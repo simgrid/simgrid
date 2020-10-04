@@ -7,6 +7,7 @@
 #define SIMGRID_ROUTING_NETZONEIMPL_HPP
 
 #include <simgrid/forward.h>
+#include <simgrid/s4u/Link.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <xbt/PropertyHolder.hpp>
 #include <xbt/graph.h>
@@ -119,7 +120,11 @@ public:
 
   /** @brief Make a host within that NetZone */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate, int core_count,
-                         const std::map<std::string, std::string>* props);
+                         const std::unordered_map<std::string, std::string>* props);
+  /** @brief Make a link within that NetZone */
+  virtual s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
+                                 s4u::Link::SharingPolicy policy,
+                                 const std::unordered_map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
   virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical);

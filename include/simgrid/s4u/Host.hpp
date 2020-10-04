@@ -105,7 +105,7 @@ public:
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
   const std::unordered_map<std::string, std::string>* get_properties() const;
-  void set_properties(const std::map<std::string, std::string>& properties);
+  void set_properties(const std::unordered_map<std::string, std::string>& properties);
 
   void set_state_profile(kernel::profile::Profile* p);
   void set_speed_profile(kernel::profile::Profile* p);

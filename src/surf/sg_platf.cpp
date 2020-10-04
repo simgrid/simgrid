@@ -69,7 +69,7 @@ void sg_platf_exit() {
 /** @brief Add a host to the current AS */
 void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  std::map<std::string, std::string> props;
+  std::unordered_map<std::string, std::string> props;
   if (args->properties) {
     for (auto const& elm : *args->properties)
       props.insert({elm.first, elm.second});
@@ -114,27 +114,23 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
   return netpoint;
 }
 
-static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link, const std::string& link_name)
+static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args, const std::string& link_name)
 {
-  static double last_warned_latency = sg_surf_precision;
-  if (link->latency != 0.0 && link->latency < last_warned_latency) {
-    XBT_WARN("Latency for link %s is smaller than surf/precision (%g < %g)."
-             " For more accuracy, consider setting \"--cfg=surf/precision:%g\".",
-             link_name.c_str(), link->latency, sg_surf_precision, link->latency);
-    last_warned_latency = link->latency;
-  }
-  simgrid::kernel::resource::LinkImpl* l =
-      surf_network_model->create_link(link_name, link->bandwidths, link->latency, link->policy);
+  std::unordered_map<std::string, std::string> props;
+  if (args->properties)
+    for (auto const& elm : *args->properties)
+      props.insert({elm.first, elm.second});
 
-  if (link->properties)
-    l->set_properties(*link->properties);
+  simgrid::s4u::Link* link =
+      routing_get_current()->create_link(link_name, args->bandwidths, args->latency, args->policy, &props);
 
-  if (link->latency_trace)
-    l->set_latency_profile(link->latency_trace);
-  if (link->bandwidth_trace)
-    l->set_bandwidth_profile(link->bandwidth_trace);
-  if (link->state_trace)
-    l->set_state_profile(link->state_trace);
+  simgrid::kernel::resource::LinkImpl* l = link->get_impl();
+  if (args->latency_trace)
+    l->set_latency_profile(args->latency_trace);
+  if (args->bandwidth_trace)
+    l->set_bandwidth_profile(args->bandwidth_trace);
+  if (args->state_trace)
+    l->set_state_profile(args->state_trace);
 }
 
 void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link)
