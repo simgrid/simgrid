@@ -161,27 +161,25 @@ static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, st
     unsigned int id             = parent_cont->get_id_by_name(host_name);
     id_list.push_back(id);
   }
-  unsigned int nb_ids = static_cast<unsigned int>(id_list.size());
   std::sort(id_list.begin(), id_list.end());
 
-  if( nb_ids > 0 ) {
-    int start = 0;
-    int pos = start;
-    for(unsigned int i=0; i<nb_ids; i++) {
-      if( id_list[i] - id_list[pos] > 1 ) {
-        subset_list.emplace_back(id_list[start], id_list[pos], parent);
-        start = i;
+  size_t nb_ids = id_list.size();
+  size_t start  = 0;
+  size_t pos    = start;
+  for (size_t i = 0; i < nb_ids; i++) {
+    if (id_list[i] - id_list[pos] > 1) {
+      subset_list.emplace_back(id_list[start], id_list[pos], parent);
+      start = i;
 
-        if( i == nb_ids-1 ) {
-          subset_list.emplace_back(id_list[i], id_list[i], parent);
-        }
-      } else {
-        if( i == nb_ids-1 ) {
-          subset_list.emplace_back(id_list[start], id_list[i], parent);
-        }
+      if (i == nb_ids - 1) {
+        subset_list.emplace_back(id_list[i], id_list[i], parent);
       }
-      pos = i;
+    } else {
+      if (i == nb_ids - 1) {
+        subset_list.emplace_back(id_list[start], id_list[i], parent);
+      }
     }
+    pos = i;
   }
 }
 
