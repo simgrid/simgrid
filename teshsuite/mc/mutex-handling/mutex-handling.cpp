@@ -44,7 +44,7 @@ static int receiver(const char* box_name)
 
 static int sender(const char* box_name, simgrid::s4u::MutexPtr mutex, int value)
 {
-  int* payload = new int(value);
+  auto* payload = new int(value);
   auto mb      = simgrid::s4u::Mailbox::by_name(box_name);
 
   if (mutex)

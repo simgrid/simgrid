@@ -47,8 +47,8 @@ static void sender(std::vector<std::string> args)
   XBT_INFO("Sender spec: %s", args[0].c_str());
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     simgrid::s4u::this_actor::sleep_until(test * 5 - 5);
-    std::string* mboxName         = new std::string("Test #" + std::to_string(test));
-    simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(*mboxName);
+    auto* mboxName = new std::string("Test #" + std::to_string(test));
+    auto* mbox     = simgrid::s4u::Mailbox::by_name(*mboxName);
 
     switch (args[0][test - 1]) {
       case 'r':

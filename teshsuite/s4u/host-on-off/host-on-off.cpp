@@ -38,7 +38,7 @@ static void master()
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("jupi");
   simgrid::s4u::Host* jupiter    = simgrid::s4u::Host::by_name("Jupiter");
 
-  std::string* payload = new std::string("task on");
+  auto* payload = new std::string("task on");
 
   XBT_INFO("Sending \"task on\"");
   mailbox->put_async(payload, 1E6)->wait_for(1);

@@ -37,7 +37,7 @@ int main(int argc, char**argv)
 
   XBT_INFO("Allocating a new heap");
   unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
-  void *addr = (void*)(((unsigned long)sbrk(0) + BUFFSIZE) & mask);
+  auto* addr         = reinterpret_cast<void*>(((unsigned long)sbrk(0) + BUFFSIZE) & mask);
   heapA = xbt_mheap_new(-1, addr);
   if (heapA == NULL) {
     perror("attach 1 failed");

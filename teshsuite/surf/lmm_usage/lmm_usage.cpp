@@ -98,7 +98,7 @@ static void test3()
   int flows = 11;
   int links = 10;
 
-  double** A = new double*[links + 5];
+  auto* A = new double*[links + 5];
   /* array to add the constraints of fictitious variables */
   double B[15] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1 };
 
@@ -133,12 +133,12 @@ static void test3()
   lmm::System* Sys = lmm::make_new_maxmin_system(false);
 
   /* Creates the constraints */
-  lmm::Constraint** tmp_cnst = new lmm::Constraint*[15];
+  auto* tmp_cnst = new lmm::Constraint*[15];
   for (int i = 0; i < 15; i++)
     tmp_cnst[i] = Sys->constraint_new(nullptr, B[i]);
 
   /* Creates the variables */
-  lmm::Variable** tmp_var = new lmm::Variable*[16];
+  auto* tmp_var = new lmm::Variable*[16];
   for (int j = 0; j < 16; j++) {
     tmp_var[j] = Sys->variable_new(nullptr, 1.0, -1.0, 15);
     Sys->update_variable_penalty(tmp_var[j], 1.0);

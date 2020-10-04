@@ -42,12 +42,12 @@ static void create_environment(xbt_os_timer_t parse_time, const char *platformFi
 
 static void dump_hosts()
 {
-  unsigned int totalHosts = static_cast<unsigned int>(sg_host_count());
-  sg_host_t* hosts        = sg_host_list();
+  size_t totalHosts = sg_host_count();
+  sg_host_t* hosts  = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
             [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
 
-  for (unsigned int i = 0; i < totalHosts; i++) {
+  for (size_t i = 0; i < totalHosts; i++) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->get_cname(), sg_host_speed(hosts[i]));
     const std::unordered_map<std::string, std::string>* props = hosts[i]->get_properties();
     if (hosts[i]->get_core_count() > 1) {
@@ -72,14 +72,14 @@ static void dump_hosts()
 
 static void dump_links()
 {
-  unsigned int totalLinks    = sg_link_count();
+  size_t totalLinks          = sg_link_count();
   simgrid::s4u::Link** links = sg_link_list();
 
   std::sort(links, links + totalLinks, [](const simgrid::s4u::Link* a, const simgrid::s4u::Link* b) {
     return strcmp(sg_link_name(a), sg_link_name(b)) < 0;
   });
 
-  for (unsigned int i = 0; i < totalLinks; i++) {
+  for (size_t i = 0; i < totalLinks; i++) {
     const simgrid::s4u::Link* link = links[i];
     std::printf("  <link id=\"");
 
@@ -110,8 +110,8 @@ static void dump_routers()
 
 static void dump_routes()
 {
-  unsigned int totalHosts = static_cast<unsigned int>(sg_host_count());
-  sg_host_t* hosts        = sg_host_list();
+  size_t totalHosts = sg_host_count();
+  sg_host_t* hosts  = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
             [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
   std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
@@ -121,7 +121,7 @@ static void dump_routes()
               return a->get_name() < b->get_name();
             });
 
-  for (unsigned int it_src = 0; it_src < totalHosts; it_src++) { // Routes from host
+  for (size_t it_src = 0; it_src < totalHosts; it_src++) { // Routes from host
     const simgrid::s4u::Host* host1         = hosts[it_src];
     simgrid::kernel::routing::NetPoint* src = host1->get_netpoint();
     for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host

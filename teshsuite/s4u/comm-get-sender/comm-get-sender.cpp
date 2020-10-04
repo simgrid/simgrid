@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific to this example");
 static void sender_fun()
 {
   XBT_INFO("Sending");
-  std::string* payload = new std::string("Blah");
+  auto* payload = new std::string("Blah");
   simgrid::s4u::Mailbox::by_name("Tremblay")->put(payload, 0);
   simgrid::s4u::this_actor::sleep_for(1.0);
   XBT_INFO("Exiting");

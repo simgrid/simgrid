@@ -10,13 +10,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this msg example")
 static void sendpid()
 {
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
-  int pid                        = static_cast<int>(simgrid::s4u::this_actor::get_pid());
+  aid_t pid                      = simgrid::s4u::this_actor::get_pid();
   long comm_size                 = 100000;
-  simgrid::s4u::this_actor::on_exit([pid](bool /*failed*/) { XBT_INFO("Process \"%d\" killed.", pid); });
+  simgrid::s4u::this_actor::on_exit([pid](bool /*failed*/) { XBT_INFO("Process \"%ld\" killed.", pid); });
 
-  XBT_INFO("Sending pid of \"%d\".", pid);
+  XBT_INFO("Sending pid of \"%ld\".", pid);
   mailbox->put(&pid, comm_size);
-  XBT_INFO("Send of pid \"%d\" done.", pid);
+  XBT_INFO("Send of pid \"%ld\" done.", pid);
 
   simgrid::s4u::this_actor::suspend();
 }
@@ -25,8 +25,8 @@ static void killall()
 {
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
   for (int i = 0; i < 3; i++) {
-    const int* pid = static_cast<int*>(mailbox->get());
-    XBT_INFO("Killing process \"%d\".", *pid);
+    const auto* pid = static_cast<aid_t*>(mailbox->get());
+    XBT_INFO("Killing process \"%ld\".", *pid);
     simgrid::s4u::Actor::by_pid(*pid)->kill();
   }
 }

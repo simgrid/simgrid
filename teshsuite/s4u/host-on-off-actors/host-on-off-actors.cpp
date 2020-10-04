@@ -25,7 +25,7 @@ XBT_ATTRIB_NORETURN static void actor_daemon()
 static void commTX()
 {
   XBT_INFO("  Start TX");
-  std::string* payload = new std::string("COMM");
+  auto* payload = new std::string("COMM");
   simgrid::s4u::Mailbox::by_name("comm")->put_init(payload, 100000000)->detach();
   // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
   try {

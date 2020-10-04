@@ -29,7 +29,7 @@ static void master_main()
   simgrid::s4u::Host* pm0 = simgrid::s4u::Host::by_name("Fafard");
   simgrid::s4u::Host* pm1 = simgrid::s4u::Host::by_name("Tremblay");
 
-  simgrid::s4u::VirtualMachine* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  auto* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->set_ramsize(1e9); // 1Gbytes
   vm0->start();
 

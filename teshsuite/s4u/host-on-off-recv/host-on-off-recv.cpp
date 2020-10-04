@@ -16,7 +16,7 @@ static void master()
   XBT_INFO("Master starting");
   simgrid::s4u::this_actor::sleep_for(0.5);
 
-  std::string* payload       = new std::string("COMM");
+  auto* payload              = new std::string("COMM");
   simgrid::s4u::CommPtr comm = mailbox->put_async(payload, 1E8);
 
   simgrid::s4u::this_actor::sleep_for(0.5);

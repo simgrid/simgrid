@@ -206,8 +206,8 @@ static void run_test(const std::string& chooser)
 
   } else if (chooser == "( [o]1 [ ]1 )2") {
     XBT_INFO("### Put two VMs on a PM, and put a task to one VM");
-    vm0          = new simgrid::s4u::VirtualMachine("VM0", pm2,1);
-    simgrid::s4u::VirtualMachine *vm1 = new simgrid::s4u::VirtualMachine("VM1", pm2,1);
+    vm0       = new simgrid::s4u::VirtualMachine("VM0", pm2, 1);
+    auto* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm2, 1);
     run_test_process("( [X]1 [ ]1 )2", vm0, flop_amount);
     simgrid::s4u::this_actor::sleep_for(2);
     test_energy_consumption(chooser,1);
@@ -216,8 +216,8 @@ static void run_test(const std::string& chooser)
 
   } else if (chooser == "( [o]1 [o]1 )2") {
     XBT_INFO("### Put two VMs on a PM, and put a task to each VM");
-    vm0          = new simgrid::s4u::VirtualMachine("VM0", pm2,1);
-    simgrid::s4u::VirtualMachine *vm1 = new simgrid::s4u::VirtualMachine("VM1", pm2,1);
+    vm0       = new simgrid::s4u::VirtualMachine("VM0", pm2, 1);
+    auto* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm2, 1);
     run_test_process("( [X]1 [x]1 )2", vm0, flop_amount);
     run_test_process("( [x]1 [X]1 )2", vm1, flop_amount);
     simgrid::s4u::this_actor::sleep_for(2);
@@ -227,9 +227,9 @@ static void run_test(const std::string& chooser)
 
   } else if (chooser == "( [o]1 [o]1 [ ]1 )2") {
     XBT_INFO("### Put three VMs on a PM, and put a task to two VMs");
-    vm0          = new simgrid::s4u::VirtualMachine("VM0", pm2,1);
-    simgrid::s4u::VirtualMachine *vm1 = new simgrid::s4u::VirtualMachine("VM1", pm2,1);
-    simgrid::s4u::VirtualMachine *vm2 = new simgrid::s4u::VirtualMachine("VM2", pm2,1);
+    vm0       = new simgrid::s4u::VirtualMachine("VM0", pm2, 1);
+    auto* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm2, 1);
+    auto* vm2 = new simgrid::s4u::VirtualMachine("VM2", pm2, 1);
     run_test_process("( [X]1 [x]1 [ ]1 )2", vm0, flop_amount);
     run_test_process("( [x]1 [X]1 [ ]1 )2", vm1, flop_amount);
     simgrid::s4u::this_actor::sleep_for(2);
@@ -240,9 +240,9 @@ static void run_test(const std::string& chooser)
 
   } else if (chooser == "( [o]1 [o]1 [o]1 )2") {
     XBT_INFO("### Put three VMs on a PM, and put a task to each VM");
-    vm0          = new simgrid::s4u::VirtualMachine("VM0", pm2,1);
-    simgrid::s4u::VirtualMachine *vm1 = new simgrid::s4u::VirtualMachine("VM1", pm2,1);
-    simgrid::s4u::VirtualMachine *vm2 = new simgrid::s4u::VirtualMachine("VM2", pm2,1);
+    vm0       = new simgrid::s4u::VirtualMachine("VM0", pm2, 1);
+    auto* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm2, 1);
+    auto* vm2 = new simgrid::s4u::VirtualMachine("VM2", pm2, 1);
     run_test_process("( [X]1 [o]1 [o]1 )2", vm0, flop_amount * 2 / 3);
     run_test_process("( [o]1 [X]1 [o]1 )2", vm1, flop_amount * 2 / 3);
     run_test_process("( [o]1 [o]1 [X]1 )2", vm2, flop_amount * 2 / 3);

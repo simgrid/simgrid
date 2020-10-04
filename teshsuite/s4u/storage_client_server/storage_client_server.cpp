@@ -51,8 +51,8 @@ static void hsm_put(const std::string& remote_host, const std::string& src, cons
 
   // Send file
   XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::get_cname(), read_size, remote_host.c_str());
-  std::string* payload             = new std::string(simgrid::xbt::string_printf("%s %llu", dest.c_str(), read_size));
-  simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(remote_host);
+  auto* payload = new std::string(simgrid::xbt::string_printf("%s %llu", dest.c_str(), read_size));
+  auto* mailbox = simgrid::s4u::Mailbox::by_name(remote_host);
   mailbox->put(payload, read_size);
   simgrid::s4u::this_actor::sleep_for(.4);
 }
