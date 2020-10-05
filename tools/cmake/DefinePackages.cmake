@@ -342,6 +342,7 @@ set(SURF_SRC
   src/kernel/routing/TorusZone.cpp
   src/kernel/routing/RoutedZone.cpp
   src/kernel/routing/VivaldiZone.cpp
+  src/kernel/routing/WifiZone.cpp
 
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
@@ -745,6 +746,7 @@ set(headers_to_install
   include/simgrid/kernel/routing/RoutedZone.hpp
   include/simgrid/kernel/routing/TorusZone.hpp
   include/simgrid/kernel/routing/VivaldiZone.hpp
+  include/simgrid/kernel/routing/WifiZone.hpp
 
   include/smpi/mpi.h
   include/smpi/sampi.h

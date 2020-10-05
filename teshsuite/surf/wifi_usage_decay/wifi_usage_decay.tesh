@@ -10,7 +10,7 @@ $ ${bindir:=.}/wifi_usage_decay ${platfdir}/wifi.xml --log=root.fmt=%m%n
 > We should thus have:
 >   mu = 1 / [ 1/1 * 1.05/49.00487Mbps ] = 46671305
 >   simulation_time = 1000*8 / mu = 0.0001714115 (rounded to 0.000171s in SimGrid)
-> Actual result: Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000171 seconds.
+> Actual result: Sending 1000 bytes from 'Station 1' to 'node1' takes 0.000171 seconds.
 >
 >
 > TEST: Send from a station to another station on the same AP.
@@ -34,7 +34,7 @@ $ ${bindir:=.}/wifi_usage_decay ${platfdir}/wifi.xml --log=root.fmt=%m%n --cfg=n
 > We should thus have:
 >   mu = 1 / [ 1/1 * 1/49.00487Mbps ] = 49004870
 >   simulation_time = 1000*8 / mu = 0.0001632491s (rounded to 0.000163s in SimGrid)
-> Actual result: Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000163 seconds.
+> Actual result: Sending 1000 bytes from 'Station 1' to 'node1' takes 0.000163 seconds.
 >
 >
 > TEST: Send from a station to another station on the same AP.

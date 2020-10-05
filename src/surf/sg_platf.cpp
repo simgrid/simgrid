@@ -15,6 +15,7 @@
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/kernel/routing/TorusZone.hpp"
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
+#include "simgrid/kernel/routing/WifiZone.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/include/simgrid/sg_config.hpp"
 #include "src/include/surf/surf.hpp"
@@ -606,8 +607,10 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
       new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id, netmodel);
   } else if (strcasecmp(zone->routing.c_str(),"Vivaldi") == 0) {
       new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id, netmodel);
+  } else if (strcasecmp(zone->routing.c_str(), "Wifi") == 0) {
+    new_zone = new simgrid::kernel::routing::WifiZone(current_routing, zone->id, netmodel);
   } else {
-      xbt_die("Not a valid model!");
+    xbt_die("Not a valid model!");
   }
 
   if (current_routing == nullptr) { /* it is the first one */

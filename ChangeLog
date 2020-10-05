@@ -52,6 +52,9 @@ C interface:
 Simix:
  - Remove obsolete option --cfg=contexts/parallel-threshold.
 
+XML:
+ - New routing 'WiFi' that makes it easier to specify a wifi network zone.
+
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
  - FG#41: Add sg_actor_create C interface

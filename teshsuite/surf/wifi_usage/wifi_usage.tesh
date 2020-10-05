@@ -9,7 +9,7 @@ $ ${bindir:=.}/wifi_usage ${platfdir}/wifi.xml --log=root.fmt=%m%n
 > We should thus have:
 >   mu = 1 / [ 1/1 * 1.05/54Mbps ] = 51428571
 >   simulation_time = 1000*8 / mu = 0.0001555556s (rounded to 0.000156s in SimGrid)
-> Actual result: Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000156 seconds.
+> Actual result: Sending 1000 bytes from 'Station 1' to 'node1' takes 0.000156 seconds.
 >
 >
 > TEST: Send from a station to another station on the same AP.
@@ -31,7 +31,7 @@ $ ${bindir:=.}/wifi_usage ${platfdir}/wifi.xml --log=root.fmt=%m%n --cfg=network
 > We should thus have:
 >   mu = 1 / [ 1/1 * 1/54Mbps ] = 5.4e+07
 >   simulation_time = 1000*8 / mu = 0.0001481481s
-> Actual result: Sending 1000 bytes from 'Station 1' to 'NODE1' takes 0.000148 seconds.
+> Actual result: Sending 1000 bytes from 'Station 1' to 'node1' takes 0.000148 seconds.
 >
 >
 > TEST: Send from a station to another station on the same AP.

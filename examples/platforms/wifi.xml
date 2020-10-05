@@ -4,31 +4,29 @@
 <platform version="4.1">
   <zone id="world" routing="Full">
 
-    <zone id="WIFI zone" routing="Cluster">
-        <!-- Two stations in the wifi zone -->
+    <zone id="WIFI zone" routing="Wifi">
+        <prop id="access_point" value="WIFI router" />
+	
+        <!-- Declare the stations of this wifi zone -->
         <host id="Station 1" speed="100.0Mf,50.0Mf,20.0Mf" />
         <host id="Station 2" speed="100.0Mf,50.0Mf,20.0Mf" />
 
-        <!-- Declare the wifi media after the hosts (so that the parser don't choke on an ambiguity between internal and leaf zones) -->
+        <!-- Declare the wifi media (after hosts because our parser is sometimes annoying) -->
         <link id="AP1" sharing_policy="WIFI" bandwidth="54Mbps,36Mbps,24Mbps" latency="0ms" />
 	
-        <!-- Specify that stations use the WIFI link for every communication (incoming or outgoing) -->
-        <host_link id="Station 1" up="AP1" down="AP1"/>
-        <host_link id="Station 2" up="AP1" down="AP1"/>
-
         <router id="WIFI router"/>
     </zone>
 
 
     <!-- NODE1 AS -->
     <zone id="Wired zone" routing="Full">
-      <host id="NODE1" speed="100.0Mf,50.0Mf,20.0Mf" />
+      <host id="node1" speed="100.0Mf,50.0Mf,20.0Mf" />
     </zone>
     
 
     <!-- AS Routing -->
     <link id="Collector" sharing_policy="SHARED" bandwidth="100Mbps" latency="0ms" />
-    <zoneRoute src="WIFI zone" dst="Wired zone" gw_src="WIFI router" gw_dst="NODE1">
+    <zoneRoute src="WIFI zone" dst="Wired zone" gw_src="WIFI router" gw_dst="node1">
       <link_ctn id="Collector" />
     </zoneRoute>
     

@@ -202,6 +202,13 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
                "WIFI link. Did you call link->set_host_rate()?",
                src->get_cname(), dst->get_cname(), dst_wifi_link->get_cname(), dst->get_cname());
   }
+  if (route.size() > 2)
+    for (unsigned i = 1; i < route.size() - 1; i++)
+      xbt_assert(route.at(i)->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI,
+                 "Link '%s' is a WIFI link. It can only be at the beginning or the end of the route from '%s' to '%s', "
+                 "not in between (it is at position %u out of %zu). "
+                 "Did you declare an access_point in your WIFI zones?",
+                 route.at(i)->get_cname(), src->get_cname(), dst->get_cname(), i + 1, route.size());
 
   NetworkCm02Action* action;
   if (src_wifi_link == nullptr && dst_wifi_link == nullptr)

@@ -2006,6 +2006,7 @@ include include/simgrid/kernel/routing/NetZoneImpl.hpp
 include include/simgrid/kernel/routing/RoutedZone.hpp
 include include/simgrid/kernel/routing/TorusZone.hpp
 include include/simgrid/kernel/routing/VivaldiZone.hpp
+include include/simgrid/kernel/routing/WifiZone.hpp
 include include/simgrid/link.h
 include include/simgrid/mailbox.h
 include include/simgrid/modelchecker.h
@@ -2246,6 +2247,7 @@ include src/kernel/routing/NetZoneImpl.cpp
 include src/kernel/routing/RoutedZone.cpp
 include src/kernel/routing/TorusZone.cpp
 include src/kernel/routing/VivaldiZone.cpp
+include src/kernel/routing/WifiZone.cpp
 include src/mc/AddressSpace.hpp
 include src/mc/ModelChecker.cpp
 include src/mc/ModelChecker.hpp

@@ -6,7 +6,7 @@
 #include "simgrid/s4u.hpp"
 
 /* This example demonstrates how to use wifi links in SimGrid. Most of the interesting things happen in the
- * corresponding XML file.
+ * corresponding XML file: examples/platforms/wifi.xml
  */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_network_wifi, "Messages specific for this s4u example");
@@ -33,12 +33,14 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
+  /* Exchange a message between the 2 stations */
   auto mailbox  = simgrid::s4u::Mailbox::by_name("mailbox");
   auto station1 = simgrid::s4u::Host::by_name("Station 1");
   auto station2 = simgrid::s4u::Host::by_name("Station 2");
   simgrid::s4u::Actor::create("sender", station1, sender, mailbox, 1e7);
   simgrid::s4u::Actor::create("receiver", station2, receiver, mailbox);
 
+  /* Declare that the stations are not at the same distance from their AP */
   auto ap = simgrid::s4u::Link::by_name("AP1");
   ap->set_host_wifi_rate(station1, 1); // The host "Station 1" uses the second level of bandwidths on that AP
   ap->set_host_wifi_rate(station2, 0); // This is perfectly useless as level 0 is used by default

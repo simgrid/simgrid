@@ -34,7 +34,7 @@ static void main_dispatcher()
     XBT_INFO("  mu = 1 / [ 1/1 * 1/49.00487Mbps ] = 49004870");
     XBT_INFO("  simulation_time = 1000*8 / mu = 0.0001632491s (rounded to 0.000163s in SimGrid)");
   }
-  run_ping_test("Station 1", "NODE1", 1000);
+  run_ping_test("Station 1", "node1", 1000);
 
   XBT_INFO("TEST: Send from a station to another station on the same AP.");
   XBT_INFO("------------------------------------------------------------");
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 {
   simgrid::s4u::Engine engine(&argc, argv);
   engine.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("dispatcher", simgrid::s4u::Host::by_name("NODE1"), main_dispatcher);
+  simgrid::s4u::Actor::create("dispatcher", simgrid::s4u::Host::by_name("node1"), main_dispatcher);
   engine.run();
 
   return 0;
