@@ -248,12 +248,11 @@ static s_mpi_coll_description_t* find_coll_description(const std::string& collec
   if (table->empty())
     xbt_die("No registered algorithm for collective '%s'! This is a bug.", collective.c_str());
 
-  for (unsigned long i = 0; i < table->size(); i++) {
-    auto desc = &table->at(i);
-    if (algo == desc->name) {
-      if (desc->name != "default")
-        XBT_INFO("Switch to algorithm %s for collective %s", desc->name.c_str(), collective.c_str());
-      return desc;
+  for (auto& desc : *table) {
+    if (algo == desc.name) {
+      if (desc.name != "default")
+        XBT_INFO("Switch to algorithm %s for collective %s", desc.name.c_str(), collective.c_str());
+      return &desc;
     }
   }
 
