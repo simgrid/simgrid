@@ -8,6 +8,8 @@
 
 #include "colls_private.hpp"
 
+#include <memory>
+
 /* This is the default implementation of allreduce. The algorithm is:
 
    Algorithm: MPI_Allreduce
@@ -695,7 +697,7 @@ int scatter__mpich(const void *sbuf, int scount,
 {
   std::unique_ptr<unsigned char[]> tmp_buf;
   if(comm->rank()!=root){
-    tmp_buf.reset(new unsigned char[rcount * rdtype->get_extent()]);
+    tmp_buf = std::make_unique<unsigned char[]>(rcount * rdtype->get_extent());
     sbuf   = tmp_buf.get();
     scount = rcount;
     sdtype = rdtype;

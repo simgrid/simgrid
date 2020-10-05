@@ -10,6 +10,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <sys/ptrace.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -48,7 +49,7 @@ AppSide* AppSide::initialize()
   xbt_assert(type == SOCK_SEQPACKET, "Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 
-  instance_.reset(new simgrid::mc::AppSide(fd));
+  instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
 
   // Wait for the model-checker:
   errno = 0;

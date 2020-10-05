@@ -49,7 +49,7 @@ int helper_tests::value                        = 0;
 void helper_tests::Init()
 {
   pagesize = (size_t)getpagesize();
-  store.reset(new simgrid::mc::PageStore(50));
+  store    = std::make_unique<simgrid::mc::PageStore>(50);
   data     = mmap(nullptr, getpagesize(), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   REQUIRE(store->size() == 0);
 }

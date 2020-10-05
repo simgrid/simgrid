@@ -8,6 +8,7 @@
 #include "src/mc/sosp/Snapshot.hpp"
 
 #include <cstddef>
+#include <memory>
 #include <sys/mman.h>
 #include <xbt/random.hpp>
 
@@ -56,7 +57,7 @@ void snap_test_helper::Init()
   REQUIRE(xbt_pagesize == getpagesize());
   REQUIRE(1 << xbt_pagebits == xbt_pagesize);
 
-  process.reset(new simgrid::mc::RemoteSimulation(getpid()));
+  process = std::make_unique<simgrid::mc::RemoteSimulation>(getpid());
   process->init();
   mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process), -1);
 }

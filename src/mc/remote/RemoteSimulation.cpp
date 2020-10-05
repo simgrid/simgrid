@@ -16,6 +16,8 @@
 #include <libunwind-ptrace.h>
 #include <sys/mman.h> // PROT_*
 
+#include <memory>
+
 using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc, "MC process information");
@@ -259,7 +261,7 @@ void RemoteSimulation::refresh_heap()
 {
   // Read/dereference/refresh the std_heap pointer:
   if (not this->heap)
-    this->heap.reset(new s_xbt_mheap_t());
+    this->heap = std::make_unique<s_xbt_mheap_t>();
   this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address));
   this->cache_flags_ |= RemoteSimulation::cache_heap;
 }

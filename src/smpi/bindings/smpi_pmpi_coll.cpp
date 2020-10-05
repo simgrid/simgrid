@@ -11,12 +11,14 @@
 #include "smpi_op.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
+#include <memory>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
   static const void* smpi_get_in_place_buf(const void* inplacebuf, const void* otherbuf,std::unique_ptr<unsigned char[]>& tmp_sendbuf, int count, MPI_Datatype datatype){
   if (inplacebuf == MPI_IN_PLACE) {
-      tmp_sendbuf.reset(new unsigned char[count * datatype->get_extent()]);
-      simgrid::smpi::Datatype::copy(otherbuf, count, datatype, tmp_sendbuf.get(), count, datatype);
+    tmp_sendbuf = std::make_unique<unsigned char[]>(count * datatype->get_extent());
+    simgrid::smpi::Datatype::copy(otherbuf, count, datatype, tmp_sendbuf.get(), count, datatype);
     return tmp_sendbuf.get();
   }else{
     return inplacebuf;
@@ -753,10 +755,10 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   std::unique_ptr<int[]> tmp_senddispls;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
   if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendcounts.reset(new int[size]);
+    tmp_sendcounts = std::make_unique<int[]>(size);
     std::copy(recvcounts, recvcounts + size, tmp_sendcounts.get());
     real_sendcounts = tmp_sendcounts.get();
-    tmp_senddispls.reset(new int[size]);
+    tmp_senddispls  = std::make_unique<int[]>(size);
     std::copy(recvdispls, recvdispls + size, tmp_senddispls.get());
     real_senddispls = tmp_senddispls.get();
     real_sendtype  = recvtype;
@@ -849,13 +851,13 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   std::unique_ptr<MPI_Datatype[]> tmp_sendtypes;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
   if (sendbuf == MPI_IN_PLACE) {
-    tmp_sendcounts.reset(new int[size]);
+    tmp_sendcounts = std::make_unique<int[]>(size);
     std::copy(recvcounts, recvcounts + size, tmp_sendcounts.get());
     real_sendcounts = tmp_sendcounts.get();
-    tmp_senddispls.reset(new int[size]);
+    tmp_senddispls  = std::make_unique<int[]>(size);
     std::copy(recvdispls, recvdispls + size, tmp_senddispls.get());
     real_senddispls = tmp_senddispls.get();
-    tmp_sendtypes.reset(new MPI_Datatype[size]);
+    tmp_sendtypes   = std::make_unique<MPI_Datatype[]>(size);
     std::copy(recvtypes, recvtypes + size, tmp_sendtypes.get());
     real_sendtypes = tmp_sendtypes.get();
   }

@@ -16,6 +16,7 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <fstream>
+#include <memory>
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_file, s4u, "S4U files");
@@ -107,7 +108,7 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
     // assign a file descriptor id to the newly opened File
     FileDescriptorHostExt* ext = host->extension<simgrid::s4u::FileDescriptorHostExt>();
     if (ext->file_descriptor_table == nullptr) {
-      ext->file_descriptor_table.reset(new std::vector<int>(sg_storage_max_file_descriptors));
+      ext->file_descriptor_table = std::make_unique<std::vector<int>>(sg_storage_max_file_descriptors);
       std::iota(ext->file_descriptor_table->rbegin(), ext->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
     }
     xbt_assert(not ext->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");

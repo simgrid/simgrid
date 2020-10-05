@@ -24,6 +24,7 @@
 #include "src/mc/remote/AppSide.hpp"
 #endif
 
+#include <memory>
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
@@ -285,7 +286,7 @@ void SIMIX_global_init(int *argc, char **argv)
   if (simix_global == nullptr) {
     surf_init(argc, argv); /* Initialize SURF structures */
 
-    simix_global.reset(new simgrid::simix::Global());
+    simix_global           = std::make_unique<simgrid::simix::Global>();
     simix_global->maestro_ = nullptr;
     SIMIX_context_mod_init();
 

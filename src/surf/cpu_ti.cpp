@@ -10,6 +10,7 @@
 #include "surf/surf.hpp"
 
 #include <algorithm>
+#include <memory>
 
 constexpr double EPSILON = 0.000000001;
 
@@ -238,7 +239,7 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
   for (auto const& val : speed_profile->event_list)
     total_time += val.date_;
 
-  profile_.reset(new CpuTiProfile(speed_profile));
+  profile_   = std::make_unique<CpuTiProfile>(speed_profile);
   last_time_ = total_time;
   total_     = profile_->integrate_simple(0, total_time);
 

@@ -12,6 +12,8 @@
 
 #include "src/kernel/context/ContextSwapped.hpp"
 
+#include <memory>
+
 #ifdef _WIN32
 #include <malloc.h>
 #include <windows.h>
@@ -212,8 +214,8 @@ void SwappedContextFactory::run_all()
   if (SIMIX_context_is_parallel()) {
     // We lazily create the parmap so that all options are actually processed when doing so.
     if (parmap_ == nullptr)
-      parmap_.reset(
-          new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode()));
+      parmap_ = std::make_unique<simgrid::xbt::Parmap<smx_actor_t>>(SIMIX_context_get_nthreads(),
+                                                                    SIMIX_context_get_parallel_mode());
 
     // Usually, Parmap::apply() executes the provided function on all elements of the array.
     // Here, the executed function does not return the control to the parmap before all the array is processed:

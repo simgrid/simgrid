@@ -107,11 +107,11 @@ static std::unique_ptr<Random> default_random = std::make_unique<XbtRandom>();
 
 void set_implem_xbt()
 {
-  default_random.reset(new XbtRandom);
+  default_random = std::make_unique<XbtRandom>();
 }
 void set_implem_std()
 {
-  default_random.reset(new StdRandom);
+  default_random = std::make_unique<StdRandom>();
 }
 
 void set_mersenne_seed(int seed)

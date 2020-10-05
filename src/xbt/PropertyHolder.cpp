@@ -6,6 +6,7 @@
 #include <xbt/PropertyHolder.hpp>
 
 #include <map>
+#include <memory>
 
 namespace simgrid {
 namespace xbt {
@@ -23,7 +24,7 @@ const char* PropertyHolder::get_property(const std::string& key) const
 void PropertyHolder::set_property(const std::string& key, const std::string& value)
 {
   if (not properties_)
-    properties_.reset(new std::unordered_map<std::string, std::string>);
+    properties_ = std::make_unique<std::unordered_map<std::string, std::string>>();
   (*properties_)[key] = value;
 }
 
@@ -31,7 +32,7 @@ void PropertyHolder::set_property(const std::string& key, const std::string& val
 const std::unordered_map<std::string, std::string>* PropertyHolder::get_properties()
 {
   if (not properties_)
-    properties_.reset(new std::unordered_map<std::string, std::string>);
+    properties_ = std::make_unique<std::unordered_map<std::string, std::string>>();
   return properties_.get();
 }
 
@@ -39,7 +40,7 @@ const std::unordered_map<std::string, std::string>* PropertyHolder::get_properti
 template <class Assoc> void PropertyHolder::set_properties(const Assoc& properties)
 {
   if (not properties_)
-    properties_.reset(new std::unordered_map<std::string, std::string>);
+    properties_ = std::make_unique<std::unordered_map<std::string, std::string>>();
   std::unordered_map<std::string, std::string> props(properties.cbegin(), properties.cend());
 #if __cplusplus >= 201703L
   props.merge(properties_);
