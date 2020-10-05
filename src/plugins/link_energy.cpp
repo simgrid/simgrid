@@ -156,7 +156,7 @@ static void on_communicate(const simgrid::kernel::resource::NetworkAction& actio
       continue;
 
     XBT_DEBUG("Update link %s", link->get_cname());
-    LinkEnergy* link_energy = link->get_iface()->extension<LinkEnergy>();
+    auto* link_energy = link->get_iface()->extension<LinkEnergy>();
     link_energy->init_watts_range_list();
     link_energy->update();
   }

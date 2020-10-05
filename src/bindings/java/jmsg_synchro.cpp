@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_init(JNIEnv * env, jobject obj
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject obj) {
-  sg_mutex_t mutex = (sg_mutex_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Mutex_bind);
+  auto mutex = (sg_mutex_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Mutex_bind);
   sg_mutex_lock(mutex);
 }
 

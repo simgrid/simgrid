@@ -709,7 +709,7 @@ int Win::finish_comms(int rank){
   if (size > 0) {
     size = 0;
     std::vector<MPI_Request> myreqqs;
-    std::vector<MPI_Request>::iterator iter = reqqs->begin();
+    auto iter                               = reqqs->begin();
     int proc_id                             = comm_->group()->actor(rank)->get_pid();
     while (iter != reqqs->end()){
       // Let's see if we're either the destination or the sender of this request

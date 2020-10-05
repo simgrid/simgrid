@@ -70,7 +70,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   jobject jprocess = jprocess_ref(jprocess_arg, env);
 
   /* Actually build the MSG process */
-  jstring jname     = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
+  auto jname        = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
   const char* name  = env->GetStringUTFChars(jname, nullptr);
   auto actor_code   = [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); };
   smx_actor_t self  = SIMIX_process_self();

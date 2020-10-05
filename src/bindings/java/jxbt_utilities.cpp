@@ -33,7 +33,7 @@ jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls, const char *name, const cha
 
   if (not id) {
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, nullptr);
+    auto jclassname       = (jstring)env->CallObjectMethod(cls, tostr_id, nullptr);
     const char* classname = env->GetStringUTFChars(jclassname, nullptr);
 
     env->ReleaseStringUTFChars(jclassname, classname);
@@ -55,7 +55,7 @@ jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls, const char *name, co
 
   if (not id) {
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, nullptr);
+    auto jclassname       = (jstring)env->CallObjectMethod(cls, tostr_id, nullptr);
     const char* classname = env->GetStringUTFChars(jclassname, nullptr);
 
     env->ReleaseStringUTFChars(jclassname, classname);
@@ -114,7 +114,7 @@ jfieldID jxbt_get_jfield(JNIEnv * env, jclass cls, const char *name, const char 
 
   if (not id) {
     jmethodID getname_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) env->CallObjectMethod(cls, getname_id, nullptr);
+    auto jclassname       = (jstring)env->CallObjectMethod(cls, getname_id, nullptr);
     const char* classname = env->GetStringUTFChars(jclassname, nullptr);
 
     env->ReleaseStringUTFChars(jclassname, classname);

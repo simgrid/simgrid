@@ -32,7 +32,7 @@ int alltoall__basic_linear(const void *sendbuf, int sendcount, MPI_Datatype send
                                static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
-    MPI_Request* requests = new MPI_Request[2 * (size - 1)];
+    auto* requests = new MPI_Request[2 * (size - 1)];
     /* Post all receives first -- a simple optimization */
     count = 0;
     for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {

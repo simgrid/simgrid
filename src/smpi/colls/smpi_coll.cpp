@@ -360,8 +360,8 @@ int colls::scan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype data
   Datatype::copy(sendbuf, count, datatype, recvbuf, count, datatype);
 
   // Send/Recv buffers to/from others
-  MPI_Request* requests = new MPI_Request[size - 1];
-  unsigned char** tmpbufs = new unsigned char*[rank];
+  auto* requests = new MPI_Request[size - 1];
+  auto** tmpbufs = new unsigned char*[rank];
   int index = 0;
   for (int other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
@@ -418,8 +418,8 @@ int colls::exscan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype da
   datatype->extent(&lb, &dataext);
 
   // Send/Recv buffers to/from others
-  MPI_Request* requests = new MPI_Request[size - 1];
-  unsigned char** tmpbufs = new unsigned char*[rank];
+  auto* requests = new MPI_Request[size - 1];
+  auto** tmpbufs = new unsigned char*[rank];
   int index = 0;
   for (int other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);

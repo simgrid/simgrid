@@ -111,7 +111,7 @@ public:
 
     MPI_Request find(int src, int dst, int tag)
     {
-      req_storage_t::iterator it = store.find(req_key_t(src, dst, tag));
+      auto it = store.find(req_key_t(src, dst, tag));
       return (it == store.end()) ? MPI_REQUEST_NULL : it->second;
     }
 

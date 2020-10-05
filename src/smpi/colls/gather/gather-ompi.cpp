@@ -270,7 +270,7 @@ int gather__ompi_linear_sync(const void *sbuf, int scount,
 */
       char* ptmp;
       MPI_Request first_segment_req;
-      MPI_Request* reqs = new (std::nothrow) MPI_Request[size];
+      auto* reqs = new (std::nothrow) MPI_Request[size];
       if (nullptr == reqs) {
         ret  = -1;
         line = __LINE__;

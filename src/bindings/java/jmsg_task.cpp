@@ -76,8 +76,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
   int host_count = env->GetArrayLength(jhosts);
 
   jdouble* jcomputeDurations = env->GetDoubleArrayElements(jcomputeDurations_arg, nullptr);
-  msg_host_t* hosts          = new msg_host_t[host_count];
-  double* computeDurations   = new double[host_count];
+  auto* hosts                = new msg_host_t[host_count];
+  auto* computeDurations     = new double[host_count];
   for (int index = 0; index < host_count; index++) {
     jobject jhost           = env->GetObjectArrayElement(jhosts, index);
     hosts[index] = jhost_get_native(env, jhost);
@@ -86,7 +86,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
   env->ReleaseDoubleArrayElements(jcomputeDurations_arg, jcomputeDurations, 0);
 
   jdouble* jmessageSizes = env->GetDoubleArrayElements(jmessageSizes_arg, nullptr);
-  double* messageSizes   = new double[host_count * host_count];
+  auto* messageSizes     = new double[host_count * host_count];
   for (int index = 0; index < host_count * host_count; index++) {
     messageSizes[index] = jmessageSizes[index];
   }
@@ -294,7 +294,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv* env, jclass 
     jmsg_throw_status(env, rv);
     return nullptr;
   }
-  jobject jtask_global = (jobject) MSG_task_get_data(task);
+  auto jtask_global = (jobject)MSG_task_get_data(task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
   jobject jtask_local = env->NewLocalRef(jtask_global);
@@ -310,7 +310,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass c
     return nullptr;
 
   //pointer to store the task object pointer.
-  msg_task_t* task = new msg_task_t(nullptr);
+  auto* task = new msg_task_t(nullptr);
   /* There should be a cache here */
 
   jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
@@ -343,7 +343,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receiveBounded(JNIEnv* env, 
     jmsg_throw_status(env, res);
     return nullptr;
   }
-  jobject jtask_global = (jobject)MSG_task_get_data(task);
+  auto jtask_global = (jobject)MSG_task_get_data(task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
   jobject jtask_local = env->NewLocalRef(jtask_global);
@@ -363,7 +363,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, j
     return nullptr;
 
   // pointer to store the task object pointer.
-  msg_task_t* task = new msg_task_t(nullptr);
+  auto* task = new msg_task_t(nullptr);
 
   jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
   if (not jcomm) {
@@ -464,10 +464,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_nativeFinalize(JNIEnv * env, jo
 }
 
 static void msg_task_cancel_on_failed_dsend(void*t) {
-  msg_task_t task = (msg_task_t) t;
+  auto task       = (msg_task_t)t;
   JNIEnv* env     = get_current_thread_env();
   if (env) {
-    jobject jtask_global = (jobject)MSG_task_get_data(task);
+    auto jtask_global = (jobject)MSG_task_get_data(task);
     /* Destroy the global ref so that the JVM can free the stuff */
     env->DeleteGlobalRef(jtask_global);
     /* Don't free the C data here, to avoid a race condition with the GC also sometimes doing so.

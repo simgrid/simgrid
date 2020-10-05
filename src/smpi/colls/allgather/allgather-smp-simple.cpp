@@ -76,9 +76,9 @@ int allgather__smp_simple(const void *send_buf, int scount,
 
   if (intra_rank == 0) {
     int num_req = (inter_comm_size - 1) * 2;
-    MPI_Request* reqs    = new MPI_Request[num_req];
+    auto* reqs           = new MPI_Request[num_req];
     MPI_Request* req_ptr = reqs;
-    MPI_Status* stat     = new MPI_Status[num_req];
+    auto* stat           = new MPI_Status[num_req];
 
     for (i = 1; i < inter_comm_size; i++) {
 

@@ -184,10 +184,10 @@ int reduce__arrival_pattern_aware(const void *buf, void *rbuf,
   else {
     //    printf("node %d start\n",rank);
 
-    MPI_Request* send_request_array = new MPI_Request[size + pipe_length];
-    MPI_Request* recv_request_array = new MPI_Request[size + pipe_length];
-    MPI_Status* send_status_array   = new MPI_Status[size + pipe_length];
-    MPI_Status* recv_status_array   = new MPI_Status[size + pipe_length];
+    auto* send_request_array = new MPI_Request[size + pipe_length];
+    auto* recv_request_array = new MPI_Request[size + pipe_length];
+    auto* send_status_array  = new MPI_Status[size + pipe_length];
+    auto* recv_status_array  = new MPI_Status[size + pipe_length];
 
     if (rank == 0) {
       sent_count = 0;

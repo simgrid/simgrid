@@ -32,8 +32,7 @@ static void master(int argc, char* argv[])
 
   masternames[id] = simgrid::s4u::Host::current()->get_cname();
 
-  double* payload = new double();
-  *payload        = msg_size;
+  auto* payload = new double(msg_size);
 
   count_finished++;
   timer_start = 1;

@@ -139,7 +139,7 @@ allgather__2dmesh(const void *send_buff, int send_count, MPI_Datatype
   if (Y > X)
     num_reqs = Y;
 
-  MPI_Request* req     = new MPI_Request[num_reqs];
+  auto* req            = new MPI_Request[num_reqs];
   MPI_Request* req_ptr = req;
 
   // do local allgather/local copy

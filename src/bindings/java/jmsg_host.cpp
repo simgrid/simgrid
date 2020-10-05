@@ -309,7 +309,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
   }
 
   for (int index = 0; index < count; index++) {
-    jobject jhost = static_cast<jobject>(table[index]->extension(JAVA_HOST_LEVEL));
+    auto jhost = static_cast<jobject>(table[index]->extension(JAVA_HOST_LEVEL));
 
     if (not jhost) {
       jstring jname = env->NewStringUTF(table[index]->get_cname());

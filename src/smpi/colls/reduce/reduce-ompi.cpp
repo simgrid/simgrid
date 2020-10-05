@@ -266,7 +266,7 @@ int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int 
         else {
 
             int creq = 0;
-            MPI_Request* sreq = new (std::nothrow) MPI_Request[max_outstanding_reqs];
+            auto* sreq = new (std::nothrow) MPI_Request[max_outstanding_reqs];
             if (nullptr == sreq) {
               line = __LINE__;
               ret  = -1;

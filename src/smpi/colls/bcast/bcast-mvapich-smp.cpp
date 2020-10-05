@@ -193,9 +193,9 @@ int bcast__mvapich2_knomial_intra_node(void *buffer,
     local_size = comm->size();
     rank = comm->rank();
 
-    MPI_Request* reqarray = new MPI_Request[2 * mv2_intra_node_knomial_factor];
+    auto* reqarray = new MPI_Request[2 * mv2_intra_node_knomial_factor];
 
-    MPI_Status* starray = new MPI_Status[2 * mv2_intra_node_knomial_factor];
+    auto* starray = new MPI_Status[2 * mv2_intra_node_knomial_factor];
 
     /* intra-node k-nomial bcast  */
     if (local_size > 1) {

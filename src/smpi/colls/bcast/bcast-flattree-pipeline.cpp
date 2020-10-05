@@ -30,8 +30,8 @@ int bcast__flattree_pipeline(void *buff, int count,
   rank = comm->rank();
   num_procs = comm->size();
 
-  MPI_Request* request_array = new MPI_Request[pipe_length];
-  MPI_Status* status_array   = new MPI_Status[pipe_length];
+  auto* request_array = new MPI_Request[pipe_length];
+  auto* status_array  = new MPI_Status[pipe_length];
 
   if (rank != root) {
     for (i = 0; i < pipe_length; i++) {

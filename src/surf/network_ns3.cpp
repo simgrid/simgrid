@@ -378,7 +378,7 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
     ns3::NetDeviceContainer netA;
     WifiZone* zone = WifiZone::by_name(name);
     xbt_assert(zone != nullptr, "Link name '%s' does not match the 'wifi_link' property of a host.", name.c_str());
-    NetPointNs3* netpoint_ns3 = zone->get_host()->get_netpoint()->extension<NetPointNs3>();
+    auto* netpoint_ns3 = zone->get_host()->get_netpoint()->extension<NetPointNs3>();
 
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "ControlMode", ns3::StringValue("HtMcs0"), "DataMode",
                                  ns3::StringValue("HtMcs" + std::to_string(zone->get_mcs())));

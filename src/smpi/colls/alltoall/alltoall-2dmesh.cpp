@@ -87,8 +87,8 @@ int alltoall__2dmesh(const void *send_buff, int send_count,
   if (Y > X)
     num_reqs = Y;
 
-  MPI_Status* statuses = new MPI_Status[num_reqs];
-  MPI_Request* reqs    = new MPI_Request[num_reqs];
+  auto* statuses       = new MPI_Status[num_reqs];
+  auto* reqs           = new MPI_Request[num_reqs];
   MPI_Request* req_ptr = reqs;
 
   count = send_count * num_procs;

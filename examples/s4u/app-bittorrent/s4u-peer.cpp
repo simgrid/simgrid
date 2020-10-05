@@ -552,7 +552,7 @@ void Peer::updateChokedPeers()
       int j = 0;
       do {
         // We choose a random peer to unchoke.
-        std::unordered_map<int, Connection>::iterator chosen_peer_it = connected_peers.begin();
+        auto chosen_peer_it = connected_peers.begin();
         std::advance(chosen_peer_it, random.uniform_int(0, static_cast<int>(connected_peers.size() - 1)));
         chosen_peer = &chosen_peer_it->second;
         if (not chosen_peer->interested || not chosen_peer->choked_upload)

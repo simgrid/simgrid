@@ -83,8 +83,8 @@ int alltoall__3dmesh(const void *send_buff, int send_count,
   unsigned char* tmp_buff1 = smpi_get_tmp_sendbuffer(block_size * num_procs * two_dsize);
   unsigned char* tmp_buff2 = smpi_get_tmp_recvbuffer(block_size * two_dsize);
 
-  MPI_Status* statuses = new MPI_Status[num_reqs];
-  MPI_Request* reqs    = new MPI_Request[num_reqs];
+  auto* statuses       = new MPI_Status[num_reqs];
+  auto* reqs           = new MPI_Request[num_reqs];
   MPI_Request* req_ptr = reqs;
 
   recv_offset = (rank % two_dsize) * block_size * num_procs;

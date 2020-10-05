@@ -42,7 +42,7 @@ int alltoallv__ompi_basic_linear(const void *sbuf, const int *scounts, const int
   }
 
   /* Now, initiate all send/recv to/from others. */
-  MPI_Request* ireqs = new MPI_Request[size * 2];
+  auto* ireqs        = new MPI_Request[size * 2];
   int nreqs          = 0;
   MPI_Request* preq  = ireqs;
 

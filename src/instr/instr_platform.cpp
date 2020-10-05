@@ -270,7 +270,7 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
     xbt_assert(Container::get_root() == root);
 
     if (TRACE_smpi_is_enabled()) {
-      ContainerType* mpi = root->type_->by_name_or_create<ContainerType>("MPI");
+      auto* mpi = root->type_->by_name_or_create<ContainerType>("MPI");
       if (not TRACE_smpi_is_grouped())
         mpi->by_name_or_create<StateType>("MPI_STATE");
       root->type_->by_name_or_create("MPI_LINK", mpi, mpi);
@@ -332,7 +332,7 @@ static void on_host_creation(s4u::Host const& host)
     container->type_->by_name_or_create("speed_used", "0.5 0.5 0.5");
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()) {
-    ContainerType* mpi = container->type_->by_name_or_create<ContainerType>("MPI");
+    auto* mpi = container->type_->by_name_or_create<ContainerType>("MPI");
     mpi->by_name_or_create<StateType>("MPI_STATE");
     // TODO See if we can move this to the LoadBalancer plugin
     root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
@@ -381,8 +381,8 @@ static void on_actor_creation(s4u::Actor const& actor)
   std::string container_name = instr_pid(actor);
 
   container->create_child(container_name, "ACTOR");
-  ContainerType* actor_type = container->type_->by_name_or_create<ContainerType>("ACTOR");
-  StateType* state          = actor_type->by_name_or_create<StateType>("ACTOR_STATE");
+  auto* actor_type = container->type_->by_name_or_create<ContainerType>("ACTOR");
+  auto* state      = actor_type->by_name_or_create<StateType>("ACTOR_STATE");
   state->add_entity_value("suspend", "1 0 1");
   state->add_entity_value("sleep", "1 1 0");
   state->add_entity_value("receive", "1 0 0");
@@ -418,8 +418,8 @@ static void on_vm_creation(s4u::Host const& host)
 {
   const Container* container = new HostContainer(host, currentContainer.back());
   const Container* root      = Container::get_root();
-  ContainerType* vm          = container->type_->by_name_or_create<ContainerType>("VM");
-  StateType* state           = vm->by_name_or_create<StateType>("VM_STATE");
+  auto* vm                   = container->type_->by_name_or_create<ContainerType>("VM");
+  auto* state                = vm->by_name_or_create<StateType>("VM_STATE");
   state->add_entity_value("suspend", "1 0 1");
   state->add_entity_value("sleep", "1 1 0");
   state->add_entity_value("receive", "1 0 0");

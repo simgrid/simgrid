@@ -49,7 +49,7 @@ int alltoallv__bruck(const void *sendbuf, const int *sendcounts, const int *send
     int ii, ss, dst;
     /* post only bblock isends/irecvs at a time as suggested by Tony Ladd */
     for (ii = 0; ii < size; ii += bblock) {
-      MPI_Request* requests = new MPI_Request[2 * bblock];
+      auto* requests = new MPI_Request[2 * bblock];
 
       ss    = size - ii < bblock ? size - ii : bblock;
       count = 0;

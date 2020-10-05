@@ -83,10 +83,10 @@ int reduce__NTSL(const void *buf, void *rbuf, int count,
 
   /* pipeline */
   else {
-    MPI_Request* send_request_array = new MPI_Request[size + pipe_length];
-    MPI_Request* recv_request_array = new MPI_Request[size + pipe_length];
-    MPI_Status* send_status_array   = new MPI_Status[size + pipe_length];
-    MPI_Status* recv_status_array   = new MPI_Status[size + pipe_length];
+    auto* send_request_array = new MPI_Request[size + pipe_length];
+    auto* recv_request_array = new MPI_Request[size + pipe_length];
+    auto* send_status_array  = new MPI_Status[size + pipe_length];
+    auto* recv_status_array  = new MPI_Status[size + pipe_length];
 
     /* root recv data */
     if (rank == root) {

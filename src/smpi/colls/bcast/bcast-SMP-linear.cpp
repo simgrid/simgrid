@@ -96,8 +96,8 @@ int bcast__SMP_linear(void *buf, int count,
   }
   // pipeline bcast
   else {
-    MPI_Request* request_array = new MPI_Request[size + pipe_length];
-    MPI_Status* status_array   = new MPI_Status[size + pipe_length];
+    auto* request_array = new MPI_Request[size + pipe_length];
+    auto* status_array  = new MPI_Status[size + pipe_length];
 
     // case ROOT of each SMP
     if (rank % num_core == 0) {

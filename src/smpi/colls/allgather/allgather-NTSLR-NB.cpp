@@ -25,8 +25,8 @@ allgather__NTSLR_NB(const void *sbuf, int scount, MPI_Datatype stype,
   size = comm->size();
   rextent = rtype->get_extent();
   sextent = stype->get_extent();
-  MPI_Request* rrequest_array = new MPI_Request[size];
-  MPI_Request* srequest_array = new MPI_Request[size];
+  auto* rrequest_array = new MPI_Request[size];
+  auto* srequest_array = new MPI_Request[size];
 
   // irregular case use default MPI functions
   if (scount * sextent != rcount * rextent) {

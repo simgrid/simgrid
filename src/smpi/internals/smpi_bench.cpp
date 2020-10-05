@@ -280,7 +280,7 @@ unsigned long long smpi_rastro_timestamp ()
   smpi_bench_end();
   double now = SIMIX_get_clock();
 
-  unsigned long long sec = static_cast<unsigned long long>(now);
+  auto sec               = static_cast<unsigned long long>(now);
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();
   smpi_bench_begin();
   return sec * smpi_rastro_resolution() + pre;

@@ -173,8 +173,8 @@ int reduce__mvapich2_knomial(
            &dst, &expected_send_count, &expected_recv_count, &src_array);
 
     if(expected_recv_count > 0 ) {
-      unsigned char** tmp_buf = new unsigned char*[expected_recv_count];
-      MPI_Request* requests = new MPI_Request[expected_recv_count];
+      auto** tmp_buf = new unsigned char*[expected_recv_count];
+      auto* requests = new MPI_Request[expected_recv_count];
       for (k = 0; k < expected_recv_count; k++) {
         tmp_buf[k] = smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
         tmp_buf[k] = tmp_buf[k] - true_lb;

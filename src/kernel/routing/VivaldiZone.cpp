@@ -55,7 +55,7 @@ static inline double euclidean_dist_comp(int index, std::vector<double>* src, st
 
 static std::vector<double>* netpoint_get_coords(NetPoint* np)
 {
-  vivaldi::Coords* coords = np->extension<vivaldi::Coords>();
+  auto* coords = np->extension<vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
              (np->is_netzone() ? "Netzone" : (np->is_host() ? "Host" : "Router")), np->get_cname(), np);
   return &coords->coords;

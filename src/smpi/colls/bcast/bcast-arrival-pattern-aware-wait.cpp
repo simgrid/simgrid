@@ -93,10 +93,10 @@ int bcast__arrival_pattern_aware_wait(void *buf, int count,
 
   /* start pipeline bcast */
 
-  MPI_Request* send_request_array = new MPI_Request[size + pipe_length];
-  MPI_Request* recv_request_array = new MPI_Request[size + pipe_length];
-  MPI_Status* send_status_array   = new MPI_Status[size + pipe_length];
-  MPI_Status* recv_status_array   = new MPI_Status[size + pipe_length];
+  auto* send_request_array = new MPI_Request[size + pipe_length];
+  auto* recv_request_array = new MPI_Request[size + pipe_length];
+  auto* send_status_array  = new MPI_Status[size + pipe_length];
+  auto* recv_status_array  = new MPI_Status[size + pipe_length];
 
   /* root */
   if (rank == 0) {

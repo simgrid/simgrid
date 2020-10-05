@@ -19,7 +19,7 @@ int colls::ibarrier(MPI_Comm comm, MPI_Request* request, int external)
   (*request) = new Request( nullptr, 0, MPI_BYTE,
                          rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   if (rank > 0) {
-    MPI_Request* requests = new MPI_Request[2];
+    auto* requests = new MPI_Request[2];
     requests[0] = Request::isend (nullptr, 0, MPI_BYTE, 0,
                              system_tag,
                              comm);
@@ -29,7 +29,7 @@ int colls::ibarrier(MPI_Comm comm, MPI_Request* request, int external)
     (*request)->set_nbc_requests(requests, 2);
   }
   else {
-    MPI_Request* requests = new MPI_Request[(size - 1) * 2];
+    auto* requests = new MPI_Request[(size - 1) * 2];
     for (int i = 1; i < 2 * size - 1; i += 2) {
       requests[i - 1] = Request::irecv(nullptr, 0, MPI_BYTE, MPI_ANY_SOURCE, system_tag, comm);
       requests[i]     = Request::isend(nullptr, 0, MPI_BYTE, (i + 1) / 2, system_tag, comm);
@@ -48,14 +48,14 @@ int colls::ibcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Com
   (*request) = new Request( nullptr, 0, MPI_BYTE,
                          rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   if (rank != root) {
-    MPI_Request* requests = new MPI_Request[1];
+    auto* requests = new MPI_Request[1];
     requests[0] = Request::irecv (buf, count, datatype, root,
                              system_tag,
                              comm);
     (*request)->set_nbc_requests(requests, 1);
   }
   else {
-    MPI_Request* requests = new MPI_Request[size - 1];
+    auto* requests = new MPI_Request[size - 1];
     int n = 0;
     for (int i = 0; i < size; i++) {
       if(i!=root){
@@ -89,7 +89,7 @@ int colls::iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
   Datatype::copy(sendbuf, sendcount, sendtype, static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount,
                      recvtype);
   // Send/Recv buffers to/from others;
-  MPI_Request* requests = new MPI_Request[2 * (size - 1)];
+  auto* requests = new MPI_Request[2 * (size - 1)];
   int index = 0;
   for (int other = 0; other < size; other++) {
     if(other != rank) {
@@ -117,7 +117,7 @@ int colls::iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
   (*request) = new Request( nullptr, 0, MPI_BYTE,
                          rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   if(rank != root) {
-    MPI_Request* requests = new MPI_Request[1];
+    auto* requests = new MPI_Request[1];
     // Recv buffer from root
     requests[0] = Request::irecv(recvbuf, recvcount, recvtype, root, system_tag, comm);
     (*request)->set_nbc_requests(requests, 1);
@@ -129,7 +129,7 @@ int colls::iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
                            sendcount, sendtype, recvbuf, recvcount, recvtype);
     }
     // Send buffers to receivers
-    MPI_Request* requests = new MPI_Request[size - 1];
+    auto* requests = new MPI_Request[size - 1];
     int index = 0;
     for(int dst = 0; dst < size; dst++) {
       if(dst != root) {
@@ -161,7 +161,7 @@ int colls::iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype
   Datatype::copy(sendbuf, sendcount, sendtype,
                      static_cast<char *>(recvbuf) + displs[rank] * recvext,recvcounts[rank], recvtype);
   // Send buffers to others;
-  MPI_Request *requests = new MPI_Request[2 * (size - 1)];
+  auto* requests = new MPI_Request[2 * (size - 1)];
   int index = 0;
   for (int other = 0; other < size; other++) {
     if(other != rank) {
@@ -199,7 +199,7 @@ int colls::ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
                                static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
-    MPI_Request* requests = new MPI_Request[2 * (size - 1)];
+    auto* requests = new MPI_Request[2 * (size - 1)];
     /* Post all receives first -- a simple optimization */
     int count = 0;
     for (int i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
@@ -245,7 +245,7 @@ int colls::ialltoallv(const void* sendbuf, const int* sendcounts, const int* sen
                                static_cast<char *>(recvbuf) + recvdisps[rank] * recvext, recvcounts[rank], recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
-    MPI_Request* requests = new MPI_Request[2 * (size - 1)];
+    auto* requests = new MPI_Request[2 * (size - 1)];
     int count = 0;
     /* Create all receives that will be posted first */
     for (int i = 0; i < size; ++i) {
@@ -290,7 +290,7 @@ int colls::ialltoallw(const void* sendbuf, const int* sendcounts, const int* sen
                                static_cast<char *>(recvbuf) + recvdisps[rank], recvcounts[rank], recvtypes[rank]): MPI_SUCCESS;
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
-    MPI_Request* requests = new MPI_Request[2 * (size - 1)];
+    auto* requests = new MPI_Request[2 * (size - 1)];
     int count = 0;
     /* Create all receives that will be posted first */
     for (int i = 0; i < size; ++i) {
@@ -332,7 +332,7 @@ int colls::igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
                          rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   if(rank != root) {
     // Send buffer to root
-    MPI_Request* requests = new MPI_Request[1];
+    auto* requests = new MPI_Request[1];
     requests[0]=Request::isend(sendbuf, sendcount, sendtype, root, system_tag, comm);
     (*request)->set_nbc_requests(requests, 1);
   } else {
@@ -341,7 +341,7 @@ int colls::igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
     Datatype::copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + root * recvcount * recvext,
                        recvcount, recvtype);
     // Receive buffers from senders
-    MPI_Request* requests = new MPI_Request[size - 1];
+    auto* requests = new MPI_Request[size - 1];
     int index = 0;
     for (int src = 0; src < size; src++) {
       if(src != root) {
@@ -371,7 +371,7 @@ int colls::igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
                          rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   if (rank != root) {
     // Send buffer to root
-    MPI_Request* requests = new MPI_Request[1];
+    auto* requests = new MPI_Request[1];
     requests[0]=Request::isend(sendbuf, sendcount, sendtype, root, system_tag, comm);
     (*request)->set_nbc_requests(requests, 1);
   } else {
@@ -380,7 +380,7 @@ int colls::igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
     Datatype::copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + displs[root] * recvext,
                        recvcounts[root], recvtype);
     // Receive buffers from senders
-    MPI_Request* requests = new MPI_Request[size - 1];
+    auto* requests = new MPI_Request[size - 1];
     int index = 0;
     for (int src = 0; src < size; src++) {
       if(src != root) {
@@ -409,7 +409,7 @@ int colls::iscatterv(const void* sendbuf, const int* sendcounts, const int* disp
                          rank,rank, system_tag, comm, MPI_REQ_PERSISTENT);
   if(rank != root) {
     // Recv buffer from root
-    MPI_Request* requests = new MPI_Request[1];
+    auto* requests = new MPI_Request[1];
     requests[0]=Request::irecv(recvbuf, recvcount, recvtype, root, system_tag, comm);
     (*request)->set_nbc_requests(requests, 1);
   } else {
@@ -420,7 +420,7 @@ int colls::iscatterv(const void* sendbuf, const int* sendcounts, const int* disp
                        sendtype, recvbuf, recvcount, recvtype);
     }
     // Send buffers to receivers
-    MPI_Request *requests = new MPI_Request[size - 1];
+    auto* requests = new MPI_Request[size - 1];
     int index = 0;
     for (int dst = 0; dst < size; dst++) {
       if (dst != root) {
@@ -468,7 +468,7 @@ int colls::ireduce(const void* sendbuf, void* recvbuf, int count, MPI_Datatype d
 
   if(rank != root) {
     // Send buffer to root
-    MPI_Request* requests = new MPI_Request[1];
+    auto* requests        = new MPI_Request[1];
     requests[0]           = Request::isend(real_sendbuf, count, datatype, root, system_tag, comm);
     (*request)->set_nbc_requests(requests, 1);
   } else {
@@ -477,7 +477,7 @@ int colls::ireduce(const void* sendbuf, void* recvbuf, int count, MPI_Datatype d
     if (real_sendbuf != nullptr && recvbuf != nullptr)
       Datatype::copy(real_sendbuf, count, datatype, recvbuf, count, datatype);
     // Receive buffers from senders
-    MPI_Request *requests = new MPI_Request[size - 1];
+    auto* requests = new MPI_Request[size - 1];
     int index = 0;
     for (int src = 0; src < size; src++) {
       if (src != root) {
@@ -513,7 +513,7 @@ int colls::iallreduce(const void* sendbuf, void* recvbuf, int count, MPI_Datatyp
   // Local copy from self
   Datatype::copy(sendbuf, count, datatype, recvbuf, count, datatype);
   // Send/Recv buffers to/from others;
-  MPI_Request* requests = new MPI_Request[2 * (size - 1)];
+  auto* requests = new MPI_Request[2 * (size - 1)];
   int index = 0;
   for (int other = 0; other < size; other++) {
     if(other != rank) {
@@ -546,7 +546,7 @@ int colls::iscan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype dat
   Datatype::copy(sendbuf, count, datatype, recvbuf, count, datatype);
 
   // Send/Recv buffers to/from others
-  MPI_Request *requests = new MPI_Request[size - 1];
+  auto* requests = new MPI_Request[size - 1];
   int index = 0;
   for (int other = 0; other < rank; other++) {
     requests[index] = Request::irecv_init(smpi_get_tmp_sendbuffer(count * dataext), count, datatype, other, system_tag, comm);
@@ -577,7 +577,7 @@ int colls::iexscan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype d
     memset(recvbuf, 0, count*dataext);
 
   // Send/Recv buffers to/from others
-  MPI_Request *requests = new MPI_Request[size - 1];
+  auto* requests = new MPI_Request[size - 1];
   int index = 0;
   for (int other = 0; other < rank; other++) {
     requests[index] = Request::irecv_init(smpi_get_tmp_sendbuffer(count * dataext), count, datatype, other, system_tag, comm);
@@ -609,7 +609,7 @@ int colls::ireduce_scatter(const void* sendbuf, void* recvbuf, const int* recvco
   datatype->extent(&lb, &dataext);
 
   // Send/Recv buffers to/from others;
-  MPI_Request* requests = new MPI_Request[2 * (size - 1)];
+  auto* requests = new MPI_Request[2 * (size - 1)];
   int index = 0;
   int recvdisp=0;
   for (int other = 0; other < size; other++) {

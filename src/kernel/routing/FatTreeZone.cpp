@@ -178,7 +178,7 @@ void FatTreeZone::seal()
 
 int FatTreeZone::connect_node_to_parents(FatTreeNode* node)
 {
-  std::vector<FatTreeNode*>::iterator currentParentNode = this->nodes_.begin();
+  auto currentParentNode                                = this->nodes_.begin();
   int connectionsNumber                                 = 0;
   const int level                                       = node->level;
   XBT_DEBUG("We are connecting node %d(%u,%u) to his parents.", node->id, node->level, node->position);

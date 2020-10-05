@@ -106,7 +106,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv* env, jclass, jobjec
 
   args.emplace_back("java");
   for (int index = 1; index < argc; index++) {
-    jstring jval    = (jstring)env->GetObjectArrayElement(jargs, index - 1);
+    auto jval       = (jstring)env->GetObjectArrayElement(jargs, index - 1);
     const char* tmp = env->GetStringUTFChars(jval, nullptr);
     args.emplace_back(tmp);
     env->ReleaseStringUTFChars(jval, tmp);
@@ -138,7 +138,7 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv* env, jclass)
   sg_host_t* hosts  = sg_host_list();
   size_t host_count = sg_host_count();
   for (size_t index = 0; index < host_count - 1; index++) {
-    jobject jhost = (jobject)hosts[index]->extension(JAVA_HOST_LEVEL);
+    auto jhost = (jobject)hosts[index]->extension(JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);
   }
@@ -277,8 +277,7 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
 static void java_main(int argc, char* argv[])
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::kernel::context::JavaContext* context =
-      static_cast<simgrid::kernel::context::JavaContext*>(simgrid::kernel::context::Context::self());
+  auto* context = static_cast<simgrid::kernel::context::JavaContext*>(simgrid::kernel::context::Context::self());
 
   //Change the "." in class name for "/".
   std::string arg0 = argv[0];
@@ -292,8 +291,8 @@ static void java_main(int argc, char* argv[])
   //Retrieve the name of the process.
   jstring jname = env->NewStringUTF(argv[0]);
   //Build the arguments
-  jobjectArray args = static_cast<jobjectArray>(env->NewObjectArray(argc - 1, env->FindClass("java/lang/String"),
-                                                                    env->NewStringUTF("")));
+  auto args = static_cast<jobjectArray>(
+      env->NewObjectArray(argc - 1, env->FindClass("java/lang/String"), env->NewStringUTF("")));
   for (int i = 1; i < argc; i++)
       env->SetObjectArrayElement(args,i - 1, env->NewStringUTF(argv[i]));
   //Retrieve the host for the process.
@@ -323,7 +322,7 @@ namespace context {
 void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
-  JavaContext* context = static_cast<JavaContext*>(Context::self());
+  auto* context        = static_cast<JavaContext*>(Context::self());
   context->jprocess_   = jprocess;
   jprocess_bind(context->jprocess_, sg_actor_self(), env);
 

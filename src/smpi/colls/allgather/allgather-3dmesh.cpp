@@ -131,7 +131,7 @@ int allgather__3dmesh(const void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  MPI_Request* req     = new MPI_Request[num_reqs];
+  auto* req            = new MPI_Request[num_reqs];
   MPI_Request* req_ptr = req;
 
   // do local allgather/local copy

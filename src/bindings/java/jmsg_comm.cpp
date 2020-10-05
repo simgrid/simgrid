@@ -27,7 +27,7 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
     //bind the task object.
     msg_task_t task = MSG_comm_get_task(comm);
     xbt_assert(task != nullptr, "Task is nullptr");
-    jobject jtask_global = static_cast<jobject>(MSG_task_get_data(task));
+    auto jtask_global = static_cast<jobject>(MSG_task_get_data(task));
     //case where the data has already been retrieved
     if (jtask_global == nullptr) {
       return;
@@ -95,7 +95,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject j
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
-  msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
+  auto comm = (msg_comm_t)(uintptr_t)env->GetLongField(jcomm, jcomm_field_Comm_bind);
   if (not comm) {
     jxbt_throw_null(env, "comm is null");
     return;
@@ -119,7 +119,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
 static msg_comm_t* jarray_to_commArray(JNIEnv *env, jobjectArray jcomms, /* OUT */ int *count)
 {
   *count = env->GetArrayLength(jcomms);
-  msg_comm_t* comms = new msg_comm_t[*count];
+  auto* comms = new msg_comm_t[*count];
 
   for (int i=0; i < *count; i++) {
      jobject jcomm = env->GetObjectArrayElement(jcomms, i);

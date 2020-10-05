@@ -85,8 +85,8 @@ int allgather__SMP_NTS(const void *sbuf, int scount,
 
   // root of each SMP
   if (intra_rank == 0) {
-    MPI_Request* rrequest_array = new MPI_Request[inter_comm_size - 1];
-    MPI_Request* srequest_array = new MPI_Request[inter_comm_size - 1];
+    auto* rrequest_array = new MPI_Request[inter_comm_size - 1];
+    auto* srequest_array = new MPI_Request[inter_comm_size - 1];
 
     src = ((inter_rank - 1 + inter_comm_size) % inter_comm_size) * num_core;
     dst = ((inter_rank + 1) % inter_comm_size) * num_core;

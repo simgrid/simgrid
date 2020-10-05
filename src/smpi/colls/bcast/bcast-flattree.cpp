@@ -21,7 +21,7 @@ int bcast__flattree(void *buff, int count, MPI_Datatype data_type,
   }
 
   else {
-    MPI_Request* reqs    = new MPI_Request[num_procs - 1];
+    auto* reqs           = new MPI_Request[num_procs - 1];
     MPI_Request* req_ptr = reqs;
 
     // Root sends data to all others

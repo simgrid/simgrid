@@ -32,7 +32,7 @@ void dump_buffer(bool force)
     }
     buffer.clear();
   } else {
-    std::vector<PajeEvent*>::iterator i = buffer.begin();
+    auto i = buffer.begin();
     for (auto const& event : buffer) {
       double head_timestamp = event->timestamp_;
       if (head_timestamp > last_timestamp_to_dump)

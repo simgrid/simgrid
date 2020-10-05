@@ -90,9 +90,9 @@ int alltoall__mvapich2_scatter_dest(const void *sendbuf,
 
     /* FIXME: This should use the memory macros (there are storage
      leaks here if there is an error, for example) */
-    MPI_Request* reqarray = new MPI_Request[2 * bblock];
+    auto* reqarray = new MPI_Request[2 * bblock];
 
-    MPI_Status* starray = new MPI_Status[2 * bblock];
+    auto* starray = new MPI_Status[2 * bblock];
 
     for (ii=0; ii<comm_size; ii+=bblock) {
         ss = comm_size-ii < bblock ? comm_size-ii : bblock;

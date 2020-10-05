@@ -186,9 +186,8 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
       to->ActiveCommsDown[from] -= 1;
 
     to->nbActiveCommsDown--;
-    std::vector<ActiveComm*>::iterator it =
-        std::find_if(begin(from->ActiveCommsUp), end(from->ActiveCommsUp),
-                     [action](const ActiveComm* comm) { return comm->action == action; });
+    auto it = std::find_if(begin(from->ActiveCommsUp), end(from->ActiveCommsUp),
+                           [action](const ActiveComm* comm) { return comm->action == action; });
     if (it != std::end(from->ActiveCommsUp)) {
       delete *it;
       from->ActiveCommsUp.erase(it);

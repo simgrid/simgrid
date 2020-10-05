@@ -481,7 +481,7 @@ static void on_action_state_change(simgrid::kernel::resource::CpuAction const& a
         host = vm->get_pm();
 
       // Get the host_energy extension for the relevant host
-      HostEnergy* host_energy = host->extension<HostEnergy>();
+      auto* host_energy = host->extension<HostEnergy>();
 
       if (host_energy->get_last_update_time() < surf_get_clock())
         host_energy->update();
@@ -496,7 +496,7 @@ static void on_host_change(simgrid::s4u::Host const& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine const*>(&host)) // Ignore virtual machines
     return;
 
-  HostEnergy* host_energy = host.extension<HostEnergy>();
+  auto* host_energy = host.extension<HostEnergy>();
 
   host_energy->update();
 }

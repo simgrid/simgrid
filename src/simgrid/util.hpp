@@ -17,7 +17,7 @@ template<typename C, typename K>
 inline XBT_PRIVATE
 typename C::mapped_type* find_map_ptr(C& c, K const& k)
 {
-  typename C::iterator i = c.find(k);
+  auto i = c.find(k);
   if (i == c.end())
     return nullptr;
   else

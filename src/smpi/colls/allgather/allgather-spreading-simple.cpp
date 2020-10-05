@@ -89,7 +89,7 @@ allgather__spreading_simple(const void *send_buff, int send_count,
   extent = send_type->get_extent();
 
   num_reqs = (2 * num_procs) - 2;
-  MPI_Request* reqs    = new MPI_Request[num_reqs];
+  auto* reqs           = new MPI_Request[num_reqs];
   MPI_Request* req_ptr = reqs;
   Request::sendrecv(send_buff, send_count, send_type, rank, tag,
                (char *) recv_buff + rank * recv_count * extent, recv_count,

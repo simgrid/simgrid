@@ -159,10 +159,10 @@ int bcast__arrival_pattern_aware(void *buf, int count,
   }
   /* pipeline bcast */
   else {
-    MPI_Request* send_request_array = new MPI_Request[size + pipe_length];
-    MPI_Request* recv_request_array = new MPI_Request[size + pipe_length];
-    MPI_Status* send_status_array   = new MPI_Status[size + pipe_length];
-    MPI_Status* recv_status_array   = new MPI_Status[size + pipe_length];
+    auto* send_request_array = new MPI_Request[size + pipe_length];
+    auto* recv_request_array = new MPI_Request[size + pipe_length];
+    auto* send_status_array  = new MPI_Status[size + pipe_length];
+    auto* recv_status_array  = new MPI_Status[size + pipe_length];
 
     if (rank == 0) {
       //double start2 = MPI_Wtime();
