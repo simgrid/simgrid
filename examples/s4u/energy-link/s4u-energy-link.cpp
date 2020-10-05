@@ -83,11 +83,11 @@ int main(int argc, char* argv[])
   std::vector<std::string> argSender;
   std::vector<std::string> argReceiver;
   if (argc > 2) {
-    argSender.push_back(argv[2]); // Take the amount of flows from the command line
-    argReceiver.push_back(argv[2]);
+    argSender.emplace_back(argv[2]); // Take the amount of flows from the command line
+    argReceiver.emplace_back(argv[2]);
   } else {
-    argSender.push_back("1"); // Default value
-    argReceiver.push_back("1");
+    argSender.emplace_back("1"); // Default value
+    argReceiver.emplace_back("1");
   }
 
   if (argc > 3) {
@@ -95,10 +95,10 @@ int main(int argc, char* argv[])
       std::string size = std::to_string(simgrid::xbt::random::uniform_int(min_size, max_size));
       argSender.push_back(size);
     } else {                        // Not "random" ? Then it should be the size to use
-      argSender.push_back(argv[3]); // Take the datasize from the command line
+      argSender.emplace_back(argv[3]); // Take the datasize from the command line
     }
   } else { // No parameter at all? Then use the default value
-    argSender.push_back("25000");
+    argSender.emplace_back("25000");
   }
   simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("MyHost1"), sender, argSender);
   simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("MyHost2"), receiver, argReceiver);

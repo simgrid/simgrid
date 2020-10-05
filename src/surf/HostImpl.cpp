@@ -95,7 +95,7 @@ std::vector<s4u::ActorPtr> HostImpl::get_all_actors()
 {
   std::vector<s4u::ActorPtr> res;
   for (auto& actor : actor_list_)
-    res.push_back(actor.ciface());
+    res.emplace_back(actor.ciface());
   return res;
 }
 size_t HostImpl::get_actor_count() const

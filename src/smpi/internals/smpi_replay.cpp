@@ -567,7 +567,7 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
     req_storage.get_requests(reqs);
     for (auto const& req : reqs) {
       if (req && (req->flags() & MPI_REQ_RECV)) {
-        sender_receiver.push_back({req->src(), req->dst()});
+        sender_receiver.emplace_back(req->src(), req->dst());
       }
     }
     Request::waitall(count_requests, &(reqs.data())[0], MPI_STATUSES_IGNORE);

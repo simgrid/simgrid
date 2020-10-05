@@ -60,7 +60,7 @@ ExecImpl::ExecImpl()
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
     actor_ = self;
-    self->activities_.push_back(this);
+    self->activities_.emplace_back(this);
   }
 }
 

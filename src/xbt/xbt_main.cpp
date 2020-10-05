@@ -128,7 +128,7 @@ void xbt_init(int *argc, char **argv)
 
   simgrid::xbt::binary_name = argv[0];
   for (int i = 0; i < *argc; i++)
-    simgrid::xbt::cmdline.push_back(argv[i]);
+    simgrid::xbt::cmdline.emplace_back(argv[i]);
 
   xbt_log_init(argc, argv);
 }

@@ -67,7 +67,7 @@ void Answer::addBucket(const Bucket* bucket)
 
   for (auto const& id : bucket->nodes_) {
     unsigned int distance = id ^ destination_id_;
-    nodes_.push_back(std::pair<unsigned int, unsigned int>(id, distance));
+    nodes_.emplace_back(id, distance);
   }
 }
 } // namespace kademlia

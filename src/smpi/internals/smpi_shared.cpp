@@ -287,14 +287,14 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   newmeta.allocated_ptr = allocated_ptr;
   newmeta.allocated_size = allocated_size;
   if(shared_block_offsets[0] > 0) {
-    newmeta.private_blocks.push_back(std::make_pair(0, shared_block_offsets[0]));
+    newmeta.private_blocks.emplace_back(0, shared_block_offsets[0]);
   }
   int i_block;
   for(i_block = 0; i_block < nb_shared_blocks-1; i_block ++) {
-    newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[2*i_block+1], shared_block_offsets[2*i_block+2]));
+    newmeta.private_blocks.emplace_back(shared_block_offsets[2 * i_block + 1], shared_block_offsets[2 * i_block + 2]);
   }
   if(shared_block_offsets[2*i_block+1] < size) {
-    newmeta.private_blocks.push_back(std::make_pair(shared_block_offsets[2*i_block+1], size));
+    newmeta.private_blocks.emplace_back(shared_block_offsets[2 * i_block + 1], size);
   }
   allocs_metadata[mem] = newmeta;
 

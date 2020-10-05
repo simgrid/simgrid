@@ -77,7 +77,7 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = nullptr;
-    src_proc->activities_.push_back(other_comm);
+    src_proc->activities_.emplace_back(other_comm);
   }
 
   /* Setup the communication synchro */
@@ -160,7 +160,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
       other_comm->state_ = simgrid::kernel::activity::State::READY;
       other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
     }
-    receiver->activities_.push_back(other_comm);
+    receiver->activities_.emplace_back(other_comm);
   }
 
   /* Setup communication synchro */

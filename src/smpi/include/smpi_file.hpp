@@ -144,7 +144,7 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   // merge the ranges of every process
   std::vector<std::pair<MPI_Offset, MPI_Offset>> ranges;
   for (int i = 0; i < size; ++i)
-    ranges.push_back(std::make_pair(min_offsets[i], max_offsets[i]));
+    ranges.emplace_back(min_offsets[i], max_offsets[i]);
   std::sort(ranges.begin(), ranges.end());
   std::vector<std::pair<MPI_Offset, MPI_Offset>> chunks;
   chunks.push_back(ranges[0]);

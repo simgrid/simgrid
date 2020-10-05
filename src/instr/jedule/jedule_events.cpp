@@ -20,7 +20,7 @@ void Event::add_resources(const std::vector<sg_host_t>& host_selection)
 void Event::add_characteristic(const char* characteristic)
 {
   xbt_assert( characteristic != nullptr );
-  this->characteristics_list_.push_back(characteristic);
+  this->characteristics_list_.emplace_back(characteristic);
 }
 
 void Event::add_info(char* key, char* value)

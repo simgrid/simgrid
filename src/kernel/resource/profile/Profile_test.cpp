@@ -53,7 +53,7 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 
     REQUIRE(it == insertedIt); // Check that we find what we've put
     if (value >= 0) {
-      res.push_back(simgrid::kernel::profile::DatedValue(thedate, value));
+      res.emplace_back(thedate, value);
     } else {
       XBT_DEBUG("%.1f: ignore an event (idx: %u)\n", thedate, it->idx);
     }
@@ -77,7 +77,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
     std::vector<simgrid::kernel::profile::DatedValue> got = trace2vector("9.0 3.0\n");
 
     std::vector<simgrid::kernel::profile::DatedValue> want;
-    want.push_back(simgrid::kernel::profile::DatedValue(9, 3));
+    want.emplace_back(9, 3);
     REQUIRE(want == got);
   }
 
@@ -87,8 +87,8 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                          "9.0 3.0\n");
 
     std::vector<simgrid::kernel::profile::DatedValue> want;
-    want.push_back(simgrid::kernel::profile::DatedValue(3, 1));
-    want.push_back(simgrid::kernel::profile::DatedValue(9, 3));
+    want.emplace_back(3, 1);
+    want.emplace_back(9, 3);
 
     REQUIRE(want == got);
   }
@@ -100,9 +100,9 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                          "9.0 3.0\n");
 
     std::vector<simgrid::kernel::profile::DatedValue> want;
-    want.push_back(simgrid::kernel::profile::DatedValue(3, 1));
-    want.push_back(simgrid::kernel::profile::DatedValue(5, 2));
-    want.push_back(simgrid::kernel::profile::DatedValue(9, 3));
+    want.emplace_back(3, 1);
+    want.emplace_back(5, 2);
+    want.emplace_back(9, 3);
 
     REQUIRE(want == got);
   }
@@ -114,14 +114,14 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                          "LOOPAFTER 2\n");
 
     std::vector<simgrid::kernel::profile::DatedValue> want;
-    want.push_back(simgrid::kernel::profile::DatedValue(1, 1));
-    want.push_back(simgrid::kernel::profile::DatedValue(3, 3));
-    want.push_back(simgrid::kernel::profile::DatedValue(6, 1));
-    want.push_back(simgrid::kernel::profile::DatedValue(8, 3));
-    want.push_back(simgrid::kernel::profile::DatedValue(11, 1));
-    want.push_back(simgrid::kernel::profile::DatedValue(13, 3));
-    want.push_back(simgrid::kernel::profile::DatedValue(16, 1));
-    want.push_back(simgrid::kernel::profile::DatedValue(18, 3));
+    want.emplace_back(1, 1);
+    want.emplace_back(3, 3);
+    want.emplace_back(6, 1);
+    want.emplace_back(8, 3);
+    want.emplace_back(11, 1);
+    want.emplace_back(13, 3);
+    want.emplace_back(16, 1);
+    want.emplace_back(18, 3);
 
     REQUIRE(want == got);
   }
@@ -133,11 +133,11 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                          "LOOPAFTER 5\n");
 
     std::vector<simgrid::kernel::profile::DatedValue> want;
-    want.push_back(simgrid::kernel::profile::DatedValue(0, 1));
-    want.push_back(simgrid::kernel::profile::DatedValue(5, 2));
-    want.push_back(simgrid::kernel::profile::DatedValue(10, 1));
-    want.push_back(simgrid::kernel::profile::DatedValue(15, 2));
-    want.push_back(simgrid::kernel::profile::DatedValue(20, 1));
+    want.emplace_back(0, 1);
+    want.emplace_back(5, 2);
+    want.emplace_back(10, 1);
+    want.emplace_back(15, 2);
+    want.emplace_back(20, 1);
 
     REQUIRE(want == got);
   }

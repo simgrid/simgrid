@@ -849,7 +849,7 @@ void ETag_surfxml_actor()
 }
 
 void STag_surfxml_argument(){
-  arguments.push_back(A_surfxml_argument_value);
+  arguments.emplace_back(A_surfxml_argument_value);
 }
 
 void STag_surfxml_model___prop(){

@@ -48,12 +48,12 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
   if (not host)
     throw std::invalid_argument(simgrid::xbt::string_printf("Host '%s' unknown", process_host));
   actor.host = process_host;
-  actor.args.push_back(process_function);
+  actor.args.emplace_back(process_function);
   /* add arguments */
   unsigned int i;
   char *arg;
   xbt_dynar_foreach(arguments, i, arg) {
-    actor.args.push_back(arg);
+    actor.args.emplace_back(arg);
   }
 
   // Check we know how to handle this function name:

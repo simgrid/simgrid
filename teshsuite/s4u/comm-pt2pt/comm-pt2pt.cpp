@@ -173,11 +173,11 @@ int main(int argc, char* argv[])
 
   if (argc >= 3) {
     argSend.clear();
-    argSend.push_back(argv[2]);
+    argSend.emplace_back(argv[2]);
   }
   if (argc >= 4) {
     argRecv.clear();
-    argRecv.push_back(argv[3]);
+    argRecv.emplace_back(argv[3]);
   }
   xbt_assert(argSend.front().size() == argRecv.front().size(), "Sender and receiver spec must be of the same size");
 

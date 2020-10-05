@@ -262,12 +262,12 @@ MPI_Comm Comm::split(int color, int key)
         for (int j = i + 1; j < size; j++) {
           if(recvbuf[2 * i] == recvbuf[2 * j]) {
             recvbuf[2 * j] = MPI_UNDEFINED;
-            rankmap.push_back({recvbuf[2 * j + 1], j});
+            rankmap.emplace_back(recvbuf[2 * j + 1], j);
           }
         }
         /* Add self in the group */
         recvbuf[2 * i] = MPI_UNDEFINED;
-        rankmap.push_back({recvbuf[2 * i + 1], i});
+        rankmap.emplace_back(recvbuf[2 * i + 1], i);
         std::sort(begin(rankmap), end(rankmap));
         group_out = new Group(rankmap.size());
         if (i == 0) {

@@ -172,7 +172,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   }
   else {
     src_private_blocks.clear();
-    src_private_blocks.push_back(std::make_pair(0, buff_size));
+    src_private_blocks.emplace_back(0, buff_size);
   }
   if (smpi_is_shared((char*)comm->dst_buff_, dst_private_blocks, &dst_offset)) {
     dst_private_blocks = shift_and_frame_private_blocks(dst_private_blocks, dst_offset, buff_size);
@@ -184,7 +184,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   }
   else {
     dst_private_blocks.clear();
-    dst_private_blocks.push_back(std::make_pair(0, buff_size));
+    dst_private_blocks.emplace_back(0, buff_size);
   }
   check_blocks(src_private_blocks, buff_size);
   check_blocks(dst_private_blocks, buff_size);
@@ -441,7 +441,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
 #else
       xbt_die("smpi/privatize-libs is not (yet) compatible with OSX nor with Haiku");
 #endif
-      privatize_libs_paths.push_back(fullpath);
+      privatize_libs_paths.emplace_back(fullpath);
       dlclose(libhandle);
     }
   }
