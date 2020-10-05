@@ -6,7 +6,7 @@
 #include "mpi.h"
 #include "simgrid/s4u.hpp"
 
-#include <stdio.h> /* snprintf */
+#include <cstdio> /* snprintf */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 

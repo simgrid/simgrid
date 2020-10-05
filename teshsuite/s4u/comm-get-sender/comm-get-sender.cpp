@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
-#include <float.h>
+#include <cfloat>
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific to this example");
 
 static void sender_fun()

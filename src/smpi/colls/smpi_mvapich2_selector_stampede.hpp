@@ -16,7 +16,7 @@
 
 #define MV2_MAX_NB_THRESHOLDS 32
 
-XBT_PUBLIC void smpi_coll_cleanup_mvapich2(void);
+XBT_PUBLIC void smpi_coll_cleanup_mvapich2();
 
 struct mv2_alltoall_tuning_element {
   int min;

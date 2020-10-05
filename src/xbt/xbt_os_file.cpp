@@ -17,8 +17,8 @@
 #include <unistd.h>
 #endif
 
+#include <cerrno>
 #include <cstring>
-#include <errno.h>
 #include <libgen.h> /* POSIX dirname */
 
 simgrid::xbt::Path::Path()

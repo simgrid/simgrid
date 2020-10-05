@@ -30,7 +30,7 @@ XBT_PRIVATE void MC_init_dot_output();
 
 XBT_PRIVATE extern FILE* dot_output;
 
-XBT_PRIVATE void MC_show_deadlock(void);
+XBT_PRIVATE void MC_show_deadlock();
 
 /********************************** Miscellaneous **********************************/
 namespace simgrid {

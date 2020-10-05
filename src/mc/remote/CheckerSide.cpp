@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/CheckerSide.hpp"
-#include <signal.h>
+#include <csignal>
 #include <sys/wait.h>
 
 namespace simgrid {

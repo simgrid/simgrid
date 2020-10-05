@@ -5,7 +5,7 @@
 
 // teshsuite/s4u/evaluate-parse-time/evaluate-parse-time examples/platforms/g5k.xml
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "simgrid/s4u/Engine.hpp"
 #include "xbt/xbt_os_time.h"

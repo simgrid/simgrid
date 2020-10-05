@@ -14,7 +14,7 @@ done
 #include "simgrid/s4u.hpp"
 #include "xbt/random.hpp"
 #include "xbt/xbt_os_time.h"
-#include <stdio.h>
+#include <cstdio>
 
 int main(int argc, char** argv)
 {

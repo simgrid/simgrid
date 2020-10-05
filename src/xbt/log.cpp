@@ -76,8 +76,8 @@ void xbt_log_preinit(void)
   log_cat_init_mutex                   = new std::recursive_mutex();
 }
 
-static void xbt_log_help(void);
-static void xbt_log_help_categories(void);
+static void xbt_log_help();
+static void xbt_log_help_categories();
 
 /** @brief Get all logging settings from the command line
  *
@@ -545,7 +545,7 @@ void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)
   cat->additivity = additivity;
 }
 
-static void xbt_log_help(void)
+static void xbt_log_help()
 {
   XBT_HELP(
       "Description of the logging output:\n"
@@ -637,7 +637,7 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category, const std::
   }
 }
 
-static void xbt_log_help_categories(void)
+static void xbt_log_help_categories()
 {
   XBT_HELP("Current log category hierarchy:");
   xbt_log_help_categories_rec(&_XBT_LOGV(XBT_LOG_ROOT_CAT), "   ");

@@ -6,10 +6,10 @@
 // This is the MWE of https://framagit.org/simgrid/simgrid/-/issues/50
 // The problem was occurring when suspending an actor that will be executed later in the same scheduling round
 
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <simgrid/s4u.hpp>
-#include <stdio.h>
-#include <stdlib.h>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mwe, "Minimum Working Example");
