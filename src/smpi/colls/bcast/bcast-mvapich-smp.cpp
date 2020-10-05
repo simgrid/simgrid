@@ -91,12 +91,11 @@ int bcast__mvapich2_inter_node(void *buffer,
     rank = comm->rank();
     //comm_size = comm->size();
 
-
-    if (MV2_Bcast_function==NULL){
+    if (MV2_Bcast_function == nullptr) {
       MV2_Bcast_function = bcast__mpich;
     }
 
-    if (MV2_Bcast_intra_node_function==NULL){
+    if (MV2_Bcast_intra_node_function == nullptr) {
       MV2_Bcast_intra_node_function = bcast__mpich;
     }
 
@@ -179,11 +178,11 @@ int bcast__mvapich2_knomial_intra_node(void *buffer,
     int mpi_errno = MPI_SUCCESS;
     int src, dst, mask, relative_rank;
     int k;
-    if (MV2_Bcast_function==NULL){
+    if (MV2_Bcast_function == nullptr) {
       MV2_Bcast_function = bcast__mpich;
     }
 
-    if (MV2_Bcast_intra_node_function==NULL){
+    if (MV2_Bcast_intra_node_function == nullptr) {
       MV2_Bcast_intra_node_function = bcast__mpich;
     }
 
@@ -259,11 +258,11 @@ int bcast__mvapich2_intra_node(void *buffer,
 
     if (count == 0)
         return MPI_SUCCESS;
-    if (MV2_Bcast_function==NULL){
+    if (MV2_Bcast_function == nullptr) {
       MV2_Bcast_function = bcast__mpich;
     }
 
-    if (MV2_Bcast_intra_node_function==NULL){
+    if (MV2_Bcast_intra_node_function == nullptr) {
       MV2_Bcast_intra_node_function = bcast__mpich;
     }
 

@@ -302,7 +302,7 @@ static uint64_t MC_dwarf_attr_integrate_uint(Dwarf_Die* die, int attribute, uint
 static bool MC_dwarf_attr_flag(Dwarf_Die* die, int attribute, bool integrate)
 {
   Dwarf_Attribute attr;
-  if ((integrate ? dwarf_attr_integrate(die, attribute, &attr) : dwarf_attr(die, attribute, &attr)) == 0)
+  if ((integrate ? dwarf_attr_integrate(die, attribute, &attr) : dwarf_attr(die, attribute, &attr)) == nullptr)
     return false;
 
   bool result;

@@ -34,7 +34,7 @@ int allgatherv__mpich_ring(const void *sendbuf, int sendcount,
                            MPI_Comm comm)
 {
 
-  char * sbuf = NULL, * rbuf = NULL;
+  char *sbuf = nullptr, *rbuf = nullptr;
   int soffset, roffset;
   int torecv=0, tosend=0, min, rank, comm_size;
   int sendnow, recvnow;

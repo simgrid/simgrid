@@ -50,10 +50,10 @@ int main(int argc, char **argv)
            sg_host_route_latency(h2, h1) + comm_amount21 / sg_host_route_bandwidth(h2, h1));
 
   /* creation of the tasks and their dependencies */
-  SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
-  SD_task_t taskB = SD_task_create("Task B", NULL, 40.0);
-  SD_task_t taskC = SD_task_create("Task C", NULL, 30.0);
-  SD_task_t taskD = SD_task_create("Task D", NULL, 60.0);
+  SD_task_t taskA = SD_task_create("Task A", nullptr, 10.0);
+  SD_task_t taskB = SD_task_create("Task B", nullptr, 40.0);
+  SD_task_t taskC = SD_task_create("Task C", nullptr, 30.0);
+  SD_task_t taskD = SD_task_create("Task D", nullptr, 60.0);
 
   /* try to attach and retrieve user data to a task */
   SD_task_set_data(taskA, static_cast<void*>(&comp_amount1));

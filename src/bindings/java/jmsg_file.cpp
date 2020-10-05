@@ -24,7 +24,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_File_nativeInit(JNIEnv *env, jclass 
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jpath) {
-  const char *path = env->GetStringUTFChars((jstring) jpath, 0);
+  const char* path = env->GetStringUTFChars((jstring)jpath, nullptr);
   sg_file_t file   = sg_file_open(path, nullptr);
   jfile_bind(env, jfile, file);
 

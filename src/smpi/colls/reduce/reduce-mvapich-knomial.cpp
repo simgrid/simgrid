@@ -57,7 +57,7 @@ static int MPIR_Reduce_knomial_trace(int root, int reduce_knomial_factor,
     int mask=0x1, k, comm_size, src, rank, relative_rank, lroot=0;
     int orig_mask=0x1;
     int recv_iter=0, send_iter=0;
-    int *knomial_reduce_src_array=NULL;
+    int* knomial_reduce_src_array = nullptr;
     comm_size =  comm->size();
     rank = comm->rank();
 
@@ -135,7 +135,7 @@ int reduce__mvapich2_knomial(
     MPI_Aint true_lb, true_extent, extent;
     MPI_Status status;
     int recv_iter=0, dst=-1, expected_send_count, expected_recv_count;
-    int *src_array=NULL;
+    int* src_array = nullptr;
 
     if (count == 0) return MPI_SUCCESS;
 
@@ -207,7 +207,7 @@ int reduce__mvapich2_knomial(
         delete[] requests;
     }
 
-    if(src_array != NULL) {
+    if (src_array != nullptr) {
       delete[] src_array;
     }
 

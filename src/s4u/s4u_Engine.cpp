@@ -58,7 +58,7 @@ Engine::~Engine()
 Engine* Engine::get_instance()
 {
   if (Engine::instance_ == nullptr) {
-    auto e = new Engine(0, nullptr);
+    auto e = new Engine(nullptr, nullptr);
     xbt_assert(Engine::instance_ == e);
   }
   return Engine::instance_;

@@ -95,9 +95,9 @@ int reduce__mvapich2_two_level( const void *sendbuf,
     int intra_node_root=0;
 
     //if not set (use of the algo directly, without mvapich2 selector)
-    if(MV2_Reduce_function==NULL)
+    if (MV2_Reduce_function == nullptr)
       MV2_Reduce_function = reduce__mpich;
-    if(MV2_Reduce_intra_function==NULL)
+    if (MV2_Reduce_intra_function == nullptr)
       MV2_Reduce_intra_function = reduce__mpich;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){

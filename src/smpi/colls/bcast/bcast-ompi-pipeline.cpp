@@ -35,7 +35,7 @@ int bcast__ompi_pipeline( void* buffer,
     char *tmpbuf;
     ptrdiff_t extent;
     MPI_Request recv_reqs[2] = {MPI_REQUEST_NULL, MPI_REQUEST_NULL};
-    MPI_Request *send_reqs = NULL;
+    MPI_Request* send_reqs   = nullptr;
     int req_index;
 
     /**

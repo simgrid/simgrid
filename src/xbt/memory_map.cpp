@@ -162,7 +162,7 @@ std::vector<VmMap> get_memory_map(pid_t pid)
   /* to be returned. */
   std::string path = std::string("/proc/") + std::to_string(pid) + "/maps";
   std::ifstream fp;
-  fp.rdbuf()->pubsetbuf(0, 0);
+  fp.rdbuf()->pubsetbuf(nullptr, 0);
   fp.open(path);
   if (not fp) {
     std::perror("open failed");

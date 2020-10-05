@@ -81,7 +81,7 @@ template <typename T> int Keyval::keyval_free(int* keyval){
 /* See MPI-1, 5.7.1.  Freeing the keyval does not remove it if it
          * is in use in an attribute */
   smpi_key_elem elem = T::keyvals_.at(*keyval);
-  if(elem==0){
+  if (elem == nullptr) {
     return MPI_ERR_ARG;
   }
   if(elem->refcount==1){

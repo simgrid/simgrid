@@ -28,18 +28,18 @@ jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls, const char *name, const cha
   jmethodID id;
 
   if (not cls)
-    return 0;
+    return nullptr;
   id = env->GetMethodID(cls, name, signature);
 
   if (not id) {
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
     jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, nullptr);
-    const char *classname = env->GetStringUTFChars(jclassname, 0);
+    const char* classname = env->GetStringUTFChars(jclassname, nullptr);
 
     env->ReleaseStringUTFChars(jclassname, classname);
 
     jxbt_throw_jni(env, std::string("Cannot find method") + name + "(" + signature + ") in " + classname);
-    return 0;
+    return nullptr;
   }
 
   return id;
@@ -50,18 +50,18 @@ jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls, const char *name, co
   jmethodID id;
 
   if (not cls)
-    return 0;
+    return nullptr;
   id = env->GetStaticMethodID(cls, name, signature);
 
   if (not id) {
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
     jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, nullptr);
-    const char *classname = env->GetStringUTFChars(jclassname, 0);
+    const char* classname = env->GetStringUTFChars(jclassname, nullptr);
 
     env->ReleaseStringUTFChars(jclassname, classname);
 
     jxbt_throw_jni(env, std::string("Cannot find static method") + name + "(" + signature + ") in " + classname);
-    return 0;
+    return nullptr;
   }
 
   return id;
@@ -74,13 +74,13 @@ jmethodID jxbt_get_static_smethod(JNIEnv * env, const char *classname, const cha
   cls = jxbt_get_class(env, classname);
 
   if (not cls)
-    return 0;
+    return nullptr;
 
   id = env->GetStaticMethodID(cls, name, signature);
 
   if (not id) {
     jxbt_throw_jni(env, std::string("Cannot find static method") + name + "(" + signature + ") in " + classname);
-    return 0;
+    return nullptr;
   }
   return id;
 }
@@ -92,13 +92,13 @@ jmethodID jxbt_get_smethod(JNIEnv * env, const char *classname, const char *name
   cls = jxbt_get_class(env, classname);
 
   if (not cls)
-    return 0;
+    return nullptr;
 
   id = env->GetMethodID(cls, name, signature);
 
   if (not id) {
     jxbt_throw_jni(env, std::string("Cannot find method") + name + "(" + signature + ") in " + classname);
-    return 0;
+    return nullptr;
   }
   return id;
 }
@@ -108,20 +108,20 @@ jfieldID jxbt_get_jfield(JNIEnv * env, jclass cls, const char *name, const char 
   jfieldID id;
 
   if (not cls)
-    return 0;
+    return nullptr;
 
   id = env->GetFieldID(cls, name, signature);
 
   if (not id) {
     jmethodID getname_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
     jstring jclassname = (jstring) env->CallObjectMethod(cls, getname_id, nullptr);
-    const char *classname = env->GetStringUTFChars(jclassname, 0);
+    const char* classname = env->GetStringUTFChars(jclassname, nullptr);
 
     env->ReleaseStringUTFChars(jclassname, classname);
 
     jxbt_throw_jni(env, std::string("Cannot find field") + signature + " " + name + " in " + classname);
 
-    return 0;
+    return nullptr;
   }
 
   return id;
@@ -133,13 +133,13 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname, const char *name, 
   jfieldID id;
 
   if (not cls)
-    return 0;
+    return nullptr;
 
   id = env->GetFieldID(cls, name, signature);
 
   if (not id) {
     jxbt_throw_jni(env, std::string("Cannot find field") + signature + " " + name + " in " + classname);
-    return 0;
+    return nullptr;
   }
 
   return id;

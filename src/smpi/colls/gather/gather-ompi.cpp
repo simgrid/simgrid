@@ -76,7 +76,7 @@ int gather__ompi_binomial(const void* sbuf, int scount, MPI_Datatype sdtype, voi
           /* root is not on 0, allocate temp buffer for recv,
            * rotate data at the end */
           tempbuf = smpi_get_tmp_recvbuffer(rtrue_extent + (rcount * size - 1) * rextent);
-          if (NULL == tempbuf) {
+          if (nullptr == tempbuf) {
             err  = MPI_ERR_OTHER;
             line = __LINE__;
             goto err_hndl;
@@ -106,7 +106,7 @@ int gather__ompi_binomial(const void* sbuf, int scount, MPI_Datatype sdtype, voi
        * children, the most we need is half of the total data elements due
        * to the property of binomial tree */
       tempbuf = smpi_get_tmp_sendbuffer(strue_extent + (scount * size - 1) * sextent);
-      if (NULL == tempbuf) {
+      if (nullptr == tempbuf) {
         err  = MPI_ERR_OTHER;
         line = __LINE__;
         goto err_hndl;
@@ -188,11 +188,11 @@ int gather__ompi_binomial(const void* sbuf, int scount, MPI_Datatype sdtype, voi
     return MPI_SUCCESS;
 
  err_hndl:
-    if (NULL != tempbuf)
-      smpi_free_tmp_buffer(tempbuf);
+   if (nullptr != tempbuf)
+     smpi_free_tmp_buffer(tempbuf);
 
-    XBT_DEBUG("%s:%4d\tError occurred %d, rank %2d", __FILE__, line, err, rank);
-    return err;
+   XBT_DEBUG("%s:%4d\tError occurred %d, rank %2d", __FILE__, line, err, rank);
+   return err;
 }
 
 /*
@@ -271,10 +271,11 @@ int gather__ompi_linear_sync(const void *sbuf, int scount,
       char* ptmp;
       MPI_Request first_segment_req;
       MPI_Request* reqs = new (std::nothrow) MPI_Request[size];
-      if (NULL == reqs) {
+      if (nullptr == reqs) {
         ret  = -1;
         line = __LINE__;
-        goto error_hndl; }
+        goto error_hndl;
+      }
 
         typelng=rdtype->size();
         rdtype->extent(&lb, &extent);

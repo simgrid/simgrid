@@ -39,7 +39,7 @@ int main(int argc, char**argv)
   unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
   auto* addr         = reinterpret_cast<void*>(((unsigned long)sbrk(0) + BUFFSIZE) & mask);
   heapA = xbt_mheap_new(-1, addr);
-  if (heapA == NULL) {
+  if (heapA == nullptr) {
     perror("attach 1 failed");
     fprintf(stderr, "bye\n");
     exit(1);

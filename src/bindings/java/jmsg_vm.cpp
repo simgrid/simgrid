@@ -71,7 +71,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jVm, 
 {
   sg_host_t host = jhost_get_native(env, jHost);
 
-  const char* name = env->GetStringUTFChars(jname, 0);
+  const char* name = env->GetStringUTFChars(jname, nullptr);
   sg_vm_t vm       = sg_vm_create_migratable(host, name, static_cast<int>(coreAmount), static_cast<int>(jramsize),
                                        static_cast<int>(jmig_netspeed), static_cast<int>(jdp_intensity));
   env->ReleaseStringUTFChars(jname, name);
@@ -175,7 +175,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclas
     jxbt_throw_null(env, "No VM can have a null name");
     return nullptr;
   }
-  const char* name = env->GetStringUTFChars(jname, 0);
+  const char* name = env->GetStringUTFChars(jname, nullptr);
   /* get the VM by name   (VMs are just special hosts, unfortunately) */
   auto const* host = sg_host_by_name(name);
 

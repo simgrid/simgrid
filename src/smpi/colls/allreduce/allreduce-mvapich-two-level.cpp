@@ -91,9 +91,9 @@ int allreduce__mvapich2_two_level(const void *sendbuf,
     int local_rank = -1, local_size = 0;
 
     //if not set (use of the algo directly, without mvapich2 selector)
-    if(MV2_Allreduce_intra_function==NULL)
+    if (MV2_Allreduce_intra_function == nullptr)
       MV2_Allreduce_intra_function = allreduce__mpich;
-    if(MV2_Allreducection==NULL)
+    if (MV2_Allreducection == nullptr)
       MV2_Allreducection = allreduce__rdb;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){

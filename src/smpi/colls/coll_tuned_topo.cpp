@@ -89,11 +89,11 @@ ompi_coll_tuned_topo_build_tree( int fanout,
 
     if (fanout<1) {
         XBT_DEBUG("coll:tuned:topo_build_tree invalid fanout %d", fanout);
-        return NULL;
+        return nullptr;
     }
     if (fanout>MAXTREEFANOUT) {
         XBT_DEBUG("coll:tuned:topo_build_tree invalid fanout %d bigger than max %d", fanout, MAXTREEFANOUT);
-        return NULL;
+        return nullptr;
     }
 
     /*
@@ -105,7 +105,7 @@ ompi_coll_tuned_topo_build_tree( int fanout,
     tree = new ompi_coll_tree_t;
     if (not tree) {
       XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
-      return NULL;
+      return nullptr;
     }
 
     /*
@@ -197,7 +197,7 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
     tree = new ompi_coll_tree_t;
     if (not tree) {
       XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
-      return NULL;
+      return nullptr;
     }
 
     /*
@@ -221,61 +221,63 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
     parent = size - 1;
     delta = 0;
 
-    while ( 1 ) {
-        /* Compute the size of the right subtree */
-        int rightsize = size >> 1;
+    while (true) {
+      /* Compute the size of the right subtree */
+      int rightsize = size >> 1;
 
-        /* Determine the left and right child of this parent  */
-        int lchild = -1;
-        int rchild = -1;
-        if (size - 1 > 0) {
-            lchild = parent - 1;
-            if (lchild > 0) {
-                rchild = rightsize - 1;
-            }
+      /* Determine the left and right child of this parent  */
+      int lchild = -1;
+      int rchild = -1;
+      if (size - 1 > 0) {
+        lchild = parent - 1;
+        if (lchild > 0) {
+          rchild = rightsize - 1;
         }
+      }
 
-        /* The following cases are possible: myrank can be
-           - a parent,
-           - belong to the left subtree, or
-           - belong to the right subtee
-           Each of the cases need to be handled differently.
+      /* The following cases are possible: myrank can be
+         - a parent,
+         - belong to the left subtree, or
+         - belong to the right subtee
+         Each of the cases need to be handled differently.
+      */
+
+      if (myrank == parent) {
+        /* I am the parent:
+           - compute real ranks of my children, and exit the loop. */
+        if (lchild >= 0)
+          tree->tree_next[0] = lchild + delta;
+        if (rchild >= 0)
+          tree->tree_next[1] = rchild + delta;
+        break;
+      }
+      if (myrank > rchild) {
+        /* I belong to the left subtree:
+           - If I am the left child, compute real rank of my parent
+           - Iterate down through tree:
+           compute new size, shift ranks down, and update delta.
         */
-
-        if (myrank == parent) {
-            /* I am the parent:
-               - compute real ranks of my children, and exit the loop. */
-            if (lchild >= 0) tree->tree_next[0] = lchild + delta;
-            if (rchild >= 0) tree->tree_next[1] = rchild + delta;
-            break;
+        if (myrank == lchild) {
+          tree->tree_prev = parent + delta;
         }
-        if (myrank > rchild) {
-            /* I belong to the left subtree:
-               - If I am the left child, compute real rank of my parent
-               - Iterate down through tree:
-               compute new size, shift ranks down, and update delta.
-            */
-            if (myrank == lchild) {
-                tree->tree_prev = parent + delta;
-            }
-            size = size - rightsize - 1;
-            delta = delta + rightsize;
-            myrank = myrank - rightsize;
-            parent = size - 1;
+        size   = size - rightsize - 1;
+        delta  = delta + rightsize;
+        myrank = myrank - rightsize;
+        parent = size - 1;
 
-        } else {
-            /* I belong to the right subtree:
-               - If I am the right child, compute real rank of my parent
-               - Iterate down through tree:
-               compute new size and parent,
-               but the delta and rank do not need to change.
-            */
-            if (myrank == rchild) {
-                tree->tree_prev = parent + delta;
-            }
-            size = rightsize;
-            parent = rchild;
+      } else {
+        /* I belong to the right subtree:
+           - If I am the right child, compute real rank of my parent
+           - Iterate down through tree:
+           compute new size and parent,
+           but the delta and rank do not need to change.
+        */
+        if (myrank == rchild) {
+          tree->tree_prev = parent + delta;
         }
+        size   = rightsize;
+        parent = rchild;
+      }
     }
 
     if (tree->tree_next[0] >= 0) { tree->tree_nextsize = 1; }
@@ -295,7 +297,7 @@ int ompi_coll_tuned_topo_destroy_tree( ompi_coll_tree_t** tree )
     ptr = *tree;
 
     delete ptr;
-    *tree = NULL;   /* mark tree as gone */
+    *tree = nullptr; /* mark tree as gone */
 
     return MPI_SUCCESS;
 }
@@ -338,7 +340,7 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
     bmtree = new ompi_coll_tree_t;
     if (not bmtree) {
       XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
-      return NULL;
+      return nullptr;
     }
 
     bmtree->tree_bmtree   = 1;
@@ -370,7 +372,7 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
         if (children==MAXTREEFANOUT) {
             XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, children);
             delete bmtree;
-            return NULL;
+            return nullptr;
         }
         bmtree->tree_next[children] = remote;
         mask <<= 1;
@@ -418,7 +420,7 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
     if (not bmtree) {
       XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
       delete bmtree;
-      return NULL;
+      return nullptr;
     }
 
     bmtree->tree_bmtree   = 1;
@@ -443,7 +445,7 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
         if (children == MAXTREEFANOUT) {
           XBT_DEBUG("coll:tuned:topo:build_bmtree max fanout incorrect %d needed %d", MAXTREEFANOUT, children);
           delete bmtree;
-          return NULL;
+          return nullptr;
         }
       }
       mask <<= 1;
@@ -490,7 +492,7 @@ ompi_coll_tuned_topo_build_chain( int fanout,
     if (not chain) {
       XBT_DEBUG("coll:tuned:topo:build_chain PANIC out of memory");
       fflush(stdout);
-      return NULL;
+      return nullptr;
     }
     for(i=0;i<fanout;i++) chain->tree_next[i] = -1;
 

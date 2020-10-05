@@ -96,9 +96,9 @@ Win::~Win(){
 
 int Win::attach(void* /*base*/, MPI_Aint size)
 {
-  if (not(base_ == MPI_BOTTOM || base_ == 0))
+  if (not(base_ == MPI_BOTTOM || base_ == nullptr))
     return MPI_ERR_ARG;
-  base_=0;//actually the address will be given in the RMA calls, as being the disp.
+  base_ = nullptr; // actually the address will be given in the RMA calls, as being the disp.
   size_+=size;
   return MPI_SUCCESS;
 }

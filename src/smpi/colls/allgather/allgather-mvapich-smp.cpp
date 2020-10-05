@@ -102,21 +102,20 @@ int allgather__mvapich2_smp(const void *sendbuf,int sendcnt, MPI_Datatype sendty
         /*When data in each socket is different*/
         if (not comm->is_uniform()) {
 
-            int *node_sizes = NULL;
-            int i = 0;
+          int* node_sizes = nullptr;
+          int i           = 0;
 
-            node_sizes = comm->get_non_uniform_map();
+          node_sizes = comm->get_non_uniform_map();
 
-            int* displs   = new int[leader_comm_size];
-            int* recvcnts = new int[leader_comm_size];
-            recvcnts[0] = node_sizes[0] * recvcnt;
-            displs[0] = 0;
+          int* displs   = new int[leader_comm_size];
+          int* recvcnts = new int[leader_comm_size];
+          recvcnts[0]   = node_sizes[0] * recvcnt;
+          displs[0]     = 0;
 
-            for (i = 1; i < leader_comm_size; i++) {
-                displs[i] = displs[i - 1] + node_sizes[i - 1] * recvcnt;
-                recvcnts[i] = node_sizes[i] * recvcnt;
-            }
-
+          for (i = 1; i < leader_comm_size; i++) {
+            displs[i]   = displs[i - 1] + node_sizes[i - 1] * recvcnt;
+            recvcnts[i] = node_sizes[i] * recvcnt;
+          }
 
             void* sendbuf=((char*)recvbuf)+recvtype->get_extent()*displs[leader_comm->rank()];
 

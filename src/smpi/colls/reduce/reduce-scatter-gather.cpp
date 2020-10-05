@@ -25,8 +25,8 @@ int reduce__scatter_gather(const void *sendbuf, void *recvbuf,
   int tag = COLL_TAG_REDUCE,temporary_buffer=0;
   unsigned char *send_ptr, *recv_ptr, *tmp_buf;
 
-  cnts = NULL;
-  disps = NULL;
+  cnts  = nullptr;
+  disps = nullptr;
 
   MPI_Aint extent;
 

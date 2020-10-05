@@ -47,8 +47,7 @@ int alltoall__pair_rma(const void *send_buff, int send_count, MPI_Datatype send_
   send_chunk = send_type->get_extent();
   recv_chunk = recv_type->get_extent();
 
-  win=new  Win(recv_buff, num_procs * recv_chunk * send_count, recv_chunk, 0,
-                 comm);
+  win = new Win(recv_buff, num_procs * recv_chunk * send_count, recv_chunk, nullptr, comm);
   send_chunk *= send_count;
   recv_chunk *= recv_count;
 

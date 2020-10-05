@@ -68,30 +68,26 @@ int barrier__mvapich2_pair(MPI_Comm comm)
         if (rank < surfeit) {
             /* get the fanin letter from the upper "half" process: */
             dst = N2_prev + rank;
-            Request::recv(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER,
-                                     comm, MPI_STATUS_IGNORE);
+            Request::recv(nullptr, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
         }
 
         /* combine on embedded N2_prev power-of-two processes */
         for (d = 1; d < N2_prev; d <<= 1) {
             dst = (rank ^ d);
-            Request::sendrecv(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, NULL,
-                                 0, MPI_BYTE, dst, COLL_TAG_BARRIER, comm,
-                                 MPI_STATUS_IGNORE);
+            Request::sendrecv(nullptr, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, nullptr, 0, MPI_BYTE, dst, COLL_TAG_BARRIER,
+                              comm, MPI_STATUS_IGNORE);
         }
 
         /* fanout data to nodes above N2_prev... */
         if (rank < surfeit) {
             dst = N2_prev + rank;
-            Request::send(NULL, 0, MPI_BYTE, dst, COLL_TAG_BARRIER,
-                                     comm);
+            Request::send(nullptr, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, comm);
         }
     } else {
         /* fanin data to power of 2 subset */
         src = rank - N2_prev;
-        Request::sendrecv(NULL, 0, MPI_BYTE, src, COLL_TAG_BARRIER,
-                                     NULL, 0, MPI_BYTE, src, COLL_TAG_BARRIER,
-                                     comm, MPI_STATUS_IGNORE);
+        Request::sendrecv(nullptr, 0, MPI_BYTE, src, COLL_TAG_BARRIER, nullptr, 0, MPI_BYTE, src, COLL_TAG_BARRIER,
+                          comm, MPI_STATUS_IGNORE);
     }
 
     return mpi_errno;

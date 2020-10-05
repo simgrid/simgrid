@@ -309,7 +309,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activi
   }
 
   if (timeout < 0.0) {
-    simcall->timeout_cb_ = NULL;
+    simcall->timeout_cb_ = nullptr;
   } else {
     simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
       simcall->timeout_cb_ = nullptr;

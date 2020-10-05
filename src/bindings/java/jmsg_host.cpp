@@ -60,7 +60,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv* env, jclas
     jxbt_throw_null(env, "No host can have a null name");
     return nullptr;
   }
-  const char *name = env->GetStringUTFChars(jname, 0);
+  const char* name = env->GetStringUTFChars(jname, nullptr);
   /* get the host by name       (the hosts are created during the grid resolution) */
   sg_host_t host = sg_host_by_name(name);
 
@@ -180,7 +180,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, job
     jxbt_throw_notbound(env, "host", jhost);
     return nullptr;
   }
-  const char *name = env->GetStringUTFChars((jstring) jname, 0);
+  const char* name = env->GetStringUTFChars((jstring)jname, nullptr);
 
   const char* property = sg_host_get_property_value(host, name);
   if (not property) {
@@ -202,8 +202,8 @@ Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname,
     jxbt_throw_notbound(env, "host", jhost);
     return;
   }
-  const char *name = env->GetStringUTFChars((jstring) jname, 0);
-  const char *value_java = env->GetStringUTFChars((jstring) jvalue, 0);
+  const char* name       = env->GetStringUTFChars((jstring)jname, nullptr);
+  const char* value_java = env->GetStringUTFChars((jstring)jvalue, nullptr);
   const char* value      = xbt_strdup(value_java);
 
   sg_host_set_property_value(host, name, value);
@@ -232,7 +232,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
 
   if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
-    return 0;
+    return nullptr;
   }
 
   int index = 0;
@@ -263,7 +263,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIE
 
   if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
-    return 0;
+    return nullptr;
   }
   jobjectArray jtable;
 
@@ -287,7 +287,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getStorageContent(JNIEn
 
   if (not host) {
     jxbt_throw_notbound(env, "host", jhost);
-    return 0;
+    return nullptr;
   }
   return (jobjectArray)sg_host_get_storage_content(host);
 }
@@ -324,7 +324,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname)
 {
-  const char *name = env->GetStringUTFChars((jstring) jname, 0);
+  const char* name = env->GetStringUTFChars((jstring)jname, nullptr);
   sg_mailbox_set_receiver(name);
   env->ReleaseStringUTFChars((jstring) jname, name);
 }

@@ -81,7 +81,7 @@ allgather__ompi_neighborexchange(const void *sbuf, int scount,
    int i, even_rank;
    int err = 0;
    ptrdiff_t slb, rlb, sext, rext;
-   char *tmpsend = NULL, *tmprecv = NULL;
+   char *tmpsend = nullptr, *tmprecv = nullptr;
 
    size = comm->size();
    rank = comm->rank();

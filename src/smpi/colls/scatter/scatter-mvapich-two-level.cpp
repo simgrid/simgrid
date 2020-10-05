@@ -65,7 +65,7 @@ int scatter__mvapich2_two_level_direct(const void *sendbuf,
     int leader_root, leader_of_root = -1;
     MPI_Comm shmem_comm, leader_comm;
     //if not set (use of the algo directly, without mvapich2 selector)
-    if(MV2_Scatter_intra_function==NULL)
+    if (MV2_Scatter_intra_function == nullptr)
       MV2_Scatter_intra_function = scatter__mpich;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
@@ -142,8 +142,8 @@ int scatter__mvapich2_two_level_direct(const void *sendbuf,
 
         if (leader_comm_size > 1 && local_rank == 0) {
           if (not comm->is_uniform()) {
-            int* displs   = NULL;
-            int* sendcnts = NULL;
+            int* displs   = nullptr;
+            int* sendcnts = nullptr;
             int* node_sizes;
             int i      = 0;
             node_sizes = comm->get_non_uniform_map();
@@ -244,7 +244,7 @@ int scatter__mvapich2_two_level_binomial(const void *sendbuf,
 
 
     //if not set (use of the algo directly, without mvapich2 selector)
-    if(MV2_Scatter_intra_function==NULL)
+    if (MV2_Scatter_intra_function == nullptr)
       MV2_Scatter_intra_function = scatter__mpich;
 
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
@@ -318,8 +318,8 @@ int scatter__mvapich2_two_level_binomial(const void *sendbuf,
 
         if (leader_comm_size > 1 && local_rank == 0) {
           if (not comm->is_uniform()) {
-            int* displs   = NULL;
-            int* sendcnts = NULL;
+            int* displs   = nullptr;
+            int* sendcnts = nullptr;
             int* node_sizes;
             int i      = 0;
             node_sizes = comm->get_non_uniform_map();

@@ -1178,7 +1178,7 @@ int Request::grequest_start(MPI_Grequest_query_function* query_fn, MPI_Grequest_
 
 int Request::grequest_complete(MPI_Request request)
 {
-  if ((!(request->flags_ & MPI_REQ_GENERALIZED)) || request->generalized_funcs->mutex==NULL) 
+  if ((!(request->flags_ & MPI_REQ_GENERALIZED)) || request->generalized_funcs->mutex == nullptr)
     return MPI_ERR_REQUEST;
   request->generalized_funcs->mutex->lock();
   request->flags_ |= MPI_REQ_COMPLETE; // in case wait would be called after complete

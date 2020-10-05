@@ -170,10 +170,7 @@ static int l_host_tostring(lua_State * L)
   return 1;
 }
 
-static const luaL_Reg host_meta[] = {
-  {"__tostring", l_host_tostring},
-  {0, 0}
-};
+static const luaL_Reg host_meta[] = {{"__tostring", l_host_tostring}, {nullptr, nullptr}};
 
 /**
  * @brief Registers the host functions into the table simgrid.host.

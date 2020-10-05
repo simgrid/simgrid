@@ -75,7 +75,7 @@ static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
                 flow->remaining_);
       return;
     }
-    int amountSent = sock->Send(0, toWrite, 0);
+    int amountSent = sock->Send(nullptr, toWrite, 0);
 
     xbt_assert(amountSent > 0, "Since TxAvailable>0, amountSent should also >0");
     flow->buffered_bytes_ += amountSent;

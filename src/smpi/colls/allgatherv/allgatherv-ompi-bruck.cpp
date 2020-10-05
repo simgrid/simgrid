@@ -90,7 +90,7 @@ int allgatherv__ompi_bruck(const void *sbuf, int scount,
    int sendto, recvfrom, blockcount, i;
    unsigned int distance;
    ptrdiff_t slb, rlb, sext, rext;
-   char *tmpsend = NULL, *tmprecv = NULL;
+   char *tmpsend = nullptr, *tmprecv = nullptr;
    MPI_Datatype new_rdtype = MPI_DATATYPE_NULL, new_sdtype = MPI_DATATYPE_NULL;
 
    unsigned int size = comm->size();

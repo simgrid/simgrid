@@ -778,7 +778,7 @@ int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status)
     *flag=1;
     simgrid::smpi::Status::empty(status);
     return MPI_SUCCESS;
-  } else if (flag==NULL || status ==NULL){
+  } else if (flag == nullptr || status == nullptr) {
     return MPI_ERR_ARG;
   }
   return simgrid::smpi::Request::get_status(request,flag,status);

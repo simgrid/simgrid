@@ -131,7 +131,7 @@ int gather__mvapich2_two_level(const void *sendbuf,
                                int root,
                                MPI_Comm comm)
 {
-  unsigned char* leader_gather_buf = NULL;
+  unsigned char* leader_gather_buf = nullptr;
   int comm_size, rank;
   int local_rank, local_size;
   int leader_comm_rank = -1, leader_comm_size = 0;
@@ -142,10 +142,10 @@ int gather__mvapich2_two_level(const void *sendbuf,
   MPI_Aint sendtype_extent = 0, recvtype_extent = 0; /* Datatype extent */
   MPI_Aint true_lb = 0, sendtype_true_extent = 0, recvtype_true_extent = 0;
   MPI_Comm shmem_comm, leader_comm;
-  unsigned char* tmp_buf = NULL;
+  unsigned char* tmp_buf = nullptr;
 
   // if not set (use of the algo directly, without mvapich2 selector)
-  if (MV2_Gather_intra_node_function == NULL)
+  if (MV2_Gather_intra_node_function == nullptr)
     MV2_Gather_intra_node_function = gather__mpich;
 
   if (comm->get_leaders_comm() == MPI_COMM_NULL) {
@@ -222,9 +222,9 @@ int gather__mvapich2_two_level(const void *sendbuf,
             } else {
               tmp_buf = smpi_get_tmp_sendbuffer(sendcnt * std::max(sendtype_extent, sendtype_true_extent) * local_size);
             }
-            if (tmp_buf == NULL) {
-                mpi_errno = MPI_ERR_OTHER;
-                return mpi_errno;
+            if (tmp_buf == nullptr) {
+              mpi_errno = MPI_ERR_OTHER;
+              return mpi_errno;
             }
         }
          /*while testing mpich2 gather test, we see that
@@ -268,8 +268,8 @@ int gather__mvapich2_two_level(const void *sendbuf,
      */
     if (not comm->is_uniform()) {
       if (local_rank == 0) {
-        int* displs   = NULL;
-        int* recvcnts = NULL;
+        int* displs   = nullptr;
+        int* recvcnts = nullptr;
         int* node_sizes;
         int i = 0;
         /* Node leaders have all the data. But, different nodes can have
@@ -288,7 +288,7 @@ int gather__mvapich2_two_level(const void *sendbuf,
             leader_gather_buf =
                 smpi_get_tmp_sendbuffer(sendcnt * std::max(sendtype_extent, sendtype_true_extent) * comm_size);
           }
-          if (leader_gather_buf == NULL) {
+          if (leader_gather_buf == nullptr) {
             mpi_errno = MPI_ERR_OTHER;
             return mpi_errno;
           }
@@ -345,9 +345,9 @@ int gather__mvapich2_two_level(const void *sendbuf,
                 /* The root of the Gather operation is not a node-level leader
                  */
                 leader_gather_buf = smpi_get_tmp_sendbuffer(nbytes * comm_size);
-                if (leader_gather_buf == NULL) {
-                    mpi_errno = MPI_ERR_OTHER;
-                    return mpi_errno;
+                if (leader_gather_buf == nullptr) {
+                  mpi_errno = MPI_ERR_OTHER;
+                  return mpi_errno;
                 }
             }
             if (root == leader_of_root) {
@@ -384,12 +384,12 @@ int gather__mvapich2_two_level(const void *sendbuf,
 
     /* check if multiple threads are calling this collective function */
     if (local_rank == 0 ) {
-        if (tmp_buf != NULL) {
-            smpi_free_tmp_buffer(tmp_buf);
-        }
-        if (leader_gather_buf != NULL) {
-            smpi_free_tmp_buffer(leader_gather_buf);
-        }
+      if (tmp_buf != nullptr) {
+        smpi_free_tmp_buffer(tmp_buf);
+      }
+      if (leader_gather_buf != nullptr) {
+        smpi_free_tmp_buffer(leader_gather_buf);
+      }
     }
 
     return (mpi_errno);

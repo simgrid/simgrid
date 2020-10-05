@@ -61,7 +61,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, j
     jxbt_throw_null(env, "No host can have a null name");
     return nullptr;
   }
-  const char *name = env->GetStringUTFChars(jname, 0);
+  const char* name = env->GetStringUTFChars(jname, nullptr);
   storage          = sg_storage_get_by_name(name);
 
   if (not storage) { /* invalid name */
@@ -143,7 +143,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, 
     jxbt_throw_notbound(env, "storage", jstorage);
     return nullptr;
   }
-  const char *name = env->GetStringUTFChars((jstring) jname, 0);
+  const char* name = env->GetStringUTFChars((jstring)jname, nullptr);
 
   const char* property = sg_storage_get_property_value(storage, name);
   if (not property) {
@@ -164,8 +164,8 @@ Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject 
     jxbt_throw_notbound(env, "storage", jstorage);
     return;
   }
-  const char *name = env->GetStringUTFChars((jstring) jname, 0);
-  const char *value_java = env->GetStringUTFChars((jstring) jvalue, 0);
+  const char* name       = env->GetStringUTFChars((jstring)jname, nullptr);
+  const char* value_java = env->GetStringUTFChars((jstring)jvalue, nullptr);
 
   storage->set_property(name, std::string(value_java));
 

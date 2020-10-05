@@ -93,9 +93,9 @@ int reduce_scatter__ompi_basic_recursivehalving(const void *sbuf,
     /* Allocate temporary receive buffer. */
     unsigned char* recv_buf_free = smpi_get_tmp_recvbuffer(buf_size);
     unsigned char* recv_buf      = recv_buf_free - lb;
-    if (NULL == recv_buf_free) {
-        err = MPI_ERR_OTHER;
-        goto cleanup;
+    if (nullptr == recv_buf_free) {
+      err = MPI_ERR_OTHER;
+      goto cleanup;
     }
 
     /* allocate temporary buffer for results */
@@ -279,8 +279,10 @@ int reduce_scatter__ompi_basic_recursivehalving(const void *sbuf,
 
  cleanup:
     delete[] disps;
-    if (NULL != recv_buf_free) smpi_free_tmp_buffer(recv_buf_free);
-    if (NULL != result_buf_free) smpi_free_tmp_buffer(result_buf_free);
+    if (nullptr != recv_buf_free)
+      smpi_free_tmp_buffer(recv_buf_free);
+    if (nullptr != result_buf_free)
+      smpi_free_tmp_buffer(result_buf_free);
 
     return err;
 }
@@ -355,10 +357,10 @@ int reduce_scatter__ompi_ring(const void *sbuf, void *rbuf, const int *rcounts,
 {
     int ret, line, rank, size, i, k, recv_from, send_to, total_count, max_block_count;
     int inbi;
-    unsigned char *tmpsend = NULL, *tmprecv = NULL, *accumbuf = NULL, *accumbuf_free = NULL;
-    unsigned char *inbuf_free[2] = {NULL, NULL}, *inbuf[2] = {NULL, NULL};
+    unsigned char *tmpsend = nullptr, *tmprecv = nullptr, *accumbuf = nullptr, *accumbuf_free = nullptr;
+    unsigned char *inbuf_free[2] = {nullptr, nullptr}, *inbuf[2] = {nullptr, nullptr};
     ptrdiff_t true_lb, true_extent, lb, extent, max_real_segsize;
-    MPI_Request reqs[2] = {NULL, NULL};
+    MPI_Request reqs[2] = {nullptr, nullptr};
 
     size = comm->size();
     rank = comm->rank();
@@ -401,15 +403,23 @@ int reduce_scatter__ompi_ring(const void *sbuf, void *rbuf, const int *rcounts,
     max_real_segsize = true_extent + (ptrdiff_t)(max_block_count - 1) * extent;
 
     accumbuf_free = smpi_get_tmp_recvbuffer(true_extent + (ptrdiff_t)(total_count - 1) * extent);
-    if (NULL == accumbuf_free) { ret = -1; line = __LINE__; goto error_hndl; }
+    if (nullptr == accumbuf_free) {
+      ret  = -1;
+      line = __LINE__;
+      goto error_hndl;
+    }
     accumbuf = accumbuf_free - lb;
 
     inbuf_free[0] = smpi_get_tmp_sendbuffer(max_real_segsize);
-    if (NULL == inbuf_free[0]) { ret = -1; line = __LINE__; goto error_hndl; }
+    if (nullptr == inbuf_free[0]) {
+      ret  = -1;
+      line = __LINE__;
+      goto error_hndl;
+    }
     inbuf[0] = inbuf_free[0] - lb;
     if (size > 2) {
       inbuf_free[1] = smpi_get_tmp_sendbuffer(max_real_segsize);
-      if (NULL == inbuf_free[1]) {
+      if (nullptr == inbuf_free[1]) {
         ret  = -1;
         line = __LINE__;
         goto error_hndl;
@@ -495,9 +505,12 @@ int reduce_scatter__ompi_ring(const void *sbuf, void *rbuf, const int *rcounts,
     if (ret < 0) { line = __LINE__; goto error_hndl; }
 
     delete[] displs;
-    if (NULL != accumbuf_free) smpi_free_tmp_buffer(accumbuf_free);
-    if (NULL != inbuf_free[0]) smpi_free_tmp_buffer(inbuf_free[0]);
-    if (NULL != inbuf_free[1]) smpi_free_tmp_buffer(inbuf_free[1]);
+    if (nullptr != accumbuf_free)
+      smpi_free_tmp_buffer(accumbuf_free);
+    if (nullptr != inbuf_free[0])
+      smpi_free_tmp_buffer(inbuf_free[0]);
+    if (nullptr != inbuf_free[1])
+      smpi_free_tmp_buffer(inbuf_free[1]);
 
     return MPI_SUCCESS;
 
@@ -505,9 +518,12 @@ int reduce_scatter__ompi_ring(const void *sbuf, void *rbuf, const int *rcounts,
     XBT_DEBUG( "%s:%4d\tRank %d Error occurred %d\n",
                  __FILE__, line, rank, ret);
     delete[] displs;
-    if (NULL != accumbuf_free) smpi_free_tmp_buffer(accumbuf_free);
-    if (NULL != inbuf_free[0]) smpi_free_tmp_buffer(inbuf_free[0]);
-    if (NULL != inbuf_free[1]) smpi_free_tmp_buffer(inbuf_free[1]);
+    if (nullptr != accumbuf_free)
+      smpi_free_tmp_buffer(accumbuf_free);
+    if (nullptr != inbuf_free[0])
+      smpi_free_tmp_buffer(inbuf_free[0]);
+    if (nullptr != inbuf_free[1])
+      smpi_free_tmp_buffer(inbuf_free[1]);
     return ret;
 }
 }

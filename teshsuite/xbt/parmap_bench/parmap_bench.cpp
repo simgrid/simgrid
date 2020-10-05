@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
   }
   timeout = atof(argv[2]);
   if (argc == 4)
-    modes = static_cast<unsigned>(strtoul(argv[2], NULL, 0));
+    modes = static_cast<unsigned>(strtoul(argv[2], nullptr, 0));
 
   XBT_INFO("Parmap benchmark with %d workers (modes = %#x)...", nthreads, modes);
   XBT_INFO("%s", "");

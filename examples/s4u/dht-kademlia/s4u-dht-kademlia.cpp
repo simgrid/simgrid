@@ -28,7 +28,7 @@ static void node(int argc, char* argv[])
 
   if (argc == 4) {
     XBT_INFO("Hi, I'm going to join the network with id %u", node.getId());
-    unsigned int known_id = static_cast<unsigned int>(strtoul(argv[2], NULL, 0));
+    unsigned int known_id = static_cast<unsigned int>(strtoul(argv[2], nullptr, 0));
     join_success          = node.join(known_id);
     deadline              = std::stod(argv[3]);
   } else {

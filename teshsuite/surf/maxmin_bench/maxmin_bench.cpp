@@ -29,7 +29,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   auto* Sys = new simgrid::kernel::lmm::System(false);
 
   for (int i = 0; i < nb_cnst; i++) {
-    cnst[i] = Sys->constraint_new(NULL, simgrid::xbt::random::uniform_real(0.0, 10.0));
+    cnst[i] = Sys->constraint_new(nullptr, simgrid::xbt::random::uniform_real(0.0, 10.0));
     int l;
     if (rate_no_limit > simgrid::xbt::random::uniform_real(0.0, 1.0)) {
       // Look at what happens when there is no concurrency limit
@@ -42,7 +42,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   }
 
   for (int i = 0; i < nb_var; i++) {
-    var[i] = Sys->variable_new(NULL, 1.0, -1.0, nb_elem);
+    var[i] = Sys->variable_new(nullptr, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
     short concurrency_share = 1 + static_cast<short>(simgrid::xbt::random::uniform_int(0, max_share - 1));
     var[i]->set_concurrency_share(concurrency_share);

@@ -20,7 +20,7 @@ static void computation_fun()
   exec->wait();
   XBT_INFO("%s:%s Exec 1 complete %g", host_name, pr_name, simgrid::s4u::Engine::get_clock() - clock_sta);
 
-  exec = NULL;
+  exec = nullptr;
 
   simgrid::s4u::this_actor::sleep_for(1);
 

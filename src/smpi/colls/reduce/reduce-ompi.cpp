@@ -267,7 +267,11 @@ int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int 
 
             int creq = 0;
             MPI_Request* sreq = new (std::nothrow) MPI_Request[max_outstanding_reqs];
-            if (NULL == sreq) { line = __LINE__; ret = -1; goto error_hndl; }
+            if (nullptr == sreq) {
+              line = __LINE__;
+              ret  = -1;
+              goto error_hndl;
+            }
 
             /* post first group of requests */
             for (segindex = 0; segindex < max_outstanding_reqs; segindex++) {
@@ -520,14 +524,14 @@ int reduce__ompi_in_order_binary(const void *sendbuf, void *recvbuf,
 
         if ((root == rank) && (MPI_IN_PLACE == sendbuf)) {
           tmp_sendbuf = smpi_get_tmp_sendbuffer(text + (count - 1) * ext);
-          if (NULL == tmp_sendbuf) {
+          if (nullptr == tmp_sendbuf) {
             return MPI_ERR_INTERN;
           }
           Datatype::copy(recvbuf, count, datatype, tmp_sendbuf, count, datatype);
           use_this_sendbuf = tmp_sendbuf;
         } else if (io_root == rank) {
           tmp_recvbuf = smpi_get_tmp_recvbuffer(text + (count - 1) * ext);
-          if (NULL == tmp_recvbuf) {
+          if (nullptr == tmp_recvbuf) {
             return MPI_ERR_INTERN;
           }
           use_this_recvbuf = tmp_recvbuf;

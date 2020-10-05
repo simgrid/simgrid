@@ -367,7 +367,7 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
 
   XBT_DEBUG("Copy %" PRIdMAX " bytes into %s", static_cast<intmax_t>(fdin_size), target.c_str());
 #if SG_HAVE_SENDFILE
-  ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
+  ssize_t sent_size = sendfile(fdout, fdin, nullptr, fdin_size);
   if (sent_size == fdin_size) {
     close(fdin);
     close(fdout);

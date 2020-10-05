@@ -31,31 +31,31 @@ int barrier__mpich_smp(MPI_Comm comm)
     shmem_comm = comm->get_intra_comm();
     local_rank = shmem_comm->rank();
     /* do the intranode barrier on all nodes */
-    if (shmem_comm != NULL) {
-        mpi_errno = barrier__mpich(shmem_comm);
-        if (mpi_errno) {
-          mpi_errno_ret+=mpi_errno;
-        }
+    if (shmem_comm != nullptr) {
+      mpi_errno = barrier__mpich(shmem_comm);
+      if (mpi_errno) {
+        mpi_errno_ret += mpi_errno;
+      }
     }
 
     leader_comm = comm->get_leaders_comm();
     /* do the barrier across roots of all nodes */
-    if (leader_comm != NULL && local_rank == 0) {
-        mpi_errno = barrier__mpich(leader_comm);
-        if (mpi_errno) {
-          mpi_errno_ret+=mpi_errno;
-        }
+    if (leader_comm != nullptr && local_rank == 0) {
+      mpi_errno = barrier__mpich(leader_comm);
+      if (mpi_errno) {
+        mpi_errno_ret += mpi_errno;
+      }
     }
 
     /* release the local processes on each node with a 1-byte
      * broadcast (0-byte broadcast just returns without doing
      * anything) */
-    if (shmem_comm != NULL) {
-        int i = 0;
-        mpi_errno = bcast__mpich(&i, 1, MPI_BYTE, 0, shmem_comm);
-        if (mpi_errno) {
-          mpi_errno_ret+=mpi_errno;
-        }
+    if (shmem_comm != nullptr) {
+      int i     = 0;
+      mpi_errno = bcast__mpich(&i, 1, MPI_BYTE, 0, shmem_comm);
+      if (mpi_errno) {
+        mpi_errno_ret += mpi_errno;
+      }
     }
 
     if (mpi_errno_ret)

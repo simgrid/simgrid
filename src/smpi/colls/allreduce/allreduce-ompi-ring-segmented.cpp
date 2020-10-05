@@ -171,11 +171,11 @@ int allreduce__ompi_ring_segmented(const void *sbuf, void *rbuf, int count,
    int block_count;
    unsigned int inbi;
    size_t typelng;
-   char *tmpsend = NULL, *tmprecv = NULL;
+   char *tmpsend = nullptr, *tmprecv = nullptr;
    unsigned char* inbuf[2] = {nullptr, nullptr};
    ptrdiff_t true_extent, extent;
    ptrdiff_t block_offset, max_real_segsize;
-   MPI_Request reqs[2] = {NULL, NULL};
+   MPI_Request reqs[2]  = {nullptr, nullptr};
    const size_t segsize = 1 << 20; /* 1 MB */
    int size = comm->size();
    int rank = comm->rank();
@@ -231,7 +231,11 @@ int allreduce__ompi_ring_segmented(const void *sbuf, void *rbuf, int count,
 
    /* Allocate and initialize temporary buffers */
    inbuf[0] = smpi_get_tmp_sendbuffer(max_real_segsize);
-   if (NULL == inbuf[0]) { ret = -1; line = __LINE__; goto error_hndl; }
+   if (nullptr == inbuf[0]) {
+     ret  = -1;
+     line = __LINE__;
+     goto error_hndl;
+   }
    if (size > 2) {
      inbuf[1] = smpi_get_tmp_recvbuffer(max_real_segsize);
      if (nullptr == inbuf[1]) {

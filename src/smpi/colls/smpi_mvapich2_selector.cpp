@@ -21,7 +21,7 @@ int alltoall__mvapich2( const void *sendbuf, int sendcount,
                         MPI_Comm comm)
 {
 
-  if(mv2_alltoall_table_ppn_conf==NULL)
+  if (mv2_alltoall_table_ppn_conf == nullptr)
     init_mv2_alltoall_tables_stampede();
 
   int sendtype_size, recvtype_size, comm_size;
@@ -96,7 +96,7 @@ int allgather__mvapich2(const void *sendbuf, int sendcount, MPI_Datatype sendtyp
   recvtype_size=recvtype->size();
   nbytes = recvtype_size * recvcount;
 
-  if(mv2_allgather_table_ppn_conf==NULL)
+  if (mv2_allgather_table_ppn_conf == nullptr)
     init_mv2_allgather_tables_stampede();
 
   if(comm->get_leaders_comm()==MPI_COMM_NULL){
@@ -186,7 +186,7 @@ int gather__mvapich2(const void *sendbuf,
     MPI_Datatype recvtype,
     int root, MPI_Comm  comm)
 {
-  if(mv2_gather_thresholds_table==NULL)
+  if (mv2_gather_thresholds_table == nullptr)
     init_mv2_gather_tables_stampede();
 
   int mpi_errno = MPI_SUCCESS;
@@ -261,7 +261,7 @@ int allgatherv__mvapich2(const void *sendbuf, int sendcount, MPI_Datatype sendty
   int range_threshold = 0;
   long nbytes = 0;
 
-  if(mv2_allgatherv_thresholds_table==NULL)
+  if (mv2_allgatherv_thresholds_table == nullptr)
     init_mv2_allgatherv_tables_stampede();
 
   comm_size = comm->size();
@@ -332,7 +332,7 @@ int allreduce__mvapich2(const void *sendbuf,
       return MPI_SUCCESS;
   }
 
-  if (mv2_allreduce_thresholds_table == NULL)
+  if (mv2_allreduce_thresholds_table == nullptr)
     init_mv2_allreduce_tables_stampede();
 
   /* check if multiple threads are calling this collective function */
@@ -559,10 +559,10 @@ int bcast__mvapich2(void *buffer,
         zcpy_knomial_factor = mv2_pipelined_zcpy_knomial_factor;
     }
 
-    if(MV2_Bcast_intra_node_function == NULL) {
-        /* if tuning table do not have any intra selection, set func pointer to
-        ** default one for mcast intra node */
-        MV2_Bcast_intra_node_function = &MPIR_Shmem_Bcast_MV2;
+    if (MV2_Bcast_intra_node_function == nullptr) {
+      /* if tuning table do not have any intra selection, set func pointer to
+      ** default one for mcast intra node */
+      MV2_Bcast_intra_node_function = &MPIR_Shmem_Bcast_MV2;
     }
 
     /* Set value of pipeline segment size */
@@ -659,7 +659,7 @@ int reduce__mvapich2(const void *sendbuf,
     MPI_Datatype datatype,
     MPI_Op op, int root, MPI_Comm comm)
 {
-  if(mv2_reduce_thresholds_table == NULL)
+  if (mv2_reduce_thresholds_table == nullptr)
     init_mv2_reduce_tables_stampede();
 
   int mpi_errno = MPI_SUCCESS;
@@ -779,7 +779,7 @@ int reduce_scatter__mvapich2(const void *sendbuf, void *recvbuf, const int *recv
       0, nbytes = 0;
   int* disps          = new int[comm_size];
 
-  if(mv2_red_scat_thresholds_table==NULL)
+  if (mv2_red_scat_thresholds_table == nullptr)
     init_mv2_reduce_scatter_tables_stampede();
 
   bool is_commutative = (op == MPI_OP_NULL || op->is_commutative());
@@ -860,12 +860,12 @@ int scatter__mvapich2(const void *sendbuf,
   int conf_index = 0;
      MPI_Comm shmem_comm;
   //    MPID_Comm *shmem_commptr=NULL;
-  if(mv2_scatter_thresholds_table==NULL)
-    init_mv2_scatter_tables_stampede();
+     if (mv2_scatter_thresholds_table == nullptr)
+       init_mv2_scatter_tables_stampede();
 
-  if(comm->get_leaders_comm()==MPI_COMM_NULL){
-    comm->init_smp();
-  }
+     if (comm->get_leaders_comm() == MPI_COMM_NULL) {
+       comm->init_smp();
+     }
 
   comm_size = comm->size();
 
@@ -939,14 +939,14 @@ int scatter__mvapich2(const void *sendbuf,
       } else
 #endif /*#if defined(_MCST_SUPPORT_) */
         {
-          if(mv2_scatter_thresholds_table[conf_index][range].inter_leader[range_threshold + 1].
-              MV2_pt_Scatter_function != NULL) {
-              MV2_Scatter_function = mv2_scatter_thresholds_table[conf_index][range].inter_leader[range_threshold + 1]
-                                                                                                  .MV2_pt_Scatter_function;
-          } else {
-              /* Fallback! */
-              MV2_Scatter_function = &MPIR_Scatter_MV2_Binomial;
-          }
+        if (mv2_scatter_thresholds_table[conf_index][range].inter_leader[range_threshold + 1].MV2_pt_Scatter_function !=
+            nullptr) {
+          MV2_Scatter_function =
+              mv2_scatter_thresholds_table[conf_index][range].inter_leader[range_threshold + 1].MV2_pt_Scatter_function;
+        } else {
+          /* Fallback! */
+          MV2_Scatter_function = &MPIR_Scatter_MV2_Binomial;
+        }
         }
   }
 

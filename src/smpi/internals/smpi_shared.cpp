@@ -178,7 +178,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
 
 
   /* First reserve memory area */
-  void* allocated_ptr = mmap(NULL, allocated_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  void* allocated_ptr = mmap(nullptr, allocated_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
   xbt_assert(allocated_ptr != MAP_FAILED, "Failed to allocate %zuMiB of memory. Run \"sysctl vm.overcommit_memory=1\" as root "
                                 "to allow big allocations.\n",

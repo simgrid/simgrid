@@ -90,7 +90,7 @@ static const char* instr_find_color(const char* c_state)
     return smpi_colors.find(state)->second.c_str();
   }
   for (const auto& pair : smpi_colors) { // Is an entry of our map a substring of this state name?
-    if (std::strstr(state.c_str(), pair.first.c_str()) != 0)
+    if (std::strstr(state.c_str(), pair.first.c_str()) != nullptr)
       return pair.second.c_str();
   }
 
