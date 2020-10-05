@@ -132,8 +132,8 @@ void DragonflyZone::generate_routers()
         this->routers_.emplace_back(i, j, k);
 }
 
-void DragonflyZone::create_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
-                                resource::LinkImpl** linkdown) const
+void DragonflyZone::generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
+                                  resource::LinkImpl** linkdown) const
 {
   *linkup   = nullptr;
   *linkdown = nullptr;
@@ -173,7 +173,7 @@ void DragonflyZone::generate_links()
     for (unsigned int j = 0; j < num_links_per_link_ * this->num_nodes_per_blade_; j += num_links_per_link_) {
       std::string id = "local_link_from_router_" + std::to_string(i) + "_to_node_" +
                        std::to_string(j / num_links_per_link_) + "_" + std::to_string(uniqueId);
-      this->create_link(id, 1, &linkup, &linkdown);
+      this->generate_link(id, 1, &linkup, &linkdown);
 
       this->routers_[i].my_nodes_[j] = linkup;
       if (this->sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX)
@@ -189,7 +189,7 @@ void DragonflyZone::generate_links()
       for (unsigned int k = j + 1; k < this->num_blades_per_chassis_; k++) {
         std::string id = "green_link_in_chassis_" + std::to_string(i % num_chassis_per_group_) + "_between_routers_" +
                          std::to_string(j) + "_and_" + std::to_string(k) + "_" + std::to_string(uniqueId);
-        this->create_link(id, this->num_links_green_, &linkup, &linkdown);
+        this->generate_link(id, this->num_links_green_, &linkup, &linkdown);
 
         this->routers_[i * num_blades_per_chassis_ + j].green_links_[k] = linkup;
         this->routers_[i * num_blades_per_chassis_ + k].green_links_[j] = linkdown;
@@ -205,7 +205,7 @@ void DragonflyZone::generate_links()
         for (unsigned int l = 0; l < this->num_blades_per_chassis_; l++) {
           std::string id = "black_link_in_group_" + std::to_string(i) + "_between_chassis_" + std::to_string(j) +
               "_and_" + std::to_string(k) +"_blade_" + std::to_string(l) + "_" + std::to_string(uniqueId);
-          this->create_link(id, this->num_links_black_, &linkup, &linkdown);
+          this->generate_link(id, this->num_links_black_, &linkup, &linkdown);
 
           this->routers_[i * num_blades_per_chassis_ * num_chassis_per_group_ + j * num_blades_per_chassis_ + l]
               .black_links_[k] = linkup;
@@ -226,7 +226,7 @@ void DragonflyZone::generate_links()
       unsigned int routernumj                 = j * num_blades_per_chassis_ * num_chassis_per_group_ + i;
       std::string id = "blue_link_between_group_"+ std::to_string(i) +"_and_" + std::to_string(j) +"_routers_" +
           std::to_string(routernumi) + "_and_" + std::to_string(routernumj) + "_" + std::to_string(uniqueId);
-      this->create_link(id, this->num_links_blue_, &linkup, &linkdown);
+      this->generate_link(id, this->num_links_blue_, &linkup, &linkdown);
 
       this->routers_[routernumi].blue_link_ = linkup;
       this->routers_[routernumj].blue_link_ = linkdown;
