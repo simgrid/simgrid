@@ -89,25 +89,22 @@ private:
     req_storage_t store;
 
 public:
-    RequestStorage() {}
-    int size() const { return store.size(); }
+  RequestStorage() = default;
+  int size() const { return store.size(); }
 
-    req_storage_t& get_store()
-    {
-      return store;
-    }
+  req_storage_t& get_store() { return store; }
 
-    void get_requests(std::vector<MPI_Request>& vec) const
-    {
-      for (auto const& pair : store) {
-        auto& req = pair.second;
-        auto my_proc_id = simgrid::s4u::this_actor::get_pid();
-        if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
-          vec.push_back(pair.second);
-          pair.second->print_request("MM");
-        }
+  void get_requests(std::vector<MPI_Request>& vec) const
+  {
+    for (auto const& pair : store) {
+      auto& req       = pair.second;
+      auto my_proc_id = simgrid::s4u::this_actor::get_pid();
+      if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
+        vec.push_back(pair.second);
+        pair.second->print_request("MM");
       }
     }
+  }
 
     MPI_Request find(int src, int dst, int tag)
     {

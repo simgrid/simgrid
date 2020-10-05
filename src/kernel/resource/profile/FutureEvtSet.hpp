@@ -27,7 +27,7 @@ public:
 
 private:
   typedef std::pair<double, Event*> Qelt;
-  std::priority_queue<Qelt, std::vector<Qelt>, std::greater<Qelt>> heap_;
+  std::priority_queue<Qelt, std::vector<Qelt>, std::greater<>> heap_;
 };
 
 // FIXME: kill that singleton

@@ -145,7 +145,7 @@ class Task<R(Args...)> {
   }
 
 public:
-  Task() { /* Nothing to do */}
+  Task() = default;
   explicit Task(std::nullptr_t) { /* Nothing to do */}
   ~Task()
   {

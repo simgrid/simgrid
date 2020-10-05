@@ -41,7 +41,7 @@ public:
   friend Mailbox; // Factory of comms
 #endif
 
-  virtual ~Comm();
+  ~Comm() override;
 
   static xbt::signal<void(Actor const&)> on_sender_start;
   static xbt::signal<void(Actor const&)> on_receiver_start;

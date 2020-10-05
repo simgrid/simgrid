@@ -38,7 +38,7 @@ public:
   friend Storage; // Factory of IOs
 #endif
 
-  ~Io() = default;
+  ~Io() override = default;
 
   Io* start() override;
   Io* wait() override;

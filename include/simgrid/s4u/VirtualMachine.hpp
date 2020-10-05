@@ -22,7 +22,7 @@ namespace s4u {
  */
 class XBT_PUBLIC VirtualMachine : public s4u::Host {
   vm::VirtualMachineImpl* const pimpl_vm_;
-  virtual ~VirtualMachine();
+  ~VirtualMachine() override;
 
 public:
   explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount);

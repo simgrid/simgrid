@@ -19,7 +19,7 @@ namespace mc {
 class XBT_PRIVATE CommunicationDeterminismChecker : public Checker {
 public:
   explicit CommunicationDeterminismChecker(Session& session);
-  ~CommunicationDeterminismChecker();
+  ~CommunicationDeterminismChecker() override;
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;

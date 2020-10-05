@@ -39,7 +39,7 @@ public:
   static std::deque<s4u::VirtualMachine*> allVms_;
 
   explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host, int core_amount, size_t ramsize);
-  ~VirtualMachineImpl();
+  ~VirtualMachineImpl() override;
 
   virtual void suspend(kernel::actor::ActorImpl* issuer);
   virtual void resume();

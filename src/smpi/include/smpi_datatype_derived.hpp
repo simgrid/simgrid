@@ -20,7 +20,7 @@ public:
   Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type);
   Type_Contiguous(const Type_Contiguous&) = delete;
   Type_Contiguous& operator=(const Type_Contiguous&) = delete;
-  ~Type_Contiguous();
+  ~Type_Contiguous() override;
   int clone(MPI_Datatype* type) override;
   void serialize(const void* noncontiguous, void* contiguous, int count) override;
   void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
@@ -37,7 +37,7 @@ public:
                MPI_Datatype old_type);
   Type_Hvector(const Type_Hvector&) = delete;
   Type_Hvector& operator=(const Type_Hvector&) = delete;
-  ~Type_Hvector();
+  ~Type_Hvector() override;
   int clone(MPI_Datatype* type) override;
   void serialize(const void* noncontiguous, void* contiguous, int count) override;
   void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
@@ -64,7 +64,7 @@ public:
   Type_Hindexed(const Type_Hindexed&) = delete;
   Type_Hindexed& operator=(const Type_Hindexed&) = delete;
   int clone(MPI_Datatype* type) override;
-  ~Type_Hindexed();
+  ~Type_Hindexed() override;
   void serialize(const void* noncontiguous, void* contiguous, int count) override;
   void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
 };
@@ -88,7 +88,7 @@ public:
   Type_Struct(const Type_Struct&) = delete;
   Type_Struct& operator=(const Type_Struct&) = delete;
   int clone(MPI_Datatype* type) override;
-  ~Type_Struct();
+  ~Type_Struct() override;
   void serialize(const void* noncontiguous, void* contiguous, int count) override;
   void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
 };

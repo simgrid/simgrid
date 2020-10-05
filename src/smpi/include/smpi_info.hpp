@@ -22,7 +22,7 @@ class Info : public F2C{
 public:
   Info() = default;
   explicit Info(const Info* orig) : map_(orig->map_) {}
-  ~Info() = default;
+  ~Info() override = default;
   void ref();
   static void unref(MPI_Info info);
   void set(const char* key, const char* value) { map_[key] = value; }

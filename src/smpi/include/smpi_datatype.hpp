@@ -113,7 +113,7 @@ public:
   Datatype(Datatype* datatype, int* ret);
   Datatype(const Datatype&) = delete;
   Datatype& operator=(const Datatype&) = delete;
-  virtual ~Datatype();
+  ~Datatype() override;
 
   char* name() const { return name_; }
   size_t size() const { return size_; }

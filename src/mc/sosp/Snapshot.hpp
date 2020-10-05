@@ -61,7 +61,7 @@ class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   /* Initialization */
   Snapshot(int num_state, RemoteSimulation* get_remote_simulation = &mc_model_checker->get_remote_simulation());
-  ~Snapshot() = default;
+  ~Snapshot() override = default;
 
   /* Regular use */
   bool on_heap(const void* address) const

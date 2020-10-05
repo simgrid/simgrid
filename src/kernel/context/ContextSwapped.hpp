@@ -50,7 +50,7 @@ public:
   SwappedContext(std::function<void()>&& code, actor::ActorImpl* get_actor, SwappedContextFactory* factory);
   SwappedContext(const SwappedContext&) = delete;
   SwappedContext& operator=(const SwappedContext&) = delete;
-  virtual ~SwappedContext();
+  ~SwappedContext() override;
 
   void suspend() override;
   virtual void resume();

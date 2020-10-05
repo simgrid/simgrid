@@ -44,7 +44,7 @@ public:
   StorageN11(StorageModel* model, const std::string& name, kernel::lmm::System* maxminSystem, double bread,
              double bwrite, const std::string& type_id, const std::string& content_name, sg_size_t size,
              const std::string& attach);
-  virtual ~StorageN11() = default;
+  ~StorageN11() override = default;
   StorageAction* io_start(sg_size_t size, s4u::Io::OpType type) override;
   StorageAction* read(sg_size_t size) override;
   StorageAction* write(sg_size_t size) override;

@@ -40,7 +40,7 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
 
 public:
   Exec();
-  virtual ~Exec() = default;
+  ~Exec() override = default;
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;

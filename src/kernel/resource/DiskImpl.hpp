@@ -39,7 +39,7 @@ public:
   DiskModel();
   DiskModel(const DiskModel&) = delete;
   DiskModel& operator=(const DiskModel&) = delete;
-  ~DiskModel();
+  ~DiskModel() override;
 
   virtual DiskImpl* createDisk(const std::string& id, double read_bw, double write_bw) = 0;
 };

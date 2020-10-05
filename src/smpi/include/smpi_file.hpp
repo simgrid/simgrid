@@ -36,7 +36,7 @@ class File : public F2C{
   File(MPI_Comm comm, const char *filename, int amode, MPI_Info info);
   File(const File&) = delete;
   File& operator=(const File&) = delete;
-  ~File();
+  ~File() override;
   int size() const;
   int get_position(MPI_Offset* offset) const;
   int get_position_shared(MPI_Offset* offset) const;

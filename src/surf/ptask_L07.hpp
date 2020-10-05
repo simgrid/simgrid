@@ -51,7 +51,7 @@ public:
   CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
   CpuL07Model(const CpuL07Model&) = delete;
   CpuL07Model& operator=(const CpuL07Model&) = delete;
-  ~CpuL07Model();
+  ~CpuL07Model() override;
 
   kernel::resource::Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
   HostL07Model *hostModel_;
@@ -62,7 +62,7 @@ public:
   NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
   NetworkL07Model(const NetworkL07Model&) = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
-  ~NetworkL07Model();
+  ~NetworkL07Model() override;
   kernel::resource::LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
                                           double latency, s4u::Link::SharingPolicy policy) override;
 
@@ -133,7 +133,7 @@ public:
             const double* bytes_amount, double rate);
   L07Action(const L07Action&) = delete;
   L07Action& operator=(const L07Action&) = delete;
-  ~L07Action();
+  ~L07Action() override;
 
   void updateBound();
   double get_latency() const { return latency_; }

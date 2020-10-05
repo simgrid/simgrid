@@ -50,7 +50,7 @@ public:
   Win(MPI_Info info, MPI_Comm comm) : Win(MPI_BOTTOM, 0, 1, info, comm, 0, 1) {};
   Win(const Win&) = delete;
   Win& operator=(const Win&) = delete;
-  ~Win();
+  ~Win() override;
   int attach (void *base, MPI_Aint size);
   int detach (const void *base);
   void get_name(char* name, int* length) const;

@@ -130,7 +130,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     std::vector<double> cost_arr(nr_nodes); /* link cost from src to other hosts */
     pred_arr.resize(nr_nodes);              /* predecessors in path from src */
     typedef std::pair<double, int> Qelt;
-    std::priority_queue<Qelt, std::vector<Qelt>, std::greater<Qelt>> pqueue;
+    std::priority_queue<Qelt, std::vector<Qelt>, std::greater<>> pqueue;
 
     /* initialize */
     cost_arr[src_node_id] = 0.0;

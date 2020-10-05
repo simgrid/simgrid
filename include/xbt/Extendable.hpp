@@ -24,7 +24,7 @@ class Extension {
   friend class Extendable<T>;
   explicit constexpr Extension(std::size_t id) : id_(id) {}
 public:
-  explicit constexpr Extension() {}
+  explicit constexpr Extension() = default;
   std::size_t id() const { return id_; }
   bool valid() const { return id_ != INVALID_ID; }
 };
@@ -69,7 +69,7 @@ public:
   {
     return Extension<T, U>(extension_create([](void* p) { delete static_cast<U*>(p); }));
   }
-  Extendable() {}
+  Extendable()                  = default;
   Extendable(const Extendable&) = delete;
   Extendable& operator=(const Extendable&) = delete;
   ~Extendable()

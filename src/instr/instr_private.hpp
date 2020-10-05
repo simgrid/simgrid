@@ -106,7 +106,7 @@ public:
       , send_type(send_type)
       , recv_type(recv_type){};
 
-  virtual ~TIData() {}
+  virtual ~TIData() = default;
 
   const std::string& get_name() const { return name_; }
   double get_amount() const { return amount_; }

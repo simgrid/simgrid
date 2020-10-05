@@ -80,7 +80,7 @@ class StateEvent : public PajeEvent {
 public:
   static xbt::signal<void(StateEvent&)> on_destruction;
   StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra);
-  ~StateEvent() { on_destruction(*this); }
+  ~StateEvent() override { on_destruction(*this); }
   bool has_extra() const { return extra_ != nullptr; }
   void print() override;
 };

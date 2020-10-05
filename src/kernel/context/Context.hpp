@@ -18,7 +18,7 @@ namespace context {
 
 class XBT_PUBLIC ContextFactory {
 public:
-  explicit ContextFactory() {}
+  explicit ContextFactory()             = default;
   ContextFactory(const ContextFactory&) = delete;
   ContextFactory& operator=(const ContextFactory&) = delete;
   virtual ~ContextFactory();

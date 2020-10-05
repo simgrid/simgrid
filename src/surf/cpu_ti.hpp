@@ -76,7 +76,7 @@ public:
   CpuTiAction(CpuTi* cpu, double cost);
   CpuTiAction(const CpuTiAction&) = delete;
   CpuTiAction& operator=(const CpuTiAction&) = delete;
-  ~CpuTiAction();
+  ~CpuTiAction() override;
 
   void set_state(Action::State state) override;
   void cancel() override;

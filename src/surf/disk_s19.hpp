@@ -42,7 +42,7 @@ class DiskS19 : public DiskImpl {
 public:
   DiskS19(DiskModel* model, const std::string& name, kernel::lmm::System* maxminSystem, double read_bw,
           double write_bw);
-  virtual ~DiskS19() = default;
+  ~DiskS19() override = default;
   DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) override;
   DiskAction* read(sg_size_t size) override;
   DiskAction* write(sg_size_t size) override;

@@ -17,7 +17,7 @@ namespace resource {
 class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
-  ~NetworkNS3Model() = default;
+  ~NetworkNS3Model() override = default;
   LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth, double latency,
                         s4u::Link::SharingPolicy policy) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
@@ -33,7 +33,7 @@ class LinkNS3 : public LinkImpl {
 public:
   explicit LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, double latency,
                    s4u::Link::SharingPolicy policy);
-  ~LinkNS3();
+  ~LinkNS3() override;
   s4u::Link::SharingPolicy sharing_policy_;
 
   void apply_event(profile::Event* event, double value) override;

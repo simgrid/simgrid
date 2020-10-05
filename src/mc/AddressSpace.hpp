@@ -23,7 +23,7 @@ class ReadOptions {
   constexpr explicit ReadOptions(std::uint32_t value) : value_(value) {}
 
 public:
-  constexpr ReadOptions() {}
+  constexpr ReadOptions() = default;
 
   explicit constexpr operator bool() const { return value_ != 0; }
   constexpr bool operator!() const { return value_ == 0; }

@@ -28,7 +28,7 @@ public:
 class NetworkConstantAction : public NetworkAction {
 public:
   NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size, double latency);
-  ~NetworkConstantAction();
+  ~NetworkConstantAction() override;
   double initial_latency_;
   void update_remains_lazy(double now) override;
 };

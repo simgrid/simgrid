@@ -74,7 +74,7 @@ private:
 
 public:
   explicit RemoteSimulation(pid_t pid);
-  ~RemoteSimulation();
+  ~RemoteSimulation() override;
   void init();
 
   RemoteSimulation(RemoteSimulation const&) = delete;
