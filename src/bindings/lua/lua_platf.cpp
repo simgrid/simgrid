@@ -475,26 +475,9 @@ int console_AS_open(lua_State *L) {
  const char* mode = lua_tostring(L, -1);
  lua_pop(L, 1);
 
- int mode_int = A_surfxml_AS_routing_None;
- if (not strcmp(mode, "Full"))
-   mode_int = A_surfxml_AS_routing_Full;
- else if (not strcmp(mode, "Floyd"))
-   mode_int = A_surfxml_AS_routing_Floyd;
- else if (not strcmp(mode, "Dijkstra"))
-   mode_int = A_surfxml_AS_routing_Dijkstra;
- else if (not strcmp(mode, "DijkstraCache"))
-   mode_int = A_surfxml_AS_routing_DijkstraCache;
- else if (not strcmp(mode, "Vivaldi"))
-   mode_int = A_surfxml_AS_routing_Vivaldi;
- else if (not strcmp(mode, "Cluster"))
-   mode_int = A_surfxml_AS_routing_Cluster;
- else if (not strcmp(mode, "none"))
-   mode_int = A_surfxml_AS_routing_None;
- else xbt_die("Don't have the model name '%s'",mode);
-
  simgrid::kernel::routing::ZoneCreationArgs AS;
  AS.id = id;
- AS.routing = mode_int;
+ AS.routing                                    = mode;
  simgrid::kernel::routing::NetZoneImpl* new_as = sg_platf_new_Zone_begin(&AS);
 
  /* Build a Lua representation of the new AS on the stack */
