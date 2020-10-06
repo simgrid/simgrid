@@ -28,15 +28,14 @@
 #endif
 
 #if defined(__cplusplus)
-#if __cplusplus >= 201103L
-#define XBT_ATTRIB_NORETURN [[noreturn]]
+#if __cplusplus < 201402L
+#error C++14 support is needed.  Please upgrade your compiler and/or fix your compilation flags.
 #endif
+#define XBT_ATTRIB_NORETURN [[noreturn]]
 #if __cplusplus >= 201703L
 #define XBT_ATTRIB_UNUSED [[maybe_unused]]
 #endif
-#if __cplusplus >= 201402L
 #define XBT_ATTRIB_DEPRECATED(mesg) [[deprecated(mesg)]]
-#endif
 #elif defined(__STDC_VERSION__)
 #if __STDC_VERSION__ >= 201112L
 #define XBT_ATTRIB_NORETURN _Noreturn

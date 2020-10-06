@@ -40,6 +40,7 @@ C binding:
 
 General:
  - Require a compiler with C++14 support.
+   Take care to upgrade FindSimgrid.cmake if it's used.
  - LTO is now enabled for Intel/clang compilers.
  - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.
    Setting it to "auto" will use all available cores, while setting it to n will
