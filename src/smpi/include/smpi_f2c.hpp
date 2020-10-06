@@ -36,7 +36,7 @@ class F2C {
     static char* get_key(char* key, int id);
     static void delete_lookup();
     static std::unordered_map<std::string, F2C*>* lookup();
-    F2C()          = default;
+    F2C();
     virtual ~F2C() = default;
 
     //Override these to handle specific values.

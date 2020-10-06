@@ -20,6 +20,9 @@ namespace smpi{
 std::unordered_map<std::string, F2C*>* F2C::f2c_lookup_ = nullptr;
 int F2C::f2c_id_ = 0;
 
+// Keep it non trivially-constructible, or it will break MC+smpi on FreeBSD with Clang (don't ask why)
+F2C::F2C() = default;
+
 std::unordered_map<std::string, F2C*>* F2C::f2c_lookup()
 {
   return f2c_lookup_;
