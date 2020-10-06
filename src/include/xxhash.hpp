@@ -285,7 +285,7 @@ namespace xxh
 #else
 		constexpr endianness get_endian(endianness endian)
 		{
-			constexpr std::array<endianness, 3> endian_lookup = { endianness::big_endian, endianness::little_endian, (XXH_CPU_LITTLE_ENDIAN) ? endianness::little_endian : endianness::big_endian };
+			constexpr std::array<endianness, 3> endian_lookup = {{ endianness::big_endian, endianness::little_endian, (XXH_CPU_LITTLE_ENDIAN) ? endianness::little_endian : endianness::big_endian }};
 			return endian_lookup[static_cast<uint8_t>(endian)];
 		}
 
@@ -345,8 +345,8 @@ namespace xxh
 		*  Hash functions - Implementation
 		*********************************************************************/
 
-		constexpr static std::array<hash32_t, 5> primes32 = { 2654435761U, 2246822519U, 3266489917U, 668265263U, 374761393U };
-		constexpr static std::array<hash64_t, 5> primes64 = { 11400714785074694791ULL, 14029467366897019727ULL, 1609587929392839161ULL, 9650029242287828579ULL, 2870177450012600261ULL };
+		constexpr static std::array<hash32_t, 5> primes32 = {{ 2654435761U, 2246822519U, 3266489917U, 668265263U, 374761393U }};
+		constexpr static std::array<hash64_t, 5> primes64 = {{ 11400714785074694791ULL, 14029467366897019727ULL, 1609587929392839161ULL, 9650029242287828579ULL, 2870177450012600261ULL }};
 
 		template <size_t N>
 		constexpr hash_t<N> PRIME(int32_t n) {};
@@ -381,7 +381,13 @@ namespace xxh
 		}
 
 		template <size_t N>
-		inline void endian_align_sub_mergeround([[maybe_unused]] hash_t<N>& hash_ret, hash_t<N> v1, hash_t<N> v2, hash_t<N> v3, hash_t<N> v4) {};
+		inline void endian_align_sub_mergeround(
+#if __cplusplus < 201703L
+		  __attribute__((unused))
+#else
+		  [[maybe_unused]]
+#endif
+		  hash_t<N>& hash_ret, hash_t<N> v1, hash_t<N> v2, hash_t<N> v3, hash_t<N> v4) {};
 
 		template <>
 		inline void endian_align_sub_mergeround<64>(hash_t<64>& hash_ret, hash_t<64> v1, hash_t<64> v2, hash_t<64> v3, hash_t<64> v4)
