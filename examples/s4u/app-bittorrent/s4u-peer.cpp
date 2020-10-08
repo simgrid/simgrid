@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <algorithm>
+#include <array>
 #include <climits>
 
 #include "s4u-peer.hpp"
@@ -114,7 +115,8 @@ void Peer::sendHandshakeToAllPeers()
 
 void Peer::sendMessage(simgrid::s4u::Mailbox* mailbox, e_message_type type, uint64_t size)
 {
-  const char* type_names[6] = {"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "CANCEL"};
+  constexpr std::array<const char*, 6> type_names{
+      {"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "CANCEL"}};
   XBT_DEBUG("Sending %s to %s", type_names[type], mailbox->get_cname());
   mailbox->put_init(new Message(type, id, bitfield_, mailbox_), size)->detach();
 }
@@ -283,8 +285,8 @@ void Peer::updateActivePeersSet(Connection* remote_peer)
 
 void Peer::handleMessage()
 {
-  const char* type_names[10] = {"HANDSHAKE", "CHOKE",    "UNCHOKE", "INTERESTED", "NOTINTERESTED",
-                                "HAVE",      "BITFIELD", "REQUEST", "PIECE",      "CANCEL"};
+  constexpr std::array<const char*, 10> type_names{{"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED",
+                                                    "HAVE", "BITFIELD", "REQUEST", "PIECE", "CANCEL"}};
 
   XBT_DEBUG("Received a %s message from %s", type_names[message->type], message->return_mailbox->get_cname());
 

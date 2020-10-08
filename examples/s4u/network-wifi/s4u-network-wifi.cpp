@@ -14,8 +14,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_network_wifi, "Messages specific for this s4u e
 static void sender(simgrid::s4u::Mailbox* mailbox, int data_size)
 {
   XBT_INFO("Send a message to the other station.");
-  static char message[] = "message";
-  mailbox->put(message, data_size);
+  static std::string message = "message";
+  mailbox->put(&message, data_size);
   XBT_INFO("Done.");
 }
 static void receiver(simgrid::s4u::Mailbox* mailbox)

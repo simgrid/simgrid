@@ -6,6 +6,7 @@
 #include "mpi.h"
 #include "simgrid/s4u.hpp"
 
+#include <array>
 #include <cstdio> /* snprintf */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
@@ -68,11 +69,11 @@ static void master_mpi(int argc, char* argv[])
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   XBT_INFO("here for rank %d", rank);
-  int test[1000] = {rank};
+  std::array<int, 1000> test{{rank}};
   if (rank == 0)
-    MPI_Send(&test, 1000, MPI_INT, 1, 1, MPI_COMM_WORLD);
+    MPI_Send(test.data(), 1000, MPI_INT, 1, 1, MPI_COMM_WORLD);
   else
-    MPI_Recv(&test, 1000, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUSES_IGNORE);
+    MPI_Recv(test.data(), 1000, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUSES_IGNORE);
 
   XBT_INFO("After comm %d", rank);
   MPI_Finalize();
