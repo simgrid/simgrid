@@ -55,6 +55,7 @@ public:
   void set_latency(double) override { THROW_UNIMPLEMENTED; }
   void refresh_decay_bandwidths();
   bool toggle_decay_model();
+  int get_host_count();
 };
 
 class NetworkWifiAction : public NetworkCm02Action {
