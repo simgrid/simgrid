@@ -7,6 +7,7 @@
 #include <unordered_set>
 
 #include "xbt/config.hpp"
+#include "xbt/str.h"
 #include "xbt/string.hpp"
 #include "xbt/utility.hpp"
 
@@ -210,7 +211,24 @@ void surf_network_model_init_NS3()
 }
 
 static simgrid::config::Flag<std::string>
-    ns3_tcp_model("ns3/TcpModel", "The ns-3 tcp model can be : NewReno or Reno or Tahoe", "default");
+    ns3_tcp_model("ns3/TcpModel", "The ns-3 tcp model can be: NewReno or Reno or Tahoe", "default");
+static simgrid::config::Flag<std::string> ns3_seed(
+    "ns3/seed",
+    "The random seed provided to ns-3. Either 'time' to seed with time(), blank to not set (default), or a number.", "",
+    [](std::string val) {
+      if (val.length() == 0)
+        return;
+      if (strcasecmp(val.c_str(), "time") == 0) {
+        std::srand(time(NULL));
+        ns3::RngSeedManager::SetSeed(std::rand());
+        ns3::RngSeedManager::SetRun(std::rand());
+      } else {
+        int v = xbt_str_parse_int(
+            val.c_str(), "Invalid value for option ns3/seed. It must be either 'time', a number, or left empty.");
+        ns3::RngSeedManager::SetSeed(v);
+        ns3::RngSeedManager::SetRun(v);
+      }
+    });
 
 namespace simgrid {
 namespace kernel {

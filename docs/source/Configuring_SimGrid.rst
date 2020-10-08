@@ -132,6 +132,7 @@ Existing Configuration Items
 - **network/weight-S:** :ref:`cfg=network/weight-S`
 
 - **ns3/TcpModel:** :ref:`options_pls`
+- **ns3/seed:** :ref:`options_pls`
 - **path:** :ref:`cfg=path`
 - **plugin:** :ref:`cfg=plugin`
 
@@ -438,6 +439,15 @@ to the ``ns3::TcpL4Protocol::SocketType`` configuration item in
 ns-3. The only valid values (enforced on the SimGrid side) are
 'default' (no change to the ns-3 configuration), 'NewReno' or 'Reno' or
 'Tahoe'.
+
+**Option** ``ns3/seed`` **Default:** "" (don't set the seed in ns-3)
+
+This option is the random seed to provide to ns-3 with
+``ns3::RngSeedManager::SetSeed`` and ``ns3::RngSeedManager::SetRun``.
+
+If left blank, no seed is set in ns-3. If the value 'time' is
+provided, the current amount of seconds since epoch is used as a seed.
+Otherwise, the provided value must be a number to use as a seed.
 
 Configuring the Storage model
 .............................
