@@ -17,22 +17,22 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(kademlia, "Messages specific for this example");
   * @param the ID of the person I know in the system (or not)
   * @param Time before I leave the system because I'm bored
   */
-static void node(int argc, char* argv[])
+static void node(std::vector<std::string> args)
 {
   bool join_success = true;
   double deadline;
-  xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
+  xbt_assert(args.size() == 3 || args.size() == 4, "Wrong number of arguments");
   /* Node initialization */
-  auto node_id = static_cast<unsigned int>(strtoul(argv[1], nullptr, 0));
+  auto node_id = static_cast<unsigned int>(std::stoul(args[1], 0, 0));
   kademlia::Node node(node_id);
 
-  if (argc == 4) {
+  if (args.size() == 4) {
     XBT_INFO("Hi, I'm going to join the network with id %u", node.getId());
-    auto known_id = static_cast<unsigned int>(strtoul(argv[2], nullptr, 0));
+    auto known_id = static_cast<unsigned int>(std::stoul(args[2], 0, 0));
     join_success  = node.join(known_id);
-    deadline      = std::stod(argv[3]);
+    deadline      = std::stod(args[3]);
   } else {
-    deadline = std::stod(argv[2]);
+    deadline = std::stod(args[2]);
     XBT_INFO("Hi, I'm going to create the network with id %u", node.getId());
     node.routingTableUpdate(node.getId());
   }

@@ -18,19 +18,18 @@
  */
 
 #include "simgrid/s4u.hpp"
-#include "xbt/str.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-static void master(int argc, char* argv[])
+static void master(std::vector<std::string> args)
 {
-  xbt_assert(argc == 5, "Expecting one parameter");
+  xbt_assert(args.size() == 5, "Expecting one parameter");
 
   simgrid::s4u::Mailbox* mailbox;
-  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
-  double comp_size     = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
-  long comm_size       = xbt_str_parse_int(argv[3], "Invalid communication size: %s");
-  long workers_count   = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
+  long number_of_tasks = std::stol(args[1]);
+  double comp_size     = std::stod(args[2]);
+  long comm_size       = std::stol(args[3]);
+  long workers_count   = std::stol(args[4]);
 
   XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);
 
@@ -69,10 +68,10 @@ static void master(int argc, char* argv[])
   XBT_INFO("Goodbye now!");
 }
 
-static void worker(int argc, char* argv[])
+static void worker(std::vector<std::string> args)
 {
-  xbt_assert(argc == 2, "Expecting one parameter");
-  long id                          = xbt_str_parse_int(argv[1], "Invalid argument %s");
+  xbt_assert(args.size() == 2, "Expecting one parameter");
+  long id                          = std::stol(args[1]);
   simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(id));
   while (true) {
     try {
