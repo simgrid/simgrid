@@ -31,9 +31,8 @@ int main(int argc, char* argv[])
     for (auto d : dragonfly_clusters) {
       XBT_INFO("%s' dragonfly topology:", d->get_cname());
       for (int i = 0; i < d->get_host_count(); i++) {
-        unsigned int coords[4];
-        d->rankId_to_coords(i, coords);
-        XBT_INFO("   %d: (%u, %u, %u, %u)", i, coords[0], coords[1], coords[2], coords[3]);
+        const simgrid::kernel::routing::DragonflyZone::Coords coords = d->rankId_to_coords(i);
+        XBT_INFO("   %d: (%u, %u, %u, %u)", i, coords.group, coords.chassis, coords.blade, coords.node);
       }
     }
   }

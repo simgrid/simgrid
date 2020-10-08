@@ -60,12 +60,21 @@ public:
  */
 class XBT_PUBLIC DragonflyZone : public ClusterZone {
 public:
+  struct Coords {
+    unsigned group;
+    unsigned chassis;
+    unsigned blade;
+    unsigned node;
+  };
+
   explicit DragonflyZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void seal() override;
 
-  void rankId_to_coords(int rank_id, unsigned int coords[4]) const;
+  Coords rankId_to_coords(int rank_id) const;
+  XBT_ATTRIB_DEPRECATED_v330("Please use rankId_to_coords(int)") void rankId_to_coords(int rank_id,
+                                                                                       unsigned int coords[4]) const;
 
 private:
   void generate_routers();

@@ -23,15 +23,26 @@ DragonflyZone::DragonflyZone(NetZoneImpl* father, const std::string& name, resou
 {
 }
 
-void DragonflyZone::rankId_to_coords(int rankId, unsigned int coords[4]) const
+DragonflyZone::Coords DragonflyZone::rankId_to_coords(int rankId) const
 {
   // coords : group, chassis, blade, node
-  coords[0] = rankId / (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
-  rankId    = rankId % (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
-  coords[1] = rankId / (num_blades_per_chassis_ * num_nodes_per_blade_);
-  rankId    = rankId % (num_blades_per_chassis_ * num_nodes_per_blade_);
-  coords[2] = rankId / num_nodes_per_blade_;
-  coords[3] = rankId % num_nodes_per_blade_;
+  Coords coords;
+  coords.group   = rankId / (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
+  rankId         = rankId % (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
+  coords.chassis = rankId / (num_blades_per_chassis_ * num_nodes_per_blade_);
+  rankId         = rankId % (num_blades_per_chassis_ * num_nodes_per_blade_);
+  coords.blade   = rankId / num_nodes_per_blade_;
+  coords.node    = rankId % num_nodes_per_blade_;
+  return coords;
+}
+
+void DragonflyZone::rankId_to_coords(int rankId, unsigned int coords[4]) const // XBT_ATTRIB_DEPRECATED_v330
+{
+  const auto s_coords = rankId_to_coords(rankId);
+  coords[0]           = s_coords.group;
+  coords[1]           = s_coords.chassis;
+  coords[2]           = s_coords.blade;
+  coords[3]           = s_coords.node;
 }
 
 void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
@@ -255,24 +266,23 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
     return;
   }
 
-  unsigned int myCoords[4];
-  rankId_to_coords(src->id(), myCoords);
-  unsigned int targetCoords[4];
-  rankId_to_coords(dst->id(), targetCoords);
-  XBT_DEBUG("src : %u group, %u chassis, %u blade, %u node", myCoords[0], myCoords[1], myCoords[2], myCoords[3]);
-  XBT_DEBUG("dst : %u group, %u chassis, %u blade, %u node", targetCoords[0], targetCoords[1], targetCoords[2],
-            targetCoords[3]);
+  const auto myCoords     = rankId_to_coords(src->id());
+  const auto targetCoords = rankId_to_coords(dst->id());
+  XBT_DEBUG("src : %u group, %u chassis, %u blade, %u node", myCoords.group, myCoords.chassis, myCoords.blade,
+            myCoords.node);
+  XBT_DEBUG("dst : %u group, %u chassis, %u blade, %u node", targetCoords.group, targetCoords.chassis,
+            targetCoords.blade, targetCoords.node);
 
-  DragonflyRouter* myRouter = &routers_[myCoords[0] * (num_chassis_per_group_ * num_blades_per_chassis_) +
-                                        myCoords[1] * num_blades_per_chassis_ + myCoords[2]];
-  DragonflyRouter* targetRouter = &routers_[targetCoords[0] * (num_chassis_per_group_ * num_blades_per_chassis_) +
-                                            targetCoords[1] * num_blades_per_chassis_ + targetCoords[2]];
+  DragonflyRouter* myRouter = &routers_[myCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +
+                                        myCoords.chassis * num_blades_per_chassis_ + myCoords.blade];
+  DragonflyRouter* targetRouter = &routers_[targetCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +
+                                            targetCoords.chassis * num_blades_per_chassis_ + targetCoords.blade];
   DragonflyRouter* currentRouter = myRouter;
 
   // node->router local link
-  route->link_list.push_back(myRouter->my_nodes_[myCoords[3] * num_links_per_link_]);
+  route->link_list.push_back(myRouter->my_nodes_[myCoords.node * num_links_per_link_]);
   if (latency)
-    *latency += myRouter->my_nodes_[myCoords[3] * num_links_per_link_]->get_latency();
+    *latency += myRouter->my_nodes_[myCoords.node * num_links_per_link_]->get_latency();
 
   if (has_limiter_) { // limiter for sender
     std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
@@ -283,13 +293,13 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
     // are we on a different group ?
     if (targetRouter->group_ != currentRouter->group_) {
       // go to the router of our group connected to this one.
-      if (currentRouter->blade_ != targetCoords[0]) {
+      if (currentRouter->blade_ != targetCoords.group) {
         // go to the nth router in our chassis
-        route->link_list.push_back(currentRouter->green_links_[targetCoords[0]]);
+        route->link_list.push_back(currentRouter->green_links_[targetCoords.group]);
         if (latency)
-          *latency += currentRouter->green_links_[targetCoords[0]]->get_latency();
-        currentRouter = &routers_[myCoords[0] * (num_chassis_per_group_ * num_blades_per_chassis_) +
-                                  myCoords[1] * num_blades_per_chassis_ + targetCoords[0]];
+          *latency += currentRouter->green_links_[targetCoords.group]->get_latency();
+        currentRouter = &routers_[myCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +
+                                  myCoords.chassis * num_blades_per_chassis_ + targetCoords.group];
       }
 
       if (currentRouter->chassis_ != 0) {
@@ -297,29 +307,32 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
         route->link_list.push_back(currentRouter->black_links_[0]);
         if (latency)
           *latency += currentRouter->black_links_[0]->get_latency();
-        currentRouter = &routers_[myCoords[0] * (num_chassis_per_group_ * num_blades_per_chassis_) + targetCoords[0]];
+        currentRouter =
+            &routers_[myCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) + targetCoords.group];
       }
 
       // go to destination group - the only optical hop
       route->link_list.push_back(currentRouter->blue_link_);
       if (latency)
         *latency += currentRouter->blue_link_->get_latency();
-      currentRouter = &routers_[targetCoords[0] * (num_chassis_per_group_ * num_blades_per_chassis_) + myCoords[0]];
+      currentRouter =
+          &routers_[targetCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) + myCoords.group];
     }
 
     // same group, but same blade ?
     if (targetRouter->blade_ != currentRouter->blade_) {
-      route->link_list.push_back(currentRouter->green_links_[targetCoords[2]]);
+      route->link_list.push_back(currentRouter->green_links_[targetCoords.blade]);
       if (latency)
-        *latency += currentRouter->green_links_[targetCoords[2]]->get_latency();
-      currentRouter = &routers_[targetCoords[0] * (num_chassis_per_group_ * num_blades_per_chassis_) + targetCoords[2]];
+        *latency += currentRouter->green_links_[targetCoords.blade]->get_latency();
+      currentRouter =
+          &routers_[targetCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) + targetCoords.blade];
     }
 
     // same blade, but same chassis ?
     if (targetRouter->chassis_ != currentRouter->chassis_) {
-      route->link_list.push_back(currentRouter->black_links_[targetCoords[1]]);
+      route->link_list.push_back(currentRouter->black_links_[targetCoords.chassis]);
       if (latency)
-        *latency += currentRouter->black_links_[targetCoords[1]]->get_latency();
+        *latency += currentRouter->black_links_[targetCoords.chassis]->get_latency();
     }
   }
 
@@ -329,9 +342,11 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   }
 
   // router->node local link
-  route->link_list.push_back(targetRouter->my_nodes_[targetCoords[3] * num_links_per_link_ + num_links_per_link_ - 1]);
+  route->link_list.push_back(
+      targetRouter->my_nodes_[targetCoords.node * num_links_per_link_ + num_links_per_link_ - 1]);
   if (latency)
-    *latency += targetRouter->my_nodes_[targetCoords[3] * num_links_per_link_ + num_links_per_link_ - 1]->get_latency();
+    *latency +=
+        targetRouter->my_nodes_[targetCoords.node * num_links_per_link_ + num_links_per_link_ - 1]->get_latency();
 }
 }
 }
