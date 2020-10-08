@@ -173,7 +173,7 @@ SimGrid for such studies (or the framework could possibly be extended
 in this direction), but another framework specifically targeting such a
 use case would probably be more suited.
 
-**There is currently no support for wireless networks**.
+**There is currently no support for 5G or LoRa networks**.
 The framework could certainly be improved in this direction, but this
 still has to be done.
 
