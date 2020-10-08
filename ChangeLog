@@ -39,9 +39,11 @@ SMPI:
    building shared libraries, this may cause issues, so environment variable
    SMPI_NO_UNDEFINED_CHECK can be added to disable this.
 
-C binding:
+C binding and interface:
  - The return type of the sg_actor_on_exit() callbacks is now 'void'
    (int value was previously ignored)
+ - Many MSG tests were converted to the new S4U's interface in C, that
+   was extended for that.
 
 General:
  - Require a compiler with C++14 support.
@@ -50,16 +52,11 @@ General:
  - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.
    Setting it to "auto" will use all available cores, while setting it to n will
    use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
-
-C interface:
- - Many MSG tests were converted to the new S4U's interface in C, that
-   was extended for that.
-
-Simix:
  - Remove obsolete option --cfg=contexts/parallel-threshold.
 
-XML:
+XML and models:
  - New routing 'WiFi' that makes it easier to specify a wifi network zone.
+ - New plugin: wifi_energy. See the associated example.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
