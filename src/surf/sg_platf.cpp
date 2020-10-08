@@ -122,7 +122,7 @@ static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* 
     for (auto const& elm : *args->properties)
       props.insert({elm.first, elm.second});
 
-  simgrid::s4u::Link* link =
+  const simgrid::s4u::Link* link =
       routing_get_current()->create_link(link_name, args->bandwidths, args->latency, args->policy, &props);
 
   simgrid::kernel::resource::LinkImpl* l = link->get_impl();

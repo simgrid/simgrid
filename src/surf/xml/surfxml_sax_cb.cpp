@@ -735,7 +735,7 @@ void STag_surfxml_trace___connect()
 void STag_surfxml_AS()
 {
   AX_surfxml_zone_id = AX_surfxml_AS_id;
-  AX_surfxml_zone_routing = (AT_surfxml_zone_routing)AX_surfxml_AS_routing;
+  AX_surfxml_zone_routing = AX_surfxml_AS_routing;
   STag_surfxml_zone();
 }
 
