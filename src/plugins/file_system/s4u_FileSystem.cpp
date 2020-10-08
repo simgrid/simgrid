@@ -389,7 +389,7 @@ int File::unlink() const
   }
 }
 
-int File::remote_copy(sg_host_t host, const char* fullpath)
+int File::remote_copy(sg_host_t host, const std::string& fullpath)
 {
   /* Find the host where the file is physically located and read it */
   Host* src_host = nullptr;
@@ -432,7 +432,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
       /* Mount point found, retrieve the host the storage is attached to */
       dst_host = storage_dest->get_host();
     } else {
-      XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->get_cname());
+      XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath.c_str(), host->get_cname());
       return -1;
     }
   }
@@ -451,7 +451,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
     }
 
     if (dst_disk == nullptr) {
-      XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->get_cname());
+      XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath.c_str(), host->get_cname());
       return -1;
     }
   }
@@ -475,7 +475,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
   return 0;
 }
 
-int File::remote_move(sg_host_t host, const char* fullpath)
+int File::remote_move(sg_host_t host, const std::string& fullpath)
 {
   int res = remote_copy(host, fullpath);
   unlink();

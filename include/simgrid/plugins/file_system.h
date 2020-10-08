@@ -142,8 +142,8 @@ public:
 
   /** Rename a file. WARNING: It is forbidden to move the file to another mount point */
   void move(const std::string& fullpath) const;
-  int remote_copy(sg_host_t host, const char* fullpath);
-  int remote_move(sg_host_t host, const char* fullpath);
+  int remote_copy(sg_host_t host, const std::string& fullpath);
+  int remote_move(sg_host_t host, const std::string& fullpath);
 
   int unlink() const; /** Remove a file from the contents of a disk */
   void dump() const;
