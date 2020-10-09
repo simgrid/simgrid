@@ -714,8 +714,8 @@ the execution, or start an asynchronous activity.
       .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(double flops_amounts)
       .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop)
       .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop, double priority)
-      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host *> &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
-      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host *> &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts, double timeout)
+      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts, double timeout)
 
    .. group-tab:: Python
 
