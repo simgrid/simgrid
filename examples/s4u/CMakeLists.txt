@@ -75,6 +75,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-hostload
+                 plugin-link-cumload
                  replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-condition-variable synchro-mutex synchro-semaphore)
