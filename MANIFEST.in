@@ -2345,6 +2345,7 @@ include src/plugins/file_system/s4u_FileSystem.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
 include src/plugins/host_load.cpp
+include src/plugins/link_cumload.cpp
 include src/plugins/link_energy.cpp
 include src/plugins/link_energy_wifi.cpp
 include src/plugins/vm/VirtualMachineImpl.cpp
