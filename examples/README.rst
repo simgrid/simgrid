@@ -644,14 +644,22 @@ Energy Simulation
 =================
 
   - **Describing the energy profiles in the platform:**
-    This platform file contains the energy profile of each links and
-    hosts, which is necessary to get energy consumption predictions.
-    As usual, you should not trust our example, and you should strive
-    to double-check that your instantiation matches your target platform.
+    The first platform file contains the energy profile of each links and
+    hosts for a wired network, which is necessary to get energy consumption
+    predictions. The second platform file is the equivalent for a wireless
+    network. As usual, you should not trust our example, and you should
+    strive to double-check that your instantiation matches your target
+    platform.
 
     .. tabs::
 
-       .. example-tab:: examples/platforms/energy_platform.xml
+       .. group-tab:: XML
+
+	  .. showfile:: examples/platforms/energy_platform.xml
+	     :language: xml
+
+	  .. showfile:: examples/platforms/wifi_energy.xml
+	     :language: xml
 
   - **Consumption due to the CPU:** 
     This example shows how to retrieve the amount of energy consumed
@@ -663,13 +671,21 @@ Energy Simulation
 
        .. example-tab:: examples/c/energy-exec/energy-exec.c
 
-  - **Consumption due to the network:**
+  - **Consumption due to the wired network:**
     This example shows how to retrieve and display the energy consumed
-    by the network during communications.
+    by the wired network during communications.
 
     .. tabs::
 
        .. example-tab:: examples/s4u/energy-link/s4u-energy-link.cpp
+
+  - **Consumption due to the wireless network:**
+    This example shows how to retrieve and display the energy consumed
+    by the wireless network during communications.
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/energy-wifi/s4u-energy-wifi.cpp
 
   - **Modeling the shutdown and boot of hosts:**
     Simple example of model of model for the energy consumption during
