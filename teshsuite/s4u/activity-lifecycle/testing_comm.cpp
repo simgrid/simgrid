@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "activity-lifecycle.hpp"
+#include <array>
 
 // Normally, we should be able use Catch2's REQUIRE_THROWS_AS(...), but it generates errors with Address Sanitizer.
 // They're certainly false positive. Nevermind and use this simpler replacement.
@@ -23,7 +24,7 @@ static void test_link_off_helper(double delay)
 
   simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", all_hosts[1], [&start]() {
     assert_exit(true, 9);
-    double milestone[5] = {0.5, 3.5, 4.5, 7.5, 9.0};
+    std::array<double, 5> milestone{{0.5, 3.5, 4.5, 7.5, 9.0}};
     for (double& m : milestone)
       m += start;
     for (int i = 0; i < 4; i++) {
@@ -39,7 +40,7 @@ static void test_link_off_helper(double delay)
   simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], [&start]() {
     assert_exit(true, 9);
     int data            = 42;
-    double milestone[5] = {1.5, 2.5, 5.5, 6.5, 9.0};
+    std::array<double, 5> milestone{{1.5, 2.5, 5.5, 6.5, 9.0}};
     for (double& m : milestone)
       m += start;
     for (int i = 0; i < 2; i++) {

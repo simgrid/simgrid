@@ -8,12 +8,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(meh, "meh");
 static void worker()
 {
   auto mbox = simgrid::s4u::Mailbox::by_name("meh");
-  int input_data[2] = {42, 51};
+  int input1 = 42;
+  int input2 = 51;
 
-  XBT_INFO("Sending and receiving %d and %d asynchronously", input_data[0], input_data[1]);
+  XBT_INFO("Sending and receiving %d and %d asynchronously", input1, input2);
 
-  auto put1 = mbox->put_async(input_data, 1000*1000*500);
-  auto put2 = mbox->put_async(input_data + 1, 1000*1000*1000);
+  auto put1 = mbox->put_async(&input1, 1000 * 1000 * 500);
+  auto put2 = mbox->put_async(&input2, 1000 * 1000 * 1000);
 
   int * out1;
   auto get1 = mbox->get_async((void**)&out1);

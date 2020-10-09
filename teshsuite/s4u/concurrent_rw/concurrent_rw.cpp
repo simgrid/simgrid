@@ -14,15 +14,15 @@ static void host()
   XBT_INFO("process %ld is writing!", id);
   disk->write(4000000);
   XBT_INFO("process %ld goes to sleep for %ld seconds", id, id);
-  simgrid::s4u::this_actor::sleep_for(id);
+  simgrid::s4u::this_actor::sleep_for(static_cast<double>(id));
   XBT_INFO("process %ld is writing again!", id);
   disk->write(4000000);
   XBT_INFO("process %ld goes to sleep for %ld seconds", id, 6 - id);
-  simgrid::s4u::this_actor::sleep_for(6 - id);
+  simgrid::s4u::this_actor::sleep_for(static_cast<double>(6 - id));
   XBT_INFO("process %ld is reading!", id);
   disk->read(4000000);
   XBT_INFO("process %ld goes to sleep for %ld seconds", id, id);
-  simgrid::s4u::this_actor::sleep_for(id);
+  simgrid::s4u::this_actor::sleep_for(static_cast<double>(id));
   XBT_INFO("process %ld is reading again!", id);
   disk->read(4000000);
 }

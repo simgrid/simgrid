@@ -9,13 +9,14 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test_trace_integration, "Messages specific for this msg example");
 
 /** test the trace integration cpu model */
-static void test_trace(int argc, char* argv[])
+static void test_trace(std::vector<std::string> args)
 {
-  xbt_assert(argc == 3, "Wrong number of arguments!\nUsage: %s <task computational size in FLOPS> <task priority>",
-             argv[0]);
+  xbt_assert(args.size() == 3,
+             "Wrong number of arguments!\nUsage: %s <task computational size in FLOPS> <task priority>",
+             args[0].c_str());
 
-  double task_comp_size = std::stod(argv[1]);
-  double task_prio      = std::stod(argv[2]);
+  double task_comp_size = std::stod(args[1]);
+  double task_prio      = std::stod(args[2]);
 
   XBT_INFO("Testing the trace integration cpu model: CpuTI");
   XBT_INFO("Task size: %f", task_comp_size);

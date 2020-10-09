@@ -12,6 +12,7 @@
 #include "xbt/module.h"
 #include "xbt/sysdep.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
@@ -95,18 +96,16 @@ static void test2()
 
 static void test3()
 {
-  int flows = 11;
-  int links = 10;
+  constexpr int flows = 11;
+  constexpr int links = 10;
 
-  auto* A = new double*[links + 5];
+  std::array<std::array<double, flows + 5>, links + 5> A;
   /* array to add the constraints of fictitious variables */
-  double B[15] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1 };
+  std::array<double, 15> B{{10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1}};
 
   for (int i = 0; i < links + 5; i++) {
-    A[i] = new double[flows + 5];
     for (int j = 0; j < flows + 5; j++) {
       A[i][j] = 0.0;
-
       if (i >= links || j >= flows) {
         A[i][j] = 0.0;
       }
@@ -133,12 +132,12 @@ static void test3()
   lmm::System* Sys = lmm::make_new_maxmin_system(false);
 
   /* Creates the constraints */
-  auto* tmp_cnst = new lmm::Constraint*[15];
+  std::array<lmm::Constraint*, 15> tmp_cnst;
   for (int i = 0; i < 15; i++)
     tmp_cnst[i] = Sys->constraint_new(nullptr, B[i]);
 
   /* Creates the variables */
-  auto* tmp_var = new lmm::Variable*[16];
+  std::array<lmm::Variable*, 16> tmp_var;
   for (int j = 0; j < 16; j++) {
     tmp_var[j] = Sys->variable_new(nullptr, 1.0, -1.0, 15);
     Sys->update_variable_penalty(tmp_var[j], 1.0);
@@ -157,12 +156,7 @@ static void test3()
 
   for (int j = 0; j < 16; j++)
     Sys->variable_free(tmp_var[j]);
-  delete[] tmp_var;
-  delete[] tmp_cnst;
   delete Sys;
-  for (int i = 0; i < links + 5; i++)
-    delete[] A[i];
-  delete[] A;
 }
 
 int main(int argc, char** argv)

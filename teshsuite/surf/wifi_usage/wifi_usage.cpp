@@ -65,8 +65,8 @@ void run_ping_test(const char* src, const char* dest, int data_size)
 
   simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name(src), [mailbox, dest, data_size]() {
     double start_time = simgrid::s4u::Engine::get_clock();
-    static char message[] = "message";
-    mailbox->put(message, data_size);
+    static std::string message = "message";
+    mailbox->put(&message, data_size);
     double end_time = simgrid::s4u::Engine::get_clock();
     XBT_INFO("Actual result: Sending %d bytes from '%s' to '%s' takes %f seconds.", data_size,
              simgrid::s4u::this_actor::get_host()->get_cname(), dest, end_time - start_time);

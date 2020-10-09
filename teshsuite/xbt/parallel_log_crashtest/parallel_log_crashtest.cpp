@@ -6,14 +6,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Engine.hpp"
+#include <array>
 #include <thread>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
 
-const int test_amount    = 99; /* Up to 99 to not break the logs (and thus the testing mechanism) */
-const int crasher_amount = 99; /* Up to 99 to not break the logs (and thus the testing mechanism) */
+constexpr int test_amount    = 99; /* Up to 99 to not break the logs (and thus the testing mechanism) */
+constexpr int crasher_amount = 99; /* Up to 99 to not break the logs (and thus the testing mechanism) */
 
-int more_info = 0; /* SET IT TO TRUE TO GET MORE INFO */
+constexpr bool more_info = false; /* SET IT TO TRUE TO GET MORE INFO */
 
 /* Code ran by each thread */
 static void crasher_thread(int id)
@@ -31,7 +32,7 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
 
-  std::thread crashers[crasher_amount];
+  std::array<std::thread, crasher_amount> crashers;
 
   /* spawn threads */
   int id = 0;

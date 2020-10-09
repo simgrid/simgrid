@@ -12,14 +12,13 @@
 #include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"
 
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 
-double date;
-
-static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
-                 double rate_no_limit, int max_share, int mode)
+static double test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
+                   double rate_no_limit, int max_share, int mode)
 {
   auto* cnst = new simgrid::kernel::lmm::Constraint*[nb_cnst];
   auto* var  = new simgrid::kernel::lmm::Variable*[nb_var];
@@ -61,9 +60,9 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   }
 
   fprintf(stderr, "Starting to solve(%i)\n", simgrid::xbt::random::uniform_int(0, 999));
-  date = xbt_os_time() * 1000000;
+  double date = xbt_os_time();
   Sys->solve();
-  date = xbt_os_time() * 1000000 - date;
+  date = (xbt_os_time() - date) * 1e6;
 
   if(mode==2){
     fprintf(stderr,"Max concurrency:\n");
@@ -91,15 +90,17 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   delete[] cnst;
   delete[] var;
   delete[] used;
+
+  return date;
 }
 
-unsigned int TestClasses [][4]=
-  //Nbcnst Nbvar Baselimit Maxlimit
-  {{  10  ,10    ,1        ,2 }, //small
-   {  100 ,100   ,3        ,6 }, //medium
-   {  2000,2000  ,5        ,8 }, //big
-   { 20000,20000 ,7        ,10}  //huge
-  };
+constexpr std::array<std::array<unsigned int, 4>, 4> TestClasses{{
+    // Nbcnst Nbvar Baselimit Maxlimit
+    {{10, 10, 1, 2}},       // small
+    {{100, 100, 3, 6}},     // medium
+    {{2000, 2000, 5, 8}},   // big
+    {{20000, 20000, 7, 10}} // huge
+}};
 
 int main(int argc, char **argv)
 {
@@ -162,7 +163,7 @@ int main(int argc, char **argv)
   for(int i=0;i<testcount;i++){
     simgrid::xbt::random::set_mersenne_seed(i + 1);
     fprintf(stderr, "Starting %i: (%i)\n", i, simgrid::xbt::random::uniform_int(0, 999));
-    test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,mode);
+    double date = test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit, max_share, mode);
     acc_date+=date;
     acc_date2+=date*date;
   }

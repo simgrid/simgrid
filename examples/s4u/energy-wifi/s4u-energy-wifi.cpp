@@ -25,8 +25,8 @@ static void sender()
   int size = 6750000;
 
   XBT_INFO("SENDING 1 msg of size %d to %s", size, mbName.c_str());
-  static char message[] = "message";
-  dst->put(message, size);
+  static std::string message = "message";
+  dst->put(&message, size);
   XBT_INFO("finished sending");
 }
 
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
   engine.load_platform(argv[1]);
 
   // setup WiFi bandwidths
-  auto* l = simgrid::s4u::Link::by_name("AP1");
+  const auto* l = simgrid::s4u::Link::by_name("AP1");
   l->set_host_wifi_rate(simgrid::s4u::Host::by_name("Station 1"), 0);
   l->set_host_wifi_rate(simgrid::s4u::Host::by_name("Station 2"), 0);
 

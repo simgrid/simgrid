@@ -7,6 +7,7 @@
 #include "xbt.h"
 #include "xbt/mmalloc.h"
 
+#include <array>
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -14,6 +15,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 
@@ -32,7 +34,7 @@ static void check_block(const unsigned char* p, unsigned char b, int n)
 int main(int argc, char**argv)
 {
   xbt_mheap_t heapA = nullptr;
-  void *pointers[TESTSIZE];
+  std::array<void*, TESTSIZE> pointers;
   xbt_init(&argc,argv);
 
   XBT_INFO("Allocating a new heap");
