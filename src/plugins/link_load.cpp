@@ -12,7 +12,7 @@
 
 #include <limits>
 
-SIMGRID_REGISTER_PLUGIN(link_energy, "Link cumulated load.", &sg_link_load_plugin_init)
+SIMGRID_REGISTER_PLUGIN(link_load, "Link cumulated load.", &sg_link_load_plugin_init)
 
 /** @defgroup plugin_link_load Plugin Link Cumulated Load
 
