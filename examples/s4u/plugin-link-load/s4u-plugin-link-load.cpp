@@ -21,9 +21,9 @@ static void receiver(const std::string& mailbox)
 }
 
 static void run_transfer(simgrid::s4u::Host* src_host, simgrid::s4u::Host* dst_host, const std::string& mailbox,
-                         uint64_t msg_size)
+                         unsigned long msg_size)
 {
-  XBT_INFO("Launching the transfer of %zu bytes", msg_size);
+  XBT_INFO("Launching the transfer of %lu bytes", msg_size);
   simgrid::s4u::Actor::create("sender", src_host, sender, mailbox, msg_size);
   simgrid::s4u::Actor::create("receiver", dst_host, receiver, mailbox);
 }
