@@ -376,6 +376,7 @@ set(PLUGINS_SRC
   src/plugins/link_energy.cpp
   src/plugins/link_energy_wifi.cpp
   src/plugins/host_load.cpp
+  src/plugins/link_cumload.cpp
   src/plugins/file_system/s4u_FileSystem.cpp
   src/plugins/vm/VirtualMachineImpl.hpp
   src/plugins/vm/s4u_VirtualMachine.cpp
