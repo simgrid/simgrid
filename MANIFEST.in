@@ -492,10 +492,10 @@ include examples/s4u/platform-profile/s4u-platform-profile.tesh
 include examples/s4u/platform-properties/s4u-platform-properties.cpp
 include examples/s4u/platform-properties/s4u-platform-properties.tesh
 include examples/s4u/platform-properties/s4u-platform-properties_d.xml
-include examples/s4u/plugin-hostload/s4u-plugin-hostload.cpp
-include examples/s4u/plugin-hostload/s4u-plugin-hostload.tesh
-include examples/s4u/plugin-link-cumload/s4u-plugin-link-cumload.cpp
-include examples/s4u/plugin-link-cumload/s4u-plugin-link-cumload.tesh
+include examples/s4u/plugin-host-load/s4u-plugin-host-load.cpp
+include examples/s4u/plugin-host-load/s4u-plugin-host-load.tesh
+include examples/s4u/plugin-link-load/s4u-plugin-link-load.cpp
+include examples/s4u/plugin-link-load/s4u-plugin-link-load.tesh
 include examples/s4u/replay-comm/s4u-replay-comm-split-p0.txt
 include examples/s4u/replay-comm/s4u-replay-comm-split-p1.txt
 include examples/s4u/replay-comm/s4u-replay-comm-split_d.xml
@@ -2347,9 +2347,9 @@ include src/plugins/file_system/s4u_FileSystem.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
 include src/plugins/host_load.cpp
-include src/plugins/link_cumload.cpp
 include src/plugins/link_energy.cpp
 include src/plugins/link_energy_wifi.cpp
+include src/plugins/link_load.cpp
 include src/plugins/vm/VirtualMachineImpl.cpp
 include src/plugins/vm/VirtualMachineImpl.hpp
 include src/plugins/vm/VmHostExt.cpp

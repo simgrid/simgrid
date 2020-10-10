@@ -1,8 +1,8 @@
 #!/usr/bin/env tesh
 
-p This tests the LinkCumload plugin (this allows the user to get the cumulated load of a link)
+p This tests the LinkLoad plugin (that allows the user to get the load of a link)
 
-$ ${bindir:=.}/s4u-plugin-link-cumload ${platfdir}/cluster_backbone.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-plugin-link-load ${platfdir}/cluster_backbone.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (2:monitor@node-51.simgrid.org) Tracking desired links
 > [  0.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (0, 0, 0, 0)
 > [  1.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (0, 0, 0, 0)
