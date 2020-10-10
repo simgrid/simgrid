@@ -103,7 +103,7 @@ void LinkLoad::reset()
   XBT_DEBUG("min_bytes_per_second_ = %g", min_bytes_per_second_);
   XBT_DEBUG("max_bytes_per_second_ = %g", max_bytes_per_second_);
   last_reset_   = surf_get_clock();
-  last_updated_ = last_updated_;
+  last_updated_ = last_reset_;
 }
 
 void LinkLoad::update()
