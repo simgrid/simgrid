@@ -383,7 +383,7 @@ ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double
              "Host count (%zu) does not match flops_amount count (%zu).", hosts.size(), flops_amounts.size());
   xbt_assert(hosts.size() * hosts.size() == bytes_amounts.size() || bytes_amounts.empty(),
              "bytes_amounts must be a matrix of size host_count * host_count (%zu*%zu), but it's of size %zu.",
-             hosts.size(), hosts.size(), flops_amounts.size());
+             hosts.size(), hosts.size(), bytes_amounts.size());
   /* Check that we are not mixing VMs and PMs in the parallel task */
   bool is_a_vm = (nullptr != dynamic_cast<VirtualMachine*>(hosts.front()));
   xbt_assert(std::all_of(hosts.begin(), hosts.end(),
