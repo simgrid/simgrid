@@ -494,6 +494,8 @@ include examples/s4u/platform-properties/s4u-platform-properties.tesh
 include examples/s4u/platform-properties/s4u-platform-properties_d.xml
 include examples/s4u/plugin-hostload/s4u-plugin-hostload.cpp
 include examples/s4u/plugin-hostload/s4u-plugin-hostload.tesh
+include examples/s4u/plugin-link-cumload/s4u-plugin-link-cumload.cpp
+include examples/s4u/plugin-link-cumload/s4u-plugin-link-cumload.tesh
 include examples/s4u/replay-comm/s4u-replay-comm-split-p0.txt
 include examples/s4u/replay-comm/s4u-replay-comm-split-p1.txt
 include examples/s4u/replay-comm/s4u-replay-comm-split_d.xml
