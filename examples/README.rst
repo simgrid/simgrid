@@ -440,6 +440,13 @@ Executions on the CPU
     computational kernels that span over several machines, such as a
     PDGEM and the other ScaLAPACK routines. Note that this only works
     with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``).
+    
+    This example demonstrates several kind of parallel tasks: regular
+    ones, communication-only (without computation), computation-only
+    (without communication), synchronization-only (neither
+    communication nor computation). It also shows how to reconfigure a
+    task after its start, to change the amount of hosts it runs onto.
+    This allows to simulate malleable tasks.
 
     .. tabs::
 
