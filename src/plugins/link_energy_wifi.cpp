@@ -21,7 +21,7 @@
 
 SIMGRID_REGISTER_PLUGIN(link_energy_wifi, "Energy wifi test", &sg_wifi_energy_plugin_init);
 /** @degroup plugin_link_energy_wifi Plugin WiFi energy
- * 
+ *
  * This is the WiFi energy plugin, accounting for the dissipated energy of WiFi links.
  */
 
@@ -31,7 +31,6 @@ namespace simgrid {
 namespace plugin {
 
 class XBT_PRIVATE LinkEnergyWifi {
-
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergyWifi> EXTENSION_ID;
 
@@ -44,7 +43,7 @@ public:
    * Update the energy consumed by link_ when transmissions start or end
    */
   void update(const simgrid::kernel::resource::NetworkAction &);
-  
+
   /**
    * Update the energy consumed when link_ is destroyed
    */
@@ -138,30 +137,31 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
 
   simgrid::kernel::resource::NetworkWifiLink* wifi_link =
       static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
-  
+
   const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem = nullptr;
 
   /**
    * We update the energy consumed by each flow active on the link since the previous update.
-   * To do this, we need to know how much time each flow has been effectively sending data on the WiFi link since the previous update (durUsage). 
-   * We compute this value using the size of the flow, 
-   * the amount of data already spent (using flowTmp), 
-   * as well as the bandwidth used by the flow since the previous update (using LMM variables)
-   * Since flows are sharing the medium, the total active duration on the link is equal to the transmission/reception duration used by the flow with the longest active time since the previous update 
+   *
+   * To do this, we need to know how much time each flow has been effectively sending data on the WiFi link since the
+   * previous update (durUsage).  We compute this value using the size of the flow, the amount of data already spent
+   * (using flowTmp), as well as the bandwidth used by the flow since the previous update (using LMM variables).  Since
+   * flows are sharing the medium, the total active duration on the link is equal to the transmission/reception duration
+   * used by the flow with the longest active time since the previous update
    */
   double durUsage = 0;
   while((var = wifi_link->get_constraint()->get_variable(&elem))) {
     auto* action = static_cast<kernel::resource::NetworkWifiAction*>(var->get_id());
     XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(), action->get_variable()->get_value(), wifi_link->get_host_rate(&action->get_src()),wifi_link->get_host_rate(&action->get_dst()));
     action->get_variable();
-    
+
     double du = 0; // durUsage on the current flow
     std::map<simgrid::kernel::resource::NetworkWifiAction *, std::pair<int, double>>::iterator it;
 
     if(action->get_variable()->get_value()) {
       it = flowTmp.find(action);
-      
+
       // if the flow has not been registered, initialize it: 0 bytes sent, and not updated since its creation timestamp
       if(it == flowTmp.end())
         flowTmp[action] = std::pair<int,double>(0, action->get_start_time());
@@ -333,7 +333,7 @@ void sg_wifi_energy_plugin_init()
   simgrid::s4u::Link::on_communicate.connect([](const simgrid::kernel::resource::NetworkAction& action) {
     const simgrid::kernel::resource::NetworkWifiAction* actionWifi = dynamic_cast<const simgrid::kernel::resource::NetworkWifiAction*>(&action);
 
-    if(actionWifi == nullptr) 
+    if (actionWifi == nullptr)
       return;
 
     auto link_src  = actionWifi->get_src_link();
@@ -343,7 +343,5 @@ void sg_wifi_energy_plugin_init()
       link_src->get_iface()->extension<LinkEnergyWifi>()->update(action);
     if(link_dst != nullptr)
       link_dst->get_iface()->extension<LinkEnergyWifi>()->update(action);
-
   });
-
 }
