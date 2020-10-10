@@ -28,13 +28,13 @@ static void runner()
   auto hosts         = simgrid::s4u::Engine::get_instance()->get_all_hosts();
   size_t hosts_count = hosts.size();
 
-  XBT_INFO("First, build a classical parallel activity, with 1 Gflop to execute on each node, "
-           "and 10MB to exchange between each pair");
-
   std::vector<double> computation_amounts;
   std::vector<double> communication_amounts;
 
   /* ------[ test 1 ]----------------- */
+  XBT_INFO("First, build a classical parallel activity, with 1 Gflop to execute on each node, "
+           "and 10MB to exchange between each pair");
+
   computation_amounts.assign(hosts_count, 1e9 /*1Gflop*/);
   communication_amounts.assign(hosts_count * hosts_count, 0);
   for (size_t i = 0; i < hosts_count; i++)
@@ -83,6 +83,47 @@ static void runner()
     XBT_INFO("Remaining flop ratio: %.0f%%", 100 * activity->get_remaining_ratio());
     simgrid::s4u::this_actor::sleep_for(5);
   }
+  activity->wait();
+
+  /* ------[ test 6 ]----------------- */
+  XBT_INFO("Finally, simulate a malleable task (a parallel execution that gets reconfigured after its start).");
+  XBT_INFO("  - Start a regular parallel execution, with both comm and computation");
+  computation_amounts.assign(hosts_count, 1e6 /*1Mflop*/);
+  communication_amounts = {0, 1e6, 0, 0, 1e6, 0, 1e6, 0, 0};
+  activity              = simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
+  activity->start();
+
+  simgrid::s4u::this_actor::sleep_for(10);
+  double remaining_ratio = activity->get_remaining_ratio();
+  XBT_INFO("  - After 10 seconds, %.2f%% remains to be done. Change it from 3 hosts to 2 hosts only.",
+           remaining_ratio * 100);
+  XBT_INFO("    Let's first suspend the task.");
+  activity->suspend();
+
+  XBT_INFO("  - Now, simulate the reconfiguration (modeled as a comm from the removed host to the remaining ones).");
+  std::vector<double> rescheduling_comp{0, 0, 0};
+  std::vector<double> rescheduling_comm{0, 0, 0, 0, 0, 0, 25000, 25000, 0};
+  simgrid::s4u::this_actor::parallel_execute(hosts, rescheduling_comp, rescheduling_comm);
+
+  XBT_INFO("  - Now, let's cancel the old task and create a new task with modified comm and computation vectors:");
+  XBT_INFO("    What was already done is removed, and the load of the removed host is shared between remaining ones.");
+  for (int i = 0; i < 2; i++) {
+    // remove what we've done so far, for both comm and compute load
+    computation_amounts[i]   *= remaining_ratio;
+    communication_amounts[i] *= remaining_ratio;
+    // The work from 1 must be shared between 2 remaining ones. 1/2=50% of extra work for each
+    computation_amounts[i]   *= 1.5;
+    communication_amounts[i] *= 1.5;
+  }
+  hosts.resize(2);
+  computation_amounts.resize(2);
+  double remaining_comm = communication_amounts[1];
+  communication_amounts = {0, remaining_comm, remaining_comm, 0}; // Resizing a linearized matrix is hairly
+
+  activity->cancel();
+  activity = simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
+
+  XBT_INFO("  - Done, let's wait for the task completion");
   activity->wait();
 
   XBT_INFO("Goodbye now!");

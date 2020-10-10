@@ -28,5 +28,21 @@ $ ${bindir:=.}/s4u-exec-ptask ${platfdir}/energy_platform.xml --cfg=host/model:p
 > [350.000000] (0:maestro@) UNCAT HOST [320.000000 - 350.000000] MyHost2 speed_used 33333.333333
 > [350.000000] (0:maestro@) UNCAT HOST [320.000000 - 350.000000] MyHost3 speed_used 33333.333333
 > [350.000000] (0:maestro@) UNCAT LINK [320.000000 - 350.000000] bus bandwidth_used 100000.000000
-> [350.000000] (1:test@MyHost1) Goodbye now!
-> [350.000000] (0:maestro@) Simulation done.
+> [350.000000] (1:test@MyHost1) Finally, simulate a malleable task (a parallel execution that gets reconfigured after its start).
+> [350.000000] (1:test@MyHost1)   - Start a regular parallel execution, with both comm and computation
+> [360.000000] (1:test@MyHost1)   - After 10 seconds, 50.00% remains to be done. Change it from 3 hosts to 2 hosts only.
+> [360.000000] (1:test@MyHost1)     Let's first suspend the task.
+> [360.000000] (1:test@MyHost1) UNCAT HOST [350.000000 - 360.000000] MyHost1 speed_used 50000.000000
+> [360.000000] (1:test@MyHost1) UNCAT HOST [350.000000 - 360.000000] MyHost2 speed_used 50000.000000
+> [360.000000] (1:test@MyHost1) UNCAT HOST [350.000000 - 360.000000] MyHost3 speed_used 50000.000000
+> [360.000000] (1:test@MyHost1) UNCAT LINK [350.000000 - 360.000000] bus bandwidth_used 100000.000000
+> [360.000000] (1:test@MyHost1)   - Now, simulate the reconfiguration (modeled as a comm from the removed host to the remaining ones).
+> [360.500000] (0:maestro@) UNCAT LINK [360.000000 - 360.500000] bus bandwidth_used 100000.000000
+> [360.500000] (1:test@MyHost1)   - Now, let's cancel the old task and create a new task with modified comm and computation vectors:
+> [360.500000] (1:test@MyHost1)     What was already done is removed, and the load of the removed host is shared between remaining ones.
+> [360.500000] (1:test@MyHost1)   - Done, let's wait for the task completion
+> [375.500000] (0:maestro@) UNCAT HOST [360.500000 - 375.500000] MyHost1 speed_used 50000.000000
+> [375.500000] (0:maestro@) UNCAT HOST [360.500000 - 375.500000] MyHost2 speed_used 50000.000000
+> [375.500000] (0:maestro@) UNCAT LINK [360.500000 - 375.500000] bus bandwidth_used 100000.000000
+> [375.500000] (1:test@MyHost1) Goodbye now!
+> [375.500000] (0:maestro@) Simulation done.
