@@ -349,7 +349,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
       action->last_sent_ = sgFlow->sent_bytes_;
     }
 
-    if(sgFlow->finished_){
+    if ((sgFlow->finished_) && (remains <= 0)) { // finished_ should not become true before remains gets to 0, but it sometimes does. Let's play safe, here.
       socket_to_destroy.push_back(ns3_socket);
       XBT_DEBUG("Destroy socket %s of action %p", ns3_socket.c_str(), action);
       action->set_remains(0);
