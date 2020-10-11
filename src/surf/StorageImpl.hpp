@@ -82,6 +82,7 @@ public:
 
   ~StorageImpl() override;
 
+  const s4u::Storage* get_iface() const { return &piface_; }
   s4u::Storage* get_iface() { return &piface_; }
   const char* get_type() const { return typeId_.c_str(); }
   lmm::Constraint* get_read_constraint() const { return constraint_read_; }

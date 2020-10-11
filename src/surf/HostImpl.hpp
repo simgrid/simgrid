@@ -63,7 +63,7 @@ public:
   std::unordered_map<std::string, s4u::Storage*>* get_mounted_storages();
   void set_storages(const std::map<std::string, kernel::resource::StorageImpl*>& storages) { storage_ = storages; }
 
-  s4u::Host* get_iface() { return piface_; }
+  s4u::Host* get_iface() const { return piface_; }
 
   void turn_on() const;
   void turn_off(const kernel::actor::ActorImpl* issuer);

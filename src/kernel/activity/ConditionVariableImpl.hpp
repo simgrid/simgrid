@@ -28,6 +28,7 @@ public:
   ~ConditionVariableImpl() = default;
 
   void remove_sleeping_actor(actor::ActorImpl& actor) { xbt::intrusive_erase(sleeping_, actor); }
+  const s4u::ConditionVariable* get_iface() const { return &piface_; }
   s4u::ConditionVariable* get_iface() { return &piface_; }
   void broadcast();
   void signal();

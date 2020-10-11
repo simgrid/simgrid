@@ -121,6 +121,7 @@ public:
   void destroy(); // Must be called instead of the destructor
 
   /** @brief Public interface */
+  const s4u::Link* get_iface() const { return &piface_; }
   s4u::Link* get_iface() { return &piface_; }
 
   /** @brief Get the bandwidth in bytes per second of current Link */

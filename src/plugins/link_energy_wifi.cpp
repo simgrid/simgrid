@@ -337,8 +337,8 @@ void sg_wifi_energy_plugin_init()
     if (actionWifi == nullptr)
       return;
 
-    auto link_src  = actionWifi->get_src_link();
-    auto link_dst = actionWifi->get_dst_link();
+    auto const* link_src = actionWifi->get_src_link();
+    auto const* link_dst = actionWifi->get_dst_link();
 
     if(link_src != nullptr)
       link_src->get_iface()->extension<LinkEnergyWifi>()->update(action);
