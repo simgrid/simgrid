@@ -151,7 +151,7 @@ using simgrid::plugin::LinkEnergy;
 static void on_communicate(const simgrid::kernel::resource::NetworkAction& action)
 {
   XBT_DEBUG("onCommunicate is called");
-  for (simgrid::kernel::resource::LinkImpl* link : action.get_links()) {
+  for (auto const* link : action.get_links()) {
     if (link == nullptr || link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI)
       continue;
 
@@ -167,7 +167,7 @@ static void on_simulation_end()
   std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
 
   double total_energy = 0.0; // Total dissipated energy (whole platform)
-  for (const auto link : links) {
+  for (auto const* link : links) {
     if (link == nullptr || link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI)
       continue;
 
@@ -219,7 +219,7 @@ void sg_link_energy_plugin_init()
   simgrid::s4u::Link::on_communication_state_change.connect(
       [](simgrid::kernel::resource::NetworkAction const& action,
          simgrid::kernel::resource::Action::State /* previous */) {
-        for (simgrid::kernel::resource::LinkImpl* link : action.get_links()) {
+        for (auto const* link : action.get_links()) {
           if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI)
             link->get_iface()->extension<LinkEnergy>()->update();
         }

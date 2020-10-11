@@ -49,7 +49,7 @@ public:
   /** @brief Get the AP rate associated to the host (or -1 if not associated to the AP) */
   double get_host_rate(const s4u::Host* host);
 
-  s4u::Link::SharingPolicy get_sharing_policy() override;
+  s4u::Link::SharingPolicy get_sharing_policy() const override;
   void apply_event(kernel::profile::Event*, double) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
   void set_latency(double) override { THROW_UNIMPLEMENTED; }

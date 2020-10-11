@@ -137,7 +137,7 @@ public:
   virtual void set_latency(double value) = 0;
 
   /** @brief The sharing policy */
-  virtual s4u::Link::SharingPolicy get_sharing_policy();
+  virtual s4u::Link::SharingPolicy get_sharing_policy() const;
 
   /** @brief Check if the Link is used */
   bool is_used() override;

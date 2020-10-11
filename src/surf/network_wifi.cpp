@@ -57,7 +57,7 @@ double NetworkWifiLink::get_host_rate(const s4u::Host* host)
   return rate.peak * rate.scale;
 }
 
-s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy()
+s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy() const
 {
   return s4u::Link::SharingPolicy::WIFI;
 }

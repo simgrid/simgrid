@@ -41,7 +41,7 @@ public:
   void set_latency(double) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth_profile(profile::Profile* profile) override;
   void set_latency_profile(profile::Profile* profile) override;
-  s4u::Link::SharingPolicy get_sharing_policy() override {return sharing_policy_;}
+  s4u::Link::SharingPolicy get_sharing_policy() const override { return sharing_policy_; }
 };
 
 /**********

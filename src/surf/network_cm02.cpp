@@ -273,7 +273,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(),
                                 1.0 / dst_wifi_link->get_host_rate(dst));
 
-  for (auto const& link : route) {
+  for (auto const* link : route) {
     // WIFI links are handled manually just above, so skip them now
     if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
       xbt_assert(link == src_wifi_link || link == dst_wifi_link,
@@ -292,7 +292,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     if (src_wifi_link != nullptr)
       get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(),
                                   .05 / src_wifi_link->get_host_rate(src));
-    for (auto const& link : back_route)
+    for (auto const* link : back_route)
       if (link->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI)
         get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
     // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency

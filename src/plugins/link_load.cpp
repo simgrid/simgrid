@@ -218,7 +218,7 @@ void sg_link_load_plugin_init()
   simgrid::s4u::Link::on_communication_state_change.connect(
       [](simgrid::kernel::resource::NetworkAction const& action,
          simgrid::kernel::resource::Action::State /* previous */) {
-        for (simgrid::kernel::resource::LinkImpl* link : action.get_links()) {
+        for (auto const* link : action.get_links()) {
           if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
             auto link_load = link->get_iface()->extension<LinkLoad>();
             if (link_load->is_tracked())
