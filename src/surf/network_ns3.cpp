@@ -468,8 +468,6 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
     }
   }
 
-  XBT_DEBUG("Communicate from %s to %s", src->get_cname(), dst->get_cname());
-
   static int port_number = 1025; // Port number is limited from 1025 to 65 000
 
   ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
@@ -479,12 +477,13 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
              dst->get_netpoint()->get_cname());
 
-  XBT_DEBUG("ns3: Create flow of %.0f Bytes from %s to %s with Interface %s", totalBytes, src->get_cname(),
-            dst->get_cname(), addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
   ns3::ApplicationContainer apps = sink.Install(dst_node);
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
+
+  XBT_DEBUG("Create socket %s for a flow of %.0f Bytes from %s to %s with Interface %s",
+            transform_socket_ptr(sock).c_str(), totalBytes, src->get_cname(), dst->get_cname(), addr.c_str());
 
   flow_from_sock.insert({transform_socket_ptr(sock), new SgFlow(totalBytes, this)});
   sink_from_sock.insert({transform_socket_ptr(sock), apps});
