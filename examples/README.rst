@@ -953,6 +953,34 @@ Model-Related Examples
          .. showfile:: examples/platforms/wifi.xml
             :language: xml
 
+===============
+Plugin Examples
+===============
+
+It is possible to extend SimGrid without modifying its internals by
+attaching code to the existing signals and by adding extra data to the
+simulation objects through extensions. How to do that is not exactly
+documented yet, and you should look for examples in the src/plugins
+directory.
+
+This section documents how the existing plugins can be used. Remember
+that you are very welcome to modify the plugins to fit your needs. It
+should be much easier than modifying the SimGrid kernel.
+
+  - **Monitoring the host load**
+
+    .. tabs::
+
+      .. example-tab:: examples/s4u/plugin-host-load/s4u-plugin-host-load.cpp
+
+      .. example-tab:: examples/c/plugin-host-load/plugin-host-load.c
+
+  - **Monitoring the link load**
+
+    .. tabs::
+
+      .. example-tab:: examples/s4u/plugin-link-load/s4u-plugin-link-load.cpp
+
 =======================
 Model-Checking Examples
 =======================
