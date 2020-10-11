@@ -3,6 +3,8 @@
 SimGrid (3.25.1) UNRELEASED (target: March 20 2020 or v3.26 on 3/26/20)
 
 Important user-visible changes:
+ - SimGrid now requires a compiler with C++14 support.
+   Sibling projects should upgrade their FindSimgrid.cmake
  - Surf precision default value is now 1e-9, instead of 1e-5. This was changed as
    several users had difficult to understand issues when using high bandwidth or
    small latency events. The new value was already the default for SMPI and
@@ -24,6 +26,18 @@ Important user-visible changes:
 Documentation:
  - New examples: wifi networks, and communication suspend
 
+XML and models:
+ - New routing 'WiFi' that makes it easier to specify a wifi network zone.
+ - New plugin: wifi_energy. See the associated example.
+ - New plugin: link_load. See the associated example.
+
+General:
+ - LTO is now enabled for Intel/clang compilers.
+ - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.
+   Setting it to "auto" will use all available cores, while setting it to n will
+   use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
+ - Remove obsolete option --cfg=contexts/parallel-threshold.
+
 S4U:
  - the on_exit() of each actor is also executed when the simulation deadlocks.
  - New functions: s4u::Activity:: suspend(), resume() and is_suspended()
@@ -44,19 +58,6 @@ C binding and interface:
    (int value was previously ignored)
  - Many MSG tests were converted to the new S4U's interface in C, that
    was extended for that.
-
-General:
- - Require a compiler with C++14 support.
-   Take care to upgrade FindSimgrid.cmake if it's used.
- - LTO is now enabled for Intel/clang compilers.
- - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.
-   Setting it to "auto" will use all available cores, while setting it to n will
-   use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
- - Remove obsolete option --cfg=contexts/parallel-threshold.
-
-XML and models:
- - New routing 'WiFi' that makes it easier to specify a wifi network zone.
- - New plugin: wifi_energy. See the associated example.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
