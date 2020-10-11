@@ -21,8 +21,8 @@ class Container {
   std::string name_; /* Unique name of this container */
 
 public:
-  static xbt::signal<void(Container&)> on_creation;
-  static xbt::signal<void(Container&)> on_destruction;
+  static xbt::signal<void(Container const&)> on_creation;
+  static xbt::signal<void(Container const&)> on_destruction;
 
   explicit Container(const std::string& name, const std::string& type_name, Container* father);
   Container(const Container&) = delete;

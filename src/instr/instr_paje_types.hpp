@@ -28,7 +28,7 @@ protected:
   Container* get_issuer() const { return issuer_; }
 
 public:
-  static xbt::signal<void(Type&, e_event_type event_type)> on_creation;
+  static xbt::signal<void(Type const&, e_event_type event_type)> on_creation;
 
   Type(e_event_type event_type, const std::string& name, const std::string& alias, const std::string& color,
        Type* father);
@@ -93,7 +93,7 @@ public:
 
 class LinkType : public ValueType {
 public:
-  static xbt::signal<void(LinkType&, Type&, Type&)> on_creation;
+  static xbt::signal<void(LinkType const&, Type const&, Type const&)> on_creation;
   LinkType(const std::string& name, Type* source, Type* dest, const std::string& alias, Type* father)
       : ValueType(PAJE_DefineLinkType, name, alias, father)
   {

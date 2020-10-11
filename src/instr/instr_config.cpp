@@ -23,7 +23,7 @@ XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used fo
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 std::ofstream tracing_file;
-std::map<container_t, std::ofstream*> tracing_files; // TI specific
+std::map<const simgrid::instr::Container*, std::ofstream*> tracing_files; // TI specific
 double prefix = 0.0;                                 // TI specific
 
 constexpr char OPT_TRACING_BASIC[]             = "tracing/basic";
@@ -216,14 +216,14 @@ int trace_precision;
 /*************
  * Callbacks *
  *************/
-xbt::signal<void(Container&)> Container::on_creation;
-xbt::signal<void(Container&)> Container::on_destruction;
-xbt::signal<void(Type&, e_event_type)> Type::on_creation;
-xbt::signal<void(LinkType&, Type&, Type&)> LinkType::on_creation;
+xbt::signal<void(Container const&)> Container::on_creation;
+xbt::signal<void(Container const&)> Container::on_destruction;
+xbt::signal<void(Type const&, e_event_type)> Type::on_creation;
+xbt::signal<void(LinkType const&, Type const&, Type const&)> LinkType::on_creation;
 xbt::signal<void(PajeEvent&)> PajeEvent::on_creation;
-xbt::signal<void(PajeEvent&)> PajeEvent::on_destruction;
-xbt::signal<void(StateEvent&)> StateEvent::on_destruction;
-xbt::signal<void(EntityValue&)> EntityValue::on_creation;
+xbt::signal<void(PajeEvent const&)> PajeEvent::on_destruction;
+xbt::signal<void(StateEvent const&)> StateEvent::on_destruction;
+xbt::signal<void(EntityValue const&)> EntityValue::on_creation;
 
 static void on_container_creation_paje(const Container& c)
 {
@@ -260,7 +260,7 @@ static void on_container_destruction_paje(const Container& c)
   }
 }
 
-static void on_container_creation_ti(Container& c)
+static void on_container_creation_ti(const Container& c)
 {
   XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_CreateContainer, SIMIX_get_clock());
   // if we are in the mode with only one file
@@ -286,7 +286,7 @@ static void on_container_creation_ti(Container& c)
   tracing_files.insert({&c, ti_unique_file});
 }
 
-static void on_container_destruction_ti(Container& c)
+static void on_container_destruction_ti(const Container& c)
 {
   if (not trace_disable_destroy && &c != Container::get_root()) {
     if (not simgrid::config::get_value<bool>("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {

@@ -42,7 +42,7 @@ class PajeEvent {
   Type* type_;
 public:
   static xbt::signal<void(PajeEvent&)> on_creation;
-  static xbt::signal<void(PajeEvent&)> on_destruction;
+  static xbt::signal<void(PajeEvent const&)> on_destruction;
 
   double timestamp_;
   e_event_type eventType_;
@@ -78,7 +78,7 @@ class StateEvent : public PajeEvent {
   std::unique_ptr<TIData> extra_;
 
 public:
-  static xbt::signal<void(StateEvent&)> on_destruction;
+  static xbt::signal<void(StateEvent const&)> on_destruction;
   StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra);
   ~StateEvent() override { on_destruction(*this); }
   bool has_extra() const { return extra_ != nullptr; }
