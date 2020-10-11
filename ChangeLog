@@ -23,13 +23,10 @@ Important user-visible changes:
    src/dest, and communicator information). This may change simulation times
    for very small message sizes, but should be more realistic.
 
-Documentation:
- - New examples: wifi networks, and communication suspend
-
-XML and models:
+New features:
  - New routing 'WiFi' that makes it easier to specify a wifi network zone.
- - New plugin: wifi_energy. See the associated example.
- - New plugin: link_load. See the associated example.
+ - New plugins: wifi_energy and link_load. See the associated examples.
+ - New examples: wifi networks, and communication suspend.
 
 General:
  - LTO is now enabled for Intel/clang compilers.
@@ -37,6 +34,7 @@ General:
    Setting it to "auto" will use all available cores, while setting it to n will
    use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
  - Remove obsolete option --cfg=contexts/parallel-threshold.
+ - Further improve the documentation.
 
 S4U:
  - the on_exit() of each actor is also executed when the simulation deadlocks.
