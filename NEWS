@@ -6,6 +6,10 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / /_
                (unreleased)
 
  * SMPI: improved support of the proxy apps (including those using petsc)
+ * WiFi: easier description in XML; energy plugin; more examples.
+ * ns-3: Many bug fixes, can use the wifi models too.
+ * (+ many bug fixes, documentation improvement and internal refactoring)
+
                     _               _____  ____  ____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \| ___|
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) |___ \
