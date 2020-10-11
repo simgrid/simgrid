@@ -299,7 +299,7 @@ void sg_wifi_energy_plugin_init()
     // verify the link is appropriate to WiFi energy computations
     if (link.get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
       XBT_DEBUG("Wifi Link: %s, initialization of wifi energy plugin", link.get_cname());
-      LinkEnergyWifi* plugin = new LinkEnergyWifi(&link);
+      auto* plugin = new LinkEnergyWifi(&link);
       link.extension_set(plugin);
     } else {
       XBT_DEBUG("Not Wifi Link: %s, wifi energy on link not computed", link.get_cname());
@@ -330,7 +330,7 @@ void sg_wifi_energy_plugin_init()
       });
 
   simgrid::s4u::Link::on_communicate.connect([](const simgrid::kernel::resource::NetworkAction& action) {
-    const simgrid::kernel::resource::NetworkWifiAction* actionWifi = dynamic_cast<const simgrid::kernel::resource::NetworkWifiAction*>(&action);
+    auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::NetworkWifiAction*>(&action);
 
     if (actionWifi == nullptr)
       return;

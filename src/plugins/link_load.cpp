@@ -172,7 +172,7 @@ using simgrid::plugin::LinkLoad;
 static void on_communicate(const simgrid::kernel::resource::NetworkAction& action)
 {
   XBT_DEBUG("on_communicate is called");
-  for (simgrid::kernel::resource::LinkImpl* link : action.get_links()) {
+  for (auto* link : action.get_links()) {
     if (link == nullptr || link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI)
       continue;
 

@@ -152,7 +152,7 @@ void Host::route_to(const Host* dest, std::vector<Link*>& links, double* latency
 {
   std::vector<kernel::resource::LinkImpl*> linkImpls;
   this->route_to(dest, linkImpls, latency);
-  for (kernel::resource::LinkImpl* const& l : linkImpls)
+  for (auto* l : linkImpls)
     links.push_back(l->get_iface());
 }
 
@@ -163,7 +163,7 @@ void Host::route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& 
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", get_cname(), dest->get_cname(),
                (latency == nullptr ? -1 : *latency));
-    for (auto const& link : links)
+    for (auto const* link : links)
       XBT_CDEBUG(surf_route, "  Link '%s'", link->get_cname());
   }
 }

@@ -77,7 +77,7 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
     last_warned_latency = latency;
   }
 
-  simgrid::kernel::resource::LinkImpl* l = surf_network_model->create_link(name, bandwidths, latency, policy);
+  auto* l = surf_network_model->create_link(name, bandwidths, latency, policy);
 
   if (props)
     l->set_properties(*props);
