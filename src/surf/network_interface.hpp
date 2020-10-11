@@ -125,13 +125,13 @@ public:
   s4u::Link* get_iface() { return &piface_; }
 
   /** @brief Get the bandwidth in bytes per second of current Link */
-  virtual double get_bandwidth() const;
+  double get_bandwidth() const;
 
   /** @brief Update the bandwidth in bytes per second of current Link */
   virtual void set_bandwidth(double value) = 0;
 
   /** @brief Get the latency in seconds of current Link */
-  virtual double get_latency() const;
+  double get_latency() const;
 
   /** @brief Update the latency in seconds of current Link */
   virtual void set_latency(double value) = 0;
