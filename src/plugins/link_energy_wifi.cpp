@@ -321,7 +321,8 @@ void sg_wifi_energy_plugin_init()
   });
 
   simgrid::s4u::Link::on_communication_state_change.connect(
-      [](simgrid::kernel::resource::NetworkAction const& action, simgrid::kernel::resource::Action::State previous) {
+      [](simgrid::kernel::resource::NetworkAction const& action,
+         simgrid::kernel::resource::Action::State /* previous */) {
         // update WiFi links encountered during the communication
         for (simgrid::kernel::resource::LinkImpl* link : action.get_links()) {
           if (link != nullptr && link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
