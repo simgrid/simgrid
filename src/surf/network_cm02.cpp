@@ -188,15 +188,15 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   NetworkWifiLink* src_wifi_link = nullptr;
   NetworkWifiLink* dst_wifi_link = nullptr;
-  if (not route.empty() && route.at(0)->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-    src_wifi_link = static_cast<NetworkWifiLink*>(route.at(0));
+  if (not route.empty() && route.front()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+    src_wifi_link = static_cast<NetworkWifiLink*>(route.front());
     xbt_assert(src_wifi_link->get_host_rate(src) != -1,
                "The route from %s to %s begins with the WIFI link %s, but the host %s does not seem attached to that "
                "WIFI link. Did you call link->set_host_rate()?",
                src->get_cname(), dst->get_cname(), src_wifi_link->get_cname(), src->get_cname());
   }
-  if (route.size() > 1 && route.at(route.size() - 1)->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-    dst_wifi_link = static_cast<NetworkWifiLink*>(route.at(route.size() - 1));
+  if (route.size() > 1 && route.back()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+    dst_wifi_link = static_cast<NetworkWifiLink*>(route.back());
     xbt_assert(dst_wifi_link->get_host_rate(dst) != -1,
                "The route from %s to %s ends with the WIFI link %s, but the host %s does not seem attached to that "
                "WIFI link. Did you call link->set_host_rate()?",
@@ -204,11 +204,11 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   }
   if (route.size() > 2)
     for (unsigned i = 1; i < route.size() - 1; i++)
-      xbt_assert(route.at(i)->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI,
+      xbt_assert(route[i]->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI,
                  "Link '%s' is a WIFI link. It can only be at the beginning or the end of the route from '%s' to '%s', "
                  "not in between (it is at position %u out of %zu). "
                  "Did you declare an access_point in your WIFI zones?",
-                 route.at(i)->get_cname(), src->get_cname(), dst->get_cname(), i + 1, route.size());
+                 route[i]->get_cname(), src->get_cname(), dst->get_cname(), i + 1, route.size());
 
   NetworkCm02Action* action;
   if (src_wifi_link == nullptr && dst_wifi_link == nullptr)
