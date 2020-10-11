@@ -81,7 +81,7 @@ public:
   CpuL07(const CpuL07&) = delete;
   CpuL07& operator=(const CpuL07&) = delete;
   ~CpuL07() override;
-  bool is_used() override;
+  bool is_used() const override;
   void apply_event(kernel::profile::Event* event, double value) override;
   kernel::resource::CpuAction* execution_start(double size) override;
   kernel::resource::CpuAction* execution_start(double, int) override
@@ -102,7 +102,7 @@ public:
   LinkL07(const LinkL07&) = delete;
   LinkL07& operator=(const LinkL07&) = delete;
   ~LinkL07() override;
-  bool is_used() override;
+  bool is_used() const override;
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
   void set_latency(double value) override;

@@ -50,7 +50,7 @@ public:
   CpuAction* execution_start(double size, int requested_cores) override;
   CpuAction* sleep(double duration) override;
 
-  bool is_used() override;
+  bool is_used() const override;
 
 protected:
   void on_speed_change() override;

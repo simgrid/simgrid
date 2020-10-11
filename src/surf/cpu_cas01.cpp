@@ -94,7 +94,7 @@ CpuCas01::CpuCas01(CpuCas01Model* model, s4u::Host* host, const std::vector<doub
 
 CpuCas01::~CpuCas01() = default;
 
-bool CpuCas01::is_used()
+bool CpuCas01::is_used() const
 {
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }

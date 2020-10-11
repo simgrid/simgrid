@@ -69,7 +69,7 @@ void StorageImpl::destroy()
   }
 }
 
-bool StorageImpl::is_used()
+bool StorageImpl::is_used() const
 {
   THROW_UNIMPLEMENTED;
 }

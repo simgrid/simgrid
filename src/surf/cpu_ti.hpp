@@ -110,7 +110,7 @@ public:
   void update_actions_finish_time(double now);
   void update_remaining_amount(double now);
 
-  bool is_used() override;
+  bool is_used() const override;
   CpuAction* execution_start(double size) override;
   CpuAction* execution_start(double, int) override
   {

@@ -27,7 +27,7 @@ public:
     XBT_VERB("t=%.1f: Change value to %lg (idx: %u)", thedate, value, event->idx);
     tmgr_trace_event_unref(&event);
   }
-  bool is_used() override { return true; }
+  bool is_used() const override { return true; }
 };
 
 static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char* str)

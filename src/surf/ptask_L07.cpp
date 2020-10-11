@@ -282,7 +282,7 @@ kernel::resource::CpuAction* CpuL07::sleep(double duration)
   return action;
 }
 
-bool CpuL07::is_used()
+bool CpuL07::is_used() const
 {
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
@@ -303,7 +303,7 @@ void CpuL07::on_speed_change()
   Cpu::on_speed_change();
 }
 
-bool LinkL07::is_used()
+bool LinkL07::is_used() const
 {
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }

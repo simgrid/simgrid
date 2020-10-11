@@ -104,7 +104,7 @@ void LinkImpl::destroy()
   }
 }
 
-bool LinkImpl::is_used()
+bool LinkImpl::is_used() const
 {
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }

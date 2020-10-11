@@ -458,7 +458,7 @@ void CpuTi::update_actions_finish_time(double now)
   set_modified(false);
 }
 
-bool CpuTi::is_used()
+bool CpuTi::is_used() const
 {
   return not action_set_.empty();
 }

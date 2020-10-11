@@ -65,7 +65,7 @@ public:
   virtual void apply_event(profile::Event* event, double value) = 0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
-  virtual bool is_used() = 0;
+  virtual bool is_used() const = 0;
 
   /** @brief returns the current load due to activities (in flops per second, byte per second or similar)
    *

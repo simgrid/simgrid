@@ -140,7 +140,7 @@ public:
   virtual s4u::Link::SharingPolicy get_sharing_policy() const;
 
   /** @brief Check if the Link is used */
-  bool is_used() override;
+  bool is_used() const override;
 
   void turn_on() override;
   void turn_off() override;

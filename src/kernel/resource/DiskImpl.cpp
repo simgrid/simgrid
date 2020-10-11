@@ -66,7 +66,7 @@ void DiskImpl::destroy()
   }
 }
 
-bool DiskImpl::is_used()
+bool DiskImpl::is_used() const
 {
   THROW_UNIMPLEMENTED;
 }
