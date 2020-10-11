@@ -141,7 +141,7 @@ sg_link_t sg_link_by_name(const char* name)
 
 int sg_link_is_shared(const_sg_link_t link)
 {
-  return (int)link->get_sharing_policy();
+  return link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::FATPIPE;
 }
 double sg_link_bandwidth(const_sg_link_t link)
 {
