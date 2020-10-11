@@ -351,11 +351,11 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
     if(sgFlow->finished_){
       socket_to_destroy.push_back(ns3_socket);
-      XBT_DEBUG("Destroy socket %p of action %p", ns3_socket.c_str(), action);
+      XBT_DEBUG("Destroy socket %s of action %p", ns3_socket.c_str(), action);
       action->set_remains(0);
       action->finish(Action::State::FINISHED);
     } else {
-      XBT_DEBUG("Socket %p sent %u bytes out of %u (%u remaining)", ns3_socket.c_str(), sgFlow->sent_bytes_,
+      XBT_DEBUG("Socket %s sent %u bytes out of %u (%u remaining)", ns3_socket.c_str(), sgFlow->sent_bytes_,
                 sgFlow->total_bytes_, sgFlow->remaining_);
     }
   }
@@ -365,7 +365,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     socket_to_destroy.pop_back();
     SgFlow* flow = flow_from_sock.at(ns3_socket);
     if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
-      XBT_DEBUG("Removing socket %p of action %p", ns3_socket.c_str(), flow->action_);
+      XBT_DEBUG("Removing socket %s of action %p", ns3_socket.c_str(), flow->action_);
     }
     delete flow;
     flow_from_sock.erase(ns3_socket);
