@@ -12,11 +12,11 @@ public abstract class MsgException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	/** Constructs an <code>MsgException</code> without a detail message. */
-	public MsgException() {
+	protected MsgException() {
 		super();
 	}
 	/** Constructs an <code>MsgException</code> with a detail message. */
-	public MsgException(String msg) {
+	protected MsgException(String msg) {
 		super(msg);
 	}
 }

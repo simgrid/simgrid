@@ -73,7 +73,7 @@ public abstract class Process implements Runnable {
 	 *
 	 *
 	 */
-	public Process(String hostname, String name) throws HostNotFoundException {
+	protected Process(String hostname, String name) throws HostNotFoundException {
 		this(Host.getByName(hostname), name, null);
 	}
 	/**
@@ -87,7 +87,7 @@ public abstract class Process implements Runnable {
 	 * @exception			HostNotFoundException  if no host with this name exists.
 	 *
 	 */
-	public Process(String hostname, String name, String[] args) throws HostNotFoundException {
+	protected Process(String hostname, String name, String[] args) throws HostNotFoundException {
 		this(Host.getByName(hostname), name, args);
 	}
 	/**
@@ -98,7 +98,7 @@ public abstract class Process implements Runnable {
 	 * @param name			The name of the process.
 	 *
 	 */
-	public Process(Host host, String name) {
+	protected Process(Host host, String name) {
 		this(host, name, null);
 	}
 	/**
@@ -109,7 +109,7 @@ public abstract class Process implements Runnable {
 	 * @param name			The name of the process.
 	 * @param argsParam		The arguments of main method of the process.
 	 */	
-	public Process(Host host, String name, String[]argsParam)
+	protected Process(Host host, String name, String[]argsParam)
 	{
 		if (host == null)
 			throw new IllegalArgumentException("Cannot create a process on the null host");
@@ -134,7 +134,7 @@ public abstract class Process implements Runnable {
 	 * @param killTime		Kill time of the process
 	 *
 	 */
-	public Process(Host host, String name, String[]args, double startTime, double killTime) {
+	protected Process(Host host, String name, String[]args, double startTime, double killTime) {
 		this(host, name, args);
 		this.startTime = startTime;
 		this.killTime = killTime;
