@@ -191,9 +191,10 @@ void Engine::host_unregister(const std::string& name)
  */
 Host* Engine::host_by_name(const std::string& name) const
 {
-  if (pimpl->hosts_.find(name) == pimpl->hosts_.end())
+  auto host = pimpl->hosts_.find(name);
+  if (host == pimpl->hosts_.end())
     throw std::invalid_argument(std::string("Host not found: '") + name + std::string("'"));
-  return pimpl->hosts_.at(name);
+  return host->second;
 }
 
 /** @brief Find a host from its name (or nullptr if that host does not exist) */
@@ -209,10 +210,10 @@ Host* Engine::host_by_name_or_null(const std::string& name) const
  */
 Link* Engine::link_by_name(const std::string& name) const
 {
-  if (pimpl->links_.find(name) == pimpl->links_.end())
+  auto link = pimpl->links_.find(name);
+  if (link == pimpl->links_.end())
     throw std::invalid_argument(std::string("Link not found: ") + name);
-
-  return pimpl->links_.at(name)->get_iface();
+  return link->second->get_iface();
 }
 
 /** @brief Find an link from its name (or nullptr if that link does not exist) */
@@ -253,10 +254,10 @@ std::vector<Storage*> Engine::get_all_storages() const
  */
 Storage* Engine::storage_by_name(const std::string& name) const
 {
-  if (pimpl->storages_.find(name) == pimpl->storages_.end())
+  auto storage = pimpl->storages_.find(name);
+  if (storage == pimpl->storages_.end())
     throw std::invalid_argument(std::string("Storage not found: ") + name);
-
-  return pimpl->storages_.at(name)->get_iface();
+  return storage->second->get_iface();
 }
 
 /** @brief Find a storage from its name (or nullptr if that storage does not exist) */
