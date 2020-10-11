@@ -37,10 +37,9 @@ void NetworkWifiLink::set_host_rate(const s4u::Host* host, int rate_level)
   refresh_decay_bandwidths();
 }
 
-double NetworkWifiLink::get_host_rate(const s4u::Host* host)
+double NetworkWifiLink::get_host_rate(const s4u::Host* host) const
 {
-  std::map<xbt::string, int>::iterator host_rates_it;
-  host_rates_it = host_rates_.find(host->get_name());
+  auto host_rates_it = host_rates_.find(host->get_name());
 
   if (host_rates_it == host_rates_.end())
     return -1;
@@ -62,7 +61,7 @@ s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy() const
   return s4u::Link::SharingPolicy::WIFI;
 }
 
-int NetworkWifiLink::get_host_count()
+int NetworkWifiLink::get_host_count() const
 {
   return host_rates_.size();
 }

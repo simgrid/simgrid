@@ -47,7 +47,7 @@ public:
 
   void set_host_rate(const s4u::Host* host, int rate_level);
   /** @brief Get the AP rate associated to the host (or -1 if not associated to the AP) */
-  double get_host_rate(const s4u::Host* host);
+  double get_host_rate(const s4u::Host* host) const;
 
   s4u::Link::SharingPolicy get_sharing_policy() const override;
   void apply_event(kernel::profile::Event*, double) override { THROW_UNIMPLEMENTED; }
@@ -55,7 +55,7 @@ public:
   void set_latency(double) override { THROW_UNIMPLEMENTED; }
   void refresh_decay_bandwidths();
   bool toggle_decay_model();
-  int get_host_count();
+  int get_host_count() const;
 };
 
 class NetworkWifiAction : public NetworkCm02Action {

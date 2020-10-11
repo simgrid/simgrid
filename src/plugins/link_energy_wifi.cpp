@@ -59,12 +59,12 @@ public:
    */
   void init_watts_range_list();
 
-  double get_consumed_energy(void) { return eDyn_ + eStat_; }
+  double get_consumed_energy(void) const { return eDyn_ + eStat_; }
   /** Get the dynamic part of the energy for this link */
-  double get_energy_dynamic(void) { return eDyn_; }
-  double get_energy_static(void) { return eStat_; }
-  double get_duration_comm(void) { return dur_TxRx_; }
-  double get_duration_idle(void) { return dur_idle_; }
+  double get_energy_dynamic(void) const { return eDyn_; }
+  double get_energy_static(void) const { return eStat_; }
+  double get_duration_comm(void) const { return dur_TxRx_; }
+  double get_duration_idle(void) const { return dur_idle_; }
 
   /** Set the power consumed by this link while idle */
   void set_power_idle(double value) { pIdle_ = value; }
@@ -110,8 +110,7 @@ xbt::Extension<s4u::Link, LinkEnergyWifi> LinkEnergyWifi::EXTENSION_ID;
 
 void LinkEnergyWifi::update_destroy()
 {
-  simgrid::kernel::resource::NetworkWifiLink* wifi_link =
-    static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
+  auto const* wifi_link = static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
   double duration = surf_get_clock() - prev_update_;
   prev_update_    = surf_get_clock();
 
@@ -135,8 +134,7 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
   if(duration < 1e-6)
     return;
 
-  simgrid::kernel::resource::NetworkWifiLink* wifi_link =
-      static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
+  auto const* wifi_link = static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
 
   const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem = nullptr;
