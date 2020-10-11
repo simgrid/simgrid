@@ -109,12 +109,12 @@ bool LinkImpl::is_used() const
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
-double LinkImpl::get_latency()
+double LinkImpl::get_latency() const
 {
   return latency_.peak * latency_.scale;
 }
 
-double LinkImpl::get_bandwidth()
+double LinkImpl::get_bandwidth() const
 {
   return bandwidth_.peak * bandwidth_.scale;
 }

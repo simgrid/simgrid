@@ -175,7 +175,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                              std::vector<simgrid::kernel::resource::LinkImpl*> const& link_list)
 {
   if (link_list.size() == 1) {
-    auto* link = static_cast<simgrid::kernel::resource::LinkNS3*>(link_list[0]);
+    auto const* link = static_cast<simgrid::kernel::resource::LinkNS3*>(link_list[0]);
 
     XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s %s", src->get_cname(), dst->get_cname(), link->get_cname(),
               (link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI ? "(wifi)" : "(wired)"),
