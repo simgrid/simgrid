@@ -131,8 +131,8 @@ include examples/c/platform-failures/platform-failures.tesh
 include examples/c/platform-properties/platform-properties.c
 include examples/c/platform-properties/platform-properties.tesh
 include examples/c/platform-properties/platform-properties_d.xml
-include examples/c/plugin-hostload/plugin-hostload.c
-include examples/c/plugin-hostload/plugin-hostload.tesh
+include examples/c/plugin-host-load/plugin-host-load.c
+include examples/c/plugin-host-load/plugin-host-load.tesh
 include examples/c/synchro-semaphore/synchro-semaphore.c
 include examples/c/synchro-semaphore/synchro-semaphore.tesh
 include examples/deprecated/java/app/bittorrent/Common.java
@@ -846,8 +846,8 @@ include teshsuite/smpi/coll-reduce/coll-reduce.c
 include teshsuite/smpi/coll-reduce/coll-reduce.tesh
 include teshsuite/smpi/coll-scatter/coll-scatter.c
 include teshsuite/smpi/coll-scatter/coll-scatter.tesh
-include teshsuite/smpi/fort_args/fort_args.f90
-include teshsuite/smpi/fort_args/fort_args.tesh
+include teshsuite/smpi/fort args/fort_args.f90
+include teshsuite/smpi/fort args/fort_args.tesh
 include teshsuite/smpi/gh-139/gh-139.c
 include teshsuite/smpi/gh-139/gh-139.tesh
 include teshsuite/smpi/hostfile
