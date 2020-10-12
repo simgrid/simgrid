@@ -94,7 +94,7 @@ public:
 class LinkType : public ValueType {
 public:
   static xbt::signal<void(LinkType const&, Type const&, Type const&)> on_creation;
-  LinkType(const std::string& name, Type* source, Type* dest, const std::string& alias, Type* father)
+  LinkType(const std::string& name, const Type* source, const Type* dest, const std::string& alias, Type* father)
       : ValueType(PAJE_DefineLinkType, name, alias, father)
   {
     on_creation(*this, *source, *dest);
