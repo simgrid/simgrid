@@ -12,7 +12,7 @@
 #include <boost/intrusive_ptr.hpp>
 
 /********************************* Simcalls *********************************/
-#include "popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
+#include "popping_enum.hpp" /* Definition of e_smx_simcall_t, with one value per simcall */
 
 XBT_PUBLIC_DATA const char* simcall_names[]; /* Name of each simcall */
 

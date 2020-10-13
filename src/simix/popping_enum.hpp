@@ -17,7 +17,7 @@
 /**
  * @brief All possible simcalls.
  */
-typedef enum {
+enum e_smx_simcall_t {
   SIMCALL_NONE,
   SIMCALL_EXECUTION_WAITANY_FOR,
   SIMCALL_COMM_SEND,
@@ -39,4 +39,4 @@ typedef enum {
   SIMCALL_RUN_KERNEL,
   SIMCALL_RUN_BLOCKING,
   NUM_SIMCALLS
-} e_smx_simcall_t;
+};

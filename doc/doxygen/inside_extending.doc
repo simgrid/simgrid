@@ -164,7 +164,7 @@ generates the following files:
   Helper functions to get and set simcall arguments and results
 - popping_bodies.cpp:
   The BODY function of each simcall
-- popping_enum.h:
+- popping_enum.hpp:
   Definition of type `enum e_smx_simcall_t` (one value per existing simcall)
 - popping_generated.cpp:
   Definitions of `simcall_names[]` (debug name of each simcall), and

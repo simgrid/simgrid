@@ -2389,7 +2389,7 @@ include src/simix/libsmx.cpp
 include src/simix/popping.cpp
 include src/simix/popping_accessors.hpp
 include src/simix/popping_bodies.cpp
-include src/simix/popping_enum.h
+include src/simix/popping_enum.hpp
 include src/simix/popping_generated.cpp
 include src/simix/popping_private.hpp
 include src/simix/simcalls.in

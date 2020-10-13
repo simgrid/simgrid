@@ -292,19 +292,19 @@ if __name__ == '__main__':
     fd.close()
 
     #
-    # popping_enum.h
+    # popping_enum.hpp
     #
-    fd = header("popping_enum.h")
+    fd = header("popping_enum.hpp")
     fd.write('/**\n')
     fd.write(' * @brief All possible simcalls.\n')
     fd.write(' */\n')
-    fd.write('typedef enum {\n')
+    fd.write('enum e_smx_simcall_t {\n')
     fd.write('  SIMCALL_NONE,\n')
 
     handle(fd, Simcall.enum, simcalls, simcalls_dict)
 
     fd.write('  NUM_SIMCALLS\n')
-    fd.write('} e_smx_simcall_t;\n')
+    fd.write('};\n')
     fd.close()
 
     #

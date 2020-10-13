@@ -24,7 +24,7 @@ set(EXTRA_DIST
   src/simix/popping_private.hpp
   src/simix/popping_bodies.cpp
   src/simix/popping_generated.cpp
-  src/simix/popping_enum.h
+  src/simix/popping_enum.hpp
   src/simix/popping_accessors.hpp
   src/simix/smx_private.hpp
   src/smpi/colls/coll_tuned_topo.hpp

@@ -743,7 +743,7 @@ EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/xbt/automaton/parserPromela.*
 EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.cpp @CMAKE_HOME_DIRECTORY@/src/bindings/java/*.h
 EXCLUDE_PATTERNS += @CMAKE_HOME_DIRECTORY@/src/simix/popping_accessors.hpp \
                     @CMAKE_HOME_DIRECTORY@/src/simix/popping_bodies.cpp    \
-                    @CMAKE_HOME_DIRECTORY@/src/simix/popping_enum.h        \
+                    @CMAKE_HOME_DIRECTORY@/src/simix/popping_enum.hpp      \
                     @CMAKE_HOME_DIRECTORY@/src/simix/popping_generated.cpp
 
 
