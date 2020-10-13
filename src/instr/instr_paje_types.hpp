@@ -43,7 +43,7 @@ public:
   bool is_colored() const { return not color_.empty(); }
 
   Type* by_name(const std::string& name);
-  LinkType* by_name_or_create(const std::string& name, Type* source, Type* dest);
+  LinkType* by_name_or_create(const std::string& name, const Type* source, const Type* dest);
   VariableType* by_name_or_create(const std::string& name, const std::string& color);
 
   template <class T> T* by_name_or_create(const std::string& name)

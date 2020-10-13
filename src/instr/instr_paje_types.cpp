@@ -157,7 +157,7 @@ VariableType* Type::by_name_or_create(const std::string& name, const std::string
                                  : static_cast<VariableType*>(cont->second.get());
 }
 
-LinkType* Type::by_name_or_create(const std::string& name, Type* source, Type* dest)
+LinkType* Type::by_name_or_create(const std::string& name, const Type* source, const Type* dest)
 {
   std::string alias = name + "-" + std::to_string(source->id_) + "-" + std::to_string(dest->id_);
   auto it           = children_.find(alias);
