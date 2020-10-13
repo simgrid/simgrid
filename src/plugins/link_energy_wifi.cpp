@@ -154,11 +154,8 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
     XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(), action->get_variable()->get_value(), wifi_link->get_host_rate(&action->get_src()),wifi_link->get_host_rate(&action->get_dst()));
     action->get_variable();
 
-    double du = 0; // durUsage on the current flow
-    std::map<simgrid::kernel::resource::NetworkWifiAction *, std::pair<int, double>>::iterator it;
-
     if(action->get_variable()->get_value()) {
-      it = flowTmp.find(action);
+      auto it = flowTmp.find(action);
 
       // if the flow has not been registered, initialize it: 0 bytes sent, and not updated since its creation timestamp
       if(it == flowTmp.end())
@@ -170,7 +167,8 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
        * The active duration of the link is equal to the amount of data it had to send divided by the bandwidth on the link.
        * If this is longer than the duration since the previous update, active duration = now - previous_update
        */
-      du = (action->get_cost()-it->second.first) / action->get_variable()->get_value();
+      double du = // durUsage on the current flow
+          (action->get_cost() - it->second.first) / action->get_variable()->get_value();
 
       if(du > surf_get_clock()-it->second.second)
         du = surf_get_clock()-it->second.second;
