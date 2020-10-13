@@ -27,10 +27,10 @@ if(enable_smpi)
 
   if(enable_smpi AND SMPI_FORTRAN)
     set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90")
-    add_executable       (fort_args EXCLUDE_FROM_ALL fort\ args/fort_args.f90)
+    add_executable       (fort_args EXCLUDE_FROM_ALL fort_args/fort_args.f90)
     target_link_libraries(fort_args simgrid)
     target_link_libraries(fort_args mpi)
-    set_target_properties(fort_args PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fort\ args)
+    set_target_properties(fort_args PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fort_args)
     add_dependencies(tests fort_args)
   endif()
 endif()
@@ -44,13 +44,13 @@ foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-allto
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 
-set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/fort\ args/fort_args.f90 PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/fort_args/fort_args.f90 PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-alltoall/clusters.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/fort\ args/fort_args.tesh  PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/fort_args/fort_args.tesh  PARENT_SCOPE)
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_cluster
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
@@ -74,7 +74,7 @@ if(enable_smpi)
   endforeach()
 
   if(SMPI_FORTRAN)
-    ADD_TESH_FACTORIES(tesh-smpi-fort_args "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/fort\ args --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/fort\ args fort_args.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-fort_args "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/fort_args --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/fort_args fort_args.tesh)
   endif()
 
   foreach (ALLGATHER 2dmesh 3dmesh bruck GB loosely_lr NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS smp_simple spreading_simple

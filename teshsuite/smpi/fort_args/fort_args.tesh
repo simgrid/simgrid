@@ -1,0 +1,5 @@
+p Test fortran params
+! output sort
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ${platfdir}/small_platform.xml -np 2 ${bindir:=.}/fort_args 'a' 3 -q --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
