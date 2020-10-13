@@ -63,6 +63,7 @@ class NetworkWifiAction : public NetworkCm02Action {
   NetworkWifiLink* dst_wifi_link_;
 
 public:
+  NetworkWifiAction() = delete;
   NetworkWifiAction(Model* model, s4u::Host& src, s4u::Host& dst, double cost, bool failed,
                     NetworkWifiLink* src_wifi_link, NetworkWifiLink* dst_wifi_link)
       : NetworkCm02Action(model, src, dst, cost, failed)

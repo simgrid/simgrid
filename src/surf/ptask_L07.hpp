@@ -129,6 +129,7 @@ class L07Action : public kernel::resource::CpuAction {
   friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:
+  L07Action() = delete;
   L07Action(kernel::resource::Model* model, const std::vector<s4u::Host*>& host_list, const double* flops_amount,
             const double* bytes_amount, double rate);
   L07Action(const L07Action&) = delete;
