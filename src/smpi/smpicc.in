@@ -42,7 +42,7 @@ elif [ "x@APPLE@" = "x1" ]; then
 else
     list_add CFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
-       list_add CFLAGS "-include" "\"@includedir@/smpi/smpi_helpers.h\""
+       list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
        list_add LINKARGS "-shared"
     else
        echo "Warning: smpicc pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
@@ -67,7 +67,7 @@ while [ $# -gt 0 ]; do
             if [ -z "$SRCFILE" ] ; then
                 SRCFILE="$ARG"
             fi
-            list_add CMDARGS "\"${SRCFILE}\""
+            list_add CMDARGS "${SRCFILE}"
             ;;
         '-version' | '--version')
             printf '%b\n' "$SIMGRID_VERSION"
@@ -105,4 +105,4 @@ if [ "x$VERBOSE" = x1 ] || [ "x$show" = x1 ] ; then
   echo "$@"
   [ "x$show" = x1 ] && exit 0
 fi
-eval "$@"
+"$@"

@@ -38,7 +38,7 @@ cleanup () {
 trap 'cleanup' EXIT
 
 filter_and_compile() {
-    list_add TMPFILES "\"${TMPFILE}\""
+    list_add TMPFILES "${TMPFILE}"
     #replace "program main_name by subroutine user_main (and the end clause as well)"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
       sed 's/^\([[:space:]]*\)\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][^a-zA-Z0-9]*\([a-zA-Z0-9_]*\)/\1\2subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
@@ -46,7 +46,7 @@ filter_and_compile() {
     else
       SRCFILE="${ARG}"
     fi
-    list_add CMDLINE "\"${SRCFILE}\""
+    list_add CMDLINE "${SRCFILE}"
 }
 
 NEEDS_OUTPUT=1
@@ -86,7 +86,7 @@ while [ $# -gt 0 ]; do
             ${REAL_FORTRAN_COMPILER} --version
             ;;
         -o)
-            list_add CMDLINE "\"-o$1\""
+            list_add CMDLINE "-o$1"
             NEEDS_OUTPUT=0
             shift
             ;;
@@ -101,7 +101,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ $NEEDS_OUTPUT -ne 0 ]; then
-   list_add CMDLINE "\"-o${ORIGFILE}.o\""
+   list_add CMDLINE "-o${ORIGFILE}.o"
 fi
 
 list_add_not_empty CMDLINE ${INCLUDEARGS}
@@ -113,4 +113,4 @@ if [ "x$VERBOSE" = x1 ] || [ "x$show" = x1 ] ; then
   echo "$@"
   [ "x$show" = x1 ] && exit 0
 fi
-eval "$@"
+"$@"
