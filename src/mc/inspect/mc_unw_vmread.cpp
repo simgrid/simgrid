@@ -57,9 +57,9 @@ static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word
       return -UNW_EINVAL;
     else
       return 0;
-  }
-  if (s < 0 && errno != ENOSYS)
+  } else if (errno != ENOSYS) {
     return -UNW_EINVAL;
+  }
 #endif
 
   // /proc/${pid}/mem implementation.
