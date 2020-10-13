@@ -25,8 +25,6 @@
 #include <sstream>
 #include <string>
 
-typedef simgrid::instr::Container* container_t;
-
 namespace simgrid {
 namespace instr {
 namespace paje {

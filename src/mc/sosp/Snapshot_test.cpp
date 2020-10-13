@@ -18,13 +18,13 @@ class snap_test_helper {
 public:
   static void init_memory(void* mem, size_t size);
   static void Init();
-  typedef struct {
+  struct prologue_return {
     size_t size;
     void* src;
     void* dstn;
     Region* region0;
     Region* region;
-  } prologue_return;
+  };
   static prologue_return prologue(int n); // common to the below 5 fxs
   static void read_whole_region();
   static void read_region_parts();

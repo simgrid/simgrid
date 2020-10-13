@@ -97,7 +97,7 @@ static const char* instr_find_color(const char* c_state)
   return "0.5 0.5 0.5"; // Just in case we find nothing in the map ...
 }
 
-XBT_PRIVATE container_t smpi_container(int rank)
+XBT_PRIVATE simgrid::instr::Container* smpi_container(int rank)
 {
   return simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(rank));
 }
@@ -138,7 +138,7 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
 
 void TRACE_smpi_setup_container(int rank, const_sg_host_t host)
 {
-  container_t father = simgrid::instr::Container::get_root();
+  auto* father = simgrid::instr::Container::get_root();
   if (TRACE_smpi_is_grouped()) {
     father = simgrid::instr::Container::by_name_or_null(host->get_name());
     xbt_assert(father != nullptr, "Could not find a parent for mpi rank 'rank-%d' at function %s", rank, __func__);
@@ -245,7 +245,7 @@ void TRACE_smpi_process_change_host(int rank, const_sg_host_t new_host)
   counter++;
 
   // start link (= tell the trace that this rank moves from A to B)
-  container_t cont = smpi_container(rank);
+  auto* cont = smpi_container(rank);
   simgrid::instr::Container::get_root()->get_link("MIGRATE_LINK")->start_event(cont, "M", key);
 
   // Destroy container of this rank on this host

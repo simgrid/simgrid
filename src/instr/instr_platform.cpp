@@ -29,22 +29,23 @@ std::string instr_pid(simgrid::s4u::Actor const& proc)
   return std::string(proc.get_name()) + "-" + std::to_string(proc.get_pid());
 }
 
-static container_t lowestCommonAncestor(const simgrid::instr::Container* a1, const simgrid::instr::Container* a2)
+static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Container* a1,
+                                                       const simgrid::instr::Container* a2)
 {
   // this is only an optimization (since most of a1 and a2 share the same parent)
   if (a1->father_ == a2->father_)
     return a1->father_;
 
   // create an array with all ancestors of a1
-  std::vector<container_t> ancestors_a1;
-  container_t p = a1->father_;
+  std::vector<simgrid::instr::Container*> ancestors_a1;
+  simgrid::instr::Container* p = a1->father_;
   while (p) {
     ancestors_a1.push_back(p);
     p = p->father_;
   }
 
   // create an array with all ancestors of a2
-  std::vector<container_t> ancestors_a2;
+  std::vector<simgrid::instr::Container*> ancestors_a2;
   p = a2->father_;
   while (p) {
     ancestors_a2.push_back(p);
@@ -56,7 +57,7 @@ static container_t lowestCommonAncestor(const simgrid::instr::Container* a1, con
   int i = static_cast<int>(ancestors_a1.size()) - 1;
   int j = static_cast<int>(ancestors_a2.size()) - 1;
   while (i >= 0 && j >= 0) {
-    container_t a1p = ancestors_a1.at(i);
+    simgrid::instr::Container* a1p       = ancestors_a1.at(i);
     const simgrid::instr::Container* a2p = ancestors_a2.at(j);
     if (a1p == a2p) {
       p = a1p;
@@ -69,7 +70,8 @@ static container_t lowestCommonAncestor(const simgrid::instr::Container* a1, con
   return p;
 }
 
-static void linkContainers(container_t src, container_t dst, std::set<std::string>* filter)
+static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Container* dst,
+                           std::set<std::string>* filter)
 {
   // ignore loopback
   if (src->get_name() == "__loopback__" || dst->get_name() == "__loopback__") {
@@ -78,7 +80,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   }
 
   // find common father
-  container_t father = lowestCommonAncestor(src, dst);
+  simgrid::instr::Container* father = lowestCommonAncestor(src, dst);
   if (not father) {
     xbt_die("common father unknown, this is a tracing problem");
   }
@@ -118,7 +120,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   XBT_DEBUG("  linkContainers %s <-> %s", src->get_cname(), dst->get_cname());
 }
 
-static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, container_t container,
+static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgrid::instr::Container* container,
                                      std::set<std::string>* filter)
 {
   if (not TRACE_platform_topology()) {
@@ -129,7 +131,7 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, conta
   if (not netzone->get_children().empty()) {
     // bottom-up recursion
     for (auto const& nz_son : netzone->get_children()) {
-      container_t child_container = container->children_.at(nz_son->get_name());
+      simgrid::instr::Container* child_container = container->children_.at(nz_son->get_name());
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
@@ -400,7 +402,7 @@ static void on_actor_creation(s4u::Actor const& actor)
 static void on_actor_host_change(s4u::Actor const& actor, s4u::Host const& /*previous_location*/)
 {
   static long long int counter = 0;
-  container_t container        = Container::by_name(instr_pid(actor));
+  Container* container         = Container::by_name(instr_pid(actor));
   LinkType* link               = Container::get_root()->get_link("ACTOR_LINK");
 
   // start link

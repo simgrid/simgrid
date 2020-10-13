@@ -59,7 +59,7 @@ void MigrationRx::operator()()
     counter++;
 
     // start link
-    container_t msg = instr::Container::by_name(vm_->get_name());
+    auto* msg = instr::Container::by_name(vm_->get_name());
     instr::Container::get_root()->get_link("VM_LINK")->start_event(msg, "M", key);
 
     // destroy existing container of this vm

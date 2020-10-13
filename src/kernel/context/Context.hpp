@@ -101,8 +101,6 @@ XBT_PRIVATE ContextFactory* boost_factory();
 } // namespace kernel
 } // namespace simgrid
 
-typedef simgrid::kernel::context::ContextFactory *smx_context_factory_t;
-
 XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
 

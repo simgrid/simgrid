@@ -10,11 +10,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
-static container_t rootContainer = nullptr;    /* the root container */
-static std::map<std::string, container_t> allContainers; /* all created containers indexed by name */
-
 namespace simgrid {
 namespace instr {
+
+static Container* rootContainer = nullptr;              /* the root container */
+static std::map<std::string, Container*> allContainers; /* all created containers indexed by name */
 
 long long int new_paje_id()
 {

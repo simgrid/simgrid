@@ -15,7 +15,7 @@ void resource_set_utilization(const char* type, const char* name, const char* re
                               double value, double now, double delta)
 {
   // only trace resource utilization if resource is known by tracing mechanism
-  container_t container = Container::by_name_or_null(resource);
+  Container* container = Container::by_name_or_null(resource);
   if (container == nullptr || value == 0.0)
     return;
 
