@@ -38,7 +38,7 @@ cleanup () {
 trap 'cleanup' EXIT
 
 filter_and_compile_f77() {
-    list_add TMPFILES "${TMPFILE}"
+    list_add TMPFILES "\"${TMPFILE}\""
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
       #replace "program main_name by subroutine user_main (and the end clause as well)"
       if [ "$TRACE_CALL_LOCATION" -gt 0 ]; then
@@ -50,10 +50,10 @@ filter_and_compile_f77() {
     else
       SRCFILE="${ARG}"
     fi
-    list_add CMDLINE "${SRCFILE}"
+    list_add CMDLINE "\"${SRCFILE}\""
 }
 filter_and_compile_f90() {
-    list_add TMPFILES "${TMPFILE}"
+    list_add TMPFILES "\"${TMPFILE}\""
     #replace "program main_name by subroutine user_main (and the end clause as well)"
     if [ "$TRACE_CALL_LOCATION" -gt 0 ]; then
       echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > "${TMPFILE}"
@@ -61,7 +61,7 @@ filter_and_compile_f90() {
     fi
     sed 's/^\([[:space:]]*\)\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][^a-zA-Z0-9]*\([a-zA-Z0-9_]*\)/\1\2subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
     SRCFILE="${TMPFILE}"
-    list_add CMDLINE "${SRCFILE}"
+    list_add CMDLINE "\"${SRCFILE}\""
 }
 TRACE_CALL_LOCATION=0
 NEEDS_OUTPUT=1
@@ -134,7 +134,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ $NEEDS_OUTPUT -ne 0 ]; then
-   list_add CMDLINE "-o${ORIGFILE}.o"
+   list_add CMDLINE "\"-o${ORIGFILE}.o\""
 fi
 
 list_add_not_empty CMDLINE ${INCLUDEARGS}
@@ -146,4 +146,4 @@ if [ "x$VERBOSE" = x1 ] || [ "x$show" = x1 ] ; then
   echo "$@"
   [ "x$show" = x1 ] && exit 0
 fi
-"$@"
+eval "$@"

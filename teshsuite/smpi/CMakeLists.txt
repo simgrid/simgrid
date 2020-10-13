@@ -74,7 +74,7 @@ if(enable_smpi)
   endforeach()
 
   if(SMPI_FORTRAN)
-    ADD_TESH_FACTORIES(tesh-smpi-fort_args "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/fort\ args --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/fort\ args fort_args.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-fort_args "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv "bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/fort args" --cd "${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/fort args" fort_args.tesh)
   endif()
 
   foreach (ALLGATHER 2dmesh 3dmesh bruck GB loosely_lr NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS smp_simple spreading_simple
