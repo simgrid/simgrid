@@ -489,7 +489,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
       // Load the copy and resolve the entry point:
       void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | WANT_RTLD_DEEPBIND);
       int saved_errno = errno;
-      if (simgrid::config::get_value<bool>("smpi/keep-temps") == false) {
+      if (not simgrid::config::get_value<bool>("smpi/keep-temps")) {
         unlink(target_executable.c_str());
         for (const std::string& target_lib : target_libs)
           unlink(target_lib.c_str());

@@ -229,7 +229,7 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
 
   new_edge(src->id(), dst->id(), new_extended_route(hierarchy_, gw_src, gw_dst, link_list, true));
 
-  if (symmetrical == true)
+  if (symmetrical)
     new_edge(dst->id(), src->id(), new_extended_route(hierarchy_, gw_dst, gw_src, link_list, false));
 }
 

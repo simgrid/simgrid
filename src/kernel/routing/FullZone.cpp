@@ -95,7 +95,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
   /* Add the route to the base */
   TO_ROUTE_FULL(src->id(), dst->id()) = new_extended_route(hierarchy_, gw_src, gw_dst, link_list, true);
 
-  if (symmetrical == true && src != dst) {
+  if (symmetrical && src != dst) {
     if (gw_dst && gw_src) {
       NetPoint* gw_tmp = gw_src;
       gw_src           = gw_dst;

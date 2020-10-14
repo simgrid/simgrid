@@ -121,7 +121,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
   TO_FLOYD_PRED(src->id(), dst->id()) = src->id();
   TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list.size();
 
-  if (symmetrical == true) {
+  if (symmetrical) {
     if (gw_dst) // netzone route (to adapt the error message, if any)
       xbt_assert(
           nullptr == TO_FLOYD_LINK(dst->id(), src->id()),

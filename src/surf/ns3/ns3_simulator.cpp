@@ -48,7 +48,7 @@ static void receive_callback(ns3::Ptr<ns3::Socket> socket)
   SgFlow* flow = getFlowFromSocket(socket);
   XBT_DEBUG("received on F[%p, total: %u, remain: %u]", flow, flow->total_bytes_, flow->remaining_);
 
-  if (flow->finished_ == false) {
+  if (not flow->finished_) {
     flow->finished_ = true;
     XBT_DEBUG("recv_cb of F[%p, %p, %u]", flow, flow->action_, flow->total_bytes_);
     XBT_DEBUG("Stop simulator at %f seconds", ns3::Simulator::Now().GetSeconds());

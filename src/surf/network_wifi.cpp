@@ -30,7 +30,7 @@ NetworkWifiLink::NetworkWifiLink(NetworkCm02Model* model, const std::string& nam
 void NetworkWifiLink::set_host_rate(const s4u::Host* host, int rate_level)
 {
   auto insert_done = host_rates_.insert(std::make_pair(host->get_name(), rate_level));
-  if (insert_done.second == false)
+  if (not insert_done.second)
     insert_done.first->second = rate_level;
 
   // Each time we add a host, we refresh the decay model

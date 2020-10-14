@@ -270,7 +270,7 @@ void Op::ref(){
 void Op::unref(MPI_Op* op){
   if((*op)!=MPI_OP_NULL){
     (*op)->refcount_--;
-    if((*op)->refcount_==0 && (*op)->predefined_==false)
+    if ((*op)->refcount_ == 0 && not (*op)->predefined_)
       delete(*op);
   }
 }
