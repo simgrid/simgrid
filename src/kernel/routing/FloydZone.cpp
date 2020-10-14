@@ -117,8 +117,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
                "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->get_cname(),
                dst->get_cname());
 
-  TO_FLOYD_LINK(src->id(), dst->id()) =
-      new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, true);
+  TO_FLOYD_LINK(src->id(), dst->id()) = new_extended_route(hierarchy_, gw_src, gw_dst, link_list, true);
   TO_FLOYD_PRED(src->id(), dst->id()) = src->id();
   TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list.size();
 
@@ -145,8 +144,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
       XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", dst->get_cname(), gw_src->get_cname(),
                 src->get_cname(), gw_dst->get_cname());
 
-    TO_FLOYD_LINK(dst->id(), src->id()) =
-        new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, false);
+    TO_FLOYD_LINK(dst->id(), src->id()) = new_extended_route(hierarchy_, gw_src, gw_dst, link_list, false);
     TO_FLOYD_PRED(dst->id(), src->id()) = dst->id();
     TO_FLOYD_COST(dst->id(), src->id()) =
         (TO_FLOYD_LINK(dst->id(), src->id()))->link_list.size(); /* count of links, old model assume 1 */
