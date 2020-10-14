@@ -89,8 +89,8 @@ void ThreadContext::wrapper(ThreadContext* context)
 #ifndef WIN32
   /* Install alternate signal stack, for SIGSEGV handler. */
   stack_t stack;
-  stack.ss_sp = sigsegv_stack;
-  stack.ss_size = sizeof sigsegv_stack;
+  stack.ss_sp    = sigsegv_stack.data();
+  stack.ss_size  = sigsegv_stack.size();
   stack.ss_flags = 0;
   sigaltstack(&stack, nullptr);
 #endif

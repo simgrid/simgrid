@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -181,7 +182,7 @@ std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens for 6 fields */
     char* saveptr = nullptr; // for strtok_r()
-    char* lfields[6];
+    std::array<char*, 6> lfields;
     lfields[0] = strtok_r(line, " ", &saveptr);
 
     int i;

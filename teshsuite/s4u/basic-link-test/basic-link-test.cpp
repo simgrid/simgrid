@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, s4u, "basic link test");
 
 int main(int argc, char** argv)
 {
-  char user_data[] = "some user_data";
+  std::string user_data = "some user_data";
 
   /* initialization of SD */
   simgrid::s4u::Engine e(&argc, argv);
@@ -28,8 +28,8 @@ int main(int argc, char** argv)
 
   for (const auto& l : links) {
     XBT_INFO("%s: latency = %.5f, bandwidth = %f", l->get_cname(), l->get_latency(), l->get_bandwidth());
-    l->set_data(user_data);
-    xbt_assert(!strcmp(user_data, static_cast<const char*>(l->get_data())), "User data was corrupted.");
+    l->set_data(&user_data);
+    xbt_assert(user_data == *static_cast<const std::string*>(l->get_data()), "User data was corrupted.");
   }
 
   return 0;

@@ -38,19 +38,12 @@ namespace config {
 
 namespace {
 
-const char* true_values[] = {
-  "yes", "on", "true", "1"
-};
-const char* false_values[] = {
-  "no", "off", "false", "0"
-};
-
 static bool parse_bool(const char* value)
 {
-  for (const char* const& true_value : true_values)
+  for (const char* true_value : {"yes", "on", "true", "1"})
     if (std::strcmp(true_value, value) == 0)
       return true;
-  for (const char* const& false_value : false_values)
+  for (const char* false_value : {"no", "off", "false", "0"})
     if (std::strcmp(false_value, value) == 0)
       return false;
   throw std::range_error("not a boolean");

@@ -9,6 +9,7 @@
 #include "xbt/misc.h"
 #include "xbt/str.h" /* headers of these functions */
 #include "xbt/string.hpp"
+#include <array>
 
 /** @brief Splits a string into a dynar of strings
  *
@@ -28,18 +29,18 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   const char *sep_dflt = " \t\n\r\x0B";
-  char is_sep[256] = { 1, 0 };
+  std::array<bool, 256> is_sep;
 
   /* check what are the separators */
-  memset(is_sep, 0, sizeof(is_sep));
+  is_sep.fill(false);
   if (not sep) {
     while (*sep_dflt)
-      is_sep[(unsigned char) *sep_dflt++] = 1;
+      is_sep[(unsigned char)*sep_dflt++] = true;
   } else {
     while (*sep)
-      is_sep[(unsigned char) *sep++] = 1;
+      is_sep[(unsigned char)*sep++] = true;
   }
-  is_sep[0] = 1; /* End of string is also separator */
+  is_sep[0] = true; /* End of string is also separator */
 
   /* Do the job */
   const char* p = s;

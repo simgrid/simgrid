@@ -53,9 +53,6 @@ std::unique_ptr<char, std::function<void(char*)>> demangle(const char* name)
 class BacktraceImpl {
 #if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
   const boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
-#else
-  const char st[1] = ""; // fallback value
-#endif
 public:
   std::string resolve() const
   {
@@ -63,6 +60,10 @@ public:
     ss << st;
     return ss.str();
   }
+#else
+public:
+  std::string resolve() const { return ""; } // fallback value
+#endif
 };
 
 Backtrace::Backtrace() : impl_(std::make_shared<BacktraceImpl>()) {}

@@ -24,7 +24,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
-const char* simcall_names[] = {
+const std::array<const char*, NUM_SIMCALLS> simcall_names{{
     "SIMCALL_NONE",
     "SIMCALL_EXECUTION_WAITANY_FOR",
     "SIMCALL_COMM_SEND",
@@ -45,7 +45,7 @@ const char* simcall_names[] = {
     "SIMCALL_MC_RANDOM",
     "SIMCALL_RUN_KERNEL",
     "SIMCALL_RUN_BLOCKING",
-};
+}};
 
 /** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler

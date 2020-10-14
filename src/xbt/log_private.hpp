@@ -7,6 +7,8 @@
 #define LOG_PRIVATE_H
 
 #include "xbt/log.h"
+#include <array>
+
 struct xbt_log_appender_s {
   void (*do_append)(const s_xbt_log_appender_t* this_appender, const char* event);
   void (*free_)(const s_xbt_log_appender_t* this_);
@@ -18,6 +20,8 @@ struct xbt_log_layout_s {
   void (*free_)(const s_xbt_log_layout_t* l);
   void *data;
 };
+
+extern const std::array<const char*, 8> xbt_log_priority_names;
 
 /**
  * @ingroup XBT_log_implem

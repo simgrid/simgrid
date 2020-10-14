@@ -10,42 +10,43 @@
 #include "smpi/smpi.h"
 #include "xbt/config.hpp"
 
+#include <initializer_list>
 #include <thread>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mechanism");
 
-static std::pair<const char*, simgrid::kernel::context::ContextFactoryInitializer> context_factories[] = {
+constexpr std::initializer_list<std::pair<const char*, simgrid::kernel::context::ContextFactoryInitializer>>
+    context_factories = {
 #if HAVE_RAW_CONTEXTS
-  { "raw", &simgrid::kernel::context::raw_factory },
+        {"raw", &simgrid::kernel::context::raw_factory},
 #endif
 #if HAVE_UCONTEXT_CONTEXTS
-  { "ucontext", &simgrid::kernel::context::sysv_factory },
+        {"ucontext", &simgrid::kernel::context::sysv_factory},
 #endif
 #if HAVE_BOOST_CONTEXTS
-  { "boost", &simgrid::kernel::context::boost_factory },
+        {"boost", &simgrid::kernel::context::boost_factory},
 #endif
-  { "thread", &simgrid::kernel::context::thread_factory },
+        {"thread", &simgrid::kernel::context::thread_factory},
 };
 
-static_assert(sizeof(context_factories) != 0, "No context factories are enabled for this build");
+static_assert(context_factories.size() > 0, "No context factories are enabled for this build");
 
 // Create the list of possible contexts:
 static inline
 std::string contexts_list()
 {
   std::string res;
-  const std::size_t n = sizeof(context_factories) / sizeof(context_factories[0]);
-  for (std::size_t i = 1; i != n; ++i) {
-    res += ", ";
-    res += context_factories[i].first;
+  std::string sep = "";
+  for (auto const& factory : context_factories) {
+    res += sep + factory.first;
+    sep = ", ";
   }
   return res;
 }
 
-static simgrid::config::Flag<std::string> context_factory_name(
-  "contexts/factory",
-  (std::string("Possible values: ")+contexts_list()).c_str(),
-  context_factories[0].first);
+static simgrid::config::Flag<std::string>
+    context_factory_name("contexts/factory", (std::string("Possible values: ") + contexts_list()).c_str(),
+                         context_factories.begin()->first);
 
 unsigned smx_context_stack_size;
 unsigned smx_context_guard_size;

@@ -9,12 +9,13 @@
 #include "simgrid/forward.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
 
+#include <array>
 #include <boost/intrusive_ptr.hpp>
 
 /********************************* Simcalls *********************************/
 #include "popping_enum.hpp" /* Definition of e_smx_simcall_t, with one value per simcall */
 
-XBT_PUBLIC_DATA const char* simcall_names[]; /* Name of each simcall */
+XBT_PUBLIC_DATA const std::array<const char*, NUM_SIMCALLS> simcall_names; /* Name of each simcall */
 
 typedef bool (*simix_match_func_t)(void*, void*, simgrid::kernel::activity::CommImpl*);
 typedef void (*simix_copy_data_func_t)(simgrid::kernel::activity::CommImpl*, void*, size_t);

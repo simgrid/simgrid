@@ -13,6 +13,7 @@
 #include "xbt/string.hpp"
 
 #include <algorithm>
+#include <array>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -38,16 +39,8 @@ struct xbt_log_setting_t {
 
 static std::vector<xbt_log_setting_t> xbt_log_settings;
 
-const char *xbt_log_priority_names[8] = {
-  "NONE",
-  "TRACE",
-  "DEBUG",
-  "VERBOSE",
-  "INFO",
-  "WARNING",
-  "ERROR",
-  "CRITICAL"
-};
+const std::array<const char*, 8> xbt_log_priority_names{
+    {"NONE", "TRACE", "DEBUG", "VERBOSE", "INFO", "WARNING", "ERROR", "CRITICAL"}};
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
     nullptr /*parent */,
@@ -158,7 +151,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   const xbt_log_category_s* cat = ev->cat;
 
   xbt_assert(ev->priority >= 0, "Negative logging priority naturally forbidden");
-  xbt_assert(static_cast<size_t>(ev->priority) < sizeof(xbt_log_priority_names)/sizeof(xbt_log_priority_names[0]),
+  xbt_assert(static_cast<size_t>(ev->priority) < xbt_log_priority_names.size(),
              "Priority %d is greater than the biggest allowed value", ev->priority);
 
   while (true) {
@@ -169,15 +162,15 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
 
       /* First, try with a static buffer */
       int done = 0;
-      char buff[XBT_LOG_STATIC_BUFFER_SIZE];
-      ev->buffer      = buff;
-      ev->buffer_size = sizeof buff;
+      std::array<char, XBT_LOG_STATIC_BUFFER_SIZE> buff;
+      ev->buffer      = buff.data();
+      ev->buffer_size = buff.size();
       va_start(ev->ap, fmt);
       done = cat->layout->do_layout(cat->layout, ev, fmt);
       va_end(ev->ap);
       ev->buffer = nullptr; // Calm down, static analyzers, this pointer to local array won't leak out of the scope.
       if (done) {
-        appender->do_append(appender, buff);
+        appender->do_append(appender, buff.data());
       } else {
         /* The static buffer was too small, use a dynamically expanded one */
         ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;

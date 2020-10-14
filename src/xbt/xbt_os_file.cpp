@@ -14,20 +14,21 @@
 #endif
 
 #if HAVE_UNISTD_H
+#include <array>
+#include <cerrno>
 #include <unistd.h>
 #endif
 
-#include <cerrno>
 #include <cstring>
 #include <libgen.h> /* POSIX dirname */
 
 simgrid::xbt::Path::Path()
 {
 #if HAVE_UNISTD_H
-  char buffer[2048];
-  const char* ret = getcwd(buffer, 2048);
-  xbt_assert(ret == buffer, "Error during getcwd: %s", strerror(errno));
-  path_ = std::string(buffer);
+  std::array<char, 2048> buffer;
+  const char* cwd = getcwd(buffer.data(), 2048);
+  xbt_assert(cwd != nullptr, "Error during getcwd: %s", strerror(errno));
+  path_ = std::string(cwd);
 #else
   path_ = std::string(".");
 #endif

@@ -9,6 +9,7 @@
 #include "simgrid/forward.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
 
+#include <array>
 #include <csignal>
 #include <functional>
 
@@ -105,6 +106,6 @@ XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
 
 #ifndef WIN32
-XBT_PUBLIC_DATA unsigned char sigsegv_stack[SIGSTKSZ];
+XBT_PUBLIC_DATA std::array<unsigned char, SIGSTKSZ> sigsegv_stack;
 #endif
 #endif

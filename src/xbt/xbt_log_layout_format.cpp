@@ -12,8 +12,6 @@
 #include <algorithm>
 #include <cstdio>
 
-extern const char *xbt_log_priority_names[8];
-
 static constexpr const char* ERRMSG =
     "Unknown %%%c sequence in layout format (%s).\n"
     "Known sequences:\n"
