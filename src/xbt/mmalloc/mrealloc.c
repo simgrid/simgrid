@@ -36,8 +36,8 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   }
 
   if ((char *) ptr < (char *) mdp->heapbase || BLOCK(ptr) > mdp->heapsize) {
-    printf("FIXME. Ouch, this pointer is not mine, refusing to proceed (another solution would be to malloc "
-           "it instead of reallocing it, see source code)\n");
+    // Don't trust xbt_assert and friends in malloc-level library, you fool!
+    fprintf(stderr, "This pointer is not mine, refusing to realloc it (maybe you wanted to malloc it instead?)\n");
     abort();
   }
 
