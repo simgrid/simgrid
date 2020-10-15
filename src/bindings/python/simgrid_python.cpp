@@ -31,6 +31,7 @@
 #include <simgrid/s4u/Mailbox.hpp>
 #include <simgrid/version.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -151,14 +152,11 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine")
       .def(py::init([](std::vector<std::string> args) {
-        static char noarg[] = {'\0'};
         auto argc           = static_cast<int>(args.size());
-        auto argv           = std::make_unique<char*[]>(argc + 1);
-        for (int i = 0; i != argc; ++i)
-          argv[i] = args[i].empty() ? noarg : &args[i].front();
-        argv[argc] = nullptr;
+        std::vector<char*> argv(args.size() + 1); // argv[argc] is nullptr
+        std::transform(begin(args), end(args), begin(argv), [](std::string& s) { return &s.front(); });
         // Currently this can be dangling, we should wrap this somehow.
-        return new simgrid::s4u::Engine(&argc, argv.get());
+        return new simgrid::s4u::Engine(&argc, argv.data());
       }))
       .def_static("get_clock", &Engine::get_clock,
                   "The simulation time, ie the amount of simulated seconds since the simulation start.")

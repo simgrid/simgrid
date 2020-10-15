@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <algorithm>
 #include <array>
 #include <exception>
 #include <functional>
@@ -38,15 +39,9 @@ public:
   {
     const int argc                = args_->size();
     std::vector<std::string> args = *args_;
-    if (not args.empty()) {
-      char noarg[] = {'\0'};
-      auto argv    = std::make_unique<char*[]>(argc + 1);
-      for (int i = 0; i != argc; ++i)
-        argv[i] = args[i].empty() ? noarg : &args[i].front();
-      argv[argc] = nullptr;
-      code_(argc, argv.get());
-    } else
-      code_(argc, nullptr);
+    std::vector<char*> argv(args.size() + 1); // argv[argc] is nullptr
+    std::transform(begin(args), end(args), begin(argv), [](std::string& s) { return &s.front(); });
+    code_(argc, argv.data());
   }
 };
 
