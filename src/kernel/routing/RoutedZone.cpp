@@ -116,7 +116,8 @@ void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
 RouteCreationArgs* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
-                                                  std::vector<resource::LinkImpl*>& link_list, bool change_order)
+                                                  const std::vector<resource::LinkImpl*>& link_list,
+                                                  bool preserve_order)
 {
   auto* result = new RouteCreationArgs();
 
@@ -130,12 +131,10 @@ RouteCreationArgs* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoin
     result->gw_dst = gw_dst;
   }
 
-  for (auto const& link : link_list) {
-    if (change_order)
-      result->link_list.push_back(link);
-    else
-      result->link_list.insert(result->link_list.begin(), link);
-  }
+  if (preserve_order)
+    result->link_list = link_list;
+  else
+    result->link_list.assign(link_list.rbegin(), link_list.rend()); // reversed
   result->link_list.shrink_to_fit();
 
   return result;
