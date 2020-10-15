@@ -185,6 +185,7 @@ int Datatype::copy_attrs(Datatype* datatype){
       }
     }
   }
+  delete contents_;
   contents_ = new Datatype_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
   return ret;
 }
