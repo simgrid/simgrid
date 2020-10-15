@@ -9,8 +9,9 @@
 #define LUA_UTILS_HPP
 
 #include <lua.h>
+#include <string>
 
-const char* sglua_tostring(lua_State* L, int index);
-const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index);
+std::string sglua_tostring(lua_State* L, int index);
+std::string sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index);
 
 #endif

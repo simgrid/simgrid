@@ -85,7 +85,7 @@ static int dump(lua_State* L)
 
         lua_pushvalue(L, -2); /* table key val key */
 
-        XBT_DEBUG("%s", sglua_keyvalue_tostring(L, -1, -2));
+        XBT_DEBUG("%s", sglua_keyvalue_tostring(L, -1, -2).c_str());
       }
 
       lua_settop(L, argc); // Remove everything except the initial arguments
