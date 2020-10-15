@@ -62,8 +62,6 @@ public:
   void set_tracing_category(const char* category) { tracing_category_ = category ? category : ""; }
   const std::string& get_tracing_category() const { return tracing_category_; }
   bool has_tracing_category() { return not tracing_category_.empty(); }
-  XBT_ATTRIB_DEPRECATED_v329("Please use set_data()") void* get_user_data() { return get_data(); }
-  XBT_ATTRIB_DEPRECATED_v329("Please use get_data()") void set_user_data(void* data) { set_data(data); }
   long long int get_id() const { return id_; }
   double get_priority() const { return priority_; }
   void set_priority(double priority);
