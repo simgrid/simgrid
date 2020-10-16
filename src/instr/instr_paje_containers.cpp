@@ -13,18 +13,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing eve
 namespace simgrid {
 namespace instr {
 
-static Container* rootContainer = nullptr;              /* the root container */
-static std::map<std::string, Container*> allContainers; /* all created containers indexed by name */
+Container* Container::root_container_ = nullptr;              /* the root container */
+std::map<std::string, Container*> Container::all_containers_; /* all created containers indexed by name */
 
 long long int new_paje_id()
 {
   static long long int type_id = 0;
   return type_id++;
-}
-
-Container* Container::get_root()
-{
-  return rootContainer;
 }
 
 NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father)
@@ -38,7 +33,7 @@ NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, 
     on_creation(*this);
   } else {
     type_         = new ContainerType("0");
-    rootContainer = this;
+    set_root(this);
   }
 }
 
@@ -74,9 +69,9 @@ Container::Container(const std::string& name, const std::string& type_name, Cont
   }
 
   //register all kinds by name
-  if (not allContainers.emplace(name_, this).second)
+  if (not all_containers_.emplace(name_, this).second)
     throw TracingError(XBT_THROW_POINT,
-                       xbt::string_printf("container %s already present in allContainers data structure", get_cname()));
+                       xbt::string_printf("container %s already present in all_containers_", get_cname()));
 
   XBT_DEBUG("Add container name '%s'", get_cname());
 }
@@ -88,8 +83,8 @@ Container::~Container()
   for (auto child : children_)
     delete child.second;
 
-  // remove me from the allContainers data structure
-  allContainers.erase(name_);
+  // remove me from the all_containers_ data structure
+  all_containers_.erase(name_);
 
   // obligation to dump previous events because they might reference the container that is about to be destroyed
   last_timestamp_to_dump = SIMIX_get_clock();
@@ -105,8 +100,8 @@ void Container::create_child(const std::string& name, const std::string& type_na
 
 Container* Container::by_name_or_null(const std::string& name)
 {
-  auto cont = allContainers.find(name);
-  return cont == allContainers.end() ? nullptr : cont->second;
+  auto cont = all_containers_.find(name);
+  return cont == all_containers_.end() ? nullptr : cont->second;
 }
 
 Container* Container::by_name(const std::string& name)

@@ -17,8 +17,14 @@ class StateType;
 class VariableType;
 
 class Container {
+  static Container* root_container_;
+  static std::map<std::string, Container*> all_containers_;
+
   long long int id_;
   std::string name_; /* Unique name of this container */
+
+protected:
+  static void set_root(Container* root) { root_container_ = root; }
 
 public:
   static xbt::signal<void(Container const&)> on_creation;
@@ -44,7 +50,7 @@ public:
   LinkType* get_link(const std::string& name);
   VariableType* get_variable(const std::string& name);
   void create_child(const std::string& name, const std::string& type_name);
-  static Container* get_root();
+  static Container* get_root() { return root_container_; }
 };
 
 class NetZoneContainer : public Container {
