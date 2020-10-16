@@ -26,6 +26,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(bittorrent_peers, "Messages specific for the peers"
 #define SLEEP_DURATION 1
 #define BITS_TO_BYTES(x) (((x) / 8 + (x) % 8) ? 1 : 0)
 
+const char* const message_type_names[10] = {"HANDSHAKE", "CHOKE",    "UNCHOKE", "INTERESTED", "NOTINTERESTED",
+                                            "HAVE",      "BITFIELD", "REQUEST", "PIECE",      "CANCEL"};
+
 #ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
@@ -173,8 +176,7 @@ void send_handshake_to_all_peers(const_peer_t peer)
 
 void send_message(const_peer_t peer, sg_mailbox_t mailbox, e_message_type type, uint64_t size)
 {
-  const char* type_names[6] = {"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "CANCEL"};
-  XBT_DEBUG("Sending %s to %s", type_names[type], sg_mailbox_get_name(mailbox));
+  XBT_DEBUG("Sending %s to %s", message_type_names[type], sg_mailbox_get_name(mailbox));
   message_t message = message_other_new(type, peer->id, peer->mailbox, peer->bitfield);
   sg_comm_t comm    = sg_mailbox_put_init(mailbox, message, size);
   sg_comm_detach(comm, NULL);
@@ -364,9 +366,8 @@ void update_active_peers_set(const s_peer_t* peer, connection_t remote_peer)
 /** @brief Handle a received message sent by another peer */
 void handle_message(peer_t peer, message_t message)
 {
-  const char* type_names[10] = {"HANDSHAKE", "CHOKE",    "UNCHOKE", "INTERESTED", "NOTINTERESTED",
-                                "HAVE",      "BITFIELD", "REQUEST", "PIECE",      "CANCEL"};
-  XBT_DEBUG("Received a %s message from %s", type_names[message->type], sg_mailbox_get_name(message->return_mailbox));
+  XBT_DEBUG("Received a %s message from %s", message_type_names[message->type],
+            sg_mailbox_get_name(message->return_mailbox));
 
   connection_t remote_peer = xbt_dict_get_or_null_ext(peer->connected_peers, (char*)&message->peer_id, sizeof(int));
   xbt_assert(remote_peer != NULL || message->type == MESSAGE_HANDSHAKE,

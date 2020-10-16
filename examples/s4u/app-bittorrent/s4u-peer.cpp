@@ -26,6 +26,9 @@ constexpr unsigned long BLOCKS_REQUESTED = 2UL;
 constexpr double SLEEP_DURATION     = 1.0;
 #define BITS_TO_BYTES(x) (((x) / 8 + (x) % 8) ? 1 : 0)
 
+constexpr std::array<const char*, 10> message_type_names{
+    {"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "HAVE", "BITFIELD", "REQUEST", "PIECE", "CANCEL"}};
+
 Peer::Peer(std::vector<std::string> args)
 {
   // Check arguments
@@ -115,9 +118,7 @@ void Peer::sendHandshakeToAllPeers()
 
 void Peer::sendMessage(simgrid::s4u::Mailbox* mailbox, e_message_type type, uint64_t size)
 {
-  constexpr std::array<const char*, 6> type_names{
-      {"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "CANCEL"}};
-  XBT_DEBUG("Sending %s to %s", type_names[type], mailbox->get_cname());
+  XBT_DEBUG("Sending %s to %s", message_type_names.at(type), mailbox->get_cname());
   mailbox->put_init(new Message(type, id, bitfield_, mailbox_), size)->detach();
 }
 
@@ -285,10 +286,8 @@ void Peer::updateActivePeersSet(Connection* remote_peer)
 
 void Peer::handleMessage()
 {
-  constexpr std::array<const char*, 10> type_names{{"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED",
-                                                    "HAVE", "BITFIELD", "REQUEST", "PIECE", "CANCEL"}};
-
-  XBT_DEBUG("Received a %s message from %s", type_names[message->type], message->return_mailbox->get_cname());
+  XBT_DEBUG("Received a %s message from %s", message_type_names.at(message->type),
+            message->return_mailbox->get_cname());
 
   auto known_peer         = connected_peers.find(message->peer_id);
   Connection* remote_peer = (known_peer == connected_peers.end()) ? nullptr : &known_peer->second;
