@@ -10,6 +10,7 @@
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/checker/SimcallInspector.hpp"
 #include "src/mc/mc_smx.hpp"
+#include <array>
 
 using simgrid::mc::remote;
 
@@ -386,14 +387,12 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   return comm->src_actor_.get() && comm->dst_actor_.get();
 }
 
-static const char* colors[] = {
-    "blue",       "red",    "green3",      "goldenrod", "brown",     "purple", "magenta",
-    "turquoise4", "gray25", "forestgreen", "hotpink",   "lightblue", "tan",
-};
-
 static inline const char* get_color(int id)
 {
-  return colors[id % (sizeof(colors) / sizeof(colors[0])) ];
+  static constexpr std::array<const char*, 13> colors{{"blue", "red", "green3", "goldenrod", "brown", "purple",
+                                                       "magenta", "turquoise4", "gray25", "forestgreen", "hotpink",
+                                                       "lightblue", "tan"}};
+  return colors[id % colors.size()];
 }
 
 std::string request_get_dot_output(smx_simcall_t req, int value)
