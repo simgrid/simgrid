@@ -12,8 +12,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay_io, "Messages specific for this example");
 
-static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
-
 #define ACT_DEBUG(...)                                                                                                 \
   if (XBT_LOG_ISENABLED(replay_io, xbt_log_priority_verbose)) {                                                        \
     std::string NAME = boost::algorithm::join(action, " ");                                                            \
@@ -21,22 +19,23 @@ static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
   } else                                                                                                               \
     ((void)0)
 
-static void log_action(const simgrid::xbt::ReplayAction& action, double date)
-{
-  if (XBT_LOG_ISENABLED(replay_io, xbt_log_priority_verbose)) {
-    std::string s = boost::algorithm::join(action, " ");
-    XBT_VERB("%s %f", s.c_str(), date);
-  }
-}
-
-static simgrid::s4u::File* get_file_descriptor(const std::string& file_name)
-{
-  std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
-
-  return opened_files.at(full_name);
-}
-
 class Replayer {
+  static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
+
+  static void log_action(const simgrid::xbt::ReplayAction& action, double date)
+  {
+    if (XBT_LOG_ISENABLED(replay_io, xbt_log_priority_verbose)) {
+      std::string s = boost::algorithm::join(action, " ");
+      XBT_VERB("%s %f", s.c_str(), date);
+    }
+  }
+
+  static simgrid::s4u::File* get_file_descriptor(const std::string& file_name)
+  {
+    std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
+    return opened_files.at(full_name);
+  }
+
 public:
   explicit Replayer(std::vector<std::string> args)
   {
@@ -91,6 +90,8 @@ public:
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 };
+
+std::unordered_map<std::string, simgrid::s4u::File*> Replayer::opened_files;
 
 int main(int argc, char* argv[])
 {
