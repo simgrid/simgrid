@@ -991,7 +991,7 @@ static std::string to_hex(std::vector<char> const& data)
 }
 
 /** Base directories for external debug files */
-static const char* debug_paths[] = {
+static constexpr auto debug_paths = {
     "/usr/lib/debug/",
     "/usr/local/lib/debug/",
 };

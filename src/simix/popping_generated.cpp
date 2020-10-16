@@ -24,7 +24,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
-const std::array<const char*, NUM_SIMCALLS> simcall_names{{
+constexpr std::array<const char*, NUM_SIMCALLS> simcall_names{{
     "SIMCALL_NONE",
     "SIMCALL_EXECUTION_WAITANY_FOR",
     "SIMCALL_COMM_SEND",

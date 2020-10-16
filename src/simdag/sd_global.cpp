@@ -124,7 +124,7 @@ std::set<SD_task_t>* simulate(double how_long){
  * @return the equivalent as a readable string
  */
 const char *__get_state_name(e_SD_task_state_t state){
-  static std::array<const char*, 7> state_names{
+  static constexpr std::array<const char*, 7> state_names{
       {"not scheduled", "schedulable", "scheduled", "runnable", "running", "done", "failed"}};
   return state_names.at(static_cast<int>(log2(static_cast<double>(state))));
 }

@@ -39,7 +39,7 @@ struct xbt_log_setting_t {
 
 static std::vector<xbt_log_setting_t> xbt_log_settings;
 
-const std::array<const char*, 8> xbt_log_priority_names{
+constexpr std::array<const char*, 8> xbt_log_priority_names{
     {"NONE", "TRACE", "DEBUG", "VERBOSE", "INFO", "WARNING", "ERROR", "CRITICAL"}};
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {

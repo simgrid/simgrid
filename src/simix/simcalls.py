@@ -325,7 +325,7 @@ if __name__ == '__main__':
 
     fd.write(
         '/** @brief Simcalls\' names (generated from src/simix/simcalls.in) */\n')
-    fd.write('const std::array<const char*, NUM_SIMCALLS> simcall_names{{\n')
+    fd.write('constexpr std::array<const char*, NUM_SIMCALLS> simcall_names{{\n')
 
     fd.write('    "SIMCALL_NONE",\n')
     handle(fd, Simcall.string, simcalls, simcalls_dict)
