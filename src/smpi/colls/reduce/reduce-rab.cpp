@@ -19,28 +19,28 @@
 #      define SCR_LNG_OPTIM(bytelng)  128 + ((bytelng+127)/256) * 256;
                                  /* =  16 + multiple of 32 doubles*/
 
-# define REDUCE_LIMITS  /*  values are lower limits for count arg.  */ \
-       /*  routine =    reduce                allreduce             */ \
-       /*  size    =       2,   3,2**n,other     2,   3,2**n,other  */ \
- static int Lsh[2][4]={{ 896,1728, 576, 736},{ 448,1280, 512, 512}};   \
- static int Lin[2][4]={{ 896,1728, 576, 736},{ 448,1280, 512, 512}};   \
- static int Llg[2][4]={{ 896,1728, 576, 736},{ 448,1280, 512, 512}};   \
- static int Lfp[2][4]={{ 896,1728, 576, 736},{ 448,1280, 512, 512}};   \
- static int Ldb[2][4]={{ 896,1728, 576, 736},{ 448,1280, 512, 512}};   \
- static int Lby[2][4]={{ 896,1728, 576, 736},{ 448,1280, 512, 512}};
+#define REDUCE_LIMITS /*  values are lower limits for count arg.  */                                                   \
+                      /*  routine =    reduce                allreduce             */                                  \
+                      /*  size    =       2,   3,2**n,other     2,   3,2**n,other  */                                  \
+  static int Lsh[2][4] = {{896, 1728, 576, 736}, {448, 1280, 512, 512}};                                               \
+  static int Lin[2][4] = {{896, 1728, 576, 736}, {448, 1280, 512, 512}};                                               \
+  static int Llg[2][4] = {{896, 1728, 576, 736}, {448, 1280, 512, 512}};                                               \
+  static int Lfp[2][4] = {{896, 1728, 576, 736}, {448, 1280, 512, 512}};                                               \
+  static int Ldb[2][4] = {{896, 1728, 576, 736}, {448, 1280, 512, 512}};                                               \
+  static int Lby[2][4] = {{896, 1728, 576, 736}, {448, 1280, 512, 512}};
 #endif
 
 #ifdef REDUCE_NEW_ALWAYS
 # undef  REDUCE_LIMITS
-# define REDUCE_LIMITS  /*  values are lower limits for count arg.  */ \
-       /*  routine =    reduce                allreduce             */ \
-       /*  size    =       2,   3,2**n,other     2,   3,2**n,other  */ \
- static int Lsh[2][4]={{   1,   1,   1,   1},{   1,   1,   1,   1}};   \
- static int Lin[2][4]={{   1,   1,   1,   1},{   1,   1,   1,   1}};   \
- static int Llg[2][4]={{   1,   1,   1,   1},{   1,   1,   1,   1}};   \
- static int Lfp[2][4]={{   1,   1,   1,   1},{   1,   1,   1,   1}};   \
- static int Ldb[2][4]={{   1,   1,   1,   1},{   1,   1,   1,   1}};   \
- static int Lby[2][4]={{   1,   1,   1,   1},{   1,   1,   1,   1}};
+#define REDUCE_LIMITS /*  values are lower limits for count arg.  */                                                   \
+                      /*  routine =    reduce                allreduce             */                                  \
+                      /*  size    =       2,   3,2**n,other     2,   3,2**n,other  */                                  \
+  static int Lsh[2][4] = {{1, 1, 1, 1}, {1, 1, 1, 1}};                                                                 \
+  static int Lin[2][4] = {{1, 1, 1, 1}, {1, 1, 1, 1}};                                                                 \
+  static int Llg[2][4] = {{1, 1, 1, 1}, {1, 1, 1, 1}};                                                                 \
+  static int Lfp[2][4] = {{1, 1, 1, 1}, {1, 1, 1, 1}};                                                                 \
+  static int Ldb[2][4] = {{1, 1, 1, 1}, {1, 1, 1, 1}};                                                                 \
+  static int Lby[2][4] = {{1, 1, 1, 1}, {1, 1, 1, 1}};
 #endif
 
 /* Fast reduce and allreduce algorithm for longer buffers and predefined
@@ -389,23 +389,25 @@ Benchmark results on CRAY T3E
 #ifdef REDUCE_LIMITS
 
 #ifdef USE_Irecv
-#define  MPI_I_Sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat) \
-           { MPI_Request req;                                          \
-             req=Request::irecv(rb,rc,rd,source,rt,comm);                  \
-             Request::send(sb,sc,sd,dest,st,comm);                          \
-             Request::wait(&req,stat);                                      \
-           }
+#define MPI_I_Sendrecv(sb, sc, sd, dest, st, rb, rc, rd, source, rt, comm, stat)                                       \
+  {                                                                                                                    \
+    MPI_Request req;                                                                                                   \
+    req = Request::irecv(rb, rc, rd, source, rt, comm);                                                                \
+    Request::send(sb, sc, sd, dest, st, comm);                                                                         \
+    Request::wait(&req, stat);                                                                                         \
+  }
 #else
 #ifdef USE_Isend
-#define  MPI_I_Sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat) \
-           { MPI_Request req;                                          \
-             req=mpi_mpi_isend(sb,sc,sd,dest,st,comm);                    \
-             Request::recv(rb,rc,rd,source,rt,comm,stat);                   \
-             Request::wait(&req,stat);                                      \
-           }
+#define MPI_I_Sendrecv(sb, sc, sd, dest, st, rb, rc, rd, source, rt, comm, stat)                                       \
+  {                                                                                                                    \
+    MPI_Request req;                                                                                                   \
+    req = mpi_mpi_isend(sb, sc, sd, dest, st, comm);                                                                   \
+    Request::recv(rb, rc, rd, source, rt, comm, stat);                                                                 \
+    Request::wait(&req, stat);                                                                                         \
+  }
 #else
-#define  MPI_I_Sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat) \
-           Request::sendrecv(sb,sc,sd,dest,st,rb,rc,rd,source,rt,comm,stat)
+#define MPI_I_Sendrecv(sb, sc, sd, dest, st, rb, rc, rd, source, rt, comm, stat)                                       \
+  Request::sendrecv(sb, sc, sd, dest, st, rb, rc, rd, source, rt, comm, stat)
 #endif
 #endif
 
@@ -434,89 +436,148 @@ enum MPIM_Op {
   MPIM_LXOR,
   MPIM_BXOR
 };
-#define MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_TYPE,TYPE)                   \
-static void MPI_I_do_op_TYPE(TYPE* b1,TYPE* b2,TYPE* rslt, int cnt,MPIM_Op op)\
-{ int i;                                                               \
-  switch (op) {                                                        \
-   case MPIM_MAX :                                                     \
-      for(i=0;i<cnt;i++) rslt[i] = (b1[i]>b2[i]?b1[i]:b2[i]); break;   \
-   case MPIM_MIN :                                                     \
-      for(i=0;i<cnt;i++) rslt[i] = (b1[i]<b2[i]?b1[i]:b2[i]); break;   \
-   case MPIM_SUM :for(i=0;i<cnt;i++) rslt[i] = b1[i] +  b2[i]; break;  \
-   case MPIM_PROD:for(i=0;i<cnt;i++) rslt[i] = b1[i] *  b2[i]; break;  \
-   case MPIM_LAND:for(i=0;i<cnt;i++) rslt[i] = b1[i] && b2[i]; break;  \
-   case MPIM_LOR :for(i=0;i<cnt;i++) rslt[i] = b1[i] || b2[i]; break;  \
-   case MPIM_LXOR:for(i=0;i<cnt;i++) rslt[i] = b1[i] != b2[i]; break;  \
-   case MPIM_BAND:for(i=0;i<cnt;i++) rslt[i] = b1[i] &  b2[i]; break;  \
-   case MPIM_BOR :for(i=0;i<cnt;i++) rslt[i] = b1[i] |  b2[i]; break;  \
-   case MPIM_BXOR:for(i=0;i<cnt;i++) rslt[i] = b1[i] ^  b2[i]; break;  \
-   default: break;                                                     \
-  }                                                                    \
-}
+#define MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_TYPE, TYPE)                                                                  \
+  static void MPI_I_do_op_TYPE(TYPE* b1, TYPE* b2, TYPE* rslt, int cnt, MPIM_Op op)                                    \
+  {                                                                                                                    \
+    int i;                                                                                                             \
+    switch (op) {                                                                                                      \
+      case MPIM_MAX:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = (b1[i] > b2[i] ? b1[i] : b2[i]);                                                                   \
+        break;                                                                                                         \
+      case MPIM_MIN:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = (b1[i] < b2[i] ? b1[i] : b2[i]);                                                                   \
+        break;                                                                                                         \
+      case MPIM_SUM:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] + b2[i];                                                                                     \
+        break;                                                                                                         \
+      case MPIM_PROD:                                                                                                  \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] * b2[i];                                                                                     \
+        break;                                                                                                         \
+      case MPIM_LAND:                                                                                                  \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] && b2[i];                                                                                    \
+        break;                                                                                                         \
+      case MPIM_LOR:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] || b2[i];                                                                                    \
+        break;                                                                                                         \
+      case MPIM_LXOR:                                                                                                  \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] != b2[i];                                                                                    \
+        break;                                                                                                         \
+      case MPIM_BAND:                                                                                                  \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] & b2[i];                                                                                     \
+        break;                                                                                                         \
+      case MPIM_BOR:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] | b2[i];                                                                                     \
+        break;                                                                                                         \
+      case MPIM_BXOR:                                                                                                  \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] ^ b2[i];                                                                                     \
+        break;                                                                                                         \
+      default:                                                                                                         \
+        break;                                                                                                         \
+    }                                                                                                                  \
+  }
 
-#define MPI_I_DO_OP_FP(MPI_I_do_op_TYPE,TYPE)                          \
-static void MPI_I_do_op_TYPE(TYPE* b1,TYPE* b2,TYPE* rslt, int cnt,MPIM_Op op) \
-{ int i;                                                               \
-  switch (op) {                                                        \
-   case MPIM_MAX :                                                     \
-      for(i=0;i<cnt;i++) rslt[i] = (b1[i]>b2[i]?b1[i]:b2[i]); break;   \
-   case MPIM_MIN :                                                     \
-      for(i=0;i<cnt;i++) rslt[i] = (b1[i]<b2[i]?b1[i]:b2[i]); break;   \
-   case MPIM_SUM :for(i=0;i<cnt;i++) rslt[i] = b1[i] +  b2[i]; break;  \
-   case MPIM_PROD:for(i=0;i<cnt;i++) rslt[i] = b1[i] *  b2[i]; break;  \
-   default: break;                                                     \
-  }                                                                    \
-}
+#define MPI_I_DO_OP_FP(MPI_I_do_op_TYPE, TYPE)                                                                         \
+  static void MPI_I_do_op_TYPE(TYPE* b1, TYPE* b2, TYPE* rslt, int cnt, MPIM_Op op)                                    \
+  {                                                                                                                    \
+    int i;                                                                                                             \
+    switch (op) {                                                                                                      \
+      case MPIM_MAX:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = (b1[i] > b2[i] ? b1[i] : b2[i]);                                                                   \
+        break;                                                                                                         \
+      case MPIM_MIN:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = (b1[i] < b2[i] ? b1[i] : b2[i]);                                                                   \
+        break;                                                                                                         \
+      case MPIM_SUM:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] + b2[i];                                                                                     \
+        break;                                                                                                         \
+      case MPIM_PROD:                                                                                                  \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] * b2[i];                                                                                     \
+        break;                                                                                                         \
+      default:                                                                                                         \
+        break;                                                                                                         \
+    }                                                                                                                  \
+  }
 
-#define MPI_I_DO_OP_BYTE(MPI_I_do_op_TYPE,TYPE)                        \
-static void MPI_I_do_op_TYPE(TYPE* b1,TYPE* b2,TYPE* rslt, int cnt,MPIM_Op op)\
-{ int i;                                                               \
-  switch (op) {                                                        \
-   case MPIM_BAND:for(i=0;i<cnt;i++) rslt[i] = b1[i] &  b2[i]; break;  \
-   case MPIM_BOR :for(i=0;i<cnt;i++) rslt[i] = b1[i] |  b2[i]; break;  \
-   case MPIM_BXOR:for(i=0;i<cnt;i++) rslt[i] = b1[i] ^  b2[i]; break;  \
-   default: break;                                                     \
-  }                                                                    \
-}
+#define MPI_I_DO_OP_BYTE(MPI_I_do_op_TYPE, TYPE)                                                                       \
+  static void MPI_I_do_op_TYPE(TYPE* b1, TYPE* b2, TYPE* rslt, int cnt, MPIM_Op op)                                    \
+  {                                                                                                                    \
+    int i;                                                                                                             \
+    switch (op) {                                                                                                      \
+      case MPIM_BAND:                                                                                                  \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] & b2[i];                                                                                     \
+        break;                                                                                                         \
+      case MPIM_BOR:                                                                                                   \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] | b2[i];                                                                                     \
+        break;                                                                                                         \
+      case MPIM_BXOR:                                                                                                  \
+        for (i = 0; i < cnt; i++)                                                                                      \
+          rslt[i] = b1[i] ^ b2[i];                                                                                     \
+        break;                                                                                                         \
+      default:                                                                                                         \
+        break;                                                                                                         \
+    }                                                                                                                  \
+  }
 
-MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_short,  short)
-MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_int,    int)
-MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_long,   long)
-MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_ushort, unsigned short)
-MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_uint,   unsigned int)
-MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_ulong,  unsigned long)
-MPI_I_DO_OP_C_INTEGER( MPI_I_do_op_ulonglong,  unsigned long long)
-MPI_I_DO_OP_FP(        MPI_I_do_op_float,  float)
-MPI_I_DO_OP_FP(        MPI_I_do_op_double, double)
-MPI_I_DO_OP_BYTE(      MPI_I_do_op_byte,   char)
+MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_short, short)
+MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_int, int)
+MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_long, long)
+MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_ushort, unsigned short)
+MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_uint, unsigned int)
+MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_ulong, unsigned long)
+MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_ulonglong, unsigned long long)
+MPI_I_DO_OP_FP(MPI_I_do_op_float, float)
+MPI_I_DO_OP_FP(MPI_I_do_op_double, double)
+MPI_I_DO_OP_BYTE(MPI_I_do_op_byte, char)
 
-#define MPI_I_DO_OP_CALL(MPI_I_do_op_TYPE,TYPE)                        \
-   MPI_I_do_op_TYPE ((TYPE*)b1, (TYPE*)b2, (TYPE*)rslt, cnt, op); break;
+#define MPI_I_DO_OP_CALL(MPI_I_do_op_TYPE, TYPE)                                                                       \
+  MPI_I_do_op_TYPE((TYPE*)b1, (TYPE*)b2, (TYPE*)rslt, cnt, op);                                                        \
+  break;
 
-static void MPI_I_do_op(void* b1, void* b2, void* rslt, int cnt,
-                 MPIM_Datatype datatype, MPIM_Op op)
+static void MPI_I_do_op(void* b1, void* b2, void* rslt, int cnt, MPIM_Datatype datatype, MPIM_Op op)
 {
- switch (datatype) {
-  case MPIM_SHORT : MPI_I_DO_OP_CALL(MPI_I_do_op_short,  short)
-  case MPIM_INT   : MPI_I_DO_OP_CALL(MPI_I_do_op_int,    int)
-  case MPIM_LONG  : MPI_I_DO_OP_CALL(MPI_I_do_op_long,   long)
-  case MPIM_UNSIGNED_SHORT:
-                   MPI_I_DO_OP_CALL(MPI_I_do_op_ushort, unsigned short)
-  case MPIM_UNSIGNED:
-                   MPI_I_DO_OP_CALL(MPI_I_do_op_uint,   unsigned int)
-  case MPIM_UNSIGNED_LONG:
-                   MPI_I_DO_OP_CALL(MPI_I_do_op_ulong,  unsigned long)
-  case MPIM_UNSIGNED_LONG_LONG:
-                   MPI_I_DO_OP_CALL(MPI_I_do_op_ulonglong,  unsigned long long)
-  case MPIM_FLOAT : MPI_I_DO_OP_CALL(MPI_I_do_op_float,  float)
-  case MPIM_DOUBLE: MPI_I_DO_OP_CALL(MPI_I_do_op_double, double)
-  case MPIM_BYTE  : MPI_I_DO_OP_CALL(MPI_I_do_op_byte,   char)
- }
+  switch (datatype) {
+    case MPIM_SHORT:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_short, short)
+    case MPIM_INT:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_int, int)
+    case MPIM_LONG:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_long, long)
+    case MPIM_UNSIGNED_SHORT:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_ushort, unsigned short)
+    case MPIM_UNSIGNED:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_uint, unsigned int)
+    case MPIM_UNSIGNED_LONG:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_ulong, unsigned long)
+    case MPIM_UNSIGNED_LONG_LONG:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_ulonglong, unsigned long long)
+    case MPIM_FLOAT:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_float, float)
+    case MPIM_DOUBLE:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_double, double)
+    case MPIM_BYTE:
+      MPI_I_DO_OP_CALL(MPI_I_do_op_byte, char)
+  }
 }
 
 REDUCE_LIMITS
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 static int MPI_I_anyReduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype mpi_datatype, MPI_Op mpi_op,
                            int root, MPI_Comm comm, bool is_all)
 {
@@ -884,8 +945,7 @@ static int MPI_I_anyReduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Da
       if (mynewrank >= 0)
       { /* begin -- only for nodes with new rank */
 
-#       define OLDRANK(new) ((new)==newroot ? root                     \
-                             : ((new)<r ? (new)*2 : (new)+r) )
+#define OLDRANK(new) ((new) == newroot ? root : ((new) < r ? (new) * 2 : (new) + r))
 
         for(idx=n-1, x_base=x_size/2; idx>=0; idx--, x_base=x_base/2)
         {
@@ -949,8 +1009,8 @@ static int MPI_I_anyReduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Da
 }
 #endif /*REDUCE_LIMITS*/
 
-
-int reduce__rab(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+int reduce__rab(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+                MPI_Comm comm)
 {
   return MPI_I_anyReduce(Sendbuf, Recvbuf, count, datatype, op, root, comm, false);
 }
