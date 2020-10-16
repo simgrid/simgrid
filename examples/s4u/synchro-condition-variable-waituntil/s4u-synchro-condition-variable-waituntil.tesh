@@ -1,0 +1,63 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-synchro-condition-variable-waituntil "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (2:competitor@Tremblay) Entering the race...
+> [  0.000000] (3:competitor@Tremblay) Entering the race...
+> [  0.000000] (4:competitor@Tremblay) Entering the race...
+> [  0.000000] (5:competitor@Tremblay) Entering the race...
+> [  0.000000] (6:competitor@Tremblay) Entering the race...
+> [  0.000000] (7:competitor@Tremblay) Entering the race...
+> [  0.000000] (8:competitor@Tremblay) Entering the race...
+> [  0.000000] (9:competitor@Tremblay) Entering the race...
+> [  0.000000] (10:competitor@Tremblay) Entering the race...
+> [  0.000000] (11:competitor@Tremblay) Entering the race...
+> [  0.000000] (12:go@Tremblay) Are you ready? ...
+> [  0.250000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  0.500000] (3:competitor@Tremblay) Out of wait_until (timeout)
+> [  0.500000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  0.750000] (4:competitor@Tremblay) Out of wait_until (timeout)
+> [  0.750000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.000000] (5:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.000000] (3:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.000000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.250000] (6:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.250000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.500000] (7:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.500000] (4:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.500000] (3:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.500000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.750000] (8:competitor@Tremblay) Out of wait_until (timeout)
+> [  1.750000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.000000] (9:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.000000] (5:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.000000] (3:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.000000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.250000] (10:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.250000] (4:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.250000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.500000] (11:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.500000] (6:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.500000] (3:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.500000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  2.750000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  3.000000] (12:go@Tremblay) Go go go!
+> [  3.000000] (7:competitor@Tremblay) Out of wait_until (timeout)
+> [  3.000000] (7:competitor@Tremblay) Running!
+> [  3.000000] (5:competitor@Tremblay) Out of wait_until (timeout)
+> [  3.000000] (5:competitor@Tremblay) Running!
+> [  3.000000] (4:competitor@Tremblay) Out of wait_until (timeout)
+> [  3.000000] (4:competitor@Tremblay) Running!
+> [  3.000000] (3:competitor@Tremblay) Out of wait_until (timeout)
+> [  3.000000] (3:competitor@Tremblay) Running!
+> [  3.000000] (2:competitor@Tremblay) Out of wait_until (timeout)
+> [  3.000000] (2:competitor@Tremblay) Running!
+> [  3.000000] (8:competitor@Tremblay) Out of wait_until (YAY!)
+> [  3.000000] (8:competitor@Tremblay) Running!
+> [  3.000000] (9:competitor@Tremblay) Out of wait_until (YAY!)
+> [  3.000000] (9:competitor@Tremblay) Running!
+> [  3.000000] (10:competitor@Tremblay) Out of wait_until (YAY!)
+> [  3.000000] (10:competitor@Tremblay) Running!
+> [  3.000000] (11:competitor@Tremblay) Out of wait_until (YAY!)
+> [  3.000000] (11:competitor@Tremblay) Running!
+> [  3.000000] (6:competitor@Tremblay) Out of wait_until (YAY!)
+> [  3.000000] (6:competitor@Tremblay) Running!
