@@ -22,7 +22,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-std::thread::id root_id;
+const std::thread::id root_id = std::this_thread::get_id();
 
 static void ensure_root_tid()
 {
@@ -63,8 +63,6 @@ static void maestro(void* /* data */)
 /** Main function */
 int main(int argc, char* argv[])
 {
-  root_id = std::this_thread::get_id();
-
   /* Specify which code should be executed by maestro on another thread, once this current thread is affected to an
    * actor by the subsequent sg_actor_attach(). This must be done before the creation of the engine. */
   SIMIX_set_maestro(maestro, nullptr);
