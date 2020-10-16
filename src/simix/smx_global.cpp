@@ -93,13 +93,9 @@ std::array<unsigned char, SIGSTKSZ> sigsegv_stack; /* alternate stack for SIGSEG
  */
 static void install_segvhandler()
 {
-  stack_t stack;
   stack_t old_stack;
-  stack.ss_sp    = sigsegv_stack.data();
-  stack.ss_size  = sigsegv_stack.size();
-  stack.ss_flags = 0;
 
-  if (sigaltstack(&stack, &old_stack) == -1) {
+  if (simgrid::kernel::context::Context::install_sigsegv_stack(&old_stack, true) == -1) {
     XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
     return;
   }

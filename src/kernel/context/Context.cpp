@@ -11,8 +11,9 @@
 #include "src/simix/smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+#include <array>
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 namespace simgrid {
 namespace kernel {
@@ -22,14 +23,28 @@ ContextFactoryInitializer factory_initializer = nullptr;
 
 ContextFactory::~ContextFactory() = default;
 
-static thread_local Context* smx_current_context = nullptr;
+thread_local Context* Context::current_context_ = nullptr;
+
+#ifndef WIN32
+/* Install or disable alternate signal stack, for SIGSEGV handler. */
+int Context::install_sigsegv_stack(stack_t* old_stack, bool enable)
+{
+  static std::array<unsigned char, SIGSTKSZ> sigsegv_stack;
+  stack_t stack;
+  stack.ss_sp    = sigsegv_stack.data();
+  stack.ss_size  = sigsegv_stack.size();
+  stack.ss_flags = enable ? 0 : SS_DISABLE;
+  return sigaltstack(&stack, old_stack);
+}
+#endif
+
 Context* Context::self()
 {
-  return smx_current_context;
+  return current_context_;
 }
 void Context::set_current(Context* self)
 {
-  smx_current_context = self;
+  current_context_ = self;
 }
 
 void Context::declare_context(std::size_t size)

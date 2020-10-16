@@ -9,7 +9,6 @@
 #include "simgrid/forward.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
 
-#include <array>
 #include <csignal>
 #include <functional>
 
@@ -44,12 +43,16 @@ protected:
 class XBT_PUBLIC Context {
   friend ContextFactory;
 
+  static thread_local Context* current_context_;
+
   std::function<void()> code_;
   actor::ActorImpl* actor_ = nullptr;
   bool iwannadie_          = false;
   void declare_context(std::size_t size);
 
 public:
+  static int install_sigsegv_stack(stack_t* old_stack, bool enable);
+
   Context(std::function<void()>&& code, actor::ActorImpl* actor);
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
@@ -104,8 +107,4 @@ XBT_PRIVATE ContextFactory* boost_factory();
 
 XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
-
-#ifndef WIN32
-XBT_PUBLIC_DATA std::array<unsigned char, SIGSTKSZ> sigsegv_stack;
-#endif
 #endif

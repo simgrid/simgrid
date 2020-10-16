@@ -87,12 +87,7 @@ void ThreadContext::wrapper(ThreadContext* context)
   Context::set_current(context);
 
 #ifndef WIN32
-  /* Install alternate signal stack, for SIGSEGV handler. */
-  stack_t stack;
-  stack.ss_sp    = sigsegv_stack.data();
-  stack.ss_size  = sigsegv_stack.size();
-  stack.ss_flags = 0;
-  sigaltstack(&stack, nullptr);
+  install_sigsegv_stack(nullptr, true);
 #endif
   // Tell the caller (normally the maestro) we are starting, and wait for its green light
   context->end_.release();
@@ -115,8 +110,7 @@ void ThreadContext::wrapper(ThreadContext* context)
   context->yield();
 
 #ifndef WIN32
-  stack.ss_flags = SS_DISABLE;
-  sigaltstack(&stack, nullptr);
+  install_sigsegv_stack(nullptr, false);
 #endif
   XBT_DEBUG("Terminating");
   Context::set_current(nullptr);
