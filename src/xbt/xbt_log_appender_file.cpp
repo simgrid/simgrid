@@ -75,8 +75,8 @@ static void open_append2_file(xbt_log_append2_file_t data){
     char* sep=strchr(pre,'%');
     if(!sep)
       sep=pre+strlen(pre);
-    char* post=sep+1;
-    *sep='\0';
+    const char* post    = sep + 1;
+    *sep                = '\0';
     std::string newname = pre + std::to_string(data->count) + post;
     data->count++;
     data->file = fopen(newname.c_str(), "w");
