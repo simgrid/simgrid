@@ -1140,7 +1140,7 @@ set(CMAKE_SOURCE_FILES
   )
 
 set(PLATFORMS_EXAMPLES
-  examples/platforms/bypassASroute.xml
+  examples/platforms/bypassZoneRoute.xml
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
   examples/platforms/cluster_backbone.xml

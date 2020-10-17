@@ -1891,8 +1891,8 @@ include examples/deprecated/java/CMakeLists.txt
 include examples/deprecated/msg/CMakeLists.txt
 include examples/deprecated/msg/mc/CMakeLists.txt
 include examples/deprecated/simdag/CMakeLists.txt
-include examples/platforms/bypassASroute.xml
 include examples/platforms/bypassRoute.xml
+include examples/platforms/bypassZoneRoute.xml
 include examples/platforms/cloud.xml
 include examples/platforms/cluster_and_one_host.xml
 include examples/platforms/cluster_backbone.xml

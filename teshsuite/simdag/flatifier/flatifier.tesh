@@ -550,7 +550,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%1
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassASroute.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">

@@ -1,17 +1,17 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
-  <zone id="AS0" routing="Full">
-    <cluster id="my_cluster_1" prefix="c-" suffix=".me" radical="0-1" speed="1Gf" bw="125MBps" lat="50us"
+  <zone id="world" routing="Full">
+    <cluster id="datacenter" prefix="c-" suffix=".me" radical="0-1" speed="1Gf" bw="125MBps" lat="50us"
              router_id="router1"/>
 
-    <zone id="AS1" routing="None">
+    <zone id="outside" routing="None">
       <host id="host1" speed="1Gf"/>
     </zone>
 
     <link id="link1" bandwidth="100kBps" latency="10ms"/>
 
-    <zoneRoute src="my_cluster_1" dst="AS1" gw_src="router1" gw_dst="host1">
+    <zoneRoute src="datacenter" dst="outside" gw_src="router1" gw_dst="host1">
       <link_ctn id="link1"/>
     </zoneRoute>
   </zone>
