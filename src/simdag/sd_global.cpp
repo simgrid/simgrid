@@ -10,6 +10,8 @@
 #include "simgrid/sg_config.hpp"
 #include "src/surf/surf_interface.hpp"
 
+#include <array>
+
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd, "Logging specific to SimDag (kernel)");
 
