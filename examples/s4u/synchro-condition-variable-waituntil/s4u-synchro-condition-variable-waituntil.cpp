@@ -32,12 +32,10 @@ static void go()
 {
   XBT_INFO("Are you ready? ...");
   simgrid::s4u::this_actor::sleep_for(3);
-  {
-    std::unique_lock<simgrid::s4u::Mutex> lck(*mtx);
-    XBT_INFO("Go go go!");
-    ready = true;
-    cv->notify_all();
-  }
+  std::unique_lock<simgrid::s4u::Mutex> lck(*mtx);
+  XBT_INFO("Go go go!");
+  ready = true;
+  cv->notify_all();
 }
 
 static void main_actor()
