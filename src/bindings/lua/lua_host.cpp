@@ -8,6 +8,7 @@
 #include "lua_private.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "xbt/asserts.h"
 #include <lauxlib.h>
 
 constexpr char HOST_MODULE_NAME[] = "simgrid.host";

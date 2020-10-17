@@ -12,6 +12,7 @@
 #include "src/surf/network_interface.hpp"
 
 #include <algorithm>
+#include <cstring>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier, "Logging specific to this platform parsing tool");
 

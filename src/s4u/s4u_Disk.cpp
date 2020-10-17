@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Io.hpp"
+#include "simgrid/simix.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 
 namespace simgrid {

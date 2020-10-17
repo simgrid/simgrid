@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "simgrid/s4u/Storage.hpp"
+#include "simgrid/simix.hpp"
 #include "simgrid/storage.h"
 #include "src/surf/StorageImpl.hpp"
 

@@ -4,8 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/host.h"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/simix.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"

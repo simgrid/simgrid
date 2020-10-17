@@ -6,7 +6,7 @@
 
 #include <mpi.h>
 #include <simgrid/actor.h>
-#include <simgrid/simix.h>
+#include <simgrid/host.h>
 #include <stdio.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(smpi_test, "Messages specific for this SMPI example");

@@ -7,7 +7,7 @@
 #define SIMGRID_SIMIX_H
 
 #include <simgrid/forward.h>
-#include <simgrid/host.h>
+#include <xbt/dynar.h>
 #include <xbt/ex.h>
 #include <xbt/parmap.h>
 #ifdef __cplusplus

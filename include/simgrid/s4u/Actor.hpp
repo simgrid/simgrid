@@ -10,7 +10,6 @@
 
 #include <simgrid/chrono.hpp>
 #include <xbt/Extendable.hpp>
-#include <xbt/functional.hpp>
 #include <xbt/signal.hpp>
 #include <xbt/string.hpp>
 

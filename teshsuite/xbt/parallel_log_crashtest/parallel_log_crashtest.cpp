@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Engine.hpp"
+#include "xbt/log.h"
 #include <array>
 #include <thread>
 

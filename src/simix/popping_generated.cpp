@@ -15,6 +15,7 @@
  */
 
 #include "smx_private.hpp"
+#include <simgrid/host.h>
 #include <xbt/base.h>
 #if SIMGRID_HAVE_MC
 #include "src/mc/mc_forward.hpp"

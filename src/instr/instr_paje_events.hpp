@@ -8,6 +8,7 @@
 
 #include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
+#include <memory>
 #include <sstream>
 #include <string>
 

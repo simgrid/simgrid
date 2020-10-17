@@ -314,6 +314,7 @@ if __name__ == '__main__':
     fd = header("popping_generated.cpp")
 
     fd.write('#include "smx_private.hpp"\n')
+    fd.write('#include <simgrid/host.h>\n')
     fd.write('#include <xbt/base.h>\n')
     fd.write('#if SIMGRID_HAVE_MC\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')

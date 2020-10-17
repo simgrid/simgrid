@@ -7,10 +7,8 @@
 #define SIMGRID_S4U_ENGINE_HPP
 
 #include <xbt/base.h>
-#include <xbt/functional.hpp>
 
 #include <simgrid/forward.h>
-#include <simgrid/simix.hpp>
 
 #include <simgrid/s4u/NetZone.hpp>
 

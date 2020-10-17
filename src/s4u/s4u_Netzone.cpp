@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
+#include "simgrid/simix.hpp"
 #include "simgrid/zone.h"
 
 namespace simgrid {
