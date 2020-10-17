@@ -511,6 +511,8 @@ include examples/s4u/routing-get-clusters/s4u-routing-get-clusters.cpp
 include examples/s4u/routing-get-clusters/s4u-routing-get-clusters.tesh
 include examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp
 include examples/s4u/synchro-barrier/s4u-synchro-barrier.tesh
+include examples/s4u/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.cpp
+include examples/s4u/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.tesh
 include examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable.cpp
 include examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable.tesh
 include examples/s4u/synchro-mutex/s4u-synchro-mutex.cpp
@@ -846,8 +848,8 @@ include teshsuite/smpi/coll-reduce/coll-reduce.c
 include teshsuite/smpi/coll-reduce/coll-reduce.tesh
 include teshsuite/smpi/coll-scatter/coll-scatter.c
 include teshsuite/smpi/coll-scatter/coll-scatter.tesh
-include teshsuite/smpi/fort args/fort_args.f90
-include teshsuite/smpi/fort args/fort_args.tesh
+include teshsuite/smpi/fort_args/fort_args.f90
+include teshsuite/smpi/fort_args/fort_args.tesh
 include teshsuite/smpi/gh-139/gh-139.c
 include teshsuite/smpi/gh-139/gh-139.tesh
 include teshsuite/smpi/hostfile
