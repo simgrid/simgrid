@@ -6705,7 +6705,7 @@ SET(DOCTYPE);
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-FAIL("Bad declaration %s.\nIf your are using a XML v3 file (check the version attribute in <platform>), please update it with tools/simgrid_update_xml.pl",yytext);
+FAIL("Bad declaration %s.\nIf your are using an XML v3 file (check the version attribute in <platform>), please update it with tools/simgrid_update_xml.pl",yytext);
 	YY_BREAK
 
 case 13:
@@ -6721,7 +6721,7 @@ SET(ROOT_surfxml_platform);
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-FAIL("Bad declaration %s.\nIf your are using a XML v3 file (check the version attribute in <platform>), please update it with tools/simgrid_update_xml.pl",yytext);
+FAIL("Bad declaration %s.\nIf your are using an XML v3 file (check the version attribute in <platform>), please update it with tools/simgrid_update_xml.pl",yytext);
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
