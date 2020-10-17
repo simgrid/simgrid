@@ -55,10 +55,10 @@ void smpi_prepare_global_memory_segment()
 
 static void smpi_get_executable_global_size()
 {
-  char buffer[PATH_MAX];
-  const char* full_name = realpath(simgrid::xbt::binary_name.c_str(), buffer);
-  xbt_assert(full_name != nullptr, "Could not resolve real path of binary file '%s'",
-             simgrid::xbt::binary_name.c_str());
+  char* buffer = realpath(simgrid::xbt::binary_name.c_str(), nullptr);
+  xbt_assert(buffer != nullptr, "Could not resolve real path of binary file '%s'", simgrid::xbt::binary_name.c_str());
+  std::string full_name = buffer;
+  free(buffer);
 
   std::vector<simgrid::xbt::VmMap> map = simgrid::xbt::get_memory_map(getpid());
   for (auto i = map.begin(); i != map.end() ; ++i) {
