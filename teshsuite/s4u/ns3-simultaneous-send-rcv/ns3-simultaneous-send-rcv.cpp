@@ -18,7 +18,7 @@ const int nb_sender          = 100;
 
 int nb_messages_sent = 0;
 
-simgrid::s4u::Mailbox* box;
+simgrid::s4u::Mailbox* box = simgrid::s4u::Mailbox::by_name("test");
 
 static void test_send(){
   for (int nb_message = 0; nb_message < nb_message_to_send; nb_message++) {
@@ -48,13 +48,11 @@ int main(int argc, char *argv[])
  
   e.load_platform(argv[1]);
 
-  simgrid::s4u::ActorPtr receiver = simgrid::s4u::Actor::create("receiver", e.get_all_hosts()[0], test_receive);
-  for (int i = 0; i < nb_sender; i++)
-    simgrid::s4u::Actor::create("sender_" + std::to_string(i), e.get_all_hosts()[i % (e.get_host_count() - 1) + 1],
-                                test_send);
+  auto hosts = e.get_all_hosts();
 
-  box = simgrid::s4u::Mailbox::by_name("test");
-  box->set_receiver(receiver);
+  simgrid::s4u::Actor::create("receiver", hosts[0], test_receive);
+  for (int i = 0; i < nb_sender; i++)
+    simgrid::s4u::Actor::create("sender_" + std::to_string(i), hosts[i % (e.get_host_count() - 1) + 1], test_send);
 
   e.run();
 

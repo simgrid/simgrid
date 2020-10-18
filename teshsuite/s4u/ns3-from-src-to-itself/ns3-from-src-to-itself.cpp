@@ -13,12 +13,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u tests");
 
 const int payload            = 1000;
 const int nb_message_to_send = 5;
-// const double sleep_time      = 5;
 const int nb_sender = 2;
 
 int nb_messages_sent = 0;
 
-simgrid::s4u::Mailbox* box;
+simgrid::s4u::Mailbox* box = simgrid::s4u::Mailbox::by_name("test");
 
 static void test_send()
 {
@@ -27,7 +26,6 @@ static void test_send()
     XBT_VERB("start sending test #%i", nb_messages_sent);
     box->put(new int(nb_messages_sent), payload);
     XBT_VERB("done sending test #%i", nb_messages_sent);
-    //    simgrid::s4u::this_actor::sleep_until(sleep_time * (nb_message + 1));
   }
 }
 
@@ -49,12 +47,10 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  auto host       = e.get_all_hosts()[0];
-  auto receiver   = simgrid::s4u::Actor::create("receiver", host, test_receive);
-  auto send_same  = simgrid::s4u::Actor::create("send_same", host, test_send);
-  auto send_other = simgrid::s4u::Actor::create("send_other", e.get_all_hosts()[1], test_send);
-
-  box = simgrid::s4u::Mailbox::by_name("test");
+  auto hosts = e.get_all_hosts();
+  simgrid::s4u::Actor::create("receiver", hosts[0], test_receive);
+  simgrid::s4u::Actor::create("send_same", hosts[0], test_send);
+  simgrid::s4u::Actor::create("send_other", hosts[1], test_send);
 
   e.run();
 
