@@ -41,7 +41,7 @@ ADD_TEST(tesh-s4u-comm-pt2pt    ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-pt2pt/com
 
 # NS-3 specific tests
 if(SIMGRID_HAVE_NS3)
-  foreach(x ns3-simultaneous-send-rcv)
+  foreach(x ns3-simultaneous-send-rcv ns3-from-src-to-itself)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -50,7 +50,7 @@ if(SIMGRID_HAVE_NS3)
   endforeach()
 endif()
 
-foreach(x ns3-simultaneous-send-rcv)
+foreach(x ns3-simultaneous-send-rcv ns3-from-src-to-itself)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()

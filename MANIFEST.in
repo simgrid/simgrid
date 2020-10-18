@@ -717,6 +717,8 @@ include teshsuite/s4u/is-router/is-router.cpp
 include teshsuite/s4u/is-router/is-router.tesh
 include teshsuite/s4u/listen_async/listen_async.cpp
 include teshsuite/s4u/listen_async/listen_async.tesh
+include teshsuite/s4u/ns3-from-src-to-itself/ns3-from-src-to-itself.cpp
+include teshsuite/s4u/ns3-from-src-to-itself/ns3-from-src-to-itself.tesh
 include teshsuite/s4u/ns3-simultaneous-send-rcv/ns3-simultaneous-send-rcv.cpp
 include teshsuite/s4u/ns3-simultaneous-send-rcv/ns3-simultaneous-send-rcv.tesh
 include teshsuite/s4u/pid/pid.cpp

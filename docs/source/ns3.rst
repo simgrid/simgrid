@@ -12,7 +12,9 @@ The SimGrid/ns-3 binding only contains features that are common to both systems.
 Not all ns-3 models are available from SimGrid (only the TCP and WiFi ones are),
 while not all SimGrid platform files can be used in conjunction ns-3 (routes
 must be of length 1). Also, the platform built in ns-3 from the SimGrid
-description is very basic.
+description is very basic. Finally, communicating from an host to
+itself is forbidden in ns-3, so every such communication completes
+immediately upon startup.
 
 
 Compiling the ns-3/SimGrid binding
