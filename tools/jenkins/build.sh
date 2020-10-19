@@ -5,8 +5,6 @@
 # See https://ci.inria.fr/simgrid/job/SimGrid/configure
 # See https://ci.inria.fr/simgrid/job/Simgrid-Windows/configure
 
-set -e
-
 # ensure that the locales are set, so that perl keeps its nerves
 export LC_ALL=C
 
@@ -18,6 +16,8 @@ find /builds/workspace/SimGrid/ -name "hs_err_pid*.log" -exec rm -f {} +
 ls /tmp
 df -h
 echo "XXXX Let's go"
+
+set -e
 
 # Help older cmakes
 if [ -e /usr/lib/jvm/java-7-openjdk-amd64 ] ;
