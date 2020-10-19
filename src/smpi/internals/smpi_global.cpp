@@ -481,7 +481,8 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
           smpi_copy_file(libpath, target_lib, fdin_size2);
 
           std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_lib + "/g' " + target_executable;
-          xbt_assert(system(sedcommand.c_str()) == 0, "error while applying sed command %s \n", sedcommand.c_str());
+          int status             = system(sedcommand.c_str());
+          xbt_assert(status == 0, "error while applying sed command %s \n", sedcommand.c_str());
         }
       }
 
