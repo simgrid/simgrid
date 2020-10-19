@@ -30,6 +30,7 @@ public:
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                          s4u::Link::SharingPolicy policy,
                          const std::unordered_map<std::string, std::string>* props) override;
+  NetPoint* get_access_point() {return access_point_;}
 
 private:
   resource::LinkImpl* wifi_link_ = nullptr; // Representing the air media (there is no such thing in NS-3)
