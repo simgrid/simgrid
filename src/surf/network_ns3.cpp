@@ -460,7 +460,6 @@ void LinkNS3::set_latency_profile(profile::Profile*)
 NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, *src, *dst, totalBytes, false)
 {
-
   // ns-3 fails when src = dst, so avoid the problem by considering that communications are infinitely fast on the
   // loopback that does not exists
   if (src == dst) {
