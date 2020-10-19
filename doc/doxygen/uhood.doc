@@ -19,7 +19,7 @@ We provide an uniform interface to them:
   `intrusive_ptr_release(p)` (which is the interface used by
   [`boost::intrusive_ptr`](http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html));
 
-- delegation of the operations to a opaque `pimpl` (which is the Maestro object);
+- delegation of the operations to an opaque `pimpl` (which is the Maestro object);
 
 - the Maestro object and the corresponding S4U object have the same lifetime
   (and share the same reference count).
@@ -33,7 +33,7 @@ Some objects currently live for the whole duration of the simulation and do
 not have reference counts. We still provide dummy `intrusive_ptr_add_ref(p)`,
 `intrusive_ptr_release(p)` and `FooPtr` for consistency.
 
-In many cases, we try to have a API which is consistent with the API or
+In many cases, we try to have an API which is consistent with the API or
 corresponding C++ standard classes. For example, the methods of
 `simgrid::s4u::Mutex` are based on [`std::mutex`](http://en.cppreference.com/w/cpp/thread/mutex).
 This has several benefits:
@@ -84,7 +84,7 @@ public:
 using ActorPtr = Actor::Ptr;
 ~~~
 
-It uses the `simgrid::simix::Process` as a opaque pimple:
+It uses the `simgrid::simix::Process` as an opaque pimple:
 
 ~~~
 class Process {

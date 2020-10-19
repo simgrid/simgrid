@@ -463,7 +463,7 @@ Documentation:
    (documenting all internals this way is overkill + doxygen scales badly)
  - New tutorial on S4U (highly inspired from the old MSG one, but with
    a git repository to fork as a starting point, and a docker image)
- - Started but not finished a SMPI tutorial inspired from the JLPC'14 one.
+ - Started but not finished an SMPI tutorial inspired from the JLPC'14 one.
  - The Developper manual is still to be converted (not compiled until then)
  - Some parts are still missing in this conversion (such as the
    platform and deployment sections) while others were blindly converted
@@ -891,7 +891,7 @@ SimGrid (3.16) Released June 22. 2017.
  * This is (mainly) a backward compatible change: v4 are valid v4.1 files
    - <zone> can be used as a synonym for the now deprecated <as>
    - <zoneRoute> can be used as a synonym for the now deprecated <asroute>
-   - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
+   - <bypassZoneRoute> can be used as a synonym for the now deprecated <bypassAsRoute>
    - <actor> can be used as a synonym for the now deprecated <process>
    - state_file and avail_file periodicity is now easier to express
      (check the documentation) the old behavior should still work.
@@ -1827,7 +1827,7 @@ SimGrid (3.8) stable; urgency=low
  TRACE:
  * Two new tracing options for adding comments to trace file so you
    can track your experiments (see --help-tracing for details).
- * New option to generate a impoverished trace file (--cfg=tracing/basic:1)
+ * New option to generate an impoverished trace file (--cfg=tracing/basic:1)
  * Adding the SimGrid version that generated the trace file as a comment.
  * Instrumenting other MSG functions (MSG_task_isend_with_matching and MSG_task_dsend)
  * Fix to avoid key clashes on Paje links
@@ -3778,7 +3778,7 @@ SimGrid (2.90) unstable; urgency=low
     MSG but a few things really had to disappear. The main differences
     with the previous version are:
        1) no more m_links_t and the corresponding functions. Platforms are
-         directly read from a XML description and cannot be hard-coded
+         directly read from an XML description and cannot be hard-coded
          anymore. The same format is used for application deployment
          description. The new format is described in the documentation.
          Have a look in tools/platform_generation. There is a tiny script

@@ -67,7 +67,7 @@ time is reported into the simulator.
 Describing Your Platform
 ------------------------
 
-As a SMPI user, you are supposed to provide a description of your
+As an SMPI user, you are supposed to provide a description of your
 simulated platform, that is mostly a set of simulated hosts and network
 links with some performance characteristics. SimGrid provides a plenty
 of :ref:`documentation <platform>` and examples (in the
@@ -256,7 +256,7 @@ Hands-on!
 ---------
 
 It is time to start using SMPI yourself. For that, you first need to
-install it somehow, and then you will need a MPI application to play with.
+install it somehow, and then you will need an MPI application to play with.
 
 Using Docker
 ............

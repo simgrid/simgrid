@@ -126,7 +126,7 @@ double surf_get_clock()
   return NOW;
 }
 
-/* returns whether #file_path is a absolute file path. Surprising, isn't it ? */
+/* returns whether #file_path is an absolute file path. Surprising, isn't it ? */
 static bool is_absolute_file_path(const std::string& file_path)
 {
 #ifdef _WIN32

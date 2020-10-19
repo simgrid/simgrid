@@ -380,7 +380,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit)
   return upper_bound - lower_bound + 1;
 }
 
-/** @brief Finds the number of elements in a array type (DW_TAG_array_type)
+/** @brief Finds the number of elements in an array type (DW_TAG_array_type)
  *
  *  The compilation unit might be needed because the default lower
  *  bound depends on the language of the compilation unit.

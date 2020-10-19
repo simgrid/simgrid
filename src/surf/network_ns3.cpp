@@ -465,7 +465,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   if (src == dst) {
     static bool warned = false;
     if (not warned) {
-      XBT_WARN("Sending from an host %s to itself is not supported by ns-3. Every such communication finishes "
+      XBT_WARN("Sending from a host %s to itself is not supported by ns-3. Every such communication finishes "
                "immediately upon startup.",
                src->get_cname());
       warned = true;

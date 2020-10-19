@@ -7,7 +7,7 @@
  *
  *  This file contains the MC replay/record functionality.
  *  The recorded path is written in the log output and can be replayed with MC disabled
- *  (even with an non-MC build) using `--cfg=model-check/replay:$replayPath`.
+ *  (even with a non-MC build) using `--cfg=model-check/replay:$replayPath`.
  *
  *  The same version of Simgrid should be used and the same arguments should be
  *  passed to the application (without the MC specific arguments).
@@ -27,7 +27,7 @@ namespace mc {
 
 typedef std::vector<Transition> RecordTrace;
 
-/** Convert a string representation of the path into a array of `simgrid::mc::Transition`
+/** Convert a string representation of the path into an array of `simgrid::mc::Transition`
  */
 XBT_PRIVATE RecordTrace parseRecordTrace(const char* data);
 XBT_PRIVATE std::string traceToString(simgrid::mc::RecordTrace const& trace);

@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to work with the state profile of an host or a link,
+/* This example shows how to work with the state profile of a host or a link,
  * specifying when the resource must be turned on or off.
  *
  * To set such a profile, the first way is to use a file in the XML, while the second is to use the programmatic
  * interface. Once this profile is in place, the resource will automatically be turned on and off.
  *
- * The actors running on an host that is turned off are forcefully killed
+ * The actors running on a host that is turned off are forcefully killed
  * once their on_exit callbacks are executed. They cannot avoid this fate.
  * Since we specified on_failure="RESTART" for each actors in the XML file,
  * they will be automatically restarted when the host starts again.

@@ -112,7 +112,7 @@ public:
     extensions_[0]=data;
   }
   void* get_data() const { return extensions_[0]; }
-  // Convenience extension access when the type has a associated EXTENSION ID:
+  // Convenience extension access when the type has an associated EXTENSION ID:
   template <class U> U* extension() const { return extension<U>(U::EXTENSION_ID); }
   template<class U> void extension_set(U* p) { extension_set<U>(U::EXTENSION_ID, p); }
 };

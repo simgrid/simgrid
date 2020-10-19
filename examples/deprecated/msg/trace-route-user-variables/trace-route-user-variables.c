@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);
 
-  //declaring link user variables (one without, another with a RGB color)
+  // declaring link user variables (one without, another with an RGB color)
   TRACE_link_variable_declare("Link_Capacity");
   TRACE_link_variable_declare_with_color ("Link_Utilization", "0.9 0.1 0.1");
 

@@ -32,7 +32,7 @@ XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_list()") XBT_PUBLIC xbt_dynar_t s
 XBT_PUBLIC size_t sg_host_extension_create(void (*deleter)(void*));
 XBT_PUBLIC void* sg_host_extension_get(const_sg_host_t host, size_t rank);
 
-/** Finds an host from its name */
+/** Finds a host from its name */
 XBT_PUBLIC sg_host_t sg_host_by_name(const char* name);
 
 /** @brief Return the name of the sg_host_t. */
@@ -57,13 +57,13 @@ XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_data_set(h, NULL)") XBT_PUBLIC vo
 #endif
 
 // ========= storage related functions ============
-/** @brief Return the list of mount point names on an host.
+/** @brief Return the list of mount point names on a host.
  * @param host a host
  * @return a dict containing all mount point on the host (mount_name => sg_storage_t)
  */
 XBT_PUBLIC xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host);
 
-/** @brief Return the list of storages attached to an host.
+/** @brief Return the list of storages attached to a host.
  * @param host a host
  * @return a dynar containing all storages (name) attached to the host
  */

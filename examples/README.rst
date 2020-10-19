@@ -456,7 +456,7 @@ Executions on the CPU
 
   - **Using Pstates on a host:**
     This example shows how define a set of pstates in the XML. The current pstate
-    of an host can then be accessed and changed from the program.
+    of a host can then be accessed and changed from the program.
 
     .. tabs::
 

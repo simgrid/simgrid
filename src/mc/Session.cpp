@@ -66,7 +66,7 @@ Session::Session(const std::function<void()>& code)
              "Please use the dlopen privatization schema when model-checking SMPI code");
 #endif
 
-  // Create a AF_LOCAL socketpair used for exchanging messages
+  // Create an AF_LOCAL socketpair used for exchanging messages
   // between the model-checker process (ourselves) and the model-checked
   // process:
   int sockets[2];

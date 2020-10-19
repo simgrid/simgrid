@@ -12,7 +12,7 @@ The SimGrid/ns-3 binding only contains features that are common to both systems.
 Not all ns-3 models are available from SimGrid (only the TCP and WiFi ones are),
 while not all SimGrid platform files can be used in conjunction ns-3 (routes
 must be of length 1). Also, the platform built in ns-3 from the SimGrid
-description is very basic. Finally, communicating from an host to
+description is very basic. Finally, communicating from a host to
 itself is forbidden in ns-3, so every such communication completes
 immediately upon startup.
 
@@ -182,7 +182,7 @@ WiFi network performance
 
 
 The performance of a wifi network is controlled by 3 property that can be added
-to the an host connected to the wifi zone:
+to the a host connected to the wifi zone:
 
  * ``wifi_mcs`` (`Modulation and Coding Scheme <https://en.wikipedia.org/wiki/Link_adaptation>`_)
    Roughly speaking, it defines the speed at which the access point is

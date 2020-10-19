@@ -9,7 +9,7 @@
 /** @file
  *  Libunwind implementation for the model-checker
  *
- *  Libunwind provides an pluggable stack unwinding API: the way the current
+ *  Libunwind provides a pluggable stack unwinding API: the way the current
  *  registers and memory is accessed, the way unwinding information is found
  *  is pluggable.
  *

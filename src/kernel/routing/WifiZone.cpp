@@ -29,7 +29,7 @@ void WifiZone::seal()
     xbt_assert(access_point_ != nullptr, "Access point '%s' of WIFI zone '%s' does not exist: no such host or router.",
                AP_name, get_cname());
     xbt_assert(access_point_->is_host() || access_point_->is_router(),
-               "Access point '%s' of WIFI zone '%s' must be either an host or a router.", AP_name, get_cname());
+               "Access point '%s' of WIFI zone '%s' must be either a host or a router.", AP_name, get_cname());
   }
 }
 

@@ -789,7 +789,7 @@ Reusing the same API as the C++ standard library is very useful because:
 
 This type of approach might be useful for other libraries which define
 their own contexts. An example of this is
-[Mordor](https://github.com/mozy/mordor), a I/O library using fibers
+[Mordor](https://github.com/mozy/mordor), an I/O library using fibers
 (cooperative scheduling): it implements cooperative/fiber
 [mutex](https://github.com/mozy/mordor/blob/4803b6343aee531bfc3588ffc26a0d0fdf14b274/mordor/fibersynchronization.h#L70),
 [recursive

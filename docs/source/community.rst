@@ -266,7 +266,7 @@ low-level concerns about the way the model checker is implemented. This makes it
 difficult to write new algorithms and difficult to understand, debug, and modify
 the existing ones. We need a clean API to express the model-checking algorithms
 in a form which is closer to the text-book/paper description. This API must
-be exposed in a a language which is more adequate to this task.
+be exposed in a language which is more adequate to this task.
 
 Tasks:
 

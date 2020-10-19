@@ -10,7 +10,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(kademlia_node);
 
 namespace kademlia {
 
-/** @brief Prints a answer_t, for debugging purposes */
+/** @brief Prints an Answer, for debugging purposes */
 void Answer::print() const
 {
   XBT_INFO("Searching %08x, size %zu", destination_id_, nodes_.size());
@@ -58,9 +58,9 @@ bool Answer::destinationFound() const
   return not nodes_.empty() && nodes_.begin()->second == 0;
 }
 
-/** @brief Adds the content of a bucket unsigned into a answer object.
-  * @param bucket the bucket we have to had unsigned into
-  */
+/** @brief Adds the content of a bucket unsigned into an answer object.
+ * @param bucket the bucket we have to had unsigned into
+ */
 void Answer::addBucket(const Bucket* bucket)
 {
   xbt_assert((bucket != nullptr), "Provided a NULL bucket");
