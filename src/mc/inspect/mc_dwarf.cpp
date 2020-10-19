@@ -1017,7 +1017,7 @@ static std::string find_by_build_id(std::vector<char> id)
       return filename;
     }
   }
-  XBT_DEBUG("Not debuf info found for build ID %s\n", hex.data());
+  XBT_DEBUG("No debug info found for build ID %s\n", hex.data());
   return std::string();
 }
 
