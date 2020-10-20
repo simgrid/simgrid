@@ -150,7 +150,7 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
 
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     ns3::Ptr<ns3::ListPositionAllocator> positionAllocS = ns3::CreateObject<ns3::ListPositionAllocator>();
-    positionAllocS->Add(ns3::Vector(0, 0, 0));
+    positionAllocS->Add(ns3::Vector(0, 0, 255 * 100 * number_of_networks + 100 * number_of_links));
 
     ns3::NetDeviceContainer netDevices;
     NetPointNs3* access_point_netpoint_ns3 = wifizone->get_access_point()->extension<NetPointNs3>();
@@ -166,14 +166,18 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
 
     NetPointNs3* station_netpoint_ns3 = nullptr;
     ns3::Ptr<ns3::Node> station_ns3_node = nullptr;
-    const char* distance;
+    double distance;
+    double angle = 0;
+    int nb_stations = wifizone->get_all_hosts().size() - 1;
+    double step = 2 * M_PI / nb_stations;
     for (auto station_host : wifizone->get_all_hosts()) {
         station_netpoint_ns3 = station_host->get_netpoint()->extension<NetPointNs3>();
         if (station_netpoint_ns3 == access_point_netpoint_ns3)
             continue;
         hosts_netpoints.push_back(station_netpoint_ns3);
-        distance = station_host->get_property("wifi_distance");
-        positionAllocS->Add(ns3::Vector(distance ? atof(distance) : 10.0, 0, 0));
+        distance = station_host->get_property("wifi_distance") ? atof(station_host->get_property("wifi_distance")) : 10.0;
+        positionAllocS->Add(ns3::Vector(distance * std::cos(angle), distance * std::sin(angle), 255 * 100 * number_of_networks + 100 * number_of_links));
+        angle += step;
         station_ns3_node = station_netpoint_ns3->ns3_node_;
         nodes.Add(station_ns3_node);
         netDevices.Add(wifi.Install(wifiPhy, wifiMac, station_ns3_node));
