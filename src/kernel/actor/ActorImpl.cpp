@@ -62,7 +62,7 @@ ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std
 ActorImpl::~ActorImpl()
 {
   if (simix_global != nullptr && this != simix_global->maestro_)
-    s4u::Actor::on_destruction(*ciface());
+    s4u::Actor::on_destruction(*get_ciface());
 }
 
 /* Become an actor in the simulation
@@ -112,7 +112,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   context->attach_start();
 
   /* The on_creation() signal must be delayed until there, where the pid and everything is set */
-  s4u::Actor::on_creation(*actor->ciface());
+  s4u::Actor::on_creation(*actor->get_ciface());
 
   return ActorImplPtr(actor);
 }
@@ -190,7 +190,7 @@ void ActorImpl::cleanup()
   cleanup_from_simix();
 
   context_->set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  actor::simcall([this] { s4u::Actor::on_termination(*ciface()); });
+  actor::simcall([this] { s4u::Actor::on_termination(*get_ciface()); });
   context_->set_wannadie();
 }
 
@@ -310,7 +310,7 @@ void ActorImpl::yield()
   }
 
   if (SMPI_switch_data_segment && not finished_) {
-    SMPI_switch_data_segment(iface());
+    SMPI_switch_data_segment(get_iface());
   }
 }
 
@@ -356,7 +356,7 @@ s4u::Actor* ActorImpl::restart()
   actor->set_kill_time(arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);
 
-  return actor->ciface();
+  return actor->get_ciface();
 }
 
 void ActorImpl::suspend()
@@ -461,7 +461,7 @@ ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
 
   intrusive_ptr_add_ref(actor);
   /* The on_creation() signal must be delayed until there, where the pid and everything is set */
-  s4u::Actor::on_creation(*actor->ciface());
+  s4u::Actor::on_creation(*actor->get_ciface());
 
   return ActorImplPtr(actor);
 }

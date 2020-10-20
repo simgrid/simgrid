@@ -195,7 +195,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
       (static_cast<char*>(buff) >= smpi_data_exe_start) &&
       (static_cast<char*>(buff) < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-    smpi_switch_data_segment(comm->src_actor_->iface());
+    smpi_switch_data_segment(comm->src_actor_->get_iface());
     tmpbuff = xbt_malloc(buff_size);
     memcpy_private(tmpbuff, buff, private_blocks);
   }
@@ -204,7 +204,7 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
       ((char*)comm->dst_buff_ >= smpi_data_exe_start) &&
       ((char*)comm->dst_buff_ < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-    smpi_switch_data_segment(comm->dst_actor_->iface());
+    smpi_switch_data_segment(comm->dst_actor_->get_iface());
   }
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff, comm->dst_buff_);
   memcpy_private(comm->dst_buff_, tmpbuff, private_blocks);

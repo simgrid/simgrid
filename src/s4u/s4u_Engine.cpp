@@ -312,7 +312,7 @@ std::vector<ActorPtr> Engine::get_all_actors() const
 {
   std::vector<ActorPtr> actor_list;
   for (auto const& kv : simix_global->process_list) {
-    actor_list.push_back(kv.second->iface());
+    actor_list.push_back(kv.second->get_iface());
   }
   return actor_list;
 }
@@ -321,8 +321,8 @@ std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(Actor
 {
   std::vector<ActorPtr> actor_list;
   for (auto const& kv : simix_global->process_list) {
-    if (filter(kv.second->iface()))
-      actor_list.push_back(kv.second->iface());
+    if (filter(kv.second->get_iface()))
+      actor_list.push_back(kv.second->get_iface());
   }
   return actor_list;
 }

@@ -80,7 +80,7 @@ ActorPtr Mailbox::get_receiver() const
 {
   if (pimpl_->permanent_receiver_ == nullptr)
     return ActorPtr();
-  return pimpl_->permanent_receiver_->iface();
+  return pimpl_->permanent_receiver_->get_iface();
 }
 
 CommPtr Mailbox::put_init()
