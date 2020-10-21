@@ -51,39 +51,4 @@ static inline std::string transform_socket_ptr(ns3::Ptr<ns3::Socket> local_socke
   return sstream.str();
 }
 
-class XBT_PRIVATE WifiZone {
-public:
-  WifiZone(const std::string& name_, simgrid::s4u::Host* host_, ns3::Ptr<ns3::Node> ap_node_,
-           ns3::Ptr<ns3::YansWifiChannel> channel_, int mcs_, int nss_, int network_, int link_);
-
-  const char* get_cname() { return name.c_str(); }
-  simgrid::s4u::Host* get_host() { return host; }
-  ns3::Ptr<ns3::Node> get_ap_node() { return ap_node; }
-  ns3::Ptr<ns3::YansWifiChannel> get_channel() { return channel; }
-  int get_mcs() { return mcs; }
-  int get_nss() { return nss; }
-  int get_network() { return network; }
-  int get_link() { return link; }
-  int get_n_sta_nodes() { return n_sta_nodes; }
-
-  void set_network(int network_) { network = network_; }
-  void set_link(int link_) { link = link_; }
-  void add_sta_node() { n_sta_nodes++; }
-
-  static bool is_ap(ns3::Ptr<ns3::Node> node);
-  static WifiZone* by_name(const std::string& name);
-
-private:
-  std::string name;
-  simgrid::s4u::Host* host;
-  ns3::Ptr<ns3::Node> ap_node;
-  ns3::Ptr<ns3::YansWifiChannel> channel;
-  int mcs;
-  int nss;
-  int network;
-  int link;
-  int n_sta_nodes = 0;
-  static std::unordered_map<std::string, WifiZone*> wifi_zones;
-};
-
 #endif
