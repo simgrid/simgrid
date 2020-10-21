@@ -139,74 +139,118 @@ to see which ones are used in our regression tests.
 WiFi platforms
 --------------
 
-In SimGrid, WiFi networks are modeled as regular links with a specific
-attribute, and these links are then added to routes between hosts. The main
-difference When using ns-3 WiFi networks is that the network performance is not
-given by the link bandwidth and latency but by the access point WiFi
-characteristics, and the distance between the access point and the hosts (called
-station in the WiFi world).
+In SimGrid, WiFi networks are modeled with WiFi zones, where a zone contains 
+the access point of the WiFi network and the hosts connected to it (called 
+station in the WiFi world). Links inside WiFi zones are modeled as regular 
+links with a specific attribute, and these links are then added to routes 
+between hosts. The main difference When using ns-3 WiFi networks is that 
+the network performance is not given by the link bandwidth and latency but 
+by the access point WiFi characteristics, and the distance between the access 
+point and the hosts.
 
-So, to declare a new WiFi network, simply declare a link with the ``WiFi``
-sharing policy as you would do in a pure SimGrid simulation (you must still
-provide the ``bandwidth`` and ``latency`` attributes even if they are ignored,
-because they are mandatory to the SimGrid XML parser).
-
-.. code-block:: xml
-
-	 <link id="net0" bandwidth="0" latency="0" sharing_policy="WIFI"/>
-
-To declare that a given host is connected to this WiFi zone, use the
-``wifi_link`` property of that host. The property value must be the link id that
-you want to use as a WiFi zone. This is not needed when using pure SimGrid wifi,
-only when using ns-3 wifi, because the wifi performance is :ref:`configured <ns3_wifi_perf>`.
+So, to declare a new WiFi network, simply declare a zone with the ``WIFI``
+routing.
 
 .. code-block:: xml
 
-   <host id="alice" speed="1Gf">
-     <prop id="wifi_link" value="net0"/>
-   </host>
+	<zone id="SSID_1" routing="WIFI">
 
-To connect the station node to the access point node, simply create a route
-between them:
+Inside this zone you must declare which host or router will be the access point
+of the WiFi network.
 
 .. code-block:: xml
 
-   <route src="alice" dst="bob">
-     <link_ctn id="net0" />
-   </route>
+	<prop id="access_point" value="alice"/>
 
-.. _ns3_wifi_perf:
+Afterward simply declare the hosts and routers inside the WiFi network. Remember 
+that one must have the same name as declared in the property "access point".
+
+.. code-block:: xml
+
+	<router id="alice" speed="1Gf"/>
+	<host id="STA0-0" speed="1Gf"/>
+	<host id="STA0-1" speed="1Gf"/> 
+
+Finally, close the WiFi zone.
+
+.. code-block:: xml
+
+	</zone>
+
+The WiFi zone may be connected to another zone using a traditional link and 
+a zoneRoute. Note that the connection between two zones is always wired.
+
+.. code-block:: xml
+
+	<link id="wireline" bandwidth="100Mbps" latency="2ms" sharing_policy="SHARED"/>
+
+	<zoneRoute src="SSID_1" dst="SSID_2" gw_src="alice" gw_dst="bob">
+	    <link_ctn id="wireline"/>
+	</zoneRoute>
 
 WiFi network performance
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 The performance of a wifi network is controlled by 3 property that can be added
-to the an host connected to the wifi zone:
+to hosts connected to the wifi zone:
 
- * ``wifi_mcs`` (`Modulation and Coding Scheme <https://en.wikipedia.org/wiki/Link_adaptation>`_)
+ * ``mcs`` (`Modulation and Coding Scheme <https://en.wikipedia.org/wiki/Link_adaptation>`_)
    Roughly speaking, it defines the speed at which the access point is
    exchanging data with all stations. It depends on its model and configuration,
    and the possible values are listed for example on Wikipedia.
-   |br| By default, ``wifi_mcs=3``.
- * ``wifi_nss`` (Number of Spatial Streams, or `number of antennas <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Number_of_antennas>`_)
+   |br| By default, ``mcs=3``. 
+   It is a property of the WiFi zone.
+ * ``nss`` (Number of Spatial Streams, or `number of antennas <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Number_of_antennas>`_)
    defines the amount of simultaneous data streams that the AP can sustain.
    Not all value of MCS and NSS are valid nor compatible (cf. `802.11n standard <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates>`_).
-   |br| By default, ``wifi_nss=1``.
+   |br| By default, ``nss=1``.
+   It is a property of the WiFi zone.
  * ``wifi_distance`` is the distance from the station to the access point. Each
    station can have a specific value.
    |br| By default, ``wifi_distance=10``.
+   It is a property of stations of the WiFi network.
 
-Here is an example of host changing all these values:
+Here is an example of a zone changing ``mcs`` and ``nss`` values.
 
 .. code-block:: xml
 
-   <host id="alice" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0">
-     <prop id="wifi_link" value="net0"/>
-     <prop id="wifi_mcs" value="5"/>
-     <prop id="wifi_nss" value="2"/>
-     <prop id="wifi_distance" value="30" />
-   </host>
+	<zone id="SSID_1" routing="WIFI">
+	    <prop id="access_point" value="alice"/>
+	    <prop id="mcs" value="2"/>
+	    <prop id="nss" value="2"/>
+	...
+	</zone>
+
+Here is an example of a host changing ``wifi_distance`` value.
+
+.. code-block:: xml
+
+	<host id="STA0-0" speed="1Gf">
+	    <prop id="wifi_distance" value="37"/>
+	</host>
+
+Random Number Generator
+=======================
+
+It is possible to define a fixed or random seed to the ns3 random number 
+generator using the config tag.
+
+.. code-block:: xml
+
+	<?xml version='1.0'?><!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+	<platform version="4.1">
+	    <config>
+		    <prop id = "network/model" value = "ns-3" />
+		    <prop id = "ns3/seed" value = "time" /> 
+	    </config>
+	... 
+	</platform>
+
+The first property defines that this platform will be used with the ns3 model.
+The second property defines the seed that will be used. Defined to ``time`` 
+it will use a random seed, defined to a number it will use this number as 
+the seed.
 
 Limitations
 ===========
