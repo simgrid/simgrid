@@ -69,7 +69,7 @@ public:
    * Note that being permanent receivers of a mailbox prevents actors to be garbage-collected.
    * If your simulation creates many short-lived actors that marked as permanent receiver, you
    * should call mailbox->set_receiver(nullptr) by the end of the actors so that their memory gets
-   * properly reclaimed. This call should be at the end of the actor's function, not in a on_exit
+   * properly reclaimed. This call should be at the end of the actor's function, not in an on_exit
    * callback.
    */
   void set_receiver(ActorPtr actor);

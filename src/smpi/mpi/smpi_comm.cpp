@@ -348,7 +348,7 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto& actor : actor_list) {
     int index = actor.get_pid();
-    if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) { // Is this process in the current group?
+    if (this->group()->rank(actor.get_ciface()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
       if (index < min_index)
         min_index = index;
@@ -358,8 +358,8 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   auto* group_intra = new Group(intra_comm_size);
   int i = 0;
   for (auto& actor : actor_list) {
-    if (this->group()->rank(actor.ciface()) != MPI_UNDEFINED) {
-      group_intra->set_mapping(actor.ciface(), i);
+    if (this->group()->rank(actor.get_ciface()) != MPI_UNDEFINED) {
+      group_intra->set_mapping(actor.get_ciface(), i);
       i++;
     }
   }

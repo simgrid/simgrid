@@ -180,7 +180,7 @@ void MigrationTx::operator()()
       XBT_CRITICAL("bug");
   } catch (const Exception&) {
     // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
-    // Stop the dirty page tracking an return (there is no memory space to release)
+    // Stop the dirty page tracking and return (there is no memory space to release)
     sg_vm_stop_dirty_page_tracking(vm_);
     return;
   }
@@ -219,7 +219,7 @@ void MigrationTx::operator()()
       } catch (const Exception&) {
         // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data
         // code)
-        // Stop the dirty page tracking an return (there is no memory space to release)
+        // Stop the dirty page tracking and return (there is no memory space to release)
         sg_vm_stop_dirty_page_tracking(vm_);
         return;
       }
@@ -262,7 +262,7 @@ void MigrationTx::operator()()
     sendMigrationData(remaining_size, 3, 0, mig_speed, -1);
   } catch (const Exception&) {
     // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
-    // Stop the dirty page tracking an return (there is no memory space to release)
+    // Stop the dirty page tracking and return (there is no memory space to release)
     vm_->resume();
     return;
   }

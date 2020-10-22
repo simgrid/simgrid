@@ -35,7 +35,7 @@ the classes of the corresponding interfaces.
 For instance, if you want to add a new cup model called `Plop`, create two files
 cpu_plop.hpp and cpu_plop_cpp which contains classes CpuPlopModel, CpuPlop and
 CpuPlopAction implementing respectively the interfaces CpuModel, Cpu and
-CpuAction. You also need to define a initializing function like this:
+CpuAction. You also need to define an initializing function like this:
 
 ~~~~
 void surf_cpu_model_init_plop()

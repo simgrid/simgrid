@@ -55,7 +55,7 @@ screenshots.
 
 @subsection msg_ex_tracing_user_variables Tracing user variables
 
-You can also attach your own variables to a any resource described in
+You can also attach your own variables to any resource described in
 the platform file. The following examples illustrate this feature.
 They have to be run with the following options:
 @verbatim --cfg=tracing:yes --cfg=tracing/platform:yes

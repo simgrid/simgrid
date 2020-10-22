@@ -37,7 +37,7 @@ static void host(int argc, char* argv[])
 
   show_info(disk_count, disks);
 
-  // Open an non-existing file to create it
+  // Open a non-existing file to create it
   const char* filename = "/scratch/tmp/data.txt";
   sg_file_t file       = sg_file_open(filename, NULL);
 

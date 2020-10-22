@@ -44,7 +44,7 @@ public class Bucket {
     return nodes.get(id);
   }
 
-  /* Add the content of the bucket into a answer object. */
+  /* Add the content of the bucket into an answer object. */
   public void addToAnswer(Answer answer, int destination) {
     for (int nodeId : this.nodes) {
       answer.getNodes().add(new Contact(nodeId,nodeId ^ destination));

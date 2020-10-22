@@ -75,7 +75,7 @@ std::vector<VmMap> get_memory_map(pid_t pid)
 
   /*
    * Darwin do not give us the number of mappings, so we read entries until
-   * we get an KERN_INVALID_ADDRESS return.
+   * we get a KERN_INVALID_ADDRESS return.
    */
   mach_vm_address_t address = VM_MIN_ADDRESS;
   while (true) {

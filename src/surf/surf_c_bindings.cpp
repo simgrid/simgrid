@@ -50,8 +50,8 @@ double surf_solve(double max_date)
   simgrid::kernel::resource::Resource* resource = nullptr;
   simgrid::kernel::profile::Event* event        = nullptr;
 
-  if (max_date > 0.0) {
-    xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);
+  if (max_date != -1.0) {
+    xbt_assert(max_date >= NOW, "You asked to simulate up to %f, but that's in the past already", max_date);
 
     time_delta = max_date - NOW;
   }

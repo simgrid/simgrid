@@ -85,11 +85,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   env->ReleaseStringUTFChars(jname, name);
 
   /* Retrieve the kill time from the actor */
-  actor->ciface()->set_kill_time((double)env->GetDoubleField(jprocess, jprocess_field_Process_killTime));
+  actor->get_ciface()->set_kill_time((double)env->GetDoubleField(jprocess, jprocess_field_Process_killTime));
 
   /* sets the PID and the PPID of the actor */
-  env->SetIntField(jprocess, jprocess_field_Process_pid, (jint)actor->ciface()->get_pid());
-  env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint)actor->ciface()->get_ppid());
+  env->SetIntField(jprocess, jprocess_field_Process_pid, (jint)actor->get_ciface()->get_pid());
+  env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint)actor->get_ciface()->get_ppid());
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_daemonize(JNIEnv* env, jobject jprocess)

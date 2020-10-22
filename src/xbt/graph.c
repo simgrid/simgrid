@@ -101,13 +101,13 @@ void xbt_graph_node_set_data(xbt_node_t node, void *data)
   node->data = data;
 }
 
-/** @brief Get the user data associated to a edge */
+/** @brief Get the user data associated to an edge */
 void* xbt_graph_edge_get_data(const s_xbt_edge_t* edge)
 {
   return edge->data;
 }
 
-/** @brief Set the user data associated to a edge */
+/** @brief Set the user data associated to an edge */
 void xbt_graph_edge_set_data(xbt_edge_t edge, void *data)
 {
   edge->data = data;

@@ -81,7 +81,7 @@ unsigned int join(node_t node, unsigned int id_known)
     }
   } while (got_answer == 0);
 
-  /* Second step: Send a FIND_NODE to a a random node in buckets */
+  /* Second step: Send a FIND_NODE to a random node in buckets */
   unsigned int bucket_id = routing_table_find_bucket(node->table, id_known)->id;
   xbt_assert(bucket_id <= IDENTIFIER_SIZE);
   for (i = 0; ((bucket_id > i) || (bucket_id + i) <= IDENTIFIER_SIZE) && i < JOIN_BUCKETS_QUERIES; i++) {

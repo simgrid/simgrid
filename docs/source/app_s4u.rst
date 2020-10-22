@@ -332,7 +332,7 @@ garbage-collected. If your simulation creates many short-lived actors
 that marked as permanent receiver, you should call
 ``mailbox->set_receiver(nullptr)`` by the end of the actors so that their
 memory gets properly reclaimed. This call should be at the end of the
-actor's function, not in a on_exit callback.
+actor's function, not in an on_exit callback.
 
 .. _s4u_raii:
 
@@ -364,7 +364,7 @@ Here is a little example:
 
 Note that Mailboxes, Hosts and Links are not handled thought smart
 pointers (yet?). This means that it is currently impossible to destroy a
-mailbox or a link. You can still destroy an host (but probably
+mailbox or a link. You can still destroy a host (but probably
 shouldn't), using :cpp:func:`simgrid::s4u::Host::destroy`.
 
 .. THE EXAMPLES

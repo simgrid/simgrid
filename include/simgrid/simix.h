@@ -183,12 +183,12 @@ XBT_ATTRIB_DEPRECATED_v330("Please use a CommImpl*[] for first parameter") XBT_P
     int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count);
 XBT_PUBLIC int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
 
-XBT_ATTRIB_DEPRECATED_v330("Please use a ActivityImpl* for first parameter") inline void simcall_comm_wait(
+XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline void simcall_comm_wait(
     const simgrid::kernel::activity::ActivityImplPtr& comm, double timeout)
 {
   simcall_comm_wait(comm.get(), timeout);
 }
-XBT_ATTRIB_DEPRECATED_v330("Please use a ActivityImpl* for first parameter") inline bool simcall_comm_test(
+XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline bool simcall_comm_test(
     const simgrid::kernel::activity::ActivityImplPtr& comm)
 {
   return simcall_comm_test(comm.get());

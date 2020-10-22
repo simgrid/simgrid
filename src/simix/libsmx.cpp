@@ -69,7 +69,7 @@ void simcall_process_join(smx_actor_t process, double timeout) // XBT_DEPRECATED
 
 void simcall_process_suspend(smx_actor_t process) // XBT_DEPRECATED_v328
 {
-  process->iface()->suspend();
+  process->get_iface()->suspend();
 }
 
 simgrid::kernel::activity::State simcall_process_sleep(double duration) // XBT_ATTRIB_DEPRECATED_v329

@@ -67,7 +67,7 @@ static inline SD_task_t SD_task_create_sized(const char *name, void *data, doubl
   return task;
 }
 
-/** @brief create a end-to-end communication task that can then be auto-scheduled
+/** @brief create an end-to-end communication task that can then be auto-scheduled
  *
  * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows one to specify the task costs at
  * creation, and decouple them from the scheduling process where you just specify which resource should deliver the

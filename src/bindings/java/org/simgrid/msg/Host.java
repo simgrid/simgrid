@@ -17,11 +17,11 @@ package org.simgrid.msg;
  * platform file which describes all elements of the platform (host, link, root..).
  * You cannot create a host yourself.
  *
- * The best way to get an host instance is to call the static method
+ * The best way to get a host instance is to call the static method
  * Host.getByName().
  *
  * For example to get the instance of the host. If your platform
- * file description contains an host named "Jacquelin" :
+ * file description contains a host named "Jacquelin" :
  *
  * \verbatim
 Host jacquelin;
@@ -61,7 +61,7 @@ public class Host {
 	}
 
 	/**
-	 * This static method gets an host instance associated with a native
+	 * This static method gets a host instance associated with a native
 	 * host of your platform. This is the best way to get a java host object.
 	 *
 	 * @param name		The name of the host to get.
@@ -122,12 +122,12 @@ public class Host {
 
 	public native String getProperty(String name);
 	public native void setProperty(String name, String value);
-	/** Tests if an host is up and running. */
+	/** Tests if a host is up and running. */
 	public native boolean isOn();
 
-	/** Returns the list of mount point names on an host */
+	/** Returns the list of mount point names on a host */
 	public native Storage[] getMountedStorage();
-	/** This methods returns the list of storages (names) attached to an host */
+	/** This methods returns the list of storages (names) attached to a host */
 	public native String[] getAttachedStorage();
 
 	/** After this call, sg_host_get_consumed_energy() will not interrupt your process

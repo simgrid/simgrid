@@ -17,7 +17,7 @@ namespace xbt {
 /** A `error_category` suitable to be used with `errno`
  *
  *  It is not clear which error we are supposed to generate
- *  when getting a errno:
+ *  when getting an errno:
  *
  *  * `system_error` clearly cannot be used for this on Windows;
  *

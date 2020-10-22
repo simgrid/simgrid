@@ -44,7 +44,7 @@ using simgrid::smpi::app::Instance;
 static std::map<std::string, Instance> smpi_instances;
 
 /** @ingroup smpi_simulation
- * @brief Registers a running instance of a MPI program.
+ * @brief Registers a running instance of an MPI program.
  *
  * @param name the reference name of the function.
  * @param code either the main mpi function

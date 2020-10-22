@@ -380,7 +380,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die* die, Dwarf_Die* unit)
   return upper_bound - lower_bound + 1;
 }
 
-/** @brief Finds the number of elements in a array type (DW_TAG_array_type)
+/** @brief Finds the number of elements in an array type (DW_TAG_array_type)
  *
  *  The compilation unit might be needed because the default lower
  *  bound depends on the language of the compilation unit.
@@ -1017,7 +1017,7 @@ static std::string find_by_build_id(std::vector<char> id)
       return filename;
     }
   }
-  XBT_DEBUG("Not debuf info found for build ID %s\n", hex.data());
+  XBT_DEBUG("No debug info found for build ID %s\n", hex.data());
   return std::string();
 }
 

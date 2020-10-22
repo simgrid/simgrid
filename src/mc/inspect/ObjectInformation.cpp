@@ -26,7 +26,7 @@ namespace mc {
  */
 void* ObjectInformation::base_address() const
 {
-  // For an executable (more precisely for a ET_EXEC) the base it 0:
+  // For an executable (more precisely for an ET_EXEC) the base it 0:
   if (this->executable())
     return nullptr;
 

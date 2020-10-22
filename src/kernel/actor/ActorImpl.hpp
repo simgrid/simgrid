@@ -114,8 +114,8 @@ private:
   void undaemonize();
 
 public:
-  s4u::ActorPtr iface() { return s4u::ActorPtr(&piface_); }
-  s4u::Actor* ciface() { return &piface_; }
+  s4u::ActorPtr get_iface() { return s4u::ActorPtr(&piface_); }
+  s4u::Actor* get_ciface() { return &piface_; }
 
   ActorImplPtr init(const std::string& name, s4u::Host* host) const;
   ActorImpl* start(const ActorCode& code);

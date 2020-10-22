@@ -382,7 +382,7 @@ int colls::scan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype data
         break;
       }
       if(index < rank) {
-        // #Request is below rank: it's a irecv
+        // #Request is below rank: it's an irecv
         op->apply( tmpbufs[index], recvbuf, &count, datatype);
       }
     }
@@ -444,7 +444,7 @@ int colls::exscan(const void* sendbuf, void* recvbuf, int count, MPI_Datatype da
           Datatype::copy(tmpbufs[index], count, datatype, recvbuf, count, datatype);
           recvbuf_is_empty=0;
         } else
-          // #Request is below rank: it's a irecv
+          // #Request is below rank: it's an irecv
           op->apply( tmpbufs[index], recvbuf, &count, datatype);
       }
     }

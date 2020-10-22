@@ -15,7 +15,7 @@ ctest:
     paths:
     - lib/
     expire_in: 1 week
-  
+
 release:
   stage: build
   only:
@@ -71,4 +71,3 @@ pages:
   only:
   - master
   needs: ["ctest"]
-  

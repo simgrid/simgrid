@@ -31,7 +31,7 @@ void answer_free(answer_t answer)
   xbt_free(answer);
 }
 
-/** @brief Prints a answer_t, for debugging purposes */
+/** @brief Prints an answer_t, for debugging purposes */
 void answer_print(const_answer_t answer)
 {
   unsigned int cpt;
@@ -82,7 +82,7 @@ static int _answer_sort_function(const void* e1, const void* e2)
     return 1;
 }
 
-/** @brief Sorts a answer_t, by node distance.
+/** @brief Sorts an answer_t, by node distance.
  * @param answer the answer to sort
  * @param destination_id the id of the guy we are trying to find
  */
@@ -91,7 +91,7 @@ void answer_sort(const_answer_t answer)
   xbt_dynar_sort(answer->nodes, &_answer_sort_function);
 }
 
-/** @brief Trims a answer_t, in order for it to have a size of less or equal to "BUCKET_SIZE"
+/** @brief Trims an answer_t, in order for it to have a size of less or equal to "BUCKET_SIZE"
  * @param answer the answer_t to trim
  */
 void answer_trim(answer_t answer)
@@ -105,7 +105,7 @@ void answer_trim(answer_t answer)
   xbt_assert(xbt_dynar_length(answer->nodes) == answer->size, "Wrong size for the answer");
 }
 
-/** @brief Adds the content of a bucket unsigned into a answer object.
+/** @brief Adds the content of a bucket unsigned into an answer object.
  * @param bucket the bucket we have to had unsigned into
  * @param answer the answer object we're going  to put the data in
  * @param destination_id the id of the guy we are trying to find.
