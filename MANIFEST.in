@@ -1970,6 +1970,7 @@ include examples/platforms/two_peers.xml
 include examples/platforms/vivaldi.xml
 include examples/platforms/wifi.xml
 include examples/platforms/wifi_energy.xml
+include examples/platforms/wifi_ns3.xml
 include examples/python/CMakeLists.txt
 include examples/python/actor-create/actor-create_d.xml
 include examples/python/actor-lifetime/actor-lifetime_d.xml
