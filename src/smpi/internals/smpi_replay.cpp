@@ -410,7 +410,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
   req_storage.remove(request);
 
   if (request == MPI_REQUEST_NULL) {
-    /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just
+    /* Assume that the trace is well formed, meaning the comm might have been caught by an MPI_test. Then just
      * return.*/
     return;
   }

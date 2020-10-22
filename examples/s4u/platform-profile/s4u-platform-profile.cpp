@@ -5,7 +5,7 @@
 
 #include "simgrid/s4u.hpp"
 
-/* This example demonstrates how to attach a profile to an host or a link,
+/* This example demonstrates how to attach a profile to a host or a link,
  * to specify external changes to the resource speed. The first way to do
  * so is to use a file in the XML, while the second is to use the programmatic interface.
  */

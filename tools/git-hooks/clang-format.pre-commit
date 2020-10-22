@@ -22,7 +22,7 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#  git pre-commit hook that runs an clang-format stylecheck.
+#  git pre-commit hook that runs a clang-format stylecheck.
 #  Features:
 #   - abort commit when commit does not comply with the style guidelines
 #   - create a patch of the proposed style changes

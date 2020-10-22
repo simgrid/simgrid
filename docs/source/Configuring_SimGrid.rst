@@ -636,7 +636,7 @@ If set, the ``model-check/dot-output`` configuration item is the name
 of a file in which to write a dot file of the path leading to the
 property violation discovered (safety or liveness violation), as well
 as the cycle for liveness properties. This dot file can then be fed to the
-graphviz dot tool to generate an corresponding graphical representation.
+graphviz dot tool to generate a corresponding graphical representation.
 
 .. _cfg=model-check/max-depth:
 

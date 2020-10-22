@@ -163,7 +163,7 @@ etc.
 
 There are two tags at all times available to represent network entities and
 several other tags that are available only in certain contexts.
-1. ``<link>``: Represents a entity that has a limited bandwidth, a
+1. ``<link>``: Represents an entity that has a limited bandwidth, a
     latency, and that can be shared according to TCP way to share this
     bandwidth.
 @remark
@@ -519,7 +519,7 @@ and destination zones, along with the gateway in each zone (ie, the
 point to reach within that zone to reach the netzone), and the list of
 links in the ancestor zone to go from one zone to another.
 
-So, to go from an host @c src_host that is within zone @c src, to an
+So, to go from a host @c src_host that is within zone @c src, to a
 host @c dst_host that is within @c dst, you need to:
 
  - move within zone @c src, from @c src_host to the specified @c gw_src;
@@ -672,7 +672,7 @@ attribute was not given, this route is presumed to be symmetrical.
 
 @subsection pb_baroex Basic Routing Example
 
-Let's say you have an zone named zone_Big that contains two other zone, zone_1
+Let's say you have a zone named zone_Big that contains two other zones, zone_1
 and zone_2. If you want to make a host (h1) from zone_1 with another one
 (h2) from zone_2 then you'll have to proceed as follows:
 @li First, you have to ensure that a route is defined from h1 to the
@@ -910,11 +910,11 @@ non-intuitive schema ... Something like that:
 
 In the zone_4, you have an exitzone_4 defined, containing only one router,
 and routes defined to that zone from all other zone (as cluster is only a
-shortcut for an zone, see cluster description for details). If there was
+shortcut for a zone, see cluster description for details). If there was
 an upper zone, it would define routes to and from zone_4 with the gateway
 router_4. It's just because, as we did not allowed (for performances
-issues) to have routes from an zone to a single host/router, you have to
-enclose your gateway, when you have zone included in your zone, within an
+issues) to have routes from a zone to a single host/router, you have to
+enclose your gateway, when you have zone included in your zone, within a
 zone to define routes to it.
 
 @subsection pf_P2P_tags P2P or how to use coordinates
@@ -966,7 +966,7 @@ That is for example what is commonly done when using peers (see Section @ref pf_
 In such a case though, we connect the zone created by the <b>peer</b> tag with the Vivaldi routing mechanism.
 This means that to route between zone1 and zone2, it will use the coordinates of router_zone1 and router_zone2.
 This is currently a convention and we may offer to change this convention in the DTD later if needed.
-You may have noted that conveniently, a peer named FOO defines an zone named FOO and a router named router_FOO, which is why it works seamlessly with the <b>peer</b> tag.
+You may have noted that conveniently, a peer named FOO defines a zone named FOO and a router named router_FOO, which is why it works seamlessly with the <b>peer</b> tag.
 
 
 @subsection pf_routing_howto_choose_wisely Choosing wisely the routing model to use

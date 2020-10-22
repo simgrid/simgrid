@@ -96,7 +96,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
       return (NULL);
 
     else if (sbuf.st_size > 0) {
-      /* We were given an valid file descriptor on an open file, so try to remap
+      /* We were given a valid file descriptor on an open file, so try to remap
          it into the current process at the same address to which it was previously
          mapped. It naturally have to pass some sanity checks for that.
 

@@ -58,7 +58,7 @@ void TRACE_category(const char *category)
 /** @ingroup TRACE_category
  *  @brief Declare a new category with a color.
  *
- *  Same as #TRACE_category, but let user specify a color encoded as a RGB-like string with three floats from 0 to 1.
+ *  Same as #TRACE_category, but let user specify a color encoded as an RGB-like string with three floats from 0 to 1.
  *  So, to specify a red color, pass "1 0 0" as color parameter. A light-gray color can be specified using "0.7 0.7 0.7"
  *   as color. This function has no effect if a category with the same name has been already declared.
  *

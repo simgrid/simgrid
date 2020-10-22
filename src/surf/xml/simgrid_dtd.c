@@ -9441,7 +9441,7 @@ FAIL("Premature EOF: `</peer>' expected.");
   * * New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
   *    - <zone> can be used as a synonym for the now deprecated <as>
   *    - <zoneRoute> can be used as a synonym for the now deprecated <asroute>
-  *    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
+  *    - <bypassZoneRoute> can be used as a synonym for the now deprecated <bypassAsRoute>
   *    - <actor> can be used as a synonym for the now deprecated <process>
   *   Other backward-compatible changes for which we did not bump the DTD version.
   *   - SPLITDUPLEX is the new spelling of the deprecated FULLDUPLEX (SimGrid v3.19)

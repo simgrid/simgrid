@@ -210,7 +210,7 @@ public:
       this->update();
     } else {
       XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.",
-                get_key().c_str(), to_string(value).c_str());
+                get_key().c_str(), get_string_value().c_str());
     }
   }
 };
@@ -218,6 +218,12 @@ public:
 template <class T> std::string TypedConfigurationElement<T>::get_string_value() // override
 {
   return to_string(content);
+}
+
+template <> std::string TypedConfigurationElement<double>::get_string_value() // override
+{
+  // don't want std::to_string which uses %f, and formats very small values as 0.000000
+  return xbt::string_printf("%g", content);
 }
 
 template <class T> void TypedConfigurationElement<T>::set_string_value(const char* value) // override

@@ -23,7 +23,7 @@ SG_BEGIN_DECL
 #endif
 /* end of eclipse-mandated pimple */
 
-/** Returns a new java instance of an host. */
+/** Returns a new java instance of a host. */
 jobject jhost_new_instance(JNIEnv * env);
 
 /** Take a ref onto the java instance (to prevent its collection) */

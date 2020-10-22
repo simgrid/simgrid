@@ -5,8 +5,6 @@
 # See https://ci.inria.fr/simgrid/job/SimGrid/configure
 # See https://ci.inria.fr/simgrid/job/Simgrid-Windows/configure
 
-set -e
-
 # ensure that the locales are set, so that perl keeps its nerves
 export LC_ALL=C
 
@@ -14,10 +12,12 @@ echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
 rm -rf /var/tmp/simgrid-java*
 rm -rf /tmp/jvm-*
-find /builds/workspace/SimGrid/ -name "hs_err_pid*.log" -exec rm -f {} +
+find $WORKSPACE -name "hs_err_pid*.log" -exec rm -f {} +
 ls /tmp
 df -h
 echo "XXXX Let's go"
+
+set -e
 
 # Help older cmakes
 if [ -e /usr/lib/jvm/java-7-openjdk-amd64 ] ;
@@ -103,11 +103,11 @@ build_mode="$1"
 echo "Build mode $build_mode on $(uname -np)" >&2
 case "$build_mode" in
   "Debug")
-      INSTALL="/builds/simgrid_install"
+      INSTALL="$HOME/simgrid_install"
   ;;
 
   "ModelChecker")
-      INSTALL="/builds/mc_simgrid_install"
+      INSTALL="$HOME/mc_simgrid_install"
   ;;
 
   "DynamicAnalysis")

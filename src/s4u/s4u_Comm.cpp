@@ -256,7 +256,7 @@ Actor* Comm::get_sender() const
   kernel::actor::ActorImplPtr sender = nullptr;
   if (pimpl_)
     sender = boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->src_actor_;
-  return sender ? sender->ciface() : nullptr;
+  return sender ? sender->get_ciface() : nullptr;
 }
 
 } // namespace s4u

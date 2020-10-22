@@ -30,7 +30,7 @@ public:
 
     show_info(disks);
 
-    // Open an non-existing file to create it
+    // Open a non-existing file to create it
     std::string filename     = "/scratch/tmp/data.txt";
     auto* file               = new simgrid::s4u::File(filename, nullptr);
 

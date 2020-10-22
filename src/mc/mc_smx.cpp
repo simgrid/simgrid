@@ -10,7 +10,7 @@
 
 using simgrid::mc::remote;
 
-/** HACK, Statically "upcast" a s_smx_actor_t into a ActorInformation
+/** HACK, Statically "upcast" a s_smx_actor_t into an ActorInformation
  *
  *  This gets 'actorInfo' from '&actorInfo->copy'. It upcasts in the
  *  sense that we could achieve the same thing by having ActorInformation

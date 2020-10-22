@@ -169,10 +169,10 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
     xbt_assert(not link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
     xbt_assert(not src->is_netzone(),
-               "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
+               "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
                srcName);
     xbt_assert(not dst->is_netzone(),
-               "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
+               "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
                dstName);
     s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
   } else {
@@ -185,7 +185,7 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
     xbt_assert(gw_dst->is_host() || gw_dst->is_router(),
                "When defining a NetzoneRoute, gw_dst must be a host or a router but '%s' is not.", dstName);
 
-    xbt_assert(gw_src != gw_dst, "Cannot define an NetzoneRoute from '%s' to itself", gw_src->get_cname());
+    xbt_assert(gw_src != gw_dst, "Cannot define a NetzoneRoute from '%s' to itself", gw_src->get_cname());
 
     xbt_assert(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, gw_src->get_cname(), dstName,
                gw_dst->get_cname(), srcName);

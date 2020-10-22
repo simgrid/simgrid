@@ -176,7 +176,7 @@ void* smpi_temp_shm_mmap(int fd, size_t size)
   return mem;
 }
 
-/** Map a given SMPI privatization segment (make a SMPI process active)
+/** Map a given SMPI privatization segment (make an SMPI process active)
  *
  *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
  *  virtual memory. In this case, we to change the data segment.

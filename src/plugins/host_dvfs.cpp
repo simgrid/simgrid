@@ -297,7 +297,7 @@ public:
     });
     simgrid::s4u::Exec::on_completion.connect([this](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
       // For more than one host (not yet supported), we can access the host via
-      // simcalls_.front()->issuer->iface()->get_host()
+      // simcalls_.front()->issuer->get_iface()->get_host()
       if (activity.get_host() == get_host() && iteration_running) {
         comp_timer += activity.get_finish_time() - activity.get_start_time();
       }

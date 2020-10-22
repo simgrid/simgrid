@@ -658,9 +658,9 @@ MPI_Barrier
 
 */
 static int intel_barrier_gather_scatter(MPI_Comm comm){
-    //our default barrier performs a antibcast/bcast
-    barrier__default(comm);
-    return MPI_SUCCESS;
+  // our default barrier performs an antibcast/bcast
+  barrier__default(comm);
+  return MPI_SUCCESS;
 }
 
 int (*intel_barrier_functions_table[])(MPI_Comm comm) ={

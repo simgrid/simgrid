@@ -216,7 +216,7 @@ Link* Engine::link_by_name(const std::string& name) const
   return link->second->get_iface();
 }
 
-/** @brief Find an link from its name (or nullptr if that link does not exist) */
+/** @brief Find a link from its name (or nullptr if that link does not exist) */
 Link* Engine::link_by_name_or_null(const std::string& name) const
 {
   auto link = pimpl->links_.find(name);
@@ -312,7 +312,7 @@ std::vector<ActorPtr> Engine::get_all_actors() const
 {
   std::vector<ActorPtr> actor_list;
   for (auto const& kv : simix_global->process_list) {
-    actor_list.push_back(kv.second->iface());
+    actor_list.push_back(kv.second->get_iface());
   }
   return actor_list;
 }
@@ -321,8 +321,8 @@ std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(Actor
 {
   std::vector<ActorPtr> actor_list;
   for (auto const& kv : simix_global->process_list) {
-    if (filter(kv.second->iface()))
-      actor_list.push_back(kv.second->iface());
+    if (filter(kv.second->get_iface()))
+      actor_list.push_back(kv.second->get_iface());
   }
   return actor_list;
 }

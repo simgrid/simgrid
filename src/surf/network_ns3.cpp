@@ -439,6 +439,20 @@ void LinkNS3::set_latency_profile(profile::Profile*)
 NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, *src, *dst, totalBytes, false)
 {
+  // ns-3 fails when src = dst, so avoid the problem by considering that communications are infinitely fast on the
+  // loopback that does not exists
+  if (src == dst) {
+    static bool warned = false;
+    if (not warned) {
+      XBT_WARN("Sending from a host %s to itself is not supported by ns-3. Every such communication finishes "
+               "immediately upon startup.",
+               src->get_cname());
+      warned = true;
+    }
+    finish(Action::State::FINISHED);
+    return;
+  }
+
   // If there is no other started actions, we need to move NS-3 forward to be sync with SimGrid
   if (model->get_started_action_set()->size()==1){
     while(double_positive(surf_get_clock() - ns3::Simulator::Now().GetSeconds(), sg_surf_precision)){

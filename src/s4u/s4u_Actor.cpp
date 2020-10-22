@@ -45,7 +45,7 @@ Actor* Actor::self()
   if (self_context == nullptr)
     return nullptr;
 
-  return self_context->get_actor()->ciface();
+  return self_context->get_actor()->get_ciface();
 }
 
 ActorPtr Actor::init(const std::string& name, s4u::Host* host)
@@ -53,7 +53,7 @@ ActorPtr Actor::init(const std::string& name, s4u::Host* host)
   kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host] { return self->init(name, host).get(); });
-  return actor->iface();
+  return actor->get_iface();
 }
 
 /** Set a non-default stack size for this context (in Kb)
@@ -77,7 +77,7 @@ ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::func
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host, &code] { return self->init(name, host)->start(code); });
 
-  return actor->iface();
+  return actor->get_iface();
 }
 
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::string& function,
@@ -262,7 +262,7 @@ ActorPtr Actor::by_pid(aid_t pid)
 {
   kernel::actor::ActorImpl* actor = SIMIX_process_from_PID(pid);
   if (actor != nullptr)
-    return actor->iface();
+    return actor->get_iface();
   else
     return ActorPtr();
 }
@@ -318,7 +318,7 @@ void sleep_for(double duration)
 
   if (duration > 0) {
     kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-    Actor::on_sleep(*issuer->ciface());
+    Actor::on_sleep(*issuer->get_ciface());
 
     kernel::actor::simcall_blocking<void>([issuer, duration]() {
       if (MC_is_active() || MC_record_replay_is_active()) {
@@ -330,7 +330,7 @@ void sleep_for(double duration)
       sync->register_simcall(&issuer->simcall_);
     });
 
-    Actor::on_wake_up(*issuer->ciface());
+    Actor::on_wake_up(*issuer->get_ciface());
   }
 }
 
@@ -438,7 +438,7 @@ Host* get_host()
 void suspend()
 {
   kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
-  s4u::Actor::on_suspend(*self->ciface());
+  s4u::Actor::on_suspend(*self->get_ciface());
   kernel::actor::simcall_blocking<void>([self] { self->suspend(); });
 }
 
@@ -450,7 +450,7 @@ void exit()
 
 void on_exit(const std::function<void(bool)>& fun)
 {
-  simgrid::kernel::actor::ActorImpl::self()->iface()->on_exit(fun);
+  simgrid::kernel::actor::ActorImpl::self()->get_iface()->on_exit(fun);
 }
 
 /** @brief Moves the current actor to another host
@@ -459,7 +459,7 @@ void on_exit(const std::function<void(bool)>& fun)
  */
 void set_host(Host* new_host)
 {
-  simgrid::kernel::actor::ActorImpl::self()->iface()->set_host(new_host);
+  simgrid::kernel::actor::ActorImpl::self()->get_iface()->set_host(new_host);
 }
 void migrate(Host* new_host) // deprecated
 {
@@ -738,7 +738,7 @@ sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dic
   }
 
   simgrid::s4u::this_actor::yield();
-  return actor->ciface();
+  return actor->get_ciface();
 }
 
 void sg_actor_detach()

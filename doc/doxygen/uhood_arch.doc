@@ -42,7 +42,7 @@ your work.
    technical issues of real platforms are masked here. Check the @ref
    MSG_API section for more information.
 
- - If you want to study the behavior of a MPI application using emulation,
+ - If you want to study the behavior of an MPI application using emulation,
    you should have a look at the <b>@ref SMPI_API</b> (Simulated
    MPI) programming environment. Unfortunately, this work is still underway.
    Check the @ref SMPI_API section for more information.

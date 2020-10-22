@@ -144,7 +144,7 @@ void smpi_bench_end()
 
   if (smpi_process()->sampling()) {
     XBT_CRITICAL("Cannot do recursive benchmarks.");
-    XBT_CRITICAL("Are you trying to make a call to MPI within a SMPI_SAMPLE_ block?");
+    XBT_CRITICAL("Are you trying to make a call to MPI within an SMPI_SAMPLE_ block?");
     xbt_backtrace_display_current();
     xbt_die("Aborting.");
   }

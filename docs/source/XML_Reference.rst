@@ -300,7 +300,7 @@ This tag represents a peer, as in Peer-to-Peer (P2P) networks. It is
 handy to model situations where hosts have an asymmetric
 connectivity. Computers connected through set-top-boxes usually have a
 much better download rate than their upload rate.  To model this,
-<peer> creates and connects several elements: an host, an upload link
+<peer> creates and connects several elements: a host, an upload link
 and a download link.
 
 **Parent tags:** :ref:`pf_tag_zone` (only with Vivaldi routing) |br|

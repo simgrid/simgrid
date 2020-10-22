@@ -215,7 +215,7 @@ class XBT_PUBLIC ForcefulKillException {
    *   simgrid::s4u::this_actor::execute(100000);
    * } catch (simgrid::kernel::context::ForcefulKillException& e) { // oops, my host just turned off
    *   free(malloc);
-   *   throw; // I shall never survive on an host that was switched off
+   *   throw; // I shall never survive on a host that was switched off
    * }
    * @endverbatim
    */

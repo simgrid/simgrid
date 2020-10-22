@@ -210,13 +210,13 @@ void Host::set_properties(const std::unordered_map<std::string, std::string>& pr
   kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
 }
 
-/** Specify a profile turning the host on and off according to a exhaustive list or a stochastic law.
+/** Specify a profile turning the host on and off according to an exhaustive list or a stochastic law.
  * The profile must contain boolean values. */
 void Host::set_state_profile(kernel::profile::Profile* p)
 {
   return kernel::actor::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
 }
-/** Specify a profile modeling the external load according to a exhaustive list or a stochastic law.
+/** Specify a profile modeling the external load according to an exhaustive list or a stochastic law.
  *
  * Each event of the profile represent a peak speed change that is due to external load. The values are given as a rate
  * of the initial value. This means that the actual value is obtained by multiplying the initial value (the peek speed

@@ -81,7 +81,7 @@ public:
   /** Get a view of the chunk indices */
   const std::size_t* pagenos() const { return pagenos_.data(); }
 
-  /** Get a a pointer to a chunk */
+  /** Get a pointer to a chunk */
   void* page(std::size_t i) const { return store_->get_page(pagenos_[i]); }
 
   ChunkedData(PageStore& store, const AddressSpace& as, RemotePtr<void> addr, std::size_t page_count);
