@@ -473,6 +473,8 @@ include examples/s4u/mc-electric-fence/s4u-mc-electric-fence.cpp
 include examples/s4u/mc-electric-fence/s4u-mc-electric-fence.tesh
 include examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/s4u/mc-failing-assert/s4u-mc-failing-assert.tesh
+include examples/s4u/network-ns3-wifi/s4u-network-ns3-wifi.cpp
+include examples/s4u/network-ns3-wifi/s4u-network-ns3-wifi.tesh
 include examples/s4u/network-ns3/3hosts_2links_d.xml
 include examples/s4u/network-ns3/3links-timer_d.xml
 include examples/s4u/network-ns3/3links_d.xml
