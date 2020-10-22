@@ -2,7 +2,6 @@
 <platform version="4.1">
 	<config>
 		<prop id = "network/model" value = "ns-3" />
-		<prop id = "ns3/seed" value = "time" /> 
 	</config>
 	<zone id="world" routing="Floyd">
 
