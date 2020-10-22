@@ -1214,6 +1214,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/two_peers.xml
   examples/platforms/vivaldi.xml
   examples/platforms/wifi_energy.xml
+  examples/platforms/wifi_ns3.xml
   examples/platforms/wifi.xml
   )
 
