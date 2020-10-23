@@ -45,12 +45,12 @@ static void host(int argc, char* argv[])
   /* - Attach some user data to disk1 */
   XBT_INFO("*** Get/set data for storage element: Disk1 ***");
 
-  char* data = (char*)sg_disk_data(disk);
+  char* data = (char*)sg_disk_get_data(disk);
 
   XBT_INFO("Get storage data: '%s'", data ? data : "No user data");
 
-  sg_disk_data_set(disk, xbt_strdup("Some user data"));
-  data = (char*)sg_disk_data(disk);
+  sg_disk_set_data(disk, xbt_strdup("Some user data"));
+  data = (char*)sg_disk_get_data(disk);
   XBT_INFO("Set and get data: '%s'", data);
   free(data);
   free(disk_list);
