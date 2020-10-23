@@ -369,13 +369,21 @@ xbt_dynar_t sg_hosts_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
 // ========= Layering madness ==============*
 
 // ========== User data Layer ==========
-void* sg_host_data(const_sg_host_t host)
+void* sg_host_get_data(const_sg_host_t host)
 {
   return host->get_data();
 }
-void sg_host_data_set(sg_host_t host, void* userdata)
+void sg_host_set_data(sg_host_t host, void* userdata)
 {
   host->set_data(userdata);
+}
+void* sg_host_data(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_data(host);
+}
+void sg_host_data_set(sg_host_t host, void* userdata) // XBT_ATTRIB_DEPRECATED_v330
+{
+  sg_host_set_data(host, userdata);
 }
 void* sg_host_user(sg_host_t host) // deprecated
 {

@@ -44,16 +44,19 @@ XBT_PUBLIC const char* sg_host_get_name(const_sg_host_t host);
  *
  * This functions returns the user data associated to @a host if any.
  */
-XBT_PUBLIC void* sg_host_data(const_sg_host_t host);
-XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_data()") XBT_PUBLIC void* sg_host_user(sg_host_t host);
+XBT_PUBLIC void* sg_host_get_data(const_sg_host_t host);
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_get_data()") XBT_PUBLIC void* sg_host_data(const_sg_host_t host);
+XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_get_data()") XBT_PUBLIC void* sg_host_user(sg_host_t host);
 /** @brief Set the user data of a #sg_host_t.
  *
  * This functions attach @a data to @a host.
  */
-XBT_PUBLIC void sg_host_data_set(sg_host_t host, void* userdata);
-XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_data_set()") XBT_PUBLIC
+XBT_PUBLIC void sg_host_set_data(sg_host_t host, void* userdata);
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_set_data()") XBT_PUBLIC
+    void sg_host_data_set(sg_host_t host, void* userdata);
+XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_set_data()") XBT_PUBLIC
     void sg_host_user_set(sg_host_t host, void* userdata);
-XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_data_set(h, NULL)") XBT_PUBLIC void sg_host_user_destroy(sg_host_t host);
+XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_set_data(h, NULL)") XBT_PUBLIC void sg_host_user_destroy(sg_host_t host);
 #endif
 
 // ========= storage related functions ============
