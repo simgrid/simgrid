@@ -54,6 +54,9 @@ SMPI:
 C binding and interface:
  - The return type of the sg_actor_on_exit() callbacks is now 'void'
    (int value was previously ignored)
+ - Many C functions were renamed to follow a common naming style
+   (sg_object_get_something and sg_object_set_something). As usual, the deprecated
+   names are kept until version 3.30.
  - Many MSG tests were converted to the new S4U's interface in C, that
    was extended for that.
 
