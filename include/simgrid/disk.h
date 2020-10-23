@@ -11,7 +11,8 @@
 
 /* C interface */
 SG_BEGIN_DECL
-XBT_PUBLIC const char* sg_disk_name(const_sg_disk_t disk);
+XBT_PUBLIC const char* sg_disk_get_name(const_sg_disk_t disk);
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_disk_get_name()") XBT_PUBLIC const char* sg_disk_name(const_sg_disk_t disk);
 XBT_PUBLIC sg_host_t sg_disk_get_host(const_sg_disk_t disk);
 XBT_PUBLIC double sg_disk_read_bandwidth(const_sg_disk_t disk);
 XBT_PUBLIC double sg_disk_write_bandwidth(const_sg_disk_t disk);

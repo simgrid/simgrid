@@ -80,9 +80,14 @@ sg_size_t Disk::write(sg_size_t size)
 
 /* **************************** Public C interface *************************** */
 
-const char* sg_disk_name(const_sg_disk_t disk)
+const char* sg_disk_get_name(const_sg_disk_t disk)
 {
   return disk->get_cname();
+}
+
+const char* sg_disk_name(const_sg_disk_t disk) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_disk_get_name(disk);
 }
 
 sg_host_t sg_disk_get_host(const_sg_disk_t disk)
