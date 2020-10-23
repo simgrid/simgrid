@@ -2244,6 +2244,8 @@ include src/kernel/resource/profile/FutureEvtSet.hpp
 include src/kernel/resource/profile/Profile.cpp
 include src/kernel/resource/profile/Profile.hpp
 include src/kernel/resource/profile/Profile_test.cpp
+include src/kernel/resource/profile/StochasticDatedValue.cpp
+include src/kernel/resource/profile/StochasticDatedValue.hpp
 include src/kernel/routing/ClusterZone.cpp
 include src/kernel/routing/DijkstraZone.cpp
 include src/kernel/routing/DragonflyZone.cpp

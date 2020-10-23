@@ -329,6 +329,8 @@ set(SURF_SRC
   src/kernel/resource/profile/FutureEvtSet.hpp
   src/kernel/resource/profile/Profile.cpp
   src/kernel/resource/profile/Profile.hpp
+  src/kernel/resource/profile/StochasticDatedValue.cpp
+  src/kernel/resource/profile/StochasticDatedValue.hpp
 
   src/kernel/routing/ClusterZone.cpp
   src/kernel/routing/DijkstraZone.cpp
