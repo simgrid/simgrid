@@ -65,6 +65,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - FG#50: Suspending an actor executed at the current timestamp fails
  - FG#52: Zero-seconds timeout : "That's in the past already"
  - FG#54: How to suspend a comm?
+ - FG!22: Stochastic Profiles
  - FG!24: Documentation and fix for xbt/random
  - FG!35: Add a modeling hint for parallel links in doc
  - FG!36: [xbt/random] Read/Write the state of the RNG
