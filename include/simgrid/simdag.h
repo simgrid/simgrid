@@ -178,22 +178,22 @@ XBT_PUBLIC xbt_dynar_t SD_PTG_dotload(const char* filename);
 #define SD_workstation_get_name sg_host_get_name
 #define SD_workstation_get_by_name sg_host_by_name
 #define SD_workstation_dump sg_host_dump
-#define SD_workstation_get_data sg_host_user
-#define SD_workstation_set_data sg_host_user_set
+#define SD_workstation_get_data sg_host_get_data
+#define SD_workstation_set_data sg_host_set_data
 #define SD_workstation_get_properties sg_host_get_properties
 #define SD_workstation_get_property_value sg_host_get_property_value
-#define SD_workstation_get_power sg_host_speed
+#define SD_workstation_get_power sg_host_get_speed
 #define SD_workstation_get_available_power sg_host_get_available_speed
-#define SD_route_get_latency sg_host_route_latency
-#define SD_route_get_bandwidth sg_host_route_bandwidth
+#define SD_route_get_latency sg_host_get_route_latency
+#define SD_route_get_bandwidth sg_host_get_route_bandwidth
 
 #define SD_workstation_get_mounted_storage_list sg_host_get_mounted_storage_list // XBT_ATTRIB_DEPRECATED_v330
 // Lost functions
 //SD_workstation_get_access_mode
 //SD_workstation_set_access_mode
 //SD_workstation_get_current_task
-//SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
-//SD_workstation_get_computation_time => amount / sg_host_speed()
+//SD_route_get_communication_time => SD_route_get_latency() + amount / SD_route_get_bandwidth()
+//SD_workstation_get_computation_time => amount / sg_host_get_speed()
 //SD_route_get_size
 //SD_route_get_list
 //TRACE_sd_set_task_category

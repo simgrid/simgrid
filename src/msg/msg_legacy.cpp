@@ -347,7 +347,7 @@ xbt_dynar_t MSG_host_get_attached_storage_lists(const_sg_host_t host)
 }
 double MSG_host_get_speed(const_sg_host_t host)
 {
-  return sg_host_speed(host);
+  return sg_host_get_speed(host);
 }
 double MSG_host_get_power_peak_at(const_sg_host_t host, int pstate_index)
 {
@@ -404,7 +404,7 @@ sg_host_t MSG_host_self()
 
 double MSG_host_get_load(const_sg_host_t host)
 {
-  return sg_host_load(host);
+  return sg_host_get_load(host);
 }
 /* ************************** Virtual Machines *************************** */
 sg_vm_t MSG_vm_create_core(sg_host_t pm, const char* name)

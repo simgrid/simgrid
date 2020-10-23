@@ -19,7 +19,7 @@ static void worker(int argc, char* argv[])
   sg_host_t first  = sg_host_by_name(argv[1]);
   const_sg_host_t second = sg_host_by_name(argv[2]);
 
-  double flopAmount = sg_host_speed(first) * 5 + sg_host_speed(second) * 5;
+  double flopAmount = sg_host_get_speed(first) * 5 + sg_host_get_speed(second) * 5;
 
   XBT_INFO("Let's move to %s to execute %.2f Mflops (5sec on %s and 5sec on %s)", argv[1], flopAmount / 1e6, argv[1],
            argv[2]);

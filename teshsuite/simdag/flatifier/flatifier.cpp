@@ -49,7 +49,7 @@ static void dump_hosts()
             [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
 
   for (size_t i = 0; i < totalHosts; i++) {
-    std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->get_cname(), sg_host_speed(hosts[i]));
+    std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->get_cname(), sg_host_get_speed(hosts[i]));
     const std::unordered_map<std::string, std::string>* props = hosts[i]->get_properties();
     if (hosts[i]->get_core_count() > 1) {
       std::printf(" core=\"%d\"", hosts[i]->get_core_count());

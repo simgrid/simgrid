@@ -25,8 +25,8 @@ static void wizard(int argc, char* argv[])
   XBT_INFO("It started. Running 48.492Mf takes exactly one second on Ginette (but not on Fafard).");
 
   sg_actor_sleep_for(0.1);
-  XBT_INFO("Loads in flops/s: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", sg_host_load(boivin), sg_host_load(fafard),
-           sg_host_load(ginette));
+  XBT_INFO("Loads in flops/s: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", sg_host_get_load(boivin),
+           sg_host_get_load(fafard), sg_host_get_load(ginette));
 
   sg_exec_wait(exec);
 
@@ -37,14 +37,14 @@ static void wizard(int argc, char* argv[])
   sg_exec_start(exec);
 
   sg_actor_sleep_for(0.5);
-  XBT_INFO("Loads before the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", sg_host_load(boivin), sg_host_load(fafard),
-           sg_host_load(ginette));
+  XBT_INFO("Loads before the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", sg_host_get_load(boivin),
+           sg_host_get_load(fafard), sg_host_get_load(ginette));
 
   sg_exec_set_host(exec, boivin);
 
   sg_actor_sleep_for(0.1);
-  XBT_INFO("Loads after the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", sg_host_load(boivin), sg_host_load(fafard),
-           sg_host_load(ginette));
+  XBT_INFO("Loads after the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", sg_host_get_load(boivin),
+           sg_host_get_load(fafard), sg_host_get_load(ginette));
 
   sg_exec_wait(exec);
   XBT_INFO("Done!");

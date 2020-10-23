@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 
   sg_host_t* hosts = sg_host_list();
   for (size_t i = 0; i < host_count; i++)
-    XBT_INFO("Host '%s' runs at %.0f flops/s", sg_host_get_name(hosts[i]), sg_host_speed(hosts[i]));
+    XBT_INFO("Host '%s' runs at %.0f flops/s", sg_host_get_name(hosts[i]), sg_host_get_speed(hosts[i]));
 
   free(hosts);
 

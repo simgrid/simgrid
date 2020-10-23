@@ -1157,8 +1157,8 @@ Querying info
       .. autodoxymethod:: sg_host_core_count(const_sg_host_t host)
       .. autodoxymethod:: sg_host_dump(const_sg_host_t ws)
       .. autodoxymethod:: sg_host_get_name(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_load(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_speed(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_load(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_speed(const_sg_host_t host)
 
 User data and properties
 ------------------------
@@ -1268,9 +1268,9 @@ Platform and routing
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
-      .. autodoxymethod:: sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
-      .. autodoxymethod:: sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
+      .. autodoxymethod:: sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
+      .. autodoxymethod:: sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
+      .. autodoxymethod:: sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to)
       .. autodoxymethod:: sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
 
 Signals

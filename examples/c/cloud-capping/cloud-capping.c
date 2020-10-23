@@ -94,7 +94,7 @@ static void test_dynamic_change()
   const char* w0_argv[] = {"worker0", "Task0", "-1.0", NULL};
   sg_actor_create("worker0", (sg_host_t)vm0, worker_busy_loop, 3, w0_argv);
 
-  char* speed           = bprintf("%f", sg_host_speed(pm0));
+  char* speed           = bprintf("%f", sg_host_get_speed(pm0));
   const char* w1_argv[] = {"worker1", "Task1", speed, NULL};
   sg_actor_create("worker1", (sg_host_t)vm1, worker_busy_loop, 3, w1_argv);
 
@@ -107,7 +107,7 @@ static void test_dynamic_change()
 
 static void test_one_task(sg_host_t hostA)
 {
-  const double cpu_speed          = sg_host_speed(hostA);
+  const double cpu_speed          = sg_host_get_speed(hostA);
   const double computation_amount = cpu_speed * 10;
   const char* hostA_name          = sg_host_get_name(hostA);
 
@@ -141,8 +141,8 @@ static void test_one_task(sg_host_t hostA)
 
 static void test_two_tasks(sg_host_t hostA, sg_host_t hostB)
 {
-  const double cpu_speed = sg_host_speed(hostA);
-  xbt_assert(cpu_speed == sg_host_speed(hostB));
+  const double cpu_speed = sg_host_get_speed(hostA);
+  xbt_assert(cpu_speed == sg_host_get_speed(hostB));
   const double computation_amount = cpu_speed * 10;
   const char* hostA_name          = sg_host_get_name(hostA);
   const char* hostB_name          = sg_host_get_name(hostB);
@@ -226,7 +226,7 @@ static void master_main(int argc, char* argv[])
   sg_vm_destroy(vm0);
 
   vm0              = sg_vm_create_core(pm0, "VM0");
-  double cpu_speed = sg_host_speed(pm0);
+  double cpu_speed = sg_host_get_speed(pm0);
   sg_vm_set_bound(vm0, cpu_speed / 10);
   sg_vm_start(vm0);
 
@@ -249,7 +249,7 @@ static void master_main(int argc, char* argv[])
   sg_vm_set_ramsize(vm0, 1e9); // 1GB
   sg_vm_start(vm0);
 
-  cpu_speed = sg_host_speed(pm0);
+  cpu_speed = sg_host_get_speed(pm0);
   sg_vm_start(vm0);
 
   XBT_INFO("# 10. Test migration");

@@ -33,7 +33,7 @@ static void host(int argc, char* argv[])
 {
   unsigned int disk_count;
   sg_disk_t* disks;
-  sg_host_disks(sg_host_self(), &disk_count, &disks);
+  sg_host_get_disks(sg_host_self(), &disk_count, &disks);
 
   show_info(disk_count, disks);
 

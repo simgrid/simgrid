@@ -86,8 +86,8 @@ static double finish_on_at(const_SD_task_t task, const_sg_host_t host)
         if (SD_task_get_amount(parent) <= 1e-6){
           redist_time= 0;
         } else {
-          redist_time = sg_host_route_latency(parent_host[0], host) +
-                        SD_task_get_amount(parent) / sg_host_route_bandwidth(parent_host[0], host);
+          redist_time = sg_host_get_route_latency(parent_host[0], host) +
+                        SD_task_get_amount(parent) / sg_host_get_route_bandwidth(parent_host[0], host);
         }
         data_available = SD_task_get_start_time(parent) + redist_time;
       }
@@ -103,11 +103,12 @@ static double finish_on_at(const_SD_task_t task, const_sg_host_t host)
 
     xbt_dynar_free_container(&parents);
 
-    result = fmax(sg_host_get_available_at(host), last_data_available) + SD_task_get_amount(task) / sg_host_speed(host);
+    result =
+        fmax(sg_host_get_available_at(host), last_data_available) + SD_task_get_amount(task) / sg_host_get_speed(host);
   } else {
     xbt_dynar_free_container(&parents);
 
-    result = sg_host_get_available_at(host) + SD_task_get_amount(task)/sg_host_speed(host);
+    result = sg_host_get_available_at(host) + SD_task_get_amount(task) / sg_host_get_speed(host);
   }
   return result;
 }

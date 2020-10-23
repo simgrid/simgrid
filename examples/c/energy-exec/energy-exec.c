@@ -19,14 +19,14 @@ static void dvfs(int argc, char* argv[])
   sg_host_t host = sg_host_by_name("MyHost1");
 
   XBT_INFO("Energetic profile: %s", sg_host_get_property_value(host, "wattage_per_state"));
-  XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", sg_host_speed(host),
+  XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", sg_host_get_speed(host),
            sg_host_get_consumed_energy(host));
 
   double start = simgrid_get_clock();
   XBT_INFO("Sleep for 10 seconds");
   sg_actor_sleep_for(10);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E; Energy dissipated=%.2f J",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_consumed_energy(host));
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_consumed_energy(host));
 
   // Run a task
   start = simgrid_get_clock();
@@ -34,27 +34,27 @@ static void dvfs(int argc, char* argv[])
   sg_actor_execute(100E6);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW"
            " depending on load; Energy dissipated=%.0f J",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_wattmin_at(host, sg_host_get_pstate(host)),
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_wattmin_at(host, sg_host_get_pstate(host)),
            sg_host_get_wattmax_at(host, sg_host_get_pstate(host)), sg_host_get_consumed_energy(host));
 
   // ========= Change power peak =========
   int pstate = 2;
   sg_host_set_pstate(host, pstate);
   XBT_INFO("========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s)", pstate,
-           sg_host_get_pstate_speed(host, pstate), sg_host_speed(host));
+           sg_host_get_pstate_speed(host, pstate), sg_host_get_speed(host));
 
   // Run a second task
   start = simgrid_get_clock();
   XBT_INFO("Run a task of %.0E flops", 100E6);
   sg_actor_execute(100E6);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_consumed_energy(host));
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_consumed_energy(host));
 
   start = simgrid_get_clock();
   XBT_INFO("Sleep for 4 seconds");
   sg_actor_sleep_for(4);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_consumed_energy(host));
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_consumed_energy(host));
 
   // =========== Turn the other host off ==========
   XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated %.0f J so far.",
@@ -63,7 +63,7 @@ static void dvfs(int argc, char* argv[])
   start = simgrid_get_clock();
   sg_actor_sleep_for(10);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_consumed_energy(host));
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_consumed_energy(host));
 }
 
 int main(int argc, char* argv[])

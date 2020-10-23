@@ -20,36 +20,36 @@ static void execute_load_test(int argc, char* argv[])
 
   XBT_INFO("Initial peak speed: %.0E flop/s; number of flops computed so far: %.0E (should be 0) and current average "
            "load: %.5f (should be 0)",
-           sg_host_speed(host), sg_host_get_computed_flops(host), sg_host_get_avg_load(host));
+           sg_host_get_speed(host), sg_host_get_computed_flops(host), sg_host_get_avg_load(host));
 
   double start = simgrid_get_clock();
   XBT_INFO("Sleep for 10 seconds");
   sg_actor_sleep_for(10);
 
-  double speed = sg_host_speed(host);
+  double speed = sg_host_get_speed(host);
   XBT_INFO("Done sleeping %.2fs; peak speed: %.0E flop/s; number of flops computed so far: %.0E (nothing should have "
            "changed)",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_computed_flops(host));
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_computed_flops(host));
 
   // Run a task
   start = simgrid_get_clock();
-  XBT_INFO("Run a task of %.0E flops at current speed of %.0E flop/s", 200e6, sg_host_speed(host));
+  XBT_INFO("Run a task of %.0E flops at current speed of %.0E flop/s", 200e6, sg_host_get_speed(host));
   sg_actor_execute(200e6);
 
   XBT_INFO("Done working on my task; this took %.2fs; current peak speed: %.0E flop/s (when I started the computation, "
            "the speed was set to %.0E flop/s); number of flops computed so "
            "far: %.2E, average load as reported by the HostLoad plugin: %.5f (should be %.5f)",
-           simgrid_get_clock() - start, sg_host_speed(host), speed, sg_host_get_computed_flops(host),
+           simgrid_get_clock() - start, sg_host_get_speed(host), speed, sg_host_get_computed_flops(host),
            sg_host_get_avg_load(host),
            200E6 / (10.5 * speed * sg_host_core_count(host) +
-                    (simgrid_get_clock() - start - 0.5) * sg_host_speed(host) * sg_host_core_count(host)));
+                    (simgrid_get_clock() - start - 0.5) * sg_host_get_speed(host) * sg_host_core_count(host)));
 
   // ========= Change power peak =========
   int pstate = 1;
   sg_host_set_pstate(host, pstate);
   XBT_INFO(
       "========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s, average load is %.5f)",
-      pstate, sg_host_get_pstate_speed(host, pstate), sg_host_speed(host), sg_host_get_avg_load(host));
+      pstate, sg_host_get_pstate_speed(host, pstate), sg_host_get_speed(host), sg_host_get_avg_load(host));
 
   // Run a second task
   start = simgrid_get_clock();
@@ -57,7 +57,7 @@ static void execute_load_test(int argc, char* argv[])
   sg_actor_execute(100e6);
   XBT_INFO("Done working on my task; this took %.2fs; current peak speed: %.0E flop/s; number of flops computed so "
            "far: %.2E",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_computed_flops(host));
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_computed_flops(host));
 
   start = simgrid_get_clock();
   XBT_INFO("========= Requesting a reset of the computation and load counters");
@@ -67,7 +67,7 @@ static void execute_load_test(int argc, char* argv[])
   XBT_INFO("Sleep for 4 seconds");
   sg_actor_sleep_for(4);
   XBT_INFO("Done sleeping %.2f s; peak speed: %.0E flop/s; number of flops computed so far: %.0E",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_computed_flops(host));
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_computed_flops(host));
 
   // =========== Turn the other host off ==========
   XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 computed %.0f flops so far and has an "
@@ -77,7 +77,7 @@ static void execute_load_test(int argc, char* argv[])
   start = simgrid_get_clock();
   sg_actor_sleep_for(10);
   XBT_INFO("Done sleeping %.2f s; peak speed: %.0E flop/s; number of flops computed so far: %.0E",
-           simgrid_get_clock() - start, sg_host_speed(host), sg_host_get_computed_flops(host));
+           simgrid_get_clock() - start, sg_host_get_speed(host), sg_host_get_computed_flops(host));
 }
 
 static void change_speed(int argc, char* argv[])

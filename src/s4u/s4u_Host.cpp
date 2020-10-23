@@ -399,13 +399,18 @@ void sg_host_user_destroy(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v328
 }
 
 // ========= storage related functions ============
-void sg_host_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
+void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
 {
   std::vector<sg_disk_t> list = host->get_disks();
   *disk_count                 = list.size();
   *disks                      = static_cast<sg_disk_t*>(xbt_malloc(sizeof(sg_disk_t) * (*disk_count)));
   for (size_t i = 0; i < *disk_count; i++)
     (*disks)[i] = list[i];
+}
+
+void sg_host_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks) // XBT_ATTRIB_DEPRECATED_v330
+{
+  sg_host_get_disks(host, disk_count, disks);
 }
 
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
@@ -433,9 +438,14 @@ xbt_dynar_t sg_host_get_attached_storage_list(const_sg_host_t host)
 // =========== user-level functions ===============
 // ================================================
 /** @brief Returns the total speed of a host */
-double sg_host_speed(const_sg_host_t host)
+double sg_host_get_speed(const_sg_host_t host)
 {
   return host->get_speed();
+}
+
+double sg_host_speed(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_speed(host);
 }
 
 /** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
@@ -566,7 +576,7 @@ void sg_host_set_property_value(sg_host_t host, const char* name, const char* va
  * @param to where to
  * @param links [OUT] where to store the list of links (must exist, cannot be nullptr).
  */
-void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
+void sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   from->route_to(to, vlinks, nullptr);
@@ -579,7 +589,7 @@ void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
  * @param from where from
  * @param to where to
  */
-double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
+double sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   double res = 0;
@@ -592,7 +602,7 @@ double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
  * @param from where from
  * @param to where to
  */
-double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
+double sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
 {
   double min_bandwidth = -1.0;
 
@@ -604,6 +614,21 @@ double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
       min_bandwidth = bandwidth;
   }
   return min_bandwidth;
+}
+
+void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links) // XBT_ATTRIB_DEPRECATED_v330
+{
+  sg_host_get_route(from, to, links);
+}
+
+double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_route_latency(from, to);
+}
+
+double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_route_bandwidth(from, to);
 }
 
 void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
@@ -656,7 +681,12 @@ const char* sg_host_self_get_name()
   return res;
 }
 
-double sg_host_load(const_sg_host_t host)
+double sg_host_get_load(const_sg_host_t host)
 {
   return host->get_load();
+}
+
+double sg_host_load(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_load(host);
 }
