@@ -189,6 +189,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
   SECTION("Two stochastic events (drawing each distribution)")
   {
+    simgrid::xbt::random::set_implem_xbt();
     simgrid::xbt::random::set_mersenne_seed(12345);
     std::vector<simgrid::kernel::profile::DatedValue> got = trace2vector("STOCHASTIC\n"
                                                                          "DET 0 UNIF 10 20\n"
@@ -204,6 +205,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
   SECTION("Two stochastic events, with a loop")
   {
+    simgrid::xbt::random::set_implem_xbt();
     simgrid::xbt::random::set_mersenne_seed(12345);
     std::vector<simgrid::kernel::profile::DatedValue> got = trace2vector("STOCHASTIC LOOP\n"
                                                                          "DET 0 UNIF 10 20\n"
