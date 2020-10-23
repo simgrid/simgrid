@@ -165,9 +165,9 @@ XBT_PUBLIC xbt_dynar_t SD_PTG_dotload(const char* filename);
 /* Support some backward compatibility */
 #define SD_workstation_t sg_host_t
 
-#define SD_link_get_name sg_link_name
-#define SD_link_get_current_latency sg_link_latency
-#define SD_link_get_current_bandwidth sg_link_bandwidth
+#define SD_link_get_name sg_link_get_name
+#define SD_link_get_current_latency sg_link_get_latency
+#define SD_link_get_current_bandwidth sg_link_get_bandwidth
 
 #define SD_route_get_current_latency SD_route_get_latency
 #define SD_route_get_current_bandwidth SD_route_get_bandwidth

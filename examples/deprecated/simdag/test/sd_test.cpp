@@ -40,8 +40,8 @@ int main(int argc, char **argv)
   h1->route_to(h2, route, &latency);
 
   for (auto const& link : route)
-    XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_name(link), sg_link_latency(link),
-             sg_link_bandwidth(link));
+    XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_get_name(link), sg_link_get_latency(link),
+             sg_link_get_bandwidth(link));
 
   XBT_INFO("Route latency = %f, route bandwidth = %f", latency, sg_host_route_bandwidth(h1, h2));
   XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount12, h1->get_cname(), h2->get_cname(),

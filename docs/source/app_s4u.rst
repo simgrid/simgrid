@@ -1360,10 +1360,10 @@ Querying info
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_bandwidth(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_get_bandwidth(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_get_latency(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_get_name(const_sg_link_t link)
       .. autodoxymethod:: sg_link_is_shared(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_latency(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_name(const_sg_link_t link)
 
 Modifying characteristics
 -------------------------
@@ -1374,6 +1374,11 @@ Modifying characteristics
 
       .. autodoxymethod:: simgrid::s4u::Link::set_bandwidth(double value)
       .. autodoxymethod:: simgrid::s4u::Link::set_latency(double value)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_link_set_bandwidth(const_sg_link_t link, double value)
+      .. autodoxymethod:: sg_link_set_latency(const_sg_link_t link, double value)
 
 User data and properties
 ------------------------

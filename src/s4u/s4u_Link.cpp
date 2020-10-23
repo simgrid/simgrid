@@ -130,10 +130,16 @@ void Link::set_property(const std::string& key, const std::string& value)
 
 /* **************************** Public C interface *************************** */
 
-const char* sg_link_name(const_sg_link_t link)
+const char* sg_link_get_name(const_sg_link_t link)
 {
   return link->get_cname();
 }
+
+const char* sg_link_name(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_link_get_name(link);
+}
+
 sg_link_t sg_link_by_name(const char* name)
 {
   return simgrid::s4u::Link::by_name(name);
@@ -143,40 +149,67 @@ int sg_link_is_shared(const_sg_link_t link)
 {
   return link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::FATPIPE;
 }
-double sg_link_bandwidth(const_sg_link_t link)
+
+double sg_link_get_bandwidth(const_sg_link_t link)
 {
   return link->get_bandwidth();
 }
 
-void sg_link_bandwidth_set(sg_link_t link, double value)
+void sg_link_set_bandwidth(sg_link_t link, double value)
 {
   return link->set_bandwidth(value);
 }
 
-double sg_link_latency(const_sg_link_t link)
+double sg_link_bandwidth(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_link_get_bandwidth(link);
+}
+
+void sg_link_bandwidth_set(sg_link_t link, double value) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_link_set_bandwidth(link, value);
+}
+
+double sg_link_get_latency(const_sg_link_t link)
 {
   return link->get_latency();
 }
-void sg_link_latency_set(sg_link_t link, double value)
+
+void sg_link_set_latency(sg_link_t link, double value)
 {
   return link->set_latency(value);
 }
+
+double sg_link_latency(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_link_get_latency(link);
+}
+
+void sg_link_latency_set(sg_link_t link, double value) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_link_set_latency(link, value);
+}
+
 void* sg_link_get_data(const_sg_link_t link)
 {
   return link->get_data();
 }
+
 void sg_link_set_data(sg_link_t link, void* data)
 {
   link->set_data(data);
 }
+
 void* sg_link_data(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
 {
   return sg_link_get_data(link);
 }
+
 void sg_link_data_set(sg_link_t link, void* data) // XBT_ATTRIB_DEPRECATED_v330
 {
   sg_link_set_data(link, data);
 }
+
 int sg_link_count()
 {
   return simgrid::s4u::Engine::get_instance()->get_link_count();
