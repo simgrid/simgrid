@@ -30,7 +30,8 @@ public:
       : date_law(Dist_Det), date_params({d}), value_law(Dist_Det), value_params({v})
   {
   }
-  explicit StochasticDatedValue(Distribution dl, std::vector<double> dp, Distribution vl, std::vector<double> vp)
+  explicit StochasticDatedValue(Distribution dl, const std::vector<double>& dp, Distribution vl,
+                                const std::vector<double>& vp)
       : date_law(dl), date_params(dp), value_law(vl), value_params(vp)
   {
   }

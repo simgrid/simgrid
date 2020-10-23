@@ -29,8 +29,8 @@ Profile::Profile()
   /* Add the first fake event storing the time at which the trace begins */
   DatedValue val(0, -1);
   StochasticDatedValue stoval(0, -1);
-  event_list.push_back(val);
-  stochastic_event_list.push_back(stoval);
+  event_list.emplace_back(val);
+  stochastic_event_list.emplace_back(stoval);
 }
 Profile::~Profile() = default;
 
@@ -48,8 +48,8 @@ Event* Profile::schedule(FutureEvtSet* fes, resource::Resource* resource)
 
   fes_ = fes;
   fes_->add_event(0.0 /* start time */, event);
-  if (stochastic > 0) {
-    xbt_assert((event->idx < stochastic_event_list.size()), "Your profile should have at least one stochastic event!");
+  if (stochastic) {
+    xbt_assert(event->idx < stochastic_event_list.size(), "Your profile should have at least one stochastic event!");
     futureDV = stochastic_event_list.at(event->idx).get_datedvalue();
   }
 
@@ -78,15 +78,14 @@ DatedValue Profile::next(Event* event)
     DatedValue dateVal = futureDV;
     if (event->idx < stochastic_event_list.size() - 1) {
       event->idx++;
-    } else if (stochasticloop > 0) { /* We have reached the last element and we have to loop. */
+    } else if (stochasticloop) { /* We have reached the last element and we have to loop. */
       event->idx = 1;
     } else {
       event->free_me = true; /* We have reached the last element, but we don't need to loop. */
     }
 
-    if (event->free_me == false) { // In the case there is an element, we draw the next event
-      StochasticDatedValue stodateVal = stochastic_event_list.at(event->idx);
-      futureDV                        = stochastic_event_list.at(event->idx).get_datedvalue();
+    if (not event->free_me) { // In the case there is an element, we draw the next event
+      futureDV = stochastic_event_list.at(event->idx).get_datedvalue();
       fes_->add_event(event_date + futureDV.date_, event);
     }
     return dateVal;
@@ -183,7 +182,7 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
         stochevent.value_params = {std::atof(splittedval[i + 1].c_str()), std::atof(splittedval[i + 2].c_str())};
       }
 
-      profile->stochastic_event_list.push_back(stochevent);
+      profile->stochastic_event_list.emplace_back(stochevent);
     } else {
       XBT_ATTRIB_UNUSED int res = sscanf(val.c_str(), "%lg  %lg\n", &event.date_, &event.value_);
       xbt_assert(res == 2, "%s:%d: Syntax error in trace\n%s", name.c_str(), linecount, input.c_str());
@@ -193,7 +192,7 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
                  last_event->date_, event.date_, input.c_str());
       last_event->date_ = event.date_ - last_event->date_;
 
-      profile->event_list.push_back(event);
+      profile->event_list.emplace_back(event);
       last_event = &(profile->event_list.back());
     }
   }

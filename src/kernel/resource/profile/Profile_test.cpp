@@ -158,9 +158,9 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                                    "DET 0 UNIF 10 20");
 
     std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
-    want.push_back(simgrid::kernel::profile::StochasticDatedValue(0, -1)); // The initial fake event
-    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {0},
-                                                                  simgrid::kernel::profile::Dist_Unif, {10, 20}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(0, -1)); // The initial fake event
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {0},
+                                                                     simgrid::kernel::profile::Dist_Unif, {10, 20}));
 
     REQUIRE(want == got);
   }
@@ -174,15 +174,15 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                                    "DET 5 UNIF 5 25");
 
     std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
-    want.push_back(simgrid::kernel::profile::StochasticDatedValue(0, -1));
-    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {0},
-                                                                  simgrid::kernel::profile::Dist_Det, {4}));
-    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Norm, {25, 10},
-                                                                  simgrid::kernel::profile::Dist_Det, {3}));
-    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Unif, {10, 20},
-                                                                  simgrid::kernel::profile::Dist_Norm, {25, 10}));
-    want.push_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {5},
-                                                                  simgrid::kernel::profile::Dist_Unif, {5, 25}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(0, -1));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {0},
+                                                                     simgrid::kernel::profile::Dist_Det, {4}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Norm, {25, 10},
+                                                                     simgrid::kernel::profile::Dist_Det, {3}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Unif, {10, 20},
+                                                                     simgrid::kernel::profile::Dist_Norm, {25, 10}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {5},
+                                                                     simgrid::kernel::profile::Dist_Unif, {5, 25}));
 
     REQUIRE(want == got);
   }
@@ -197,8 +197,8 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
     std::vector<simgrid::kernel::profile::DatedValue> want;
     // The following values were drawn using the XBT_RNG_xbt method /outside/ the testcase.
-    want.push_back(simgrid::kernel::profile::DatedValue(0, 19.29616086867082813683));
-    want.push_back(simgrid::kernel::profile::DatedValue(2.32719992449416279712, 20.16807234800742065772));
+    want.emplace_back(simgrid::kernel::profile::DatedValue(0, 19.29616086867082813683));
+    want.emplace_back(simgrid::kernel::profile::DatedValue(2.32719992449416279712, 20.16807234800742065772));
 
     REQUIRE(want == got);
   }
@@ -215,10 +215,10 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
     // In this case, the main use of the last stochastic event is to set when the first event takes place.
 
     std::vector<simgrid::kernel::profile::DatedValue> want;
-    want.push_back(simgrid::kernel::profile::DatedValue(0, 19.29616086867082813683));
-    want.push_back(simgrid::kernel::profile::DatedValue(2.32719992449416279712, 20.16807234800742065772));
-    want.push_back(simgrid::kernel::profile::DatedValue(3.51111873684917075167, 0));
-    want.push_back(simgrid::kernel::profile::DatedValue(3.51111873684917075167, 10.39759496468994726115));
+    want.emplace_back(simgrid::kernel::profile::DatedValue(0, 19.29616086867082813683));
+    want.emplace_back(simgrid::kernel::profile::DatedValue(2.32719992449416279712, 20.16807234800742065772));
+    want.emplace_back(simgrid::kernel::profile::DatedValue(3.51111873684917075167, 0));
+    want.emplace_back(simgrid::kernel::profile::DatedValue(3.51111873684917075167, 10.39759496468994726115));
 
     REQUIRE(want == got);
   }
