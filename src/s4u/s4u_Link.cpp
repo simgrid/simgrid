@@ -161,13 +161,21 @@ void sg_link_latency_set(sg_link_t link, double value)
 {
   return link->set_latency(value);
 }
-void* sg_link_data(const_sg_link_t link)
+void* sg_link_get_data(const_sg_link_t link)
 {
   return link->get_data();
 }
-void sg_link_data_set(sg_link_t link, void* data)
+void sg_link_set_data(sg_link_t link, void* data)
 {
   link->set_data(data);
+}
+void* sg_link_data(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_link_get_data(link);
+}
+void sg_link_data_set(sg_link_t link, void* data) // XBT_ATTRIB_DEPRECATED_v330
+{
+  sg_link_set_data(link, data);
 }
 int sg_link_count()
 {

@@ -1387,8 +1387,8 @@ User data and properties
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_data(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_data_set(sg_link_t link, void *data)
+      .. autodoxymethod:: sg_link_get_data(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_set_data(sg_link_t link, void *data)
 
 On/Off
 ------

@@ -20,8 +20,11 @@ XBT_PUBLIC double sg_link_bandwidth(const_sg_link_t link);
 XBT_PUBLIC void sg_link_bandwidth_set(sg_link_t link, double value);
 XBT_PUBLIC double sg_link_latency(const_sg_link_t link);
 XBT_PUBLIC void sg_link_latency_set(sg_link_t link, double value);
-XBT_PUBLIC void* sg_link_data(const_sg_link_t link);
-XBT_PUBLIC void sg_link_data_set(sg_link_t link, void* data);
+XBT_PUBLIC void* sg_link_get_data(const_sg_link_t link);
+XBT_PUBLIC void sg_link_set_data(sg_link_t link, void* data);
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_link_get_data()") XBT_PUBLIC void* sg_link_data(const_sg_link_t link);
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_link_set_data()") XBT_PUBLIC
+    void sg_link_data_set(sg_link_t link, void* data);
 XBT_PUBLIC int sg_link_count();
 XBT_PUBLIC sg_link_t* sg_link_list();
 SG_END_DECL
