@@ -30,7 +30,7 @@ void* req_wait(void* bar);
 static void thread_create_wrapper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   int the_global_rank  = global_rank;
-  struct threadwrap* t = (struct threadwrap*)sg_actor_self_data();
+  struct threadwrap* t = (struct threadwrap*)sg_actor_self_get_data();
   XBT_INFO("new thread has parameter rank %d and global variable rank %d", ((struct param*)(t->param))->rank,
            the_global_rank);
   SMPI_thread_create();
@@ -44,7 +44,7 @@ static void mpi_thread_create(const char* name, void* (*f)(void*), void* param)
   threadwrap->f                 = f;
   threadwrap->param             = param;
   sg_actor_t actor              = sg_actor_init(name, sg_host_self());
-  sg_actor_data_set(actor, threadwrap);
+  sg_actor_set_data(actor, threadwrap);
   sg_actor_start(actor, thread_create_wrapper, 0, NULL);
 }
 

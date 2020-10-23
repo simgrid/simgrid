@@ -65,7 +65,7 @@ static void worker_fun(int argc, char* argv[])
 
 static void master_fun(int argc, char* argv[])
 {
-  sg_host_t* worker_pms = sg_actor_self_data();
+  sg_host_t* worker_pms = sg_actor_self_get_data();
 
   sg_vm_t* vms = xbt_malloc(2 * sizeof(sg_vm_t));
 
@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
   free(pms);
 
   sg_actor_t actor = sg_actor_init("master", master_pm);
-  sg_actor_data_set(actor, worker_pms);
+  sg_actor_set_data(actor, worker_pms);
   sg_actor_start(actor, master_fun, 0, NULL);
 
   simgrid_run();

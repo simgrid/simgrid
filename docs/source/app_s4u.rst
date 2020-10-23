@@ -509,8 +509,8 @@ Querying info
       .. autodoxymethod:: sg_actor_get_host(const_sg_actor_t actor)
       .. autodoxymethod:: sg_actor_set_host(sg_actor_t actor, sg_host_t host)
 
-      .. autodoxymethod:: sg_actor_data(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_data_set(sg_actor_t actor, void *userdata)        
+      .. autodoxymethod:: sg_actor_get_data(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_set_data(sg_actor_t actor, void *userdata)
 
 Suspending and resuming actors
 ------------------------------
@@ -644,8 +644,8 @@ Querying info
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_self_data()
-      .. autodoxymethod:: sg_actor_self_data_set(void *data)
+      .. autodoxymethod:: sg_actor_self_get_data()
+      .. autodoxymethod:: sg_actor_self_set_data(void *data)
       .. autodoxymethod:: sg_actor_self_get_name()
       .. autodoxymethod:: sg_actor_self_get_pid()
       .. autodoxymethod:: sg_actor_self_get_ppid()

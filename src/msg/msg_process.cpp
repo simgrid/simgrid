@@ -63,7 +63,7 @@ msg_process_t MSG_process_create_with_environment(const char* name, int (*code)(
 
   try {
     if (data != nullptr) {
-      sg_actor_data_set(actor, data);
+      sg_actor_set_data(actor, data);
       xbt_dict_cursor_t cursor = nullptr;
       char* key;
       char* value;

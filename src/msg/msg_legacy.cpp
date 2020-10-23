@@ -157,7 +157,7 @@ void* MSG_process_get_data(const_sg_actor_t process)
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  return sg_actor_data(process);
+  return sg_actor_get_data(process);
 }
 
 /** @brief Sets the user data of a process.
@@ -167,7 +167,7 @@ void* MSG_process_get_data(const_sg_actor_t process)
 msg_error_t MSG_process_set_data(msg_process_t process, void* data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
-  sg_actor_data_set(process, data);
+  sg_actor_set_data(process, data);
 
   return MSG_OK;
 }
