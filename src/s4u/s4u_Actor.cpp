@@ -32,8 +32,8 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_suspend;
 xbt::signal<void(Actor const&)> s4u::Actor::on_resume;
 xbt::signal<void(Actor const&)> s4u::Actor::on_sleep;
 xbt::signal<void(Actor const&)> s4u::Actor::on_wake_up;
-xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start; // deprecated
-xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;   // deprecated
+xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
+xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329
 xbt::signal<void(Actor const&, Host const& previous_location)> s4u::Actor::on_host_change;
 xbt::signal<void(Actor const&)> s4u::Actor::on_termination;
 xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
@@ -461,7 +461,7 @@ void set_host(Host* new_host)
 {
   simgrid::kernel::actor::ActorImpl::self()->get_iface()->set_host(new_host);
 }
-void migrate(Host* new_host) // deprecated
+void migrate(Host* new_host) // XBT_ATTRIB_DEPRECATED_v329
 {
   set_host(new_host);
 }
@@ -665,7 +665,7 @@ void sg_actor_set_host(sg_actor_t actor, sg_host_t host)
 {
   actor->set_host(host);
 }
-void sg_actor_migrate(sg_actor_t process, sg_host_t host) // deprecated
+void sg_actor_migrate(sg_actor_t process, sg_host_t host) // XBT_ATTRIB_DEPRECATED_v329
 {
   process->set_host(host);
 }
@@ -786,7 +786,7 @@ sg_actor_t sg_actor_self()
   return simgrid::s4u::Actor::self();
 }
 
-void sg_actor_self_execute(double flops) // XBT_DEPRECATED_v330
+void sg_actor_self_execute(double flops) // XBT_ATTRIB_DEPRECATED_v330
 {
   simgrid::s4u::this_actor::execute(flops);
 }

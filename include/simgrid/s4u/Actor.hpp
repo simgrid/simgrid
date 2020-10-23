@@ -14,7 +14,6 @@
 #include <xbt/string.hpp>
 
 #include <functional>
-#include <map> // deprecated wrappers
 #include <unordered_map>
 
 namespace simgrid {

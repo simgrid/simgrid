@@ -385,15 +385,15 @@ void sg_host_data_set(sg_host_t host, void* userdata) // XBT_ATTRIB_DEPRECATED_v
 {
   sg_host_set_data(host, userdata);
 }
-void* sg_host_user(sg_host_t host) // deprecated
+void* sg_host_user(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v328
 {
   return host->get_data();
 }
-void sg_host_user_set(sg_host_t host, void* userdata) // deprecated
+void sg_host_user_set(sg_host_t host, void* userdata) // XBT_ATTRIB_DEPRECATED_v328
 {
   host->set_data(userdata);
 }
-void sg_host_user_destroy(sg_host_t host) // deprecated
+void sg_host_user_destroy(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v328
 {
   host->set_data(nullptr);
 }

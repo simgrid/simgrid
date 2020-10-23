@@ -15,25 +15,26 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix, "Logging specific to SIMIX (deployment)");
 
-void SIMIX_init_application() // XBT_DEPRECATED_v329
+void SIMIX_init_application() // XBT_ATTRIB_DEPRECATED_v329
 {
   sg_platf_exit();
   sg_platf_init();
 }
 
-void SIMIX_launch_application(const std::string& file) // XBT_DEPRECATED_v329
+void SIMIX_launch_application(const std::string& file) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid_load_deployment(file.c_str());
 }
-void SIMIX_function_register(const std::string& name, xbt_main_func_t code) // XBT_DEPRECATED_v329
+void SIMIX_function_register(const std::string& name, xbt_main_func_t code) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);
 }
-void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>)) // XBT_DEPRECATED_v329
+void SIMIX_function_register(const std::string& name,
+                             void (*code)(std::vector<std::string>)) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);
 }
-void SIMIX_function_register_default(xbt_main_func_t code) // XBT_DEPRECATED_v329
+void SIMIX_function_register_default(xbt_main_func_t code) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid::s4u::Engine::get_instance()->register_default(code);
 }

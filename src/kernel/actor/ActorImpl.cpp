@@ -541,8 +541,7 @@ int SIMIX_process_count() // XBT_ATTRIB_DEPRECATED_v329
   return simix_global->process_list.size();
 }
 
-// XBT_DEPRECATED_v329
-void* SIMIX_process_self_get_data()
+void* SIMIX_process_self_get_data() // XBT_ATTRIB_DEPRECATED_v329
 {
   smx_actor_t self = simgrid::kernel::actor::ActorImpl::self();
 
@@ -552,8 +551,7 @@ void* SIMIX_process_self_get_data()
   return self->get_user_data();
 }
 
-// XBT_DEPRECATED_v329
-void SIMIX_process_self_set_data(void* data)
+void SIMIX_process_self_set_data(void* data) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid::kernel::actor::ActorImpl::self()->set_user_data(data);
 }
