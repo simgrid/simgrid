@@ -151,36 +151,32 @@ bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases
 
 template <class T, class F>
 typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
-bind_flag(T& value, const char* name, const char* description, std::map<T, std::string> valid_values, F callback)
+bind_flag(T& value, const char* name, const char* description, const std::map<T, std::string>& valid_values, F callback)
 {
   declare_flag(name, description, value,
                std::function<void(const T&)>([&value, name, valid_values, callback](const T& val) {
                  callback(val);
-                 bool found = false;
-                 for (auto kv : valid_values) {
-                   if (kv.first == val)
-                     found = true;
+                 if (valid_values.find(val) != valid_values.end()) {
+                   value = std::move(val);
+                   return;
                  }
-                 if (not found || std::string(val) == "help") {
-                   std::string mesg = "\n";
-                   if (std::string(val) == "help")
-                     mesg += std::string("Possible values for option ") + name + ":\n";
-                   else
-                     mesg += std::string("Invalid value '") + val + "' for option " + name + ". Possible values:\n";
-                   for (auto kv : valid_values)
-                     mesg += "  - '" + std::string(kv.first) + "': " + kv.second +
-                             (kv.first == value ? "  <=== DEFAULT" : "") + "\n";
-                   xbt_die("%s", mesg.c_str());
-                 }
-                 value = std::move(val);
+                 std::string mesg = "\n";
+                 if (std::string(val) == "help")
+                   mesg += std::string("Possible values for option ") + name + ":\n";
+                 else
+                   mesg += std::string("Invalid value '") + val + "' for option " + name + ". Possible values:\n";
+                 for (auto const& kv : valid_values)
+                   mesg += "  - '" + std::string(kv.first) + "': " + kv.second +
+                           (kv.first == value ? "  <=== DEFAULT" : "") + "\n";
+                 xbt_die("%s", mesg.c_str());
                }));
 }
 template <class T, class F>
 typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
 bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description,
-          std::map<T, std::string> valid_values, F callback)
+          const std::map<T, std::string>& valid_values, F callback)
 {
-  bind_flag(value, name, description, std::move(valid_values), std::move(callback));
+  bind_flag(value, name, description, valid_values, std::move(callback));
   alias(name, std::move(aliases));
 }
 
@@ -254,7 +250,7 @@ public:
    * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
    */
   template <class F>
-  Flag(const char* name, const char* desc, T value, std::map<T, std::string> valid_values, F callback)
+  Flag(const char* name, const char* desc, T value, const std::map<T, std::string>& valid_values, F callback)
       : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc, std::move(valid_values), std::move(callback));
@@ -263,10 +259,10 @@ public:
   /* A constructor with everything */
   template <class F>
   Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value,
-       std::map<T, std::string> valid_values, F callback)
+       const std::map<T, std::string>& valid_values, F callback)
       : value_(value), name_(name)
   {
-    simgrid::config::bind_flag(value_, name, std::move(aliases), desc, std::move(valid_values), std::move(callback));
+    simgrid::config::bind_flag(value_, name, std::move(aliases), desc, valid_values, std::move(callback));
   }
 
   // No copy:
