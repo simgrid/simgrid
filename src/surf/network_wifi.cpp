@@ -63,7 +63,7 @@ s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy() const
 
 int NetworkWifiLink::get_host_count() const
 {
-  return host_rates_.size();
+  return static_cast<int>(host_rates_.size());
 }
 
 void NetworkWifiLink::refresh_decay_bandwidths(){

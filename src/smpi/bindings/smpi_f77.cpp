@@ -901,7 +901,7 @@ void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
 
 void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen){
   *ierr = MPI_Info_get_nthkey( simgrid::smpi::Info::f2c(*info), *n, key);
-  for (unsigned int i = strlen(key); i < keylen; i++)
+  for (auto i = static_cast<unsigned>(strlen(key)); i < keylen; i++)
     key[i]=' ';
 }
 
