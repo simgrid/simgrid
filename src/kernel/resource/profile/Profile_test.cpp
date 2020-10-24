@@ -67,7 +67,7 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 
 static std::vector<simgrid::kernel::profile::StochasticDatedValue> trace2selist(const char* str)
 {
-  simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
+  const simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
   std::vector<simgrid::kernel::profile::StochasticDatedValue> stocevlist = trace->stochastic_event_list;
   tmgr_finalize();
   return stocevlist;
