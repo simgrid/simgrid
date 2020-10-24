@@ -117,12 +117,12 @@ int allgather__mvapich2_smp(const void *sendbuf,int sendcnt, MPI_Datatype sendty
             recvcnts[i] = node_sizes[i] * recvcnt;
           }
 
-            void* sendbuf=((char*)recvbuf)+recvtype->get_extent()*displs[leader_comm->rank()];
+          void* sendtmpbuf = ((char*)recvbuf) + recvtype->get_extent() * displs[leader_comm->rank()];
 
-            mpi_errno = colls::allgatherv(sendbuf, (recvcnt * local_size), recvtype, recvbuf, recvcnts, displs,
-                                          recvtype, leader_comm);
-            delete[] displs;
-            delete[] recvcnts;
+          mpi_errno = colls::allgatherv(sendtmpbuf, (recvcnt * local_size), recvtype, recvbuf, recvcnts, displs,
+                                        recvtype, leader_comm);
+          delete[] displs;
+          delete[] recvcnts;
         } else {
         void* sendtmpbuf=((char*)recvbuf)+recvtype->get_extent()*(recvcnt*local_size)*leader_comm->rank();
 
