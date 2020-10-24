@@ -152,7 +152,6 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
   while((var = wifi_link->get_constraint()->get_variable(&elem))) {
     auto* action = static_cast<kernel::resource::NetworkWifiAction*>(var->get_id());
     XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(), action->get_variable()->get_value(), wifi_link->get_host_rate(&action->get_src()),wifi_link->get_host_rate(&action->get_dst()));
-    action->get_variable();
 
     if(action->get_variable()->get_value()) {
       auto it = flowTmp.find(action);
