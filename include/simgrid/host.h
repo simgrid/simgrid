@@ -72,8 +72,6 @@ XBT_PUBLIC xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host);
  */
 XBT_PUBLIC xbt_dynar_t sg_host_get_attached_storage_list(const_sg_host_t host);
 XBT_PUBLIC void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks);
-XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_get_disks()") XBT_PUBLIC
-    void sg_host_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks);
 
 // =========== user-level functions ===============
 /** @brief Return the speed of the processor (in flop/s), regardless of the current load on the machine. */

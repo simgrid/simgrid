@@ -408,11 +408,6 @@ void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t
     (*disks)[i] = list[i];
 }
 
-void sg_host_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks) // XBT_ATTRIB_DEPRECATED_v330
-{
-  sg_host_get_disks(host, disk_count, disks);
-}
-
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
 {
   xbt_assert((host != nullptr), "Invalid parameters");

@@ -85,11 +85,6 @@ const char* sg_disk_get_name(const_sg_disk_t disk)
   return disk->get_cname();
 }
 
-const char* sg_disk_name(const_sg_disk_t disk) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_disk_get_name(disk);
-}
-
 sg_host_t sg_disk_get_host(const_sg_disk_t disk)
 {
   return disk->get_host();
@@ -122,14 +117,4 @@ void* sg_disk_get_data(const_sg_disk_t disk)
 void sg_disk_set_data(sg_disk_t disk, void* data)
 {
   disk->set_data(data);
-}
-
-void* sg_disk_data(const_sg_disk_t disk) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_disk_get_data(disk);
-}
-
-void sg_disk_data_set(sg_disk_t disk, void* data) // XBT_ATTRIB_DEPRECATED_v330
-{
-  sg_disk_set_data(disk, data);
 }
