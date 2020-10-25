@@ -356,7 +356,7 @@ int Datatype::copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
     int count = sendcount < recvcount ? sendcount : recvcount;
     XBT_DEBUG("Copying %d bytes from %p to %p", count, sendbuf, recvbuf);
     if (not(sendtype->flags() & DT_FLAG_DERIVED) && not(recvtype->flags() & DT_FLAG_DERIVED)) {
-      if (not smpi_process()->replaying())
+      if (not smpi_process()->replaying() && count > 0)
         memcpy(recvbuf, sendbuf, count);
     } else if (not(sendtype->flags() & DT_FLAG_DERIVED)) {
       recvtype->unserialize(sendbuf, recvbuf, count / recvtype->size(), MPI_REPLACE);
