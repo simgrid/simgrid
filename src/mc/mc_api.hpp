@@ -6,6 +6,7 @@
 
 #include "simgrid/forward.h"
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_request.hpp"
 #include "xbt/base.h"
 
 namespace simgrid {
@@ -44,6 +45,8 @@ public:
   unsigned long mc_get_visited_states() const;
   unsigned long mc_get_executed_trans() const;
   bool mc_check_deadlock() const;
+  void mc_show_deadlock() const;
+  smx_actor_t mc_smx_simcall_get_issuer(s_smx_simcall const* req) const;
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   bool actor_is_enabled(aid_t pid) const;
   void mc_assert(bool notNull, const char* message = "") const;
@@ -56,6 +59,11 @@ public:
   std::string const& mc_get_host_name(std::string const& hostname) const;
   PageStore& mc_page_store() const;
   void mc_cleanup();
+
+  // SIMCALL FUNCTIONS
+  bool request_depend(smx_simcall_t req1, smx_simcall_t req2) const;
+  std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
+  const char *simix_simcall_name(e_smx_simcall_t kind) const;
 
   // SESSION FUNCTIONS
   void s_initialize() const;

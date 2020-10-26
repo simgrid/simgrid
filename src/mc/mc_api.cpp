@@ -3,6 +3,8 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/mc_smx.hpp"
+
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
@@ -62,6 +64,16 @@ unsigned long mc_api::mc_get_executed_trans() const
 bool mc_api::mc_check_deadlock() const
 {
   return mc_model_checker->checkDeadlock();
+}
+
+void mc_api::mc_show_deadlock() const
+{
+  MC_show_deadlock();
+}
+
+smx_actor_t mc_api::mc_smx_simcall_get_issuer(s_smx_simcall const* req) const
+{
+  return MC_smx_simcall_get_issuer(req);
 }
 
 std::vector<simgrid::mc::ActorInformation>& mc_api::get_actors() const
@@ -125,6 +137,21 @@ PageStore& mc_api::mc_page_store() const
 
 void mc_api::mc_cleanup()
 {
+}
+
+bool mc_api::request_depend(smx_simcall_t req1, smx_simcall_t req2) const
+{
+  return simgrid::mc::request_depend(req1, req2);
+}
+
+std::string mc_api::request_to_string(smx_simcall_t req, int value, RequestType request_type) const
+{
+  return simgrid::mc::request_to_string(req, value, request_type).c_str();
+}
+
+const char * mc_api::simix_simcall_name(e_smx_simcall_t kind) const
+{
+  return SIMIX_simcall_name(kind);
 }
 
 void mc_api::s_close() const

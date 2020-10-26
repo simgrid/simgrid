@@ -180,8 +180,8 @@ void SafetyChecker::backtrack()
   stack_.pop_back();
 
   /* Check for deadlocks */
-  if (mc_model_checker->checkDeadlock()) {
-    MC_show_deadlock();
+  if (mcapi::get().mc_check_deadlock()) {
+    mcapi::get().mc_show_deadlock();
     throw DeadlockError();
   }
 
@@ -198,19 +198,19 @@ void SafetyChecker::backtrack()
       if (req->call_ == SIMCALL_MUTEX_LOCK || req->call_ == SIMCALL_MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none");
 
-      const kernel::actor::ActorImpl* issuer = MC_smx_simcall_get_issuer(req);
+      const kernel::actor::ActorImpl* issuer = mcapi::get().mc_smx_simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
-        if (request_depend(req, &prev_state->internal_req_)) {
+        if (mcapi::get().request_depend(req, &prev_state->internal_req_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.argument_;
             smx_simcall_t prev_req = &prev_state->executed_req_;
-            XBT_DEBUG("%s (state=%d)", simgrid::mc::request_to_string(prev_req, value, RequestType::internal).c_str(),
+            XBT_DEBUG("%s (state=%d)", mcapi::get().request_to_string(prev_req, value, RequestType::internal).c_str(),
                       prev_state->num_);
             value    = state->transition_.argument_;
             prev_req = &state->executed_req_;
-            XBT_DEBUG("%s (state=%d)", simgrid::mc::request_to_string(prev_req, value, RequestType::executed).c_str(),
+            XBT_DEBUG("%s (state=%d)", mcapi::get().request_to_string(prev_req, value, RequestType::executed).c_str(),
                       state->num_);
           }
 
@@ -220,14 +220,14 @@ void SafetyChecker::backtrack()
             XBT_DEBUG("Process %p is in done set", req->issuer_);
           break;
         } else if (req->issuer_ == prev_state->internal_req_.issuer_) {
-          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(req->call_),
-                    SIMIX_simcall_name(prev_state->internal_req_.call_));
+          XBT_DEBUG("Simcall %s and %s with same issuer", mcapi::get().simix_simcall_name(req->call_),
+                    mcapi::get().simix_simcall_name(prev_state->internal_req_.call_));
           break;
         } else {
-          const kernel::actor::ActorImpl* previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req_);
+          const kernel::actor::ActorImpl* previous_issuer = mcapi::get().mc_smx_simcall_get_issuer(&prev_state->internal_req_);
           XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
-                    SIMIX_simcall_name(req->call_), issuer->get_pid(), state->num_,
-                    SIMIX_simcall_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
+                    mcapi::get().simix_simcall_name(req->call_), issuer->get_pid(), state->num_,
+                    mcapi::get().simix_simcall_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
         }
       }
     }
