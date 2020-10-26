@@ -35,10 +35,10 @@ Comm::~Comm()
 
 int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
 {
-  auto rcomms = std::make_unique<kernel::activity::CommImpl*[]>(comms->size());
-  std::transform(begin(*comms), end(*comms), rcomms.get(),
+  std::vector<kernel::activity::CommImpl*> rcomms(comms->size());
+  std::transform(begin(*comms), end(*comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  int changed_pos = simcall_comm_waitany(rcomms.get(), comms->size(), timeout);
+  int changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
   if (changed_pos != -1)
     comms->at(changed_pos)->release_dependencies();
   return changed_pos;
@@ -198,10 +198,10 @@ Comm* Comm::wait_for(double timeout)
 
 int Comm::test_any(const std::vector<CommPtr>* comms)
 {
-  auto rcomms = std::make_unique<kernel::activity::CommImpl*[]>(comms->size());
-  std::transform(begin(*comms), end(*comms), rcomms.get(),
+  std::vector<kernel::activity::CommImpl*> rcomms(comms->size());
+  std::transform(begin(*comms), end(*comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  int changed_pos = simcall_comm_testany(rcomms.get(), comms->size());
+  int changed_pos = simcall_comm_testany(rcomms.data(), rcomms.size());
   if (changed_pos != -1)
     comms->at(changed_pos)->release_dependencies();
   return changed_pos;

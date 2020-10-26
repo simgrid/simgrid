@@ -42,11 +42,11 @@ Exec* Exec::wait_for(double timeout)
 
 int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
 {
-  auto rexecs = std::make_unique<kernel::activity::ExecImpl*[]>(execs->size());
-  std::transform(begin(*execs), end(*execs), rexecs.get(),
+  std::vector<kernel::activity::ExecImpl*> rexecs(execs->size());
+  std::transform(begin(*execs), end(*execs), begin(rexecs),
                  [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
 
-  int changed_pos = simcall_execution_waitany_for(rexecs.get(), execs->size(), timeout);
+  int changed_pos = simcall_execution_waitany_for(rexecs.data(), rexecs.size(), timeout);
   if (changed_pos != -1)
     execs->at(changed_pos)->release_dependencies();
   return changed_pos;
