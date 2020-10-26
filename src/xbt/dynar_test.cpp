@@ -10,6 +10,8 @@
 
 #include "catch.hpp"
 
+#include <string>
+
 constexpr int NB_ELEM = 5000;
 
 TEST_CASE("xbt::dynar: generic C vector", "dynar")
@@ -260,7 +262,6 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
   SECTION("Dynars of strings")
   {
     unsigned int iter;
-    char buf[1024];
     char* s1;
     char* s2;
 
@@ -278,14 +279,14 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
     d = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
     /* 1. Populate the dynar */
     for (int i = 0; i < NB_ELEM; i++) {
-      snprintf(buf, 1023, "%d", i);
-      s1 = xbt_strdup(buf);
+      std::string val = std::to_string(i);
+      s1              = xbt_strdup(val.c_str());
       xbt_dynar_push(d, &s1);
     }
     for (int i = 0; i < NB_ELEM; i++) {
-      snprintf(buf, 1023, "%d", i);
+      std::string val = std::to_string(i);
       xbt_dynar_shift(d, &s2);
-      REQUIRE(not strcmp(buf, s2)); // The retrieved value is not the same than the injected one
+      REQUIRE(s2 == val); // The retrieved value is not the same than the injected one
       xbt_free(s2);
     }
     xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
@@ -295,20 +296,20 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
     INFO("==== Unshift, traverse and pop " << NB_ELEM << " strings");
     d = xbt_dynar_new(sizeof(char**), &xbt_free_ref);
     for (int i = 0; i < NB_ELEM; i++) {
-      snprintf(buf, 1023, "%d", i);
-      s1 = xbt_strdup(buf);
+      std::string val = std::to_string(i);
+      s1              = xbt_strdup(val.c_str());
       xbt_dynar_unshift(d, &s1);
     }
     /* 2. Traverse the dynar with the macro */
     xbt_dynar_foreach (d, iter, s1) {
-      snprintf(buf, 1023, "%u", NB_ELEM - iter - 1);
-      REQUIRE(not strcmp(buf, s1)); // The retrieved value is not the same than the injected one
+      std::string val = std::to_string(NB_ELEM - iter - 1);
+      REQUIRE(s1 == val); // The retrieved value is not the same than the injected one
     }
     /* 3. Traverse the dynar with the macro */
     for (int i = 0; i < NB_ELEM; i++) {
-      snprintf(buf, 1023, "%d", i);
+      std::string val = std::to_string(i);
       xbt_dynar_pop(d, &s2);
-      REQUIRE(not strcmp(buf, s2)); // The retrieved value is not the same than the injected one
+      REQUIRE(s2 == val); // The retrieved value is not the same than the injected one
       xbt_free(s2);
     }
     /* 4. Free the resources */
@@ -319,32 +320,32 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
     INFO("==== Push " << NB_ELEM << " strings, insert " << (NB_ELEM / 5) << " strings in the middle, shift everything");
     d = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
     for (int i = 0; i < NB_ELEM; i++) {
-      snprintf(buf, 1023, "%d", i);
-      s1 = xbt_strdup(buf);
+      std::string val = std::to_string(i);
+      s1              = xbt_strdup(val.c_str());
       xbt_dynar_push(d, &s1);
     }
     for (int i = 0; i < NB_ELEM / 5; i++) {
-      snprintf(buf, 1023, "%d", i);
-      s1 = xbt_strdup(buf);
+      std::string val = std::to_string(i);
+      s1              = xbt_strdup(val.c_str());
       xbt_dynar_insert_at(d, NB_ELEM / 2, &s1);
     }
 
     for (int i = 0; i < NB_ELEM / 2; i++) {
-      snprintf(buf, 1023, "%d", i);
+      std::string val = std::to_string(i);
       xbt_dynar_shift(d, &s2);
-      REQUIRE(not strcmp(buf, s2)); // The retrieved value is not the same than the injected one at the beginning
+      REQUIRE(s2 == val); // The retrieved value is not the same than the injected one at the beginning
       xbt_free(s2);
     }
     for (int i = (NB_ELEM / 5) - 1; i >= 0; i--) {
-      snprintf(buf, 1023, "%d", i);
+      std::string val = std::to_string(i);
       xbt_dynar_shift(d, &s2);
-      REQUIRE(not strcmp(buf, s2)); // The retrieved value is not the same than the injected one in the middle
+      REQUIRE(s2 == val); // The retrieved value is not the same than the injected one in the middle
       xbt_free(s2);
     }
     for (int i = NB_ELEM / 2; i < NB_ELEM; i++) {
-      snprintf(buf, 1023, "%d", i);
+      std::string val = std::to_string(i);
       xbt_dynar_shift(d, &s2);
-      REQUIRE(not strcmp(buf, s2)); // The retrieved value is not the same than the injected one at the end
+      REQUIRE(s2 == val); // The retrieved value is not the same than the injected one at the end
       xbt_free(s2);
     }
     xbt_dynar_free(&d); /* This code is used both as example and as regression test, so we try to */
@@ -355,14 +356,14 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
                       << ". free the rest");
     d = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
     for (int i = 0; i < NB_ELEM; i++) {
-      snprintf(buf, 1023, "%d", i);
-      s1 = xbt_strdup(buf);
+      std::string val = std::to_string(i);
+      s1              = xbt_strdup(val.c_str());
       xbt_dynar_push(d, &s1);
     }
     for (int i = 2 * (NB_ELEM / 5); i < 4 * (NB_ELEM / 5); i++) {
-      snprintf(buf, 1023, "%d", i);
+      std::string val = std::to_string(i);
       xbt_dynar_remove_at(d, 2 * (NB_ELEM / 5), &s2);
-      REQUIRE(not strcmp(buf, s2)); // Remove a bad value
+      REQUIRE(s2 == val); // Remove a bad value
       xbt_free(s2);
     }
     xbt_dynar_free(&d); /* end_of_doxygen */
