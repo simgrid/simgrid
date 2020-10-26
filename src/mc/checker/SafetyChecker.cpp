@@ -23,8 +23,11 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_api.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
+
+using mcapi = simgrid::mc::mc_api;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc, "Logging specific to MC safety verification ");
 
@@ -279,7 +282,8 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
     XBT_INFO("Check a safety property. Reduction is: %s.",
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
-  session->initialize();
+  
+  mcapi::get().s_initialize();  
 
   XBT_DEBUG("Starting the safety algorithm");
 
@@ -290,8 +294,9 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
   XBT_DEBUG("Initial state");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
-    if (actor_is_enabled(actor.copy.get_buffer())) {
+  auto actors = mcapi::get().get_actors();
+  for (auto& actor : actors)
+    if (mcapi::get().actor_is_enabled(actor.copy.get_buffer()->get_pid())) {
       initial_state->add_interleaving_set(actor.copy.get_buffer());
       if (reductionMode_ != ReductionMode::none)
         break;

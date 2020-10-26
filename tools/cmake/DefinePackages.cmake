@@ -611,7 +611,7 @@ set(MC_SRC
   src/mc/checker/SimcallInspector.hpp
   src/mc/checker/LivenessChecker.cpp
   src/mc/checker/LivenessChecker.hpp
-  
+
   src/mc/inspect/DwarfExpression.hpp
   src/mc/inspect/DwarfExpression.cpp
   src/mc/inspect/Frame.hpp
@@ -661,6 +661,8 @@ set(MC_SRC
   src/mc/mc_comm_pattern.cpp
   src/mc/mc_comm_pattern.hpp
   src/mc/compare.cpp
+  src/mc/mc_api.cpp
+  src/mc/mc_api.hpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.hpp

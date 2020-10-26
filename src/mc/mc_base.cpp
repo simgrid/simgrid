@@ -70,12 +70,14 @@ void wait_for_requests()
 // Called from both MCer and MCed:
 bool actor_is_enabled(smx_actor_t actor)
 {
+// #del
 #if SIMGRID_HAVE_MC
   // If in the MCer, ask the client app since it has all the data
   if (mc_model_checker != nullptr) {
     return simgrid::mc::session->actor_is_enabled(actor->get_pid());
   }
 #endif
+// #
 
   // Now, we are in the client app, no need for remote memory reading.
   smx_simcall_t req = &actor->simcall_;
