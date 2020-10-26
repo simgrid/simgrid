@@ -49,7 +49,7 @@ struct s_smx_simcall {
   smx_timer_t timeout_cb_                   = nullptr; // Callback to timeouts
   simgrid::mc::SimcallInspector* inspector_ = nullptr; // makes that simcall observable by the MC
   int mc_value_                             = 0;
-  u_smx_scalar args_[11]                    = {};
+  std::array<u_smx_scalar, 11> args_        = {};
   u_smx_scalar result_                      = {};
 };
 
@@ -198,8 +198,8 @@ template <std::size_t I, class A, class... B> inline void marshal_args(smx_simca
 template <class... A> inline void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A const&... a)
 {
   simcall->call_ = call;
-  memset(&simcall->result_, 0, sizeof(simcall->result_));
-  memset(simcall->args_, 0, sizeof(simcall->args_));
+  memset(&simcall->result_, 0, sizeof simcall->result_);
+  memset(simcall->args_.data(), 0, simcall->args_.size() * sizeof simcall->args_[0]);
   marshal_args<0>(simcall, a...);
 }
 }
