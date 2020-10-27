@@ -7,6 +7,7 @@
 #include "simgrid/forward.h"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_request.hpp"
+#include "src/mc/mc_state.hpp"
 #include "xbt/base.h"
 
 namespace simgrid {
@@ -37,6 +38,10 @@ public:
 
   void initialize(char** argv);
 
+  // ACTOR FUNCTIONS  
+  std::vector<simgrid::mc::ActorInformation>& get_actors() const;
+  bool actor_is_enabled(aid_t pid) const;
+
   // MODEL_CHECKER FUNCTIONS
   ModelChecker* get_model_checker() const;
   void mc_inc_visited_states() const;
@@ -46,8 +51,6 @@ public:
   bool mc_check_deadlock() const;
   void mc_show_deadlock() const;
   smx_actor_t mc_smx_simcall_get_issuer(s_smx_simcall const* req) const;
-  std::vector<simgrid::mc::ActorInformation>& get_actors() const;
-  bool actor_is_enabled(aid_t pid) const;
   void mc_assert(bool notNull, const char* message = "") const;
   bool mc_is_null() const;
   Checker* mc_get_checker() const;
@@ -58,10 +61,12 @@ public:
   std::string const& mc_get_host_name(std::string const& hostname) const;
   PageStore& mc_page_store() const;
   void mc_dump_record_path() const;
+  smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 
   // SIMCALL FUNCTIONS
   bool request_depend(smx_simcall_t req1, smx_simcall_t req2) const;
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
+  std::string request_get_dot_output(smx_simcall_t req, int value) const;
   const char *simix_simcall_name(e_smx_simcall_t kind) const;
 
   // SNAPSHOT FUNCTIONS

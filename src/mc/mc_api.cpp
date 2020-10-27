@@ -27,6 +27,16 @@ void mc_api::initialize(char** argv)
   });
 }
 
+std::vector<simgrid::mc::ActorInformation>& mc_api::get_actors() const
+{
+  return mc_model_checker->get_remote_simulation().actors();
+}
+
+bool mc_api::actor_is_enabled(aid_t pid) const
+{
+  return session->actor_is_enabled(pid);
+}
+
 void mc_api::s_initialize() const
 {
   session->initialize();
@@ -70,16 +80,6 @@ void mc_api::mc_show_deadlock() const
 smx_actor_t mc_api::mc_smx_simcall_get_issuer(s_smx_simcall const* req) const
 {
   return MC_smx_simcall_get_issuer(req);
-}
-
-std::vector<simgrid::mc::ActorInformation>& mc_api::get_actors() const
-{
-  return mc_model_checker->get_remote_simulation().actors();
-}
-
-bool mc_api::actor_is_enabled(aid_t pid) const
-{
-  return session->actor_is_enabled(pid);
 }
 
 void mc_api::mc_assert(bool notNull, const char* message) const
@@ -136,6 +136,11 @@ void mc_api::mc_dump_record_path() const
   simgrid::mc::dumpRecordPath();
 }
 
+smx_simcall_t mc_api::mc_state_choose_request(simgrid::mc::State* state) const
+{
+  return MC_state_choose_request(state);
+}
+
 bool mc_api::request_depend(smx_simcall_t req1, smx_simcall_t req2) const
 {
   return simgrid::mc::request_depend(req1, req2);
@@ -144,6 +149,11 @@ bool mc_api::request_depend(smx_simcall_t req1, smx_simcall_t req2) const
 std::string mc_api::request_to_string(smx_simcall_t req, int value, RequestType request_type) const
 {
   return simgrid::mc::request_to_string(req, value, request_type).c_str();
+}
+
+std::string mc_api::request_get_dot_output(smx_simcall_t req, int value) const
+{
+  return simgrid::mc::request_get_dot_output(req, value);
 }
 
 const char* mc_api::simix_simcall_name(e_smx_simcall_t kind) const

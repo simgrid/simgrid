@@ -94,7 +94,7 @@ void SafetyChecker::run()
     XBT_VERB("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num_,
              state->interleave_size());
 
-    mc_model_checker->visited_states++;
+    mcapi::get().mc_inc_visited_states();
 
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
@@ -115,7 +115,7 @@ void SafetyChecker::run()
 
     // Search an enabled transition in the current state; backtrack if the interleave set is empty
     // get_request also sets state.transition to be the one corresponding to the returned req
-    smx_simcall_t req = MC_state_choose_request(state);
+    smx_simcall_t req = mcapi::get().mc_state_choose_request(state);
     // req is now the transition of the process that was selected to be executed
 
     if (req == nullptr) {
@@ -127,16 +127,16 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", request_to_string(req, state->transition_.argument_, RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", mcapi::get().request_to_string(req, state->transition_.argument_, RequestType::simix).c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = request_get_dot_output(req, state->transition_.argument_);
+      req_str = mcapi::get().request_get_dot_output(req, state->transition_.argument_);
 
-    mc_model_checker->executed_transitions++;
+    mcapi::get().mc_inc_executed_trans();
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    this->get_session().execute(state->transition_);
+    mcapi::get().execute(state->transition_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     ++expanded_states_count_;
@@ -152,9 +152,10 @@ void SafetyChecker::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      for (auto& remoteActor : mc_model_checker->get_remote_simulation().actors()) {
+      auto actors = mcapi::get().mc_get_remote_simulation().actors();
+      for (auto& remoteActor : actors) {
         auto actor = remoteActor.copy.get_buffer();
-        if (actor_is_enabled(actor)) {
+        if (mcapi::get().actor_is_enabled(actor->get_pid())) {
           next_state->add_interleaving_set(actor);
           if (reductionMode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
@@ -173,7 +174,7 @@ void SafetyChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  session->log_state();
+  mcapi::get().s_log_state();
 }
 
 void SafetyChecker::backtrack()
