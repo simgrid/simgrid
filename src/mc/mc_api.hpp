@@ -51,7 +51,6 @@ public:
   bool mc_check_deadlock() const;
   void mc_show_deadlock() const;
   smx_actor_t mc_smx_simcall_get_issuer(s_smx_simcall const* req) const;
-  void mc_assert(bool notNull, const char* message = "") const;
   bool mc_is_null() const;
   Checker* mc_get_checker() const;
   RemoteSimulation& mc_get_remote_simulation() const;

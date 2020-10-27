@@ -82,14 +82,6 @@ smx_actor_t mc_api::mc_smx_simcall_get_issuer(s_smx_simcall const* req) const
   return MC_smx_simcall_get_issuer(req);
 }
 
-void mc_api::mc_assert(bool notNull, const char* message) const
-{
-  if (notNull)
-    xbt_assert(mc_model_checker == nullptr, message);
-  else
-    xbt_assert(mc_model_checker != nullptr, message);
-}
-
 bool mc_api::mc_is_null() const
 {
   auto is_null = (mc_model_checker == nullptr) ? true : false;
