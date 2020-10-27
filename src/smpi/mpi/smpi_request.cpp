@@ -1119,13 +1119,13 @@ MPI_Request Request::f2c(int id)
 {
   if(id==MPI_FORTRAN_REQUEST_NULL)
     return MPI_REQUEST_NULL;
-  return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key(id)));
+  return static_cast<MPI_Request>(F2C::f2c_lookup()->at(id));
 }
 
 void Request::free_f(int id)
 {
   if (id != MPI_FORTRAN_REQUEST_NULL) {
-    F2C::f2c_lookup()->erase(get_key(id));
+    F2C::f2c_lookup()->erase(id);
   }
 }
 

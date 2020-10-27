@@ -10,7 +10,6 @@
 #define SMPI_F2C_HPP_INCLUDED
 
 #include <unordered_map>
-#include <string>
 
 namespace simgrid{
 namespace smpi{
@@ -19,21 +18,19 @@ class F2C {
   private:
     // We use a single lookup table for every type.
     // Beware of collisions if id in mpif.h is not unique
-    static std::unordered_map<std::string, F2C*>* f2c_lookup_;
+    static std::unordered_map<int, F2C*>* f2c_lookup_;
     static int f2c_id_;
     int my_f2c_id_ = -1;
 
   protected:
-    static std::unordered_map<std::string, F2C*>* f2c_lookup();
-    static void set_f2c_lookup(std::unordered_map<std::string, F2C*>* map);
+    static std::unordered_map<int, F2C*>* f2c_lookup();
+    static void set_f2c_lookup(std::unordered_map<int, F2C*>* map);
     static int f2c_id();
     static void f2c_id_increment();
 
   public:
-    std::string get_my_key() { return get_key(my_f2c_id_); }
-    static std::string get_key(int id) { return std::to_string(id); }
     static void delete_lookup();
-    static std::unordered_map<std::string, F2C*>* lookup();
+    static std::unordered_map<int, F2C*>* lookup();
     F2C();
     virtual ~F2C() = default;
 
