@@ -2,8 +2,9 @@
 
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/remote/RemoteSimulation.hpp"
 #include "src/mc/mc_smx.hpp"
+#include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/mc_record.hpp"
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
@@ -33,7 +34,7 @@ void mc_api::s_initialize() const
 
 ModelChecker* mc_api::get_model_checker() const
 {
-    return mc_model_checker;
+  return mc_model_checker;
 }
 
 void mc_api::mc_inc_visited_states() const
@@ -122,7 +123,7 @@ void mc_api::mc_exit(int status) const
 
 std::string const& mc_api::mc_get_host_name(std::string const& hostname) const
 {
-  return mc_model_checker->get_host_name(hostname); 
+  return mc_model_checker->get_host_name(hostname);
 }
 
 PageStore& mc_api::mc_page_store() const
@@ -130,8 +131,9 @@ PageStore& mc_api::mc_page_store() const
   return mc_model_checker->page_store();
 }
 
-void mc_api::mc_cleanup()
+void mc_api::mc_dump_record_path() const
 {
+  simgrid::mc::dumpRecordPath();
 }
 
 bool mc_api::request_depend(smx_simcall_t req1, smx_simcall_t req2) const
@@ -144,9 +146,14 @@ std::string mc_api::request_to_string(smx_simcall_t req, int value, RequestType 
   return simgrid::mc::request_to_string(req, value, request_type).c_str();
 }
 
-const char * mc_api::simix_simcall_name(e_smx_simcall_t kind) const
+const char* mc_api::simix_simcall_name(e_smx_simcall_t kind) const
 {
   return SIMIX_simcall_name(kind);
+}
+
+bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
+{
+  return simgrid::mc::snapshot_equal(s1, s2);
 }
 
 void mc_api::s_close() const

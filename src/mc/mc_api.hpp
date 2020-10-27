@@ -57,12 +57,15 @@ public:
   void mc_exit(int status) const;
   std::string const& mc_get_host_name(std::string const& hostname) const;
   PageStore& mc_page_store() const;
-  void mc_cleanup();
+  void mc_dump_record_path() const;
 
   // SIMCALL FUNCTIONS
   bool request_depend(smx_simcall_t req1, smx_simcall_t req2) const;
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   const char *simix_simcall_name(e_smx_simcall_t kind) const;
+
+  // SNAPSHOT FUNCTIONS
+  bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
 
   // SESSION FUNCTIONS
   void s_initialize() const;

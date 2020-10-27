@@ -37,16 +37,17 @@ namespace mc {
 void SafetyChecker::check_non_termination(const State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
-    if (snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
+    if (mcapi::get().snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
       XBT_INFO("Non-progressive cycle: state %d -> state %d", (*state)->num_, current_state->num_);
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
       XBT_INFO("******************************************");
       XBT_INFO("Counter-example execution trace:");
-      for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
+      auto checker = mcapi::get().mc_get_checker();
+      for (auto const& s : checker->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
-      dumpRecordPath();
-      session->log_state();
+      mcapi::get().mc_dump_record_path();
+      mcapi::get().s_log_state();
 
       throw TerminationError();
     }
