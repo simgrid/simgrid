@@ -67,7 +67,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
     int value         = state->transition_.argument_;
     smx_simcall_t req = &state->executed_req_;
     if (req)
-      trace.push_back(request_to_string(req, value, RequestType::executed));
+      trace.push_back(mcapi::get().request_to_string(req, value, RequestType::executed));
   }
   return trace;
 }
