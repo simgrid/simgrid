@@ -21,38 +21,6 @@ int F2C::f2c_id_ = 0;
 // Keep it non trivially-constructible, or it will break MC+smpi on FreeBSD with Clang (don't ask why)
 F2C::F2C() = default;
 
-std::unordered_map<int, F2C*>* F2C::f2c_lookup()
-{
-  return f2c_lookup_;
-}
-
-void F2C::set_f2c_lookup(std::unordered_map<int, F2C*>* map)
-{
-  f2c_lookup_ = map;
-}
-
-void F2C::f2c_id_increment(){
-  f2c_id_++;
-}
-
-int F2C::f2c_id(){
-  return f2c_id_;
-}
-
-void F2C::delete_lookup(){
-  delete f2c_lookup_;
-}
-
-std::unordered_map<int, F2C*>* F2C::lookup()
-{
-  return f2c_lookup_;
-}
-
-void F2C::free_f(int id)
-{
-  f2c_lookup_->erase(id);
-}
-
 int F2C::add_f()
 {
   if (f2c_lookup_ == nullptr)
