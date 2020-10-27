@@ -482,7 +482,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
     }
   }
 
-  static int port_number = 1025; // Port number is limited from 1025 to 65 000
+  static uint16_t port_number = 1;
 
   ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
   ns3::Ptr<ns3::Node> dst_node = dst->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
@@ -507,10 +507,8 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   ns3::Simulator::ScheduleNow(&start_flow, sock, addr.c_str(), port_number);
 
   port_number++;
-  if(port_number > 65000){
-    port_number = 1025;
+  if (port_number == UINT16_MAX)
     XBT_WARN("Too many connections! Port number is saturated. Trying to use the oldest ports.");
-  }
 
   s4u::Link::on_communicate(*this);
 }
