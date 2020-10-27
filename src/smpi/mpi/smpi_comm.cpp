@@ -509,9 +509,8 @@ MPI_Comm Comm::f2c(int id) {
   } else if(id==0){
     return MPI_COMM_WORLD;
   } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
-    char key[KEY_SIZE];
     const auto& lookup = F2C::f2c_lookup();
-    auto comm          = lookup->find(get_key(key, id));
+    auto comm          = lookup->find(get_key(id));
     return comm == lookup->end() ? MPI_COMM_NULL : static_cast<MPI_Comm>(comm->second);
   } else {
     return MPI_COMM_NULL;
@@ -519,8 +518,7 @@ MPI_Comm Comm::f2c(int id) {
 }
 
 void Comm::free_f(int id) {
-  char key[KEY_SIZE];
-  F2C::f2c_lookup()->erase(get_key(key, id));
+  F2C::f2c_lookup()->erase(get_key(id));
 }
 
 void Comm::add_rma_win(MPI_Win win){

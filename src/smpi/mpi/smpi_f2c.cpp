@@ -41,16 +41,6 @@ int F2C::f2c_id(){
   return f2c_id_;
 }
 
-char* F2C::get_my_key(char* key) {
-  std::snprintf(key, KEY_SIZE, "%d", my_f2c_id_);
-  return key;
-}
-
-char* F2C::get_key(char* key, int id) {
-  std::snprintf(key, KEY_SIZE, "%d", id);
-  return key;
-}
-
 void F2C::delete_lookup(){
   delete f2c_lookup_;
 }
@@ -62,8 +52,7 @@ std::unordered_map<std::string, F2C*>* F2C::lookup()
 
 void F2C::free_f(int id)
 {
-  char key[KEY_SIZE];
-  f2c_lookup_->erase(get_key(key,id));
+  f2c_lookup_->erase(get_key(id));
 }
 
 int F2C::add_f()
@@ -71,9 +60,8 @@ int F2C::add_f()
   if (f2c_lookup_ == nullptr)
     f2c_lookup_ = new std::unordered_map<std::string, F2C*>();
 
-  char key[KEY_SIZE];
   my_f2c_id_=f2c_id_;
-  (*f2c_lookup_)[get_my_key(key)] = this;
+  (*f2c_lookup_)[get_my_key()] = this;
   f2c_id_increment();
   return my_f2c_id_;
 }
@@ -97,8 +85,7 @@ F2C* F2C::f2c(int id)
     f2c_lookup_ = new std::unordered_map<std::string, F2C*>();
 
   if(id >= 0){
-    char key[KEY_SIZE];
-    auto comm = f2c_lookup_->find(get_key(key,id));
+    auto comm = f2c_lookup_->find(get_key(id));
     return comm == f2c_lookup_->end() ? nullptr : comm->second;
   }else
     return nullptr;

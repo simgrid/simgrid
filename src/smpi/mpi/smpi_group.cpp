@@ -319,8 +319,7 @@ MPI_Group Group::f2c(int id) {
   if(id == -2) {
     return MPI_GROUP_EMPTY;
   } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
-    char key[KEY_SIZE];
-    return static_cast<MPI_Group>(F2C::f2c_lookup()->at(get_key(key, id)));
+    return static_cast<MPI_Group>(F2C::f2c_lookup()->at(get_key(id)));
   } else {
     return MPI_GROUP_NULL;
   }

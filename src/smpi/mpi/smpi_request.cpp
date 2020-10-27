@@ -1117,17 +1117,15 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
 
 MPI_Request Request::f2c(int id)
 {
-  char key[KEY_SIZE];
   if(id==MPI_FORTRAN_REQUEST_NULL)
     return MPI_REQUEST_NULL;
-  return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key(key,id)));
+  return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key(id)));
 }
 
 void Request::free_f(int id)
 {
   if (id != MPI_FORTRAN_REQUEST_NULL) {
-    char key[KEY_SIZE];
-    F2C::f2c_lookup()->erase(get_key(key, id));
+    F2C::f2c_lookup()->erase(get_key(id));
   }
 }
 

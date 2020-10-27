@@ -12,8 +12,6 @@
 #include <unordered_map>
 #include <string>
 
-#define KEY_SIZE (sizeof(int) * 2 + 1)
-
 namespace simgrid{
 namespace smpi{
 
@@ -32,8 +30,8 @@ class F2C {
     static void f2c_id_increment();
 
   public:
-    char* get_my_key(char* key);
-    static char* get_key(char* key, int id);
+    std::string get_my_key() { return get_key(my_f2c_id_); }
+    static std::string get_key(int id) { return std::to_string(id); }
     static void delete_lookup();
     static std::unordered_map<std::string, F2C*>* lookup();
     F2C();
