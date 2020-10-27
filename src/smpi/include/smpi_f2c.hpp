@@ -23,7 +23,6 @@ private:
   int my_f2c_id_ = -1;
 
 protected:
-  static std::unordered_map<int, F2C*>* f2c_lookup() { return f2c_lookup_; }
   static void set_f2c_lookup(std::unordered_map<int, F2C*>* map) { f2c_lookup_ = map; }
   static int f2c_id() { return f2c_id_; }
   static void f2c_id_increment() { f2c_id_++; }

@@ -318,8 +318,8 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
 MPI_Group Group::f2c(int id) {
   if(id == -2) {
     return MPI_GROUP_EMPTY;
-  } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
-    return static_cast<MPI_Group>(F2C::f2c_lookup()->at(id));
+  } else if (F2C::lookup() != nullptr && id >= 0) {
+    return static_cast<MPI_Group>(F2C::lookup()->at(id));
   } else {
     return MPI_GROUP_NULL;
   }

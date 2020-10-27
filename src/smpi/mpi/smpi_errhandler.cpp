@@ -17,8 +17,8 @@ namespace simgrid{
 namespace smpi{
 
 MPI_Errhandler Errhandler::f2c(int id) {
-  if(F2C::f2c_lookup() != nullptr && id >= 0) {
-    return static_cast<MPI_Errhandler>(F2C::f2c_lookup()->at(id));
+  if (F2C::lookup() != nullptr && id >= 0) {
+    return static_cast<MPI_Errhandler>(F2C::lookup()->at(id));
   } else {
     return MPI_ERRHANDLER_NULL;
   }
