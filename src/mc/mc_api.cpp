@@ -31,11 +31,6 @@ void mc_api::s_initialize() const
   session->initialize();
 }
 
-void mc_api::create_model_checker(std::unique_ptr<RemoteSimulation> remote_simulation, int sockfd)
-{
-
-}
-
 ModelChecker* mc_api::get_model_checker() const
 {
     return mc_model_checker;

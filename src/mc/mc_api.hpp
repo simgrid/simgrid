@@ -38,7 +38,6 @@ public:
   void initialize(char** argv);
 
   // MODEL_CHECKER FUNCTIONS
-  void create_model_checker(std::unique_ptr<RemoteSimulation> remote_simulation, int sockfd);
   ModelChecker* get_model_checker() const;
   void mc_inc_visited_states() const;
   void mc_inc_executed_trans() const;

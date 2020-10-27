@@ -75,8 +75,8 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
 void SafetyChecker::log_state() // override
 {
   XBT_INFO("Expanded states = %lu", expanded_states_count_);
-  XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
-  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
+  XBT_INFO("Visited states = %lu", mcapi::get().mc_get_visited_states());
+  XBT_INFO("Executed transitions = %lu", mcapi::get().mc_get_executed_trans());
 }
 
 void SafetyChecker::run()
