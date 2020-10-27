@@ -45,9 +45,9 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
-#include <cstdio>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -208,7 +208,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
     smpi_shared_malloc_bogusfile = mkstemp(name);
     XBT_DEBUG("bogusfile         : %s\n", name);
     unlink(name);
-    int err = posix_fallocate(smpi_shared_malloc_bogusfile, 0, smpi_shared_malloc_blocksize);
+    int err = ftruncate(smpi_shared_malloc_bogusfile, smpi_shared_malloc_blocksize);
     if (err != 0)
       xbt_die("Could not write bogus file for shared malloc");
   }
