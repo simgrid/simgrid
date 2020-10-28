@@ -152,9 +152,9 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
 
       xbt_assert(splittedval.size() > i, "Invalid profile line");
       if (i == 2) {
-        stochevent.date_params = {std::atof(splittedval[1].c_str())};
+        stochevent.date_params = {std::stod(splittedval[1])};
       } else if (i == 3) {
-        stochevent.date_params = {std::atof(splittedval[1].c_str()), std::atof(splittedval[2].c_str())};
+        stochevent.date_params = {std::stod(splittedval[1]), std::stod(splittedval[2])};
       }
 
       if (splittedval[i] == "DET") {
@@ -177,9 +177,9 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
 
       xbt_assert(splittedval.size() > i + j, "Invalid profile line");
       if (j == 1) {
-        stochevent.value_params = {std::atof(splittedval[i + 1].c_str())};
+        stochevent.value_params = {std::stod(splittedval[i + 1])};
       } else if (j == 2) {
-        stochevent.value_params = {std::atof(splittedval[i + 1].c_str()), std::atof(splittedval[i + 2].c_str())};
+        stochevent.value_params = {std::stod(splittedval[i + 1]), std::stod(splittedval[i + 2])};
       }
 
       profile->stochastic_event_list.emplace_back(stochevent);
