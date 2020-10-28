@@ -146,8 +146,7 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
         stochevent.date_law = Distribution::UNIF;
         i                   = 3;
       } else {
-        xbt_assert(false, "Unknown law %s", splittedval[0].c_str());
-        i = 0;
+        xbt_die("Unknown law %s", splittedval[0].c_str());
       }
 
       xbt_assert(splittedval.size() > i, "Invalid profile line");
@@ -171,8 +170,7 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
         stochevent.value_law = Distribution::UNIF;
         j                    = 2;
       } else {
-        xbt_assert(false, "Unknown law %s", splittedval[i].c_str());
-        j = 0;
+        xbt_die("Unknown law %s", splittedval[i].c_str());
       }
 
       xbt_assert(splittedval.size() > i + j, "Invalid profile line");

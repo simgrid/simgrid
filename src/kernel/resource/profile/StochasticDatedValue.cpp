@@ -24,8 +24,7 @@ double StochasticDatedValue::draw(Distribution law, std::vector<double> params)
     case Distribution::NORM:
       return simgrid::xbt::random::normal(params[0], params[1]);
     default:
-      xbt_assert(false, "Unimplemented distribution");
-      return 0;
+      xbt_die("Unimplemented distribution");
   }
 }
 double StochasticDatedValue::get_value()
