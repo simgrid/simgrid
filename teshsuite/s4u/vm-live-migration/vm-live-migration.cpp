@@ -19,9 +19,10 @@ static void task_executor()
   simgrid::s4u::this_actor::sleep_for(3); // Breaks everything
 
   ptr->wait();
-  XBT_INFO("Task done. It's running on %s@%s that runs at %.0ef/s. host2 runs at %.0ef/s", ptr->get_host()->get_cname(),
-           dynamic_cast<simgrid::s4u::VirtualMachine*>(ptr->get_host())->get_pm()->get_cname(),
-           ptr->get_host()->get_speed(), simgrid::s4u::Host::by_name("host2")->get_speed());
+  const auto* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(ptr->get_host());
+  xbt_assert(vm != nullptr, "Hey, I expected to run on a VM");
+  XBT_INFO("Task done. It's running on %s@%s that runs at %.0ef/s. host2 runs at %.0ef/s", vm->get_cname(),
+           vm->get_pm()->get_cname(), vm->get_speed(), simgrid::s4u::Host::by_name("host2")->get_speed());
 }
 
 int main(int argc, char* argv[])
@@ -42,7 +43,7 @@ int main(int argc, char* argv[])
 
   simgrid::s4u::Actor::create("migration", pm, [vm]() {
     XBT_INFO("%s migration started", vm->get_cname());
-    auto* old = vm->get_pm();
+    const auto* old = vm->get_pm();
 
     sg_vm_migrate(vm, simgrid::s4u::Host::by_name("host2"));
 
