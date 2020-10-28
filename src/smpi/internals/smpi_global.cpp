@@ -404,13 +404,12 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
 #if not defined(__APPLE__) && not defined(__HAIKU__)
 static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 {
-  auto* libname    = static_cast<char*>(data);
-  const char *path = info->dlpi_name;
-  if(strstr(path, libname)){
-    strncpy(libname, path, 512);
+  auto* libname    = static_cast<std::string*>(data);
+  std::string path = info->dlpi_name;
+  if (path.find(*libname) != std::string::npos) {
+    *libname = std::move(path);
     return 1;
   }
-  
   return 0;
 }
 #endif
@@ -432,16 +431,15 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
       // load the library once to add it to the local libs, to get the absolute path
       void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
       // get library name from path
-      char fullpath[512] = {'\0'};
-      strncpy(fullpath, libname.c_str(), 511);
+      std::string fullpath = libname;
 #if not defined(__APPLE__) && not defined(__HAIKU__)
-      xbt_assert(0 != dl_iterate_phdr(visit_libs, fullpath),
-                 "Can't find a linked %s - check your settings in smpi/privatize-libs", fullpath);
-      XBT_DEBUG("Extra lib to privatize '%s' found", fullpath);
+      xbt_assert(0 != dl_iterate_phdr(visit_libs, &fullpath),
+                 "Can't find a linked %s - check your settings in smpi/privatize-libs", fullpath.c_str());
+      XBT_DEBUG("Extra lib to privatize '%s' found", fullpath.c_str());
 #else
       xbt_die("smpi/privatize-libs is not (yet) compatible with OSX nor with Haiku");
 #endif
-      privatize_libs_paths.emplace_back(fullpath);
+      privatize_libs_paths.emplace_back(std::move(fullpath));
       dlclose(libhandle);
     }
   }

@@ -6,7 +6,8 @@ foreach(x actor actor-autorestart actor-suspend
         host-on-off host-on-off-actors host-on-off-recv
         basic-link-test evaluate-get-route-time evaluate-parse-time is-router
         storage_client_server listen_async pid
-        trace-integration)
+        trace-integration
+	vm-live-migration)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -26,7 +27,8 @@ set_property(TARGET activity-lifecycle APPEND PROPERTY INCLUDE_DIRECTORIES "${IN
 ## Some need to be run with all factories, some don't need tesh to run
 foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle comm-get-sender wait-any-for
-        cloud-interrupt-migration cloud-two-execs concurrent_rw)
+        cloud-interrupt-migration cloud-two-execs concurrent_rw
+	vm-live-migration)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH_FACTORIES(tesh-s4u-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
@@ -69,4 +71,6 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecyc
                                     ${CMAKE_CURRENT_SOURCE_DIR}/trace-integration/test-hbp1-c0s2-c1s1.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/trace-integration/test-hbp1-c1s1-c1s2.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/trace-integration/test-hbp1-c1s1-c3s2.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace-integration/test-hbp2.5-hbp1.5.xml PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace-integration/test-hbp2.5-hbp1.5.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/vm-live-migration/platform.xml
+				    PARENT_SCOPE)
