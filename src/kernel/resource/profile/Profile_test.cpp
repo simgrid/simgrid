@@ -20,17 +20,20 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(unit, "Unit tests of the Trace Manager");
 
-double thedate;
 class MockedResource : public simgrid::kernel::resource::Resource {
 public:
+  static double the_date;
+
   explicit MockedResource() : simgrid::kernel::resource::Resource(nullptr, "fake", nullptr) {}
   void apply_event(simgrid::kernel::profile::Event* event, double value) override
   {
-    XBT_VERB("t=%.1f: Change value to %lg (idx: %u)", thedate, value, event->idx);
+    XBT_VERB("t=%.1f: Change value to %lg (idx: %u)", the_date, value, event->idx);
     tmgr_trace_event_unref(&event);
   }
   bool is_used() const override { return true; }
 };
+
+double MockedResource::the_date;
 
 static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char* str)
 {
@@ -46,18 +49,18 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
   simgrid::kernel::profile::Event* insertedIt = trace->schedule(&fes, &daResource);
 
   while (fes.next_date() <= 20.0 && fes.next_date() >= 0) {
-    thedate = fes.next_date();
+    MockedResource::the_date = fes.next_date();
     double value;
     simgrid::kernel::resource::Resource* resource;
-    simgrid::kernel::profile::Event* it = fes.pop_leq(thedate, &value, &resource);
+    simgrid::kernel::profile::Event* it = fes.pop_leq(MockedResource::the_date, &value, &resource);
     if (it == nullptr)
       continue;
 
     REQUIRE(it == insertedIt); // Check that we find what we've put
     if (value >= 0) {
-      res.emplace_back(thedate, value);
+      res.emplace_back(MockedResource::the_date, value);
     } else {
-      XBT_DEBUG("%.1f: ignore an event (idx: %u)\n", thedate, it->idx);
+      XBT_DEBUG("%.1f: ignore an event (idx: %u)\n", MockedResource::the_date, it->idx);
     }
     resource->apply_event(it, value);
   }
