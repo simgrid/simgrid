@@ -133,17 +133,17 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
       xbt_assert(splittedval.size() > 0, "Invalid profile line");
 
       if (splittedval[0] == "DET") {
-        stochevent.date_law = Dist_Det;
+        stochevent.date_law = Distribution::DET;
         i                   = 2;
       } else if (splittedval[0] == "NORM" || splittedval[0] == "NORMAL" || splittedval[0] == "GAUSS" ||
                  splittedval[0] == "GAUSSIAN") {
-        stochevent.date_law = Dist_Norm;
+        stochevent.date_law = Distribution::NORM;
         i                   = 3;
       } else if (splittedval[0] == "EXP" || splittedval[0] == "EXPONENTIAL") {
-        stochevent.date_law = Dist_Exp;
+        stochevent.date_law = Distribution::EXP;
         i                   = 2;
       } else if (splittedval[0] == "UNIF" || splittedval[0] == "UNIFORM") {
-        stochevent.date_law = Dist_Unif;
+        stochevent.date_law = Distribution::UNIF;
         i                   = 3;
       } else {
         xbt_assert(false, "Unknown law %s", splittedval[0].c_str());
@@ -158,17 +158,17 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
       }
 
       if (splittedval[i] == "DET") {
-        stochevent.value_law = Dist_Det;
+        stochevent.value_law = Distribution::DET;
         j                    = 1;
       } else if (splittedval[i] == "NORM" || splittedval[i] == "NORMAL" || splittedval[i] == "GAUSS" ||
                  splittedval[i] == "GAUSSIAN") {
-        stochevent.value_law = Dist_Norm;
+        stochevent.value_law = Distribution::NORM;
         j                    = 2;
       } else if (splittedval[i] == "EXP" || splittedval[i] == "EXPONENTIAL") {
-        stochevent.value_law = Dist_Exp;
+        stochevent.value_law = Distribution::EXP;
         j                    = 1;
       } else if (splittedval[i] == "UNIF" || splittedval[i] == "UNIFORM") {
-        stochevent.value_law = Dist_Unif;
+        stochevent.value_law = Distribution::UNIF;
         j                    = 2;
       } else {
         xbt_assert(false, "Unknown law %s", splittedval[i].c_str());

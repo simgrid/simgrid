@@ -154,19 +154,21 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
   SECTION("One stochastic event (parsing)")
   {
+    using simgrid::kernel::profile::Distribution;
     std::vector<simgrid::kernel::profile::StochasticDatedValue> got = trace2selist("STOCHASTIC\n"
                                                                                    "DET 0 UNIF 10 20");
 
     std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
     want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(0, -1)); // The initial fake event
-    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {0},
-                                                                     simgrid::kernel::profile::Dist_Unif, {10, 20}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(Distribution::DET, {0},
+                                                                     Distribution::UNIF, {10, 20}));
 
     REQUIRE(want == got);
   }
 
   SECTION("Several stochastic events (all possible parsing forms)")
   {
+    using simgrid::kernel::profile::Distribution;
     std::vector<simgrid::kernel::profile::StochasticDatedValue> got = trace2selist("STOCHASTIC\n"
                                                                                    "DET 0 DET 4\n"
                                                                                    "NORMAL 25 10 DET 3\n"
@@ -175,14 +177,14 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
     std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
     want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(0, -1));
-    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {0},
-                                                                     simgrid::kernel::profile::Dist_Det, {4}));
-    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Norm, {25, 10},
-                                                                     simgrid::kernel::profile::Dist_Det, {3}));
-    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Unif, {10, 20},
-                                                                     simgrid::kernel::profile::Dist_Norm, {25, 10}));
-    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(simgrid::kernel::profile::Dist_Det, {5},
-                                                                     simgrid::kernel::profile::Dist_Unif, {5, 25}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(Distribution::DET, {0},
+                                                                     Distribution::DET, {4}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(Distribution::NORM, {25, 10},
+                                                                     Distribution::DET, {3}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(Distribution::UNIF, {10, 20},
+                                                                     Distribution::NORM, {25, 10}));
+    want.emplace_back(simgrid::kernel::profile::StochasticDatedValue(Distribution::DET, {5},
+                                                                     Distribution::UNIF, {5, 25}));
 
     REQUIRE(want == got);
   }

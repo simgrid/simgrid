@@ -15,13 +15,13 @@ namespace profile {
 double StochasticDatedValue::draw(Distribution law, std::vector<double> params)
 {
   switch (law) {
-    case Dist_Det:
+    case Distribution::DET:
       return params[0];
-    case Dist_Exp:
+    case Distribution::EXP:
       return simgrid::xbt::random::exponential(params[0]);
-    case Dist_Unif:
+    case Distribution::UNIF:
       return simgrid::xbt::random::uniform_real(params[0], params[1]);
-    case Dist_Norm:
+    case Distribution::NORM:
       return simgrid::xbt::random::normal(params[0], params[1]);
     default:
       xbt_assert(false, "Unimplemented distribution");

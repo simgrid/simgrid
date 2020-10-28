@@ -14,22 +14,19 @@ namespace simgrid {
 namespace kernel {
 namespace profile {
 
-enum Distribution { Dist_Exp, Dist_Norm, Dist_Unif, Dist_Det };
+enum class Distribution { EXP, NORM, UNIF, DET };
 
 class XBT_PUBLIC StochasticDatedValue {
 public:
-  Distribution date_law;
+  Distribution date_law = Distribution::DET;
   std::vector<double> date_params;
-  Distribution value_law;
+  Distribution value_law = Distribution::DET;
   std::vector<double> value_params;
   DatedValue get_datedvalue();
   double get_date();
   double get_value();
   explicit StochasticDatedValue() = default;
-  explicit StochasticDatedValue(double d, double v)
-      : date_law(Dist_Det), date_params({d}), value_law(Dist_Det), value_params({v})
-  {
-  }
+  explicit StochasticDatedValue(double d, double v) : date_params({d}), value_params({v}) {}
   explicit StochasticDatedValue(Distribution dl, const std::vector<double>& dp, Distribution vl,
                                 const std::vector<double>& vp)
       : date_law(dl), date_params(dp), value_law(vl), value_params(vp)
@@ -38,7 +35,7 @@ public:
   bool operator==(StochasticDatedValue const& e2) const;
 
 private:
-  double draw(Distribution law, std::vector<double> params);
+  static double draw(Distribution law, std::vector<double> params);
 };
 
 } // namespace profile
