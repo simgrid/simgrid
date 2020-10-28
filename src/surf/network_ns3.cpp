@@ -503,14 +503,11 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   sink_from_sock.insert({transform_socket_ptr(sock), apps});
 
   sock->Bind(ns3::InetSocketAddress(port_number));
-
   ns3::Simulator::ScheduleNow(&start_flow, sock, addr.c_str(), port_number);
 
-  port_number++;
-  if (port_number == UINT16_MAX) {
-    port_number = 1;
+  port_number = 1 + (port_number % UINT16_MAX);
+  if (port_number == 1)
     XBT_WARN("Too many connections! Port number is saturated. Trying to use the oldest ports.");
-  }
 
   s4u::Link::on_communicate(*this);
 }
