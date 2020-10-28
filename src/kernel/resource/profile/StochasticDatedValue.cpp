@@ -50,26 +50,6 @@ bool StochasticDatedValue::operator==(StochasticDatedValue const& e2) const
          (e2.date_params == date_params);
 }
 
-std::ostream& operator<<(std::ostream& out, const StochasticDatedValue& e)
-{
-  out << e.date_law << " (";
-  for (unsigned int i = 0; i < e.date_params.size(); i++) {
-    out << e.date_params[i];
-    if (i != e.date_params.size() - 1) {
-      out << ",";
-    }
-  }
-  out << ") " << e.value_law << " (";
-  for (unsigned int i = 0; i < e.value_params.size(); i++) {
-    out << e.value_params[i];
-    if (i != e.value_params.size() - 1) {
-      out << ",";
-    }
-  }
-  out << ")";
-  return out;
-}
-
 } // namespace profile
 } // namespace kernel
 } // namespace simgrid

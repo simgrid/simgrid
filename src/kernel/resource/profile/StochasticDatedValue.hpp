@@ -41,8 +41,6 @@ private:
   double draw(Distribution law, std::vector<double> params);
 };
 
-std::ostream& operator<<(std::ostream& out, const StochasticDatedValue& e);
-
 } // namespace profile
 } // namespace kernel
 } // namespace simgrid
