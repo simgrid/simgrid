@@ -22,9 +22,9 @@ public:
   std::vector<double> date_params;
   Distribution value_law = Distribution::DET;
   std::vector<double> value_params;
-  DatedValue get_datedvalue();
-  double get_date();
-  double get_value();
+  DatedValue get_datedvalue() const;
+  double get_date() const;
+  double get_value() const;
   explicit StochasticDatedValue() = default;
   explicit StochasticDatedValue(double d, double v) : date_params({d}), value_params({v}) {}
   explicit StochasticDatedValue(Distribution dl, const std::vector<double>& dp, Distribution vl,
