@@ -133,53 +133,51 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
       xbt_assert(splittedval.size() > 0, "Invalid profile line");
 
       if (splittedval[0] == "DET") {
-        stochevent.date_law = Dist_Det;
+        stochevent.date_law = Distribution::DET;
         i                   = 2;
       } else if (splittedval[0] == "NORM" || splittedval[0] == "NORMAL" || splittedval[0] == "GAUSS" ||
                  splittedval[0] == "GAUSSIAN") {
-        stochevent.date_law = Dist_Norm;
+        stochevent.date_law = Distribution::NORM;
         i                   = 3;
       } else if (splittedval[0] == "EXP" || splittedval[0] == "EXPONENTIAL") {
-        stochevent.date_law = Dist_Exp;
+        stochevent.date_law = Distribution::EXP;
         i                   = 2;
       } else if (splittedval[0] == "UNIF" || splittedval[0] == "UNIFORM") {
-        stochevent.date_law = Dist_Unif;
+        stochevent.date_law = Distribution::UNIF;
         i                   = 3;
       } else {
-        xbt_assert(false, "Unknown law %s", splittedval[0].c_str());
-        i = 0;
+        xbt_die("Unknown law %s", splittedval[0].c_str());
       }
 
       xbt_assert(splittedval.size() > i, "Invalid profile line");
       if (i == 2) {
-        stochevent.date_params = {std::atof(splittedval[1].c_str())};
+        stochevent.date_params = {std::stod(splittedval[1])};
       } else if (i == 3) {
-        stochevent.date_params = {std::atof(splittedval[1].c_str()), std::atof(splittedval[2].c_str())};
+        stochevent.date_params = {std::stod(splittedval[1]), std::stod(splittedval[2])};
       }
 
       if (splittedval[i] == "DET") {
-        stochevent.value_law = Dist_Det;
+        stochevent.value_law = Distribution::DET;
         j                    = 1;
       } else if (splittedval[i] == "NORM" || splittedval[i] == "NORMAL" || splittedval[i] == "GAUSS" ||
                  splittedval[i] == "GAUSSIAN") {
-        stochevent.value_law = Dist_Norm;
+        stochevent.value_law = Distribution::NORM;
         j                    = 2;
       } else if (splittedval[i] == "EXP" || splittedval[i] == "EXPONENTIAL") {
-        stochevent.value_law = Dist_Exp;
+        stochevent.value_law = Distribution::EXP;
         j                    = 1;
       } else if (splittedval[i] == "UNIF" || splittedval[i] == "UNIFORM") {
-        stochevent.value_law = Dist_Unif;
+        stochevent.value_law = Distribution::UNIF;
         j                    = 2;
       } else {
-        xbt_assert(false, "Unknown law %s", splittedval[i].c_str());
-        j = 0;
+        xbt_die("Unknown law %s", splittedval[i].c_str());
       }
 
       xbt_assert(splittedval.size() > i + j, "Invalid profile line");
       if (j == 1) {
-        stochevent.value_params = {std::atof(splittedval[i + 1].c_str())};
+        stochevent.value_params = {std::stod(splittedval[i + 1])};
       } else if (j == 2) {
-        stochevent.value_params = {std::atof(splittedval[i + 1].c_str()), std::atof(splittedval[i + 2].c_str())};
+        stochevent.value_params = {std::stod(splittedval[i + 1]), std::stod(splittedval[i + 2])};
       }
 
       profile->stochastic_event_list.emplace_back(stochevent);

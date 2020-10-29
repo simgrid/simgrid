@@ -15,17 +15,16 @@ namespace profile {
 double StochasticDatedValue::draw(Distribution law, std::vector<double> params)
 {
   switch (law) {
-    case Dist_Det:
+    case Distribution::DET:
       return params[0];
-    case Dist_Exp:
+    case Distribution::EXP:
       return simgrid::xbt::random::exponential(params[0]);
-    case Dist_Unif:
+    case Distribution::UNIF:
       return simgrid::xbt::random::uniform_real(params[0], params[1]);
-    case Dist_Norm:
+    case Distribution::NORM:
       return simgrid::xbt::random::normal(params[0], params[1]);
     default:
-      xbt_assert(false, "Unimplemented distribution");
-      return 0;
+      xbt_die("Unimplemented distribution");
   }
 }
 double StochasticDatedValue::get_value()
@@ -48,26 +47,6 @@ bool StochasticDatedValue::operator==(StochasticDatedValue const& e2) const
 {
   return (e2.date_law == date_law) && (e2.value_law == value_law) && (e2.value_params == value_params) &&
          (e2.date_params == date_params);
-}
-
-std::ostream& operator<<(std::ostream& out, const StochasticDatedValue& e)
-{
-  out << e.date_law << " (";
-  for (unsigned int i = 0; i < e.date_params.size(); i++) {
-    out << e.date_params[i];
-    if (i != e.date_params.size() - 1) {
-      out << ",";
-    }
-  }
-  out << ") " << e.value_law << " (";
-  for (unsigned int i = 0; i < e.value_params.size(); i++) {
-    out << e.value_params[i];
-    if (i != e.value_params.size() - 1) {
-      out << ",";
-    }
-  }
-  out << ")";
-  return out;
 }
 
 } // namespace profile
