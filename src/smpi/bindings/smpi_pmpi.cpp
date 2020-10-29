@@ -152,10 +152,10 @@ int PMPI_Get_address(const void *location, MPI_Aint * address)
 
 int PMPI_Get_processor_name(char *name, int *resultlen)
 {
-  strncpy(name, sg_host_self()->get_cname(),
-          strlen(sg_host_self()->get_cname()) < MPI_MAX_PROCESSOR_NAME - 1 ? strlen(sg_host_self()->get_cname()) + 1
-                                                                           : MPI_MAX_PROCESSOR_NAME - 1);
-  *resultlen = strlen(name) > MPI_MAX_PROCESSOR_NAME ? MPI_MAX_PROCESSOR_NAME : strlen(name);
+  int len = std::min<int>(sg_host_self()->get_name().size(), MPI_MAX_PROCESSOR_NAME - 1);
+  std::string(sg_host_self()->get_name()).copy(name, len);
+  name[len]  = '\0';
+  *resultlen = len;
 
   return MPI_SUCCESS;
 }
