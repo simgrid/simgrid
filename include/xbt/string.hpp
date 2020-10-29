@@ -27,6 +27,18 @@
 namespace simgrid {
 namespace xbt {
 
+/** Create a C++ string from a C-style format
+ *
+ * @ingroup XBT_str
+ */
+XBT_PUBLIC std::string string_printf(const char* fmt, ...);
+
+/** Create a C++ string from a C-style format
+ *
+ * @ingroup XBT_str
+ */
+XBT_PUBLIC std::string string_vprintf(const char* fmt, va_list ap);
+
 #if SIMGRID_HAVE_MC
 
 /** POD structure representation of a string
@@ -292,18 +304,6 @@ bool operator>=(std::string const& a, string const& b)
 typedef std::string string;
 
 #endif
-
-/** Create a C++ string from a C-style format
- *
- * @ingroup XBT_str
-*/
-XBT_PUBLIC std::string string_printf(const char* fmt, ...);
-
-/** Create a C++ string from a C-style format
- *
- * @ingroup XBT_str
-*/
-XBT_PUBLIC std::string string_vprintf(const char* fmt, va_list ap);
 }
 }
 
