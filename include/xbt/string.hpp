@@ -193,6 +193,15 @@ public:
     str.data = &NUL;
   }
 
+  size_t copy(char* s, size_t len, size_t pos = 0) const
+  {
+    if (pos > str.len)
+      throw std::out_of_range(string_printf("xbt::string::copy with pos > size() (%zu > %zu)", pos, str.len));
+    size_t count = std::min(len, str.len - pos);
+    std::copy_n(str.data + pos, count, s);
+    return count;
+  }
+
   bool equals(const char* data, std::size_t len) const
   {
     return this->size() == len
