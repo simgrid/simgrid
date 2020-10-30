@@ -27,15 +27,18 @@ double StochasticDatedValue::draw(Distribution law, std::vector<double> params)
       xbt_die("Unimplemented distribution");
   }
 }
-double StochasticDatedValue::get_value()
+
+double StochasticDatedValue::get_value() const
 {
   return draw(value_law, value_params);
 }
-double StochasticDatedValue::get_date()
+
+double StochasticDatedValue::get_date() const
 {
   return draw(date_law, date_params);
 }
-DatedValue StochasticDatedValue::get_datedvalue()
+
+DatedValue StochasticDatedValue::get_datedvalue() const
 {
   DatedValue event;
   event.date_  = get_date();
