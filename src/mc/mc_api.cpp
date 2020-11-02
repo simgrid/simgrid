@@ -172,6 +172,16 @@ bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
   return simgrid::mc::snapshot_equal(s1, s2);
 }
 
+bool mc_api::restore_snapshot_if_exists(unsigned long state_number)
+{
+  auto state_detail = (state_detail_[state_number]).get();
+  auto system_state = state_detail->system_state_; 
+  if(system_state == nullptr)
+    return false;
+  system_state->restore(&mc_get_remote_simulation());
+  return true;
+}
+
 void mc_api::create_state_detail(unsigned long state_number)
 {
   auto state_detail = std::make_unique<simgrid::mc::state_detail>(state_number);

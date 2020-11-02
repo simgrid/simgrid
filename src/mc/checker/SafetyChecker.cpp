@@ -251,10 +251,17 @@ void SafetyChecker::restore_state()
 {
   /* Intermediate backtracking */
   const State* last_state = stack_.back().get();
+  const State_Dev* last_state_dev = stack_dev_.back().get();  
   if (last_state->system_state_) {
     last_state->system_state_->restore(&mcapi::get().mc_get_remote_simulation());
     return;
   }
+
+  // # todo: use the following snippet 
+  // auto restored = mcapi::get().restore_snapshot_if_exists(last_state_dev->num_);
+  // if(restored)
+  //   return;
+  // #
 
   /* Restore the initial state */
   mcapi::get().s_restore_initial_state();
@@ -268,6 +275,18 @@ void SafetyChecker::restore_state()
     mcapi::get().mc_inc_visited_states();
     mcapi::get().mc_inc_executed_trans();
   }
+
+  // # todo: use the following snippet
+  // /* Traverse the stack from the state at position start and re-execute the transitions */
+  // for (std::unique_ptr<State_Dev> const& state : stack_dev_) {
+  //   if (state == stack_dev_.back())
+  //     break;
+  //   mcapi::get().execute(state->transition_);
+  //   /* Update statistics */
+  //   mcapi::get().mc_inc_visited_states();
+  //   mcapi::get().mc_inc_executed_trans();
+  // }
+  // #
 }
 
 SafetyChecker::SafetyChecker(Session& s) : Checker(s)

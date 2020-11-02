@@ -62,7 +62,7 @@ public:
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> internal_comm_;
 
   /** Snapshot of system state (if needed) */
-  std::shared_ptr<simgrid::mc::Snapshot> system_state_;
+  std::shared_ptr<simgrid::mc::Snapshot> system_state_ = nullptr;
 
   // For CommunicationDeterminismChecker
   std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern_;
@@ -128,6 +128,7 @@ public:
 
   // SNAPSHOT FUNCTIONS
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
+  bool restore_snapshot_if_exists(unsigned long state_number);
 
   // STATE FUNCTIONS
   void create_state_detail(unsigned long state_number);
