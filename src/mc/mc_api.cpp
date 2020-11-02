@@ -5,6 +5,7 @@
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/RemoteSimulation.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/mc/mc_comm_pattern.hpp"
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
@@ -13,6 +14,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_api, mc, "Logging specific to MC Fasade APIs 
 
 namespace simgrid {
 namespace mc {
+
+state_detail::state_detail(unsigned long state_number)
+{
+  internal_comm_.clear();
+  /* Stateful model checking */
+  if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
+    system_state_ = std::make_shared<simgrid::mc::Snapshot>(state_number);
+    if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+      MC_state_copy_incomplete_communications_pattern_dev(this);
+      MC_state_copy_index_communications_pattern_dev(this);
+    }
+  }
+}
 
 void mc_api::initialize(char** argv)
 {
@@ -156,6 +170,12 @@ const char* mc_api::simix_simcall_name(e_smx_simcall_t kind) const
 bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
 {
   return simgrid::mc::snapshot_equal(s1, s2);
+}
+
+void mc_api::create_state_detail(unsigned long state_number)
+{
+  auto state_detail = std::make_unique<simgrid::mc::state_detail>(state_number);
+  state_detail_.insert({state_number, std::move(state_detail)});
 }
 
 void mc_api::s_close() const

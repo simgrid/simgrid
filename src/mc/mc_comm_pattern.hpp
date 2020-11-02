@@ -10,6 +10,7 @@
 
 #include "smpi/smpi.h"
 #include "src/mc/mc_state.hpp"
+#include "src/mc/mc_api.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -65,5 +66,8 @@ XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
 XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state);
 XBT_PRIVATE void MC_state_copy_index_communications_pattern(simgrid::mc::State* state);
+
+XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern_dev(simgrid::mc::state_detail* state);
+XBT_PRIVATE void MC_state_copy_index_communications_pattern_dev(simgrid::mc::state_detail* state);
 
 #endif

@@ -673,6 +673,8 @@ set(MC_SRC
   src/mc/mc_safety.hpp
   src/mc/mc_state.hpp
   src/mc/mc_state.cpp
+  src/mc/mc_state_dev.hpp
+  src/mc/mc_state_dev.cpp
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/mc_client_api.cpp

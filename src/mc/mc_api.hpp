@@ -1,17 +1,75 @@
 #ifndef SIMGRID_MC_API_HPP
 #define SIMGRID_MC_API_HPP
 
+#include <map>
 #include <memory>
 #include <vector>
 
 #include "simgrid/forward.h"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_state.hpp"
+
 #include "xbt/base.h"
 
 namespace simgrid {
 namespace mc {
+
+enum class PatternCommunicationType_Dev {
+  none    = 0,
+  send    = 1,
+  receive = 2,
+};
+
+class PatternCommunication_Dev {
+public:
+  int num = 0;
+  simgrid::kernel::activity::CommImpl* comm_addr;
+  PatternCommunicationType_Dev type = PatternCommunicationType_Dev::send;
+  unsigned long src_proc            = 0;
+  unsigned long dst_proc            = 0;
+  const char* src_host              = nullptr;
+  const char* dst_host              = nullptr;
+  std::string rdv;
+  std::vector<char> data;
+  int tag   = 0;
+  int index = 0;
+
+  PatternCommunication_Dev() { std::memset(&comm_addr, 0, sizeof(comm_addr)); }
+
+  PatternCommunication_Dev dup() const
+  {
+    simgrid::mc::PatternCommunication_Dev res;
+    // num?
+    res.comm_addr = this->comm_addr;
+    res.type      = this->type;
+    // src_proc?
+    // dst_proc?
+    res.dst_proc = this->dst_proc;
+    res.dst_host = this->dst_host;
+    res.rdv      = this->rdv;
+    res.data     = this->data;
+    // tag?
+    res.index = this->index;
+    return res;
+  }
+};
+
+class state_detail {
+public:
+  /* Can be used as a copy of the remote synchro object */
+  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> internal_comm_;
+
+  /** Snapshot of system state (if needed) */
+  std::shared_ptr<simgrid::mc::Snapshot> system_state_;
+
+  // For CommunicationDeterminismChecker
+  std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern_;
+  std::vector<unsigned> communication_indices_;
+
+  explicit state_detail(unsigned long state_number);
+};
 
 /*
 ** This class aimes to implement FACADE APIs for simgrid. The FACADE layer sits between the CheckerSide
@@ -20,10 +78,10 @@ namespace mc {
 ** detailes in a way that the CheckerSide eventually
 ** be capable to acquire the required information through the FACADE layer rather than the direct access to the AppSide.
 */
-
 class mc_api {
 private:
   mc_api() = default;
+  std::map<unsigned long, std::unique_ptr<state_detail>> state_detail_;
 
 public:
   // No copy:
@@ -38,7 +96,7 @@ public:
 
   void initialize(char** argv);
 
-  // ACTOR FUNCTIONS  
+  // ACTOR FUNCTIONS
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   bool actor_is_enabled(aid_t pid) const;
 
@@ -66,10 +124,13 @@ public:
   bool request_depend(smx_simcall_t req1, smx_simcall_t req2) const;
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
-  const char *simix_simcall_name(e_smx_simcall_t kind) const;
+  const char* simix_simcall_name(e_smx_simcall_t kind) const;
 
   // SNAPSHOT FUNCTIONS
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
+
+  // STATE FUNCTIONS
+  void create_state_detail(unsigned long state_number);
 
   // SESSION FUNCTIONS
   void s_initialize() const;
