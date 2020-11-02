@@ -291,6 +291,7 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
 
   ++expanded_states_count_;
   auto initial_state = std::make_unique<State>(expanded_states_count_);
+  auto initial_state_dev = std::make_unique<State_Dev>(expanded_states_count_);
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
@@ -300,11 +301,13 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
   for (auto& actor : actors)
     if (mcapi::get().actor_is_enabled(actor.copy.get_buffer()->get_pid())) {
       initial_state->add_interleaving_set(actor.copy.get_buffer());
+      initial_state_dev->add_interleaving_set(actor.copy.get_buffer());
       if (reductionMode_ != ReductionMode::none)
         break;
     }
 
   stack_.push_back(std::move(initial_state));
+  stack_dev_.push_back(std::move(initial_state_dev));
 }
 
 Checker* createSafetyChecker(Session& s)

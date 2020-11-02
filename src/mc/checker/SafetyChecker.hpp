@@ -37,6 +37,7 @@ private:
 
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<State>> stack_;
+  std::list<std::unique_ptr<State_Dev>> stack_dev_;
   VisitedStates visited_states_;
   std::unique_ptr<VisitedState> visited_state_;
   unsigned long expanded_states_count_ = 0;
