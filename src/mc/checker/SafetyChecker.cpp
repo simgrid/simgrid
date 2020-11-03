@@ -51,6 +51,26 @@ void SafetyChecker::check_non_termination(const State* current_state)
 
       throw TerminationError();
     }
+
+  // # todo: use the following snippet
+  // for (auto state = stack_dev_.rbegin(); state != stack_dev_.rend(); ++state) {
+  //   auto state_number_1 = (*state)->num_;
+  //   auto state_number_2 = current_state->num_;
+  //   if (mcapi::get().snapshot_equal(state_number_1, state_number_2)) {
+  //     XBT_INFO("Non-progressive cycle: state %d -> state %d", state_number_1, state_number_2);
+  //     XBT_INFO("******************************************");
+  //     XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
+  //     XBT_INFO("******************************************");
+  //     XBT_INFO("Counter-example execution trace:");
+  //     auto checker = mcapi::get().mc_get_checker();
+  //     for (auto const& s : checker->get_textual_trace())
+  //       XBT_INFO("  %s", s.c_str());
+  //     mcapi::get().mc_dump_record_path();
+  //     mcapi::get().s_log_state();
+  //     throw TerminationError();
+  //   }
+  // }
+  // #
 }
 
 RecordTrace SafetyChecker::get_record_trace() // override

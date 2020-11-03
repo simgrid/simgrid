@@ -172,6 +172,13 @@ bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
   return simgrid::mc::snapshot_equal(s1, s2);
 }
 
+bool mc_api::snapshot_equal(int state_number_1, int state_number_2)
+{
+  auto snapshot_1 = state_detail_[state_number_1]->system_state_.get();
+  auto snapshot_2 = state_detail_[state_number_2]->system_state_;
+  return simgrid::mc::snapshot_equal(snapshot_1, snapshot_2.get());
+}
+
 bool mc_api::restore_snapshot_if_exists(unsigned long state_number)
 {
   auto state_detail = (state_detail_[state_number]).get();

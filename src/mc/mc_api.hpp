@@ -128,6 +128,7 @@ public:
 
   // SNAPSHOT FUNCTIONS
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
+  bool snapshot_equal(int state_number_1, int state_number_2);
   bool restore_snapshot_if_exists(unsigned long state_number);
 
   // STATE FUNCTIONS
