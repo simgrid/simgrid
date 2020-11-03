@@ -58,6 +58,10 @@ RecordTrace SafetyChecker::get_record_trace() // override
   RecordTrace res;
   for (auto const& state : stack_)
     res.push_back(state->get_transition());
+  // # todo: use the following snippet
+  // for (auto const& state : stack_dev_)
+  //   res.push_back(state->transition_);
+  // #
   return res;
 }
 
@@ -78,6 +82,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
   //   if (req)
   //     trace.push_back(mcapi::get().request_to_string(req, value, RequestType::executed));
   // }
+  // #
 
   return trace;
 }
