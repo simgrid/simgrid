@@ -45,24 +45,24 @@ static uintptr_t eval_binary_operation(simgrid::dwarf::ExpressionContext const& 
 
 static void basic_test(simgrid::dwarf::ExpressionContext const& state)
 {
+  std::array<Dwarf_Op, 60> ops;
+
+  uintptr_t a = rnd_engine();
+  uintptr_t b = rnd_engine();
+
+  simgrid::dwarf::ExpressionStack stack;
+
+  bool caught_ex = false;
   try {
-    std::array<Dwarf_Op, 60> ops;
+    ops[0].atom = DW_OP_drop;
+    simgrid::dwarf::execute(ops.data(), 1, state, stack);
+  } catch (const simgrid::dwarf::evaluation_error&) {
+    caught_ex = true;
+  }
+  if (not caught_ex)
+    fprintf(stderr, "Exception expected");
 
-    uintptr_t a = rnd_engine();
-    uintptr_t b = rnd_engine();
-
-    simgrid::dwarf::ExpressionStack stack;
-
-    bool caught_ex = false;
-    try {
-      ops[0].atom = DW_OP_drop;
-      simgrid::dwarf::execute(ops.data(), 1, state, stack);
-    } catch (const simgrid::dwarf::evaluation_error&) {
-      caught_ex = true;
-    }
-    if (not caught_ex)
-      fprintf(stderr, "Exception expected");
-
+  try {
     ops[0].atom = DW_OP_lit21;
     simgrid::dwarf::execute(ops.data(), 1, state, stack);
     assert(stack.size() == 1);
