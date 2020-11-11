@@ -16,8 +16,10 @@ namespace instr {
 class ContainerType;
 class EventType;
 
+long long int new_paje_id();
+
 class Type {
-  long long int id_;
+  long long int id_ = new_paje_id();
   std::string name_;
   std::string color_;
   Type* father_;
