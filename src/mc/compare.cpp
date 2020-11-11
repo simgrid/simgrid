@@ -748,7 +748,6 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
   int new_size2 = -1;
 
   Type* new_type1 = nullptr;
-  Type* new_type2 = nullptr;
 
   bool match_pairs = false;
 
@@ -925,10 +924,12 @@ static bool heap_area_differ(StateComparator& state, const void* area1, const vo
 
     // The type of the variable is already known:
     if (type) {
-      new_type1 = new_type2 = type;
+      new_type1 = type;
     }
     // Type inference from the block type.
     else if (state.types_<1>(block1, frag1) != nullptr || state.types_<2>(block2, frag2) != nullptr) {
+      Type* new_type2 = nullptr;
+
       offset1 = (const char*)area1 - (const char*)real_addr_frag1;
       offset2 = (const char*)area2 - (const char*)real_addr_frag2;
 
