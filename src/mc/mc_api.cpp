@@ -5,6 +5,7 @@
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/RemoteSimulation.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/mc/mc_comm_pattern.hpp"
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
@@ -40,6 +41,16 @@ bool mc_api::actor_is_enabled(aid_t pid) const
 unsigned long mc_api::get_maxpid() const
 {
   return MC_smx_get_maxpid();
+}
+
+void mc_api::copy_incomplete_comm_pattern(const simgrid::mc::State* state) const
+{
+  MC_state_copy_incomplete_communications_pattern((simgrid::mc::State*)state);
+}
+
+void mc_api::copy_index_comm_pattern(const simgrid::mc::State* state) const
+{
+  MC_state_copy_index_communications_pattern((simgrid::mc::State*)state);
 }
 
 void mc_api::s_initialize() const

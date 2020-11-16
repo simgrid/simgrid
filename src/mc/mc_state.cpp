@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/mc_state.hpp"
-#include "src/mc/mc_comm_pattern.hpp"
+// #include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_api.hpp"
@@ -27,8 +27,8 @@ State::State(unsigned long state_number) : num_(state_number)
     auto snapshot_ptr = mcapi::get().take_snapshot(num_);
     system_state_ = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-      MC_state_copy_incomplete_communications_pattern(this);
-      MC_state_copy_index_communications_pattern(this);
+      mcapi::get().copy_incomplete_comm_pattern(this);
+      mcapi::get().copy_index_comm_pattern(this);
     }
   }
 }
