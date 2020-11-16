@@ -7,11 +7,12 @@
 #include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_request.hpp"
-#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_api.hpp"
 
 #include <boost/range/algorithm.hpp>
 
 using simgrid::mc::remote;
+using mcapi = simgrid::mc::mc_api;
 
 namespace simgrid {
 namespace mc {
@@ -19,11 +20,12 @@ namespace mc {
 State::State(unsigned long state_number) : num_(state_number)
 {
   this->internal_comm_.clear();
-
-  actor_states_.resize(MC_smx_get_maxpid());
+  auto maxpid = mcapi::get().get_maxpid();
+  actor_states_.resize(maxpid);
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_);
+    auto snapshot_ptr = mcapi::get().take_snapshot(num_);
+    system_state_ = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
       MC_state_copy_incomplete_communications_pattern(this);
       MC_state_copy_index_communications_pattern(this);

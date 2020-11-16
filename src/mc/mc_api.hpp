@@ -41,6 +41,7 @@ public:
   // ACTOR FUNCTIONS  
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   bool actor_is_enabled(aid_t pid) const;
+  unsigned long get_maxpid() const;
 
   // MODEL_CHECKER FUNCTIONS
   ModelChecker* get_model_checker() const;
@@ -58,7 +59,6 @@ public:
   void mc_wait_for_requests() const;
   void mc_exit(int status) const;
   std::string const& mc_get_host_name(std::string const& hostname) const;
-  PageStore& mc_page_store() const;
   void mc_dump_record_path() const;
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 
@@ -70,6 +70,7 @@ public:
 
   // SNAPSHOT FUNCTIONS
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
+  simgrid::mc::Snapshot* take_snapshot(int num_state) const;
 
   // SESSION FUNCTIONS
   void s_initialize() const;

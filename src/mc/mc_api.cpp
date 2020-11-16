@@ -37,6 +37,11 @@ bool mc_api::actor_is_enabled(aid_t pid) const
   return session->actor_is_enabled(pid);
 }
 
+unsigned long mc_api::get_maxpid() const
+{
+  return MC_smx_get_maxpid();
+}
+
 void mc_api::s_initialize() const
 {
   session->initialize();
@@ -118,11 +123,6 @@ std::string const& mc_api::mc_get_host_name(std::string const& hostname) const
   return mc_model_checker->get_host_name(hostname);
 }
 
-PageStore& mc_api::mc_page_store() const
-{
-  return mc_model_checker->page_store();
-}
-
 void mc_api::mc_dump_record_path() const
 {
   simgrid::mc::dumpRecordPath();
@@ -156,6 +156,12 @@ const char* mc_api::simix_simcall_name(e_smx_simcall_t kind) const
 bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
 {
   return simgrid::mc::snapshot_equal(s1, s2);
+}
+
+simgrid::mc::Snapshot* mc_api::take_snapshot(int num_state) const
+{
+  auto snapshot = new simgrid::mc::Snapshot(num_state);
+  return snapshot;
 }
 
 void mc_api::s_close() const
