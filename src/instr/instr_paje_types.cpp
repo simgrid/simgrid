@@ -15,9 +15,15 @@ static std::set<std::string> platform_variables;
 namespace simgrid {
 namespace instr {
 
+long long int new_paje_id()
+{
+  static long long int type_id = 0;
+  return type_id++;
+}
+
 Type::Type(e_event_type event_type, const std::string& name, const std::string& alias, const std::string& color,
            Type* father)
-    : id_(new_paje_id()), name_(name), color_(color), father_(father)
+    : name_(name), color_(color), father_(father)
 {
   if (name_.empty() || alias.empty())
     throw TracingError(XBT_THROW_POINT, "can't create a new type with no name or alias");

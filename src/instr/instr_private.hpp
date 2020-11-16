@@ -14,7 +14,6 @@
 #include "src/instr/instr_paje_events.hpp"
 #include "src/instr/instr_paje_types.hpp"
 #include "src/instr/instr_paje_values.hpp"
-#include "xbt/graph.h"
 
 #include <fstream>
 #include <iomanip> /** std::setprecision **/
@@ -44,8 +43,6 @@ enum class TraceFormat { Paje, /*TimeIndependent*/ Ti };
 extern TraceFormat trace_format;
 extern int trace_precision;
 extern double last_timestamp_to_dump;
-
-long long int new_paje_id();
 
 void init();
 void define_callbacks();

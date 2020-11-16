@@ -67,6 +67,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - FG#48: The Impossible Did Happen (yet again)
  - FG#50: Suspending an actor executed at the current timestamp fails
  - FG#52: Zero-seconds timeout : "That's in the past already"
+ - FG#53: Crash while using ns-3 network model
  - FG#54: How to suspend a comm?
  - FG!22: Stochastic Profiles
  - FG!24: Documentation and fix for xbt/random
@@ -80,6 +81,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - GH#336: Packet-level simulation using SMPI?
  - GH#345: Error in the LMM while migrating a VM
  - GH#346: [SMPI] error while loading shared libraries: libsimgrid.so
+ - GH#352: pip install / python setup.py install fail to find pybind11
  - GH!337: Fix link_energy plugin for wifi platforms
  - GH!339: Add Mailbox set_receiver method to python binding
  - GH!344: Cast hugepages macros parameters to int64

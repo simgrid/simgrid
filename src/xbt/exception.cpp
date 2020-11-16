@@ -37,35 +37,32 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
     auto name = simgrid::xbt::demangle(typeid(exception).name());
 
     auto* with_context = dynamic_cast<const simgrid::Exception*>(&exception);
-    if (with_context != nullptr)
+    if (with_context != nullptr) {
       XBT_LOG(prio, "%s %s by %s/%d: %s", context, name.get(), with_context->throw_point().procname_.c_str(),
               with_context->throw_point().pid_, exception.what());
-    else
+      // Do we have a backtrace?
+      if (not simgrid::config::get_value<bool>("exception/cutpath")) {
+        auto backtrace = with_context->resolve_backtrace();
+        XBT_LOG(prio, "  -> %s", backtrace.c_str());
+      }
+    } else {
       XBT_LOG(prio, "%s %s: %s", context, name.get(), exception.what());
-
-    // Do we have a backtrace?
-    if (with_context != nullptr && not simgrid::config::get_value<bool>("exception/cutpath")) {
-      auto backtrace = with_context->resolve_backtrace();
-      XBT_LOG(prio, "  -> %s", backtrace.c_str());
     }
-
-    // Do we have a nested exception?
-    auto* with_nested = dynamic_cast<const std::nested_exception*>(&exception);
-    if (with_nested == nullptr ||  with_nested->nested_ptr() == nullptr)
-      return;
-    try {
-      with_nested->rethrow_nested();
-    } catch (const std::exception& nested_exception) {
-      log_exception(prio, "Caused by", nested_exception);
-    }
-    // We could catch nested_exception or WithContextException but we don't bother:
-    catch (...) {
-      XBT_LOG(prio, "Caused by an unknown exception");
-    }
-  }
-  catch (...) {
+  } catch (...) {
     // Don't log exceptions we got when trying to log exception
     XBT_LOG(prio, "Ignoring exception caught while while trying to log an exception!");
+  }
+
+  try {
+    // Do we have a nested exception?
+    auto* with_nested = dynamic_cast<const std::nested_exception*>(&exception);
+    if (with_nested != nullptr && with_nested->nested_ptr() != nullptr)
+      with_nested->rethrow_nested();
+  } catch (const std::exception& nested_exception) {
+    log_exception(prio, "Caused by", nested_exception);
+  } catch (...) {
+    // We could catch nested_exception or WithContextException but we don't bother:
+    XBT_LOG(prio, "Caused by an unknown exception");
   }
 }
 
