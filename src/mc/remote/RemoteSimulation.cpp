@@ -72,6 +72,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libflangrti",
     "libgcc_s",
     "libgfortran",
+    "libgpg-error",
     "libgssapi_krb5",
     "libidn2",
     "libimf",
