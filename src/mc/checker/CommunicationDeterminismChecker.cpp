@@ -11,6 +11,7 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_api.hpp"
 
 #if HAVE_SMPI
 #include "smpi_request.hpp"
@@ -19,6 +20,7 @@
 #include <cstdint>
 
 using simgrid::mc::remote;
+using mcapi = simgrid::mc::mc_api;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc, "Logging specific to MC communication determinism detection");
 
@@ -422,7 +424,7 @@ void CommunicationDeterminismChecker::real_run()
     mc_model_checker->visited_states++;
 
     if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
-      req = MC_state_choose_request(cur_state);
+      req = mcapi::get().mc_state_choose_request(cur_state);
     else
       req = nullptr;
 

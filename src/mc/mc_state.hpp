@@ -90,6 +90,8 @@ public:
   void set_done() { this->state = InterleavingType::done; }
 };
 
+class PatternCommunication;
+
 /* A node in the exploration graph (kind-of) */
 class XBT_PRIVATE State {
 public:

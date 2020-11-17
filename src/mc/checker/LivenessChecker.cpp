@@ -10,11 +10,14 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_api.hpp"
 
 #include <boost/range/algorithm.hpp>
 #include <cstring>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms for liveness properties verification");
+
+using mcapi = simgrid::mc::mc_api;
 
 /********* Static functions *********/
 
@@ -370,7 +373,7 @@ void LivenessChecker::run()
       }
     }
 
-    smx_simcall_t req = MC_state_choose_request(current_pair->graph_state.get());
+    smx_simcall_t req = mcapi::get().mc_state_choose_request(current_pair->graph_state.get());
     int req_num       = current_pair->graph_state->transition_.argument_;
 
     if (dot_output != nullptr) {
