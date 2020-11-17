@@ -183,6 +183,7 @@ void smpi_init_options(){
     return;
   simgrid::config::declare_flag<bool>("smpi/display-timing", "Whether we should display the timing after simulation.", false);
   simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.", false);
+  simgrid::config::declare_flag<std::string>("smpi/tmpdir", "tmp dir for dlopen files", "/tmp");
 
   simgrid::config::declare_flag<std::string>("smpi/coll-selector", "Which collective selector to use", "default");
   simgrid::config::declare_flag<std::string>("smpi/gather", "Which collective to use for gather", "");

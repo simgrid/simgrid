@@ -14,6 +14,7 @@
 #include "src/simix/smx_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
+#include "xbt/file.hpp"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp> /* split */
@@ -448,8 +449,9 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
     return std::function<void()>([executable, fdin_size, args] {
       static std::size_t rank = 0;
       // Copy the dynamic library:
-      std::string target_executable =
-          executable + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
+      simgrid::xbt::Path path(executable);
+      std::string target_executable = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" +
+          path.get_base_name() + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
 
       smpi_copy_file(executable, target_executable, fdin_size);
       // if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
@@ -472,7 +474,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
           unsigned int pad = 7;
           if (libname.length() < pad)
             pad = libname.length();
-          std::string target_lib =
+          std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" +
               std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
           target_libs.push_back(target_lib);
           XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
