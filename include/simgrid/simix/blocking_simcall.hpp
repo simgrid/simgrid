@@ -78,7 +78,7 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
 template <class T>
 class Future {
 public:
-  Future() { /* Nothing to do*/}
+  Future() = default;
   explicit Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}
   Future(Future&&) noexcept = default;
   Future& operator=(Future&&) noexcept = default;
