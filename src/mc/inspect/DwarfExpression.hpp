@@ -53,7 +53,7 @@ struct ExpressionContext {
 /** When an error happens in the execution of a DWARF expression */
 class evaluation_error : public std::runtime_error {
 public:
-  explicit evaluation_error(const char* what) : std::runtime_error(what) {}
+  using std::runtime_error::runtime_error;
 };
 
 /** A stack for evaluating a DWARF expression

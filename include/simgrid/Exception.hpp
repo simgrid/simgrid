@@ -60,19 +60,19 @@ public:
 
 class XBT_PUBLIC ImpossibleError : public std::logic_error {
 public:
-  explicit ImpossibleError(const std::string& arg) : std::logic_error(arg) {}
+  using std::logic_error::logic_error;
   ~ImpossibleError() override;
 };
 
 class XBT_PUBLIC InitializationError : public std::logic_error {
 public:
-  explicit InitializationError(const std::string& arg) : std::logic_error(arg) {}
+  using std::logic_error::logic_error;
   ~InitializationError() override;
 };
 
 class XBT_PUBLIC UnimplementedError : public std::logic_error {
 public:
-  explicit UnimplementedError(const std::string& arg) : std::logic_error(arg) {}
+  using std::logic_error::logic_error;
   ~UnimplementedError() override;
 };
 

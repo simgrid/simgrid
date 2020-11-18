@@ -312,13 +312,13 @@ public:
 
 class GatherAction : public ReplayAction<GatherArgParser> {
 public:
-  explicit GatherAction(const std::string& name) : ReplayAction(name) {}
+  using ReplayAction::ReplayAction;
   void kernel(xbt::ReplayAction& action) override;
 };
 
 class GatherVAction : public ReplayAction<GatherVArgParser> {
 public:
-  explicit GatherVAction(const std::string& name) : ReplayAction(name) {}
+  using ReplayAction::ReplayAction;
   void kernel(xbt::ReplayAction& action) override;
 };
 

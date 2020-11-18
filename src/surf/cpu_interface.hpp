@@ -27,7 +27,7 @@ namespace resource {
  */
 class XBT_PUBLIC CpuModel : public Model {
 public:
-  explicit CpuModel(Model::UpdateAlgo algo) : Model(algo) {}
+  using Model::Model;
 
   /**
    * @brief Create a Cpu
@@ -176,8 +176,7 @@ public:
    */
   static xbt::signal<void(CpuAction const&, Action::State)> on_state_change;
 
-  CpuAction(Model* model, double cost, bool failed) : Action(model, cost, failed) {}
-  CpuAction(Model* model, double cost, bool failed, lmm::Variable* var) : Action(model, cost, failed, var) {}
+  using Action::Action;
 
   void set_state(Action::State state) override;
 
