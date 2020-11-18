@@ -351,7 +351,7 @@ void CommunicationDeterminismChecker::prepare()
 
 static inline bool all_communications_are_finished()
 {
-  for (size_t current_actor = 1; current_actor < MC_smx_get_maxpid(); current_actor++) {
+  for (size_t current_actor = 1; current_actor < mcapi::get().get_maxpid(); current_actor++) {
     if (not incomplete_communications_pattern[current_actor].empty()) {
       XBT_DEBUG("Some communications are not finished, cannot stop the exploration! State not visited.");
       return false;
@@ -365,7 +365,7 @@ void CommunicationDeterminismChecker::restoreState()
   /* Intermediate backtracking */
   State* last_state = stack_.back().get();
   if (last_state->system_state_) {
-    last_state->system_state_->restore(&mc_model_checker->get_remote_simulation());
+    last_state->system_state_->restore(&mcapi::get().mc_get_remote_simulation());
     MC_restore_communications_pattern(last_state);
     return;
   }
@@ -422,7 +422,7 @@ void CommunicationDeterminismChecker::real_run()
               cur_state->interleave_size());
 
     /* Update statistics */
-    mc_model_checker->visited_states++;
+    mcapi::get().mc_inc_visited_states();
 
     if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
       req = mcapi::get().mc_state_choose_request(cur_state);
@@ -432,13 +432,13 @@ void CommunicationDeterminismChecker::real_run()
     if (req != nullptr && visited_state == nullptr) {
       int req_num = cur_state->transition_.argument_;
 
-      XBT_DEBUG("Execute: %s", request_to_string(req, req_num, RequestType::simix).c_str());
+      XBT_DEBUG("Execute: %s", mcapi::get().request_to_string(req, req_num, RequestType::simix).c_str());
 
       std::string req_str;
       if (dot_output != nullptr)
-        req_str = request_get_dot_output(req, req_num);
+        req_str = mcapi::get().request_get_dot_output(req, req_num);
 
-      mc_model_checker->executed_transitions++;
+      mcapi::get().mc_inc_executed_trans();
 
       /* TODO : handle test and testany simcalls */
       e_mc_call_type_t call = MC_CALL_TYPE_NONE;
@@ -446,13 +446,14 @@ void CommunicationDeterminismChecker::real_run()
         call = MC_get_call_type(req);
 
       /* Answer the request */
-      mc_model_checker->handle_simcall(cur_state->transition_);
+      mcapi::get().handle_simcall(cur_state->transition_);
       /* After this call req is no longer useful */
 
       MC_handle_comm_pattern(call, req, req_num, 0);
 
+
       /* Wait for requests (schedules processes) */
-      mc_model_checker->wait_for_requests();
+      mcapi::get().mc_wait_for_requests();
 
       /* Create the new expanded state */
       ++expanded_states_count_;
@@ -470,8 +471,9 @@ void CommunicationDeterminismChecker::real_run()
 
       if (visited_state == nullptr) {
         /* Get enabled actors and insert them in the interleave set of the next state */
-        for (auto& actor : mc_model_checker->get_remote_simulation().actors())
-          if (simgrid::mc::actor_is_enabled(actor.copy.get_buffer()))
+        auto actors = mcapi::get().mc_get_remote_simulation().actors();
+        for (auto& actor : actors)
+          if (mcapi::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
             next_state->add_interleaving_set(actor.copy.get_buffer());
 
         if (dot_output != nullptr)
@@ -500,8 +502,8 @@ void CommunicationDeterminismChecker::real_run()
       visited_state = nullptr;
 
       /* Check for deadlocks */
-      if (mc_model_checker->checkDeadlock()) {
-        MC_show_deadlock();
+      if (mcapi::get().mc_check_deadlock()) {
+        mcapi::get().mc_show_deadlock();
         throw simgrid::mc::DeadlockError();
       }
 
@@ -525,7 +527,7 @@ void CommunicationDeterminismChecker::real_run()
     }
   }
 
-  mc::session->log_state();
+  mcapi::get().s_log_state();
 }
 
 void CommunicationDeterminismChecker::run()
