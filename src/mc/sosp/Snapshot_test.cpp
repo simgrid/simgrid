@@ -82,11 +82,7 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
   INFO("Could not allocate destination memory");
   REQUIRE(source != MAP_FAILED);
 
-  return {.size    = byte_size,
-          .src     = source,
-          .dstn    = destination,
-          .region0 = std::move(region0),
-          .region  = std::move(region)};
+  return {.size = byte_size, .src = source, .dstn = destination, .region0 = region0, .region = region};
 }
 
 void snap_test_helper::read_whole_region()

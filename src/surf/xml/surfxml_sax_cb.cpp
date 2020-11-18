@@ -73,7 +73,7 @@ void surf_parse_assert_netpoint(const std::string& hostname, const std::string& 
       break;
     }
   }
-  surf_parse_error(std::move(msg));
+  surf_parse_error(msg);
 }
 
 double surf_parse_get_double(const std::string& s)
@@ -786,7 +786,7 @@ void ETag_surfxml_config()
   for (std::string key : keys) {
     if (simgrid::config::is_default(key.c_str())) {
       std::string cfg = key + ":" + current_property_set->at(key);
-      simgrid::config::set_parse(std::move(cfg));
+      simgrid::config::set_parse(cfg);
     } else
       XBT_INFO("The custom configuration '%s' is already defined by user!", key.c_str());
   }

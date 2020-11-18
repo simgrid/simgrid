@@ -68,14 +68,14 @@ public:
         code();
       });
     };
-    register_function(name, std::move(code_factory));
+    register_function(name, code_factory);
   }
   template <class F> void register_actor(const std::string& name, F code)
   {
     kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
       return kernel::actor::ActorCode([code, args] { code(std::move(args)); });
     };
-    register_function(name, std::move(code_factory));
+    register_function(name, code_factory);
   }
 
   void load_deployment(const std::string& deploy) const;

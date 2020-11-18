@@ -96,7 +96,7 @@ void Engine::register_function(const std::string& name, int (*code)(int, char**)
   kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
     return xbt::wrap_main(code, std::move(args));
   };
-  register_function(name, std::move(code_factory));
+  register_function(name, code_factory);
 }
 void Engine::register_default(int (*code)(int, char**)) // XBT_ATTRIB_DEPRECATED_v329
 {
@@ -109,7 +109,7 @@ void Engine::register_function(const std::string& name, const std::function<void
   kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
     return xbt::wrap_main(code, std::move(args));
   };
-  register_function(name, std::move(code_factory));
+  register_function(name, code_factory);
 }
 
 /** Registers the main function of an actor that will be launched from the deployment file */
@@ -118,7 +118,7 @@ void Engine::register_function(const std::string& name, const std::function<void
   kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
     return std::bind(std::move(code), std::move(args));
   };
-  register_function(name, std::move(code_factory));
+  register_function(name, code_factory);
 }
 /** Registers a function as the default main function of actors
  *

@@ -350,8 +350,7 @@ s4u::Actor* ActorImpl::restart()
   context::Context::self()->get_actor()->kill(this);
 
   // start the new actor
-  ActorImplPtr actor =
-      ActorImpl::create(arg.name, std::move(arg.code), arg.data, arg.host, arg.properties.get(), nullptr);
+  ActorImplPtr actor = ActorImpl::create(arg.name, arg.code, arg.data, arg.host, arg.properties.get(), nullptr);
   *actor->on_exit = std::move(*arg.on_exit);
   actor->set_kill_time(arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);

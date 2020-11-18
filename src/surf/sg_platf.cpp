@@ -467,7 +467,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->get_cname(), start_time);
     simgrid::simix::Timer::set(start_time, [arg, auto_restart]() {
       simgrid::kernel::actor::ActorImplPtr new_actor = simgrid::kernel::actor::ActorImpl::create(
-          arg->name.c_str(), std::move(arg->code), arg->data, arg->host, arg->properties.get(), nullptr);
+          arg->name.c_str(), arg->code, arg->data, arg->host, arg->properties.get(), nullptr);
       if (arg->kill_time >= 0)
         new_actor->set_kill_time(arg->kill_time);
       if (auto_restart)
