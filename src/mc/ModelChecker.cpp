@@ -219,7 +219,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
     if (property_automaton == nullptr)
       property_automaton = xbt_automaton_new();
 
-    RemoteSimulation* process = &this->get_remote_simulation();
+    const RemoteSimulation* process = &this->get_remote_simulation();
     RemotePtr<int> address = remote((int*)message.data);
     xbt::add_proposition(property_automaton, message.name, [process, address]() { return process->read(address); });
 

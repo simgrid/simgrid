@@ -96,7 +96,7 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+    const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
     kernel::actor::simcall([this, self] {
       for (VirtualMachine* const& vm : vm::VirtualMachineImpl::allVms_)
         if (vm->get_pm() == this) {
