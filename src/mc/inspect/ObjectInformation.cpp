@@ -89,7 +89,7 @@ const Variable* ObjectInformation::find_variable(const char* name) const
 
 void ObjectInformation::remove_global_variable(const char* name)
 {
-  typedef std::vector<Variable>::size_type size_type;
+  using size_type = std::vector<Variable>::size_type;
 
   if (this->global_variables.empty())
     return;
@@ -139,7 +139,7 @@ void ObjectInformation::remove_global_variable(const char* name)
 static void remove_local_variable(Frame& scope, const char* var_name, const char* subprogram_name,
                                   Frame const& subprogram)
 {
-  typedef std::vector<Variable>::size_type size_type;
+  using size_type = std::vector<Variable>::size_type;
 
   // If the current subprogram matches the given name:
   if ((subprogram_name == nullptr || (not subprogram.name.empty() && subprogram.name == subprogram_name)) &&

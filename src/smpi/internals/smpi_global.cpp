@@ -236,7 +236,7 @@ static void smpi_init_papi()
       XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
                 " Expected version is %u", PAPI_VER_CURRENT);
 
-    typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
+    using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
     boost::char_separator<char> separator_units(";");
     std::string str = smpi_cfg_papi_events_file();
     Tokenizer tokens(str, separator_units);
@@ -288,11 +288,9 @@ static void smpi_init_papi()
 #endif
 }
 
-
-
-typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
-typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
-typedef void (*smpi_fortran_entry_point_type)();
+using smpi_entry_point_type         = std::function<int(int argc, char* argv[])>;
+using smpi_c_entry_point_type       = int (*)(int argc, char** argv);
+using smpi_fortran_entry_point_type = void (*)();
 
 template <typename F>
 static int smpi_run_entry_point(const F& entry_point, const std::string& executable_path, std::vector<std::string> args)

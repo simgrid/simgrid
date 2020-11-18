@@ -72,11 +72,11 @@ class XBT_PUBLIC string {
 
 public:
   // Types
-  typedef std::size_t size_type;
-  typedef char& reference;
-  typedef const char& const_reference;
-  typedef char* iterator;
-  typedef const char* const_iterator;
+  using size_type       = std::size_t;
+  using reference       = char&;
+  using const_reference = const char&;
+  using iterator        = char*;
+  using const_iterator  = const char*;
 
   // Dtor
   ~string()

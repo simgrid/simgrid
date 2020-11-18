@@ -12,7 +12,7 @@
 namespace simgrid {
 namespace mc {
 
-typedef std::uint64_t hash_type;
+using hash_type = std::uint64_t;
 
 XBT_PRIVATE hash_type hash(simgrid::mc::Snapshot const& snapshot);
 

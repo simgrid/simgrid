@@ -18,14 +18,14 @@
 namespace simgrid {
 namespace xbt {
 /* To split the file if a unique one is given (specific variable for the other case live in runner()) */
-typedef std::vector<std::string> ReplayAction;
+using ReplayAction = std::vector<std::string>;
 
 XBT_PUBLIC_DATA std::ifstream* action_fs;
 XBT_PUBLIC int replay_runner(const char* actor_name, const char* trace_filename);
 }
 }
 
-typedef std::function<void(simgrid::xbt::ReplayAction&)> action_fun;
+using action_fun = std::function<void(simgrid::xbt::ReplayAction&)>;
 XBT_PUBLIC void xbt_replay_action_register(const char* action_name, const action_fun& function);
 XBT_PUBLIC action_fun xbt_replay_action_get(const char* action_name);
 

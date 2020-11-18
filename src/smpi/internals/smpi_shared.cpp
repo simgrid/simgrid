@@ -79,7 +79,7 @@ struct shared_data_t {
 };
 
 std::unordered_map<smpi_source_location, shared_data_t, std::hash<std::string>> allocs;
-typedef decltype(allocs)::value_type shared_data_key_type;
+using shared_data_key_type = decltype(allocs)::value_type;
 
 struct shared_metadata_t {
   size_t size;

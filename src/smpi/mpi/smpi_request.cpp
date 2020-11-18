@@ -1164,7 +1164,7 @@ int Request::grequest_start(MPI_Grequest_query_function* query_fn, MPI_Grequest_
   (*request)->flags_ |= MPI_REQ_GENERALIZED;
   (*request)->flags_ |= MPI_REQ_PERSISTENT;
   (*request)->refcount_ = 1;
-  ((*request)->generalized_funcs) = new s_smpi_mpi_generalized_request_funcs_t;
+  ((*request)->generalized_funcs)             = new smpi_mpi_generalized_request_funcs_t;
   ((*request)->generalized_funcs)->query_fn=query_fn;
   ((*request)->generalized_funcs)->free_fn=free_fn;
   ((*request)->generalized_funcs)->cancel_fn=cancel_fn;

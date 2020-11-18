@@ -16,7 +16,7 @@ namespace simgrid {
 namespace kernel {
 namespace lmm {
 
-typedef std::vector<int> dyn_light_t;
+using dyn_light_t = std::vector<int>;
 
 int Variable::next_rank_   = 1;
 int Constraint::next_rank_ = 1;

@@ -20,12 +20,11 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-typedef std::pair<double, Action*> heap_element_type;
-typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_size<false>, boost::heap::stable<true>,
-                                  boost::heap::compare<simgrid::xbt::HeapComparator<heap_element_type>>>
-    heap_type;
+using heap_element_type = std::pair<double, Action*>;
+using heap_type =
+    boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_size<false>, boost::heap::stable<true>,
+                              boost::heap::compare<simgrid::xbt::HeapComparator<heap_element_type>>>;
 
-typedef std::pair<double, Action*> heap_element_type;
 class XBT_PUBLIC ActionHeap : public heap_type {
   friend Action;
 
@@ -63,14 +62,12 @@ public:
   /* Lazy update needs this Set hook to maintain a list of the tracked actions */
   boost::intrusive::list_member_hook<> modified_set_hook_;
   bool is_within_modified_set() const { return modified_set_hook_.is_linked(); }
-  typedef boost::intrusive::list<
-      Action, boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::modified_set_hook_>>
-      ModifiedSet;
+  using ModifiedSet = boost::intrusive::list<
+      Action, boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::modified_set_hook_>>;
 
   boost::intrusive::list_member_hook<> state_set_hook_;
-  typedef boost::intrusive::list<
-      Action, boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::state_set_hook_>>
-      StateSet;
+  using StateSet = boost::intrusive::list<
+      Action, boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::state_set_hook_>>;
 
   enum class State {
     INITED,   /**< Created, but not started yet */

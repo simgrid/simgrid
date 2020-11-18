@@ -539,7 +539,7 @@ void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
     return;
   }
 
-  typedef std::vector<IgnoredHeapRegion>::size_type size_type;
+  using size_type = std::vector<IgnoredHeapRegion>::size_type;
 
   size_type start = 0;
   size_type end   = ignored_heap_.size() - 1;
@@ -568,7 +568,7 @@ void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
 
 void RemoteSimulation::unignore_heap(void* address, size_t size)
 {
-  typedef std::vector<IgnoredHeapRegion>::size_type size_type;
+  using size_type = std::vector<IgnoredHeapRegion>::size_type;
 
   size_type start = 0;
   size_type end   = ignored_heap_.size() - 1;

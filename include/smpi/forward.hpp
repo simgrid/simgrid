@@ -34,19 +34,19 @@ class Win;
 }
 }
 
-typedef simgrid::smpi::Comm SMPI_Comm;
-typedef simgrid::smpi::Datatype SMPI_Datatype;
-typedef simgrid::smpi::Errhandler SMPI_Errhandler;
-typedef simgrid::smpi::File SMPI_File;
-typedef simgrid::smpi::Group SMPI_Group;
-typedef simgrid::smpi::Info SMPI_Info;
-typedef simgrid::smpi::Op SMPI_Op;
-typedef simgrid::smpi::Request SMPI_Request;
-typedef simgrid::smpi::Topo SMPI_Topology;
-typedef simgrid::smpi::Topo_Cart SMPI_Cart_topology;
-typedef simgrid::smpi::Topo_Dist_Graph SMPI_Dist_Graph_topology;
-typedef simgrid::smpi::Topo_Graph SMPI_Graph_topology;
-typedef simgrid::smpi::Win SMPI_Win;
+using SMPI_Comm                = simgrid::smpi::Comm;
+using SMPI_Datatype            = simgrid::smpi::Datatype;
+using SMPI_Errhandler          = simgrid::smpi::Errhandler;
+using SMPI_File                = simgrid::smpi::File;
+using SMPI_Group               = simgrid::smpi::Group;
+using SMPI_Info                = simgrid::smpi::Info;
+using SMPI_Op                  = simgrid::smpi::Op;
+using SMPI_Request             = simgrid::smpi::Request;
+using SMPI_Topology            = simgrid::smpi::Topo;
+using SMPI_Cart_topology       = simgrid::smpi::Topo_Cart;
+using SMPI_Dist_Graph_topology = simgrid::smpi::Topo_Dist_Graph;
+using SMPI_Graph_topology      = simgrid::smpi::Topo_Graph;
+using SMPI_Win                 = simgrid::smpi::Win;
 
 #else
 

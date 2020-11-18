@@ -95,7 +95,7 @@ public:
 
 
 /* This allows Java to hijack the context factory (Java induces factories of factory :) */
-typedef ContextFactory* (*ContextFactoryInitializer)();
+using ContextFactoryInitializer = ContextFactory* (*)();
 XBT_PUBLIC_DATA ContextFactoryInitializer factory_initializer;
 
 XBT_PRIVATE ContextFactory* thread_factory();

@@ -38,8 +38,8 @@ class Comm;
 class Task;
 }
 }
-typedef simgrid::msg::Comm sg_msg_Comm;
-typedef simgrid::msg::Task sg_msg_Task;
+using sg_msg_Comm = simgrid::msg::Comm;
+using sg_msg_Task = simgrid::msg::Task;
 #else
 typedef struct msg_Comm sg_msg_Comm;
 typedef struct msg_Task sg_msg_Task;

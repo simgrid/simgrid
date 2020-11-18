@@ -35,7 +35,7 @@ struct s_smpi_key_elem_t {
   int refcount;
 };
 
-typedef s_smpi_key_elem_t* smpi_key_elem;
+using smpi_key_elem = s_smpi_key_elem_t*;
 
 namespace simgrid{
 namespace smpi{

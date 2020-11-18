@@ -34,7 +34,7 @@ namespace dwarf {
  *  just a sequence of dwarf instructions. We currently directly use
  *  `Dwarf_Op` from `dwarf.h` for dwarf instructions.
  */
-typedef std::vector<Dwarf_Op> DwarfExpression;
+using DwarfExpression = std::vector<Dwarf_Op>;
 
 /** Context of evaluation of a DWARF expression
  *
@@ -62,7 +62,7 @@ public:
  */
 class ExpressionStack {
 public:
-  typedef std::uintptr_t value_type;
+  using value_type                  = std::uintptr_t;
   static const std::size_t max_size = 64;
 
 private:

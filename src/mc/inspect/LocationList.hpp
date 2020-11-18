@@ -22,7 +22,7 @@ namespace dwarf {
 /** A DWARF expression with optional validity constraints */
 class LocationListEntry {
 public:
-  typedef simgrid::xbt::Range<std::uint64_t> range_type;
+  using range_type = simgrid::xbt::Range<std::uint64_t>;
 
 private:
   DwarfExpression expression_;
@@ -41,7 +41,7 @@ public:
   bool valid_for_ip(unw_word_t ip) const { return range_.contain(ip); }
 };
 
-typedef std::vector<LocationListEntry> LocationList;
+using LocationList = std::vector<LocationListEntry>;
 
 /** Location of some variable in memory
  *

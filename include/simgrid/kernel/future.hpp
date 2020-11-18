@@ -329,7 +329,7 @@ public:
    */
   template <class F> auto then_no_unwrap(F continuation) -> Future<decltype(continuation(std::move(*this)))>
   {
-    typedef decltype(continuation(std::move(*this))) R;
+    using R = decltype(continuation(std::move(*this)));
     if (state_ == nullptr)
       throw std::future_error(std::future_errc::no_state);
     auto state = std::move(state_);

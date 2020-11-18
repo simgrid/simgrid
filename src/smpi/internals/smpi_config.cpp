@@ -99,7 +99,7 @@ simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file{"smpi/comp-adj
         std::ifstream fstream(filename);
         xbt_assert(fstream.is_open(), "Could not open file %s. Does it exist?", filename.c_str());
         std::string line;
-        typedef boost::tokenizer<boost::escaped_list_separator<char>> Tokenizer;
+        using Tokenizer = boost::tokenizer<boost::escaped_list_separator<char>>;
         std::getline(fstream, line); // Skip the header line
         while (std::getline(fstream, line)) {
           Tokenizer tok(line);

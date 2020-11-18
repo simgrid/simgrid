@@ -532,8 +532,8 @@ public:
   resource::Action::ModifiedSet* modified_set_ = nullptr;
 
 private:
-  typedef std::vector<int> dyn_light_t;
-  
+  using dyn_light_t = std::vector<int>;
+
   //Data used in lmm::solve
   std::vector<ConstraintLight> cnst_light_vec;
   dyn_light_t saturated_constraints;

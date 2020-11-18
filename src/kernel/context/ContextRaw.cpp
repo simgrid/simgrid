@@ -12,9 +12,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 // Raw context routines
 
-typedef void (*rawctx_entry_point_t)(simgrid::kernel::context::SwappedContext*);
+using rawctx_entry_point_t = void (*)(simgrid::kernel::context::SwappedContext*);
 
-typedef void* raw_stack_t;
+using raw_stack_t = void*;
 extern "C" raw_stack_t raw_makecontext(void* malloced_stack, int stack_size, rawctx_entry_point_t entry_point,
                                        simgrid::kernel::context::SwappedContext* arg);
 extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);

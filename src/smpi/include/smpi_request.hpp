@@ -12,15 +12,14 @@
 namespace simgrid{
 namespace smpi{
 
-typedef struct s_smpi_mpi_generalized_request_funcs {
+struct smpi_mpi_generalized_request_funcs_t {
   MPI_Grequest_query_function *query_fn;
   MPI_Grequest_free_function *free_fn;
   MPI_Grequest_cancel_function *cancel_fn;
   void* extra_state;
   s4u::ConditionVariablePtr cond;
   s4u::MutexPtr mutex;
-} s_smpi_mpi_generalized_request_funcs_t; 
-typedef struct s_smpi_mpi_generalized_request_funcs *smpi_mpi_generalized_request_funcs;
+};
 
 class Request : public F2C {
   void* buf_;
@@ -48,7 +47,7 @@ class Request : public F2C {
   int refcount_;
   MPI_Op op_;
   int cancelled_; // tri-state
-  smpi_mpi_generalized_request_funcs generalized_funcs;
+  smpi_mpi_generalized_request_funcs_t* generalized_funcs;
   MPI_Request* nbc_requests_;
   int nbc_requests_size_;
   static bool match_common(MPI_Request req, MPI_Request sender, MPI_Request receiver);
