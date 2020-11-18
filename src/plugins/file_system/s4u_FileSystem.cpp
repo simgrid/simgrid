@@ -614,7 +614,7 @@ static void on_platform_created()
       simgrid::s4u::Host* remote_host = simgrid::s4u::Host::by_name_or_null(tokens[2]);
       xbt_assert(remote_host, "You're trying to access a host that does not exist. Please check your platform file");
 
-      simgrid::s4u::Disk* disk = nullptr;
+      const simgrid::s4u::Disk* disk = nullptr;
       for (auto const& d : remote_host->get_disks())
         if (d->get_name() == tokens[1]) {
           disk = d;

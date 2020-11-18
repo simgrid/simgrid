@@ -1187,7 +1187,7 @@ Retrieving components
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::add_disk(Disk *disk)
+      .. autodoxymethod:: simgrid::s4u::Host::add_disk(const Disk* disk)
       .. autodoxymethod:: simgrid::s4u::Host::get_actor_count() const
       .. autodoxymethod:: simgrid::s4u::Host::get_all_actors() const
       .. autodoxymethod:: simgrid::s4u::Host::get_disks() const
