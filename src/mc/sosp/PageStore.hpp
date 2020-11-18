@@ -73,15 +73,15 @@ namespace mc {
  */
 class PageStore {
 public: // Types
-  typedef std::uint64_t hash_type;
+  using hash_type = std::uint64_t;
 
 private:
   // Types
   // We are using a cheap hash to index a page.
   // We should expect collision and we need to associate multiple page indices
   // to the same hash.
-  typedef std::unordered_set<std::size_t> page_set_type;
-  typedef std::unordered_map<hash_type, page_set_type> pages_map_type;
+  using page_set_type  = std::unordered_set<std::size_t>;
+  using pages_map_type = std::unordered_map<hash_type, page_set_type>;
 
   // Fields:
   /** First page */

@@ -189,9 +189,9 @@ public:
 };
 
 /* Used to keep the list of actors blocked on a synchro  */
-typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
-                                                                        &ActorImpl::smx_synchro_hook>>
-    SynchroList;
+using SynchroList =
+    boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
+                                                                    &ActorImpl::smx_synchro_hook>>;
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
 XBT_PUBLIC int get_maxpid();
@@ -200,9 +200,5 @@ XBT_PUBLIC int get_maxpid();
 } // namespace simgrid
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
-
-XBT_PUBLIC smx_actor_t simcall_process_create(const std::string& name, const simgrid::kernel::actor::ActorCode& code,
-                                              void* data, sg_host_t host,
-                                              std::unordered_map<std::string, std::string>* properties);
 
 #endif

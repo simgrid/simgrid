@@ -50,7 +50,7 @@ Actor* Actor::self()
 
 ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host] { return self->init(name, host).get(); });
   return actor->get_iface();
@@ -73,7 +73,7 @@ ActorPtr Actor::start(const std::function<void()>& code)
 
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::function<void()>& code)
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host, &code] { return self->init(name, host)->start(code); });
 
@@ -103,15 +103,15 @@ int Actor::get_refcount() const
 
 // ***** Actor methods *****
 
-void Actor::join()
+void Actor::join() const
 {
   join(-1);
 }
 
-void Actor::join(double timeout)
+void Actor::join(double timeout) const
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActorImpl* target = pimpl_;
+  const kernel::actor::ActorImpl* target = pimpl_;
   kernel::actor::simcall_blocking<void>([issuer, target, timeout] {
     if (target->finished_) {
       // The joined process is already finished, just wake up the issuer right away
@@ -252,7 +252,7 @@ double Actor::get_kill_time() const
 
 void Actor::kill()
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::simcall([this, self] { self->kill(pimpl_); });
 }
 
@@ -269,7 +269,7 @@ ActorPtr Actor::by_pid(aid_t pid)
 
 void Actor::kill_all()
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::simcall([self] { self->kill_all(); });
 }
 
@@ -676,7 +676,7 @@ void sg_actor_migrate(sg_actor_t process, sg_host_t host) // XBT_ATTRIB_DEPRECAT
  * @param actor the actor to wait for
  * @param timeout wait until the actor is over, or the timeout expires
  */
-void sg_actor_join(sg_actor_t actor, double timeout)
+void sg_actor_join(const_sg_actor_t actor, double timeout)
 {
   actor->join(timeout);
 }

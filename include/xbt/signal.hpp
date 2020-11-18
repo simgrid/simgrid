@@ -23,7 +23,7 @@ namespace xbt {
   */
   template<class R, class... P>
   class signal<R(P...)> {
-    typedef std::function<R(P...)> callback_type;
+    using callback_type = std::function<R(P...)>;
     std::map<unsigned int, callback_type> handlers_;
     unsigned int callback_sequence_id = 0;
 

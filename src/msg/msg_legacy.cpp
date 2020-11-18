@@ -117,7 +117,7 @@ void MSG_process_migrate(sg_actor_t actor, sg_host_t host)
 {
   sg_actor_set_host(actor, host);
 }
-void MSG_process_join(sg_actor_t actor, double timeout)
+void MSG_process_join(const_sg_actor_t actor, double timeout)
 {
   sg_actor_join(actor, timeout);
 }
@@ -499,7 +499,7 @@ void MSG_sem_release(sg_sem_t sem)
 {
   sg_sem_release(sem);
 }
-int MSG_sem_get_capacity(sg_sem_t sem)
+int MSG_sem_get_capacity(const_sg_sem_t sem)
 {
   return sg_sem_get_capacity(sem);
 }
@@ -507,7 +507,7 @@ void MSG_sem_destroy(const_sg_sem_t sem)
 {
   sg_sem_destroy(sem);
 }
-int MSG_sem_would_block(sg_sem_t sem)
+int MSG_sem_would_block(const_sg_sem_t sem)
 {
   return sg_sem_would_block(sem);
 }

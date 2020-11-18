@@ -79,7 +79,7 @@ struct shared_data_t {
 };
 
 std::unordered_map<smpi_source_location, shared_data_t, std::hash<std::string>> allocs;
-typedef decltype(allocs)::value_type shared_data_key_type;
+using shared_data_key_type = decltype(allocs)::value_type;
 
 struct shared_metadata_t {
   size_t size;
@@ -93,9 +93,9 @@ std::map<const void*, shared_metadata_t> allocs_metadata;
 std::map<std::string, void*> calls;
 
 #ifndef WIN32
-static int smpi_shared_malloc_bogusfile           = -1;
-static int smpi_shared_malloc_bogusfile_huge_page  = -1;
-static unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
+int smpi_shared_malloc_bogusfile           = -1;
+int smpi_shared_malloc_bogusfile_huge_page = -1;
+unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
 #endif
 }
 

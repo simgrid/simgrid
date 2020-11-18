@@ -99,11 +99,8 @@ class Task<R(Args...)> {
   struct whatever {};
 
   // Union used for storage:
-  typedef typename std::aligned_union<0,
-    void*,
-    std::pair<void(*)(),void*>,
-    std::pair<void(whatever::*)(), whatever*>
-  >::type TaskUnion;
+  using TaskUnion = typename std::aligned_union<0, void*, std::pair<void (*)(), void*>,
+                                                std::pair<void (whatever::*)(), whatever*>>::type;
 
   // Is F suitable for small buffer optimization?
   template<class F>
@@ -117,11 +114,11 @@ class Task<R(Args...)> {
     "SBO not working for reference_wrapper");
 
   // Call (and possibly destroy) the function:
-  typedef R (*call_function)(TaskUnion&, Args...);
+  using call_function = R (*)(TaskUnion&, Args...);
   // Destroy the function (of needed):
-  typedef void (*destroy_function)(TaskUnion&);
+  using destroy_function = void (*)(TaskUnion&);
   // Move the function (otherwise memcpy):
-  typedef void (*move_function)(TaskUnion& dest, TaskUnion& src);
+  using move_function = void (*)(TaskUnion& dest, TaskUnion& src);
 
   // Vtable of functions for manipulating whatever is in the TaskUnion:
   struct TaskVtable {
@@ -248,7 +245,8 @@ template<class F, class... Args>
 class TaskImpl {
   F code_;
   std::tuple<Args...> args_;
-  typedef decltype(simgrid::xbt::apply(std::move(code_), std::move(args_))) result_type;
+  using result_type = decltype(simgrid::xbt::apply(std::move(code_), std::move(args_)));
+
 public:
   TaskImpl(F code, std::tuple<Args...> args) :
     code_(std::move(code)),

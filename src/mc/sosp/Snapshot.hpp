@@ -34,7 +34,7 @@ struct s_mc_stack_frame_t {
   std::string frame_name;
   unw_cursor_t unw_cursor;
 };
-typedef s_mc_stack_frame_t* mc_stack_frame_t;
+using mc_stack_frame_t = s_mc_stack_frame_t*;
 
 struct s_local_variable_t {
   simgrid::mc::Frame* subprogram;
@@ -43,16 +43,16 @@ struct s_local_variable_t {
   simgrid::mc::Type* type;
   void* address;
 };
-typedef s_local_variable_t* local_variable_t;
-typedef const s_local_variable_t* const_local_variable_t;
+using local_variable_t       = s_local_variable_t*;
+using const_local_variable_t = const s_local_variable_t*;
 
 struct XBT_PRIVATE s_mc_snapshot_stack_t {
   std::vector<s_local_variable_t> local_variables;
   simgrid::mc::UnwindContext context;
   std::vector<s_mc_stack_frame_t> stack_frames;
 };
-typedef s_mc_snapshot_stack_t* mc_snapshot_stack_t;
-typedef const s_mc_snapshot_stack_t* const_mc_snapshot_stack_t;
+using mc_snapshot_stack_t       = s_mc_snapshot_stack_t*;
+using const_mc_snapshot_stack_t = const s_mc_snapshot_stack_t*;
 
 namespace simgrid {
 namespace mc {

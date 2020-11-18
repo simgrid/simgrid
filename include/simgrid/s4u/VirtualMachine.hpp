@@ -54,7 +54,7 @@ public:
   VirtualMachine* set_ramsize(size_t ramsize);
   VirtualMachine* set_bound(double bound);
 
-  VirtualMachine::state get_state();
+  VirtualMachine::state get_state() const;
   static xbt::signal<void(VirtualMachine const&)> on_start;
   static xbt::signal<void(VirtualMachine const&)> on_started;
   static xbt::signal<void(VirtualMachine const&)> on_shutdown;

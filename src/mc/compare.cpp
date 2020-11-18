@@ -38,8 +38,8 @@ public:
   }
 };
 
-typedef std::array<HeapLocation, 2> HeapLocationPair;
-typedef std::set<HeapLocationPair> HeapLocationPairs;
+using HeapLocationPair  = std::array<HeapLocation, 2>;
+using HeapLocationPairs = std::set<HeapLocationPair>;
 
 class HeapArea : public HeapLocation {
 public:

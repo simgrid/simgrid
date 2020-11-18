@@ -91,8 +91,9 @@ public:
   boost::intrusive::list_member_hook<> action_ti_hook;
 };
 
-typedef boost::intrusive::member_hook<CpuTiAction, boost::intrusive::list_member_hook<>, &CpuTiAction::action_ti_hook> ActionTiListOptions;
-typedef boost::intrusive::list<CpuTiAction, ActionTiListOptions > ActionTiList;
+using ActionTiListOptions =
+    boost::intrusive::member_hook<CpuTiAction, boost::intrusive::list_member_hook<>, &CpuTiAction::action_ti_hook>;
+using ActionTiList = boost::intrusive::list<CpuTiAction, ActionTiListOptions>;
 
 /************
  * Resource *
@@ -130,8 +131,9 @@ public:
   boost::intrusive::list_member_hook<> cpu_ti_hook;
 };
 
-typedef boost::intrusive::member_hook<CpuTi, boost::intrusive::list_member_hook<>, &CpuTi::cpu_ti_hook> CpuTiListOptions;
-typedef boost::intrusive::list<CpuTi, CpuTiListOptions> CpuTiList;
+using CpuTiListOptions =
+    boost::intrusive::member_hook<CpuTi, boost::intrusive::list_member_hook<>, &CpuTi::cpu_ti_hook>;
+using CpuTiList = boost::intrusive::list<CpuTi, CpuTiListOptions>;
 
 /*********
  * Model *

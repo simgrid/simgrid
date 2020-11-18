@@ -322,10 +322,8 @@ template <typename T> void Parmap<T>::PosixSynchro::master_signal()
 template <typename T> void Parmap<T>::PosixSynchro::master_wait()
 {
   std::unique_lock<std::mutex> lk(done_mutex);
-  while (this->parmap.thread_counter < this->parmap.num_workers) {
-    /* wait for all workers to be ready */
-    done_cond.wait(lk);
-  }
+  /* wait for all workers to be ready */
+  done_cond.wait(lk, [this]() { return this->parmap.thread_counter >= this->parmap.num_workers; });
 }
 
 template <typename T> void Parmap<T>::PosixSynchro::worker_signal()
@@ -342,9 +340,7 @@ template <typename T> void Parmap<T>::PosixSynchro::worker_wait(unsigned round)
 {
   std::unique_lock<std::mutex> lk(ready_mutex);
   /* wait for more work */
-  while (this->parmap.work_round != round) {
-    ready_cond.wait(lk);
-  }
+  ready_cond.wait(lk, [this, round]() { return this->parmap.work_round == round; });
 }
 
 #if HAVE_FUTEX_H

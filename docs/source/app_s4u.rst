@@ -579,8 +579,8 @@ Reacting to the end of actors
    .. group-tab:: C++
 
       .. autodoxymethod:: simgrid::s4u::Actor::on_exit
-      .. autodoxymethod:: simgrid::s4u::Actor::join()
-      .. autodoxymethod:: simgrid::s4u::Actor::join(double timeout)
+      .. autodoxymethod:: simgrid::s4u::Actor::join() const
+      .. autodoxymethod:: simgrid::s4u::Actor::join(double timeout) const
       .. autodoxymethod:: simgrid::s4u::Actor::set_auto_restart(bool autorestart)
 
    .. group-tab:: Python
@@ -589,7 +589,7 @@ Reacting to the end of actors
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_join(sg_actor_t actor, double timeout)
+      .. autodoxymethod:: sg_actor_join(const_sg_actor_t actor, double timeout)
       .. autodoxymethod:: sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
 
 Signals
@@ -1187,7 +1187,7 @@ Retrieving components
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::add_disk(Disk *disk)
+      .. autodoxymethod:: simgrid::s4u::Host::add_disk(const Disk* disk)
       .. autodoxymethod:: simgrid::s4u::Host::get_actor_count() const
       .. autodoxymethod:: simgrid::s4u::Host::get_all_actors() const
       .. autodoxymethod:: simgrid::s4u::Host::get_disks() const
@@ -1625,7 +1625,7 @@ Querying info
 
       .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_pm() const
       .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_ramsize() const
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_state()
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_state() const
 
       .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_bound(double bound)
       .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_pm(Host *pm)
@@ -2168,17 +2168,17 @@ Locking
 
          .. autodoxymethod:: simgrid::s4u::Semaphore::acquire()
          .. autodoxymethod:: simgrid::s4u::Semaphore::acquire_timeout(double timeout)
-         .. autodoxymethod:: simgrid::s4u::Semaphore::get_capacity()
+         .. autodoxymethod:: simgrid::s4u::Semaphore::get_capacity() const
          .. autodoxymethod:: simgrid::s4u::Semaphore::release()
-         .. autodoxymethod:: simgrid::s4u::Semaphore::would_block()
+         .. autodoxymethod:: simgrid::s4u::Semaphore::would_block() const
 
       .. group-tab:: C
 
          .. autodoxymethod:: sg_sem_acquire(sg_sem_t sem)
          .. autodoxymethod:: sg_sem_acquire_timeout(sg_sem_t sem, double timeout)
-         .. autodoxymethod:: sg_sem_get_capacity(sg_sem_t sem)
+         .. autodoxymethod:: sg_sem_get_capacity(const_sg_sem_t sem)
          .. autodoxymethod:: sg_sem_release(sg_sem_t sem)
-         .. autodoxymethod:: sg_sem_would_block(sg_sem_t sem)
+         .. autodoxymethod:: sg_sem_would_block(const_sg_sem_t sem)
 
 .. |hr| raw:: html
 

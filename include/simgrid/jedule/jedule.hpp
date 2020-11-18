@@ -34,6 +34,6 @@ public:
 } // namespace jedule
 } // namespace simgrid
 
-typedef simgrid::jedule::Jedule *jedule_t;
+using jedule_t = simgrid::jedule::Jedule*;
 
 #endif /* JEDULE_HPP_ */

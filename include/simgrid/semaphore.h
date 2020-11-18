@@ -16,9 +16,9 @@ XBT_PUBLIC sg_sem_t sg_sem_init(int initial_value);
 XBT_PUBLIC void sg_sem_acquire(sg_sem_t sem);
 XBT_PUBLIC int sg_sem_acquire_timeout(sg_sem_t sem, double timeout);
 XBT_PUBLIC void sg_sem_release(sg_sem_t sem);
-XBT_PUBLIC int sg_sem_get_capacity(sg_sem_t sem);
+XBT_PUBLIC int sg_sem_get_capacity(const_sg_sem_t sem);
 XBT_PUBLIC void sg_sem_destroy(const_sg_sem_t sem);
-XBT_PUBLIC int sg_sem_would_block(sg_sem_t sem);
+XBT_PUBLIC int sg_sem_would_block(const_sg_sem_t sem);
 
 SG_END_DECL
 

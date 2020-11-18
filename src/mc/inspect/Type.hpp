@@ -29,7 +29,7 @@ namespace mc {
  */
 class Member {
 public:
-  typedef int flags_type;
+  using flags_type                                 = int;
   static constexpr flags_type INHERITANCE_FLAG     = 1;
   static constexpr flags_type VIRTUAL_POINTER_FLAG = 2;
 

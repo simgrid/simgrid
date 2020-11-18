@@ -146,7 +146,7 @@ public:
   int get_pstate() const;
 
   std::vector<Disk*> get_disks() const;
-  void add_disk(Disk* disk);
+  void add_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
 
   std::vector<const char*> get_attached_storages() const;

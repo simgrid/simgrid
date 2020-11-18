@@ -101,37 +101,37 @@ namespace kernel {
 class EngineImpl;
 namespace actor {
 class ActorImpl;
-typedef boost::intrusive_ptr<ActorImpl> ActorImplPtr;
+using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
 
 // What's executed as an actor code:
-typedef std::function<void()> ActorCode;
+using ActorCode = std::function<void()>;
 // Create an ActorCode from the parameters parsed in the XML file (or elsewhere)
-typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
+using ActorCodeFactory = std::function<ActorCode(std::vector<std::string> args)>;
 } // namespace actor
 
 namespace activity {
   class ActivityImpl;
   enum class State;
-  typedef boost::intrusive_ptr<ActivityImpl> ActivityImplPtr;
+  using ActivityImplPtr = boost::intrusive_ptr<ActivityImpl>;
   XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
 
   class ConditionVariableImpl;
 
   class CommImpl;
-  typedef boost::intrusive_ptr<CommImpl> CommImplPtr;
+  using CommImplPtr = boost::intrusive_ptr<CommImpl>;
   class ExecImpl;
-  typedef boost::intrusive_ptr<ExecImpl> ExecImplPtr;
+  using ExecImplPtr = boost::intrusive_ptr<ExecImpl>;
   class IoImpl;
-  typedef boost::intrusive_ptr<IoImpl> IoImplPtr;
+  using IoImplPtr = boost::intrusive_ptr<IoImpl>;
   class MutexImpl;
-  typedef boost::intrusive_ptr<MutexImpl> MutexImplPtr;
+  using MutexImplPtr = boost::intrusive_ptr<MutexImpl>;
   class RawImpl;
-  typedef boost::intrusive_ptr<RawImpl> RawImplPtr;
+  using RawImplPtr = boost::intrusive_ptr<RawImpl>;
   class SemaphoreImpl;
-  typedef boost::intrusive_ptr<SemaphoreImpl> SemaphoreImplPtr;
+  using SemaphoreImplPtr = boost::intrusive_ptr<SemaphoreImpl>;
   class SleepImpl;
-  typedef boost::intrusive_ptr<SleepImpl> SleepImplPtr;
+  using SleepImplPtr = boost::intrusive_ptr<SleepImpl>;
 
   class MailboxImpl;
 }
@@ -192,30 +192,30 @@ class VirtualMachineImpl;
 } // namespace vm
 } // namespace simgrid
 
-typedef simgrid::s4u::Actor s4u_Actor;
-typedef simgrid::s4u::Barrier s4u_Barrier;
-typedef simgrid::s4u::Comm s4u_Comm;
-typedef simgrid::s4u::Exec s4u_Exec;
-typedef simgrid::s4u::Host s4u_Host;
-typedef simgrid::s4u::Link s4u_Link;
-typedef simgrid::s4u::File s4u_File;
-typedef simgrid::s4u::ConditionVariable s4u_ConditionVariable;
-typedef simgrid::s4u::Mailbox s4u_Mailbox;
-typedef simgrid::s4u::Mutex s4u_Mutex;
-typedef simgrid::s4u::Semaphore s4u_Semaphore;
-typedef simgrid::s4u::Disk s4u_Disk;
-typedef simgrid::s4u::Storage s4u_Storage;
-typedef simgrid::s4u::NetZone s4u_NetZone;
-typedef simgrid::s4u::VirtualMachine s4u_VM;
+using s4u_Actor             = simgrid::s4u::Actor;
+using s4u_Barrier           = simgrid::s4u::Barrier;
+using s4u_Comm              = simgrid::s4u::Comm;
+using s4u_Exec              = simgrid::s4u::Exec;
+using s4u_Host              = simgrid::s4u::Host;
+using s4u_Link              = simgrid::s4u::Link;
+using s4u_File              = simgrid::s4u::File;
+using s4u_ConditionVariable = simgrid::s4u::ConditionVariable;
+using s4u_Mailbox           = simgrid::s4u::Mailbox;
+using s4u_Mutex             = simgrid::s4u::Mutex;
+using s4u_Semaphore         = simgrid::s4u::Semaphore;
+using s4u_Disk              = simgrid::s4u::Disk;
+using s4u_Storage           = simgrid::s4u::Storage;
+using s4u_NetZone           = simgrid::s4u::NetZone;
+using s4u_VM                = simgrid::s4u::VirtualMachine;
 
-typedef simgrid::simix::Timer* smx_timer_t;
-typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
-typedef simgrid::kernel::activity::ActivityImpl* smx_activity_t;
-typedef simgrid::kernel::activity::ConditionVariableImpl* smx_cond_t;
-typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
-typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
-typedef simgrid::kernel::activity::SemaphoreImpl* smx_sem_t;
-XBT_ATTRIB_DEPRECATED_v330("Please use kernel::activity::State") typedef simgrid::kernel::activity::State e_smx_state_t;
+using smx_timer_t    = simgrid::simix::Timer*;
+using smx_actor_t    = simgrid::kernel::actor::ActorImpl*;
+using smx_activity_t = simgrid::kernel::activity::ActivityImpl*;
+using smx_cond_t     = simgrid::kernel::activity::ConditionVariableImpl*;
+using smx_mailbox_t  = simgrid::kernel::activity::MailboxImpl*;
+using smx_mutex_t    = simgrid::kernel::activity::MutexImpl*;
+using smx_sem_t      = simgrid::kernel::activity::SemaphoreImpl*;
+using e_smx_state_t XBT_ATTRIB_DEPRECATED_v330("Please use kernel::activity::State") = simgrid::kernel::activity::State;
 #else
 
 typedef struct s4u_Actor s4u_Actor;

@@ -37,10 +37,10 @@ public:
 private:
 #if BOOST_VERSION < 106100
   boost::context::fcontext_t fc_;
-  typedef intptr_t arg_type;
+  using arg_type = intptr_t;
 #else
   boost::context::detail::fcontext_t fc_;
-  typedef boost::context::detail::transfer_t arg_type;
+  using arg_type = boost::context::detail::transfer_t;
 #endif
 
   XBT_ATTRIB_NORETURN static void wrapper(arg_type arg);

@@ -53,7 +53,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code, mc::Simc
   // If we are in the application, pass the code to the maestro which
   // executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
-  typedef typename std::result_of<F()>::type R;
+  using R = typename std::result_of<F()>::type;
   simgrid::xbt::Result<R> result;
   simcall_run_kernel([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, t);
   return result.get();
@@ -96,8 +96,7 @@ template <class R, class F> R simcall_blocking(F&& code, mc::SimcallInspector* t
 namespace simgrid {
 namespace simix {
 
-
-typedef std::pair<double, Timer*> TimerQelt;
+using TimerQelt = std::pair<double, Timer*>;
 static boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<xbt::HeapComparator<TimerQelt>>> simix_timers;
 
 /** @brief Timer datatype */

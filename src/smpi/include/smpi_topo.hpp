@@ -10,7 +10,7 @@
 #include "smpi_status.hpp"
 #include <memory>
 
-typedef std::shared_ptr<SMPI_Topology> MPI_Topology;
+using MPI_Topology = std::shared_ptr<SMPI_Topology>;
 
 namespace simgrid{
 namespace smpi{

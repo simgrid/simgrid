@@ -60,6 +60,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libcrypt",
     "libcrypto",
     "libcurl",
+    "libcurl-gnutls",
     "libcxxrt",
     "libdebuginfod",
     "libdl",
@@ -67,11 +68,17 @@ static const std::vector<std::string> filtered_libraries = {
     "libelf",
     "libevent",
     "libexecinfo",
+    "libffi",
     "libflang",
     "libflangrti",
     "libgcc_s",
+    "libgmp",
+    "libgnutls",
+    "libgcrypt",
     "libgfortran",
+    "libgpg-error",
     "libgssapi_krb5",
+    "libhogweed",
     "libidn2",
     "libimf",
     "libintlc",
@@ -82,13 +89,16 @@ static const std::vector<std::string> filtered_libraries = {
     "libkrb5support", /*odd behaviour on fedora rawhide ... remove these when fixed*/
     "liblber",
     "libldap",
+    "libldap_r",
     "liblua5.1",
     "liblua5.3",
     "liblzma",
     "libm",
     "libmd",
+    "libnettle",
     "libnghttp2",
     "libomp",
+    "libp11-kit",
     "libpapi",
     "libpcre2",
     "libpfm",
@@ -98,6 +108,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libquadmath",
     "libresolv",
     "librt",
+    "librtmp",
     "libsasl2",
     "libselinux",
     "libssh",
@@ -105,6 +116,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libssl",
     "libstdc++",
     "libsvml",
+    "libtasn1",
     "libtsan",  /* gcc sanitizers */
     "libubsan", /* gcc sanitizers */
     "libunistring",
@@ -527,7 +539,7 @@ void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
     return;
   }
 
-  typedef std::vector<IgnoredHeapRegion>::size_type size_type;
+  using size_type = std::vector<IgnoredHeapRegion>::size_type;
 
   size_type start = 0;
   size_type end   = ignored_heap_.size() - 1;
@@ -556,7 +568,7 @@ void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
 
 void RemoteSimulation::unignore_heap(void* address, size_t size)
 {
-  typedef std::vector<IgnoredHeapRegion>::size_type size_type;
+  using size_type = std::vector<IgnoredHeapRegion>::size_type;
 
   size_type start = 0;
   size_type end   = ignored_heap_.size() - 1;

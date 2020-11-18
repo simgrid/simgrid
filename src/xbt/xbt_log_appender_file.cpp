@@ -51,7 +51,7 @@ struct xbt_log_append2_file_s {
   int count; //negative for roll
   long  int limit;
 };
-typedef struct xbt_log_append2_file_s* xbt_log_append2_file_t;
+using xbt_log_append2_file_t = xbt_log_append2_file_s*;
 
 static constexpr const char* APPEND2_END_TOKEN       = "\n[End of log]\n";
 static constexpr const char* APPEND2_END_TOKEN_CLEAR = "\n                   ";

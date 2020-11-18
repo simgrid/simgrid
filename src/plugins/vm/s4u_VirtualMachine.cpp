@@ -137,7 +137,7 @@ VirtualMachine* VirtualMachine::set_pm(simgrid::s4u::Host* pm)
   return this;
 }
 
-VirtualMachine::state VirtualMachine::get_state()
+VirtualMachine::state VirtualMachine::get_state() const
 {
   return kernel::actor::simcall([this]() { return pimpl_vm_->get_state(); });
 }

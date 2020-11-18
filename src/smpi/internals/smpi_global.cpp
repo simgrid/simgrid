@@ -14,6 +14,7 @@
 #include "src/simix/smx_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
+#include "xbt/file.hpp"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp> /* split */
@@ -235,7 +236,7 @@ static void smpi_init_papi()
       XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
                 " Expected version is %u", PAPI_VER_CURRENT);
 
-    typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
+    using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
     boost::char_separator<char> separator_units(";");
     std::string str = smpi_cfg_papi_events_file();
     Tokenizer tokens(str, separator_units);
@@ -287,11 +288,9 @@ static void smpi_init_papi()
 #endif
 }
 
-
-
-typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
-typedef int (* smpi_c_entry_point_type)(int argc, char **argv);
-typedef void (*smpi_fortran_entry_point_type)();
+using smpi_entry_point_type         = std::function<int(int argc, char* argv[])>;
+using smpi_c_entry_point_type       = int (*)(int argc, char** argv);
+using smpi_fortran_entry_point_type = void (*)();
 
 template <typename F>
 static int smpi_run_entry_point(const F& entry_point, const std::string& executable_path, std::vector<std::string> args)
@@ -430,6 +429,8 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
     for (auto const& libname : privatize_libs) {
       // load the library once to add it to the local libs, to get the absolute path
       void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
+      xbt_assert(libhandle != nullptr, 
+		 "Cannot dlopen %s - check your settings in smpi/privatize-libs", libname.c_str());
       // get library name from path
       std::string fullpath = libname;
 #if not defined(__APPLE__) && not defined(__HAIKU__)
@@ -448,8 +449,9 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
     return std::function<void()>([executable, fdin_size, args] {
       static std::size_t rank = 0;
       // Copy the dynamic library:
-      std::string target_executable =
-          executable + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
+      simgrid::xbt::Path path(executable);
+      std::string target_executable = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" +
+          path.get_base_name() + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
 
       smpi_copy_file(executable, target_executable, fdin_size);
       // if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
@@ -472,15 +474,14 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
           unsigned int pad = 7;
           if (libname.length() < pad)
             pad = libname.length();
-          std::string target_lib =
+          std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" +
               std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
           target_libs.push_back(target_lib);
           XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
           smpi_copy_file(libpath, target_lib, fdin_size2);
-
-          std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_lib + "/g' " + target_executable;
-          int status             = system(sedcommand.c_str());
-          xbt_assert(status == 0, "error while applying sed command %s \n", sedcommand.c_str());
+          void* handle = dlopen(target_lib.c_str(), RTLD_LAZY | RTLD_LOCAL | WANT_RTLD_DEEPBIND);
+          xbt_assert(handle != nullptr, "dlopen of library %s failed: %s (errno: %d -- %s)", target_lib.c_str(), 
+			  dlerror(), errno, strerror(errno));
         }
       }
 

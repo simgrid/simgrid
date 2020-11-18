@@ -22,7 +22,7 @@ std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
   std::vector<s_smpi_factor_t> smpi_factor;
 
   /** Setup the tokenizer that parses the string **/
-  typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
+  using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
   boost::char_separator<char> sep(";");
   boost::char_separator<char> factor_separator(":");
   Tokenizer tokens(smpi_coef_string, sep);

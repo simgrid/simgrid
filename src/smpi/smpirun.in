@@ -26,6 +26,8 @@ PRIVATIZE="--cfg=smpi/privatization:${SMPI_PRIVATIZATION:-@HAVE_PRIVATIZATION@}"
 
 SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI"
 
+SMPITMPDIR="$(dirname $(mktemp -u))"
+
 #usage to print the way this script should be called
 usage () {
     cat <<EOF
@@ -41,6 +43,7 @@ Options:
   -np <numprocs>             # use that amount of processes from the hostfile.
                              # By default, all processes of the hostfile are used.
   -no-privatize              # Disable the globals privatization, that is activated by default
+  -tmpdir                    # Directory used to store temporary files. Defaults to system's. 
   -trace-ti                  # activate time independent tracing (for replay, default in smpi_simgrid.txt)
   -trace                     # activate tracing (Paje, default in smpi_simgrid.trace)
   -trace-comment <comment>   # put a comment on the top of the trace file
@@ -168,6 +171,10 @@ while true; do
 	    MAPOPT=1
             shift 1
             ;;
+	"-tmpdir")
+	    SMPITMPDIR="$2"
+	    shift 1
+	    ;;
         "-trace")
             TRACE_ACTIVE="true"
             shift 1
@@ -256,6 +263,10 @@ while true; do
             ;;
     esac
 done
+
+#setup tmp dir
+SIMOPTS="$SIMOPTS --cfg=smpi/tmpdir:$SMPITMPDIR"
+export LD_LIBRARY_PATH="$SMPITMPDIR:$LD_LIBRARY_PATH"
 
 if [ -n "${APP_TRACES}" ] ; then
     if [ $# -eq 0 ] ; then
