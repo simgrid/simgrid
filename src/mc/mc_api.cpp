@@ -207,6 +207,13 @@ void mc_api::copy_index_comm_pattern(const simgrid::mc::State* state) const
   MC_state_copy_index_communications_pattern((simgrid::mc::State*)state);
 }
 
+std::size_t mc_api::get_remote_heap_bytes() const
+{
+  RemoteSimulation& process = mc_model_checker->get_remote_simulation();
+  auto heap_bytes_used = mmalloc_get_bytes_used_remote(process.get_heap()->heaplimit, process.get_malloc_info());
+  return heap_bytes_used;
+}
+
 void mc_api::s_initialize() const
 {
   session->initialize();

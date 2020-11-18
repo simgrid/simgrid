@@ -47,6 +47,9 @@ public:
   void copy_incomplete_comm_pattern(const simgrid::mc::State* state) const;
   void copy_index_comm_pattern(const simgrid::mc::State* state) const;
 
+  // REMOTE
+  std::size_t get_remote_heap_bytes() const;
+
   // MODEL_CHECKER FUNCTIONS
   ModelChecker* get_model_checker() const;
   void mc_inc_visited_states() const;
