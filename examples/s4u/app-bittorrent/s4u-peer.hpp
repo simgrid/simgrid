@@ -79,7 +79,7 @@ public:
   void requestNewPieceTo(Connection* remote_peer);
 
   bool getPeersFromTracker();
-  void sendMessage(simgrid::s4u::Mailbox* mailbox, e_message_type type, uint64_t size);
+  void sendMessage(simgrid::s4u::Mailbox* mailbox, MessageType type, uint64_t size);
   void sendBitfield(simgrid::s4u::Mailbox* mailbox);
   void sendPiece(simgrid::s4u::Mailbox* mailbox, unsigned int piece, int block_index, int block_length);
   void sendHandshakeToAllPeers();
