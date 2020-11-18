@@ -47,7 +47,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
 namespace {
 
-static std::string get_simgrid_version()
+std::string get_simgrid_version()
 {
   int major;
   int minor;

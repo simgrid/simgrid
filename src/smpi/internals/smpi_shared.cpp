@@ -93,9 +93,9 @@ std::map<const void*, shared_metadata_t> allocs_metadata;
 std::map<std::string, void*> calls;
 
 #ifndef WIN32
-static int smpi_shared_malloc_bogusfile           = -1;
-static int smpi_shared_malloc_bogusfile_huge_page  = -1;
-static unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
+int smpi_shared_malloc_bogusfile           = -1;
+int smpi_shared_malloc_bogusfile_huge_page = -1;
+unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
 #endif
 }
 
