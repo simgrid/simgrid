@@ -201,8 +201,4 @@ XBT_PUBLIC int get_maxpid();
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 
-XBT_PUBLIC smx_actor_t simcall_process_create(const std::string& name, const simgrid::kernel::actor::ActorCode& code,
-                                              void* data, sg_host_t host,
-                                              std::unordered_map<std::string, std::string>* properties);
-
 #endif

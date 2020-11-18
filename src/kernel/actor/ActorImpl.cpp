@@ -591,30 +591,6 @@ void SIMIX_process_on_exit(smx_actor_t actor,
   actor->on_exit->emplace_back(fun);
 }
 
-/** @brief Restart a process, starting it again from the beginning. */
-/**
- * @ingroup simix_process_management
- * @brief Creates and runs a new SIMIX process.
- *
- * The structure and the corresponding thread are created and put in the list of ready processes.
- *
- * @param name a name for the process. It is for user-level information and can be nullptr.
- * @param code the main function of the process
- * @param data a pointer to any data one may want to attach to the new object. It is for user-level information and can
- * be nullptr.
- * It can be retrieved with the method ActorImpl::getUserData().
- * @param host where the new agent is executed.
- * @param properties the properties of the process
- */
-smx_actor_t simcall_process_create(const std::string& name, const simgrid::kernel::actor::ActorCode& code, void* data,
-                                   sg_host_t host, std::unordered_map<std::string, std::string>* properties)
-{
-  smx_actor_t self = simgrid::kernel::actor::ActorImpl::self();
-  return simgrid::kernel::actor::simcall([&name, &code, data, host, properties, self] {
-    return simgrid::kernel::actor::ActorImpl::create(name, code, data, host, properties, self).get();
-  });
-}
-
 void simcall_process_set_data(smx_actor_t process, void* data) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid::kernel::actor::simcall([process, data] { process->set_user_data(data); });
