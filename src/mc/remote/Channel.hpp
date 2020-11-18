@@ -35,7 +35,7 @@ public:
 
   // Send
   int send(const void* message, size_t size) const;
-  int send(e_mc_message_type type) const
+  int send(MessageType type) const
   {
     s_mc_message_t message = {type};
     return this->send(&message, sizeof(message));
