@@ -253,7 +253,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
   for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
     int req_num       = pair->graph_state->transition_.argument_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
-    if (req && req->call_ != SIMCALL_NONE)
+    if (req && req->call_ != simix::Simcall::NONE)
       trace.push_back(request_to_string(req, req_num, RequestType::executed));
   }
   return trace;

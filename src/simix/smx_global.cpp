@@ -499,7 +499,7 @@ void SIMIX_run()
        */
 
       for (auto const& actor : simix_global->actors_that_ran) {
-        if (actor->simcall_.call_ != SIMCALL_NONE) {
+        if (actor->simcall_.call_ != simgrid::simix::Simcall::NONE) {
           actor->simcall_handle(0);
         }
       }

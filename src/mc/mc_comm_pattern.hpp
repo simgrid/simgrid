@@ -46,14 +46,15 @@ extern XBT_PRIVATE std::vector<std::vector<simgrid::mc::PatternCommunication*>> 
 static inline simgrid::mc::CallType MC_get_call_type(const s_smx_simcall* req)
 {
   using simgrid::mc::CallType;
+  using simgrid::simix::Simcall;
   switch (req->call_) {
-    case SIMCALL_COMM_ISEND:
+    case Simcall::COMM_ISEND:
       return CallType::SEND;
-    case SIMCALL_COMM_IRECV:
+    case Simcall::COMM_IRECV:
       return CallType::RECV;
-    case SIMCALL_COMM_WAIT:
+    case Simcall::COMM_WAIT:
       return CallType::WAIT;
-    case SIMCALL_COMM_WAITANY:
+    case Simcall::COMM_WAITANY:
       return CallType::WAITANY;
     default:
       return CallType::NONE;

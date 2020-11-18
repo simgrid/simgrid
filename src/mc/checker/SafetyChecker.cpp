@@ -192,7 +192,7 @@ void SafetyChecker::backtrack()
     stack_.pop_back();
     if (reductionMode_ == ReductionMode::dpor) {
       smx_simcall_t req = &state->internal_req_;
-      if (req->call_ == SIMCALL_MUTEX_LOCK || req->call_ == SIMCALL_MUTEX_TRYLOCK)
+      if (req->call_ == simix::Simcall::MUTEX_LOCK || req->call_ == simix::Simcall::MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none");
 
       const kernel::actor::ActorImpl* issuer = MC_smx_simcall_get_issuer(req);

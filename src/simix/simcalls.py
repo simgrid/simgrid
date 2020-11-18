@@ -79,10 +79,10 @@ class Simcall(object):
         return True
 
     def enum(self):
-        return '  SIMCALL_%s,' % (self.name.upper())
+        return '  %s,' % (self.name.upper())
 
     def string(self):
-        return '    "SIMCALL_%s",' % self.name.upper()
+        return '    "Simcall::%s",' % self.name.upper()
 
     def accessors(self):
         res = []
@@ -132,7 +132,7 @@ class Simcall(object):
         indent = '    '
         args = ["simgrid::simix::unmarshal<%s>(simcall_.args_[%d])" % (arg.rettype(), i)
                 for i, arg in enumerate(self.args)]
-        res.append(indent + 'case SIMCALL_%s:' % (self.name.upper()))
+        res.append(indent + 'case Simcall::%s:' % (self.name.upper()))
         if self.need_handler:
             call = "simcall_HANDLER_%s(&simcall_%s%s)" % (self.name,
                                                         ", " if args else "",
@@ -163,7 +163,7 @@ class Simcall(object):
         else:
             res.append('    SIMIX_%s(%s);' % (self.name,
                                               ', '.join(arg.name for arg in self.args)))
-        res.append('  return simcall<%s%s>(SIMCALL_%s%s);' % (
+        res.append('  return simcall<%s%s>(Simcall::%s%s);' % (
             self.res.rettype(),
             "".join([", " + arg.rettype() for i, arg in enumerate(self.args)]),
             self.name.upper(),
@@ -295,17 +295,21 @@ if __name__ == '__main__':
     # popping_enum.hpp
     #
     fd = header("popping_enum.hpp")
+    fd.write('namespace simgrid {\n');
+    fd.write('namespace simix {\n');
     fd.write('/**\n')
     fd.write(' * @brief All possible simcalls.\n')
     fd.write(' */\n')
-    fd.write('enum e_smx_simcall_t {\n')
-    fd.write('  SIMCALL_NONE,\n')
+    fd.write('enum class Simcall {\n')
+    fd.write('  NONE,\n')
 
     handle(fd, Simcall.enum, simcalls, simcalls_dict)
 
     fd.write('};\n')
     fd.write('\n')
     fd.write('constexpr int NUM_SIMCALLS = ' + str(1 + len(simcalls)) + ';\n');
+    fd.write('} // namespace simix\n');
+    fd.write('} // namespace simgrid\n');
     fd.close()
 
     #
@@ -325,11 +329,13 @@ if __name__ == '__main__':
     fd.write('\n')
     fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')
 
+    fd.write('using simgrid::simix::Simcall;')
+    fd.write('\n')
     fd.write(
         '/** @brief Simcalls\' names (generated from src/simix/simcalls.in) */\n')
-    fd.write('constexpr std::array<const char*, NUM_SIMCALLS> simcall_names{{\n')
+    fd.write('constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{\n')
 
-    fd.write('    "SIMCALL_NONE",\n')
+    fd.write('    "Simcall::NONE",\n')
     handle(fd, Simcall.string, simcalls, simcalls_dict)
 
     fd.write('}};\n\n')
@@ -352,7 +358,7 @@ if __name__ == '__main__':
 
     handle(fd, Simcall.case, simcalls, simcalls_dict)
 
-    fd.write('    case SIMCALL_NONE:\n')
+    fd.write('    case Simcall::NONE:\n')
     fd.write('      throw std::invalid_argument(simgrid::xbt::string_printf("Asked to do the noop syscall on %s@%s",\n')
     fd.write('                                                              get_cname(),\n')
     fd.write('                                                              sg_host_get_name(get_host())));\n')
@@ -378,8 +384,10 @@ if __name__ == '__main__':
     fd.write('''
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
+using simgrid::simix::Simcall;
+
 template<class R, class... T>
-inline static R simcall(e_smx_simcall_t call, T const&... t)
+inline static R simcall(Simcall call, T const&... t)
 {
   smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall_, call, t...);
