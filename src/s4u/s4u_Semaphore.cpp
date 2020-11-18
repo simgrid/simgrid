@@ -46,12 +46,12 @@ void Semaphore::release()
   kernel::actor::simcall([this] { sem_->release(); });
 }
 
-int Semaphore::get_capacity()
+int Semaphore::get_capacity() const
 {
   return kernel::actor::simcall([this] { return sem_->get_capacity(); });
 }
 
-int Semaphore::would_block()
+int Semaphore::would_block() const
 {
   return kernel::actor::simcall([this] { return sem_->would_block(); });
 }
@@ -99,7 +99,7 @@ void sg_sem_release(sg_sem_t sem)
   sem->release();
 }
 
-int sg_sem_get_capacity(sg_sem_t sem)
+int sg_sem_get_capacity(const_sg_sem_t sem)
 {
   return sem->get_capacity();
 }
@@ -114,7 +114,7 @@ void sg_sem_destroy(const_sg_sem_t sem)
  * Note that the returned value may be wrong right after the function call, when you try to use it...
  * But that's a classical semaphore issue, and SimGrid's semaphore are not different to usual ones here.
  */
-int sg_sem_would_block(sg_sem_t sem)
+int sg_sem_would_block(const_sg_sem_t sem)
 {
   return sem->would_block();
 }

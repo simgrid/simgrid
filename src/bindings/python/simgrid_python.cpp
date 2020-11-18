@@ -344,7 +344,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("is_daemon", &Actor::is_daemon,
            "Returns True if that actor is a daemon and will be terminated automatically when the last non-daemon actor "
            "terminates.")
-      .def("join", py::overload_cast<double>(&Actor::join), py::call_guard<GilScopedRelease>(),
+      .def("join", py::overload_cast<double>(&Actor::join, py::const_), py::call_guard<GilScopedRelease>(),
            "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout"))
       .def("kill", &Actor::kill, py::call_guard<GilScopedRelease>(), "Kill that actor")
       .def("kill_all", &Actor::kill_all, py::call_guard<GilScopedRelease>(), "Kill all actors but the caller.")

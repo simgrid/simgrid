@@ -56,7 +56,7 @@ XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_set_host() instead") XBT_PUBLIC
 #endif
 
 XBT_PUBLIC void sg_actor_set_host(sg_actor_t actor, sg_host_t host);
-XBT_PUBLIC void sg_actor_join(sg_actor_t actor, double timeout);
+XBT_PUBLIC void sg_actor_join(const_sg_actor_t actor, double timeout);
 XBT_PUBLIC void sg_actor_kill(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_kill_all();
 XBT_PUBLIC void sg_actor_set_kill_time(sg_actor_t actor, double kill_time);

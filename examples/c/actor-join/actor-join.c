@@ -22,7 +22,7 @@ static void sleeper(int argc, char* argv[])
 
 static void master(int argc, char* argv[])
 {
-  sg_actor_t actor;
+  const_sg_actor_t actor;
 
   XBT_INFO("Start sleeper");
   actor = sg_actor_create("sleeper from master", sg_host_self(), sleeper, 0, NULL);

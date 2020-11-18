@@ -103,12 +103,12 @@ int Actor::get_refcount() const
 
 // ***** Actor methods *****
 
-void Actor::join()
+void Actor::join() const
 {
   join(-1);
 }
 
-void Actor::join(double timeout)
+void Actor::join(double timeout) const
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   const kernel::actor::ActorImpl* target = pimpl_;
@@ -676,7 +676,7 @@ void sg_actor_migrate(sg_actor_t process, sg_host_t host) // XBT_ATTRIB_DEPRECAT
  * @param actor the actor to wait for
  * @param timeout wait until the actor is over, or the timeout expires
  */
-void sg_actor_join(sg_actor_t actor, double timeout)
+void sg_actor_join(const_sg_actor_t actor, double timeout)
 {
   actor->join(timeout);
 }
