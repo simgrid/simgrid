@@ -49,11 +49,12 @@ void dump_buffer(bool force)
 /* internal do the instrumentation module */
 void PajeEvent::insert_into_buffer()
 {
-  XBT_DEBUG("%s: insert event_type=%u, timestamp=%f, buffersize=%zu)", __func__, eventType_, timestamp_, buffer.size());
+  XBT_DEBUG("%s: insert event_type=%u, timestamp=%f, buffersize=%zu)", __func__, static_cast<unsigned>(eventType_),
+            timestamp_, buffer.size());
   std::vector<PajeEvent*>::reverse_iterator i;
   for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
     PajeEvent* e1 = *i;
-    XBT_DEBUG("compare to %p is of type %u; timestamp:%f", e1, e1->eventType_, e1->timestamp_);
+    XBT_DEBUG("compare to %p is of type %u; timestamp:%f", e1, static_cast<unsigned>(e1->eventType_), e1->timestamp_);
     if (e1->timestamp_ <= timestamp_)
       break;
   }

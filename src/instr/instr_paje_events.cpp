@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_events, instr, "Paje tracing event sy
 namespace simgrid {
 namespace instr {
 
-PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType)
+PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, PajeEventType eventType)
     : container_(container), type_(type), timestamp_(timestamp), eventType_(eventType)
 {
   on_creation(*this);
@@ -25,7 +25,7 @@ PajeEvent::~PajeEvent()
   on_destruction(*this);
 }
 
-StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra)
+StateEvent::StateEvent(Container* container, Type* type, PajeEventType event_type, EntityValue* value, TIData* extra)
     : PajeEvent::PajeEvent(container, type, SIMIX_get_clock(), event_type), value(value), extra_(extra)
 {
 #if HAVE_SMPI
@@ -53,7 +53,7 @@ void LinkEvent::print()
 void StateEvent::print()
 {
   if (trace_format == TraceFormat::Paje) {
-    if (value != nullptr) // PAJE_PopState Event does not need to have a value
+    if (value != nullptr) // PajeEventType::PopState Event does not need to have a value
       stream_ << " " << value->get_id();
 
     if (TRACE_display_sizes())

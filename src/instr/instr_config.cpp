@@ -218,7 +218,7 @@ int trace_precision;
  *************/
 xbt::signal<void(Container const&)> Container::on_creation;
 xbt::signal<void(Container const&)> Container::on_destruction;
-xbt::signal<void(Type const&, e_event_type)> Type::on_creation;
+xbt::signal<void(Type const&, PajeEventType)> Type::on_creation;
 xbt::signal<void(LinkType const&, Type const&, Type const&)> LinkType::on_creation;
 xbt::signal<void(PajeEvent&)> PajeEvent::on_creation;
 xbt::signal<void(PajeEvent const&)> PajeEvent::on_destruction;
@@ -230,9 +230,10 @@ static void on_container_creation_paje(const Container& c)
   double timestamp = SIMIX_get_clock();
   std::stringstream stream;
 
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_CreateContainer, timestamp);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, static_cast<unsigned>(PajeEventType::CreateContainer),
+            timestamp);
 
-  stream << std::fixed << std::setprecision(trace_precision) << PAJE_CreateContainer << " ";
+  stream << std::fixed << std::setprecision(trace_precision) << PajeEventType::CreateContainer << " ";
   stream << timestamp << " " << c.get_id() << " " << c.type_->get_id() << " " << c.father_->get_id() << " \"";
   if (c.get_name().find("rank-") != 0)
     stream << c.get_name() << "\"";
@@ -251,9 +252,10 @@ static void on_container_destruction_paje(const Container& c)
     std::stringstream stream;
     double timestamp = SIMIX_get_clock();
 
-    XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_DestroyContainer, timestamp);
+    XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, static_cast<unsigned>(PajeEventType::DestroyContainer),
+              timestamp);
 
-    stream << std::fixed << std::setprecision(trace_precision) << PAJE_DestroyContainer << " ";
+    stream << std::fixed << std::setprecision(trace_precision) << PajeEventType::DestroyContainer << " ";
     stream << timestamp << " " << c.type_->get_id() << " " << c.get_id();
     XBT_DEBUG("Dump %s", stream.str().c_str());
     tracing_file << stream.str() << std::endl;
@@ -262,7 +264,8 @@ static void on_container_destruction_paje(const Container& c)
 
 static void on_container_creation_ti(const Container& c)
 {
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_CreateContainer, SIMIX_get_clock());
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, static_cast<unsigned>(PajeEventType::CreateContainer),
+            SIMIX_get_clock());
   // if we are in the mode with only one file
   static std::ofstream* ti_unique_file = nullptr;
 
@@ -300,8 +303,8 @@ static void on_container_destruction_ti(const Container& c)
 static void on_entity_value_creation(const EntityValue& value)
 {
   std::stringstream stream;
-  XBT_DEBUG("%s: event_type=%u", __func__, PAJE_DefineEntityValue);
-  stream << std::fixed << std::setprecision(trace_precision) << PAJE_DefineEntityValue;
+  XBT_DEBUG("%s: event_type=%u", __func__, static_cast<unsigned>(PajeEventType::DefineEntityValue));
+  stream << std::fixed << std::setprecision(trace_precision) << PajeEventType::DefineEntityValue;
   stream << " " << value.get_id() << " " << value.get_father()->get_id() << " " << value.get_name();
   if (not value.get_color().empty())
     stream << " \"" << value.get_color() << "\"";
@@ -311,7 +314,8 @@ static void on_entity_value_creation(const EntityValue& value)
 
 static void on_event_creation(PajeEvent& event)
 {
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event.eventType_, trace_precision, event.timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, static_cast<unsigned>(event.eventType_), trace_precision,
+            event.timestamp_);
   event.stream_ << std::fixed << std::setprecision(trace_precision);
   event.stream_ << event.eventType_ << " " << event.timestamp_ << " ";
   event.stream_ << event.get_type()->get_id() << " " << event.get_container()->get_id();
@@ -329,14 +333,14 @@ static void on_state_event_destruction(const StateEvent& event)
     *tracing_files.at(event.get_container()) << event.stream_.str() << std::endl;
 }
 
-static void on_type_creation(const Type& type, e_event_type event_type)
+static void on_type_creation(const Type& type, PajeEventType event_type)
 {
-  if (event_type == PAJE_DefineLinkType)
+  if (event_type == PajeEventType::DefineLinkType)
     return; // this kind of type has to be handled differently
 
   std::stringstream stream;
   stream << std::fixed << std::setprecision(trace_precision);
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event_type, trace_precision, 0.);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, static_cast<unsigned>(event_type), trace_precision, 0.);
   stream << event_type << " " << type.get_id() << " " << type.get_father()->get_id() << " " << type.get_name();
   if (type.is_colored())
     stream << " \"" << type.get_color() << "\"";
@@ -347,8 +351,9 @@ static void on_type_creation(const Type& type, e_event_type event_type)
 static void on_link_type_creation(const Type& type, const Type& source, const Type& dest)
 {
   std::stringstream stream;
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, PAJE_DefineLinkType, trace_precision, 0.);
-  stream << PAJE_DefineLinkType << " " << type.get_id() << " " << type.get_father()->get_id();
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, static_cast<unsigned>(PajeEventType::DefineLinkType),
+            trace_precision, 0.);
+  stream << PajeEventType::DefineLinkType << " " << type.get_id() << " " << type.get_father()->get_id();
   stream << " " << source.get_id() << " " << dest.get_id() << " " << type.get_name();
   XBT_DEBUG("Dump %s", stream.str().c_str());
   tracing_file << stream.str() << std::endl;

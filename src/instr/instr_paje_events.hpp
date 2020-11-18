@@ -17,26 +17,31 @@ namespace instr {
 class EntityValue;
 class TIData;
 
-enum e_event_type : unsigned int {
-  PAJE_DefineContainerType,
-  PAJE_DefineVariableType,
-  PAJE_DefineStateType,
-  PAJE_DefineEventType,
-  PAJE_DefineLinkType,
-  PAJE_DefineEntityValue,
-  PAJE_CreateContainer,
-  PAJE_DestroyContainer,
-  PAJE_SetVariable,
-  PAJE_AddVariable,
-  PAJE_SubVariable,
-  PAJE_SetState,
-  PAJE_PushState,
-  PAJE_PopState,
-  PAJE_ResetState,
-  PAJE_StartLink,
-  PAJE_EndLink,
-  PAJE_NewEvent
+enum class PajeEventType : unsigned int {
+  DefineContainerType,
+  DefineVariableType,
+  DefineStateType,
+  DefineEventType,
+  DefineLinkType,
+  DefineEntityValue,
+  CreateContainer,
+  DestroyContainer,
+  SetVariable,
+  AddVariable,
+  SubVariable,
+  SetState,
+  PushState,
+  PopState,
+  ResetState,
+  StartLink,
+  EndLink,
+  NewEvent
 };
+
+inline std::ostream& operator<<(std::ostream& os, PajeEventType event)
+{
+  return os << static_cast<std::underlying_type<PajeEventType>::type>(event);
+}
 
 class PajeEvent {
   Container* container_;
@@ -46,10 +51,10 @@ public:
   static xbt::signal<void(PajeEvent const&)> on_destruction;
 
   double timestamp_;
-  e_event_type eventType_;
+  PajeEventType eventType_;
   std::stringstream stream_;
 
-  PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType);
+  PajeEvent(Container* container, Type* type, double timestamp, PajeEventType eventType);
   virtual ~PajeEvent();
 
   Container* get_container() const { return container_; }
@@ -63,7 +68,7 @@ class VariableEvent : public PajeEvent {
   double value_;
 
 public:
-  VariableEvent(double timestamp, Container* container, Type* type, e_event_type event_type, double value)
+  VariableEvent(double timestamp, Container* container, Type* type, PajeEventType event_type, double value)
       : PajeEvent::PajeEvent(container, type, timestamp, event_type), value_(value)
   {
   }
@@ -80,7 +85,7 @@ class StateEvent : public PajeEvent {
 
 public:
   static xbt::signal<void(StateEvent const&)> on_destruction;
-  StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra);
+  StateEvent(Container* container, Type* type, PajeEventType event_type, EntityValue* value, TIData* extra);
   ~StateEvent() override { on_destruction(*this); }
   bool has_extra() const { return extra_ != nullptr; }
   void print() override;
@@ -93,7 +98,7 @@ class LinkEvent : public PajeEvent {
   int size_ = -1;
 
 public:
-  LinkEvent(Container* container, Type* type, e_event_type event_type, Container* sourceContainer,
+  LinkEvent(Container* container, Type* type, PajeEventType event_type, Container* sourceContainer,
             const std::string& value, const std::string& key, int size)
       : PajeEvent(container, type, SIMIX_get_clock(), event_type)
       , endpoint_(sourceContainer)
@@ -110,7 +115,7 @@ class NewEvent : public PajeEvent {
 
 public:
   NewEvent(double timestamp, Container* container, Type* type, EntityValue* value)
-      : PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent), value(value)
+      : PajeEvent::PajeEvent(container, type, timestamp, PajeEventType::NewEvent), value(value)
   {
   }
   void print() override;
