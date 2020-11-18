@@ -330,7 +330,7 @@ void CommunicationDeterminismChecker::log_state() // override
 
 void CommunicationDeterminismChecker::prepare()
 {
-  const int maxpid = MC_smx_get_maxpid();
+  const int maxpid = mcapi::get().get_maxpid();
 
   initial_communications_pattern.resize(maxpid);
   incomplete_communications_pattern.resize(maxpid);
@@ -341,8 +341,9 @@ void CommunicationDeterminismChecker::prepare()
   XBT_DEBUG("********* Start communication determinism verification *********");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
-    if (mc::actor_is_enabled(actor.copy.get_buffer()))
+  auto actors = mcapi::get().get_actors();
+  for (auto& actor : actors)
+    if (mcapi::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
       initial_state->add_interleaving_set(actor.copy.get_buffer());
 
   stack_.push_back(std::move(initial_state));
@@ -530,7 +531,7 @@ void CommunicationDeterminismChecker::real_run()
 void CommunicationDeterminismChecker::run()
 {
   XBT_INFO("Check communication determinism");
-  mc::session->initialize();
+  mcapi::get().s_initialize();
 
   this->prepare();
   this->real_run();
