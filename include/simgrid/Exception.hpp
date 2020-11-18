@@ -113,7 +113,7 @@ public:
   ~TimeoutException() override;
 };
 
-using TimeoutError XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::TimeoutException") = TimeoutException;
+XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::TimeoutException") typedef TimeoutException TimeoutError;
 
 /** Exception raised when a host fails */
 class HostFailureException : public Exception {
@@ -239,6 +239,6 @@ private:
 
 } // namespace simgrid
 
-using xbt_ex XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::Exception") = simgrid::Exception;
+XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::Exception") typedef simgrid::Exception xbt_ex;
 
 #endif
