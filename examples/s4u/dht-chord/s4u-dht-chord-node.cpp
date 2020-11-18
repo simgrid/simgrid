@@ -104,7 +104,7 @@ void Node::leave()
 void Node::notifyAndQuit()
 {
   // send the PREDECESSOR_LEAVING to our successor
-  auto* pred_msg         = new ChordMessage(PREDECESSOR_LEAVING);
+  auto* pred_msg         = new ChordMessage(MessageType::PREDECESSOR_LEAVING);
   pred_msg->request_id   = pred_id_;
   pred_msg->answer_to    = mailbox_;
 
@@ -118,7 +118,7 @@ void Node::notifyAndQuit()
 
   if (pred_id_ != -1 && pred_id_ != id_) {
     // send the SUCCESSOR_LEAVING to our predecessor (only if I have one that is not me)
-    auto* succ_msg         = new ChordMessage(SUCCESSOR_LEAVING);
+    auto* succ_msg         = new ChordMessage(MessageType::SUCCESSOR_LEAVING);
     succ_msg->request_id   = fingers_[0];
     succ_msg->answer_to    = mailbox_;
     XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
@@ -208,7 +208,7 @@ void Node::checkPredecessor()
   simgrid::s4u::Mailbox* mailbox        = simgrid::s4u::Mailbox::by_name(std::to_string(pred_id_));
   simgrid::s4u::Mailbox* return_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_is_alive");
 
-  auto* message         = new ChordMessage(PREDECESSOR_ALIVE);
+  auto* message         = new ChordMessage(MessageType::PREDECESSOR_ALIVE);
   message->request_id   = pred_id_;
   message->answer_to    = return_mailbox;
 
@@ -248,7 +248,7 @@ int Node::remoteGetPredecessor(int ask_to)
   simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
   simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_pred");
 
-  auto* message         = new ChordMessage(GET_PREDECESSOR);
+  auto* message         = new ChordMessage(MessageType::GET_PREDECESSOR);
   message->request_id   = id_;
   message->answer_to    = return_mailbox;
 
@@ -320,7 +320,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
   simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_succ");
 
-  auto* message         = new ChordMessage(FIND_SUCCESSOR);
+  auto* message         = new ChordMessage(MessageType::FIND_SUCCESSOR);
   message->request_id   = id_;
   message->answer_to    = return_mailbox;
 
@@ -366,7 +366,7 @@ void Node::notify(int predecessor_candidate_id)
 /* Notifies a remote node that its predecessor may have changed. */
 void Node::remoteNotify(int notify_id, int predecessor_candidate_id) const
 {
-  auto* message         = new ChordMessage(NOTIFY);
+  auto* message         = new ChordMessage(MessageType::NOTIFY);
   message->request_id   = predecessor_candidate_id;
   message->answer_to    = nullptr;
 
@@ -403,77 +403,78 @@ void Node::stabilize()
 void Node::handleMessage(ChordMessage* message)
 {
   switch (message->type) {
-  case FIND_SUCCESSOR:
-    XBT_DEBUG("Received a 'Find Successor' request from %s for id %d", message->issuer_host_name.c_str(),
-        message->request_id);
-    // is my successor the successor?
-    if (is_in_interval(message->request_id, id_ + 1, fingers_[0])) {
-      message->type = FIND_SUCCESSOR_ANSWER;
-      message->answer_id = fingers_[0];
-      XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
-                message->issuer_host_name.c_str(), message->answer_to->get_cname(), message->request_id,
-                message->answer_id);
+    case MessageType::FIND_SUCCESSOR:
+      XBT_DEBUG("Received a 'Find Successor' request from %s for id %d", message->issuer_host_name.c_str(),
+                message->request_id);
+      // is my successor the successor?
+      if (is_in_interval(message->request_id, id_ + 1, fingers_[0])) {
+        message->type      = MessageType::FIND_SUCCESSOR_ANSWER;
+        message->answer_id = fingers_[0];
+        XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
+                  message->issuer_host_name.c_str(), message->answer_to->get_cname(), message->request_id,
+                  message->answer_id);
+        message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
+      } else {
+        // otherwise, forward the request to the closest preceding finger in my table
+        int closest = closestPrecedingFinger(message->request_id);
+        XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
+                  message->request_id, closest);
+        simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(closest));
+        mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
+      }
+      break;
+
+    case MessageType::GET_PREDECESSOR:
+      XBT_DEBUG("Receiving a 'Get Predecessor' request from %s", message->issuer_host_name.c_str());
+      message->type      = MessageType::GET_PREDECESSOR_ANSWER;
+      message->answer_id = pred_id_;
+      XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
+                message->issuer_host_name.c_str(), message->answer_to->get_cname(), message->answer_id);
       message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
-    } else {
-      // otherwise, forward the request to the closest preceding finger in my table
-      int closest = closestPrecedingFinger(message->request_id);
-      XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
-          message->request_id, closest);
-      simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(closest));
-      mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
-    }
-    break;
+      break;
 
-  case GET_PREDECESSOR:
-    XBT_DEBUG("Receiving a 'Get Predecessor' request from %s", message->issuer_host_name.c_str());
-    message->type = GET_PREDECESSOR_ANSWER;
-    message->answer_id = pred_id_;
-    XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
-              message->issuer_host_name.c_str(), message->answer_to->get_cname(), message->answer_id);
-    message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
-    break;
+    case MessageType::NOTIFY:
+      // someone is telling me that he may be my new predecessor
+      XBT_DEBUG("Receiving a 'Notify' request from %s", message->issuer_host_name.c_str());
+      notify(message->request_id);
+      delete message;
+      break;
 
-  case NOTIFY:
-    // someone is telling me that he may be my new predecessor
-    XBT_DEBUG("Receiving a 'Notify' request from %s", message->issuer_host_name.c_str());
-    notify(message->request_id);
-    delete message;
-    break;
+    case MessageType::PREDECESSOR_LEAVING:
+      // my predecessor is about to quit
+      XBT_DEBUG("Receiving a 'Predecessor Leaving' message from %s", message->issuer_host_name.c_str());
+      // modify my predecessor
+      setPredecessor(message->request_id);
+      delete message;
+      /*TODO :
+        >> notify my new predecessor
+        >> send a notify_predecessors !!
+       */
+      break;
 
-  case PREDECESSOR_LEAVING:
-    // my predecessor is about to quit
-    XBT_DEBUG("Receiving a 'Predecessor Leaving' message from %s", message->issuer_host_name.c_str());
-    // modify my predecessor
-    setPredecessor(message->request_id);
-    delete message;
-    /*TODO :
-      >> notify my new predecessor
-      >> send a notify_predecessors !!
-     */
-    break;
+    case MessageType::SUCCESSOR_LEAVING:
+      // my successor is about to quit
+      XBT_DEBUG("Receiving a 'Successor Leaving' message from %s", message->issuer_host_name.c_str());
+      // modify my successor FIXME : this should be implicit ?
+      setFinger(0, message->request_id);
+      delete message;
+      /* TODO
+         >> notify my new successor
+         >> update my table & predecessors table */
+      break;
 
-  case SUCCESSOR_LEAVING:
-    // my successor is about to quit
-    XBT_DEBUG("Receiving a 'Successor Leaving' message from %s", message->issuer_host_name.c_str());
-    // modify my successor FIXME : this should be implicit ?
-    setFinger(0, message->request_id);
-    delete message;
-    /* TODO
-       >> notify my new successor
-       >> update my table & predecessors table */
-    break;
+    case MessageType::PREDECESSOR_ALIVE:
+      XBT_DEBUG("Receiving a 'Predecessor Alive' request from %s", message->issuer_host_name.c_str());
+      message->type = MessageType::PREDECESSOR_ALIVE_ANSWER;
+      XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)", message->issuer_host_name.c_str(),
+                message->answer_to->get_cname());
+      message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
+      break;
 
-  case PREDECESSOR_ALIVE:
-    XBT_DEBUG("Receiving a 'Predecessor Alive' request from %s", message->issuer_host_name.c_str());
-    message->type = PREDECESSOR_ALIVE_ANSWER;
-    XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)", message->issuer_host_name.c_str(),
-              message->answer_to->get_cname());
-    message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
-    break;
-
-  default:
-    XBT_DEBUG("Ignoring unexpected message: %d from %s", message->type, message->issuer_host_name.c_str());
-    delete message;
+    default:
+      XBT_DEBUG("Ignoring unexpected message: %d from %s", static_cast<int>(message->type),
+                message->issuer_host_name.c_str());
+      delete message;
   }
 }
 
