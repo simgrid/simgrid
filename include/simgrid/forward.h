@@ -215,7 +215,7 @@ using smx_cond_t     = simgrid::kernel::activity::ConditionVariableImpl*;
 using smx_mailbox_t  = simgrid::kernel::activity::MailboxImpl*;
 using smx_mutex_t    = simgrid::kernel::activity::MutexImpl*;
 using smx_sem_t      = simgrid::kernel::activity::SemaphoreImpl*;
-XBT_ATTRIB_DEPRECATED_v330("Please use kernel::activity::State") typedef simgrid::kernel::activity::State e_smx_state_t;
+using e_smx_state_t XBT_ATTRIB_DEPRECATED_v330("Please use kernel::activity::State") = simgrid::kernel::activity::State;
 #else
 
 typedef struct s4u_Actor s4u_Actor;
