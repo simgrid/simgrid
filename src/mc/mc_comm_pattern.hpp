@@ -14,52 +14,54 @@
 namespace simgrid {
 namespace mc {
 
+enum class CallType {
+  NONE,
+  SEND,
+  RECV,
+  WAIT,
+  WAITANY,
+};
+
+enum class CommPatternDifference {
+  NONE,
+  TYPE,
+  RDV,
+  TAG,
+  SRC_PROC,
+  DST_PROC,
+  DATA_SIZE,
+  DATA,
+};
+
 struct PatternCommunicationList {
   unsigned int index_comm = 0;
   std::vector<std::unique_ptr<simgrid::mc::PatternCommunication>> list;
 };
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 extern XBT_PRIVATE std::vector<simgrid::mc::PatternCommunicationList> initial_communications_pattern;
 extern XBT_PRIVATE std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communications_pattern;
 
-enum e_mc_call_type_t {
-  MC_CALL_TYPE_NONE,
-  MC_CALL_TYPE_SEND,
-  MC_CALL_TYPE_RECV,
-  MC_CALL_TYPE_WAIT,
-  MC_CALL_TYPE_WAITANY,
-};
-
-enum e_mc_comm_pattern_difference_t {
-  NONE_DIFF,
-  TYPE_DIFF,
-  RDV_DIFF,
-  TAG_DIFF,
-  SRC_PROC_DIFF,
-  DST_PROC_DIFF,
-  DATA_SIZE_DIFF,
-  DATA_DIFF,
-};
-
-static inline e_mc_call_type_t MC_get_call_type(const s_smx_simcall* req)
+static inline simgrid::mc::CallType MC_get_call_type(const s_smx_simcall* req)
 {
+  using simgrid::mc::CallType;
   switch (req->call_) {
     case SIMCALL_COMM_ISEND:
-      return MC_CALL_TYPE_SEND;
+      return CallType::SEND;
     case SIMCALL_COMM_IRECV:
-      return MC_CALL_TYPE_RECV;
+      return CallType::RECV;
     case SIMCALL_COMM_WAIT:
-      return MC_CALL_TYPE_WAIT;
+      return CallType::WAIT;
     case SIMCALL_COMM_WAITANY:
-      return MC_CALL_TYPE_WAITANY;
+      return CallType::WAITANY;
     default:
-      return MC_CALL_TYPE_NONE;
+      return CallType::NONE;
   }
 }
 
-XBT_PRIVATE void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, int value, int backtracking);
+XBT_PRIVATE void MC_handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t request, int value,
+                                        int backtracking);
 
 XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
