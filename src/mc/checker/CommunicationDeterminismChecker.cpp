@@ -321,8 +321,8 @@ void CommunicationDeterminismChecker::log_state() // override
     }
   }
   XBT_INFO("Expanded states = %lu", expanded_states_count_);
-  XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
-  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
+  XBT_INFO("Visited states = %lu", mcapi::get().mc_get_visited_states());
+  XBT_INFO("Executed transitions = %lu", mcapi::get().mc_get_executed_trans());
   XBT_INFO("Send-deterministic : %s", this->send_deterministic ? "Yes" : "No");
   if (_sg_mc_comms_determinism)
     XBT_INFO("Recv-deterministic : %s", this->recv_deterministic ? "Yes" : "No");
@@ -351,7 +351,8 @@ void CommunicationDeterminismChecker::prepare()
 
 static inline bool all_communications_are_finished()
 {
-  for (size_t current_actor = 1; current_actor < mcapi::get().get_maxpid(); current_actor++) {
+  auto maxpid = mcapi::get().get_maxpid();
+  for (size_t current_actor = 1; current_actor < maxpid; current_actor++) {
     if (not incomplete_communications_pattern[current_actor].empty()) {
       XBT_DEBUG("Some communications are not finished, cannot stop the exploration! State not visited.");
       return false;
