@@ -371,9 +371,9 @@ void CommunicationDeterminismChecker::restoreState()
   }
 
   /* Restore the initial state */
-  mc::session->restore_initial_state();
+  mcapi::get().s_restore_initial_state();
 
-  unsigned n = MC_smx_get_maxpid();
+  unsigned n = mcapi::get().get_maxpid();
   assert(n == incomplete_communications_pattern.size());
   assert(n == initial_communications_pattern.size());
   for (unsigned j=0; j < n ; j++) {
@@ -393,18 +393,18 @@ void CommunicationDeterminismChecker::restoreState()
     /* because we got a copy of the executed request, we have to fetch the
        real one, pointed by the request field of the issuer process */
 
-    const smx_actor_t issuer = MC_smx_simcall_get_issuer(saved_req);
+    const smx_actor_t issuer = mcapi::get().mc_smx_simcall_get_issuer(saved_req);
     smx_simcall_t req        = &issuer->simcall_;
 
     /* TODO : handle test and testany simcalls */
     e_mc_call_type_t call = MC_get_call_type(req);
-    mc_model_checker->handle_simcall(state->transition_);
+    mcapi::get().handle_simcall(state->transition_);
     MC_handle_comm_pattern(call, req, req_num, 1);
-    mc_model_checker->wait_for_requests();
+    mcapi::get().mc_wait_for_requests();
 
     /* Update statistics */
-    mc_model_checker->visited_states++;
-    mc_model_checker->executed_transitions++;
+    mcapi::get().mc_inc_visited_states();
+    mcapi::get().mc_inc_executed_trans();
   }
 }
 
