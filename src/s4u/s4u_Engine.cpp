@@ -115,7 +115,7 @@ void Engine::register_function(const std::string& name, const std::function<void
 /** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, const std::function<void(std::vector<std::string>)>& code)
 {
-  kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
+  kernel::actor::ActorCodeFactory code_factory = [code{code}](std::vector<std::string> args) mutable {
     return std::bind(std::move(code), std::move(args));
   };
   register_function(name, code_factory);
