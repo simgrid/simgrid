@@ -10,7 +10,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "For this example");
 
-enum class Behavior { ABORT, ASSERT, PRINTF } behavior;
+enum class Behavior { ABORT, ASSERT, PRINTF };
+
+Behavior behavior;
 
 /** A fake application with a bug occurring for some random values */
 static void app()
