@@ -429,6 +429,8 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
     for (auto const& libname : privatize_libs) {
       // load the library once to add it to the local libs, to get the absolute path
       void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
+      xbt_assert(libhandle != nullptr, 
+		      "Cannot dlopen %s - check your settings in smpi/privatize-libs", libname.c_str());
       // get library name from path
       std::string fullpath = libname;
 #if not defined(__APPLE__) && not defined(__HAIKU__)
