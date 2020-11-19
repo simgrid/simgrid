@@ -37,13 +37,13 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cl
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isCreated(JNIEnv* env, jobject jvm)
 {
-  sg_vm_t vm = jvm_get_native(env, jvm);
+  const_sg_vm_t vm = jvm_get_native(env, jvm);
   return sg_vm_is_created(vm);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isRunning(JNIEnv* env, jobject jvm)
 {
-  sg_vm_t vm = jvm_get_native(env, jvm);
+  const_sg_vm_t vm = jvm_get_native(env, jvm);
   return sg_vm_is_running(vm);
 }
 
@@ -55,7 +55,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isMigrating(JNIEnv* env, jobj
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_VM_isSuspended(JNIEnv* env, jobject jvm)
 {
-  sg_vm_t vm = jvm_get_native(env, jvm);
+  const_sg_vm_t vm = jvm_get_native(env, jvm);
   return sg_vm_is_suspended(vm);
 }
 

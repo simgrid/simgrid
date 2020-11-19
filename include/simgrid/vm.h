@@ -17,9 +17,9 @@ SG_BEGIN_DECL
 XBT_PUBLIC sg_vm_t sg_vm_create_core(sg_host_t pm, const char* name);
 XBT_PUBLIC sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int core_amount);
 
-XBT_PUBLIC int sg_vm_is_created(sg_vm_t vm);
-XBT_PUBLIC int sg_vm_is_running(sg_vm_t vm);
-XBT_PUBLIC int sg_vm_is_suspended(sg_vm_t vm);
+XBT_PUBLIC int sg_vm_is_created(const_sg_vm_t vm);
+XBT_PUBLIC int sg_vm_is_running(const_sg_vm_t vm);
+XBT_PUBLIC int sg_vm_is_suspended(const_sg_vm_t vm);
 
 XBT_PUBLIC const char* sg_vm_get_name(const_sg_vm_t vm);
 XBT_PUBLIC void sg_vm_set_ramsize(sg_vm_t vm, size_t size);

@@ -231,19 +231,19 @@ void sg_vm_set_bound(sg_vm_t vm, double bound)
 }
 
 /** @brief Returns whether the given VM has just created, not running. */
-int sg_vm_is_created(sg_vm_t vm)
+int sg_vm_is_created(const_sg_vm_t vm)
 {
   return vm->get_state() == simgrid::s4u::VirtualMachine::state::CREATED;
 }
 
 /** @brief Returns whether the given VM is currently running */
-int sg_vm_is_running(sg_vm_t vm)
+int sg_vm_is_running(const_sg_vm_t vm)
 {
   return vm->get_state() == simgrid::s4u::VirtualMachine::state::RUNNING;
 }
 
 /** @brief Returns whether the given VM is currently suspended, not running. */
-int sg_vm_is_suspended(sg_vm_t vm)
+int sg_vm_is_suspended(const_sg_vm_t vm)
 {
   return vm->get_state() == simgrid::s4u::VirtualMachine::state::SUSPENDED;
 }
