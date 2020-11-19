@@ -434,8 +434,9 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
       // get library name from path
       std::string fullpath = libname;
 #if not defined(__APPLE__) && not defined(__HAIKU__)
-      xbt_assert(0 != dl_iterate_phdr(visit_libs, &fullpath),
-                 "Can't find a linked %s - check your settings in smpi/privatize-libs", fullpath.c_str());
+      XBT_ATTRIB_UNUSED int dl_iterate_res = dl_iterate_phdr(visit_libs, &fullpath);
+      xbt_assert(dl_iterate_res != 0, "Can't find a linked %s - check your settings in smpi/privatize-libs",
+                 fullpath.c_str());
       XBT_DEBUG("Extra lib to privatize '%s' found", fullpath.c_str());
 #else
       xbt_die("smpi/privatize-libs is not (yet) compatible with OSX nor with Haiku");
