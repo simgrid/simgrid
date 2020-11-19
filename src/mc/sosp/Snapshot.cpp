@@ -229,7 +229,7 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
 
   auto* region = new Region(type, start_addr, size);
   region->object_info(object_info);
-  snapshot_regions_.push_back(std::unique_ptr<Region>(std::move(region)));
+  snapshot_regions_.push_back(std::unique_ptr<Region>(region));
 }
 
 void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions options) const

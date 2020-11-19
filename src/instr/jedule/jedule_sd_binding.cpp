@@ -22,7 +22,7 @@ void jedule_log_sd_event(const_SD_task_t task)
   simgrid::jedule::Event event(std::string(SD_task_get_name(task)), SD_task_get_start_time(task),
                                SD_task_get_finish_time(task), "SD");
   event.add_resources(*task->allocation);
-  my_jedule->add_event(std::move(event));
+  my_jedule->add_event(event);
 }
 
 void jedule_sd_init()

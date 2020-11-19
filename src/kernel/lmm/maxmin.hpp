@@ -553,7 +553,7 @@ private:
 
 class XBT_PUBLIC FairBottleneck : public System {
 public:
-  explicit FairBottleneck(bool selective_update) : System(selective_update) {}
+  using System::System;
   void solve() final { bottleneck_solve(); }
 
 private:

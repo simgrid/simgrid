@@ -168,7 +168,7 @@ generates the following files:
   Definition of type `enum e_smx_simcall_t` (one value per existing simcall)
 - popping_generated.cpp:
   Definitions of `simcall_names[]` (debug name of each simcall), and
-  SIMIX_simcall_enter() that deals with the simcall from within the kernel
+  ActorImpl::simcall_handle() that deals with the simcall from within the kernel
 
 The simcall.in file list all the simcalls in sections. A line starting by "##"
 define a new section which will be replace by a "ifdef" in the generated code.

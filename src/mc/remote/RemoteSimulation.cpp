@@ -535,7 +535,7 @@ void RemoteSimulation::ignore_region(std::uint64_t addr, std::size_t size)
 void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
 {
   if (ignored_heap_.empty()) {
-    ignored_heap_.push_back(std::move(region));
+    ignored_heap_.push_back(region);
     return;
   }
 

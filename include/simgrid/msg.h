@@ -146,9 +146,9 @@ typedef sg_vm_t msg_vm_t;
 XBT_PUBLIC msg_vm_t MSG_vm_create_core(msg_host_t pm, const char* name);
 XBT_PUBLIC msg_vm_t MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
 
-XBT_PUBLIC int MSG_vm_is_created(msg_vm_t vm);
-XBT_PUBLIC int MSG_vm_is_running(msg_vm_t vm);
-XBT_PUBLIC int MSG_vm_is_suspended(msg_vm_t vm);
+XBT_PUBLIC int MSG_vm_is_created(const_sg_vm_t vm);
+XBT_PUBLIC int MSG_vm_is_running(const_sg_vm_t vm);
+XBT_PUBLIC int MSG_vm_is_suspended(const_sg_vm_t vm);
 
 XBT_PUBLIC const char* MSG_vm_get_name(const_sg_vm_t vm);
 XBT_PUBLIC void MSG_vm_set_ramsize(msg_vm_t vm, size_t size);

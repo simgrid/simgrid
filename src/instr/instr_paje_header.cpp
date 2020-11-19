@@ -45,7 +45,7 @@ void dump_comment_file(const std::string& filename)
 void dump_header(bool basic, bool display_sizes)
 {
   // Types
-  tracing_file << "%EventDef PajeDefineContainerType " << PAJE_DefineContainerType << std::endl;
+  tracing_file << "%EventDef PajeDefineContainerType " << PajeEventType::DefineContainerType << std::endl;
   tracing_file << "%       Alias string" << std::endl;
   if (basic)
     tracing_file << "%       ContainerType string" << std::endl;
@@ -55,26 +55,26 @@ void dump_header(bool basic, bool display_sizes)
   tracing_file << "%       Name string" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajeDefineVariableType " << PAJE_DefineVariableType << std::endl;
+  tracing_file << "%EventDef PajeDefineVariableType " << PajeEventType::DefineVariableType << std::endl;
   tracing_file << "%       Alias string" << std::endl;
   tracing_file << "%       " << (basic ? "Container" : "") << "Type string" << std::endl;
   tracing_file << "%       Name string" << std::endl;
   tracing_file << "%       Color color" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajeDefineStateType " << PAJE_DefineStateType << std::endl;
+  tracing_file << "%EventDef PajeDefineStateType " << PajeEventType::DefineStateType << std::endl;
   tracing_file << "%       Alias string" << std::endl;
   tracing_file << "%       " << (basic ? "Container" : "") << "Type string" << std::endl;
   tracing_file << "%       Name string" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajeDefineEventType " << PAJE_DefineEventType << std::endl;
+  tracing_file << "%EventDef PajeDefineEventType " << PajeEventType::DefineEventType << std::endl;
   tracing_file << "%       Alias string" << std::endl;
   tracing_file << "%       " << (basic ? "Container" : "") << "Type string" << std::endl;
   tracing_file << "%       Name string" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajeDefineLinkType " << PAJE_DefineLinkType << std::endl;
+  tracing_file << "%EventDef PajeDefineLinkType " << PajeEventType::DefineLinkType << std::endl;
   tracing_file << "%       Alias string" << std::endl;
   tracing_file << "%       " << (basic ? "Container" : "") << "Type string" << std::endl;
   tracing_file << "%       " << (basic ? "Source" : "Start") << "ContainerType string" << std::endl;
@@ -83,7 +83,7 @@ void dump_header(bool basic, bool display_sizes)
   tracing_file << "%EndEventDef" << std::endl;
 
   // EntityValue
-  tracing_file << "%EventDef PajeDefineEntityValue " << PAJE_DefineEntityValue << std::endl;
+  tracing_file << "%EventDef PajeDefineEntityValue " << PajeEventType::DefineEntityValue << std::endl;
   tracing_file << "%       Alias string" << std::endl;
   tracing_file << "%       " << (basic ? "Entity" : "") << "Type string" << std::endl;
   tracing_file << "%       Name string" << std::endl;
@@ -91,7 +91,7 @@ void dump_header(bool basic, bool display_sizes)
   tracing_file << "%EndEventDef" << std::endl;
 
   // Container
-  tracing_file << "%EventDef PajeCreateContainer " << PAJE_CreateContainer << std::endl;
+  tracing_file << "%EventDef PajeCreateContainer " << PajeEventType::CreateContainer << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Alias string" << std::endl;
   tracing_file << "%       Type string" << std::endl;
@@ -99,28 +99,28 @@ void dump_header(bool basic, bool display_sizes)
   tracing_file << "%       Name string" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajeDestroyContainer " << PAJE_DestroyContainer << std::endl;
+  tracing_file << "%EventDef PajeDestroyContainer " << PajeEventType::DestroyContainer << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Name string" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
   // Variable
-  tracing_file << "%EventDef PajeSetVariable " << PAJE_SetVariable << std::endl;
+  tracing_file << "%EventDef PajeSetVariable " << PajeEventType::SetVariable << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;
   tracing_file << "%       Value double" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajeAddVariable " << PAJE_AddVariable << std::endl;
+  tracing_file << "%EventDef PajeAddVariable " << PajeEventType::AddVariable << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;
   tracing_file << "%       Value double" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajeSubVariable " << PAJE_SubVariable << std::endl;
+  tracing_file << "%EventDef PajeSubVariable " << PajeEventType::SubVariable << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;
@@ -128,14 +128,14 @@ void dump_header(bool basic, bool display_sizes)
   tracing_file << "%EndEventDef" << std::endl;
 
   // State
-  tracing_file << "%EventDef PajeSetState " << PAJE_SetState << std::endl;
+  tracing_file << "%EventDef PajeSetState " << PajeEventType::SetState << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;
   tracing_file << "%       Value string" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajePushState " << PAJE_PushState << std::endl;
+  tracing_file << "%EventDef PajePushState " << PajeEventType::PushState << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;
@@ -151,14 +151,14 @@ void dump_header(bool basic, bool display_sizes)
 #endif
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajePopState " << PAJE_PopState << std::endl;
+  tracing_file << "%EventDef PajePopState " << PajeEventType::PopState << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
   if (not basic) {
-    tracing_file << "%EventDef PajeResetState " << PAJE_ResetState << std::endl;
+    tracing_file << "%EventDef PajeResetState " << PajeEventType::ResetState << std::endl;
     tracing_file << "%       Time date" << std::endl;
     tracing_file << "%       Type string" << std::endl;
     tracing_file << "%       Container string" << std::endl;
@@ -166,7 +166,7 @@ void dump_header(bool basic, bool display_sizes)
   }
 
   // Link
-  tracing_file << "%EventDef PajeStartLink " << PAJE_StartLink << std::endl;
+  tracing_file << "%EventDef PajeStartLink " << PajeEventType::StartLink << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;
@@ -177,7 +177,7 @@ void dump_header(bool basic, bool display_sizes)
     tracing_file << "%       Size int" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 
-  tracing_file << "%EventDef PajeEndLink " << PAJE_EndLink << std::endl;
+  tracing_file << "%EventDef PajeEndLink " << PajeEventType::EndLink << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;
@@ -187,7 +187,7 @@ void dump_header(bool basic, bool display_sizes)
   tracing_file << "%EndEventDef" << std::endl;
 
   // Event
-  tracing_file << "%EventDef PajeNewEvent " << PAJE_NewEvent << std::endl;
+  tracing_file << "%EventDef PajeNewEvent " << PajeEventType::NewEvent << std::endl;
   tracing_file << "%       Time date" << std::endl;
   tracing_file << "%       Type string" << std::endl;
   tracing_file << "%       Container string" << std::endl;

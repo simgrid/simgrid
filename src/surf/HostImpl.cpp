@@ -113,7 +113,7 @@ std::vector<s4u::Disk*> HostImpl::get_disks() const
 
 void HostImpl::set_disks(const std::vector<kernel::resource::DiskImpl*>& disks, s4u::Host* host)
 {
-  disks_ = std::move(disks);
+  disks_ = disks;
   for (auto d : disks_)
     d->set_host(host);
 }

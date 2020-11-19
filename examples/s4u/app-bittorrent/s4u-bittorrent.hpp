@@ -23,49 +23,23 @@ constexpr int MAX_UNCHOKED_PEERS = 4;
 /** Interval between each update of the choked peers */
 constexpr int UPDATE_CHOKED_INTERVAL = 30;
 
-/** Message sizes
- * Sizes based on report by A. Legout et al, Understanding BitTorrent: An Experimental Perspective
- * http://hal.inria.fr/inria-00000156/en
- */
-constexpr unsigned MESSAGE_HANDSHAKE_SIZE     = 68;
-constexpr unsigned MESSAGE_CHOKE_SIZE         = 5;
-constexpr unsigned MESSAGE_UNCHOKE_SIZE       = 5;
-constexpr unsigned MESSAGE_INTERESTED_SIZE    = 5;
-constexpr unsigned MESSAGE_NOTINTERESTED_SIZE = 5;
-constexpr unsigned MESSAGE_HAVE_SIZE          = 9;
-constexpr unsigned MESSAGE_BITFIELD_SIZE      = 5;
-constexpr unsigned MESSAGE_REQUEST_SIZE       = 17;
-constexpr unsigned MESSAGE_PIECE_SIZE         = 13;
-constexpr unsigned MESSAGE_CANCEL_SIZE        = 17;
-
 /** Types of messages exchanged between two peers. */
-enum e_message_type {
-  MESSAGE_HANDSHAKE,
-  MESSAGE_CHOKE,
-  MESSAGE_UNCHOKE,
-  MESSAGE_INTERESTED,
-  MESSAGE_NOTINTERESTED,
-  MESSAGE_HAVE,
-  MESSAGE_BITFIELD,
-  MESSAGE_REQUEST,
-  MESSAGE_PIECE,
-  MESSAGE_CANCEL
-};
+enum class MessageType { HANDSHAKE, CHOKE, UNCHOKE, INTERESTED, NOTINTERESTED, HAVE, BITFIELD, REQUEST, PIECE, CANCEL };
 
 class Message {
 public:
-  e_message_type type;
+  MessageType type;
   int peer_id;
   simgrid::s4u::Mailbox* return_mailbox;
   unsigned int bitfield = 0U;
   int piece             = 0;
   int block_index       = 0;
   int block_length      = 0;
-  Message(e_message_type type, int peer_id, simgrid::s4u::Mailbox* return_mailbox)
+  Message(MessageType type, int peer_id, simgrid::s4u::Mailbox* return_mailbox)
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox){};
-  Message(e_message_type type, int peer_id, unsigned int bitfield, simgrid::s4u::Mailbox* return_mailbox)
+  Message(MessageType type, int peer_id, unsigned int bitfield, simgrid::s4u::Mailbox* return_mailbox)
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox), bitfield(bitfield){};
-  Message(e_message_type type, int peer_id, simgrid::s4u::Mailbox* return_mailbox, int piece, int block_index,
+  Message(MessageType type, int peer_id, simgrid::s4u::Mailbox* return_mailbox, int piece, int block_index,
           int block_length)
       : type(type)
       , peer_id(peer_id)
@@ -73,7 +47,7 @@ public:
       , piece(piece)
       , block_index(block_index)
       , block_length(block_length){};
-  Message(e_message_type type, int peer_id, simgrid::s4u::Mailbox* return_mailbox, int piece)
+  Message(MessageType type, int peer_id, simgrid::s4u::Mailbox* return_mailbox, int piece)
       : type(type), peer_id(peer_id), return_mailbox(return_mailbox), piece(piece){};
 };
 

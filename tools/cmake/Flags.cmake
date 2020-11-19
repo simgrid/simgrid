@@ -22,14 +22,17 @@ if(enable_compile_warnings)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
   endif()
   if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    # ignore remark  #1418: external function definition with no prior declaration
-    # 2196: routine is both "inline" and "noinline"
-    # 3179: deprecated conversion of string literal to char* (should be const char*)
+    # ignore remarks:
     # 191: type qualifier is meaningless on cast type
+    # 1418: external function definition with no prior declaration
+    # 2196: routine is both "inline" and "noinline"
+    # 2651: attribute does not apply to any entity
+    # 3179: deprecated conversion of string literal to char* (should be const char*)
+    # set as warning:
     # 597: entity-kind "entity" will not be called for implicit or explicit conversions
     # 2330: argument of type "type" is incompatible with parameter of type "type" (dropping qualifiers)
     # 11003: no IR in object file xxxx; was the source file compiled with xxxx
-    set(warnCFLAGS "${warnCFLAGS} -diag-disable=1418,191,2196,3179 -diag-warning=2330,597,11003")
+    set(warnCFLAGS "${warnCFLAGS} -diag-disable=191,1418,2196,2651,3179 -diag-warning=597,2330,11003")
   endif()
 
   set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")

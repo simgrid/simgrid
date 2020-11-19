@@ -415,15 +415,15 @@ sg_vm_t MSG_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
 {
   return sg_vm_create_multicore(pm, name, coreAmount);
 }
-int MSG_vm_is_created(sg_vm_t vm)
+int MSG_vm_is_created(const_sg_vm_t vm)
 {
   return sg_vm_is_created(vm);
 }
-int MSG_vm_is_running(sg_vm_t vm)
+int MSG_vm_is_running(const_sg_vm_t vm)
 {
   return sg_vm_is_running(vm);
 }
-int MSG_vm_is_suspended(sg_vm_t vm)
+int MSG_vm_is_suspended(const_sg_vm_t vm)
 {
   return sg_vm_is_suspended(vm);
 }
