@@ -141,8 +141,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {
       SIMIX_run_blocking(simgrid::simix::unmarshal<std::function<void()> const*>(simcall_.args_[0]));
       break;
 
-    case NUM_SIMCALLS:
-      break;
     case SIMCALL_NONE:
       throw std::invalid_argument(simgrid::xbt::string_printf("Asked to do the noop syscall on %s@%s",
                                                               get_cname(),

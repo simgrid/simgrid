@@ -303,8 +303,9 @@ if __name__ == '__main__':
 
     handle(fd, Simcall.enum, simcalls, simcalls_dict)
 
-    fd.write('  NUM_SIMCALLS\n')
     fd.write('};\n')
+    fd.write('\n')
+    fd.write('constexpr int NUM_SIMCALLS = ' + str(1 + len(simcalls)) + ';\n');
     fd.close()
 
     #
@@ -351,8 +352,6 @@ if __name__ == '__main__':
 
     handle(fd, Simcall.case, simcalls, simcalls_dict)
 
-    fd.write('    case NUM_SIMCALLS:\n')
-    fd.write('      break;\n')
     fd.write('    case SIMCALL_NONE:\n')
     fd.write('      throw std::invalid_argument(simgrid::xbt::string_printf("Asked to do the noop syscall on %s@%s",\n')
     fd.write('                                                              get_cname(),\n')
