@@ -117,7 +117,7 @@ template <class T>
 void bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description)
 {
   bind_flag(value, name, description);
-  alias(name, std::move(aliases));
+  alias(name, aliases);
 }
 
 /** Bind a variable to configuration flag
@@ -146,7 +146,7 @@ typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declv
 bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description, F callback)
 {
   bind_flag(value, name, description, std::move(callback));
-  alias(name, std::move(aliases));
+  alias(name, aliases);
 }
 
 template <class T, class F>
@@ -177,7 +177,7 @@ bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases
           const std::map<T, std::string>& valid_values, F callback)
 {
   bind_flag(value, name, description, valid_values, std::move(callback));
-  alias(name, std::move(aliases));
+  alias(name, aliases);
 }
 
 /** Bind a variable to configuration flag
@@ -228,7 +228,7 @@ public:
   Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value)
       : value_(value), name_(name)
   {
-    simgrid::config::bind_flag(value_, name, std::move(aliases), desc);
+    simgrid::config::bind_flag(value_, name, aliases, desc);
   }
 
   /* A constructor accepting a callback that will be passed the parameter.
@@ -243,7 +243,7 @@ public:
   Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value, F callback)
       : value_(value), name_(name)
   {
-    simgrid::config::bind_flag(value_, name, std::move(aliases), desc, std::move(callback));
+    simgrid::config::bind_flag(value_, name, aliases, desc, std::move(callback));
   }
 
   /* A constructor accepting a map of valid values -> their description,
@@ -262,7 +262,7 @@ public:
        const std::map<T, std::string>& valid_values, F callback)
       : value_(value), name_(name)
   {
-    simgrid::config::bind_flag(value_, name, std::move(aliases), desc, valid_values, std::move(callback));
+    simgrid::config::bind_flag(value_, name, aliases, desc, valid_values, std::move(callback));
   }
 
   // No copy:
