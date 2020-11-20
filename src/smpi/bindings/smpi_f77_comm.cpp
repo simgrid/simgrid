@@ -8,6 +8,8 @@
 #include "smpi_errhandler.hpp"
 #include "smpi_info.hpp"
 
+#include <string>
+
 extern "C" { // This should really use the C linkage to be usable from Fortran
 
 void mpi_comm_rank_(int* comm, int* rank, int* ierr) {
@@ -146,11 +148,8 @@ void mpi_comm_set_name_ (int* comm, char* name, int* ierr){
  int count;
  for(count=MPI_MAX_OBJECT_NAME-1; count>=0 && name[count]==' '; count--);
  count+=1;
- char* tname = xbt_new(char, count+1);
- strncpy(tname, name, count);
- tname[count]='\0';
- *ierr = MPI_Comm_set_name (simgrid::smpi::Comm::f2c(*comm), tname);
- xbt_free(tname);
+ std::string tname(name, count);
+ *ierr = MPI_Comm_set_name(simgrid::smpi::Comm::f2c(*comm), tname.c_str());
 }
 
 void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr){

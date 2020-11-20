@@ -16,6 +16,7 @@
 #include "xbt/system_error.hpp"
 
 #include <memory>
+#include <string>
 
 #include <fcntl.h>
 #ifdef __linux__
@@ -50,10 +51,7 @@ template <class Code> void run_child_process(int socket, Code code)
   // modifying its .got.plt during snapshot.
   setenv("LC_BIND_NOW", "1", 1);
 
-  char buffer[64];
-  int res = std::snprintf(buffer, sizeof(buffer), "%i", socket);
-  xbt_assert((size_t)res < sizeof(buffer) && res != -1);
-  setenv(MC_ENV_SOCKET_FD, buffer, 1);
+  setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
 
   code();
 }

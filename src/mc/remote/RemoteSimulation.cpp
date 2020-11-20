@@ -17,6 +17,7 @@
 #include <sys/mman.h> // PROT_*
 
 #include <memory>
+#include <string>
 
 using simgrid::mc::remote;
 
@@ -214,14 +215,8 @@ static void zero_buffer_init()
 
 int open_vm(pid_t pid, int flags)
 {
-  const size_t buffer_size = 30;
-  char buffer[buffer_size];
-  int res = snprintf(buffer, buffer_size, "/proc/%lli/mem", (long long)pid);
-  if (res < 0 || (size_t)res >= buffer_size) {
-    errno = ENAMETOOLONG;
-    return -1;
-  }
-  return open(buffer, flags);
+  std::string buffer = "/proc/" + std::to_string(pid) + "/mem";
+  return open(buffer.c_str(), flags);
 }
 
 // ***** RemoteSimulation

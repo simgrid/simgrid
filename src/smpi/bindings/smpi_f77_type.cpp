@@ -7,6 +7,8 @@
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 
+#include <string>
+
 extern "C" { // This should really use the C linkage to be usable from Fortran
 
 void mpi_type_extent_(int* datatype, MPI_Aint * extent, int* ierr){
@@ -42,12 +44,10 @@ void mpi_type_dup_ (int*  datatype, int* newdatatype, int* ierr){
  }
 }
 
-void mpi_type_set_name_ (int*  datatype, char * name, int* ierr, int size){
- char* tname = xbt_new(char, size+1);
- strncpy(tname, name, size);
- tname[size]='\0';
- *ierr = MPI_Type_set_name(simgrid::smpi::Datatype::f2c(*datatype), tname);
- xbt_free(tname);
+void mpi_type_set_name_(int* datatype, char* name, int* ierr, int size)
+{
+  std::string tname(name, size);
+  *ierr = MPI_Type_set_name(simgrid::smpi::Datatype::f2c(*datatype), tname.c_str());
 }
 
 void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr){
