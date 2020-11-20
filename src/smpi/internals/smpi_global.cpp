@@ -434,8 +434,9 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
       // get library name from path
       std::string fullpath = libname;
 #if not defined(__APPLE__) && not defined(__HAIKU__)
-      xbt_assert(0 != dl_iterate_phdr(visit_libs, &fullpath),
-                 "Can't find a linked %s - check your settings in smpi/privatize-libs", fullpath.c_str());
+      XBT_ATTRIB_UNUSED int dl_iterate_res = dl_iterate_phdr(visit_libs, &fullpath);
+      xbt_assert(dl_iterate_res != 0, "Can't find a linked %s - check your settings in smpi/privatize-libs",
+                 fullpath.c_str());
       XBT_DEBUG("Extra lib to privatize '%s' found", fullpath.c_str());
 #else
       xbt_die("smpi/privatize-libs is not (yet) compatible with OSX nor with Haiku");
@@ -474,13 +475,13 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
           unsigned int pad = 7;
           if (libname.length() < pad)
             pad = libname.length();
-          std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" +
-              std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
+          std::string target_libname = std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
+          std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" + target_libname;
           target_libs.push_back(target_lib);
           XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
           smpi_copy_file(libpath, target_lib, fdin_size2);
 
-          std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_lib + "/g' " + target_executable;
+          std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_libname + "/g' " + target_executable;
           int status             = system(sedcommand.c_str());
           xbt_assert(status == 0, "error while applying sed command %s \n", sedcommand.c_str());
         }

@@ -38,5 +38,6 @@ enum e_smx_simcall_t {
   SIMCALL_MC_RANDOM,
   SIMCALL_RUN_KERNEL,
   SIMCALL_RUN_BLOCKING,
-  NUM_SIMCALLS
 };
+
+constexpr int NUM_SIMCALLS = 20;
