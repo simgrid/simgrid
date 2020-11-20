@@ -233,7 +233,6 @@ MPI_Comm Comm::split(int color, int key)
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->split(color, key);
   int system_tag = -123;
-  int* recvbuf;
 
   MPI_Group group_root = nullptr;
   MPI_Group group_out  = nullptr;
@@ -242,15 +241,13 @@ MPI_Comm Comm::split(int color, int key)
   int size             = this->size();
   /* Gather all colors and keys on rank 0 */
   const std::array<int, 2> sendbuf = {{color, key}};
-  if (myrank == 0) {
-    recvbuf = xbt_new(int, 2 * size);
-  } else {
-    recvbuf = nullptr;
-  }
-  gather__default(sendbuf.data(), 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
+  std::vector<int> recvbuf;
+  if (myrank == 0)
+    recvbuf.resize(2 * size);
+  gather__default(sendbuf.data(), 2, MPI_INT, recvbuf.data(), 2, MPI_INT, 0, this);
   /* Do the actual job */
   if (myrank == 0) {
-    MPI_Group* group_snd = xbt_new(MPI_Group, size);
+    std::vector<MPI_Group> group_snd(size);
     std::vector<std::pair<int, int>> rankmap;
     rankmap.reserve(size);
     for (int i = 0; i < size; i++) {
@@ -274,7 +271,7 @@ MPI_Comm Comm::split(int color, int key)
           s4u::Actor* actor = group->actor(rankmap[j].second);
           group_out->set_mapping(actor, j);
         }
-        MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
+        std::vector<MPI_Request> requests(rankmap.size());
         int reqs              = 0;
         for (auto const& rank : rankmap) {
           if (rank.second != 0) {
@@ -286,12 +283,9 @@ MPI_Comm Comm::split(int color, int key)
         if(i != 0 && group_out != MPI_COMM_WORLD->group() && group_out != MPI_GROUP_EMPTY)
           Group::unref(group_out);
 
-        Request::waitall(reqs, requests, MPI_STATUS_IGNORE);
-        xbt_free(requests);
+        Request::waitall(reqs, requests.data(), MPI_STATUS_IGNORE);
       }
     }
-    xbt_free(recvbuf);
-    xbt_free(group_snd);
     group_out = group_root; /* exit with root's group */
   } else {
     if(color != MPI_UNDEFINED) {
