@@ -192,7 +192,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
 
     char* remote_name = mc_model_checker->get_remote_simulation().read<char*>(RemotePtr<char*>(
         (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->name_ : &synchro->mbox_cpy->name_)));
-    pattern->rdv      = mc_model_checker->get_remote_simulation().read_string(RemotePtr<char>(remote_name));
+    // pattern->rdv      = mc_model_checker->get_remote_simulation().read_string(RemotePtr<char>(remote_name));
+    pattern->rdv      = mc_api::get().get_pattern_comm_rdv(pattern->comm_addr);
     pattern->src_proc =
         mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(synchro->src_actor_.get()))->get_pid();
     pattern->src_host = MC_smx_actor_get_host_name(issuer);

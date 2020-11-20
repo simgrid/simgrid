@@ -1,11 +1,13 @@
 #include "mc_api.hpp"
 
+#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/mc_pattern.hpp"
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
@@ -205,6 +207,18 @@ void mc_api::copy_incomplete_comm_pattern(const simgrid::mc::State* state) const
 void mc_api::copy_index_comm_pattern(const simgrid::mc::State* state) const
 {
   MC_state_copy_index_communications_pattern((simgrid::mc::State*)state);
+}
+
+std::string mc_api::get_pattern_comm_rdv(void* addr) const
+{
+  Remote<kernel::activity::CommImpl> temp_synchro;
+  mc_model_checker->get_remote_simulation().read(temp_synchro, remote((simgrid::kernel::activity::CommImpl*)addr));
+  const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
+
+  char* remote_name = mc_model_checker->get_remote_simulation().read<char*>(RemotePtr<char*>(
+      (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->get_name() : &synchro->mbox_cpy->get_name())));
+  auto rdv = mc_model_checker->get_remote_simulation().read_string(RemotePtr<char>(remote_name));
+  return rdv;
 }
 
 std::size_t mc_api::get_remote_heap_bytes() const

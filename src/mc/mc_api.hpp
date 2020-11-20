@@ -46,6 +46,7 @@ public:
   // COMM FUNCTIONS
   void copy_incomplete_comm_pattern(const simgrid::mc::State* state) const;
   void copy_index_comm_pattern(const simgrid::mc::State* state) const;
+  std::string get_pattern_comm_rdv(void* addr) const;
 
   // REMOTE
   std::size_t get_remote_heap_bytes() const;
