@@ -241,16 +241,13 @@ MPI_Comm Comm::split(int color, int key)
   int myrank           = this->rank();
   int size             = this->size();
   /* Gather all colors and keys on rank 0 */
-  int* sendbuf = xbt_new(int, 2);
-  sendbuf[0] = color;
-  sendbuf[1] = key;
+  const std::array<int, 2> sendbuf = {{color, key}};
   if (myrank == 0) {
     recvbuf = xbt_new(int, 2 * size);
   } else {
     recvbuf = nullptr;
   }
-  gather__default(sendbuf, 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
-  xbt_free(sendbuf);
+  gather__default(sendbuf.data(), 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
   /* Do the actual job */
   if (myrank == 0) {
     MPI_Group* group_snd = xbt_new(MPI_Group, size);

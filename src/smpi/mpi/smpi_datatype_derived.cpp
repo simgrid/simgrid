@@ -8,6 +8,7 @@
 #include "smpi_op.hpp"
 #include <xbt/log.h>
 
+#include <array>
 #include <cstring>
 
 namespace simgrid{
@@ -58,8 +59,8 @@ void Type_Contiguous::unserialize(const void* contiguous_buf, void* noncontiguou
 }
 
 Type_Hvector::Type_Hvector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int block_length, MPI_Aint stride, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_length_(block_length), block_stride_(stride), old_type_(old_type){
-  int ints[2] = {count, block_length};
-  contents_ = new Datatype_contents(MPI_COMBINER_HVECTOR, 2, ints, 1, &stride, 1, &old_type);
+  const std::array<int, 2> ints = {{count, block_length}};
+  contents_                     = new Datatype_contents(MPI_COMBINER_HVECTOR, 2, ints.data(), 1, &stride, 1, &old_type);
   old_type->ref();
 }
 Type_Hvector::~Type_Hvector(){
@@ -116,8 +117,8 @@ Type_Vector::Type_Vector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
     : Type_Hvector(size, lb, ub, flags, count, block_length, stride * old_type->get_extent(), old_type)
 {
   delete contents_;
-  int ints[3] = {count, block_length, stride};
-  contents_ = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints, 0, nullptr, 1, &old_type);
+  const std::array<int, 3> ints = {{count, block_length, stride}};
+  contents_                     = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints.data(), 0, nullptr, 1, &old_type);
 }
 
 int Type_Vector::clone(MPI_Datatype* type)
