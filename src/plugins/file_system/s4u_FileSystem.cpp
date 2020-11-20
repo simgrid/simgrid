@@ -463,15 +463,14 @@ int File::remote_copy(sg_host_t host, const std::string& fullpath)
   }
 
   /* Create file on remote host, write it and close it */
-  auto* fd = new File(fullpath, dst_host, nullptr);
+  File fd(fullpath, dst_host, nullptr);
   if (local_storage_) {
-    sg_size_t write_size = fd->local_storage_->write(read_size);
-    fd->local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
-    (*(fd->local_storage_->extension<FileSystemStorageExt>()->get_content()))[path_] = size_;
+    sg_size_t write_size = fd.local_storage_->write(read_size);
+    fd.local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
+    (*(fd.local_storage_->extension<FileSystemStorageExt>()->get_content()))[path_] = size_;
   }
   if (local_disk_)
-    fd->write(read_size);
-  delete fd;
+    fd.write(read_size);
   return 0;
 }
 

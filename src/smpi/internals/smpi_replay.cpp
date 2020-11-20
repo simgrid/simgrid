@@ -821,15 +821,14 @@ void smpi_replay_main(int rank, const char* trace_filename)
   unsigned int count_requests = storage[simgrid::s4u::this_actor::get_pid()].size();
   XBT_DEBUG("There are %ud elements in reqq[*]", count_requests);
   if (count_requests > 0) {
-    auto* requests = new MPI_Request[count_requests];
+    std::vector<MPI_Request> requests(count_requests);
     unsigned int i=0;
 
     for (auto const& pair : storage[simgrid::s4u::this_actor::get_pid()].get_store()) {
       requests[i] = pair.second;
       i++;
     }
-    simgrid::smpi::Request::waitall(count_requests, requests, MPI_STATUSES_IGNORE);
-    delete[] requests;
+    simgrid::smpi::Request::waitall(count_requests, requests.data(), MPI_STATUSES_IGNORE);
   }
   active_processes--;
 

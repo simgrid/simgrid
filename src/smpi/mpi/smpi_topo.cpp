@@ -92,8 +92,8 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
 
 Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   int oldNDims = ndims_;
-  int *newDims = nullptr;
-  int *newPeriodic = nullptr;
+  std::vector<int> newDims;
+  std::vector<int> newPeriodic;
 
   if (remain_dims == nullptr && oldNDims != 0) {
     return nullptr;
@@ -105,8 +105,8 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   }
 
   if (newNDims > 0) {
-    newDims     = new int[newNDims];
-    newPeriodic = new int[newNDims];
+    newDims.resize(newNDims);
+    newPeriodic.resize(newNDims);
 
     // that should not segfault
     int j = 0;
@@ -128,16 +128,14 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   }
   Topo_Cart* res;
   if (newNDims == 0){
-    res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, newcomm);
+    res = new Topo_Cart(getComm(), newNDims, newDims.data(), newPeriodic.data(), 0, newcomm);
   } else {
     *newcomm = getComm()->split(color, getComm()->rank());
-    auto topo = std::make_shared<Topo_Cart>(getComm(), newNDims, newDims, newPeriodic, 0, nullptr);
+    auto topo = std::make_shared<Topo_Cart>(getComm(), newNDims, newDims.data(), newPeriodic.data(), 0, nullptr);
     res       = topo.get();
     res->setComm(*newcomm);
     (*newcomm)->set_topo(topo);
   }
-  delete[] newDims;
-  delete[] newPeriodic;
   return res;
 }
 
@@ -207,34 +205,33 @@ int Topo_Cart::shift(int direction, int disp, int* rank_source, int* rank_dest)
     return MPI_ERR_DIMS;
   }
 
-  auto* position = new int[ndims_];
-  this->coords(getComm()->rank(), ndims_, position);
+  std::vector<int> position(ndims_);
+  this->coords(getComm()->rank(), ndims_, position.data());
   position[direction] += disp;
 
   if(position[direction] < 0 ||
       position[direction] >=dims_[direction]) {
     if(periodic_[direction]) {
       position[direction] %=dims_[direction];
-      this->rank(position, rank_dest);
+      this->rank(position.data(), rank_dest);
     } else {
       *rank_dest = MPI_PROC_NULL;
     }
   } else {
-    this->rank(position, rank_dest);
+    this->rank(position.data(), rank_dest);
   }
 
   position[direction] = position_[direction] - disp;
   if(position[direction] < 0 || position[direction] >=dims_[direction]) {
     if(periodic_[direction]) {
       position[direction] %=dims_[direction];
-      this->rank(position, rank_source);
+      this->rank(position.data(), rank_source);
     } else {
       *rank_source = MPI_PROC_NULL;
     }
   } else {
-    this->rank(position, rank_source);
+    this->rank(position.data(), rank_source);
   }
-  delete[] position;
   return MPI_SUCCESS;
 }
 

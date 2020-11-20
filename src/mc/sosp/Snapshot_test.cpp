@@ -158,15 +158,14 @@ void snap_test_helper::read_pointer()
 {
   prologue_return ret = prologue(1);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
-  const simgrid::mc::Region* region2 = new simgrid::mc::Region(simgrid::mc::RegionType::Data, ret.src, ret.size);
+  const simgrid::mc::Region region2(simgrid::mc::RegionType::Data, ret.src, ret.size);
   INFO("Mismtach in MC_region_read_pointer()");
-  REQUIRE(MC_region_read_pointer(region2, ret.src) == mc_model_checker);
+  REQUIRE(MC_region_read_pointer(&region2, ret.src) == mc_model_checker);
 
   munmap(ret.dstn, ret.size);
   munmap(ret.src, ret.size);
   delete ret.region0;
   delete ret.region;
-  delete region2;
 }
 
 /*************** End: class snap_test_helper *****************************/

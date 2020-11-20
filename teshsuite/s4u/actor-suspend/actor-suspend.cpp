@@ -50,15 +50,15 @@ public:
 
 int main(int argc, char** argv)
 {
-  const simgrid::s4u::Engine* engine = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine engine(&argc, argv);
 
-  engine->load_platform(argv[1]);
+  engine.load_platform(argv[1]);
   simgrid::s4u::Host* host = simgrid::s4u::Host::by_name("Tremblay");
 
   simgrid::s4u::Actor::create("Suspender", host, Suspender());
   receiver = simgrid::s4u::Actor::create("Receiver", host, Receiver());
 
-  engine->run();
+  engine.run();
 
   return 0;
 }

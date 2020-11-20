@@ -132,14 +132,13 @@ void mpi_type_create_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* 
 
 void mpi_type_hindexed_ (int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  auto* indices_aint = new MPI_Aint[*count];
+  std::vector<MPI_Aint> indices_aint(*count);
   for(int i=0; i<*count; i++)
     indices_aint[i]=indices[i];
-  *ierr = MPI_Type_hindexed(*count, blocklens, indices_aint, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
+  *ierr = MPI_Type_hindexed(*count, blocklens, indices_aint.data(), simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
-  delete[] indices_aint;
 }
 
 void mpi_type_create_hindexed_(int* count, int* blocklens, MPI_Aint* indices, int* old_type, int*  newtype, int* ierr){

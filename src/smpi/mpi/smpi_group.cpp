@@ -207,20 +207,17 @@ int Group::excl(int n, const int *ranks, MPI_Group * newgroup){
   int oldsize = size_;
   int newsize = oldsize - n;
   *newgroup = new  Group(newsize);
-  auto* to_exclude = new int[size_];
-  for (int i     = 0; i < oldsize; i++)
-    to_exclude[i]=0;
-  for (int i            = 0; i < n; i++)
-    to_exclude[ranks[i]]=1;
+  std::vector<bool> to_exclude(size_, false);
+  for (int i = 0; i < n; i++)
+    to_exclude[ranks[i]] = true;
   int j = 0;
   for (int i = 0; i < oldsize; i++) {
-    if(to_exclude[i]==0){
+    if (not to_exclude[i]) {
       s4u::Actor* actor = this->actor(i);
       (*newgroup)->set_mapping(actor, j);
       j++;
     }
   }
-  delete[] to_exclude;
   return MPI_SUCCESS;
 }
 
