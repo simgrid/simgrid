@@ -660,6 +660,7 @@ set(MC_SRC
   src/mc/Session.hpp
   src/mc/mc_comm_pattern.cpp
   src/mc/mc_comm_pattern.hpp
+  src/mc/mc_pattern.hpp
   src/mc/compare.cpp
   src/mc/mc_api.cpp
   src/mc/mc_api.hpp
