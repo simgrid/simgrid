@@ -67,7 +67,7 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
   // Store region page(s):
   size_t byte_size = n * xbt_pagesize;
   void* source     = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  INFO("Could not allocate source memory")
+  INFO("Could not allocate source memory");
   REQUIRE(source != MAP_FAILED);
 
   // Init memory and take snapshots:
@@ -80,7 +80,7 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   INFO("Could not allocate destination memory");
-  REQUIRE(source != MAP_FAILED);
+  REQUIRE(destination != MAP_FAILED);
 
   return {.size = byte_size, .src = source, .dstn = destination, .region0 = region0, .region = region};
 }
