@@ -31,67 +31,65 @@ static void test1()
   double a = 1.0;
   double b = 10.0;
 
-  lmm::System* Sys    = lmm::make_new_maxmin_system(false);
-  lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
-  lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
-  lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
+  lmm::System Sys(false);
+  lmm::Constraint* L1 = Sys.constraint_new(nullptr, a);
+  lmm::Constraint* L2 = Sys.constraint_new(nullptr, b);
+  lmm::Constraint* L3 = Sys.constraint_new(nullptr, a);
 
-  lmm::Variable* R_1_2_3 = Sys->variable_new(nullptr, 1.0, -1.0, 3);
-  lmm::Variable* R_1     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  lmm::Variable* R_2     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  lmm::Variable* R_3     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* R_1_2_3 = Sys.variable_new(nullptr, 1.0, -1.0, 3);
+  lmm::Variable* R_1     = Sys.variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* R_2     = Sys.variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* R_3     = Sys.variable_new(nullptr, 1.0, -1.0, 1);
 
-  Sys->update_variable_penalty(R_1_2_3, 1.0);
-  Sys->update_variable_penalty(R_1, 1.0);
-  Sys->update_variable_penalty(R_2, 1.0);
-  Sys->update_variable_penalty(R_3, 1.0);
+  Sys.update_variable_penalty(R_1_2_3, 1.0);
+  Sys.update_variable_penalty(R_1, 1.0);
+  Sys.update_variable_penalty(R_2, 1.0);
+  Sys.update_variable_penalty(R_3, 1.0);
 
-  Sys->expand(L1, R_1_2_3, 1.0);
-  Sys->expand(L2, R_1_2_3, 1.0);
-  Sys->expand(L3, R_1_2_3, 1.0);
+  Sys.expand(L1, R_1_2_3, 1.0);
+  Sys.expand(L2, R_1_2_3, 1.0);
+  Sys.expand(L3, R_1_2_3, 1.0);
 
-  Sys->expand(L1, R_1, 1.0);
-  Sys->expand(L2, R_2, 1.0);
-  Sys->expand(L3, R_3, 1.0);
+  Sys.expand(L1, R_1, 1.0);
+  Sys.expand(L2, R_2, 1.0);
+  Sys.expand(L3, R_3, 1.0);
 
-  Sys->solve();
+  Sys.solve();
 
   PRINT_VAR(R_1_2_3);
   PRINT_VAR(R_1);
   PRINT_VAR(R_2);
   PRINT_VAR(R_3);
 
-  Sys->variable_free(R_1_2_3);
-  Sys->variable_free(R_1);
-  Sys->variable_free(R_2);
-  Sys->variable_free(R_3);
-  delete Sys;
+  Sys.variable_free(R_1_2_3);
+  Sys.variable_free(R_1);
+  Sys.variable_free(R_2);
+  Sys.variable_free(R_3);
 }
 
 static void test2()
 {
-  lmm::System* Sys = lmm::make_new_maxmin_system(false);
+  lmm::System Sys(false);
 
-  lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
-  lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
+  lmm::Constraint* CPU1 = Sys.constraint_new(nullptr, 200.0);
+  lmm::Constraint* CPU2 = Sys.constraint_new(nullptr, 100.0);
 
-  lmm::Variable* T1 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  lmm::Variable* T2 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* T1 = Sys.variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* T2 = Sys.variable_new(nullptr, 1.0, -1.0, 1);
 
-  Sys->update_variable_penalty(T1, 1.0);
-  Sys->update_variable_penalty(T2, 1.0);
+  Sys.update_variable_penalty(T1, 1.0);
+  Sys.update_variable_penalty(T2, 1.0);
 
-  Sys->expand(CPU1, T1, 1.0);
-  Sys->expand(CPU2, T2, 1.0);
+  Sys.expand(CPU1, T1, 1.0);
+  Sys.expand(CPU2, T2, 1.0);
 
-  Sys->solve();
+  Sys.solve();
 
   PRINT_VAR(T1);
   PRINT_VAR(T2);
 
-  Sys->variable_free(T1);
-  Sys->variable_free(T2);
-  delete Sys;
+  Sys.variable_free(T1);
+  Sys.variable_free(T2);
 }
 
 static void test3()
@@ -129,34 +127,33 @@ static void test3()
   A[13][14] =                                        1.0;
   A[14][15] =                                        1.0;
 
-  lmm::System* Sys = lmm::make_new_maxmin_system(false);
+  lmm::System Sys(false);
 
   /* Creates the constraints */
   std::array<lmm::Constraint*, 15> tmp_cnst;
   for (int i = 0; i < 15; i++)
-    tmp_cnst[i] = Sys->constraint_new(nullptr, B[i]);
+    tmp_cnst[i] = Sys.constraint_new(nullptr, B[i]);
 
   /* Creates the variables */
   std::array<lmm::Variable*, 16> tmp_var;
   for (int j = 0; j < 16; j++) {
-    tmp_var[j] = Sys->variable_new(nullptr, 1.0, -1.0, 15);
-    Sys->update_variable_penalty(tmp_var[j], 1.0);
+    tmp_var[j] = Sys.variable_new(nullptr, 1.0, -1.0, 15);
+    Sys.update_variable_penalty(tmp_var[j], 1.0);
   }
 
   /* Link constraints and variables */
   for (int i = 0; i < 15; i++)
     for (int j = 0; j < 16; j++)
       if (A[i][j] != 0.0)
-        Sys->expand(tmp_cnst[i], tmp_var[j], 1.0);
+        Sys.expand(tmp_cnst[i], tmp_var[j], 1.0);
 
-  Sys->solve();
+  Sys.solve();
 
   for (int j = 0; j < 16; j++)
     PRINT_VAR(tmp_var[j]);
 
   for (int j = 0; j < 16; j++)
-    Sys->variable_free(tmp_var[j]);
-  delete Sys;
+    Sys.variable_free(tmp_var[j]);
 }
 
 int main(int argc, char** argv)
