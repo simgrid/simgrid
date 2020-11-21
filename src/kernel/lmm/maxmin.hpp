@@ -560,9 +560,6 @@ private:
   void bottleneck_solve();
 };
 
-XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);
-XBT_PUBLIC System* make_new_fair_bottleneck_system(bool selective_update);
-
 /** @} */
 } // namespace lmm
 } // namespace kernel
