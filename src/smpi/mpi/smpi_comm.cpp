@@ -242,14 +242,9 @@ MPI_Comm Comm::split(int color, int key)
   /* Gather all colors and keys on rank 0 */
   const std::array<int, 2> sendbuf = {{color, key}};
   std::vector<int> recvbuf;
-  int* recvbuf_ptr;
-  if (myrank == 0) {
+  if (myrank == 0)
     recvbuf.resize(2 * size);
-    recvbuf_ptr = recvbuf.data();
-  } else {
-    recvbuf_ptr = nullptr;
-  }
-  gather__default(sendbuf.data(), 2, MPI_INT, recvbuf_ptr, 2, MPI_INT, 0, this);
+  gather__default(sendbuf.data(), 2, MPI_INT, recvbuf.data(), 2, MPI_INT, 0, this);
   /* Do the actual job */
   if (myrank == 0) {
     std::vector<MPI_Group> group_snd(size);
