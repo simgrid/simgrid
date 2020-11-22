@@ -66,7 +66,7 @@ void smpi_execute(double duration)
 void smpi_execute_benched(double duration)
 {
   smpi_bench_end();
-  double speed = sg_host_speed(sg_host_self());
+  double speed = sg_host_get_speed(sg_host_self());
   smpi_execute_flops(duration*speed);
   smpi_bench_begin();
 }

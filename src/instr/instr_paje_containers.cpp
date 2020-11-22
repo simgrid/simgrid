@@ -16,12 +16,6 @@ namespace instr {
 Container* Container::root_container_ = nullptr;              /* the root container */
 std::map<std::string, Container*> Container::all_containers_; /* all created containers indexed by name */
 
-long long int new_paje_id()
-{
-  static long long int type_id = 0;
-  return type_id++;
-}
-
 NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father)
     : Container::Container(name, "", father)
 {
@@ -139,7 +133,6 @@ VariableType* Container::get_variable(const std::string& name)
 EntityValue::EntityValue(const std::string& name, const std::string& color, Type* father)
     : name_(name), color_(color), father_(father)
 {
-  id_ = simgrid::instr::new_paje_id();
   on_creation(*this);
 }
 

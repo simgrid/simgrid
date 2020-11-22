@@ -30,7 +30,7 @@ while i < len(sys.argv):
     else:
         input_filename = sys.argv[i]
     i = i + 1
-if input_filename == None:
+if input_filename is None:
     sys.stderr.write("Missing input file\n")
     sys.exit(1)
 

@@ -24,7 +24,7 @@ static void show_info(unsigned int disk_count, const sg_disk_t* disks)
   for (unsigned int i = 0; i < disk_count; i++) {
     const_sg_disk_t d = disks[i];
     // Retrieve disk's information
-    XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", sg_disk_name(d), sg_disk_get_mount_point(d),
+    XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", sg_disk_get_name(d), sg_disk_get_mount_point(d),
              sg_disk_get_size_used(d), sg_disk_get_size_free(d), sg_disk_get_size(d));
   }
 }
@@ -33,7 +33,7 @@ static void host(int argc, char* argv[])
 {
   unsigned int disk_count;
   sg_disk_t* disks;
-  sg_host_disks(sg_host_self(), &disk_count, &disks);
+  sg_host_get_disks(sg_host_self(), &disk_count, &disks);
 
   show_info(disk_count, disks);
 

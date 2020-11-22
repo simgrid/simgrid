@@ -17,6 +17,7 @@
 #include <sys/mman.h> // PROT_*
 
 #include <memory>
+#include <string>
 
 using simgrid::mc::remote;
 
@@ -60,6 +61,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libcrypt",
     "libcrypto",
     "libcurl",
+    "libcurl-gnutls",
     "libcxxrt",
     "libdebuginfod",
     "libdl",
@@ -67,11 +69,17 @@ static const std::vector<std::string> filtered_libraries = {
     "libelf",
     "libevent",
     "libexecinfo",
+    "libffi",
     "libflang",
     "libflangrti",
     "libgcc_s",
+    "libgmp",
+    "libgnutls",
+    "libgcrypt",
     "libgfortran",
+    "libgpg-error",
     "libgssapi_krb5",
+    "libhogweed",
     "libidn2",
     "libimf",
     "libintlc",
@@ -82,12 +90,16 @@ static const std::vector<std::string> filtered_libraries = {
     "libkrb5support", /*odd behaviour on fedora rawhide ... remove these when fixed*/
     "liblber",
     "libldap",
+    "libldap_r",
     "liblua5.1",
     "liblua5.3",
     "liblzma",
     "libm",
+    "libmd",
+    "libnettle",
     "libnghttp2",
     "libomp",
+    "libp11-kit",
     "libpapi",
     "libpcre2",
     "libpfm",
@@ -97,6 +109,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libquadmath",
     "libresolv",
     "librt",
+    "librtmp",
     "libsasl2",
     "libselinux",
     "libssh",
@@ -104,6 +117,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libssl",
     "libstdc++",
     "libsvml",
+    "libtasn1",
     "libtsan",  /* gcc sanitizers */
     "libubsan", /* gcc sanitizers */
     "libunistring",
@@ -201,14 +215,8 @@ static void zero_buffer_init()
 
 int open_vm(pid_t pid, int flags)
 {
-  const size_t buffer_size = 30;
-  char buffer[buffer_size];
-  int res = snprintf(buffer, buffer_size, "/proc/%lli/mem", (long long)pid);
-  if (res < 0 || (size_t)res >= buffer_size) {
-    errno = ENAMETOOLONG;
-    return -1;
-  }
-  return open(buffer, flags);
+  std::string buffer = "/proc/" + std::to_string(pid) + "/mem";
+  return open(buffer.c_str(), flags);
 }
 
 // ***** RemoteSimulation
@@ -522,11 +530,11 @@ void RemoteSimulation::ignore_region(std::uint64_t addr, std::size_t size)
 void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
 {
   if (ignored_heap_.empty()) {
-    ignored_heap_.push_back(std::move(region));
+    ignored_heap_.push_back(region);
     return;
   }
 
-  typedef std::vector<IgnoredHeapRegion>::size_type size_type;
+  using size_type = std::vector<IgnoredHeapRegion>::size_type;
 
   size_type start = 0;
   size_type end   = ignored_heap_.size() - 1;
@@ -555,7 +563,7 @@ void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
 
 void RemoteSimulation::unignore_heap(void* address, size_t size)
 {
-  typedef std::vector<IgnoredHeapRegion>::size_type size_type;
+  using size_type = std::vector<IgnoredHeapRegion>::size_type;
 
   size_type start = 0;
   size_type end   = ignored_heap_.size() - 1;

@@ -16,8 +16,10 @@ namespace instr {
 class ContainerType;
 class EventType;
 
+long long int new_paje_id();
+
 class Type {
-  long long int id_;
+  long long int id_ = new_paje_id();
   std::string name_;
   std::string color_;
   Type* father_;
@@ -28,9 +30,9 @@ protected:
   Container* get_issuer() const { return issuer_; }
 
 public:
-  static xbt::signal<void(Type const&, e_event_type event_type)> on_creation;
+  static xbt::signal<void(Type const&, PajeEventType event_type)> on_creation;
 
-  Type(e_event_type event_type, const std::string& name, const std::string& alias, const std::string& color,
+  Type(PajeEventType event_type, const std::string& name, const std::string& alias, const std::string& color,
        Type* father);
   virtual ~Type() = default;
 
@@ -61,15 +63,16 @@ public:
 
 class ContainerType : public Type {
 public:
-  explicit ContainerType(const std::string& name) : Type(PAJE_DefineContainerType, name, name, "", nullptr){};
-  ContainerType(const std::string& name, Type* father) : Type(PAJE_DefineContainerType, name, name, "", father){};
+  explicit ContainerType(const std::string& name) : Type(PajeEventType::DefineContainerType, name, name, "", nullptr){};
+  ContainerType(const std::string& name, Type* father)
+      : Type(PajeEventType::DefineContainerType, name, name, "", father){};
 };
 
 class VariableType : public Type {
   std::vector<VariableEvent*> events_;
 public:
   VariableType(const std::string& name, const std::string& color, Type* father)
-      : Type(PAJE_DefineVariableType, name, name, color, father)
+      : Type(PajeEventType::DefineVariableType, name, name, color, father)
   {
   }
   void instr_event(double now, double delta, const char* resource, double value);
@@ -81,9 +84,9 @@ public:
 class ValueType : public Type {
 public:
   std::map<std::string, EntityValue> values_;
-  ValueType(e_event_type event_type, const std::string& name, const std::string& alias, Type* father)
+  ValueType(PajeEventType event_type, const std::string& name, const std::string& alias, Type* father)
       : Type(event_type, name, alias, "", father){};
-  ValueType(e_event_type event_type, const std::string& name, Type* father)
+  ValueType(PajeEventType event_type, const std::string& name, Type* father)
       : Type(event_type, name, name, "", father){};
   ~ValueType() override = default;
   void add_entity_value(const std::string& name, const std::string& color);
@@ -95,7 +98,7 @@ class LinkType : public ValueType {
 public:
   static xbt::signal<void(LinkType const&, Type const&, Type const&)> on_creation;
   LinkType(const std::string& name, const Type* source, const Type* dest, const std::string& alias, Type* father)
-      : ValueType(PAJE_DefineLinkType, name, alias, father)
+      : ValueType(PajeEventType::DefineLinkType, name, alias, father)
   {
     on_creation(*this, *source, *dest);
   }
@@ -106,13 +109,13 @@ public:
 
 class EventType : public ValueType {
 public:
-  EventType(const std::string& name, Type* father) : ValueType(PAJE_DefineEventType, name, father) {}
+  EventType(const std::string& name, Type* father) : ValueType(PajeEventType::DefineEventType, name, father) {}
 };
 
 class StateType : public ValueType {
   std::vector<StateEvent*> events_;
 public:
-  StateType(const std::string& name, Type* father) : ValueType(PAJE_DefineStateType, name, father) {}
+  StateType(const std::string& name, Type* father) : ValueType(PajeEventType::DefineStateType, name, father) {}
   void set_event(const std::string& value_name);
   void push_event(const std::string& value_name);
   void push_event(const std::string& value_name, TIData* extra);

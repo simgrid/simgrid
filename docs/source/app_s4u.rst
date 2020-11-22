@@ -509,8 +509,8 @@ Querying info
       .. autodoxymethod:: sg_actor_get_host(const_sg_actor_t actor)
       .. autodoxymethod:: sg_actor_set_host(sg_actor_t actor, sg_host_t host)
 
-      .. autodoxymethod:: sg_actor_data(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_data_set(sg_actor_t actor, void *userdata)        
+      .. autodoxymethod:: sg_actor_get_data(const_sg_actor_t actor)
+      .. autodoxymethod:: sg_actor_set_data(sg_actor_t actor, void *userdata)
 
 Suspending and resuming actors
 ------------------------------
@@ -579,8 +579,8 @@ Reacting to the end of actors
    .. group-tab:: C++
 
       .. autodoxymethod:: simgrid::s4u::Actor::on_exit
-      .. autodoxymethod:: simgrid::s4u::Actor::join()
-      .. autodoxymethod:: simgrid::s4u::Actor::join(double timeout)
+      .. autodoxymethod:: simgrid::s4u::Actor::join() const
+      .. autodoxymethod:: simgrid::s4u::Actor::join(double timeout) const
       .. autodoxymethod:: simgrid::s4u::Actor::set_auto_restart(bool autorestart)
 
    .. group-tab:: Python
@@ -589,7 +589,7 @@ Reacting to the end of actors
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_join(sg_actor_t actor, double timeout)
+      .. autodoxymethod:: sg_actor_join(const_sg_actor_t actor, double timeout)
       .. autodoxymethod:: sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
 
 Signals
@@ -644,8 +644,8 @@ Querying info
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_self_data()
-      .. autodoxymethod:: sg_actor_self_data_set(void *data)
+      .. autodoxymethod:: sg_actor_self_get_data()
+      .. autodoxymethod:: sg_actor_self_set_data(void *data)
       .. autodoxymethod:: sg_actor_self_get_name()
       .. autodoxymethod:: sg_actor_self_get_pid()
       .. autodoxymethod:: sg_actor_self_get_ppid()
@@ -1157,8 +1157,8 @@ Querying info
       .. autodoxymethod:: sg_host_core_count(const_sg_host_t host)
       .. autodoxymethod:: sg_host_dump(const_sg_host_t ws)
       .. autodoxymethod:: sg_host_get_name(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_load(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_speed(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_load(const_sg_host_t host)
+      .. autodoxymethod:: sg_host_get_speed(const_sg_host_t host)
 
 User data and properties
 ------------------------
@@ -1187,7 +1187,7 @@ Retrieving components
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::add_disk(Disk *disk)
+      .. autodoxymethod:: simgrid::s4u::Host::add_disk(const Disk* disk)
       .. autodoxymethod:: simgrid::s4u::Host::get_actor_count() const
       .. autodoxymethod:: simgrid::s4u::Host::get_all_actors() const
       .. autodoxymethod:: simgrid::s4u::Host::get_disks() const
@@ -1268,9 +1268,9 @@ Platform and routing
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
-      .. autodoxymethod:: sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
-      .. autodoxymethod:: sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
+      .. autodoxymethod:: sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
+      .. autodoxymethod:: sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
+      .. autodoxymethod:: sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to)
       .. autodoxymethod:: sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
 
 Signals
@@ -1360,10 +1360,10 @@ Querying info
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_bandwidth(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_get_bandwidth(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_get_latency(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_get_name(const_sg_link_t link)
       .. autodoxymethod:: sg_link_is_shared(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_latency(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_name(const_sg_link_t link)
 
 Modifying characteristics
 -------------------------
@@ -1374,6 +1374,11 @@ Modifying characteristics
 
       .. autodoxymethod:: simgrid::s4u::Link::set_bandwidth(double value)
       .. autodoxymethod:: simgrid::s4u::Link::set_latency(double value)
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_link_set_bandwidth(const_sg_link_t link, double value)
+      .. autodoxymethod:: sg_link_set_latency(const_sg_link_t link, double value)
 
 User data and properties
 ------------------------
@@ -1387,8 +1392,8 @@ User data and properties
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_data(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_data_set(sg_link_t link, void *data)
+      .. autodoxymethod:: sg_link_get_data(const_sg_link_t link)
+      .. autodoxymethod:: sg_link_set_data(sg_link_t link, void *data)
 
 On/Off
 ------
@@ -1620,7 +1625,7 @@ Querying info
 
       .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_pm() const
       .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_ramsize() const
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_state()
+      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_state() const
 
       .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_bound(double bound)
       .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_pm(Host *pm)
@@ -2163,17 +2168,17 @@ Locking
 
          .. autodoxymethod:: simgrid::s4u::Semaphore::acquire()
          .. autodoxymethod:: simgrid::s4u::Semaphore::acquire_timeout(double timeout)
-         .. autodoxymethod:: simgrid::s4u::Semaphore::get_capacity()
+         .. autodoxymethod:: simgrid::s4u::Semaphore::get_capacity() const
          .. autodoxymethod:: simgrid::s4u::Semaphore::release()
-         .. autodoxymethod:: simgrid::s4u::Semaphore::would_block()
+         .. autodoxymethod:: simgrid::s4u::Semaphore::would_block() const
 
       .. group-tab:: C
 
          .. autodoxymethod:: sg_sem_acquire(sg_sem_t sem)
          .. autodoxymethod:: sg_sem_acquire_timeout(sg_sem_t sem, double timeout)
-         .. autodoxymethod:: sg_sem_get_capacity(sg_sem_t sem)
+         .. autodoxymethod:: sg_sem_get_capacity(const_sg_sem_t sem)
          .. autodoxymethod:: sg_sem_release(sg_sem_t sem)
-         .. autodoxymethod:: sg_sem_would_block(sg_sem_t sem)
+         .. autodoxymethod:: sg_sem_would_block(const_sg_sem_t sem)
 
 .. |hr| raw:: html
 

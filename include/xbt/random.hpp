@@ -85,8 +85,7 @@ public:
  */
 class XBT_PUBLIC StdRandom : public Random {
 public:
-  StdRandom() = default;
-  explicit StdRandom(int seed) : Random(seed) {}
+  using Random::Random;
 
   int uniform_int(int min, int max) override;
   double uniform_real(double min, double max) override;
@@ -100,8 +99,7 @@ public:
  */
 class XBT_PUBLIC XbtRandom : public Random {
 public:
-  XbtRandom() = default;
-  explicit XbtRandom(int seed) : Random(seed) {}
+  using Random::Random;
 
   int uniform_int(int min, int max) override;
   double uniform_real(double min, double max) override;

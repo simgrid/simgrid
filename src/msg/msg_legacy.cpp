@@ -117,7 +117,7 @@ void MSG_process_migrate(sg_actor_t actor, sg_host_t host)
 {
   sg_actor_set_host(actor, host);
 }
-void MSG_process_join(sg_actor_t actor, double timeout)
+void MSG_process_join(const_sg_actor_t actor, double timeout)
 {
   sg_actor_join(actor, timeout);
 }
@@ -157,7 +157,7 @@ void* MSG_process_get_data(const_sg_actor_t process)
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  return sg_actor_data(process);
+  return sg_actor_get_data(process);
 }
 
 /** @brief Sets the user data of a process.
@@ -167,7 +167,7 @@ void* MSG_process_get_data(const_sg_actor_t process)
 msg_error_t MSG_process_set_data(msg_process_t process, void* data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
-  sg_actor_data_set(process, data);
+  sg_actor_set_data(process, data);
 
   return MSG_OK;
 }
@@ -331,11 +331,11 @@ const char* MSG_host_get_name(const_sg_host_t host)
 }
 void* MSG_host_get_data(const_sg_host_t host)
 {
-  return sg_host_data(host);
+  return sg_host_get_data(host);
 }
 void MSG_host_set_data(sg_host_t host, void* data)
 {
-  return sg_host_data_set(host, data);
+  return sg_host_set_data(host, data);
 }
 xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
 {
@@ -347,7 +347,7 @@ xbt_dynar_t MSG_host_get_attached_storage_lists(const_sg_host_t host)
 }
 double MSG_host_get_speed(const_sg_host_t host)
 {
-  return sg_host_speed(host);
+  return sg_host_get_speed(host);
 }
 double MSG_host_get_power_peak_at(const_sg_host_t host, int pstate_index)
 {
@@ -404,7 +404,7 @@ sg_host_t MSG_host_self()
 
 double MSG_host_get_load(const_sg_host_t host)
 {
-  return sg_host_load(host);
+  return sg_host_get_load(host);
 }
 /* ************************** Virtual Machines *************************** */
 sg_vm_t MSG_vm_create_core(sg_host_t pm, const char* name)
@@ -415,15 +415,15 @@ sg_vm_t MSG_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
 {
   return sg_vm_create_multicore(pm, name, coreAmount);
 }
-int MSG_vm_is_created(sg_vm_t vm)
+int MSG_vm_is_created(const_sg_vm_t vm)
 {
   return sg_vm_is_created(vm);
 }
-int MSG_vm_is_running(sg_vm_t vm)
+int MSG_vm_is_running(const_sg_vm_t vm)
 {
   return sg_vm_is_running(vm);
 }
-int MSG_vm_is_suspended(sg_vm_t vm)
+int MSG_vm_is_suspended(const_sg_vm_t vm)
 {
   return sg_vm_is_suspended(vm);
 }
@@ -499,7 +499,7 @@ void MSG_sem_release(sg_sem_t sem)
 {
   sg_sem_release(sem);
 }
-int MSG_sem_get_capacity(sg_sem_t sem)
+int MSG_sem_get_capacity(const_sg_sem_t sem)
 {
   return sg_sem_get_capacity(sem);
 }
@@ -507,7 +507,7 @@ void MSG_sem_destroy(const_sg_sem_t sem)
 {
   sg_sem_destroy(sem);
 }
-int MSG_sem_would_block(sg_sem_t sem)
+int MSG_sem_would_block(const_sg_sem_t sem)
 {
   return sg_sem_would_block(sem);
 }

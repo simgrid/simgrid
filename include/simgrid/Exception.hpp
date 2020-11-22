@@ -60,19 +60,19 @@ public:
 
 class XBT_PUBLIC ImpossibleError : public std::logic_error {
 public:
-  explicit ImpossibleError(const std::string& arg) : std::logic_error(arg) {}
+  using std::logic_error::logic_error;
   ~ImpossibleError() override;
 };
 
 class XBT_PUBLIC InitializationError : public std::logic_error {
 public:
-  explicit InitializationError(const std::string& arg) : std::logic_error(arg) {}
+  using std::logic_error::logic_error;
   ~InitializationError() override;
 };
 
 class XBT_PUBLIC UnimplementedError : public std::logic_error {
 public:
-  explicit UnimplementedError(const std::string& arg) : std::logic_error(arg) {}
+  using std::logic_error::logic_error;
   ~UnimplementedError() override;
 };
 
@@ -81,8 +81,8 @@ public:
 /** Ancestor class of all SimGrid exception */
 class Exception : public std::runtime_error {
 public:
-  Exception(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : std::runtime_error(std::move(message)), throwpoint_(std::move(throwpoint))
+  Exception(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message)
+      : std::runtime_error(message), throwpoint_(throwpoint)
   {
   }
   Exception(const Exception&)     = default;
@@ -104,86 +104,51 @@ private:
 /** Exception raised when a timeout elapsed */
 class TimeoutException : public Exception {
 public:
-  TimeoutException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : Exception(std::move(throwpoint), std::move(message))
-  {
-  }
-  TimeoutException(const TimeoutException&)     = default;
-  TimeoutException(TimeoutException&&) noexcept = default;
+  using Exception::Exception;
   ~TimeoutException() override;
 };
 
-XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::TimeoutException") typedef TimeoutException TimeoutError;
+using TimeoutError XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::TimeoutException") = TimeoutException;
 
 /** Exception raised when a host fails */
 class HostFailureException : public Exception {
 public:
-  HostFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : Exception(std::move(throwpoint), std::move(message))
-  {
-  }
-  HostFailureException(const HostFailureException&)     = default;
-  HostFailureException(HostFailureException&&) noexcept = default;
+  using Exception::Exception;
   ~HostFailureException() override;
 };
 
 /** Exception raised when a communication fails because of the network or because of the remote host */
 class NetworkFailureException : public Exception {
 public:
-  NetworkFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : Exception(std::move(throwpoint), std::move(message))
-  {
-  }
-  NetworkFailureException(const NetworkFailureException&)     = default;
-  NetworkFailureException(NetworkFailureException&&) noexcept = default;
+  using Exception::Exception;
   ~NetworkFailureException() override;
 };
 
 /** Exception raised when a storage fails */
 class StorageFailureException : public Exception {
 public:
-  StorageFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : Exception(std::move(throwpoint), std::move(message))
-  {
-  }
-  StorageFailureException(const StorageFailureException&)     = default;
-  StorageFailureException(StorageFailureException&&) noexcept = default;
+  using Exception::Exception;
   ~StorageFailureException() override;
 };
 
 /** Exception raised when a VM fails */
 class VmFailureException : public Exception {
 public:
-  VmFailureException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : Exception(std::move(throwpoint), std::move(message))
-  {
-  }
-  VmFailureException(const VmFailureException&)     = default;
-  VmFailureException(VmFailureException&&) noexcept = default;
+  using Exception::Exception;
   ~VmFailureException() override;
 };
 
 /** Exception raised when something got canceled before completion */
 class CancelException : public Exception {
 public:
-  CancelException(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : Exception(std::move(throwpoint), std::move(message))
-  {
-  }
-  CancelException(const CancelException&)     = default;
-  CancelException(CancelException&&) noexcept = default;
+  using Exception::Exception;
   ~CancelException() override;
 };
 
 /** Exception raised when something is going wrong during the simulation tracing */
 class TracingError : public Exception {
 public:
-  TracingError(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
-      : Exception(std::move(throwpoint), std::move(message))
-  {
-  }
-  TracingError(const TracingError&)     = default;
-  TracingError(TracingError&&) noexcept = default;
+  using Exception::Exception;
   ~TracingError() override;
 };
 
@@ -239,6 +204,6 @@ private:
 
 } // namespace simgrid
 
-XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::Exception") typedef simgrid::Exception xbt_ex;
+using xbt_ex XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::Exception") = simgrid::Exception;
 
 #endif

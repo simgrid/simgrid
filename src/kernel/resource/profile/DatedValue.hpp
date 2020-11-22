@@ -32,7 +32,6 @@ public:
   bool operator==(DatedValue const& e2) const;
   bool operator!=(DatedValue const& e2) const { return not(*this == e2); }
 };
-std::ostream& operator<<(std::ostream& out, const DatedValue& e);
 
 } // namespace profile
 } // namespace kernel

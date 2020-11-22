@@ -7,6 +7,8 @@
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 
+#include <string>
+
 extern "C" { // This should really use the C linkage to be usable from Fortran
 
 void mpi_type_extent_(int* datatype, MPI_Aint * extent, int* ierr){
@@ -42,12 +44,10 @@ void mpi_type_dup_ (int*  datatype, int* newdatatype, int* ierr){
  }
 }
 
-void mpi_type_set_name_ (int*  datatype, char * name, int* ierr, int size){
- char* tname = xbt_new(char, size+1);
- strncpy(tname, name, size);
- tname[size]='\0';
- *ierr = MPI_Type_set_name(simgrid::smpi::Datatype::f2c(*datatype), tname);
- xbt_free(tname);
+void mpi_type_set_name_(int* datatype, char* name, int* ierr, int size)
+{
+  std::string tname(name, size);
+  *ierr = MPI_Type_set_name(simgrid::smpi::Datatype::f2c(*datatype), tname.c_str());
 }
 
 void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr){
@@ -132,14 +132,13 @@ void mpi_type_create_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* 
 
 void mpi_type_hindexed_ (int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  auto* indices_aint = new MPI_Aint[*count];
+  std::vector<MPI_Aint> indices_aint(*count);
   for(int i=0; i<*count; i++)
     indices_aint[i]=indices[i];
-  *ierr = MPI_Type_hindexed(*count, blocklens, indices_aint, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
+  *ierr = MPI_Type_hindexed(*count, blocklens, indices_aint.data(), simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
-  delete[] indices_aint;
 }
 
 void mpi_type_create_hindexed_(int* count, int* blocklens, MPI_Aint* indices, int* old_type, int*  newtype, int* ierr){
@@ -186,31 +185,28 @@ void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,
 
 void mpi_type_struct_ (int* count, int* blocklens, int* indices, int* old_types, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  auto* types        = static_cast<MPI_Datatype*>(xbt_malloc(*count * sizeof(MPI_Datatype)));
-  auto* indices_aint = new MPI_Aint[*count];
+  std::vector<MPI_Aint> indices_aint(*count);
+  std::vector<MPI_Datatype> types(*count);
   for (int i = 0; i < *count; i++) {
     indices_aint[i]=indices[i];
     types[i] = simgrid::smpi::Datatype::f2c(old_types[i]);
   }
-  *ierr = MPI_Type_struct(*count, blocklens, indices_aint, types, &tmp);
+  *ierr = MPI_Type_struct(*count, blocklens, indices_aint.data(), types.data(), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
-  xbt_free(types);
-  delete[] indices_aint;
 }
 
 void mpi_type_create_struct_(int* count, int* blocklens, MPI_Aint* indices, int*  old_types, int*  newtype, int* ierr){
   MPI_Datatype tmp;
-  auto* types = static_cast<MPI_Datatype*>(xbt_malloc(*count * sizeof(MPI_Datatype)));
+  std::vector<MPI_Datatype> types(*count);
   for (int i = 0; i < *count; i++) {
     types[i] = simgrid::smpi::Datatype::f2c(old_types[i]);
   }
-  *ierr = MPI_Type_create_struct(*count, blocklens, indices, types, &tmp);
+  *ierr = MPI_Type_create_struct(*count, blocklens, indices, types.data(), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->add_f();
   }
-  xbt_free(types);
 }
 
 void mpi_pack_ (void* inbuf, int* incount, int* type, void* outbuf, int* outcount, int* position, int* comm, int* ierr) {

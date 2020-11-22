@@ -55,8 +55,8 @@ int main(int argc, char *argv[])
 
   for (i = 0; i < pstates; i++) {
     sg_host_set_pstate(sg_host_self(), i);
-    fprintf(stderr, "[%.6f] [rank %d] Current pstate: %d; Current power: %.0f\n",
-            MPI_Wtime(), rank, i, sg_host_speed(sg_host_self()));
+    fprintf(stderr, "[%.6f] [rank %d] Current pstate: %d; Current power: %.0f\n", MPI_Wtime(), rank, i,
+            sg_host_get_speed(sg_host_self()));
 
     SMPI_SAMPLE_FLOPS(1e9) {
       /* imagine here some code running for 1e9 flops... */

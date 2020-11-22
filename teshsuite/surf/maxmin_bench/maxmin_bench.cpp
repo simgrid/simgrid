@@ -20,15 +20,14 @@
 static double test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
                    double rate_no_limit, int max_share, int mode)
 {
-  auto* cnst = new simgrid::kernel::lmm::Constraint*[nb_cnst];
-  auto* var  = new simgrid::kernel::lmm::Variable*[nb_var];
-  auto* used = new int[nb_cnst];
+  std::vector<simgrid::kernel::lmm::Constraint*> constraints(nb_cnst);
+  std::vector<simgrid::kernel::lmm::Variable*> variables(nb_var);
 
   /* We cannot activate the selective update as we pass nullptr as an Action when creating the variables */
-  auto* Sys = new simgrid::kernel::lmm::System(false);
+  simgrid::kernel::lmm::System Sys(false);
 
-  for (int i = 0; i < nb_cnst; i++) {
-    cnst[i] = Sys->constraint_new(nullptr, simgrid::xbt::random::uniform_real(0.0, 10.0));
+  for (auto& cnst : constraints) {
+    cnst = Sys.constraint_new(nullptr, simgrid::xbt::random::uniform_real(0.0, 10.0));
     int l;
     if (rate_no_limit > simgrid::xbt::random::uniform_real(0.0, 1.0)) {
       // Look at what happens when there is no concurrency limit
@@ -37,59 +36,54 @@ static double test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_li
       // Badly logarithmically random concurrency limit in [2^pw_base_limit+1,2^pw_base_limit+2^pw_max_limit]
       l = (1 << pw_base_limit) + (1 << simgrid::xbt::random::uniform_int(0, pw_max_limit - 1));
     }
-    cnst[i]->set_concurrency_limit(l);
+    cnst->set_concurrency_limit(l);
   }
 
-  for (int i = 0; i < nb_var; i++) {
-    var[i] = Sys->variable_new(nullptr, 1.0, -1.0, nb_elem);
+  for (auto& var : variables) {
+    var = Sys.variable_new(nullptr, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
     short concurrency_share = 1 + static_cast<short>(simgrid::xbt::random::uniform_int(0, max_share - 1));
-    var[i]->set_concurrency_share(concurrency_share);
+    var->set_concurrency_share(concurrency_share);
 
-    for (int j = 0; j < nb_cnst; j++)
-      used[j] = 0;
+    std::vector<int> used(nb_cnst, 0);
     for (int j = 0; j < nb_elem; j++) {
       int k;
       do {
         k = simgrid::xbt::random::uniform_int(0, nb_cnst - 1);
       } while (used[k] >= concurrency_share);
-      Sys->expand(cnst[k], var[i], simgrid::xbt::random::uniform_real(0.0, 1.5));
-      Sys->expand_add(cnst[k], var[i], simgrid::xbt::random::uniform_real(0.0, 1.5));
+      Sys.expand(constraints[k], var, simgrid::xbt::random::uniform_real(0.0, 1.5));
+      Sys.expand_add(constraints[k], var, simgrid::xbt::random::uniform_real(0.0, 1.5));
       used[k]++;
     }
   }
 
   fprintf(stderr, "Starting to solve(%i)\n", simgrid::xbt::random::uniform_int(0, 999));
   double date = xbt_os_time();
-  Sys->solve();
+  Sys.solve();
   date = (xbt_os_time() - date) * 1e6;
 
   if(mode==2){
     fprintf(stderr,"Max concurrency:\n");
     int l=0;
     for (int i = 0; i < nb_cnst; i++) {
-      int j = cnst[i]->get_concurrency_maximum();
-      int k = cnst[i]->get_concurrency_limit();
+      int j = constraints[i]->get_concurrency_maximum();
+      int k = constraints[i]->get_concurrency_limit();
       xbt_assert(k<0 || j<=k);
       if(j>l)
         l=j;
       fprintf(stderr,"(%i):%i/%i ",i,j,k);
-      cnst[i]->reset_concurrency_maximum();
-      xbt_assert(not cnst[i]->get_concurrency_maximum());
+      constraints[i]->reset_concurrency_maximum();
+      xbt_assert(not constraints[i]->get_concurrency_maximum());
       if(i%10==9)
         fprintf(stderr,"\n");
     }
     fprintf(stderr,"\nTotal maximum concurrency is %i\n",l);
 
-    Sys->print();
+    Sys.print();
   }
 
-  for (int i = 0; i < nb_var; i++)
-    Sys->variable_free(var[i]);
-  delete Sys;
-  delete[] cnst;
-  delete[] var;
-  delete[] used;
+  for (auto const& var : variables)
+    Sys.variable_free(var);
 
   return date;
 }

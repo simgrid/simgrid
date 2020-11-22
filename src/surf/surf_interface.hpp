@@ -213,8 +213,4 @@ XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_storage_model_d
 /** @brief The list of all host models (pick one with --cfg=host/model:) */
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_host_model_description;
 
-/**********
- * Action *
- **********/
-
 #endif /* SURF_MODEL_H_ */

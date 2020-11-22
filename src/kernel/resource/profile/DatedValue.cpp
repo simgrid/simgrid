@@ -14,11 +14,6 @@ bool DatedValue::operator==(DatedValue const& e2) const
 {
   return (fabs(date_ - e2.date_) < 0.0001) && (fabs(value_ - e2.value_) < 0.0001);
 }
-std::ostream& operator<<(std::ostream& out, const DatedValue& e)
-{
-  out << e.date_ << " " << e.value_;
-  return out;
-}
 
 } // namespace profile
 } // namespace kernel

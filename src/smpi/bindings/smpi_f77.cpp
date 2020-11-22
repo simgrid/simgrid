@@ -13,6 +13,8 @@
 #include "smpi_win.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
+#include <string>
+
 static int running_processes = 0;
 
 void smpi_init_fortran_types()
@@ -200,11 +202,8 @@ void mpi_win_set_name_(int* win, char* name, int* ierr, int size)
     size--;
     name++;
   }
-  char* tname = xbt_new(char,size+1);
-  strncpy(tname, name, size);
-  tname[size]='\0';
-  *ierr = MPI_Win_set_name(simgrid::smpi::Win::f2c(*win), tname);
-  xbt_free(tname);
+  std::string tname(name, size);
+  *ierr = MPI_Win_set_name(simgrid::smpi::Win::f2c(*win), tname.c_str());
 }
 
 void mpi_win_get_name_(int* win, char* name, int* len, int* ierr)
@@ -371,9 +370,7 @@ void mpi_info_set_(int* info, char* key, char* value, int* ierr, unsigned int ke
     keylen--;
     key++;
   }
-  char* tkey = xbt_new(char,keylen+1);
-  strncpy(tkey, key, keylen);
-  tkey[keylen]='\0';
+  std::string tkey(key, keylen);
 
   while(value[valuelen-1]==' ')
     valuelen--;
@@ -381,13 +378,9 @@ void mpi_info_set_(int* info, char* key, char* value, int* ierr, unsigned int ke
     valuelen--;
     value++;
   }
-  char* tvalue = xbt_new(char,valuelen+1);
-  strncpy(tvalue, value, valuelen);
-  tvalue[valuelen]='\0';
+  std::string tvalue(value, valuelen);
 
-  *ierr =  MPI_Info_set( simgrid::smpi::Info::f2c(*info), tkey, tvalue);
-  xbt_free(tkey);
-  xbt_free(tvalue);
+  *ierr = MPI_Info_set(simgrid::smpi::Info::f2c(*info), tkey.c_str(), tvalue.c_str());
 }
 
 void mpi_info_get_(int* info, char* key, int* valuelen, char* value, int* flag, int* ierr, unsigned int keylen)
@@ -398,11 +391,8 @@ void mpi_info_get_(int* info, char* key, int* valuelen, char* value, int* flag, 
     keylen--;
     key++;
   }
-  char* tkey = xbt_new(char,keylen+1);
-  strncpy(tkey, key, keylen);
-  tkey[keylen]='\0';
-  *ierr = MPI_Info_get(simgrid::smpi::Info::f2c(*info),tkey,*valuelen, value, flag);
-  xbt_free(tkey);
+  std::string tkey(key, keylen);
+  *ierr = MPI_Info_get(simgrid::smpi::Info::f2c(*info), tkey.c_str(), *valuelen, value, flag);
   if(*flag!=0){
     int replace=0;
     for (int i = 0; i < *valuelen; i++) {
@@ -874,11 +864,8 @@ void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, in
     keylen--;
     key++;
   }
-  char* tkey = xbt_new(char, keylen+1);
-  strncpy(tkey, key, keylen);
-  tkey[keylen]='\0';
-  *ierr = MPI_Info_get_valuelen( simgrid::smpi::Info::f2c(*info), tkey, valuelen, flag);
-  xbt_free(tkey);
+  std::string tkey(key, keylen);
+  *ierr = MPI_Info_get_valuelen(simgrid::smpi::Info::f2c(*info), tkey.c_str(), valuelen, flag);
 }
 
 void mpi_info_delete_ (int* info, char *key, int* ierr, unsigned int keylen){
@@ -888,11 +875,8 @@ void mpi_info_delete_ (int* info, char *key, int* ierr, unsigned int keylen){
     keylen--;
     key++;
   }
-  char* tkey = xbt_new(char, keylen+1);
-  strncpy(tkey, key, keylen);
-  tkey[keylen]='\0';
-  *ierr = MPI_Info_delete(simgrid::smpi::Info::f2c(*info), tkey);
-  xbt_free(tkey);
+  std::string tkey(key, keylen);
+  *ierr = MPI_Info_delete(simgrid::smpi::Info::f2c(*info), tkey.c_str());
 }
 
 void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
@@ -901,7 +885,7 @@ void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
 
 void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen){
   *ierr = MPI_Info_get_nthkey( simgrid::smpi::Info::f2c(*info), *n, key);
-  for (unsigned int i = strlen(key); i < keylen; i++)
+  for (auto i = static_cast<unsigned>(strlen(key)); i < keylen; i++)
     key[i]=' ';
 }
 

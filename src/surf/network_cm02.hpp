@@ -30,7 +30,7 @@ class XBT_PRIVATE NetworkSmpiModel;
 
 class NetworkCm02Model : public NetworkModel {
 public:
-  explicit NetworkCm02Model(lmm::System* (*make_new_sys)(bool) = &lmm::make_new_maxmin_system);
+  NetworkCm02Model();
   ~NetworkCm02Model() override = default;
   LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
                         s4u::Link::SharingPolicy policy) override;
@@ -60,8 +60,7 @@ class NetworkCm02Action : public NetworkAction {
   friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
 
 public:
-  NetworkCm02Action(Model* model, s4u::Host& src, s4u::Host& dst, double cost, bool failed)
-      : NetworkAction(model, src, dst, cost, failed){};
+  using NetworkAction::NetworkAction;
   ~NetworkCm02Action() override = default;
   void update_remains_lazy(double now) override;
 };

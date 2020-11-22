@@ -33,8 +33,9 @@
  *                                                                    \ |  |
  *                                                                      ----
  */
-#include <map>
+#include <array>
 #include <cstring>
+#include <map>
 
 #include "private.hpp"
 #include "xbt/config.hpp"
@@ -45,9 +46,9 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
-#include <cstdio>
-#include <fcntl.h>
-#include <sys/stat.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -79,7 +80,7 @@ struct shared_data_t {
 };
 
 std::unordered_map<smpi_source_location, shared_data_t, std::hash<std::string>> allocs;
-typedef decltype(allocs)::value_type shared_data_key_type;
+using shared_data_key_type = decltype(allocs)::value_type;
 
 struct shared_metadata_t {
   size_t size;
@@ -93,9 +94,9 @@ std::map<const void*, shared_metadata_t> allocs_metadata;
 std::map<std::string, void*> calls;
 
 #ifndef WIN32
-static int smpi_shared_malloc_bogusfile           = -1;
-static int smpi_shared_malloc_bogusfile_huge_page  = -1;
-static unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
+int smpi_shared_malloc_bogusfile           = -1;
+int smpi_shared_malloc_bogusfile_huge_page = -1;
+unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
 #endif
 }
 
@@ -155,7 +156,7 @@ constexpr unsigned HUGE_PAGE_SIZE = 1U << 21;
  * The others are not.
  */
 
-void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
+void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets, int nb_shared_blocks)
 {
   std::string huge_page_mount_point = simgrid::config::get_value<std::string>("smpi/shared-malloc-hugepage");
   bool use_huge_page                = not huge_page_mount_point.empty();
@@ -208,11 +209,9 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
     smpi_shared_malloc_bogusfile = mkstemp(name);
     XBT_DEBUG("bogusfile         : %s\n", name);
     unlink(name);
-    const char* dumb = new char[smpi_shared_malloc_blocksize](); // zero initialized
-    ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
-    if(err<0)
+    int err = ftruncate(smpi_shared_malloc_bogusfile, smpi_shared_malloc_blocksize);
+    if (err != 0)
       xbt_die("Could not write bogus file for shared malloc");
-    delete[] dumb;
   }
 
   int mmap_base_flag = MAP_FIXED | MAP_SHARED | MAP_POPULATE;
@@ -328,8 +327,8 @@ void* smpi_shared_malloc(size_t size, const char* file, int line)
     return smpi_shared_malloc_local(size, file, line);
   } else if (smpi_cfg_shared_malloc() == SharedMallocType::GLOBAL) {
     int nb_shared_blocks = 1;
-    size_t shared_block_offsets[2] = {0, size};
-    return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
+    const std::array<size_t, 2> shared_block_offsets = {{0, size}};
+    return smpi_shared_malloc_partial(size, shared_block_offsets.data(), nb_shared_blocks);
   }
   XBT_DEBUG("Classic allocation of %zu bytes", size);
   return ::operator new(size);

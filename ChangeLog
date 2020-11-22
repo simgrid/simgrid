@@ -54,6 +54,9 @@ SMPI:
 C binding and interface:
  - The return type of the sg_actor_on_exit() callbacks is now 'void'
    (int value was previously ignored)
+ - Many C functions were renamed to follow a common naming style
+   (sg_object_get_something and sg_object_set_something). As usual, the deprecated
+   names are kept until version 3.30.
  - Many MSG tests were converted to the new S4U's interface in C, that
    was extended for that.
 
@@ -64,7 +67,9 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - FG#48: The Impossible Did Happen (yet again)
  - FG#50: Suspending an actor executed at the current timestamp fails
  - FG#52: Zero-seconds timeout : "That's in the past already"
+ - FG#53: Crash while using ns-3 network model
  - FG#54: How to suspend a comm?
+ - FG!22: Stochastic Profiles
  - FG!24: Documentation and fix for xbt/random
  - FG!35: Add a modeling hint for parallel links in doc
  - FG!36: [xbt/random] Read/Write the state of the RNG
@@ -74,7 +79,9 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - GH#128: Parallelization of simulation with --cfg=contexts/nthreads
  - GH#139: Allow pthread creation in SMPI
  - GH#336: Packet-level simulation using SMPI?
+ - GH#345: Error in the LMM while migrating a VM
  - GH#346: [SMPI] error while loading shared libraries: libsimgrid.so
+ - GH#352: pip install / python setup.py install fail to find pybind11
  - GH!337: Fix link_energy plugin for wifi platforms
  - GH!339: Add Mailbox set_receiver method to python binding
  - GH!344: Cast hugepages macros parameters to int64

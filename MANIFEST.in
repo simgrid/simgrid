@@ -741,6 +741,9 @@ include teshsuite/s4u/trace-integration/test-hbp1.5-hbp1.5.xml
 include teshsuite/s4u/trace-integration/test-hbp2.5-hbp1.5.xml
 include teshsuite/s4u/trace-integration/trace-integration.cpp
 include teshsuite/s4u/trace-integration/trace-integration.tesh
+include teshsuite/s4u/vm-live-migration/platform.xml
+include teshsuite/s4u/vm-live-migration/vm-live-migration.cpp
+include teshsuite/s4u/vm-live-migration/vm-live-migration.tesh
 include teshsuite/s4u/wait-any-for/wait-any-for.cpp
 include teshsuite/s4u/wait-any-for/wait-any-for.tesh
 include teshsuite/simdag/availability/availability.c
@@ -2247,6 +2250,8 @@ include src/kernel/resource/profile/FutureEvtSet.hpp
 include src/kernel/resource/profile/Profile.cpp
 include src/kernel/resource/profile/Profile.hpp
 include src/kernel/resource/profile/Profile_test.cpp
+include src/kernel/resource/profile/StochasticDatedValue.cpp
+include src/kernel/resource/profile/StochasticDatedValue.hpp
 include src/kernel/routing/ClusterZone.cpp
 include src/kernel/routing/DijkstraZone.cpp
 include src/kernel/routing/DragonflyZone.cpp

@@ -16,15 +16,10 @@ namespace simgrid {
 namespace kernel {
 namespace lmm {
 
-typedef std::vector<int> dyn_light_t;
+using dyn_light_t = std::vector<int>;
 
 int Variable::next_rank_   = 1;
 int Constraint::next_rank_ = 1;
-
-System* make_new_maxmin_system(bool selective_update)
-{
-  return new System(selective_update);
-}
 
 int Element::get_concurrency() const
 {

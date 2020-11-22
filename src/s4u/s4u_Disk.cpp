@@ -80,7 +80,7 @@ sg_size_t Disk::write(sg_size_t size)
 
 /* **************************** Public C interface *************************** */
 
-const char* sg_disk_name(const_sg_disk_t disk)
+const char* sg_disk_get_name(const_sg_disk_t disk)
 {
   return disk->get_cname();
 }
@@ -108,11 +108,13 @@ sg_size_t sg_disk_write(sg_disk_t disk, sg_size_t size)
 {
   return disk->write(size);
 }
-void* sg_disk_data(const_sg_disk_t disk)
+
+void* sg_disk_get_data(const_sg_disk_t disk)
 {
   return disk->get_data();
 }
-void sg_disk_data_set(sg_disk_t disk, void* data)
+
+void sg_disk_set_data(sg_disk_t disk, void* data)
 {
   disk->set_data(data);
 }

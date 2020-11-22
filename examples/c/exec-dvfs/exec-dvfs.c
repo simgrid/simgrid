@@ -20,7 +20,7 @@ static void dvfs(int argc, char* argv[])
   int nb = sg_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb);
 
-  double current_peak = sg_host_speed(host);
+  double current_peak = sg_host_get_speed(host);
   XBT_INFO("Current power peak=%f", current_peak);
 
   sg_actor_execute(100E6);
@@ -38,7 +38,7 @@ static void dvfs(int argc, char* argv[])
 
   sg_host_set_pstate(host, new_pstate);
 
-  current_peak = sg_host_speed(host);
+  current_peak = sg_host_get_speed(host);
   XBT_INFO("Current power peak=%f", current_peak);
 
   sg_actor_execute(100E6);
@@ -51,7 +51,7 @@ static void dvfs(int argc, char* argv[])
   int nb2 = sg_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb2);
 
-  double current_peak2 = sg_host_speed(host);
+  double current_peak2 = sg_host_get_speed(host);
   XBT_INFO("Current power peak=%f", current_peak2);
 }
 

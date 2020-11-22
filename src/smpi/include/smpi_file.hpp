@@ -82,10 +82,10 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   MPI_Offset max_offset =
       min_offset +
       count * datatype->get_extent(); // cheating, as we don't care about exact data location, we can skip extent
-  auto* min_offsets = new MPI_Offset[size];
-  auto* max_offsets = new MPI_Offset[size];
-  simgrid::smpi::colls::allgather(&min_offset, 1, MPI_OFFSET, min_offsets, 1, MPI_OFFSET, comm_);
-  simgrid::smpi::colls::allgather(&max_offset, 1, MPI_OFFSET, max_offsets, 1, MPI_OFFSET, comm_);
+  std::vector<MPI_Offset> min_offsets(size);
+  std::vector<MPI_Offset> max_offsets(size);
+  simgrid::smpi::colls::allgather(&min_offset, 1, MPI_OFFSET, min_offsets.data(), 1, MPI_OFFSET, comm_);
+  simgrid::smpi::colls::allgather(&max_offset, 1, MPI_OFFSET, max_offsets.data(), 1, MPI_OFFSET, comm_);
   MPI_Offset min = min_offset;
   MPI_Offset max = max_offset;
   MPI_Offset tot = 0;
@@ -103,15 +103,11 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   XBT_CDEBUG(smpi_pmpi, "my offsets to read : %lld:%lld, global min and max %lld:%lld", min_offset, max_offset, min,
              max);
   if (empty == 1) {
-    delete[] min_offsets;
-    delete[] max_offsets;
     status->count = 0;
     return MPI_SUCCESS;
   }
   MPI_Offset total = max - min;
   if (total == tot && (datatype->flags() & DT_FLAG_CONTIGUOUS)) {
-    delete[] min_offsets;
-    delete[] max_offsets;
     // contiguous. Just have each proc perform its read
     if (status != MPI_STATUS_IGNORE)
       status->count = count * datatype->size();
@@ -122,10 +118,10 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   MPI_Offset my_chunk_start = (max - min + 1) / size * rank;
   MPI_Offset my_chunk_end   = ((max - min + 1) / size * (rank + 1));
   XBT_CDEBUG(smpi_pmpi, "my chunks to read : %lld:%lld", my_chunk_start, my_chunk_end);
-  auto* send_sizes = new int[size];
-  auto* recv_sizes = new int[size];
-  auto* send_disps = new int[size];
-  auto* recv_disps = new int[size];
+  std::vector<int> send_sizes(size);
+  std::vector<int> recv_sizes(size);
+  std::vector<int> send_disps(size);
+  std::vector<int> recv_disps(size);
   int total_sent  = 0;
   for (int i = 0; i < size; i++) {
     send_sizes[i] = 0;
@@ -183,24 +179,18 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
     seek(min_offset, MPI_SEEK_SET);
     T(this, sendbuf, totreads / datatype->size(), datatype, status);
   }
-  simgrid::smpi::colls::alltoall(send_sizes, 1, MPI_INT, recv_sizes, 1, MPI_INT, comm_);
+  simgrid::smpi::colls::alltoall(send_sizes.data(), 1, MPI_INT, recv_sizes.data(), 1, MPI_INT, comm_);
   int total_recv = 0;
   for (int i = 0; i < size; i++) {
     recv_disps[i] = total_recv;
     total_recv += recv_sizes[i];
   }
   // Set buf value to avoid copying dumb data
-  simgrid::smpi::colls::alltoallv(sendbuf, send_sizes, send_disps, MPI_BYTE, buf, recv_sizes, recv_disps, MPI_BYTE,
-                                  comm_);
+  simgrid::smpi::colls::alltoallv(sendbuf, send_sizes.data(), send_disps.data(), MPI_BYTE, buf, recv_sizes.data(),
+                                  recv_disps.data(), MPI_BYTE, comm_);
   if (status != MPI_STATUS_IGNORE)
     status->count = count * datatype->size();
   smpi_free_tmp_buffer(sendbuf);
-  delete[] send_sizes;
-  delete[] recv_sizes;
-  delete[] send_disps;
-  delete[] recv_disps;
-  delete[] min_offsets;
-  delete[] max_offsets;
   return MPI_SUCCESS;
 }
 }

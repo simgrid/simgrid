@@ -140,7 +140,7 @@ public:
  */
 class Performance : public Governor {
 public:
-  explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  using Governor::Governor;
   std::string get_name() const override { return "Performance"; }
 
   void update() override { get_host()->set_pstate(get_min_pstate()); }
@@ -158,7 +158,7 @@ public:
  */
 class Powersave : public Governor {
 public:
-  explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  using Governor::Governor;
   std::string get_name() const override { return "Powersave"; }
 
   void update() override { get_host()->set_pstate(get_max_pstate()); }
@@ -181,7 +181,7 @@ class OnDemand : public Governor {
   double freq_up_threshold_ = 0.80;
 
 public:
-  explicit OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  using Governor::Governor;
   std::string get_name() const override { return "OnDemand"; }
 
   void update() override
@@ -229,7 +229,7 @@ class Conservative : public Governor {
   double freq_down_threshold_ = .2;
 
 public:
-  explicit Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  using Governor::Governor;
   std::string get_name() const override { return "Conservative"; }
 
   void update() override

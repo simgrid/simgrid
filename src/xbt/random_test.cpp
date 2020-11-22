@@ -15,6 +15,7 @@ TEST_CASE("xbt::random: Random Number Generation")
 {
   SECTION("Using XBT_RNG_xbt")
   {
+    simgrid::xbt::random::set_implem_xbt();
     simgrid::xbt::random::set_mersenne_seed(12345);
     REQUIRE_THAT(simgrid::xbt::random::exponential(25), EpsilonApprox(0.00291934351538427348));
     REQUIRE(simgrid::xbt::random::uniform_int(1, 6) == 4);

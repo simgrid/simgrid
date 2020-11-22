@@ -27,30 +27,30 @@ static void host(int argc, char* argv[])
   /* - Retrieve all disks from current host */
   unsigned int disk_count;
   sg_disk_t* disk_list;
-  sg_host_disks(sg_host_self(), &disk_count, &disk_list);
+  sg_host_get_disks(sg_host_self(), &disk_count, &disk_list);
 
   for (unsigned int i = 0; i < disk_count; i++)
-    XBT_INFO("Disk name: %s (read: %.0f B/s -- write: %.0f B/s ", sg_disk_name(disk_list[i]),
+    XBT_INFO("Disk name: %s (read: %.0f B/s -- write: %.0f B/s ", sg_disk_get_name(disk_list[i]),
              sg_disk_read_bandwidth(disk_list[i]), sg_disk_write_bandwidth(disk_list[i]));
 
   /* - Write 400,000 bytes on Disk1 */
   sg_disk_t disk  = disk_list[0];
   sg_size_t write = sg_disk_write(disk, 400000);
-  XBT_INFO("Wrote %llu bytes on '%s'", write, sg_disk_name(disk));
+  XBT_INFO("Wrote %llu bytes on '%s'", write, sg_disk_get_name(disk));
 
   /*  - Now read 200,000 bytes */
   sg_size_t read = sg_disk_read(disk, 200000);
-  XBT_INFO("Read %llu bytes on '%s'", read, sg_disk_name(disk));
+  XBT_INFO("Read %llu bytes on '%s'", read, sg_disk_get_name(disk));
 
   /* - Attach some user data to disk1 */
   XBT_INFO("*** Get/set data for storage element: Disk1 ***");
 
-  char* data = (char*)sg_disk_data(disk);
+  char* data = (char*)sg_disk_get_data(disk);
 
   XBT_INFO("Get storage data: '%s'", data ? data : "No user data");
 
-  sg_disk_data_set(disk, xbt_strdup("Some user data"));
-  data = (char*)sg_disk_data(disk);
+  sg_disk_set_data(disk, xbt_strdup("Some user data"));
+  data = (char*)sg_disk_get_data(disk);
   XBT_INFO("Set and get data: '%s'", data);
   free(data);
   free(disk_list);

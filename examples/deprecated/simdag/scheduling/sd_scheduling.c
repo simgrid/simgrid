@@ -24,27 +24,27 @@ struct _HostAttribute {
 
 static double sg_host_get_available_at(const_sg_host_t host)
 {
-  const struct _HostAttribute* attr = (HostAttribute)sg_host_data(host);
+  const struct _HostAttribute* attr = (HostAttribute)sg_host_get_data(host);
   return attr->available_at;
 }
 
 static void sg_host_set_available_at(sg_host_t host, double time)
 {
-  HostAttribute attr = (HostAttribute)sg_host_data(host);
+  HostAttribute attr = (HostAttribute)sg_host_get_data(host);
   attr->available_at = time;
-  sg_host_data_set(host, attr);
+  sg_host_set_data(host, attr);
 }
 
 static SD_task_t sg_host_get_last_scheduled_task(const_sg_host_t host)
 {
-  const struct _HostAttribute* attr = (HostAttribute)sg_host_data(host);
+  const struct _HostAttribute* attr = (HostAttribute)sg_host_get_data(host);
   return attr->last_scheduled_task;
 }
 
 static void sg_host_set_last_scheduled_task(sg_host_t host, SD_task_t task){
-  HostAttribute attr       = (HostAttribute)sg_host_data(host);
+  HostAttribute attr       = (HostAttribute)sg_host_get_data(host);
   attr->last_scheduled_task=task;
-  sg_host_data_set(host, attr);
+  sg_host_set_data(host, attr);
 }
 
 static xbt_dynar_t get_ready_tasks(const_xbt_dynar_t dax)
@@ -86,8 +86,8 @@ static double finish_on_at(const_SD_task_t task, const_sg_host_t host)
         if (SD_task_get_amount(parent) <= 1e-6){
           redist_time= 0;
         } else {
-          redist_time = sg_host_route_latency(parent_host[0], host) +
-                        SD_task_get_amount(parent) / sg_host_route_bandwidth(parent_host[0], host);
+          redist_time = sg_host_get_route_latency(parent_host[0], host) +
+                        SD_task_get_amount(parent) / sg_host_get_route_bandwidth(parent_host[0], host);
         }
         data_available = SD_task_get_start_time(parent) + redist_time;
       }
@@ -103,11 +103,12 @@ static double finish_on_at(const_SD_task_t task, const_sg_host_t host)
 
     xbt_dynar_free_container(&parents);
 
-    result = fmax(sg_host_get_available_at(host), last_data_available) + SD_task_get_amount(task) / sg_host_speed(host);
+    result =
+        fmax(sg_host_get_available_at(host), last_data_available) + SD_task_get_amount(task) / sg_host_get_speed(host);
   } else {
     xbt_dynar_free_container(&parents);
 
-    result = sg_host_get_available_at(host) + SD_task_get_amount(task)/sg_host_speed(host);
+    result = sg_host_get_available_at(host) + SD_task_get_amount(task) / sg_host_get_speed(host);
   }
   return result;
 }
@@ -160,7 +161,7 @@ int main(int argc, char **argv)
   sg_host_t *hosts = sg_host_list();
 
   for (cursor = 0; cursor < total_nhosts; cursor++)
-    sg_host_data_set(hosts[cursor], xbt_new0(struct _HostAttribute, 1));
+    sg_host_set_data(hosts[cursor], xbt_new0(struct _HostAttribute, 1));
 
   /* load the DAX file */
   xbt_dynar_t dax = SD_daxload(argv[2]);
@@ -247,8 +248,8 @@ int main(int argc, char **argv)
   xbt_dynar_free_container(&dax);
 
   for (cursor = 0; cursor < total_nhosts; cursor++) {
-    free(sg_host_data(hosts[cursor]));
-    sg_host_data_set(hosts[cursor], NULL);
+    free(sg_host_get_data(hosts[cursor]));
+    sg_host_set_data(hosts[cursor], NULL);
   }
 
   xbt_free(hosts);

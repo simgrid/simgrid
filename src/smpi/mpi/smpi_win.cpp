@@ -469,7 +469,7 @@ int Win::start(MPI_Group group, int /*assert*/)
   int i             = 0;
   int j             = 0;
   int size          = group->size();
-  MPI_Request* reqs = xbt_new0(MPI_Request, size);
+  std::vector<MPI_Request> reqs(size);
 
   XBT_DEBUG("Entering MPI_Win_Start");
   while (j != size) {
@@ -481,12 +481,11 @@ int Win::start(MPI_Group group, int /*assert*/)
     j++;
   }
   size = i;
-  Request::startall(size, reqs);
-  Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
+  Request::startall(size, reqs.data());
+  Request::waitall(size, reqs.data(), MPI_STATUSES_IGNORE);
   for (i = 0; i < size; i++) {
     Request::unref(&reqs[i]);
   }
-  xbt_free(reqs);
   opened_++; //we're open for business !
   group_=group;
   group->ref();
@@ -500,7 +499,7 @@ int Win::post(MPI_Group group, int /*assert*/)
   int i             = 0;
   int j             = 0;
   int size = group->size();
-  MPI_Request* reqs = xbt_new0(MPI_Request, size);
+  std::vector<MPI_Request> reqs(size);
 
   XBT_DEBUG("Entering MPI_Win_Post");
   while(j!=size){
@@ -513,12 +512,11 @@ int Win::post(MPI_Group group, int /*assert*/)
   }
   size=i;
 
-  Request::startall(size, reqs);
-  Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
+  Request::startall(size, reqs.data());
+  Request::waitall(size, reqs.data(), MPI_STATUSES_IGNORE);
   for(i=0;i<size;i++){
     Request::unref(&reqs[i]);
   }
-  xbt_free(reqs);
   opened_++; //we're open for business !
   group_=group;
   group->ref();
@@ -534,7 +532,7 @@ int Win::complete(){
   int i             = 0;
   int j             = 0;
   int size          = group_->size();
-  MPI_Request* reqs = xbt_new0(MPI_Request, size);
+  std::vector<MPI_Request> reqs(size);
 
   while(j!=size){
     int dst = comm_->group()->rank(group_->actor(j));
@@ -546,13 +544,12 @@ int Win::complete(){
   }
   size=i;
   XBT_DEBUG("Win_complete - Sending sync messages to %d processes", size);
-  Request::startall(size, reqs);
-  Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
+  Request::startall(size, reqs.data());
+  Request::waitall(size, reqs.data(), MPI_STATUSES_IGNORE);
 
   for(i=0;i<size;i++){
     Request::unref(&reqs[i]);
   }
-  xbt_free(reqs);
 
   int finished = finish_comms();
   XBT_DEBUG("Win_complete - Finished %d RMA calls", finished);
@@ -568,7 +565,7 @@ int Win::wait(){
   int i             = 0;
   int j             = 0;
   int size          = group_->size();
-  MPI_Request* reqs = xbt_new0(MPI_Request, size);
+  std::vector<MPI_Request> reqs(size);
 
   while(j!=size){
     int src = comm_->group()->rank(group_->actor(j));
@@ -580,12 +577,11 @@ int Win::wait(){
   }
   size=i;
   XBT_DEBUG("Win_wait - Receiving sync messages from %d processes", size);
-  Request::startall(size, reqs);
-  Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
+  Request::startall(size, reqs.data());
+  Request::waitall(size, reqs.data(), MPI_STATUSES_IGNORE);
   for(i=0;i<size;i++){
     Request::unref(&reqs[i]);
   }
-  xbt_free(reqs);
   int finished = finish_comms();
   XBT_DEBUG("Win_wait - Finished %d RMA calls", finished);
 

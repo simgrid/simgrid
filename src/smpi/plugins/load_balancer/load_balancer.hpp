@@ -15,7 +15,7 @@ namespace loadbalancer {
 class XBT_PRIVATE Mapping {
 public:
   /** Each host can have an arbitrary number of actors -> multimap **/
-  typedef std::unordered_multimap<s4u::Host*, s4u::ActorPtr> host_to_actors_map_t;
+  using host_to_actors_map_t = std::unordered_multimap<s4u::Host*, s4u::ActorPtr>;
   host_to_actors_map_t host_to_actors;
 
   /** Each actor gets assigned to exactly one host -> map **/

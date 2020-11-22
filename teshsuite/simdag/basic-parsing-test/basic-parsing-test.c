@@ -25,15 +25,15 @@ int main(int argc, char **argv)
 
       fprintf(stderr, "Route between %s and %s\n", name1, name2);
       xbt_dynar_t route = xbt_dynar_new(sizeof(SD_link_t), NULL);
-      sg_host_route(h1, h2, route);
+      sg_host_get_route(h1, h2, route);
       fprintf(stderr, "Route size %lu\n", xbt_dynar_length(route));
       unsigned int i;
       SD_link_t link;
       xbt_dynar_foreach(route, i, link)
-        fprintf(stderr, "  Link %s: latency = %f, bandwidth = %f\n", sg_link_name(link),
-               sg_link_latency(link), sg_link_bandwidth(link));
-      fprintf(stderr, "Route latency = %f, route bandwidth = %f\n",
-             sg_host_route_latency(h1, h2), sg_host_route_bandwidth(h1, h2));
+        fprintf(stderr, "  Link %s: latency = %f, bandwidth = %f\n", sg_link_get_name(link), sg_link_get_latency(link),
+                sg_link_get_bandwidth(link));
+      fprintf(stderr, "Route latency = %f, route bandwidth = %f\n", sg_host_get_route_latency(h1, h2),
+              sg_host_get_route_bandwidth(h1, h2));
       xbt_dynar_free_container(&route);
     }
     if (!strcmp(argv[2], "FULL_LINK")) {
@@ -46,15 +46,15 @@ int main(int argc, char **argv)
           const char *name2 = sg_host_get_name(h2);
           fprintf(stderr, "Route between %s and %s\n", name1, name2);
           xbt_dynar_t route = xbt_dynar_new(sizeof(SD_link_t), NULL);
-          sg_host_route(h1, h2, route);
+          sg_host_get_route(h1, h2, route);
           fprintf(stderr, "  Route size %lu\n", xbt_dynar_length(route));
           unsigned int k;
           SD_link_t link;
           xbt_dynar_foreach(route, k, link)
-            fprintf(stderr, "  Link %s: latency = %f, bandwidth = %f\n",
-                sg_link_name(link), sg_link_latency(link), sg_link_bandwidth(link));
-          fprintf(stderr, "  Route latency = %f, route bandwidth = %f\n",
-                 sg_host_route_latency(h1, h2), sg_host_route_bandwidth(h1, h2));
+            fprintf(stderr, "  Link %s: latency = %f, bandwidth = %f\n", sg_link_get_name(link),
+                    sg_link_get_latency(link), sg_link_get_bandwidth(link));
+          fprintf(stderr, "  Route latency = %f, route bandwidth = %f\n", sg_host_get_route_latency(h1, h2),
+                  sg_host_get_route_bandwidth(h1, h2));
           xbt_dynar_free_container(&route);
         }
       }

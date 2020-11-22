@@ -14,7 +14,6 @@
 #include <xbt/string.hpp>
 
 #include <functional>
-#include <map> // deprecated wrappers
 #include <unordered_map>
 
 namespace simgrid {
@@ -208,14 +207,14 @@ public:
    * Blocks the calling actor until the joined actor is terminated. If actor alice executes bob.join(), then alice is
    * blocked until bob terminates.
    */
-  void join();
+  void join() const;
 
   /** Wait for the actor to finish, or for the timeout to elapse.
    *
    * Blocks the calling actor until the joined actor is terminated. If actor alice executes bob.join(), then alice is
    * blocked until bob terminates.
    */
-  void join(double timeout);
+  void join(double timeout) const;
   /** Kill that actor and restart it from start. */
   Actor* restart();
 

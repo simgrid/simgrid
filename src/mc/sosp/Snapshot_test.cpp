@@ -67,7 +67,7 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
   // Store region page(s):
   size_t byte_size = n * xbt_pagesize;
   void* source     = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  INFO("Could not allocate source memory")
+  INFO("Could not allocate source memory");
   REQUIRE(source != MAP_FAILED);
 
   // Init memory and take snapshots:
@@ -80,13 +80,9 @@ snap_test_helper::prologue_return snap_test_helper::prologue(int n)
 
   void* destination = mmap(nullptr, byte_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   INFO("Could not allocate destination memory");
-  REQUIRE(source != MAP_FAILED);
+  REQUIRE(destination != MAP_FAILED);
 
-  return {.size    = byte_size,
-          .src     = source,
-          .dstn    = destination,
-          .region0 = std::move(region0),
-          .region  = std::move(region)};
+  return {.size = byte_size, .src = source, .dstn = destination, .region0 = region0, .region = region};
 }
 
 void snap_test_helper::read_whole_region()
@@ -162,15 +158,14 @@ void snap_test_helper::read_pointer()
 {
   prologue_return ret = prologue(1);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
-  const simgrid::mc::Region* region2 = new simgrid::mc::Region(simgrid::mc::RegionType::Data, ret.src, ret.size);
+  const simgrid::mc::Region region2(simgrid::mc::RegionType::Data, ret.src, ret.size);
   INFO("Mismtach in MC_region_read_pointer()");
-  REQUIRE(MC_region_read_pointer(region2, ret.src) == mc_model_checker);
+  REQUIRE(MC_region_read_pointer(&region2, ret.src) == mc_model_checker);
 
   munmap(ret.dstn, ret.size);
   munmap(ret.src, ret.size);
   delete ret.region0;
   delete ret.region;
-  delete region2;
 }
 
 /*************** End: class snap_test_helper *****************************/

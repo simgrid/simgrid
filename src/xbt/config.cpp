@@ -38,7 +38,7 @@ namespace config {
 
 namespace {
 
-static bool parse_bool(const char* value)
+bool parse_bool(const char* value)
 {
   for (const char* true_value : {"yes", "on", "true", "1"})
     if (std::strcmp(true_value, value) == 0)
@@ -49,7 +49,7 @@ static bool parse_bool(const char* value)
   throw std::range_error("not a boolean");
 }
 
-static double parse_double(const char* value)
+double parse_double(const char* value)
 {
   char* end;
   errno = 0;
@@ -64,7 +64,7 @@ static double parse_double(const char* value)
     return res;
 }
 
-static long int parse_long(const char* value)
+long int parse_long(const char* value)
 {
   char* end;
   errno = 0;

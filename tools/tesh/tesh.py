@@ -556,12 +556,12 @@ if __name__ == '__main__':
             re.compile(r"==[0-9]+== ?WARNING: ASan doesn't fully support"),
             re.compile(r"==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
             re.compile(r"False positive error reports may follow"),
-            re.compile(r"For details see http://code.google.com/p/address-sanitizer/issues/detail\?id=189"),
-            re.compile(r"For details see https://github.com/google/sanitizers/issues/189"),
+            re.compile(r"For details see http://code\.google\.com/p/address-sanitizer/issues/detail\?id=189"),
+            re.compile(r"For details see https://github\.com/google/sanitizers/issues/189"),
             re.compile(r"Python runtime initialized with LC_CTYPE=C .*"),
             # Seen on CircleCI
             re.compile(r"cmake: /usr/local/lib/libcurl\.so\.4: no version information available \(required by cmake\)"),
-            re.compile(r".*mmap broken on FreeBSD, but dlopen\+thread broken too. Switching to dlopen\+raw contexts\."),
+            re.compile(r".*mmap broken on FreeBSD, but dlopen\+thread broken too\. Switching to dlopen\+raw contexts\."),
             re.compile(r".*dlopen\+thread broken on Apple and BSD\. Switching to raw contexts\."),
         ]
         TeshState().jenkins = True  # This is a Jenkins build

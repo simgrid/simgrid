@@ -38,8 +38,8 @@ class Comm;
 class Task;
 }
 }
-typedef simgrid::msg::Comm sg_msg_Comm;
-typedef simgrid::msg::Task sg_msg_Task;
+using sg_msg_Comm = simgrid::msg::Comm;
+using sg_msg_Task = simgrid::msg::Task;
 #else
 typedef struct msg_Comm sg_msg_Comm;
 typedef struct msg_Task sg_msg_Task;
@@ -146,9 +146,9 @@ typedef sg_vm_t msg_vm_t;
 XBT_PUBLIC msg_vm_t MSG_vm_create_core(msg_host_t pm, const char* name);
 XBT_PUBLIC msg_vm_t MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
 
-XBT_PUBLIC int MSG_vm_is_created(msg_vm_t vm);
-XBT_PUBLIC int MSG_vm_is_running(msg_vm_t vm);
-XBT_PUBLIC int MSG_vm_is_suspended(msg_vm_t vm);
+XBT_PUBLIC int MSG_vm_is_created(const_sg_vm_t vm);
+XBT_PUBLIC int MSG_vm_is_running(const_sg_vm_t vm);
+XBT_PUBLIC int MSG_vm_is_suspended(const_sg_vm_t vm);
 
 XBT_PUBLIC const char* MSG_vm_get_name(const_sg_vm_t vm);
 XBT_PUBLIC void MSG_vm_set_ramsize(msg_vm_t vm, size_t size);
@@ -223,7 +223,7 @@ XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
  * @param process the process to wait for
  * @param timeout wait until the process is over, or the timeout occurs
  */
-XBT_PUBLIC void MSG_process_join(msg_process_t process, double timeout);
+XBT_PUBLIC void MSG_process_join(const_sg_actor_t process, double timeout);
 /** @brief Kills a process */
 XBT_PUBLIC void MSG_process_kill(msg_process_t process);
 /** @brief Kill all running process */
@@ -435,9 +435,9 @@ XBT_PUBLIC msg_sem_t MSG_sem_init(int initial_value);
 XBT_PUBLIC void MSG_sem_acquire(msg_sem_t sem);
 XBT_PUBLIC int MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
 XBT_PUBLIC void MSG_sem_release(msg_sem_t sem);
-XBT_PUBLIC int MSG_sem_get_capacity(msg_sem_t sem);
+XBT_PUBLIC int MSG_sem_get_capacity(const_sg_sem_t sem);
 XBT_PUBLIC void MSG_sem_destroy(const_sg_sem_t sem);
-XBT_PUBLIC int MSG_sem_would_block(msg_sem_t sem);
+XBT_PUBLIC int MSG_sem_would_block(const_sg_sem_t sem);
 
 /** @brief Opaque type representing a barrier identifier */
 typedef sg_bar_t msg_bar_t;

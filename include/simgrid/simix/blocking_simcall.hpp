@@ -45,7 +45,7 @@ XBT_PUBLIC void unblock(smx_actor_t process);
  */
 template <class F> auto kernel_sync(F code) -> decltype(code().get())
 {
-  typedef decltype(code().get()) T;
+  using T = decltype(code().get());
   if (SIMIX_is_maestro())
     xbt_die("Can't execute blocking call in kernel mode");
 
@@ -78,7 +78,7 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
 template <class T>
 class Future {
 public:
-  Future() { /* Nothing to do*/}
+  Future() = default;
   explicit Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}
   Future(Future&&) noexcept = default;
   Future& operator=(Future&&) noexcept = default;
@@ -150,7 +150,7 @@ private:
  */
 template <class F> auto kernel_async(F code) -> Future<decltype(code().get())>
 {
-  typedef decltype(code().get()) T;
+  using T = decltype(code().get());
 
   // Execute the code in the kernel and get the kernel future:
   simgrid::kernel::Future<T> future = simgrid::kernel::actor::simcall(std::move(code));

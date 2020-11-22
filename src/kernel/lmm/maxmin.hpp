@@ -532,8 +532,8 @@ public:
   resource::Action::ModifiedSet* modified_set_ = nullptr;
 
 private:
-  typedef std::vector<int> dyn_light_t;
-  
+  using dyn_light_t = std::vector<int>;
+
   //Data used in lmm::solve
   std::vector<ConstraintLight> cnst_light_vec;
   dyn_light_t saturated_constraints;
@@ -553,15 +553,12 @@ private:
 
 class XBT_PUBLIC FairBottleneck : public System {
 public:
-  explicit FairBottleneck(bool selective_update) : System(selective_update) {}
+  using System::System;
   void solve() final { bottleneck_solve(); }
 
 private:
   void bottleneck_solve();
 };
-
-XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);
-XBT_PUBLIC System* make_new_fair_bottleneck_system(bool selective_update);
 
 /** @} */
 } // namespace lmm

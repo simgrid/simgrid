@@ -461,12 +461,12 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
 
   int size = datatype->get_extent() * count;
   xbt_assert(size > 0);
-  void* recvbuf = xbt_new0(char, size);
-  retval = MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count, datatype, src, recvtag, comm, status);
+  std::vector<char> recvbuf(size);
+  retval =
+      MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf.data(), count, datatype, src, recvtag, comm, status);
   if(retval==MPI_SUCCESS){
-    simgrid::smpi::Datatype::copy(recvbuf, count, datatype, buf, count, datatype);
+    simgrid::smpi::Datatype::copy(recvbuf.data(), count, datatype, buf, count, datatype);
   }
-  xbt_free(recvbuf);
   return retval;
 }
 

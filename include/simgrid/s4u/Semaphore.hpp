@@ -50,8 +50,8 @@ public:
   void acquire();
   int acquire_timeout(double timeout);
   void release();
-  int get_capacity();
-  int would_block();
+  int get_capacity() const;
+  int would_block() const;
 };
 
 } // namespace s4u

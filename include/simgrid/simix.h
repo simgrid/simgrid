@@ -80,7 +80,7 @@ XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_load_deployment() or Engine::load
 
 /********************************* Process ************************************/
 SG_BEGIN_DECL
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_get_actor_count()") XBT_PUBLIC int SIMIX_process_count();
+XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_count()") XBT_PUBLIC int SIMIX_process_count();
 XBT_PUBLIC smx_actor_t SIMIX_process_self();
 XBT_PUBLIC const char* SIMIX_process_self_get_name();
 XBT_ATTRIB_DEPRECATED_v329("This function will be removed in 3.29") XBT_PUBLIC

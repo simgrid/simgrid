@@ -26,8 +26,31 @@ constexpr unsigned long BLOCKS_REQUESTED = 2UL;
 constexpr double SLEEP_DURATION     = 1.0;
 #define BITS_TO_BYTES(x) (((x) / 8 + (x) % 8) ? 1 : 0)
 
-constexpr std::array<const char*, 10> message_type_names{
-    {"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "HAVE", "BITFIELD", "REQUEST", "PIECE", "CANCEL"}};
+/** Message sizes
+ * Sizes based on report by A. Legout et al, Understanding BitTorrent: An Experimental Perspective
+ * http://hal.inria.fr/inria-00000156/en
+ */
+constexpr unsigned message_size(MessageType type)
+{
+  constexpr std::array<unsigned, 10> sizes{{/* HANDSHAKE     */ 68,
+                                            /* CHOKE         */ 5,
+                                            /* UNCHOKE       */ 5,
+                                            /* INTERESTED    */ 5,
+                                            /* NOTINTERESTED */ 5,
+                                            /* HAVE          */ 9,
+                                            /* BITFIELD      */ 5,
+                                            /* REQUEST       */ 17,
+                                            /* PIECE         */ 13,
+                                            /* CANCEL        */ 17}};
+  return sizes[static_cast<int>(type)];
+}
+
+constexpr const char* message_name(MessageType type)
+{
+  constexpr std::array<const char*, 10> names{{"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "HAVE",
+                                               "BITFIELD", "REQUEST", "PIECE", "CANCEL"}};
+  return names[static_cast<int>(type)];
+}
 
 Peer::Peer(std::vector<std::string> args)
 {
@@ -110,15 +133,15 @@ void Peer::sendHandshakeToAllPeers()
 {
   for (auto const& kv : connected_peers) {
     const Connection& remote_peer = kv.second;
-    auto* handshake               = new Message(MESSAGE_HANDSHAKE, id, mailbox_);
-    remote_peer.mailbox_->put_init(handshake, MESSAGE_HANDSHAKE_SIZE)->detach();
+    auto* handshake               = new Message(MessageType::HANDSHAKE, id, mailbox_);
+    remote_peer.mailbox_->put_init(handshake, message_size(MessageType::HANDSHAKE))->detach();
     XBT_DEBUG("Sending a HANDSHAKE to %d", remote_peer.id);
   }
 }
 
-void Peer::sendMessage(simgrid::s4u::Mailbox* mailbox, e_message_type type, uint64_t size)
+void Peer::sendMessage(simgrid::s4u::Mailbox* mailbox, MessageType type, uint64_t size)
 {
-  XBT_DEBUG("Sending %s to %s", message_type_names.at(type), mailbox->get_cname());
+  XBT_DEBUG("Sending %s to %s", message_name(type), mailbox->get_cname());
   mailbox->put_init(new Message(type, id, bitfield_, mailbox_), size)->detach();
 }
 
@@ -126,8 +149,8 @@ void Peer::sendBitfield(simgrid::s4u::Mailbox* mailbox)
 {
   XBT_DEBUG("Sending a BITFIELD to %s", mailbox->get_cname());
   mailbox
-      ->put_init(new Message(MESSAGE_BITFIELD, id, bitfield_, mailbox_),
-                 MESSAGE_BITFIELD_SIZE + BITS_TO_BYTES(FILE_PIECES))
+      ->put_init(new Message(MessageType::BITFIELD, id, bitfield_, mailbox_),
+                 message_size(MessageType::BITFIELD) + BITS_TO_BYTES(FILE_PIECES))
       ->detach();
 }
 
@@ -135,7 +158,8 @@ void Peer::sendPiece(simgrid::s4u::Mailbox* mailbox, unsigned int piece, int blo
 {
   xbt_assert(not hasNotPiece(piece), "Tried to send a unavailable piece.");
   XBT_DEBUG("Sending the PIECE %u (%d,%d) to %s", piece, block_index, block_length, mailbox->get_cname());
-  mailbox->put_init(new Message(MESSAGE_PIECE, id, mailbox_, piece, block_index, block_length), BLOCK_SIZE)->detach();
+  mailbox->put_init(new Message(MessageType::PIECE, id, mailbox_, piece, block_index, block_length), BLOCK_SIZE)
+      ->detach();
 }
 
 void Peer::sendHaveToAllPeers(unsigned int piece)
@@ -143,7 +167,8 @@ void Peer::sendHaveToAllPeers(unsigned int piece)
   XBT_DEBUG("Sending HAVE message to all my peers");
   for (auto const& kv : connected_peers) {
     const Connection& remote_peer = kv.second;
-    remote_peer.mailbox_->put_init(new Message(MESSAGE_HAVE, id, mailbox_, piece), MESSAGE_HAVE_SIZE)->detach();
+    remote_peer.mailbox_->put_init(new Message(MessageType::HAVE, id, mailbox_, piece), message_size(MessageType::HAVE))
+        ->detach();
   }
 }
 
@@ -157,7 +182,8 @@ void Peer::sendRequestTo(Connection* remote_peer, unsigned int piece)
     XBT_DEBUG("Sending a REQUEST to %s for piece %u (%d,%d)", remote_peer->mailbox_->get_cname(), piece, block_index,
               block_length);
     remote_peer->mailbox_
-        ->put_init(new Message(MESSAGE_REQUEST, id, mailbox_, piece, block_index, block_length), MESSAGE_REQUEST_SIZE)
+        ->put_init(new Message(MessageType::REQUEST, id, mailbox_, piece, block_index, block_length),
+                   message_size(MessageType::REQUEST))
         ->detach();
   }
 }
@@ -286,26 +312,25 @@ void Peer::updateActivePeersSet(Connection* remote_peer)
 
 void Peer::handleMessage()
 {
-  XBT_DEBUG("Received a %s message from %s", message_type_names.at(message->type),
-            message->return_mailbox->get_cname());
+  XBT_DEBUG("Received a %s message from %s", message_name(message->type), message->return_mailbox->get_cname());
 
   auto known_peer         = connected_peers.find(message->peer_id);
   Connection* remote_peer = (known_peer == connected_peers.end()) ? nullptr : &known_peer->second;
-  xbt_assert(remote_peer != nullptr || message->type == MESSAGE_HANDSHAKE,
+  xbt_assert(remote_peer != nullptr || message->type == MessageType::HANDSHAKE,
              "The impossible did happened: A not-in-our-list peer sent us a message.");
 
   switch (message->type) {
-    case MESSAGE_HANDSHAKE:
+    case MessageType::HANDSHAKE:
       // Check if the peer is in our connection list.
       if (remote_peer == nullptr) {
         XBT_DEBUG("This peer %d was unknown, answer to its handshake", message->peer_id);
         connected_peers.emplace(message->peer_id, Connection(message->peer_id));
-        sendMessage(message->return_mailbox, MESSAGE_HANDSHAKE, MESSAGE_HANDSHAKE_SIZE);
+        sendMessage(message->return_mailbox, MessageType::HANDSHAKE, message_size(MessageType::HANDSHAKE));
       }
       // Send our bitfield to the peer
       sendBitfield(message->return_mailbox);
       break;
-    case MESSAGE_BITFIELD:
+    case MessageType::BITFIELD:
       // Update the pieces list
       updatePiecesCountFromBitfield(message->bitfield);
       // Store the bitfield
@@ -313,32 +338,32 @@ void Peer::handleMessage()
       xbt_assert(not remote_peer->am_interested, "Should not be interested at first");
       if (isInterestedBy(remote_peer)) {
         remote_peer->am_interested = true;
-        sendMessage(message->return_mailbox, MESSAGE_INTERESTED, MESSAGE_INTERESTED_SIZE);
+        sendMessage(message->return_mailbox, MessageType::INTERESTED, message_size(MessageType::INTERESTED));
       }
       break;
-    case MESSAGE_INTERESTED:
+    case MessageType::INTERESTED:
       // Update the interested state of the peer.
       remote_peer->interested = true;
       updateActivePeersSet(remote_peer);
       break;
-    case MESSAGE_NOTINTERESTED:
+    case MessageType::NOTINTERESTED:
       remote_peer->interested = false;
       updateActivePeersSet(remote_peer);
       break;
-    case MESSAGE_UNCHOKE:
+    case MessageType::UNCHOKE:
       xbt_assert(remote_peer->choked_download);
       remote_peer->choked_download = false;
       // Send requests to the peer, since it has unchoked us
       if (remote_peer->am_interested)
         requestNewPieceTo(remote_peer);
       break;
-    case MESSAGE_CHOKE:
+    case MessageType::CHOKE:
       xbt_assert(not remote_peer->choked_download);
       remote_peer->choked_download = true;
       if (remote_peer->current_piece != -1)
         removeCurrentPiece(remote_peer, remote_peer->current_piece);
       break;
-    case MESSAGE_HAVE:
+    case MessageType::HAVE:
       XBT_DEBUG("\t for piece %d", message->piece);
       xbt_assert((message->piece >= 0 && static_cast<unsigned int>(message->piece) < FILE_PIECES),
                  "Wrong HAVE message received");
@@ -347,12 +372,12 @@ void Peer::handleMessage()
       // If the piece is in our pieces, we tell the peer that we are interested.
       if (not remote_peer->am_interested && hasNotPiece(message->piece)) {
         remote_peer->am_interested = true;
-        sendMessage(message->return_mailbox, MESSAGE_INTERESTED, MESSAGE_INTERESTED_SIZE);
+        sendMessage(message->return_mailbox, MessageType::INTERESTED, message_size(MessageType::INTERESTED));
         if (not remote_peer->choked_download)
           requestNewPieceTo(remote_peer);
       }
       break;
-    case MESSAGE_REQUEST:
+    case MessageType::REQUEST:
       xbt_assert(remote_peer->interested);
       xbt_assert((message->piece >= 0 && static_cast<unsigned int>(message->piece) < FILE_PIECES),
                  "Wrong HAVE message received");
@@ -366,7 +391,7 @@ void Peer::handleMessage()
         XBT_DEBUG("\t for piece %d but he is choked.", message->peer_id);
       }
       break;
-    case MESSAGE_PIECE:
+    case MessageType::PIECE:
       XBT_DEBUG(" \t for piece %d (%d,%d)", message->piece, message->block_index,
                 message->block_index + message->block_length);
       xbt_assert(not remote_peer->choked_download);
@@ -394,7 +419,7 @@ void Peer::handleMessage()
         requestNewPieceTo(remote_peer);
       }
       break;
-    case MESSAGE_CANCEL:
+    case MessageType::CANCEL:
       break;
     default:
       THROW_IMPOSSIBLE;
@@ -585,7 +610,7 @@ void Peer::updateChokedPeers()
       choked_peer->choked_upload = true;
       updateActivePeersSet(choked_peer);
       XBT_DEBUG("(%d) Sending a CHOKE to %d", id, choked_peer->id);
-      sendMessage(choked_peer->mailbox_, MESSAGE_CHOKE, MESSAGE_CHOKE_SIZE);
+      sendMessage(choked_peer->mailbox_, MessageType::CHOKE, message_size(MessageType::CHOKE));
     }
     if (chosen_peer != nullptr) {
       xbt_assert((chosen_peer->choked_upload), "Tries to unchoked an unchoked peer");
@@ -594,7 +619,7 @@ void Peer::updateChokedPeers()
       chosen_peer->last_unchoke = simgrid::s4u::Engine::get_clock();
       XBT_DEBUG("(%d) Sending a UNCHOKE to %d", id, chosen_peer->id);
       updateActivePeersSet(chosen_peer);
-      sendMessage(chosen_peer->mailbox_, MESSAGE_UNCHOKE, MESSAGE_UNCHOKE_SIZE);
+      sendMessage(chosen_peer->mailbox_, MessageType::UNCHOKE, message_size(MessageType::UNCHOKE));
     }
   }
 }
@@ -615,7 +640,7 @@ void Peer::updateInterestedAfterReceive()
 
       if (not interested) { // no more piece to download from connection
         remote_peer.am_interested = false;
-        sendMessage(remote_peer.mailbox_, MESSAGE_NOTINTERESTED, MESSAGE_NOTINTERESTED_SIZE);
+        sendMessage(remote_peer.mailbox_, MessageType::NOTINTERESTED, message_size(MessageType::NOTINTERESTED));
       }
     }
   }

@@ -67,11 +67,9 @@ extern XBT_PUBLIC int mpi_statuses_ignore_;
 
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
-typedef SMPI_Cart_topology* MPIR_Cart_Topology;
-
-typedef SMPI_Graph_topology* MPIR_Graph_Topology;
-
-typedef SMPI_Dist_Graph_topology* MPIR_Dist_Graph_Topology;
+using MPIR_Cart_Topology       = SMPI_Cart_topology*;
+using MPIR_Graph_Topology      = SMPI_Graph_topology*;
+using MPIR_Dist_Graph_Topology = SMPI_Dist_Graph_topology*;
 
 XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process();
 XBT_PRIVATE simgrid::smpi::ActorExt* smpi_process_remote(simgrid::s4u::ActorPtr actor);
@@ -489,7 +487,7 @@ struct s_smpi_privatization_region_t {
   void* address;
   int file_descriptor;
 };
-typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
+using smpi_privatization_region_t = s_smpi_privatization_region_t*;
 
 extern XBT_PRIVATE int smpi_loaded_page;
 XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process();
@@ -503,7 +501,7 @@ XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process(
 #define TOPAGE(addr) (void*)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
 /** Used only if PAPI is compiled in, but integrated anyway so that this file does not depend on internal_config.h (to speed builds) */
-typedef std::vector<std::pair</* counter name */ std::string, /* counter value */ long long>> papi_counter_t;
+using papi_counter_t = std::vector<std::pair</* counter name */ std::string, /* counter value */ long long>>;
 struct papi_process_data {
   papi_counter_t counter_data;
   int event_set;

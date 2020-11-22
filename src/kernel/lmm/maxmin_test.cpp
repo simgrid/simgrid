@@ -12,7 +12,7 @@ namespace lmm = simgrid::kernel::lmm;
 
 TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-single-sys]")
 {
-  lmm::System* Sys = lmm::make_new_maxmin_system(false);
+  lmm::System Sys(false);
 
   SECTION("Variable penalty")
   {
@@ -29,13 +29,13 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
      *   o rho1 + rho2 = C (because all weights are 1)
      */
 
-    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 3);
-    lmm::Variable* rho_1      = Sys->variable_new(nullptr, 1);
-    lmm::Variable* rho_2      = Sys->variable_new(nullptr, 2);
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 3);
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, 2);
 
-    Sys->expand(sys_cnst, rho_1, 1);
-    Sys->expand(sys_cnst, rho_2, 1);
-    Sys->solve();
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
+    Sys.solve();
 
     REQUIRE(double_equals(rho_1->get_value(), 2, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 1, sg_maxmin_precision));
@@ -57,13 +57,13 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
      *   o so, rho1 = rho2 = 1 (because C is 3)
      */
 
-    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 3);
-    lmm::Variable* rho_1      = Sys->variable_new(nullptr, 1);
-    lmm::Variable* rho_2      = Sys->variable_new(nullptr, 1);
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 3);
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, 1);
 
-    Sys->expand(sys_cnst, rho_1, 1);
-    Sys->expand(sys_cnst, rho_2, 2);
-    Sys->solve();
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 2);
+    Sys.solve();
 
     REQUIRE(double_equals(rho_1->get_value(), 1, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 1, sg_maxmin_precision));
@@ -85,13 +85,13 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
      *   o rho1 + 2*rho2 = C (because consumption weight of rho2 is 2)
      */
 
-    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 20);
-    lmm::Variable* rho_1      = Sys->variable_new(nullptr, 1);
-    lmm::Variable* rho_2      = Sys->variable_new(nullptr, 2);
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 20);
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, 2);
 
-    Sys->expand(sys_cnst, rho_1, 1);
-    Sys->expand(sys_cnst, rho_2, 2);
-    Sys->solve();
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 2);
+    Sys.solve();
 
     double rho_1_share = 10;
     REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_maxmin_precision));
@@ -117,21 +117,21 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
      *   o 2*rho1 + rho3 = C2 (because consumption weight of rho1 is 2)
      */
 
-    lmm::Constraint* sys_cnst_1 = Sys->constraint_new(nullptr, 20);
-    lmm::Constraint* sys_cnst_2 = Sys->constraint_new(nullptr, 60);
+    lmm::Constraint* sys_cnst_1 = Sys.constraint_new(nullptr, 20);
+    lmm::Constraint* sys_cnst_2 = Sys.constraint_new(nullptr, 60);
 
-    lmm::Variable* rho_1 = Sys->variable_new(nullptr, 1, -1, 2);
-    lmm::Variable* rho_2 = Sys->variable_new(nullptr, 2, -1, 1);
-    lmm::Variable* rho_3 = Sys->variable_new(nullptr, 1, -1, 1);
+    lmm::Variable* rho_1 = Sys.variable_new(nullptr, 1, -1, 2);
+    lmm::Variable* rho_2 = Sys.variable_new(nullptr, 2, -1, 1);
+    lmm::Variable* rho_3 = Sys.variable_new(nullptr, 1, -1, 1);
 
     // Constraint 1
-    Sys->expand(sys_cnst_1, rho_1, 1);
-    Sys->expand(sys_cnst_1, rho_2, 2);
+    Sys.expand(sys_cnst_1, rho_1, 1);
+    Sys.expand(sys_cnst_1, rho_2, 2);
 
     // Constraint 2
-    Sys->expand(sys_cnst_2, rho_1, 2);
-    Sys->expand(sys_cnst_2, rho_3, 1);
-    Sys->solve();
+    Sys.expand(sys_cnst_2, rho_1, 2);
+    Sys.expand(sys_cnst_2, rho_3, 1);
+    Sys.solve();
 
     double rho_1_share = 10; // Start by solving the first constraint (results is the same as previous tests)
     REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_maxmin_precision));
@@ -139,13 +139,12 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     REQUIRE(double_equals(rho_3->get_value(), 60 - 2 * rho_1_share, sg_maxmin_precision));
   }
 
-  Sys->variable_free_all();
-  delete Sys;
+  Sys.variable_free_all();
 }
 
 TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshared-single-sys]")
 {
-  lmm::System* Sys = lmm::make_new_maxmin_system(false);
+  lmm::System Sys(false);
 
   SECTION("Variable penalty")
   {
@@ -163,14 +162,14 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
      *   o rho2 = max_share/2 (because penalty of rho2 is 2)
      */
 
-    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 10);
     sys_cnst->unshare(); // FATPIPE
-    lmm::Variable* rho_1 = Sys->variable_new(nullptr, 1);
-    lmm::Variable* rho_2 = Sys->variable_new(nullptr, 2);
+    lmm::Variable* rho_1 = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2 = Sys.variable_new(nullptr, 2);
 
-    Sys->expand(sys_cnst, rho_1, 1);
-    Sys->expand(sys_cnst, rho_2, 1);
-    Sys->solve();
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
+    Sys.solve();
 
     REQUIRE(double_equals(rho_1->get_value(), 10, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 10 / 2, sg_maxmin_precision));
@@ -193,14 +192,14 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
      *   o rho2 = max_share/2 (because penalty of rho2 is 1)
      */
 
-    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 10);
     sys_cnst->unshare(); // FATPIPE
-    lmm::Variable* rho_1 = Sys->variable_new(nullptr, 1);
-    lmm::Variable* rho_2 = Sys->variable_new(nullptr, 1);
+    lmm::Variable* rho_1 = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2 = Sys.variable_new(nullptr, 1);
 
-    Sys->expand(sys_cnst, rho_1, 1);
-    Sys->expand(sys_cnst, rho_2, 2);
-    Sys->solve();
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 2);
+    Sys.solve();
 
     REQUIRE(double_equals(rho_1->get_value(), 5, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 5, sg_maxmin_precision));
@@ -223,14 +222,14 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
      *   o rho1 <= C and 2*rho2 <= C
      */
 
-    lmm::Constraint* sys_cnst = Sys->constraint_new(nullptr, 10);
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 10);
     sys_cnst->unshare();
-    lmm::Variable* sys_var_1 = Sys->variable_new(nullptr, 1);
-    lmm::Variable* sys_var_2 = Sys->variable_new(nullptr, 2);
+    lmm::Variable* sys_var_1 = Sys.variable_new(nullptr, 1);
+    lmm::Variable* sys_var_2 = Sys.variable_new(nullptr, 2);
 
-    Sys->expand(sys_cnst, sys_var_1, 1);
-    Sys->expand(sys_cnst, sys_var_2, 2);
-    Sys->solve();
+    Sys.expand(sys_cnst, sys_var_1, 1);
+    Sys.expand(sys_cnst, sys_var_2, 2);
+    Sys.solve();
 
     REQUIRE(double_equals(sys_var_1->get_value(), 10, sg_maxmin_precision));
     REQUIRE(double_equals(sys_var_2->get_value(), 5, sg_maxmin_precision));
@@ -255,23 +254,23 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
      *   o Each constraint should satisfy max(a_i * rho_i) <= C_r
      */
 
-    lmm::Constraint* sys_cnst_1 = Sys->constraint_new(nullptr, 10);
-    lmm::Constraint* sys_cnst_2 = Sys->constraint_new(nullptr, 60);
+    lmm::Constraint* sys_cnst_1 = Sys.constraint_new(nullptr, 10);
+    lmm::Constraint* sys_cnst_2 = Sys.constraint_new(nullptr, 60);
     sys_cnst_1->unshare(); // FATPIPE
     sys_cnst_2->unshare();
 
-    lmm::Variable* rho_1 = Sys->variable_new(nullptr, 1, -1, 2);
-    lmm::Variable* rho_2 = Sys->variable_new(nullptr, 2, -1, 1);
-    lmm::Variable* rho_3 = Sys->variable_new(nullptr, 1, -1, 1);
+    lmm::Variable* rho_1 = Sys.variable_new(nullptr, 1, -1, 2);
+    lmm::Variable* rho_2 = Sys.variable_new(nullptr, 2, -1, 1);
+    lmm::Variable* rho_3 = Sys.variable_new(nullptr, 1, -1, 1);
 
     // Constraint 1
-    Sys->expand(sys_cnst_1, rho_1, 1);
-    Sys->expand(sys_cnst_1, rho_2, 2);
+    Sys.expand(sys_cnst_1, rho_1, 1);
+    Sys.expand(sys_cnst_1, rho_2, 2);
 
     // Constraint 2
-    Sys->expand(sys_cnst_2, rho_1, 2);
-    Sys->expand(sys_cnst_2, rho_3, 1);
-    Sys->solve();
+    Sys.expand(sys_cnst_2, rho_1, 2);
+    Sys.expand(sys_cnst_2, rho_3, 1);
+    Sys.solve();
 
     double rho_1_share = 10; // Start by solving the first constraint (results is the same as previous tests)
     REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_maxmin_precision));
@@ -279,6 +278,5 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     REQUIRE(double_equals(rho_3->get_value(), 60, sg_maxmin_precision));
   }
 
-  Sys->variable_free_all();
-  delete Sys;
+  Sys.variable_free_all();
 }

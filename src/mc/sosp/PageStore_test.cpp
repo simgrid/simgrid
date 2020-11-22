@@ -5,6 +5,7 @@
 
 #include "src/include/catch.hpp"
 
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -25,7 +26,7 @@ public:
   static std::size_t pagesize;
   static std::unique_ptr<PageStore> store;
   static void* data;
-  static size_t pageno[4];
+  static std::array<size_t, 4> pageno;
   static int value;
 
   // member functions used by the test suite(s)
@@ -43,7 +44,7 @@ public:
 std::size_t helper_tests::pagesize             = 0;
 std::unique_ptr<PageStore> helper_tests::store = nullptr;
 void* helper_tests::data                       = nullptr;
-size_t helper_tests::pageno[4]                 = {0, 0, 0, 0};
+std::array<size_t, 4> helper_tests::pageno     = {{0, 0, 0, 0}};
 int helper_tests::value                        = 0;
 
 void helper_tests::Init()

@@ -159,7 +159,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env, jobje
     return -1;
   }
 
-  return (jdouble)sg_host_speed(host);
+  return (jdouble)sg_host_get_speed(host);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber(JNIEnv * env, jobject jhost) {
@@ -364,7 +364,7 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getPstatesCount(JNIEnv* env, jo
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentPowerPeak(JNIEnv* env, jobject jhost)
 {
   const_sg_host_t host = jhost_get_native(env, jhost);
-  return sg_host_speed(host);
+  return sg_host_get_speed(host);
 }
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, jobject jhost, jint pstate)
 {
@@ -375,7 +375,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getLoad(JNIEnv* env, jobject jhost)
 {
   const_sg_host_t host = jhost_get_native(env, jhost);
-  return sg_host_load(host);
+  return sg_host_get_load(host);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCurrentLoad (JNIEnv *env, jobject jhost)

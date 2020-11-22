@@ -47,6 +47,7 @@ class CMakeBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
+        from pybind11 import get_cmake_dir
         extdir = os.path.abspath(os.path.dirname(
             self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
@@ -54,7 +55,9 @@ class CMakeBuild(build_ext):
                       '-Denable_smpi=OFF',
                       '-Denable_java=OFF',
                       '-Denable_python=ON',
-                      '-Dminimal-bindings=ON']
+                      '-Dminimal-bindings=ON',
+                      '-Dpybind11_DIR=' + get_cmake_dir()
+                      ]
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]

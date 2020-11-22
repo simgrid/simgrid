@@ -23,7 +23,7 @@ public:
   bool operator()(s4u::Host* const a, s4u::Host* const b) const;
 };
 
-typedef boost::heap::fibonacci_heap<s4u::Host*, boost::heap::compare<compare_hosts>>::handle_type heap_handle;
+using heap_handle = boost::heap::fibonacci_heap<s4u::Host*, boost::heap::compare<compare_hosts>>::handle_type;
 
 /** Structure that imitates a std::pair, but it allows us to use meaningful names instead of .first and .second */
 struct XBT_PRIVATE pair_handle_load

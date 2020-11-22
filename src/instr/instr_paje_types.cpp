@@ -15,9 +15,15 @@ static std::set<std::string> platform_variables;
 namespace simgrid {
 namespace instr {
 
-Type::Type(e_event_type event_type, const std::string& name, const std::string& alias, const std::string& color,
+long long int new_paje_id()
+{
+  static long long int type_id = 0;
+  return type_id++;
+}
+
+Type::Type(PajeEventType event_type, const std::string& name, const std::string& alias, const std::string& color,
            Type* father)
-    : id_(new_paje_id()), name_(name), color_(color), father_(father)
+    : name_(name), color_(color), father_(father)
 {
   if (name_.empty() || alias.empty())
     throw TracingError(XBT_THROW_POINT, "can't create a new type with no name or alias");
@@ -31,17 +37,18 @@ Type::Type(e_event_type event_type, const std::string& name, const std::string& 
 
 void StateType::set_event(const std::string& value_name)
 {
-  events_.push_back(new StateEvent(get_issuer(), this, PAJE_SetState, get_entity_value(value_name), nullptr));
+  events_.push_back(new StateEvent(get_issuer(), this, PajeEventType::SetState, get_entity_value(value_name), nullptr));
 }
 
 void StateType::push_event(const std::string& value_name, TIData* extra)
 {
-  events_.push_back(new StateEvent(get_issuer(), this, PAJE_PushState, get_entity_value(value_name), extra));
+  events_.push_back(new StateEvent(get_issuer(), this, PajeEventType::PushState, get_entity_value(value_name), extra));
 }
 
 void StateType::push_event(const std::string& value_name)
 {
-  events_.push_back(new StateEvent(get_issuer(), this, PAJE_PushState, get_entity_value(value_name), nullptr));
+  events_.push_back(
+      new StateEvent(get_issuer(), this, PajeEventType::PushState, get_entity_value(value_name), nullptr));
 }
 
 void StateType::pop_event()
@@ -51,7 +58,7 @@ void StateType::pop_event()
 
 void StateType::pop_event(TIData* extra)
 {
-  events_.push_back(new StateEvent(get_issuer(), this, PAJE_PopState, nullptr, extra));
+  events_.push_back(new StateEvent(get_issuer(), this, PajeEventType::PopState, nullptr, extra));
 }
 
 void VariableType::instr_event(double now, double delta, const char* resource, double value)
@@ -76,17 +83,17 @@ void VariableType::instr_event(double now, double delta, const char* resource, d
 
 void VariableType::set_event(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PAJE_SetVariable, value));
+  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PajeEventType::SetVariable, value));
 }
 
 void VariableType::add_event(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PAJE_AddVariable, value));
+  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PajeEventType::AddVariable, value));
 }
 
 void VariableType::sub_event(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PAJE_SubVariable, value));
+  events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PajeEventType::SubVariable, value));
 }
 
 void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key)
@@ -96,12 +103,12 @@ void LinkType::start_event(Container* startContainer, const std::string& value, 
 
 void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key, int size)
 {
-  new LinkEvent(get_issuer(), this, PAJE_StartLink, startContainer, value, key, size);
+  new LinkEvent(get_issuer(), this, PajeEventType::StartLink, startContainer, value, key, size);
 }
 
 void LinkType::end_event(Container* endContainer, const std::string& value, const std::string& key)
 {
-  new LinkEvent(get_issuer(), this, PAJE_EndLink, endContainer, value, key, -1);
+  new LinkEvent(get_issuer(), this, PajeEventType::EndLink, endContainer, value, key, -1);
 }
 
 Type* Type::by_name(const std::string& name)

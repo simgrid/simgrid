@@ -23,7 +23,7 @@ int main(int argc, char** argv)
   XBT_INFO("Link count: %zu", links.size());
 
   std::sort(links.begin(), links.end(), [](const simgrid::s4u::Link* a, const simgrid::s4u::Link* b) {
-    return strcmp(sg_link_name(a), sg_link_name(b)) < 0;
+    return strcmp(sg_link_get_name(a), sg_link_get_name(b)) < 0;
   });
 
   for (const auto& l : links) {

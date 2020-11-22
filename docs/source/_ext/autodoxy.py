@@ -407,7 +407,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
 
         xpath_query_noparam = ('{:s}/memberdef[@kind="function"]/name[text()="{:s}"]/..').format(prefix, meth)
         xpath_query = ""
-        if self.argsstring != None:
+        if self.argsstring is not None:
             xpath_query = ('{:s}/memberdef[@kind="function" and argsstring/text()="{:s}"]/name[text()="{:s}"]/..').format(prefix,self.argsstring,meth)
         else:
             xpath_query = xpath_query_noparam
@@ -415,7 +415,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
         if not match:
             logger = logging.getLogger(__name__)
 
-            if self.argsstring != None:
+            if self.argsstring is not None:
                 candidates = get_doxygen_root().xpath(xpath_query_noparam)
                 if len(candidates) == 1:
                     logger.warning("[autodoxy] Using method '{}{}{}' instead of '{}{}{}'. You may want to drop your specification of the signature, or to fix it."

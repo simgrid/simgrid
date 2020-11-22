@@ -207,20 +207,17 @@ int Group::excl(int n, const int *ranks, MPI_Group * newgroup){
   int oldsize = size_;
   int newsize = oldsize - n;
   *newgroup = new  Group(newsize);
-  auto* to_exclude = new int[size_];
-  for (int i     = 0; i < oldsize; i++)
-    to_exclude[i]=0;
-  for (int i            = 0; i < n; i++)
-    to_exclude[ranks[i]]=1;
+  std::vector<bool> to_exclude(size_, false);
+  for (int i = 0; i < n; i++)
+    to_exclude[ranks[i]] = true;
   int j = 0;
   for (int i = 0; i < oldsize; i++) {
-    if(to_exclude[i]==0){
+    if (not to_exclude[i]) {
       s4u::Actor* actor = this->actor(i);
       (*newgroup)->set_mapping(actor, j);
       j++;
     }
   }
-  delete[] to_exclude;
   return MPI_SUCCESS;
 }
 
@@ -318,9 +315,8 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
 MPI_Group Group::f2c(int id) {
   if(id == -2) {
     return MPI_GROUP_EMPTY;
-  } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
-    char key[KEY_SIZE];
-    return static_cast<MPI_Group>(F2C::f2c_lookup()->at(get_key(key, id)));
+  } else if (F2C::lookup() != nullptr && id >= 0) {
+    return static_cast<MPI_Group>(F2C::lookup()->at(id));
   } else {
     return MPI_GROUP_NULL;
   }

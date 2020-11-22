@@ -357,7 +357,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     ns3_socket                = elm.first;
     SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
-    XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
+    XBT_DEBUG("Processing flow %p (socket %s, action %p)", sgFlow, ns3_socket.c_str(), action);
     // Because NS3 stops as soon as a flow is finished, the other flows that ends at the same time may remains in an
     // inconsistent state (i.e. remains_ == 0 but finished_ == false).
     // However, SimGrid considers sometimes that an action with remains_ == 0 is finished.
@@ -461,7 +461,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
     }
   }
 
-  static int port_number = 1025; // Port number is limited from 1025 to 65 000
+  static uint16_t port_number = 1;
 
   ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
   ns3::Ptr<ns3::Node> dst_node = dst->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
@@ -482,14 +482,11 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   sink_from_sock.insert({transform_socket_ptr(sock), apps});
 
   sock->Bind(ns3::InetSocketAddress(port_number));
-
   ns3::Simulator::ScheduleNow(&start_flow, sock, addr.c_str(), port_number);
 
-  port_number++;
-  if(port_number > 65000){
-    port_number = 1025;
+  port_number = 1 + (port_number % UINT16_MAX);
+  if (port_number == 1)
     XBT_WARN("Too many connections! Port number is saturated. Trying to use the oldest ports.");
-  }
 
   s4u::Link::on_communicate(*this);
 }

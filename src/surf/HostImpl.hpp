@@ -73,11 +73,10 @@ public:
   void remove_actor(kernel::actor::ActorImpl* actor) { xbt::intrusive_erase(actor_list_, *actor); }
   void add_actor_at_boot(kernel::actor::ProcessArg* arg) { actors_at_boot_.emplace_back(arg); }
 
-  typedef boost::intrusive::list<
+  using ActorList = boost::intrusive::list<
       kernel::actor::ActorImpl,
       boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
-                                    &kernel::actor::ActorImpl::host_actor_list_hook>>
-      ActorList;
+                                    &kernel::actor::ActorImpl::host_actor_list_hook>>;
 
   // FIXME: make these private
   ActorList actor_list_;

@@ -21,6 +21,7 @@ void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex
 /** @brief Handle a condition waiting simcall with timeouts */
 void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
+  simcall_cond_wait_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
   cond->wait(mutex, timeout, simcall->issuer_);
 }
 

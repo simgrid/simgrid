@@ -18,6 +18,7 @@
 #include "src/smpi/include/smpi_actor.hpp"
 
 #include <algorithm>
+#include <array>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (request)");
 
@@ -337,8 +338,8 @@ void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
                        void *recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag,
                        MPI_Comm comm, MPI_Status * status)
 {
-  MPI_Request requests[2];
-  MPI_Status stats[2];
+  std::array<MPI_Request, 2> requests;
+  std::array<MPI_Status, 2> stats;
   int myid = simgrid::s4u::this_actor::get_pid();
   if ((comm->group()->actor(dst)->get_pid() == myid) && (comm->group()->actor(src)->get_pid() == myid)) {
     Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
@@ -352,8 +353,8 @@ void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
   }
   requests[0] = isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm);
   requests[1] = irecv_init(recvbuf, recvcount, recvtype, src, recvtag, comm);
-  startall(2, requests);
-  waitall(2, requests, stats);
+  startall(2, requests.data());
+  waitall(2, requests.data(), stats.data());
   unref(&requests[0]);
   unref(&requests[1]);
   if(status != MPI_STATUS_IGNORE) {
@@ -1117,17 +1118,15 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
 
 MPI_Request Request::f2c(int id)
 {
-  char key[KEY_SIZE];
   if(id==MPI_FORTRAN_REQUEST_NULL)
     return MPI_REQUEST_NULL;
-  return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key(key,id)));
+  return static_cast<MPI_Request>(F2C::lookup()->at(id));
 }
 
 void Request::free_f(int id)
 {
   if (id != MPI_FORTRAN_REQUEST_NULL) {
-    char key[KEY_SIZE];
-    F2C::f2c_lookup()->erase(get_key(key, id));
+    F2C::lookup()->erase(id);
   }
 }
 
@@ -1166,7 +1165,7 @@ int Request::grequest_start(MPI_Grequest_query_function* query_fn, MPI_Grequest_
   (*request)->flags_ |= MPI_REQ_GENERALIZED;
   (*request)->flags_ |= MPI_REQ_PERSISTENT;
   (*request)->refcount_ = 1;
-  ((*request)->generalized_funcs) = new s_smpi_mpi_generalized_request_funcs_t;
+  ((*request)->generalized_funcs)             = new smpi_mpi_generalized_request_funcs_t;
   ((*request)->generalized_funcs)->query_fn=query_fn;
   ((*request)->generalized_funcs)->free_fn=free_fn;
   ((*request)->generalized_funcs)->cancel_fn=cancel_fn;

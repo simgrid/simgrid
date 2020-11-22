@@ -24,14 +24,14 @@ static void worker(int argc, char* argv[])
 
   for (int i = 0; i < 3; i++) {
     char* name    = bprintf("Exec-%d", i);
-    double amount = (6 * (i % 2) + i + 1) * sg_host_speed(sg_host_self());
+    double amount = (6 * (i % 2) + i + 1) * sg_host_get_speed(sg_host_self());
 
     sg_exec_t exec = sg_actor_exec_init(amount);
     sg_exec_set_name(exec, name);
     pending_execs[pending_execs_count++] = exec;
     sg_exec_start(exec);
 
-    XBT_INFO("Activity %s has started for %.0f seconds", name, amount / sg_host_speed(sg_host_self()));
+    XBT_INFO("Activity %s has started for %.0f seconds", name, amount / sg_host_get_speed(sg_host_self()));
     free(name);
   }
 

@@ -26,7 +26,7 @@ public:
   void add_event(double date, Event* evt);
 
 private:
-  typedef std::pair<double, Event*> Qelt;
+  using Qelt = std::pair<double, Event*>;
   std::priority_queue<Qelt, std::vector<Qelt>, std::greater<>> heap_;
 };
 

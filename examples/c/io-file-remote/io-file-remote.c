@@ -56,11 +56,11 @@ int main(int argc, char** argv)
   for (long i = 0; i < host_count; i++) {
     unsigned int disk_count;
     sg_disk_t* disks;
-    sg_host_disks(hosts[i], &disk_count, &disks);
+    sg_host_get_disks(hosts[i], &disk_count, &disks);
     for (unsigned int j = 0; j < disk_count; j++)
       XBT_INFO("Init: %s: %llu/%llu MiB used/free on '%s@%s'", sg_host_get_name(hosts[i]),
                sg_disk_get_size_used(disks[j]) / INMEGA, sg_disk_get_size_free(disks[j]) / INMEGA,
-               sg_disk_name(disks[j]), sg_host_get_name(sg_disk_get_host(disks[j])));
+               sg_disk_get_name(disks[j]), sg_host_get_name(sg_disk_get_host(disks[j])));
     free(disks);
   }
 
@@ -69,10 +69,10 @@ int main(int argc, char** argv)
   for (long i = 0; i < host_count; i++) {
     unsigned int disk_count;
     sg_disk_t* disks;
-    sg_host_disks(hosts[i], &disk_count, &disks);
+    sg_host_get_disks(hosts[i], &disk_count, &disks);
     for (unsigned int j = 0; j < disk_count; j++)
       XBT_INFO("End: %llu/%llu MiB used/free on '%s@%s'", sg_disk_get_size_used(disks[j]) / INMEGA,
-               sg_disk_get_size_free(disks[j]) / INMEGA, sg_disk_name(disks[j]), sg_host_get_name(hosts[i]));
+               sg_disk_get_size_free(disks[j]) / INMEGA, sg_disk_get_name(disks[j]), sg_host_get_name(hosts[i]));
     free(disks);
   }
 

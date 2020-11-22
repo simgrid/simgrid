@@ -40,6 +40,6 @@ private:
 }
 }
 
-typedef simgrid::jedule::Event* jed_event_t;
+using jed_event_t = simgrid::jedule::Event*;
 
 #endif /* JEDULE_EVENTS_H_ */

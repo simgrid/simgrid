@@ -13,7 +13,7 @@ namespace simgrid {
 namespace instr {
 
 class EntityValue {
-  long long int id_;
+  long long int id_ = new_paje_id();
   std::string name_;
   std::string color_;
   Type* father_;

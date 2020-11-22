@@ -152,7 +152,7 @@ void DragonflyZone::generate_link(const std::string& id, int numlinks, resource:
   linkTemplate.bandwidths.push_back(this->bw_ * numlinks);
   linkTemplate.latency   = this->lat_;
   linkTemplate.policy    = this->sharing_policy_;
-  linkTemplate.id        = std::move(id);
+  linkTemplate.id        = id;
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", linkTemplate.id.c_str());
   resource::LinkImpl* link;

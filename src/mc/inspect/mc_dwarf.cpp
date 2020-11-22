@@ -15,6 +15,8 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/remote/RemoteSimulation.hpp"
 
+#include <algorithm>
+#include <array>
 #include <cinttypes>
 #include <cstdint>
 #include <cstdlib>
@@ -961,11 +963,11 @@ static std::vector<char> get_build_id(Elf* elf)
   return std::vector<char>();
 }
 
-static char hexdigits[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
 /** Binary data to hexadecimal */
 static inline std::array<char, 2> to_hex(std::uint8_t byte)
 {
+  constexpr std::array<char, 16> hexdigits{
+      {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'}};
   // Horrid double braces!
   // Apparently, this is needed in C++11 (not in C++14).
   return {{hexdigits[byte >> 4], hexdigits[byte & 0xF]}};
@@ -976,11 +978,8 @@ static std::string to_hex(const char* data, std::size_t count)
 {
   std::string res;
   res.resize(2 * count);
-  for (std::size_t i = 0; i < count; i++) {
-    std::array<char, 2> hex_byte = to_hex(data[i]);
-    for (int j = 0; j < 2; ++j)
-      res[2 * i + j] = hex_byte[j];
-  }
+  for (std::size_t i = 0; i < count; i++)
+    std::copy_n(cbegin(to_hex(data[i])), 2, &res[2 * i]);
   return res;
 }
 

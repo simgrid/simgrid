@@ -32,8 +32,8 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_suspend;
 xbt::signal<void(Actor const&)> s4u::Actor::on_resume;
 xbt::signal<void(Actor const&)> s4u::Actor::on_sleep;
 xbt::signal<void(Actor const&)> s4u::Actor::on_wake_up;
-xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start; // deprecated
-xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;   // deprecated
+xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
+xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329
 xbt::signal<void(Actor const&, Host const& previous_location)> s4u::Actor::on_host_change;
 xbt::signal<void(Actor const&)> s4u::Actor::on_termination;
 xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
@@ -50,7 +50,7 @@ Actor* Actor::self()
 
 ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host] { return self->init(name, host).get(); });
   return actor->get_iface();
@@ -73,7 +73,7 @@ ActorPtr Actor::start(const std::function<void()>& code)
 
 ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::function<void()>& code)
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
       kernel::actor::simcall([self, &name, host, &code] { return self->init(name, host)->start(code); });
 
@@ -103,15 +103,15 @@ int Actor::get_refcount() const
 
 // ***** Actor methods *****
 
-void Actor::join()
+void Actor::join() const
 {
   join(-1);
 }
 
-void Actor::join(double timeout)
+void Actor::join(double timeout) const
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ActorImpl* target = pimpl_;
+  const kernel::actor::ActorImpl* target = pimpl_;
   kernel::actor::simcall_blocking<void>([issuer, target, timeout] {
     if (target->finished_) {
       // The joined process is already finished, just wake up the issuer right away
@@ -252,7 +252,7 @@ double Actor::get_kill_time() const
 
 void Actor::kill()
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::simcall([this, self] { self->kill(pimpl_); });
 }
 
@@ -269,7 +269,7 @@ ActorPtr Actor::by_pid(aid_t pid)
 
 void Actor::kill_all()
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::simcall([self] { self->kill_all(); });
 }
 
@@ -461,7 +461,7 @@ void set_host(Host* new_host)
 {
   simgrid::kernel::actor::ActorImpl::self()->get_iface()->set_host(new_host);
 }
-void migrate(Host* new_host) // deprecated
+void migrate(Host* new_host) // XBT_ATTRIB_DEPRECATED_v329
 {
   set_host(new_host);
 }
@@ -499,13 +499,13 @@ void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char
   simgrid::kernel::actor::ActorCode function;
   if (code)
     function = simgrid::xbt::wrap_main(code, argc, argv);
-  actor->start(std::move(function));
+  actor->start(function);
 }
 
 sg_actor_t sg_actor_create(const char* name, sg_host_t host, xbt_main_func_t code, int argc, const char* const* argv)
 {
   simgrid::kernel::actor::ActorCode function = simgrid::xbt::wrap_main(code, argc, argv);
-  return simgrid::s4u::Actor::init(name, host)->start(std::move(function)).get();
+  return simgrid::s4u::Actor::init(name, host)->start(function).get();
 }
 
 void sg_actor_set_stacksize(sg_actor_t actor, unsigned size)
@@ -665,7 +665,7 @@ void sg_actor_set_host(sg_actor_t actor, sg_host_t host)
 {
   actor->set_host(host);
 }
-void sg_actor_migrate(sg_actor_t process, sg_host_t host) // deprecated
+void sg_actor_migrate(sg_actor_t process, sg_host_t host) // XBT_ATTRIB_DEPRECATED_v329
 {
   process->set_host(host);
 }
@@ -676,7 +676,7 @@ void sg_actor_migrate(sg_actor_t process, sg_host_t host) // deprecated
  * @param actor the actor to wait for
  * @param timeout wait until the actor is over, or the timeout expires
  */
-void sg_actor_join(sg_actor_t actor, double timeout)
+void sg_actor_join(const_sg_actor_t actor, double timeout)
 {
   actor->join(timeout);
 }
@@ -761,14 +761,24 @@ const char* sg_actor_self_get_name()
   return simgrid::s4u::this_actor::get_cname();
 }
 
-void* sg_actor_self_data()
+void* sg_actor_self_get_data()
 {
   return simgrid::s4u::Actor::self()->get_data();
 }
 
-void sg_actor_self_data_set(void* userdata)
+void sg_actor_self_set_data(void* userdata)
 {
   simgrid::s4u::Actor::self()->set_data(userdata);
+}
+
+void* sg_actor_self_data() // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_actor_self_get_data();
+}
+
+void sg_actor_self_data_set(void* userdata) // XBT_ATTRIB_DEPRECATED_v330
+{
+  sg_actor_self_set_data(userdata);
 }
 
 sg_actor_t sg_actor_self()
@@ -776,7 +786,7 @@ sg_actor_t sg_actor_self()
   return simgrid::s4u::Actor::self();
 }
 
-void sg_actor_self_execute(double flops) // XBT_DEPRECATED_v330
+void sg_actor_self_execute(double flops) // XBT_ATTRIB_DEPRECATED_v330
 {
   simgrid::s4u::this_actor::execute(flops);
 }
@@ -815,15 +825,27 @@ void sg_actor_unref(const_sg_actor_t actor)
 }
 
 /** @brief Return the user data of a #sg_actor_t */
-void* sg_actor_data(const_sg_actor_t actor)
+void* sg_actor_get_data(const_sg_actor_t actor)
 {
   return actor->get_data();
 }
+
 /** @brief Set the user data of a #sg_actor_t */
-void sg_actor_data_set(sg_actor_t actor, void* userdata)
+void sg_actor_set_data(sg_actor_t actor, void* userdata)
 {
   actor->set_data(userdata);
 }
+
+void* sg_actor_data(const_sg_actor_t actor) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_actor_get_data(actor);
+}
+
+void sg_actor_data_set(sg_actor_t actor, void* userdata) // XBT_ATTRIB_DEPRECATED_v330
+{
+  sg_actor_set_data(actor, userdata);
+}
+
 /** @brief Add a function to the list of "on_exit" functions for the current process.
  *  The on_exit functions are the functions executed when your process is killed.
  *  You should use them to free the data used by your process.

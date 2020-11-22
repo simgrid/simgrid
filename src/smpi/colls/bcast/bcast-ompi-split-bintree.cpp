@@ -112,23 +112,20 @@ int bcast__ompi_split_bintree( void* buffer,
     counts[0] = count/2;
     if (count % 2 != 0) counts[0]++;
     counts[1] = count - counts[0];
-    if ( segsize > 0 ) {
-        /* Note that ompi_datatype_type_size() will never return a negative
-           value in typelng; it returns an int [vs. an unsigned type]
-           because of the MPI spec. */
-        if (segsize < ((uint32_t)type_size)) {
-          segsize = type_size; /* push segsize up to hold one type */
-        }
-        segcount[0] = segcount[1] = segsize / type_size;
-        num_segments[0] = counts[0]/segcount[0];
-        if ((counts[0] % segcount[0]) != 0) num_segments[0]++;
-        num_segments[1] = counts[1]/segcount[1];
-        if ((counts[1] % segcount[1]) != 0) num_segments[1]++;
-    } else {
-        segcount[0]     = counts[0];
-        segcount[1]     = counts[1];
-        num_segments[0] = num_segments[1] = 1;
+
+    /* Note that ompi_datatype_type_size() will never return a negative
+       value in typelng; it returns an int [vs. an unsigned type]
+       because of the MPI spec. */
+    if (segsize < ((uint32_t)type_size)) {
+      segsize = type_size; /* push segsize up to hold one type */
     }
+    segcount[0] = segcount[1] = segsize / type_size;
+    num_segments[0]           = counts[0] / segcount[0];
+    if ((counts[0] % segcount[0]) != 0)
+      num_segments[0]++;
+    num_segments[1] = counts[1] / segcount[1];
+    if ((counts[1] % segcount[1]) != 0)
+      num_segments[1]++;
 
     /* if the message is too small to be split into segments */
     if( (counts[0] == 0 || counts[1] == 0) ||

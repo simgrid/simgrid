@@ -99,7 +99,7 @@ simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file{"smpi/comp-adj
         std::ifstream fstream(filename);
         xbt_assert(fstream.is_open(), "Could not open file %s. Does it exist?", filename.c_str());
         std::string line;
-        typedef boost::tokenizer<boost::escaped_list_separator<char>> Tokenizer;
+        using Tokenizer = boost::tokenizer<boost::escaped_list_separator<char>>;
         std::getline(fstream, line); // Skip the header line
         while (std::getline(fstream, line)) {
           Tokenizer tok(line);
@@ -183,6 +183,7 @@ void smpi_init_options(){
     return;
   simgrid::config::declare_flag<bool>("smpi/display-timing", "Whether we should display the timing after simulation.", false);
   simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.", false);
+  simgrid::config::declare_flag<std::string>("smpi/tmpdir", "tmp dir for dlopen files", "/tmp");
 
   simgrid::config::declare_flag<std::string>("smpi/coll-selector", "Which collective selector to use", "default");
   simgrid::config::declare_flag<std::string>("smpi/gather", "Which collective to use for gather", "");

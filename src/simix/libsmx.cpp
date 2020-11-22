@@ -62,12 +62,12 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
   return simcall_BODY_execution_waitany_for(execs, count, timeout);
 }
 
-void simcall_process_join(smx_actor_t process, double timeout) // XBT_DEPRECATED_v328
+void simcall_process_join(smx_actor_t process, double timeout) // XBT_ATTRIB_DEPRECATED_v328
 {
   simgrid::kernel::actor::ActorImpl::self()->join(process, timeout);
 }
 
-void simcall_process_suspend(smx_actor_t process) // XBT_DEPRECATED_v328
+void simcall_process_suspend(smx_actor_t process) // XBT_ATTRIB_DEPRECATED_v328
 {
   process->get_iface()->suspend();
 }
@@ -184,11 +184,11 @@ simcall_comm_iprobe(smx_mailbox_t mbox, int type, bool (*match_fun)(void*, void*
 unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count,
                                   double timeout) // XBT_ATTRIB_DEPRECATED_v330
 {
-  auto rcomms = std::make_unique<simgrid::kernel::activity::CommImpl*[]>(count);
-  std::transform(comms, comms + count, rcomms.get(), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
+  std::vector<simgrid::kernel::activity::CommImpl*> rcomms(count);
+  std::transform(comms, comms + count, begin(rcomms), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
-  return simcall_BODY_comm_waitany(rcomms.get(), count, timeout);
+  return simcall_BODY_comm_waitany(rcomms.data(), rcomms.size(), timeout);
 }
 
 unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout)
@@ -203,11 +203,11 @@ int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], siz
 {
   if (count == 0)
     return -1;
-  auto rcomms = std::make_unique<simgrid::kernel::activity::CommImpl*[]>(count);
-  std::transform(comms, comms + count, rcomms.get(), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
+  std::vector<simgrid::kernel::activity::CommImpl*> rcomms(count);
+  std::transform(comms, comms + count, begin(rcomms), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
-  return simcall_BODY_comm_testany(rcomms.get(), count);
+  return simcall_BODY_comm_testany(rcomms.data(), rcomms.size());
 }
 
 int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count)

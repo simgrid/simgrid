@@ -96,7 +96,7 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+    const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
     kernel::actor::simcall([this, self] {
       for (VirtualMachine* const& vm : vm::VirtualMachineImpl::allVms_)
         if (vm->get_pm() == this) {
@@ -267,7 +267,7 @@ std::vector<Disk*> Host::get_disks() const
   return kernel::actor::simcall([this] { return this->pimpl_->get_disks(); });
 }
 
-void Host::add_disk(Disk* disk)
+void Host::add_disk(const Disk* disk)
 {
   kernel::actor::simcall([this, disk] { this->pimpl_->add_disk(disk); });
 }
@@ -369,29 +369,37 @@ xbt_dynar_t sg_hosts_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
 // ========= Layering madness ==============*
 
 // ========== User data Layer ==========
-void* sg_host_data(const_sg_host_t host)
+void* sg_host_get_data(const_sg_host_t host)
 {
   return host->get_data();
 }
-void sg_host_data_set(sg_host_t host, void* userdata)
+void sg_host_set_data(sg_host_t host, void* userdata)
 {
   host->set_data(userdata);
 }
-void* sg_host_user(sg_host_t host) // deprecated
+void* sg_host_data(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_data(host);
+}
+void sg_host_data_set(sg_host_t host, void* userdata) // XBT_ATTRIB_DEPRECATED_v330
+{
+  sg_host_set_data(host, userdata);
+}
+void* sg_host_user(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v328
 {
   return host->get_data();
 }
-void sg_host_user_set(sg_host_t host, void* userdata) // deprecated
+void sg_host_user_set(sg_host_t host, void* userdata) // XBT_ATTRIB_DEPRECATED_v328
 {
   host->set_data(userdata);
 }
-void sg_host_user_destroy(sg_host_t host) // deprecated
+void sg_host_user_destroy(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v328
 {
   host->set_data(nullptr);
 }
 
 // ========= storage related functions ============
-void sg_host_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
+void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
 {
   std::vector<sg_disk_t> list = host->get_disks();
   *disk_count                 = list.size();
@@ -425,9 +433,14 @@ xbt_dynar_t sg_host_get_attached_storage_list(const_sg_host_t host)
 // =========== user-level functions ===============
 // ================================================
 /** @brief Returns the total speed of a host */
-double sg_host_speed(const_sg_host_t host)
+double sg_host_get_speed(const_sg_host_t host)
 {
   return host->get_speed();
+}
+
+double sg_host_speed(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_speed(host);
 }
 
 /** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
@@ -558,7 +571,7 @@ void sg_host_set_property_value(sg_host_t host, const char* name, const char* va
  * @param to where to
  * @param links [OUT] where to store the list of links (must exist, cannot be nullptr).
  */
-void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
+void sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   from->route_to(to, vlinks, nullptr);
@@ -571,7 +584,7 @@ void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
  * @param from where from
  * @param to where to
  */
-double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
+double sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   double res = 0;
@@ -584,7 +597,7 @@ double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to)
  * @param from where from
  * @param to where to
  */
-double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
+double sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
 {
   double min_bandwidth = -1.0;
 
@@ -596,6 +609,21 @@ double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
       min_bandwidth = bandwidth;
   }
   return min_bandwidth;
+}
+
+void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links) // XBT_ATTRIB_DEPRECATED_v330
+{
+  sg_host_get_route(from, to, links);
+}
+
+double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_route_latency(from, to);
+}
+
+double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_route_bandwidth(from, to);
 }
 
 void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
@@ -648,7 +676,12 @@ const char* sg_host_self_get_name()
   return res;
 }
 
-double sg_host_load(const_sg_host_t host)
+double sg_host_get_load(const_sg_host_t host)
 {
   return host->get_load();
+}
+
+double sg_host_load(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
+{
+  return sg_host_get_load(host);
 }

@@ -152,10 +152,10 @@ int PMPI_Get_address(const void *location, MPI_Aint * address)
 
 int PMPI_Get_processor_name(char *name, int *resultlen)
 {
-  strncpy(name, sg_host_self()->get_cname(),
-          strlen(sg_host_self()->get_cname()) < MPI_MAX_PROCESSOR_NAME - 1 ? strlen(sg_host_self()->get_cname()) + 1
-                                                                           : MPI_MAX_PROCESSOR_NAME - 1);
-  *resultlen = strlen(name) > MPI_MAX_PROCESSOR_NAME ? MPI_MAX_PROCESSOR_NAME : strlen(name);
+  int len = std::min<int>(sg_host_self()->get_name().size(), MPI_MAX_PROCESSOR_NAME - 1);
+  std::string(sg_host_self()->get_name()).copy(name, len);
+  name[len]  = '\0';
+  *resultlen = len;
 
   return MPI_SUCCESS;
 }
@@ -209,9 +209,8 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
 
 int PMPI_Error_string(int errorcode, char* string, int* resultlen)
 {
-  static const char* smpi_error_string[] = {FOREACH_ERROR(GENERATE_STRING)};
-  constexpr int nerrors                  = (sizeof smpi_error_string) / (sizeof smpi_error_string[0]);
-  if (errorcode < 0 || errorcode >= nerrors || string == nullptr)
+  static const std::vector<const char*> smpi_error_string = {FOREACH_ERROR(GENERATE_STRING)};
+  if (errorcode < 0 || static_cast<size_t>(errorcode) >= smpi_error_string.size() || string == nullptr)
     return MPI_ERR_ARG;
 
   int len    = snprintf(string, MPI_MAX_ERROR_STRING, "%s", smpi_error_string[errorcode]);

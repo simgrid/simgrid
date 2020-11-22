@@ -53,7 +53,7 @@ public:
 
 } // namespace jedule
 } // namespace simgrid
-typedef simgrid::jedule::Container * jed_container_t;
+using jed_container_t = simgrid::jedule::Container*;
 void get_resource_selection_by_hosts(std::vector<simgrid::jedule::Subset>& subset_list,
                                      const std::vector<sg_host_t>& host_list);
 

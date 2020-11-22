@@ -233,7 +233,6 @@ MPI_Comm Comm::split(int color, int key)
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->split(color, key);
   int system_tag = -123;
-  int* recvbuf;
 
   MPI_Group group_root = nullptr;
   MPI_Group group_out  = nullptr;
@@ -241,19 +240,14 @@ MPI_Comm Comm::split(int color, int key)
   int myrank           = this->rank();
   int size             = this->size();
   /* Gather all colors and keys on rank 0 */
-  int* sendbuf = xbt_new(int, 2);
-  sendbuf[0] = color;
-  sendbuf[1] = key;
-  if (myrank == 0) {
-    recvbuf = xbt_new(int, 2 * size);
-  } else {
-    recvbuf = nullptr;
-  }
-  gather__default(sendbuf, 2, MPI_INT, recvbuf, 2, MPI_INT, 0, this);
-  xbt_free(sendbuf);
+  const std::array<int, 2> sendbuf = {{color, key}};
+  std::vector<int> recvbuf;
+  if (myrank == 0)
+    recvbuf.resize(2 * size);
+  gather__default(sendbuf.data(), 2, MPI_INT, recvbuf.data(), 2, MPI_INT, 0, this);
   /* Do the actual job */
   if (myrank == 0) {
-    MPI_Group* group_snd = xbt_new(MPI_Group, size);
+    std::vector<MPI_Group> group_snd(size);
     std::vector<std::pair<int, int>> rankmap;
     rankmap.reserve(size);
     for (int i = 0; i < size; i++) {
@@ -277,7 +271,7 @@ MPI_Comm Comm::split(int color, int key)
           s4u::Actor* actor = group->actor(rankmap[j].second);
           group_out->set_mapping(actor, j);
         }
-        MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
+        std::vector<MPI_Request> requests(rankmap.size());
         int reqs              = 0;
         for (auto const& rank : rankmap) {
           if (rank.second != 0) {
@@ -289,12 +283,9 @@ MPI_Comm Comm::split(int color, int key)
         if(i != 0 && group_out != MPI_COMM_WORLD->group() && group_out != MPI_GROUP_EMPTY)
           Group::unref(group_out);
 
-        Request::waitall(reqs, requests, MPI_STATUS_IGNORE);
-        xbt_free(requests);
+        Request::waitall(reqs, requests.data(), MPI_STATUS_IGNORE);
       }
     }
-    xbt_free(recvbuf);
-    xbt_free(group_snd);
     group_out = group_root; /* exit with root's group */
   } else {
     if(color != MPI_UNDEFINED) {
@@ -508,10 +499,9 @@ MPI_Comm Comm::f2c(int id) {
     return MPI_COMM_SELF;
   } else if(id==0){
     return MPI_COMM_WORLD;
-  } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
-    char key[KEY_SIZE];
-    const auto& lookup = F2C::f2c_lookup();
-    auto comm          = lookup->find(get_key(key, id));
+  } else if (F2C::lookup() != nullptr && id >= 0) {
+    const auto& lookup = F2C::lookup();
+    auto comm          = lookup->find(id);
     return comm == lookup->end() ? MPI_COMM_NULL : static_cast<MPI_Comm>(comm->second);
   } else {
     return MPI_COMM_NULL;
@@ -519,8 +509,7 @@ MPI_Comm Comm::f2c(int id) {
 }
 
 void Comm::free_f(int id) {
-  char key[KEY_SIZE];
-  F2C::f2c_lookup()->erase(get_key(key, id));
+  F2C::lookup()->erase(id);
 }
 
 void Comm::add_rma_win(MPI_Win win){
