@@ -150,6 +150,7 @@ else()
   if(NOT Python3_FOUND)
     message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
   endif()
+  set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
 endif()
 
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
