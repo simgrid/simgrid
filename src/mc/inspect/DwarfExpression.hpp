@@ -100,7 +100,8 @@ public:
   {
     if (size_ == stack_.size())
       throw evaluation_error("DWARF stack overflow");
-    stack_[size_++] = value;
+    stack_[size_] = value;
+    size_++;
   }
 
   /* Pop a value from the top of the stack */
@@ -108,7 +109,8 @@ public:
   {
     if (size_ == 0)
       throw evaluation_error("DWARF stack underflow");
-    return stack_[--size_];
+    --size_;
+    return stack_[size_];
   }
 
   // These are DWARF operations (DW_OP_foo):
