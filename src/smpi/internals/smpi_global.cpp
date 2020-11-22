@@ -379,13 +379,13 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
 #endif
   // If this point is reached, sendfile() actually is not available.  Copy file by hand.
   std::vector<unsigned char> buf(1024 * 1024 * 4);
-  while (int got = read(fdin, buf.data(), buf.size())) {
+  while (ssize_t got = read(fdin, buf.data(), buf.size())) {
     if (got == -1) {
       xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
     } else {
       const unsigned char* p = buf.data();
-      int todo = got;
-      while (int done = write(fdout, p, todo)) {
+      ssize_t todo           = got;
+      while (ssize_t done = write(fdout, p, todo)) {
         if (done == -1) {
           xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
         } else {
