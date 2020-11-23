@@ -209,6 +209,11 @@ void mc_api::copy_index_comm_pattern(const simgrid::mc::State* state) const
   MC_state_copy_index_communications_pattern((simgrid::mc::State*)state);
 }
 
+kernel::activity::CommImpl* mc_api::get_pattern_comm_addr(smx_simcall_t request) const
+{
+  auto comm_addr = simcall_comm_isend__getraw__result(request);
+  return static_cast<kernel::activity::CommImpl*>(comm_addr);
+}
 std::string mc_api::get_pattern_comm_rdv(void* addr) const
 {
   Remote<kernel::activity::CommImpl> temp_synchro;
@@ -221,10 +226,40 @@ std::string mc_api::get_pattern_comm_rdv(void* addr) const
   return rdv;
 }
 
+unsigned long mc_api::get_pattern_comm_src_proc(void* addr) const
+{
+  Remote<kernel::activity::CommImpl> temp_synchro;
+  mc_model_checker->get_remote_simulation().read(temp_synchro, remote((simgrid::kernel::activity::CommImpl*)addr));
+  const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
+  auto src_proc = mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(synchro->src_actor_.get()))->get_pid();
+  return src_proc;
+}
+
+std::vector<char> mc_api::get_pattern_comm_data(void* addr) const
+{
+  Remote<kernel::activity::CommImpl> temp_synchro;
+  mc_model_checker->get_remote_simulation().read(temp_synchro, remote((simgrid::kernel::activity::CommImpl*)addr));
+  const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
+
+  std::vector<char> buffer {};
+  if (synchro->src_buff_ != nullptr) {
+    buffer.resize(synchro->src_buff_size_);
+    mc_model_checker->get_remote_simulation().read_bytes(buffer.data(), buffer.size(),
+                                                         remote(synchro->src_buff_));
+  }
+  return buffer;
+}
+
+const char* mc_api::get_actor_host_name(smx_actor_t actor) const
+{
+  const char* host_name = MC_smx_actor_get_host_name(actor);
+  return host_name;
+}
+
 std::size_t mc_api::get_remote_heap_bytes() const
 {
   RemoteSimulation& process = mc_model_checker->get_remote_simulation();
-  auto heap_bytes_used = mmalloc_get_bytes_used_remote(process.get_heap()->heaplimit, process.get_malloc_info());
+  auto heap_bytes_used      = mmalloc_get_bytes_used_remote(process.get_heap()->heaplimit, process.get_malloc_info());
   return heap_bytes_used;
 }
 

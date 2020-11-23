@@ -174,7 +174,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
 void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_mc_call_type_t call_type,
                                                        int backtracking)
 {
-  const smx_actor_t issuer = MC_smx_simcall_get_issuer(request);
+  const smx_actor_t issuer = mcapi::get().mc_smx_simcall_get_issuer(request);
   const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[issuer->get_pid()];
   const std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer->get_pid()];
 
@@ -184,7 +184,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
   if (call_type == MC_CALL_TYPE_SEND) {
     /* Create comm pattern */
     pattern->type      = PatternCommunicationType::send;
-    pattern->comm_addr = static_cast<kernel::activity::CommImpl*>(simcall_comm_isend__getraw__result(request));
+    pattern->comm_addr = mcapi::get().get_pattern_comm_addr(request);
 
     Remote<kernel::activity::CommImpl> temp_synchro;
     mc_model_checker->get_remote_simulation().read(temp_synchro, remote(pattern->comm_addr));
@@ -192,11 +192,9 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
 
     char* remote_name = mc_model_checker->get_remote_simulation().read<char*>(RemotePtr<char*>(
         (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->name_ : &synchro->mbox_cpy->name_)));
-    // pattern->rdv      = mc_model_checker->get_remote_simulation().read_string(RemotePtr<char>(remote_name));
-    pattern->rdv      = mc_api::get().get_pattern_comm_rdv(pattern->comm_addr);
-    pattern->src_proc =
-        mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(synchro->src_actor_.get()))->get_pid();
-    pattern->src_host = MC_smx_actor_get_host_name(issuer);
+    pattern->rdv      = mcapi::get().get_pattern_comm_rdv(pattern->comm_addr);
+    pattern->src_proc = mcapi::get().get_pattern_comm_src_proc(pattern->comm_addr);
+    pattern->src_host = mc_api::get().get_actor_host_name(issuer);
 
 #if HAVE_SMPI
     simgrid::smpi::Request mpi_request;
@@ -205,10 +203,17 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
     pattern->tag = mpi_request.tag();
 #endif
 
-    if (synchro->src_buff_ != nullptr) {
-      pattern->data.resize(synchro->src_buff_size_);
-      mc_model_checker->get_remote_simulation().read_bytes(pattern->data.data(), pattern->data.size(),
-                                                           remote(synchro->src_buff_));
+    // if (synchro->src_buff_ != nullptr) {
+    //   pattern->data.resize(synchro->src_buff_size_);
+    //   mc_model_checker->get_remote_simulation().read_bytes(pattern->data.data(), pattern->data.size(),
+    //                                                        remote(synchro->src_buff_));
+    // }
+
+    auto pattern_data = mcapi::get().get_pattern_comm_data(pattern->comm_addr);
+    if(pattern_data.data() != nullptr) {
+      auto data_size = pattern_data.size();
+      pattern->data.resize(data_size);
+      memcpy(pattern->data.data(), pattern_data.data(), data_size);
     }
 #if HAVE_SMPI
     if(mpi_request.detached()){
@@ -300,7 +305,7 @@ std::vector<std::string> CommunicationDeterminismChecker::get_textual_trace() //
   for (auto const& state : stack_) {
     smx_simcall_t req = &state->executed_req_;
     if (req)
-      trace.push_back(request_to_string(req, state->transition_.argument_, RequestType::executed));
+      trace.push_back(mcapi::get().request_to_string(req, state->transition_.argument_, RequestType::executed));
   }
   return trace;
 }

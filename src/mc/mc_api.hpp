@@ -46,7 +46,11 @@ public:
   // COMM FUNCTIONS
   void copy_incomplete_comm_pattern(const simgrid::mc::State* state) const;
   void copy_index_comm_pattern(const simgrid::mc::State* state) const;
+  kernel::activity::CommImpl* get_pattern_comm_addr(smx_simcall_t request) const;
   std::string get_pattern_comm_rdv(void* addr) const;
+  unsigned long get_pattern_comm_src_proc(void* addr) const;
+  std::vector<char> get_pattern_comm_data(void* addr) const;
+  const char* get_actor_host_name(smx_actor_t actor) const;
 
   // REMOTE
   std::size_t get_remote_heap_bytes() const;
