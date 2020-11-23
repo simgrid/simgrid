@@ -55,7 +55,6 @@ static void node(std::vector<std::string> args)
         const auto* msg = static_cast<kademlia::Message*>(node.received_msg);
         if (msg) {
           node.handleFindNode(msg);
-          delete msg->answer_;
           delete msg;
           node.receive_comm = nullptr;
         } else

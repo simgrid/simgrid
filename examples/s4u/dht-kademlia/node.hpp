@@ -11,6 +11,8 @@
 #include "routing_table.hpp"
 #include "s4u-dht-kademlia.hpp"
 
+#include <memory>
+
 namespace kademlia {
 
 class Node {
@@ -30,7 +32,7 @@ public:
   void sendFindNode(unsigned int id, unsigned int destination) const;
   unsigned int sendFindNodeToBest(const Answer* node_list) const;
   void routingTableUpdate(unsigned int id);
-  Answer* findClosest(unsigned int destination_id);
+  std::unique_ptr<Answer> findClosest(unsigned int destination_id);
   bool findNode(unsigned int id_to_find, bool count_in_stats);
   void randomLookup();
   void handleFindNode(const Message* msg);

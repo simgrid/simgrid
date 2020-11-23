@@ -12,7 +12,6 @@ namespace kademlia {
 static void destroy(void* message)
 {
   const auto* msg = static_cast<Message*>(message);
-  delete msg->answer_;
   delete msg;
 }
 
@@ -22,7 +21,6 @@ static void destroy(void* message)
   */
 bool Node::join(unsigned int known_id)
 {
-  const Answer* node_list;
   bool got_answer = false;
 
   /* Add the guy we know to our routing table and ourselves. */
@@ -41,14 +39,13 @@ bool Node::join(unsigned int known_id)
       got_answer = true;
       // retrieve the node list and ping them.
       const auto* msg = static_cast<Message*>(received_msg);
-      node_list    = msg->answer_;
+      const Answer* node_list = msg->answer_.get();
       if (node_list) {
         for (auto const& contact : node_list->getNodes())
           routingTableUpdate(contact.first);
       } else {
         handleFindNode(msg);
       }
-      delete msg->answer_;
       delete msg;
       receive_comm = nullptr;
     } else
@@ -142,9 +139,9 @@ void Node::routingTableUpdate(unsigned int id)
   * @param node : our node
   * @param destination_id : the id of the guy we are trying to find
   */
-Answer* Node::findClosest(unsigned int destination_id)
+std::unique_ptr<Answer> Node::findClosest(unsigned int destination_id)
 {
-  auto* answer = new Answer(destination_id);
+  auto answer = std::make_unique<Answer>(destination_id);
   /* We find the corresponding bucket for the id */
   const Bucket* bucket = table.findBucket(destination_id);
   int bucket_id  = bucket->getId();
@@ -186,14 +183,14 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
   unsigned int steps       = 0;
 
   /* First we build a list of who we already know */
-  Answer* node_list = findClosest(id_to_find);
+  std::unique_ptr<Answer> node_list = findClosest(id_to_find);
   xbt_assert((node_list != nullptr), "node_list incorrect");
   XBT_DEBUG("Doing a FIND_NODE on %08x", id_to_find);
 
   /* Ask the nodes on our list if they have information about the node we are trying to find */
   do {
     answers        = 0;
-    queries        = sendFindNodeToBest(node_list);
+    queries        = sendFindNodeToBest(node_list.get());
     nodes_added    = 0;
     double timeout = simgrid::s4u::Engine::get_clock() + FIND_NODE_TIMEOUT;
     steps++;
@@ -214,7 +211,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
             routingTableUpdate(contact.first);
           answers++;
 
-          nodes_added = node_list->merge(msg->answer_);
+          nodes_added = node_list->merge(msg->answer_.get());
           XBT_DEBUG("Received an answer from %s (%s) with %zu nodes on it", msg->answer_to_->get_cname(),
                     msg->issuer_host_name_.c_str(), msg->answer_->getSize());
         } else {
@@ -228,7 +225,6 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
           timeout += simgrid::s4u::Engine::get_clock() - time_beginreceive;
           time_beginreceive = simgrid::s4u::Engine::get_clock();
         }
-        delete msg->answer_;
         delete msg;
         receive_comm = nullptr;
       } else {
@@ -251,7 +247,6 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
       XBT_VERB("%08x not found in %u steps", id_to_find, steps);
     }
   }
-  delete node_list;
   return destination_found;
 }
 
