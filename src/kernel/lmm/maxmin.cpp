@@ -136,7 +136,7 @@ System::System(bool selective_update) : selective_update_active(selective_update
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
 
   if (selective_update)
-    modified_set_ = new kernel::resource::Action::ModifiedSet();
+    modified_set_ = std::make_unique<kernel::resource::Action::ModifiedSet>();
 }
 
 System::~System()
@@ -154,7 +154,6 @@ System::~System()
     cnst_free(cnst);
 
   xbt_mallocator_free(variable_mallocator_);
-  delete modified_set_;
 }
 
 void System::cnst_free(Constraint* cnst)

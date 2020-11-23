@@ -15,6 +15,7 @@
 #include <boost/intrusive/list.hpp>
 #include <cmath>
 #include <limits>
+#include <memory>
 #include <vector>
 
 namespace simgrid {
@@ -529,7 +530,7 @@ public:
                                                                    &Constraint::saturated_constraint_set_hook_>>
       saturated_constraint_set;
 
-  resource::Action::ModifiedSet* modified_set_ = nullptr;
+  std::unique_ptr<resource::Action::ModifiedSet> modified_set_ = nullptr;
 
 private:
   using dyn_light_t = std::vector<int>;
