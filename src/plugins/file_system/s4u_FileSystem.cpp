@@ -511,7 +511,7 @@ std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::st
 
   auto* parse_content = new std::map<std::string, sg_size_t>();
 
-  std::ifstream* fs = surf_ifsopen(filename);
+  auto fs = std::unique_ptr<std::ifstream>(surf_ifsopen(filename));
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
              (boost::join(surf_path, ":")).c_str());
 
@@ -529,7 +529,6 @@ std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::st
       parse_content->insert({tokens.front(), size});
     }
   } while (not fs->eof());
-  delete fs;
   return parse_content;
 }
 
@@ -540,7 +539,7 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std:
 
   auto* parse_content = new std::map<std::string, sg_size_t>();
 
-  std::ifstream* fs = surf_ifsopen(filename);
+  auto fs = std::unique_ptr<std::ifstream>(surf_ifsopen(filename));
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
              (boost::join(surf_path, ":")).c_str());
 
@@ -558,7 +557,6 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std:
       parse_content->insert({tokens.front(), size});
     }
   } while (not fs->eof());
-  delete fs;
   return parse_content;
 }
 

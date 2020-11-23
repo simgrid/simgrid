@@ -13,6 +13,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <fstream>
+#include <memory>
 #include <ostream>
 #include <sstream>
 #include <unordered_map>
@@ -211,12 +212,11 @@ Profile* Profile::from_file(const std::string& path)
   xbt_assert(not path.empty(), "Cannot parse a trace from an empty filename");
   xbt_assert(trace_list.find(path) == trace_list.end(), "Refusing to define trace %s twice", path.c_str());
 
-  const std::ifstream* f = surf_ifsopen(path);
+  auto f = std::unique_ptr<std::ifstream>(surf_ifsopen(path));
   xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", path.c_str(), (boost::join(surf_path, ":")).c_str());
 
   std::stringstream buffer;
   buffer << f->rdbuf();
-  delete f;
 
   return Profile::from_string(path, buffer.str(), -1);
 }
