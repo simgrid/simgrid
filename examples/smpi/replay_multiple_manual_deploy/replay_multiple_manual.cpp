@@ -66,13 +66,10 @@ static void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int 
 }
 
 // Sleeps for a given amount of time
-static int sleeper_process(const int* param)
+static int sleeper_process(int param)
 {
-  XBT_DEBUG("Sleeping for %d seconds", *param);
-  simgrid::s4u::this_actor::sleep_for(*param);
-
-  delete param;
-
+  XBT_DEBUG("Sleeping for %d seconds", param);
+  simgrid::s4u::this_actor::sleep_for(param);
   return 0;
 }
 
@@ -80,7 +77,7 @@ static int sleeper_process(const int* param)
 static void pop_some_processes(int nb_processes, simgrid::s4u::Host* host)
 {
   for (int i = 0; i < nb_processes; ++i) {
-    auto* param = new int(i + 1);
+    int param = i + 1;
     simgrid::s4u::Actor::create("meh", host, sleeper_process, param);
   }
 }
