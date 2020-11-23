@@ -36,7 +36,6 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   if(info!=MPI_INFO_NULL)
     info->ref();
   int comm_size          = comm->size();
-  name_                  = nullptr;
   opened_                = 0;
   group_                 = MPI_GROUP_NULL;
   requests_              = new std::vector<MPI_Request>();
@@ -72,9 +71,6 @@ Win::~Win(){
 
   delete requests_;
   delete[] connected_wins_;
-  if (name_ != nullptr){
-    xbt_free(name_);
-  }
   if (info_ != MPI_INFO_NULL)
     simgrid::smpi::Info::unref(info_);
   if (errhandler_ != MPI_ERRHANDLER_NULL)
@@ -112,13 +108,11 @@ int Win::detach(const void* /*base*/)
 
 void Win::get_name(char* name, int* length) const
 {
-  if(name_==nullptr){
-    *length=0;
-    name=nullptr;
-    return;
+  *length = name_.length();
+  if (not name_.empty()) {
+    name_.copy(name, *length);
+    name[*length] = '\0';
   }
-  *length = strlen(name_);
-  strncpy(name, name_, *length+1);
 }
 
 void Win::get_group(MPI_Group* group){
@@ -172,7 +166,7 @@ void Win::set_info(MPI_Info info)
 }
 
 void Win::set_name(const char* name){
-  name_ = xbt_strdup(name);
+  name_ = name;
 }
 
 int Win::fence(int assert)

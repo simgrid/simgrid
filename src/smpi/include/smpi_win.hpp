@@ -29,7 +29,7 @@ class Win : public F2C, public Keyval {
   s4u::MutexPtr mut_;
   s4u::Barrier* bar_;
   MPI_Win* connected_wins_;
-  char* name_;
+  std::string name_;
   int opened_;
   MPI_Group group_;
   int count_; //for ordering the accs

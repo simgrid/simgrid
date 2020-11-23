@@ -89,7 +89,7 @@ class Datatype_contents {
 };
 
 class Datatype : public F2C, public Keyval{
-  char* name_ = nullptr;
+  std::string name_ = "";
   /* The id here is the (unique) datatype id used for this datastructure.
    * It's default value is set to -1 since some code expects this return value
    * when no other id has been assigned
@@ -115,7 +115,7 @@ public:
   Datatype& operator=(const Datatype&) = delete;
   ~Datatype() override;
 
-  char* name() const { return name_; }
+  const char* name() const { return name_.c_str(); }
   size_t size() const { return size_; }
   MPI_Aint lb() const { return lb_; }
   MPI_Aint ub() const { return ub_; }

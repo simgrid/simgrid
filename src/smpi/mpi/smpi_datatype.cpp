@@ -151,7 +151,6 @@ Datatype::~Datatype()
 
   cleanup_attr<Datatype>();
   delete contents_;
-  xbt_free(name_);
 }
 
 int Datatype::copy_attrs(Datatype* datatype){
@@ -261,18 +260,16 @@ int Datatype::extent(MPI_Aint* lb, MPI_Aint* extent) const
 
 void Datatype::get_name(char* name, int* length) const
 {
-  if(name_!=nullptr){
-    *length = strlen(name_);
-    strncpy(name, name_, *length+1);
-  }else{
-    *length = 0;
+  *length = name_.length();
+  if (not name_.empty()) {
+    name_.copy(name, *length);
+    name[*length] = '\0';
   }
 }
 
-void Datatype::set_name(const char* name){
-  if(name_!=nullptr &&  (flags_ & DT_FLAG_PREDEFINED) == 0)
-    xbt_free(name_);
-  name_ = xbt_strdup(name);
+void Datatype::set_name(const char* name)
+{
+  name_ = name;
 }
 
 int Datatype::pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, const Comm*)
