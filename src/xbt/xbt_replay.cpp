@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 namespace simgrid {
 namespace xbt {
 
-std::ifstream* action_fs = nullptr;
+std::unique_ptr<std::ifstream> action_fs = nullptr;
 std::unordered_map<std::string, action_fun> action_funs;
 static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
 

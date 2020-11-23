@@ -12,6 +12,7 @@
 
 #include <fstream>
 #include <functional>
+#include <memory>
 #include <queue>
 #include <unordered_map>
 
@@ -20,7 +21,7 @@ namespace xbt {
 /* To split the file if a unique one is given (specific variable for the other case live in runner()) */
 using ReplayAction = std::vector<std::string>;
 
-XBT_PUBLIC_DATA std::ifstream* action_fs;
+XBT_PUBLIC_DATA std::unique_ptr<std::ifstream> action_fs;
 XBT_PUBLIC int replay_runner(const char* actor_name, const char* trace_filename);
 }
 }
