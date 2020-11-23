@@ -31,7 +31,7 @@ public:
                  std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 
 private:
-  RouteCreationArgs** routing_table_ = nullptr;
+  std::vector<RouteCreationArgs*> routing_table_;
 };
 } // namespace routing
 } // namespace kernel

@@ -30,17 +30,19 @@ FloydZone::FloydZone(NetZoneImpl* father, const std::string& name, resource::Net
 
 FloydZone::~FloydZone()
 {
-  if (link_table_ == nullptr) // Dealing with a parse error in the file?
-    return;
-  unsigned int table_size = get_table_size();
   /* Delete link_table */
-  for (unsigned int i = 0; i < table_size; i++)
-    for (unsigned int j = 0; j < table_size; j++)
-      delete TO_FLOYD_LINK(i, j);
-  delete[] link_table_;
+  for (auto const* link : link_table_)
+    delete link;
+}
 
-  delete[] predecessor_table_;
-  delete[] cost_table_;
+void FloydZone::init_tables(unsigned int table_size)
+{
+  if (link_table_.empty()) {
+    /* Create and initialize Cost, Predecessor and Link tables */
+    cost_table_.resize(table_size * table_size, DBL_MAX);   /* link cost from host to host */
+    predecessor_table_.resize(table_size * table_size, -1); /* predecessor host numbers */
+    link_table_.resize(table_size * table_size, nullptr);   /* actual link between src and dst */
+  }
 }
 
 void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
@@ -89,23 +91,9 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
 {
   /* set the size of table routing */
   unsigned int table_size = get_table_size();
+  init_tables(table_size);
 
   add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
-
-  if (not link_table_) {
-    /* Create Cost, Predecessor and Link tables */
-    cost_table_        = new double[table_size * table_size];             /* link cost from host to host */
-    predecessor_table_ = new int[table_size * table_size];                /* predecessor host numbers */
-    link_table_        = new RouteCreationArgs*[table_size * table_size]; /* actual link between src and dst */
-
-    /* Initialize costs and predecessors */
-    for (unsigned int i = 0; i < table_size; i++)
-      for (unsigned int j = 0; j < table_size; j++) {
-        TO_FLOYD_COST(i, j) = DBL_MAX;
-        TO_FLOYD_PRED(i, j) = -1;
-        TO_FLOYD_LINK(i, j) = nullptr;
-      }
-  }
 
   /* Check that the route does not already exist */
   if (gw_dst) // netzone route (to adapt the error message, if any)
@@ -155,21 +143,7 @@ void FloydZone::seal()
 {
   /* set the size of table routing */
   unsigned int table_size = get_table_size();
-
-  if (not link_table_) {
-    /* Create Cost, Predecessor and Link tables */
-    cost_table_        = new double[table_size * table_size];             /* link cost from host to host */
-    predecessor_table_ = new int[table_size * table_size];                /* predecessor host numbers */
-    link_table_        = new RouteCreationArgs*[table_size * table_size]; /* actual link between src and dst */
-
-    /* Initialize costs and predecessors */
-    for (unsigned int i = 0; i < table_size; i++)
-      for (unsigned int j = 0; j < table_size; j++) {
-        TO_FLOYD_COST(i, j) = DBL_MAX;
-        TO_FLOYD_PRED(i, j) = -1;
-        TO_FLOYD_LINK(i, j) = nullptr;
-      }
-  }
+  init_tables(table_size);
 
   /* Add the loopback if needed */
   if (network_model_->loopback_ && hierarchy_ == RoutingMode::base) {

@@ -26,8 +26,8 @@ void FullZone::seal()
   unsigned int table_size = get_table_size();
 
   /* Create table if needed */
-  if (not routing_table_)
-    routing_table_ = new RouteCreationArgs*[table_size * table_size]();
+  if (routing_table_.empty())
+    routing_table_.resize(table_size * table_size, nullptr);
 
   /* Add the loopback if needed */
   if (network_model_->loopback_ && hierarchy_ == RoutingMode::base) {
@@ -44,14 +44,9 @@ void FullZone::seal()
 
 FullZone::~FullZone()
 {
-  if (routing_table_) {
-    unsigned int table_size = get_table_size();
-    /* Delete routing table */
-    for (unsigned int i = 0; i < table_size; i++)
-      for (unsigned int j = 0; j < table_size; j++)
-        delete TO_ROUTE_FULL(i, j);
-    delete[] routing_table_;
-  }
+  /* Delete routing table */
+  for (auto const* route : routing_table_)
+    delete route;
 }
 
 void FullZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* res, double* lat)
@@ -79,8 +74,8 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
 
   unsigned int table_size = get_table_size();
 
-  if (not routing_table_)
-    routing_table_ = new RouteCreationArgs*[table_size * table_size]();
+  if (routing_table_.empty())
+    routing_table_.resize(table_size * table_size, nullptr);
 
   /* Check that the route does not already exist */
   if (gw_dst) // inter-zone route (to adapt the error message, if any)
