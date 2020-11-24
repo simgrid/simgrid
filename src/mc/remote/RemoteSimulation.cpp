@@ -128,11 +128,6 @@ static const std::vector<std::string> filtered_libraries = {
     "libz",
     "libzstd"};
 
-static bool is_simgrid_lib(const std::string& libname)
-{
-  return libname == "libsimgrid";
-}
-
 static bool is_filtered_lib(const std::string& libname)
 {
   return std::find(begin(filtered_libraries), end(filtered_libraries), libname) != end(filtered_libraries);
@@ -299,7 +294,6 @@ void RemoteSimulation::init_memory_map_info()
   this->maestro_stack_end_   = nullptr;
   this->object_infos.resize(0);
   this->binary_info     = nullptr;
-  this->libsimgrid_info = nullptr;
 
   std::vector<simgrid::xbt::VmMap> const& maps = this->memory_map_;
 
@@ -348,8 +342,6 @@ void RemoteSimulation::init_memory_map_info()
     this->object_infos.push_back(info);
     if (is_executable)
       this->binary_info = info;
-    else if (is_simgrid_lib(libname))
-      this->libsimgrid_info = info;
   }
 
   // Resolve time (including across different objects):

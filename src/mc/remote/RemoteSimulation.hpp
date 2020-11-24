@@ -207,7 +207,6 @@ public:
   // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
   std::vector<std::shared_ptr<ObjectInformation>> object_infos;
-  std::shared_ptr<ObjectInformation> libsimgrid_info;
   std::shared_ptr<ObjectInformation> binary_info;
 
   // Copies of MCed SMX data structures
