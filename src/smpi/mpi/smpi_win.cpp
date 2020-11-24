@@ -98,7 +98,7 @@ int Win::detach(const void* /*base*/)
 
 void Win::get_name(char* name, int* length) const
 {
-  *length = name_.length();
+  *length = static_cast<int>(name_.length());
   if (not name_.empty()) {
     name_.copy(name, *length);
     name[*length] = '\0';

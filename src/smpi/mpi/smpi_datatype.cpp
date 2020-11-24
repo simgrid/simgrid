@@ -260,7 +260,7 @@ int Datatype::extent(MPI_Aint* lb, MPI_Aint* extent) const
 
 void Datatype::get_name(char* name, int* length) const
 {
-  *length = name_.length();
+  *length = static_cast<int>(name_.length());
   if (not name_.empty()) {
     name_.copy(name, *length);
     name[*length] = '\0';
