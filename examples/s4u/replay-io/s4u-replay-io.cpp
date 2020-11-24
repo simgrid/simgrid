@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(replay_io, "Messages specific for this example");
     ((void)0)
 
 class Replayer {
-  static std::unordered_map<std::string, std::unique_ptr<simgrid::s4u::File>> opened_files;
+  static std::unordered_map<std::string, simgrid::s4u::File> opened_files;
 
   static void log_action(const simgrid::xbt::ReplayAction& action, double date)
   {
@@ -33,7 +33,7 @@ class Replayer {
   static simgrid::s4u::File* get_file_descriptor(const std::string& file_name)
   {
     std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
-    return opened_files.at(full_name).get();
+    return &opened_files.at(full_name);
   }
 
 public:
@@ -56,9 +56,8 @@ public:
     std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
-    auto file = std::make_unique<simgrid::s4u::File>(file_name, nullptr);
-
-    opened_files.insert({full_name, std::move(file)});
+    opened_files.emplace(std::piecewise_construct, std::forward_as_tuple(full_name),
+                         std::forward_as_tuple(file_name, nullptr));
 
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
@@ -91,7 +90,7 @@ public:
   }
 };
 
-std::unordered_map<std::string, std::unique_ptr<simgrid::s4u::File>> Replayer::opened_files;
+std::unordered_map<std::string, simgrid::s4u::File> Replayer::opened_files;
 
 int main(int argc, char* argv[])
 {
