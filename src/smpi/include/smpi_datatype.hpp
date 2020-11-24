@@ -106,10 +106,9 @@ public:
   static int keyval_id_;
   Datatype_contents* contents_ = nullptr;
 
-  Datatype(int id, int size, MPI_Aint lb, MPI_Aint ub, int flags);
-  Datatype(char* name, int id, int size, MPI_Aint lb, MPI_Aint ub, int flags);
+  Datatype(int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags);
+  Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags);
-  Datatype(char* name, int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(Datatype* datatype, int* ret);
   Datatype(const Datatype&) = delete;
   Datatype& operator=(const Datatype&) = delete;

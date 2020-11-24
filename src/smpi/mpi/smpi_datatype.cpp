@@ -120,7 +120,7 @@ Datatype::Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags) : size_(size),
 }
 
 // for predefined types, so refcount_ = 0.
-Datatype::Datatype(char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
+Datatype::Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
     : name_(name), id(std::to_string(ident)), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0)
 {
   id2type_lookup.insert({id, this});
