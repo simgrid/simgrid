@@ -8,7 +8,6 @@
 #include "xbt/str.h"
 #include <boost/algorithm/string/join.hpp>
 #include <cinttypes>
-#include <memory>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay_comm, "Messages specific for this msg example");
@@ -102,10 +101,15 @@ int main(int argc, char* argv[])
   xbt_replay_action_register("recv", Replayer::recv);
 
   if (argv[3]) {
-    simgrid::xbt::action_fs = std::make_unique<std::ifstream>(argv[3], std::ifstream::in);
+    simgrid::xbt::action_fs = new std::ifstream(argv[3], std::ifstream::in);
   }
 
   e.run();
+
+  if (argv[3]) {
+    delete simgrid::xbt::action_fs;
+    simgrid::xbt::action_fs = nullptr;
+  }
 
   XBT_INFO("Simulation time %g", e.get_clock());
 
