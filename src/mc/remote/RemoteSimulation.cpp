@@ -16,6 +16,7 @@
 #include <libunwind-ptrace.h>
 #include <sys/mman.h> // PROT_*
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -480,102 +481,32 @@ void RemoteSimulation::ignore_region(std::uint64_t addr, std::size_t size)
   region.addr = addr;
   region.size = size;
 
-  if (ignored_regions_.empty()) {
-    ignored_regions_.push_back(region);
-    return;
-  }
-
-  unsigned int cursor                 = 0;
-  const IgnoredRegion* current_region = nullptr;
-
-  int start = 0;
-  int end   = ignored_regions_.size() - 1;
-  while (start <= end) {
-    cursor         = (start + end) / 2;
-    current_region = &ignored_regions_[cursor];
-    if (current_region->addr == addr) {
-      if (current_region->size == size)
-        return;
-      else if (current_region->size < size)
-        start = cursor + 1;
-      else
-        end = cursor - 1;
-    } else if (current_region->addr < addr)
-      start = cursor + 1;
-    else
-      end = cursor - 1;
-  }
-
-  std::size_t position;
-  if (current_region->addr == addr) {
-    if (current_region->size < size)
-      position = cursor + 1;
-    else
-      position = cursor;
-  } else if (current_region->addr < addr)
-    position = cursor + 1;
-  else
-    position = cursor;
-  ignored_regions_.insert(ignored_regions_.begin() + position, region);
+  auto pos = std::lower_bound(ignored_regions_.begin(), ignored_regions_.end(), region,
+                              [](auto const& reg1, auto const& reg2) {
+                                return reg1.addr < reg2.addr || (reg1.addr == reg2.addr && reg1.size < reg2.size);
+                              });
+  if (pos == ignored_regions_.end() || pos->addr != addr || pos->size != size)
+    ignored_regions_.insert(pos, region);
 }
 
 void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
 {
-  if (ignored_heap_.empty()) {
-    ignored_heap_.push_back(region);
-    return;
-  }
-
-  using size_type = std::vector<IgnoredHeapRegion>::size_type;
-
-  size_type start = 0;
-  size_type end   = ignored_heap_.size() - 1;
-
   // Binary search the position of insertion:
-  size_type cursor;
-  while (start <= end) {
-    cursor                     = start + (end - start) / 2;
-    auto const& current_region = ignored_heap_[cursor];
-    if (current_region.address == region.address)
-      return;
-    else if (current_region.address < region.address)
-      start = cursor + 1;
-    else if (cursor != 0)
-      end = cursor - 1;
-    // Avoid underflow:
-    else
-      break;
+  auto pos = std::lower_bound(ignored_heap_.begin(), ignored_heap_.end(), region.address,
+                              [](auto const& reg, const void* address) { return reg.address < address; });
+  if (pos == ignored_heap_.end() || pos->address != region.address) {
+    // Insert it:
+    ignored_heap_.insert(pos, region);
   }
-
-  // Insert it mc_heap_ignore_region_t:
-  if (ignored_heap_[cursor].address < region.address)
-    ++cursor;
-  ignored_heap_.insert(ignored_heap_.begin() + cursor, region);
 }
 
 void RemoteSimulation::unignore_heap(void* address, size_t size)
 {
-  using size_type = std::vector<IgnoredHeapRegion>::size_type;
-
-  size_type start = 0;
-  size_type end   = ignored_heap_.size() - 1;
-
   // Binary search:
-  size_type cursor;
-  while (start <= end) {
-    cursor             = (start + end) / 2;
-    auto const& region = ignored_heap_[cursor];
-    if (region.address < address)
-      start = cursor + 1;
-    else if ((char*)region.address <= ((char*)address + size)) {
-      ignored_heap_.erase(ignored_heap_.begin() + cursor);
-      return;
-    } else if (cursor != 0)
-      end = cursor - 1;
-    // Avoid underflow:
-    else
-      break;
-  }
+  auto pos = std::lower_bound(ignored_heap_.begin(), ignored_heap_.end(), address,
+                              [](auto const& reg, const void* address) { return reg.address < address; });
+  if (pos != ignored_heap_.end() && static_cast<char*>(pos->address) <= static_cast<char*>(address) + size)
+    ignored_heap_.erase(pos);
 }
 
 void RemoteSimulation::ignore_local_variable(const char* var_name, const char* frame_name) const

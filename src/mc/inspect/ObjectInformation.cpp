@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
 #include <cstdint>
 #include <sys/mman.h> // PROT_READ and friends
 #include <vector>
@@ -89,41 +90,14 @@ const Variable* ObjectInformation::find_variable(const char* name) const
 
 void ObjectInformation::remove_global_variable(const char* name)
 {
-  using size_type = std::vector<Variable>::size_type;
-
-  if (this->global_variables.empty())
-    return;
-
   // Binary search:
-  size_type first = 0;
-  size_type last  = this->global_variables.size() - 1;
-
-  while (first <= last) {
-    size_type cursor                   = first + (last - first) / 2;
-    const Variable& current_var        = this->global_variables[cursor];
-    int cmp                            = current_var.name.compare(name);
-
-    if (cmp == 0) {
-      // Find the whole range:
-      first = cursor;
-      while (first != 0 && this->global_variables[first - 1].name == name)
-        first--;
-      size_type size = this->global_variables.size();
-      last           = cursor;
-      while (last != size - 1 && this->global_variables[last + 1].name == name)
-        last++;
-
-      // Remove the whole range:
-      this->global_variables.erase(this->global_variables.begin() + first, this->global_variables.begin() + last + 1);
-
-      return;
-    } else if (cmp < 0)
-      first = cursor + 1;
-    else if (cursor != 0)
-      last = cursor - 1;
-    else
-      break;
-  }
+  auto pos1 = std::lower_bound(this->global_variables.begin(), this->global_variables.end(), name,
+                               [](auto const& var, const char* var_name) { return var.name.compare(var_name) < 0; });
+  // Find the whole range:
+  auto pos2 = std::upper_bound(pos1, this->global_variables.end(), name,
+                               [](const char* var_name, auto const& var) { return var.name.compare(var_name) > 0; });
+  // Remove the whole range:
+  this->global_variables.erase(pos1, pos2);
 }
 
 /** Ignore a local variable in a scope
@@ -139,30 +113,16 @@ void ObjectInformation::remove_global_variable(const char* name)
 static void remove_local_variable(Frame& scope, const char* var_name, const char* subprogram_name,
                                   Frame const& subprogram)
 {
-  using size_type = std::vector<Variable>::size_type;
-
   // If the current subprogram matches the given name:
-  if ((subprogram_name == nullptr || (not subprogram.name.empty() && subprogram.name == subprogram_name)) &&
-      not scope.variables.empty()) {
+  if (subprogram_name == nullptr || (not subprogram.name.empty() && subprogram.name == subprogram_name)) {
     // Try to find the variable and remove it:
-    size_type start = 0;
-    size_type end   = scope.variables.size() - 1;
 
     // Binary search:
-    while (start <= end) {
-      size_type cursor                   = start + (end - start) / 2;
-      const Variable& current_var        = scope.variables[cursor];
-      int compare                        = current_var.name.compare(var_name);
-      if (compare == 0) {
-        // Variable found, remove it:
-        scope.variables.erase(scope.variables.begin() + cursor);
-        break;
-      } else if (compare < 0)
-        start = cursor + 1;
-      else if (cursor != 0)
-        end = cursor - 1;
-      else
-        break;
+    auto pos = std::lower_bound(scope.variables.begin(), scope.variables.end(), var_name,
+                                [](auto const& var, const char* var_name) { return var.name.compare(var_name) < 0; });
+    if (pos != scope.variables.end() && pos->name.compare(var_name) == 0) {
+      // Variable found, remove it:
+      scope.variables.erase(pos);
     }
   }
 
