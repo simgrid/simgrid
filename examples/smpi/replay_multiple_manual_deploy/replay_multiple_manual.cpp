@@ -48,13 +48,6 @@ struct Job {
 static std::vector<simgrid::s4u::Host*> hosts;
 static int noise_between_jobs;
 
-static bool job_comparator(const std::unique_ptr<Job>& j1, const std::unique_ptr<Job>& j2)
-{
-  if (j1->starting_time == j2->starting_time)
-    return j1->smpi_app_name < j2->smpi_app_name;
-  return j1->starting_time < j2->starting_time;
-}
-
 static void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int rank)
 {
   XBT_INFO("Replaying rank %d of job %d (smpi_app '%s')", rank, job->unique_job_number, job->smpi_app_name.c_str());
@@ -197,8 +190,11 @@ static std::vector<std::unique_ptr<Job>> all_jobs(const std::string& workload_fi
 
   // Jobs are sorted by ascending date, then by lexicographical order of their
   // application names
-  sort(jobs.begin(), jobs.end(), job_comparator);
-
+  sort(jobs.begin(), jobs.end(), [](auto const& j1, auto const& j2) {
+    if (j1->starting_time == j2->starting_time)
+      return j1->smpi_app_name < j2->smpi_app_name;
+    return j1->starting_time < j2->starting_time;
+  });
   for (unsigned int i = 0; i < jobs.size(); ++i)
     jobs[i]->unique_job_number = i;
 
