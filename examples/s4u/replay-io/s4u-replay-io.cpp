@@ -114,16 +114,15 @@ int main(int argc, char* argv[])
   xbt_replay_action_register("read", Replayer::read);
   xbt_replay_action_register("close", Replayer::close);
 
+  std::ifstream ifs;
   if (argv[3]) {
-    simgrid::xbt::action_fs = new std::ifstream(argv[3], std::ifstream::in);
+    ifs.open(argv[3], std::ifstream::in);
+    simgrid::xbt::action_fs = &ifs;
   }
 
   e.run();
 
-  if (argv[3]) {
-    delete simgrid::xbt::action_fs;
-    simgrid::xbt::action_fs = nullptr;
-  }
+  simgrid::xbt::action_fs = nullptr;
 
   XBT_INFO("Simulation time %g", e.get_clock());
 
