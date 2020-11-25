@@ -135,9 +135,10 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 
 const char* MC_smx_actor_get_name(smx_actor_t actor)
 {
-  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
   if (mc_model_checker == nullptr)
     return actor->get_cname();
+
+  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
 
   simgrid::mc::ActorInformation* info = actor_info_cast(actor);
   if (info->name.empty()) {
