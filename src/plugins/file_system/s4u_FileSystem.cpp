@@ -463,15 +463,14 @@ int File::remote_copy(sg_host_t host, const std::string& fullpath)
   }
 
   /* Create file on remote host, write it and close it */
-  auto* fd = new File(fullpath, dst_host, nullptr);
+  File fd(fullpath, dst_host, nullptr);
   if (local_storage_) {
-    sg_size_t write_size = fd->local_storage_->write(read_size);
-    fd->local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
-    (*(fd->local_storage_->extension<FileSystemStorageExt>()->get_content()))[path_] = size_;
+    sg_size_t write_size = fd.local_storage_->write(read_size);
+    fd.local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
+    (*(fd.local_storage_->extension<FileSystemStorageExt>()->get_content()))[path_] = size_;
   }
   if (local_disk_)
-    fd->write(read_size);
-  delete fd;
+    fd.write(read_size);
   return 0;
 }
 
@@ -512,7 +511,7 @@ std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::st
 
   auto* parse_content = new std::map<std::string, sg_size_t>();
 
-  std::ifstream* fs = surf_ifsopen(filename);
+  auto fs = std::unique_ptr<std::ifstream>(surf_ifsopen(filename));
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
              (boost::join(surf_path, ":")).c_str());
 
@@ -530,7 +529,6 @@ std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::st
       parse_content->insert({tokens.front(), size});
     }
   } while (not fs->eof());
-  delete fs;
   return parse_content;
 }
 
@@ -541,7 +539,7 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std:
 
   auto* parse_content = new std::map<std::string, sg_size_t>();
 
-  std::ifstream* fs = surf_ifsopen(filename);
+  auto fs = std::unique_ptr<std::ifstream>(surf_ifsopen(filename));
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
              (boost::join(surf_path, ":")).c_str());
 
@@ -559,7 +557,6 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std:
       parse_content->insert({tokens.front(), size});
     }
   } while (not fs->eof());
-  delete fs;
   return parse_content;
 }
 

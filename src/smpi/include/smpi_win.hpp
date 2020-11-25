@@ -25,22 +25,22 @@ class Win : public F2C, public Keyval {
   int assert_ = 0;
   MPI_Info info_;
   MPI_Comm comm_;
-  std::vector<MPI_Request> *requests_;
-  s4u::MutexPtr mut_;
-  s4u::Barrier* bar_;
-  MPI_Win* connected_wins_;
-  char* name_;
-  int opened_;
-  MPI_Group group_;
-  int count_; //for ordering the accs
-  s4u::MutexPtr lock_mut_;
-  s4u::MutexPtr atomic_mut_;
+  std::vector<MPI_Request> requests_;
+  s4u::MutexPtr mut_ = s4u::Mutex::create();
+  s4u::Barrier* bar_ = nullptr;
+  std::vector<MPI_Win> connected_wins_;
+  std::string name_;
+  int opened_               = 0;
+  MPI_Group group_          = MPI_GROUP_NULL;
+  int count_                = 0; // for ordering the accs
+  s4u::MutexPtr lock_mut_   = s4u::Mutex::create();
+  s4u::MutexPtr atomic_mut_ = s4u::Mutex::create();
   std::list<int> lockers_;
   int rank_; // to identify owner for barriers in MPI_COMM_WORLD
-  int mode_; // exclusive or shared lock
+  int mode_ = 0; // exclusive or shared lock
   int allocated_;
   int dynamic_;
-  MPI_Errhandler errhandler_;
+  MPI_Errhandler errhandler_ = MPI_ERRORS_ARE_FATAL;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;

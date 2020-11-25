@@ -12,6 +12,7 @@
 #include "src/smpi/include/smpi_actor.hpp"
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <string>
 
@@ -119,7 +120,7 @@ Datatype::Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags) : size_(size),
 }
 
 // for predefined types, so refcount_ = 0.
-Datatype::Datatype(char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
+Datatype::Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
     : name_(name), id(std::to_string(ident)), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0)
 {
   id2type_lookup.insert({id, this});
@@ -150,7 +151,6 @@ Datatype::~Datatype()
 
   cleanup_attr<Datatype>();
   delete contents_;
-  xbt_free(name_);
 }
 
 int Datatype::copy_attrs(Datatype* datatype){
@@ -260,18 +260,16 @@ int Datatype::extent(MPI_Aint* lb, MPI_Aint* extent) const
 
 void Datatype::get_name(char* name, int* length) const
 {
-  if(name_!=nullptr){
-    *length = strlen(name_);
-    strncpy(name, name_, *length+1);
-  }else{
-    *length = 0;
+  *length = static_cast<int>(name_.length());
+  if (not name_.empty()) {
+    name_.copy(name, *length);
+    name[*length] = '\0';
   }
 }
 
-void Datatype::set_name(const char* name){
-  if(name_!=nullptr &&  (flags_ & DT_FLAG_PREDEFINED) == 0)
-    xbt_free(name_);
-  name_ = xbt_strdup(name);
+void Datatype::set_name(const char* name)
+{
+  name_ = name;
 }
 
 int Datatype::pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, const Comm*)
@@ -423,8 +421,8 @@ int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatyp
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
     *new_type = new Datatype(count * block_length * old_type->size(), 0, ((count -1) * stride + block_length)*
                          old_type->size(), DT_FLAG_CONTIGUOUS);
-    int ints[3] = {count, block_length, stride};
-    (*new_type)->contents_ = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints, 0, nullptr, 1, &old_type);
+    const std::array<int, 3> ints = {{count, block_length, stride}};
+    (*new_type)->contents_ = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints.data(), 0, nullptr, 1, &old_type);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -449,8 +447,8 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
     *new_type = new Datatype(count * block_length * old_type->size(), 0, count * block_length * old_type->size(), DT_FLAG_CONTIGUOUS);
-    int ints[2] = {count, block_length};
-    (*new_type)->contents_ = new Datatype_contents(MPI_COMBINER_HVECTOR, 2, ints, 1, &stride, 1, &old_type);
+    const std::array<int, 2> ints = {{count, block_length}};
+    (*new_type)->contents_ = new Datatype_contents(MPI_COMBINER_HVECTOR, 2, ints.data(), 1, &stride, 1, &old_type);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -618,10 +616,10 @@ int Datatype::create_subarray(int ndims, const int* array_of_sizes,
       tmp = *newtype;
   }
 
-  MPI_Aint lbs[1] = {lb * extent};
-  int sizes [1]={1};
+  const MPI_Aint lbs = lb * extent;
+  const int sizes    = 1;
   //handle LB and UB with a resized call
-  create_hindexed( 1, sizes, lbs, tmp, newtype);
+  create_hindexed(1, &sizes, &lbs, tmp, newtype);
   unref(tmp);
 
   tmp = *newtype;
@@ -632,11 +630,12 @@ int Datatype::create_subarray(int ndims, const int* array_of_sizes,
 }
 
 int Datatype::create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
-  int blocks[3]         = {1, 1, 1};
-  MPI_Aint disps[3]     = {lb, 0, lb + extent};
-  MPI_Datatype types[3] = {MPI_LB, oldtype, MPI_UB};
+  const std::array<int, 3> blocks         = {{1, 1, 1}};
+  const std::array<MPI_Aint, 3> disps     = {{lb, 0, lb + extent}};
+  const std::array<MPI_Datatype, 3> types = {{MPI_LB, oldtype, MPI_UB}};
 
-  *newtype = new simgrid::smpi::Type_Struct(oldtype->size(), lb, lb + extent, DT_FLAG_DERIVED, 3, blocks, disps, types);
+  *newtype = new simgrid::smpi::Type_Struct(oldtype->size(), lb, lb + extent, DT_FLAG_DERIVED, 3, blocks.data(),
+                                            disps.data(), types.data());
 
   (*newtype)->addflag(~DT_FLAG_COMMITED);
   return MPI_SUCCESS;

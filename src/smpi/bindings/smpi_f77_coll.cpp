@@ -119,18 +119,16 @@ void mpi_reduce_scatter_block_ (void *sendbuf, void *recvbuf, int* recvcount, in
 void mpi_alltoallw_ ( void *sendbuf, int *sendcnts, int *sdispls, int* old_sendtypes, void *recvbuf, int *recvcnts,
                       int *rdispls, int* old_recvtypes, int* comm, int* ierr){
   int size = simgrid::smpi::Comm::f2c(*comm)->size();
-  auto* sendtypes = new MPI_Datatype[size];
-  auto* recvtypes = new MPI_Datatype[size];
+  std::vector<MPI_Datatype> sendtypes(size);
+  std::vector<MPI_Datatype> recvtypes(size);
   for(int i=0; i< size; i++){
     if(FORT_IN_PLACE(sendbuf)!=MPI_IN_PLACE)
       sendtypes[i] = simgrid::smpi::Datatype::f2c(old_sendtypes[i]);
     recvtypes[i] = simgrid::smpi::Datatype::f2c(old_recvtypes[i]);
   }
   sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
- *ierr = MPI_Alltoallw( sendbuf, sendcnts, sdispls, sendtypes, recvbuf, recvcnts, rdispls,
-                        recvtypes, simgrid::smpi::Comm::f2c(*comm));
-  delete[] sendtypes;
-  delete[] recvtypes;
+  *ierr   = MPI_Alltoallw(sendbuf, sendcnts, sdispls, sendtypes.data(), recvbuf, recvcnts, rdispls, recvtypes.data(),
+                        simgrid::smpi::Comm::f2c(*comm));
 }
 
 void mpi_exscan_ (void *sendbuf, void *recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr){
@@ -301,21 +299,19 @@ void mpi_ialltoallw_ ( void *sendbuf, int *sendcnts, int *sdispls, int* old_send
                       int *rdispls, int* old_recvtypes, int* comm, int* request, int* ierr){
   MPI_Request req;
   int size = simgrid::smpi::Comm::f2c(*comm)->size();
-  auto* sendtypes = new MPI_Datatype[size];
-  auto* recvtypes = new MPI_Datatype[size];
+  std::vector<MPI_Datatype> sendtypes(size);
+  std::vector<MPI_Datatype> recvtypes(size);
   for(int i=0; i< size; i++){
     if(FORT_IN_PLACE(sendbuf)!=MPI_IN_PLACE)
       sendtypes[i] = simgrid::smpi::Datatype::f2c(old_sendtypes[i]);
     recvtypes[i] = simgrid::smpi::Datatype::f2c(old_recvtypes[i]);
   }
   sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
- *ierr = MPI_Ialltoallw( sendbuf, sendcnts, sdispls, sendtypes, recvbuf, recvcnts, rdispls,
-                        recvtypes, simgrid::smpi::Comm::f2c(*comm), &req);
+  *ierr   = MPI_Ialltoallw(sendbuf, sendcnts, sdispls, sendtypes.data(), recvbuf, recvcnts, rdispls, recvtypes.data(),
+                         simgrid::smpi::Comm::f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
     *request = req->add_f();
   }
-  delete[] sendtypes;
-  delete[] recvtypes;
 }
 
 void mpi_iexscan_ (void *sendbuf, void *recvbuf, int* count, int* datatype, int* op, int* comm, int* request, int* ierr){

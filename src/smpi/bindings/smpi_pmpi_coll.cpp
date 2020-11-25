@@ -637,14 +637,13 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
       new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, 0,
                                         nullptr, -1, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
 
-  auto* recvcounts = new int[count];
+  std::vector<int> recvcounts(count);
   for (int i      = 0; i < count; i++)
     recvcounts[i] = recvcount;
   if (request == MPI_REQUEST_IGNORED)
-    simgrid::smpi::colls::reduce_scatter(real_sendbuf, recvbuf, recvcounts, datatype, op, comm);
+    simgrid::smpi::colls::reduce_scatter(real_sendbuf, recvbuf, recvcounts.data(), datatype, op, comm);
   else
-    simgrid::smpi::colls::ireduce_scatter(real_sendbuf, recvbuf, recvcounts, datatype, op, comm, request);
-  delete[] recvcounts;
+    simgrid::smpi::colls::ireduce_scatter(real_sendbuf, recvbuf, recvcounts.data(), datatype, op, comm, request);
 
   TRACE_smpi_comm_out(rank);
   smpi_bench_begin();

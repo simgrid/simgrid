@@ -150,15 +150,13 @@ void mpi_start_(int* request, int* ierr) {
   *ierr = MPI_Start(&req);
 }
 
-void mpi_startall_(int* count, int* requests, int* ierr) {
-  MPI_Request* reqs;
-
-  reqs = xbt_new(MPI_Request, *count);
+void mpi_startall_(int* count, int* requests, int* ierr)
+{
+  std::vector<MPI_Request> reqs(*count);
   for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
-  *ierr = MPI_Startall(*count, reqs);
-  xbt_free(reqs);
+  *ierr = MPI_Startall(*count, reqs.data());
 }
 
 void mpi_wait_(int* request, MPI_Status* status, int* ierr) {
@@ -171,14 +169,13 @@ void mpi_wait_(int* request, MPI_Status* status, int* ierr) {
    }
 }
 
-void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int* ierr) {
-  MPI_Request* reqs;
-
-  reqs = xbt_new(MPI_Request, *count);
+void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int* ierr)
+{
+  std::vector<MPI_Request> reqs(*count);
   for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
-  *ierr = MPI_Waitany(*count, reqs, index, status);
+  *ierr = MPI_Waitany(*count, reqs.data(), index, status);
   if(*index!=MPI_UNDEFINED){
     if(reqs[*index]==MPI_REQUEST_NULL){
         simgrid::smpi::Request::free_f(requests[*index]);
@@ -186,46 +183,37 @@ void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int
     }
   *index=*index+1;
   }
-  xbt_free(reqs);
 }
 
-void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr) {
-  MPI_Request* reqs;
-  int i;
-
-  reqs = xbt_new(MPI_Request, *count);
-  for(i = 0; i < *count; i++) {
+void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr)
+{
+  std::vector<MPI_Request> reqs(*count);
+  for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
-  *ierr = MPI_Waitall(*count, reqs, FORT_STATUSES_IGNORE(status));
-  for(i = 0; i < *count; i++) {
-      if(reqs[i]==MPI_REQUEST_NULL){
-          simgrid::smpi::Request::free_f(requests[i]);
-          requests[i]=MPI_FORTRAN_REQUEST_NULL;
-      }
+  *ierr = MPI_Waitall(*count, reqs.data(), FORT_STATUSES_IGNORE(status));
+  for (int i = 0; i < *count; i++) {
+    if (reqs[i] == MPI_REQUEST_NULL) {
+      simgrid::smpi::Request::free_f(requests[i]);
+      requests[i] = MPI_FORTRAN_REQUEST_NULL;
+    }
   }
-
-  xbt_free(reqs);
 }
 
 void mpi_waitsome_ (int* incount, int* requests, int *outcount, int *indices, MPI_Status* status, int* ierr)
 {
-  MPI_Request* reqs;
-  int i;
-
-  reqs = xbt_new(MPI_Request, *incount);
-  for(i = 0; i < *incount; i++) {
+  std::vector<MPI_Request> reqs(*incount);
+  for (int i = 0; i < *incount; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
-  *ierr = MPI_Waitsome(*incount, reqs, outcount, indices, status);
-  for(i=0;i<*outcount;i++){
+  *ierr = MPI_Waitsome(*incount, reqs.data(), outcount, indices, status);
+  for (int i = 0; i < *outcount; i++) {
     if(reqs[indices[i]]==MPI_REQUEST_NULL){
         simgrid::smpi::Request::free_f(requests[indices[i]]);
         requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
     }
     indices[i]++;
   }
-  xbt_free(reqs);
 }
 
 void mpi_test_ (int * request, int *flag, MPI_Status * status, int* ierr){
@@ -237,31 +225,28 @@ void mpi_test_ (int * request, int *flag, MPI_Status * status, int* ierr){
   }
 }
 
-void mpi_testall_ (int* count, int * requests,  int *flag, MPI_Status * statuses, int* ierr){
-  int i;
-  MPI_Request* reqs = xbt_new(MPI_Request, *count);
-  for(i = 0; i < *count; i++) {
+void mpi_testall_(int* count, int* requests, int* flag, MPI_Status* statuses, int* ierr)
+{
+  std::vector<MPI_Request> reqs(*count);
+  for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
-  *ierr= MPI_Testall(*count, reqs, flag, FORT_STATUSES_IGNORE(statuses));
-  for(i = 0; i < *count; i++) {
+  *ierr = MPI_Testall(*count, reqs.data(), flag, FORT_STATUSES_IGNORE(statuses));
+  for (int i = 0; i < *count; i++) {
     if(reqs[i]==MPI_REQUEST_NULL){
         simgrid::smpi::Request::free_f(requests[i]);
         requests[i]=MPI_FORTRAN_REQUEST_NULL;
     }
   }
-  xbt_free(reqs);
 }
 
 void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status* status, int* ierr)
 {
-  MPI_Request* reqs;
-
-  reqs = xbt_new(MPI_Request, *count);
+  std::vector<MPI_Request> reqs(*count);
   for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
-  *ierr = MPI_Testany(*count, reqs, index, flag, FORT_STATUS_IGNORE(status));
+  *ierr = MPI_Testany(*count, reqs.data(), index, flag, FORT_STATUS_IGNORE(status));
   if(*index!=MPI_UNDEFINED){
     if(reqs[*index]==MPI_REQUEST_NULL){
     simgrid::smpi::Request::free_f(requests[*index]);
@@ -269,27 +254,23 @@ void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status*
     }
   *index=*index+1;
   }
-  xbt_free(reqs);
 }
 
-void mpi_testsome_ (int* incount, int*  requests, int* outcount, int* indices, MPI_Status*  statuses, int* ierr) {
-  MPI_Request* reqs;
-  int i;
-
-  reqs = xbt_new(MPI_Request, *incount);
-  for(i = 0; i < *incount; i++) {
+void mpi_testsome_(int* incount, int* requests, int* outcount, int* indices, MPI_Status* statuses, int* ierr)
+{
+  std::vector<MPI_Request> reqs(*incount);
+  for (int i = 0; i < *incount; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
     indices[i]=0;
   }
-  *ierr = MPI_Testsome(*incount, reqs, outcount, indices, FORT_STATUSES_IGNORE(statuses));
-  for(i=0;i<*incount;i++){
+  *ierr = MPI_Testsome(*incount, reqs.data(), outcount, indices, FORT_STATUSES_IGNORE(statuses));
+  for (int i = 0; i < *incount; i++) {
     if(reqs[indices[i]]==MPI_REQUEST_NULL){
       simgrid::smpi::Request::free_f(requests[indices[i]]);
       requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
     }
     indices[i]++;
   }
-  xbt_free(reqs);
 }
 
 void mpi_probe_ (int* source, int* tag, int* comm, MPI_Status*  status, int* ierr) {

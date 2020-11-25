@@ -71,7 +71,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(bool))
+NetworkCm02Model::NetworkCm02Model()
     : NetworkModel(simgrid::config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::FULL
                                                                                       : Model::UpdateAlgo::LAZY)
 {
@@ -86,7 +86,7 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
     select = true;
   }
 
-  set_maxmin_system(make_new_lmm_system(select));
+  set_maxmin_system(new lmm::System(select));
   loopback_ = NetworkCm02Model::create_link("__loopback__", 
                                             std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
                                             simgrid::config::get_value<double>("network/loopback-lat"),

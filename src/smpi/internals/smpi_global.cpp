@@ -17,6 +17,7 @@
 #include "xbt/file.hpp"
 
 #include <algorithm>
+#include <array>
 #include <boost/algorithm/string.hpp> /* split */
 #include <boost/tokenizer.hpp>
 #include <cinttypes>
@@ -377,15 +378,14 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
   }
 #endif
   // If this point is reached, sendfile() actually is not available.  Copy file by hand.
-  const int bufsize = 1024 * 1024 * 4;
-  auto* buf         = new char[bufsize];
-  while (int got = read(fdin, buf, bufsize)) {
+  std::vector<unsigned char> buf(1024 * 1024 * 4);
+  while (ssize_t got = read(fdin, buf.data(), buf.size())) {
     if (got == -1) {
       xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
     } else {
-      const char* p = buf;
-      int todo = got;
-      while (int done = write(fdout, p, todo)) {
+      const unsigned char* p = buf.data();
+      ssize_t todo           = got;
+      while (ssize_t done = write(fdout, p, todo)) {
         if (done == -1) {
           xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
         } else {
@@ -395,7 +395,6 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
       }
     }
   }
-  delete[] buf;
   close(fdin);
   close(fdout);
 }

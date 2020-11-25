@@ -15,11 +15,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 
-simgrid::kernel::lmm::System* simgrid::kernel::lmm::make_new_fair_bottleneck_system(bool selective_update)
-{
-  return new simgrid::kernel::lmm::FairBottleneck(selective_update);
-}
-
 void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
 {
   if (not modified_)

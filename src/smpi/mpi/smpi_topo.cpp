@@ -8,13 +8,13 @@
 #include "smpi_comm.hpp"
 #include "smpi_topo.hpp"
 #include "xbt/sysdep.h"
-#include <cmath>
+
+#include <algorithm>
 #include <vector>
 
 /* static functions */
-static int assignnodes(int ndim, int nfactor, const int* pfacts, int** pdims);
-static int getfactors(int num, int *nfators, int **factors);
-
+static int assignnodes(int ndim, const std::vector<int>& factors, std::vector<int>& dims);
+static int getfactors(int num, std::vector<int>& factors);
 
 namespace simgrid{
 namespace smpi{
@@ -92,8 +92,8 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
 
 Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   int oldNDims = ndims_;
-  int *newDims = nullptr;
-  int *newPeriodic = nullptr;
+  std::vector<int> newDims;
+  std::vector<int> newPeriodic;
 
   if (remain_dims == nullptr && oldNDims != 0) {
     return nullptr;
@@ -105,8 +105,8 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   }
 
   if (newNDims > 0) {
-    newDims     = new int[newNDims];
-    newPeriodic = new int[newNDims];
+    newDims.resize(newNDims);
+    newPeriodic.resize(newNDims);
 
     // that should not segfault
     int j = 0;
@@ -128,16 +128,14 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   }
   Topo_Cart* res;
   if (newNDims == 0){
-    res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, newcomm);
+    res = new Topo_Cart(getComm(), newNDims, newDims.data(), newPeriodic.data(), 0, newcomm);
   } else {
     *newcomm = getComm()->split(color, getComm()->rank());
-    auto topo = std::make_shared<Topo_Cart>(getComm(), newNDims, newDims, newPeriodic, 0, nullptr);
+    auto topo = std::make_shared<Topo_Cart>(getComm(), newNDims, newDims.data(), newPeriodic.data(), 0, nullptr);
     res       = topo.get();
     res->setComm(*newcomm);
     (*newcomm)->set_topo(topo);
   }
-  delete[] newDims;
-  delete[] newPeriodic;
   return res;
 }
 
@@ -207,34 +205,33 @@ int Topo_Cart::shift(int direction, int disp, int* rank_source, int* rank_dest)
     return MPI_ERR_DIMS;
   }
 
-  auto* position = new int[ndims_];
-  this->coords(getComm()->rank(), ndims_, position);
+  std::vector<int> position(ndims_);
+  this->coords(getComm()->rank(), ndims_, position.data());
   position[direction] += disp;
 
   if(position[direction] < 0 ||
       position[direction] >=dims_[direction]) {
     if(periodic_[direction]) {
       position[direction] %=dims_[direction];
-      this->rank(position, rank_dest);
+      this->rank(position.data(), rank_dest);
     } else {
       *rank_dest = MPI_PROC_NULL;
     }
   } else {
-    this->rank(position, rank_dest);
+    this->rank(position.data(), rank_dest);
   }
 
   position[direction] = position_[direction] - disp;
   if(position[direction] < 0 || position[direction] >=dims_[direction]) {
     if(periodic_[direction]) {
       position[direction] %=dims_[direction];
-      this->rank(position, rank_source);
+      this->rank(position.data(), rank_source);
     } else {
       *rank_source = MPI_PROC_NULL;
     }
   } else {
-    this->rank(position, rank_source);
+    this->rank(position.data(), rank_source);
   }
-  delete[] position;
   return MPI_SUCCESS;
 }
 
@@ -275,17 +272,15 @@ int Topo_Cart::Dims_create(int nnodes, int ndims, int dims[])
   /* Get # of free-to-be-assigned processes and # of free dimensions */
   int freeprocs = nnodes;
   int freedims = 0;
-  const int* p  = dims;
   for (int i = 0; i < ndims; ++i) {
-    if (*p == 0) {
+    if (dims[i] == 0) {
       ++freedims;
-    } else if ((*p < 0) || ((nnodes % *p) != 0)) {
+    } else if ((dims[i] < 0) || ((nnodes % dims[i]) != 0)) {
       return  MPI_ERR_DIMS;
 
     } else {
-      freeprocs /= *p;
+      freeprocs /= dims[i];
     }
-    p++;
   }
 
   if (freedims == 0) {
@@ -297,38 +292,32 @@ int Topo_Cart::Dims_create(int nnodes, int ndims, int dims[])
 
   if (freeprocs == 1) {
     for (int i = 0; i < ndims; ++i) {
-      if (*dims == 0) {
-        *dims = 1;
+      if (dims[i] == 0) {
+        dims[i] = 1;
       }
-      dims++;
     }
     return MPI_SUCCESS;
   }
 
   /* Factor the number of free processes */
-  int nfactors;
-  int *factors;
-  int err = getfactors(freeprocs, &nfactors, &factors);
+  std::vector<int> factors;
+  int err = getfactors(freeprocs, factors);
   if (MPI_SUCCESS != err)
     return  err;
 
   /* Assign free processes to free dimensions */
-  int *procs;
-  err = assignnodes(freedims, nfactors, factors, &procs);
+  std::vector<int> procs;
+  err = assignnodes(freedims, factors, procs);
   if (MPI_SUCCESS != err)
     return err;
 
   /* Return assignment results */
-  p = procs;
+  auto p = procs.begin();
   for (int i = 0; i < ndims; ++i) {
-    if (*dims == 0) {
-      *dims = *p++;
+    if (dims[i] == 0) {
+      dims[i] = *p++;
     }
-    dims++;
   }
-
-  delete[] factors;
-  delete[] procs;
 
   /* all done */
   return MPI_SUCCESS;
@@ -346,58 +335,29 @@ int Topo_Cart::Dims_create(int nnodes, int ndims, int dims[])
  *          - sort dimensions in decreasing order
  *          - dimensions array dynamically allocated
  *  Accepts:    - # of dimensions
- *          - # of prime factors
- *          - array of prime factors
- *          - ptr to array of dimensions (returned value)
+ *          - std::vector of prime factors
+ *          - reference to std::vector of dimensions (returned value)
  *  Returns:    - 0 or ERROR
  */
-static int assignnodes(int ndim, int nfactor, const int* pfacts, int** pdims)
+static int assignnodes(int ndim, const std::vector<int>& factors, std::vector<int>& dims)
 {
-  int *pmin;
-
   if (0 >= ndim) {
     return MPI_ERR_DIMS;
   }
 
   /* Allocate and initialize the bins */
-  auto* bins = new int[ndim];
+  dims.clear();
+  dims.resize(ndim, 1);
 
-  *pdims = bins;
-  int *p = bins;
-
-  for (int i = 0 ; i < ndim; ++i) {
-    *p = 1;
-    p++;
-  }
   /* Loop assigning factors from the highest to the lowest */
-  for (int j = nfactor - 1; j >= 0; --j) {
-    int f = pfacts[j];
+  for (auto pfact = factors.crbegin(); pfact != factors.crend(); ++pfact) {
     /* Assign a factor to the smallest bin */
-    pmin = bins;
-    p = pmin + 1;
-    for (int i = 1; i < ndim; ++i) {
-      if (*p < *pmin) {
-        pmin = p;
-      }
-      p++;
-    }
-    *pmin *= f;
+    auto pmin = std::min_element(dims.begin(), dims.end());
+    *pmin *= *pfact;
   }
 
-  /* Sort dimensions in decreasing order (O(n^2) for now) */
-  pmin = bins;
-  for (int i = 0; i < ndim - 1; ++i) {
-    p = pmin + 1;
-    for (int j = i + 1; j < ndim; ++j) {
-      if (*p > *pmin) {
-        int n = *p;
-        *p = *pmin;
-        *pmin = n;
-      }
-      p++;
-    }
-    pmin++;
-  }
+  /* Sort dimensions in decreasing order */
+  std::sort(dims.begin(), dims.end(), std::greater<>());
 
   return MPI_SUCCESS;
 }
@@ -407,39 +367,31 @@ static int assignnodes(int ndim, int nfactor, const int* pfacts, int** pdims)
  *
  *  Function:   - factorize a number
  *  Accepts:    - number
- *          - # prime factors
- *          - array of prime factors
+ *              - reference to std::vector of prime factors
  *  Returns:    - MPI_SUCCESS or ERROR
  */
-static int getfactors(int num, int *nfactors, int **factors) {
-  if(num  < 2) {
-    (*nfactors) = 0;
-    (*factors) = nullptr;
+static int getfactors(int num, std::vector<int>& factors)
+{
+  factors.clear();
+  if (num < 2) {
     return MPI_SUCCESS;
   }
-  /* Allocate the array of prime factors which cannot exceed log_2(num) entries */
-  int sqrtnum = ceil(sqrt(double(num)));
-  int size = ceil(log(double(num)) / log(2.0));
-  *factors = new int[size];
 
-  int i = 0;
   /* determine all occurrences of factor 2 */
   while((num % 2) == 0) {
     num /= 2;
-    (*factors)[i++] = 2;
+    factors.push_back(2);
   }
   /* determine all occurrences of uneven prime numbers up to sqrt(num) */
-  for(int d = 3; (num > 1) && (d < sqrtnum); d += 2) {
+  for (int d = 3; (num > 1) && (d * d < num); d += 2) {
     while((num % d) == 0) {
       num /= d;
-      (*factors)[i++] = d;
+      factors.push_back(d);
     }
   }
   /* as we looped only up to sqrt(num) one factor > sqrt(num) may be left over */
   if(num != 1) {
-    (*factors)[i++] = num;
+    factors.push_back(num);
   }
-  (*nfactors) = i;
   return MPI_SUCCESS;
 }
-

@@ -139,30 +139,26 @@ static void peer()
 {
   XBT_DEBUG("peer");
 
-  auto* p = new Peer();
+  Peer p;
 
   double start_time = simgrid::s4u::Engine::get_clock();
-  p->joinChain();
-  p->forwardFile();
+  p.joinChain();
+  p.forwardFile();
 
-  simgrid::s4u::Comm::wait_all(&p->pending_sends);
+  simgrid::s4u::Comm::wait_all(&p.pending_sends);
   double end_time = simgrid::s4u::Engine::get_clock();
 
-  XBT_INFO("### %f %llu bytes (Avg %f MB/s); copy finished (simulated).", end_time - start_time, p->received_bytes,
-           p->received_bytes / 1024.0 / 1024.0 / (end_time - start_time));
-
-  delete p;
+  XBT_INFO("### %f %llu bytes (Avg %f MB/s); copy finished (simulated).", end_time - start_time, p.received_bytes,
+           p.received_bytes / 1024.0 / 1024.0 / (end_time - start_time));
 }
 
 static void broadcaster(int hostcount, unsigned int piece_count)
 {
   XBT_DEBUG("broadcaster");
 
-  auto* bc = new Broadcaster(hostcount, piece_count);
-  bc->buildChain();
-  bc->sendFile();
-
-  delete bc;
+  Broadcaster bc(hostcount, piece_count);
+  bc.buildChain();
+  bc.sendFile();
 }
 
 int main(int argc, char* argv[])

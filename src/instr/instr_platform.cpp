@@ -137,17 +137,15 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgr
   }
 
   auto* graph = xbt_graph_new_graph(0, nullptr);
-  auto* nodes = new std::map<std::string, xbt_node_t>();
-  auto* edges = new std::map<std::string, xbt_edge_t>();
+  std::map<std::string, xbt_node_t> nodes;
+  std::map<std::string, xbt_edge_t> edges;
 
-  netzone->get_impl()->get_graph(graph, nodes, edges);
-  for (auto elm : *edges) {
+  netzone->get_impl()->get_graph(graph, &nodes, &edges);
+  for (auto elm : edges) {
     const xbt_edge* edge = elm.second;
     linkContainers(simgrid::instr::Container::by_name(static_cast<const char*>(edge->src->data)),
                    simgrid::instr::Container::by_name(static_cast<const char*>(edge->dst->data)), filter);
   }
-  delete nodes;
-  delete edges;
   xbt_graph_free_graph(graph, xbt_free_f, xbt_free_f, nullptr);
 }
 
@@ -225,9 +223,9 @@ namespace instr {
 void platform_graph_export_graphviz(const std::string& output_filename)
 {
   auto* g     = xbt_graph_new_graph(0, nullptr);
-  auto* nodes = new std::map<std::string, xbt_node_t>();
-  auto* edges = new std::map<std::string, xbt_edge_t>();
-  s4u::Engine::get_instance()->get_netzone_root()->extract_xbt_graph(g, nodes, edges);
+  std::map<std::string, xbt_node_t> nodes;
+  std::map<std::string, xbt_edge_t> edges;
+  s4u::Engine::get_instance()->get_netzone_root()->extract_xbt_graph(g, &nodes, &edges);
 
   std::ofstream fs;
   fs.open(output_filename, std::ofstream::out);
@@ -243,10 +241,10 @@ void platform_graph_export_graphviz(const std::string& output_filename)
   fs << "  node [shape=box, style=filled]" << std::endl;
   fs << "  node [width=.3, height=.3, style=filled, color=skyblue]" << std::endl << std::endl;
 
-  for (auto const& elm : *nodes)
+  for (auto const& elm : nodes)
     fs << "  \"" << elm.first << "\";" << std::endl;
 
-  for (auto const& elm : *edges) {
+  for (auto const& elm : edges) {
     const char* src_s = static_cast<char*>(elm.second->src->data);
     const char* dst_s = static_cast<char*>(elm.second->dst->data);
     if (g->directed)
@@ -258,8 +256,6 @@ void platform_graph_export_graphviz(const std::string& output_filename)
   fs.close();
 
   xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, nullptr);
-  delete nodes;
-  delete edges;
 }
 
 /* Callbacks */
@@ -368,11 +364,10 @@ static void on_action_state_change(kernel::resource::Action const& action,
 static void on_platform_created()
 {
   currentContainer.clear();
-  auto* filter = new std::set<std::string>();
+  std::set<std::string> filter;
   XBT_DEBUG("Starting graph extraction.");
-  recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), filter);
+  recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), &filter);
   XBT_DEBUG("Graph extraction finished.");
-  delete filter;
   dump_buffer(true);
 }
 

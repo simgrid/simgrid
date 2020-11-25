@@ -107,8 +107,8 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
    * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
   const unsigned int dsize = dimensions_.size();
-  auto* myCoords                = new unsigned int[dsize];
-  auto* targetCoords            = new unsigned int[dsize];
+  std::vector<unsigned int> myCoords(dsize);
+  std::vector<unsigned int> targetCoords(dsize);
   unsigned int dim_size_product = 1;
   for (unsigned i = 0; i < dsize; i++) {
     unsigned cur_dim_size = dimensions_[i];
@@ -185,8 +185,6 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 
     current_node = next_node;
   }
-  delete[] myCoords;
-  delete[] targetCoords;
 }
 } // namespace routing
 } // namespace kernel

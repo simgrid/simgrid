@@ -17,7 +17,7 @@ Model::~Model() = default; // Don't move this declaration to the header, or it w
 
 Action::ModifiedSet* Model::get_modified_set() const
 {
-  return maxmin_system_->modified_set_;
+  return maxmin_system_->modified_set_.get();
 }
 
 void Model::set_maxmin_system(lmm::System* system)

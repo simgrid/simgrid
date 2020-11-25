@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include <array>
 #include <stdexcept> // runtime_error
 #include <utility>
 #include <vector>
@@ -62,12 +63,12 @@ public:
  */
 class ExpressionStack {
 public:
-  using value_type                  = std::uintptr_t;
-  static const std::size_t max_size = 64;
+  using value_type                      = std::uintptr_t;
+  static constexpr std::size_t MAX_SIZE = 64;
 
 private:
   // Values of the stack (the top is stack_[size_ - 1]):
-  uintptr_t stack_[max_size]{0};
+  std::array<uintptr_t, MAX_SIZE> stack_{{0}};
   size_t size_ = 0;
 
 public:
@@ -97,9 +98,10 @@ public:
   /** Push a value on the top of the stack */
   void push(value_type value)
   {
-    if (size_ == max_size)
+    if (size_ == stack_.size())
       throw evaluation_error("DWARF stack overflow");
-    stack_[size_++] = value;
+    stack_[size_] = value;
+    size_++;
   }
 
   /* Pop a value from the top of the stack */
@@ -107,7 +109,8 @@ public:
   {
     if (size_ == 0)
       throw evaluation_error("DWARF stack underflow");
-    return stack_[--size_];
+    --size_;
+    return stack_[size_];
   }
 
   // These are DWARF operations (DW_OP_foo):

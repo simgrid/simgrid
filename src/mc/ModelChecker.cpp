@@ -14,6 +14,7 @@
 #include "xbt/automaton.hpp"
 #include "xbt/system_error.hpp"
 
+#include <array>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 
@@ -42,12 +43,12 @@ void ModelChecker::start()
   checker_side_.start([](evutil_socket_t sig, short events, void* arg) {
     auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
     if (events == EV_READ) {
-      char buffer[MC_MESSAGE_LENGTH];
-      ssize_t size = mc->checker_side_.get_channel().receive(buffer, sizeof(buffer), false);
+      std::array<char, MC_MESSAGE_LENGTH> buffer;
+      ssize_t size = mc->checker_side_.get_channel().receive(buffer.data(), buffer.size(), false);
       if (size == -1 && errno != EAGAIN)
         throw simgrid::xbt::errno_error();
 
-      if (not mc->handle_message(buffer, size))
+      if (not mc->handle_message(buffer.data(), size))
         mc->checker_side_.break_loop();
     } else if (events == EV_SIGNAL) {
       if (sig == SIGCHLD)
@@ -84,19 +85,18 @@ void ModelChecker::start()
 #endif
 }
 
-static const std::pair<const char*, const char*> ignored_local_variables[] = {
-  std::pair<const char*, const char*>{  "e", "*" },
-  std::pair<const char*, const char*>{ "_log_ev", "*" },
+static constexpr auto ignored_local_variables = {
+    std::make_pair("e", "*"),
+    std::make_pair("_log_ev", "*"),
 
-  /* Ignore local variable about time used for tracing */
-  std::pair<const char*, const char*>{ "start_time", "*" },
+    /* Ignore local variable about time used for tracing */
+    std::make_pair("start_time", "*"),
 };
 
 void ModelChecker::setup_ignore()
 {
   const RemoteSimulation& process = this->get_remote_simulation();
-  for (std::pair<const char*, const char*> const& var :
-      ignored_local_variables)
+  for (auto const& var : ignored_local_variables)
     process.ignore_local_variable(var.first, var.second);
 
   /* Static variable used for tracing */

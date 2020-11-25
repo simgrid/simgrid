@@ -33,8 +33,9 @@
  *                                                                    \ |  |
  *                                                                      ----
  */
-#include <map>
+#include <array>
 #include <cstring>
+#include <map>
 
 #include "private.hpp"
 #include "xbt/config.hpp"
@@ -155,7 +156,7 @@ constexpr unsigned HUGE_PAGE_SIZE = 1U << 21;
  * The others are not.
  */
 
-void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
+void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets, int nb_shared_blocks)
 {
   std::string huge_page_mount_point = simgrid::config::get_value<std::string>("smpi/shared-malloc-hugepage");
   bool use_huge_page                = not huge_page_mount_point.empty();
@@ -326,8 +327,8 @@ void* smpi_shared_malloc(size_t size, const char* file, int line)
     return smpi_shared_malloc_local(size, file, line);
   } else if (smpi_cfg_shared_malloc() == SharedMallocType::GLOBAL) {
     int nb_shared_blocks = 1;
-    size_t shared_block_offsets[2] = {0, size};
-    return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
+    const std::array<size_t, 2> shared_block_offsets = {{0, size}};
+    return smpi_shared_malloc_partial(size, shared_block_offsets.data(), nb_shared_blocks);
   }
   XBT_DEBUG("Classic allocation of %zu bytes", size);
   return ::operator new(size);

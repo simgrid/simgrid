@@ -10,6 +10,8 @@
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 
+#include <algorithm>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt, "Logging specific to mc_compare in mc");
 
 using simgrid::mc::remote;
@@ -134,21 +136,9 @@ public:
 static ssize_t heap_comparison_ignore_size(const std::vector<simgrid::mc::IgnoredHeapRegion>* ignore_list,
                                            const void* address)
 {
-  int start = 0;
-  int end = ignore_list->size() - 1;
-
-  while (start <= end) {
-    unsigned int cursor = (start + end) / 2;
-    simgrid::mc::IgnoredHeapRegion const& region = (*ignore_list)[cursor];
-    if (region.address == address)
-      return region.size;
-    if (region.address < address)
-      start = cursor + 1;
-    if (region.address > address)
-      end = cursor - 1;
-  }
-
-  return -1;
+  auto pos = std::lower_bound(ignore_list->begin(), ignore_list->end(), address,
+                              [](auto const& reg, auto const* addr) { return reg.address < addr; });
+  return (pos != ignore_list->end() && pos->address == address) ? pos->size : -1;
 }
 
 static bool is_stack(const void *address)

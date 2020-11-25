@@ -18,6 +18,7 @@
 #include "src/smpi/include/smpi_actor.hpp"
 
 #include <algorithm>
+#include <array>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (request)");
 
@@ -61,7 +62,6 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int
   else
     refcount_ = 0;
   cancelled_ = 0;
-  generalized_funcs=nullptr;
   nbc_requests_=nullptr;
   nbc_requests_size_=0;
   init_buffer(count);
@@ -82,7 +82,6 @@ void Request::unref(MPI_Request* request)
     if((*request)->refcount_==0){
       if ((*request)->flags_ & MPI_REQ_GENERALIZED){
         ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
-        delete (*request)->generalized_funcs;
       }else{
         Comm::unref((*request)->comm_);
         Datatype::unref((*request)->old_type_);
@@ -337,8 +336,8 @@ void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
                        void *recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag,
                        MPI_Comm comm, MPI_Status * status)
 {
-  MPI_Request requests[2];
-  MPI_Status stats[2];
+  std::array<MPI_Request, 2> requests;
+  std::array<MPI_Status, 2> stats;
   int myid = simgrid::s4u::this_actor::get_pid();
   if ((comm->group()->actor(dst)->get_pid() == myid) && (comm->group()->actor(src)->get_pid() == myid)) {
     Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
@@ -352,8 +351,8 @@ void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
   }
   requests[0] = isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm);
   requests[1] = irecv_init(recvbuf, recvcount, recvtype, src, recvtag, comm);
-  startall(2, requests);
-  waitall(2, requests, stats);
+  startall(2, requests.data());
+  waitall(2, requests.data(), stats.data());
   unref(&requests[0]);
   unref(&requests[1]);
   if(status != MPI_STATUS_IGNORE) {
@@ -593,16 +592,15 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
     if (*flag) {
       finish_wait(request,status);
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
+        MPI_Status tmp_status;
         MPI_Status* mystatus;
-        if(status==MPI_STATUS_IGNORE){
-          mystatus=new MPI_Status();
+        if (status == MPI_STATUS_IGNORE) {
+          mystatus = &tmp_status;
           Status::empty(mystatus);
-        }else{
-          mystatus=status;
+        } else {
+          mystatus = status;
         }
         ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
-        if(status==MPI_STATUS_IGNORE) 
-          delete mystatus;
       }
       nsleeps=1;//reset the number of sleeps we will do next time
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_PERSISTENT) == 0)
@@ -685,16 +683,15 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
       } else {
         finish_wait(&requests[*index],status);
       if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_GENERALIZED)){
+        MPI_Status tmp_status;
         MPI_Status* mystatus;
-        if(status==MPI_STATUS_IGNORE){
-          mystatus=new MPI_Status();
+        if (status == MPI_STATUS_IGNORE) {
+          mystatus = &tmp_status;
           Status::empty(mystatus);
-        }else{
-          mystatus=status;
+        } else {
+          mystatus = status;
         }
         ret=(requests[*index]->generalized_funcs)->query_fn((requests[*index]->generalized_funcs)->extra_state, mystatus);
-        if(status==MPI_STATUS_IGNORE) 
-          delete mystatus;
       }
 
         if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_NON_PERSISTENT)) 
@@ -944,21 +941,20 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
   }
 
   if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
-    MPI_Status* mystatus;
     if(!((*request)->flags_ & MPI_REQ_COMPLETE)){
       ((*request)->generalized_funcs)->mutex->lock();
       ((*request)->generalized_funcs)->cond->wait(((*request)->generalized_funcs)->mutex);
       ((*request)->generalized_funcs)->mutex->unlock();
-      }
-    if(status==MPI_STATUS_IGNORE){
-      mystatus=new MPI_Status();
+    }
+    MPI_Status tmp_status;
+    MPI_Status* mystatus;
+    if (status == MPI_STATUS_IGNORE) {
+      mystatus = &tmp_status;
       Status::empty(mystatus);
-    }else{
-      mystatus=status;
+    } else {
+      mystatus = status;
     }
     ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
-    if(status==MPI_STATUS_IGNORE) 
-      delete mystatus;
   }
 
   finish_wait(request,status);
@@ -1164,7 +1160,7 @@ int Request::grequest_start(MPI_Grequest_query_function* query_fn, MPI_Grequest_
   (*request)->flags_ |= MPI_REQ_GENERALIZED;
   (*request)->flags_ |= MPI_REQ_PERSISTENT;
   (*request)->refcount_ = 1;
-  ((*request)->generalized_funcs)             = new smpi_mpi_generalized_request_funcs_t;
+  ((*request)->generalized_funcs)             = std::make_unique<smpi_mpi_generalized_request_funcs_t>();
   ((*request)->generalized_funcs)->query_fn=query_fn;
   ((*request)->generalized_funcs)->free_fn=free_fn;
   ((*request)->generalized_funcs)->cancel_fn=cancel_fn;

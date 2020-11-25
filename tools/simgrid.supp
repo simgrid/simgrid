@@ -99,7 +99,6 @@
    Memcheck:Leak
    fun:malloc
    ...
-   obj:*/libcgraph.so*
    fun:aaglex
    fun:aagparse
    fun:agconcat
