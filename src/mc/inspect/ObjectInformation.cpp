@@ -50,33 +50,18 @@ Frame* ObjectInformation::find_function(const void* ip) const
    * during the binary search (only at the end) so it is not included
    * in the index entry. We could use parallel arrays as well.
    *
-   * We cannot really use the std:: algorithm for this.
-   * We could use std::binary_search by including the high_pc inside
-   * the FunctionIndexEntry.
+   * Note the usage of reverse iterators to match the correct interval.
    */
-  const FunctionIndexEntry* base = this->functions_index.data();
-  int i                          = 0;
-  int j                          = this->functions_index.size() - 1;
-  while (j >= i) {
-    int k = i + ((j - i) / 2);
+  auto pos = std::lower_bound(this->functions_index.rbegin(), this->functions_index.rend(), ip,
+                              [](auto const& func, auto const* addr) { return func.low_pc > addr; });
 
-    /* In most of the search, we do not dereference the base[k].function.
-     * This way the memory accesses are located in the base[k] array. */
-    if (ip < base[k].low_pc)
-      j = k - 1;
-    else if (k < j && ip >= base[k + 1].low_pc)
-      i = k + 1;
-
-    /* At this point, the search is over.
-     * Either we have found the correct function or we do not know
-     * any function corresponding to this instruction address.
-     * Only at the point do we dereference the function pointer. */
-    else if ((std::uint64_t)ip < base[k].function->range.end())
-      return base[k].function;
-    else
-      return nullptr;
-  }
-  return nullptr;
+  /* At this point, the search is over.
+   * Either we have found the correct function or we do not know
+   * any function corresponding to this instruction address.
+   * Only at the point do we dereference the function pointer. */
+  return (pos != this->functions_index.rend() && reinterpret_cast<std::uint64_t>(ip) < pos->function->range.end())
+             ? pos->function
+             : nullptr;
 }
 
 const Variable* ObjectInformation::find_variable(const char* name) const
