@@ -20,6 +20,7 @@
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/backtrace.hpp"
 
+#include <array>
 #include <libunwind.h>
 #endif
 
@@ -108,11 +109,11 @@ namespace mc {
 void dumpStack(FILE* file, unw_cursor_t* cursor)
 {
   int nframe = 0;
-  char buffer[100];
+  std::array<char, 100> buffer;
 
   unw_word_t off;
   do {
-    const char* name = not unw_get_proc_name(cursor, buffer, 100, &off) ? buffer : "?";
+    const char* name = not unw_get_proc_name(cursor, buffer.data(), buffer.size(), &off) ? buffer.data() : "?";
     // Unmangle C++ names:
     auto realname = simgrid::xbt::demangle(name);
 

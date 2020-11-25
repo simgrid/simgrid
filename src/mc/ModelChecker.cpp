@@ -14,6 +14,7 @@
 #include "xbt/automaton.hpp"
 #include "xbt/system_error.hpp"
 
+#include <array>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 
@@ -42,12 +43,12 @@ void ModelChecker::start()
   checker_side_.start([](evutil_socket_t sig, short events, void* arg) {
     auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
     if (events == EV_READ) {
-      char buffer[MC_MESSAGE_LENGTH];
-      ssize_t size = mc->checker_side_.get_channel().receive(buffer, sizeof(buffer), false);
+      std::array<char, MC_MESSAGE_LENGTH> buffer;
+      ssize_t size = mc->checker_side_.get_channel().receive(buffer.data(), buffer.size(), false);
       if (size == -1 && errno != EAGAIN)
         throw simgrid::xbt::errno_error();
 
-      if (not mc->handle_message(buffer, size))
+      if (not mc->handle_message(buffer.data(), size))
         mc->checker_side_.break_loop();
     } else if (events == EV_SIGNAL) {
       if (sig == SIGCHLD)

@@ -112,12 +112,12 @@ void AppSide::handle_messages() const
   while (true) {
     XBT_DEBUG("Waiting messages from model-checker");
 
-    char message_buffer[MC_MESSAGE_LENGTH];
-    ssize_t received_size = channel_.receive(&message_buffer, sizeof(message_buffer));
+    std::array<char, MC_MESSAGE_LENGTH> message_buffer;
+    ssize_t received_size = channel_.receive(message_buffer.data(), message_buffer.size());
 
     xbt_assert(received_size >= 0, "Could not receive commands from the model-checker");
 
-    const s_mc_message_t* message = (s_mc_message_t*)message_buffer;
+    const s_mc_message_t* message = (s_mc_message_t*)message_buffer.data();
     switch (message->type) {
       case MC_MESSAGE_DEADLOCK_CHECK:
         assert_msg_size("DEADLOCK_CHECK", s_mc_message_t);
@@ -131,12 +131,12 @@ void AppSide::handle_messages() const
 
       case MC_MESSAGE_SIMCALL_HANDLE:
         assert_msg_size("SIMCALL_HANDLE", s_mc_message_simcall_handle_t);
-        handle_simcall((s_mc_message_simcall_handle_t*)message_buffer);
+        handle_simcall((s_mc_message_simcall_handle_t*)message_buffer.data());
         break;
 
       case MC_MESSAGE_ACTOR_ENABLED:
         assert_msg_size("ACTOR_ENABLED", s_mc_message_actor_enabled_t);
-        handle_actor_enabled((s_mc_message_actor_enabled_t*)message_buffer);
+        handle_actor_enabled((s_mc_message_actor_enabled_t*)message_buffer.data());
         break;
 
       default:
