@@ -88,14 +88,14 @@ const Variable* ObjectInformation::find_variable(const char* name) const
   return nullptr;
 }
 
-void ObjectInformation::remove_global_variable(const char* name)
+void ObjectInformation::remove_global_variable(const char* var_name)
 {
   // Binary search:
-  auto pos1 = std::lower_bound(this->global_variables.begin(), this->global_variables.end(), name,
-                               [](auto const& var, const char* var_name) { return var.name.compare(var_name) < 0; });
+  auto pos1 = std::lower_bound(this->global_variables.begin(), this->global_variables.end(), var_name,
+                               [](auto const& var, const char* name) { return var.name < name; });
   // Find the whole range:
-  auto pos2 = std::upper_bound(pos1, this->global_variables.end(), name,
-                               [](const char* var_name, auto const& var) { return var.name.compare(var_name) > 0; });
+  auto pos2 = std::upper_bound(pos1, this->global_variables.end(), var_name,
+                               [](const char* name, auto const& var) { return name < var.name; });
   // Remove the whole range:
   this->global_variables.erase(pos1, pos2);
 }
@@ -119,8 +119,8 @@ static void remove_local_variable(Frame& scope, const char* var_name, const char
 
     // Binary search:
     auto pos = std::lower_bound(scope.variables.begin(), scope.variables.end(), var_name,
-                                [](auto const& var, const char* var_name) { return var.name.compare(var_name) < 0; });
-    if (pos != scope.variables.end() && pos->name.compare(var_name) == 0) {
+                                [](auto const& var, const char* name) { return var.name < name; });
+    if (pos != scope.variables.end() && pos->name == var_name) {
       // Variable found, remove it:
       scope.variables.erase(pos);
     }

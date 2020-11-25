@@ -137,7 +137,7 @@ static ssize_t heap_comparison_ignore_size(const std::vector<simgrid::mc::Ignore
                                            const void* address)
 {
   auto pos = std::lower_bound(ignore_list->begin(), ignore_list->end(), address,
-                              [](auto const& reg, const void* address) { return reg.address < address; });
+                              [](auto const& reg, auto const* addr) { return reg.address < addr; });
   return (pos != ignore_list->end() && pos->address == address) ? pos->size : -1;
 }
 

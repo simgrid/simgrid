@@ -493,7 +493,7 @@ void RemoteSimulation::ignore_heap(IgnoredHeapRegion const& region)
 {
   // Binary search the position of insertion:
   auto pos = std::lower_bound(ignored_heap_.begin(), ignored_heap_.end(), region.address,
-                              [](auto const& reg, const void* address) { return reg.address < address; });
+                              [](auto const& reg, auto const* addr) { return reg.address < addr; });
   if (pos == ignored_heap_.end() || pos->address != region.address) {
     // Insert it:
     ignored_heap_.insert(pos, region);
@@ -504,7 +504,7 @@ void RemoteSimulation::unignore_heap(void* address, size_t size)
 {
   // Binary search:
   auto pos = std::lower_bound(ignored_heap_.begin(), ignored_heap_.end(), address,
-                              [](auto const& reg, const void* address) { return reg.address < address; });
+                              [](auto const& reg, auto const* addr) { return reg.address < addr; });
   if (pos != ignored_heap_.end() && static_cast<char*>(pos->address) <= static_cast<char*>(address) + size)
     ignored_heap_.erase(pos);
 }
