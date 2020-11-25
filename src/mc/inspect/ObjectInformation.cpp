@@ -64,13 +64,11 @@ Frame* ObjectInformation::find_function(const void* ip) const
              : nullptr;
 }
 
-const Variable* ObjectInformation::find_variable(const char* name) const
+const Variable* ObjectInformation::find_variable(const char* var_name) const
 {
-  for (Variable const& variable : this->global_variables) {
-    if (variable.name == name)
-      return &variable;
-  }
-  return nullptr;
+  auto pos = std::lower_bound(this->global_variables.begin(), this->global_variables.end(), var_name,
+                              [](auto const& var, const char* name) { return var.name < name; });
+  return (pos != this->global_variables.end() && pos->name == var_name) ? &(*pos) : nullptr;
 }
 
 void ObjectInformation::remove_global_variable(const char* var_name)
