@@ -145,8 +145,6 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
             show_string(ev->functionName);
             break;
           case 'd': /* date; LOG4J compliant */
-            show_double(simgrid_get_clock());
-            break;
           case 'r': /* application age; LOG4J compliant */
             show_double(simgrid_get_clock());
             break;
