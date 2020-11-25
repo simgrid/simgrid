@@ -90,7 +90,6 @@ public:
     return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0);
   }
 
-  void* loopback_                = nullptr;
   kernel::resource::LinkImpl* backbone_ = nullptr;
   NetPoint* router_              = nullptr;
   bool has_limiter_                = false;
