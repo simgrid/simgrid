@@ -126,9 +126,10 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
   auto remote_string_address =
       remote(reinterpret_cast<const simgrid::xbt::string_data*>(&actor->get_host()->get_name()));
   simgrid::xbt::string_data remote_string = process->read(remote_string_address);
-  char hostname[remote_string.len];
-  process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
-  info->hostname = mc_model_checker->get_host_name(hostname).c_str();
+  std::vector<char> hostname(remote_string.len + 1);
+  // no need to read the terminating null byte, and thus hostname[remote_string.len] is guaranteed to be '\0'
+  process->read_bytes(hostname.data(), remote_string.len, remote(remote_string.data));
+  info->hostname = mc_model_checker->get_host_name(hostname.data()).c_str();
   return info->hostname;
 }
 
