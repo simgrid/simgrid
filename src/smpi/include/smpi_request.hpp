@@ -9,6 +9,8 @@
 #include "smpi/smpi.h"
 #include "smpi_f2c.hpp"
 
+#include <memory>
+
 namespace simgrid{
 namespace smpi{
 
@@ -47,7 +49,7 @@ class Request : public F2C {
   int refcount_;
   MPI_Op op_;
   int cancelled_; // tri-state
-  smpi_mpi_generalized_request_funcs_t* generalized_funcs;
+  std::unique_ptr<smpi_mpi_generalized_request_funcs_t> generalized_funcs;
   MPI_Request* nbc_requests_;
   int nbc_requests_size_;
   static bool match_common(MPI_Request req, MPI_Request sender, MPI_Request receiver);
