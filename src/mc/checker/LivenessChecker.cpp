@@ -144,16 +144,14 @@ void LivenessChecker::replay()
 
       smx_simcall_t req = nullptr;
 
-      if (saved_req != nullptr) {
-        /* because we got a copy of the executed request, we have to fetch the
-             real one, pointed by the request field of the issuer process */
-        const smx_actor_t issuer = MC_smx_simcall_get_issuer(saved_req);
-        req                      = &issuer->simcall_;
+      /* because we got a copy of the executed request, we have to fetch the
+         real one, pointed by the request field of the issuer process */
+      const smx_actor_t issuer = MC_smx_simcall_get_issuer(saved_req);
+      req                      = &issuer->simcall_;
 
-        /* Debug information */
-        XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
-                  request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
-      }
+      /* Debug information */
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
+                request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
 
       this->get_session().execute(state->transition_);
     }
@@ -253,7 +251,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
   for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
     int req_num       = pair->graph_state->transition_.argument_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
-    if (req && req->call_ != simix::Simcall::NONE)
+    if (req->call_ != simix::Simcall::NONE)
       trace.push_back(request_to_string(req, req_num, RequestType::executed));
   }
   return trace;

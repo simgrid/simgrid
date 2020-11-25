@@ -297,8 +297,7 @@ std::vector<std::string> CommunicationDeterminismChecker::get_textual_trace() //
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
     smx_simcall_t req = &state->executed_req_;
-    if (req)
-      trace.push_back(request_to_string(req, state->transition_.argument_, RequestType::executed));
+    trace.push_back(request_to_string(req, state->transition_.argument_, RequestType::executed));
   }
   return trace;
 }
