@@ -31,27 +31,28 @@ std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communic
 
 /********** Static functions ***********/
 
-static e_mc_comm_pattern_difference_t compare_comm_pattern(const simgrid::mc::PatternCommunication* comm1,
-                                                           const simgrid::mc::PatternCommunication* comm2)
+static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc::PatternCommunication* comm1,
+                                                               const simgrid::mc::PatternCommunication* comm2)
 {
+  using simgrid::mc::CommPatternDifference;
   if(comm1->type != comm2->type)
-    return TYPE_DIFF;
+    return CommPatternDifference::TYPE;
   if (comm1->rdv != comm2->rdv)
-    return RDV_DIFF;
+    return CommPatternDifference::RDV;
   if (comm1->src_proc != comm2->src_proc)
-    return SRC_PROC_DIFF;
+    return CommPatternDifference::SRC_PROC;
   if (comm1->dst_proc != comm2->dst_proc)
-    return DST_PROC_DIFF;
+    return CommPatternDifference::DST_PROC;
   if (comm1->tag != comm2->tag)
-    return TAG_DIFF;
+    return CommPatternDifference::TAG;
   if (comm1->data.size() != comm2->data.size())
-    return DATA_SIZE_DIFF;
+    return CommPatternDifference::DATA_SIZE;
   if (comm1->data != comm2->data)
-    return DATA_DIFF;
-  return NONE_DIFF;
+    return CommPatternDifference::DATA;
+  return CommPatternDifference::NONE;
 }
 
-static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int process,
+static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, int process,
                                       const simgrid::mc::PatternCommunication* comm, unsigned int cursor)
 {
   char* type;
@@ -62,31 +63,32 @@ static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int p
   else
     type = bprintf("The recv communications pattern of the process %d is different!", process - 1);
 
+  using simgrid::mc::CommPatternDifference;
   switch(diff) {
-  case TYPE_DIFF:
-    res = bprintf("%s Different type for communication #%u", type, cursor);
-    break;
-  case RDV_DIFF:
-    res = bprintf("%s Different rdv for communication #%u", type, cursor);
-    break;
-  case TAG_DIFF:
-    res = bprintf("%s Different tag for communication #%u", type, cursor);
-    break;
-  case SRC_PROC_DIFF:
-    res = bprintf("%s Different source for communication #%u", type, cursor);
-    break;
-  case DST_PROC_DIFF:
-    res = bprintf("%s Different destination for communication #%u", type, cursor);
-    break;
-  case DATA_SIZE_DIFF:
-    res = bprintf("%s Different data size for communication #%u", type, cursor);
-    break;
-  case DATA_DIFF:
-    res = bprintf("%s Different data for communication #%u", type, cursor);
-    break;
-  default:
-    res = nullptr;
-    break;
+    case CommPatternDifference::TYPE:
+      res = bprintf("%s Different type for communication #%u", type, cursor);
+      break;
+    case CommPatternDifference::RDV:
+      res = bprintf("%s Different rdv for communication #%u", type, cursor);
+      break;
+    case CommPatternDifference::TAG:
+      res = bprintf("%s Different tag for communication #%u", type, cursor);
+      break;
+    case CommPatternDifference::SRC_PROC:
+      res = bprintf("%s Different source for communication #%u", type, cursor);
+      break;
+    case CommPatternDifference::DST_PROC:
+      res = bprintf("%s Different destination for communication #%u", type, cursor);
+      break;
+    case CommPatternDifference::DATA_SIZE:
+      res = bprintf("%s Different data size for communication #%u", type, cursor);
+      break;
+    case CommPatternDifference::DATA:
+      res = bprintf("%s Different data for communication #%u", type, cursor);
+      break;
+    default:
+      res = nullptr;
+      break;
   }
 
   return res;
@@ -125,9 +127,9 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
 {
   if (not backtracking) {
     PatternCommunicationList& list      = initial_communications_pattern[process];
-    e_mc_comm_pattern_difference_t diff = compare_comm_pattern(list.list[list.index_comm].get(), comm);
+    CommPatternDifference diff          = compare_comm_pattern(list.list[list.index_comm].get(), comm);
 
-    if (diff != NONE_DIFF) {
+    if (diff != CommPatternDifference::NONE) {
       if (comm->type == PatternCommunicationType::send) {
         this->send_deterministic = false;
         if (this->send_diff != nullptr)
@@ -171,8 +173,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
 
 /********** Non Static functions ***********/
 
-void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_mc_call_type_t call_type,
-                                                       int backtracking)
+void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, CallType call_type, int backtracking)
 {
   const smx_actor_t issuer = mcapi::get().mc_smx_simcall_get_issuer(request);
   const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[issuer->get_pid()];
@@ -181,7 +182,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
   auto pattern   = std::make_unique<PatternCommunication>();
   pattern->index = initial_pattern.index_comm + incomplete_pattern.size();
 
-  if (call_type == MC_CALL_TYPE_SEND) {
+  if (call_type == CallType::SEND) {
     /* Create comm pattern */
     pattern->type      = PatternCommunicationType::send;
     pattern->comm_addr = mcapi::get().get_pattern_comm_addr(request);
@@ -228,7 +229,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, e_
       return;
     }
 #endif
-  } else if (call_type == MC_CALL_TYPE_RECV) {
+  } else if (call_type == CallType::RECV) {
     pattern->type      = PatternCommunicationType::receive;
     pattern->comm_addr = static_cast<kernel::activity::CommImpl*>(simcall_comm_irecv__getraw__result(request));
 
@@ -304,8 +305,7 @@ std::vector<std::string> CommunicationDeterminismChecker::get_textual_trace() //
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
     smx_simcall_t req = &state->executed_req_;
-    if (req)
-      trace.push_back(mcapi::get().request_to_string(req, state->transition_.argument_, RequestType::executed));
+    trace.push_back(request_to_string(req, state->transition_.argument_, RequestType::executed));
   }
   return trace;
 }
@@ -404,8 +404,8 @@ void CommunicationDeterminismChecker::restoreState()
     smx_simcall_t req        = &issuer->simcall_;
 
     /* TODO : handle test and testany simcalls */
-    e_mc_call_type_t call = MC_get_call_type(req);
-    mcapi::get().handle_simcall(state->transition_);
+    CallType call = MC_get_call_type(req);
+    mc_model_checker->handle_simcall(state->transition_);
     MC_handle_comm_pattern(call, req, req_num, 1);
     mcapi::get().mc_wait_for_requests();
 
@@ -448,7 +448,7 @@ void CommunicationDeterminismChecker::real_run()
       mcapi::get().mc_inc_executed_trans();
 
       /* TODO : handle test and testany simcalls */
-      e_mc_call_type_t call = MC_CALL_TYPE_NONE;
+      CallType call = CallType::NONE;
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = MC_get_call_type(req);
 

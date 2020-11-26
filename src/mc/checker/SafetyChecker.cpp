@@ -67,8 +67,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
   for (auto const& state : stack_) {
     int value         = state->transition_.argument_;
     smx_simcall_t req = &state->executed_req_;
-    if (req)
-      trace.push_back(mcapi::get().request_to_string(req, value, RequestType::executed));
+    trace.push_back(request_to_string(req, value, RequestType::executed));
   }
   return trace;
 }
@@ -197,7 +196,7 @@ void SafetyChecker::backtrack()
     stack_.pop_back();
     if (reductionMode_ == ReductionMode::dpor) {
       smx_simcall_t req = &state->internal_req_;
-      if (req->call_ == SIMCALL_MUTEX_LOCK || req->call_ == SIMCALL_MUTEX_TRYLOCK)
+      if (req->call_ == simix::Simcall::MUTEX_LOCK || req->call_ == simix::Simcall::MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none");
 
       const kernel::actor::ActorImpl* issuer = mcapi::get().mc_smx_simcall_get_issuer(req);

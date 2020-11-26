@@ -78,24 +78,24 @@ void RawImpl::finish()
   }
 
   switch (simcall->call_) {
-    case SIMCALL_MUTEX_LOCK:
+    case simix::Simcall::MUTEX_LOCK:
       simcall_mutex_lock__get__mutex(simcall)->remove_sleeping_actor(*simcall->issuer_);
       break;
 
-    case SIMCALL_COND_WAIT:
+    case simix::Simcall::COND_WAIT:
       simcall_cond_wait_timeout__get__cond(simcall)->remove_sleeping_actor(*simcall->issuer_);
       break;
 
-    case SIMCALL_COND_WAIT_TIMEOUT:
+    case simix::Simcall::COND_WAIT_TIMEOUT:
       simcall_cond_wait_timeout__get__cond(simcall)->remove_sleeping_actor(*simcall->issuer_);
       simcall_cond_wait_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
-    case SIMCALL_SEM_ACQUIRE:
+    case simix::Simcall::SEM_ACQUIRE:
       simcall_sem_acquire_timeout__get__sem(simcall)->remove_sleeping_actor(*simcall->issuer_);
       break;
 
-    case SIMCALL_SEM_ACQUIRE_TIMEOUT:
+    case simix::Simcall::SEM_ACQUIRE_TIMEOUT:
       simcall_sem_acquire_timeout__get__sem(simcall)->remove_sleeping_actor(*simcall->issuer_);
       simcall_sem_acquire_timeout__set__result(simcall, 1); // signal a timeout
       break;

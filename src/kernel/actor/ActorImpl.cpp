@@ -436,8 +436,8 @@ void ActorImpl::simcall_answer()
   if (this != simix_global->maestro_) {
     XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall_.call_), (int)simcall_.call_,
               get_cname(), this);
-    xbt_assert(simcall_.call_ != SIMCALL_NONE);
-    simcall_.call_ = SIMCALL_NONE;
+    xbt_assert(simcall_.call_ != simix::Simcall::NONE);
+    simcall_.call_ = simix::Simcall::NONE;
     xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
                    std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
                        end(simix_global->actors_to_run),

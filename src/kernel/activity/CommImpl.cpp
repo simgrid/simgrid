@@ -581,9 +581,9 @@ void CommImpl::finish()
      * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
 
-    if (simcall->call_ == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
-      continue;                         // if actor handling comm is killed
-    if (simcall->call_ == SIMCALL_COMM_WAITANY) {
+    if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
+      continue;                                 // if actor handling comm is killed
+    if (simcall->call_ == simix::Simcall::COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (simcall->timeout_cb_) {
         simcall->timeout_cb_->remove();
@@ -674,15 +674,15 @@ void CommImpl::finish()
     }
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
     if (simcall->issuer_->exception_ &&
-        (simcall->call_ == SIMCALL_COMM_WAITANY || simcall->call_ == SIMCALL_COMM_TESTANY)) {
+        (simcall->call_ == simix::Simcall::COMM_WAITANY || simcall->call_ == simix::Simcall::COMM_TESTANY)) {
       // First retrieve the rank of our failing synchro
       CommImpl** comms;
       size_t count;
-      if (simcall->call_ == SIMCALL_COMM_WAITANY) {
+      if (simcall->call_ == simix::Simcall::COMM_WAITANY) {
         comms = simcall_comm_waitany__get__comms(simcall);
         count = simcall_comm_waitany__get__count(simcall);
       } else {
-        /* simcall->call_ == SIMCALL_COMM_TESTANY */
+        /* simcall->call_ == simix::Simcall::COMM_TESTANY */
         comms = simcall_comm_testany__get__comms(simcall);
         count = simcall_comm_testany__get__count(simcall);
       }

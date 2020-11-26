@@ -96,7 +96,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
   add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   /* Check that the route does not already exist */
-  if (gw_dst) // netzone route (to adapt the error message, if any)
+  if (gw_dst && gw_src) // netzone route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_FLOYD_LINK(src->id(), dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
                src->get_cname(), gw_src->get_cname(), dst->get_cname(), gw_dst->get_cname());
@@ -110,7 +110,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
   TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list.size();
 
   if (symmetrical) {
-    if (gw_dst) // netzone route (to adapt the error message, if any)
+    if (gw_dst && gw_src) // netzone route (to adapt the error message, if any)
       xbt_assert(
           nullptr == TO_FLOYD_LINK(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",

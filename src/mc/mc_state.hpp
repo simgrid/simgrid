@@ -29,8 +29,8 @@ public:
 
   /* Internal translation of the executed_req simcall
    *
-   * SIMCALL_COMM_TESTANY is translated to a SIMCALL_COMM_TEST
-   * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.
+   * Simcall::COMM_TESTANY is translated to a Simcall::COMM_TEST
+   * and Simcall::COMM_WAITANY to a Simcall::COMM_WAIT.
    */
   s_smx_simcall internal_req_;
 

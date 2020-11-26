@@ -368,8 +368,9 @@ int simcall_mc_random(int min, int max) {
 /* ************************************************************************** */
 
 /** @brief returns a printable string representing a simcall */
-const char *SIMIX_simcall_name(e_smx_simcall_t kind) {
-  return simcall_names[kind];
+const char* SIMIX_simcall_name(Simcall kind)
+{
+  return simcall_names[static_cast<int>(kind)];
 }
 
 namespace simgrid {

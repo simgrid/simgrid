@@ -133,7 +133,10 @@ function sortTable(n, type) {
 
 for node in "${nodes[@]}"
 do
-    wget --quiet ${BUILD_URL}/build_mode=Debug,node=${node}/consoleText >/dev/null 2>&1
+    wget --quiet --output-document=consoleText \
+         ${BUILD_URL}/build_mode=Debug,node=${node}/consoleText \
+         ${BUILD_URL}/build_mode=ModelChecker,node=${node}/consoleText \
+         >/dev/null 2>&1
     if [ ! -f consoleText ]; then
       echo "file not existing for node ${node}"
       exit 1

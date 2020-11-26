@@ -165,7 +165,7 @@ generates the following files:
 - popping_bodies.cpp:
   The BODY function of each simcall
 - popping_enum.hpp:
-  Definition of type `enum e_smx_simcall_t` (one value per existing simcall)
+  Definition of type `enum class Simcall` (one value per existing simcall)
 - popping_generated.cpp:
   Definitions of `simcall_names[]` (debug name of each simcall), and
   ActorImpl::simcall_handle() that deals with the simcall from within the kernel

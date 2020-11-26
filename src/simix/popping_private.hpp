@@ -13,9 +13,9 @@
 #include <boost/intrusive_ptr.hpp>
 
 /********************************* Simcalls *********************************/
-#include "popping_enum.hpp" /* Definition of e_smx_simcall_t, with one value per simcall */
+#include "popping_enum.hpp" /* Definition of Simcall, with one value per simcall */
 
-XBT_PUBLIC_DATA const std::array<const char*, NUM_SIMCALLS> simcall_names; /* Name of each simcall */
+XBT_PUBLIC_DATA const std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names; /* Name of each simcall */
 
 using simix_match_func_t     = bool (*)(void*, void*, simgrid::kernel::activity::CommImpl*);
 using simix_copy_data_func_t = void (*)(simgrid::kernel::activity::CommImpl*, void*, size_t);
@@ -44,7 +44,7 @@ union u_smx_scalar {
  * @brief Represents a simcall to the kernel.
  */
 struct s_smx_simcall {
-  e_smx_simcall_t call_                     = SIMCALL_NONE;
+  simgrid::simix::Simcall call_             = simgrid::simix::Simcall::NONE;
   smx_actor_t issuer_                       = nullptr;
   smx_timer_t timeout_cb_                   = nullptr; // Callback to timeouts
   simgrid::mc::SimcallInspector* inspector_ = nullptr; // makes that simcall observable by the MC
@@ -58,7 +58,7 @@ struct s_smx_simcall {
 
 /******************************** General *************************************/
 
-XBT_PRIVATE const char* SIMIX_simcall_name(e_smx_simcall_t kind);
+XBT_PRIVATE const char* SIMIX_simcall_name(simgrid::simix::Simcall kind);
 XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
 XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);
 
@@ -195,7 +195,7 @@ template <std::size_t I, class A, class... B> inline void marshal_args(smx_simca
 }
 
 /** Initialize the simcall */
-template <class... A> inline void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A const&... a)
+template <class... A> inline void marshal(smx_simcall_t simcall, Simcall call, A const&... a)
 {
   simcall->call_ = call;
   memset(&simcall->result_, 0, sizeof simcall->result_);

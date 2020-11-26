@@ -20,6 +20,7 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
+#include <cerrno>
 #include <cmath>
 
 #if HAVE_PAPI
@@ -235,15 +236,17 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
 #if _POSIX_TIMERS > 0
 int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
 {
+  if (not tp) {
+    errno = EFAULT;
+    return -1;
+  }
   if (not smpi_process())
     return clock_gettime(clk_id, tp);
   //there is only one time in SMPI, so clk_id is ignored.
   smpi_bench_end();
   double now = SIMIX_get_clock();
-  if (tp) {
-    tp->tv_sec = static_cast<time_t>(now);
-    tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
-  }
+  tp->tv_sec  = static_cast<time_t>(now);
+  tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   if (smpi_wtime_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
   smpi_bench_begin();

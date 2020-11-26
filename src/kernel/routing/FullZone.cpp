@@ -78,7 +78,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
     routing_table_.resize(table_size * table_size, nullptr);
 
   /* Check that the route does not already exist */
-  if (gw_dst) // inter-zone route (to adapt the error message, if any)
+  if (gw_dst && gw_src) // inter-zone route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
                src->get_cname(), gw_src->get_cname(), dst->get_cname(), gw_dst->get_cname());
