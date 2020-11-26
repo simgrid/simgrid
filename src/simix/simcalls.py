@@ -295,8 +295,8 @@ if __name__ == '__main__':
     # popping_enum.hpp
     #
     fd = header("popping_enum.hpp")
-    fd.write('namespace simgrid {\n');
-    fd.write('namespace simix {\n');
+    fd.write('namespace simgrid {\n')
+    fd.write('namespace simix {\n')
     fd.write('/**\n')
     fd.write(' * @brief All possible simcalls.\n')
     fd.write(' */\n')
@@ -307,9 +307,9 @@ if __name__ == '__main__':
 
     fd.write('};\n')
     fd.write('\n')
-    fd.write('constexpr int NUM_SIMCALLS = ' + str(1 + len(simcalls)) + ';\n');
-    fd.write('} // namespace simix\n');
-    fd.write('} // namespace simgrid\n');
+    fd.write('constexpr int NUM_SIMCALLS = ' + str(1 + len(simcalls)) + ';\n')
+    fd.write('} // namespace simix\n')
+    fd.write('} // namespace simgrid\n')
     fd.close()
 
     #
