@@ -211,13 +211,13 @@ void Datatype::unref(MPI_Datatype datatype)
   if (datatype->refcount_ > 0)
     datatype->refcount_--;
 
-  if (datatype->refcount_ == 0 && not(datatype->flags_ & DT_FLAG_PREDEFINED))
-    delete datatype;
-
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(datatype->refcount_), sizeof(datatype->refcount_));
 #endif
+
+  if (datatype->refcount_ == 0 && not(datatype->flags_ & DT_FLAG_PREDEFINED))
+    delete datatype;
 }
 
 void Datatype::commit()
