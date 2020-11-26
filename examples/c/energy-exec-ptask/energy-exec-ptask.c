@@ -22,8 +22,8 @@ static void runner(int argc, char* argv[])
 
   XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "
            "and 10MB to exchange between each pair");
-  double* computation_amounts   = (double*)calloc(host_count, sizeof(double));
-  double* communication_amounts = (double*)calloc(host_count * host_count, sizeof(double));
+  double* computation_amounts   = xbt_new0(double, host_count);
+  double* communication_amounts = xbt_new0(double, host_count * host_count);
 
   for (int i = 0; i < host_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
@@ -34,12 +34,12 @@ static void runner(int argc, char* argv[])
 
   sg_actor_parallel_execute(host_count, hosts, computation_amounts, communication_amounts);
 
-  free(communication_amounts);
-  free(computation_amounts);
+  xbt_free(communication_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("We can do the same with a timeout of one second enabled.");
-  computation_amounts   = (double*)calloc(host_count, sizeof(double));
-  communication_amounts = (double*)calloc(host_count * host_count, sizeof(double));
+  computation_amounts   = xbt_new0(double, host_count);
+  communication_amounts = xbt_new0(double, host_count * host_count);
   for (int i = 0; i < host_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
   for (int i = 0; i < host_count; i++)
@@ -48,8 +48,8 @@ static void runner(int argc, char* argv[])
 
   sg_exec_t exec = sg_actor_parallel_exec_init(host_count, hosts, computation_amounts, communication_amounts);
   sg_exec_wait_for(exec, 1 /* timeout (in seconds)*/);
-  free(communication_amounts);
-  free(computation_amounts);
+  xbt_free(communication_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
   computation_amounts = (double*)calloc(host_count, sizeof(double));
