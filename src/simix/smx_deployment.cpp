@@ -63,7 +63,6 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
 
   actor.function           = process_function;
-  actor.host               = process_host;
   actor.kill_time          = process_kill_time;
   actor.start_time         = process_start_time;
   actor.restart_on_failure = false;
