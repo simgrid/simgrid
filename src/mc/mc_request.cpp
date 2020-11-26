@@ -371,7 +371,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
       break;
 
     case Simcall::COMM_WAITANY:
-      remote_act = mc_model_checker->get_remote_simulation().read(remote(simcall_comm_testany__get__comms(req) + idx));
+      remote_act = mc_model_checker->get_remote_simulation().read(remote(simcall_comm_waitany__get__comms(req) + idx));
       break;
 
     case Simcall::COMM_TESTANY:
