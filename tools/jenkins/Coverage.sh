@@ -106,7 +106,10 @@ if [ -f Testing/TAG ] ; then
   #generate PVS-studio report
   EXCLUDEDPATH="-e $WORKSPACE/src/include/catch.hpp -e $WORKSPACE/src/include/xxhash.hpp -e $WORKSPACE/teshsuite/smpi/mpich3-test/ -e $WORKSPACE/teshsuite/smpi/isp/ -e *_dtd.c -e *_dtd.h -e *yy.c -e  $WORKSPACE/src/xbt/automaton/ -e $WORKSPACE/src/smpi/colls/ -e $WORKSPACE/examples/smpi/NAS/ -e $WORKSPACE/examples/smpi/gemm/gemm.c -e $WORKSPACE/src/msg/ -e $WORKSPACE/include/msg/ -e $WORKSPACE/examples/deprecated/ -e $WORKSPACE/teshsuite/msg/"
   pvs-studio-analyzer analyze -f "$BUILDFOLDER"/compile_commands.json -o "$WORKSPACE"/pvs.log $EXCLUDEDPATH -j$NUMPROC
-  #disable V1042 (copyleft), V521 (commas in catch.hpp)
-  plog-converter -t xml -o "$WORKSPACE"/pvs.plog -d V1042,V521 "$WORKSPACE"/pvs.log
+  # Disable:
+  # V521 Such expressions using the ',' operator are dangerous. (-> commas in catch.hpp),
+  # V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+  # V1056 The predefined identifier '__func__' always contains the string 'operator()' inside function body of the overloaded 'operator()'.
+  plog-converter -t xml -o "$WORKSPACE"/pvs.plog -d V521,V1042,V1056 "$WORKSPACE"/pvs.log
 
 fi || exit 42
