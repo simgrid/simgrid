@@ -100,7 +100,7 @@ namespace s4u {
  * For now, you cannot change the mountpoints programmatically, and must declare them from your platform file.
  */
 class XBT_PUBLIC File : public xbt::Extendable<File> {
-  sg_size_t size_;
+  sg_size_t size_ = 0;
   std::string path_;
   std::string fullpath_;
   sg_size_t current_position_ = SEEK_SET;
