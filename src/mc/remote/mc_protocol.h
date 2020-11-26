@@ -16,9 +16,10 @@
 
 #ifdef __cplusplus
 
-#include "cstdint"
 #include "mc/datatypes.h"
 #include "simgrid/forward.h" // aid_t
+#include <array>
+#include <cstdint>
 
 // ***** Messages
 namespace simgrid {
@@ -44,7 +45,7 @@ enum class MessageType {
 } // namespace mc
 } // namespace simgrid
 
-#define MC_MESSAGE_LENGTH 512
+constexpr unsigned MC_MESSAGE_LENGTH = 512;
 
 /** Basic structure for a MC message
  *
@@ -88,7 +89,7 @@ struct s_mc_message_stack_region_t {
 
 struct s_mc_message_register_symbol_t {
   simgrid::mc::MessageType type;
-  char name[128];
+  std::array<char, 128> name;
   int (*callback)(void*);
   void* data;
 };
