@@ -29,23 +29,19 @@ to us and say hello! We love earing about how people use SimGrid.
    framework, and you never know who have the time and knowledge to
    answer your question, so please keep messages on the public mailing
    list.
- - Join us on IRC and ask your question directly on the channel \#simgrid at
-   ``irc.debian.org``
-   (or use the ugly `web interface <https://webchat.oftc.net/?channels=%23simgrid>`__
-   if you don't have a
-   `real client <https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients>`_
-   installed). When no non-french speaker are connected, we usually
-   chat in french on this channel, but we do switch back to english
-   when we have a guest.
    
-   Be warned that even if many people are connected to
-   the channel, they may not be staring at their IRC windows.
-   So don't be surprised if you don't get an answer in the 
-   second, and turn to the mailing lists if nobody seems to be there.
-   The logs of this channel are publicly
-   `available online <http://colabti.org/irclogger/irclogger_logs/simgrid>`_,
-   so may also want to check in a few hours if someone answered after
-   you left. 
+ - If you want to chat with the community, join us on `Mattermost
+   <https://framateam.org/simgrid/channels/town-square>`_. Be warned
+   that even if many people are connected to the channel, they may not
+   be staring at their chat windows. So don't be surprised if you
+   don't get an answer in the second, and please be patient.
+
+   If you prefer, you can reach us on IRC on \#simgrid at
+   ``irc.debian.org`` (the `logs are available
+   <http://colabti.org/irclogger/irclogger_logs/simgrid>`_). When no
+   non-french speaker are connected, we usually chat in french on
+   these channel, but we do switch back to english when we have a
+   guest.
    
  - Asking your question on
    `StackOverflow <http://stackoverflow.com/questions/tagged/simgrid>`_
