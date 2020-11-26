@@ -12,16 +12,16 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_token_ring, "Messages specific for this s4u example");
 
 class RelayRunner {
-  size_t token_size = 1000000; /* The token is 1MB long*/
-  simgrid::s4u::Mailbox* my_mailbox;
-  simgrid::s4u::Mailbox* neighbor_mailbox;
-  unsigned int rank      = 0;
-
 public:
   explicit RelayRunner() = default;
 
   void operator()()
   {
+    size_t token_size = 1000000; /* The token is 1MB long*/
+    simgrid::s4u::Mailbox* my_mailbox;
+    simgrid::s4u::Mailbox* neighbor_mailbox;
+    unsigned int rank = 0;
+
     try {
       rank = std::stoi(simgrid::s4u::this_actor::get_name());
     } catch (const std::invalid_argument& ia) {

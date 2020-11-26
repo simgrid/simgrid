@@ -102,12 +102,12 @@ public:
   double loopback_bw  = 0;
   double loopback_lat = 0;
   double limiter_link = 0;
-  ClusterTopology topology;
+  ClusterTopology topology = ClusterTopology::FLAT;
   std::string topo_parameters;
-  std::unordered_map<std::string, std::string>* properties;
+  std::unordered_map<std::string, std::string>* properties = nullptr;
   std::string router_id;
-  simgrid::s4u::Link::SharingPolicy sharing_policy;
-  simgrid::s4u::Link::SharingPolicy bb_sharing_policy;
+  simgrid::s4u::Link::SharingPolicy sharing_policy    = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+  simgrid::s4u::Link::SharingPolicy bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
 };
 
 class CabinetCreationArgs {
