@@ -56,6 +56,4 @@ public:
 }
 }
 
-XBT_PRIVATE smx_simcall_t MC_state_choose_request(simgrid::mc::State* state);
-
 #endif

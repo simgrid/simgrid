@@ -78,7 +78,7 @@ public:
   bool request_depend(smx_simcall_t req1, smx_simcall_t req2) const;
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
-  const char *simix_simcall_name(e_smx_simcall_t kind) const;
+  const char *simix_simcall_name(simgrid::simix::Simcall kind) const;
 
   // SNAPSHOT FUNCTIONS
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
