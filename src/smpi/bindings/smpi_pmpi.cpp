@@ -188,12 +188,8 @@ int PMPI_Initialized(int* flag) {
 int PMPI_Alloc_mem(MPI_Aint size, MPI_Info /*info*/, void* baseptr)
 {
   void *ptr = xbt_malloc(size);
-  if(ptr==nullptr)
-    return MPI_ERR_NO_MEM;
-  else {
-    *static_cast<void**>(baseptr) = ptr;
-    return MPI_SUCCESS;
-  }
+  *static_cast<void**>(baseptr) = ptr;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Free_mem(void *baseptr){
