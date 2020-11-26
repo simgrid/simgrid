@@ -187,9 +187,9 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     pattern->type      = PatternCommunicationType::send;
     pattern->comm_addr = mcapi::get().get_pattern_comm_addr(request);
 
-    Remote<kernel::activity::CommImpl> temp_synchro;
-    mc_model_checker->get_remote_simulation().read(temp_synchro, remote(pattern->comm_addr));
-    const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
+    // Remote<kernel::activity::CommImpl> temp_synchro;
+    // mc_model_checker->get_remote_simulation().read(temp_synchro, remote(pattern->comm_addr));
+    // const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
 
     // char* remote_name = mc_model_checker->get_remote_simulation().read<char*>(RemotePtr<char*>(
     //     (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->name_ : &synchro->mbox_cpy->name_)));
