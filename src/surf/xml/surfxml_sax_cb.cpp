@@ -610,7 +610,9 @@ void ETag_surfxml_route(){
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
   route.gw_src    = nullptr;
   route.gw_dst    = nullptr;
-  route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
+  route.symmetrical = (A_surfxml_route_symmetrical == AU_surfxml_route_symmetrical ||
+                       A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES ||
+                       A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_yes);
 
   route.link_list.swap(parsed_link_list);
 
@@ -638,17 +640,9 @@ void ETag_surfxml_zoneRoute()
 
   ASroute.link_list.swap(parsed_link_list);
 
-  switch (A_surfxml_zoneRoute_symmetrical) {
-  case AU_surfxml_zoneRoute_symmetrical:
-  case A_surfxml_zoneRoute_symmetrical_YES:
-    ASroute.symmetrical = true;
-    break;
-  case A_surfxml_zoneRoute_symmetrical_NO:
-    ASroute.symmetrical = false;
-    break;
-  default:
-    THROW_IMPOSSIBLE;
-  }
+  ASroute.symmetrical = (A_surfxml_zoneRoute_symmetrical == AU_surfxml_zoneRoute_symmetrical ||
+                         A_surfxml_zoneRoute_symmetrical == A_surfxml_zoneRoute_symmetrical_YES ||
+                         A_surfxml_zoneRoute_symmetrical == A_surfxml_zoneRoute_symmetrical_yes);
 
   sg_platf_new_route(&ASroute);
 }

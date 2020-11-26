@@ -370,16 +370,7 @@ int console_add_route(lua_State *L) {
    */
   lua_pushstring(L,"symmetrical");
   lua_gettable(L,-2);
-  if (lua_isstring(L, -1)) {
-    const char* value = lua_tostring(L, -1);
-    if (strcmp("YES", value) == 0)
-      route.symmetrical = true;
-    else
-      route.symmetrical = false;
-  }
-  else {
-    route.symmetrical = true;
-  }
+  route.symmetrical = (not lua_isstring(L, -1) || strcasecmp("YES", lua_tostring(L, -1)) == 0);
   lua_pop(L,1);
 
   route.gw_src = nullptr;
@@ -442,16 +433,7 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L,"symmetrical");
   lua_gettable(L,-2);
-  if (lua_isstring(L, -1)) {
-    const char* value = lua_tostring(L, -1);
-    if (strcmp("YES", value) == 0)
-      ASroute.symmetrical = true;
-    else
-      ASroute.symmetrical = false;
-  }
-  else {
-    ASroute.symmetrical = true;
-  }
+  ASroute.symmetrical = (not lua_isstring(L, -1) || strcasecmp("YES", lua_tostring(L, -1)) == 0);
   lua_pop(L,1);
 
   sg_platf_new_route(&ASroute);
