@@ -38,22 +38,16 @@ static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Con
 
   // create an array with all ancestors of a1
   std::vector<simgrid::instr::Container*> ancestors_a1;
-  simgrid::instr::Container* p = a1->father_;
-  while (p) {
+  for (auto* p = a1->father_; p != nullptr; p = p->father_)
     ancestors_a1.push_back(p);
-    p = p->father_;
-  }
 
   // create an array with all ancestors of a2
   std::vector<simgrid::instr::Container*> ancestors_a2;
-  p = a2->father_;
-  while (p) {
+  for (auto* p = a2->father_; p != nullptr; p = p->father_)
     ancestors_a2.push_back(p);
-    p = p->father_;
-  }
 
   // find the lowest ancestor
-  p     = nullptr;
+  simgrid::instr::Container* p = nullptr;
   int i = static_cast<int>(ancestors_a1.size()) - 1;
   int j = static_cast<int>(ancestors_a2.size()) - 1;
   while (i >= 0 && j >= 0) {
