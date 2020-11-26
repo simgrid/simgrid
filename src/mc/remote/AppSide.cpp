@@ -208,9 +208,9 @@ void AppSide::declare_symbol(const char* name, int* value) const
 {
   s_mc_message_register_symbol_t message;
   message.type = MessageType::REGISTER_SYMBOL;
-  if (strlen(name) + 1 > sizeof(message.name))
+  if (strlen(name) + 1 > message.name.size())
     xbt_die("Symbol is too long");
-  strncpy(message.name, name, sizeof(message.name));
+  strncpy(message.name.data(), name, message.name.size());
   message.callback = nullptr;
   message.data     = value;
   if (channel_.send(message))
