@@ -151,7 +151,7 @@ void SafetyChecker::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      auto actors = mcapi::get().mc_get_remote_simulation().actors();
+      auto actors = mcapi::get().get_actors(); 
       for (auto& remoteActor : actors) {
         auto actor = remoteActor.copy.get_buffer();
         if (mcapi::get().actor_is_enabled(actor->get_pid())) {

@@ -231,7 +231,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
 #endif
   } else if (call_type == CallType::RECV) {
     pattern->type      = PatternCommunicationType::receive;
-    pattern->comm_addr = static_cast<kernel::activity::CommImpl*>(simcall_comm_irecv__getraw__result(request));
+    // pattern->comm_addr = static_cast<kernel::activity::CommImpl*>(simcall_comm_irecv__getraw__result(request));
+    pattern->comm_addr = mcapi::get().get_pattern_comm_addr(request);
 
 #if HAVE_SMPI
     smpi::Request mpi_request;
