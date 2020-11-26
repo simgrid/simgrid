@@ -45,7 +45,7 @@ namespace mc {
 class UnwindContext {
   simgrid::mc::AddressSpace* address_space_ = nullptr;
   simgrid::mc::RemoteSimulation* process_   = nullptr;
-  unw_context_t unwind_context_;
+  unw_context_t unwind_context_             = {};
 
 public:
   void initialize(simgrid::mc::RemoteSimulation* process, unw_context_t* c);
