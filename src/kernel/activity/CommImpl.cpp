@@ -480,12 +480,12 @@ void CommImpl::copy_data()
             dst_actor_ ? dst_actor_->get_host()->get_cname() : "a finished process", dst_buff_, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
-  if (dst_buff_size_)
+  if (dst_buff_size_) {
     buff_size = std::min(buff_size, *(dst_buff_size_));
 
-  /* Update the receiver's buffer size to the copied amount */
-  if (dst_buff_size_)
+    /* Update the receiver's buffer size to the copied amount */
     *dst_buff_size_ = buff_size;
+  }
 
   if (buff_size > 0) {
     if (copy_data_fun)
