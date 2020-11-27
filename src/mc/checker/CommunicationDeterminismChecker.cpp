@@ -6,12 +6,12 @@
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/Session.hpp"
+#include "src/mc/mc_api.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_api.hpp"
 
 #if HAVE_SMPI
 #include "smpi_request.hpp"
@@ -35,7 +35,7 @@ static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc
                                                                const simgrid::mc::PatternCommunication* comm2)
 {
   using simgrid::mc::CommPatternDifference;
-  if(comm1->type != comm2->type)
+  if (comm1->type != comm2->type)
     return CommPatternDifference::TYPE;
   if (comm1->rdv != comm2->rdv)
     return CommPatternDifference::RDV;
@@ -64,7 +64,7 @@ static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, i
     type = bprintf("The recv communications pattern of the process %d is different!", process - 1);
 
   using simgrid::mc::CommPatternDifference;
-  switch(diff) {
+  switch (diff) {
     case CommPatternDifference::TYPE:
       res = bprintf("%s Different type for communication #%u", type, cursor);
       break;
@@ -126,8 +126,8 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
                                                                  int backtracking)
 {
   if (not backtracking) {
-    PatternCommunicationList& list      = initial_communications_pattern[process];
-    CommPatternDifference diff          = compare_comm_pattern(list.list[list.index_comm].get(), comm);
+    PatternCommunicationList& list = initial_communications_pattern[process];
+    CommPatternDifference diff     = compare_comm_pattern(list.list[list.index_comm].get(), comm);
 
     if (diff != CommPatternDifference::NONE) {
       if (comm->type == PatternCommunicationType::send) {
@@ -175,7 +175,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
 
 void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, CallType call_type, int backtracking)
 {
-  const smx_actor_t issuer = mcapi::get().mc_smx_simcall_get_issuer(request);
+  const smx_actor_t issuer                                     = mcapi::get().mc_smx_simcall_get_issuer(request);
   const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[issuer->get_pid()];
   const std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer->get_pid()];
 
@@ -186,13 +186,6 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     /* Create comm pattern */
     pattern->type      = PatternCommunicationType::send;
     pattern->comm_addr = mcapi::get().get_pattern_comm_addr(request);
-
-    // Remote<kernel::activity::CommImpl> temp_synchro;
-    // mc_model_checker->get_remote_simulation().read(temp_synchro, remote(pattern->comm_addr));
-    // const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
-
-    // char* remote_name = mc_model_checker->get_remote_simulation().read<char*>(RemotePtr<char*>(
-    //     (uint64_t)(synchro->get_mailbox() ? &synchro->get_mailbox()->name_ : &synchro->mbox_cpy->name_)));
     pattern->rdv      = mcapi::get().get_pattern_comm_rdv(pattern->comm_addr);
     pattern->src_proc = mcapi::get().get_pattern_comm_src_proc(pattern->comm_addr);
     pattern->src_host = mc_api::get().get_actor_host_name(issuer);
@@ -201,23 +194,18 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     simgrid::smpi::Request mpi_request;
     mc_model_checker->get_remote_simulation().read(
         &mpi_request, remote(static_cast<smpi::Request*>(simcall_comm_isend__get__data(request))));
-    pattern->tag = mpi_request.tag();
+    // pattern->tag = mpi_request.tag();
+    pattern->tag = mcapi::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_ISEND);
 #endif
-
-    // if (synchro->src_buff_ != nullptr) {
-    //   pattern->data.resize(synchro->src_buff_size_);
-    //   mc_model_checker->get_remote_simulation().read_bytes(pattern->data.data(), pattern->data.size(),
-    //                                                        remote(synchro->src_buff_));
-    // }
-
     auto pattern_data = mcapi::get().get_pattern_comm_data(pattern->comm_addr);
-    if(pattern_data.data() != nullptr) {
+    if (pattern_data.data() != nullptr) {
       auto data_size = pattern_data.size();
       pattern->data.resize(data_size);
       memcpy(pattern->data.data(), pattern_data.data(), data_size);
     }
+
 #if HAVE_SMPI
-    if(mpi_request.detached()){
+    if (mpi_request.detached()) {
       if (this->initial_communications_pattern_done) {
         /* Evaluate comm determinism */
         this->deterministic_comm_pattern(pattern->src_proc, pattern.get(), backtracking);
@@ -230,17 +218,12 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     }
 #endif
   } else if (call_type == CallType::RECV) {
-    pattern->type      = PatternCommunicationType::receive;
-    // pattern->comm_addr = static_cast<kernel::activity::CommImpl*>(simcall_comm_irecv__getraw__result(request));
+    pattern->type = PatternCommunicationType::receive;
     pattern->comm_addr = mcapi::get().get_pattern_comm_addr(request);
 
 #if HAVE_SMPI
-    smpi::Request mpi_request;
-    mc_model_checker->get_remote_simulation().read(
-        &mpi_request, remote(static_cast<smpi::Request*>(simcall_comm_irecv__get__data(request))));
-    pattern->tag = mpi_request.tag();
+    pattern->tag = mcapi::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_IRECV);
 #endif
-
     Remote<kernel::activity::CommImpl> temp_comm;
     mc_model_checker->get_remote_simulation().read(temp_comm, remote(pattern->comm_addr));
     const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
@@ -254,7 +237,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
         mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->dst_actor_.get()))->get_pid();
     pattern->dst_host = MC_smx_actor_get_host_name(issuer);
   } else
-    xbt_die("Unexpected call_type %i", (int) call_type);
+    xbt_die("Unexpected call_type %i", (int)call_type);
 
   XBT_DEBUG("Insert incomplete comm pattern %p for process %ld", pattern.get(), issuer->get_pid());
   incomplete_communications_pattern[issuer->get_pid()].push_back(pattern.release());
@@ -287,9 +270,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::ac
   }
 }
 
-CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& s) : Checker(s)
-{
-}
+CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& s) : Checker(s) {}
 
 CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
 
@@ -384,7 +365,7 @@ void CommunicationDeterminismChecker::restoreState()
   unsigned n = mcapi::get().get_maxpid();
   assert(n == incomplete_communications_pattern.size());
   assert(n == initial_communications_pattern.size());
-  for (unsigned j=0; j < n ; j++) {
+  for (unsigned j = 0; j < n; j++) {
     incomplete_communications_pattern[j].clear();
     initial_communications_pattern[j].index_comm = 0;
   }
@@ -394,7 +375,7 @@ void CommunicationDeterminismChecker::restoreState()
     if (state == stack_.back())
       break;
 
-    int req_num             = state->transition_.argument_;
+    int req_num                    = state->transition_.argument_;
     const s_smx_simcall* saved_req = &state->executed_req_;
     xbt_assert(saved_req);
 
@@ -419,7 +400,7 @@ void CommunicationDeterminismChecker::restoreState()
 void CommunicationDeterminismChecker::real_run()
 {
   std::unique_ptr<VisitedState> visited_state = nullptr;
-  smx_simcall_t req = nullptr;
+  smx_simcall_t req                           = nullptr;
 
   while (not stack_.empty()) {
     /* Get current state */
@@ -459,7 +440,6 @@ void CommunicationDeterminismChecker::real_run()
 
       MC_handle_comm_pattern(call, req, req_num, 0);
 
-
       /* Wait for requests (schedules processes) */
       mcapi::get().mc_wait_for_requests();
 
@@ -493,11 +473,11 @@ void CommunicationDeterminismChecker::real_run()
 
       stack_.push_back(std::move(next_state));
     } else {
-      if (stack_.size() > (std::size_t) _sg_mc_max_depth)
+      if (stack_.size() > (std::size_t)_sg_mc_max_depth)
         XBT_WARN("/!\\ Max depth reached! /!\\ ");
       else if (visited_state != nullptr)
         XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
-            visited_state->original_num == -1 ? visited_state->num : visited_state->original_num);
+                  visited_state->original_num == -1 ? visited_state->num : visited_state->original_num);
       else
         XBT_DEBUG("There are no more processes to interleave. (depth %zu)", stack_.size());
 

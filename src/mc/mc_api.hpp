@@ -79,6 +79,9 @@ public:
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
   const char *simix_simcall_name(simgrid::simix::Simcall kind) const;
+  #if HAVE_SMPI
+  int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;
+  #endif
 
   // SNAPSHOT FUNCTIONS
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;

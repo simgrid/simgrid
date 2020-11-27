@@ -12,6 +12,10 @@
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
+#if HAVE_SMPI
+#include "src/smpi/include/smpi_request.hpp"
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_api, mc, "Logging specific to MC Fasade APIs ");
 
 using Simcall = simgrid::simix::Simcall;
@@ -216,6 +220,7 @@ kernel::activity::CommImpl* mc_api::get_pattern_comm_addr(smx_simcall_t request)
   auto comm_addr = simcall_comm_isend__getraw__result(request);
   return static_cast<kernel::activity::CommImpl*>(comm_addr);
 }
+
 std::string mc_api::get_pattern_comm_rdv(void* addr) const
 {
   Remote<kernel::activity::CommImpl> temp_synchro;
@@ -384,6 +389,20 @@ const char* mc_api::simix_simcall_name(simgrid::simix::Simcall kind) const
 {
   return SIMIX_simcall_name(kind);
 }
+
+#if HAVE_SMPI
+int mc_api::get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const
+{
+  simgrid::smpi::Request mpi_request;
+  void* simcall_data = nullptr;
+  if (type == Simcall::COMM_ISEND)
+    simcall_data = simcall_comm_isend__get__data(simcall);
+  else if (type == Simcall::COMM_IRECV)
+    simcall_data = simcall_comm_irecv__get__data(simcall);
+  mc_model_checker->get_remote_simulation().read(&mpi_request, remote(static_cast<smpi::Request*>(simcall_data)));
+  return mpi_request.tag();
+}
+#endif
 
 bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
 {
