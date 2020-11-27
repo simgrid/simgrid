@@ -272,6 +272,14 @@ const char* mc_api::get_actor_host_name(smx_actor_t actor) const
   return host_name;
 }
 
+bool mc_api::check_send_request_detached(smx_simcall_t const& simcall) const
+{
+  simgrid::smpi::Request mpi_request;
+  mc_model_checker->get_remote_simulation().read(
+      &mpi_request, remote(static_cast<smpi::Request*>(simcall_comm_isend__get__data(simcall))));
+  return mpi_request.detached();
+}
+
 std::size_t mc_api::get_remote_heap_bytes() const
 {
   RemoteSimulation& process = mc_model_checker->get_remote_simulation();

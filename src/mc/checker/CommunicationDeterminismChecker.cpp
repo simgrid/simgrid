@@ -201,7 +201,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     }
 
 #if HAVE_SMPI
-    if (mpi_request.detached()) {
+    auto send_detached = mcapi::get().check_send_request_detached(request);
+    if (send_detached) {
       if (this->initial_communications_pattern_done) {
         /* Evaluate comm determinism */
         this->deterministic_comm_pattern(pattern->src_proc, pattern.get(), backtracking);
