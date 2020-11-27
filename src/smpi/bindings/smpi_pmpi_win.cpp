@@ -44,8 +44,6 @@ int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm com
   CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
   void* ptr = xbt_malloc(size);
-  if(ptr==nullptr)
-    return MPI_ERR_NO_MEM;
   smpi_bench_end();
   *static_cast<void**>(base) = ptr;
   *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,1);
@@ -61,8 +59,6 @@ int PMPI_Win_allocate_shared( MPI_Aint size, int disp_unit, MPI_Info info, MPI_C
   int rank = comm->rank();
   if(rank==0){
      ptr = xbt_malloc(size*comm->size());
-     if(ptr==nullptr)
-       return MPI_ERR_NO_MEM;
   }
   smpi_bench_end();
   simgrid::smpi::colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);

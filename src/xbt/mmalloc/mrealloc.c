@@ -129,7 +129,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       abort();
     }
 
-    if (size > (size_t) (1 << (type - 1)) && size <= (size_t) (1 << type)) {
+    if (size > ((size_t)1 << (type - 1)) && size <= ((size_t)1 << type)) {
       /* The new size is the same kind of fragment.  */
 
       result = ptr;

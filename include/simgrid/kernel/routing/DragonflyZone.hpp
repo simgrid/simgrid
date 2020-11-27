@@ -82,7 +82,7 @@ private:
   void generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
                      resource::LinkImpl** linkdown) const;
 
-  simgrid::s4u::Link::SharingPolicy sharing_policy_;
+  simgrid::s4u::Link::SharingPolicy sharing_policy_ = simgrid::s4u::Link::SharingPolicy::SHARED;
   double bw_  = 0;
   double lat_ = 0;
 

@@ -10,7 +10,12 @@
 int main(int argc, char **argv)
 {
     int          rank;
-    struct { int a;int c; double b;int tab[2][3];} value;
+    struct {
+      int a;
+      int c;
+      double b;
+      int tab[2][3];
+    } value = {0};
     MPI_Datatype mystruct;
     int          blocklens[3];
     MPI_Aint     indices[3];

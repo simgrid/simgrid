@@ -26,8 +26,6 @@ static void test_opts(int argc, char* const argv[])
 
     switch (ret) {
       case 0:
-        found++;
-      break;
       case 's':
         found ++;
       break;
