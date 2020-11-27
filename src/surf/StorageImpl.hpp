@@ -62,7 +62,7 @@ public:
  */
 class StorageImpl : public Resource, public xbt::PropertyHolder {
   s4u::Storage piface_;
-  lmm::Constraint* constraint_read_;  /* Constraint for maximum write bandwidth*/
+  lmm::Constraint* constraint_read_;  /* Constraint for maximum read bandwidth*/
   lmm::Constraint* constraint_write_; /* Constraint for maximum write bandwidth*/
 
   std::string typeId_;
