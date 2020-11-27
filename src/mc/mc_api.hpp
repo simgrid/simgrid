@@ -38,12 +38,12 @@ public:
 
   void initialize(char** argv);
 
-  // ACTOR FUNCTIONS  
+  // ACTOR APIs  
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   bool actor_is_enabled(aid_t pid) const;
   unsigned long get_maxpid() const;
 
-  // COMM FUNCTIONS
+  // COMMUNICATION APIs
   void copy_incomplete_comm_pattern(const simgrid::mc::State* state) const;
   void copy_index_comm_pattern(const simgrid::mc::State* state) const;
   kernel::activity::CommImpl* get_pattern_comm_addr(smx_simcall_t request) const;
@@ -54,10 +54,10 @@ public:
   const char* get_actor_host_name(smx_actor_t actor) const;
   bool check_send_request_detached(smx_simcall_t const& simcall) const;
 
-  // REMOTE
+  // REMOTE APIs
   std::size_t get_remote_heap_bytes() const;
 
-  // MODEL_CHECKER FUNCTIONS
+  // MODEL CHECKER APIs
   ModelChecker* get_model_checker() const;
   void mc_inc_visited_states() const;
   void mc_inc_executed_trans() const;
@@ -76,7 +76,7 @@ public:
   void mc_dump_record_path() const;
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 
-  // SIMCALL FUNCTIONS
+  // SIMCALL APIs
   bool request_depend(smx_simcall_t req1, smx_simcall_t req2) const;
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
@@ -85,11 +85,11 @@ public:
   int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;
   #endif
 
-  // SNAPSHOT FUNCTIONS
+  // SNAPSHOT APIs
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
   simgrid::mc::Snapshot* take_snapshot(int num_state) const;
 
-  // SESSION FUNCTIONS
+  // SESSION APIs
   void s_initialize() const;
   void s_close() const;
   void s_restore_initial_state() const;
