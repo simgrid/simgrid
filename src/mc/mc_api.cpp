@@ -280,6 +280,16 @@ bool mc_api::check_send_request_detached(smx_simcall_t const& simcall) const
   return mpi_request.detached();
 }
 
+smx_actor_t mc_api::get_src_actor(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
+{
+  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
+  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
+  const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+
+  auto src_proc = mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
+  return src_proc;
+}
+
 std::size_t mc_api::get_remote_heap_bytes() const
 {
   RemoteSimulation& process = mc_model_checker->get_remote_simulation();

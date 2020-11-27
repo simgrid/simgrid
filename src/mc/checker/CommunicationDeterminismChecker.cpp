@@ -102,8 +102,7 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
-  smx_actor_t src_proc =
-      mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
+  auto src_proc = mcapi::get().get_src_actor(comm_addr);
   smx_actor_t dst_proc =
       mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
   comm_pattern->src_proc = src_proc->get_pid();
