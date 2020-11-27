@@ -15,7 +15,7 @@ class RelayRunner {
 public:
   explicit RelayRunner() = default;
 
-  void operator()()
+  void operator()() const
   {
     size_t token_size = 1000000; /* The token is 1MB long*/
     simgrid::s4u::Mailbox* my_mailbox;
