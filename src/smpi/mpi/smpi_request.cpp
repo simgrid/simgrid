@@ -551,11 +551,13 @@ void Request::cancel()
 }
 
 int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
-  //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or testall before)
+  // assume that *request is not MPI_REQUEST_NULL (filtered in PMPI_Test or testall before)
   // to avoid deadlocks if used as a break condition, such as
   //     while (MPI_Test(request, flag, status) && flag) dostuff...
   // because the time will not normally advance when only calls to MPI_Test are made -> deadlock
   // multiplier to the sleeptime, to increase speed of execution, each failed test will increase it
+  xbt_assert(*request != MPI_REQUEST_NULL);
+
   static int nsleeps = 1;
   int ret = MPI_SUCCESS;
   
@@ -585,12 +587,10 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
         return ret;
       }
     }
-    if (*request != MPI_REQUEST_NULL && 
-        ((*request)->flags_ & MPI_REQ_GENERALIZED)
-        && !((*request)->flags_ & MPI_REQ_COMPLETE)) 
+    if (((*request)->flags_ & MPI_REQ_GENERALIZED) && !((*request)->flags_ & MPI_REQ_COMPLETE))
       *flag=0;
     if (*flag) {
-      finish_wait(request,status);
+      finish_wait(request, status); // may invalidate *request
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
         MPI_Status tmp_status;
         MPI_Status* mystatus;
@@ -897,6 +897,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 
 int Request::wait(MPI_Request * request, MPI_Status * status)
 {
+  // assume that *request is not MPI_REQUEST_NULL (filtered in PMPI_Wait before)
+  xbt_assert(*request != MPI_REQUEST_NULL);
+
   int ret=MPI_SUCCESS;
   // Are we waiting on a request meant for non blocking collectives ?
   // If so, wait for all the subrequests.
@@ -940,7 +943,7 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
       }
   }
 
-  if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
+  if ((*request)->flags_ & MPI_REQ_GENERALIZED) {
     if(!((*request)->flags_ & MPI_REQ_COMPLETE)){
       ((*request)->generalized_funcs)->mutex->lock();
       ((*request)->generalized_funcs)->cond->wait(((*request)->generalized_funcs)->mutex);
@@ -957,7 +960,7 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
     ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
   }
 
-  finish_wait(request,status);
+  finish_wait(request, status); // may invalidate *request
   if (*request != MPI_REQUEST_NULL && (((*request)->flags_ & MPI_REQ_NON_PERSISTENT) != 0))
     *request = MPI_REQUEST_NULL;
   return ret;
