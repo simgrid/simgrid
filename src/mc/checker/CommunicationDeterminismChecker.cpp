@@ -148,8 +148,8 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
         XBT_INFO("%s", this->send_diff);
         xbt_free(this->send_diff);
         this->send_diff = nullptr;
-        mc::session->log_state();
-        mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+        mcapi::get().s_log_state();
+        mcapi::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       } else if (_sg_mc_comms_determinism && (not this->send_deterministic && not this->recv_deterministic)) {
         XBT_INFO("****************************************************");
         XBT_INFO("***** Non-deterministic communications pattern *****");
@@ -164,8 +164,8 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
           xbt_free(this->recv_diff);
           this->recv_diff = nullptr;
         }
-        mc::session->log_state();
-        mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+        mcapi::get().s_log_state();
+        mcapi::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }
     }
   }
