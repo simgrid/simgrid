@@ -40,7 +40,7 @@ namespace kernel {
 namespace actor {
 
 static unsigned long maxpid = 0;
-int get_maxpid()
+unsigned long get_maxpid()
 {
   return maxpid;
 }

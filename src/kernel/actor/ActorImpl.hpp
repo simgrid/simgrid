@@ -194,7 +194,7 @@ using SynchroList =
                                                                     &ActorImpl::smx_synchro_hook>>;
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
-XBT_PUBLIC int get_maxpid();
+XBT_PUBLIC unsigned long get_maxpid();
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid
