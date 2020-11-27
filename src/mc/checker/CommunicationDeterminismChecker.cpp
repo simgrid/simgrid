@@ -191,10 +191,6 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     pattern->src_host = mc_api::get().get_actor_host_name(issuer);
 
 #if HAVE_SMPI
-    simgrid::smpi::Request mpi_request;
-    mc_model_checker->get_remote_simulation().read(
-        &mpi_request, remote(static_cast<smpi::Request*>(simcall_comm_isend__get__data(request))));
-    // pattern->tag = mpi_request.tag();
     pattern->tag = mcapi::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_ISEND);
 #endif
     auto pattern_data = mcapi::get().get_pattern_comm_data(pattern->comm_addr);
@@ -224,18 +220,10 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
 #if HAVE_SMPI
     pattern->tag = mcapi::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_IRECV);
 #endif
-    Remote<kernel::activity::CommImpl> temp_comm;
-    mc_model_checker->get_remote_simulation().read(temp_comm, remote(pattern->comm_addr));
-    const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
-
-    char* remote_name;
-    mc_model_checker->get_remote_simulation().read(
-        &remote_name, remote(comm->get_mailbox() ? &xbt::string::to_string_data(comm->get_mailbox()->name_).data
-                                                 : &xbt::string::to_string_data(comm->mbox_cpy->name_).data));
-    pattern->rdv = mc_model_checker->get_remote_simulation().read_string(RemotePtr<char>(remote_name));
-    pattern->dst_proc =
-        mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->dst_actor_.get()))->get_pid();
-    pattern->dst_host = MC_smx_actor_get_host_name(issuer);
+    auto comm_addr = pattern->comm_addr;
+    pattern->rdv = mcapi::get().get_pattern_comm_rdv(comm_addr);
+    pattern->dst_proc = mcapi::get().get_pattern_comm_dst_proc(comm_addr);
+    pattern->dst_host = mcapi::get().get_actor_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int)call_type);
 

@@ -242,6 +242,15 @@ unsigned long mc_api::get_pattern_comm_src_proc(void* addr) const
   return src_proc;
 }
 
+unsigned long mc_api::get_pattern_comm_dst_proc(void* addr) const
+{
+  Remote<kernel::activity::CommImpl> temp_synchro;
+  mc_model_checker->get_remote_simulation().read(temp_synchro, remote((simgrid::kernel::activity::CommImpl*)addr));
+  const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
+  auto src_proc = mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(synchro->dst_actor_.get()))->get_pid();
+  return src_proc;
+}
+
 std::vector<char> mc_api::get_pattern_comm_data(void* addr) const
 {
   Remote<kernel::activity::CommImpl> temp_synchro;
