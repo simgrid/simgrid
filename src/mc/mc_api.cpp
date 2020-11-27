@@ -266,6 +266,21 @@ std::vector<char> mc_api::get_pattern_comm_data(void* addr) const
   return buffer;
 }
 
+std::vector<char> mc_api::get_pattern_comm_data(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
+{
+  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
+  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
+  const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+  
+  std::vector<char> buffer {};
+  if (comm->src_buff_ != nullptr) {
+    buffer.resize(comm->src_buff_size_);
+    mc_model_checker->get_remote_simulation().read_bytes(buffer.data(), buffer.size(),
+                                                         remote(comm->src_buff_));
+  }
+  return buffer;
+}
+
 const char* mc_api::get_actor_host_name(smx_actor_t actor) const
 {
   const char* host_name = MC_smx_actor_get_host_name(actor);
