@@ -97,18 +97,18 @@ static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, i
 static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
                                 simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr)
 {
-  // HACK, type punning
+  // // HACK, type punning
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
   mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
   auto src_proc = mcapi::get().get_src_actor(comm_addr);
-  smx_actor_t dst_proc =
-      mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
+  auto dst_proc = mcapi::get().get_dst_actor(comm_addr);
   comm_pattern->src_proc = src_proc->get_pid();
   comm_pattern->dst_proc = dst_proc->get_pid();
   comm_pattern->src_host = MC_smx_actor_get_host_name(src_proc);
   comm_pattern->dst_host = MC_smx_actor_get_host_name(dst_proc);
+  
   if (comm_pattern->data.empty() && comm->src_buff_ != nullptr) {
     size_t buff_size;
     mc_model_checker->get_remote_simulation().read(&buff_size, remote(comm->dst_buff_size_));
