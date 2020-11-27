@@ -106,8 +106,8 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   auto dst_proc = mcapi::get().get_dst_actor(comm_addr);
   comm_pattern->src_proc = src_proc->get_pid();
   comm_pattern->dst_proc = dst_proc->get_pid();
-  comm_pattern->src_host = MC_smx_actor_get_host_name(src_proc);
-  comm_pattern->dst_host = MC_smx_actor_get_host_name(dst_proc);
+  comm_pattern->src_host = mcapi::get().get_actor_host_name(src_proc);
+  comm_pattern->dst_host = mcapi::get().get_actor_host_name(dst_proc);
   
   if (comm_pattern->data.empty() && comm->src_buff_ != nullptr) {
     size_t buff_size;
