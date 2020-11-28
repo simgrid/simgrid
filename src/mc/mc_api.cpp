@@ -298,6 +298,7 @@ const char* mc_api::get_actor_host_name(smx_actor_t actor) const
   return host_name;
 }
 
+#if HAVE_SMPI
 bool mc_api::check_send_request_detached(smx_simcall_t const& simcall) const
 {
   simgrid::smpi::Request mpi_request;
@@ -305,6 +306,7 @@ bool mc_api::check_send_request_detached(smx_simcall_t const& simcall) const
       &mpi_request, remote(static_cast<smpi::Request*>(simcall_comm_isend__get__data(simcall))));
   return mpi_request.detached();
 }
+#endif
 
 smx_actor_t mc_api::get_src_actor(const kernel::activity::CommImpl* comm_addr) const
 {

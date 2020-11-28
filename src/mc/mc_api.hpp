@@ -55,7 +55,9 @@ public:
   std::vector<char> get_pattern_comm_data(void* addr) const;
   std::vector<char> get_pattern_comm_data(const kernel::activity::CommImpl* comm_addr) const;
   const char* get_actor_host_name(smx_actor_t actor) const;
+#if HAVE_SMPI
   bool check_send_request_detached(smx_simcall_t const& simcall) const;
+#endif
   smx_actor_t get_src_actor(const kernel::activity::CommImpl* comm_addr) const;
   smx_actor_t get_dst_actor(const kernel::activity::CommImpl* comm_addr) const;
 
@@ -86,9 +88,9 @@ public:
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
   const char *simcall_get_name(simgrid::simix::Simcall kind) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
-  #if HAVE_SMPI
+#if HAVE_SMPI
   int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;
-  #endif
+#endif
 
   // STATE APIs
   void restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const;
