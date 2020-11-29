@@ -77,7 +77,7 @@ public:
   RemoteSimulation& mc_get_remote_simulation() const;
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;
-  void mc_exit(int status) const;
+  XBT_ATTRIB_NORETURN void mc_exit(int status) const;
   std::string const& mc_get_host_name(std::string const& hostname) const;
   void dump_record_path() const;
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
