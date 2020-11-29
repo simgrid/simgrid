@@ -122,14 +122,8 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   comm_pattern->src_host = mcapi::get().get_actor_host_name(src_proc);
   comm_pattern->dst_host = mcapi::get().get_actor_host_name(dst_proc);
 
-  if (comm_pattern->data.empty()) {
-    auto pattern_data = mcapi::get().get_pattern_comm_data(comm_addr);
-    if (pattern_data.data() != nullptr) {
-      auto data_size = pattern_data.size();
-      comm_pattern->data.resize(data_size);
-      memcpy(comm_pattern->data.data(), pattern_data.data(), data_size);
-    }
-   }
+  if (comm_pattern->data.empty())
+    comm_pattern->data = mcapi::get().get_pattern_comm_data(comm_addr);
 }
 
 namespace simgrid {
@@ -206,12 +200,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
 #if HAVE_SMPI
     pattern->tag = mcapi::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_ISEND);
 #endif
-    auto pattern_data = mcapi::get().get_pattern_comm_data(pattern->comm_addr);
-    if (pattern_data.data() != nullptr) {
-      auto data_size = pattern_data.size();
-      pattern->data.resize(data_size);
-      memcpy(pattern->data.data(), pattern_data.data(), data_size);
-    }
+    pattern->data = mcapi::get().get_pattern_comm_data(pattern->comm_addr);
 
 #if HAVE_SMPI
     auto send_detached = mcapi::get().check_send_request_detached(request);
