@@ -495,7 +495,7 @@ void mc_api::restore_initial_state() const
   session->restore_initial_state();
 }
 
-void mc_api::execute(Transition const& transition)
+void mc_api::execute(Transition const& transition) const
 {
   session->execute(transition);
 }

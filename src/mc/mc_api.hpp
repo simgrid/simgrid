@@ -104,7 +104,7 @@ public:
   // SESSION APIs
   void s_initialize() const;
   void s_close() const;
-  void execute(Transition const& transition);
+  void execute(Transition const& transition) const;
 };
 
 } // namespace mc
