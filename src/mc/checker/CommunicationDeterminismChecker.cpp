@@ -63,10 +63,10 @@ static void patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& dest,
 
 static void restore_communications_pattern(simgrid::mc::State* state)
 {
-  for (unsigned i = 0; i < initial_communications_pattern.size(); i++)
+  for (size_t i = 0; i < initial_communications_pattern.size(); i++)
     initial_communications_pattern[i].index_comm = state->communication_indices_[i];
 
-  for (unsigned i = 0; i < mcapi::get().get_maxpid(); i++)
+  for (unsigned long i = 0; i < mcapi::get().get_maxpid(); i++)
     patterns_copy(incomplete_communications_pattern[i], state->incomplete_comm_pattern_[i]);
 }
 
@@ -320,7 +320,7 @@ void CommunicationDeterminismChecker::log_state() // override
 
 void CommunicationDeterminismChecker::prepare()
 {
-  const int maxpid = mcapi::get().get_maxpid();
+  const auto maxpid = mcapi::get().get_maxpid();
 
   initial_communications_pattern.resize(maxpid);
   incomplete_communications_pattern.resize(maxpid);
@@ -364,10 +364,10 @@ void CommunicationDeterminismChecker::restoreState()
   /* Restore the initial state */
   mcapi::get().restore_initial_state();
 
-  unsigned n = mcapi::get().get_maxpid();
+  unsigned long n = mcapi::get().get_maxpid();
   assert(n == incomplete_communications_pattern.size());
   assert(n == initial_communications_pattern.size());
-  for (unsigned j = 0; j < n; j++) {
+  for (unsigned long j = 0; j < n; j++) {
     incomplete_communications_pattern[j].clear();
     initial_communications_pattern[j].index_comm = 0;
   }

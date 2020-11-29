@@ -44,7 +44,7 @@ Transition State::get_transition() const
 void State::copy_incomplete_comm_pattern()
 {
   incomplete_comm_pattern_.clear();
-  for (auto i=0; i < mcapi::get().get_maxpid(); i++) {
+  for (unsigned long i = 0; i < mcapi::get().get_maxpid(); i++) {
     std::vector<simgrid::mc::PatternCommunication> res;
     for (auto const& comm : incomplete_communications_pattern[i])
       res.push_back(comm->dup());
