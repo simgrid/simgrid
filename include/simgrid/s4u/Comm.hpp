@@ -50,7 +50,7 @@ public:
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
   static int wait_any(const std::vector<CommPtr>* comms) { return wait_any_for(comms, -1); }
-  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  /*! Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
   static int wait_any_for(const std::vector<CommPtr>* comms_in, double timeout);
 
   /*! take a vector s4u::CommPtr and return when all of them is finished. */
