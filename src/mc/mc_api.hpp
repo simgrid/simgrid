@@ -95,13 +95,13 @@ public:
   // SNAPSHOT APIs
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
   simgrid::mc::Snapshot* take_snapshot(int num_state) const;
+  void log_state() const;
 
   // SESSION APIs
   void s_initialize() const;
   void s_close() const;
   void s_restore_initial_state() const;
   void execute(Transition const& transition);
-  void s_log_state() const;
 };
 
 } // namespace mc

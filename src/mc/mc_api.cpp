@@ -492,7 +492,7 @@ void mc_api::execute(Transition const& transition)
   session->execute(transition);
 }
 
-void mc_api::s_log_state() const
+void mc_api::log_state() const
 {
   session->log_state();
 }

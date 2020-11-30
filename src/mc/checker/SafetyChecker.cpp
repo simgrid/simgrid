@@ -47,7 +47,7 @@ void SafetyChecker::check_non_termination(const State* current_state)
       for (auto const& s : checker->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
       mcapi::get().mc_dump_record_path();
-      mcapi::get().s_log_state();
+      mcapi::get().log_state();
 
       throw TerminationError();
     }
@@ -173,7 +173,7 @@ void SafetyChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  mcapi::get().s_log_state();
+  mcapi::get().log_state();
 }
 
 void SafetyChecker::backtrack()
