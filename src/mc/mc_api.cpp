@@ -228,6 +228,11 @@ void mc_api::copy_index_comm_pattern(simgrid::mc::State* state) const
     state->communication_indices_.push_back(list_process_comm.index_comm);
 }
 
+bool mc_api::comm_addr_equal(kernel::activity::CommImpl* comm_addr1, RemotePtr<kernel::activity::CommImpl> comm_addr2) const
+{
+  return remote(comm_addr1) == comm_addr2;
+}
+
 kernel::activity::CommImpl* mc_api::get_comm_isend_raw_addr(smx_simcall_t request) const
 {
   auto comm_addr = simcall_comm_isend__getraw__result(request);

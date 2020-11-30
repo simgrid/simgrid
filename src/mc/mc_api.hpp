@@ -47,6 +47,7 @@ public:
   // COMMUNICATION APIs
   void copy_incomplete_comm_pattern(simgrid::mc::State* state) const;
   void copy_index_comm_pattern(simgrid::mc::State* state) const;
+  bool comm_addr_equal(kernel::activity::CommImpl* comm_addr1, RemotePtr<kernel::activity::CommImpl> comm_addr2) const;
   kernel::activity::CommImpl* get_comm_isend_raw_addr(smx_simcall_t request) const;
   simgrid::mc::RemotePtr<kernel::activity::CommImpl> get_comm_wait_raw_addr(smx_simcall_t request) const;
   simgrid::mc::RemotePtr<kernel::activity::CommImpl> get_comm_waitany_raw_addr(smx_simcall_t request, int value) const;
