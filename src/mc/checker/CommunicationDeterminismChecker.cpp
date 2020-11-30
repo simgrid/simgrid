@@ -443,7 +443,7 @@ void CommunicationDeterminismChecker::real_run()
 
       if (visited_state == nullptr) {
         /* Get enabled actors and insert them in the interleave set of the next state */
-        auto actors = mcapi::get().mc_get_remote_simulation().actors();
+        auto actors = mcapi::get().get_actors();
         for (auto& actor : actors)
           if (mcapi::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
             next_state->add_interleaving_set(actor.copy.get_buffer());
