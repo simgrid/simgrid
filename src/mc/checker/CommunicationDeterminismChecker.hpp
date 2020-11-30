@@ -30,6 +30,7 @@ private:
   void log_state() override;
   void deterministic_comm_pattern(int process, const PatternCommunication* comm, int backtracking);
   void restoreState();
+  void handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, int backtracking);
 
 public:
   // These are used by functions which should be moved in CommunicationDeterminismChecker:

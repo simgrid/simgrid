@@ -372,12 +372,37 @@ void CommunicationDeterminismChecker::restoreState()
     /* TODO : handle test and testany simcalls */
     CallType call = MC_get_call_type(req);
     mcapi::get().handle_simcall(state->transition_);
-    MC_handle_comm_pattern(call, req, req_num, 1);
+    handle_comm_pattern(call, req, req_num, 1);
     mcapi::get().mc_wait_for_requests();
 
     /* Update statistics */
     mcapi::get().mc_inc_visited_states();
     mcapi::get().mc_inc_executed_trans();
+  }
+}
+
+void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, int backtracking)
+{
+  using simgrid::mc::CallType;
+  switch(call_type) {
+    case CallType::NONE:
+      break;
+    case CallType::SEND:
+    case CallType::RECV:
+      get_comm_pattern(req, call_type, backtracking);
+      break;
+    case CallType::WAIT:
+    case CallType::WAITANY: {
+      simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr{nullptr};
+      if (call_type == CallType::WAIT)
+        comm_addr = mcapi::get().get_comm_wait_raw_addr(req);
+      else
+        comm_addr = mcapi::get().get_comm_waitany_raw_addr(req, value);
+      auto simcall_issuer = mcapi::get().simcall_get_issuer(req);
+      complete_comm_pattern(comm_addr, simcall_issuer->get_pid(), backtracking);
+    } break;
+  default:
+    xbt_die("Unexpected call type %i", (int)call_type);
   }
 }
 
@@ -422,7 +447,7 @@ void CommunicationDeterminismChecker::real_run()
       mcapi::get().handle_simcall(cur_state->transition_);
       /* After this call req is no longer useful */
 
-      MC_handle_comm_pattern(call, req, req_num, 0);
+      handle_comm_pattern(call, req, req_num, 0);
 
       /* Wait for requests (schedules processes) */
       mcapi::get().mc_wait_for_requests();

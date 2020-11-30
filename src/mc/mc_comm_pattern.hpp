@@ -61,9 +61,6 @@ static inline simgrid::mc::CallType MC_get_call_type(const s_smx_simcall* req)
   }
 }
 
-XBT_PRIVATE void MC_handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t request, int value,
-                                        int backtracking);
-
 XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
 #endif
