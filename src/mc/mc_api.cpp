@@ -205,6 +205,11 @@ unsigned long mc_api::get_maxpid() const
   return MC_smx_get_maxpid();
 }
 
+int mc_api::get_actors_size() const
+{
+  return mc_model_checker->get_remote_simulation().actors().size();
+}
+
 void mc_api::copy_incomplete_comm_pattern(const simgrid::mc::State* state) const
 {
   MC_state_copy_incomplete_communications_pattern((simgrid::mc::State*)state);

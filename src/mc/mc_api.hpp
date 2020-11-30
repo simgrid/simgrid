@@ -42,6 +42,7 @@ public:
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   bool actor_is_enabled(aid_t pid) const;
   unsigned long get_maxpid() const;
+  int get_actors_size() const;
 
   // COMMUNICATION APIs
   void copy_incomplete_comm_pattern(const simgrid::mc::State* state) const;
