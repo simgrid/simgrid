@@ -256,7 +256,7 @@ void SafetyChecker::restore_state()
   }
 
   /* Restore the initial state */
-  mcapi::get().s_restore_initial_state();
+  mcapi::get().restore_initial_state();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (std::unique_ptr<State> const& state : stack_) {

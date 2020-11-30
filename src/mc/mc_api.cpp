@@ -482,7 +482,7 @@ void mc_api::s_close() const
   session->close();
 }
 
-void mc_api::s_restore_initial_state() const
+void mc_api::restore_initial_state() const
 {
   session->restore_initial_state();
 }

@@ -344,7 +344,7 @@ void CommunicationDeterminismChecker::restoreState()
   }
 
   /* Restore the initial state */
-  mcapi::get().s_restore_initial_state();
+  mcapi::get().restore_initial_state();
 
   unsigned n = mcapi::get().get_maxpid();
   assert(n == incomplete_communications_pattern.size());
