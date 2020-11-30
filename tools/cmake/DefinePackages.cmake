@@ -658,7 +658,6 @@ set(MC_SRC
   src/mc/mc_forward.hpp
   src/mc/Session.cpp
   src/mc/Session.hpp
-  src/mc/mc_comm_pattern.cpp
   src/mc/mc_comm_pattern.hpp
   src/mc/mc_pattern.hpp
   src/mc/compare.cpp

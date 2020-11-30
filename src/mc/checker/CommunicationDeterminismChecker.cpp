@@ -30,6 +30,24 @@ std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communic
 
 /********** Static functions ***********/
 
+void copy_incomplete_comm_pattern(simgrid::mc::State* state)
+{
+  state->incomplete_comm_pattern_.clear();
+  for (unsigned i=0; i < MC_smx_get_maxpid(); i++) {
+    std::vector<simgrid::mc::PatternCommunication> res;
+    for (auto const& comm : incomplete_communications_pattern[i])
+      res.push_back(comm->dup());
+    state->incomplete_comm_pattern_.push_back(std::move(res));
+  }
+}
+
+void copy_index_comm_pattern(simgrid::mc::State* state)
+{
+  state->communication_indices_.clear();
+  for (auto const& list_process_comm : initial_communications_pattern)
+    state->communication_indices_.push_back(list_process_comm.index_comm);
+}
+
 static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc::PatternCommunication* comm1,
                                                                const simgrid::mc::PatternCommunication* comm2)
 {
@@ -49,6 +67,25 @@ static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc
   if (comm1->data != comm2->data)
     return CommPatternDifference::DATA;
   return CommPatternDifference::NONE;
+}
+
+static void patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& dest,
+                             std::vector<simgrid::mc::PatternCommunication> const& source)
+{
+  dest.clear();
+  for (simgrid::mc::PatternCommunication const& comm : source) {
+    auto* copy_comm = new simgrid::mc::PatternCommunication(comm.dup());
+    dest.push_back(copy_comm);
+  }
+}
+
+void restore_communications_pattern(simgrid::mc::State* state)
+{
+  for (unsigned i = 0; i < initial_communications_pattern.size(); i++)
+    initial_communications_pattern[i].index_comm = state->communication_indices_[i];
+
+  for (unsigned i = 0; i < mcapi::get().get_maxpid(); i++)
+    patterns_copy(incomplete_communications_pattern[i], state->incomplete_comm_pattern_[i]);
 }
 
 static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, int process,
@@ -338,7 +375,7 @@ void CommunicationDeterminismChecker::restoreState()
   State* last_state = stack_.back().get();
   if (last_state->system_state_) {
     mc_api::get().restore_state(last_state->system_state_);
-    MC_restore_communications_pattern(last_state);
+    restore_communications_pattern(last_state);
     return;
   }
 
