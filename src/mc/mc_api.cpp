@@ -367,7 +367,7 @@ void mc_api::mc_show_deadlock() const
   MC_show_deadlock();
 }
 
-smx_actor_t mc_api::mc_smx_simcall_get_issuer(s_smx_simcall const* req) const
+smx_actor_t mc_api::simcall_get_issuer(s_smx_simcall const* req) const
 {
   return MC_smx_simcall_get_issuer(req);
 }
@@ -442,7 +442,7 @@ std::string mc_api::request_get_dot_output(smx_simcall_t req, int value) const
   return simgrid::mc::request_get_dot_output(req, value);
 }
 
-const char* mc_api::simix_simcall_name(simgrid::simix::Simcall kind) const
+const char* mc_api::simcall_get_name(simgrid::simix::Simcall kind) const
 {
   return SIMIX_simcall_name(kind);
 }

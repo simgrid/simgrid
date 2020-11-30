@@ -199,7 +199,7 @@ void SafetyChecker::backtrack()
       if (req->call_ == simix::Simcall::MUTEX_LOCK || req->call_ == simix::Simcall::MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none");
 
-      const kernel::actor::ActorImpl* issuer = mcapi::get().mc_smx_simcall_get_issuer(req);
+      const kernel::actor::ActorImpl* issuer = mcapi::get().simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
         if (mcapi::get().request_depend(req, &prev_state->internal_req_)) {
@@ -221,14 +221,14 @@ void SafetyChecker::backtrack()
             XBT_DEBUG("Process %p is in done set", req->issuer_);
           break;
         } else if (req->issuer_ == prev_state->internal_req_.issuer_) {
-          XBT_DEBUG("Simcall %s and %s with same issuer", mcapi::get().simix_simcall_name(req->call_),
-                    mcapi::get().simix_simcall_name(prev_state->internal_req_.call_));
+          XBT_DEBUG("Simcall %s and %s with same issuer", mcapi::get().simcall_get_name(req->call_),
+                    mcapi::get().simcall_get_name(prev_state->internal_req_.call_));
           break;
         } else {
-          const kernel::actor::ActorImpl* previous_issuer = mcapi::get().mc_smx_simcall_get_issuer(&prev_state->internal_req_);
+          const kernel::actor::ActorImpl* previous_issuer = mcapi::get().simcall_get_issuer(&prev_state->internal_req_);
           XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
-                    mcapi::get().simix_simcall_name(req->call_), issuer->get_pid(), state->num_,
-                    mcapi::get().simix_simcall_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
+                    mcapi::get().simcall_get_name(req->call_), issuer->get_pid(), state->num_,
+                    mcapi::get().simcall_get_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
         }
       }
     }

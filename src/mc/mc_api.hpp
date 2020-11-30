@@ -69,7 +69,6 @@ public:
   unsigned long mc_get_executed_trans() const;
   bool mc_check_deadlock() const;
   void mc_show_deadlock() const;
-  smx_actor_t mc_smx_simcall_get_issuer(s_smx_simcall const* req) const;
   bool mc_is_null() const;
   Checker* mc_get_checker() const;
   RemoteSimulation& mc_get_remote_simulation() const;
@@ -84,7 +83,8 @@ public:
   bool request_depend(smx_simcall_t req1, smx_simcall_t req2) const;
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
-  const char *simix_simcall_name(simgrid::simix::Simcall kind) const;
+  const char *simcall_get_name(simgrid::simix::Simcall kind) const;
+  smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   #if HAVE_SMPI
   int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;
   #endif

@@ -170,7 +170,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, co
 
 void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, CallType call_type, int backtracking)
 {
-  const smx_actor_t issuer                                     = mcapi::get().mc_smx_simcall_get_issuer(request);
+  const smx_actor_t issuer                                     = mcapi::get().simcall_get_issuer(request);
   const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[issuer->get_pid()];
   const std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer->get_pid()];
 
@@ -366,7 +366,7 @@ void CommunicationDeterminismChecker::restoreState()
     /* because we got a copy of the executed request, we have to fetch the
        real one, pointed by the request field of the issuer process */
 
-    const smx_actor_t issuer = mcapi::get().mc_smx_simcall_get_issuer(saved_req);
+    const smx_actor_t issuer = mcapi::get().simcall_get_issuer(saved_req);
     smx_simcall_t req        = &issuer->simcall_;
 
     /* TODO : handle test and testany simcalls */
