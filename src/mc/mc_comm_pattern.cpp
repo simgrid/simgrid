@@ -40,13 +40,6 @@ void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state)
   }
 }
 
-void MC_state_copy_index_communications_pattern(simgrid::mc::State* state)
-{
-  state->communication_indices_.clear();
-  for (auto const& list_process_comm : initial_communications_pattern)
-    state->communication_indices_.push_back(list_process_comm.index_comm);
-}
-
 void MC_handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, int backtracking)
 {
   // HACK, do not rely on the Checker implementation outside of it

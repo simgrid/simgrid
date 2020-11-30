@@ -215,9 +215,11 @@ void mc_api::copy_incomplete_comm_pattern(const simgrid::mc::State* state) const
   MC_state_copy_incomplete_communications_pattern((simgrid::mc::State*)state);
 }
 
-void mc_api::copy_index_comm_pattern(const simgrid::mc::State* state) const
+void mc_api::copy_index_comm_pattern(simgrid::mc::State* state) const
 {
-  MC_state_copy_index_communications_pattern((simgrid::mc::State*)state);
+  state->communication_indices_.clear();
+  for (auto const& list_process_comm : initial_communications_pattern)
+    state->communication_indices_.push_back(list_process_comm.index_comm);
 }
 
 kernel::activity::CommImpl* mc_api::get_pattern_comm_addr(smx_simcall_t request) const

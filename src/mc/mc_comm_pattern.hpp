@@ -67,6 +67,5 @@ XBT_PRIVATE void MC_handle_comm_pattern(simgrid::mc::CallType call_type, smx_sim
 XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
 XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state);
-XBT_PRIVATE void MC_state_copy_index_communications_pattern(simgrid::mc::State* state);
 
 #endif
