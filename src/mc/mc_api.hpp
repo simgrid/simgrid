@@ -89,6 +89,9 @@ public:
   int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;
   #endif
 
+  // STATE APIs
+  void restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const;
+
   // SNAPSHOT APIs
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
   simgrid::mc::Snapshot* take_snapshot(int num_state) const;

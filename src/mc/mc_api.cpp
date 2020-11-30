@@ -461,6 +461,11 @@ int mc_api::get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::S
 }
 #endif
 
+void mc_api::restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const
+{
+  system_state->restore(&mc_model_checker->get_remote_simulation());
+}
+
 bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
 {
   return simgrid::mc::snapshot_equal(s1, s2);

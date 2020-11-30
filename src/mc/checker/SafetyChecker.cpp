@@ -251,7 +251,7 @@ void SafetyChecker::restore_state()
   /* Intermediate backtracking */
   const State* last_state = stack_.back().get();
   if (last_state->system_state_) {
-    last_state->system_state_->restore(&mcapi::get().mc_get_remote_simulation());
+    mc_api::get().restore_state(last_state->system_state_);
     return;
   }
 
