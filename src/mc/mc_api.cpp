@@ -234,6 +234,11 @@ kernel::activity::CommImpl* mc_api::get_comm_isend_raw_addr(smx_simcall_t reques
   return static_cast<kernel::activity::CommImpl*>(comm_addr);
 }
 
+simgrid::mc::RemotePtr<kernel::activity::CommImpl> mc_api::get_comm_wait_raw_addr(smx_simcall_t request) const
+{
+  return remote(simcall_comm_wait__getraw__comm(request));
+}
+
 std::string mc_api::get_pattern_comm_rdv(void* addr) const
 {
   Remote<kernel::activity::CommImpl> temp_synchro;
