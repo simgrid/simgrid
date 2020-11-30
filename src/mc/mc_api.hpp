@@ -47,7 +47,7 @@ public:
   // COMMUNICATION APIs
   void copy_incomplete_comm_pattern(simgrid::mc::State* state) const;
   void copy_index_comm_pattern(simgrid::mc::State* state) const;
-  kernel::activity::CommImpl* get_pattern_comm_addr(smx_simcall_t request) const;
+  kernel::activity::CommImpl* get_comm_isend_raw_addr(smx_simcall_t request) const;
   std::string get_pattern_comm_rdv(void* addr) const;
   unsigned long get_pattern_comm_src_proc(void* addr) const;
   unsigned long get_pattern_comm_dst_proc(void* addr) const;

@@ -180,7 +180,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
   if (call_type == CallType::SEND) {
     /* Create comm pattern */
     pattern->type      = PatternCommunicationType::send;
-    pattern->comm_addr = mcapi::get().get_pattern_comm_addr(request);
+    pattern->comm_addr = mcapi::get().get_comm_isend_raw_addr(request);
     pattern->rdv      = mcapi::get().get_pattern_comm_rdv(pattern->comm_addr);
     pattern->src_proc = mcapi::get().get_pattern_comm_src_proc(pattern->comm_addr);
     pattern->src_host = mc_api::get().get_actor_host_name(issuer);
@@ -211,7 +211,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
 #endif
   } else if (call_type == CallType::RECV) {
     pattern->type = PatternCommunicationType::receive;
-    pattern->comm_addr = mcapi::get().get_pattern_comm_addr(request);
+    pattern->comm_addr = mcapi::get().get_comm_isend_raw_addr(request);
 
 #if HAVE_SMPI
     pattern->tag = mcapi::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_IRECV);

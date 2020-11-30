@@ -228,7 +228,7 @@ void mc_api::copy_index_comm_pattern(simgrid::mc::State* state) const
     state->communication_indices_.push_back(list_process_comm.index_comm);
 }
 
-kernel::activity::CommImpl* mc_api::get_pattern_comm_addr(smx_simcall_t request) const
+kernel::activity::CommImpl* mc_api::get_comm_isend_raw_addr(smx_simcall_t request) const
 {
   auto comm_addr = simcall_comm_isend__getraw__result(request);
   return static_cast<kernel::activity::CommImpl*>(comm_addr);
