@@ -239,6 +239,12 @@ simgrid::mc::RemotePtr<kernel::activity::CommImpl> mc_api::get_comm_wait_raw_add
   return remote(simcall_comm_wait__getraw__comm(request));
 }
 
+simgrid::mc::RemotePtr<kernel::activity::CommImpl> mc_api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
+{
+  auto addr = mc_model_checker->get_remote_simulation().read(remote(simcall_comm_waitany__getraw__comms(request) + value));
+  return remote(static_cast<simgrid::kernel::activity::CommImpl*>(addr));
+}
+
 std::string mc_api::get_pattern_comm_rdv(void* addr) const
 {
   Remote<kernel::activity::CommImpl> temp_synchro;
