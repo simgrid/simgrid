@@ -45,7 +45,7 @@ public:
   int get_actors_size() const;
 
   // COMMUNICATION APIs
-  void copy_incomplete_comm_pattern(const simgrid::mc::State* state) const;
+  void copy_incomplete_comm_pattern(simgrid::mc::State* state) const;
   void copy_index_comm_pattern(simgrid::mc::State* state) const;
   kernel::activity::CommImpl* get_pattern_comm_addr(smx_simcall_t request) const;
   std::string get_pattern_comm_rdv(void* addr) const;

@@ -210,9 +210,15 @@ int mc_api::get_actors_size() const
   return mc_model_checker->get_remote_simulation().actors().size();
 }
 
-void mc_api::copy_incomplete_comm_pattern(const simgrid::mc::State* state) const
+void mc_api::copy_incomplete_comm_pattern(simgrid::mc::State* state) const
 {
-  MC_state_copy_incomplete_communications_pattern((simgrid::mc::State*)state);
+  state->incomplete_comm_pattern_.clear();
+  for (unsigned i=0; i < MC_smx_get_maxpid(); i++) {
+    std::vector<simgrid::mc::PatternCommunication> res;
+    for (auto const& comm : incomplete_communications_pattern[i])
+      res.push_back(comm->dup());
+    state->incomplete_comm_pattern_.push_back(std::move(res));
+  }
 }
 
 void mc_api::copy_index_comm_pattern(simgrid::mc::State* state) const
