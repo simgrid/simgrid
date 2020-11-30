@@ -228,9 +228,9 @@ void mc_api::copy_index_comm_pattern(simgrid::mc::State* state) const
     state->communication_indices_.push_back(list_process_comm.index_comm);
 }
 
-bool mc_api::comm_addr_equal(kernel::activity::CommImpl* comm_addr1, RemotePtr<kernel::activity::CommImpl> comm_addr2) const
+bool mc_api::comm_addr_equal(const kernel::activity::CommImpl* comm_addr1, const kernel::activity::CommImpl* comm_addr2) const
 {
-  return remote(comm_addr1) == comm_addr2;
+  return remote(comm_addr1) == remote(comm_addr2);
 }
 
 kernel::activity::CommImpl* mc_api::get_comm_isend_raw_addr(smx_simcall_t request) const
@@ -239,15 +239,15 @@ kernel::activity::CommImpl* mc_api::get_comm_isend_raw_addr(smx_simcall_t reques
   return static_cast<kernel::activity::CommImpl*>(comm_addr);
 }
 
-simgrid::mc::RemotePtr<kernel::activity::CommImpl> mc_api::get_comm_wait_raw_addr(smx_simcall_t request) const
+kernel::activity::CommImpl* mc_api::get_comm_wait_raw_addr(smx_simcall_t request) const
 {
-  return remote(simcall_comm_wait__getraw__comm(request));
+  return simcall_comm_wait__getraw__comm(request);
 }
 
-simgrid::mc::RemotePtr<kernel::activity::CommImpl> mc_api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
+kernel::activity::CommImpl* mc_api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
 {
   auto addr = mc_model_checker->get_remote_simulation().read(remote(simcall_comm_waitany__getraw__comms(request) + value));
-  return remote(static_cast<simgrid::kernel::activity::CommImpl*>(addr));
+  return static_cast<simgrid::kernel::activity::CommImpl*>(addr);
 }
 
 std::string mc_api::get_pattern_comm_rdv(void* addr) const
@@ -295,10 +295,10 @@ std::vector<char> mc_api::get_pattern_comm_data(void* addr) const
   return buffer;
 }
 
-std::vector<char> mc_api::get_pattern_comm_data(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
+std::vector<char> mc_api::get_pattern_comm_data(const kernel::activity::CommImpl* comm_addr) const
 {
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
+  mc_model_checker->get_remote_simulation().read(temp_comm, remote((kernel::activity::CommImpl*)comm_addr));
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
   
   std::vector<char> buffer {};
@@ -324,20 +324,20 @@ bool mc_api::check_send_request_detached(smx_simcall_t const& simcall) const
   return mpi_request.detached();
 }
 
-smx_actor_t mc_api::get_src_actor(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
+smx_actor_t mc_api::get_src_actor(const kernel::activity::CommImpl* comm_addr) const
 {
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
+  mc_model_checker->get_remote_simulation().read(temp_comm, remote((kernel::activity::CommImpl*)comm_addr));
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
   auto src_proc = mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
   return src_proc;
 }
 
-smx_actor_t mc_api::get_dst_actor(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
+smx_actor_t mc_api::get_dst_actor(const kernel::activity::CommImpl* comm_addr) const
 {
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
+  mc_model_checker->get_remote_simulation().read(temp_comm, remote((kernel::activity::CommImpl*)comm_addr));
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
   auto dst_proc = mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));

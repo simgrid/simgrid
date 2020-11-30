@@ -19,7 +19,6 @@
 
 #include <cstdint>
 
-using simgrid::mc::remote;
 using mcapi = simgrid::mc::mc_api;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc, "Logging specific to MC communication determinism detection");
@@ -95,7 +94,7 @@ static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, i
 }
 
 static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
-                                simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr)
+                                const simgrid::kernel::activity::CommImpl* comm_addr)
 {
   auto src_proc = mcapi::get().get_src_actor(comm_addr);
   auto dst_proc = mcapi::get().get_dst_actor(comm_addr);
@@ -227,7 +226,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
   incomplete_communications_pattern[issuer->get_pid()].push_back(pattern.release());
 }
 
-void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> comm_addr,
+void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activity::CommImpl* comm_addr,
                                                             unsigned int issuer, int backtracking)
 {
   /* Complete comm pattern */
@@ -393,7 +392,7 @@ void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType 
       break;
     case CallType::WAIT:
     case CallType::WAITANY: {
-      simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr{nullptr};
+      simgrid::kernel::activity::CommImpl* comm_addr = nullptr;
       if (call_type == CallType::WAIT)
         comm_addr = mcapi::get().get_comm_wait_raw_addr(req);
       else

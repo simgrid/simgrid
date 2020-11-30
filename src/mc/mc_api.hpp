@@ -47,19 +47,19 @@ public:
   // COMMUNICATION APIs
   void copy_incomplete_comm_pattern(simgrid::mc::State* state) const;
   void copy_index_comm_pattern(simgrid::mc::State* state) const;
-  bool comm_addr_equal(kernel::activity::CommImpl* comm_addr1, RemotePtr<kernel::activity::CommImpl> comm_addr2) const;
+  bool comm_addr_equal(const kernel::activity::CommImpl* comm_addr1, const kernel::activity::CommImpl* comm_addr2) const;
   kernel::activity::CommImpl* get_comm_isend_raw_addr(smx_simcall_t request) const;
-  simgrid::mc::RemotePtr<kernel::activity::CommImpl> get_comm_wait_raw_addr(smx_simcall_t request) const;
-  simgrid::mc::RemotePtr<kernel::activity::CommImpl> get_comm_waitany_raw_addr(smx_simcall_t request, int value) const;
+  kernel::activity::CommImpl* get_comm_wait_raw_addr(smx_simcall_t request) const;
+  kernel::activity::CommImpl* get_comm_waitany_raw_addr(smx_simcall_t request, int value) const;
   std::string get_pattern_comm_rdv(void* addr) const;
   unsigned long get_pattern_comm_src_proc(void* addr) const;
   unsigned long get_pattern_comm_dst_proc(void* addr) const;
   std::vector<char> get_pattern_comm_data(void* addr) const;
-  std::vector<char> get_pattern_comm_data(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const;
+  std::vector<char> get_pattern_comm_data(const kernel::activity::CommImpl* comm_addr) const;
   const char* get_actor_host_name(smx_actor_t actor) const;
   bool check_send_request_detached(smx_simcall_t const& simcall) const;
-  smx_actor_t get_src_actor(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const;
-  smx_actor_t get_dst_actor(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const;
+  smx_actor_t get_src_actor(const kernel::activity::CommImpl* comm_addr) const;
+  smx_actor_t get_dst_actor(const kernel::activity::CommImpl* comm_addr) const;
 
   // REMOTE APIs
   std::size_t get_remote_heap_bytes() const;
