@@ -255,7 +255,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
     int req_num       = pair->graph_state->transition_.argument_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
     if (req->call_ != simix::Simcall::NONE)
-      trace.push_back(request_to_string(req, req_num, RequestType::executed));
+      trace.push_back(mcapi::get().request_to_string(req, req_num, RequestType::executed));
   }
   return trace;
 }
