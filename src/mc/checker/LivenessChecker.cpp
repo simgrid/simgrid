@@ -154,7 +154,7 @@ void LivenessChecker::replay()
 
       /* Debug information */
       XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
-                request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
+                mcapi::get().request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
 
       this->get_session().execute(state->transition_);
     }
@@ -387,7 +387,7 @@ void LivenessChecker::run()
       fflush(dot_output);
     }
 
-    XBT_DEBUG("Execute: %s", request_to_string(req, req_num, RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", mcapi::get().request_to_string(req, req_num, RequestType::simix).c_str());
 
     /* Update stats */
     mc_model_checker->executed_transitions++;
