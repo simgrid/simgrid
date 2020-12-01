@@ -61,7 +61,7 @@ static void patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& dest,
   }
 }
 
-void restore_communications_pattern(simgrid::mc::State* state)
+static void restore_communications_pattern(simgrid::mc::State* state)
 {
   for (unsigned i = 0; i < initial_communications_pattern.size(); i++)
     initial_communications_pattern[i].index_comm = state->communication_indices_[i];
