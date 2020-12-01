@@ -414,7 +414,7 @@ std::string const& mc_api::mc_get_host_name(std::string const& hostname) const
   return mc_model_checker->get_host_name(hostname);
 }
 
-void mc_api::mc_dump_record_path() const
+void mc_api::dump_record_path() const
 {
   simgrid::mc::dumpRecordPath();
 }

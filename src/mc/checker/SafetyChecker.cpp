@@ -46,7 +46,7 @@ void SafetyChecker::check_non_termination(const State* current_state)
       auto checker = mcapi::get().mc_get_checker();
       for (auto const& s : checker->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
-      mcapi::get().mc_dump_record_path();
+      mcapi::get().dump_record_path();
       mcapi::get().log_state();
 
       throw TerminationError();

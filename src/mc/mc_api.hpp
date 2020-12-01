@@ -77,7 +77,7 @@ public:
   void mc_wait_for_requests() const;
   void mc_exit(int status) const;
   std::string const& mc_get_host_name(std::string const& hostname) const;
-  void mc_dump_record_path() const;
+  void dump_record_path() const;
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 
   // SIMCALL APIs
