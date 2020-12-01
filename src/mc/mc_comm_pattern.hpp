@@ -7,9 +7,7 @@
 #define SIMGRID_MC_COMM_PATTERN_H
 
 #include <vector>
-
-#include "smpi/smpi.h"
-#include "src/mc/mc_state.hpp"
+#include "src/mc/mc_pattern.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -60,13 +58,5 @@ static inline simgrid::mc::CallType MC_get_call_type(const s_smx_simcall* req)
       return CallType::NONE;
   }
 }
-
-XBT_PRIVATE void MC_handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t request, int value,
-                                        int backtracking);
-
-XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
-
-XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state);
-XBT_PRIVATE void MC_state_copy_index_communications_pattern(simgrid::mc::State* state);
 
 #endif

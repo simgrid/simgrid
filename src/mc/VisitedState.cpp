@@ -23,7 +23,7 @@ namespace mc {
 VisitedState::VisitedState(unsigned long state_number) : num(state_number)
 {  
   this->heap_bytes_used = mcapi::get().get_remote_heap_bytes();
-  this->actors_count = mcapi::get().mc_get_remote_simulation().actors().size();
+  this->actors_count = mcapi::get().get_actors_size();
   this->system_state = std::make_shared<simgrid::mc::Snapshot>(state_number);
 }
 

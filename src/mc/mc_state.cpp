@@ -25,8 +25,8 @@ State::State(unsigned long state_number) : num_(state_number)
     auto snapshot_ptr = mcapi::get().take_snapshot(num_);
     system_state_ = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-      mcapi::get().copy_incomplete_comm_pattern(this);
-      mcapi::get().copy_index_comm_pattern(this);
+      copy_incomplete_comm_pattern();
+      copy_index_comm_pattern();
     }
   }
 }
@@ -39,6 +39,24 @@ std::size_t State::interleave_size() const
 Transition State::get_transition() const
 {
   return this->transition_;
+}
+
+void State::copy_incomplete_comm_pattern()
+{
+  incomplete_comm_pattern_.clear();
+  for (auto i=0; i < mcapi::get().get_maxpid(); i++) {
+    std::vector<simgrid::mc::PatternCommunication> res;
+    for (auto const& comm : incomplete_communications_pattern[i])
+      res.push_back(comm->dup());
+    incomplete_comm_pattern_.push_back(std::move(res));
+  }
+}
+
+void State::copy_index_comm_pattern()
+{
+  communication_indices_.clear();
+  for (auto const& list_process_comm : initial_communications_pattern)
+    this->communication_indices_.push_back(list_process_comm.index_comm);
 }
 
 }

@@ -154,7 +154,7 @@ void LivenessChecker::replay()
 
       /* Debug information */
       XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
-                request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
+                mcapi::get().request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
 
       this->get_session().execute(state->transition_);
     }
@@ -232,7 +232,7 @@ void LivenessChecker::log_state() // override
 {
   XBT_INFO("Expanded pairs = %lu", expanded_pairs_count_);
   XBT_INFO("Visited pairs = %lu", visited_pairs_count_);
-  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
+  XBT_INFO("Executed transitions = %lu", mcapi::get().mc_get_executed_trans());
 }
 
 void LivenessChecker::show_acceptance_cycle(std::size_t depth)
@@ -243,8 +243,8 @@ void LivenessChecker::show_acceptance_cycle(std::size_t depth)
   XBT_INFO("Counter-example that violates formula:");
   for (auto const& s : this->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
-  mc::dumpRecordPath();
-  mc::session->log_state();
+  mcapi::get().dump_record_path();
+  mcapi::get().log_state();
   XBT_INFO("Counter-example depth: %zu", depth);
 }
 
@@ -255,7 +255,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
     int req_num       = pair->graph_state->transition_.argument_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
     if (req->call_ != simix::Simcall::NONE)
-      trace.push_back(request_to_string(req, req_num, RequestType::executed));
+      trace.push_back(mcapi::get().request_to_string(req, req_num, RequestType::executed));
   }
   return trace;
 }
@@ -387,7 +387,7 @@ void LivenessChecker::run()
       fflush(dot_output);
     }
 
-    XBT_DEBUG("Execute: %s", request_to_string(req, req_num, RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", mcapi::get().request_to_string(req, req_num, RequestType::simix).c_str());
 
     /* Update stats */
     mc_model_checker->executed_transitions++;

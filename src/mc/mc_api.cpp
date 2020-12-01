@@ -205,20 +205,31 @@ unsigned long mc_api::get_maxpid() const
   return MC_smx_get_maxpid();
 }
 
-void mc_api::copy_incomplete_comm_pattern(const simgrid::mc::State* state) const
+int mc_api::get_actors_size() const
 {
-  MC_state_copy_incomplete_communications_pattern((simgrid::mc::State*)state);
+  return mc_model_checker->get_remote_simulation().actors().size();
 }
 
-void mc_api::copy_index_comm_pattern(const simgrid::mc::State* state) const
+bool mc_api::comm_addr_equal(const kernel::activity::CommImpl* comm_addr1, const kernel::activity::CommImpl* comm_addr2) const
 {
-  MC_state_copy_index_communications_pattern((simgrid::mc::State*)state);
+  return remote(comm_addr1) == remote(comm_addr2);
 }
 
-kernel::activity::CommImpl* mc_api::get_pattern_comm_addr(smx_simcall_t request) const
+kernel::activity::CommImpl* mc_api::get_comm_isend_raw_addr(smx_simcall_t request) const
 {
   auto comm_addr = simcall_comm_isend__getraw__result(request);
   return static_cast<kernel::activity::CommImpl*>(comm_addr);
+}
+
+kernel::activity::CommImpl* mc_api::get_comm_wait_raw_addr(smx_simcall_t request) const
+{
+  return simcall_comm_wait__getraw__comm(request);
+}
+
+kernel::activity::CommImpl* mc_api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
+{
+  auto addr = mc_model_checker->get_remote_simulation().read(remote(simcall_comm_waitany__getraw__comms(request) + value));
+  return static_cast<simgrid::kernel::activity::CommImpl*>(addr);
 }
 
 std::string mc_api::get_pattern_comm_rdv(void* addr) const
@@ -266,10 +277,10 @@ std::vector<char> mc_api::get_pattern_comm_data(void* addr) const
   return buffer;
 }
 
-std::vector<char> mc_api::get_pattern_comm_data(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
+std::vector<char> mc_api::get_pattern_comm_data(const kernel::activity::CommImpl* comm_addr) const
 {
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
+  mc_model_checker->get_remote_simulation().read(temp_comm, remote((kernel::activity::CommImpl*)comm_addr));
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
   
   std::vector<char> buffer {};
@@ -295,20 +306,20 @@ bool mc_api::check_send_request_detached(smx_simcall_t const& simcall) const
   return mpi_request.detached();
 }
 
-smx_actor_t mc_api::get_src_actor(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
+smx_actor_t mc_api::get_src_actor(const kernel::activity::CommImpl* comm_addr) const
 {
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
+  mc_model_checker->get_remote_simulation().read(temp_comm, remote((kernel::activity::CommImpl*)comm_addr));
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
   auto src_proc = mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
   return src_proc;
 }
 
-smx_actor_t mc_api::get_dst_actor(mc::RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
+smx_actor_t mc_api::get_dst_actor(const kernel::activity::CommImpl* comm_addr) const
 {
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
+  mc_model_checker->get_remote_simulation().read(temp_comm, remote((kernel::activity::CommImpl*)comm_addr));
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
   auto dst_proc = mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
@@ -362,7 +373,7 @@ void mc_api::mc_show_deadlock() const
   MC_show_deadlock();
 }
 
-smx_actor_t mc_api::mc_smx_simcall_get_issuer(s_smx_simcall const* req) const
+smx_actor_t mc_api::simcall_get_issuer(s_smx_simcall const* req) const
 {
   return MC_smx_simcall_get_issuer(req);
 }
@@ -403,7 +414,7 @@ std::string const& mc_api::mc_get_host_name(std::string const& hostname) const
   return mc_model_checker->get_host_name(hostname);
 }
 
-void mc_api::mc_dump_record_path() const
+void mc_api::dump_record_path() const
 {
   simgrid::mc::dumpRecordPath();
 }
@@ -437,7 +448,7 @@ std::string mc_api::request_get_dot_output(smx_simcall_t req, int value) const
   return simgrid::mc::request_get_dot_output(req, value);
 }
 
-const char* mc_api::simix_simcall_name(simgrid::simix::Simcall kind) const
+const char* mc_api::simcall_get_name(simgrid::simix::Simcall kind) const
 {
   return SIMIX_simcall_name(kind);
 }
@@ -456,6 +467,11 @@ int mc_api::get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::S
 }
 #endif
 
+void mc_api::restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const
+{
+  system_state->restore(&mc_model_checker->get_remote_simulation());
+}
+
 bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
 {
   return simgrid::mc::snapshot_equal(s1, s2);
@@ -472,7 +488,7 @@ void mc_api::s_close() const
   session->close();
 }
 
-void mc_api::s_restore_initial_state() const
+void mc_api::restore_initial_state() const
 {
   session->restore_initial_state();
 }
@@ -482,7 +498,7 @@ void mc_api::execute(Transition const& transition)
   session->execute(transition);
 }
 
-void mc_api::s_log_state() const
+void mc_api::log_state() const
 {
   session->log_state();
 }

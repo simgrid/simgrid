@@ -8,7 +8,7 @@
 
 #include "src/mc/Transition.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
-#include "src/mc/mc_pattern.hpp"
+#include "src/mc/mc_comm_pattern.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -52,6 +52,10 @@ public:
     this->actor_states_[actor->get_pid()].consider();
   }
   Transition get_transition() const;
+
+private:
+  void copy_incomplete_comm_pattern();
+  void copy_index_comm_pattern();
 };
 }
 }
