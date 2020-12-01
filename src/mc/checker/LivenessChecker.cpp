@@ -243,8 +243,8 @@ void LivenessChecker::show_acceptance_cycle(std::size_t depth)
   XBT_INFO("Counter-example that violates formula:");
   for (auto const& s : this->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
-  mc::dumpRecordPath();
-  mc::session->log_state();
+  mcapi::get().mc_dump_record_path();
+  mcapi::get().log_state();
   XBT_INFO("Counter-example depth: %zu", depth);
 }
 
