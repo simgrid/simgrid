@@ -45,8 +45,6 @@ public:
   int get_actors_size() const;
 
   // COMMUNICATION APIs
-  void copy_incomplete_comm_pattern(simgrid::mc::State* state) const;
-  void copy_index_comm_pattern(simgrid::mc::State* state) const;
   bool comm_addr_equal(const kernel::activity::CommImpl* comm_addr1, const kernel::activity::CommImpl* comm_addr2) const;
   kernel::activity::CommImpl* get_comm_isend_raw_addr(smx_simcall_t request) const;
   kernel::activity::CommImpl* get_comm_wait_raw_addr(smx_simcall_t request) const;

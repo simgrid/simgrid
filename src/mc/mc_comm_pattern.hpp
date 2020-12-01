@@ -7,8 +7,7 @@
 #define SIMGRID_MC_COMM_PATTERN_H
 
 #include <vector>
-
-#include "src/mc/mc_state.hpp"
+#include "src/mc/mc_pattern.hpp"
 
 namespace simgrid {
 namespace mc {
