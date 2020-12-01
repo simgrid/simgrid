@@ -232,7 +232,7 @@ void LivenessChecker::log_state() // override
 {
   XBT_INFO("Expanded pairs = %lu", expanded_pairs_count_);
   XBT_INFO("Visited pairs = %lu", visited_pairs_count_);
-  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
+  XBT_INFO("Executed transitions = %lu", mcapi::get().mc_get_executed_trans());
 }
 
 void LivenessChecker::show_acceptance_cycle(std::size_t depth)
