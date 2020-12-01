@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "smpi/smpi.h"
 #include "src/mc/mc_state.hpp"
 
 namespace simgrid {
@@ -60,7 +59,5 @@ static inline simgrid::mc::CallType MC_get_call_type(const s_smx_simcall* req)
       return CallType::NONE;
   }
 }
-
-XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
 #endif

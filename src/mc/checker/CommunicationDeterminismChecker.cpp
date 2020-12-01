@@ -30,24 +30,6 @@ std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communic
 
 /********** Static functions ***********/
 
-void copy_incomplete_comm_pattern(simgrid::mc::State* state)
-{
-  state->incomplete_comm_pattern_.clear();
-  for (unsigned i=0; i < MC_smx_get_maxpid(); i++) {
-    std::vector<simgrid::mc::PatternCommunication> res;
-    for (auto const& comm : incomplete_communications_pattern[i])
-      res.push_back(comm->dup());
-    state->incomplete_comm_pattern_.push_back(std::move(res));
-  }
-}
-
-void copy_index_comm_pattern(simgrid::mc::State* state)
-{
-  state->communication_indices_.clear();
-  for (auto const& list_process_comm : initial_communications_pattern)
-    state->communication_indices_.push_back(list_process_comm.index_comm);
-}
-
 static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc::PatternCommunication* comm1,
                                                                const simgrid::mc::PatternCommunication* comm2)
 {
