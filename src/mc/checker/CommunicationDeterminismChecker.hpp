@@ -35,7 +35,7 @@ private:
 public:
   // These are used by functions which should be moved in CommunicationDeterminismChecker:
   void get_comm_pattern(smx_simcall_t request, CallType call_type, int backtracking);
-  void complete_comm_pattern(const kernel::activity::CommImpl* comm_addr, unsigned int issuer, int backtracking);
+  void complete_comm_pattern(const kernel::activity::CommImpl* comm_addr, aid_t issuer, int backtracking);
 
 private:
   /** Stack representing the position in the exploration graph */

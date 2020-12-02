@@ -234,8 +234,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
   incomplete_communications_pattern[issuer->get_pid()].push_back(pattern.release());
 }
 
-void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activity::CommImpl* comm_addr,
-                                                            unsigned int issuer, int backtracking)
+void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activity::CommImpl* comm_addr, aid_t issuer,
+                                                            int backtracking)
 {
   /* Complete comm pattern */
   std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer];
@@ -247,7 +247,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activi
 
   update_comm_pattern(*current_comm_pattern, comm_addr);
   std::unique_ptr<PatternCommunication> comm_pattern(*current_comm_pattern);
-  XBT_DEBUG("Remove incomplete comm pattern for process %u at cursor %zd", issuer,
+  XBT_DEBUG("Remove incomplete comm pattern for process %ld at cursor %zd", issuer,
             std::distance(begin(incomplete_pattern), current_comm_pattern));
   incomplete_pattern.erase(current_comm_pattern);
 
