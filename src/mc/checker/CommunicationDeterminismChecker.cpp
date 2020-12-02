@@ -400,7 +400,7 @@ void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType 
       break;
     case CallType::WAIT:
     case CallType::WAITANY: {
-      simgrid::kernel::activity::CommImpl* comm_addr = nullptr;
+      const simgrid::kernel::activity::CommImpl* comm_addr = nullptr;
       if (call_type == CallType::WAIT)
         comm_addr = mcapi::get().get_comm_wait_raw_addr(req);
       else
