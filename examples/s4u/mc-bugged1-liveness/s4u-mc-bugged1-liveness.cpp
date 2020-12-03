@@ -147,7 +147,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("coordinator", simgrid::s4u::Host::by_name("Tremblay"), coordinator);
+  simgrid::s4u::Actor::create("coordinator", simgrid::s4u::Host::by_name("Tremblay"), coordinator)
+      ->set_kill_time(argc > 3 ? std::stod(argv[3]) : -1.0);
   if (std::stod(argv[2]) == 0) {
     simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("Boivin"), raw_client, 1);
     simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("Fafard"), raw_client, 2);
