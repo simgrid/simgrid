@@ -47,7 +47,6 @@ if(SIMGRID_HAVE_MC)
     set_target_properties(s4u-mc-bugged1-liveness-cleaner-off PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fno-stack-cleaner")
     add_dependencies(tests s4u-mc-bugged1-liveness-cleaner-off)
   endif()
-
 endif()
 
 if(SIMGRID_HAVE_NS3)
@@ -205,6 +204,17 @@ if (NOT enable_memcheck AND NOT WIN32)
   ADD_TESH(simix-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/app-pingpong
                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                             ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh)
+endif()
+
+if(enable_coverage)
+  foreach (example mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert)
+    if(NOT DEFINED _${example}_disable)
+      ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/s4u-${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/model_checker_platform.xml)
+    endif()
+  endforeach()
+  if(SIMGRID_HAVE_MC)
+    add_test(cover-mc-bugged1-liveness ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml 0 1000)
+  endif()
 endif()
 
 # Add all extra files to the archive
