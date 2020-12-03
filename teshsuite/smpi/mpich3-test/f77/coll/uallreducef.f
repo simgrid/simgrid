@@ -6,6 +6,23 @@ C
 C
 C Test user-defined operations.  This tests a simple commutative operation
 C
+      subroutine uop( cin, cout, count, datatype )
+      implicit none
+      include 'mpif.h'
+      integer cin(*), cout(*)
+      integer count, datatype
+      integer i
+      
+C      if (datatype .ne. MPI_INTEGER) then
+C         print *, 'Invalid datatype (',datatype,') passed to user_op()'
+C         return
+C      endif
+
+      do i=1, count
+         cout(i) = cin(i) + cout(i)
+      enddo
+      end
+
       program main
       implicit none
       include 'mpif.h'
@@ -43,21 +60,4 @@ C         Check that all results are correct
 
       call mtest_finalize(errs)
       call mpi_finalize(ierr)
-      end
-
-      subroutine uop( cin, cout, count, datatype )
-      implicit none
-      include 'mpif.h'
-      integer cin(*), cout(*)
-      integer count, datatype
-      integer i
-      
-C      if (datatype .ne. MPI_INTEGER) then
-C         print *, 'Invalid datatype (',datatype,') passed to user_op()'
-C         return
-C      endif
-
-      do i=1, count
-         cout(i) = cin(i) + cout(i)
-      enddo
       end

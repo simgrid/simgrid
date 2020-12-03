@@ -4,6 +4,23 @@
 !  (C) 2011 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
 !
+      subroutine uop( cin, cout, count, datatype )
+      use mpi
+      integer cin(*), cout(*)
+      integer count, datatype
+      integer i
+      
+      if (.false.) then
+         if (datatype .ne. MPI_INTEGER) then
+            write(6,*) 'Invalid datatype ',datatype,' passed to user_op()'
+            return
+         endif
+      endif
+
+      do i=1, count
+         cout(i) = cin(i) + cout(i)
+      enddo
+      end
 !
 ! Test of reduce scatter.
 !
@@ -70,22 +87,4 @@
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
 
-      end
-
-      subroutine uop( cin, cout, count, datatype )
-      use mpi
-      integer cin(*), cout(*)
-      integer count, datatype
-      integer i
-      
-      if (.false.) then
-         if (datatype .ne. MPI_INTEGER) then
-            write(6,*) 'Invalid datatype ',datatype,' passed to user_op()'
-            return
-         endif
-      endif
-
-      do i=1, count
-         cout(i) = cin(i) + cout(i)
-      enddo
       end
