@@ -213,7 +213,7 @@ if(enable_coverage)
     endif()
   endforeach()
   if(SIMGRID_HAVE_MC)
-    ADD_TEST(cover-mc-bugged1-liveness ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml 1 1000)
+    ADD_TEST(cover-mc-bugged1-liveness ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml 1 1001)
   endif()
 endif()
 
