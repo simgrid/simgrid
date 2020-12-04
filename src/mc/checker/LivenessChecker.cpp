@@ -75,11 +75,7 @@ Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs)
 
 std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values() const
 {
-  std::vector<int> values;
-  unsigned int cursor = 0;
-  xbt_automaton_propositional_symbol_t ps = nullptr;
-  xbt_dynar_foreach (mc::property_automaton->propositional_symbols, cursor, ps)
-    values.push_back(xbt_automaton_propositional_symbol_evaluate(ps));
+  auto values = mcapi::get().automaton_propositional_symbol_evaluate();  
   return std::make_shared<const std::vector<int>>(std::move(values));
 }
 

@@ -106,10 +106,11 @@ public:
   void s_close() const;
   void execute(Transition const& transition) const;
 
-  // Global APIs
+  // AUTOMATION APIs
   #if SIMGRID_HAVE_MC
   void automaton_load(const char *file) const;
   #endif
+  std::vector<int> automaton_propositional_symbol_evaluate() const;
 };
 
 } // namespace mc

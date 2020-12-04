@@ -507,6 +507,16 @@ void mc_api::automaton_load(const char *file) const
 }
 #endif
 
+std::vector<int> mc_api::automaton_propositional_symbol_evaluate() const  
+{
+  unsigned int cursor = 0;
+  std::vector<int> values;    
+  xbt_automaton_propositional_symbol_t ps = nullptr;
+  xbt_dynar_foreach (mc::property_automaton->propositional_symbols, cursor, ps)
+    values.push_back(xbt_automaton_propositional_symbol_evaluate(ps));
+  return values;
+}
+
 void mc_api::log_state() const
 {
   session->log_state();
