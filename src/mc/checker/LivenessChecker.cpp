@@ -314,7 +314,7 @@ void LivenessChecker::run()
   mcapi::get().automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
-  mc::session->initialize();
+  mcapi::get().s_initialize();
 
   /* Initialize */
   this->previous_pair_ = 0;
