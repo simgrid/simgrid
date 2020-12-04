@@ -130,48 +130,48 @@ static void dump_routes()
       std::vector<simgrid::kernel::resource::LinkImpl*> route;
       simgrid::kernel::routing::NetPoint* dst = host2->get_netpoint();
       simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
-      if (not route.empty()) {
-        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), host2->get_cname());
-        for (auto const& link : route)
-          std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
-        std::printf("\n  </route>\n");
-      }
+      if (route.empty())
+        continue;
+      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), host2->get_cname());
+      for (auto const& link : route)
+        std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
+      std::printf("\n  </route>\n");
     }
 
     for (auto const& dst : netpoints) { // to router
-      if (dst->is_router()) {
-        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), dst->get_cname());
-        std::vector<simgrid::kernel::resource::LinkImpl*> route;
-        simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
-        for (auto const& link : route)
-          std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
-        std::printf("\n  </route>\n");
-      }
+      if (not dst->is_router())
+        continue;
+      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), dst->get_cname());
+      std::vector<simgrid::kernel::resource::LinkImpl*> route;
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
+      for (auto const& link : route)
+        std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
+      std::printf("\n  </route>\n");
     }
   }
 
   for (auto const& value1 : netpoints) { // Routes from router
-    if (value1->is_router()) {
-      for (auto const& value2 : netpoints) { // to router
-        if (value2->is_router()) {
-          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), value2->get_cname());
-          std::vector<simgrid::kernel::resource::LinkImpl*> route;
-          simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, value2, route, nullptr);
-          for (auto const& link : route)
-            std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
-          std::printf("\n  </route>\n");
-        }
-      }
-      for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
-        const simgrid::s4u::Host* host2 = hosts[it_dst];
-        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), host2->get_cname());
-        std::vector<simgrid::kernel::resource::LinkImpl*> route;
-        simgrid::kernel::routing::NetPoint* netcardDst = host2->get_netpoint();
-        simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, netcardDst, route, nullptr);
-        for (auto const& link : route)
-          std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
-        std::printf("\n  </route>\n");
-      }
+    if (not value1->is_router())
+      continue;
+    for (auto const& value2 : netpoints) { // to router
+      if (not value2->is_router())
+        continue;
+      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), value2->get_cname());
+      std::vector<simgrid::kernel::resource::LinkImpl*> route;
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, value2, route, nullptr);
+      for (auto const& link : route)
+        std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
+      std::printf("\n  </route>\n");
+    }
+    for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
+      const simgrid::s4u::Host* host2 = hosts[it_dst];
+      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), host2->get_cname());
+      std::vector<simgrid::kernel::resource::LinkImpl*> route;
+      simgrid::kernel::routing::NetPoint* netcardDst = host2->get_netpoint();
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, netcardDst, route, nullptr);
+      for (auto const& link : route)
+        std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
+      std::printf("\n  </route>\n");
     }
   }
   xbt_free(hosts);

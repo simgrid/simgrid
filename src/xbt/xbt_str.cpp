@@ -136,26 +136,26 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       }
       if (in_simple_quote || in_double_quote) {
         end++;
-      } else {
-        if (*end == '\0')
-          done = 1;
-
-        *end = '\0';
-        if (ctn) {
-          /* Found a separator. Push the string if contains something */
-          xbt_dynar_push(res, &beg);
-        }
-        ctn = 0;
-
-        if (done)
-          break;
-
-        beg = ++end;
-        /* trim within the string, manually to speed things up */
-        while (*beg == ' ')
-          beg++;
-        end = beg;
+        break;
       }
+      if (*end == '\0')
+        done = 1;
+
+      *end = '\0';
+      if (ctn) {
+        /* Found a separator. Push the string if contains something */
+        xbt_dynar_push(res, &beg);
+      }
+      ctn = 0;
+
+      if (done)
+        break;
+
+      beg = ++end;
+      /* trim within the string, manually to speed things up */
+      while (*beg == ' ')
+        beg++;
+      end = beg;
       break;
     default:
       ctn = 1;
