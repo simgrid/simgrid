@@ -270,8 +270,9 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   else
     next_pair->depth = 1;
   /* Get enabled actors and insert them in the interleave set of the next graph_state */
-  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
     if (mc::actor_is_enabled(actor.copy.get_buffer()))
+  auto actors = mcapi::get().get_actors();
+  for (auto& actor : actors)
       next_pair->graph_state->add_interleaving_set(actor.copy.get_buffer());
   next_pair->requests = next_pair->graph_state->interleave_size();
   /* FIXME : get search_cycle value for each accepting state */
