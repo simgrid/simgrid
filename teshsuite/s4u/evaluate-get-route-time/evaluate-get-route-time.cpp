@@ -6,7 +6,7 @@
 
 /*
 for i in $(seq 1 20); do
-  teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time examples/platforms/cluster_backbone.xml 1
+  teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time examples/platforms/cluster_backbone.xml
   sleep 1
 done
 */
