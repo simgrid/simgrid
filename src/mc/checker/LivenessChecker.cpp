@@ -311,7 +311,7 @@ void LivenessChecker::backtrack()
 void LivenessChecker::run()
 {
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file.get().c_str());
-  MC_automaton_load(_sg_mc_property_file.get().c_str());
+  mcapi::get().automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
   mc::session->initialize();

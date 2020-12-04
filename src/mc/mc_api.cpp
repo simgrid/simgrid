@@ -500,6 +500,13 @@ void mc_api::execute(Transition const& transition) const
   session->execute(transition);
 }
 
+#if SIMGRID_HAVE_MC
+void mc_api::automaton_load(const char *file) const
+{ 
+  MC_automaton_load(file); 
+}
+#endif
+
 void mc_api::log_state() const
 {
   session->log_state();

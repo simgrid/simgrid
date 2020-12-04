@@ -105,6 +105,11 @@ public:
   void s_initialize() const;
   void s_close() const;
   void execute(Transition const& transition) const;
+
+  // Global APIs
+  #if SIMGRID_HAVE_MC
+  void automaton_load(const char *file) const;
+  #endif
 };
 
 } // namespace mc
