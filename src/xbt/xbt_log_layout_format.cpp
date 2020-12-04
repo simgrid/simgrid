@@ -22,11 +22,11 @@ static constexpr const char* ERRMSG =
     "  when:        %%d: date          %%r: app. age\n"
     "  other:       %%%%: %%             %%n: new line      %%e: plain space\n";
 
-#define check_overflow(len)                                             \
-  if ((rem_size -= (len)) > 0) {                                        \
-    p += (len);                                                         \
-  } else                                                                \
-    return 0
+#define check_overflow(len)                                                                                            \
+  if ((rem_size -= (len)) > 0) {                                                                                       \
+    p += (len);                                                                                                        \
+  } else                                                                                                               \
+    return false
 
 #define set_sz_from_precision()                                                                                        \
   if (true) {                                                                                                          \
@@ -68,7 +68,7 @@ static constexpr const char* ERRMSG =
 #define show_int(data) show_it((data), "d")
 #define show_double(data) show_it((data), "f")
 
-static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event_t ev, const char* msg_fmt)
+static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event_t ev, const char* msg_fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -175,7 +175,7 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
   }
   *p = '\0';
 
-  return 1;
+  return true;
 }
 
 static void xbt_log_layout_format_free(const s_xbt_log_layout_t* lay)

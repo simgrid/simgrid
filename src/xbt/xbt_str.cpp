@@ -26,10 +26,10 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), nullptr);
   char* beg;
   char* end; /* pointers around the parsed chunk */
-  int in_simple_quote = 0;
-  int in_double_quote = 0;
-  int done            = 0;
-  int ctn             = 0; /* Got something in this block */
+  bool in_simple_quote = false;
+  bool in_double_quote = false;
+  bool done            = false;
+  bool ctn             = false; /* Got something in this block */
 
   if (s[0] == '\0')
     return res;
@@ -42,7 +42,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   while (not done) {
     switch (*end) {
     case '\\':
-      ctn = 1;
+      ctn = true;
       /* Protected char; move it closer */
       memmove(end, end + 1, strlen(end));
       if (*end == '\0')
@@ -50,7 +50,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       end++;                    /* Pass the protected char */
       break;
     case '\'':
-      ctn = 1;
+      ctn = true;
       if (not in_double_quote) {
         in_simple_quote = not in_simple_quote;
         memmove(end, end + 1, strlen(end));
@@ -60,7 +60,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       }
       break;
     case '"':
-      ctn = 1;
+      ctn = true;
       if (not in_simple_quote) {
         in_double_quote = not in_double_quote;
         memmove(end, end + 1, strlen(end));
@@ -82,14 +82,14 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
         break;
       }
       if (*end == '\0')
-        done = 1;
+        done = true;
 
       *end = '\0';
       if (ctn) {
         /* Found a separator. Push the string if contains something */
         xbt_dynar_push(res, &beg);
       }
-      ctn = 0;
+      ctn = false;
 
       if (done)
         break;
@@ -101,7 +101,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       end = beg;
       break;
     default:
-      ctn = 1;
+      ctn = true;
       end++;
     }
   }

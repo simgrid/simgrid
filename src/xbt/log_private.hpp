@@ -16,7 +16,7 @@ struct xbt_log_appender_s {
 };
 
 struct xbt_log_layout_s {
-  int (*do_layout)(const s_xbt_log_layout_t* l, xbt_log_event_t event, const char* fmt);
+  bool (*do_layout)(const s_xbt_log_layout_t* l, xbt_log_event_t event, const char* fmt);
   void (*free_)(const s_xbt_log_layout_t* l);
   void *data;
 };
