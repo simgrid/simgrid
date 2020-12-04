@@ -266,7 +266,6 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
       if (not TRACE_smpi_is_grouped())
         mpi->by_name_or_create<StateType>("MPI_STATE");
       root->type_->by_name_or_create("MPI_LINK", mpi, mpi);
-      // TODO See if we can move this to the LoadBalancer plugin
       root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
       mpi->by_name_or_create<StateType>("MIGRATE_STATE");
     }
@@ -326,7 +325,6 @@ static void on_host_creation(s4u::Host const& host)
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()) {
     auto* mpi = container->type_->by_name_or_create<ContainerType>("MPI");
     mpi->by_name_or_create<StateType>("MPI_STATE");
-    // TODO See if we can move this to the LoadBalancer plugin
     root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
     mpi->by_name_or_create<StateType>("MIGRATE_STATE");
   }

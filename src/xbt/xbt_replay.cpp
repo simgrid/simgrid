@@ -70,20 +70,19 @@ static ReplayAction* get_action(const char* name)
 
       // if it's for me, I'm done
       std::string evtname = action->front();
-      if (evtname.compare(name) == 0) {
+      if (evtname.compare(name) == 0)
         return action;
-      } else {
-        // Else, I have to store it for the relevant colleague
-        std::queue<ReplayAction*>* otherqueue = nullptr;
-        auto act                              = action_queues.find(evtname);
-        if (act != action_queues.end()) {
-          otherqueue = act->second;
-        } else { // Damn. Create the queue of that guy
-          otherqueue = new std::queue<ReplayAction*>();
-          action_queues.insert({evtname, otherqueue});
-        }
-        otherqueue->push(action);
+
+      // Else, I have to store it for the relevant colleague
+      std::queue<ReplayAction*>* otherqueue = nullptr;
+      auto act                              = action_queues.find(evtname);
+      if (act != action_queues.end()) {
+        otherqueue = act->second;
+      } else { // Damn. Create the queue of that guy
+        otherqueue = new std::queue<ReplayAction*>();
+        action_queues.insert({evtname, otherqueue});
       }
+      otherqueue->push(action);
     }
     // end of file reached while searching in vain for more work
   } else {

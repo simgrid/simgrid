@@ -132,13 +132,10 @@ set(SMPI_SRC
   src/smpi/include/smpi_status.hpp
   src/smpi/include/smpi_topo.hpp
   src/smpi/include/smpi_win.hpp
-  src/smpi/plugins/sampi_loadbalancer.cpp
   src/smpi/plugins/ampi/ampi.cpp
   src/smpi/plugins/ampi/ampi.hpp
   src/smpi/plugins/ampi/instr_ampi.cpp
   src/smpi/plugins/ampi/instr_ampi.hpp
-  src/smpi/plugins/load_balancer/LoadBalancer.cpp
-  src/smpi/plugins/load_balancer/load_balancer.hpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
   src/smpi/bindings/smpi_mpi.cpp
@@ -697,7 +694,6 @@ set(headers_to_install
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
-  include/simgrid/plugins/load_balancer.h
   include/simgrid/smpi/replay.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h

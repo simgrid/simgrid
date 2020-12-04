@@ -161,7 +161,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
       xbt_assert(cat->layout, "No valid layout for the appender of category %s", cat->name);
 
       /* First, try with a static buffer */
-      int done = 0;
+      bool done = false;
       std::array<char, XBT_LOG_STATIC_BUFFER_SIZE> buff;
       ev->buffer      = buff.data();
       ev->buffer_size = buff.size();

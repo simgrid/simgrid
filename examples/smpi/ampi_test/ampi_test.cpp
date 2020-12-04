@@ -10,9 +10,15 @@
 int main(int argc, char* argv[])
 {
   MPI_Init(&argc, &argv);
+  // useless alocations for testing and coverage
   void* pointer = malloc(100 * sizeof(int));
+  void* ptmp;
+  if ((ptmp = realloc(pointer, 50 * sizeof(int))) != NULL)
+    pointer = ptmp;
+  if ((ptmp = realloc(pointer, 200 * sizeof(int))) != NULL)
+    pointer = ptmp;
   free(pointer);
-  pointer = malloc(100 * sizeof(int));
+  pointer = calloc(100, sizeof(int));
   int rank;
   int err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
   if (err != MPI_SUCCESS) {

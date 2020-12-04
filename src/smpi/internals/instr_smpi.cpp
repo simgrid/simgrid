@@ -233,28 +233,3 @@ void TRACE_smpi_recv(int src, int dst, int tag)
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
   simgrid::instr::Container::get_root()->get_link("MPI_LINK")->end_event(smpi_container(dst), "PTP", key);
 }
-
-/**************** Functions to trace the migration of tasks. *****************/
-void TRACE_smpi_process_change_host(int rank, const_sg_host_t new_host)
-{
-  if (not TRACE_smpi_is_enabled()) return;
-
-  /** The key is (most likely) used to match the events in the trace */
-  static long long int counter = 0;
-  std::string key              = std::to_string(counter);
-  counter++;
-
-  // start link (= tell the trace that this rank moves from A to B)
-  auto* cont = smpi_container(rank);
-  simgrid::instr::Container::get_root()->get_link("MIGRATE_LINK")->start_event(cont, "M", key);
-
-  // Destroy container of this rank on this host
-  cont->remove_from_parent();
-
-  // Setup container on new host
-  TRACE_smpi_setup_container(rank, new_host);
-
-  // end link
-  cont = smpi_container(rank); // This points to the newly created container
-  simgrid::instr::Container::get_root()->get_link("MIGRATE_LINK")->end_event(cont, "M", key);
-}

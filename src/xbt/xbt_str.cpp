@@ -11,63 +11,6 @@
 #include "xbt/string.hpp"
 #include <array>
 
-/** @brief Splits a string into a dynar of strings
- *
- * @param s: the string to split
- * @param sep: a string of all chars to consider as separator.
- *
- * By default (with sep=nullptr), these characters are used as separator:
- *
- *  - " "    (ASCII 32  (0x20))  space.
- *  - "\t"    (ASCII 9  (0x09))  tab.
- *  - "\n"    (ASCII 10  (0x0A))  line feed.
- *  - "\r"    (ASCII 13  (0x0D))  carriage return.
- *  - "\0"    (ASCII 0  (0x00))  nullptr.
- *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
- */
-xbt_dynar_t xbt_str_split(const char *s, const char *sep)
-{
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-  const char *sep_dflt = " \t\n\r\x0B";
-  std::array<bool, 256> is_sep;
-
-  /* check what are the separators */
-  is_sep.fill(false);
-  if (not sep) {
-    while (*sep_dflt)
-      is_sep[(unsigned char)*sep_dflt++] = true;
-  } else {
-    while (*sep)
-      is_sep[(unsigned char)*sep++] = true;
-  }
-  is_sep[0] = true; /* End of string is also separator */
-
-  /* Do the job */
-  const char* p = s;
-  const char* q = s;
-  int done      = 0;
-
-  if (s[0] == '\0')
-    return res;
-
-  while (not done) {
-    char *topush;
-    while (not is_sep[(unsigned char)*q]) {
-      q++;
-    }
-    if (*q == '\0')
-      done = 1;
-
-    topush = (char*) xbt_malloc(q - p + 1);
-    memcpy(topush, p, q - p);
-    topush[q - p] = '\0';
-    xbt_dynar_push(res, &topush);
-    p = ++q;
-  }
-
-  return res;
-}
-
 /** @brief Just like @ref xbt_str_split_quoted (Splits a string into a dynar of strings), but without memory allocation
  *
  * The string passed as argument must be writable (not const)
@@ -83,10 +26,10 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), nullptr);
   char* beg;
   char* end; /* pointers around the parsed chunk */
-  int in_simple_quote = 0;
-  int in_double_quote = 0;
-  int done            = 0;
-  int ctn             = 0; /* Got something in this block */
+  bool in_simple_quote = false;
+  bool in_double_quote = false;
+  bool done            = false;
+  bool ctn             = false; /* Got something in this block */
 
   if (s[0] == '\0')
     return res;
@@ -99,7 +42,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   while (not done) {
     switch (*end) {
     case '\\':
-      ctn = 1;
+      ctn = true;
       /* Protected char; move it closer */
       memmove(end, end + 1, strlen(end));
       if (*end == '\0')
@@ -107,7 +50,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       end++;                    /* Pass the protected char */
       break;
     case '\'':
-      ctn = 1;
+      ctn = true;
       if (not in_double_quote) {
         in_simple_quote = not in_simple_quote;
         memmove(end, end + 1, strlen(end));
@@ -117,7 +60,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       }
       break;
     case '"':
-      ctn = 1;
+      ctn = true;
       if (not in_simple_quote) {
         in_double_quote = not in_double_quote;
         memmove(end, end + 1, strlen(end));
@@ -136,29 +79,29 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
       }
       if (in_simple_quote || in_double_quote) {
         end++;
-      } else {
-        if (*end == '\0')
-          done = 1;
-
-        *end = '\0';
-        if (ctn) {
-          /* Found a separator. Push the string if contains something */
-          xbt_dynar_push(res, &beg);
-        }
-        ctn = 0;
-
-        if (done)
-          break;
-
-        beg = ++end;
-        /* trim within the string, manually to speed things up */
-        while (*beg == ' ')
-          beg++;
-        end = beg;
+        break;
       }
+      if (*end == '\0')
+        done = true;
+
+      *end = '\0';
+      if (ctn) {
+        /* Found a separator. Push the string if contains something */
+        xbt_dynar_push(res, &beg);
+      }
+      ctn = false;
+
+      if (done)
+        break;
+
+      beg = ++end;
+      /* trim within the string, manually to speed things up */
+      while (*beg == ' ')
+        beg++;
+      end = beg;
       break;
     default:
-      ctn = 1;
+      ctn = true;
       end++;
     }
   }

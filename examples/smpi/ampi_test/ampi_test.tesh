@@ -1,4 +1,4 @@
-p Test if the load balancing code gets traced correctly
+p Test if the AMPI code gets traced correctly
 
 $ rm -rf ${bindir:=.}/smpi_trace.trace ${bindir:=.}/smpi_trace.trace_files
 

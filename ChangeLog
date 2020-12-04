@@ -51,6 +51,9 @@ SMPI:
    building shared libraries, this may cause issues, so environment variable
    SMPI_NO_UNDEFINED_CHECK can be added to disable this.
 
+XBT:
+ - Drop xbt_str_split().
+
 C binding and interface:
  - The return type of the sg_actor_on_exit() callbacks is now 'void'
    (int value was previously ignored)
