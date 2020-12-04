@@ -12,8 +12,11 @@ int main(int argc, char* argv[])
   MPI_Init(&argc, &argv);
   // useless alocations for testing and coverage
   void* pointer = malloc(100 * sizeof(int));
-  pointer       = realloc(pointer, 50 * sizeof(int));
-  pointer       = realloc(pointer, 200 * sizeof(int));
+  void* ptmp;
+  if ((ptmp = realloc(pointer, 50 * sizeof(int))) != NULL)
+    pointer = ptmp;
+  if ((ptmp = realloc(pointer, 200 * sizeof(int))) != NULL)
+    pointer = ptmp;
   free(pointer);
   pointer = calloc(100, sizeof(int));
   int rank;
