@@ -537,7 +537,7 @@ void CommunicationDeterminismChecker::real_run()
 void CommunicationDeterminismChecker::run()
 {
   XBT_INFO("Check communication determinism");
-  mcapi::get().s_initialize();
+  mcapi::get().session_initialize();
 
   this->prepare();
   this->real_run();

@@ -284,7 +284,7 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
   
-  mcapi::get().s_initialize();  
+  mcapi::get().session_initialize();  
 
   XBT_DEBUG("Starting the safety algorithm");
 

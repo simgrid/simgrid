@@ -102,7 +102,7 @@ public:
   simgrid::mc::Snapshot* take_snapshot(int num_state) const;
 
   // SESSION APIs
-  void s_initialize() const;
+  void session_initialize() const;
   void s_close() const;
   void execute(Transition const& transition) const;
 

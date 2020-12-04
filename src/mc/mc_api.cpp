@@ -335,7 +335,7 @@ std::size_t mc_api::get_remote_heap_bytes() const
   return heap_bytes_used;
 }
 
-void mc_api::s_initialize() const
+void mc_api::session_initialize() const
 {
   session->initialize();
 }
