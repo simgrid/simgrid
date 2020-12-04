@@ -113,6 +113,8 @@ public:
   #endif
   std::vector<int> automaton_propositional_symbol_evaluate() const;
   std::vector<xbt_automaton_state_t> get_automaton_state() const;
+  int compare_automaton_exp_lable(const xbt_automaton_exp_label* l, std::vector<int> const& values) const;
+
 };
 
 } // namespace mc
