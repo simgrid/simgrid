@@ -474,6 +474,11 @@ void mc_api::restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) 
   system_state->restore(&mc_model_checker->get_remote_simulation());
 }
 
+void mc_api::log_state() const
+{
+  session->log_state();
+}
+
 bool mc_api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
 {
   return simgrid::mc::snapshot_equal(s1, s2);
@@ -515,11 +520,6 @@ std::vector<int> mc_api::automaton_propositional_symbol_evaluate() const
   xbt_dynar_foreach (mc::property_automaton->propositional_symbols, cursor, ps)
     values.push_back(xbt_automaton_propositional_symbol_evaluate(ps));
   return values;
-}
-
-void mc_api::log_state() const
-{
-  session->log_state();
 }
 
 } // namespace mc
