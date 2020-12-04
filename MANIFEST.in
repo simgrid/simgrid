@@ -2029,7 +2029,6 @@ include include/simgrid/plugins/energy.h
 include include/simgrid/plugins/file_system.h
 include include/simgrid/plugins/live_migration.h
 include include/simgrid/plugins/load.h
-include include/simgrid/plugins/load_balancer.h
 include include/simgrid/s4u.hpp
 include include/simgrid/s4u/Activity.hpp
 include include/simgrid/s4u/Actor.hpp
@@ -2584,9 +2583,6 @@ include src/smpi/plugins/ampi/ampi.cpp
 include src/smpi/plugins/ampi/ampi.hpp
 include src/smpi/plugins/ampi/instr_ampi.cpp
 include src/smpi/plugins/ampi/instr_ampi.hpp
-include src/smpi/plugins/load_balancer/LoadBalancer.cpp
-include src/smpi/plugins/load_balancer/load_balancer.hpp
-include src/smpi/plugins/sampi_loadbalancer.cpp
 include src/smpi/smpi_main.c
 include src/smpi/smpi_replay_main.cpp
 include src/smpi/smpicc.in
