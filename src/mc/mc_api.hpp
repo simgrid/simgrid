@@ -8,6 +8,7 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_state.hpp"
+#include "xbt/automaton.hpp"
 #include "xbt/base.h"
 
 namespace simgrid {
@@ -111,6 +112,7 @@ public:
   void automaton_load(const char *file) const;
   #endif
   std::vector<int> automaton_propositional_symbol_evaluate() const;
+  std::vector<xbt_automaton_state_t> get_automaton_state() const;
 };
 
 } // namespace mc

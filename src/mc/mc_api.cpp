@@ -522,5 +522,16 @@ std::vector<int> mc_api::automaton_propositional_symbol_evaluate() const
   return values;
 }
 
+std::vector<xbt_automaton_state_t> mc_api::get_automaton_state() const
+{
+  std::vector<xbt_automaton_state_t> automaton_stack;
+  unsigned int cursor = 0;
+  xbt_automaton_state_t automaton_state;
+  xbt_dynar_foreach (mc::property_automaton->states, cursor, automaton_state)
+    if (automaton_state->type == -1)
+      automaton_stack.push_back(automaton_state);
+  return automaton_stack;
+}
+
 } // namespace mc
 } // namespace simgrid
