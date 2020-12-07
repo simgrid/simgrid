@@ -20,8 +20,7 @@ struct Task {
 
 static void master()
 {
-  auto mbox                     = simgrid::s4u::Mailbox::by_name("master_mailbox");
-
+  auto mbox = simgrid::s4u::Mailbox::by_name("master_mailbox");
   for (int i = 0; i < 10; i++) {
     Task task;
     if (i % 2)
@@ -32,7 +31,6 @@ static void master()
       task = {"task_data", "data", 10, 10000000};
     mbox->put(new Task(task), task.bytes);
   }
-
   Task finalize = {"finalize", "finalize", 0, 1000};
   mbox->put(new Task(finalize), finalize.bytes);
 }
