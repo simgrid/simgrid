@@ -54,11 +54,11 @@ int main(int argc, char* argv[])
   e.run();
 
   // get user declared variables
-  unsigned int cursor;
-  char* variable;
   xbt_dynar_t host_variables = TRACE_get_host_variables();
   if (host_variables) {
     XBT_INFO("Declared host variables:");
+    unsigned int cursor;
+    char* variable;
     xbt_dynar_foreach (host_variables, cursor, variable) {
       XBT_INFO("%s", variable);
     }
