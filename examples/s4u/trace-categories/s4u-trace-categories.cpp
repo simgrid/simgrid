@@ -15,7 +15,7 @@ struct Task {
   std::string name;
   std::string category;
   double flops;
-  double bytes;
+  uint64_t bytes;
 };
 
 static void master()
