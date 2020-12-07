@@ -196,7 +196,9 @@ foreach (example trace-platform)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
   
   ADD_TESH(s4u-${example} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                          --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                           --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                          --cd ${CMAKE_CURRENT_BINARY_DIR}/${example}
                           ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
 
