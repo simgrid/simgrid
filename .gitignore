@@ -166,7 +166,6 @@ examples/deprecated/msg/mc/bugged3
 examples/deprecated/msg/mc/centralized_mutex
 examples/deprecated/msg/mc/electric_fence
 examples/deprecated/msg/synchro-semaphore/synchro-semaphore
-examples/deprecated/msg/trace-categories/trace-categories
 examples/deprecated/msg/trace-host-user-variables/trace-host-user-variables
 examples/deprecated/msg/trace-link-user-variables/trace-link-user-variables
 examples/deprecated/msg/trace-masterworker/trace-masterworker
@@ -241,6 +240,7 @@ examples/s4u/synchro-barrier/s4u-synchro-barrier
 examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable
 examples/s4u/synchro-mutex/s4u-synchro-mutex
 examples/s4u/synchro-semaphore/s4u-synchro-semaphore
+examples/s4u/trace-categories/s4u-trace-categories
 examples/s4u/trace-platform/s4u-trace-platform
 examples/deprecated/simdag/dag-dotload/sd_dag-dotload
 examples/deprecated/simdag/daxload/sd_daxload
