@@ -328,7 +328,7 @@ void LivenessChecker::run()
     std::shared_ptr<Pair> current_pair = exploration_stack_.back();
 
     /* Update current state in buchi automaton */
-    mc::property_automaton->current_state = current_pair->automaton_state;
+    mcapi::get().set_property_automaton(current_pair->automaton_state);
 
     XBT_DEBUG(
         "********************* ( Depth = %d, search_cycle = %d, interleave size = %zu, pair_num = %d, requests = %d)",

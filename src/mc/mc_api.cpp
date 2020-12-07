@@ -544,5 +544,10 @@ int mc_api::compare_automaton_exp_lable(const xbt_automaton_exp_label* l, std::v
   return -1;
 }
 
+void mc_api::set_property_automaton(xbt_automaton_state_t const& automaton_state) const
+{
+  mc::property_automaton->current_state = automaton_state;
+}
+
 } // namespace mc
 } // namespace simgrid
