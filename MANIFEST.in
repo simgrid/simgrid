@@ -2298,10 +2298,11 @@ include src/mc/inspect/mc_member.cpp
 include src/mc/inspect/mc_unw.cpp
 include src/mc/inspect/mc_unw.hpp
 include src/mc/inspect/mc_unw_vmread.cpp
+include src/mc/mc_api.cpp
+include src/mc/mc_api.hpp
 include src/mc/mc_base.cpp
 include src/mc/mc_base.h
 include src/mc/mc_client_api.cpp
-include src/mc/mc_comm_pattern.cpp
 include src/mc/mc_comm_pattern.hpp
 include src/mc/mc_config.cpp
 include src/mc/mc_config.hpp
@@ -2312,6 +2313,7 @@ include src/mc/mc_hash.cpp
 include src/mc/mc_hash.hpp
 include src/mc/mc_ignore.hpp
 include src/mc/mc_mmu.hpp
+include src/mc/mc_pattern.hpp
 include src/mc/mc_private.hpp
 include src/mc/mc_record.cpp
 include src/mc/mc_record.hpp
