@@ -1,4 +1,4 @@
-foreach(x trace-route-user-variables trace-masterworker trace-process-migration)
+foreach(x trace-masterworker trace-process-migration)
   if(enable_msg)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
@@ -14,7 +14,7 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README.doc       
 set(tesh_files    ${tesh_files}    PARENT_SCOPE)
 
 if(enable_msg)
-  foreach (x trace-route-user-variables trace-masterworker trace-process-migration)
+  foreach (x trace-masterworker trace-process-migration)
     ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/deprecated/msg/${x}
                       --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/${x} 
                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 

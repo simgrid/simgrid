@@ -266,8 +266,6 @@ include examples/deprecated/msg/trace-masterworker/trace-masterworker.c
 include examples/deprecated/msg/trace-masterworker/trace-masterworker.tesh
 include examples/deprecated/msg/trace-process-migration/trace-process-migration.c
 include examples/deprecated/msg/trace-process-migration/trace-process-migration.tesh
-include examples/deprecated/msg/trace-route-user-variables/trace-route-user-variables.c
-include examples/deprecated/msg/trace-route-user-variables/trace-route-user-variables.tesh
 include examples/deprecated/simdag/dag-dotload/dag.dot
 include examples/deprecated/simdag/dag-dotload/dag_with_cycle.dot
 include examples/deprecated/simdag/dag-dotload/sd_dag-dotload.c
@@ -521,6 +519,8 @@ include examples/s4u/trace-link-user-variables/s4u-trace-link-user-variables.cpp
 include examples/s4u/trace-link-user-variables/s4u-trace-link-user-variables.tesh
 include examples/s4u/trace-platform/s4u-trace-platform.cpp
 include examples/s4u/trace-platform/s4u-trace-platform.tesh
+include examples/s4u/trace-route-user-variables/s4u-trace-route-user-variables.cpp
+include examples/s4u/trace-route-user-variables/s4u-trace-route-user-variables.tesh
 include examples/smpi/NAS/DGraph.c
 include examples/smpi/NAS/DGraph.h
 include examples/smpi/NAS/README.install
