@@ -186,7 +186,7 @@ endif()
 # Examples not accepting factories
 ##################################
 
-foreach (example trace-categories trace-platform)
+foreach (example trace-categories trace-host-user-variables trace-platform)
   add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example} simgrid)
   set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})

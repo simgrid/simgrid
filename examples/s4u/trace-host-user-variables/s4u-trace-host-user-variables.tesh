@@ -1,0 +1,15 @@
+#!/usr/bin/env tesh
+
+p Tracing user variables for hosts
+$ ${bindir:=.}/s4u-trace-host-user-variables --cfg=tracing:yes --cfg=tracing/platform:yes ${platfdir}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
+> [0.002039] [s4u_test/INFO] Declared host variables:
+> [0.002039] [s4u_test/INFO] HDD_capacity
+> [0.002039] [s4u_test/INFO] HDD_utilization
+> [0.002039] [s4u_test/INFO] Declared link variables:
+
+$ rm -f simgrid.trace
+
+p Not tracing user variables
+$ ${bindir:=.}/s4u-trace-host-user-variables ${platfdir}/small_platform.xml

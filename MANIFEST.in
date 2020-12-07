@@ -262,8 +262,6 @@ include examples/deprecated/msg/mc/centralized_mutex.tesh
 include examples/deprecated/msg/mc/deploy_bugged2_liveness.xml
 include examples/deprecated/msg/mc/deploy_centralized_mutex.xml
 include examples/deprecated/msg/mc/promela_bugged2_liveness
-include examples/deprecated/msg/trace-host-user-variables/trace-host-user-variables.c
-include examples/deprecated/msg/trace-host-user-variables/trace-host-user-variables.tesh
 include examples/deprecated/msg/trace-link-user-variables/trace-link-user-variables.c
 include examples/deprecated/msg/trace-link-user-variables/trace-link-user-variables.tesh
 include examples/deprecated/msg/trace-masterworker/trace-masterworker.c
@@ -519,6 +517,8 @@ include examples/s4u/synchro-semaphore/s4u-synchro-semaphore.cpp
 include examples/s4u/synchro-semaphore/s4u-synchro-semaphore.tesh
 include examples/s4u/trace-categories/s4u-trace-categories.cpp
 include examples/s4u/trace-categories/s4u-trace-categories.tesh
+include examples/s4u/trace-host-user-variables/s4u-trace-host-user-variables.cpp
+include examples/s4u/trace-host-user-variables/s4u-trace-host-user-variables.tesh
 include examples/s4u/trace-platform/s4u-trace-platform.cpp
 include examples/s4u/trace-platform/s4u-trace-platform.tesh
 include examples/smpi/NAS/DGraph.c
