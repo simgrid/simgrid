@@ -66,10 +66,7 @@ int main(int argc, char* argv[])
   }
   xbt_dynar_t link_variables = TRACE_get_link_variables();
   if (link_variables) {
-    XBT_INFO("Declared link variables:");
-    xbt_dynar_foreach (link_variables, cursor, variable) {
-      XBT_INFO("%s", variable);
-    }
+    xbt_assert(xbt_dynar_is_empty(link_variables), "Should not have any declared link variable!");
     xbt_dynar_free(&link_variables);
   }
 

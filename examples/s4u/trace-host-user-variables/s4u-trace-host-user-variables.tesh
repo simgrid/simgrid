@@ -7,7 +7,6 @@ $ ${bindir:=.}/s4u-trace-host-user-variables --cfg=tracing:yes --cfg=tracing/pla
 > [0.002039] [s4u_test/INFO] Declared host variables:
 > [0.002039] [s4u_test/INFO] HDD_capacity
 > [0.002039] [s4u_test/INFO] HDD_utilization
-> [0.002039] [s4u_test/INFO] Declared link variables:
 
 $ rm -f simgrid.trace
 
