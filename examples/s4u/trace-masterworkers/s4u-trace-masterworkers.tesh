@@ -1,0 +1,48 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-trace-masterworkers --cfg=tracing:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir:=.}/../app-masterworkers/s4u-app-masterworkers_d.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
+> [4.214821] [s4u_trace_masterworker/INFO] Declared tracing categories:
+> [4.214821] [s4u_trace_masterworker/INFO] compute
+> [4.214821] [s4u_trace_masterworker/INFO] finalize
+> [4.214821] [s4u_trace_masterworker/INFO] report
+> [4.214821] [s4u_trace_masterworker/INFO] request
+> [4.214821] [s4u_trace_masterworker/INFO] Declared marks:
+> [4.214821] [s4u_trace_masterworker/INFO] msmark
+
+p Tracing master/worker application with xml config
+$ ${bindir:=.}/s4u-trace-masterworkers ${platfdir}/config_tracing.xml ${srcdir:=.}/../app-masterworkers/s4u-app-masterworkers_d.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
+> [4.214821] [s4u_trace_masterworker/INFO] Declared tracing categories:
+> [4.214821] [s4u_trace_masterworker/INFO] compute
+> [4.214821] [s4u_trace_masterworker/INFO] finalize
+> [4.214821] [s4u_trace_masterworker/INFO] report
+> [4.214821] [s4u_trace_masterworker/INFO] request
+> [4.214821] [s4u_trace_masterworker/INFO] Declared marks:
+> [4.214821] [s4u_trace_masterworker/INFO] msmark
+
+p Not tracing master/worker application
+$ ${bindir:=.}/s4u-trace-masterworkers ${platfdir}/small_platform.xml ${srcdir:=.}/../app-masterworkers/s4u-app-masterworkers_d.xml
+
+p Testing tracing by process
+$ ${bindir:=.}/s4u-trace-masterworkers --cfg=tracing:yes --cfg=tracing/msg/process:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir:=.}/../app-masterworkers/s4u-app-masterworkers_d.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
+> [4.214821] [s4u_trace_masterworker/INFO] Declared tracing categories:
+> [4.214821] [s4u_trace_masterworker/INFO] compute
+> [4.214821] [s4u_trace_masterworker/INFO] finalize
+> [4.214821] [s4u_trace_masterworker/INFO] report
+> [4.214821] [s4u_trace_masterworker/INFO] request
+> [4.214821] [s4u_trace_masterworker/INFO] Declared marks:
+> [4.214821] [s4u_trace_masterworker/INFO] msmark
+
+$ rm -f trace-masterworker.trace
