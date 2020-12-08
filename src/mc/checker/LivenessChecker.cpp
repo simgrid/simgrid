@@ -393,7 +393,7 @@ void LivenessChecker::run()
     mcapi::get().handle_simcall(current_pair->graph_state->transition_);
 
     /* Wait for requests (schedules processes) */
-    mc_model_checker->wait_for_requests();
+    mcapi::get().mc_wait_for_requests();
 
     current_pair->requests--;
     current_pair->exploration_started = true;
