@@ -87,7 +87,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
     std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
     if (mcapi::get().automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
-        not snapshot_equal(pair_test->graph_state->system_state_.get(), new_pair->graph_state->system_state_.get()))
+        not mcapi::get().snapshot_equal(pair_test->graph_state->system_state_.get(), new_pair->graph_state->system_state_.get()))
       continue;
     XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
     exploration_stack_.pop_back();
