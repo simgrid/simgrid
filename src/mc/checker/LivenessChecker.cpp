@@ -177,7 +177,7 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
 
   for (auto i = range.first; i != range.second; ++i) {
     const VisitedPair* pair_test = i->get();
-    if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
+    if (mcapi::get().automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
         not snapshot_equal(pair_test->graph_state->system_state_.get(), visited_pair->graph_state->system_state_.get()))
       continue;
