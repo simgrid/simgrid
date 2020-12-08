@@ -879,5 +879,12 @@ void mc_api::set_property_automaton(xbt_automaton_state_t const& automaton_state
   mc::property_automaton->current_state = automaton_state;
 }
 
+xbt_automaton_exp_label_t mc_api::get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const
+{
+  const xbt_automaton_transition* transition =
+      xbt_dynar_get_as(dynar, index, xbt_automaton_transition_t);
+  return transition->label;
+}
+
 } // namespace mc
 } // namespace simgrid

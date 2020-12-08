@@ -406,9 +406,10 @@ void LivenessChecker::run()
     for (int i = mcapi::get().get_dynar_length(current_pair->automaton_state->out) - 1; i >= 0; i--) {
       const xbt_automaton_transition* transition_succ =
           xbt_dynar_get_as(current_pair->automaton_state->out, i, xbt_automaton_transition_t);
-      if (evaluate_label(transition_succ->label, *prop_values))
+      auto transition_succ_label = mcapi::get().get_automaton_transition_label(current_pair->automaton_state->out, i);
+      if (evaluate_label(transition_succ_label, *prop_values))
         exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ->dst, prop_values));
-     }
+    }
   }
 
   XBT_INFO("No property violation found.");
