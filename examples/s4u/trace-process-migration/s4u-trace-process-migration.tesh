@@ -1,11 +1,10 @@
 #!/usr/bin/env tesh
 
 p Tracing processes
-$ ${bindir:=.}/trace-process-migration --cfg=tracing:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${platfdir}/small_platform.xml
+$ ${bindir:=.}/s4u-trace-process-migration --cfg=tracing:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/actor:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Option tracing/msg/process has been renamed to tracing/actor. Consider switching.
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/actor' to 'yes'
 
 $ tail -n +3 procmig.trace
 > %EventDef PajeDefineContainerType 0
@@ -255,15 +254,12 @@ $ tail -n +3 procmig.trace
 > 4 13 0 6 6 ACTOR_LINK
 > 6 0.000000 33 6 1 "policeman-2"
 > 12 0.000000 7 32 9
-> 15 0.000000 13 0 SR 33 p0
 > 12 0.000000 7 33 11
 > 13 2.000000 7 32
 > 12 2.000000 7 32 10
 > 13 2.025708 7 33
-> 15 2.025708 13 0 SR 33 p1
 > 12 2.025708 7 33 11
 > 13 2.025708 7 32
-> 16 2.025708 13 0 SR 32 p0
 > 15 2.025708 13 0 M 32 0
 > 7 2.025708 6 32
 > 6 2.025708 34 6 1 "emigrant-1"
@@ -272,10 +268,8 @@ $ tail -n +3 procmig.trace
 > 13 4.025708 7 34
 > 12 4.025708 7 34 10
 > 13 4.025903 7 33
-> 15 4.025903 13 0 SR 33 p2
 > 12 4.025903 7 33 11
 > 13 4.025903 7 34
-> 16 4.025903 13 0 SR 34 p1
 > 15 4.025903 13 0 M 34 1
 > 7 4.025903 6 34
 > 6 4.025903 35 6 2 "emigrant-1"
@@ -284,10 +278,8 @@ $ tail -n +3 procmig.trace
 > 13 6.025903 7 35
 > 12 6.025903 7 35 10
 > 13 6.044918 7 33
-> 15 6.044918 13 0 SR 33 p3
 > 12 6.044918 7 33 11
 > 13 6.044918 7 35
-> 16 6.044918 13 0 SR 35 p2
 > 15 6.044918 13 0 M 35 2
 > 7 6.044918 6 35
 > 6 6.044918 36 6 3 "emigrant-1"
@@ -296,10 +288,8 @@ $ tail -n +3 procmig.trace
 > 13 8.044918 7 36
 > 12 8.044918 7 36 10
 > 13 8.070626 7 33
-> 15 8.070626 13 0 SR 33 p4
 > 12 8.070626 7 33 11
 > 13 8.070626 7 36
-> 16 8.070626 13 0 SR 36 p3
 > 15 8.070626 13 0 M 36 3
 > 7 8.070626 6 36
 > 6 8.070626 37 6 4 "emigrant-1"
@@ -308,10 +298,8 @@ $ tail -n +3 procmig.trace
 > 13 10.070626 7 37
 > 12 10.070626 7 37 10
 > 13 10.087178 7 33
-> 15 10.087178 13 0 SR 33 p5
 > 12 10.087178 7 33 11
 > 13 10.087178 7 37
-> 16 10.087178 13 0 SR 37 p4
 > 15 10.087178 13 0 M 37 4
 > 7 10.087178 6 37
 > 6 10.087178 38 6 5 "emigrant-1"
@@ -320,10 +308,8 @@ $ tail -n +3 procmig.trace
 > 13 12.087178 7 38
 > 12 12.087178 7 38 10
 > 13 12.112617 7 33
-> 15 12.112617 13 0 SR 33 p6
 > 12 12.112617 7 33 11
 > 13 12.112617 7 38
-> 16 12.112617 13 0 SR 38 p5
 > 15 12.112617 13 0 M 38 5
 > 7 12.112617 6 38
 > 6 12.112617 39 6 3 "emigrant-1"
@@ -332,10 +318,8 @@ $ tail -n +3 procmig.trace
 > 13 14.112617 7 39
 > 12 14.112617 7 39 10
 > 13 14.138325 7 33
-> 15 14.138325 13 0 SR 33 p7
 > 12 14.138325 7 33 11
 > 13 14.138325 7 39
-> 16 14.138325 13 0 SR 39 p6
 > 15 14.138325 13 0 M 39 6
 > 7 14.138325 6 39
 > 6 14.138325 40 6 1 "emigrant-1"
@@ -344,10 +328,8 @@ $ tail -n +3 procmig.trace
 > 13 16.138325 7 40
 > 12 16.138325 7 40 10
 > 13 16.138521 7 33
-> 15 16.138521 13 0 SR 33 p8
 > 12 16.138521 7 33 11
 > 13 16.138521 7 40
-> 16 16.138521 13 0 SR 40 p7
 > 15 16.138521 13 0 M 40 7
 > 7 16.138521 6 40
 > 6 16.138521 41 6 4 "emigrant-1"
@@ -357,7 +339,6 @@ $ tail -n +3 procmig.trace
 > 12 18.138521 7 41 10
 > 13 18.155073 7 33
 > 13 18.155073 7 41
-> 16 18.155073 13 0 SR 41 p8
 > 7 18.155073 6 33
 > 7 18.155073 6 41
 > 7 18.155073 2 16
@@ -392,4 +373,4 @@ $ tail -n +3 procmig.trace
 > 7 18.155073 1 1
 > 7 18.155073 2 31
 
-$ rm -rf procmig.trace
+$ rm -f procmig.trace
