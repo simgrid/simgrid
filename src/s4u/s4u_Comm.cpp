@@ -182,7 +182,6 @@ Comm* Comm::wait_for(double timeout)
 
     case State::STARTED:
       simcall_comm_wait(get_impl(), timeout);
-      on_completion(*Actor::self());
       state_ = State::FINISHED;
       this->release_dependencies();
       break;
@@ -193,6 +192,7 @@ Comm* Comm::wait_for(double timeout)
     default:
       THROW_IMPOSSIBLE;
   }
+  on_completion(*Actor::self());
   return this;
 }
 
