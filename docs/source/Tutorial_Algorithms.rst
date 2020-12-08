@@ -621,7 +621,7 @@ default. You can still see the debug messages as follows:
 
 .. code-block:: shell
 
-   ./master-workers-lab3 small_platform.xml deployment3.xml --log=msg_test.thres:debug
+   ./master-workers-lab3 small_platform.xml deployment3.xml --log=s4u_app_masterworker.thres:debug
 
 
 Lab 4: Competing Applications
