@@ -13,9 +13,9 @@ int main(int argc, char* argv[])
   // useless alocations for testing and coverage
   void* pointer = malloc(100 * sizeof(int));
   void* ptmp;
-  if ((ptmp = realloc(pointer, 50 * sizeof(int))) != NULL)
+  if ((ptmp = realloc(pointer, 50 * sizeof(int))) != nullptr)
     pointer = ptmp;
-  if ((ptmp = realloc(pointer, 200 * sizeof(int))) != NULL)
+  if ((ptmp = realloc(pointer, 200 * sizeof(int))) != nullptr)
     pointer = ptmp;
   free(pointer);
   pointer = calloc(100, sizeof(int));

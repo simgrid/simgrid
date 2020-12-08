@@ -186,7 +186,8 @@ endif()
 # Examples not accepting factories
 ##################################
 
-foreach (example trace-platform)
+foreach (example trace-categories trace-platform
+                 trace-host-user-variables trace-link-user-variables trace-route-user-variables)
   add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example} simgrid)
   set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
@@ -196,7 +197,9 @@ foreach (example trace-platform)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
   
   ADD_TESH(s4u-${example} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                          --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                           --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                          --cd ${CMAKE_CURRENT_BINARY_DIR}/${example}
                           ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
 
