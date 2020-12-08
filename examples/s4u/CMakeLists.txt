@@ -27,14 +27,11 @@ foreach (example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
   set(_${example}_factories "ucontext;raw;boost")
 endforeach()
 
-set(_mc-bugged1-liveness_disable 1) 
 if(SIMGRID_HAVE_MC)
    add_executable       (s4u-mc-bugged1-liveness  EXCLUDE_FROM_ALL mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
    target_link_libraries(s4u-mc-bugged1-liveness  simgrid)
    set_target_properties(s4u-mc-bugged1-liveness PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness)
    add_dependencies(tests s4u-mc-bugged1-liveness)
-   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
-   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh)
  
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
@@ -69,7 +66,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
                  maestro-set
-                 mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-electric-fence mc-failing-assert
+                 mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
 		 network-wifi
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
@@ -102,7 +99,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                                       ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
   else()
     message(STATUS "Example ${example} disabled, thus not compiled.")
-    unset(_${example}_disabled)
+    unset(_${example}_disable)
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
@@ -186,7 +183,7 @@ endif()
 # Examples not accepting factories
 ##################################
 
-foreach (example trace-categories trace-platform
+foreach (example trace-categories trace-platform trace-masterworkers
                  trace-host-user-variables trace-link-user-variables trace-route-user-variables)
   add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example} simgrid)
@@ -209,22 +206,19 @@ if (NOT enable_memcheck AND NOT WIN32)
                             ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh)
 endif()
 
-if(enable_coverage)
+if(enable_coverage AND SIMGRID_HAVE_MC)
   foreach (example mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert)
-    if(NOT DEFINED _${example}_disable)
-      ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/s4u-${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/model_checker_platform.xml)
-    endif()
+    ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/s4u-${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/model_checker_platform.xml)
   endforeach()
-  if(SIMGRID_HAVE_MC)
-    ADD_TEST(cover-mc-bugged1-liveness ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml 1 1001)
-  endif()
+  ADD_TEST(cover-mc-bugged1-liveness ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml 1 1001)
 endif()
 
 # Add all extra files to the archive
 ####################################
-
-set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp              PARENT_SCOPE)
+set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp              PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.tesh             PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
