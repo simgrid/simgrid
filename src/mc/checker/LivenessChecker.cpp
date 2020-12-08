@@ -390,7 +390,7 @@ void LivenessChecker::run()
       visited_pairs_count_++;
 
     /* Answer the request */
-    mc_model_checker->handle_simcall(current_pair->graph_state->transition_);
+    mcapi::get().handle_simcall(current_pair->graph_state->transition_);
 
     /* Wait for requests (schedules processes) */
     mc_model_checker->wait_for_requests();
