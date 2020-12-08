@@ -126,6 +126,9 @@ public:
   inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const {
     return DerefAndCompareByActorsCountAndUsedHeap();
   }
+  inline int automaton_state_compare(const_xbt_automaton_state_t const& s1, const_xbt_automaton_state_t const& s2) const {
+    return xbt_automaton_state_compare(s1, s2);
+  }
 };
 
 } // namespace mc
