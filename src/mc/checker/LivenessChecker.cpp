@@ -173,7 +173,7 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     visited_pair =
         std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
-  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), DerefAndCompareByActorsCountAndUsedHeap());
+  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), mcapi::get().compare_pair());
 
   for (auto i = range.first; i != range.second; ++i) {
     const VisitedPair* pair_test = i->get();

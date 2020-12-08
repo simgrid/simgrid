@@ -26,6 +26,14 @@ class mc_api {
 private:
   mc_api() = default;
 
+  struct DerefAndCompareByActorsCountAndUsedHeap {
+    template <class X, class Y> bool operator()(X const& a, Y const& b) const
+    {
+      return std::make_pair(a->actors_count, a->heap_bytes_used) < std::make_pair(b->actors_count, b->heap_bytes_used);
+    }
+  };
+
+
 public:
   // No copy:
   mc_api(mc_api const&) = delete;
@@ -115,6 +123,9 @@ public:
   std::vector<xbt_automaton_state_t> get_automaton_state() const;
   int compare_automaton_exp_lable(const xbt_automaton_exp_label* l, std::vector<int> const& values) const;
   void set_property_automaton(xbt_automaton_state_t const& automaton_state) const;
+  inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const {
+    return DerefAndCompareByActorsCountAndUsedHeap();
+  }
 };
 
 } // namespace mc
