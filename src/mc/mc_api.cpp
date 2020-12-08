@@ -12,6 +12,7 @@
 #include "src/mc/checker/SimcallInspector.hpp"
 #include <xbt/asserts.h>
 #include <xbt/log.h>
+// #include <xbt/dynar.h>
 
 #if HAVE_SMPI
 #include "src/smpi/include/smpi_request.hpp"

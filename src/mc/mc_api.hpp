@@ -129,6 +129,10 @@ public:
   inline int automaton_state_compare(const_xbt_automaton_state_t const& s1, const_xbt_automaton_state_t const& s2) const {
     return xbt_automaton_state_compare(s1, s2);
   }
+  // DYNAR APIs
+  inline unsigned long get_dynar_length(const_xbt_dynar_t const& dynar) const {
+    return xbt_dynar_length(dynar);
+  }
 };
 
 } // namespace mc
