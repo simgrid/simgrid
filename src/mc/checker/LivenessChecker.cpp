@@ -375,7 +375,7 @@ void LivenessChecker::run()
         this->previous_request_.clear();
       }
       this->previous_pair_    = current_pair->num;
-      this->previous_request_ = request_get_dot_output(req, req_num);
+      this->previous_request_ = mcapi::get().request_get_dot_output(req, req_num);
       if (current_pair->search_cycle)
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);
