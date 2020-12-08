@@ -412,7 +412,7 @@ void LivenessChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  mc::session->log_state();
+  mcapi::get().log_state();
 }
 
 Checker* createLivenessChecker(Session& s)
