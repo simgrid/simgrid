@@ -5,6 +5,7 @@ $ ${bindir:=.}/trace-process-migration --cfg=tracing:yes --cfg=tracing/filename:
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Option tracing/msg/process has been renamed to tracing/actor. Consider switching.
 
 $ tail -n +3 procmig.trace
 > %EventDef PajeDefineContainerType 0

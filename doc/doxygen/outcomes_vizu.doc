@@ -209,13 +209,12 @@ TODO
 @endverbatim
 
 @li <b>@c
-tracing/msg/process
+tracing/actor
 </b>:
-  This option only has effect if this simulator is MSG-based. It traces the
-  behavior of all categorized MSG processes, grouping them by hosts. This option
-  can be used to track process location if this simulator has process migration.
+  This option traces the behavior of all categorized actors, grouping them by hosts. This option
+  can be used to track actor location if this simulator has actor migration.
 @verbatim
---cfg=tracing/msg/process:yes
+--cfg=tracing/actor:yes
 @endverbatim
 
 @li <b>@c
