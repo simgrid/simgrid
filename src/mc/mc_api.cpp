@@ -8,6 +8,7 @@
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/RemoteSimulation.hpp"
 #include "src/mc/mc_pattern.hpp"
+#include "src/mc/checker/SimcallInspector.hpp"
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
@@ -22,6 +23,14 @@ using Simcall = simgrid::simix::Simcall;
 
 namespace simgrid {
 namespace mc {
+
+static inline const char* get_color(int id)
+{
+  static constexpr std::array<const char*, 13> colors{{"blue", "red", "green3", "goldenrod", "brown", "purple",
+                                                       "magenta", "turquoise4", "gray25", "forestgreen", "hotpink",
+                                                       "lightblue", "tan"}};
+  return colors[id % colors.size()];
+}  
 
 /* Search an enabled transition for the given process.
  *
@@ -447,7 +456,125 @@ std::string mc_api::request_to_string(smx_simcall_t req, int value, RequestType 
 
 std::string mc_api::request_get_dot_output(smx_simcall_t req, int value) const
 {
-  return simgrid::mc::request_get_dot_output(req, value);
+  const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
+  const char* color        = get_color(issuer->get_pid() - 1);
+
+  if (req->inspector_ != nullptr)
+    return simgrid::xbt::string_printf("label = \"%s\", color = %s, fontcolor = %s",
+                                       req->inspector_->dot_label().c_str(), color, color);
+
+  std::string label;
+
+  switch (req->call_) {
+    case Simcall::COMM_ISEND:
+      if (issuer->get_host())
+        label = xbt::string_printf("[(%ld)%s] iSend", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+      else
+        label = bprintf("[(%ld)] iSend", issuer->get_pid());
+      break;
+
+    case Simcall::COMM_IRECV:
+      if (issuer->get_host())
+        label = xbt::string_printf("[(%ld)%s] iRecv", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+      else
+        label = xbt::string_printf("[(%ld)] iRecv", issuer->get_pid());
+      break;
+
+    case Simcall::COMM_WAIT:
+      if (value == -1) {
+        if (issuer->get_host())
+          label = xbt::string_printf("[(%ld)%s] WaitTimeout", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+        else
+          label = xbt::string_printf("[(%ld)] WaitTimeout", issuer->get_pid());
+      } else {
+        kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__getraw__comm(req);
+        Remote<kernel::activity::CommImpl> temp_comm;
+        mc_model_checker->get_remote_simulation().read(temp_comm,
+                                                       remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
+        const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+
+        const kernel::actor::ActorImpl* src_proc =
+            mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->src_actor_.get()));
+        const kernel::actor::ActorImpl* dst_proc =
+            mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->dst_actor_.get()));
+        if (issuer->get_host())
+          label =
+              xbt::string_printf("[(%ld)%s] Wait [(%ld)->(%ld)]", issuer->get_pid(), MC_smx_actor_get_host_name(issuer),
+                                 src_proc ? src_proc->get_pid() : 0, dst_proc ? dst_proc->get_pid() : 0);
+        else
+          label = xbt::string_printf("[(%ld)] Wait [(%ld)->(%ld)]", issuer->get_pid(),
+                                     src_proc ? src_proc->get_pid() : 0, dst_proc ? dst_proc->get_pid() : 0);
+      }
+      break;
+
+    case Simcall::COMM_TEST: {
+      kernel::activity::ActivityImpl* remote_act = simcall_comm_test__getraw__comm(req);
+      Remote<simgrid::kernel::activity::CommImpl> temp_comm;
+      mc_model_checker->get_remote_simulation().read(temp_comm,
+                                                     remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
+      const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+      if (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr) {
+        if (issuer->get_host())
+          label = xbt::string_printf("[(%ld)%s] Test FALSE", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+        else
+          label = bprintf("[(%ld)] Test FALSE", issuer->get_pid());
+      } else {
+        if (issuer->get_host())
+          label = xbt::string_printf("[(%ld)%s] Test TRUE", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+        else
+          label = xbt::string_printf("[(%ld)] Test TRUE", issuer->get_pid());
+      }
+      break;
+    }
+
+    case Simcall::COMM_WAITANY: {
+      size_t comms_size = simcall_comm_waitany__get__count(req);
+      if (issuer->get_host())
+        label = xbt::string_printf("[(%ld)%s] WaitAny [%d of %zu]", issuer->get_pid(),
+                                   MC_smx_actor_get_host_name(issuer), value + 1, comms_size);
+      else
+        label = xbt::string_printf("[(%ld)] WaitAny [%d of %zu]", issuer->get_pid(), value + 1, comms_size);
+      break;
+    }
+
+    case Simcall::COMM_TESTANY:
+      if (value == -1) {
+        if (issuer->get_host())
+          label = xbt::string_printf("[(%ld)%s] TestAny FALSE", issuer->get_pid(), MC_smx_actor_get_host_name(issuer));
+        else
+          label = xbt::string_printf("[(%ld)] TestAny FALSE", issuer->get_pid());
+      } else {
+        if (issuer->get_host())
+          label =
+              xbt::string_printf("[(%ld)%s] TestAny TRUE [%d of %lu]", issuer->get_pid(),
+                                 MC_smx_actor_get_host_name(issuer), value + 1, simcall_comm_testany__get__count(req));
+        else
+          label = xbt::string_printf("[(%ld)] TestAny TRUE [%d of %lu]", issuer->get_pid(), value + 1,
+                                     simcall_comm_testany__get__count(req));
+      }
+      break;
+
+    case Simcall::MUTEX_TRYLOCK:
+      label = xbt::string_printf("[(%ld)] Mutex TRYLOCK", issuer->get_pid());
+      break;
+
+    case Simcall::MUTEX_LOCK:
+      label = xbt::string_printf("[(%ld)] Mutex LOCK", issuer->get_pid());
+      break;
+
+    case Simcall::MC_RANDOM:
+      if (issuer->get_host())
+        label = xbt::string_printf("[(%ld)%s] MC_RANDOM (%d)", issuer->get_pid(), MC_smx_actor_get_host_name(issuer),
+                                   value);
+      else
+        label = xbt::string_printf("[(%ld)] MC_RANDOM (%d)", issuer->get_pid(), value);
+      break;
+
+    default:
+      THROW_UNIMPLEMENTED;
+  }
+
+  return xbt::string_printf("label = \"%s\", color = %s, fontcolor = %s", label.c_str(), color, color);  
 }
 
 const char* mc_api::simcall_get_name(simgrid::simix::Simcall kind) const
