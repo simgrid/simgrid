@@ -51,7 +51,7 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
             new_state->num, graph_state->num_);
 
   auto range =
-      boost::range::equal_range(states_, new_state.get(), simgrid::mc::DerefAndCompareByActorsCountAndUsedHeap());
+      boost::range::equal_range(states_, new_state.get(), mcapi::get().compare_pair());
 
   if (compare_snapshots)
     for (auto i = range.first; i != range.second; ++i) {
