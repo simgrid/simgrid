@@ -36,6 +36,7 @@ General:
  - Remove obsolete runtime option 'contexts/parallel-threshold'.
  - Runtime option 'tracing/msg/process' renamed to 'tracing/actor'. The old name
    has been kept for compatibility.
+ - Finally remove obsolete snake_case() aliases for runtime options.
  - Further improve the documentation.
 
 S4U:
