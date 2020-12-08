@@ -384,7 +384,8 @@ void LivenessChecker::run()
     XBT_DEBUG("Execute: %s", mcapi::get().request_to_string(req, req_num, RequestType::simix).c_str());
 
     /* Update stats */
-    mc_model_checker->executed_transitions++;
+    mcapi::get().mc_inc_executed_trans();
+
     if (not current_pair->exploration_started)
       visited_pairs_count_++;
 
