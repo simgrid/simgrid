@@ -6,6 +6,7 @@
 
 #include "simgrid/Exception.hpp"
 #include "src/instr/instr_private.hpp"
+#include "src/smpi/include/private.hpp"
 #include "xbt/virtu.h" /* xbt::cmdline */
 
 extern std::ofstream tracing_file;
@@ -143,7 +144,7 @@ void dump_header(bool basic, bool display_sizes)
   if (display_sizes)
     tracing_file << "%       Size int" << std::endl;
 #if HAVE_SMPI
-  if (simgrid::config::get_value<bool>("smpi/trace-call-location")) {
+  if (smpi_cfg_trace_call_location()) {
     /* paje currently (May 2016) uses "Filename" and "Linenumber" as reserved words. We cannot use them... */
     tracing_file << "%       Fname string" << std::endl;
     tracing_file << "%       Lnumber int" << std::endl;
