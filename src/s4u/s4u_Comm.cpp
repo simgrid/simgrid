@@ -113,13 +113,6 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
   return this;
 }
 
-CommPtr Comm::set_tracing_category(const std::string& category)
-{
-  xbt_assert(state_ == State::INITED, "Cannot change the tracing category of an exec after its start");
-  tracing_category_ = category;
-  return this;
-}
-
 Comm* Comm::start()
 {
   xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
