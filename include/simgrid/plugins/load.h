@@ -28,6 +28,8 @@ XBT_PUBLIC double sg_link_get_avg_load(const_sg_link_t link);
 XBT_PUBLIC double sg_link_get_min_instantaneous_load(const_sg_link_t link);
 XBT_PUBLIC double sg_link_get_max_instantaneous_load(const_sg_link_t link);
 
+#if SIMGRID_HAVE_MSG
+
 #define MSG_host_load_plugin_init() sg_host_load_plugin_init()
 /** @brief Returns the current load of that host, as a ratio = achieved_flops / (core_current_speed * core_amount)
  *
@@ -36,6 +38,8 @@ XBT_PUBLIC double sg_link_get_max_instantaneous_load(const_sg_link_t link);
 #define MSG_host_get_current_load(host) sg_host_get_current_load(host)
 #define MSG_host_get_computed_flops(host) sg_host_get_computed_flops(host)
 #define MSG_host_get_avg_load(host) sg_host_get_avg_load(host)
+
+#endif // SIMGRID_HAVE_MSG
 
 SG_END_DECL
 

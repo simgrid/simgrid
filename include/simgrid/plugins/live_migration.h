@@ -28,6 +28,8 @@ XBT_PUBLIC int sg_vm_is_migrating(const_sg_vm_t vm);
 XBT_PUBLIC sg_vm_t sg_vm_create_migratable(sg_host_t pm, const char* name, int coreAmount, int ramsize,
                                            int mig_netspeed, int dp_intensity);
 
+#if SIMGRID_HAVE_MSG
+
 #define MSG_vm_live_migration_plugin_init() sg_vm_live_migration_plugin_init()
 
 #define MSG_vm_create_migratable(pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity)                            \
@@ -35,6 +37,8 @@ XBT_PUBLIC sg_vm_t sg_vm_create_migratable(sg_host_t pm, const char* name, int c
 
 #define MSG_vm_is_migrating(vm) sg_vm_is_migrating(vm)
 #define MSG_vm_migrate(vm, dst_pm) sg_vm_migrate((vm), (dst_pm))
+
+#endif // SIMGRID_HAVE_MSG
 
 SG_END_DECL
 

@@ -227,7 +227,7 @@ static void master_main()
 
   XBT_INFO("# 10. (c) migrate");
   simgrid::s4u::Host* pm1 = simgrid::s4u::Host::by_name("Fafard");
-  MSG_vm_migrate(vm0, pm1);
+  sg_vm_migrate(vm0, pm1);
   XBT_INFO(" ");
 
   XBT_INFO("# 10. (d) Put an activity again on the VM.");
