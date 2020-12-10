@@ -6,6 +6,7 @@
 #ifndef SIMGRID_PLUGINS_LIVE_MIGRATION_H_
 #define SIMGRID_PLUGINS_LIVE_MIGRATION_H_
 
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
 #include <xbt/base.h>
 
