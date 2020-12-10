@@ -1035,7 +1035,6 @@ set(CMAKEFILES_TXT
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
-  examples/deprecated/msg/CMakeLists.txt
   examples/deprecated/msg/mc/CMakeLists.txt
   examples/deprecated/simdag/CMakeLists.txt
 

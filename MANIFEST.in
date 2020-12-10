@@ -254,7 +254,6 @@ include examples/deprecated/java/trace/pingpong/PingPongTask.java
 include examples/deprecated/java/trace/pingpong/Receiver.java
 include examples/deprecated/java/trace/pingpong/Sender.java
 include examples/deprecated/java/trace/pingpong/trace-pingpong.tesh
-include examples/deprecated/msg/README.doc
 include examples/deprecated/msg/mc/bugged2-liveness.tesh
 include examples/deprecated/msg/mc/bugged2_liveness.c
 include examples/deprecated/msg/mc/centralized_mutex.c
@@ -1893,7 +1892,6 @@ include examples/c/CMakeLists.txt
 include examples/deprecated/java/.classpath
 include examples/deprecated/java/.project
 include examples/deprecated/java/CMakeLists.txt
-include examples/deprecated/msg/CMakeLists.txt
 include examples/deprecated/msg/mc/CMakeLists.txt
 include examples/deprecated/simdag/CMakeLists.txt
 include examples/platforms/bypassRoute.xml
