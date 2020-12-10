@@ -70,16 +70,16 @@ static void restore_communications_pattern(simgrid::mc::State* state)
     patterns_copy(incomplete_communications_pattern[i], state->incomplete_comm_pattern_[i]);
 }
 
-static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, int process,
+static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t process,
                                       const simgrid::mc::PatternCommunication* comm, unsigned int cursor)
 {
   char* type;
   char* res;
 
   if (comm->type == simgrid::mc::PatternCommunicationType::send)
-    type = bprintf("The send communications pattern of the process %d is different!", process - 1);
+    type = bprintf("The send communications pattern of the process %ld is different!", process - 1);
   else
-    type = bprintf("The recv communications pattern of the process %d is different!", process - 1);
+    type = bprintf("The recv communications pattern of the process %ld is different!", process - 1);
 
   using simgrid::mc::CommPatternDifference;
   switch (diff) {
@@ -129,7 +129,7 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
 namespace simgrid {
 namespace mc {
 
-void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, const PatternCommunication* comm,
+void CommunicationDeterminismChecker::deterministic_comm_pattern(aid_t process, const PatternCommunication* comm,
                                                                  int backtracking)
 {
   if (not backtracking) {

@@ -28,7 +28,7 @@ private:
   void prepare();
   void real_run();
   void log_state() override;
-  void deterministic_comm_pattern(int process, const PatternCommunication* comm, int backtracking);
+  void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, int backtracking);
   void restoreState();
   void handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, int backtracking);
 
