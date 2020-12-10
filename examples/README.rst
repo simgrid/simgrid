@@ -733,7 +733,7 @@ options to see the task executions:
 
     .. tabs::
 
-       .. example-tab:: examples/s4u/trace-categories/trace-categories.cpp
+       .. example-tab:: examples/s4u/trace-categories/s4u-trace-categories.cpp
 
   - **Master Workers tracing**
     This is an augmented version of our basic master/worker example using
@@ -743,7 +743,7 @@ options to see the task executions:
 
     .. tabs::
 
-       .. example-tab:: examples/s4u/trace-masterworkers/trace-masterworkers.cpp
+       .. example-tab:: examples/s4u/trace-masterworkers/s4u-trace-masterworkers.cpp
 
   - **Process migration tracing**
     This version is enhanced so that the process migrations can be displayed
@@ -752,7 +752,7 @@ options to see the task executions:
 
     .. tabs::
 
-       .. example-tab:: examples/s4u/trace-process-migration/trace-process-migration.cpp
+       .. example-tab:: examples/s4u/trace-process-migration/s4u-trace-process-migration.cpp
 
 ..
     TODO: These tracing examples should be integrated in the examples to not
@@ -770,7 +770,7 @@ the following options: ``--cfg=tracing:yes --cfg=tracing/platform:yes``
 
     .. tabs::
 
-       .. example-tab:: examples/s4u/trace-host-user-variables/trace-host-user-variables.cpp
+       .. example-tab:: examples/s4u/trace-host-user-variables/s4u-trace-host-user-variables.cpp
 
   - **Attaching variables to Links**
     The tricky part is that you have to know the name of the link you want to
@@ -778,7 +778,7 @@ the following options: ``--cfg=tracing:yes --cfg=tracing/platform:yes``
 
     .. tabs::
 
-       .. example-tab:: examples/s4u/trace-link-user-variables/trace-link-user-variables.cpp
+       .. example-tab:: examples/s4u/trace-link-user-variables/s4u-trace-link-user-variables.cpp
 
   - **Attaching variables to network Routes**
     It is often easier to update a given variable for all links of a given
@@ -787,7 +787,7 @@ the following options: ``--cfg=tracing:yes --cfg=tracing/platform:yes``
 
     .. tabs::
 
-       .. example-tab::  examples/s4u/trace-route-user-variables/trace-route-user-variables.cpp
+       .. example-tab::  examples/s4u/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 
 ========================
 Larger SimGrid Examplars
