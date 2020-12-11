@@ -52,7 +52,6 @@ public:
 
   /** Log additional information about the state of the model-checker */
   virtual void log_state() = 0;
-
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
