@@ -33,8 +33,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
   if (this->graph_state->system_state_ == nullptr)
     this->graph_state->system_state_ = std::make_shared<Snapshot>(pair_num);
   this->heap_bytes_used = mcapi::get().get_remote_heap_bytes();
-  this->actors_count = mc_model_checker->get_remote_simulation().actors().size();
-
+  this->actors_count = mcapi::get().get_actors_size();
   this->other_num = -1;
   this->atomic_propositions = std::move(atomic_propositions);
 }
