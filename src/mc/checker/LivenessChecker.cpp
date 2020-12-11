@@ -205,7 +205,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(Session& s) : Checker()
+LivenessChecker::LivenessChecker() : Checker()
 {
 }
 
@@ -413,7 +413,7 @@ void LivenessChecker::run()
 
 Checker* createLivenessChecker(Session& s)
 {
-  return new LivenessChecker(s);
+  return new LivenessChecker();
 }
 
 } // namespace mc
