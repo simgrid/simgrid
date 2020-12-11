@@ -120,7 +120,7 @@ void LivenessChecker::replay()
   }
 
   /* Restore the initial state */
-  mc::session->restore_initial_state();
+  mcapi::get().restore_initial_state();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
