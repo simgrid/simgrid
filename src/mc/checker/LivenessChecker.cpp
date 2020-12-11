@@ -150,7 +150,7 @@ void LivenessChecker::replay()
 
     /* Update statistics */
     visited_pairs_count_++;
-    mc_model_checker->executed_transitions++;
+    mcapi::get().mc_inc_executed_trans();
 
     depth++;
   }
