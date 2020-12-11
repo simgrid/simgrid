@@ -31,7 +31,7 @@ char** argvdup(int argc, char** argv)
   return argv_copy;
 }
 
-static std::unique_ptr<simgrid::mc::Checker> create_checker(simgrid::mc::Session& session)
+static std::unique_ptr<simgrid::mc::Checker> create_checker()
 {
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker());
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
   mcapi::get().initialize(argv_copy);
   delete[] argv_copy;
 
-  auto checker = create_checker(*simgrid::mc::session);
+  auto checker = create_checker();
   int res      = SIMGRID_MC_EXIT_SUCCESS;
   try {
     checker->run();
