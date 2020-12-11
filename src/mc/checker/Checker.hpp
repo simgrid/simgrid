@@ -59,7 +59,7 @@ public:
 
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC Checker* createLivenessChecker();
-XBT_PUBLIC Checker* createSafetyChecker(Session& session);
+XBT_PUBLIC Checker* createSafetyChecker();
 XBT_PUBLIC Checker* createCommunicationDeterminismChecker(Session& session);
 
 } // namespace mc

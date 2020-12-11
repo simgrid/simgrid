@@ -306,7 +306,7 @@ SafetyChecker::SafetyChecker() : Checker()
   stack_.push_back(std::move(initial_state));
 }
 
-Checker* createSafetyChecker(Session& s)
+Checker* createSafetyChecker()
 {
   return new SafetyChecker();
 }
