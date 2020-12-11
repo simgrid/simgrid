@@ -5,8 +5,6 @@
 
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
-#include "src/mc/Session.hpp"
-#include "src/mc/mc_api.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -261,7 +259,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activi
   }
 }
 
-CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& s) : Checker(s) {}
+CommunicationDeterminismChecker::CommunicationDeterminismChecker() : Checker() {}
 
 CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
 
@@ -537,15 +535,15 @@ void CommunicationDeterminismChecker::real_run()
 void CommunicationDeterminismChecker::run()
 {
   XBT_INFO("Check communication determinism");
-  mcapi::get().s_initialize();
+  mcapi::get().session_initialize();
 
   this->prepare();
   this->real_run();
 }
 
-Checker* createCommunicationDeterminismChecker(Session& s)
+Checker* createCommunicationDeterminismChecker()
 {
-  return new CommunicationDeterminismChecker(s);
+  return new CommunicationDeterminismChecker();
 }
 
 } // namespace mc

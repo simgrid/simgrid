@@ -5,12 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/sg_config.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/internal_config.h"
-#include "src/mc/mc_api.hpp"
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"
@@ -31,14 +29,14 @@ char** argvdup(int argc, char** argv)
   return argv_copy;
 }
 
-static std::unique_ptr<simgrid::mc::Checker> create_checker(simgrid::mc::Session& session)
+static std::unique_ptr<simgrid::mc::Checker> create_checker()
 {
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker());
   else if (_sg_mc_property_file.get().empty())
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker());
   else
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker());
 }
 
 int main(int argc, char** argv)
@@ -60,7 +58,7 @@ int main(int argc, char** argv)
   mcapi::get().initialize(argv_copy);
   delete[] argv_copy;
 
-  auto checker = create_checker(*simgrid::mc::session);
+  auto checker = create_checker();
   int res      = SIMGRID_MC_EXIT_SUCCESS;
   try {
     checker->run();

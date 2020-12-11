@@ -599,7 +599,6 @@ set(MC_SRC_BASE
   )
 
 set(MC_SRC
-  src/mc/checker/Checker.cpp
   src/mc/checker/Checker.hpp
   src/mc/checker/CommunicationDeterminismChecker.cpp
   src/mc/checker/CommunicationDeterminismChecker.hpp

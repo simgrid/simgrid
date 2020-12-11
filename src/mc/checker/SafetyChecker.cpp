@@ -13,7 +13,6 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
-#include "src/mc/Session.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/SafetyChecker.hpp"
@@ -23,7 +22,6 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_api.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -269,7 +267,7 @@ void SafetyChecker::restore_state()
   }
 }
 
-SafetyChecker::SafetyChecker(Session& s) : Checker(s)
+SafetyChecker::SafetyChecker() : Checker()
 {
   reductionMode_ = reduction_mode;
   if (_sg_mc_termination)
@@ -284,7 +282,7 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
   
-  mcapi::get().s_initialize();  
+  mcapi::get().session_initialize();  
 
   XBT_DEBUG("Starting the safety algorithm");
 
@@ -306,9 +304,9 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
   stack_.push_back(std::move(initial_state));
 }
 
-Checker* createSafetyChecker(Session& s)
+Checker* createSafetyChecker()
 {
-  return new SafetyChecker(s);
+  return new SafetyChecker();
 }
 
 } // namespace mc

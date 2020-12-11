@@ -8,6 +8,8 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_state.hpp"
+#include "src/mc/mc_record.hpp"
+#include "xbt/automaton.hpp"
 #include "xbt/base.h"
 
 namespace simgrid {
@@ -24,6 +26,14 @@ namespace mc {
 class mc_api {
 private:
   mc_api() = default;
+
+  struct DerefAndCompareByActorsCountAndUsedHeap {
+    template <class X, class Y> bool operator()(X const& a, Y const& b) const
+    {
+      return std::make_pair(a->actors_count, a->heap_bytes_used) < std::make_pair(b->actors_count, b->heap_bytes_used);
+    }
+  };
+
 
 public:
   // No copy:
@@ -74,6 +84,7 @@ public:
   void mc_show_deadlock() const;
   bool mc_is_null() const;
   Checker* mc_get_checker() const;
+  void set_checker(Checker* const checker) const;
   RemoteSimulation& mc_get_remote_simulation() const;
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;
@@ -102,9 +113,31 @@ public:
   simgrid::mc::Snapshot* take_snapshot(int num_state) const;
 
   // SESSION APIs
-  void s_initialize() const;
+  void session_initialize() const;
   void s_close() const;
   void execute(Transition const& transition) const;
+
+  // AUTOMATION APIs
+  #if SIMGRID_HAVE_MC
+  void automaton_load(const char *file) const;
+  #endif
+  std::vector<int> automaton_propositional_symbol_evaluate() const;
+  std::vector<xbt_automaton_state_t> get_automaton_state() const;
+  int compare_automaton_exp_lable(const xbt_automaton_exp_label* l, std::vector<int> const& values) const;
+  void set_property_automaton(xbt_automaton_state_t const& automaton_state) const;
+  inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const {
+    return DerefAndCompareByActorsCountAndUsedHeap();
+  }
+  inline int automaton_state_compare(const_xbt_automaton_state_t const& s1, const_xbt_automaton_state_t const& s2) const {
+    return xbt_automaton_state_compare(s1, s2);
+  }
+  xbt_automaton_exp_label_t get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const;
+  xbt_automaton_state_t get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const;
+
+  // DYNAR APIs
+  inline unsigned long get_dynar_length(const_xbt_dynar_t const& dynar) const {
+    return xbt_dynar_length(dynar);
+  }
 };
 
 } // namespace mc
