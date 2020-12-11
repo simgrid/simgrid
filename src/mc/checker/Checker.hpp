@@ -7,9 +7,7 @@
 #ifndef SIMGRID_MC_CHECKER_HPP
 #define SIMGRID_MC_CHECKER_HPP
 
-//#include "src/mc/Session.hpp"
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_api.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -29,7 +27,7 @@ namespace mc {
 // abstract
 class Checker {
 public:
-  explicit Checker();
+  inline explicit Checker() { mc_api::get().set_checker(this); }
 
   // No copy:
   Checker(Checker const&) = delete;

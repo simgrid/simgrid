@@ -5,7 +5,6 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_record.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/RemoteSimulation.hpp"
 #include "src/mc/mc_pattern.hpp"
@@ -415,6 +414,13 @@ bool mc_api::mc_is_null() const
 Checker* mc_api::mc_get_checker() const
 {
   return mc_model_checker->getChecker();
+}
+
+void mc_api::set_checker(Checker* const checker) const
+{
+  xbt_assert(mc_model_checker);
+  xbt_assert(mc_model_checker->getChecker() == nullptr);
+  mc_model_checker->setChecker(checker);
 }
 
 RemoteSimulation& mc_api::mc_get_remote_simulation() const

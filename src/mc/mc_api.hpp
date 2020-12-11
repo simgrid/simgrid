@@ -8,6 +8,7 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_state.hpp"
+#include "src/mc/mc_record.hpp"
 #include "xbt/automaton.hpp"
 #include "xbt/base.h"
 
@@ -83,6 +84,7 @@ public:
   void mc_show_deadlock() const;
   bool mc_is_null() const;
   Checker* mc_get_checker() const;
+  void set_checker(Checker* const checker) const;
   RemoteSimulation& mc_get_remote_simulation() const;
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;
