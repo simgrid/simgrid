@@ -413,7 +413,7 @@ is a better way to visualize SimGrid traces (see below).
 
 .. code-block:: shell
 
-   ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
+   ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/actor:yes
    vite simgrid.trace
 
 .. image:: /tuto_s4u/img/vite-screenshot.png
@@ -426,7 +426,7 @@ and use it as follows:
 
 .. code-block:: shell
 
-   ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/msg/process:yes
+   ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/actor:yes
    Rscript draw_gantt.R simgrid.trace
 
 It produces a ``Rplots.pdf`` with the following content:
@@ -621,7 +621,7 @@ default. You can still see the debug messages as follows:
 
 .. code-block:: shell
 
-   ./master-workers-lab3 small_platform.xml deployment3.xml --log=msg_test.thres:debug
+   ./master-workers-lab3 small_platform.xml deployment3.xml --log=s4u_app_masterworker.thres:debug
 
 
 Lab 4: Competing Applications

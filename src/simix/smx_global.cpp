@@ -35,7 +35,10 @@ void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
 namespace simgrid {
 namespace simix {
-config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", {"verbose-exit"}, "Display the actor status at exit", true};
+config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit",
+                                    {"verbose-exit"}, // XBT_ATTRIB_DEPRECATED_v327(option alias)
+                                    "Display the actor status at exit",
+                                    true};
 } // namespace simix
 } // namespace simgrid
 
@@ -253,8 +256,10 @@ void Global::display_all_actor_status() const
   }
 }
 
-config::Flag<double> cfg_breakpoint{
-    "debug/breakpoint", {"simix/breakpoint"}, "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
+config::Flag<double> cfg_breakpoint{"debug/breakpoint",
+                                    {"simix/breakpoint"}, // XBT_ATTRIB_DEPRECATED_v327(option alias)
+                                    "When non-negative, raise a SIGTRAP after given (simulated) time",
+                                    -1.0};
 } // namespace simix
 } // namespace simgrid
 

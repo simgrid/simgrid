@@ -70,16 +70,16 @@ static void restore_communications_pattern(simgrid::mc::State* state)
     patterns_copy(incomplete_communications_pattern[i], state->incomplete_comm_pattern_[i]);
 }
 
-static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, int process,
+static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t process,
                                       const simgrid::mc::PatternCommunication* comm, unsigned int cursor)
 {
   char* type;
   char* res;
 
   if (comm->type == simgrid::mc::PatternCommunicationType::send)
-    type = bprintf("The send communications pattern of the process %d is different!", process - 1);
+    type = bprintf("The send communications pattern of the process %ld is different!", process - 1);
   else
-    type = bprintf("The recv communications pattern of the process %d is different!", process - 1);
+    type = bprintf("The recv communications pattern of the process %ld is different!", process - 1);
 
   using simgrid::mc::CommPatternDifference;
   switch (diff) {
@@ -129,7 +129,7 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
 namespace simgrid {
 namespace mc {
 
-void CommunicationDeterminismChecker::deterministic_comm_pattern(int process, const PatternCommunication* comm,
+void CommunicationDeterminismChecker::deterministic_comm_pattern(aid_t process, const PatternCommunication* comm,
                                                                  int backtracking)
 {
   if (not backtracking) {
@@ -234,8 +234,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
   incomplete_communications_pattern[issuer->get_pid()].push_back(pattern.release());
 }
 
-void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activity::CommImpl* comm_addr,
-                                                            unsigned int issuer, int backtracking)
+void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activity::CommImpl* comm_addr, aid_t issuer,
+                                                            int backtracking)
 {
   /* Complete comm pattern */
   std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer];
@@ -247,7 +247,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activi
 
   update_comm_pattern(*current_comm_pattern, comm_addr);
   std::unique_ptr<PatternCommunication> comm_pattern(*current_comm_pattern);
-  XBT_DEBUG("Remove incomplete comm pattern for process %u at cursor %zd", issuer,
+  XBT_DEBUG("Remove incomplete comm pattern for process %ld at cursor %zd", issuer,
             std::distance(begin(incomplete_pattern), current_comm_pattern));
   incomplete_pattern.erase(current_comm_pattern);
 
@@ -400,7 +400,7 @@ void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType 
       break;
     case CallType::WAIT:
     case CallType::WAITANY: {
-      simgrid::kernel::activity::CommImpl* comm_addr = nullptr;
+      const simgrid::kernel::activity::CommImpl* comm_addr = nullptr;
       if (call_type == CallType::WAIT)
         comm_addr = mcapi::get().get_comm_wait_raw_addr(req);
       else

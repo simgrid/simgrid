@@ -31,9 +31,9 @@ p Not tracing master/worker application
 $ ${bindir:=.}/s4u-trace-masterworkers ${platfdir}/small_platform.xml ${srcdir:=.}/../app-masterworkers/s4u-app-masterworkers_d.xml
 
 p Testing tracing by process
-$ ${bindir:=.}/s4u-trace-masterworkers --cfg=tracing:yes --cfg=tracing/msg/process:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir:=.}/../app-masterworkers/s4u-app-masterworkers_d.xml
+$ ${bindir:=.}/s4u-trace-masterworkers --cfg=tracing:yes --cfg=tracing/actor:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir:=.}/../app-masterworkers/s4u-app-masterworkers_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/actor' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'

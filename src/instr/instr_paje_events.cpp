@@ -29,7 +29,7 @@ StateEvent::StateEvent(Container* container, Type* type, PajeEventType event_typ
     : PajeEvent::PajeEvent(container, type, SIMIX_get_clock(), event_type), value(value), extra_(extra)
 {
 #if HAVE_SMPI
-  if (simgrid::config::get_value<bool>("smpi/trace-call-location")) {
+  if (smpi_cfg_trace_call_location()) {
     const smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
     filename                        = loc->filename;
     linenumber                      = loc->linenumber;
@@ -60,7 +60,7 @@ void StateEvent::print()
       stream_ << " " << ((extra_ != nullptr) ? extra_->display_size() : "");
 
 #if HAVE_SMPI
-    if (simgrid::config::get_value<bool>("smpi/trace-call-location"))
+    if (smpi_cfg_trace_call_location())
       stream_ << " \"" << filename << "\" " << linenumber;
 #endif
   } else if (trace_format == TraceFormat::Ti) {
@@ -75,7 +75,7 @@ void StateEvent::print()
       container_name=std::to_string(stoi(container_name.erase(0, 5)) - 1);
     }
 #if HAVE_SMPI
-    if (config::get_value<bool>("smpi/trace-call-location"))
+    if (smpi_cfg_trace_call_location())
       stream_ << container_name << " location " << filename << " " << linenumber << std::endl ;
 #endif
     stream_ << container_name << " " << extra_->print();

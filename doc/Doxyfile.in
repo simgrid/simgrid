@@ -685,9 +685,7 @@ INPUT                  = @CMAKE_HOME_DIRECTORY@/doc/doxygen/index.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-trace.doc \
                          @CMAKE_BINARY_DIR@/doc/doxygen/logcategories.doc \
                          @CMAKE_HOME_DIRECTORY@/include/ \
-			 @CMAKE_HOME_DIRECTORY@/src/plugins/ \
-                         @CMAKE_HOME_DIRECTORY@/examples/deprecated/msg/README.doc \
-                         @CMAKE_HOME_DIRECTORY@/examples/s4u/README.doc
+                         @CMAKE_HOME_DIRECTORY@/src/plugins/
 
 
 # This tag can be used to specify the character encoding of the source files

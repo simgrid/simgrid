@@ -7,6 +7,7 @@
 #ifndef SIMGRID_PLUGINS_DVFS_H_
 #define SIMGRID_PLUGINS_DVFS_H_
 
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
 #include <xbt/base.h>
 
@@ -14,7 +15,9 @@ SG_BEGIN_DECL
 
 XBT_PUBLIC void sg_host_dvfs_plugin_init();
 
+#if SIMGRID_HAVE_MSG
 #define MSG_host_dvfs_plugin_init() sg_host_dvfs_plugin_init()
+#endif // SIMGRID_HAVE_MSG
 
 SG_END_DECL
 

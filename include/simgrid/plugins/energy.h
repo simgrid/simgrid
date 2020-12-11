@@ -6,8 +6,9 @@
 #ifndef SIMGRID_PLUGINS_ENERGY_H_
 #define SIMGRID_PLUGINS_ENERGY_H_
 
-#include <xbt/base.h>
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
+#include <xbt/base.h>
 
 SG_BEGIN_DECL
 
@@ -28,6 +29,8 @@ XBT_PUBLIC int sg_link_energy_is_inited();
 
 XBT_PUBLIC void sg_wifi_energy_plugin_init();
 
+#if SIMGRID_HAVE_MSG
+
 #define MSG_host_energy_plugin_init() sg_host_energy_plugin_init()
 #define MSG_host_get_consumed_energy(host) sg_host_get_consumed_energy(host)
 #define MSG_host_get_idle_consumption_at(host,pstate) sg_host_get_idle_consumption_at((host), (pstate))
@@ -35,6 +38,8 @@ XBT_PUBLIC void sg_wifi_energy_plugin_init();
 #define MSG_host_get_wattmax_at(host,pstate) sg_host_get_wattmax_at((host), (pstate))
 #define MSG_host_get_power_range_slope_at(host,pstate) sg_host_get_power_range_slope_at((host), (pstate))
 #define MSG_host_get_current_consumption(host) sg_host_get_current_consumption(host)
+
+#endif // SIMGRID_HAVE_MSG
 
 SG_END_DECL
 

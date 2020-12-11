@@ -33,7 +33,10 @@ General:
  - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.
    Setting it to "auto" will use all available cores, while setting it to n will
    use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
- - Remove obsolete option --cfg=contexts/parallel-threshold.
+ - Remove obsolete runtime option 'contexts/parallel-threshold'.
+ - Runtime option 'tracing/msg/process' renamed to 'tracing/actor'. The old name
+   has been kept for compatibility.
+ - Finally remove obsolete snake_case() aliases for runtime options.
  - Further improve the documentation.
 
 S4U:

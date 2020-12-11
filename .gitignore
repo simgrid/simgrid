@@ -157,18 +157,8 @@ examples/c/platform-failures/c-platform-failures
 examples/c/platform-properties/c-platform-properties
 examples/c/plugin-hostload/c-plugin-hostload
 examples/c/synchro-semaphore/c-synchro-semaphore
-examples/deprecated/msg/app-masterworker/app-masterworker
-examples/deprecated/msg/cloud-masterworker/cloud-masterworker
-examples/deprecated/msg/dht-kademlia/dht-kademlia
-examples/deprecated/msg/dht-pastry/dht-pastry
 examples/deprecated/msg/mc/bugged2_liveness
-examples/deprecated/msg/mc/bugged3
 examples/deprecated/msg/mc/centralized_mutex
-examples/deprecated/msg/mc/electric_fence
-examples/deprecated/msg/synchro-semaphore/synchro-semaphore
-examples/deprecated/msg/trace-process-migration/trace-process-migration
-examples/deprecated/msg/*.pcap
-examples/deprecated/msg/*.tr
 examples/s4u/actor-create/s4u-actor-create
 examples/s4u/actor-daemon/s4u-actor-daemon
 examples/s4u/actor-exiting/s4u-actor-exiting
@@ -241,6 +231,7 @@ examples/s4u/trace-host-user-variables/s4u-trace-host-user-variables
 examples/s4u/trace-link-user-variables/s4u-trace-link-user-variables
 examples/s4u/trace-masterworkers/s4u-trace-masterworkers
 examples/s4u/trace-platform/s4u-trace-platform
+examples/s4u/trace-process-migration/s4u-trace-process-migration
 examples/s4u/trace-route-user-variables/s4u-trace-route-user-variables
 examples/deprecated/simdag/dag-dotload/sd_dag-dotload
 examples/deprecated/simdag/daxload/sd_daxload

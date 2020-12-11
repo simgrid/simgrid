@@ -37,7 +37,8 @@ static simgrid::config::Flag<bool> trace_enabled{
     "tracing", "Enable the tracing system. You have to enable this option to use other tracing options.", false};
 
 static simgrid::config::Flag<bool> trace_actor_enabled{
-    "tracing/msg/process", // FIXME rename this flag
+    "tracing/actor",
+    {"tracing/msg/process"}, // XBT_ATTRIB_DEPRECATED_v330(option alias)
     "Trace the behavior of all categorized actors, grouping them by host. "
     "Can be used to track actor location if the simulator does actor migration.",
     false};
@@ -72,8 +73,8 @@ static simgrid::config::Flag<bool> trace_uncategorized{
     "To use if the simulator does not use tracing categories but resource utilization have to be traced.",
     false};
 
-static simgrid::config::Flag<bool> trace_disable_destroy{
-    OPT_TRACING_DISABLE_DESTROY, {"tracing/disable_destroy"}, "Disable platform containers destruction.", false};
+static simgrid::config::Flag<bool> trace_disable_destroy{OPT_TRACING_DISABLE_DESTROY,
+                                                         "Disable platform containers destruction.", false};
 static simgrid::config::Flag<bool> trace_basic{OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
                                                false};
 
@@ -455,11 +456,9 @@ void init()
 
   config::declare_flag<bool>(OPT_TRACING_FORMAT_TI_ONEFILE,
                              "(smpi only) For replay format only : output to one file only", false);
-  config::alias(OPT_TRACING_FORMAT_TI_ONEFILE, {"tracing/smpi/format/ti_one_file"});
   config::declare_flag<std::string>("tracing/comment", "Add a comment line to the top of the trace file.", "");
   config::declare_flag<std::string>(OPT_TRACING_COMMENT_FILE,
                                     "Add the contents of a file as comments to the top of the trace.", "");
-  config::alias(OPT_TRACING_COMMENT_FILE, {"tracing/comment_file"});
   config::declare_flag<int>("tracing/precision",
                             "Numerical precision used when timestamping events "
                             "(expressed in number of digits after decimal point)",

@@ -27,7 +27,7 @@ namespace resource {
 
 /** @brief Command-line option 'network/TCP-gamma' -- see @ref options_model_network_gamma */
 simgrid::config::Flag<double> NetworkModel::cfg_tcp_gamma(
-    "network/TCP-gamma", {"network/TCP_gamma"},
+    "network/TCP-gamma",
     "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; "
     "Use the last given value, which is the max window size)",
     4194304.0);
