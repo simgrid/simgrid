@@ -29,13 +29,10 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
                          std::shared_ptr<State> graph_state)
     : num(pair_num), automaton_state(automaton_state)
 {
-  RemoteSimulation* process = &(mc_model_checker->get_remote_simulation());
-
   this->graph_state = std::move(graph_state);
   if (this->graph_state->system_state_ == nullptr)
     this->graph_state->system_state_ = std::make_shared<Snapshot>(pair_num);
-  this->heap_bytes_used = mmalloc_get_bytes_used_remote(process->get_heap()->heaplimit, process->get_malloc_info());
-
+  this->heap_bytes_used = mcapi::get().get_remote_heap_bytes();
   this->actors_count = mc_model_checker->get_remote_simulation().actors().size();
 
   this->other_num = -1;
