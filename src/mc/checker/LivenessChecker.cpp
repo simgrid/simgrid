@@ -4,13 +4,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/checker/LivenessChecker.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_api.hpp"
 
 #include <boost/range/algorithm.hpp>
 #include <cstring>

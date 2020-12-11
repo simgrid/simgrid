@@ -5,8 +5,6 @@
 
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
-#include "src/mc/Session.hpp"
-#include "src/mc/mc_api.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"

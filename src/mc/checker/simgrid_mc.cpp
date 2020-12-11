@@ -5,12 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/sg_config.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/internal_config.h"
-#include "src/mc/mc_api.hpp"
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"
