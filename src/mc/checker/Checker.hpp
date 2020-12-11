@@ -57,8 +57,6 @@ public:
   /** Log additional information about the state of the model-checker */
   virtual void log_state() = 0;
 
-protected:
-  Session& get_session() { return *session_; }
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
