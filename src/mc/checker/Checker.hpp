@@ -28,10 +28,8 @@ namespace mc {
  *  have all the necessary features). */
 // abstract
 class Checker {
-  Session* session_;
-
 public:
-  explicit Checker(Session& session);
+  explicit Checker();
 
   // No copy:
   Checker(Checker const&) = delete;

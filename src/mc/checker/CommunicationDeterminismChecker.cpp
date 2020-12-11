@@ -261,7 +261,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activi
   }
 }
 
-CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& s) : Checker(s) {}
+CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& s) : Checker() {}
 
 CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
 

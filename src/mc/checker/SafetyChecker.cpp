@@ -269,7 +269,7 @@ void SafetyChecker::restore_state()
   }
 }
 
-SafetyChecker::SafetyChecker(Session& s) : Checker(s)
+SafetyChecker::SafetyChecker(Session& s) : Checker()
 {
   reductionMode_ = reduction_mode;
   if (_sg_mc_termination)

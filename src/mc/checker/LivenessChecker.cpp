@@ -205,7 +205,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(Session& s) : Checker(s)
+LivenessChecker::LivenessChecker(Session& s) : Checker()
 {
 }
 
