@@ -269,7 +269,7 @@ void SafetyChecker::restore_state()
   }
 }
 
-SafetyChecker::SafetyChecker(Session& s) : Checker()
+SafetyChecker::SafetyChecker() : Checker()
 {
   reductionMode_ = reduction_mode;
   if (_sg_mc_termination)
@@ -308,7 +308,7 @@ SafetyChecker::SafetyChecker(Session& s) : Checker()
 
 Checker* createSafetyChecker(Session& s)
 {
-  return new SafetyChecker(s);
+  return new SafetyChecker();
 }
 
 } // namespace mc
