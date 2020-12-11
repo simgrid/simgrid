@@ -114,7 +114,7 @@ void LivenessChecker::replay()
   if(_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (pair->graph_state->system_state_) {
-      pair->graph_state->system_state_->restore(&mc_model_checker->get_remote_simulation());
+      mcapi::get().restore_state(pair->graph_state->system_state_);
       return;
     }
   }
