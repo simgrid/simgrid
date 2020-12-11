@@ -38,7 +38,7 @@ static std::unique_ptr<simgrid::mc::Checker> create_checker(simgrid::mc::Session
   else if (_sg_mc_property_file.get().empty())
     return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker(session));
   else
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker());
 }
 
 int main(int argc, char** argv)

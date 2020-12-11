@@ -411,7 +411,7 @@ void LivenessChecker::run()
   mcapi::get().log_state();
 }
 
-Checker* createLivenessChecker(Session& s)
+Checker* createLivenessChecker()
 {
   return new LivenessChecker();
 }
