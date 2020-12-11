@@ -261,7 +261,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activi
   }
 }
 
-CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& s) : Checker() {}
+CommunicationDeterminismChecker::CommunicationDeterminismChecker() : Checker() {}
 
 CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
 
@@ -545,7 +545,7 @@ void CommunicationDeterminismChecker::run()
 
 Checker* createCommunicationDeterminismChecker(Session& s)
 {
-  return new CommunicationDeterminismChecker(s);
+  return new CommunicationDeterminismChecker();
 }
 
 } // namespace mc
