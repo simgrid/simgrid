@@ -123,7 +123,7 @@ public:
   #endif
   std::vector<int> automaton_propositional_symbol_evaluate() const;
   std::vector<xbt_automaton_state_t> get_automaton_state() const;
-  int compare_automaton_exp_label(const xbt_automaton_exp_label* l, std::vector<int> const& values) const;
+  int compare_automaton_exp_label(const xbt_automaton_exp_label* l) const;
   void set_property_automaton(xbt_automaton_state_t const& automaton_state) const;
   inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const {
     return DerefAndCompareByActorsCountAndUsedHeap();

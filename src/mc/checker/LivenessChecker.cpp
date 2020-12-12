@@ -48,7 +48,7 @@ static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> co
   case xbt_automaton_exp_label::AUT_NOT:
     return not evaluate_label(l->u.exp_not, values);
   case xbt_automaton_exp_label::AUT_PREDICAT:{
-      auto cursor = mcapi::get().compare_automaton_exp_label(l, values);
+      auto cursor = mcapi::get().compare_automaton_exp_label(l);
       if(cursor >= 0)
         return values[cursor] != 0;
       xbt_die("Missing predicate");
