@@ -17,9 +17,6 @@ using simgrid::simix::Simcall;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc, "Logging specific to MC (request)");
 
-static char *pointer_to_string(void *pointer);
-static char *buff_size_to_string(size_t size);
-
 static inline simgrid::kernel::activity::CommImpl* MC_get_comm(smx_simcall_t r)
 {
   switch (r->call_) {
@@ -150,22 +147,6 @@ bool request_depend(smx_simcall_t req1, smx_simcall_t req2)
 } // namespace mc
 } // namespace simgrid
 
-static char *pointer_to_string(void *pointer)
-{
-  if (XBT_LOG_ISENABLED(mc_request, xbt_log_priority_verbose))
-    return bprintf("%p", pointer);
-
-  return xbt_strdup("(verbose only)");
-}
-
-static char *buff_size_to_string(size_t buff_size)
-{
-  if (XBT_LOG_ISENABLED(mc_request, xbt_log_priority_verbose))
-    return bprintf("%zu", buff_size);
-
-  return xbt_strdup("(verbose only)");
-}
-
 namespace simgrid {
 namespace mc {
 
@@ -194,14 +175,6 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   mc_model_checker->get_remote_simulation().read(temp_comm, remote(remote_act));
   const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
   return comm->src_actor_.get() && comm->dst_actor_.get();
-}
-
-static inline const char* get_color(int id)
-{
-  static constexpr std::array<const char*, 13> colors{{"blue", "red", "green3", "goldenrod", "brown", "purple",
-                                                       "magenta", "turquoise4", "gray25", "forestgreen", "hotpink",
-                                                       "lightblue", "tan"}};
-  return colors[id % colors.size()];
 }
 
 } // namespace mc
