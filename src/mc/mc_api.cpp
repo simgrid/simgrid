@@ -869,7 +869,7 @@ std::vector<xbt_automaton_state_t> mc_api::get_automaton_state() const
   return automaton_stack;
 }
 
-int mc_api::compare_automaton_exp_lable(const xbt_automaton_exp_label* l, std::vector<int> const& values) const
+int mc_api::compare_automaton_exp_label(const xbt_automaton_exp_label* l, std::vector<int> const& values) const
 {
   unsigned int cursor = 0;
   xbt_automaton_propositional_symbol_t p = nullptr;
