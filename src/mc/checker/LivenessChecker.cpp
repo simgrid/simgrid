@@ -312,10 +312,10 @@ void LivenessChecker::run()
   // For each initial state of the property automaton, push a
   // (application_state, automaton_state) pair to the exploration stack:
   auto automaton_stack = mcapi::get().get_automaton_state();
-  std::for_each(automaton_stack.begin(), automaton_stack.end(), [&](xbt_automaton_state_t const& automaton_state) {
+  for (auto* automaton_state : automaton_stack) {
     if (automaton_state->type == -1)
       exploration_stack_.push_back(this->create_pair(nullptr, automaton_state, propos));
-  });
+  }
 
   /* Actually run the double DFS search for counter-examples */
   while (not exploration_stack_.empty()) {
