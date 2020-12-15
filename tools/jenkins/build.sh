@@ -145,7 +145,7 @@ mkdir "$WORKSPACE"/build
 cd "$WORKSPACE"/build
 
 have_NS3="no"
-if dpkg -l libns3-dev 2>&1|grep -q "ii  libns3-dev" ; then
+if [ "$os" == "Debian" ] || [ "$os" == "Ubuntu" ] || [ "$os" == "NixOS" ] ; then 
   have_NS3="yes"
 fi
 echo "XX have_NS3: ${have_NS3}"
