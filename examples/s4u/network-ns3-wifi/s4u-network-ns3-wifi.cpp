@@ -11,25 +11,25 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(ns3_wifi_example, "Messages specific for this s4u e
 
 class Message
 {
-    public:
-    std::string sender;
-    int size;
+public:
+  std::string sender;
+  int size;
 
-    Message(std::string sender_, int size_) : sender(sender_), size(size_){}
+  Message(std::string sender_, int size_) : sender(sender_), size(size_) {}
 };
 
 static void sender(std::string mailbox, double msg_size, unsigned sleep_time)
 {
   simgrid::s4u::this_actor::sleep_for(sleep_time);
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mailbox);
-  Message* msg = new Message(simgrid::s4u::this_actor::get_host()->get_name(), msg_size);
+  auto* mbox = simgrid::s4u::Mailbox::by_name(mailbox);
+  auto* msg  = new Message(simgrid::s4u::this_actor::get_host()->get_name(), msg_size);
   mbox->put(msg, msg_size);
 }
 
 static void receiver(std::string mailbox)
 {
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mailbox);
-  Message* msg = (Message*) mbox->get();
+  auto* mbox = simgrid::s4u::Mailbox::by_name(mailbox);
+  auto msg   = std::unique_ptr<Message>(static_cast<Message*>(mbox->get()));
   XBT_INFO("[%s] %s received %d bytes from %s",
            mailbox.c_str(),
            simgrid::s4u::this_actor::get_host()->get_name().c_str(),
