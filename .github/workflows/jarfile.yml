@@ -2,6 +2,8 @@ name: SimGrid complete jar file generation
 
 on: [workflow_dispatch]
 
+ACTIONS_ALLOW_UNSECURE_COMMANDS=true
+
 jobs:
   build:
     runs-on: ${{ matrix.config.os }}-latest
