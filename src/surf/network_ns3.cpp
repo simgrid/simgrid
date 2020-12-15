@@ -80,7 +80,11 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
     simgrid::kernel::routing::WifiZone* wifizone = dynamic_cast<simgrid::kernel::routing::WifiZone*> (zone.get_impl());
     if (wifizone == nullptr) return;
 
+#if NS3_MINOR_VERSION < 32
     wifi.SetStandard(ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
+#else
+    wifi.SetStandard(ns3::WIFI_STANDARD_80211n_5GHZ);
+#endif
 
     std::string ssid = wifizone->get_name();
     const char* mcs = wifizone->get_property("mcs");
