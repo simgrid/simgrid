@@ -53,6 +53,10 @@ SMPI:
  - smpicc/cxx/ff/f90 now will actually perform definition checks at link time. When
    building shared libraries, this may cause issues, so environment variable
    SMPI_NO_UNDEFINED_CHECK can be added to disable this.
+ - most temporary files should now be created in /tmp dir (or equivalent). 
+   If this one does not allow execution of code (noexec flag), this may cause issues.
+   Please use another tmp directory (using TMPDIR or equivalent system variable) 
+   in this case
 
 XBT:
  - Drop xbt_str_split().
