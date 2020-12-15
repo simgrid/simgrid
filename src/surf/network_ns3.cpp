@@ -146,7 +146,7 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
     address.SetBase(addr.c_str(), "255.255.0.0");
     XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
     ns3::Ipv4InterfaceContainer addresses = address.Assign(netDevices);
-    for (int i = 0; i < hosts_netpoints.size(); i++) {
+    for (unsigned int i = 0; i < hosts_netpoints.size(); i++) {
         hosts_netpoints[i]->ipv4_address_ = transformIpv4Address(addresses.GetAddress(i));
     }
 
