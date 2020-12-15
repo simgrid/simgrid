@@ -91,6 +91,10 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
     const char* nss = wifizone->get_property("nss");
     int mcs_value = mcs ? atoi(mcs) : 3;
     int nss_value = nss ? atoi(nss) : 1;
+#if NS3_MINOR_VERSION < 30
+    if(nss_value != 1+(mcs_value/8))
+      xbt_die("On NS3 < 3.30, NSS value has to satisfy NSS == 1+(MCS/8) constraint. Bailing out");
+#endif
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                  "ControlMode", ns3::StringValue("HtMcs0"),
                                  "DataMode", ns3::StringValue("HtMcs" + std::to_string(mcs_value)));
