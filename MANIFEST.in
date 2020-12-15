@@ -2267,7 +2267,6 @@ include src/mc/Session.hpp
 include src/mc/Transition.hpp
 include src/mc/VisitedState.cpp
 include src/mc/VisitedState.hpp
-include src/mc/checker/Checker.cpp
 include src/mc/checker/Checker.hpp
 include src/mc/checker/CommunicationDeterminismChecker.cpp
 include src/mc/checker/CommunicationDeterminismChecker.hpp
