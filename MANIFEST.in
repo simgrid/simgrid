@@ -460,6 +460,8 @@ include examples/s4u/mc-electric-fence/s4u-mc-electric-fence.cpp
 include examples/s4u/mc-electric-fence/s4u-mc-electric-fence.tesh
 include examples/s4u/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/s4u/mc-failing-assert/s4u-mc-failing-assert.tesh
+include examples/s4u/network-ns3-wifi/s4u-network-ns3-wifi.cpp
+include examples/s4u/network-ns3-wifi/s4u-network-ns3-wifi.tesh
 include examples/s4u/network-ns3/3hosts_2links_d.xml
 include examples/s4u/network-ns3/3links-timer_d.xml
 include examples/s4u/network-ns3/3links_d.xml
@@ -1969,6 +1971,7 @@ include examples/platforms/two_peers.xml
 include examples/platforms/vivaldi.xml
 include examples/platforms/wifi.xml
 include examples/platforms/wifi_energy.xml
+include examples/platforms/wifi_ns3.xml
 include examples/python/CMakeLists.txt
 include examples/python/actor-create/actor-create_d.xml
 include examples/python/actor-lifetime/actor-lifetime_d.xml

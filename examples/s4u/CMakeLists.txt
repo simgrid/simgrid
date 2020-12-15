@@ -51,6 +51,10 @@ if(SIMGRID_HAVE_NS3)
   target_link_libraries(s4u-network-ns3 simgrid)
   set_target_properties(s4u-network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
   add_dependencies(tests s4u-network-ns3)
+  add_executable       (s4u-network-ns3-wifi EXCLUDE_FROM_ALL network-ns3-wifi/s4u-network-ns3-wifi.cpp)
+  target_link_libraries(s4u-network-ns3-wifi simgrid)
+  set_target_properties(s4u-network-ns3-wifi  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3-wifi)
+  add_dependencies(tests s4u-network-ns3-wifi)
 endif()
 
 # Deal with each example
@@ -179,6 +183,11 @@ if(SIMGRID_HAVE_NS3)
                                      --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u
                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                      ${CMAKE_HOME_DIRECTORY}/examples/s4u/network-ns3/s4u-network-ns3.tesh)
+  ADD_TESH_FACTORIES(s4u-network-ns3-wifi "thread;ucontext;raw;boost"
+                                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/s4u
+                                     --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u
+                                     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                     ${CMAKE_HOME_DIRECTORY}/examples/s4u/network-ns3-wifi/s4u-network-ns3-wifi.tesh)
 endif()
 # Examples not accepting factories
 ##################################
@@ -216,11 +225,13 @@ endif()
 # Add all extra files to the archive
 ####################################
 set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp              PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp              
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3-wifi/s4u-network-ns3-wifi.cpp              PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.tesh             PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3-wifi/s4u-network-ns3-wifi.tesh             PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml

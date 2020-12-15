@@ -39,7 +39,7 @@ void WifiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
 
   if (wifi_link_ != nullptr) {
     // If src and dst are nodes, not access_point, we need to traverse the link twice
-    // Otherwise (if src or dst is access_poit), we need to traverse the link only once
+    // Otherwise (if src or dst is access_point), we need to traverse the link only once
 
     if (src != access_point_) {
       XBT_DEBUG("src %s is not our gateway", src->get_cname());

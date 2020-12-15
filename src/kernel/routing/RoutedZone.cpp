@@ -172,6 +172,7 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
     xbt_assert(not dst->is_netzone(),
                "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
                dstName);
+    s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
   } else {
     XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, gw_src->get_cname(), dstName, gw_dst->get_cname());
     xbt_assert(src->is_netzone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
@@ -190,9 +191,8 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                gw_dst->get_cname(), dstName);
     xbt_assert(not link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName, gw_src->get_cname(),
                dstName, gw_dst->get_cname());
+    s4u::NetZone::on_route_creation(symmetrical,  gw_src, gw_dst, gw_src, gw_dst, link_list);
   }
-
-  s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
 }
 } // namespace routing
 } // namespace kernel
