@@ -1,17 +1,18 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.25.1) UNRELEASED (target: March 20 2020 or v3.26 on 3/26/20)
+SimGrid (3.26) December 15. 2020
+
+The Release release (the French lockdown was eased today).
 
 Important user-visible changes:
  - SimGrid now requires a compiler with C++14 support.
    Sibling projects should upgrade their FindSimgrid.cmake
  - Surf precision default value is now 1e-9, instead of 1e-5. This was changed as
-   several users had difficult to understand issues when using high bandwidth or
+   several users had difficulties to understand issues when using high bandwidth or
    small latency events. The new value was already the default for SMPI and
    should not cause too much performance hit. It can change some simulation
    timings if simulation was skipping a lot of small events (which was actually
-   an issue of said simulation). The value can still be changed back using
-   --cfg=surf/precision:1e-5.
+   an issue per see). The old value can be restored with --cfg=surf/precision:1e-5.
  - On some network models (L07, CM02, LV08), an implicit loopback link is created
    for local communication. Default bandwidth was 500MBps and latency was 15µs,
    which was rather bad. Default values have been changed to 10GBps and 0 latency.
@@ -56,7 +57,10 @@ SMPI:
  - most temporary files should now be created in /tmp dir (or equivalent). 
    If this one does not allow execution of code (noexec flag), this may cause issues.
    Please use another tmp directory (using TMPDIR or equivalent system variable) 
-   in this case
+   in this case.
+
+Model-Checker:
+ - A large refactoring is ongoing, but this should be transparent for users so far.
 
 XBT:
  - Drop xbt_str_split().
