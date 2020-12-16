@@ -28,10 +28,8 @@ namespace profile {
 Profile::Profile()
 {
   /* Add the first fake event storing the time at which the trace begins */
-  DatedValue val(0, -1);
-  StochasticDatedValue stoval(0, -1);
-  event_list.emplace_back(val);
-  stochastic_event_list.emplace_back(stoval);
+  event_list.emplace_back(0, -1);
+  stochastic_event_list.emplace_back(0, -1);
 }
 Profile::~Profile() = default;
 
