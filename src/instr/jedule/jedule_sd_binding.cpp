@@ -49,6 +49,7 @@ void jedule_sd_dump(const char * filename)
     }
 
     FILE* fh = fopen(fname.c_str(), "w");
+    xbt_assert(fh != nullptr, "Failed to open file: %s", fname.c_str());
 
     my_jedule->write_output(fh);
 
