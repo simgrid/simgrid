@@ -46,7 +46,7 @@ public:
     return mcapi;
   }
 
-  void initialize(char** argv);
+  void initialize(char** argv) const;
 
   // ACTOR APIs  
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;

@@ -202,7 +202,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
   return req;
 }
 
-void mc_api::initialize(char** argv)
+void mc_api::initialize(char** argv) const
 {
   simgrid::mc::session = new simgrid::mc::Session([argv] {
     int i = 1;
