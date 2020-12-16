@@ -135,7 +135,7 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgr
   std::map<std::string, xbt_edge_t> edges;
 
   netzone->get_impl()->get_graph(graph, &nodes, &edges);
-  for (auto elm : edges) {
+  for (auto const& elm : edges) {
     const xbt_edge* edge = elm.second;
     linkContainers(simgrid::instr::Container::by_name(static_cast<const char*>(edge->src->data)),
                    simgrid::instr::Container::by_name(static_cast<const char*>(edge->dst->data)), filter);

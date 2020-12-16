@@ -18,7 +18,7 @@ simgrid::s4u::SemaphorePtr sem_full  = simgrid::s4u::Semaphore::create(0); /* in
 
 static void producer(const std::vector<std::string>* args)
 {
-  for (auto str : *args) {
+  for (auto const& str : *args) {
     sem_empty->acquire();
     XBT_INFO("Pushing '%s'", str.c_str());
     buffer = str.c_str();

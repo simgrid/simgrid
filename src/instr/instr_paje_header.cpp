@@ -19,7 +19,7 @@ void dump_generator_version()
   tracing_file << "#This file was generated using SimGrid-" << SIMGRID_VERSION_MAJOR << "." << SIMGRID_VERSION_MINOR
                << "." << SIMGRID_VERSION_PATCH << std::endl;
   tracing_file << "#[";
-  for (auto str : simgrid::xbt::cmdline) {
+  for (auto const& str : simgrid::xbt::cmdline) {
     tracing_file << str << " ";
   }
   tracing_file << "]" << std::endl;
