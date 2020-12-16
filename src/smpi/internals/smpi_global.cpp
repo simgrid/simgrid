@@ -275,9 +275,7 @@ static void smpi_init_papi()
         }
         XBT_DEBUG("Successfully added PAPI event '%s' to the event set.", event_name);
 
-        counters2values.push_back(
-            // We cannot just pass *events_it, as this is of type const basic_string
-            std::make_pair(std::string(*events_it), 0LL));
+        counters2values.emplace_back(*events_it, 0LL);
       }
 
       std::string unit_name    = *(event_tokens.begin());

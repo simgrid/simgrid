@@ -88,7 +88,7 @@ LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Att
     else
       range = {base_address + start, base_address + end};
 
-    locations.push_back({DwarfExpression(ops, ops + len), range});
+    locations.emplace_back(DwarfExpression(ops, ops + len), range);
   }
 
   return locations;

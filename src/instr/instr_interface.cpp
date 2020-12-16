@@ -82,8 +82,8 @@ void TRACE_category_with_color (const char *category, const char *color)
   //check if category is already created
   if (created_categories.find(category) != created_categories.end())
     return;
-  else
-    created_categories.insert(category);
+
+  created_categories.emplace(category);
 
   //define final_color
   std::string final_color;
@@ -148,7 +148,7 @@ void TRACE_declare_mark(const char *mark_type)
 
   XBT_DEBUG("MARK,declare %s", mark_type);
   simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(mark_type);
-  declared_marks.insert(mark_type);
+  declared_marks.emplace(mark_type);
 }
 
 /** @ingroup TRACE_mark
