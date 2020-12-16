@@ -143,19 +143,17 @@ static ssize_t heap_comparison_ignore_size(const std::vector<simgrid::mc::Ignore
 
 static bool is_stack(const void *address)
 {
-  for (auto const& stack : mc_model_checker->get_remote_simulation().stack_areas())
-    if (address == stack.address)
-      return true;
-  return false;
+  auto const& stack_areas = mc_model_checker->get_remote_simulation().stack_areas();
+  return std::any_of(stack_areas.begin(), stack_areas.end(),
+                     [address](auto const& stack) { return stack.address == address; });
 }
 
 // TODO, this should depend on the snapshot?
 static bool is_block_stack(int block)
 {
-  for (auto const& stack : mc_model_checker->get_remote_simulation().stack_areas())
-    if (block == stack.block)
-      return true;
-  return false;
+  auto const& stack_areas = mc_model_checker->get_remote_simulation().stack_areas();
+  return std::any_of(stack_areas.begin(), stack_areas.end(),
+                     [block](auto const& stack) { return stack.block == block; });
 }
 
 namespace simgrid {
