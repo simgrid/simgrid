@@ -147,8 +147,8 @@ public:
   static void get_global_route(routing::NetPoint* src, routing::NetPoint* dst,
                                /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
 
-  virtual void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
-                         std::map<std::string, xbt_edge_t>* edges) = 0;
+  virtual void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
+                         std::map<std::string, xbt_edge_t, std::less<>>* edges) = 0;
 };
 } // namespace routing
 } // namespace kernel

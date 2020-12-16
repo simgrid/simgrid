@@ -16,7 +16,7 @@ namespace simgrid{
 namespace smpi{
 
 class Info : public F2C{
-  std::map<std::string, std::string> map_;
+  std::map<std::string, std::string, std::less<>> map_;
   int refcount_ = 1;
 
 public:

@@ -10,7 +10,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
 // to check if variables were previously set to 0, otherwise paje won't simulate them
-static std::set<std::string> platform_variables;
+static std::set<std::string, std::less<>> platform_variables;
 
 namespace simgrid {
 namespace instr {

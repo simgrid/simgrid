@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 /*************
  * CallBacks *
  *************/
-extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
+extern std::map<std::string, simgrid::kernel::resource::StorageType*, std::less<>> storage_types;
 
 void check_disk_attachment()
 {

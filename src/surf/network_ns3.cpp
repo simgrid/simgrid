@@ -43,8 +43,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network
  * Crude globals *
  *****************/
 
-extern std::map<std::string, SgFlow*> flow_from_sock;
-extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
+extern std::map<std::string, SgFlow*, std::less<>> flow_from_sock;
+extern std::map<std::string, ns3::ApplicationContainer, std::less<>> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
 

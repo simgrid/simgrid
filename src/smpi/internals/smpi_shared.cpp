@@ -91,7 +91,7 @@ struct shared_metadata_t {
 };
 
 std::map<const void*, shared_metadata_t> allocs_metadata;
-std::map<std::string, void*> calls;
+std::map<std::string, void*, std::less<>> calls;
 
 #ifndef WIN32
 int smpi_shared_malloc_bogusfile           = -1;

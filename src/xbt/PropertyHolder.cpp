@@ -50,7 +50,7 @@ template <class Assoc> void PropertyHolder::set_properties(const Assoc& properti
   properties_->swap(props);
 }
 
-template void PropertyHolder::set_properties(const std::map<std::string, std::string>& properties);
+template void PropertyHolder::set_properties(const std::map<std::string, std::string, std::less<>>& properties);
 template void PropertyHolder::set_properties(const std::unordered_map<std::string, std::string>& properties);
 
 } // namespace xbt

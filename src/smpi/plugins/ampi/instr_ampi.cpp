@@ -9,9 +9,8 @@
 #include <src/instr/instr_smpi.hpp>
 #include <src/smpi/include/smpi_actor.hpp>
 
-static std::map<std::string, std::string> ampi_colors = {{"migrate", "0.2 0.5 0.2"},
-  {"iteration", "0.5 0.5 0.5"}
-};
+static std::map<std::string, std::string, std::less<>> ampi_colors = {{"migrate", "0.2 0.5 0.2"},
+                                                                      {"iteration", "0.5 0.5 0.5"}};
 
 void TRACE_Iteration_in(int rank, simgrid::instr::TIData* extra)
 {

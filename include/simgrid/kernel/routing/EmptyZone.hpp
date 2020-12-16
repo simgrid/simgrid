@@ -29,8 +29,8 @@ public:
     /* There can't be route in an Empty zone */
   }
 
-  void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* /*nodes*/,
-                 std::map<std::string, xbt_edge_t>* /*edges*/) override;
+  void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* /*nodes*/,
+                 std::map<std::string, xbt_edge_t, std::less<>>* /*edges*/) override;
 };
 } // namespace routing
 } // namespace kernel

@@ -65,7 +65,7 @@ static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Con
 }
 
 static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Container* dst,
-                           std::set<std::string>* filter)
+                           std::set<std::string, std::less<>>* filter)
 {
   // ignore loopback
   if (src->get_name() == "__loopback__" || dst->get_name() == "__loopback__") {
@@ -115,7 +115,7 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
 }
 
 static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgrid::instr::Container* container,
-                                     std::set<std::string>* filter)
+                                     std::set<std::string, std::less<>>* filter)
 {
   if (not TRACE_platform_topology()) {
     XBT_DEBUG("Graph extraction disabled by user.");
@@ -131,8 +131,8 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgr
   }
 
   auto* graph = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t> nodes;
-  std::map<std::string, xbt_edge_t> edges;
+  std::map<std::string, xbt_node_t, std::less<>> nodes;
+  std::map<std::string, xbt_edge_t, std::less<>> edges;
 
   netzone->get_impl()->get_graph(graph, &nodes, &edges);
   for (auto const& elm : edges) {
@@ -217,8 +217,8 @@ namespace instr {
 void platform_graph_export_graphviz(const std::string& output_filename)
 {
   auto* g     = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t> nodes;
-  std::map<std::string, xbt_edge_t> edges;
+  std::map<std::string, xbt_node_t, std::less<>> nodes;
+  std::map<std::string, xbt_edge_t, std::less<>> edges;
   s4u::Engine::get_instance()->get_netzone_root()->extract_xbt_graph(g, &nodes, &edges);
 
   std::ofstream fs;
@@ -356,7 +356,7 @@ static void on_action_state_change(kernel::resource::Action const& action,
 static void on_platform_created()
 {
   currentContainer.clear();
-  std::set<std::string> filter;
+  std::set<std::string, std::less<>> filter;
   XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), &filter);
   XBT_DEBUG("Graph extraction finished.");

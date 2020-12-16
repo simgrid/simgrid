@@ -91,8 +91,8 @@ void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::
   pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
 }
 
-void NetZone::extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
-                                std::map<std::string, xbt_edge_t>* edges)
+void NetZone::extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
+                                std::map<std::string, xbt_edge_t, std::less<>>* edges)
 {
   for (auto const& child : get_children())
     child->extract_xbt_graph(graph, nodes, edges);

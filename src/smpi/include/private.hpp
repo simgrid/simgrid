@@ -506,7 +506,7 @@ struct papi_process_data {
   papi_counter_t counter_data;
   int event_set;
 };
-extern std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
+extern std::map</* computation unit name */ std::string, papi_process_data, std::less<>> units2papi_setup;
 
 extern std::unordered_map<std::string, double> location2speedup;
 

@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI colle
 namespace simgrid {
 namespace smpi {
 
-std::map<std::string, std::vector<s_mpi_coll_description_t>> smpi_coll_descriptions(
+std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_coll_descriptions(
     {{std::string("gather"),
       {{"default", "gather default collective", (void*)gather__default},
        {"ompi", "gather ompi collective", (void*)gather__ompi},

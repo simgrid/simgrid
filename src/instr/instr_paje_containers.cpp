@@ -14,7 +14,7 @@ namespace simgrid {
 namespace instr {
 
 Container* Container::root_container_ = nullptr;              /* the root container */
-std::map<std::string, Container*> Container::all_containers_; /* all created containers indexed by name */
+std::map<std::string, Container*, std::less<>> Container::all_containers_; /* all created containers indexed by name */
 
 NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father)
     : Container::Container(name, "", father)

@@ -22,7 +22,7 @@ namespace mc {
 class ModelChecker {
   CheckerSide checker_side_;
   /** String pool for host names */
-  std::set<std::string> hostnames_;
+  std::set<std::string, std::less<>> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_{500};
   std::unique_ptr<RemoteSimulation> remote_simulation_;

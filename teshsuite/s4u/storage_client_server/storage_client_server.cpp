@@ -61,7 +61,7 @@ static void display_disk_content(const simgrid::s4u::Disk* disk)
 {
   XBT_INFO("*** Dump a disk ***");
   XBT_INFO("Print the content of the disk: %s", disk->get_cname());
-  const std::map<std::string, sg_size_t>* content = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_content();
+  const auto* content = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_content();
   if (not content->empty()) {
     for (auto const& entry : *content)
       XBT_INFO("  %s size: %llu bytes", entry.first.c_str(), entry.second);

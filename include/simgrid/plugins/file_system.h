@@ -156,7 +156,7 @@ public:
 };
 
 class XBT_PUBLIC FileSystemDiskExt {
-  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  std::unique_ptr<std::map<std::string, sg_size_t, std::less<>>> content_;
   std::map<Host*, std::string> remote_mount_points_;
   std::string mount_point_;
   sg_size_t used_size_ = 0;
@@ -167,8 +167,8 @@ public:
   explicit FileSystemDiskExt(const Disk* ptr);
   FileSystemDiskExt(const FileSystemDiskExt&) = delete;
   FileSystemDiskExt& operator=(const FileSystemDiskExt&) = delete;
-  std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
-  std::map<std::string, sg_size_t>* get_content() const { return content_.get(); }
+  std::map<std::string, sg_size_t, std::less<>>* parse_content(const std::string& filename);
+  std::map<std::string, sg_size_t, std::less<>>* get_content() const { return content_.get(); }
   const char* get_mount_point() const { return mount_point_.c_str(); }
   const char* get_mount_point(s4u::Host* remote_host) { return remote_mount_points_[remote_host].c_str(); }
   void add_remote_mount(Host* host, const std::string& mount_point)
@@ -182,7 +182,7 @@ public:
 };
 
 class XBT_PUBLIC FileSystemStorageExt {
-  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  std::unique_ptr<std::map<std::string, sg_size_t, std::less<>>> content_;
   sg_size_t used_size_ = 0;
   sg_size_t size_      = 0;
 
@@ -191,8 +191,8 @@ public:
   explicit FileSystemStorageExt(const Storage* ptr);
   FileSystemStorageExt(const FileSystemStorageExt&) = delete;
   FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
-  std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
-  std::map<std::string, sg_size_t>* get_content() { return content_.get(); }
+  std::map<std::string, sg_size_t, std::less<>>* parse_content(const std::string& filename);
+  std::map<std::string, sg_size_t, std::less<>>* get_content() { return content_.get(); }
   sg_size_t get_size() const { return size_; }
   sg_size_t get_used_size() const { return used_size_; }
   void decr_used_size(sg_size_t size);

@@ -116,7 +116,7 @@ File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpa
     ext->file_descriptor_table->pop_back();
 
     XBT_DEBUG("\tOpen file '%s'", path_.c_str());
-    std::map<std::string, sg_size_t>* content = nullptr;
+    std::map<std::string, sg_size_t, std::less<>>* content = nullptr;
     if (local_storage_)
       content = local_storage_->extension<FileSystemStorageExt>()->get_content();
 
@@ -236,7 +236,7 @@ sg_size_t File::write_on_disk(sg_size_t size, bool write_inside)
       size_ = current_position_;
   }
   kernel::actor::simcall([this] {
-    std::map<std::string, sg_size_t>* content = local_disk_->extension<FileSystemDiskExt>()->get_content();
+    std::map<std::string, sg_size_t, std::less<>>* content = local_disk_->extension<FileSystemDiskExt>()->get_content();
 
     content->erase(path_);
     content->insert({path_, size_});
@@ -276,7 +276,8 @@ sg_size_t File::write_on_storage(sg_size_t size, bool write_inside)
       size_ = current_position_;
   }
   kernel::actor::simcall([this] {
-    std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
+    std::map<std::string, sg_size_t, std::less<>>* content =
+        local_storage_->extension<FileSystemStorageExt>()->get_content();
 
     content->erase(path_);
     content->insert({path_, size_});
@@ -334,7 +335,7 @@ void File::move(const std::string& fullpath) const
 {
   /* Check if the new full path is on the same mount point */
   if (fullpath.compare(0, mount_point_.length(), mount_point_) == 0) {
-    std::map<std::string, sg_size_t>* content = nullptr;
+    std::map<std::string, sg_size_t, std::less<>>* content = nullptr;
     if (local_storage_)
       content = local_storage_->extension<FileSystemStorageExt>()->get_content();
     if (local_disk_)
@@ -359,7 +360,7 @@ void File::move(const std::string& fullpath) const
 int File::unlink() const
 {
   /* Check if the file is on local storage */
-  std::map<std::string, sg_size_t>* content = nullptr;
+  std::map<std::string, sg_size_t, std::less<>>* content = nullptr;
   const char* name = "";
   if (local_storage_) {
     content = local_storage_->extension<FileSystemStorageExt>()->get_content();
@@ -504,12 +505,12 @@ FileSystemStorageExt::FileSystemStorageExt(const Storage* ptr) : size_(ptr->get_
   content_.reset(parse_content(ptr->get_impl()->content_name_));
 }
 
-std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::string& filename)
+std::map<std::string, sg_size_t, std::less<>>* FileSystemDiskExt::parse_content(const std::string& filename)
 {
   if (filename.empty())
     return nullptr;
 
-  auto* parse_content = new std::map<std::string, sg_size_t>();
+  auto* parse_content = new std::map<std::string, sg_size_t, std::less<>>();
 
   auto fs = std::unique_ptr<std::ifstream>(surf_ifsopen(filename));
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
@@ -532,12 +533,12 @@ std::map<std::string, sg_size_t>* FileSystemDiskExt::parse_content(const std::st
   return parse_content;
 }
 
-std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(const std::string& filename)
+std::map<std::string, sg_size_t, std::less<>>* FileSystemStorageExt::parse_content(const std::string& filename)
 {
   if (filename.empty())
     return nullptr;
 
-  auto* parse_content = new std::map<std::string, sg_size_t>();
+  auto* parse_content = new std::map<std::string, sg_size_t, std::less<>>();
 
   auto fs = std::unique_ptr<std::ifstream>(surf_ifsopen(filename));
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
@@ -831,7 +832,7 @@ sg_size_t sg_storage_get_size(const_sg_storage_t st)
 
 xbt_dict_t sg_storage_get_content(const_sg_storage_t storage)
 {
-  const std::map<std::string, sg_size_t>* content =
+  const std::map<std::string, sg_size_t, std::less<>>* content =
       storage->extension<simgrid::s4u::FileSystemStorageExt>()->get_content();
   // Note: ::operator delete is ok here (no destructor called) since the dict elements are of POD type sg_size_t.
   xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);

@@ -130,8 +130,8 @@ bool acyclic_graph_detail(const_xbt_dynar_t dag)
 static YY_BUFFER_STATE input_buffer;
 
 static xbt_dynar_t result;
-static std::map<std::string, SD_task_t> jobs;
-static std::map<std::string, SD_task_t> files;
+static std::map<std::string, SD_task_t, std::less<>> jobs;
+static std::map<std::string, SD_task_t, std::less<>> files;
 static SD_task_t current_job;
 
 /** @brief loads a DAX file describing a DAG

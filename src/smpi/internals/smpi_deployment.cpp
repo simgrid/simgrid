@@ -41,7 +41,7 @@ public:
 
 using simgrid::smpi::app::Instance;
 
-static std::map<std::string, Instance> smpi_instances;
+static std::map<std::string, Instance, std::less<>> smpi_instances;
 
 /** @ingroup smpi_simulation
  * @brief Registers a running instance of an MPI program.

@@ -17,13 +17,13 @@ enum class InstrUserVariable { DECLARE, SET, ADD, SUB };
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
-std::set<std::string> created_categories;
-std::set<std::string> declared_marks;
-std::set<std::string> user_host_variables;
-std::set<std::string> user_vm_variables;
-std::set<std::string> user_link_variables;
+std::set<std::string, std::less<>> created_categories;
+std::set<std::string, std::less<>> declared_marks;
+std::set<std::string, std::less<>> user_host_variables;
+std::set<std::string, std::less<>> user_vm_variables;
+std::set<std::string, std::less<>> user_link_variables;
 
-static xbt_dynar_t instr_set_to_dynar(const std::set<std::string>& filter)
+static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& filter)
 {
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return nullptr;
@@ -258,7 +258,8 @@ xbt_dynar_t TRACE_get_marks ()
 }
 
 static void instr_user_variable(double time, const char* resource, const char* variable_name, const char* father_type,
-                                double value, InstrUserVariable what, const char* color, std::set<std::string>* filter)
+                                double value, InstrUserVariable what, const char* color,
+                                std::set<std::string, std::less<>>* filter)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we don't allow user variables */
   if (not TRACE_is_enabled() || not TRACE_needs_platform())

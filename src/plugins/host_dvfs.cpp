@@ -33,7 +33,7 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
                                                        "Which Governor should be used that adapts the CPU frequency?",
                                                        "performance",
 
-                                                       std::map<std::string, std::string>({
+                                                       std::map<std::string, std::string, std::less<>>({
 #if HAVE_SMPI
                                                          {"adagio", "TODO: Doc"},
 #endif

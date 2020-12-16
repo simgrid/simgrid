@@ -246,11 +246,11 @@ public:
 
 XBT_PRIVATE std::string instr_pid(simgrid::s4u::Actor const& proc);
 
-extern XBT_PRIVATE std::set<std::string> created_categories;
-extern XBT_PRIVATE std::set<std::string> declared_marks;
-extern XBT_PRIVATE std::set<std::string> user_host_variables;
-extern XBT_PRIVATE std::set<std::string> user_vm_variables;
-extern XBT_PRIVATE std::set<std::string> user_link_variables;
+extern XBT_PRIVATE std::set<std::string, std::less<>> created_categories;
+extern XBT_PRIVATE std::set<std::string, std::less<>> declared_marks;
+extern XBT_PRIVATE std::set<std::string, std::less<>> user_host_variables;
+extern XBT_PRIVATE std::set<std::string, std::less<>> user_vm_variables;
+extern XBT_PRIVATE std::set<std::string, std::less<>> user_link_variables;
 
 /* from instr_config.c */
 XBT_PRIVATE bool TRACE_needs_platform();

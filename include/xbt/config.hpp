@@ -153,7 +153,7 @@ template <class F>
 typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>::value,
                         void>::type
 bind_flag(std::string& value, const char* name, const char* description,
-          const std::map<std::string, std::string>& valid_values, F callback)
+          const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
 {
   declare_flag(name, description, value,
                std::function<void(const std::string&)>([&value, name, valid_values, callback](const std::string& val) {
@@ -176,7 +176,7 @@ template <class F>
 typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>::value,
                         void>::type
 bind_flag(std::string& value, const char* name, std::initializer_list<const char*> aliases, const char* description,
-          const std::map<std::string, std::string>& valid_values, F callback)
+          const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
 {
   bind_flag(value, name, description, valid_values, std::move(callback));
   alias(name, aliases);
@@ -252,7 +252,8 @@ public:
    * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
    */
   template <class F>
-  Flag(const char* name, const char* desc, T value, const std::map<std::string, std::string>& valid_values, F callback)
+  Flag(const char* name, const char* desc, T value, const std::map<std::string, std::string, std::less<>>& valid_values,
+       F callback)
       : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc, std::move(valid_values), std::move(callback));
@@ -261,7 +262,7 @@ public:
   /* A constructor with everything */
   template <class F>
   Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value,
-       const std::map<std::string, std::string>& valid_values, F callback)
+       const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
       : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, aliases, desc, valid_values, std::move(callback));
