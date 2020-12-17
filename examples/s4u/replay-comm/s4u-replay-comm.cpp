@@ -60,8 +60,6 @@ public:
     ACT_DEBUG("Entering Send: %s (size: %" PRIu64 ") -- Actor %s on mailbox %s", NAME.c_str(), size,
               simgrid::s4u::this_actor::get_cname(), to->get_cname());
     to->put(payload, size);
-    delete payload;
-
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 
@@ -73,7 +71,7 @@ public:
 
     ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), simgrid::s4u::this_actor::get_cname(),
               from->get_cname());
-    from->get();
+    delete static_cast<std::string*>(from->get());
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 };
