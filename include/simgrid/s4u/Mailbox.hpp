@@ -95,11 +95,14 @@ public:
   CommPtr get_init();
   /** Creates and start an async data reception to that mailbox */
   CommPtr get_async(void** data);
+  template <typename T> CommPtr get_async(T** data) { return get_async(reinterpret_cast<void**>(data)); }
 
   /** Blocking data reception */
-  void* get(); // FIXME: make a typed template version
+  void* get();
+  template <typename T> T* get() { return static_cast<T*>(get()); }
   /** Blocking data reception with timeout */
   void* get(double timeout);
+  template <typename T> T* get(double timeout) { return static_cast<T*>(get(timeout)); }
 };
 
 } // namespace s4u
