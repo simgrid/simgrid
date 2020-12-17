@@ -251,13 +251,11 @@ void Peer::leech()
   sendHandshakeToAllPeers();
   XBT_DEBUG("Starting main leech loop listening on mailbox: %s", mailbox_->get_cname());
 
-  void* data = nullptr;
   while (simgrid::s4u::Engine::get_clock() < deadline && countPieces(bitfield_) < FILE_PIECES) {
     if (comm_received == nullptr) {
-      comm_received = mailbox_->get_async(&data);
+      comm_received = mailbox_->get_async<Message>(&message);
     }
     if (comm_received->test()) {
-      message = static_cast<Message*>(data);
       handleMessage();
       delete message;
       comm_received = nullptr;
@@ -280,13 +278,11 @@ void Peer::seed()
   double next_choked_update = simgrid::s4u::Engine::get_clock() + UPDATE_CHOKED_INTERVAL;
   XBT_DEBUG("Start seeding.");
   // start the main seed loop
-  void* data = nullptr;
   while (simgrid::s4u::Engine::get_clock() < deadline) {
     if (comm_received == nullptr) {
-      comm_received = mailbox_->get_async(&data);
+      comm_received = mailbox_->get_async<Message>(&message);
     }
     if (comm_received->test()) {
-      message = static_cast<Message*>(data);
       handleMessage();
       delete message;
       comm_received = nullptr;

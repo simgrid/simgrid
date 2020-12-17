@@ -16,11 +16,11 @@ static void worker()
   auto put1 = mbox->put_async(&input1, 1000 * 1000 * 500);
   auto put2 = mbox->put_async(&input2, 1000 * 1000 * 1000);
 
-  int * out1;
-  auto get1 = mbox->get_async((void**)&out1);
+  int* out1;
+  auto get1 = mbox->get_async<int>(&out1);
 
-  int * out2;
-  auto get2 = mbox->get_async((void**)&out2);
+  int* out2;
+  auto get2 = mbox->get_async<int>(&out2);
 
   XBT_INFO("All comms have started");
   std::vector<simgrid::s4u::CommPtr> comms = {put1, put2, get1, get2};

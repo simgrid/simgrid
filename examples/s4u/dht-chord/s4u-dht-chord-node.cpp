@@ -201,7 +201,6 @@ void Node::printFingerTable()
 void Node::checkPredecessor()
 {
   XBT_DEBUG("Checking whether my predecessor is alive");
-  void* data = nullptr;
   if (pred_id_ == -1)
     return;
 
@@ -224,12 +223,13 @@ void Node::checkPredecessor()
   // receive the answer
   XBT_DEBUG("Sent 'Predecessor Alive' request to %d, waiting for the answer on my mailbox '%s'", pred_id_,
             message->answer_to->get_cname());
-  simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
+  ChordMessage* answer       = nullptr;
+  simgrid::s4u::CommPtr comm = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
     comm->wait_for(timeout);
     XBT_DEBUG("Received the answer to my 'Predecessor Alive': my predecessor %d is alive", pred_id_);
-    delete static_cast<ChordMessage*>(data);
+    delete answer;
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Failed to receive the answer to my 'Predecessor Alive' request");
     pred_id_ = -1;
@@ -244,7 +244,6 @@ void Node::checkPredecessor()
 int Node::remoteGetPredecessor(int ask_to)
 {
   int predecessor_id                      = -1;
-  void* data                              = nullptr;
   simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
   simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_pred");
 
@@ -265,18 +264,18 @@ int Node::remoteGetPredecessor(int ask_to)
   // receive the answer
   XBT_DEBUG("Sent 'Get Predecessor' request to %d, waiting for the answer on my mailbox '%s'", ask_to,
             message->answer_to->get_cname());
-  simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
+  ChordMessage* answer       = nullptr;
+  simgrid::s4u::CommPtr comm = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
     comm->wait_for(timeout);
-    const auto* answer = static_cast<ChordMessage*>(data);
     XBT_DEBUG("Received the answer to my 'Get Predecessor' request: the predecessor of node %d is %d", ask_to,
               answer->answer_id);
     predecessor_id = answer->answer_id;
     delete answer;
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Failed to receive the answer to my 'Get Predecessor' request");
-    delete static_cast<ChordMessage*>(data);
+    delete answer;
   }
 
   return predecessor_id;
@@ -316,7 +315,6 @@ int Node::findSuccessor(int id)
 int Node::remoteFindSuccessor(int ask_to, int id)
 {
   int successor                           = -1;
-  ChordMessage* data                      = nullptr;
   simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
   simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_succ");
 
@@ -335,18 +333,18 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   }
   // receive the answer
   XBT_DEBUG("Sent a 'Find Successor' request to %d for key %d, waiting for the answer", ask_to, id);
-  simgrid::s4u::CommPtr comm = return_mailbox->get_async(reinterpret_cast<void**>(&data));
+  ChordMessage* answer       = nullptr;
+  simgrid::s4u::CommPtr comm = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
     comm->wait_for(timeout);
-    const ChordMessage* answer = data;
     XBT_DEBUG("Received the answer to my 'Find Successor' request for id %d: the successor of key %d is %d",
               answer->request_id, id_, answer->answer_id);
     successor = answer->answer_id;
     delete answer;
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request");
-    delete data;
+    delete answer;
   }
 
   return successor;
@@ -491,7 +489,7 @@ void Node::operator()()
 
   if (not joined)
     return;
-  void* data                         = nullptr;
+  ChordMessage* message              = nullptr;
   double now                         = simgrid::s4u::Engine::get_clock();
   double next_stabilize_date         = start_time_ + PERIODIC_STABILIZE_DELAY;
   double next_fix_fingers_date       = start_time_ + PERIODIC_FIX_FINGERS_DELAY;
@@ -500,7 +498,7 @@ void Node::operator()()
   simgrid::s4u::CommPtr comm_receive = nullptr;
   while (now < std::min(start_time_ + deadline_, MAX_SIMULATION_TIME)) {
     if (comm_receive == nullptr)
-      comm_receive = mailbox_->get_async(&data);
+      comm_receive = mailbox_->get_async<ChordMessage>(&message);
     bool comm_completed = true;
     try {
       if (not comm_receive->test())
@@ -510,10 +508,9 @@ void Node::operator()()
     }
 
     if (comm_completed) {
-      if (data != nullptr) {
-        auto* message = static_cast<ChordMessage*>(data);
+      if (message != nullptr) {
         handleMessage(message);
-        data = nullptr;
+        message = nullptr;
       }
       comm_receive = nullptr;
     } else {
@@ -541,7 +538,7 @@ void Node::operator()()
   if (comm_receive != nullptr) {
     try {
       if (comm_receive->test())
-        delete static_cast<ChordMessage*>(data);
+        delete message;
       else
         comm_receive->cancel();
     } catch (const simgrid::TimeoutException&) {

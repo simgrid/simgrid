@@ -22,7 +22,7 @@ class Node {
   unsigned int find_node_failed  = 0; // Number of find_node which have failed.
 public:
   simgrid::s4u::CommPtr receive_comm = nullptr;
-  void* received_msg             = nullptr;
+  Message* received_msg              = nullptr;
   explicit Node(unsigned int node_id) : id_(node_id), table(node_id) {}
   Node(const Node&) = delete;
   Node& operator=(const Node&) = delete;

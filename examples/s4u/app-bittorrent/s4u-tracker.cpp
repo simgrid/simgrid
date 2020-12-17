@@ -29,14 +29,13 @@ Tracker::Tracker(std::vector<std::string> args)
 void Tracker::operator()()
 {
   simgrid::s4u::CommPtr comm = nullptr;
-  void* received             = nullptr;
+  TrackerQuery* query        = nullptr;
   while (simgrid::s4u::Engine::get_clock() < deadline) {
     if (comm == nullptr)
-      comm = mailbox->get_async(&received);
+      comm = mailbox->get_async<TrackerQuery>(&query);
     if (comm->test()) {
       // Retrieve the data sent by the peer.
-      xbt_assert(received != nullptr);
-      auto* query = static_cast<TrackerQuery*>(received);
+      xbt_assert(query != nullptr);
 
       // Add the peer to our peer list, if not already known.
       if (known_peers.find(query->getPeerId()) == known_peers.end()) {

@@ -58,11 +58,11 @@ public:
 
   void forwardFile()
   {
-    void* received;
+    FilePiece* received;
     bool done = false;
 
     while (not done) {
-      simgrid::s4u::CommPtr comm = me->get_async(&received);
+      simgrid::s4u::CommPtr comm = me->get_async<FilePiece>(&received);
       pending_recvs.push_back(comm);
 
       int idx = simgrid::s4u::Comm::wait_any(&pending_recvs);
@@ -75,7 +75,7 @@ public:
           simgrid::s4u::CommPtr send = next->put_async(received, MESSAGE_SEND_DATA_HEADER_SIZE + PIECE_SIZE);
           pending_sends.push_back(send);
         } else
-          delete static_cast<FilePiece*>(received);
+          delete received;
 
         received_pieces++;
         received_bytes += PIECE_SIZE;

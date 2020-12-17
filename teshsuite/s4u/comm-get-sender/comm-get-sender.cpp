@@ -20,14 +20,14 @@ static void sender_fun()
 static void receiver_fun()
 {
   XBT_INFO("Receiving");
-  void* payload              = nullptr;
-  simgrid::s4u::CommPtr comm = simgrid::s4u::Mailbox::by_name("Tremblay")->get_async(&payload);
+  std::string* payload       = nullptr;
+  simgrid::s4u::CommPtr comm = simgrid::s4u::Mailbox::by_name("Tremblay")->get_async<std::string>(&payload);
   comm->wait();
   xbt_assert(comm->get_sender(), "No sender received");
   XBT_INFO("Got a message sent by '%s'", comm->get_sender()->get_cname());
   simgrid::s4u::this_actor::sleep_for(2.0);
   XBT_INFO("Did I tell you that I got a message sent by '%s'?", comm->get_sender()->get_cname());
-  delete static_cast<std::string*>(payload);
+  delete payload;
 }
 
 int main(int argc, char* argv[])

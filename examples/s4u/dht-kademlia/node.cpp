@@ -33,20 +33,19 @@ bool Node::join(unsigned int known_id)
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
   do {
     if (receive_comm == nullptr)
-      receive_comm = mailbox->get_async(&received_msg);
+      receive_comm = mailbox->get_async<Message>(&received_msg);
     if (receive_comm->test()) {
       XBT_DEBUG("Received an answer from the node I know.");
       got_answer = true;
       // retrieve the node list and ping them.
-      const auto* msg = static_cast<Message*>(received_msg);
-      const Answer* node_list = msg->answer_.get();
+      const Answer* node_list = received_msg->answer_.get();
       if (node_list) {
         for (auto const& contact : node_list->getNodes())
           routingTableUpdate(contact.first);
       } else {
-        handleFindNode(msg);
+        handleFindNode(received_msg);
       }
-      delete msg;
+      delete received_msg;
       receive_comm = nullptr;
     } else
       simgrid::s4u::this_actor::sleep_for(1);
@@ -199,33 +198,32 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
     simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
     do {
       if (receive_comm == nullptr)
-        receive_comm = mailbox->get_async(&received_msg);
+        receive_comm = mailbox->get_async<Message>(&received_msg);
 
       if (receive_comm->test()) {
-        const auto* msg = static_cast<Message*>(received_msg);
         // Check if what we have received is what we are looking for.
-        if (msg->answer_ && msg->answer_->getDestinationId() == id_to_find) {
-          routingTableUpdate(msg->sender_id_);
+        if (received_msg->answer_ && received_msg->answer_->getDestinationId() == id_to_find) {
+          routingTableUpdate(received_msg->sender_id_);
           // Handle the answer
           for (auto const& contact : node_list->getNodes())
             routingTableUpdate(contact.first);
           answers++;
 
-          nodes_added = node_list->merge(msg->answer_.get());
-          XBT_DEBUG("Received an answer from %s (%s) with %zu nodes on it", msg->answer_to_->get_cname(),
-                    msg->issuer_host_name_.c_str(), msg->answer_->getSize());
+          nodes_added = node_list->merge(received_msg->answer_.get());
+          XBT_DEBUG("Received an answer from %s (%s) with %zu nodes on it", received_msg->answer_to_->get_cname(),
+                    received_msg->issuer_host_name_.c_str(), received_msg->answer_->getSize());
         } else {
-          if (msg->answer_) {
-            routingTableUpdate(msg->sender_id_);
+          if (received_msg->answer_) {
+            routingTableUpdate(received_msg->sender_id_);
             XBT_DEBUG("Received a wrong answer for a FIND_NODE");
           } else {
-            handleFindNode(msg);
+            handleFindNode(received_msg);
           }
           // Update the timeout if we didn't have our answer
           timeout += simgrid::s4u::Engine::get_clock() - time_beginreceive;
           time_beginreceive = simgrid::s4u::Engine::get_clock();
         }
-        delete msg;
+        delete received_msg;
         receive_comm = nullptr;
       } else {
         simgrid::s4u::this_actor::sleep_for(1);

@@ -48,14 +48,13 @@ static void node(std::vector<std::string> args)
 
     while (simgrid::s4u::Engine::get_clock() < deadline) {
       if (node.receive_comm == nullptr)
-        node.receive_comm = mailbox->get_async(&node.received_msg);
+        node.receive_comm = mailbox->get_async<kademlia::Message>(&node.received_msg);
 
       if (node.receive_comm->test()) {
         // There has been a message, we need to handle it !
-        const auto* msg = static_cast<kademlia::Message*>(node.received_msg);
-        if (msg) {
-          node.handleFindNode(msg);
-          delete msg;
+        if (node.received_msg) {
+          node.handleFindNode(node.received_msg);
+          delete node.received_msg;
           node.receive_comm = nullptr;
         } else
           simgrid::s4u::this_actor::sleep_for(1);
