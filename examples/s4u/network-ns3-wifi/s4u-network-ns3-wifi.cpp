@@ -29,7 +29,7 @@ static void sender(std::string mailbox, double msg_size, unsigned sleep_time)
 static void receiver(std::string mailbox)
 {
   auto* mbox = simgrid::s4u::Mailbox::by_name(mailbox);
-  auto msg   = std::unique_ptr<Message>(static_cast<Message*>(mbox->get()));
+  auto msg   = std::unique_ptr<Message>(mbox->get<Message>());
   XBT_INFO("[%s] %s received %d bytes from %s",
            mailbox.c_str(),
            simgrid::s4u::this_actor::get_host()->get_name().c_str(),

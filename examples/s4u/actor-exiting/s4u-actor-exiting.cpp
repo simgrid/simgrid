@@ -64,7 +64,7 @@ static void actor_c()
 
   simgrid::s4u::this_actor::sleep_for(3);
   XBT_INFO("And now, induce a deadlock by waiting for a message that will never come\n\n");
-  simgrid::s4u::Mailbox::by_name("nobody")->get();
+  simgrid::s4u::Mailbox::by_name("nobody")->get<void>();
   xbt_die("Receiving is not supposed to succeed when nobody is sending");
 }
 

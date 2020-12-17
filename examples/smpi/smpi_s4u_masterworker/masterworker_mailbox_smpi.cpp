@@ -51,7 +51,7 @@ static void worker(std::vector<std::string> args)
 
   double compute_cost;
   do {
-    const auto* msg   = static_cast<double*>(mailbox->get());
+    const auto* msg   = mailbox->get<double>();
     compute_cost      = *msg;
     delete msg;
 

@@ -94,58 +94,57 @@ static void receiver(std::vector<std::string> args)
   XBT_INFO("Receiver spec: %s", args[0].c_str());
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     simgrid::s4u::this_actor::sleep_until(test * 5 - 5);
-    std::string mboxName          = "Test #" + std::to_string(test);
-    simgrid::s4u::Mailbox* mbox   = simgrid::s4u::Mailbox::by_name(mboxName);
-    void* received                = nullptr;
+    std::string mboxName        = "Test #" + std::to_string(test);
+    simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+    std::string* received       = nullptr;
 
     switch (args[0][test - 1]) {
       case 'r':
         XBT_INFO("Test %u: r (regular receive)", test);
-        received = mbox->get();
+        received = mbox->get<std::string>();
         break;
       case 'R':
         XBT_INFO("Test %u: R (sleep + regular receive)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        received = mbox->get();
+        received = mbox->get<std::string>();
         break;
 
       case 'i':
         XBT_INFO("Test %u: i (asynchronous irecv)", test);
-        mbox->get_async(&received)->wait();
+        mbox->get_async<std::string>(&received)->wait();
         break;
       case 'I':
         XBT_INFO("Test %u: I (sleep + asynchronous irecv)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        mbox->get_async(&received)->wait();
+        mbox->get_async<std::string>(&received)->wait();
         break;
       case 'p':
         XBT_INFO("Test %u: p (regular receive on permanent mailbox)", test);
         mbox->set_receiver(simgrid::s4u::Actor::self());
-        received = mbox->get();
+        received = mbox->get<std::string>();
         break;
       case 'P':
         XBT_INFO("Test %u: P (sleep + regular receive on permanent mailbox)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
         mbox->set_receiver(simgrid::s4u::Actor::self());
-        received = mbox->get();
+        received = mbox->get<std::string>();
         break;
       case 'j':
         XBT_INFO("Test %u: j (irecv on permanent mailbox)", test);
         mbox->set_receiver(simgrid::s4u::Actor::self());
-        mbox->get_async(&received)->wait();
+        mbox->get_async<std::string>(&received)->wait();
         break;
       case 'J':
         XBT_INFO("Test %u: J (sleep + irecv on permanent mailbox)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
         mbox->set_receiver(simgrid::s4u::Actor::self());
-        mbox->get_async(&received)->wait();
+        mbox->get_async<std::string>(&received)->wait();
         break;
       default:
         xbt_die("Unknown receiver spec for test %u: '%c'", test, args[0][test - 1]);
     }
-    const std::string* receivedStr = static_cast<std::string*>(received);
-    xbt_assert(*receivedStr == mboxName);
-    delete receivedStr;
+    xbt_assert(*received == mboxName);
+    delete received;
     XBT_INFO("Test %u OK", test);
   }
   simgrid::s4u::this_actor::sleep_for(0.5);

@@ -33,9 +33,9 @@ static void receiver(const std::string& mailbox_name)
 
   XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->get_cname());
 
-  const auto* msg1 = static_cast<std::string*>(mailbox->get());
-  const auto* msg2 = static_cast<std::string*>(mailbox->get());
-  const auto* msg3 = static_cast<std::string*>(mailbox->get());
+  const auto* msg1 = mailbox->get<std::string>();
+  const auto* msg2 = mailbox->get<std::string>();
+  const auto* msg3 = mailbox->get<std::string>();
   XBT_INFO("I received '%s', '%s' and '%s'", msg1->c_str(), msg2->c_str(), msg3->c_str());
   delete msg1;
   delete msg2;
@@ -49,7 +49,7 @@ static void forwarder(int argc, char** argv)
   xbt_assert(argc >= 3, "Actor forwarder requires 2 parameters, but got only %d", argc - 1);
   simgrid::s4u::Mailbox* in    = simgrid::s4u::Mailbox::by_name(argv[1]);
   simgrid::s4u::Mailbox* out   = simgrid::s4u::Mailbox::by_name(argv[2]);
-  auto* msg                    = static_cast<std::string*>(in->get());
+  auto* msg                    = in->get<std::string>();
   XBT_INFO("Forward '%s'.", msg->c_str());
   out->put(msg, msg->size());
 }

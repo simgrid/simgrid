@@ -31,7 +31,7 @@ static void test_link_off_helper(double delay)
       simgrid::s4u::this_actor::sleep_until(milestone[i]);
       REQUIRE_NETWORK_FAILURE({
         INFO("get(" << ('A' + i) << ")");
-        simgrid::s4u::Mailbox::by_name("mb")->get();
+        simgrid::s4u::Mailbox::by_name("mb")->get<int>();
       });
     }
     simgrid::s4u::this_actor::sleep_until(milestone[4]);
@@ -89,7 +89,7 @@ TEST_CASE("Activity lifecycle: comm activities")
 
     simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
       assert_exit(true, 5);
-      void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+      char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
       xbt_free(payload);
       recv_done = true;
     });
@@ -118,7 +118,7 @@ TEST_CASE("Activity lifecycle: comm activities")
     simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
       assert_exit(true, 3);
       simgrid::s4u::this_actor::sleep_for(2);
-      void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+      char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
       xbt_free(payload);
       recv_done = true;
     });
@@ -148,7 +148,7 @@ TEST_CASE("Activity lifecycle: comm activities")
 
     simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
       assert_exit(true, 3);
-      void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+      char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
       xbt_free(payload);
       recv_done = true;
     });
@@ -181,7 +181,7 @@ TEST_CASE("Activity lifecycle: comm activities")
     simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
       assert_exit(true, 2);
       REQUIRE_NETWORK_FAILURE({
-        void* payload = simgrid::s4u::Mailbox::by_name("mb")->get();
+        char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
         xbt_free(payload);
       });
       recv_done = true;
@@ -213,7 +213,7 @@ TEST_CASE("Activity lifecycle: comm activities")
                                                                &in_catch_before_on_exit, &in_catch_after_on_exit]() {
           assert_exit(false, 1);
           try {
-            simgrid::s4u::Mailbox::by_name("mb")->get();
+            simgrid::s4u::Mailbox::by_name("mb")->get<int>();
           } catch (simgrid::NetworkFailureException const&) {
             // Shouldn't get in here after the on_exit function
             in_catch_before_on_exit = not in_on_exit;

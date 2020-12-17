@@ -17,17 +17,17 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 
 static void server()
 {
-  void* received = nullptr;
-  int count      = 0;
+  int* received = nullptr;
+  int count     = 0;
   while (count < N) {
     if (received) {
-      delete static_cast<int*>(received);
+      delete received;
       received = nullptr;
     }
-    received = simgrid::s4u::Mailbox::by_name("mymailbox")->get();
+    received = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
     count++;
   }
-  int value_got = *(static_cast<int*>(received));
+  int value_got = *received;
   MC_assert(value_got == 3);
 
   XBT_INFO("OK");

@@ -40,7 +40,7 @@ static void worker()
 
   XBT_INFO("Worker receiving");
   try {
-    payload = static_cast<std::string*>(mailbox->get());
+    payload = mailbox->get<std::string>();
   } catch (const simgrid::HostFailureException&) {
     XBT_DEBUG("The host has been turned off, this was expected");
     delete payload;

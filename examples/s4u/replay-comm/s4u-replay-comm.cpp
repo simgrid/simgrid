@@ -71,7 +71,7 @@ public:
 
     ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), simgrid::s4u::this_actor::get_cname(),
               from->get_cname());
-    delete static_cast<std::string*>(from->get());
+    delete from->get<std::string>();
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 };

@@ -15,7 +15,7 @@ static void worker()
 
   while (true) {
     try {
-      payload = static_cast<std::string*>(mailbox->get());
+      payload = mailbox->get<std::string>();
     } catch (const simgrid::HostFailureException&) {
       XBT_DEBUG("The host has been turned off, this was expected");
       return;

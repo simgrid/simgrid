@@ -75,7 +75,7 @@ static void peer(int argc, char** argv)
   while (pending_finalize_messages > 0) {
     if (my_mbox->ready()) {
       double start                = simgrid::s4u::Engine::get_clock();
-      const auto* received        = static_cast<std::string*>(my_mbox->get());
+      const auto* received        = my_mbox->get<std::string>();
       double waiting_time         = simgrid::s4u::Engine::get_clock() - start;
       xbt_assert(
           waiting_time == 0,

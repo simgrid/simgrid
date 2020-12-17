@@ -21,7 +21,7 @@ static void sender(simgrid::s4u::Mailbox* mailbox, int data_size)
 static void receiver(simgrid::s4u::Mailbox* mailbox)
 {
   XBT_INFO("Wait for a message.");
-  mailbox->get();
+  mailbox->get<std::string>();
   XBT_INFO("Done.");
 }
 

@@ -49,7 +49,7 @@ static void receiver(std::vector<std::string> args)
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::string("message"));
 
   if (flow_amount == 1) {
-    void* res = mailbox->get();
+    char* res = mailbox->get<char>();
     xbt_free(res);
   } else {
     std::vector<void*> data(flow_amount);

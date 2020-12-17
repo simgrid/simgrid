@@ -11,13 +11,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 static void sender(const std::string& mailbox, uint64_t msg_size)
 {
   auto mbox = simgrid::s4u::Mailbox::by_name(mailbox);
-  mbox->put((void*)1, msg_size);
+  static int payload = 42;
+  mbox->put(&payload, msg_size);
 }
 
 static void receiver(const std::string& mailbox)
 {
   auto mbox = simgrid::s4u::Mailbox::by_name(mailbox);
-  mbox->get();
+  mbox->get<int>();
 }
 
 static void run_transfer(simgrid::s4u::Host* src_host, simgrid::s4u::Host* dst_host, const std::string& mailbox,

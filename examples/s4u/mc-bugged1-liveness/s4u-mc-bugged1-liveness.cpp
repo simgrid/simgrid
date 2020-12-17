@@ -53,7 +53,7 @@ static void coordinator()
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
 
   while (true) {
-    m = static_cast<Message*>(mbox->get());
+    m = mbox->get<Message>();
     if (m->kind == Message::Kind::REQUEST) {
       if (CS_used) {
         XBT_INFO("CS already used. Queue the request.");
@@ -101,7 +101,7 @@ static void client(int id)
       XBT_INFO("Propositions changed : r=1, cs=0");
     }
 
-    const auto* grant = static_cast<Message*>(my_mailbox->get());
+    const auto* grant = my_mailbox->get<Message>();
 
     if ((id == 1) && (grant->kind == Message::Kind::GRANT)) {
       cs = 1;

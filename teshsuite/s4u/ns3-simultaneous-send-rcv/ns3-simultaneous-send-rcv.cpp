@@ -33,7 +33,7 @@ static void test_send(){
 static void test_receive(){
   for (int nb_message = 0; nb_message < nb_message_to_send * nb_sender; nb_message++) {
     XBT_VERB("waiting for messages");
-    int* ptr = (int*)(box->get());
+    int* ptr = box->get<int>();
     int id   = *ptr;
     XBT_VERB("received messages #%i", id);
     delete ptr;

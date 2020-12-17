@@ -127,7 +127,7 @@ static void server()
 
   XBT_INFO("Server waiting for transfers ...");
   while (true) {
-    const std::string* msg = static_cast<std::string*>(mailbox->get());
+    const std::string* msg = mailbox->get<std::string>();
     if (*msg == "finalize") { // Shutdown ...
       delete msg;
       break;

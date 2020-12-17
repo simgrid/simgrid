@@ -48,7 +48,7 @@ static void receiver()
 {
   ensure_other_tid();
 
-  const auto* payload = static_cast<std::string*>(simgrid::s4u::Mailbox::by_name("some mailbox")->get());
+  const auto* payload = simgrid::s4u::Mailbox::by_name("some mailbox")->get<std::string>();
   XBT_INFO("Task received");
   delete payload;
 }

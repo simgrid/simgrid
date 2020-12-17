@@ -31,11 +31,11 @@ static int receiver(const char* box_name)
   auto mb = simgrid::s4u::Mailbox::by_name(box_name);
   const int* payload;
 
-  payload = static_cast<int*>(mb->get());
+  payload = mb->get<int>();
   MC_assert(*payload == 1);
   delete payload;
 
-  payload = static_cast<int*>(mb->get());
+  payload = mb->get<int>();
   MC_assert(*payload == 2);
   delete payload;
 

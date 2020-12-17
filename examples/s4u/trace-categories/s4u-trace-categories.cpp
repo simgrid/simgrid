@@ -39,7 +39,7 @@ static void worker()
 {
   auto mbox = simgrid::s4u::Mailbox::by_name("master_mailbox");
   while (true) {
-    const auto* task = static_cast<Task*>(mbox->get());
+    const auto* task = mbox->get<Task>();
     if (task->name == "finalize") {
       delete task;
       break;

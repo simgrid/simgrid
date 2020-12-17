@@ -72,7 +72,7 @@ static void worker(int argc, char* argv[])
 
   XBT_DEBUG("Worker started");
 
-  const auto* payload = static_cast<double*>(mbox->get());
+  const auto* payload = mbox->get<double>();
 
   count_finished--;
   if (count_finished == 0) {

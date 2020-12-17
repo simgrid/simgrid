@@ -76,7 +76,7 @@ static void worker(std::vector<std::string> args)
   while (true) {
     try {
       XBT_INFO("Waiting a message on %s", mailbox->get_cname());
-      const auto* payload = static_cast<double*>(mailbox->get());
+      const auto* payload = mailbox->get<double>();
       xbt_assert(payload != nullptr, "mailbox->get() failed");
       double comp_size = *payload;
       delete payload;
