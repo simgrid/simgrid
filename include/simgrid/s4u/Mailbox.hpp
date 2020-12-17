@@ -95,15 +95,32 @@ public:
   CommPtr get_init();
   /** Creates and start an async data reception to that mailbox */
   CommPtr get_async(void** data);
-  template <typename T> CommPtr get_async(T** data) { return get_async(reinterpret_cast<void**>(data)); }
+  template <typename T> CommPtr get_async(T** data) { return get_async<void>(reinterpret_cast<void**>(data)); }
 
   /** Blocking data reception */
   void* get();
-  template <typename T> T* get() { return static_cast<T*>(get()); }
+  template <typename T> T* get() { return static_cast<T*>(get<void>()); }
   /** Blocking data reception with timeout */
   void* get(double timeout);
-  template <typename T> T* get(double timeout) { return static_cast<T*>(get(timeout)); }
+  template <typename T> T* get(double timeout) { return static_cast<T*>(get<void>(timeout)); }
 };
+
+template <> CommPtr Mailbox::get_async<void>(void** data);
+template <> void* Mailbox::get<void>();
+template <> void* Mailbox::get<void>(double timeout);
+
+inline CommPtr Mailbox::get_async(void** data)
+{
+  return get_async<void>(data);
+}
+inline void* Mailbox::get()
+{
+  return get<void>();
+}
+inline void* Mailbox::get(double timeout)
+{
+  return get<void>(timeout);
+}
 
 } // namespace s4u
 } // namespace simgrid

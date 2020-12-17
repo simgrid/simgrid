@@ -138,7 +138,7 @@ CommPtr Mailbox::get_init()
   return res;
 }
 
-CommPtr Mailbox::get_async(void** data)
+template <> CommPtr Mailbox::get_async<void>(void** data)
 {
   CommPtr res = get_init();
   res->set_dst_data(data, sizeof(*data));
@@ -146,7 +146,7 @@ CommPtr Mailbox::get_async(void** data)
   return res;
 }
 
-void* Mailbox::get()
+template <> void* Mailbox::get<void>()
 {
   void* res = nullptr;
   CommPtr c = get_init();
@@ -155,7 +155,8 @@ void* Mailbox::get()
   c->wait();
   return res;
 }
-void* Mailbox::get(double timeout)
+
+template <> void* Mailbox::get<void>(double timeout)
 {
   void* res = nullptr;
   CommPtr c = get_init();
@@ -210,12 +211,12 @@ int sg_mailbox_listen(const char* alias)
 
 void* sg_mailbox_get(sg_mailbox_t mailbox)
 {
-  return mailbox->get();
+  return mailbox->get<void>();
 }
 
 sg_comm_t sg_mailbox_get_async(sg_mailbox_t mailbox, void** data)
 {
-  auto comm = mailbox->get_async(data);
+  auto comm = mailbox->get_async<void>(data);
   comm->add_ref();
   return comm.get();
 }
