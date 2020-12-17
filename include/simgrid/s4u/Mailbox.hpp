@@ -11,6 +11,7 @@
 #include <smpi/forward.hpp>
 #include <xbt/string.hpp>
 
+#include <memory>
 #include <string>
 
 namespace simgrid {
@@ -100,9 +101,12 @@ public:
   /** Blocking data reception */
   template <typename T> T* get() { return static_cast<T*>(get<void>()); }
   XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get();
+  template <typename T> std::unique_ptr<T> get_unique() { return std::unique_ptr<T>(get<T>()); }
+
   /** Blocking data reception with timeout */
   template <typename T> T* get(double timeout) { return static_cast<T*>(get<void>(timeout)); }
   XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get(double timeout);
+  template <typename T> std::unique_ptr<T> get_unique(double timeout) { return std::unique_ptr<T>(get<T>(timeout)); }
 };
 
 template <> CommPtr Mailbox::get_async<void>(void** data);

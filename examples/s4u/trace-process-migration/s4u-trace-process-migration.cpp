@@ -20,7 +20,7 @@ static void emigrant()
   simgrid::s4u::this_actor::sleep_for(2);
 
   while (true) { // I am an eternal emigrant
-    auto destination = std::unique_ptr<std::string>(mailbox->get<std::string>());
+    auto destination = mailbox->get_unique<std::string>();
     if (destination->empty())
       break; // there is no destination, die
     simgrid::s4u::this_actor::set_host(simgrid::s4u::Host::by_name(*destination));

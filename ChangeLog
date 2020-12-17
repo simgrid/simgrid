@@ -9,6 +9,7 @@ User-visible changes:
    - 'clean-atexit' is now 'debug/clean-atexit'
 
 S4U:
+- Define new template functions Mailbox::get_unique(), returning a std::unique_ptr.
 - Functions Mailbox::get() and Mailbox::get_async() are now templated with the
   type of the pointee. Untyped functions are deprecated. Use Mailbox::get<void>()
   or Mailbox::get_async<void>() if you really want to play with void*.
@@ -69,9 +70,9 @@ SMPI:
  - smpicc/cxx/ff/f90 now will actually perform definition checks at link time. When
    building shared libraries, this may cause issues, so environment variable
    SMPI_NO_UNDEFINED_CHECK can be added to disable this.
- - most temporary files should now be created in /tmp dir (or equivalent). 
+ - most temporary files should now be created in /tmp dir (or equivalent).
    If this one does not allow execution of code (noexec flag), this may cause issues.
-   Please use another tmp directory (using TMPDIR or equivalent system variable) 
+   Please use another tmp directory (using TMPDIR or equivalent system variable)
    in this case.
 
 Model-Checker:
