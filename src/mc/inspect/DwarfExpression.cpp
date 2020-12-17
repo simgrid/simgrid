@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <unordered_set>
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/inspect/DwarfExpression.hpp"
@@ -28,48 +29,6 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
     intptr_t second;
 
     switch (atom) {
-        // Registers:
-      case DW_OP_breg0:
-      case DW_OP_breg1:
-      case DW_OP_breg2:
-      case DW_OP_breg3:
-      case DW_OP_breg4:
-      case DW_OP_breg5:
-      case DW_OP_breg6:
-      case DW_OP_breg7:
-      case DW_OP_breg8:
-      case DW_OP_breg9:
-      case DW_OP_breg10:
-      case DW_OP_breg11:
-      case DW_OP_breg12:
-      case DW_OP_breg13:
-      case DW_OP_breg14:
-      case DW_OP_breg15:
-      case DW_OP_breg16:
-      case DW_OP_breg17:
-      case DW_OP_breg18:
-      case DW_OP_breg19:
-      case DW_OP_breg20:
-      case DW_OP_breg21:
-      case DW_OP_breg22:
-      case DW_OP_breg23:
-      case DW_OP_breg24:
-      case DW_OP_breg25:
-      case DW_OP_breg26:
-      case DW_OP_breg27:
-      case DW_OP_breg28:
-      case DW_OP_breg29:
-      case DW_OP_breg30:
-      case DW_OP_breg31: {
-        // Push register + constant:
-        int register_id = simgrid::dwarf::dwarf_register_to_libunwind(op->atom - DW_OP_breg0);
-        unw_word_t res;
-        if (not context.cursor)
-          throw evaluation_error("Missing stack context");
-        unw_get_reg(context.cursor, register_id, &res);
-        stack.push(res + op->number);
-        break;
-      }
 
         // Push the CFA (Canonical Frame Address):
       case DW_OP_call_frame_cfa: {
@@ -99,48 +58,8 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
       }
 
         // Frame base:
-
       case DW_OP_fbreg:
         stack.push((std::uintptr_t)context.frame_base + op->number);
-        break;
-
-        // ***** Constants:
-
-        // Short constant literals:
-      case DW_OP_lit0:
-      case DW_OP_lit1:
-      case DW_OP_lit2:
-      case DW_OP_lit3:
-      case DW_OP_lit4:
-      case DW_OP_lit5:
-      case DW_OP_lit6:
-      case DW_OP_lit7:
-      case DW_OP_lit8:
-      case DW_OP_lit9:
-      case DW_OP_lit10:
-      case DW_OP_lit11:
-      case DW_OP_lit12:
-      case DW_OP_lit13:
-      case DW_OP_lit14:
-      case DW_OP_lit15:
-      case DW_OP_lit16:
-      case DW_OP_lit17:
-      case DW_OP_lit18:
-      case DW_OP_lit19:
-      case DW_OP_lit20:
-      case DW_OP_lit21:
-      case DW_OP_lit22:
-      case DW_OP_lit23:
-      case DW_OP_lit24:
-      case DW_OP_lit25:
-      case DW_OP_lit26:
-      case DW_OP_lit27:
-      case DW_OP_lit28:
-      case DW_OP_lit29:
-      case DW_OP_lit30:
-      case DW_OP_lit31:
-        // Push a literal/constant on the stack:
-        stack.push(atom - DW_OP_lit0);
         break;
 
         // Address from the base address of this ELF object.
@@ -153,20 +72,6 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
         break;
       }
 
-        // General constants:
-        // Push the constant argument on the stack.
-      case DW_OP_const1u:
-      case DW_OP_const2u:
-      case DW_OP_const4u:
-      case DW_OP_const8u:
-      case DW_OP_const1s:
-      case DW_OP_const2s:
-      case DW_OP_const4s:
-      case DW_OP_const8s:
-      case DW_OP_constu:
-      case DW_OP_consts:
-        stack.push(op->number);
-        break;
 
         // ***** Stack manipulation:
 
@@ -257,8 +162,51 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
         context.address_space->read_bytes(&stack.top(), sizeof(uintptr_t), remote(stack.top()));
         break;
 
-        // Not handled:
       default:
+
+        // Registers:
+        static const std::unordered_set<uint8_t> registers = {
+            DW_OP_breg0,  DW_OP_breg1,  DW_OP_breg2,  DW_OP_breg3,  DW_OP_breg4,  DW_OP_breg5,  DW_OP_breg6,
+            DW_OP_breg7,  DW_OP_breg8,  DW_OP_breg9,  DW_OP_breg10, DW_OP_breg11, DW_OP_breg12, DW_OP_breg13,
+            DW_OP_breg14, DW_OP_breg15, DW_OP_breg16, DW_OP_breg17, DW_OP_breg18, DW_OP_breg19, DW_OP_breg20,
+            DW_OP_breg21, DW_OP_breg22, DW_OP_breg23, DW_OP_breg24, DW_OP_breg25, DW_OP_breg26, DW_OP_breg27,
+            DW_OP_breg28, DW_OP_breg29, DW_OP_breg30, DW_OP_breg31};
+        if (registers.count(atom) > 0) {
+          // Push register + constant:
+          int register_id = simgrid::dwarf::dwarf_register_to_libunwind(op->atom - DW_OP_breg0);
+          unw_word_t res;
+          if (not context.cursor)
+            throw evaluation_error("Missing stack context");
+          unw_get_reg(context.cursor, register_id, &res);
+          stack.push(res + op->number);
+          break;
+        }
+
+        // ***** Constants:
+
+        // Short constant literals:
+        static const std::unordered_set<uint8_t> literals = {
+            DW_OP_lit0,  DW_OP_lit1,  DW_OP_lit2,  DW_OP_lit3,  DW_OP_lit4,  DW_OP_lit5,  DW_OP_lit6,  DW_OP_lit7,
+            DW_OP_lit8,  DW_OP_lit9,  DW_OP_lit10, DW_OP_lit11, DW_OP_lit12, DW_OP_lit13, DW_OP_lit14, DW_OP_lit15,
+            DW_OP_lit16, DW_OP_lit17, DW_OP_lit18, DW_OP_lit19, DW_OP_lit20, DW_OP_lit21, DW_OP_lit22, DW_OP_lit23,
+            DW_OP_lit24, DW_OP_lit25, DW_OP_lit26, DW_OP_lit27, DW_OP_lit28, DW_OP_lit29, DW_OP_lit30, DW_OP_lit31};
+        if (literals.count(atom) > 0) {
+          // Push a literal/constant on the stack:
+          stack.push(atom - DW_OP_lit0);
+          break;
+        }
+
+        // General constants:
+        static const std::unordered_set<uint8_t> constants = {
+            DW_OP_const1u, DW_OP_const2u, DW_OP_const4u, DW_OP_const8u, DW_OP_const1s,
+            DW_OP_const2s, DW_OP_const4s, DW_OP_const8s, DW_OP_constu,  DW_OP_consts};
+        if (constants.count(atom) > 0) {
+          // Push the constant argument on the stack.
+          stack.push(op->number);
+          break;
+        }
+
+        // Not handled:
         throw evaluation_error("Unsupported operation");
     }
   }
