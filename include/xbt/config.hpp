@@ -159,7 +159,7 @@ bind_flag(std::string& value, const char* name, const char* description,
                std::function<void(const std::string&)>([&value, name, valid_values, callback](const std::string& val) {
                  callback(val);
                  if (valid_values.find(val) != valid_values.end()) {
-                   value = std::move(val);
+                   value = val;
                    return;
                  }
                  std::string mesg = "\n";
@@ -256,7 +256,7 @@ public:
        F callback)
       : value_(value), name_(name)
   {
-    simgrid::config::bind_flag(value_, name, desc, std::move(valid_values), std::move(callback));
+    simgrid::config::bind_flag(value_, name, desc, valid_values, std::move(callback));
   }
 
   /* A constructor with everything */
