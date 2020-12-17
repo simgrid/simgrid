@@ -109,9 +109,9 @@ public:
   template <typename T> std::unique_ptr<T> get_unique(double timeout) { return std::unique_ptr<T>(get<T>(timeout)); }
 };
 
-template <> CommPtr Mailbox::get_async<void>(void** data);
-template <> void* Mailbox::get<void>();
-template <> void* Mailbox::get<void>(double timeout);
+template <> XBT_PUBLIC CommPtr Mailbox::get_async<void>(void** data);
+template <> XBT_PUBLIC void* Mailbox::get<void>();
+template <> XBT_PUBLIC void* Mailbox::get<void>(double timeout);
 
 inline CommPtr Mailbox::get_async(void** data) // XBT_ATTRIB_DEPRECATED_v331
 {
