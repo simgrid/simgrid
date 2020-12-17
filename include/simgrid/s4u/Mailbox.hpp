@@ -94,30 +94,30 @@ public:
   /** Creates (but don't start) a data reception onto that mailbox */
   CommPtr get_init();
   /** Creates and start an async data reception to that mailbox */
-  CommPtr get_async(void** data);
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get_async<>()") CommPtr get_async(void** data);
   template <typename T> CommPtr get_async(T** data) { return get_async<void>(reinterpret_cast<void**>(data)); }
 
   /** Blocking data reception */
-  void* get();
   template <typename T> T* get() { return static_cast<T*>(get<void>()); }
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get();
   /** Blocking data reception with timeout */
-  void* get(double timeout);
   template <typename T> T* get(double timeout) { return static_cast<T*>(get<void>(timeout)); }
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get(double timeout);
 };
 
 template <> CommPtr Mailbox::get_async<void>(void** data);
 template <> void* Mailbox::get<void>();
 template <> void* Mailbox::get<void>(double timeout);
 
-inline CommPtr Mailbox::get_async(void** data)
+inline CommPtr Mailbox::get_async(void** data) // XBT_ATTRIB_DEPRECATED_v331
 {
   return get_async<void>(data);
 }
-inline void* Mailbox::get()
+inline void* Mailbox::get() // XBT_ATTRIB_DEPRECATED_v331
 {
   return get<void>();
 }
-inline void* Mailbox::get(double timeout)
+inline void* Mailbox::get(double timeout) // XBT_ATTRIB_DEPRECATED_v331
 {
   return get<void>(timeout);
 }
