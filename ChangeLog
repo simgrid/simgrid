@@ -2,6 +2,12 @@
 
 SimGrid (3.26.1) NOT RELEASED YET (v3.27 expected March 20. 2021, 09:37 UTC)
 
+User-visible changes:
+ - Removed some option aliases that were deprecated since v3.23 (June 2019)
+   - 'verbose-exit' is now 'debug/verbose-exit'
+   - 'simix/breakpoint' is now 'debug/breakpoint'
+   - 'clean-atexit' is now 'debug/clean-atexit'
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.26) December 15. 2020
