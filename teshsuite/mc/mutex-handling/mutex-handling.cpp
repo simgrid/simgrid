@@ -48,7 +48,7 @@ static int sender(const char* box_name, simgrid::s4u::MutexPtr mutex, int value)
   if (mutex)
     mutex->lock();
 
-  mb->put(static_cast<void*>(payload), 8);
+  mb->put(payload, 8);
 
   if (mutex)
     mutex->unlock();

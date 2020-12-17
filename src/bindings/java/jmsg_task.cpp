@@ -267,7 +267,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobjec
   }
 
   /* Add a global ref into the Ctask so that the receiver can use it */
-  MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
+  MSG_task_set_data(task, env->NewGlobalRef(jtask));
 
   const char* alias = env->GetStringUTFChars(jalias, nullptr);
   msg_error_t res   = MSG_task_send_with_timeout_bounded(task, alias, jtimeout, maxrate);
@@ -403,7 +403,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject j
         return nullptr;
   }
 
-  MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
+  MSG_task_set_data(task, env->NewGlobalRef(jtask));
   comm = MSG_task_isend(task,mailbox);
 
   env->SetLongField(jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
@@ -439,7 +439,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jo
         return nullptr;
   }
 
-  MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
+  MSG_task_set_data(task, env->NewGlobalRef(jtask));
   comm = MSG_task_isend_bounded(task,mailbox,maxrate);
 
   env->SetLongField(jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
@@ -491,7 +491,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jta
   }
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
-  MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
+  MSG_task_set_data(task, env->NewGlobalRef(jtask));
   MSG_task_dsend(task, alias, msg_task_cancel_on_failed_dsend);
 
   env->ReleaseStringUTFChars(jalias, alias);
@@ -511,7 +511,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsendBounded(JNIEnv * env, jobj
   }
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
-  MSG_task_set_data(task, (void *) env->NewGlobalRef(jtask));
+  MSG_task_set_data(task, env->NewGlobalRef(jtask));
   MSG_task_dsend_bounded(task, alias, msg_task_cancel_on_failed_dsend, maxrate);
 
   env->ReleaseStringUTFChars(jalias, alias);

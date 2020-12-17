@@ -41,7 +41,7 @@ static void sender()
 {
   ensure_root_tid();
   auto* payload = new std::string("some message");
-  simgrid::s4u::Mailbox::by_name("some mailbox")->put((void*)payload, 10e8);
+  simgrid::s4u::Mailbox::by_name("some mailbox")->put(payload, 10e8);
 }
 
 static void receiver()

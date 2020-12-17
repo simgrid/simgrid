@@ -79,7 +79,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jVm, 
   jvm_bind(env, jVm, vm);
   jVm = env->NewGlobalRef(jVm);
   // We use the extension level of the host, even if that's somehow disturbing
-  vm->extension_set(JAVA_HOST_LEVEL, (void*)jVm);
+  vm->extension_set(JAVA_HOST_LEVEL, jVm);
 }
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass cls_arg)

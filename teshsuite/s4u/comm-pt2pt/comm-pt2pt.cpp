@@ -53,32 +53,32 @@ static void sender(std::vector<std::string> args)
     switch (args[0][test - 1]) {
       case 'r':
         XBT_INFO("Test %u: r (regular send)", test);
-        mbox->put((void*)mboxName, 42.0);
+        mbox->put(mboxName, 42.0);
         break;
       case 'R':
         XBT_INFO("Test %u: R (sleep + regular send)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        mbox->put((void*)mboxName, 42.0);
+        mbox->put(mboxName, 42.0);
         break;
 
       case 'i':
         XBT_INFO("Test %u: i (asynchronous isend)", test);
-        mbox->put_async((void*)mboxName, 42.0)->wait();
+        mbox->put_async(mboxName, 42.0)->wait();
         break;
       case 'I':
         XBT_INFO("Test %u: I (sleep + isend)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        mbox->put_async((void*)mboxName, 42.0)->wait();
+        mbox->put_async(mboxName, 42.0)->wait();
         break;
 
       case 'd':
         XBT_INFO("Test %u: d (detached send)", test);
-        mbox->put_init((void*)mboxName, 42.0)->detach();
+        mbox->put_init(mboxName, 42.0)->detach();
         break;
       case 'D':
         XBT_INFO("Test %u: D (sleep + detached send)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        mbox->put_init((void*)mboxName, 42.0)->detach();
+        mbox->put_init(mboxName, 42.0)->detach();
         break;
       default:
         xbt_die("Unknown sender spec for test %u: '%c'", test, args[0][test - 1]);

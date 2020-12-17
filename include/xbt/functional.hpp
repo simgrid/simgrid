@@ -151,7 +151,7 @@ public:
     if (that.vtable_ && that.vtable_->move)
       that.vtable_->move(buffer_, that.buffer_);
     else
-      std::memcpy(static_cast<void*>(&buffer_), static_cast<void*>(&that.buffer_), sizeof(buffer_));
+      std::memcpy(&buffer_, &that.buffer_, sizeof(buffer_));
     vtable_      = std::move(that.vtable_);
     that.vtable_ = nullptr;
   }
@@ -162,7 +162,7 @@ public:
     if (that.vtable_ && that.vtable_->move)
       that.vtable_->move(buffer_, that.buffer_);
     else
-      std::memcpy(static_cast<void*>(&buffer_), static_cast<void*>(&that.buffer_), sizeof(buffer_));
+      std::memcpy(&buffer_, &that.buffer_, sizeof(buffer_));
     vtable_      = std::move(that.vtable_);
     that.vtable_ = nullptr;
     return *this;

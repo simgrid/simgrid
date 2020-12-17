@@ -93,7 +93,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv* env, jclas
     jhost_bind(jhost, host, env);
 
     /* the native host data field is set with the global reference to the java host returned by this function */
-    host->extension_set(JAVA_HOST_LEVEL, (void *)jhost);
+    host->extension_set(JAVA_HOST_LEVEL, jhost);
   }
 
   /* return the global reference to the java host instance */
@@ -128,7 +128,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
     env->SetObjectField(jhost, jhost_field_Host_name, jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
-    host->extension_set(JAVA_HOST_LEVEL, (void *) jhost);
+    host->extension_set(JAVA_HOST_LEVEL, jhost);
   } else {
     jhost = (jobject) host->extension(JAVA_HOST_LEVEL);
   }
