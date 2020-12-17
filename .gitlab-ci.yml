@@ -25,19 +25,22 @@ release:
   # Build the linux version of the jarfile without the boost dependency
   - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
   - make VERBOSE=1 -j$(nproc) dist simgrid simgrid-java_jar
-  # Get the foreign architectures
-  - wget https://ci.appveyor.com/api/projects/mquinson/simgrid/artifacts/simgrid.jar -O simgrid-windows.jar
-  - export SGVER=`grep SimGrid ChangeLog|head -n1|sed -e 's/SimGrid (//' -e 's/).*//'`
-  - wget https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=macos/lastSuccessfulBuild/artifact/build/simgrid-${SGVER}/build/simgrid.jar -O simgrid-mac.jar
-  # Open all jar files, and strip them
-  - mkdir content ; cd content
-  - for j in  ../simgrid.jar ../simgrid-windows.jar ../simgrid-mac.jar ; do unzip -n $j ; done
-  - strip NATIVE/*/*/*.so
-  - x86_64-linux-gnu-strip NATIVE/*/*/lib*dll
-  - zip -r ../simgrid-${SGVER}.jar *
+# This cannot work anymore because Java is now built by the modelchecker jenkins configuration, that is not on macosx
+# Please use the github action instead
+#  - make VERBOSE=1 -j$(nproc) dist simgrid simgrid-java_jar
+#  # Get the foreign architectures
+#  - wget https://ci.appveyor.com/api/projects/mquinson/simgrid/artifacts/simgrid.jar -O simgrid-windows.jar
+#  - export SGVER=`grep SimGrid ChangeLog|head -n1|sed -e 's/SimGrid (//' -e 's/).*//'`
+#  - wget https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=macos/lastSuccessfulBuild/artifact/build/simgrid-${SGVER}/build/simgrid.jar -O simgrid-mac.jar
+#  # Open all jar files, and strip them
+#  - mkdir content ; cd content
+#  - for j in  ../simgrid.jar ../simgrid-windows.jar ../simgrid-mac.jar ; do unzip -n $j ; done
+#  - strip NATIVE/*/*/*.so
+#  - x86_64-linux-gnu-strip NATIVE/*/*/lib*dll
+#  - zip -r ../simgrid-${SGVER}.jar *
   artifacts:
     paths:
-    - simgrid-*.jar
+#    - simgrid-*.jar
     - simgrid-*.tar.gz
 
 pip:
