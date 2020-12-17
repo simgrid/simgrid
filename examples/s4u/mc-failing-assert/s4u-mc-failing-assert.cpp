@@ -18,9 +18,8 @@ static int server(int worker_amount)
   int value_got             = -1;
   simgrid::s4u::Mailbox* mb = simgrid::s4u::Mailbox::by_name("server");
   for (int count = 0; count < worker_amount; count++) {
-    const auto* msg = mb->get<int>();
+    auto msg  = mb->get_unique<int>();
     value_got = *msg;
-    delete msg;
   }
   /*
    * We assert here that the last message we got (which overwrite any previously received message) is the one from the

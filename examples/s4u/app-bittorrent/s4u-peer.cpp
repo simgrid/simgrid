@@ -116,12 +116,11 @@ bool Peer::getPeersFromTracker()
   }
 
   try {
-    auto* answer = mailbox_->get<TrackerAnswer>(GET_PEERS_TIMEOUT);
+    auto answer = mailbox_->get_unique<TrackerAnswer>(GET_PEERS_TIMEOUT);
     // Add the peers the tracker gave us to our peer list.
     for (auto const& peer_id : answer->getPeers())
       if (id != peer_id)
         connected_peers.emplace(peer_id, Connection(peer_id));
-    delete answer;
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     return false;

@@ -17,14 +17,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 
 static void server()
 {
-  int* received = nullptr;
+  std::unique_ptr<int> received;
   int count     = 0;
   while (count < N) {
-    if (received) {
-      delete received;
-      received = nullptr;
-    }
-    received = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
+    received.reset();
+    received = simgrid::s4u::Mailbox::by_name("mymailbox")->get_unique<int>();
     count++;
   }
   int value_got = *received;

@@ -47,13 +47,12 @@ public:
 
   void joinChain()
   {
-    const auto* msg   = me->get<ChainMessage>();
-    prev              = msg->prev_;
-    next              = msg->next_;
-    total_pieces      = msg->num_pieces;
+    auto msg     = me->get_unique<ChainMessage>();
+    prev         = msg->prev_;
+    next         = msg->next_;
+    total_pieces = msg->num_pieces;
     XBT_DEBUG("Peer %s got a 'BUILD_CHAIN' message (prev: %s / next: %s)", me->get_cname(),
               prev ? prev->get_cname() : nullptr, next ? next->get_cname() : nullptr);
-    delete msg;
   }
 
   void forwardFile()

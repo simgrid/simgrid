@@ -30,12 +30,10 @@ void MigrationRx::operator()()
       std::string("__mig_stage3:") + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" + dst_pm_->get_cname() + ")";
 
   while (not received_finalize) {
-    const std::string* payload = mbox->get<std::string>();
+    auto payload = mbox->get_unique<std::string>();
 
     if (finalize_task_name == *payload)
       received_finalize = true;
-
-    delete payload;
   }
 
   // Here Stage 1, 2  and 3 have been performed.
@@ -353,7 +351,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
   simgrid::s4u::Mailbox* mbox_ctl = simgrid::s4u::Mailbox::by_name(
       std::string("__mbox_mig_ctl:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")");
-  delete mbox_ctl->get<std::string>();
+  mbox_ctl->get_unique<std::string>();
   tx->join();
   rx->join();
 

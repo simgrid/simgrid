@@ -33,10 +33,9 @@ static void test_receive()
 {
   for (int nb_message = 0; nb_message < nb_message_to_send * nb_sender; nb_message++) {
     XBT_VERB("waiting for messages");
-    int* ptr = box->get<int>();
+    auto ptr = box->get_unique<int>();
     int id   = *ptr;
     XBT_VERB("received messages #%i", id);
-    delete ptr;
   }
   XBT_INFO("Done receiving from %d senders, each of them sending %d messages", nb_sender, nb_message_to_send);
 }

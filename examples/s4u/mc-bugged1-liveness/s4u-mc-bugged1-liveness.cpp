@@ -47,13 +47,12 @@ static void garbage_stack(void)
 static void coordinator()
 {
   int CS_used = 0;
-  const Message* m = nullptr;
   std::queue<simgrid::s4u::Mailbox*> requests;
 
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
 
   while (true) {
-    m = mbox->get<Message>();
+    auto m = mbox->get_unique<Message>();
     if (m->kind == Message::Kind::REQUEST) {
       if (CS_used) {
         XBT_INFO("CS already used. Queue the request.");
@@ -81,7 +80,6 @@ static void coordinator()
         CS_used = 0;
       }
     }
-    delete m;
   }
 }
 
@@ -101,15 +99,13 @@ static void client(int id)
       XBT_INFO("Propositions changed : r=1, cs=0");
     }
 
-    const auto* grant = my_mailbox->get<Message>();
+    auto grant = my_mailbox->get_unique<Message>();
 
     if ((id == 1) && (grant->kind == Message::Kind::GRANT)) {
       cs = 1;
       r  = 0;
       XBT_INFO("Propositions changed : r=0, cs=1");
     }
-
-    delete grant;
 
     XBT_INFO("%d got the answer. Sleep a bit and release it", id);
 

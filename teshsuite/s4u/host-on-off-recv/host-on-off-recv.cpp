@@ -35,15 +35,14 @@ static void master()
 
 static void worker()
 {
-  const std::string* payload     = nullptr;
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("comm");
 
   XBT_INFO("Worker receiving");
   try {
-    payload = mailbox->get<std::string>();
+    auto payload = mailbox->get_unique<std::string>();
+    XBT_DEBUG("Received message: %s", payload->c_str());
   } catch (const simgrid::HostFailureException&) {
     XBT_DEBUG("The host has been turned off, this was expected");
-    delete payload;
     return;
   }
 

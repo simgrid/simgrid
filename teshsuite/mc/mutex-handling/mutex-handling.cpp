@@ -29,15 +29,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 static int receiver(const char* box_name)
 {
   auto mb = simgrid::s4u::Mailbox::by_name(box_name);
-  const int* payload;
+  std::unique_ptr<int> payload;
 
-  payload = mb->get<int>();
+  payload = mb->get_unique<int>();
   MC_assert(*payload == 1);
-  delete payload;
 
-  payload = mb->get<int>();
+  payload = mb->get_unique<int>();
   MC_assert(*payload == 2);
-  delete payload;
 
   return 0;
 }

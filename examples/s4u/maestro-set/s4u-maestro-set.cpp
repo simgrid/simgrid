@@ -48,9 +48,8 @@ static void receiver()
 {
   ensure_other_tid();
 
-  const auto* payload = simgrid::s4u::Mailbox::by_name("some mailbox")->get<std::string>();
+  simgrid::s4u::Mailbox::by_name("some mailbox")->get_unique<std::string>();
   XBT_INFO("Task received");
-  delete payload;
 }
 
 static void maestro(void* /* data */)

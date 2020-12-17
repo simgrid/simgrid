@@ -59,9 +59,8 @@ static void worker(std::vector<std::string> args)
   TRACE_host_variable_set(my_hostname, "task_computation", 0);
 
   while (true) {
-    const auto* task = mailbox->get<Task>();
+    auto task = mailbox->get_unique<Task>();
     if (task->name == "finalize") {
-      delete task;
       break;
     }
     // adding the task's cost to the variable "task_computation"
@@ -70,7 +69,6 @@ static void worker(std::vector<std::string> args)
         ->set_name(task->name)
         ->set_tracing_category(task->category)
         ->wait();
-    delete task;
   }
 
   XBT_DEBUG("Exiting now.");

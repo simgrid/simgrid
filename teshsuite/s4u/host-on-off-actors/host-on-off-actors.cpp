@@ -40,10 +40,9 @@ static void commTX()
 
 static void commRX()
 {
-  const std::string* payload = nullptr;
   XBT_INFO("  Start RX");
   try {
-    payload = simgrid::s4u::Mailbox::by_name("comm")->get<std::string>();
+    auto payload = simgrid::s4u::Mailbox::by_name("comm")->get_unique<std::string>();
     XBT_INFO("  Receive message: %s", payload->c_str());
   } catch (const simgrid::HostFailureException&) {
     XBT_INFO("  Receive message: HOST_FAILURE");
@@ -51,7 +50,6 @@ static void commRX()
     XBT_INFO("  Receive message: TRANSFER_FAILURE");
   }
 
-  delete payload;
   XBT_INFO("  RX Done");
 }
 

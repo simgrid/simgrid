@@ -127,16 +127,14 @@ static void server()
 
   XBT_INFO("Server waiting for transfers ...");
   while (true) {
-    const std::string* msg = mailbox->get<std::string>();
+    auto msg = mailbox->get_unique<std::string>();
     if (*msg == "finalize") { // Shutdown ...
-      delete msg;
       break;
     } else { // Receive file to save
       size_t pos              = msg->find(' ');
       std::string dest        = msg->substr(0, pos);
       sg_size_t size_to_write = std::stoull(msg->substr(pos + 1));
       write_local_file(dest, size_to_write);
-      delete msg;
     }
   }
 

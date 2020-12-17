@@ -102,11 +102,10 @@ public:
   {
     XBT_INFO("Wait for my first message");
     for (bool cont = true; cont;) {
-      const auto* received = mbox->get<std::string>();
+      auto received = mbox->get_unique<std::string>();
       XBT_INFO("I got a '%s'.", received->c_str());
       cont = (*received != "finalize"); // If it's a finalize message, we're done
       // Receiving the message was all we were supposed to do
-      delete received;
     }
   }
 };

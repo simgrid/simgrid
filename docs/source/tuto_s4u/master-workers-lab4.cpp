@@ -22,9 +22,8 @@ static void worker(std::string category)
   simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
   while (true) { // Master forcefully kills the workers by the end of the simulation
-    double* msg         = mailbox->get<double>();
+    auto msg            = mailbox->get_unique<double>();
     double compute_cost = *msg;
-    delete msg;
 
     // simgrid::s4u::this_actor::exec_init(compute_cost)->set_tracing_category(category)->wait();
     /* Long form:*/

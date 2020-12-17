@@ -39,9 +39,8 @@ static void worker()
 {
   auto mbox = simgrid::s4u::Mailbox::by_name("master_mailbox");
   while (true) {
-    const auto* task = mbox->get<Task>();
+    auto task = mbox->get_unique<Task>();
     if (task->name == "finalize") {
-      delete task;
       break;
     }
     // creating task and setting its category
@@ -49,7 +48,6 @@ static void worker()
         ->set_name(task->name)
         ->set_tracing_category(task->category)
         ->wait();
-    delete task;
   }
 }
 

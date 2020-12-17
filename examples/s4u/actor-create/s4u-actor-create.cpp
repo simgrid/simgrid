@@ -33,13 +33,10 @@ static void receiver(const std::string& mailbox_name)
 
   XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->get_cname());
 
-  const auto* msg1 = mailbox->get<std::string>();
-  const auto* msg2 = mailbox->get<std::string>();
-  const auto* msg3 = mailbox->get<std::string>();
+  auto msg1 = mailbox->get_unique<std::string>();
+  auto msg2 = mailbox->get_unique<std::string>();
+  auto msg3 = mailbox->get_unique<std::string>();
   XBT_INFO("I received '%s', '%s' and '%s'", msg1->c_str(), msg2->c_str(), msg3->c_str());
-  delete msg1;
-  delete msg2;
-  delete msg3;
   XBT_INFO("I'm done. See you.");
 }
 

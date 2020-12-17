@@ -46,10 +46,9 @@ static void receiver(int, char**)
 {
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("receiver");
   XBT_INFO("Wait for the message.");
-  const auto* received = mbox->get<std::string>();
+  auto received = mbox->get_unique<std::string>();
 
   XBT_INFO("I got '%s'.", received->c_str());
-  delete received;
 }
 
 int main(int argc, char* argv[])

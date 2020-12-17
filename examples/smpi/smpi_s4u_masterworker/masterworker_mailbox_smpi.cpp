@@ -51,9 +51,8 @@ static void worker(std::vector<std::string> args)
 
   double compute_cost;
   do {
-    const auto* msg   = mailbox->get<double>();
-    compute_cost      = *msg;
-    delete msg;
+    auto msg     = mailbox->get_unique<double>();
+    compute_cost = *msg;
 
     if (compute_cost > 0) /* If compute_cost is valid, execute a computation of that cost */
       simgrid::s4u::this_actor::execute(compute_cost);

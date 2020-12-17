@@ -23,9 +23,8 @@ static void worker()
 
   double compute_cost;
   do {
-    double* msg  = mailbox->get<double>();
+    auto msg     = mailbox->get_unique<double>();
     compute_cost = *msg;
-    delete msg;
 
     if (compute_cost > 0) /* If compute_cost is valid, execute a computation of that cost */
       simgrid::s4u::this_actor::execute(compute_cost);
