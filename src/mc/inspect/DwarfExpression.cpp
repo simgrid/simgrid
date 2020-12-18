@@ -29,9 +29,8 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
     intptr_t second;
 
     switch (atom) {
-
         // Push the CFA (Canonical Frame Address):
-      case DW_OP_call_frame_cfa: {
+      case DW_OP_call_frame_cfa:
         /* See 6.4 of DWARF4 (http://dwarfstd.org/doc/DWARF4.pdf#page=140):
          *
          * > Typically, the CFA is defined to be the value of the stack
@@ -43,19 +42,17 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
          *
          * Warning: the CFA returned by libunwind (UNW_X86_64_RSP, etc.)
          * is the SP of the *current* frame. */
+        if (context.cursor) {
+          // Get frame:
+          unw_cursor_t cursor = *(context.cursor);
+          unw_step(&cursor);
 
-        if (not context.cursor)
-          throw evaluation_error("Missint cursor");
-
-        // Get frame:
-        unw_cursor_t cursor = *(context.cursor);
-        unw_step(&cursor);
-
-        unw_word_t res;
-        unw_get_reg(&cursor, UNW_REG_SP, &res);
-        stack.push(res);
-        break;
-      }
+          unw_word_t res;
+          unw_get_reg(&cursor, UNW_REG_SP, &res);
+          stack.push(res);
+          break;
+        }
+        throw evaluation_error("Missing cursor");
 
         // Frame base:
       case DW_OP_fbreg:
@@ -64,14 +61,13 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
 
         // Address from the base address of this ELF object.
         // Push the address on the stack (base_address + argument).
-      case DW_OP_addr: {
-        if (not context.object_info)
-          throw evaluation_error("No base address");
-        Dwarf_Off addr = (Dwarf_Off)(std::uintptr_t)context.object_info->base_address() + op->number;
-        stack.push(addr);
-        break;
-      }
-
+      case DW_OP_addr:
+        if (context.object_info) {
+          Dwarf_Off addr = (Dwarf_Off)(std::uintptr_t)context.object_info->base_address() + op->number;
+          stack.push(addr);
+          break;
+        }
+        throw evaluation_error("No base address");
 
         // ***** Stack manipulation:
 
