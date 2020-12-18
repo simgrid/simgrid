@@ -138,34 +138,6 @@ CommPtr Mailbox::get_init()
   return res;
 }
 
-template <> CommPtr Mailbox::get_async<void>(void** data)
-{
-  CommPtr res = get_init();
-  res->set_dst_data(data, sizeof(*data));
-  res->vetoable_start();
-  return res;
-}
-
-template <> void* Mailbox::get<void>()
-{
-  void* res = nullptr;
-  CommPtr c = get_init();
-  c->set_dst_data(&res, sizeof(res));
-  c->vetoable_start();
-  c->wait();
-  return res;
-}
-
-template <> void* Mailbox::get<void>(double timeout)
-{
-  void* res = nullptr;
-  CommPtr c = get_init();
-  c->set_dst_data(&res, sizeof(res));
-  c->vetoable_start();
-  c->wait_for(timeout);
-  return res;
-}
-
 kernel::activity::ActivityImplPtr
 Mailbox::iprobe(int type, bool (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data)
 {

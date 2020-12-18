@@ -8,6 +8,7 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Comm.hpp>
 #include <smpi/forward.hpp>
 #include <xbt/string.hpp>
 
@@ -96,22 +97,40 @@ public:
   CommPtr get_init();
   /** Creates and start an async data reception to that mailbox */
   XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get_async<>()") CommPtr get_async(void** data);
-  template <typename T> CommPtr get_async(T** data) { return get_async<void>(reinterpret_cast<void**>(data)); }
+  template <typename T> CommPtr get_async(T** data);
 
   /** Blocking data reception */
-  template <typename T> T* get() { return static_cast<T*>(get<void>()); }
+  template <typename T> T* get();
   XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get();
   template <typename T> std::unique_ptr<T> get_unique() { return std::unique_ptr<T>(get<T>()); }
 
   /** Blocking data reception with timeout */
-  template <typename T> T* get(double timeout) { return static_cast<T*>(get<void>(timeout)); }
+  template <typename T> T* get(double timeout);
   XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get(double timeout);
   template <typename T> std::unique_ptr<T> get_unique(double timeout) { return std::unique_ptr<T>(get<T>(timeout)); }
 };
 
-template <> XBT_PUBLIC CommPtr Mailbox::get_async<void>(void** data);
-template <> XBT_PUBLIC void* Mailbox::get<void>();
-template <> XBT_PUBLIC void* Mailbox::get<void>(double timeout);
+template <typename T> CommPtr Mailbox::get_async(T** data)
+{
+  CommPtr res = get_init();
+  res->set_dst_data(reinterpret_cast<void**>(data), sizeof(void*));
+  res->vetoable_start();
+  return res;
+}
+
+template <typename T> T* Mailbox::get()
+{
+  T* res = nullptr;
+  get_async<T>(&res)->wait();
+  return res;
+}
+
+template <typename T> T* Mailbox::get(double timeout)
+{
+  T* res = nullptr;
+  get_async<T>(&res)->wait_for(timeout);
+  return res;
+}
 
 inline CommPtr Mailbox::get_async(void** data) // XBT_ATTRIB_DEPRECATED_v331
 {
