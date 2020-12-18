@@ -15,8 +15,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 
 static void server()
 {
-  int* received1 = nullptr;
-  int* received2 = nullptr;
+  const int* received1 = nullptr;
+  const int* received2 = nullptr;
 
   received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
   long val1 = *received1;
