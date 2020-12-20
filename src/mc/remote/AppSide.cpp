@@ -5,6 +5,7 @@
 
 #include "src/mc/remote/AppSide.hpp"
 #include "src/internal_config.h"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>
@@ -89,7 +90,7 @@ void AppSide::handle_continue(const s_mc_message_t*) const
 }
 void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message) const
 {
-  smx_actor_t process = SIMIX_process_from_PID(message->pid);
+  kernel::actor::ActorImpl* process = kernel::actor::ActorImpl::by_PID(message->pid);
   xbt_assert(process != nullptr, "Invalid pid %lu", message->pid);
   process->simcall_handle(message->value);
   if (channel_.send(MessageType::WAITING))
@@ -98,7 +99,7 @@ void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message) const
 
 void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const
 {
-  bool res = simgrid::mc::actor_is_enabled(SIMIX_process_from_PID(msg->aid));
+  bool res = simgrid::mc::actor_is_enabled(kernel::actor::ActorImpl::by_PID(msg->aid));
   s_mc_message_int_t answer{MessageType::ACTOR_ENABLED_REPLY, res};
   channel_.send(answer);
 }
