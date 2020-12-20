@@ -35,6 +35,9 @@ public:
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();
 
+  /** Retrieve the actor implementation from its PID (or nullptr if non-existent) */
+  static ActorImpl* by_PID(aid_t PID);
+
   static ActorImpl* self();
   double get_kill_time() const;
   void set_kill_time(double kill_time);

@@ -260,7 +260,7 @@ void Actor::kill()
 
 ActorPtr Actor::by_pid(aid_t pid)
 {
-  kernel::actor::ActorImpl* actor = SIMIX_process_from_PID(pid);
+  kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(pid);
   if (actor != nullptr)
     return actor->get_iface();
   else

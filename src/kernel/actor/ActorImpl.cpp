@@ -44,6 +44,18 @@ unsigned long get_maxpid()
 {
   return maxpid;
 }
+ActorImpl* ActorImpl::by_PID(aid_t PID)
+{
+  auto item = simix_global->process_list.find(PID);
+  if (item != simix_global->process_list.end())
+    return item->second;
+
+  // Search the trash
+  for (auto& a : simix_global->actors_to_destroy)
+    if (a.get_pid() == PID)
+      return &a;
+  return nullptr; // Not found, even in the trash
+}
 
 ActorImpl* ActorImpl::self()
 {
@@ -562,25 +574,10 @@ const char* SIMIX_process_self_get_name()
   return SIMIX_is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }
 
-/**
- * @brief Calling this function makes the process to yield.
- *
- * Only the current process can call this function, giving back the control to maestro.
- *
- * @param self the current process
- */
-
 /** @brief Returns the process from PID. */
 smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
-  auto item = simix_global->process_list.find(PID);
-  if (item == simix_global->process_list.end()) {
-    for (auto& a : simix_global->actors_to_destroy)
-      if (a.get_pid() == PID)
-        return &a;
-    return nullptr; // Not found, even in the trash
-  }
-  return item->second;
+  return simgrid::kernel::actor::ActorImpl::by_PID(PID);
 }
 
 void SIMIX_process_on_exit(smx_actor_t actor,
