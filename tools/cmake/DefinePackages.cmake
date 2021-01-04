@@ -607,6 +607,8 @@ set(MC_SRC
   src/mc/checker/SimcallInspector.hpp
   src/mc/checker/LivenessChecker.cpp
   src/mc/checker/LivenessChecker.hpp
+  src/mc/checker/UdporChecker.cpp
+  src/mc/checker/UdporChecker.hpp
 
   src/mc/inspect/DwarfExpression.hpp
   src/mc/inspect/DwarfExpression.cpp
