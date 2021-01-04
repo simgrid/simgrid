@@ -29,5 +29,10 @@ std::vector<std::string> UdporChecker::get_textual_trace()
 
 void UdporChecker::log_state() {}
 
+Checker* createUdporChecker()
+{
+  return new UdporChecker();
+}
+
 } // namespace mc
 } // namespace simgrid

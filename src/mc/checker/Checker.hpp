@@ -58,6 +58,7 @@ public:
 XBT_PUBLIC Checker* createLivenessChecker();
 XBT_PUBLIC Checker* createSafetyChecker();
 XBT_PUBLIC Checker* createCommunicationDeterminismChecker();
+XBT_PUBLIC Checker* createUdporChecker();
 
 } // namespace mc
 } // namespace simgrid
