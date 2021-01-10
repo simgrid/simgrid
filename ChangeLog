@@ -13,6 +13,7 @@ S4U:
 - Functions Mailbox::get() and Mailbox::get_async() are now templated with the
   type of the pointee. Untyped functions are deprecated. Use Mailbox::get<void>()
   or Mailbox::get_async<void>() if you really want to play with void*.
+- Unify the interface of Activity::on_{start/activity}
 
 ----------------------------------------------------------------------------
 

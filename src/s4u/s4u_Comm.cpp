@@ -16,9 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous commun
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(Actor const&)> Comm::on_sender_start;
-xbt::signal<void(Actor const&)> Comm::on_receiver_start;
-xbt::signal<void(Actor const&)> Comm::on_completion;
+xbt::signal<void(Comm const&, Actor const&)> Comm::on_sender_start;
+xbt::signal<void(Comm const&, Actor const&)> Comm::on_receiver_start;
+xbt::signal<void(Comm const&, Actor const&)> Comm::on_completion;
 
 Comm::~Comm()
 {
@@ -119,12 +119,12 @@ Comm* Comm::start()
              "You cannot use %s() once your communication started (not implemented)", __FUNCTION__);
 
   if (src_buff_ != nullptr) { // Sender side
-    on_sender_start(*Actor::self());
+    on_sender_start(*this, *Actor::self());
     pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                                 clean_fun_, copy_data_function_, get_user_data(), detached_);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
-    on_receiver_start(*Actor::self());
+    on_receiver_start(*this, *Actor::self());
     pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_,
                                 copy_data_function_, get_user_data(), rate_);
 
@@ -160,12 +160,12 @@ Comm* Comm::wait_for(double timeout)
     case State::INITED:
     case State::STARTING: // It's not started yet. Do it in one simcall
       if (src_buff_ != nullptr) {
-        on_sender_start(*Actor::self());
+        on_sender_start(*this, *Actor::self());
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                           copy_data_function_, get_user_data(), timeout);
 
       } else { // Receiver
-        on_receiver_start(*Actor::self());
+        on_receiver_start(*this, *Actor::self());
         simcall_comm_recv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_,
                           get_user_data(), timeout, rate_);
       }
@@ -185,7 +185,7 @@ Comm* Comm::wait_for(double timeout)
     default:
       THROW_IMPOSSIBLE;
   }
-  on_completion(*Actor::self());
+  on_completion(*this, *Actor::self());
   return this;
 }
 

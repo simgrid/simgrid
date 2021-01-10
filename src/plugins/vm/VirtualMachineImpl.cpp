@@ -55,7 +55,7 @@ static void host_state_change(s4u::Host const& host)
   }
 }
 
-static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
+static void add_active_exec(s4u::Exec const& task, s4u::Actor const&)
 {
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
@@ -65,7 +65,7 @@ static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
   }
 }
 
-static void remove_active_exec(s4u::Actor const&, s4u::Exec const& task)
+static void remove_active_exec(s4u::Exec const& task, s4u::Actor const&)
 {
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
