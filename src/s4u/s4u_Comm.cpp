@@ -95,10 +95,13 @@ CommPtr Comm::set_dst_data(void** buff)
   dst_buff_ = buff;
   return this;
 }
+void* Comm::get_dst_data()
+{
+  return dst_buff_;
+}
 
 size_t Comm::get_dst_data_size() const
 {
-  xbt_assert(state_ == State::FINISHED, "You cannot use %s before your communication terminated", __FUNCTION__);
   return dst_buff_size_;
 }
 CommPtr Comm::set_dst_data(void** buff, size_t size)

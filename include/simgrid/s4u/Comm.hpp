@@ -107,6 +107,8 @@ public:
    *
    * That's a buffer where the sent data will be copied  */
   CommPtr set_dst_data(void** buff, size_t size);
+  /** Retrieve where the data will be copied on the receiver side */
+  void* get_dst_data();
 
   /** Retrieve the mailbox on which this comm acts */
   Mailbox* get_mailbox() const;
