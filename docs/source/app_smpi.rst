@@ -710,6 +710,36 @@ Finally, you may want to check `this article
 <https://hal.inria.fr/hal-00907887>`_ on the classical pitfalls in
 modeling distributed systems.
 
+----------------------
+Examples of SMPI Usage
+----------------------
+
+A small amount of examples can be found directly in the SimGrid
+archive, under `examples/smpi <https://framagit.org/simgrid/simgrid/-/tree/master/examples/smpi>`_.
+Some show how to simply run MPI code in SimGrid, how to use the
+tracing/replay mechanism or how to use plugins written in S4U to
+extend the simulator abilities.
+
+Another source of examples lay in the SimGrid archive, under 
+`teshsuite/smpi <https://framagit.org/simgrid/simgrid/-/tree/master/examples/smpi>`_.
+They are not in the ``examples`` directory because they probably don't
+constitute pedagogical examples. Instead, they are intended to stress
+our implementation during the tests. Some of you may be interested
+anyway.
+ 
+But the best source of SMPI examples is certainly the `proxy app
+<https://framagit.org/simgrid/SMPI-proxy-apps>`_ external project.
+Proxy apps are scale models of real, massive HPC applications: each of
+them exhibits the same communication and computation patterns than the
+massive application that it stands for. But they last only a few
+thousands lines instead of some millions of lines. These proxy apps
+are usually provided for educational purpose, and also to ensure that
+the represented large HPC applications will correctly work with the
+next generation of runtimes and hardware. `This project
+<https://framagit.org/simgrid/SMPI-proxy-apps>`_ gathers proxy apps
+from different sources, along with the patches needed (if any) to run
+them on top of SMPI.
+
 -------------------------
 Troubleshooting with SMPI
 -------------------------
