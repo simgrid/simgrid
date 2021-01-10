@@ -10,7 +10,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   add_executable(allpairf  EXCLUDE_FROM_ALL allpairf.f)
-  if((CMAKE_Fortran_COMPILER_ID MATCHES "GNU") AND (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0"))
+  if((CMAKE_Fortran_COMPILER_ID MATCHES "GNU") AND (NOT CMAKE_Fortran_COMPILER_VERSION VERSION_LESS "10.0"))
     set_property(SOURCE allpairf.f PROPERTY COMPILE_FLAGS -std=legacy)
   endif()
   add_executable(greqf    EXCLUDE_FROM_ALL greqf.f dummyf.f)
