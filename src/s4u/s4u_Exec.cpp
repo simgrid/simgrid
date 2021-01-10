@@ -14,8 +14,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(Exec const&, Actor const&)> Exec::on_start;
-xbt::signal<void(Exec const&, Actor const&)> Exec::on_completion;
+xbt::signal<void(Exec const&)> Exec::on_start;
+xbt::signal<void(Exec const&)> Exec::on_completion;
 
 Exec::Exec()
 {
@@ -35,7 +35,7 @@ Exec* Exec::wait_for(double timeout)
   kernel::actor::ActorImpl* issuer = Actor::self()->get_impl();
   kernel::actor::simcall_blocking<void>([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
   state_ = State::FINISHED;
-  on_completion(*this, *Actor::self());
+  on_completion(*this);
   this->release_dependencies();
   return this;
 }
@@ -185,7 +185,7 @@ Exec* Exec::start()
     pimpl_->suspend();
 
   state_ = State::STARTED;
-  on_start(*this, *Actor::self());
+  on_start(*this);
   return this;
 }
 

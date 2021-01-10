@@ -295,11 +295,11 @@ public:
         task_id           = 0;
       }
     });
-    simgrid::s4u::Exec::on_start.connect([this](simgrid::s4u::Exec const& activity, simgrid::s4u::Actor const&) {
+    simgrid::s4u::Exec::on_start.connect([this](simgrid::s4u::Exec const& activity) {
       if (activity.get_host() == get_host())
         pre_task();
     });
-    simgrid::s4u::Exec::on_completion.connect([this](simgrid::s4u::Exec const& activity, simgrid::s4u::Actor const&) {
+    simgrid::s4u::Exec::on_completion.connect([this](simgrid::s4u::Exec const& activity) {
       // For more than one host (not yet supported), we can access the host via
       // simcalls_.front()->issuer->get_iface()->get_host()
       if (activity.get_host() == get_host() && iteration_running) {

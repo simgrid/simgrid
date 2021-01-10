@@ -40,8 +40,8 @@ public:
   ~Io() override = default;
 #endif
 
-  static xbt::signal<void(Io const&, Actor const&)> on_start;
-  static xbt::signal<void(Io const&, Actor const&)> on_completion;
+  static xbt::signal<void(Io const&)> on_start;
+  static xbt::signal<void(Io const&)> on_completion;
 
   Io* start() override;
   Io* wait() override;

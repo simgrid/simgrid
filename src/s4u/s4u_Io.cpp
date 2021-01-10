@@ -12,8 +12,8 @@
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(Io const&, Actor const&)> Io::on_start;
-xbt::signal<void(Io const&, Actor const&)> Io::on_completion;
+xbt::signal<void(Io const&)> Io::on_start;
+xbt::signal<void(Io const&)> Io::on_completion;
 
 Io::Io(sg_disk_t disk, sg_size_t size, OpType type) : disk_(disk), size_(size), type_(type)
 {
@@ -51,7 +51,7 @@ Io* Io::start()
     pimpl_->suspend();
 
   state_ = State::STARTED;
-  on_start(*this, *Actor::self());
+  on_start(*this);
   return this;
 }
 
@@ -77,7 +77,7 @@ Io* Io::wait_for(double timeout)
   state_ = State::FINISHED;
   this->release_dependencies();
 
-  on_completion(*this, *Actor::self());
+  on_completion(*this);
   return this;
 }
 
