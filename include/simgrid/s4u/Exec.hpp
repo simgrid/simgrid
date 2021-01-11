@@ -46,8 +46,8 @@ public:
   Exec& operator=(Exec const&) = delete;
 
 #endif
-  static xbt::signal<void(Actor const&, Exec const&)> on_start;
-  static xbt::signal<void(Actor const&, Exec const&)> on_completion;
+  static xbt::signal<void(Exec const&)> on_start;
+  static xbt::signal<void(Exec const&)> on_completion;
 
   Exec* start() override;
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on

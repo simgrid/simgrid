@@ -42,9 +42,8 @@ public:
 
   ~Comm() override;
 
-  static xbt::signal<void(Actor const&)> on_sender_start;
-  static xbt::signal<void(Actor const&)> on_receiver_start;
-  static xbt::signal<void(Actor const&)> on_completion;
+  static xbt::signal<void(Comm const&, bool is_sender)> on_start;
+  static xbt::signal<void(Comm const&)> on_completion;
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
@@ -108,6 +107,8 @@ public:
    *
    * That's a buffer where the sent data will be copied  */
   CommPtr set_dst_data(void** buff, size_t size);
+  /** Retrieve where the data will be copied on the receiver side */
+  void* get_dst_data();
 
   /** Retrieve the mailbox on which this comm acts */
   Mailbox* get_mailbox() const;

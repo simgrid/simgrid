@@ -41,7 +41,7 @@ of it. Check its contents on the left. Each tutorial presents a classical use
 case, in a fast and practical manner. The user manual contains more
 thorough information. In each part, the important concepts are concisely
 introduced, before the reference manual. SimGrid is also described in several
-`scientific papers <https://simgrid.org/Publications.html>`_.
+`scientific papers <https://simgrid.org/usages.html>`_.
 
 Please report any documentation issue, including typos or unclear elements. You
 can even propose changes by clicking on the "Edit on FramaGit" button at the top

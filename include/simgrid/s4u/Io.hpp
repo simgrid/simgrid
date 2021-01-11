@@ -36,9 +36,12 @@ public:
 #ifndef DOXYGEN
   friend Disk;    // Factory of IOs
   friend Storage; // Factory of IOs
-#endif
 
   ~Io() override = default;
+#endif
+
+  static xbt::signal<void(Io const&)> on_start;
+  static xbt::signal<void(Io const&)> on_completion;
 
   Io* start() override;
   Io* wait() override;
