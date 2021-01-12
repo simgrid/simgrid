@@ -43,6 +43,43 @@ public:
   ~Configuration()                               = default;
 };
 
+class UnfoldingEvent {
+public:
+  int id = -1;
+  EventSet causes; // used to store directed ancestors of event e
+  UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& causes, int sid = -1);
+  UnfoldingEvent(const UnfoldingEvent&) = default;
+  UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
+  UnfoldingEvent(UnfoldingEvent&&)                 = default;
+  ~UnfoldingEvent()                                = default;
+
+  EventSet getHistory() const;
+
+  bool isConflict(UnfoldingEvent* event, UnfoldingEvent* otherEvent) const;
+  bool concernSameComm(const UnfoldingEvent* event, const UnfoldingEvent* otherEvent) const;
+
+  // check otherEvent is in my history ?
+  bool inHistory(UnfoldingEvent* otherEvent) const;
+
+  bool isImmediateConflict1(UnfoldingEvent* evt, UnfoldingEvent* otherEvt) const;
+
+  bool conflictWithConfig(UnfoldingEvent* event, Configuration const& config) const;
+  bool operator==(const UnfoldingEvent& other) const;
+  void print() const;
+
+  inline int get_state_id() const { return state_id; }
+  inline void set_state_id(int sid) { state_id = sid; }
+
+  inline std::string get_transition_tag() const { return transition_tag; }
+  inline void set_transition_tag(std::string const& tr_tag) { transition_tag = tr_tag; }
+
+private:
+  int state_id{-1};
+  std::string transition_tag{""}; // The tag of the last transition that lead to creating the event
+  bool transition_is_IReceive(const UnfoldingEvent* testedEvt, const UnfoldingEvent* SdRcEvt) const;
+  bool transition_is_ISend(const UnfoldingEvent* testedEvt, const UnfoldingEvent* SdRcEvt) const;
+  bool check_tr_concern_same_comm(bool& chk1, bool& chk2, UnfoldingEvent* evt1, UnfoldingEvent* evt2) const;
+};
 } // namespace mc
 } // namespace simgrid
 #endif
