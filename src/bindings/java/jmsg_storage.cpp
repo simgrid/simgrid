@@ -195,7 +195,6 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   jobjectArray jtable;
   jobject jstorage;
   jstring jname;
-  sg_storage_t storage;
 
   xbt_dynar_t table = sg_storages_as_dynar();
   int count = xbt_dynar_length(table);
@@ -214,7 +213,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   }
 
   for (index = 0; index < count; index++) {
-    storage = xbt_dynar_get_as(table, index, sg_storage_t);
+    sg_storage_t storage = xbt_dynar_get_as(table, index, sg_storage_t);
     if (java_storage_map.find(storage) != java_storage_map.end()) {
       jstorage = java_storage_map.at(storage);
     } else {
