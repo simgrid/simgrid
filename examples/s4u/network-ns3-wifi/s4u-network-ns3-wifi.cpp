@@ -15,7 +15,7 @@ public:
   std::string sender;
   int size;
 
-  Message(std::string sender_, int size_) : sender(sender_), size(size_) {}
+  Message(const std::string& sender_, int size_) : sender(sender_), size(size_) {}
 };
 
 static void sender(std::string mailbox, double msg_size, unsigned sleep_time)
