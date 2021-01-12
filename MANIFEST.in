@@ -2302,6 +2302,7 @@ include src/mc/inspect/mc_unw.hpp
 include src/mc/inspect/mc_unw_vmread.cpp
 include src/mc/mc_api.cpp
 include src/mc/mc_api.hpp
+include src/mc/udpor_global.hpp
 include src/mc/mc_base.cpp
 include src/mc/mc_base.h
 include src/mc/mc_client_api.cpp

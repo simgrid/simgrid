@@ -678,6 +678,7 @@ set(MC_SRC
   src/mc/mc_smx.cpp
   src/mc/mc_exit.hpp
   src/mc/Transition.hpp
+  src/mc/udpor_global.hpp
   )
 
 set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
