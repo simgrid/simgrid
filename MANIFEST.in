@@ -2278,6 +2278,8 @@ include src/mc/checker/LivenessChecker.hpp
 include src/mc/checker/SafetyChecker.cpp
 include src/mc/checker/SafetyChecker.hpp
 include src/mc/checker/SimcallInspector.hpp
+include src/mc/checker/UdporChecker.cpp
+include src/mc/checker/UdporChecker.hpp
 include src/mc/checker/simgrid_mc.cpp
 include src/mc/compare.cpp
 include src/mc/inspect/DwarfExpression.cpp
