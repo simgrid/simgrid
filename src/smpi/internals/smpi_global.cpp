@@ -497,8 +497,10 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
         for (const std::string& target_lib : target_libs)
           unlink(target_lib.c_str());
       }
-      xbt_assert(handle != nullptr, "dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno,
-                 strerror(saved_errno));
+      xbt_assert(handle != nullptr,
+                 "dlopen failed: %s (errno: %d -- %s).\nError: Did you compile the program with a SMPI-specific "
+                 "compiler (spmicc or friends)?",
+                 dlerror(), saved_errno, strerror(saved_errno));
 
       smpi_entry_point_type entry_point = smpi_resolve_function(handle);
       xbt_assert(entry_point, "Could not resolve entry point");
