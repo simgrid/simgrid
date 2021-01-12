@@ -15,6 +15,20 @@ namespace mc {
 class UnfoldingEvent;
 using EventSet = std::deque<UnfoldingEvent*>;
 
+class EvtSetTools {
+public:
+  static bool contains(const EventSet events, const UnfoldingEvent* e);
+  static UnfoldingEvent* find(const EventSet events, const UnfoldingEvent* e);
+  static void subtract(EventSet& events, EventSet const& otherSet);
+  static bool depends(EventSet const& events, EventSet const& otherSet);
+  static bool isEmptyIntersection(EventSet evtS1, EventSet evtS2);
+  static EventSet makeUnion(EventSet s1, EventSet s2);
+  static void pushBack(EventSet& events, UnfoldingEvent* e);
+  static void remove(EventSet& events, UnfoldingEvent* e);
+  static EventSet minus(EventSet events, UnfoldingEvent* e);
+  static EventSet plus(EventSet events, UnfoldingEvent* e);
+};
+
 typedef struct s_evset_in {
   EventSet causuality_events;
   EventSet cause;
