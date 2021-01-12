@@ -61,7 +61,6 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     private_links_.insert({position + j, {linkUp, linkDown}});
     dim_product *= current_dimension;
   }
-  rank++;
 }
 
 void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
