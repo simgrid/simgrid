@@ -51,8 +51,7 @@ std::set<SD_task_t>* simulate(double how_long){
         SD_task_set_state(task, SD_DONE);
 
         /* the state has changed. Add it only if it's the first change */
-        if (sd_global->return_set.find(task) == sd_global->return_set.end())
-          sd_global->return_set.insert(task);
+        sd_global->return_set.emplace(task);
 
         /* remove the dependencies after this task */
         for (auto const& succ : *task->successors) {

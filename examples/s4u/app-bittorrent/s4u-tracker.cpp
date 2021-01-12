@@ -38,9 +38,7 @@ void Tracker::operator()()
       xbt_assert(query != nullptr);
 
       // Add the peer to our peer list, if not already known.
-      if (known_peers.find(query->getPeerId()) == known_peers.end()) {
-        known_peers.insert(query->getPeerId());
-      }
+      known_peers.emplace(query->getPeerId());
 
       // Sending back peers to the requesting peer
       auto* answer = new TrackerAnswer(TRACKER_QUERY_INTERVAL);
