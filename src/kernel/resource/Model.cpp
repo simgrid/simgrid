@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +17,7 @@ Model::~Model() = default; // Don't move this declaration to the header, or it w
 
 Action::ModifiedSet* Model::get_modified_set() const
 {
-  return maxmin_system_->modified_set_;
+  return maxmin_system_->modified_set_.get();
 }
 
 void Model::set_maxmin_system(lmm::System* system)

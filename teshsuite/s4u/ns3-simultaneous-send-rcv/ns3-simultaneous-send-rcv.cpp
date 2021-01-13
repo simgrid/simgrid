@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,10 +33,9 @@ static void test_send(){
 static void test_receive(){
   for (int nb_message = 0; nb_message < nb_message_to_send * nb_sender; nb_message++) {
     XBT_VERB("waiting for messages");
-    int* ptr = (int*)(box->get());
+    auto ptr = box->get_unique<int>();
     int id   = *ptr;
     XBT_VERB("received messages #%i", id);
-    delete ptr;
   }
   XBT_INFO("Done receiving from %d senders, each of them sending %d messages", nb_sender, nb_message_to_send);
 }

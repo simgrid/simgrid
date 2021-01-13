@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,6 +9,8 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
+
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt, "Logging specific to mc_compare in mc");
 
@@ -134,38 +136,24 @@ public:
 static ssize_t heap_comparison_ignore_size(const std::vector<simgrid::mc::IgnoredHeapRegion>* ignore_list,
                                            const void* address)
 {
-  int start = 0;
-  int end = ignore_list->size() - 1;
-
-  while (start <= end) {
-    unsigned int cursor = (start + end) / 2;
-    simgrid::mc::IgnoredHeapRegion const& region = (*ignore_list)[cursor];
-    if (region.address == address)
-      return region.size;
-    if (region.address < address)
-      start = cursor + 1;
-    if (region.address > address)
-      end = cursor - 1;
-  }
-
-  return -1;
+  auto pos = std::lower_bound(ignore_list->begin(), ignore_list->end(), address,
+                              [](auto const& reg, auto const* addr) { return reg.address < addr; });
+  return (pos != ignore_list->end() && pos->address == address) ? pos->size : -1;
 }
 
 static bool is_stack(const void *address)
 {
-  for (auto const& stack : mc_model_checker->get_remote_simulation().stack_areas())
-    if (address == stack.address)
-      return true;
-  return false;
+  auto const& stack_areas = mc_model_checker->get_remote_simulation().stack_areas();
+  return std::any_of(stack_areas.begin(), stack_areas.end(),
+                     [address](auto const& stack) { return stack.address == address; });
 }
 
 // TODO, this should depend on the snapshot?
 static bool is_block_stack(int block)
 {
-  for (auto const& stack : mc_model_checker->get_remote_simulation().stack_areas())
-    if (block == stack.block)
-      return true;
-  return false;
+  auto const& stack_areas = mc_model_checker->get_remote_simulation().stack_areas();
+  return std::any_of(stack_areas.begin(), stack_areas.end(),
+                     [block](auto const& stack) { return stack.block == block; });
 }
 
 namespace simgrid {

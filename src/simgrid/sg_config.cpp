@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -277,24 +277,24 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::bind_flag(sg_maxmin_precision, "maxmin/precision",
                              "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
 
-  simgrid::config::bind_flag(sg_concurrency_limit, "maxmin/concurrency-limit", {"maxmin/concurrency_limit"},
+  simgrid::config::bind_flag(sg_concurrency_limit, "maxmin/concurrency-limit",
                              "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
                              "processes on each host, at higher level. (default: -1 means no such limitation)");
 
   /* The parameters of network models */
 
   sg_latency_factor = 13.01; // comes from the default LV08 network model
-  simgrid::config::bind_flag(sg_latency_factor, "network/latency-factor", {"network/latency_factor"},
+  simgrid::config::bind_flag(sg_latency_factor, "network/latency-factor",
                              "Correction factor to apply to the provided latency (default value set by network model)");
 
   sg_bandwidth_factor = 0.97; // comes from the default LV08 network model
   simgrid::config::bind_flag(
-      sg_bandwidth_factor, "network/bandwidth-factor", {"network/bandwidth_factor"},
+      sg_bandwidth_factor, "network/bandwidth-factor",
       "Correction factor to apply to the provided bandwidth (default value set by network model)");
 
   sg_weight_S_parameter = 20537; // comes from the default LV08 network model
   simgrid::config::bind_flag(
-      sg_weight_S_parameter, "network/weight-S", {"network/weight_S"},
+      sg_weight_S_parameter, "network/weight-S",
       "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
   simgrid::config::declare_flag<double>("network/loopback-lat",
@@ -318,16 +318,13 @@ void sg_config_init(int *argc, char **argv)
                                       "Update the constraint set propagating recursively to others constraints "
                                       "(off by default unless optim is set to lazy)",
                                       "no");
-  simgrid::config::alias("cpu/maxmin-selective-update", {"cpu/maxmin_selective_update"});
   simgrid::config::declare_flag<bool>("network/maxmin-selective-update", "Update the constraint set propagating "
                                                                          "recursively to others constraints (off by "
                                                                          "default unless optim is set to lazy)",
                                       "no");
-  simgrid::config::alias("network/maxmin-selective-update", {"network/maxmin_selective_update"});
 
   simgrid::config::declare_flag<int>("contexts/stack-size", "Stack size of contexts in KiB (not with threads)",
                                      8 * 1024, [](int value) { smx_context_stack_size = value * 1024; });
-  simgrid::config::alias("contexts/stack-size", {"contexts/stack_size"});
 
   /* guard size for contexts stacks in memory pages */
 #if defined(_WIN32) || (PTH_STACKGROWTH != -1)
@@ -338,7 +335,6 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::declare_flag<int>("contexts/guard-size", "Guard size for contexts stacks in memory pages",
                                      default_guard_size,
                                      [](int value) { smx_context_guard_size = value * xbt_pagesize; });
-  simgrid::config::alias("contexts/guard-size", {"contexts/guard_size"});
   simgrid::config::declare_flag<int>("contexts/nthreads", "Number of parallel threads used to execute user contexts", 1,
                                      &SIMIX_context_set_nthreads);
 
@@ -360,17 +356,14 @@ void sg_config_init(int *argc, char **argv)
                                              "meaning if(size >=thresholdN ) return valueN.",
                                              "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;"
                                              "1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
-  simgrid::config::alias("smpi/bw-factor", {"smpi/bw_factor"});
 
   simgrid::config::declare_flag<std::string>("smpi/lat-factor", "Latency factors for smpi.",
                                              "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;"
                                              "1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
-  simgrid::config::alias("smpi/lat-factor", {"smpi/lat_factor"});
   simgrid::config::declare_flag<std::string>("smpi/IB-penalty-factors",
                                              "Correction factor to communications using Infiniband model with "
                                              "contention (default value based on Stampede cluster profiling)",
                                              "0.965;0.925;1.35");
-  simgrid::config::alias("smpi/IB-penalty-factors", {"smpi/IB_penalty_factors"});
   /* Others */
 
   simgrid::config::declare_flag<bool>(

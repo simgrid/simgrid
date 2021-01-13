@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,12 +16,11 @@ static void pinger(simgrid::s4u::Mailbox* mailbox_in, simgrid::s4u::Mailbox* mai
 
   mailbox_out->put(payload, 1);
   /* - ... then wait for the (large) pong */
-  const auto* sender_time = static_cast<double*>(mailbox_in->get());
+  auto sender_time = mailbox_in->get_unique<double>();
 
   double communication_time = simgrid::s4u::Engine::get_clock() - *sender_time;
   XBT_INFO("Payload received : large communication (bandwidth bound)");
   XBT_INFO("Pong time (bandwidth bound): %.3f", communication_time);
-  delete sender_time;
 }
 
 static void ponger(simgrid::s4u::Mailbox* mailbox_in, simgrid::s4u::Mailbox* mailbox_out)
@@ -29,11 +28,10 @@ static void ponger(simgrid::s4u::Mailbox* mailbox_in, simgrid::s4u::Mailbox* mai
   XBT_INFO("Pong from mailbox %s to mailbox %s", mailbox_in->get_name().c_str(), mailbox_out->get_name().c_str());
 
   /* - Receive the (small) ping first ....*/
-  const auto* sender_time   = static_cast<double*>(mailbox_in->get());
+  auto sender_time          = mailbox_in->get_unique<double>();
   double communication_time = simgrid::s4u::Engine::get_clock() - *sender_time;
   XBT_INFO("Payload received : small communication (latency bound)");
   XBT_INFO("Ping time (latency bound) %f", communication_time);
-  delete sender_time;
 
   /*  - ... Then send a 1GB pong back (bandwidth bound) */
   auto* payload = new double(simgrid::s4u::Engine::get_clock());

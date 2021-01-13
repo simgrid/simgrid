@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -138,33 +138,6 @@ CommPtr Mailbox::get_init()
   return res;
 }
 
-CommPtr Mailbox::get_async(void** data)
-{
-  CommPtr res = get_init();
-  res->set_dst_data(data, sizeof(*data));
-  res->vetoable_start();
-  return res;
-}
-
-void* Mailbox::get()
-{
-  void* res = nullptr;
-  CommPtr c = get_init();
-  c->set_dst_data(&res, sizeof(res));
-  c->vetoable_start();
-  c->wait();
-  return res;
-}
-void* Mailbox::get(double timeout)
-{
-  void* res = nullptr;
-  CommPtr c = get_init();
-  c->set_dst_data(&res, sizeof(res));
-  c->vetoable_start();
-  c->wait_for(timeout);
-  return res;
-}
-
 kernel::activity::ActivityImplPtr
 Mailbox::iprobe(int type, bool (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data)
 {
@@ -210,12 +183,12 @@ int sg_mailbox_listen(const char* alias)
 
 void* sg_mailbox_get(sg_mailbox_t mailbox)
 {
-  return mailbox->get();
+  return mailbox->get<void>();
 }
 
 sg_comm_t sg_mailbox_get_async(sg_mailbox_t mailbox, void** data)
 {
-  auto comm = mailbox->get_async(data);
+  auto comm = mailbox->get_async<void>(data);
   comm->add_ref();
   return comm.get();
 }

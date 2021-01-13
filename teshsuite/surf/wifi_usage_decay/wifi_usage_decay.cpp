@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -75,7 +75,8 @@ void run_ping_test(const char* src, const char* dest, int data_size)
     XBT_INFO("Actual result: Sending %d bytes from '%s' to '%s' takes %f seconds.", data_size,
              simgrid::s4u::this_actor::get_host()->get_cname(), dest, end_time - start_time);
   });
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name(dest), [mailbox]() { mailbox->get(); });
+  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name(dest),
+                              [mailbox]() { mailbox->get<std::string>(); });
   auto* l = (simgrid::kernel::resource::NetworkWifiLink*)simgrid::s4u::Link::by_name("AP1")->get_impl();
   if(!l->toggle_decay_model())
     l->toggle_decay_model();

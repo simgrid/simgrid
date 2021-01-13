@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,18 +11,6 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/xbt/memory_map.hpp"
-
-namespace simgrid {
-namespace mc {
-
-struct DerefAndCompareByActorsCountAndUsedHeap {
-  template <class X, class Y> bool operator()(X const& a, Y const& b) const
-  {
-    return std::make_pair(a->actors_count, a->heap_bytes_used) < std::make_pair(b->actors_count, b->heap_bytes_used);
-  }
-};
-}
-}
 
 /********************************* MC Global **********************************/
 

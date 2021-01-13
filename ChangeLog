@@ -1,17 +1,36 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.25.1) UNRELEASED (target: March 20 2020 or v3.26 on 3/26/20)
+SimGrid (3.26.1) NOT RELEASED YET (v3.27 expected March 20. 2021, 09:37 UTC)
+
+User-visible changes:
+ - Removed some option aliases that were deprecated since v3.23 (June 2019)
+   - 'verbose-exit' is now 'debug/verbose-exit'
+   - 'simix/breakpoint' is now 'debug/breakpoint'
+   - 'clean-atexit' is now 'debug/clean-atexit'
+
+S4U:
+- Define new template functions Mailbox::get_unique(), returning a std::unique_ptr.
+- Functions Mailbox::get() and Mailbox::get_async() are now templated with the
+  type of the pointee. Untyped functions are deprecated. Use Mailbox::get<void>()
+  or Mailbox::get_async<void>() if you really want to play with void*.
+- Unify the interface of Activity::on_{start/activity}
+- New function: Comm::get_dst_data()
+
+----------------------------------------------------------------------------
+
+SimGrid (3.26) December 15. 2020
+
+The Release release (the French lockdown was eased today).
 
 Important user-visible changes:
  - SimGrid now requires a compiler with C++14 support.
    Sibling projects should upgrade their FindSimgrid.cmake
  - Surf precision default value is now 1e-9, instead of 1e-5. This was changed as
-   several users had difficult to understand issues when using high bandwidth or
+   several users had difficulties to understand issues when using high bandwidth or
    small latency events. The new value was already the default for SMPI and
    should not cause too much performance hit. It can change some simulation
    timings if simulation was skipping a lot of small events (which was actually
-   an issue of said simulation). The value can still be changed back using
-   --cfg=surf/precision:1e-5.
+   an issue per see). The old value can be restored with --cfg=surf/precision:1e-5.
  - On some network models (L07, CM02, LV08), an implicit loopback link is created
    for local communication. Default bandwidth was 500MBps and latency was 15µs,
    which was rather bad. Default values have been changed to 10GBps and 0 latency.
@@ -33,7 +52,10 @@ General:
  - LTO behavior on GCC can be parameterized using LTO_EXTRA_FLAG in cmake.
    Setting it to "auto" will use all available cores, while setting it to n will
    use n cores to speedup link step (usage: cmake -DLTO_EXTRA_FLAG=4).
- - Remove obsolete option --cfg=contexts/parallel-threshold.
+ - Remove obsolete runtime option 'contexts/parallel-threshold'.
+ - Runtime option 'tracing/msg/process' renamed to 'tracing/actor'. The old name
+   has been kept for compatibility.
+ - Finally remove obsolete snake_case() aliases for runtime options.
  - Further improve the documentation.
 
 S4U:
@@ -50,6 +72,16 @@ SMPI:
  - smpicc/cxx/ff/f90 now will actually perform definition checks at link time. When
    building shared libraries, this may cause issues, so environment variable
    SMPI_NO_UNDEFINED_CHECK can be added to disable this.
+ - most temporary files should now be created in /tmp dir (or equivalent).
+   If this one does not allow execution of code (noexec flag), this may cause issues.
+   Please use another tmp directory (using TMPDIR or equivalent system variable)
+   in this case.
+
+Model-Checker:
+ - A large refactoring is ongoing, but this should be transparent for users so far.
+
+XBT:
+ - Drop xbt_str_split().
 
 C binding and interface:
  - The return type of the sg_actor_on_exit() callbacks is now 'void'

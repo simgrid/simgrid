@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,6 +15,7 @@
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -143,12 +144,12 @@ void Session::close()
 
 bool Session::actor_is_enabled(aid_t pid) const
 {
-  s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
+  s_mc_message_actor_enabled_t msg{simgrid::mc::MessageType::ACTOR_ENABLED, pid};
   model_checker_->channel().send(msg);
-  char buff[MC_MESSAGE_LENGTH];
-  ssize_t received = model_checker_->channel().receive(buff, MC_MESSAGE_LENGTH, true);
+  std::array<char, MC_MESSAGE_LENGTH> buff;
+  ssize_t received = model_checker_->channel().receive(buff.data(), buff.size(), true);
   xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
-  return ((s_mc_message_int_t*)buff)->value;
+  return ((s_mc_message_int_t*)buff.data())->value;
 }
 
 simgrid::mc::Session* session;

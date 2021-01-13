@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -43,8 +43,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network
  * Crude globals *
  *****************/
 
-extern std::map<std::string, SgFlow*> flow_from_sock;
-extern std::map<std::string, ns3::ApplicationContainer> sink_from_sock;
+extern std::map<std::string, SgFlow*, std::less<>> flow_from_sock;
+extern std::map<std::string, ns3::ApplicationContainer, std::less<>> sink_from_sock;
 
 static ns3::InternetStackHelper stack;
 
@@ -80,13 +80,21 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
     simgrid::kernel::routing::WifiZone* wifizone = dynamic_cast<simgrid::kernel::routing::WifiZone*> (zone.get_impl());
     if (wifizone == nullptr) return;
 
+#if NS3_MINOR_VERSION < 32
     wifi.SetStandard(ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
+#else
+    wifi.SetStandard(ns3::WIFI_STANDARD_80211n_5GHZ);
+#endif
 
     std::string ssid = wifizone->get_name();
     const char* mcs = wifizone->get_property("mcs");
     const char* nss = wifizone->get_property("nss");
     int mcs_value = mcs ? atoi(mcs) : 3;
     int nss_value = nss ? atoi(nss) : 1;
+#if NS3_MINOR_VERSION < 30
+    if(nss_value != 1+(mcs_value/8))
+      xbt_die("On NS3 < 3.30, NSS value has to satisfy NSS == 1+(MCS/8) constraint. Bailing out");
+#endif
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                  "ControlMode", ns3::StringValue("HtMcs0"),
                                  "DataMode", ns3::StringValue("HtMcs" + std::to_string(mcs_value)));
@@ -142,7 +150,7 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
     address.SetBase(addr.c_str(), "255.255.0.0");
     XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
     ns3::Ipv4InterfaceContainer addresses = address.Assign(netDevices);
-    for (int i = 0; i < hosts_netpoints.size(); i++) {
+    for (unsigned int i = 0; i < hosts_netpoints.size(); i++) {
         hosts_netpoints[i]->ipv4_address_ = transformIpv4Address(addresses.GetAddress(i));
     }
 

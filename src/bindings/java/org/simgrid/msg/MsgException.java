@@ -1,6 +1,6 @@
 /* This exception is an abstract class grouping all MSG-related exceptions */
 
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -244,16 +244,6 @@ void smpi_init_options(){
       "smpi/ois", "Small messages timings (MPI_Isend minimum time for small messages)", "0:0:0:0:0");
   simgrid::config::declare_flag<std::string>(
       "smpi/or", "Small messages timings (MPI_Recv minimum time for small messages)", "0:0:0:0:0");
-  simgrid::config::alias("smpi/display-timing", {"smpi/display_timing"});
-  simgrid::config::alias("smpi/coll-selector", {"smpi/coll_selector"});
-  simgrid::config::alias("smpi/simulate-computation", {"smpi/simulate_computation"});
-  simgrid::config::alias("smpi/shared-malloc", {"smpi/use_shared_malloc", "smpi/use-shared-malloc"});
-  simgrid::config::alias("smpi/host-speed", {"smpi/running_power", "smpi/running-power"});
-  simgrid::config::alias("smpi/cpu-threshold", {"smpi/cpu_threshold"});
-  simgrid::config::alias("smpi/async-small-thresh", {"smpi/async_small_thres", "smpi/async_small_thresh"});
-  simgrid::config::alias("smpi/send-is-detached-thresh", {"smpi/send_is_detached_thres", "smpi/send_is_detached_thresh"});
-  simgrid::config::alias("smpi/privatization", {"smpi/privatize_global_variables", "smpi/privatize-global-variables"});
-  simgrid::config::alias("smpi/reduce_scatter", {"smpi/reduce-scatter"});
   _smpi_options_initialized=true;
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,6 +6,7 @@
 #ifndef SIMGRID_PLUGINS_FILE_SYSTEM_H_
 #define SIMGRID_PLUGINS_FILE_SYSTEM_H_
 
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
 #include <xbt/base.h>
 #include <xbt/dict.h>
@@ -20,7 +21,6 @@
 
 // C interface
 ////////////////
-typedef sg_file_t msg_file_t; // MSG backwards compatibility
 
 SG_BEGIN_DECL
 XBT_PUBLIC void sg_storage_file_system_init();
@@ -53,6 +53,10 @@ XBT_PUBLIC xbt_dict_t sg_storage_get_content(const_sg_storage_t storage);
 
 XBT_PUBLIC xbt_dict_t sg_host_get_storage_content(sg_host_t host);
 
+#if SIMGRID_HAVE_MSG
+
+typedef sg_file_t msg_file_t; // MSG backwards compatibility
+
 #define MSG_file_open(fullpath, data) sg_file_open((fullpath), (data))
 #define MSG_file_read(fd, size) sg_file_read((fd), (size))
 #define MSG_file_write(fd, size) sg_file_write((fd), (size))
@@ -77,6 +81,8 @@ XBT_PUBLIC xbt_dict_t sg_host_get_storage_content(sg_host_t host);
 
 #define MSG_host_get_storage_content(st) sg_host_get_storage_content(st)
 
+#endif // SIMGRID_HAVE_MSG
+
 SG_END_DECL
 
 // C++ interface
@@ -100,7 +106,7 @@ namespace s4u {
  * For now, you cannot change the mountpoints programmatically, and must declare them from your platform file.
  */
 class XBT_PUBLIC File : public xbt::Extendable<File> {
-  sg_size_t size_;
+  sg_size_t size_ = 0;
   std::string path_;
   std::string fullpath_;
   sg_size_t current_position_ = SEEK_SET;
@@ -150,7 +156,7 @@ public:
 };
 
 class XBT_PUBLIC FileSystemDiskExt {
-  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  std::unique_ptr<std::map<std::string, sg_size_t, std::less<>>> content_;
   std::map<Host*, std::string> remote_mount_points_;
   std::string mount_point_;
   sg_size_t used_size_ = 0;
@@ -161,8 +167,8 @@ public:
   explicit FileSystemDiskExt(const Disk* ptr);
   FileSystemDiskExt(const FileSystemDiskExt&) = delete;
   FileSystemDiskExt& operator=(const FileSystemDiskExt&) = delete;
-  std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
-  std::map<std::string, sg_size_t>* get_content() const { return content_.get(); }
+  std::map<std::string, sg_size_t, std::less<>>* parse_content(const std::string& filename);
+  std::map<std::string, sg_size_t, std::less<>>* get_content() const { return content_.get(); }
   const char* get_mount_point() const { return mount_point_.c_str(); }
   const char* get_mount_point(s4u::Host* remote_host) { return remote_mount_points_[remote_host].c_str(); }
   void add_remote_mount(Host* host, const std::string& mount_point)
@@ -176,7 +182,7 @@ public:
 };
 
 class XBT_PUBLIC FileSystemStorageExt {
-  std::unique_ptr<std::map<std::string, sg_size_t>> content_;
+  std::unique_ptr<std::map<std::string, sg_size_t, std::less<>>> content_;
   sg_size_t used_size_ = 0;
   sg_size_t size_      = 0;
 
@@ -185,8 +191,8 @@ public:
   explicit FileSystemStorageExt(const Storage* ptr);
   FileSystemStorageExt(const FileSystemStorageExt&) = delete;
   FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
-  std::map<std::string, sg_size_t>* parse_content(const std::string& filename);
-  std::map<std::string, sg_size_t>* get_content() { return content_.get(); }
+  std::map<std::string, sg_size_t, std::less<>>* parse_content(const std::string& filename);
+  std::map<std::string, sg_size_t, std::less<>>* get_content() { return content_.get(); }
   sg_size_t get_size() const { return size_; }
   sg_size_t get_used_size() const { return used_size_; }
   void decr_used_size(sg_size_t size);

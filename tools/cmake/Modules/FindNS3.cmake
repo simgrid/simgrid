@@ -75,6 +75,7 @@ if(NS3_INCLUDE_DIR)
     endif()
 
     string(REGEX REPLACE ".*ns([.0-9]+)-core.*" "\\1" NS3_VERSION "${NS3_LIBRARIES}")
+    string(REGEX REPLACE "3.([.0-9]+)" "\\1" NS3_MINOR_VERSION "${NS3_VERSION}")
     get_filename_component(NS3_LIBRARY_PATH "${NS3_LIBRARIES}" PATH)
 
     # Compute NS3_PATH

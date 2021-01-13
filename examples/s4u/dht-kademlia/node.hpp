@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2020. The SimGrid Team.
+/* Copyright (c) 2012-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,6 +11,8 @@
 #include "routing_table.hpp"
 #include "s4u-dht-kademlia.hpp"
 
+#include <memory>
+
 namespace kademlia {
 
 class Node {
@@ -20,7 +22,7 @@ class Node {
   unsigned int find_node_failed  = 0; // Number of find_node which have failed.
 public:
   simgrid::s4u::CommPtr receive_comm = nullptr;
-  void* received_msg             = nullptr;
+  Message* received_msg              = nullptr;
   explicit Node(unsigned int node_id) : id_(node_id), table(node_id) {}
   Node(const Node&) = delete;
   Node& operator=(const Node&) = delete;
@@ -30,7 +32,7 @@ public:
   void sendFindNode(unsigned int id, unsigned int destination) const;
   unsigned int sendFindNodeToBest(const Answer* node_list) const;
   void routingTableUpdate(unsigned int id);
-  Answer* findClosest(unsigned int destination_id);
+  std::unique_ptr<Answer> findClosest(unsigned int destination_id);
   bool findNode(unsigned int id_to_find, bool count_in_stats);
   void randomLookup();
   void handleFindNode(const Message* msg);

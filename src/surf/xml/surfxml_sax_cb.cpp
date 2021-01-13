@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -288,7 +288,6 @@ void ETag_surfxml_host()    {
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
 
-  host.speed_trace = nullptr;
   if (A_surfxml_host_availability___file[0] != '\0') {
     XBT_WARN("The availability_file attribute in <host> is now deprecated. Please, use 'speed_file' instead.");
     host.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_host_availability___file);
@@ -554,7 +553,6 @@ void STag_surfxml_link___ctn()
 void ETag_surfxml_backbone(){
   simgrid::kernel::routing::LinkCreationArgs link;
 
-  link.properties = nullptr;
   link.id = std::string(A_surfxml_backbone_id);
   link.bandwidths.push_back(xbt_parse_get_bandwidth(
       surf_parsed_filename, surf_parse_lineno, A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str()));
@@ -608,9 +606,9 @@ void ETag_surfxml_route(){
 
   route.src         = sg_netpoint_by_name_or_null(A_surfxml_route_src); // tested to not be nullptr in start tag
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
-  route.gw_src    = nullptr;
-  route.gw_dst    = nullptr;
-  route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
+  route.symmetrical = (A_surfxml_route_symmetrical == AU_surfxml_route_symmetrical ||
+                       A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES ||
+                       A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_yes);
 
   route.link_list.swap(parsed_link_list);
 
@@ -638,17 +636,9 @@ void ETag_surfxml_zoneRoute()
 
   ASroute.link_list.swap(parsed_link_list);
 
-  switch (A_surfxml_zoneRoute_symmetrical) {
-  case AU_surfxml_zoneRoute_symmetrical:
-  case A_surfxml_zoneRoute_symmetrical_YES:
-    ASroute.symmetrical = true;
-    break;
-  case A_surfxml_zoneRoute_symmetrical_NO:
-    ASroute.symmetrical = false;
-    break;
-  default:
-    THROW_IMPOSSIBLE;
-  }
+  ASroute.symmetrical = (A_surfxml_zoneRoute_symmetrical == AU_surfxml_zoneRoute_symmetrical ||
+                         A_surfxml_zoneRoute_symmetrical == A_surfxml_zoneRoute_symmetrical_YES ||
+                         A_surfxml_zoneRoute_symmetrical == A_surfxml_zoneRoute_symmetrical_yes);
 
   sg_platf_new_route(&ASroute);
 }
@@ -658,8 +648,6 @@ void ETag_surfxml_bypassRoute(){
 
   route.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be nullptr in start tag
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be nullptr in start tag
-  route.gw_src = nullptr;
-  route.gw_dst = nullptr;
   route.symmetrical = false;
 
   route.link_list.swap(parsed_link_list);

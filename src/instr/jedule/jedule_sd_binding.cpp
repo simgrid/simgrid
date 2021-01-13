@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,6 +49,7 @@ void jedule_sd_dump(const char * filename)
     }
 
     FILE* fh = fopen(fname.c_str(), "w");
+    xbt_assert(fh != nullptr, "Failed to open file: %s", fname.c_str());
 
     my_jedule->write_output(fh);
 

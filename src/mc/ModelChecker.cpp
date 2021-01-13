@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,6 +14,7 @@
 #include "xbt/automaton.hpp"
 #include "xbt/system_error.hpp"
 
+#include <array>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 
@@ -42,12 +43,12 @@ void ModelChecker::start()
   checker_side_.start([](evutil_socket_t sig, short events, void* arg) {
     auto mc = static_cast<simgrid::mc::ModelChecker*>(arg);
     if (events == EV_READ) {
-      char buffer[MC_MESSAGE_LENGTH];
-      ssize_t size = mc->checker_side_.get_channel().receive(buffer, sizeof(buffer), false);
+      std::array<char, MC_MESSAGE_LENGTH> buffer;
+      ssize_t size = mc->checker_side_.get_channel().receive(buffer.data(), buffer.size(), false);
       if (size == -1 && errno != EAGAIN)
         throw simgrid::xbt::errno_error();
 
-      if (not mc->handle_message(buffer, size))
+      if (not mc->handle_message(buffer.data(), size))
         mc->checker_side_.break_loop();
     } else if (events == EV_SIGNAL) {
       if (sig == SIGCHLD)
@@ -116,7 +117,7 @@ void ModelChecker::shutdown()
 
 void ModelChecker::resume(RemoteSimulation& process)
 {
-  int res = checker_side_.get_channel().send(MC_MESSAGE_CONTINUE);
+  int res = checker_side_.get_channel().send(MessageType::CONTINUE);
   if (res)
     throw xbt::errno_error();
   process.clear_cache();
@@ -165,75 +166,70 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
   memcpy(&base_message, buffer, sizeof(base_message));
 
   switch(base_message.type) {
-  case MC_MESSAGE_IGNORE_HEAP:
-    {
-    s_mc_message_ignore_heap_t message;
-    xbt_assert(size == sizeof(message), "Broken message");
-    memcpy(&message, buffer, sizeof(message));
+    case MessageType::IGNORE_HEAP: {
+      s_mc_message_ignore_heap_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
 
-    IgnoredHeapRegion region;
-    region.block    = message.block;
-    region.fragment = message.fragment;
-    region.address  = message.address;
-    region.size     = message.size;
-    get_remote_simulation().ignore_heap(region);
-    break;
+      IgnoredHeapRegion region;
+      region.block    = message.block;
+      region.fragment = message.fragment;
+      region.address  = message.address;
+      region.size     = message.size;
+      get_remote_simulation().ignore_heap(region);
+      break;
     }
 
-  case MC_MESSAGE_UNIGNORE_HEAP:
-    {
-    s_mc_message_ignore_memory_t message;
-    xbt_assert(size == sizeof(message), "Broken message");
-    memcpy(&message, buffer, sizeof(message));
-    get_remote_simulation().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
-    break;
+    case MessageType::UNIGNORE_HEAP: {
+      s_mc_message_ignore_memory_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      get_remote_simulation().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+      break;
     }
 
-  case MC_MESSAGE_IGNORE_MEMORY:
-    {
-    s_mc_message_ignore_memory_t message;
-    xbt_assert(size == sizeof(message), "Broken message");
-    memcpy(&message, buffer, sizeof(message));
-    this->get_remote_simulation().ignore_region(message.addr, message.size);
-    break;
+    case MessageType::IGNORE_MEMORY: {
+      s_mc_message_ignore_memory_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      this->get_remote_simulation().ignore_region(message.addr, message.size);
+      break;
     }
 
-  case MC_MESSAGE_STACK_REGION:
-    {
-    s_mc_message_stack_region_t message;
-    xbt_assert(size == sizeof(message), "Broken message");
-    memcpy(&message, buffer, sizeof(message));
-    this->get_remote_simulation().stack_areas().push_back(message.stack_region);
-    }
-    break;
+    case MessageType::STACK_REGION: {
+      s_mc_message_stack_region_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      this->get_remote_simulation().stack_areas().push_back(message.stack_region);
+    } break;
 
-  case MC_MESSAGE_REGISTER_SYMBOL:
-    {
-    s_mc_message_register_symbol_t message;
-    xbt_assert(size == sizeof(message), "Broken message");
-    memcpy(&message, buffer, sizeof(message));
-    xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
-    XBT_DEBUG("Received symbol: %s", message.name);
+    case MessageType::REGISTER_SYMBOL: {
+      s_mc_message_register_symbol_t message;
+      xbt_assert(size == sizeof(message), "Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
+      XBT_DEBUG("Received symbol: %s", message.name.data());
 
-    if (property_automaton == nullptr)
-      property_automaton = xbt_automaton_new();
+      if (property_automaton == nullptr)
+        property_automaton = xbt_automaton_new();
 
-    const RemoteSimulation* process = &this->get_remote_simulation();
-    RemotePtr<int> address = remote((int*)message.data);
-    xbt::add_proposition(property_automaton, message.name, [process, address]() { return process->read(address); });
+      const RemoteSimulation* process = &this->get_remote_simulation();
+      RemotePtr<int> address          = remote((int*)message.data);
+      xbt::add_proposition(property_automaton, message.name.data(),
+                           [process, address]() { return process->read(address); });
 
-    break;
+      break;
     }
 
-  case MC_MESSAGE_WAITING:
-    return false;
+    case MessageType::WAITING:
+      return false;
 
-  case MC_MESSAGE_ASSERTION_FAILED:
-    MC_report_assertion_error();
-    this->exit(SIMGRID_MC_EXIT_SAFETY);
+    case MessageType::ASSERTION_FAILED:
+      MC_report_assertion_error();
+      this->exit(SIMGRID_MC_EXIT_SAFETY);
 
-  default:
-    xbt_die("Unexpected message from model-checked application");
+    default:
+      xbt_die("Unexpected message from model-checked application");
   }
   return true;
 }
@@ -311,7 +307,7 @@ void ModelChecker::handle_simcall(Transition const& transition)
 {
   s_mc_message_simcall_handle_t m;
   memset(&m, 0, sizeof(m));
-  m.type  = MC_MESSAGE_SIMCALL_HANDLE;
+  m.type  = MessageType::SIMCALL_HANDLE;
   m.pid   = transition.pid_;
   m.value = transition.argument_;
   checker_side_.get_channel().send(m);
@@ -322,15 +318,15 @@ void ModelChecker::handle_simcall(Transition const& transition)
 
 bool ModelChecker::checkDeadlock()
 {
-  int res = checker_side_.get_channel().send(MC_MESSAGE_DEADLOCK_CHECK);
+  int res = checker_side_.get_channel().send(MessageType::DEADLOCK_CHECK);
   xbt_assert(res == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
   ssize_t s = checker_side_.get_channel().receive(message);
   xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof(message) && message.type == MC_MESSAGE_DEADLOCK_CHECK_REPLY,
+  xbt_assert(s == sizeof(message) && message.type == MessageType::DEADLOCK_CHECK_REPLY,
              "Received unexpected message %s (%i, size=%i) "
-             "expected MC_MESSAGE_DEADLOCK_CHECK_REPLY (%i, size=%i)",
-             MC_message_type_name(message.type), (int)message.type, (int)s, (int)MC_MESSAGE_DEADLOCK_CHECK_REPLY,
+             "expected MessageType::DEADLOCK_CHECK_REPLY (%i, size=%i)",
+             MC_message_type_name(message.type), (int)message.type, (int)s, (int)MessageType::DEADLOCK_CHECK_REPLY,
              (int)sizeof(message));
   return message.value != 0;
 }

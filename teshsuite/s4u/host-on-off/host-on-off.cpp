@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team.
+/* Copyright (c) 2010-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,25 +10,23 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void worker()
 {
-  const std::string* payload;
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("jupi");
 
   while (true) {
+    std::unique_ptr<std::string> payload;
     try {
-      payload = static_cast<std::string*>(mailbox->get());
+      payload = mailbox->get_unique<std::string>();
     } catch (const simgrid::HostFailureException&) {
       XBT_DEBUG("The host has been turned off, this was expected");
       return;
     }
 
     if (*payload == "finalize") {
-      delete payload;
       break;
     }
     simgrid::s4u::this_actor::execute(5E7);
 
     XBT_INFO("Task \"%s\" done", payload->c_str());
-    delete payload;
   }
   XBT_INFO("I'm done. See you!");
 }

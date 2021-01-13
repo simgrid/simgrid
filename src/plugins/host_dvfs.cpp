@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,15 +21,19 @@
 
 SIMGRID_REGISTER_PLUGIN(host_dvfs, "Dvfs support", &sg_host_dvfs_plugin_init)
 
-static simgrid::config::Flag<double> cfg_sampling_rate("plugin/dvfs/sampling-rate", {"plugin/dvfs/sampling_rate"},
-    "How often should the dvfs plugin check whether the frequency needs to be changed?", 0.1,
-    [](double val){if (val != 0.1) sg_host_dvfs_plugin_init();});
+static simgrid::config::Flag<double>
+    cfg_sampling_rate("plugin/dvfs/sampling-rate",
+                      "How often should the dvfs plugin check whether the frequency needs to be changed?", 0.1,
+                      [](double val) {
+                        if (val != 0.1)
+                          sg_host_dvfs_plugin_init();
+                      });
 
 static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
                                                        "Which Governor should be used that adapts the CPU frequency?",
                                                        "performance",
 
-                                                       std::map<std::string, std::string>({
+                                                       std::map<std::string, std::string, std::less<>>({
 #if HAVE_SMPI
                                                          {"adagio", "TODO: Doc"},
 #endif
@@ -43,12 +47,12 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
                                                        });
 
 static simgrid::config::Flag<int>
-    cfg_min_pstate("plugin/dvfs/min-pstate", {"plugin/dvfs/min_pstate"},
+    cfg_min_pstate("plugin/dvfs/min-pstate",
                    "Which pstate is the minimum (and hence fastest) pstate for this governor?", 0);
 
 static const int max_pstate_not_limited = -1;
 static simgrid::config::Flag<int>
-    cfg_max_pstate("plugin/dvfs/max-pstate", {"plugin/dvfs/max_pstate"},
+    cfg_max_pstate("plugin/dvfs/max-pstate",
                    "Which pstate is the maximum (and hence slowest) pstate for this governor?", max_pstate_not_limited);
 
 /** @addtogroup SURF_plugin_load
@@ -291,11 +295,11 @@ public:
         task_id           = 0;
       }
     });
-    simgrid::s4u::Exec::on_start.connect([this](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+    simgrid::s4u::Exec::on_start.connect([this](simgrid::s4u::Exec const& activity) {
       if (activity.get_host() == get_host())
         pre_task();
     });
-    simgrid::s4u::Exec::on_completion.connect([this](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+    simgrid::s4u::Exec::on_completion.connect([this](simgrid::s4u::Exec const& activity) {
       // For more than one host (not yet supported), we can access the host via
       // simcalls_.front()->issuer->get_iface()->get_host()
       if (activity.get_host() == get_host() && iteration_running) {

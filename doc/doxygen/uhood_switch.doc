@@ -328,7 +328,7 @@ number and its arguments (among some other things):
 @code{cpp}
 struct s_smx_simcall {
   // Simcall number:
-  e_smx_simcall_t call;
+  Simcall call;
   // Issuing actor:
   smx_actor_t issuer;
   // Arguments of the simcall:

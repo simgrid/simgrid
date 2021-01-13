@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -70,8 +70,8 @@ public:
   explicit ClusterZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
-  void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
-                 std::map<std::string, xbt_edge_t>* edges) override;
+  void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
+                 std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
 
   virtual void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position);
   virtual void parse_specific_arguments(ClusterCreationArgs*)
@@ -90,7 +90,6 @@ public:
     return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0);
   }
 
-  void* loopback_                = nullptr;
   kernel::resource::LinkImpl* backbone_ = nullptr;
   NetPoint* router_              = nullptr;
   bool has_limiter_                = false;

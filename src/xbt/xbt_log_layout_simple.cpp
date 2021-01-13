@@ -1,6 +1,6 @@
 /* layout_simple - a dumb log layout                                        */
 
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,11 +18,11 @@ extern int xbt_log_no_loc;
   do {                                                                                                                 \
     rem_size -= (len);                                                                                                 \
     if (rem_size <= 0)                                                                                                 \
-      return 0;                                                                                                        \
+      return false;                                                                                                    \
     p += (len);                                                                                                        \
   } while (0)
 
-static int xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_t ev, const char* fmt)
+static bool xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_t ev, const char* fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -66,7 +66,7 @@ static int xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_t
   check_overflow(1);
   *p = '\0';
 
-  return 1;
+  return true;
 }
 
 xbt_log_layout_t xbt_log_layout_simple_new(const char*)

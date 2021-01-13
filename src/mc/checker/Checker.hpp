@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2020. The SimGrid Team.
+/* Copyright (c) 2016-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,9 +7,7 @@
 #ifndef SIMGRID_MC_CHECKER_HPP
 #define SIMGRID_MC_CHECKER_HPP
 
-//#include "src/mc/Session.hpp"
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_api.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -28,10 +26,8 @@ namespace mc {
  *  have all the necessary features). */
 // abstract
 class Checker {
-  Session* session_;
-
 public:
-  explicit Checker(Session& session);
+  inline explicit Checker() { mc_api::get().set_checker(this); }
 
   // No copy:
   Checker(Checker const&) = delete;
@@ -56,15 +52,13 @@ public:
 
   /** Log additional information about the state of the model-checker */
   virtual void log_state() = 0;
-
-protected:
-  Session& get_session() { return *session_; }
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC Checker* createLivenessChecker(Session& session);
-XBT_PUBLIC Checker* createSafetyChecker(Session& session);
-XBT_PUBLIC Checker* createCommunicationDeterminismChecker(Session& session);
+XBT_PUBLIC Checker* createLivenessChecker();
+XBT_PUBLIC Checker* createSafetyChecker();
+XBT_PUBLIC Checker* createCommunicationDeterminismChecker();
+XBT_PUBLIC Checker* createUdporChecker();
 
 } // namespace mc
 } // namespace simgrid

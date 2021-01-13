@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -71,7 +71,7 @@ void NetworkWifiLink::refresh_decay_bandwidths(){
   int nSTA = get_host_count();
 
   std::vector<Metric> new_bandwidths;
-  for (auto bandwidth : bandwidths_){
+  for (auto const& bandwidth : bandwidths_) {
     // Instantiate decay model relatively to the actual bandwidth
     double max_bw=bandwidth.peak;
     double min_bw=bandwidth.peak-(wifi_max_rate_-wifi_min_rate_);

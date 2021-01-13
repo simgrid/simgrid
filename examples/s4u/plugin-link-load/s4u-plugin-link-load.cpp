@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,13 +11,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 static void sender(const std::string& mailbox, uint64_t msg_size)
 {
   auto mbox = simgrid::s4u::Mailbox::by_name(mailbox);
-  mbox->put((void*)1, msg_size);
+  static int payload = 42;
+  mbox->put(&payload, msg_size);
 }
 
 static void receiver(const std::string& mailbox)
 {
   auto mbox = simgrid::s4u::Mailbox::by_name(mailbox);
-  mbox->get();
+  mbox->get<int>();
 }
 
 static void run_transfer(simgrid::s4u::Host* src_host, simgrid::s4u::Host* dst_host, const std::string& mailbox,

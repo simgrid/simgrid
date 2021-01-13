@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,9 +18,8 @@ static int server(int worker_amount)
   int value_got             = -1;
   simgrid::s4u::Mailbox* mb = simgrid::s4u::Mailbox::by_name("server");
   for (int count = 0; count < worker_amount; count++) {
-    const auto* msg = static_cast<int*>(mb->get());
+    auto msg  = mb->get_unique<int>();
     value_got = *msg;
-    delete msg;
   }
   /*
    * We assert here that the last message we got (which overwrite any previously received message) is the one from the

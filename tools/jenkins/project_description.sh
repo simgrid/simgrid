@@ -34,7 +34,7 @@ get_ns3(){
 get_python(){
   found=$(grep -c "Compile Python bindings .....: ON" ./consoleText)
   if [ "$found" != 0 ]; then
-    grep -m 1 "Found PythonInterp" ./consoleText| sed "s/.*-- Found PythonInterp.*found suitable version \"\([a-zA-Z0-9\.]*\)\",.*/\1/g"
+    grep -m 1 "Found Python3" ./consoleText| sed "s/.*-- Found Python3.*found version \"\([a-zA-Z0-9\.]*\)\".*/\1/g"
   else
     echo ""
   fi
@@ -133,7 +133,10 @@ function sortTable(n, type) {
 
 for node in "${nodes[@]}"
 do
-    wget --quiet ${BUILD_URL}/build_mode=Debug,node=${node}/consoleText >/dev/null 2>&1
+    wget --quiet --output-document=consoleText \
+         ${BUILD_URL}/build_mode=Debug,node=${node}/consoleText \
+         ${BUILD_URL}/build_mode=ModelChecker,node=${node}/consoleText \
+         >/dev/null 2>&1
     if [ ! -f consoleText ]; then
       echo "file not existing for node ${node}"
       exit 1

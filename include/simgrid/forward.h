@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +17,7 @@ namespace simgrid {
 
 namespace s4u {
 class Activity;
-/** Smart pointer to a simgrid::s4u::Actor */
+/** Smart pointer to a simgrid::s4u::Activity */
 using ActivityPtr = boost::intrusive_ptr<Activity>;
 XBT_PUBLIC void intrusive_ptr_release(const Activity* actor);
 XBT_PUBLIC void intrusive_ptr_add_ref(const Activity* actor);

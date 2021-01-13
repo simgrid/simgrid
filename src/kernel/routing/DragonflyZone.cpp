@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -51,7 +51,7 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
 
-  if (parameters.size() != 4 || parameters.empty()) {
+  if (parameters.size() != 4) {
     surf_parse_error(
         "Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
   }

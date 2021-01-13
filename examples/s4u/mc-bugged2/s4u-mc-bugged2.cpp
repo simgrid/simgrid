@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,27 +15,27 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 
 static void server()
 {
-  void* received1 = nullptr;
-  void* received2 = nullptr;
+  const int* received1 = nullptr;
+  const int* received2 = nullptr;
 
-  received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get();
-  long val1 = *(static_cast<int*>(received1));
+  received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
+  long val1 = *received1;
   received1 = nullptr;
   XBT_INFO("Received %ld", val1);
 
-  received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get();
-  long val2 = *(static_cast<int*>(received2));
+  received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
+  long val2 = *received2;
   received2 = nullptr;
   XBT_INFO("Received %ld", val2);
 
   MC_assert(std::min(val1, val2) == 1);
 
-  received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get();
-  val1      = *(static_cast<int*>(received1));
+  received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
+  val1      = *received1;
   XBT_INFO("Received %ld", val1);
 
-  received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get();
-  val2      = *(static_cast<int*>(received2));
+  received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
+  val2      = *received2;
   XBT_INFO("Received %ld", val2);
 
   XBT_INFO("OK");

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,17 +17,17 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(electric_fence, "Example to check the soundness of 
 
 static void server()
 {
-  void* data1                          = nullptr;
-  void* data2                          = nullptr;
-  simgrid::s4u::CommPtr comm_received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get_async(&data1);
-  simgrid::s4u::CommPtr comm_received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get_async(&data2);
+  int* data1                           = nullptr;
+  int* data2                           = nullptr;
+  simgrid::s4u::CommPtr comm_received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get_async<int>(&data1);
+  simgrid::s4u::CommPtr comm_received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get_async<int>(&data2);
 
   comm_received1->wait();
   comm_received2->wait();
 
   XBT_INFO("OK");
-  delete static_cast<int*>(data1);
-  delete static_cast<int*>(data2);
+  delete data1;
+  delete data2;
 }
 
 static void client(int id)

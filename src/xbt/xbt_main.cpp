@@ -1,6 +1,6 @@
 /* module handling                                                          */
 
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -45,7 +45,6 @@ std::vector<std::string> cmdline; /* all we got in argv */
 int xbt_initialized = 0;
 simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
     "debug/clean-atexit",
-    {"clean-atexit"},
     "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.",
     true};
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,7 +18,7 @@ simgrid::s4u::SemaphorePtr sem_full  = simgrid::s4u::Semaphore::create(0); /* in
 
 static void producer(const std::vector<std::string>* args)
 {
-  for (auto str : *args) {
+  for (auto const& str : *args) {
     sem_empty->acquire();
     XBT_INFO("Pushing '%s'", str.c_str());
     buffer = str.c_str();

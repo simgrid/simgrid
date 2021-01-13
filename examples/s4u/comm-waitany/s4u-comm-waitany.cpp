@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -102,11 +102,10 @@ public:
   {
     XBT_INFO("Wait for my first message");
     for (bool cont = true; cont;) {
-      const auto* received = static_cast<std::string*>(mbox->get());
+      auto received = mbox->get_unique<std::string>();
       XBT_INFO("I got a '%s'.", received->c_str());
       cont = (*received != "finalize"); // If it's a finalize message, we're done
       // Receiving the message was all we were supposed to do
-      delete received;
     }
   }
 };

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -151,7 +151,7 @@ public:
     if (that.vtable_ && that.vtable_->move)
       that.vtable_->move(buffer_, that.buffer_);
     else
-      std::memcpy(static_cast<void*>(&buffer_), static_cast<void*>(&that.buffer_), sizeof(buffer_));
+      std::memcpy(&buffer_, &that.buffer_, sizeof(buffer_));
     vtable_      = std::move(that.vtable_);
     that.vtable_ = nullptr;
   }
@@ -162,7 +162,7 @@ public:
     if (that.vtable_ && that.vtable_->move)
       that.vtable_->move(buffer_, that.buffer_);
     else
-      std::memcpy(static_cast<void*>(&buffer_), static_cast<void*>(&that.buffer_), sizeof(buffer_));
+      std::memcpy(&buffer_, &that.buffer_, sizeof(buffer_));
     vtable_      = std::move(that.vtable_);
     that.vtable_ = nullptr;
     return *this;

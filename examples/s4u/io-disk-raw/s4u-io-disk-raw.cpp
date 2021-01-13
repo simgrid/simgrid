@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   /* - Display Host properties */
   for (auto h : e.get_all_hosts()) {
     XBT_INFO("*** %s properties ****", h->get_cname());
-    for (auto kv : *h->get_properties())
+    for (auto const& kv : *h->get_properties())
       XBT_INFO("  %s -> %s", kv.first.c_str(), kv.second.c_str());
   }
 

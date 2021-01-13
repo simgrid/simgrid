@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -54,9 +54,8 @@ static void worker(std::vector<std::string> args)
 
   double compute_cost;
   do {
-    const auto* msg = static_cast<double*>(mailbox->get());
+    auto msg     = mailbox->get_unique<double>();
     compute_cost = *msg;
-    delete msg;
 
     if (compute_cost > 0) /* If compute_cost is valid, execute a computation of that cost */
       simgrid::s4u::this_actor::execute(compute_cost);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,6 +8,8 @@
 
 #include "smpi/smpi.h"
 #include "smpi_f2c.hpp"
+
+#include <memory>
 
 namespace simgrid{
 namespace smpi{
@@ -47,7 +49,7 @@ class Request : public F2C {
   int refcount_;
   MPI_Op op_;
   int cancelled_; // tri-state
-  smpi_mpi_generalized_request_funcs_t* generalized_funcs;
+  std::unique_ptr<smpi_mpi_generalized_request_funcs_t> generalized_funcs;
   MPI_Request* nbc_requests_;
   int nbc_requests_size_;
   static bool match_common(MPI_Request req, MPI_Request sender, MPI_Request receiver);

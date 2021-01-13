@@ -132,13 +132,10 @@ set(SMPI_SRC
   src/smpi/include/smpi_status.hpp
   src/smpi/include/smpi_topo.hpp
   src/smpi/include/smpi_win.hpp
-  src/smpi/plugins/sampi_loadbalancer.cpp
   src/smpi/plugins/ampi/ampi.cpp
   src/smpi/plugins/ampi/ampi.hpp
   src/smpi/plugins/ampi/instr_ampi.cpp
   src/smpi/plugins/ampi/instr_ampi.hpp
-  src/smpi/plugins/load_balancer/LoadBalancer.cpp
-  src/smpi/plugins/load_balancer/load_balancer.hpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
   src/smpi/bindings/smpi_mpi.cpp
@@ -602,7 +599,6 @@ set(MC_SRC_BASE
   )
 
 set(MC_SRC
-  src/mc/checker/Checker.cpp
   src/mc/checker/Checker.hpp
   src/mc/checker/CommunicationDeterminismChecker.cpp
   src/mc/checker/CommunicationDeterminismChecker.hpp
@@ -611,7 +607,9 @@ set(MC_SRC
   src/mc/checker/SimcallInspector.hpp
   src/mc/checker/LivenessChecker.cpp
   src/mc/checker/LivenessChecker.hpp
-  
+  src/mc/checker/UdporChecker.cpp
+  src/mc/checker/UdporChecker.hpp
+
   src/mc/inspect/DwarfExpression.hpp
   src/mc/inspect/DwarfExpression.cpp
   src/mc/inspect/Frame.hpp
@@ -658,9 +656,11 @@ set(MC_SRC
   src/mc/mc_forward.hpp
   src/mc/Session.cpp
   src/mc/Session.hpp
-  src/mc/mc_comm_pattern.cpp
   src/mc/mc_comm_pattern.hpp
+  src/mc/mc_pattern.hpp
   src/mc/compare.cpp
+  src/mc/mc_api.cpp
+  src/mc/mc_api.hpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.hpp
@@ -678,6 +678,7 @@ set(MC_SRC
   src/mc/mc_smx.cpp
   src/mc/mc_exit.hpp
   src/mc/Transition.hpp
+  src/mc/udpor_global.hpp
   )
 
 set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
@@ -695,7 +696,6 @@ set(headers_to_install
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
-  include/simgrid/plugins/load_balancer.h
   include/simgrid/smpi/replay.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
@@ -1037,7 +1037,6 @@ set(CMAKEFILES_TXT
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
-  examples/deprecated/msg/CMakeLists.txt
   examples/deprecated/msg/mc/CMakeLists.txt
   examples/deprecated/simdag/CMakeLists.txt
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2005-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -89,10 +89,9 @@ static void handler()
   }
 
   // Get the current backtrace and exception
-  auto e = std::current_exception();
   simgrid::xbt::Backtrace bt = simgrid::xbt::Backtrace();
   try {
-    std::rethrow_exception(e);
+    std::rethrow_exception(std::current_exception());
   }
 
   // Parse error are handled differently, as the call stack does not matter, only the file location

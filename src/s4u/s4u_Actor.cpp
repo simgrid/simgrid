@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -260,7 +260,7 @@ void Actor::kill()
 
 ActorPtr Actor::by_pid(aid_t pid)
 {
-  kernel::actor::ActorImpl* actor = SIMIX_process_from_PID(pid);
+  kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(pid);
   if (actor != nullptr)
     return actor->get_iface();
   else

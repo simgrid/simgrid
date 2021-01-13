@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
   SD_task_t taskD = SD_task_create("Task D", nullptr, 60.0);
 
   /* try to attach and retrieve user data to a task */
-  SD_task_set_data(taskA, static_cast<void*>(&comp_amount1));
+  SD_task_set_data(taskA, &comp_amount1);
   if (fabs(comp_amount1 - (*(static_cast<double*>(SD_task_get_data(taskA))))) > 1e-12)
       XBT_ERROR("User data was corrupted by a simple set/get");
 

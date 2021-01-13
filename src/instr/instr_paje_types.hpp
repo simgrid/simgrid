@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,7 +23,7 @@ class Type {
   std::string name_;
   std::string color_;
   Type* father_;
-  std::map<std::string, std::unique_ptr<Type>> children_;
+  std::map<std::string, std::unique_ptr<Type>, std::less<>> children_;
   Container* issuer_ = nullptr;
 
 protected:
@@ -41,7 +41,7 @@ public:
   const char* get_cname() const { return name_.c_str(); }
   const std::string& get_color() const { return color_; }
   Type* get_father() const { return father_; }
-  const std::map<std::string, std::unique_ptr<Type>>& get_children() const { return children_; }
+  const std::map<std::string, std::unique_ptr<Type>, std::less<>>& get_children() const { return children_; }
   bool is_colored() const { return not color_.empty(); }
 
   Type* by_name(const std::string& name);
@@ -83,7 +83,7 @@ public:
 
 class ValueType : public Type {
 public:
-  std::map<std::string, EntityValue> values_;
+  std::map<std::string, EntityValue, std::less<>> values_;
   ValueType(PajeEventType event_type, const std::string& name, const std::string& alias, Type* father)
       : Type(event_type, name, alias, "", father){};
   ValueType(PajeEventType event_type, const std::string& name, Type* father)

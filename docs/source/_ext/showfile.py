@@ -38,7 +38,7 @@ class ShowFileDirective(Directive):
           '.. toggle-header::',
           '   :header: View {}'.format(filename),
           '',
-          '   `Download {} <https://framagit.org/simgrid/simgrid/tree/{}>`_'.format(os.path.basename(filename), filename),
+          '   `Download {} <https://framagit.org/simgrid/simgrid/tree/master/{}>`_'.format(os.path.basename(filename), filename),
           '',
           '   .. literalinclude:: ../../{}'.format(filename),
           '      :language: {}'.format(language),

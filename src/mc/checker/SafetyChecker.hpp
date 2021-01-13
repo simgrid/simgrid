@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2020. The SimGrid Team.
+/* Copyright (c) 2008-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -23,7 +23,7 @@ class XBT_PRIVATE SafetyChecker : public Checker {
   ReductionMode reductionMode_ = ReductionMode::unset;
 
 public:
-  explicit SafetyChecker(Session& session);
+  explicit SafetyChecker();
   ~SafetyChecker() override = default;
   void run() override;
   RecordTrace get_record_trace() override;

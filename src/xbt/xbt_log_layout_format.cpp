@@ -1,6 +1,6 @@
 /* layout_simple - a dumb log layout                                        */
 
-/* Copyright (c) 2007-2020. The SimGrid Team.                               */
+/* Copyright (c) 2007-2021. The SimGrid Team.                               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,11 +22,11 @@ static constexpr const char* ERRMSG =
     "  when:        %%d: date          %%r: app. age\n"
     "  other:       %%%%: %%             %%n: new line      %%e: plain space\n";
 
-#define check_overflow(len)                                             \
-  if ((rem_size -= (len)) > 0) {                                        \
-    p += (len);                                                         \
-  } else                                                                \
-    return 0
+#define check_overflow(len)                                                                                            \
+  if ((rem_size -= (len)) > 0) {                                                                                       \
+    p += (len);                                                                                                        \
+  } else                                                                                                               \
+    return false
 
 #define set_sz_from_precision()                                                                                        \
   if (true) {                                                                                                          \
@@ -68,7 +68,7 @@ static constexpr const char* ERRMSG =
 #define show_int(data) show_it((data), "d")
 #define show_double(data) show_it((data), "f")
 
-static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event_t ev, const char* msg_fmt)
+static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event_t ev, const char* msg_fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -77,104 +77,105 @@ static int xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event
 
   auto* q = static_cast<char*>(l->data);
   while (*q != '\0') {
-    if (*q == '%') {
-      q++;
-      do {
-        switch (*q) {
-          case '\0':
-            fprintf(stderr, "Layout format (%s) ending with %%\n", (char*)l->data);
-            xbt_abort();
-          case '%':
-            *p = '%';
-            check_overflow(1);
-            break;
-          case 'n': /* platform-dependant line separator; LOG4J compliant */
-            *p = '\n';
-            check_overflow(1);
-            break;
-          case 'e': /* plain space; SimGrid extension */
-            *p = ' ';
-            check_overflow(1);
-            break;
-          case '.': /* precision specifier */
-            precision = static_cast<int>(strtol(q + 1, &q, 10));
-            continue; /* conversion specifier still not found, continue reading */
-          case '0':
-          case '1':
-          case '2':
-          case '3':
-          case '4':
-          case '5':
-          case '6':
-          case '7':
-          case '8':
-          case '9': /* length modifier */
-            length = static_cast<int>(strtol(q, &q, 10));
-            continue; /* conversion specifier still not found, continue reading */
-          case 'c':   /* category name; LOG4J compliant
-                         should accept a precision postfix to show the hierarchy */
-            show_string(ev->cat->name);
-            break;
-          case 'p': /* priority name; LOG4J compliant */
-            show_string(xbt_log_priority_names[ev->priority]);
-            break;
-          case 'h': /* host name; SimGrid extension */
-            show_string(sg_host_self_get_name());
-            break;
-          case 't': /* thread/process name; LOG4J compliant */
-          case 'P': /* process name; SimGrid extension */
-            show_string(xbt_procname());
-            break;
-          case 'i': /* process PID name; SimGrid extension */
-            show_int(xbt_getpid());
-            break;
-          case 'F': /* file name; LOG4J compliant */
-            show_string(ev->fileName);
-            break;
-          case 'l': { /* location; LOG4J compliant */
-            int sz;
-            set_sz_from_precision();
-            int len = snprintf(p, sz, "%s:%d", ev->fileName, ev->lineNum);
-            check_overflow(std::min(sz, len));
-            break;
-          }
-          case 'L': /* line number; LOG4J compliant */
-            show_int(ev->lineNum);
-            break;
-          case 'M': /* method (ie, function) name; LOG4J compliant */
-            show_string(ev->functionName);
-            break;
-          case 'd': /* date; LOG4J compliant */
-            show_double(simgrid_get_clock());
-            break;
-          case 'r': /* application age; LOG4J compliant */
-            show_double(simgrid_get_clock());
-            break;
-          case 'm': { /* user-provided message; LOG4J compliant */
-            int sz;
-            set_sz_from_precision();
-            va_list ap;
-            va_copy(ap, ev->ap);
-            int len = vsnprintf(p, sz, msg_fmt, ap);
-            va_end(ap);
-            check_overflow(std::min(sz, len));
-            break;
-          }
-          default:
-            fprintf(stderr, ERRMSG, *q, (char*)l->data);
-            xbt_abort();
-        }
-        break; /* done, continue normally */
-      } while (true);
-    } else {
+    if (*q != '%') {
       *p = *q;
       check_overflow(1);
+      q++;
+      continue;
     }
+
+    // *q == '%'
+    q++;
+    do {
+      switch (*q) {
+        case '\0':
+          fprintf(stderr, "Layout format (%s) ending with %%\n", (char*)l->data);
+          xbt_abort();
+        case '%':
+          *p = '%';
+          check_overflow(1);
+          break;
+        case 'n': /* platform-dependant line separator; LOG4J compliant */
+          *p = '\n';
+          check_overflow(1);
+          break;
+        case 'e': /* plain space; SimGrid extension */
+          *p = ' ';
+          check_overflow(1);
+          break;
+        case '.': /* precision specifier */
+          precision = static_cast<int>(strtol(q + 1, &q, 10));
+          continue; /* conversion specifier still not found, continue reading */
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9': /* length modifier */
+          length = static_cast<int>(strtol(q, &q, 10));
+          continue; /* conversion specifier still not found, continue reading */
+        case 'c':   /* category name; LOG4J compliant
+                       should accept a precision postfix to show the hierarchy */
+          show_string(ev->cat->name);
+          break;
+        case 'p': /* priority name; LOG4J compliant */
+          show_string(xbt_log_priority_names[ev->priority]);
+          break;
+        case 'h': /* host name; SimGrid extension */
+          show_string(sg_host_self_get_name());
+          break;
+        case 't': /* thread/process name; LOG4J compliant */
+        case 'P': /* process name; SimGrid extension */
+          show_string(xbt_procname());
+          break;
+        case 'i': /* process PID name; SimGrid extension */
+          show_int(xbt_getpid());
+          break;
+        case 'F': /* file name; LOG4J compliant */
+          show_string(ev->fileName);
+          break;
+        case 'l': { /* location; LOG4J compliant */
+          int sz;
+          set_sz_from_precision();
+          int len = snprintf(p, sz, "%s:%d", ev->fileName, ev->lineNum);
+          check_overflow(std::min(sz, len));
+          break;
+        }
+        case 'L': /* line number; LOG4J compliant */
+          show_int(ev->lineNum);
+          break;
+        case 'M': /* method (ie, function) name; LOG4J compliant */
+          show_string(ev->functionName);
+          break;
+        case 'd': /* date; LOG4J compliant */
+        case 'r': /* application age; LOG4J compliant */
+          show_double(simgrid_get_clock());
+          break;
+        case 'm': { /* user-provided message; LOG4J compliant */
+          int sz;
+          set_sz_from_precision();
+          va_list ap;
+          va_copy(ap, ev->ap);
+          int len = vsnprintf(p, sz, msg_fmt, ap);
+          va_end(ap);
+          check_overflow(std::min(sz, len));
+          break;
+        }
+        default:
+          fprintf(stderr, ERRMSG, *q, (char*)l->data);
+          xbt_abort();
+      }
+      break; /* done, continue normally */
+    } while (true);
     q++;
   }
   *p = '\0';
 
-  return 1;
+  return true;
 }
 
 static void xbt_log_layout_format_free(const s_xbt_log_layout_t* lay)

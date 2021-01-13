@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(replay_io, "Messages specific for this example");
     ((void)0)
 
 class Replayer {
-  static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
+  static std::unordered_map<std::string, simgrid::s4u::File> opened_files;
 
   static void log_action(const simgrid::xbt::ReplayAction& action, double date)
   {
@@ -33,7 +33,7 @@ class Replayer {
   static simgrid::s4u::File* get_file_descriptor(const std::string& file_name)
   {
     std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
-    return opened_files.at(full_name);
+    return &opened_files.at(full_name);
   }
 
 public:
@@ -56,9 +56,8 @@ public:
     std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
-    auto* file = new simgrid::s4u::File(file_name, nullptr);
-
-    opened_files.insert({full_name, file});
+    opened_files.emplace(std::piecewise_construct, std::forward_as_tuple(full_name),
+                         std::forward_as_tuple(file_name, nullptr));
 
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
@@ -80,18 +79,18 @@ public:
   static void close(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
+    std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
     double clock          = simgrid::s4u::Engine::get_clock();
 
-    const simgrid::s4u::File* file = get_file_descriptor(file_name);
-
     ACT_DEBUG("Entering Close: %s (filename: %s)", NAME.c_str(), file_name.c_str());
-    delete file;
+    XBT_ATTRIB_UNUSED auto count = opened_files.erase(full_name);
+    xbt_assert(count == 1, "File not found in opened files: %s", full_name.c_str());
 
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 };
 
-std::unordered_map<std::string, simgrid::s4u::File*> Replayer::opened_files;
+std::unordered_map<std::string, simgrid::s4u::File> Replayer::opened_files;
 
 int main(int argc, char* argv[])
 {
@@ -114,16 +113,15 @@ int main(int argc, char* argv[])
   xbt_replay_action_register("read", Replayer::read);
   xbt_replay_action_register("close", Replayer::close);
 
+  std::ifstream ifs;
   if (argv[3]) {
-    simgrid::xbt::action_fs = new std::ifstream(argv[3], std::ifstream::in);
+    ifs.open(argv[3], std::ifstream::in);
+    simgrid::xbt::action_fs = &ifs;
   }
 
   e.run();
 
-  if (argv[3]) {
-    delete simgrid::xbt::action_fs;
-    simgrid::xbt::action_fs = nullptr;
-  }
+  simgrid::xbt::action_fs = nullptr;
 
   XBT_INFO("Simulation time %g", e.get_clock());
 

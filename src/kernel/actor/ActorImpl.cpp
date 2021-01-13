@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -40,9 +40,21 @@ namespace kernel {
 namespace actor {
 
 static unsigned long maxpid = 0;
-int get_maxpid()
+unsigned long get_maxpid()
 {
   return maxpid;
+}
+ActorImpl* ActorImpl::by_PID(aid_t PID)
+{
+  auto item = simix_global->process_list.find(PID);
+  if (item != simix_global->process_list.end())
+    return item->second;
+
+  // Search the trash
+  for (auto& a : simix_global->actors_to_destroy)
+    if (a.get_pid() == PID)
+      return &a;
+  return nullptr; // Not found, even in the trash
 }
 
 ActorImpl* ActorImpl::self()
@@ -436,8 +448,8 @@ void ActorImpl::simcall_answer()
   if (this != simix_global->maestro_) {
     XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall_.call_), (int)simcall_.call_,
               get_cname(), this);
-    xbt_assert(simcall_.call_ != SIMCALL_NONE);
-    simcall_.call_ = SIMCALL_NONE;
+    xbt_assert(simcall_.call_ != simix::Simcall::NONE);
+    simcall_.call_ = simix::Simcall::NONE;
     xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
                    std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
                        end(simix_global->actors_to_run),
@@ -562,25 +574,10 @@ const char* SIMIX_process_self_get_name()
   return SIMIX_is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }
 
-/**
- * @brief Calling this function makes the process to yield.
- *
- * Only the current process can call this function, giving back the control to maestro.
- *
- * @param self the current process
- */
-
 /** @brief Returns the process from PID. */
 smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
-  auto item = simix_global->process_list.find(PID);
-  if (item == simix_global->process_list.end()) {
-    for (auto& a : simix_global->actors_to_destroy)
-      if (a.get_pid() == PID)
-        return &a;
-    return nullptr; // Not found, even in the trash
-  }
-  return item->second;
+  return simgrid::kernel::actor::ActorImpl::by_PID(PID);
 }
 
 void SIMIX_process_on_exit(smx_actor_t actor,

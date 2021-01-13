@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -31,7 +31,7 @@ public:
                  std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 
 private:
-  RouteCreationArgs** routing_table_ = nullptr;
+  std::vector<RouteCreationArgs*> routing_table_;
 };
 } // namespace routing
 } // namespace kernel

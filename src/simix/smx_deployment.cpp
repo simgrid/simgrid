@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -63,7 +63,6 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
 
   actor.function           = process_function;
-  actor.host               = process_host;
   actor.kill_time          = process_kill_time;
   actor.start_time         = process_start_time;
   actor.restart_on_failure = false;

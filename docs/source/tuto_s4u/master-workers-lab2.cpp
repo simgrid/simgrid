@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,7 +23,7 @@ static void worker()
 
   double compute_cost;
   do {
-    double* msg  = static_cast<double*>(mailbox->get());
+    double* msg  = mailbox->get<double>();
     compute_cost = *msg;
     delete msg;
 

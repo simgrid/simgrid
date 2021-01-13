@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,9 +21,6 @@ XBT_PRIVATE void TRACE_smpi_comm_out(int rank);
 XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
 XBT_PRIVATE void TRACE_smpi_recv(int src, int dst, int tag);
 XBT_PRIVATE void TRACE_smpi_init(int rank, const std::string& calling_func);
-
-/* SMPI + LB (load balancer) */
-XBT_PRIVATE void TRACE_smpi_process_change_host(int rank, const_sg_host_t new_host);
 
 class smpi_trace_call_location_t {
 public:

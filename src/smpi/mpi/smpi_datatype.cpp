@@ -1,5 +1,5 @@
 /* smpi_datatype.cpp -- MPI primitives to handle datatypes                  */
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -120,7 +120,7 @@ Datatype::Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags) : size_(size),
 }
 
 // for predefined types, so refcount_ = 0.
-Datatype::Datatype(char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
+Datatype::Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
     : name_(name), id(std::to_string(ident)), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0)
 {
   id2type_lookup.insert({id, this});
@@ -151,7 +151,6 @@ Datatype::~Datatype()
 
   cleanup_attr<Datatype>();
   delete contents_;
-  xbt_free(name_);
 }
 
 int Datatype::copy_attrs(Datatype* datatype){
@@ -212,13 +211,13 @@ void Datatype::unref(MPI_Datatype datatype)
   if (datatype->refcount_ > 0)
     datatype->refcount_--;
 
-  if (datatype->refcount_ == 0 && not(datatype->flags_ & DT_FLAG_PREDEFINED))
-    delete datatype;
-
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(datatype->refcount_), sizeof(datatype->refcount_));
 #endif
+
+  if (datatype->refcount_ == 0 && not(datatype->flags_ & DT_FLAG_PREDEFINED))
+    delete datatype;
 }
 
 void Datatype::commit()
@@ -261,18 +260,16 @@ int Datatype::extent(MPI_Aint* lb, MPI_Aint* extent) const
 
 void Datatype::get_name(char* name, int* length) const
 {
-  if(name_!=nullptr){
-    *length = strlen(name_);
-    strncpy(name, name_, *length+1);
-  }else{
-    *length = 0;
+  *length = static_cast<int>(name_.length());
+  if (not name_.empty()) {
+    name_.copy(name, *length);
+    name[*length] = '\0';
   }
 }
 
-void Datatype::set_name(const char* name){
-  if(name_!=nullptr &&  (flags_ & DT_FLAG_PREDEFINED) == 0)
-    xbt_free(name_);
-  name_ = xbt_strdup(name);
+void Datatype::set_name(const char* name)
+{
+  name_ = name;
 }
 
 int Datatype::pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, const Comm*)

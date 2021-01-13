@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,17 +17,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 
 static void server()
 {
-  void* received = nullptr;
-  int count      = 0;
+  std::unique_ptr<int> received;
+  int count     = 0;
   while (count < N) {
-    if (received) {
-      delete static_cast<int*>(received);
-      received = nullptr;
-    }
-    received = simgrid::s4u::Mailbox::by_name("mymailbox")->get();
+    received.reset();
+    received = simgrid::s4u::Mailbox::by_name("mymailbox")->get_unique<int>();
     count++;
   }
-  int value_got = *(static_cast<int*>(received));
+  int value_got = *received;
   MC_assert(value_got == 3);
 
   XBT_INFO("OK");

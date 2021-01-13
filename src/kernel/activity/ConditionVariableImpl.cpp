@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -51,11 +51,11 @@ void ConditionVariableImpl::signal()
     /* Now transform the cond wait simcall into a mutex lock one */
     smx_simcall_t simcall = &proc.simcall_;
     MutexImpl* simcall_mutex;
-    if (simcall->call_ == SIMCALL_COND_WAIT)
+    if (simcall->call_ == simix::Simcall::COND_WAIT)
       simcall_mutex = simcall_cond_wait__get__mutex(simcall);
     else
       simcall_mutex = simcall_cond_wait_timeout__get__mutex(simcall);
-    simcall->call_ = SIMCALL_MUTEX_LOCK;
+    simcall->call_ = simix::Simcall::MUTEX_LOCK;
 
     simcall_mutex->lock(simcall->issuer_);
   }

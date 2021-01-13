@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -310,35 +310,29 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
   /* (3) Search for a bypass making the path up to the ancestor useless */
   const BypassRoute* bypassedRoute = nullptr;
   std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*> key;
-  for (int max = 0; max <= max_index; max++) {
-    for (int i = 0; i < max; i++) {
+  for (int max = 0; max <= max_index && not bypassedRoute; max++) {
+    for (int i = 0; i < max && not bypassedRoute; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
         key = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
         auto bpr = bypass_routes_.find(key);
         if (bpr != bypass_routes_.end()) {
           bypassedRoute = bpr->second;
-          break;
         }
       }
-      if (max <= max_index_src && i <= max_index_dst) {
+      if (not bypassedRoute && max <= max_index_src && i <= max_index_dst) {
         key = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
         auto bpr = bypass_routes_.find(key);
         if (bpr != bypass_routes_.end()) {
           bypassedRoute = bpr->second;
-          break;
         }
       }
     }
 
-    if (bypassedRoute)
-      break;
-
-    if (max <= max_index_src && max <= max_index_dst) {
+    if (not bypassedRoute && max <= max_index_src && max <= max_index_dst) {
       key = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
       auto bpr = bypass_routes_.find(key);
       if (bpr != bypass_routes_.end()) {
         bypassedRoute = bpr->second;
-        break;
       }
     }
   }

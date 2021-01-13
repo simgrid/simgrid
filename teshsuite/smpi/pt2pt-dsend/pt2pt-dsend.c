@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2020. The SimGrid Team.
+/* Copyright (c) 2011-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,8 +26,6 @@ static void test_opts(int argc, char* const argv[])
 
     switch (ret) {
       case 0:
-        found++;
-      break;
       case 's':
         found ++;
       break;

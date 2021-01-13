@@ -5,7 +5,7 @@
 /*                                                                            */
 /* This is somehow the "libc" of SimGrid                                      */
 
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -368,8 +368,9 @@ int simcall_mc_random(int min, int max) {
 /* ************************************************************************** */
 
 /** @brief returns a printable string representing a simcall */
-const char *SIMIX_simcall_name(e_smx_simcall_t kind) {
-  return simcall_names[kind];
+const char* SIMIX_simcall_name(Simcall kind)
+{
+  return simcall_names[static_cast<int>(kind)];
 }
 
 namespace simgrid {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -246,11 +246,11 @@ public:
 
 XBT_PRIVATE std::string instr_pid(simgrid::s4u::Actor const& proc);
 
-extern XBT_PRIVATE std::set<std::string> created_categories;
-extern XBT_PRIVATE std::set<std::string> declared_marks;
-extern XBT_PRIVATE std::set<std::string> user_host_variables;
-extern XBT_PRIVATE std::set<std::string> user_vm_variables;
-extern XBT_PRIVATE std::set<std::string> user_link_variables;
+extern XBT_PRIVATE std::set<std::string, std::less<>> created_categories;
+extern XBT_PRIVATE std::set<std::string, std::less<>> declared_marks;
+extern XBT_PRIVATE std::set<std::string, std::less<>> user_host_variables;
+extern XBT_PRIVATE std::set<std::string, std::less<>> user_vm_variables;
+extern XBT_PRIVATE std::set<std::string, std::less<>> user_link_variables;
 
 /* from instr_config.c */
 XBT_PRIVATE bool TRACE_needs_platform();

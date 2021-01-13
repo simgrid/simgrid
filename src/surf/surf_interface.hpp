@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,7 +30,7 @@ extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
 extern XBT_PRIVATE std::vector<std::string> surf_path;
 extern XBT_PRIVATE std::unordered_map<std::string, simgrid::kernel::profile::Profile*> traces_set_list;
-extern XBT_PRIVATE std::set<std::string> watched_hosts;
+extern XBT_PRIVATE std::set<std::string, std::less<>> watched_hosts;
 
 static inline void double_update(double* variable, double value, double precision)
 {

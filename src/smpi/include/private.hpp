@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -506,7 +506,7 @@ struct papi_process_data {
   papi_counter_t counter_data;
   int event_set;
 };
-extern std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
+extern std::map</* computation unit name */ std::string, papi_process_data, std::less<>> units2papi_setup;
 
 extern std::unordered_map<std::string, double> location2speedup;
 
@@ -515,12 +515,12 @@ XBT_PUBLIC smpi_trace_call_location_t* smpi_trace_get_call_location();
 
 XBT_PRIVATE void private_execute_flops(double flops);
 
-
 #define CHECK_ARGS(test, errcode, ...)                                                                                 \
   if (test) {                                                                                                          \
-    if((errcode) != MPI_SUCCESS)                                                                                       \
+    int error_code_ = (errcode);                                                                                       \
+    if (error_code_ != MPI_SUCCESS)                                                                                    \
       XBT_WARN(__VA_ARGS__);                                                                                           \
-    return (errcode);                                                                                                  \
+    return error_code_;                                                                                                \
   }
 
 #define CHECK_MPI_NULL(num, val, err, ptr)                                                                             \

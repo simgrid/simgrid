@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -55,7 +55,7 @@ static void host_state_change(s4u::Host const& host)
   }
 }
 
-static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
+static void add_active_exec(s4u::Exec const& task)
 {
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
@@ -65,7 +65,7 @@ static void add_active_exec(s4u::Actor const&, s4u::Exec const& task)
   }
 }
 
-static void remove_active_exec(s4u::Actor const&, s4u::Exec const& task)
+static void remove_active_exec(s4u::Exec const& task)
 {
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {

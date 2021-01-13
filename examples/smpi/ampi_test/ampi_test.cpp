@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,9 +10,15 @@
 int main(int argc, char* argv[])
 {
   MPI_Init(&argc, &argv);
+  // useless alocations for testing and coverage
   void* pointer = malloc(100 * sizeof(int));
+  void* ptmp;
+  if ((ptmp = realloc(pointer, 50 * sizeof(int))) != nullptr)
+    pointer = ptmp;
+  if ((ptmp = realloc(pointer, 200 * sizeof(int))) != nullptr)
+    pointer = ptmp;
   free(pointer);
-  pointer = malloc(100 * sizeof(int));
+  pointer = calloc(100, sizeof(int));
   int rank;
   int err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
   if (err != MPI_SUCCESS) {

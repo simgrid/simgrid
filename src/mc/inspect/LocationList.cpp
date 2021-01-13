@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -88,7 +88,7 @@ LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Att
     else
       range = {base_address + start, base_address + end};
 
-    locations.push_back({DwarfExpression(ops, ops + len), range});
+    locations.emplace_back(DwarfExpression(ops, ops + len), range);
   }
 
   return locations;

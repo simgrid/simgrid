@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -38,22 +38,16 @@ static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Con
 
   // create an array with all ancestors of a1
   std::vector<simgrid::instr::Container*> ancestors_a1;
-  simgrid::instr::Container* p = a1->father_;
-  while (p) {
+  for (auto* p = a1->father_; p != nullptr; p = p->father_)
     ancestors_a1.push_back(p);
-    p = p->father_;
-  }
 
   // create an array with all ancestors of a2
   std::vector<simgrid::instr::Container*> ancestors_a2;
-  p = a2->father_;
-  while (p) {
+  for (auto* p = a2->father_; p != nullptr; p = p->father_)
     ancestors_a2.push_back(p);
-    p = p->father_;
-  }
 
   // find the lowest ancestor
-  p     = nullptr;
+  simgrid::instr::Container* p = nullptr;
   int i = static_cast<int>(ancestors_a1.size()) - 1;
   int j = static_cast<int>(ancestors_a2.size()) - 1;
   while (i >= 0 && j >= 0) {
@@ -71,7 +65,7 @@ static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Con
 }
 
 static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Container* dst,
-                           std::set<std::string>* filter)
+                           std::set<std::string, std::less<>>* filter)
 {
   // ignore loopback
   if (src->get_name() == "__loopback__" || dst->get_name() == "__loopback__") {
@@ -121,7 +115,7 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
 }
 
 static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgrid::instr::Container* container,
-                                     std::set<std::string>* filter)
+                                     std::set<std::string, std::less<>>* filter)
 {
   if (not TRACE_platform_topology()) {
     XBT_DEBUG("Graph extraction disabled by user.");
@@ -137,11 +131,11 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgr
   }
 
   auto* graph = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t> nodes;
-  std::map<std::string, xbt_edge_t> edges;
+  std::map<std::string, xbt_node_t, std::less<>> nodes;
+  std::map<std::string, xbt_edge_t, std::less<>> edges;
 
   netzone->get_impl()->get_graph(graph, &nodes, &edges);
-  for (auto elm : edges) {
+  for (auto const& elm : edges) {
     const xbt_edge* edge = elm.second;
     linkContainers(simgrid::instr::Container::by_name(static_cast<const char*>(edge->src->data)),
                    simgrid::instr::Container::by_name(static_cast<const char*>(edge->dst->data)), filter);
@@ -223,8 +217,8 @@ namespace instr {
 void platform_graph_export_graphviz(const std::string& output_filename)
 {
   auto* g     = xbt_graph_new_graph(0, nullptr);
-  std::map<std::string, xbt_node_t> nodes;
-  std::map<std::string, xbt_edge_t> edges;
+  std::map<std::string, xbt_node_t, std::less<>> nodes;
+  std::map<std::string, xbt_edge_t, std::less<>> edges;
   s4u::Engine::get_instance()->get_netzone_root()->extract_xbt_graph(g, &nodes, &edges);
 
   std::ofstream fs;
@@ -272,7 +266,6 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
       if (not TRACE_smpi_is_grouped())
         mpi->by_name_or_create<StateType>("MPI_STATE");
       root->type_->by_name_or_create("MPI_LINK", mpi, mpi);
-      // TODO See if we can move this to the LoadBalancer plugin
       root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
       mpi->by_name_or_create<StateType>("MIGRATE_STATE");
     }
@@ -332,7 +325,6 @@ static void on_host_creation(s4u::Host const& host)
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()) {
     auto* mpi = container->type_->by_name_or_create<ContainerType>("MPI");
     mpi->by_name_or_create<StateType>("MPI_STATE");
-    // TODO See if we can move this to the LoadBalancer plugin
     root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
     mpi->by_name_or_create<StateType>("MIGRATE_STATE");
   }
@@ -364,7 +356,7 @@ static void on_action_state_change(kernel::resource::Action const& action,
 static void on_platform_created()
 {
   currentContainer.clear();
-  std::set<std::string> filter;
+  std::set<std::string, std::less<>> filter;
   XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), &filter);
   XBT_DEBUG("Graph extraction finished.");
@@ -473,31 +465,33 @@ void define_callbacks()
     });
     s4u::Actor::on_wake_up.connect(
         [](s4u::Actor const& actor) { Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event(); });
-    s4u::Exec::on_start.connect([](simgrid::s4u::Actor const& actor, s4u::Exec const&) {
-      Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->push_event("execute");
+    s4u::Exec::on_start.connect([](s4u::Exec const&) {
+      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("execute");
     });
-    s4u::Exec::on_completion.connect([](s4u::Actor const& actor, s4u::Exec const&) {
-      Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event();
+    s4u::Exec::on_completion.connect([](s4u::Exec const&) {
+      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();
     });
-    s4u::Comm::on_sender_start.connect([](s4u::Actor const& actor) {
-      Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->push_event("send");
+    s4u::Comm::on_start.connect([](s4u::Comm const&, bool is_sender) {
+      Container::by_name(instr_pid(*s4u::Actor::self()))
+          ->get_state("ACTOR_STATE")
+          ->push_event(is_sender ? "send" : "receive");
     });
-    s4u::Comm::on_receiver_start.connect([](s4u::Actor const& actor) {
-      Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->push_event("receive");
+    s4u::Comm::on_completion.connect([](s4u::Comm const&) {
+      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();
     });
-    s4u::Comm::on_completion.connect(
-        [](s4u::Actor const& actor) { Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event(); });
     s4u::Actor::on_host_change.connect(on_actor_host_change);
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing()) {
-    s4u::Exec::on_start.connect([](simgrid::s4u::Actor const& actor, s4u::Exec const& exec) {
-      Container::by_name(std::string("rank-") + std::to_string(actor.get_pid()))
+    s4u::Exec::on_start.connect([](s4u::Exec const& exec) {
+      Container::by_name(std::string("rank-") + std::to_string(s4u::Actor::self()->get_pid()))
           ->get_state("MPI_STATE")
           ->push_event("computing", new CpuTIData("compute", exec.get_cost()));
     });
-    s4u::Exec::on_completion.connect([](s4u::Actor const& actor, s4u::Exec const&) {
-      Container::by_name(std::string("rank-") + std::to_string(actor.get_pid()))->get_state("MPI_STATE")->pop_event();
+    s4u::Exec::on_completion.connect([](s4u::Exec const&) {
+      Container::by_name(std::string("rank-") + std::to_string(s4u::Actor::self()->get_pid()))
+          ->get_state("MPI_STATE")
+          ->pop_event();
     });
   }
 

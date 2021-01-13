@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -74,9 +74,9 @@ static void peer(int argc, char** argv)
   long pending_finalize_messages = peers_count - 1;
   while (pending_finalize_messages > 0) {
     if (my_mbox->ready()) {
-      double start                = simgrid::s4u::Engine::get_clock();
-      const auto* received        = static_cast<std::string*>(my_mbox->get());
-      double waiting_time         = simgrid::s4u::Engine::get_clock() - start;
+      double start        = simgrid::s4u::Engine::get_clock();
+      auto received       = my_mbox->get_unique<std::string>();
+      double waiting_time = simgrid::s4u::Engine::get_clock() - start;
       xbt_assert(
           waiting_time == 0,
           "Expecting the waiting time to be 0 because the communication was supposedly ready, but got %f instead",
@@ -85,7 +85,6 @@ static void peer(int argc, char** argv)
       if (*received == "finalize") {
         pending_finalize_messages--;
       }
-      delete received;
     } else {
       XBT_INFO("Nothing ready to consume yet, I better sleep for a while");
       simgrid::s4u::this_actor::sleep_for(.01);

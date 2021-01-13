@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -227,7 +227,7 @@ static void master_main()
 
   XBT_INFO("# 10. (c) migrate");
   simgrid::s4u::Host* pm1 = simgrid::s4u::Host::by_name("Fafard");
-  MSG_vm_migrate(vm0, pm1);
+  sg_vm_migrate(vm0, pm1);
   XBT_INFO(" ");
 
   XBT_INFO("# 10. (d) Put an activity again on the VM.");

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the
 static simgrid::config::Flag<std::string>
     cpu_optim_opt("cpu/optim", "Optimization algorithm to use for CPU resources. ", "Lazy",
 
-                  std::map<std::string, std::string>({
+                  std::map<std::string, std::string, std::less<>>({
                       {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining)."},
                       {"TI", "Trace integration. Highly optimized mode when using availability traces (only available "
                              "for the Cas01 CPU model for now)."},

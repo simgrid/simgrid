@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 /*************
  * CallBacks *
  *************/
-extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
+extern std::map<std::string, simgrid::kernel::resource::StorageType*, std::less<>> storage_types;
 
 void check_disk_attachment()
 {

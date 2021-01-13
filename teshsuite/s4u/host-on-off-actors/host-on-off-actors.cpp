@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -40,10 +40,9 @@ static void commTX()
 
 static void commRX()
 {
-  const std::string* payload = nullptr;
   XBT_INFO("  Start RX");
   try {
-    payload = static_cast<std::string*>(simgrid::s4u::Mailbox::by_name("comm")->get());
+    auto payload = simgrid::s4u::Mailbox::by_name("comm")->get_unique<std::string>();
     XBT_INFO("  Receive message: %s", payload->c_str());
   } catch (const simgrid::HostFailureException&) {
     XBT_INFO("  Receive message: HOST_FAILURE");
@@ -51,7 +50,6 @@ static void commRX()
     XBT_INFO("  Receive message: TRANSFER_FAILURE");
   }
 
-  delete payload;
   XBT_INFO("  RX Done");
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -34,8 +34,8 @@ std::vector<simgrid::kernel::resource::Model*> all_existing_models; /* to destro
 simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
 /**  set of hosts for which one want to be notified if they ever restart. */
-std::set<std::string> watched_hosts;
-extern std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
+std::set<std::string, std::less<>> watched_hosts;
+extern std::map<std::string, simgrid::kernel::resource::StorageType*, std::less<>> storage_types;
 
 std::vector<surf_model_description_t>* surf_plugin_description = nullptr;
 

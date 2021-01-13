@@ -1,10 +1,9 @@
-/* Copyright (c) 2011-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2011-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/checker/LivenessChecker.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -16,6 +15,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms for liveness properties verification");
 
+using mcapi = simgrid::mc::mc_api;
+
 /********* Static functions *********/
 
 namespace simgrid {
@@ -26,15 +27,11 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
                          std::shared_ptr<State> graph_state)
     : num(pair_num), automaton_state(automaton_state)
 {
-  RemoteSimulation* process = &(mc_model_checker->get_remote_simulation());
-
   this->graph_state = std::move(graph_state);
   if (this->graph_state->system_state_ == nullptr)
     this->graph_state->system_state_ = std::make_shared<Snapshot>(pair_num);
-  this->heap_bytes_used = mmalloc_get_bytes_used_remote(process->get_heap()->heaplimit, process->get_malloc_info());
-
-  this->actors_count = mc_model_checker->get_remote_simulation().actors().size();
-
+  this->heap_bytes_used = mcapi::get().get_remote_heap_bytes();
+  this->actors_count = mcapi::get().get_actors_size();
   this->other_num = -1;
   this->atomic_propositions = std::move(atomic_propositions);
 }
@@ -51,12 +48,9 @@ static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> co
   case xbt_automaton_exp_label::AUT_NOT:
     return not evaluate_label(l->u.exp_not, values);
   case xbt_automaton_exp_label::AUT_PREDICAT:{
-      unsigned int cursor = 0;
-      xbt_automaton_propositional_symbol_t p = nullptr;
-      xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, p) {
-        if (std::strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
-          return values[cursor] != 0;
-      }
+      auto cursor = mcapi::get().compare_automaton_exp_label(l);
+      if(cursor >= 0)
+        return values[cursor] != 0;
       xbt_die("Missing predicate");
       break;
     }
@@ -72,11 +66,7 @@ Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs)
 
 std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values() const
 {
-  std::vector<int> values;
-  unsigned int cursor = 0;
-  xbt_automaton_propositional_symbol_t ps = nullptr;
-  xbt_dynar_foreach (mc::property_automaton->propositional_symbols, cursor, ps)
-    values.push_back(xbt_automaton_propositional_symbol_evaluate(ps));
+  auto values = mcapi::get().automaton_propositional_symbol_evaluate();  
   return std::make_shared<const std::vector<int>>(std::move(values));
 }
 
@@ -85,13 +75,13 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
   auto new_pair =
       std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
-  auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(), DerefAndCompareByActorsCountAndUsedHeap());
+  auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(), mcapi::get().compare_pair());
 
   if (pair->search_cycle) for (auto i = res.first; i != res.second; ++i) {
     std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
-    if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
+    if (mcapi::get().automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
-        not snapshot_equal(pair_test->graph_state->system_state_.get(), new_pair->graph_state->system_state_.get()))
+        not mcapi::get().snapshot_equal(pair_test->graph_state->system_state_.get(), new_pair->graph_state->system_state_.get()))
       continue;
     XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
     exploration_stack_.pop_back();
@@ -122,13 +112,13 @@ void LivenessChecker::replay()
   if(_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (pair->graph_state->system_state_) {
-      pair->graph_state->system_state_->restore(&mc_model_checker->get_remote_simulation());
+      mcapi::get().restore_state(pair->graph_state->system_state_);
       return;
     }
   }
 
   /* Restore the initial state */
-  mc::session->restore_initial_state();
+  mcapi::get().restore_initial_state();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
@@ -144,23 +134,21 @@ void LivenessChecker::replay()
 
       smx_simcall_t req = nullptr;
 
-      if (saved_req != nullptr) {
-        /* because we got a copy of the executed request, we have to fetch the
-             real one, pointed by the request field of the issuer process */
-        const smx_actor_t issuer = MC_smx_simcall_get_issuer(saved_req);
-        req                      = &issuer->simcall_;
+      /* because we got a copy of the executed request, we have to fetch the
+         real one, pointed by the request field of the issuer process */
+      const smx_actor_t issuer = mcapi::get().simcall_get_issuer(saved_req);
+      req                      = &issuer->simcall_;
 
-        /* Debug information */
-        XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
-                  request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
-      }
+      /* Debug information */
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
+                mcapi::get().request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
 
-      this->get_session().execute(state->transition_);
+      mcapi::get().execute(state->transition_);
     }
 
     /* Update statistics */
     visited_pairs_count_++;
-    mc_model_checker->executed_transitions++;
+    mcapi::get().mc_inc_executed_trans();
 
     depth++;
   }
@@ -179,13 +167,13 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     visited_pair =
         std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
-  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), DerefAndCompareByActorsCountAndUsedHeap());
+  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), mcapi::get().compare_pair());
 
   for (auto i = range.first; i != range.second; ++i) {
     const VisitedPair* pair_test = i->get();
-    if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
+    if (mcapi::get().automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
-        not snapshot_equal(pair_test->graph_state->system_state_.get(), visited_pair->graph_state->system_state_.get()))
+        not mcapi::get().snapshot_equal(pair_test->graph_state->system_state_.get(), visited_pair->graph_state->system_state_.get()))
       continue;
     if (pair_test->other_num == -1)
       visited_pair->other_num = pair_test->num;
@@ -215,7 +203,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(Session& s) : Checker(s)
+LivenessChecker::LivenessChecker() : Checker()
 {
 }
 
@@ -231,7 +219,7 @@ void LivenessChecker::log_state() // override
 {
   XBT_INFO("Expanded pairs = %lu", expanded_pairs_count_);
   XBT_INFO("Visited pairs = %lu", visited_pairs_count_);
-  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
+  XBT_INFO("Executed transitions = %lu", mcapi::get().mc_get_executed_trans());
 }
 
 void LivenessChecker::show_acceptance_cycle(std::size_t depth)
@@ -242,8 +230,8 @@ void LivenessChecker::show_acceptance_cycle(std::size_t depth)
   XBT_INFO("Counter-example that violates formula:");
   for (auto const& s : this->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
-  mc::dumpRecordPath();
-  mc::session->log_state();
+  mcapi::get().dump_record_path();
+  mcapi::get().log_state();
   XBT_INFO("Counter-example depth: %zu", depth);
 }
 
@@ -253,8 +241,8 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
   for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
     int req_num       = pair->graph_state->transition_.argument_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
-    if (req && req->call_ != SIMCALL_NONE)
-      trace.push_back(request_to_string(req, req_num, RequestType::executed));
+    if (req->call_ != simix::Simcall::NONE)
+      trace.push_back(mcapi::get().request_to_string(req, req_num, RequestType::executed));
   }
   return trace;
 }
@@ -273,8 +261,9 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   else
     next_pair->depth = 1;
   /* Get enabled actors and insert them in the interleave set of the next graph_state */
-  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
-    if (mc::actor_is_enabled(actor.copy.get_buffer()))
+  auto actors = mcapi::get().get_actors();
+  for (auto& actor : actors)
+    if (mcapi::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
       next_pair->graph_state->add_interleaving_set(actor.copy.get_buffer());
   next_pair->requests = next_pair->graph_state->interleave_size();
   /* FIXME : get search_cycle value for each accepting state */
@@ -310,10 +299,10 @@ void LivenessChecker::backtrack()
 void LivenessChecker::run()
 {
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file.get().c_str());
-  MC_automaton_load(_sg_mc_property_file.get().c_str());
+  mcapi::get().automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
-  mc::session->initialize();
+  mcapi::get().session_initialize();
 
   /* Initialize */
   this->previous_pair_ = 0;
@@ -322,18 +311,18 @@ void LivenessChecker::run()
 
   // For each initial state of the property automaton, push a
   // (application_state, automaton_state) pair to the exploration stack:
-  unsigned int cursor = 0;
-  xbt_automaton_state_t automaton_state;
-  xbt_dynar_foreach (mc::property_automaton->states, cursor, automaton_state)
+  auto automaton_stack = mcapi::get().get_automaton_state();
+  for (auto* automaton_state : automaton_stack) {
     if (automaton_state->type == -1)
       exploration_stack_.push_back(this->create_pair(nullptr, automaton_state, propos));
+  }
 
   /* Actually run the double DFS search for counter-examples */
   while (not exploration_stack_.empty()) {
     std::shared_ptr<Pair> current_pair = exploration_stack_.back();
 
     /* Update current state in buchi automaton */
-    mc::property_automaton->current_state = current_pair->automaton_state;
+    mcapi::get().set_property_automaton(current_pair->automaton_state);
 
     XBT_DEBUG(
         "********************* ( Depth = %d, search_cycle = %d, interleave size = %zu, pair_num = %d, requests = %d)",
@@ -370,7 +359,7 @@ void LivenessChecker::run()
       }
     }
 
-    smx_simcall_t req = MC_state_choose_request(current_pair->graph_state.get());
+    smx_simcall_t req = mcapi::get().mc_state_choose_request(current_pair->graph_state.get());
     int req_num       = current_pair->graph_state->transition_.argument_;
 
     if (dot_output != nullptr) {
@@ -380,24 +369,25 @@ void LivenessChecker::run()
         this->previous_request_.clear();
       }
       this->previous_pair_    = current_pair->num;
-      this->previous_request_ = request_get_dot_output(req, req_num);
+      this->previous_request_ = mcapi::get().request_get_dot_output(req, req_num);
       if (current_pair->search_cycle)
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);
     }
 
-    XBT_DEBUG("Execute: %s", request_to_string(req, req_num, RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", mcapi::get().request_to_string(req, req_num, RequestType::simix).c_str());
 
     /* Update stats */
-    mc_model_checker->executed_transitions++;
+    mcapi::get().mc_inc_executed_trans();
+
     if (not current_pair->exploration_started)
       visited_pairs_count_++;
 
     /* Answer the request */
-    mc_model_checker->handle_simcall(current_pair->graph_state->transition_);
+    mcapi::get().handle_simcall(current_pair->graph_state->transition_);
 
     /* Wait for requests (schedules processes) */
-    mc_model_checker->wait_for_requests();
+    mcapi::get().mc_wait_for_requests();
 
     current_pair->requests--;
     current_pair->exploration_started = true;
@@ -407,21 +397,21 @@ void LivenessChecker::run()
 
     // For each enabled transition in the property automaton, push a
     // (application_state, automaton_state) pair to the exploration stack:
-    for (int i = xbt_dynar_length(current_pair->automaton_state->out) - 1; i >= 0; i--) {
-      const xbt_automaton_transition* transition_succ =
-          xbt_dynar_get_as(current_pair->automaton_state->out, i, xbt_automaton_transition_t);
-      if (evaluate_label(transition_succ->label, *prop_values))
-        exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ->dst, prop_values));
-     }
+    for (int i = mcapi::get().get_dynar_length(current_pair->automaton_state->out) - 1; i >= 0; i--) {
+      auto transition_succ_label = mcapi::get().get_automaton_transition_label(current_pair->automaton_state->out, i);
+      auto transition_succ_dst = mcapi::get().get_automaton_transition_dst(current_pair->automaton_state->out, i);      
+      if (evaluate_label(transition_succ_label, *prop_values))
+        exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ_dst, prop_values));
+    }
   }
 
   XBT_INFO("No property violation found.");
-  mc::session->log_state();
+  mcapi::get().log_state();
 }
 
-Checker* createLivenessChecker(Session& s)
+Checker* createLivenessChecker()
 {
-  return new LivenessChecker(s);
+  return new LivenessChecker();
 }
 
 } // namespace mc

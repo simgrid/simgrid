@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,16 +12,16 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_token_ring, "Messages specific for this s4u example");
 
 class RelayRunner {
-  size_t token_size = 1000000; /* The token is 1MB long*/
-  simgrid::s4u::Mailbox* my_mailbox;
-  simgrid::s4u::Mailbox* neighbor_mailbox;
-  unsigned int rank      = 0;
-
 public:
   explicit RelayRunner() = default;
 
-  void operator()()
+  void operator()() const
   {
+    size_t token_size = 1000000; /* The token is 1MB long*/
+    simgrid::s4u::Mailbox* my_mailbox;
+    simgrid::s4u::Mailbox* neighbor_mailbox;
+    unsigned int rank = 0;
+
     try {
       rank = std::stoi(simgrid::s4u::this_actor::get_name());
     } catch (const std::invalid_argument& ia) {
@@ -40,10 +40,10 @@ public:
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       std::string msg = "Token";
       neighbor_mailbox->put(&msg, token_size);
-      const auto* res = static_cast<std::string*>(my_mailbox->get());
+      const auto* res = my_mailbox->get<std::string>();
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
     } else {
-      auto* res = static_cast<std::string*>(my_mailbox->get());
+      auto* res = my_mailbox->get<std::string>();
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
       XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       neighbor_mailbox->put(res, token_size);

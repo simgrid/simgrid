@@ -1,6 +1,6 @@
 /* selector for collective algorithms based on mvapich decision logic */
 
-/* Copyright (c) 2009-2020. The SimGrid Team.
+/* Copyright (c) 2009-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

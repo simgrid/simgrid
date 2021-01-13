@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,7 +14,7 @@ namespace simgrid {
 namespace instr {
 
 Container* Container::root_container_ = nullptr;              /* the root container */
-std::map<std::string, Container*> Container::all_containers_; /* all created containers indexed by name */
+std::map<std::string, Container*, std::less<>> Container::all_containers_; /* all created containers indexed by name */
 
 NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father)
     : Container::Container(name, "", father)

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,6 +12,8 @@
 
 namespace simgrid {
 namespace s4u {
+xbt::signal<void(Io const&)> Io::on_start;
+xbt::signal<void(Io const&)> Io::on_completion;
 
 Io::Io(sg_disk_t disk, sg_size_t size, OpType type) : disk_(disk), size_(size), type_(type)
 {
@@ -49,6 +51,7 @@ Io* Io::start()
     pimpl_->suspend();
 
   state_ = State::STARTED;
+  on_start(*this);
   return this;
 }
 
@@ -73,6 +76,8 @@ Io* Io::wait_for(double timeout)
   kernel::actor::simcall_blocking<void>([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
   state_ = State::FINISHED;
   this->release_dependencies();
+
+  on_completion(*this);
   return this;
 }
 

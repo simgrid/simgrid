@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,7 +30,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-XBT_PRIVATE std::map<std::string, simgrid::kernel::resource::StorageImpl*> mount_list;
+XBT_PRIVATE std::map<std::string, simgrid::kernel::resource::StorageImpl*, std::less<>> mount_list;
 XBT_PRIVATE std::vector<std::string> known_storages;
 
 namespace simgrid {
@@ -42,7 +42,7 @@ xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
 } // namespace simgrid
 
 static int surf_parse_models_setup_already_called = 0;
-std::map<std::string, simgrid::kernel::resource::StorageType*> storage_types;
+std::map<std::string, simgrid::kernel::resource::StorageType*, std::less<>> storage_types;
 
 /** The current AS in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;

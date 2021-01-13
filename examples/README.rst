@@ -724,6 +724,71 @@ options to see the task executions:
 
        .. example-tab:: examples/s4u/trace-platform/s4u-trace-platform.cpp
 
+  - **Setting Categories**
+    This example declares several tracing categories to that are used to
+    classify its tasks. When the program is executed, the tracing mechanism
+    registers the resource utilization of hosts and links according to these
+    categories. Recommended options:
+    ``--cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes``
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/trace-categories/s4u-trace-categories.cpp
+
+  - **Master Workers tracing**
+    This is an augmented version of our basic master/worker example using
+    several tracing features. It traces resource usage, sorted out in several
+    categories; Trace marks and user variables are also used. Recommended
+    options: ``--cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes``
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/trace-masterworkers/s4u-trace-masterworkers.cpp
+
+  - **Process migration tracing**
+    This version is enhanced so that the process migrations can be displayed
+    as arrows in a Gantt-chart visualization. Recommended options to that
+    extend: ``--cfg=tracing:yes --cfg=tracing/actor:yes``
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/trace-process-migration/s4u-trace-process-migration.cpp
+
+..
+    TODO: These tracing examples should be integrated in the examples to not
+    duplicate the C++ files. A full command line to see the result in the right
+    tool (vite/FrameSoc) should be given along with some screenshots.
+
+Tracing user variables
+----------------------
+
+You can also attach your own variables to any resource described in the platform
+file. The following examples illustrate this feature.  They have to be run with
+the following options: ``--cfg=tracing:yes --cfg=tracing/platform:yes``
+
+  - **Attaching variables to Hosts**
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/trace-host-user-variables/s4u-trace-host-user-variables.cpp
+
+  - **Attaching variables to Links**
+    The tricky part is that you have to know the name of the link you want to
+    enhance with a variable.
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/trace-link-user-variables/s4u-trace-link-user-variables.cpp
+
+  - **Attaching variables to network Routes**
+    It is often easier to update a given variable for all links of a given
+    network path (identified by its source and destination hosts) instead of
+    knowing the name of each specific link.
+
+    .. tabs::
+
+       .. example-tab::  examples/s4u/trace-route-user-variables/s4u-trace-route-user-variables.cpp
+
 ========================
 Larger SimGrid Examplars
 ========================

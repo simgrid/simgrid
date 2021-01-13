@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team.
+/* Copyright (c) 2010-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -35,15 +35,14 @@ static void master()
 
 static void worker()
 {
-  const std::string* payload     = nullptr;
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("comm");
 
   XBT_INFO("Worker receiving");
   try {
-    payload = static_cast<std::string*>(mailbox->get());
+    auto payload = mailbox->get_unique<std::string>();
+    XBT_DEBUG("Received message: %s", payload->c_str());
   } catch (const simgrid::HostFailureException&) {
     XBT_DEBUG("The host has been turned off, this was expected");
-    delete payload;
     return;
   }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -45,14 +45,10 @@ static void sender(int argc, char**)
 static void receiver(int, char**)
 {
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("receiver");
-
   XBT_INFO("Wait for the message.");
-  void* payload = mbox->get();
+  auto received = mbox->get_unique<std::string>();
 
-  const auto* received = static_cast<std::string*>(payload);
   XBT_INFO("I got '%s'.", received->c_str());
-
-  delete received;
 }
 
 int main(int argc, char* argv[])

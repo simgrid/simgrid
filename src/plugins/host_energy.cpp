@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -551,7 +551,7 @@ void sg_host_energy_plugin_init()
   // that the next trigger would be the 2nd compute, hence ignoring the idle time
   // during the recv call. By updating at the beginning of a compute, we can
   // fix that. (If the cpu is not idle, this is not required.)
-  simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+  simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Exec const& activity) {
     if (activity.get_host_number() == 1) { // We only run on one host
       simgrid::s4u::Host* host         = activity.get_host();
       const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);

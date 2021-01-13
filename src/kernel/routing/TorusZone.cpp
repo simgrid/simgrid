@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -61,7 +61,6 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     private_links_.insert({position + j, {linkUp, linkDown}});
     dim_product *= current_dimension;
   }
-  rank++;
 }
 
 void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)

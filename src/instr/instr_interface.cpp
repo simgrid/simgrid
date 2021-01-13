@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,13 +17,13 @@ enum class InstrUserVariable { DECLARE, SET, ADD, SUB };
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
-std::set<std::string> created_categories;
-std::set<std::string> declared_marks;
-std::set<std::string> user_host_variables;
-std::set<std::string> user_vm_variables;
-std::set<std::string> user_link_variables;
+std::set<std::string, std::less<>> created_categories;
+std::set<std::string, std::less<>> declared_marks;
+std::set<std::string, std::less<>> user_host_variables;
+std::set<std::string, std::less<>> user_vm_variables;
+std::set<std::string, std::less<>> user_link_variables;
 
-static xbt_dynar_t instr_set_to_dynar(const std::set<std::string>& filter)
+static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& filter)
 {
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return nullptr;
@@ -82,8 +82,8 @@ void TRACE_category_with_color (const char *category, const char *color)
   //check if category is already created
   if (created_categories.find(category) != created_categories.end())
     return;
-  else
-    created_categories.insert(category);
+
+  created_categories.emplace(category);
 
   //define final_color
   std::string final_color;
@@ -148,7 +148,7 @@ void TRACE_declare_mark(const char *mark_type)
 
   XBT_DEBUG("MARK,declare %s", mark_type);
   simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(mark_type);
-  declared_marks.insert(mark_type);
+  declared_marks.emplace(mark_type);
 }
 
 /** @ingroup TRACE_mark
@@ -258,7 +258,8 @@ xbt_dynar_t TRACE_get_marks ()
 }
 
 static void instr_user_variable(double time, const char* resource, const char* variable_name, const char* father_type,
-                                double value, InstrUserVariable what, const char* color, std::set<std::string>* filter)
+                                double value, InstrUserVariable what, const char* color,
+                                std::set<std::string, std::less<>>* filter)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we don't allow user variables */
   if (not TRACE_is_enabled() || not TRACE_needs_platform())

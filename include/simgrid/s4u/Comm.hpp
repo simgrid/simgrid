@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -27,7 +27,6 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   size_t dst_buff_size_               = 0;
   void* src_buff_                     = nullptr;
   size_t src_buff_size_               = sizeof(void*);
-  std::string tracing_category_       = "";
   /* FIXME: expose these elements in the API */
   bool detached_                                                          = false;
   bool (*match_fun_)(void*, void*, kernel::activity::CommImpl*)           = nullptr;
@@ -43,14 +42,13 @@ public:
 
   ~Comm() override;
 
-  static xbt::signal<void(Actor const&)> on_sender_start;
-  static xbt::signal<void(Actor const&)> on_receiver_start;
-  static xbt::signal<void(Actor const&)> on_completion;
+  static xbt::signal<void(Comm const&, bool is_sender)> on_start;
+  static xbt::signal<void(Comm const&)> on_completion;
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
   static int wait_any(const std::vector<CommPtr>* comms) { return wait_any_for(comms, -1); }
-  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  /*! Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
   static int wait_any_for(const std::vector<CommPtr>* comms_in, double timeout);
 
   /*! take a vector s4u::CommPtr and return when all of them is finished. */
@@ -109,8 +107,8 @@ public:
    *
    * That's a buffer where the sent data will be copied  */
   CommPtr set_dst_data(void** buff, size_t size);
-
-  CommPtr set_tracing_category(const std::string& category);
+  /** Retrieve where the data will be copied on the receiver side */
+  void* get_dst_data();
 
   /** Retrieve the mailbox on which this comm acts */
   Mailbox* get_mailbox() const;

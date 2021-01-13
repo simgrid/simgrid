@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -46,8 +46,8 @@ public:
   Exec& operator=(Exec const&) = delete;
 
 #endif
-  static xbt::signal<void(Actor const&, Exec const&)> on_start;
-  static xbt::signal<void(Actor const&, Exec const&)> on_completion;
+  static xbt::signal<void(Exec const&)> on_start;
+  static xbt::signal<void(Exec const&)> on_completion;
 
   Exec* start() override;
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on

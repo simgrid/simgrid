@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -50,7 +50,7 @@ template <class Assoc> void PropertyHolder::set_properties(const Assoc& properti
   properties_->swap(props);
 }
 
-template void PropertyHolder::set_properties(const std::map<std::string, std::string>& properties);
+template void PropertyHolder::set_properties(const std::map<std::string, std::string, std::less<>>& properties);
 template void PropertyHolder::set_properties(const std::unordered_map<std::string, std::string>& properties);
 
 } // namespace xbt

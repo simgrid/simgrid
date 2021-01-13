@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -62,7 +62,7 @@ public:
  */
 class StorageImpl : public Resource, public xbt::PropertyHolder {
   s4u::Storage piface_;
-  lmm::Constraint* constraint_read_;  /* Constraint for maximum write bandwidth*/
+  lmm::Constraint* constraint_read_;  /* Constraint for maximum read bandwidth*/
   lmm::Constraint* constraint_write_; /* Constraint for maximum write bandwidth*/
 
   std::string typeId_;

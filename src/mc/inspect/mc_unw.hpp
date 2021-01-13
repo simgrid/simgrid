@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -45,7 +45,7 @@ namespace mc {
 class UnwindContext {
   simgrid::mc::AddressSpace* address_space_ = nullptr;
   simgrid::mc::RemoteSimulation* process_   = nullptr;
-  unw_context_t unwind_context_;
+  unw_context_t unwind_context_             = {};
 
 public:
   void initialize(simgrid::mc::RemoteSimulation* process, unw_context_t* c);

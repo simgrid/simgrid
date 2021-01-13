@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -136,7 +136,7 @@ System::System(bool selective_update) : selective_update_active(selective_update
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
 
   if (selective_update)
-    modified_set_ = new kernel::resource::Action::ModifiedSet();
+    modified_set_ = std::make_unique<kernel::resource::Action::ModifiedSet>();
 }
 
 System::~System()
@@ -154,7 +154,6 @@ System::~System()
     cnst_free(cnst);
 
   xbt_mallocator_free(variable_mallocator_);
-  delete modified_set_;
 }
 
 void System::cnst_free(Constraint* cnst)

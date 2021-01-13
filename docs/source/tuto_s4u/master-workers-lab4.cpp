@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,7 +22,7 @@ static void worker(std::string category)
   simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
   while (true) { // Master forcefully kills the workers by the end of the simulation
-    double* msg         = static_cast<double*>(mailbox->get());
+    double* msg         = mailbox->get<double>();
     double compute_cost = *msg;
     delete msg;
 

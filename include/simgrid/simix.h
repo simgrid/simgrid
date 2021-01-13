@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,7 +23,8 @@ extern unsigned smx_context_guard_size;
 
 SG_BEGIN_DECL
 
-XBT_PUBLIC smx_actor_t SIMIX_process_from_PID(aid_t PID);
+XBT_ATTRIB_DEPRECATED_v331("Please use sg_actor_by_PID instead.") XBT_PUBLIC smx_actor_t
+    SIMIX_process_from_PID(aid_t PID);
 
 /* parallelism */
 XBT_PUBLIC int SIMIX_context_is_parallel();

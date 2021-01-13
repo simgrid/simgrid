@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -47,13 +47,12 @@ static void garbage_stack(void)
 static void coordinator()
 {
   int CS_used = 0;
-  const Message* m = nullptr;
   std::queue<simgrid::s4u::Mailbox*> requests;
 
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
 
   while (true) {
-    m = static_cast<Message*>(mbox->get());
+    auto m = mbox->get_unique<Message>();
     if (m->kind == Message::Kind::REQUEST) {
       if (CS_used) {
         XBT_INFO("CS already used. Queue the request.");
@@ -81,7 +80,6 @@ static void coordinator()
         CS_used = 0;
       }
     }
-    delete m;
   }
 }
 
@@ -101,15 +99,13 @@ static void client(int id)
       XBT_INFO("Propositions changed : r=1, cs=0");
     }
 
-    const auto* grant = static_cast<Message*>(my_mailbox->get());
+    auto grant = my_mailbox->get_unique<Message>();
 
     if ((id == 1) && (grant->kind == Message::Kind::GRANT)) {
       cs = 1;
       r  = 0;
       XBT_INFO("Propositions changed : r=0, cs=1");
     }
-
-    delete grant;
 
     XBT_INFO("%d got the answer. Sleep a bit and release it", id);
 
@@ -147,7 +143,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("coordinator", simgrid::s4u::Host::by_name("Tremblay"), coordinator);
+  simgrid::s4u::Actor::create("coordinator", simgrid::s4u::Host::by_name("Tremblay"), coordinator)
+      ->set_kill_time(argc > 3 ? std::stod(argv[3]) : -1.0);
   if (std::stod(argv[2]) == 0) {
     simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("Boivin"), raw_client, 1);
     simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("Fafard"), raw_client, 2);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -31,13 +31,13 @@ void replay(RecordTrace const& trace)
     XBT_DEBUG("Executing %i$%i", transition.pid_, transition.argument_);
 
     // Choose a request:
-    smx_actor_t process = SIMIX_process_from_PID(transition.pid_);
-    if (not process)
-      xbt_die("Unexpected process (pid:%d).", transition.pid_);
-    const s_smx_simcall* simcall = &(process->simcall_);
-    if (simcall == nullptr || simcall->call_ == SIMCALL_NONE)
+    kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(transition.pid_);
+    if (actor == nullptr)
+      xbt_die("Unexpected actor (id:%d).", transition.pid_);
+    const s_smx_simcall* simcall = &(actor->simcall_);
+    if (simcall->call_ == simix::Simcall::NONE)
       xbt_die("No simcall for process %d.", transition.pid_);
-    if (not simgrid::mc::request_is_visible(simcall) || not simgrid::mc::actor_is_enabled(process))
+    if (not simgrid::mc::request_is_visible(simcall) || not simgrid::mc::actor_is_enabled(actor))
       xbt_die("Unexpected simcall.");
 
     // Execute the request:

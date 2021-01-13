@@ -1,6 +1,6 @@
 /* mc::RemoteClient: representative of the Client memory on the MC side */
 
-/* Copyright (c) 2008-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -207,7 +207,6 @@ public:
   // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
   std::vector<std::shared_ptr<ObjectInformation>> object_infos;
-  std::shared_ptr<ObjectInformation> libsimgrid_info;
   std::shared_ptr<ObjectInformation> binary_info;
 
   // Copies of MCed SMX data structures

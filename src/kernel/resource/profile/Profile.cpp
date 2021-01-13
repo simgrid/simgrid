@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,6 +13,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <fstream>
+#include <memory>
 #include <ostream>
 #include <sstream>
 #include <unordered_map>
@@ -27,10 +28,8 @@ namespace profile {
 Profile::Profile()
 {
   /* Add the first fake event storing the time at which the trace begins */
-  DatedValue val(0, -1);
-  StochasticDatedValue stoval(0, -1);
-  event_list.emplace_back(val);
-  stochastic_event_list.emplace_back(stoval);
+  event_list.emplace_back(0, -1);
+  stochastic_event_list.emplace_back(0, -1);
 }
 Profile::~Profile() = default;
 
@@ -211,12 +210,11 @@ Profile* Profile::from_file(const std::string& path)
   xbt_assert(not path.empty(), "Cannot parse a trace from an empty filename");
   xbt_assert(trace_list.find(path) == trace_list.end(), "Refusing to define trace %s twice", path.c_str());
 
-  const std::ifstream* f = surf_ifsopen(path);
+  auto f = std::unique_ptr<std::ifstream>(surf_ifsopen(path));
   xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", path.c_str(), (boost::join(surf_path, ":")).c_str());
 
   std::stringstream buffer;
   buffer << f->rdbuf();
-  delete f;
 
   return Profile::from_string(path, buffer.str(), -1);
 }

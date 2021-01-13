@@ -8,7 +8,7 @@
 		<zone id="SSID_1" routing="WIFI">
 			<prop id="access_point" value="alice"/>
 			<prop id="mcs" value="2"/> <!-- Optionnal: default = 3 -->
-			<prop id="nss" value="2"/> <!-- Optionnal: default = 1 -->
+			<prop id="nss" value="1"/> <!-- Optionnal: default = 1 -->
 
 			<host id="alice" speed="1Gf"/>
 

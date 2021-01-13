@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -116,12 +116,11 @@ bool Peer::getPeersFromTracker()
   }
 
   try {
-    auto* answer = static_cast<TrackerAnswer*>(mailbox_->get(GET_PEERS_TIMEOUT));
+    auto answer = mailbox_->get_unique<TrackerAnswer>(GET_PEERS_TIMEOUT);
     // Add the peers the tracker gave us to our peer list.
     for (auto const& peer_id : answer->getPeers())
       if (id != peer_id)
         connected_peers.emplace(peer_id, Connection(peer_id));
-    delete answer;
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     return false;
@@ -251,13 +250,11 @@ void Peer::leech()
   sendHandshakeToAllPeers();
   XBT_DEBUG("Starting main leech loop listening on mailbox: %s", mailbox_->get_cname());
 
-  void* data = nullptr;
   while (simgrid::s4u::Engine::get_clock() < deadline && countPieces(bitfield_) < FILE_PIECES) {
     if (comm_received == nullptr) {
-      comm_received = mailbox_->get_async(&data);
+      comm_received = mailbox_->get_async<Message>(&message);
     }
     if (comm_received->test()) {
-      message = static_cast<Message*>(data);
       handleMessage();
       delete message;
       comm_received = nullptr;
@@ -280,13 +277,11 @@ void Peer::seed()
   double next_choked_update = simgrid::s4u::Engine::get_clock() + UPDATE_CHOKED_INTERVAL;
   XBT_DEBUG("Start seeding.");
   // start the main seed loop
-  void* data = nullptr;
   while (simgrid::s4u::Engine::get_clock() < deadline) {
     if (comm_received == nullptr) {
-      comm_received = mailbox_->get_async(&data);
+      comm_received = mailbox_->get_async<Message>(&message);
     }
     if (comm_received->test()) {
-      message = static_cast<Message*>(data);
       handleMessage();
       delete message;
       comm_received = nullptr;

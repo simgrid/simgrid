@@ -1,6 +1,6 @@
 /* simple test trying to load a DAX file.                                   */
 
-/* Copyright (c) 2009-2020. The SimGrid Team.
+/* Copyright (c) 2009-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
   XBT_INFO("------------------- Schedule tasks ---------------------------");
   sg_host_t *host_list = sg_host_list();
   int hosts_count = sg_host_count();
-  qsort((void *) host_list, hosts_count, sizeof(sg_host_t), name_compare_hosts);
+  qsort(host_list, hosts_count, sizeof(sg_host_t), name_compare_hosts);
 
   xbt_dynar_foreach(dax, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {

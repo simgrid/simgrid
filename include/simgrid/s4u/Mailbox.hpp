@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,9 +8,11 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Comm.hpp>
 #include <smpi/forward.hpp>
 #include <xbt/string.hpp>
 
+#include <memory>
 #include <string>
 
 namespace simgrid {
@@ -94,13 +96,54 @@ public:
   /** Creates (but don't start) a data reception onto that mailbox */
   CommPtr get_init();
   /** Creates and start an async data reception to that mailbox */
-  CommPtr get_async(void** data);
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get_async<>()") CommPtr get_async(void** data);
+  template <typename T> CommPtr get_async(T** data);
 
   /** Blocking data reception */
-  void* get(); // FIXME: make a typed template version
+  template <typename T> T* get();
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get();
+  template <typename T> std::unique_ptr<T> get_unique() { return std::unique_ptr<T>(get<T>()); }
+
   /** Blocking data reception with timeout */
-  void* get(double timeout);
+  template <typename T> T* get(double timeout);
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get(double timeout);
+  template <typename T> std::unique_ptr<T> get_unique(double timeout) { return std::unique_ptr<T>(get<T>(timeout)); }
 };
+
+template <typename T> CommPtr Mailbox::get_async(T** data)
+{
+  CommPtr res = get_init();
+  res->set_dst_data(reinterpret_cast<void**>(data), sizeof(void*));
+  res->vetoable_start();
+  return res;
+}
+
+template <typename T> T* Mailbox::get()
+{
+  T* res = nullptr;
+  get_async<T>(&res)->wait();
+  return res;
+}
+
+template <typename T> T* Mailbox::get(double timeout)
+{
+  T* res = nullptr;
+  get_async<T>(&res)->wait_for(timeout);
+  return res;
+}
+
+inline CommPtr Mailbox::get_async(void** data) // XBT_ATTRIB_DEPRECATED_v331
+{
+  return get_async<void>(data);
+}
+inline void* Mailbox::get() // XBT_ATTRIB_DEPRECATED_v331
+{
+  return get<void>();
+}
+inline void* Mailbox::get(double timeout) // XBT_ATTRIB_DEPRECATED_v331
+{
+  return get<void>(timeout);
+}
 
 } // namespace s4u
 } // namespace simgrid

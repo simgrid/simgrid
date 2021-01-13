@@ -1,11 +1,10 @@
-/* Copyright (c) 2015-2020. The SimGrid Team.
+/* Copyright (c) 2015-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/sg_config.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -19,6 +18,8 @@
 #include <memory>
 #include <unistd.h>
 
+using mcapi = simgrid::mc::mc_api;
+
 static inline
 char** argvdup(int argc, char** argv)
 {
@@ -28,14 +29,14 @@ char** argvdup(int argc, char** argv)
   return argv_copy;
 }
 
-static std::unique_ptr<simgrid::mc::Checker> create_checker(simgrid::mc::Session& session)
+static std::unique_ptr<simgrid::mc::Checker> create_checker()
 {
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker());
   else if (_sg_mc_property_file.get().empty())
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker());
   else
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker());
 }
 
 int main(int argc, char** argv)
@@ -54,18 +55,10 @@ int main(int argc, char** argv)
   smpi_init_options(); // only performed once
 #endif
   sg_config_init(&argc, argv);
-  simgrid::mc::session = new simgrid::mc::Session([argv_copy] {
-    int i = 1;
-    while (argv_copy[i] != nullptr && argv_copy[i][0] == '-')
-      i++;
-    xbt_assert(argv_copy[i] != nullptr,
-               "Unable to find a binary to exec on the command line. Did you only pass config flags?");
-    execvp(argv_copy[i], argv_copy + i);
-    xbt_die("The model-checked process failed to exec(): %s", strerror(errno));
-  });
+  mcapi::get().initialize(argv_copy);
   delete[] argv_copy;
 
-  auto checker = create_checker(*simgrid::mc::session);
+  auto checker = create_checker();
   int res      = SIMGRID_MC_EXIT_SUCCESS;
   try {
     checker->run();
@@ -77,6 +70,6 @@ int main(int argc, char** argv)
     res = SIMGRID_MC_EXIT_LIVENESS;
   }
   checker = nullptr;
-  simgrid::mc::session->close();
+  mcapi::get().s_close();
   return res;
 }

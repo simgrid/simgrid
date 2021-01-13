@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,16 +41,15 @@ static void sender()
 {
   ensure_root_tid();
   auto* payload = new std::string("some message");
-  simgrid::s4u::Mailbox::by_name("some mailbox")->put((void*)payload, 10e8);
+  simgrid::s4u::Mailbox::by_name("some mailbox")->put(payload, 10e8);
 }
 
 static void receiver()
 {
   ensure_other_tid();
 
-  const auto* payload = static_cast<std::string*>(simgrid::s4u::Mailbox::by_name("some mailbox")->get());
+  simgrid::s4u::Mailbox::by_name("some mailbox")->get_unique<std::string>();
   XBT_INFO("Task received");
-  delete payload;
 }
 
 static void maestro(void* /* data */)

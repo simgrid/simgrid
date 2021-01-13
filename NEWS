@@ -1,9 +1,18 @@
+                    _               _____  ____ _____
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ \___  |
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | / /
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ / /
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____/_/
+               (unreleased)
+
                     _               _____  ____   __
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / /_
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | '_ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/| (_) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|\___/
-               (unreleased)
+               December 15. 2020
+
+The Release release (the French lockdown was eased).
 
  * SMPI: improved support of the proxy apps (including those using petsc)
  * WiFi: easier description in XML; energy plugin; more examples.

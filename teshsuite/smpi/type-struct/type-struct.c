@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2020. The SimGrid Team.
+/* Copyright (c) 2012-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,7 +10,12 @@
 int main(int argc, char **argv)
 {
     int          rank;
-    struct { int a;int c; double b;int tab[2][3];} value;
+    struct {
+      int a;
+      int c;
+      double b;
+      int tab[2][3];
+    } value = {0};
     MPI_Datatype mystruct;
     int          blocklens[3];
     MPI_Aint     indices[3];

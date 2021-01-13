@@ -35,6 +35,9 @@ install:
 #- choco install lua53
 # We need python v3
 - cmd: SET PATH=C:\Python37-x64;%PATH% # We need python v3
+# Ugly hack to ignore versions 3.8 and later of Python
+- rename "C:\Python38-x64\python.exe" "python-ignored.exe"
+- rename "C:\Python39-x64\python.exe" "python-ignored.exe"
 # Use the mingw-w64 provided by Appveyor (must be placed before Perl in the path)
 - cmd: SET PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\;%PATH%
 # Work around a bug on appveyor where the default sh is not the one I expect

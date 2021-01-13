@@ -1,6 +1,6 @@
 /* simgrid/config.h - Results of the configure made visible to user code.   */
 
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,5 +21,5 @@
 #cmakedefine01 SIMGRID_HAVE_MC
 /* Was the ns-3 support compiled in? */
 #cmakedefine01 SIMGRID_HAVE_NS3
-
+#cmakedefine NS3_MINOR_VERSION @NS3_MINOR_VERSION@ 
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

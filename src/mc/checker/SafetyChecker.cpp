@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +13,6 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
-#include "src/mc/Session.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/SafetyChecker.hpp"
@@ -26,6 +25,8 @@
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
+using mcapi = simgrid::mc::mc_api;
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc, "Logging specific to MC safety verification ");
 
 namespace simgrid {
@@ -34,16 +35,17 @@ namespace mc {
 void SafetyChecker::check_non_termination(const State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
-    if (snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
+    if (mcapi::get().snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
       XBT_INFO("Non-progressive cycle: state %d -> state %d", (*state)->num_, current_state->num_);
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
       XBT_INFO("******************************************");
       XBT_INFO("Counter-example execution trace:");
-      for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
+      auto checker = mcapi::get().mc_get_checker();
+      for (auto const& s : checker->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
-      dumpRecordPath();
-      session->log_state();
+      mcapi::get().dump_record_path();
+      mcapi::get().log_state();
 
       throw TerminationError();
     }
@@ -63,8 +65,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
   for (auto const& state : stack_) {
     int value         = state->transition_.argument_;
     smx_simcall_t req = &state->executed_req_;
-    if (req)
-      trace.push_back(request_to_string(req, value, RequestType::executed));
+    trace.push_back(mcapi::get().request_to_string(req, value, RequestType::executed));
   }
   return trace;
 }
@@ -72,8 +73,8 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
 void SafetyChecker::log_state() // override
 {
   XBT_INFO("Expanded states = %lu", expanded_states_count_);
-  XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
-  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
+  XBT_INFO("Visited states = %lu", mcapi::get().mc_get_visited_states());
+  XBT_INFO("Executed transitions = %lu", mcapi::get().mc_get_executed_trans());
 }
 
 void SafetyChecker::run()
@@ -90,7 +91,7 @@ void SafetyChecker::run()
     XBT_VERB("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num_,
              state->interleave_size());
 
-    mc_model_checker->visited_states++;
+    mcapi::get().mc_inc_visited_states();
 
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
@@ -111,7 +112,7 @@ void SafetyChecker::run()
 
     // Search an enabled transition in the current state; backtrack if the interleave set is empty
     // get_request also sets state.transition to be the one corresponding to the returned req
-    smx_simcall_t req = MC_state_choose_request(state);
+    smx_simcall_t req = mcapi::get().mc_state_choose_request(state);
     // req is now the transition of the process that was selected to be executed
 
     if (req == nullptr) {
@@ -123,16 +124,16 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", request_to_string(req, state->transition_.argument_, RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", mcapi::get().request_to_string(req, state->transition_.argument_, RequestType::simix).c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = request_get_dot_output(req, state->transition_.argument_);
+      req_str = mcapi::get().request_get_dot_output(req, state->transition_.argument_);
 
-    mc_model_checker->executed_transitions++;
+    mcapi::get().mc_inc_executed_trans();
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    this->get_session().execute(state->transition_);
+    mcapi::get().execute(state->transition_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     ++expanded_states_count_;
@@ -148,9 +149,10 @@ void SafetyChecker::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      for (auto& remoteActor : mc_model_checker->get_remote_simulation().actors()) {
+      auto actors = mcapi::get().get_actors(); 
+      for (auto& remoteActor : actors) {
         auto actor = remoteActor.copy.get_buffer();
-        if (actor_is_enabled(actor)) {
+        if (mcapi::get().actor_is_enabled(actor->get_pid())) {
           next_state->add_interleaving_set(actor);
           if (reductionMode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
@@ -169,7 +171,7 @@ void SafetyChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  session->log_state();
+  mcapi::get().log_state();
 }
 
 void SafetyChecker::backtrack()
@@ -177,8 +179,8 @@ void SafetyChecker::backtrack()
   stack_.pop_back();
 
   /* Check for deadlocks */
-  if (mc_model_checker->checkDeadlock()) {
-    MC_show_deadlock();
+  if (mcapi::get().mc_check_deadlock()) {
+    mcapi::get().mc_show_deadlock();
     throw DeadlockError();
   }
 
@@ -192,22 +194,22 @@ void SafetyChecker::backtrack()
     stack_.pop_back();
     if (reductionMode_ == ReductionMode::dpor) {
       smx_simcall_t req = &state->internal_req_;
-      if (req->call_ == SIMCALL_MUTEX_LOCK || req->call_ == SIMCALL_MUTEX_TRYLOCK)
+      if (req->call_ == simix::Simcall::MUTEX_LOCK || req->call_ == simix::Simcall::MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none");
 
-      const kernel::actor::ActorImpl* issuer = MC_smx_simcall_get_issuer(req);
+      const kernel::actor::ActorImpl* issuer = mcapi::get().simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
-        if (request_depend(req, &prev_state->internal_req_)) {
+        if (mcapi::get().request_depend(req, &prev_state->internal_req_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.argument_;
             smx_simcall_t prev_req = &prev_state->executed_req_;
-            XBT_DEBUG("%s (state=%d)", simgrid::mc::request_to_string(prev_req, value, RequestType::internal).c_str(),
+            XBT_DEBUG("%s (state=%d)", mcapi::get().request_to_string(prev_req, value, RequestType::internal).c_str(),
                       prev_state->num_);
             value    = state->transition_.argument_;
             prev_req = &state->executed_req_;
-            XBT_DEBUG("%s (state=%d)", simgrid::mc::request_to_string(prev_req, value, RequestType::executed).c_str(),
+            XBT_DEBUG("%s (state=%d)", mcapi::get().request_to_string(prev_req, value, RequestType::executed).c_str(),
                       state->num_);
           }
 
@@ -217,14 +219,14 @@ void SafetyChecker::backtrack()
             XBT_DEBUG("Process %p is in done set", req->issuer_);
           break;
         } else if (req->issuer_ == prev_state->internal_req_.issuer_) {
-          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(req->call_),
-                    SIMIX_simcall_name(prev_state->internal_req_.call_));
+          XBT_DEBUG("Simcall %s and %s with same issuer", mcapi::get().simcall_get_name(req->call_),
+                    mcapi::get().simcall_get_name(prev_state->internal_req_.call_));
           break;
         } else {
-          const kernel::actor::ActorImpl* previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req_);
+          const kernel::actor::ActorImpl* previous_issuer = mcapi::get().simcall_get_issuer(&prev_state->internal_req_);
           XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
-                    SIMIX_simcall_name(req->call_), issuer->get_pid(), state->num_,
-                    SIMIX_simcall_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
+                    mcapi::get().simcall_get_name(req->call_), issuer->get_pid(), state->num_,
+                    mcapi::get().simcall_get_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
         }
       }
     }
@@ -247,25 +249,25 @@ void SafetyChecker::restore_state()
   /* Intermediate backtracking */
   const State* last_state = stack_.back().get();
   if (last_state->system_state_) {
-    last_state->system_state_->restore(&mc_model_checker->get_remote_simulation());
+    mc_api::get().restore_state(last_state->system_state_);
     return;
   }
 
   /* Restore the initial state */
-  session->restore_initial_state();
+  mcapi::get().restore_initial_state();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (std::unique_ptr<State> const& state : stack_) {
     if (state == stack_.back())
       break;
-    session->execute(state->transition_);
+    mcapi::get().execute(state->transition_);
     /* Update statistics */
-    mc_model_checker->visited_states++;
-    mc_model_checker->executed_transitions++;
+    mcapi::get().mc_inc_visited_states();
+    mcapi::get().mc_inc_executed_trans();
   }
 }
 
-SafetyChecker::SafetyChecker(Session& s) : Checker(s)
+SafetyChecker::SafetyChecker() : Checker()
 {
   reductionMode_ = reduction_mode;
   if (_sg_mc_termination)
@@ -279,7 +281,8 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
     XBT_INFO("Check a safety property. Reduction is: %s.",
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
-  session->initialize();
+  
+  mcapi::get().session_initialize();  
 
   XBT_DEBUG("Starting the safety algorithm");
 
@@ -290,8 +293,9 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
   XBT_DEBUG("Initial state");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
-    if (actor_is_enabled(actor.copy.get_buffer())) {
+  auto actors = mcapi::get().get_actors();
+  for (auto& actor : actors)
+    if (mcapi::get().actor_is_enabled(actor.copy.get_buffer()->get_pid())) {
       initial_state->add_interleaving_set(actor.copy.get_buffer());
       if (reductionMode_ != ReductionMode::none)
         break;
@@ -300,9 +304,9 @@ SafetyChecker::SafetyChecker(Session& s) : Checker(s)
   stack_.push_back(std::move(initial_state));
 }
 
-Checker* createSafetyChecker(Session& s)
+Checker* createSafetyChecker()
 {
-  return new SafetyChecker(s);
+  return new SafetyChecker();
 }
 
 } // namespace mc

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,8 +22,8 @@ static void runner(int argc, char* argv[])
 
   XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "
            "and 10MB to exchange between each pair");
-  double* computation_amounts   = (double*)calloc(host_count, sizeof(double));
-  double* communication_amounts = (double*)calloc(host_count * host_count, sizeof(double));
+  double* computation_amounts   = xbt_new0(double, host_count);
+  double* communication_amounts = xbt_new0(double, host_count * host_count);
 
   for (int i = 0; i < host_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
@@ -34,12 +34,12 @@ static void runner(int argc, char* argv[])
 
   sg_actor_parallel_execute(host_count, hosts, computation_amounts, communication_amounts);
 
-  free(communication_amounts);
-  free(computation_amounts);
+  xbt_free(communication_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("We can do the same with a timeout of one second enabled.");
-  computation_amounts   = (double*)calloc(host_count, sizeof(double));
-  communication_amounts = (double*)calloc(host_count * host_count, sizeof(double));
+  computation_amounts   = xbt_new0(double, host_count);
+  communication_amounts = xbt_new0(double, host_count * host_count);
   for (int i = 0; i < host_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
   for (int i = 0; i < host_count; i++)
@@ -48,33 +48,33 @@ static void runner(int argc, char* argv[])
 
   sg_exec_t exec = sg_actor_parallel_exec_init(host_count, hosts, computation_amounts, communication_amounts);
   sg_exec_wait_for(exec, 1 /* timeout (in seconds)*/);
-  free(communication_amounts);
-  free(computation_amounts);
+  xbt_free(communication_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
-  computation_amounts = (double*)calloc(host_count, sizeof(double));
+  computation_amounts = xbt_new0(double, host_count);
   for (int i = 0; i < host_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
   sg_actor_parallel_execute(host_count, hosts, computation_amounts, NULL);
-  free(computation_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");
-  computation_amounts   = (double*)calloc(host_count, sizeof(double));
-  communication_amounts = (double*)calloc(host_count * host_count, sizeof(double));
+  computation_amounts   = xbt_new0(double, host_count);
+  communication_amounts = xbt_new0(double, host_count * host_count);
   sg_actor_parallel_execute(host_count, hosts, computation_amounts, communication_amounts);
-  free(communication_amounts);
-  free(computation_amounts);
+  xbt_free(communication_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", sg_host_get_name(hosts[1]));
-  computation_amounts    = (double*)calloc(1, sizeof(double));
+  computation_amounts    = xbt_new0(double, 1);
   computation_amounts[0] = 1e9; // 1 Gflop
   sg_host_t remote[1];
   remote[0] = hosts[1];
   sg_actor_parallel_execute(1, remote, computation_amounts, NULL /* no comm */);
-  free(computation_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("Goodbye now!");
-  free(hosts);
+  xbt_free(hosts);
 }
 
 int main(int argc, char* argv[])
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
   /* Pick the first host from the platform file */
   sg_host_t* all_hosts = sg_host_list();
   sg_host_t first_host = all_hosts[0];
-  free(all_hosts);
+  xbt_free(all_hosts);
 
   sg_actor_create("test", first_host, runner, 0, NULL);
 

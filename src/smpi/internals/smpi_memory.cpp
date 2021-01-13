@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -72,14 +72,14 @@ static void smpi_get_executable_global_size()
       /* Here we are making the assumption that a suitable empty region
          following the rw- area is the end of the data segment. It would
          be better to check with the size of the data segment. */
-      ++i;
-      if (i != map.end() && i->pathname.empty() && (i->prot & PROT_RWX) == PROT_RW &&
-          (char*)i->start_addr == smpi_data_exe_start + smpi_data_exe_size) {
+      auto j = i + 1;
+      if (j != map.end() && j->pathname.empty() && (j->prot & PROT_RWX) == PROT_RW &&
+          (char*)j->start_addr == smpi_data_exe_start + smpi_data_exe_size) {
         // Only count the portion of this region not present in the initial map.
-        auto found = std::find_if(initial_vm_map.begin(), initial_vm_map.end(), [&i](const simgrid::xbt::VmMap& m) {
-          return i->start_addr <= m.start_addr && m.start_addr < i->end_addr;
+        auto found    = std::find_if(initial_vm_map.begin(), initial_vm_map.end(), [&j](const simgrid::xbt::VmMap& m) {
+          return j->start_addr <= m.start_addr && m.start_addr < j->end_addr;
         });
-        auto end_addr      = (found == initial_vm_map.end() ? i->end_addr : found->start_addr);
+        auto end_addr = (found == initial_vm_map.end() ? j->end_addr : found->start_addr);
         smpi_data_exe_size = (char*)end_addr - smpi_data_exe_start;
       }
       return;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -203,7 +203,6 @@ answer_t find_closest(const_node_t node, unsigned int destination_id)
 
 unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_in_stats)
 {
-  unsigned int i = 0;
   unsigned int queries;
   unsigned int answers;
   unsigned int destination_found = 0;
@@ -240,6 +239,7 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
           // Handle the answer
           routing_table_update(node, msg->sender_id);
           node_contact_t contact;
+          unsigned int i;
           xbt_dynar_foreach (node_list->nodes, i, contact)
             routing_table_update(node, contact->id);
 

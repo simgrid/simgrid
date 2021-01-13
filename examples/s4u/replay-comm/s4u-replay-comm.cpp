@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -60,8 +60,6 @@ public:
     ACT_DEBUG("Entering Send: %s (size: %" PRIu64 ") -- Actor %s on mailbox %s", NAME.c_str(), size,
               simgrid::s4u::this_actor::get_cname(), to->get_cname());
     to->put(payload, size);
-    delete payload;
-
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 
@@ -73,7 +71,7 @@ public:
 
     ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), simgrid::s4u::this_actor::get_cname(),
               from->get_cname());
-    from->get();
+    from->get_unique<std::string>();
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 };
@@ -100,16 +98,15 @@ int main(int argc, char* argv[])
   xbt_replay_action_register("send", Replayer::send);
   xbt_replay_action_register("recv", Replayer::recv);
 
+  std::ifstream ifs;
   if (argv[3]) {
-    simgrid::xbt::action_fs = new std::ifstream(argv[3], std::ifstream::in);
+    ifs.open(argv[3], std::ifstream::in);
+    simgrid::xbt::action_fs = &ifs;
   }
 
   e.run();
 
-  if (argv[3]) {
-    delete simgrid::xbt::action_fs;
-    simgrid::xbt::action_fs = nullptr;
-  }
+  simgrid::xbt::action_fs = nullptr;
 
   XBT_INFO("Simulation time %g", e.get_clock());
 

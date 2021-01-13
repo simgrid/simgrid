@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team.
+/* Copyright (c) 2010-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,6 +6,7 @@
 
 #include "simgrid/Exception.hpp"
 #include "src/instr/instr_private.hpp"
+#include "src/smpi/include/private.hpp"
 #include "xbt/virtu.h" /* xbt::cmdline */
 
 extern std::ofstream tracing_file;
@@ -18,7 +19,7 @@ void dump_generator_version()
   tracing_file << "#This file was generated using SimGrid-" << SIMGRID_VERSION_MAJOR << "." << SIMGRID_VERSION_MINOR
                << "." << SIMGRID_VERSION_PATCH << std::endl;
   tracing_file << "#[";
-  for (auto str : simgrid::xbt::cmdline) {
+  for (auto const& str : simgrid::xbt::cmdline) {
     tracing_file << str << " ";
   }
   tracing_file << "]" << std::endl;
@@ -143,7 +144,7 @@ void dump_header(bool basic, bool display_sizes)
   if (display_sizes)
     tracing_file << "%       Size int" << std::endl;
 #if HAVE_SMPI
-  if (simgrid::config::get_value<bool>("smpi/trace-call-location")) {
+  if (smpi_cfg_trace_call_location()) {
     /* paje currently (May 2016) uses "Filename" and "Linenumber" as reserved words. We cannot use them... */
     tracing_file << "%       Fname string" << std::endl;
     tracing_file << "%       Lnumber int" << std::endl;

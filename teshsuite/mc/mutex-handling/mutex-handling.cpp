@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -29,15 +29,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 static int receiver(const char* box_name)
 {
   auto mb = simgrid::s4u::Mailbox::by_name(box_name);
-  const int* payload;
+  std::unique_ptr<int> payload;
 
-  payload = static_cast<int*>(mb->get());
+  payload = mb->get_unique<int>();
   MC_assert(*payload == 1);
-  delete payload;
 
-  payload = static_cast<int*>(mb->get());
+  payload = mb->get_unique<int>();
   MC_assert(*payload == 2);
-  delete payload;
 
   return 0;
 }
@@ -50,7 +48,7 @@ static int sender(const char* box_name, simgrid::s4u::MutexPtr mutex, int value)
   if (mutex)
     mutex->lock();
 
-  mb->put(static_cast<void*>(payload), 8);
+  mb->put(payload, 8);
 
   if (mutex)
     mutex->unlock();

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -91,7 +91,7 @@ struct shared_metadata_t {
 };
 
 std::map<const void*, shared_metadata_t> allocs_metadata;
-std::map<std::string, void*> calls;
+std::map<std::string, void*, std::less<>> calls;
 
 #ifndef WIN32
 int smpi_shared_malloc_bogusfile           = -1;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -68,8 +68,8 @@ static void receiver(int, char**)
 
   XBT_INFO("Wait for my first message");
   for (bool cont = true; cont;) {
-    void* payload;
-    simgrid::s4u::CommPtr comm = mbox->get_async(&payload);
+    std::string* received;
+    simgrid::s4u::CommPtr comm = mbox->get_async<std::string>(&received);
 
     if (sleep_test_time > 0) {   /* - "test_time" is set to 0, wait */
       while (not comm->test()) { /* - Call test() every "sleep_test_time" otherwise */
@@ -79,7 +79,6 @@ static void receiver(int, char**)
       comm->wait();
     }
 
-    const auto* received = static_cast<std::string*>(payload);
     XBT_INFO("I got a '%s'.", received->c_str());
     if (*received == "finalize")
       cont = false; // If it's a finalize message, we're done.

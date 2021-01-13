@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -61,7 +61,7 @@ static void display_disk_content(const simgrid::s4u::Disk* disk)
 {
   XBT_INFO("*** Dump a disk ***");
   XBT_INFO("Print the content of the disk: %s", disk->get_cname());
-  const std::map<std::string, sg_size_t>* content = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_content();
+  const auto* content = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_content();
   if (not content->empty()) {
     for (auto const& entry : *content)
       XBT_INFO("  %s size: %llu bytes", entry.first.c_str(), entry.second);
@@ -127,16 +127,14 @@ static void server()
 
   XBT_INFO("Server waiting for transfers ...");
   while (true) {
-    const std::string* msg = static_cast<std::string*>(mailbox->get());
+    auto msg = mailbox->get_unique<std::string>();
     if (*msg == "finalize") { // Shutdown ...
-      delete msg;
       break;
     } else { // Receive file to save
       size_t pos              = msg->find(' ');
       std::string dest        = msg->substr(0, pos);
       sg_size_t size_to_write = std::stoull(msg->substr(pos + 1));
       write_local_file(dest, size_to_write);
-      delete msg;
     }
   }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -77,8 +77,8 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   }
 }
 
-void ClusterZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
-                            std::map<std::string, xbt_edge_t>* edges)
+void ClusterZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
+                            std::map<std::string, xbt_edge_t, std::less<>>* edges)
 {
   xbt_assert(router_,
              "Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -231,7 +231,7 @@ void sg_host_load_plugin_init()
     host.extension_set(new HostLoad(&host));
   });
 
-  simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+  simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Exec const& activity) {
     if (activity.get_host_number() == 1) { // We only run on one host
       simgrid::s4u::Host* host         = activity.get_host();
       const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
@@ -247,7 +247,7 @@ void sg_host_load_plugin_init()
       XBT_WARN("HostLoad plugin currently does not support executions on several hosts");
     }
   });
-  simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Actor const&, simgrid::s4u::Exec const& activity) {
+  simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Exec const& activity) {
     if (activity.get_host_number() == 1) { // We only run on one host
       simgrid::s4u::Host* host         = activity.get_host();
       const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);

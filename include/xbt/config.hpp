@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -149,32 +149,34 @@ bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases
   alias(name, aliases);
 }
 
-template <class T, class F>
-typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
-bind_flag(T& value, const char* name, const char* description, const std::map<T, std::string>& valid_values, F callback)
+template <class F>
+typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>::value,
+                        void>::type
+bind_flag(std::string& value, const char* name, const char* description,
+          const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
 {
   declare_flag(name, description, value,
-               std::function<void(const T&)>([&value, name, valid_values, callback](const T& val) {
+               std::function<void(const std::string&)>([&value, name, valid_values, callback](const std::string& val) {
                  callback(val);
                  if (valid_values.find(val) != valid_values.end()) {
-                   value = std::move(val);
+                   value = val;
                    return;
                  }
                  std::string mesg = "\n";
-                 if (std::string(val) == "help")
+                 if (val == "help")
                    mesg += std::string("Possible values for option ") + name + ":\n";
                  else
                    mesg += std::string("Invalid value '") + val + "' for option " + name + ". Possible values:\n";
                  for (auto const& kv : valid_values)
-                   mesg += "  - '" + std::string(kv.first) + "': " + kv.second +
-                           (kv.first == value ? "  <=== DEFAULT" : "") + "\n";
+                   mesg += "  - '" + kv.first + "': " + kv.second + (kv.first == value ? "  <=== DEFAULT" : "") + "\n";
                  xbt_die("%s", mesg.c_str());
                }));
 }
-template <class T, class F>
-typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
-bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description,
-          const std::map<T, std::string>& valid_values, F callback)
+template <class F>
+typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const std::string&>()))>::value,
+                        void>::type
+bind_flag(std::string& value, const char* name, std::initializer_list<const char*> aliases, const char* description,
+          const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
 {
   bind_flag(value, name, description, valid_values, std::move(callback));
   alias(name, aliases);
@@ -250,16 +252,17 @@ public:
    * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
    */
   template <class F>
-  Flag(const char* name, const char* desc, T value, const std::map<T, std::string>& valid_values, F callback)
+  Flag(const char* name, const char* desc, T value, const std::map<std::string, std::string, std::less<>>& valid_values,
+       F callback)
       : value_(value), name_(name)
   {
-    simgrid::config::bind_flag(value_, name, desc, std::move(valid_values), std::move(callback));
+    simgrid::config::bind_flag(value_, name, desc, valid_values, std::move(callback));
   }
 
   /* A constructor with everything */
   template <class F>
   Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value,
-       const std::map<T, std::string>& valid_values, F callback)
+       const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
       : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, aliases, desc, valid_values, std::move(callback));

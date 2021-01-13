@@ -3,6 +3,26 @@ C
 C  (C) 2011 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
 C
+      subroutine uop( cin, cout, count, datatype )
+      implicit none
+      include 'mpif.h'
+      integer cin(*), cout(*)
+      integer count, datatype
+      integer i
+
+      if (.false.) then
+         if (datatype .ne. MPI_INTEGER) then
+            write(6,*) 'Invalid datatype ',datatype,
+     &           ' passed to user_op()'
+            return
+         endif
+      endif
+
+      do i=1, count
+         cout(i) = cin(i) + cout(i)
+      enddo
+      end
+C
 C Test of reduce scatter.
 C
 C Each processor contributes its rank + the index to the reduction, 
@@ -65,24 +85,4 @@ C recvbuf should be size * (rank + i)
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
 
-      end
-C
-      subroutine uop( cin, cout, count, datatype )
-      implicit none
-      include 'mpif.h'
-      integer cin(*), cout(*)
-      integer count, datatype
-      integer i
-
-      if (.false.) then
-         if (datatype .ne. MPI_INTEGER) then
-            write(6,*) 'Invalid datatype ',datatype,
-     &           ' passed to user_op()'
-            return
-         endif
-      endif
-
-      do i=1, count
-         cout(i) = cin(i) + cout(i)
-      enddo
       end

@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2020. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2021. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -55,8 +55,8 @@ public:
   void set_property(const std::string& key, const std::string& value);
 
   std::vector<NetZone*> get_children() const;
-  void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t>* nodes,
-                         std::map<std::string, xbt_edge_t>* edges);
+  void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
+                         std::map<std::string, xbt_edge_t, std::less<>>* edges);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */

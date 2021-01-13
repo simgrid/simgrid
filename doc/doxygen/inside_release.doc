@@ -22,12 +22,12 @@ Please apply the following checklist before releasing.
   - The release dub name matches the one given in ChangeLog file
 - Tests
   - The "make distcheck" target works (tested by jenkins)
-  - All tests pass oneverything on ci + travis/macOS + AppVeyor
+  - All tests pass on everything on ci + travis/macOS + AppVeyor
   - Tutorials and derivative projects build correctly
     https://framagit.org/simgrid/simgrid-template-s4u/pipelines
     https://framagit.org/simgrid/external-projects-ci/pipelines
   - The python module builds (see below).
-  - You can have a simgrid.jar from jenkins/macosx + AppVeyor
+  - The java jarfile builds from the github action
 
 @subsection inside_release_c_releasing Actually releasing SimGrid
 
@@ -41,13 +41,11 @@ Please apply the following checklist before releasing.
 - If it's not successful, fix it and push again
 - Once it's successful everywhere: merge 'master' into 'stable' and push it to framagit
   - You can interrupt the build on jenkins, as it was tested just before
-  - This builds the tar.gz and jar artefacts. The old doc says how to do manually if something goes wrong.
-  - Do not merge into 'stable' before appveyor and jenkins are done,
-    or your jarfile will not contain the code you expect for win and mac.
+  - This builds the tar.gz artefact.
 
 - Download the simgrid-doc-3.X.Y (artefact of pipeline 'pages' on framagit)
-  Download the tgz and jar files (artefacts of the pipeline 'stable' on framagit)
-- Push the archive files (tar.gz and jar) on gforge
+  Download the tgz file (artefact of the pipeline 'stable' on framagit)
+  Build the jar file using the github action
 - Tag the git repository v3.XX.X and push it to framagit and ghub
 - Document the tag on framagit and ghub
   - Upload the files simgrid-3.XX.tar.gz, simgrid-3_XX.jar and simgrid-doc-3_XX.zip
@@ -56,7 +54,7 @@ Please apply the following checklist before releasing.
   - emacs org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
   - jed .gitlab-ci.yml
     - Change the link to the simgrid-doc-3_XX.zip file
-    - Only keep 2 versions so that people don't find older ones in google
+    - Only keep 2 old versions so that people don't find older ones in google
     - Change the link to latest
   - git commit -a && git push # Check that the pipeline goes well on framagit
 

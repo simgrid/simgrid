@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -480,12 +480,12 @@ void CommImpl::copy_data()
             dst_actor_ ? dst_actor_->get_host()->get_cname() : "a finished process", dst_buff_, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
-  if (dst_buff_size_)
+  if (dst_buff_size_) {
     buff_size = std::min(buff_size, *(dst_buff_size_));
 
-  /* Update the receiver's buffer size to the copied amount */
-  if (dst_buff_size_)
+    /* Update the receiver's buffer size to the copied amount */
     *dst_buff_size_ = buff_size;
+  }
 
   if (buff_size > 0) {
     if (copy_data_fun)
@@ -581,9 +581,9 @@ void CommImpl::finish()
      * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
 
-    if (simcall->call_ == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
-      continue;                         // if actor handling comm is killed
-    if (simcall->call_ == SIMCALL_COMM_WAITANY) {
+    if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
+      continue;                                 // if actor handling comm is killed
+    if (simcall->call_ == simix::Simcall::COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (simcall->timeout_cb_) {
         simcall->timeout_cb_->remove();
@@ -674,15 +674,15 @@ void CommImpl::finish()
     }
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
     if (simcall->issuer_->exception_ &&
-        (simcall->call_ == SIMCALL_COMM_WAITANY || simcall->call_ == SIMCALL_COMM_TESTANY)) {
+        (simcall->call_ == simix::Simcall::COMM_WAITANY || simcall->call_ == simix::Simcall::COMM_TESTANY)) {
       // First retrieve the rank of our failing synchro
       CommImpl** comms;
       size_t count;
-      if (simcall->call_ == SIMCALL_COMM_WAITANY) {
+      if (simcall->call_ == simix::Simcall::COMM_WAITANY) {
         comms = simcall_comm_waitany__get__comms(simcall);
         count = simcall_comm_waitany__get__count(simcall);
       } else {
-        /* simcall->call_ == SIMCALL_COMM_TESTANY */
+        /* simcall->call_ == simix::Simcall::COMM_TESTANY */
         comms = simcall_comm_testany__get__comms(simcall);
         count = simcall_comm_testany__get__count(simcall);
       }

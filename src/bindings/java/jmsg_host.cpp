@@ -1,6 +1,6 @@
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -93,7 +93,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv* env, jclas
     jhost_bind(jhost, host, env);
 
     /* the native host data field is set with the global reference to the java host returned by this function */
-    host->extension_set(JAVA_HOST_LEVEL, (void *)jhost);
+    host->extension_set(JAVA_HOST_LEVEL, jhost);
   }
 
   /* return the global reference to the java host instance */
@@ -128,7 +128,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
     env->SetObjectField(jhost, jhost_field_Host_name, jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
-    host->extension_set(JAVA_HOST_LEVEL, (void *) jhost);
+    host->extension_set(JAVA_HOST_LEVEL, jhost);
   } else {
     jhost = (jobject) host->extension(JAVA_HOST_LEVEL);
   }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,8 +16,8 @@
 
 #include <algorithm>
 
-std::map<std::string, SgFlow*> flow_from_sock; // ns3::sock -> SgFlow
-std::map<std::string, ns3::ApplicationContainer> sink_from_sock; // ns3::sock -> ns3::PacketSink
+std::map<std::string, SgFlow*, std::less<>> flow_from_sock;                   // ns3::sock -> SgFlow
+std::map<std::string, ns3::ApplicationContainer, std::less<>> sink_from_sock; // ns3::sock -> ns3::PacketSink
 
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
 static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);

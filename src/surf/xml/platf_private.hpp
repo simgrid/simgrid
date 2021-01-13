@@ -1,6 +1,6 @@
 /* platf_private.h - Interface to the SimGrid platforms which visibility should be limited to this directory */
 
-/* Copyright (c) 2004-2020. The SimGrid Team.
+/* Copyright (c) 2004-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -102,12 +102,12 @@ public:
   double loopback_bw  = 0;
   double loopback_lat = 0;
   double limiter_link = 0;
-  ClusterTopology topology;
+  ClusterTopology topology = ClusterTopology::FLAT;
   std::string topo_parameters;
-  std::unordered_map<std::string, std::string>* properties;
+  std::unordered_map<std::string, std::string>* properties = nullptr;
   std::string router_id;
-  simgrid::s4u::Link::SharingPolicy sharing_policy;
-  simgrid::s4u::Link::SharingPolicy bb_sharing_policy;
+  simgrid::s4u::Link::SharingPolicy sharing_policy    = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+  simgrid::s4u::Link::SharingPolicy bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
 };
 
 class CabinetCreationArgs {

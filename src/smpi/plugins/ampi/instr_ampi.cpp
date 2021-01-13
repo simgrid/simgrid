@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,9 +9,8 @@
 #include <src/instr/instr_smpi.hpp>
 #include <src/smpi/include/smpi_actor.hpp>
 
-static std::map<std::string, std::string> ampi_colors = {{"migrate", "0.2 0.5 0.2"},
-  {"iteration", "0.5 0.5 0.5"}
-};
+static std::map<std::string, std::string, std::less<>> ampi_colors = {{"migrate", "0.2 0.5 0.2"},
+                                                                      {"iteration", "0.5 0.5 0.5"}};
 
 void TRACE_Iteration_in(int rank, simgrid::instr::TIData* extra)
 {

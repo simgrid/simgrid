@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,7 +18,7 @@ class VariableType;
 
 class Container {
   static Container* root_container_;
-  static std::map<std::string, Container*> all_containers_;
+  static std::map<std::string, Container*, std::less<>> all_containers_;
 
   long long int id_;
   std::string name_; /* Unique name of this container */
@@ -37,7 +37,7 @@ public:
 
   Type* type_; /* Type of this container */
   Container* father_;
-  std::map<std::string, Container*> children_;
+  std::map<std::string, Container*, std::less<>> children_;
 
   static Container* by_name_or_null(const std::string& name);
   static Container* by_name(const std::string& name);

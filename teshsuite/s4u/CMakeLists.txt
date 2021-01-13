@@ -41,6 +41,12 @@ endforeach()
 # The output is not relevant
 ADD_TEST(tesh-s4u-comm-pt2pt    ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-pt2pt/comm-pt2pt    ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster_backbone.xml)
 
+if(enable_coverage)
+  foreach (example evaluate-get-route-time evaluate-parse-time)
+    ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml)
+  endforeach()
+endif()
+
 # NS-3 specific tests
 if(SIMGRID_HAVE_NS3)
   foreach(x ns3-simultaneous-send-rcv ns3-from-src-to-itself)

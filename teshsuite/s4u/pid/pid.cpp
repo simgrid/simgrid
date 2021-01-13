@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,7 +25,7 @@ static void killall()
 {
   simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
   for (int i = 0; i < 3; i++) {
-    const auto* pid = static_cast<aid_t*>(mailbox->get());
+    const auto* pid = mailbox->get<aid_t>();
     XBT_INFO("Killing process \"%ld\".", *pid);
     simgrid::s4u::Actor::by_pid(*pid)->kill();
   }

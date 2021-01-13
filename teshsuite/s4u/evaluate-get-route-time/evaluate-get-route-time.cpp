@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2020. The SimGrid Team.
+/* Copyright (c) 2008-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,7 +6,7 @@
 
 /*
 for i in $(seq 1 20); do
-  teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time examples/platforms/cluster_backbone.xml 1
+  teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time examples/platforms/cluster_backbone.xml
   sleep 1
 done
 */

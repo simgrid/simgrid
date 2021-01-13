@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,7 +18,7 @@ namespace mc {
 
 class XBT_PRIVATE CommunicationDeterminismChecker : public Checker {
 public:
-  explicit CommunicationDeterminismChecker(Session& session);
+  explicit CommunicationDeterminismChecker();
   ~CommunicationDeterminismChecker() override;
   void run() override;
   RecordTrace get_record_trace() override;
@@ -28,13 +28,14 @@ private:
   void prepare();
   void real_run();
   void log_state() override;
-  void deterministic_comm_pattern(int process, const PatternCommunication* comm, int backtracking);
+  void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, int backtracking);
   void restoreState();
+  void handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, int backtracking);
 
 public:
   // These are used by functions which should be moved in CommunicationDeterminismChecker:
-  void get_comm_pattern(smx_simcall_t request, e_mc_call_type_t call_type, int backtracking);
-  void complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> comm_addr, unsigned int issuer, int backtracking);
+  void get_comm_pattern(smx_simcall_t request, CallType call_type, int backtracking);
+  void complete_comm_pattern(const kernel::activity::CommImpl* comm_addr, aid_t issuer, int backtracking);
 
 private:
   /** Stack representing the position in the exploration graph */

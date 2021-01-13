@@ -153,6 +153,9 @@ Here is the meaning of this example: ``2 ; 4,4 ; 1,2 ; 1,2``
    :language: xml
    :lines: 1-3,10-
 
+.. todo:
+
+   Model some other platforms, for example from https://link.springer.com/article/10.1007/s11227-019-03142-8
 
 Dragonfly Cluster
 -----------------

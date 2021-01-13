@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,6 +6,7 @@
 #ifndef SIMGRID_PLUGINS_LIVE_MIGRATION_H_
 #define SIMGRID_PLUGINS_LIVE_MIGRATION_H_
 
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
 #include <xbt/base.h>
 
@@ -28,6 +29,8 @@ XBT_PUBLIC int sg_vm_is_migrating(const_sg_vm_t vm);
 XBT_PUBLIC sg_vm_t sg_vm_create_migratable(sg_host_t pm, const char* name, int coreAmount, int ramsize,
                                            int mig_netspeed, int dp_intensity);
 
+#if SIMGRID_HAVE_MSG
+
 #define MSG_vm_live_migration_plugin_init() sg_vm_live_migration_plugin_init()
 
 #define MSG_vm_create_migratable(pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity)                            \
@@ -35,6 +38,8 @@ XBT_PUBLIC sg_vm_t sg_vm_create_migratable(sg_host_t pm, const char* name, int c
 
 #define MSG_vm_is_migrating(vm) sg_vm_is_migrating(vm)
 #define MSG_vm_migrate(vm, dst_pm) sg_vm_migrate((vm), (dst_pm))
+
+#endif // SIMGRID_HAVE_MSG
 
 SG_END_DECL
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -55,7 +55,6 @@ simgrid::config::Flag<std::string> _sg_mc_property_file{
 
 simgrid::config::Flag<bool> _sg_mc_comms_determinism{
     "model-check/communications-determinism",
-    {"model-check/communications_determinism"},
     "Whether to enable the detection of communication determinism",
     false,
     [](bool) {
@@ -64,7 +63,6 @@ simgrid::config::Flag<bool> _sg_mc_comms_determinism{
 
 simgrid::config::Flag<bool> _sg_mc_send_determinism{
     "model-check/send-determinism",
-    {"model-check/send_determinism"},
     "Enable/disable the detection of send-determinism in the communications schemes",
     false,
     [](bool) {
@@ -93,7 +91,6 @@ static simgrid::config::Flag<std::string> _sg_mc_reduce{
     }};
 
 simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth",
-                                            {"model-check/max_depth"},
                                             "Maximal exploration depth (default: 1000)",
                                             1000,
                                             [](int) { _mc_cfg_cb_check("max depth value"); }};
@@ -108,7 +105,6 @@ static simgrid::config::Flag<int> _sg_mc_max_visited_states__{
 
 simgrid::config::Flag<std::string> _sg_mc_dot_output_file{
     "model-check/dot-output",
-    {"model-check/dot_output"},
     "Name of dot output file corresponding to graph state",
     "",
     [](const std::string&) { _mc_cfg_cb_check("file name for a dot output of graph state"); }};

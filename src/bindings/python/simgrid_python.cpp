@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -251,7 +251,7 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "get",
           [](Mailbox* self) {
-            py::object data = pybind11::reinterpret_steal<py::object>(static_cast<PyObject*>(self->get()));
+            py::object data = pybind11::reinterpret_steal<py::object>(self->get<PyObject>());
             // data.dec_ref(); // FIXME: why does it break python-actor-create?
             return data;
           },

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -44,8 +44,6 @@ int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm com
   CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
   void* ptr = xbt_malloc(size);
-  if(ptr==nullptr)
-    return MPI_ERR_NO_MEM;
   smpi_bench_end();
   *static_cast<void**>(base) = ptr;
   *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,1);
@@ -61,8 +59,6 @@ int PMPI_Win_allocate_shared( MPI_Aint size, int disp_unit, MPI_Info info, MPI_C
   int rank = comm->rank();
   if(rank==0){
      ptr = xbt_malloc(size*comm->size());
-     if(ptr==nullptr)
-       return MPI_ERR_NO_MEM;
   }
   smpi_bench_end();
   simgrid::smpi::colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);

@@ -4,7 +4,7 @@
 /*                    DO NOT EVER CHANGE THIS FILE                    */
 /*                                                                    */
 /* change simcalls specification in src/simix/simcalls.in             */
-/* Copyright (c) 2014-2020. The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2014-2021. The SimGrid Team. All rights reserved.    */
 /**********************************************************************/
 
 /*
@@ -14,30 +14,34 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
+namespace simgrid {
+namespace simix {
 /**
  * @brief All possible simcalls.
  */
-enum e_smx_simcall_t {
-  SIMCALL_NONE,
-  SIMCALL_EXECUTION_WAITANY_FOR,
-  SIMCALL_COMM_SEND,
-  SIMCALL_COMM_ISEND,
-  SIMCALL_COMM_RECV,
-  SIMCALL_COMM_IRECV,
-  SIMCALL_COMM_WAITANY,
-  SIMCALL_COMM_WAIT,
-  SIMCALL_COMM_TEST,
-  SIMCALL_COMM_TESTANY,
-  SIMCALL_MUTEX_LOCK,
-  SIMCALL_MUTEX_TRYLOCK,
-  SIMCALL_MUTEX_UNLOCK,
-  SIMCALL_COND_WAIT,
-  SIMCALL_COND_WAIT_TIMEOUT,
-  SIMCALL_SEM_ACQUIRE,
-  SIMCALL_SEM_ACQUIRE_TIMEOUT,
-  SIMCALL_MC_RANDOM,
-  SIMCALL_RUN_KERNEL,
-  SIMCALL_RUN_BLOCKING,
+enum class Simcall {
+  NONE,
+  EXECUTION_WAITANY_FOR,
+  COMM_SEND,
+  COMM_ISEND,
+  COMM_RECV,
+  COMM_IRECV,
+  COMM_WAITANY,
+  COMM_WAIT,
+  COMM_TEST,
+  COMM_TESTANY,
+  MUTEX_LOCK,
+  MUTEX_TRYLOCK,
+  MUTEX_UNLOCK,
+  COND_WAIT,
+  COND_WAIT_TIMEOUT,
+  SEM_ACQUIRE,
+  SEM_ACQUIRE_TIMEOUT,
+  MC_RANDOM,
+  RUN_KERNEL,
+  RUN_BLOCKING,
 };
 
 constexpr int NUM_SIMCALLS = 20;
+} // namespace simix
+} // namespace simgrid

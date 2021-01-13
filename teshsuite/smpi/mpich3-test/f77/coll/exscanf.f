@@ -3,6 +3,25 @@ C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
 C
+      subroutine uop( cin, cout, count, datatype )
+      implicit none
+      include 'mpif.h'
+      integer cin(*), cout(*)
+      integer count, datatype
+      integer i
+      
+      if (.false.) then
+         if (datatype .ne. MPI_INTEGER) then
+            write(6,*) 'Invalid datatype passed to user_op()'
+            return
+         endif
+      endif
+
+      do i=1, count
+         cout(i) = cin(i) + cout(i)
+      enddo
+      end
+C
       program main
       implicit none
       include 'mpif.h'
@@ -87,23 +106,4 @@ C (rank)(rank-1)/2 and -i
       
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
-      end
-C
-      subroutine uop( cin, cout, count, datatype )
-      implicit none
-      include 'mpif.h'
-      integer cin(*), cout(*)
-      integer count, datatype
-      integer i
-      
-      if (.false.) then
-         if (datatype .ne. MPI_INTEGER) then
-            write(6,*) 'Invalid datatype passed to user_op()'
-            return
-         endif
-      endif
-
-      do i=1, count
-         cout(i) = cin(i) + cout(i)
-      enddo
       end

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -34,6 +34,9 @@ public:
   ActorImpl(const ActorImpl&) = delete;
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();
+
+  /** Retrieve the actor implementation from its PID (or nullptr if non-existent) */
+  static ActorImpl* by_PID(aid_t PID);
 
   static ActorImpl* self();
   double get_kill_time() const;
@@ -194,7 +197,7 @@ using SynchroList =
                                                                     &ActorImpl::smx_synchro_hook>>;
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
-XBT_PUBLIC int get_maxpid();
+XBT_PUBLIC unsigned long get_maxpid();
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

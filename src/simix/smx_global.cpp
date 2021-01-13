@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -35,7 +35,9 @@ void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
 namespace simgrid {
 namespace simix {
-config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", {"verbose-exit"}, "Display the actor status at exit", true};
+config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit",
+                                    "Display the actor status at exit",
+                                    true};
 } // namespace simix
 } // namespace simgrid
 
@@ -253,8 +255,9 @@ void Global::display_all_actor_status() const
   }
 }
 
-config::Flag<double> cfg_breakpoint{
-    "debug/breakpoint", {"simix/breakpoint"}, "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
+config::Flag<double> cfg_breakpoint{"debug/breakpoint",
+                                    "When non-negative, raise a SIGTRAP after given (simulated) time",
+                                    -1.0};
 } // namespace simix
 } // namespace simgrid
 
@@ -499,7 +502,7 @@ void SIMIX_run()
        */
 
       for (auto const& actor : simix_global->actors_that_ran) {
-        if (actor->simcall_.call_ != SIMCALL_NONE) {
+        if (actor->simcall_.call_ != simgrid::simix::Simcall::NONE) {
           actor->simcall_handle(0);
         }
       }

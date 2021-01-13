@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -61,7 +61,6 @@ IoImpl* IoImpl::start()
   surf_action_->set_activity(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
-  IoImpl::on_start(*this);
 
   return this;
 }
@@ -85,8 +84,6 @@ void IoImpl::post()
     timeout_detector_->unref();
     timeout_detector_ = nullptr;
   }
-
-  on_completion(*this);
 
   /* Answer all simcalls associated with the synchro */
   finish();
@@ -121,12 +118,6 @@ void IoImpl::finish()
     simcall->issuer_->simcall_answer();
   }
 }
-
-/*************
- * Callbacks *
- *************/
-xbt::signal<void(IoImpl const&)> IoImpl::on_start;
-xbt::signal<void(IoImpl const&)> IoImpl::on_completion;
 
 } // namespace activity
 } // namespace kernel

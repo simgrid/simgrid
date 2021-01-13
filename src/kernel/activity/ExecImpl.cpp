@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -183,9 +183,9 @@ void ExecImpl::finish()
      * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
 
-    if (simcall->call_ == SIMCALL_NONE) // FIXME: maybe a better way to handle this case
+    if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                        // if process handling comm is killed
-    if (simcall->call_ == SIMCALL_EXECUTION_WAITANY_FOR) {
+    if (simcall->call_ == simix::Simcall::EXECUTION_WAITANY_FOR) {
       simgrid::kernel::activity::ExecImpl** execs = simcall_execution_waitany_for__get__execs(simcall);
       size_t count                                = simcall_execution_waitany_for__get__count(simcall);
 

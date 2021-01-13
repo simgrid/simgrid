@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_op, smpi, "Logging specific to SMPI (op)");
   }
 #define LAND_OP(a, b) (b) = (a) && (b)
 #define LOR_OP(a, b)  (b) = (a) || (b)
-#define LXOR_OP(a, b) (b) = (not(a) && (b)) || ((a) && not(b))
+#define LXOR_OP(a, b) (b) = bool(a) != bool(b)
 #define BAND_OP(a, b) (b) &= (a)
 #define BOR_OP(a, b)  (b) |= (a)
 #define BXOR_OP(a, b) (b) ^= (a)

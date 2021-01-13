@@ -1,7 +1,7 @@
 # Build the version number
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "25")
+set(SIMGRID_VERSION_MINOR "26")
 set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
@@ -146,8 +146,8 @@ if(CMAKE_VERSION VERSION_LESS "3.12")
     message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
   endif()
 else()
-  find_package(Python3)
-  if(NOT Python3_FOUND)
+  find_package(Python3 COMPONENTS Interpreter Development)
+  if(NOT Python3_Interpreter_FOUND)
     message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
   endif()
   set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
@@ -820,7 +820,7 @@ if((NOT DEFINED enable_python) OR enable_python)
     endif()
   endif()
 
-  if(NOT PYTHONLIBS_FOUND)
+  if(NOT PYTHONLIBS_FOUND AND NOT Python3_Development_FOUND)
     message(STATUS "Python libs not found. Turn pybind11 off.")
 
     set(pybind11_FOUND OFF)

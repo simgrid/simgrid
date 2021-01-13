@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -82,7 +82,7 @@ private:
   void generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
                      resource::LinkImpl** linkdown) const;
 
-  simgrid::s4u::Link::SharingPolicy sharing_policy_;
+  simgrid::s4u::Link::SharingPolicy sharing_policy_ = simgrid::s4u::Link::SharingPolicy::SHARED;
   double bw_  = 0;
   double lat_ = 0;
 

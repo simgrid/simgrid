@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,63 +21,62 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
 static std::unordered_map<std::string, std::deque<std::string>> keys;
 
-static std::map<std::string, std::string> smpi_colors = {{"recv", "1 0 0"},
-  {"irecv", "1 0.52 0.52"},
-  {"send", "0 0 1"},
-  {"isend", "0.52 0.52 1"},
-  {"sendrecv", "0 1 1"},
-  {"wait", "1 1 0"},
-  {"waitall", "0.78 0.78 0"},
-  {"waitany", "0.78 0.78 0.58"},
-  {"test", "0.52 0.52 0"},
+static std::map<std::string, std::string, std::less<>> smpi_colors = {{"recv", "1 0 0"},
+                                                                      {"irecv", "1 0.52 0.52"},
+                                                                      {"send", "0 0 1"},
+                                                                      {"isend", "0.52 0.52 1"},
+                                                                      {"sendrecv", "0 1 1"},
+                                                                      {"wait", "1 1 0"},
+                                                                      {"waitall", "0.78 0.78 0"},
+                                                                      {"waitany", "0.78 0.78 0.58"},
+                                                                      {"test", "0.52 0.52 0"},
 
-  {"allgather", "1 0 0"},
-  {"allgatherv", "1 0.52 0.52"},
-  {"allreduce", "1 0 1"},
-  {"alltoall", "0.52 0 1"},
-  {"alltoallv", "0.78 0.52 1"},
-  {"barrier", "0 0.39 0.78"},
-  {"bcast", "0 0.78 0.39"},
-  {"gather", "1 1 0"},
-  {"gatherv", "1 1 0.52"},
-  {"reduce", "0 1 0"},
-  {"reducescatter", "0.52 1 0.52"},
-  {"scan", "1 0.58 0.23"},
-  {"exscan", "1 0.54 0.25"},
-  {"scatterv", "0.52 0 0.52"},
-  {"scatter", "1 0.74 0.54"},
+                                                                      {"allgather", "1 0 0"},
+                                                                      {"allgatherv", "1 0.52 0.52"},
+                                                                      {"allreduce", "1 0 1"},
+                                                                      {"alltoall", "0.52 0 1"},
+                                                                      {"alltoallv", "0.78 0.52 1"},
+                                                                      {"barrier", "0 0.39 0.78"},
+                                                                      {"bcast", "0 0.78 0.39"},
+                                                                      {"gather", "1 1 0"},
+                                                                      {"gatherv", "1 1 0.52"},
+                                                                      {"reduce", "0 1 0"},
+                                                                      {"reducescatter", "0.52 1 0.52"},
+                                                                      {"scan", "1 0.58 0.23"},
+                                                                      {"exscan", "1 0.54 0.25"},
+                                                                      {"scatterv", "0.52 0 0.52"},
+                                                                      {"scatter", "1 0.74 0.54"},
 
-  {"computing", "0 1 1"},
-  {"sleeping", "0 0.5 0.5"},
+                                                                      {"computing", "0 1 1"},
+                                                                      {"sleeping", "0 0.5 0.5"},
 
-  {"init", "0 1 0"},
-  {"finalize", "0 1 0"},
+                                                                      {"init", "0 1 0"},
+                                                                      {"finalize", "0 1 0"},
 
-  {"put", "0.3 1 0"},
-  {"get", "0 1 0.3"},
-  {"accumulate", "1 0.3 0"},
-  {"rput", "0.3 1 0"},
-  {"rget", "0 1 0.3"},
-  {"raccumulate", "1 0.3 0"},
-  {"compare_and_swap", "0.3 1 0"},
-  {"get_accumulate", "0 1 0.3"},
-  {"rget_accumulate", "1 0.3 0"},
-  {"win_fence", "1 0 0.3"},
-  {"win_post", "1 0 0.8"},
-  {"win_wait", "1 0.8 0"},
-  {"win_start", "0.8 0 1"},
-  {"win_complete", "0.8 1 0"},
-  {"win_lock", "1 0 0.3"},
-  {"win_unlock", "1 0 0.3"},
-  {"win_lock_all", "1 0 0.8"},
-  {"win_unlock_all", "1 0.8 0"},
-  {"win_flush", "1 0 0.3"},
-  {"win_flush_local", "1 0 0.8"},
-  {"win_flush_all", "1 0.8 0"},
-  {"win_flush_local_all", "1 0 0.3"},
-  
-  {"file_read", "1 1 0.3"}
-};
+                                                                      {"put", "0.3 1 0"},
+                                                                      {"get", "0 1 0.3"},
+                                                                      {"accumulate", "1 0.3 0"},
+                                                                      {"rput", "0.3 1 0"},
+                                                                      {"rget", "0 1 0.3"},
+                                                                      {"raccumulate", "1 0.3 0"},
+                                                                      {"compare_and_swap", "0.3 1 0"},
+                                                                      {"get_accumulate", "0 1 0.3"},
+                                                                      {"rget_accumulate", "1 0.3 0"},
+                                                                      {"win_fence", "1 0 0.3"},
+                                                                      {"win_post", "1 0 0.8"},
+                                                                      {"win_wait", "1 0.8 0"},
+                                                                      {"win_start", "0.8 0 1"},
+                                                                      {"win_complete", "0.8 1 0"},
+                                                                      {"win_lock", "1 0 0.3"},
+                                                                      {"win_unlock", "1 0 0.3"},
+                                                                      {"win_lock_all", "1 0 0.8"},
+                                                                      {"win_unlock_all", "1 0.8 0"},
+                                                                      {"win_flush", "1 0 0.3"},
+                                                                      {"win_flush_local", "1 0 0.8"},
+                                                                      {"win_flush_all", "1 0.8 0"},
+                                                                      {"win_flush_local_all", "1 0 0.3"},
+
+                                                                      {"file_read", "1 1 0.3"}};
 
 static const char* instr_find_color(const char* c_state)
 {
@@ -232,29 +231,4 @@ void TRACE_smpi_recv(int src, int dst, int tag)
 
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
   simgrid::instr::Container::get_root()->get_link("MPI_LINK")->end_event(smpi_container(dst), "PTP", key);
-}
-
-/**************** Functions to trace the migration of tasks. *****************/
-void TRACE_smpi_process_change_host(int rank, const_sg_host_t new_host)
-{
-  if (not TRACE_smpi_is_enabled()) return;
-
-  /** The key is (most likely) used to match the events in the trace */
-  static long long int counter = 0;
-  std::string key              = std::to_string(counter);
-  counter++;
-
-  // start link (= tell the trace that this rank moves from A to B)
-  auto* cont = smpi_container(rank);
-  simgrid::instr::Container::get_root()->get_link("MIGRATE_LINK")->start_event(cont, "M", key);
-
-  // Destroy container of this rank on this host
-  cont->remove_from_parent();
-
-  // Setup container on new host
-  TRACE_smpi_setup_container(rank, new_host);
-
-  // end link
-  cont = smpi_container(rank); // This points to the newly created container
-  simgrid::instr::Container::get_root()->get_link("MIGRATE_LINK")->end_event(cont, "M", key);
 }

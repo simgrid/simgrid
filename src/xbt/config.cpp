@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2020. The SimGrid Team. All rights reserved.     */
+/* Copyright (c) 2004-2021. The SimGrid Team. All rights reserved.     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -245,9 +245,9 @@ template <class T> const char* TypedConfigurationElement<T>::get_type_name() // 
 class Config {
 private:
   // name -> ConfigElement:
-  std::map<std::string, std::unique_ptr<ConfigurationElement>> options;
+  std::map<std::string, std::unique_ptr<ConfigurationElement>, std::less<>> options;
   // alias -> ConfigElement from options:
-  std::map<std::string, ConfigurationElement*> aliases;
+  std::map<std::string, ConfigurationElement*, std::less<>> aliases;
   bool warn_for_aliases = true;
 
 public:

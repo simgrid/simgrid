@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -24,11 +24,10 @@ static void server()
   XBT_INFO("Mailbox::listen_from() returns %ld (should return my pid, which is %ld)", mailbox->listen_from(),
            simgrid::s4u::this_actor::get_pid());
 
-  const std::string* res = static_cast<std::string*>(mailbox->get());
+  auto res = mailbox->get_unique<std::string>();
 
   xbt_assert(*res == "Some data", "Data received: %s", res->c_str());
   XBT_INFO("Data successfully received from regular mailbox");
-  delete res;
   sendComm->wait();
 
   simgrid::s4u::Mailbox* mailbox2 = simgrid::s4u::Mailbox::by_name("mailbox2");
@@ -39,9 +38,8 @@ static void server()
   xbt_assert(mailbox2->listen()); // used to break.
   XBT_INFO("Task listen works on asynchronous mailboxes");
 
-  res = static_cast<std::string*>(mailbox2->get());
+  res = mailbox2->get_unique<std::string>();
   xbt_assert(*res == "More data");
-  delete res;
 
   XBT_INFO("Data successfully received from asynchronous mailbox");
 }

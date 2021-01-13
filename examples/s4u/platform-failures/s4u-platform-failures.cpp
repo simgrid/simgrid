@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -76,10 +76,9 @@ static void worker(std::vector<std::string> args)
   while (true) {
     try {
       XBT_INFO("Waiting a message on %s", mailbox->get_cname());
-      const auto* payload = static_cast<double*>(mailbox->get());
+      auto payload = mailbox->get_unique<double>();
       xbt_assert(payload != nullptr, "mailbox->get() failed");
       double comp_size = *payload;
-      delete payload;
       if (comp_size < 0) { /* - Exit when -1.0 is received */
         XBT_INFO("I'm done. See you!");
         break;

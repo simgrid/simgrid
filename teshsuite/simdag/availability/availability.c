@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020. The SimGrid Team.
+/* Copyright (c) 2013-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,7 +22,7 @@ static void scheduleDAX(const_xbt_dynar_t dax)
 
   sg_host_t *hosts = sg_host_list();
   size_t totalHosts = sg_host_count();
-  qsort((void *) hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
+  qsort(hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
 
   xbt_dynar_foreach(dax, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {

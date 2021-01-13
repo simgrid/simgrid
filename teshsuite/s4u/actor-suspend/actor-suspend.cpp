@@ -1,4 +1,4 @@
-/* Copyright (c) 2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2020-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,7 +22,7 @@ public:
   {
     XBT_INFO("Starting.");
     auto mailbox = simgrid::s4u::Mailbox::by_name("receiver");
-    int data     = *(int*)mailbox->get();
+    int data     = *mailbox->get<int>();
     XBT_INFO("Got %d at the end", data);
   }
 };
@@ -41,7 +41,7 @@ public:
 
     XBT_INFO("Sending a message to the receiver...");
     auto mailbox = simgrid::s4u::Mailbox::by_name("receiver");
-    int data     = 42;
+    static int data = 42;
     mailbox->put(&data, 4);
 
     XBT_INFO("Done!");

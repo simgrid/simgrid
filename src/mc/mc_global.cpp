@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,6 +20,7 @@
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/backtrace.hpp"
 
+#include <array>
 #include <libunwind.h>
 #endif
 
@@ -108,11 +109,11 @@ namespace mc {
 void dumpStack(FILE* file, unw_cursor_t* cursor)
 {
   int nframe = 0;
-  char buffer[100];
+  std::array<char, 100> buffer;
 
   unw_word_t off;
   do {
-    const char* name = not unw_get_proc_name(cursor, buffer, 100, &off) ? buffer : "?";
+    const char* name = not unw_get_proc_name(cursor, buffer.data(), buffer.size(), &off) ? buffer.data() : "?";
     // Unmangle C++ names:
     auto realname = simgrid::xbt::demangle(name);
 

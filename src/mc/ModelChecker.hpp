@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,7 +22,7 @@ namespace mc {
 class ModelChecker {
   CheckerSide checker_side_;
   /** String pool for host names */
-  std::set<std::string> hostnames_;
+  std::set<std::string, std::less<>> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_{500};
   std::unique_ptr<RemoteSimulation> remote_simulation_;

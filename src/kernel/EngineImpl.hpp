@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,9 +18,9 @@ namespace simgrid {
 namespace kernel {
 
 class EngineImpl {
-  std::map<std::string, s4u::Host*> hosts_;
-  std::map<std::string, resource::LinkImpl*> links_;
-  std::map<std::string, resource::StorageImpl*> storages_;
+  std::map<std::string, s4u::Host*, std::less<>> hosts_;
+  std::map<std::string, resource::LinkImpl*, std::less<>> links_;
+  std::map<std::string, resource::StorageImpl*, std::less<>> storages_;
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   std::unordered_map<std::string, actor::ActorCodeFactory> registered_functions; // Maps function names to actor code
   actor::ActorCodeFactory default_function; // Function to use as a fallback when the provided name matches nothing

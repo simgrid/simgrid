@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -62,7 +62,6 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int
   else
     refcount_ = 0;
   cancelled_ = 0;
-  generalized_funcs=nullptr;
   nbc_requests_=nullptr;
   nbc_requests_size_=0;
   init_buffer(count);
@@ -83,7 +82,6 @@ void Request::unref(MPI_Request* request)
     if((*request)->refcount_==0){
       if ((*request)->flags_ & MPI_REQ_GENERALIZED){
         ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
-        delete (*request)->generalized_funcs;
       }else{
         Comm::unref((*request)->comm_);
         Datatype::unref((*request)->old_type_);
@@ -553,11 +551,13 @@ void Request::cancel()
 }
 
 int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
-  //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or testall before)
+  // assume that *request is not MPI_REQUEST_NULL (filtered in PMPI_Test or testall before)
   // to avoid deadlocks if used as a break condition, such as
   //     while (MPI_Test(request, flag, status) && flag) dostuff...
   // because the time will not normally advance when only calls to MPI_Test are made -> deadlock
   // multiplier to the sleeptime, to increase speed of execution, each failed test will increase it
+  xbt_assert(*request != MPI_REQUEST_NULL);
+
   static int nsleeps = 1;
   int ret = MPI_SUCCESS;
   
@@ -587,23 +587,20 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
         return ret;
       }
     }
-    if (*request != MPI_REQUEST_NULL && 
-        ((*request)->flags_ & MPI_REQ_GENERALIZED)
-        && !((*request)->flags_ & MPI_REQ_COMPLETE)) 
+    if (((*request)->flags_ & MPI_REQ_GENERALIZED) && !((*request)->flags_ & MPI_REQ_COMPLETE))
       *flag=0;
     if (*flag) {
-      finish_wait(request,status);
+      finish_wait(request, status); // may invalidate *request
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
+        MPI_Status tmp_status;
         MPI_Status* mystatus;
-        if(status==MPI_STATUS_IGNORE){
-          mystatus=new MPI_Status();
+        if (status == MPI_STATUS_IGNORE) {
+          mystatus = &tmp_status;
           Status::empty(mystatus);
-        }else{
-          mystatus=status;
+        } else {
+          mystatus = status;
         }
         ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
-        if(status==MPI_STATUS_IGNORE) 
-          delete mystatus;
       }
       nsleeps=1;//reset the number of sleeps we will do next time
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_PERSISTENT) == 0)
@@ -686,16 +683,15 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
       } else {
         finish_wait(&requests[*index],status);
       if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_GENERALIZED)){
+        MPI_Status tmp_status;
         MPI_Status* mystatus;
-        if(status==MPI_STATUS_IGNORE){
-          mystatus=new MPI_Status();
+        if (status == MPI_STATUS_IGNORE) {
+          mystatus = &tmp_status;
           Status::empty(mystatus);
-        }else{
-          mystatus=status;
+        } else {
+          mystatus = status;
         }
         ret=(requests[*index]->generalized_funcs)->query_fn((requests[*index]->generalized_funcs)->extra_state, mystatus);
-        if(status==MPI_STATUS_IGNORE) 
-          delete mystatus;
       }
 
         if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_NON_PERSISTENT)) 
@@ -901,6 +897,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 
 int Request::wait(MPI_Request * request, MPI_Status * status)
 {
+  // assume that *request is not MPI_REQUEST_NULL (filtered in PMPI_Wait before)
+  xbt_assert(*request != MPI_REQUEST_NULL);
+
   int ret=MPI_SUCCESS;
   // Are we waiting on a request meant for non blocking collectives ?
   // If so, wait for all the subrequests.
@@ -944,25 +943,24 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
       }
   }
 
-  if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & MPI_REQ_GENERALIZED)){
-    MPI_Status* mystatus;
+  if ((*request)->flags_ & MPI_REQ_GENERALIZED) {
     if(!((*request)->flags_ & MPI_REQ_COMPLETE)){
       ((*request)->generalized_funcs)->mutex->lock();
       ((*request)->generalized_funcs)->cond->wait(((*request)->generalized_funcs)->mutex);
       ((*request)->generalized_funcs)->mutex->unlock();
-      }
-    if(status==MPI_STATUS_IGNORE){
-      mystatus=new MPI_Status();
+    }
+    MPI_Status tmp_status;
+    MPI_Status* mystatus;
+    if (status == MPI_STATUS_IGNORE) {
+      mystatus = &tmp_status;
       Status::empty(mystatus);
-    }else{
-      mystatus=status;
+    } else {
+      mystatus = status;
     }
     ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
-    if(status==MPI_STATUS_IGNORE) 
-      delete mystatus;
   }
 
-  finish_wait(request,status);
+  finish_wait(request, status); // may invalidate *request
   if (*request != MPI_REQUEST_NULL && (((*request)->flags_ & MPI_REQ_NON_PERSISTENT) != 0))
     *request = MPI_REQUEST_NULL;
   return ret;
@@ -1165,7 +1163,7 @@ int Request::grequest_start(MPI_Grequest_query_function* query_fn, MPI_Grequest_
   (*request)->flags_ |= MPI_REQ_GENERALIZED;
   (*request)->flags_ |= MPI_REQ_PERSISTENT;
   (*request)->refcount_ = 1;
-  ((*request)->generalized_funcs)             = new smpi_mpi_generalized_request_funcs_t;
+  ((*request)->generalized_funcs)             = std::make_unique<smpi_mpi_generalized_request_funcs_t>();
   ((*request)->generalized_funcs)->query_fn=query_fn;
   ((*request)->generalized_funcs)->free_fn=free_fn;
   ((*request)->generalized_funcs)->cancel_fn=cancel_fn;

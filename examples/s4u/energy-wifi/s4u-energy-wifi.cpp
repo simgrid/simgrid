@@ -35,7 +35,7 @@ static void receiver()
   std::string mbName = "MailBoxRCV";
   XBT_INFO("RECEIVING on mb %s", mbName.c_str());
   simgrid::s4u::Mailbox *myBox = simgrid::s4u::Mailbox::by_name(mbName);
-  myBox->get();
+  myBox->get<std::string>();
 
   XBT_INFO("received all messages");
 }

@@ -1,6 +1,6 @@
 /* Functions related to the Virtual Machines.                               */
 
-/* Copyright (c) 2012-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -79,7 +79,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jVm, 
   jvm_bind(env, jVm, vm);
   jVm = env->NewGlobalRef(jVm);
   // We use the extension level of the host, even if that's somehow disturbing
-  vm->extension_set(JAVA_HOST_LEVEL, (void*)jVm);
+  vm->extension_set(JAVA_HOST_LEVEL, jVm);
 }
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass cls_arg)

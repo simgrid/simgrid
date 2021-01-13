@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,7 +16,7 @@ struct xbt_log_appender_s {
 };
 
 struct xbt_log_layout_s {
-  int (*do_layout)(const s_xbt_log_layout_t* l, xbt_log_event_t event, const char* fmt);
+  bool (*do_layout)(const s_xbt_log_layout_t* l, xbt_log_event_t event, const char* fmt);
   void (*free_)(const s_xbt_log_layout_t* l);
   void *data;
 };

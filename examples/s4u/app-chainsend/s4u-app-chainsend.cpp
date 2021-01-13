@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -47,22 +47,21 @@ public:
 
   void joinChain()
   {
-    const auto* msg   = static_cast<ChainMessage*>(me->get());
-    prev              = msg->prev_;
-    next              = msg->next_;
-    total_pieces      = msg->num_pieces;
+    auto msg     = me->get_unique<ChainMessage>();
+    prev         = msg->prev_;
+    next         = msg->next_;
+    total_pieces = msg->num_pieces;
     XBT_DEBUG("Peer %s got a 'BUILD_CHAIN' message (prev: %s / next: %s)", me->get_cname(),
               prev ? prev->get_cname() : nullptr, next ? next->get_cname() : nullptr);
-    delete msg;
   }
 
   void forwardFile()
   {
-    void* received;
+    FilePiece* received;
     bool done = false;
 
     while (not done) {
-      simgrid::s4u::CommPtr comm = me->get_async(&received);
+      simgrid::s4u::CommPtr comm = me->get_async<FilePiece>(&received);
       pending_recvs.push_back(comm);
 
       int idx = simgrid::s4u::Comm::wait_any(&pending_recvs);
@@ -75,7 +74,7 @@ public:
           simgrid::s4u::CommPtr send = next->put_async(received, MESSAGE_SEND_DATA_HEADER_SIZE + PIECE_SIZE);
           pending_sends.push_back(send);
         } else
-          delete static_cast<FilePiece*>(received);
+          delete received;
 
         received_pieces++;
         received_bytes += PIECE_SIZE;

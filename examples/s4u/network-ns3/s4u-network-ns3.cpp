@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -72,7 +72,7 @@ static void worker(int argc, char* argv[])
 
   XBT_DEBUG("Worker started");
 
-  const auto* payload = static_cast<double*>(mbox->get());
+  auto payload = mbox->get_unique<double>();
 
   count_finished--;
   if (count_finished == 0) {
@@ -83,7 +83,6 @@ static void worker(int argc, char* argv[])
 
   XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s", id, *payload, masternames[id], workernames[id]);
   XBT_DEBUG("FLOW[%d] : transferred in  %f seconds", id, elapsed_time);
-  delete payload;
 
   XBT_DEBUG("Finished");
 }

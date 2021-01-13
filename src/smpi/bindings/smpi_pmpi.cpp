@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -76,7 +76,7 @@ int PMPI_Get_version (int *version,int *subversion){
 }
 
 int PMPI_Get_library_version (char *version,int *len){
-  snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The SimGrid Team 2007-2020",
+  snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The SimGrid Team 2007-2021",
            SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR);
   *len = strlen(version) > MPI_MAX_LIBRARY_VERSION_STRING ? MPI_MAX_LIBRARY_VERSION_STRING : strlen(version);
   return MPI_SUCCESS;
@@ -188,12 +188,8 @@ int PMPI_Initialized(int* flag) {
 int PMPI_Alloc_mem(MPI_Aint size, MPI_Info /*info*/, void* baseptr)
 {
   void *ptr = xbt_malloc(size);
-  if(ptr==nullptr)
-    return MPI_ERR_NO_MEM;
-  else {
-    *static_cast<void**>(baseptr) = ptr;
-    return MPI_SUCCESS;
-  }
+  *static_cast<void**>(baseptr) = ptr;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Free_mem(void *baseptr){

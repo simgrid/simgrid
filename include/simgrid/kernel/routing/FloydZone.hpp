@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -35,9 +35,11 @@ public:
 
 private:
   /* vars to compute the Floyd algorithm. */
-  int* predecessor_table_         = nullptr;
-  double* cost_table_             = nullptr;
-  RouteCreationArgs** link_table_ = nullptr;
+  std::vector<int> predecessor_table_;
+  std::vector<double> cost_table_;
+  std::vector<RouteCreationArgs*> link_table_;
+
+  void init_tables(unsigned int table_size);
 };
 } // namespace routing
 } // namespace kernel

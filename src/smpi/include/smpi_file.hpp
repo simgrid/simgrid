@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2020. The SimGrid Team.
+/* Copyright (c) 2010-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -103,7 +103,8 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   XBT_CDEBUG(smpi_pmpi, "my offsets to read : %lld:%lld, global min and max %lld:%lld", min_offset, max_offset, min,
              max);
   if (empty == 1) {
-    status->count = 0;
+    if (status != MPI_STATUS_IGNORE)
+      status->count = 0;
     return MPI_SUCCESS;
   }
   MPI_Offset total = max - min;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2020. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2021. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -35,7 +35,7 @@ public:
 
   // Send
   int send(const void* message, size_t size) const;
-  int send(e_mc_message_type type) const
+  int send(MessageType type) const
   {
     s_mc_message_t message = {type};
     return this->send(&message, sizeof(message));

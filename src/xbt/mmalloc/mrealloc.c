@@ -1,6 +1,6 @@
 /* Change the size of a block allocated by `mmalloc'. */
 
-/* Copyright (c) 2010-2020. The SimGrid Team.
+/* Copyright (c) 2010-2021. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -129,7 +129,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       abort();
     }
 
-    if (size > (size_t) (1 << (type - 1)) && size <= (size_t) (1 << type)) {
+    if (size > ((size_t)1 << (type - 1)) && size <= ((size_t)1 << type)) {
       /* The new size is the same kind of fragment.  */
 
       result = ptr;
