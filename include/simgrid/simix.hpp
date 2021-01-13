@@ -43,7 +43,7 @@ namespace actor {
  * you may need to wait for that mutex to be unlocked by its current owner.
  * Potentially blocking simcall must be issued using simcall_blocking(), right below in this file.
  */
-template <class F> typename std::result_of<F()>::type simcall(F&& code, mc::SimcallInspector* t = nullptr)
+template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallInspector* t = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall marshalling/unmarshalling/dispatch:
@@ -53,7 +53,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code, mc::Simc
   // If we are in the application, pass the code to the maestro which
   // executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
-  using R = typename std::result_of<F()>::type;
+  using R = typename std::result_of_t<F()>;
   simgrid::xbt::Result<R> result;
   simcall_run_kernel([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, t);
   return result.get();

@@ -40,7 +40,7 @@ enum class PajeEventType : unsigned int {
 
 inline std::ostream& operator<<(std::ostream& os, PajeEventType event)
 {
-  return os << static_cast<std::underlying_type<PajeEventType>::type>(event);
+  return os << static_cast<std::underlying_type_t<PajeEventType>>(event);
 }
 
 class PajeEvent {

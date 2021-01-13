@@ -77,11 +77,10 @@ constexpr auto apply(F&& f, Tuple&& t, std::index_sequence<I...>)
 template <class F, class Tuple>
 constexpr auto apply(F&& f, Tuple&& t) -> decltype(
     simgrid::xbt::bits::apply(std::forward<F>(f), std::forward<Tuple>(t),
-                              std::make_index_sequence<std::tuple_size<typename std::decay<Tuple>::type>::value>()))
+                              std::make_index_sequence<std::tuple_size<typename std::decay_t<Tuple>>::value>()))
 {
-  return simgrid::xbt::bits::apply(
-      std::forward<F>(f), std::forward<Tuple>(t),
-      std::make_index_sequence<std::tuple_size<typename std::decay<Tuple>::type>::value>());
+  return simgrid::xbt::bits::apply(std::forward<F>(f), std::forward<Tuple>(t),
+                                   std::make_index_sequence<std::tuple_size<typename std::decay_t<Tuple>>::value>());
 }
 
 template<class T> class Task;
@@ -99,8 +98,8 @@ class Task<R(Args...)> {
   struct whatever {};
 
   // Union used for storage:
-  using TaskUnion = typename std::aligned_union<0, void*, std::pair<void (*)(), void*>,
-                                                std::pair<void (whatever::*)(), whatever*>>::type;
+  using TaskUnion =
+      typename std::aligned_union_t<0, void*, std::pair<void (*)(), void*>, std::pair<void (whatever::*)(), whatever*>>;
 
   // Is F suitable for small buffer optimization?
   template<class F>
@@ -169,9 +168,7 @@ public:
   }
 
 private:
-  template<class F>
-  typename std::enable_if<canSBO<F>()>::type
-  init(F code)
+  template <class F> typename std::enable_if_t<canSBO<F>()> init(F code)
   {
     const static TaskVtable vtable {
       // Call:
@@ -201,7 +198,7 @@ private:
     vtable_ = &vtable;
   }
 
-  template <class F> typename std::enable_if<not canSBO<F>()>::type init(F code)
+  template <class F> typename std::enable_if_t<not canSBO<F>()> init(F code)
   {
     const static TaskVtable vtable {
       // Call:

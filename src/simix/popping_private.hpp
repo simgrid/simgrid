@@ -169,11 +169,11 @@ template <class T> inline void marshal(u_smx_scalar& simcall, T const& value)
 {
   return marshal(type<T>(), simcall, value);
 }
-template <class T> inline typename std::remove_reference<T>::type unmarshal(u_smx_scalar& simcall)
+template <class T> inline typename std::remove_reference_t<T> unmarshal(u_smx_scalar& simcall)
 {
   return unmarshal(type<T>(), simcall);
 }
-template <class T> inline typename std::remove_reference<T>::type unmarshal_raw(u_smx_scalar& simcall)
+template <class T> inline typename std::remove_reference_t<T> unmarshal_raw(u_smx_scalar& simcall)
 {
   return unmarshal(type<T>(), simcall);
 }
