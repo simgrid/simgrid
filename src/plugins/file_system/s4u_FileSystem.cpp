@@ -171,25 +171,26 @@ sg_size_t File::read(sg_size_t size)
 {
   if (size_ == 0) /* Nothing to read, return */
     return 0;
-  sg_size_t read_size = 0;
   Host* host          = nullptr;
+  // if the current position is close to the end of the file, we may not be able to read the requested size
+  sg_size_t to_read   = std::min(size, size_ - current_position_);
+  sg_size_t read_size = 0;
+
   if (local_storage_) {
     /* Find the host where the file is physically located and read it */
     host = local_storage_->get_host();
     XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
-    // if the current position is close to the end of the file, we may not be able to read the requested size
-    read_size = local_storage_->read(std::min(size, size_ - current_position_));
-    current_position_ += read_size;
+    read_size = local_storage_->read(to_read);
   }
 
   if (local_disk_) {
     /* Find the host where the file is physically located and read it */
     host = local_disk_->get_host();
     XBT_DEBUG("READ %s on disk '%s'", get_path(), local_disk_->get_cname());
-    // if the current position is close to the end of the file, we may not be able to read the requested size
-    read_size = local_disk_->read(std::min(size, size_ - current_position_));
-    current_position_ += read_size;
+    read_size = local_disk_->read(to_read);
   }
+
+  current_position_ += read_size;
 
   if (host && host->get_name() != Host::current()->get_name() && read_size > 0) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
@@ -393,30 +394,20 @@ int File::unlink() const
 int File::remote_copy(sg_host_t host, const std::string& fullpath)
 {
   /* Find the host where the file is physically located and read it */
-  Host* src_host = nullptr;
-  if (local_storage_) {
-    src_host = local_storage_->get_host();
-    XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
-  }
-
-  if (local_disk_) {
-    src_host = local_disk_->get_host();
-    XBT_DEBUG("READ %s on disk '%s'", get_path(), local_disk_->get_cname());
-  }
-
-  seek(0, SEEK_SET);
-  // if the current position is close to the end of the file, we may not be able to read the requested size
+  Host* src_host      = nullptr;
   sg_size_t read_size = 0;
-  if (local_storage_)
-    read_size = local_storage_->read(size_);
-  if (local_disk_)
-    read_size = local_disk_->read(size_);
-
-  current_position_ += read_size;
 
   Host* dst_host = host;
   size_t longest_prefix_length = 0;
+
+  seek(0, SEEK_SET);
+
   if (local_storage_) {
+    src_host = local_storage_->get_host();
+    XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
+    read_size = local_storage_->read(size_);
+    current_position_ += read_size;
+
     /* Find the host that owns the storage where the file has to be copied */
     const Storage* storage_dest = nullptr;
 
@@ -439,6 +430,11 @@ int File::remote_copy(sg_host_t host, const std::string& fullpath)
   }
 
   if (local_disk_) {
+    src_host = local_disk_->get_host();
+    XBT_DEBUG("READ %s on disk '%s'", get_path(), local_disk_->get_cname());
+    read_size = local_disk_->read(size_);
+    current_position_ += read_size;
+
     const Disk* dst_disk = nullptr;
 
     for (auto const& disk : host->get_disks()) {
