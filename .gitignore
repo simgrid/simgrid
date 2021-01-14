@@ -34,21 +34,13 @@ src/surf/xml/simgrid_dtd.l
 examples/deprecated/simdag/scheduling/sd_scheduling.jed
 teshsuite/simdag/platforms/simgrid.jed
 ### Libraries links 
-examples/lua/simgrid.so
-examples/lua/console/simgrid.so
 [Ss]im[Gg]rid-*.tar.gz
 simgrid.jar
-### Unit files
-src/simgrid_units_main.c
-src/*_unit.cpp
-src/*_unit.c
 ### Generated files
 _*.c
 include/simgrid/config.h
 include/simgrid/version.h
-include/smpi/smpif.h
 src/internal_config.h
-testprog
 ### Cmake files
 CPackConfig.cmake
 CPackSourceConfig.cmake
@@ -67,9 +59,6 @@ lib/
 manpages/
 build_*/
 build/
-### windows borland
-*.bpr
-*.bpf
 ### Documentation
 docs/source/java
 docs/source/_ext/__pycache__/
@@ -133,9 +122,6 @@ examples/c/app-chainsend/c-app-chainsend
 examples/c/app-masterworker/c-app-masterworker
 examples/c/app-pingpong/c-app-pingpong
 examples/c/app-token-ring/c-app-token-ring
-examples/c/async-wait/c-async-wait
-examples/c/async-waitall/c-async-waitall
-examples/c/async-waitany/c-async-waitany
 examples/c/cloud-capping/c-cloud-capping
 examples/c/cloud-masterworker/c-cloud-masterworker
 examples/c/cloud-migration/c-cloud-migration
@@ -145,10 +131,10 @@ examples/c/dht-pastry/c-dht-pastry
 examples/c/energy-exec/c-energy-exec
 examples/c/energy-exec-ptask/c-energy-exec-ptask
 examples/c/energy-vm/c-energy-vm
+examples/c/exec-async/c-exec-async
 examples/c/exec-basic/c-exec-basic
 examples/c/exec-dvfs/c-exec-dvfs
 examples/c/exec-remote/c-exec-remote
-examples/c/exec-async/c-exec-async
 examples/c/exec-waitany/c-exec-waitany
 examples/c/io-disk-raw/c-io-disk-raw
 examples/c/io-file-remote/c-io-file-remote
@@ -175,11 +161,6 @@ examples/s4u/app-masterworkers/s4u-app-masterworkers-class
 examples/s4u/app-masterworkers/s4u-app-masterworkers-fun
 examples/s4u/app-pingpong/s4u-app-pingpong
 examples/s4u/app-token-ring/s4u-app-token-ring
-examples/s4u/async-ready/s4u-async-ready
-examples/s4u/async-wait/s4u-async-wait
-examples/s4u/async-waitall/s4u-async-waitall
-examples/s4u/async-waitany/s4u-async-waitany
-examples/s4u/async-waituntil/s4u-async-waituntil
 examples/s4u/cloud-capping/s4u-cloud-capping
 examples/s4u/cloud-migration/s4u-cloud-migration
 examples/s4u/cloud-simple/s4u-cloud-simple
@@ -188,15 +169,14 @@ examples/s4u/dht-chord/s4u-dht-chord
 examples/s4u/dht-kademlia/s4u-dht-kademlia
 examples/s4u/energy-boot/s4u-energy-boot
 examples/s4u/energy-exec/s4u-energy-exec
-examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-exec-ptask/s4u-energy-exec-ptask
+examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-vm/s4u-energy-vm
 examples/s4u/engine-filtering/s4u-engine-filtering
 examples/s4u/exec-async/s4u-exec-async
 examples/s4u/exec-basic/s4u-exec-basic
 examples/s4u/exec-dependent/s4u-exec-dependent
 examples/s4u/exec-dvfs/s4u-exec-dvfs
-examples/s4u/exec-monitor/s4u-exec-monitor
 examples/s4u/exec-ptask/s4u-exec-ptask
 examples/s4u/exec-remote/s4u-exec-remote
 examples/s4u/exec-waitany/s4u-exec-waitany
@@ -206,7 +186,6 @@ examples/s4u/io-dependent/s4u-io-dependent
 examples/s4u/io-disk-raw/s4u-io-disk-raw
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-file-system/s4u-io-file-system
-examples/s4u/io-storage-raw/s4u-io-storage-raw
 examples/s4u/maestro-set/s4u-maestro-set
 examples/s4u/mc-bugged1/s4u-mc-bugged1
 examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness
@@ -217,10 +196,8 @@ examples/s4u/network-ns3/s4u-network-ns3
 examples/s4u/platform-failures/s4u-platform-failures
 examples/s4u/platform-profile/s4u-platform-profile
 examples/s4u/platform-properties/s4u-platform-properties
-examples/s4u/plugin-hostload/s4u-plugin-hostload
 examples/s4u/replay-comm/s4u-replay-comm
 examples/s4u/replay-io/s4u-replay-io
-examples/s4u/replay-storage/s4u-replay-storage
 examples/s4u/routing-get-clusters/s4u-routing-get-clusters
 examples/s4u/synchro-barrier/s4u-synchro-barrier
 examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable
@@ -243,7 +220,6 @@ examples/deprecated/simdag/scheduling/sd_scheduling
 examples/deprecated/simdag/test/sd_test
 examples/deprecated/simdag/throttling/sd_throttling
 examples/deprecated/simdag/typed_tasks/sd_typed_tasks
-examples/smpi/ampi/smpi_ampi
 examples/smpi/energy/smpi_energy
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
@@ -269,7 +245,6 @@ examples/smpi/trace_call_location/smpi_trace_call_location
 examples/smpi/trace_simple/smpi_trace_simple
 examples/smpi/trace/smpi_trace
 teshsuite/kernel/context-defaults/context-defaults
-teshsuite/kernel/context-stacksize/context-stacksize
 teshsuite/java/semaphoregc/java-semaphoregc_compiled
 teshsuite/java/sleephostoff/java-sleephostoff_compiled
 teshsuite/mc/dwarf/dwarf
@@ -277,14 +252,10 @@ teshsuite/mc/dwarf-expression/dwarf-expression
 teshsuite/mc/mutex-handling/mutex-handling
 teshsuite/mc/mutex-handling/without-mutex-handling
 teshsuite/mc/random-bug/random-bug
-teshsuite/msg/get_sender/get_sender
-teshsuite/msg/io-file/io-file
 teshsuite/msg/task_destroy_cancel/task_destroy_cancel
-teshsuite/msg/task_listen_from/task_listen_from
 teshsuite/s4u/activity-lifecycle/activity-lifecycle
 teshsuite/s4u/actor/actor
 teshsuite/s4u/actor-autorestart/actor-autorestart
-teshsuite/s4u/actor-migration/actor-migration
 teshsuite/s4u/basic-link-test/basic-link-test
 teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration
 teshsuite/s4u/cloud-sharing/cloud-sharing
@@ -958,7 +929,6 @@ teshsuite/surf/wifi_usage/wifi_usage
 teshsuite/xbt/cmdline/cmdline
 teshsuite/xbt/log_large/log_large
 teshsuite/xbt/log_usage/log_usage
-teshsuite/xbt/mallocator/mallocator
 teshsuite/xbt/mmalloc/mmalloc_test
 teshsuite/xbt/parallel_log_crashtest/parallel_log_crashtest
 teshsuite/xbt/parmap_bench/parmap_bench
@@ -972,7 +942,6 @@ examples/deprecated/java/*/*_compiled
 /CMakeCache.txt
 simgrid.jar_finalized
 simgrid_full.jar
-src/PageStore_unit.cpp
 src/bindings/java/MANIFEST.MF
 NATIVE/
 VERSION
