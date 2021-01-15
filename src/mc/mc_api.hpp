@@ -75,7 +75,6 @@ public:
   std::size_t get_remote_heap_bytes() const;
 
   // MODEL CHECKER APIs
-  ModelChecker* get_model_checker() const;
   void mc_inc_visited_states() const;
   void mc_inc_executed_trans() const;
   unsigned long mc_get_visited_states() const;
