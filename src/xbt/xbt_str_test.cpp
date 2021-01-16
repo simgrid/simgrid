@@ -35,7 +35,7 @@ template <typename F> void test_parse_error(F function, const std::string& name,
 template <typename F, typename T> void test_parse_ok(F function, const std::string& name, const char* str, T value)
 {
   INFO(name);
-  auto variable = static_cast<T>(-9999);
+  T variable;
   REQUIRE_NOTHROW(variable = function(str, "Parse error"));
   REQUIRE(variable == value); /* Fail to parse str */
 }

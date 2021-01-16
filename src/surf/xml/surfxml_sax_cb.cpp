@@ -535,7 +535,7 @@ void STag_surfxml_link___ctn()
     surf_parse_error(std::string("Invalid direction for link ") + A_surfxml_link___ctn_id);
   }
 
-  const char* dirname = "";
+  const char* dirname;
   switch (A_surfxml_link___ctn_direction) {
     case A_surfxml_link___ctn_direction_UP:
       dirname = " (upward)";

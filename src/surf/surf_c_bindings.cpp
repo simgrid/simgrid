@@ -22,16 +22,15 @@ extern double NOW;
 
 void surf_presolve()
 {
-  double next_event_date = -1.0;
-  simgrid::kernel::profile::Event* event        = nullptr;
-  double value = -1.0;
-  simgrid::kernel::resource::Resource* resource = nullptr;
-
   XBT_DEBUG ("Consume all trace events occurring before the starting time.");
+  double next_event_date;
   while ((next_event_date = simgrid::kernel::profile::future_evt_set.next_date()) != -1.0) {
     if (next_event_date > NOW)
       break;
 
+    simgrid::kernel::profile::Event* event;
+    double value                                  = -1.0;
+    simgrid::kernel::resource::Resource* resource = nullptr;
     while ((event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource))) {
       if (value >= 0)
         resource->apply_event(event, value);
