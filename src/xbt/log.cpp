@@ -37,7 +37,12 @@ struct xbt_log_setting_t {
   xbt_log_appender_t appender = nullptr;
 };
 
-static std::vector<xbt_log_setting_t> xbt_log_settings;
+// This function is here to avoid static initialization order fiasco
+static std::vector<xbt_log_setting_t>& xbt_log_settings()
+{
+  static std::vector<xbt_log_setting_t> value;
+  return value;
+}
 
 constexpr std::array<const char*, 8> xbt_log_priority_names{
     {"NONE", "TRACE", "DEBUG", "VERBOSE", "INFO", "WARNING", "ERROR", "CRITICAL"}};
@@ -286,11 +291,11 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   }
 
   /* Apply the control */
-  auto iset = std::find_if(begin(xbt_log_settings), end(xbt_log_settings),
+  auto iset = std::find_if(begin(xbt_log_settings()), end(xbt_log_settings()),
                            [category](const xbt_log_setting_t& s) { return s.catname == category->name; });
-  if (iset != xbt_log_settings.end()) {
+  if (iset != xbt_log_settings().end()) {
     _xbt_log_cat_apply_set(category, *iset);
-    xbt_log_settings.erase(iset);
+    xbt_log_settings().erase(iset);
   } else {
     XBT_DEBUG("Category '%s': inherited threshold = %s (=%d)", category->name,
               xbt_log_priority_names[category->threshold], category->threshold);
@@ -500,7 +505,7 @@ void xbt_log_control_set(const char *control_string)
     } else {
       XBT_DEBUG("Store for further application");
       XBT_DEBUG("push %p to the settings", &set);
-      xbt_log_settings.emplace_back(std::move(set));
+      xbt_log_settings().emplace_back(std::move(set));
     }
   }
   xbt_dynar_free(&set_strings);
