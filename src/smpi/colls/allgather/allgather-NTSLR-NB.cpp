@@ -25,8 +25,6 @@ allgather__NTSLR_NB(const void *sbuf, int scount, MPI_Datatype stype,
   size = comm->size();
   rextent = rtype->get_extent();
   sextent = stype->get_extent();
-  auto* rrequest_array = new MPI_Request[size];
-  auto* srequest_array = new MPI_Request[size];
 
   // irregular case use default MPI functions
   if (scount * sextent != rcount * rextent) {
@@ -48,6 +46,9 @@ allgather__NTSLR_NB(const void *sbuf, int scount, MPI_Datatype stype,
 
   //start sending logical ring message
   int increment = scount * sextent;
+
+  auto* rrequest_array = new MPI_Request[size];
+  auto* srequest_array = new MPI_Request[size];
 
   //post all irecv first
   for (i = 0; i < size - 1; i++) {

@@ -108,8 +108,11 @@ int reduce_scatter__mpich_pair(const void *sendbuf, void *recvbuf, const int rec
                   /* copy result back into recvbuf */
                   mpi_errno =
                       Datatype::copy(tmp_recvbuf, recvcounts[rank], datatype, recvbuf, recvcounts[rank], datatype);
-                  if (mpi_errno)
+                  if (mpi_errno) {
+		    delete[] disps;
+                    smpi_free_tmp_buffer(tmp_recvbuf);
                     return (mpi_errno);
+		  }
                 }
                 else {
                   if (op != MPI_OP_NULL)
@@ -117,8 +120,11 @@ int reduce_scatter__mpich_pair(const void *sendbuf, void *recvbuf, const int rec
                   /* copy result back into recvbuf */
                   mpi_errno = Datatype::copy(tmp_recvbuf, recvcounts[rank], datatype,
                                              ((char*)recvbuf + disps[rank] * extent), recvcounts[rank], datatype);
-                  if (mpi_errno)
+                  if (mpi_errno) {
+		    delete[] disps;
+                    smpi_free_tmp_buffer(tmp_recvbuf);
                     return (mpi_errno);
+		  }
                 }
             }
         }
@@ -131,7 +137,11 @@ int reduce_scatter__mpich_pair(const void *sendbuf, void *recvbuf, const int rec
                                        recvcounts[rank], datatype,
                                        recvbuf,
                                        recvcounts[rank], datatype );
-            if (mpi_errno) return(mpi_errno);
+            if (mpi_errno) {
+	      delete[] disps;
+              smpi_free_tmp_buffer(tmp_recvbuf);
+	      return (mpi_errno);
+	    }
         }
 
         delete[] disps;
@@ -307,8 +317,10 @@ int reduce_scatter__mpich_rdb(const void *sendbuf, void *recvbuf, const int recv
     else
       mpi_errno = Datatype::copy(recvbuf, total_count, datatype, tmp_results, total_count, datatype);
 
-    if (mpi_errno)
+    if (mpi_errno) {
+      delete[] disps;
       return (mpi_errno);
+    }
 
     mask = 0x1;
     i    = 0;
