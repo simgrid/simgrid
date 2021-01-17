@@ -110,7 +110,7 @@ double surf_solve(double max_date)
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
     while ((event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource))) {
-      if (resource->is_used() || (watched_hosts.find(resource->get_cname()) != watched_hosts.end())) {
+      if (resource->is_used() || (watched_hosts().find(resource->get_cname()) != watched_hosts().end())) {
         time_delta = next_event_date - NOW;
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
                   time_delta);

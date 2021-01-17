@@ -165,7 +165,7 @@ void ActorImpl::cleanup()
   if (has_to_auto_restart() && not get_host()->is_on()) {
     XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart", get_host()->get_cname(),
               get_cname());
-    watched_hosts.insert(get_host()->get_name());
+    watched_hosts().insert(get_host()->get_name());
   }
 
   if (on_exit) {
