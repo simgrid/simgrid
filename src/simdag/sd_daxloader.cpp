@@ -48,7 +48,6 @@ static bool parents_are_marked(const_SD_task_t task)
 bool acyclic_graph_detail(const_xbt_dynar_t dag)
 {
   unsigned int count;
-  bool all_marked = true;
   SD_task_t task = nullptr;
   std::vector<SD_task_t> current;
   xbt_dynar_foreach (dag, count, task)
@@ -76,7 +75,7 @@ bool acyclic_graph_detail(const_xbt_dynar_t dag)
     current = next;
   }
 
-  all_marked = true;
+  bool all_marked = true;
   //test if all tasks are marked
   xbt_dynar_foreach(dag,count,task){
     if (task->kind != SD_TASK_COMM_E2E && not task->marked) {

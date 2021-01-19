@@ -247,7 +247,7 @@ void VirtualMachineImpl::resume()
 void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 {
   if (get_state() != s4u::VirtualMachine::state::RUNNING) {
-    const char* stateName = "(unknown state)";
+    const char* stateName;
     switch (get_state()) {
       case s4u::VirtualMachine::state::CREATED:
         stateName = "created, but not yet started";
