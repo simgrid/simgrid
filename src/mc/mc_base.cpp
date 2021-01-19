@@ -8,6 +8,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/checker/SimcallInspector.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 
@@ -170,7 +171,7 @@ bool request_is_visible(const s_smx_simcall* req)
 
 int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
-  if (not MC_is_active() && MC_record_path.empty()) {
+  if (not MC_is_active() && not MC_record_replay_is_active()) {
     static simgrid::xbt::random::XbtRandom prng;
     return prng.uniform_int(min, max);
   }

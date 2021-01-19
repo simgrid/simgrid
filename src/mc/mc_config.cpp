@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include <simgrid/sg_config.hpp>
 #if SIMGRID_HAVE_MC
@@ -32,11 +33,13 @@ static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 
 /* Replay (this part is enabled even if MC it disabled) */
 simgrid::config::Flag<std::string> _sg_mc_record_path{
-    "model-check/replay", "Model-check path to replay (as reported by SimGrid when a violation is reported)", ""};
+    "model-check/replay", "Model-check path to replay (as reported by SimGrid when a violation is reported)", "",
+    [](const std::string& value) { MC_record_path() = value; }};
 
 simgrid::config::Flag<bool> _sg_mc_timeout{
-    "model-check/timeout", "Whether to enable timeouts for wait requests", false,
-    [](bool) { _mc_cfg_cb_check("value to enable/disable timeout for wait requests", MC_record_path.empty()); }};
+    "model-check/timeout", "Whether to enable timeouts for wait requests", false, [](bool) {
+      _mc_cfg_cb_check("value to enable/disable timeout for wait requests", not MC_record_replay_is_active());
+    }};
 
 #if SIMGRID_HAVE_MC
 int _sg_do_model_check = 0;
