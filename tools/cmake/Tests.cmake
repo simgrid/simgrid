@@ -117,7 +117,6 @@ add_dependencies     (tests unit-tests)
 target_link_libraries(unit-tests simgrid)
 ADD_TEST(unit-tests ${CMAKE_BINARY_DIR}/unit-tests)
 set_property(TARGET unit-tests APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-add_dependencies(tests unit-tests)
 set(EXTRA_DIST ${EXTRA_DIST} ${UNIT_TESTS})
 
 unset(UNIT_TESTS)
