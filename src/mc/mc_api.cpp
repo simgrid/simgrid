@@ -407,7 +407,7 @@ smx_actor_t mc_api::simcall_get_issuer(s_smx_simcall const* req) const
   return MC_smx_simcall_get_issuer(req);
 }
 
-long mc_api::simcall_get_issuer_id(s_smx_simcall const* req) const
+long mc_api::simcall_get_actor_id(s_smx_simcall const* req) const
 {
   return MC_smx_simcall_get_issuer(req)->get_pid();
 }
