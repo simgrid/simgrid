@@ -40,6 +40,47 @@ double ActivityImpl::get_remaining() const
   return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
+const char* ActivityImpl::get_state_str()
+{
+  switch (state_) {
+    case State::WAITING:
+      return "WAITING";
+
+    case State::READY:
+      return "READY";
+
+    case State::RUNNING:
+      return "RUNNING";
+
+    case State::CANCELED:
+      return "CANCELED";
+
+    case State::FAILED:
+      return "FAILED";
+
+    case State::DONE:
+      return "DONE";
+
+    case State::SRC_HOST_FAILURE:
+      return "SRC_HOST_FAILURE";
+
+    case State::DST_HOST_FAILURE:
+      return "DST_HOST_FAILURE";
+
+    case State::TIMEOUT:
+      return "TIMEOUT";
+
+    case State::SRC_TIMEOUT:
+      return "SRC_TIMEOUT";
+    case State::DST_TIMEOUT:
+      return "DST_TIMEOUT";
+
+    case State::LINK_FAILURE:
+      return "LINK_FAILURE";
+  }
+  THROW_IMPOSSIBLE;
+}
+
 bool ActivityImpl::test()
 {
   if (state_ != State::WAITING && state_ != State::RUNNING) {

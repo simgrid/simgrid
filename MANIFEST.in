@@ -368,6 +368,8 @@ include examples/s4u/cloud-simple/s4u-cloud-simple.cpp
 include examples/s4u/cloud-simple/s4u-cloud-simple.tesh
 include examples/s4u/comm-dependent/s4u-comm-dependent.cpp
 include examples/s4u/comm-dependent/s4u-comm-dependent.tesh
+include examples/s4u/comm-host2host/s4u-comm-host2host.cpp
+include examples/s4u/comm-host2host/s4u-comm-host2host.tesh
 include examples/s4u/comm-ready/s4u-comm-ready.cpp
 include examples/s4u/comm-ready/s4u-comm-ready.tesh
 include examples/s4u/comm-ready/s4u-comm-ready_d.xml

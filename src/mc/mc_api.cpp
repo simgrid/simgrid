@@ -367,11 +367,6 @@ void mc_api::session_initialize() const
   session->initialize();
 }
 
-ModelChecker* mc_api::get_model_checker() const
-{
-  return mc_model_checker;
-}
-
 void mc_api::mc_inc_visited_states() const
 {
   mc_model_checker->visited_states++;

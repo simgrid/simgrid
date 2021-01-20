@@ -173,7 +173,7 @@ public:
    * There is really no limit on the hosts involved. In particular, the actor does not have to be on one of the involved
    * hosts.
    */
-  ActivityPtr sendto_async(Host* dest, double byte_amount);
+  CommPtr sendto_async(Host* dest, double byte_amount);
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v330("Please use Host::sendto()") void send_to(Host* dest, double byte_amount)
