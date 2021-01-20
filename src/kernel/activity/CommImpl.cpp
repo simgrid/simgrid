@@ -417,7 +417,7 @@ CommImpl::~CommImpl()
 {
   XBT_DEBUG("Really free communication %p in state %d (detached = %d)", this, static_cast<int>(state_), detached_);
 
-  cleanupSurf();
+  cleanup_surf();
 
   if (detached_ && state_ != State::DONE) {
     /* the communication has failed and was detached:
@@ -536,7 +536,7 @@ void CommImpl::cancel()
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */
-void CommImpl::cleanupSurf()
+void CommImpl::cleanup_surf()
 {
   clean_action();
 
@@ -571,7 +571,7 @@ void CommImpl::post()
             src_actor_.get(), dst_actor_.get(), detached_);
 
   /* destroy the surf actions associated with the Simix communication */
-  cleanupSurf();
+  cleanup_surf();
 
   /* Answer all simcalls associated with the synchro */
   finish();

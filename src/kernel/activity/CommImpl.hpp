@@ -17,7 +17,7 @@ namespace activity {
 
 class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
-  void cleanupSurf();
+  void cleanup_surf();
 
   double rate_       = 0.0;
   double size_       = 0.0;
