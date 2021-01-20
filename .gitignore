@@ -953,3 +953,4 @@ a.out
 simgrid.config
 simgrid.creator
 simgrid.includes
+.vscode/c_cpp_properties.json
