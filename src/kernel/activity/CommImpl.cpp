@@ -408,6 +408,11 @@ CommImpl& CommImpl::detach()
   return *this;
 }
 
+CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes) : size_(bytes), detached_(true), from_(from), to_(to)
+{
+  state_ = State::READY;
+}
+
 CommImpl::~CommImpl()
 {
   XBT_DEBUG("Really free communication %p in state %d (detached = %d)", this, static_cast<int>(state_), detached_);
@@ -430,25 +435,26 @@ CommImpl* CommImpl::start()
 {
   /* If both the sender and the receiver are already there, start the communication */
   if (state_ == State::READY) {
-    s4u::Host* sender   = src_actor_->get_host();
-    s4u::Host* receiver = dst_actor_->get_host();
+    from_ = from_ != nullptr ? from_ : src_actor_->get_host();
+    to_   = to_ != nullptr ? to_ : dst_actor_->get_host();
 
-    surf_action_ = surf_network_model->communicate(sender, receiver, size_, rate_);
+    surf_action_ = surf_network_model->communicate(from_, to_, size_, rate_);
     surf_action_->set_activity(this);
     surf_action_->set_category(get_tracing_category());
     state_ = State::RUNNING;
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", this, sender->get_cname(),
-              receiver->get_cname(), surf_action_);
+    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p; state: %s)", this, from_->get_cname(),
+              to_->get_cname(), surf_action_, get_state_str());
 
     /* If a link is failed, detect it immediately */
     if (surf_action_->get_state() == resource::Action::State::FAILED) {
-      XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->get_cname(),
-                receiver->get_cname());
+      XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", from_->get_cname(),
+                to_->get_cname());
       state_ = State::LINK_FAILURE;
       post();
 
-    } else if (src_actor_->is_suspended() || dst_actor_->is_suspended()) {
+    } else if ((src_actor_ != nullptr && src_actor_->is_suspended()) ||
+               (dst_actor_ != nullptr && dst_actor_->is_suspended())) {
       /* If any of the process is suspended, create the synchro but stop its execution,
          it will be restarted when the sender process resume */
       if (src_actor_->is_suspended())
@@ -561,7 +567,7 @@ void CommImpl::post()
   } else
     state_ = State::DONE;
 
-  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d", this, (int)state_,
+  XBT_DEBUG("CommImpl::post(): comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
             src_actor_.get(), dst_actor_.get(), detached_);
 
   /* destroy the surf actions associated with the Simix communication */
@@ -707,8 +713,10 @@ void CommImpl::finish()
         if (src_actor_)
           src_actor_->activities_.remove(this);
       } else {
-        dst_actor_->activities_.remove(this);
-        src_actor_->activities_.remove(this);
+        if (dst_actor_ != nullptr)
+          dst_actor_->activities_.remove(this);
+        if (src_actor_ != nullptr)
+          src_actor_->activities_.remove(this);
       }
     }
   }

@@ -6,6 +6,7 @@
 #include "simgrid/host.h"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
@@ -180,12 +181,9 @@ void Host::sendto(Host* dest, double byte_amount)
   sendto_async(dest, byte_amount)->wait();
 }
 
-ActivityPtr Host::sendto_async(Host* dest, double byte_amount)
+CommPtr Host::sendto_async(Host* dest, double byte_amount)
 {
-  std::vector<Host*> m_host_list   = {this, dest};
-  std::vector<double> flops_amount = {0, 0};
-  std::vector<double> bytes_amount = {0, byte_amount, 0, 0};
-  return this_actor::exec_init(m_host_list, flops_amount, bytes_amount)->start();
+  return Comm::sendto_async(this, dest, byte_amount);
 }
 
 /** Get the properties assigned to a host */

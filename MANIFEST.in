@@ -368,6 +368,8 @@ include examples/s4u/cloud-simple/s4u-cloud-simple.cpp
 include examples/s4u/cloud-simple/s4u-cloud-simple.tesh
 include examples/s4u/comm-dependent/s4u-comm-dependent.cpp
 include examples/s4u/comm-dependent/s4u-comm-dependent.tesh
+include examples/s4u/comm-host2host/s4u-comm-host2host.cpp
+include examples/s4u/comm-host2host/s4u-comm-host2host.tesh
 include examples/s4u/comm-ready/s4u-comm-ready.cpp
 include examples/s4u/comm-ready/s4u-comm-ready.tesh
 include examples/s4u/comm-ready/s4u-comm-ready_d.xml
@@ -2302,7 +2304,6 @@ include src/mc/inspect/mc_unw.hpp
 include src/mc/inspect/mc_unw_vmread.cpp
 include src/mc/mc_api.cpp
 include src/mc/mc_api.hpp
-include src/mc/udpor_global.hpp
 include src/mc/mc_base.cpp
 include src/mc/mc_base.h
 include src/mc/mc_client_api.cpp
@@ -2349,6 +2350,7 @@ include src/mc/sosp/Region.hpp
 include src/mc/sosp/Snapshot.cpp
 include src/mc/sosp/Snapshot.hpp
 include src/mc/sosp/Snapshot_test.cpp
+include src/mc/udpor_global.hpp
 include src/msg/msg_comm.cpp
 include src/msg/msg_global.cpp
 include src/msg/msg_legacy.cpp

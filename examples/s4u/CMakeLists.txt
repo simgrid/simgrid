@@ -63,7 +63,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-pingpong app-token-ring
                  comm-ready comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
-                 comm-dependent
+                 comm-dependent comm-host2host
                  cloud-capping cloud-migration cloud-simple
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
@@ -71,7 +71,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
-		 network-wifi
+		             network-wifi
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-host-load plugin-link-load
