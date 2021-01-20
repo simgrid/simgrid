@@ -4,8 +4,8 @@
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
-        app-masterworker app-pingpong app-token-ring 
-        comm-wait comm-waitall comm-waitany
+        app-masterworker app-token-ring 
+        comm-pingpong comm-wait comm-waitall comm-waitany
         cloud-capping cloud-masterworker cloud-migration cloud-simple
         dht-pastry
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
@@ -80,7 +80,7 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi_d.xml
-                               ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
+                               ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/comm-pingpong_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait2_d.xml
                                ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/comm-wait3_d.xml
@@ -96,8 +96,8 @@ set(xml_files     ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/actor-cr
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
-        app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
-        comm-wait comm-waitall comm-waitany
+        app-bittorrent app-chainsend app-masterworker app-token-ring
+        comm-pingpong comm-wait comm-waitall comm-waitany
         cloud-capping  cloud-masterworker cloud-migration cloud-simple
         dht-kademlia dht-pastry
         exec-async exec-basic exec-dvfs exec-remote exec-waitany
