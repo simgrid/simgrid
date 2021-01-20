@@ -1,12 +1,10 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-comm-host2host ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
-> [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
-> [  0.019014] (2:ponger@Jupiter) Payload received : small communication (latency bound)
-> [  0.019014] (2:ponger@Jupiter) Ping time (latency bound) 0.019014
-> [  0.019014] (2:ponger@Jupiter) payload = 0.019
-> [150.178356] (1:pinger@Tremblay) Payload received : large communication (bandwidth bound)
-> [150.178356] (1:pinger@Tremblay) Pong time (bandwidth bound): 150.159
-> [150.178356] (0:maestro@) Total simulation time: 150.178
-
+> [  0.000000] (1:sender@Boivin) Send c12 with sendto_async(Tremblay -> Jupiter), and c34 with sendto_init(Fafard -> Ginette)
+> [  0.000000] (1:sender@Boivin) After creation,  c12 is STARTED (remaining: 1.50e+07 bytes); c34 is INITED (remaining: 1.00e+07 bytes)
+> [  1.000000] (1:sender@Boivin) One sec later,   c12 is STARTED (remaining: 8.48e+06 bytes); c34 is INITED (remaining: 1.00e+07 bytes)
+> [  1.000000] (1:sender@Boivin) After c34->start,c12 is STARTED (remaining: 8.48e+06 bytes); c34 is STARTED (remaining: 1.00e+07 bytes)
+> [  2.272621] (1:sender@Boivin) After c12->wait, c12 is FINISHED (remaining: 0.00e+00 bytes); c34 is STARTED (remaining: 5.33e+05 bytes)
+> [  2.343278] (1:sender@Boivin) After c34->wait, c12 is FINISHED (remaining: 0.00e+00 bytes); c34 is FINISHED (remaining: 0.00e+00 bytes)
+> [  2.359841] (0:maestro@) Total simulation time: 2.360

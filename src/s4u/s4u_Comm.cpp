@@ -230,9 +230,9 @@ int Comm::test_any(const std::vector<CommPtr>* comms)
 
 Comm* Comm::detach()
 {
-  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
-             __FUNCTION__);
-  xbt_assert(src_buff_ != nullptr && src_buff_size_ != 0, "You can only detach sends, not recvs");
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication is %s (not implemented)",
+             __FUNCTION__, get_state_str());
+  xbt_assert(dst_buff_ == nullptr && dst_buff_size_ == 0, "You can only detach sends, not recvs");
   detached_ = true;
   vetoable_start();
   return this;
