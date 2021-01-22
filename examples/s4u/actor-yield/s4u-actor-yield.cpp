@@ -3,12 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u.hpp"
+#include <simgrid/s4u.hpp>
+namespace sg4 = simgrid::s4u;
 
 /* This example does not much: It just spans over-polite actor that yield a large amount
  * of time before ending.
  *
- * This serves as an example for the simgrid::s4u::this_actor::yield() function, with which an actor can request
+ * This serves as an example for the sg4::this_actor::yield() function, with which an actor can request
  * to be rescheduled after the other actor that are ready at the current timestamp.
  *
  * It can also be used to benchmark our context-switching mechanism.
@@ -23,14 +24,14 @@ public:
   void operator()() const
   {
     for (int i = 0; i < number_of_yields; i++)
-      simgrid::s4u::this_actor::yield();
+      sg4::this_actor::yield();
     XBT_INFO("I yielded %ld times. Goodbye now!", number_of_yields);
   }
 };
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
                        "\tExample: %s platform.xml deployment.xml\n",

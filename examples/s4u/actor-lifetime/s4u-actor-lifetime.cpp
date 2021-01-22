@@ -7,6 +7,7 @@
    action takes place: Actors are started and stopped at predefined time.   */
 
 #include "simgrid/s4u.hpp"
+namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this s4u example");
 
@@ -15,7 +16,7 @@ class sleeper {
 public:
   explicit sleeper(std::vector<std::string> /*args*/)
   {
-    simgrid::s4u::this_actor::on_exit([](bool /*failed*/) {
+    sg4::this_actor::on_exit([](bool /*failed*/) {
       /* Executed on actor termination, to display a message helping to understand the output */
       XBT_INFO("Exiting now (done sleeping or got killed).");
     });
@@ -23,14 +24,14 @@ public:
   void operator()() const
   {
     XBT_INFO("Hello! I go to sleep.");
-    simgrid::s4u::this_actor::sleep_for(10);
+    sg4::this_actor::sleep_for(10);
     XBT_INFO("Done sleeping.");
   }
 };
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc > 2,
              "Usage: %s platform_file deployment_file\n"
