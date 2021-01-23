@@ -296,13 +296,14 @@ static bool MC_dwarf_attr_flag(Dwarf_Die* die, int attribute, bool integrate)
 static uint64_t MC_dwarf_default_lower_bound(int lang)
 {
   const std::unordered_map<int, unsigned> map = {
-      {DW_LANG_C, 0},         {DW_LANG_C89, 0},     {DW_LANG_C99, 0},       {DW_LANG_C_plus_plus, 0},
-      {DW_LANG_D, 0},         {DW_LANG_Java, 0},    {DW_LANG_ObjC, 0},      {DW_LANG_ObjC_plus_plus, 0},
-      {DW_LANG_Python, 0},    {DW_LANG_UPC, 0},
+      {DW_LANG_C, 0},           {DW_LANG_C89, 0},            {DW_LANG_C99, 0},            {DW_LANG_C11, 0},
+      {DW_LANG_C_plus_plus, 0}, {DW_LANG_C_plus_plus_11, 0}, {DW_LANG_C_plus_plus_14, 0}, {DW_LANG_D, 0},
+      {DW_LANG_Java, 0},        {DW_LANG_ObjC, 0},           {DW_LANG_ObjC_plus_plus, 0}, {DW_LANG_Python, 0},
+      {DW_LANG_UPC, 0},
 
-      {DW_LANG_Ada83, 1},     {DW_LANG_Ada95, 1},   {DW_LANG_Fortran77, 1}, {DW_LANG_Fortran90, 1},
-      {DW_LANG_Fortran95, 1}, {DW_LANG_Modula2, 1}, {DW_LANG_Pascal83, 1},  {DW_LANG_PL1, 1},
-      {DW_LANG_Cobol74, 1},   {DW_LANG_Cobol85, 1}};
+      {DW_LANG_Ada83, 1},       {DW_LANG_Ada95, 1},          {DW_LANG_Fortran77, 1},      {DW_LANG_Fortran90, 1},
+      {DW_LANG_Fortran95, 1},   {DW_LANG_Fortran03, 1},      {DW_LANG_Fortran08, 1},      {DW_LANG_Modula2, 1},
+      {DW_LANG_Pascal83, 1},    {DW_LANG_PL1, 1},            {DW_LANG_Cobol74, 1},        {DW_LANG_Cobol85, 1}};
 
   auto res = map.find(lang);
   xbt_assert(res != map.end(), "No default DW_TAG_lower_bound for language %i and none given", lang);
