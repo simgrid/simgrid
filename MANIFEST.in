@@ -61,9 +61,6 @@ include examples/c/app-masterworker/app-masterworker-vivaldi_d.xml
 include examples/c/app-masterworker/app-masterworker.c
 include examples/c/app-masterworker/app-masterworker.tesh
 include examples/c/app-masterworker/app-masterworker_d.xml
-include examples/c/app-pingpong/app-pingpong.c
-include examples/c/app-pingpong/app-pingpong.tesh
-include examples/c/app-pingpong/app-pingpong_d.xml
 include examples/c/app-token-ring/app-token-ring.c
 include examples/c/app-token-ring/app-token-ring.tesh
 include examples/c/cloud-capping/cloud-capping.c
@@ -74,6 +71,9 @@ include examples/c/cloud-migration/cloud-migration.c
 include examples/c/cloud-migration/cloud-migration.tesh
 include examples/c/cloud-simple/cloud-simple.c
 include examples/c/cloud-simple/cloud-simple.tesh
+include examples/c/comm-pingpong/comm-pingpong.c
+include examples/c/comm-pingpong/comm-pingpong.tesh
+include examples/c/comm-pingpong/comm-pingpong_d.xml
 include examples/c/comm-wait/comm-wait.c
 include examples/c/comm-wait/comm-wait.tesh
 include examples/c/comm-wait/comm-wait2_d.xml
@@ -355,9 +355,6 @@ include examples/s4u/app-masterworkers/s4u-app-masterworkers-class.cpp
 include examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
 include examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh
 include examples/s4u/app-masterworkers/s4u-app-masterworkers_d.xml
-include examples/s4u/app-pingpong/s4u-app-pingpong.cpp
-include examples/s4u/app-pingpong/s4u-app-pingpong.tesh
-include examples/s4u/app-pingpong/simix-breakpoint.tesh
 include examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 include examples/s4u/app-token-ring/s4u-app-token-ring.tesh
 include examples/s4u/cloud-capping/s4u-cloud-capping.cpp
@@ -370,6 +367,9 @@ include examples/s4u/comm-dependent/s4u-comm-dependent.cpp
 include examples/s4u/comm-dependent/s4u-comm-dependent.tesh
 include examples/s4u/comm-host2host/s4u-comm-host2host.cpp
 include examples/s4u/comm-host2host/s4u-comm-host2host.tesh
+include examples/s4u/comm-pingpong/s4u-comm-pingpong.cpp
+include examples/s4u/comm-pingpong/s4u-comm-pingpong.tesh
+include examples/s4u/comm-pingpong/simix-breakpoint.tesh
 include examples/s4u/comm-ready/s4u-comm-ready.cpp
 include examples/s4u/comm-ready/s4u-comm-ready.tesh
 include examples/s4u/comm-ready/s4u-comm-ready_d.xml
@@ -2304,8 +2304,6 @@ include src/mc/inspect/mc_unw.hpp
 include src/mc/inspect/mc_unw_vmread.cpp
 include src/mc/mc_api.cpp
 include src/mc/mc_api.hpp
-include src/mc/udpor_global.cpp
-include src/mc/udpor_global.hpp
 include src/mc/mc_base.cpp
 include src/mc/mc_base.h
 include src/mc/mc_client_api.cpp
@@ -2352,6 +2350,8 @@ include src/mc/sosp/Region.hpp
 include src/mc/sosp/Snapshot.cpp
 include src/mc/sosp/Snapshot.hpp
 include src/mc/sosp/Snapshot_test.cpp
+include src/mc/udpor_global.cpp
+include src/mc/udpor_global.hpp
 include src/msg/msg_comm.cpp
 include src/msg/msg_global.cpp
 include src/msg/msg_legacy.cpp
