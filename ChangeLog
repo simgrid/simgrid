@@ -19,7 +19,8 @@ S4U:
    on between two (possibly remote) hosts.
 
 Documentation:
- - Add a section on configuring the logging from the command line.
+ - New section: Configuring the logs from the command line.
+ - New section: Programming API of logs.
 
 ----------------------------------------------------------------------------
 

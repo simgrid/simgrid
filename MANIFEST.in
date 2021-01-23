@@ -1801,7 +1801,6 @@ include doc/doxygen/module-sd.doc
 include doc/doxygen/module-surf.doc
 include doc/doxygen/module-trace.doc
 include doc/doxygen/module-xbt.doc
-include doc/doxygen/outcomes_logs.doc
 include doc/doxygen/outcomes_vizu.doc
 include doc/doxygen/platform.doc
 include doc/doxygen/platform_lua.doc
@@ -1829,6 +1828,7 @@ include docs/source/Platform_Examples.rst
 include docs/source/Platform_Routing.rst
 include docs/source/Plugins.rst
 include docs/source/Start_Your_Own_Project.rst
+include docs/source/The_XBT_toolbox.rst
 include docs/source/Tutorial_Algorithms.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/XML_Reference.rst

@@ -29,6 +29,9 @@ Finally, the **appender** actually displays the produced messages. SimGrid provi
 ``rollfile`` does the same, but overwrites old messages when the file grows too large and ``splitfile`` creates new files when the maximum size is reached. Each category can have
 its own appender.
 
+For more information, please refer to the :ref:`programmer's interface <logging_prog>` to learn how to produce messages from your code, or to :ref:`logging_config` to see how to
+change the settings at runtime.
+
 Graphical and statistical logging
 *********************************
 

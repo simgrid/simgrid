@@ -1540,7 +1540,9 @@ the tests: the full file path would makes the tests non-reproducible because
 the paths of source files depend of the build settings. That would
 break most of the tests since their output is continually compared.
 
-Logging Configuration
+.. _logging_config:
+
+Logging configuration
 ---------------------
 
 As introduced in :ref:`outcome_logs`, the SimGrid logging mechanism allows to configure at runtime the messages that should be displayed and those that should be omitted. Each
@@ -1548,7 +1550,7 @@ message produced in the code is given a category (denoting its topic) and a prio
 that threshold are displayed), a layout (deciding how the messages in this category are formatted), and an appender (deciding what to do with the message: either print on stderr or
 to a file).
 
-This section explains how to configure this logging features. You can also refer to the documentation of the :ref:`programmer's interface <xbt_log_prog>`, that allows to produce
+This section explains how to configure this logging features. You can also refer to the documentation of the :ref:`programmer's interface <logging_prog>`, that allows to produce
 messages from your code.
 
 Most of the time, the logging mechanism is configured at runtime using the ``--log`` command-line argument, even if you can also use :ref:`xbt_log_control_set()` to control it from
@@ -1631,11 +1633,8 @@ example, ``--log=root.app:splitfile:500:mylog_%`` creates log files of at most 5
 The ``rollfile`` appender uses one file only, but the file is emptied and recreated when its size reaches the specified maximum. For example, ``--log=root.app:rollfile:500:mylog``
 ensures that the log file ``mylog`` will never overpass 500 bytes in size.
 
-Any appender setup this way have its own layout format (simple one by default),
-so you may have to change it too afterward. Moreover, the additivity of the log category
-is also set to false to prevent log event displayed by this appender to "leak" to any other
-appender higher in the hierarchy. If it is not what you wanted, you can naturally change it
-manually.
+Any appender setup this way have its own layout format, that you may change afterward. When specifying a new appender, its additivity is set to false to prevent log event displayed
+by this appender to "leak" to any other appender higher in the hierarchy. You can naturally change that if you want your messages to be displayed twice.
 
 Category additivity
 ...................
