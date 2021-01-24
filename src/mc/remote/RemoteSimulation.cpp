@@ -43,6 +43,7 @@ static const std::vector<std::string> filtered_libraries = {
 #endif
     "libargp", /* workarounds for glibc-less systems */
     "libasan", /* gcc sanitizers */
+    "libasn1",
     "libboost_chrono",
     "libboost_context",
     "libboost_context-mt",
@@ -79,7 +80,12 @@ static const std::vector<std::string> filtered_libraries = {
     "libgcrypt",
     "libgfortran",
     "libgpg-error",
+    "libgssapi",
     "libgssapi_krb5",
+    "libhcrypto",
+    "libheimbase",
+    "libheimntlm",
+    "libhx509",
     "libhogweed",
     "libidn2",
     "libimf",
@@ -109,10 +115,12 @@ static const std::vector<std::string> filtered_libraries = {
     "libpthread",
     "libquadmath",
     "libresolv",
+    "libroken",
     "librt",
     "librtmp",
     "libsasl2",
     "libselinux",
+    "libsqlite3",
     "libssh",
     "libssh2",
     "libssl",
@@ -126,6 +134,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libunwind-ptrace",
     "libunwind-x86",
     "libunwind-x86_64",
+    "libwind",
     "libz",
     "libzstd"};
 
