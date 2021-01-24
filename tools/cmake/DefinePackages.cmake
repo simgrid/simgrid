@@ -978,11 +978,6 @@ set(DOC_SOURCES
   CITATION.bib
   )
 
-set(DOC_FIGS
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
-  )
-
 set(DOC_TOOLS
   tools/doxygen/fig2dev_postprocessor.pl
   tools/doxygen/xbt_log_extract_hierarchy.pl

@@ -19,7 +19,7 @@ find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 if(enable_documentation)
   ADD_CUSTOM_TARGET(documentation
     COMMENT "Generating the SimGrid documentation..."
-    DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
+    DEPENDS ${DOC_SOURCES} ${source_doxygen}
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_BINARY_DIR}/doc/doxygen
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_BINARY_DIR}/doc/example_lists
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/doc/html
@@ -47,12 +47,6 @@ if(enable_documentation)
   endif()
 
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
-
-  foreach(file ${DOC_FIGS})
-    string(REPLACE ".fig" ".png" tmp_file ${file})
-    string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_BINARY_DIR}/doc/html/" tmp_file ${tmp_file})
-    ADD_CUSTOM_COMMAND(TARGET documentation  COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file})
-  endforeach()
 
   foreach(file ${DOC_IMG})
     ADD_CUSTOM_COMMAND(TARGET documentation COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_BINARY_DIR}/doc/html/)
