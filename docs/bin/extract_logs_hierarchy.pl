@@ -11,9 +11,10 @@ use warnings;
 
 my $debug = 0;
 
-print "/* Generated file, do not edit */\n";
-print "/** \\addtogroup XBT_log_cats\n";
-print "        \@{\n";
+print ".. Generated file, do not edit \n\n";
+print ".. _logging_categories:\n\n";
+print "Existing categories\n";
+print "===================\n\n";
 
 # Search for calls to macros defining new channels, and prepare the tree representation
 my %ancestor;
@@ -91,13 +92,22 @@ my %used;
 sub display_subtree {
     my $name=shift;
     my $indent=shift;
-
+    
     $used{$name} = 1;
     unless ($name eq "XBT_LOG_ROOT_CAT") { # do not display the root
 	print "$indent - $name: ".($desc{$name}|| "(undocumented)")."\n";
     }
+
+    my $state = 0; # 0: before the sublist; 1, within; 2: after
     foreach my $cat (grep {$ancestor{$_} eq $name} sort keys %ancestor) {
-	display_subtree($cat,"$indent  ");
+	if ($state == 0) {
+	    $state = 1;
+	    print "\n";
+	}
+	display_subtree($cat, $name eq "XBT_LOG_ROOT_CAT" ? $indent: "$indent  ");
+    }
+    if ($state != 0) {
+	print "\n";
     }
 }
 
@@ -107,4 +117,4 @@ map {
     warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";
 } grep {!defined $used{$_}} sort keys %ancestor;
 
-print "@}*/\n";
+print "\n";

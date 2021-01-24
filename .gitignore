@@ -54,7 +54,7 @@ DartConfiguration.tcl
 TAGS
 Testing/
 Makefile
-bin/
+./bin/
 lib/
 manpages/
 build_*/

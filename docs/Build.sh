@@ -7,19 +7,30 @@
 # Python needs to find simgrid on my machine, but not ctest -- sorry for the hack
 if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
 
-set -ex
+set -e
 set -o pipefail
 
 if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
   echo "Doxygen not rerun: 'doxy' was not provided as an argument"
 else
+  set -x
   rm -rf build/xml source/api/
   (cd source; doxygen 2>&1; cd ..) | grep -v "is not documented." #   XXXXX Reduce the verbosity for now
+  set +x
 fi
+
+if [ "x$1" != 'xlogs' ] && [ -e build/log_categories.rst ] ; then
+  echo "Log categories not extracted: 'logs' was not provided as an argument"
+else
+  set -x
+  perl ./bin/extract_logs_hierarchy.pl ../ > build/log_categories.rst
+  set +x
+fi 
 
 if [ "x$1" != 'xjava' ] && [ -e source/java ] ; then
   echo "javasphinx not rerun: 'java' was not provided as an argument"
 else
+  set -x
   rm -rf source/java
   
   # Use that script without installing javasphinx: javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg

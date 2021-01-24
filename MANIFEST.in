@@ -1,8 +1,6 @@
 # This file lists the content of the python source package
 # Prepared in tools/cmake/Distrib.cmake
 include MANIFEST.in
-include doc/shared/fig/simgrid_modules.fig
-include doc/shared/fig/simgrid_modules2.fig
 include doc/webcruft/Paje_MSG_screenshot.jpg
 include doc/webcruft/Paje_MSG_screenshot_thn.jpg
 include doc/webcruft/SGicon.gif
@@ -1741,7 +1739,6 @@ include tools/MSG_visualization/colorize.pl
 include tools/MSG_visualization/trace2fig.pl
 include tools/address_sanitizer.supp
 include tools/doxygen/fig2dev_postprocessor.pl
-include tools/doxygen/xbt_log_extract_hierarchy.pl
 include tools/fix-paje-trace.sh
 include tools/generate-dwarf-functions
 include tools/graphicator/graphicator.cpp
@@ -1808,6 +1805,7 @@ include doc/doxygen/uhood.doc
 include doc/doxygen/uhood_arch.doc
 include doc/doxygen/uhood_switch.doc
 include docs/Build.sh
+include docs/bin/extract_logs_hierarchy.pl
 include docs/find-missing.ignore
 include docs/find-missing.py
 include docs/ignored_symbols
@@ -2782,7 +2780,6 @@ include tools/cmake/test_prog/prog_stacksetup.c
 include tools/cmake/test_prog/prog_tsan.cpp
 include tools/doxygen/fig2dev_postprocessor.pl
 include tools/doxygen/list_routing_models_examples.sh
-include tools/doxygen/xbt_log_extract_hierarchy.pl
 include tools/graphicator/CMakeLists.txt
 include tools/lualib.patch
 include tools/smpi/generate_smpi_defines.pl

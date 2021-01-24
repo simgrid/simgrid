@@ -893,6 +893,7 @@ set(DOC_SOURCES
   docs/manpages/tesh.pod
 
   docs/Build.sh
+  docs/bin/extract_logs_hierarchy.pl
   docs/requirements.txt
   docs/source/conf.py
   docs/source/Doxyfile
@@ -978,14 +979,8 @@ set(DOC_SOURCES
   CITATION.bib
   )
 
-set(DOC_FIGS
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
-  )
-
 set(DOC_TOOLS
   tools/doxygen/fig2dev_postprocessor.pl
-  tools/doxygen/xbt_log_extract_hierarchy.pl
   tools/doxygen/list_routing_models_examples.sh
   )
 

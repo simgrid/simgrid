@@ -22,32 +22,32 @@ Declaring categories
 ====================
 
 Typically, there will be a category for each module of the implementation, so that users can independently control the logging for each module.
-Refer to the :ref:`XBT_log_cats` section for a list of all existing categories in SimGrid.
+Refer to the :ref:`logging_categories` section for a list of all existing categories in SimGrid.
 
-.. cpp:function:: XBT_LOG_NEW_CATEGORY(category, description)
+.. c:macro:: XBT_LOG_NEW_CATEGORY(category, description)
 
    Creates a new category that is not within any existing categories. It will be located right below the ``root`` category.
    ``category`` must be a valid identifier (such as ``mycat``) with no quote or anything. It should also be unique over the whole binary.
    ``description`` must be a string, between quotes.
 
-.. cpp:function:: XBT_LOG_NEW_SUBCATEGORY(category, parent_category, description)
+.. c:macro:: XBT_LOG_NEW_SUBCATEGORY(category, parent_category, description)
 
    Creates a new category under the provided ``parent_category``.
 
-.. cpp:function:: XBT_LOG_NEW_DEFAULT_CATEGORY(category, description)
+.. c:macro:: XBT_LOG_NEW_DEFAULT_CATEGORY(category, description)
 
-   Similar to :cpp:func:`XBT_LOG_NEW_CATEGORY`, and the created category is the default one in the current source file.
+   Similar to :c:macro:`XBT_LOG_NEW_CATEGORY`, and the created category is the default one in the current source file.
 
-.. cpp:function:: XBT_LOG_NEW_DEFAULT_SUBCATEGORY(category, parent_category, description)
+.. c:macro:: XBT_LOG_NEW_DEFAULT_SUBCATEGORY(category, parent_category, description)
 
-   Similar to :cpp:func:`XBT_LOG_NEW_SUBCATEGORY`, and the created category is the default one in the current source file.
+   Similar to :c:macro:`XBT_LOG_NEW_SUBCATEGORY`, and the created category is the default one in the current source file.
 
-.. cpp:function:: XBT_LOG_EXTERNAL_CATEGORY(category)
+.. c:macro:: XBT_LOG_EXTERNAL_CATEGORY(category)
 
    Make an external category (i.e., a category declared in another source file) visible from this source file. 
    In each source file, at most one one category can be the default one.
 
-.. cpp:function:: XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(category)
+.. c:macro:: XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(category)
 
    Use an external category as default category in this source file.
 
@@ -57,27 +57,27 @@ Logging messages
 Default category
 ----------------
 
-.. cpp:function:: XBT_CRITICAL(format_string, parameters...)
+.. c:macro:: XBT_CRITICAL(format_string, parameters...)
 
    Report a fatal error to the default category.
 
-.. cpp:function:: XBT_ERROR(format_string, parameters...)
+.. c:macro:: XBT_ERROR(format_string, parameters...)
 
    Report an error to the default category.
 
-.. cpp:function:: XBT_WARN(format_string, parameters...)
+.. c:macro:: XBT_WARN(format_string, parameters...)
 
    Report a warning or an important information to the default category.
 
-.. cpp:function:: XBT_INFO(format_string, parameters...)
+.. c:macro:: XBT_INFO(format_string, parameters...)
 
    Report an information of regular importance to the default category.
 
-.. cpp:function:: XBT_VERB(format_string, parameters...)
+.. c:macro:: XBT_VERB(format_string, parameters...)
 
    Report a verbose information to the default category.
 
-.. cpp:function:: XBT_DEBUG(format_string, parameters...)
+.. c:macro:: XBT_DEBUG(format_string, parameters...)
 
    Report a debug-only information to the default category.
 
@@ -86,52 +86,52 @@ the compiler will warn you for unmatched arguments, such as passing a pointer wh
 
 Here is an example: ``XBT_WARN("Values are: %d and '%s'", 5, "oops");``
 
-.. cpp:function:: XBT_IN(format_string, parameters...)
+.. c:macro:: XBT_IN(format_string, parameters...)
 
    Report that the execution flow enters a given function (which name is displayed automatically).
 
-.. cpp:function:: XBT_OUT(format_string, parameters...)
+.. c:macro:: XBT_OUT(format_string, parameters...)
 
    Report that the execution flow exits a given function (which name is displayed automatically).
 
-.. cpp:function:: XBT_HERE(format_string, parameters...)
+.. c:macro:: XBT_HERE(format_string, parameters...)
 
    Report that the execution flow reaches a given location.
 
 Specific category
 -----------------
 
-.. cpp:function:: XBT_CCRITICAL(category, format_string, parameters...)
+.. c:macro:: XBT_CCRITICAL(category, format_string, parameters...)
 
    Report a fatal error to the specified ``category``.
 
-.. cpp:function:: XBT_CERROR(category, format_string, parameters...)
+.. c:macro:: XBT_CERROR(category, format_string, parameters...)
 
    Report an error to the specified ``category``.
 
-.. cpp:function:: XBT_CWARN(category, format_string, parameters...)
+.. c:macro:: XBT_CWARN(category, format_string, parameters...)
 
    Report a warning or an important information to the specified ``category``.
 
-.. cpp:function:: XBT_CINFO(category, format_string, parameters...)
+.. c:macro:: XBT_CINFO(category, format_string, parameters...)
 
    Report an information of regular importance to the specified ``category``.
 
-.. cpp:function:: XBT_CVERB(category, format_string, parameters...)
+.. c:macro:: XBT_CVERB(category, format_string, parameters...)
 
    Report a verbose information to the specified ``category``.
 
-.. cpp:function:: XBT_CDEBUG(category, format_string, parameters...)
+.. c:macro:: XBT_CDEBUG(category, format_string, parameters...)
 
    Report a debug-only information to the specified ``category``.
 
-Of course, the specified category must be visible from this source file, either because it was created there (e.g. with :cpp:func:`XBT_LOG_NEW_CATEGORY`) or because it was made
-visible with :cpp:func:`XBT_LOG_EXTERNAL_CATEGORY`.
+Of course, the specified category must be visible from this source file, either because it was created there (e.g. with :c:macro:`XBT_LOG_NEW_CATEGORY`) or because it was made
+visible with :c:macro:`XBT_LOG_EXTERNAL_CATEGORY`.
 
 Other functions
 ===============
 
-.. cpp:function:: XBT_LOG_ISENABLED(category, priority)
+.. c:macro:: XBT_LOG_ISENABLED(category, priority)
 
    Returns true if that category displays the messages of that priority. It's useful to compute a value that is used only in the logging, such as the textual representation of a
    non-trivial object.
@@ -139,16 +139,18 @@ Other functions
    The specified priority must be one of ``xbt_log_priority_trace``, ``xbt_log_priority_debug``, ``xbt_log_priority_verbose``, ``xbt_log_priority_info``,
    ``xbt_log_priority_warning``, ``xbt_log_priority_error`` or ``xbt_log_priority_critical``.
 
-.. cpp:function:: void xbt_log_control_set(const char* setting)
+.. c:function:: void xbt_log_control_set(const char* setting)
 
    Sets the provided ``setting`` as if it was passed in a ``--log`` command-line parameter.
 
 You should not use any of the macros which name starts with '_'.
 
+.. include:: ../build/log_categories.rst
+
 Full example
 ============
 
-.. code-block:: cpp
+.. code-block:: C
 
    #include "xbt/log.h"
 
