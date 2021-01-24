@@ -28,6 +28,7 @@
 #include <boost/range/algorithm.hpp>
 
 #include <elfutils/libdw.h>
+#include <elfutils/version.h>
 
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -171,7 +172,9 @@ static FormClass classify_form(int form)
       {DW_FORM_data1, FormClass::Constant},         {DW_FORM_data2, FormClass::Constant},
       {DW_FORM_data4, FormClass::Constant},         {DW_FORM_data8, FormClass::Constant},
       {DW_FORM_udata, FormClass::Constant},         {DW_FORM_sdata, FormClass::Constant},
+#if _ELFUTILS_PREREQ(0, 171)
       {DW_FORM_implicit_const, FormClass::Constant},
+#endif
 
       {DW_FORM_string, FormClass::String},          {DW_FORM_strp, FormClass::String},
 
