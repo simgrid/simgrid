@@ -200,7 +200,6 @@ add_custom_target(dist-dir
 add_dependencies(dist-dir maintainer_files)
 
 set(dirs_in_tarball "")
-set(PYTHON_SOURCES "include MANIFEST.in")
 foreach(file ${source_to_pack})
   #message(${file})
   # This damn prefix is still set somewhere (seems to be in subdirs)
