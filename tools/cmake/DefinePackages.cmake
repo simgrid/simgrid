@@ -78,7 +78,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mrealloc.c
   src/xbt/mmalloc/swag.c
   src/xbt/mmalloc/swag.h
-  tools/tesh/generate_tesh
   tools/lualib.patch
   teshsuite/lua/lua_platforms.tesh
   examples/smpi/mc/only_send_deterministic.tesh
@@ -980,7 +979,6 @@ set(DOC_SOURCES
   )
 
 set(DOC_TOOLS
-  tools/doxygen/fig2dev_postprocessor.pl
   tools/doxygen/list_routing_models_examples.sh
   )
 

@@ -165,20 +165,21 @@ static FormClass classify_form(int form)
   static const std::unordered_map<int, FormClass> map = {
       {DW_FORM_addr, FormClass::Address},
 
-      {DW_FORM_block2, FormClass::Block},       {DW_FORM_block4, FormClass::Block},
-      {DW_FORM_block, FormClass::Block},        {DW_FORM_block1, FormClass::Block},
+      {DW_FORM_block2, FormClass::Block},           {DW_FORM_block4, FormClass::Block},
+      {DW_FORM_block, FormClass::Block},            {DW_FORM_block1, FormClass::Block},
 
-      {DW_FORM_data1, FormClass::Constant},     {DW_FORM_data2, FormClass::Constant},
-      {DW_FORM_data4, FormClass::Constant},     {DW_FORM_data8, FormClass::Constant},
-      {DW_FORM_udata, FormClass::Constant},     {DW_FORM_sdata, FormClass::Constant},
+      {DW_FORM_data1, FormClass::Constant},         {DW_FORM_data2, FormClass::Constant},
+      {DW_FORM_data4, FormClass::Constant},         {DW_FORM_data8, FormClass::Constant},
+      {DW_FORM_udata, FormClass::Constant},         {DW_FORM_sdata, FormClass::Constant},
+      {DW_FORM_implicit_const, FormClass::Constant},
 
-      {DW_FORM_string, FormClass::String},      {DW_FORM_strp, FormClass::String},
+      {DW_FORM_string, FormClass::String},          {DW_FORM_strp, FormClass::String},
 
-      {DW_FORM_ref_addr, FormClass::Reference}, {DW_FORM_ref1, FormClass::Reference},
-      {DW_FORM_ref2, FormClass::Reference},     {DW_FORM_ref4, FormClass::Reference},
-      {DW_FORM_ref8, FormClass::Reference},     {DW_FORM_ref_udata, FormClass::Reference},
+      {DW_FORM_ref_addr, FormClass::Reference},     {DW_FORM_ref1, FormClass::Reference},
+      {DW_FORM_ref2, FormClass::Reference},         {DW_FORM_ref4, FormClass::Reference},
+      {DW_FORM_ref8, FormClass::Reference},         {DW_FORM_ref_udata, FormClass::Reference},
 
-      {DW_FORM_flag, FormClass::Flag},          {DW_FORM_flag_present, FormClass::Flag},
+      {DW_FORM_flag, FormClass::Flag},              {DW_FORM_flag_present, FormClass::Flag},
 
       {DW_FORM_exprloc, FormClass::ExprLoc}
 

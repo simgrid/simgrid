@@ -1,6 +1,6 @@
 # This file lists the content of the python source package
 # Prepared in tools/cmake/Distrib.cmake
-include MANIFEST.in
+
 include doc/webcruft/Paje_MSG_screenshot.jpg
 include doc/webcruft/Paje_MSG_screenshot_thn.jpg
 include doc/webcruft/SGicon.gif
@@ -1738,7 +1738,10 @@ include teshsuite/xbt/signals/signals.tesh
 include tools/MSG_visualization/colorize.pl
 include tools/MSG_visualization/trace2fig.pl
 include tools/address_sanitizer.supp
+<<<<<<< HEAD
 include tools/doxygen/fig2dev_postprocessor.pl
+=======
+>>>>>>> 0e860ce2fbd8d2781d6c1129bb41cb788380f398
 include tools/fix-paje-trace.sh
 include tools/generate-dwarf-functions
 include tools/graphicator/graphicator.cpp
@@ -2778,7 +2781,6 @@ include tools/cmake/test_prog/prog_makecontext.c
 include tools/cmake/test_prog/prog_stackgrowth.c
 include tools/cmake/test_prog/prog_stacksetup.c
 include tools/cmake/test_prog/prog_tsan.cpp
-include tools/doxygen/fig2dev_postprocessor.pl
 include tools/doxygen/list_routing_models_examples.sh
 include tools/graphicator/CMakeLists.txt
 include tools/lualib.patch
@@ -2791,4 +2793,3 @@ include tools/stack-cleaner/clean-stack-filter
 include tools/stack-cleaner/compiler-wrapper
 include tools/stack-cleaner/fortran
 include tools/tesh/CMakeLists.txt
-include tools/tesh/generate_tesh
