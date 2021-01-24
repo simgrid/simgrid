@@ -15,9 +15,7 @@ page.
 
 @htmlonly
 <center>
-@endhtmlonly
-@htmlinclude simgrid_modules.map
-@htmlonly
+<tt>htmlinclude simgrid_modules.map<tt>
 <br><b>SimGrid Components (click to jump to API)</b>
 </center>
 @endhtmlonly

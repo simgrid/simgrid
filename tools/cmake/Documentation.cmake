@@ -53,7 +53,6 @@ if(enable_documentation)
   endforeach()
 
   ADD_CUSTOM_COMMAND(TARGET documentation
-    COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_BINARY_DIR}/doc/simgrid_modules.map
     COMMAND pwd
     COMMAND ${CMAKE_COMMAND} -E echo "XX Generate the index files"
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/doc/doxygen/logcategories.doc
@@ -72,7 +71,6 @@ if(enable_documentation)
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh '<link_ctn ' > ${CMAKE_BINARY_DIR}/doc/example_lists/example_filelist_xmltag_linkctn
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
-    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/doc/simgrid_modules.map
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
   )
 
@@ -85,7 +83,7 @@ if(enable_documentation)
 
     COMMAND ${RSYNC_CMD} doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
 
-    COMMAND ${RSYNC_CMD} doc/html/simgrid_modules2.png doc/html/simgrid_modules.png /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
+    COMMAND ${RSYNC_CMD} /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
     /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
 
     COMMAND ${RSYNC_CMD} ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/
