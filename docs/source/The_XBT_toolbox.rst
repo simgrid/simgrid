@@ -154,25 +154,25 @@ Full example
 
    #include "xbt/log.h"
 
-   / * create a category and a default subcategory * /
+   /* create a category and a default subcategory */
    XBT_LOG_NEW_CATEGORY(VSS);
    XBT_LOG_NEW_DEFAULT_SUBCATEGORY(SA, VSS);
 
    int main() {
-       / * Now set the parent's priority.  (the string would typically be a runtime option) * /
+       /* Now set the parent's priority.  (the string would typically be a runtime option) */
        xbt_log_control_set("SA.thresh:info");
 
-       / * This request is enabled, because WARNING >= INFO. * /
+       /* This request is enabled, because WARNING >= INFO. */
        XBT_CWARN(VSS, "Low fuel level.");
 
-       / * This request is disabled, because DEBUG < INFO. * /
+       /* This request is disabled, because DEBUG < INFO. */
        XBT_CDEBUG(VSS, "Starting search for nearest gas station.");
 
-       / * The default category SA inherits its priority from VSS. Thus,
-          the following request is enabled because INFO >= INFO.  * /
+       /* The default category SA inherits its priority from VSS. Thus,
+          the following request is enabled because INFO >= INFO.  */
        XBT_INFO("Located nearest gas station.");
 
-       / * This request is disabled, because DEBUG < INFO. * /
+       /* This request is disabled, because DEBUG < INFO. */
        XBT_DEBUG("Exiting gas station search");
    }
 
