@@ -1738,10 +1738,6 @@ include teshsuite/xbt/signals/signals.tesh
 include tools/MSG_visualization/colorize.pl
 include tools/MSG_visualization/trace2fig.pl
 include tools/address_sanitizer.supp
-<<<<<<< HEAD
-include tools/doxygen/fig2dev_postprocessor.pl
-=======
->>>>>>> 0e860ce2fbd8d2781d6c1129bb41cb788380f398
 include tools/fix-paje-trace.sh
 include tools/generate-dwarf-functions
 include tools/graphicator/graphicator.cpp
