@@ -2776,7 +2776,6 @@ include tools/cmake/test_prog/prog_makecontext.c
 include tools/cmake/test_prog/prog_stackgrowth.c
 include tools/cmake/test_prog/prog_stacksetup.c
 include tools/cmake/test_prog/prog_tsan.cpp
-include tools/doxygen/fig2dev_postprocessor.pl
 include tools/doxygen/list_routing_models_examples.sh
 include tools/doxygen/xbt_log_extract_hierarchy.pl
 include tools/graphicator/CMakeLists.txt
