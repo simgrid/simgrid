@@ -84,7 +84,6 @@ public:
   bool mc_is_null() const;
   Checker* mc_get_checker() const;
   void set_checker(Checker* const checker) const;
-  RemoteSimulation& mc_get_remote_simulation() const;
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;

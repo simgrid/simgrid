@@ -522,11 +522,6 @@ void Api::set_checker(Checker* const checker) const
   mc_model_checker->setChecker(checker);
 }
 
-RemoteSimulation& Api::mc_get_remote_simulation() const
-{
-  return mc_model_checker->get_remote_simulation();
-}
-
 void Api::handle_simcall(Transition const& transition) const
 {
   mc_model_checker->handle_simcall(transition);
