@@ -9,7 +9,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(disk_kernel, surf, "Logging specific to the disk kernel resource");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(disk, resource, "Disk resource");
 
 simgrid::kernel::resource::DiskModel* surf_disk_model = nullptr;
 

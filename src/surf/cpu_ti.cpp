@@ -14,7 +14,7 @@
 
 constexpr double EPSILON = 0.000000001;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the SURF CPU TRACE INTEGRATION module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_ti, cpu, "CPU resource, Trace Integration model");
 
 namespace simgrid {
 namespace kernel {
