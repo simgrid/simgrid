@@ -53,7 +53,7 @@ public:
   Configuration()                     = default;
   Configuration(const Configuration&) = default;
   Configuration& operator=(Configuration const&) = default;
-  Configuration(Configuration&&) noexcept        = default;
+  Configuration(Configuration&&)                 = default;
   ~Configuration()                               = default;
 };
 
