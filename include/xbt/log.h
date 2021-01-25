@@ -5,25 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** @addtogroup XBT_log
- *  @brief A generic logging facility in the spirit of log4j (grounding feature)
- *
- */
-
-/** @defgroup XBT_log_cats Existing log categories
- *  @ingroup XBT_log
- *  @brief (automatically extracted)
- *
- *  This is the list of all existing log categories in SimGrid.
- *  This list is automatically extracted from the source code by the tools/doxygen/xbt_log_extract_hierarchy.pl utility.
- *
- *  It should thus contain every categories that are defined in the SimGrid library.
- *  If you want to see the one defined in your code in addition, provide `--help-logs` on the command line of your
- * simulator.
- */
-
-/* XBT_LOG_MAYDAY: define this to replace the logging facilities with basic printf function.
-   Useful to debug the logging facilities themselves, or to not make prehistoric source analysis tools mad. */
+/* Define the XBT_LOG_MAYDAY symbol to change all logging facilities into basic printfs, e.g. to debug the logs
+ * themselves. */
 //#define XBT_LOG_MAYDAY
 
 #ifndef XBT_LOG_H
@@ -98,6 +81,9 @@ typedef enum {
  * start of main().
  */
 
+/* Asserts that the provided name was not already used for another category */
+void _xbt_log_is_name_unique(const char* name, const char* file, int line);
+
 /* XBT_LOG_NEW_SUBCATEGORY_helper:
  * Implementation of XBT_LOG_NEW_SUBCATEGORY, which must declare "extern parent" in addition to avoid an extra
  * declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by XBT_LOG_NEW_CATEGORY */
@@ -108,6 +94,7 @@ typedef enum {
   void _XBT_LOGV_CTOR(catName)(void)                                                                                   \
   {                                                                                                                    \
     XBT_LOG_EXTERNAL_CATEGORY(catName);                                                                                \
+    _xbt_log_is_name_unique(_XBT_STRINGIFY(catName), __FILE__, __LINE__);                                              \
     if (!_XBT_LOGV(catName).initialized) {                                                                             \
       _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized);                                          \
     }                                                                                                                  \
