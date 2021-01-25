@@ -93,7 +93,6 @@ public:
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 
   // SIMCALL APIs
-  bool request_depend(smx_simcall_t req1, smx_simcall_t req2) const;
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
   const char *simcall_get_name(simgrid::simix::Simcall kind) const;
@@ -101,6 +100,7 @@ public:
   long simcall_get_actor_id(s_smx_simcall const* req) const;
   smx_mailbox_t simcall_get_mbox(smx_simcall_t const req) const;
   simgrid::kernel::activity::CommImpl* simcall_get_comm(smx_simcall_t const req) const;
+  bool simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const;
 
 #if HAVE_SMPI
   int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;

@@ -566,9 +566,39 @@ smx_simcall_t mc_api::mc_state_choose_request(simgrid::mc::State* state) const
   return nullptr;
 }
 
-bool mc_api::request_depend(smx_simcall_t req1, smx_simcall_t req2) const
+bool mc_api::simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const
 {
-  return simgrid::mc::request_depend(req1, req2);
+  if (req1->issuer_ == req2->issuer_)
+    return false;
+
+  /* Wait with timeout transitions are not considered by the independence theorem, thus we consider them as dependent with all other transitions */
+  if ((req1->call_ == Simcall::COMM_WAIT && simcall_comm_wait__get__timeout(req1) > 0) ||
+      (req2->call_ == Simcall::COMM_WAIT && simcall_comm_wait__get__timeout(req2) > 0))
+    return true;
+
+  if (req1->call_ != req2->call_)
+    return request_depend_asymmetric(req1, req2) && request_depend_asymmetric(req2, req1);
+
+  // Those are internal requests, we do not need indirection because those objects are copies:
+  const kernel::activity::CommImpl* synchro1 = get_comm(req1);
+  const kernel::activity::CommImpl* synchro2 = get_comm(req2);
+
+  switch (req1->call_) {
+    case Simcall::COMM_ISEND:
+      return simcall_comm_isend__get__mbox(req1) == simcall_comm_isend__get__mbox(req2);
+    case Simcall::COMM_IRECV:
+      return simcall_comm_irecv__get__mbox(req1) == simcall_comm_irecv__get__mbox(req2);
+    case Simcall::COMM_WAIT:
+      if (synchro1->src_buff_ == synchro2->src_buff_ && synchro1->dst_buff_ == synchro2->dst_buff_)
+        return false;
+      if (synchro1->src_buff_ != nullptr && synchro1->dst_buff_ != nullptr && synchro2->src_buff_ != nullptr &&
+          synchro2->dst_buff_ != nullptr && synchro1->dst_buff_ != synchro2->src_buff_ &&
+          synchro1->dst_buff_ != synchro2->dst_buff_ && synchro2->dst_buff_ != synchro1->src_buff_)
+        return false;
+      return true;
+    default:
+      return true;
+  }
 }
 
 std::string mc_api::request_to_string(smx_simcall_t req, int value, RequestType request_type) const

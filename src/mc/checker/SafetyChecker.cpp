@@ -200,7 +200,7 @@ void SafetyChecker::backtrack()
       const kernel::actor::ActorImpl* issuer = mcapi::get().simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
-        if (mcapi::get().request_depend(req, &prev_state->internal_req_)) {
+        if (mcapi::get().simcall_check_dependency(req, &prev_state->internal_req_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.argument_;
