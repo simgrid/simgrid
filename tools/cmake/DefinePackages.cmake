@@ -658,8 +658,8 @@ set(MC_SRC
   src/mc/mc_comm_pattern.hpp
   src/mc/mc_pattern.hpp
   src/mc/compare.cpp
-  src/mc/mc_api.cpp
-  src/mc/mc_api.hpp
+  src/mc/api.cpp
+  src/mc/api.hpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.hpp

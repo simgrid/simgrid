@@ -5,7 +5,7 @@
 
 #include "src/mc/mc_state.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/mc_api.hpp"
+#include "src/mc/api.hpp"
 
 #include <boost/range/algorithm.hpp>
 

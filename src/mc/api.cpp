@@ -1,4 +1,4 @@
-#include "mc_api.hpp"
+#include "api.hpp"
 
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"

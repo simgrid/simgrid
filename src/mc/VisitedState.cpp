@@ -10,7 +10,7 @@
 #include <sys/wait.h>
 #include <memory>
 #include <boost/range/algorithm.hpp>
-#include "src/mc/mc_api.hpp"
+#include "src/mc/api.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");
 

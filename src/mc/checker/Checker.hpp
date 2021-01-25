@@ -7,7 +7,7 @@
 #ifndef SIMGRID_MC_CHECKER_HPP
 #define SIMGRID_MC_CHECKER_HPP
 
-#include "src/mc/mc_api.hpp"
+#include "src/mc/api.hpp"
 
 namespace simgrid {
 namespace mc {
