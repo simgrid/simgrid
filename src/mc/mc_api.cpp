@@ -61,6 +61,18 @@ smx_mailbox_t get_mbox(smx_simcall_t const r)
   }
 }
 
+inline simgrid::kernel::activity::CommImpl* get_comm(smx_simcall_t const r)
+{
+  switch (r->call_) {
+    case Simcall::COMM_WAIT:
+      return simcall_comm_wait__getraw__comm(r);
+    case Simcall::COMM_TEST:
+      return simcall_comm_test__getraw__comm(r);
+    default:
+      return nullptr;
+  }
+}
+
 /* Search an enabled transition for the given process.
  *
  * This can be seen as an iterator returning the next transition of the process.
@@ -423,6 +435,11 @@ long mc_api::simcall_get_actor_id(s_smx_simcall const* req) const
 smx_mailbox_t mc_api::simcall_get_mbox(smx_simcall_t const req) const
 {
   return get_mbox(req);
+}
+
+simgrid::kernel::activity::CommImpl* mc_api::simcall_get_comm(smx_simcall_t const req) const
+{
+  return get_comm(req);
 }
 
 bool mc_api::mc_is_null() const
