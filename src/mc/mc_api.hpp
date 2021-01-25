@@ -99,6 +99,7 @@ public:
   const char *simcall_get_name(simgrid::simix::Simcall kind) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   long simcall_get_actor_id(s_smx_simcall const* req) const;
+  smx_mailbox_t simcall_get_mbox(smx_simcall_t const req) const;
 
 #if HAVE_SMPI
   int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;
