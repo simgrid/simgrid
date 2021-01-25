@@ -39,7 +39,7 @@ struct xbt_log_setting_t {
 };
 
 // This function is here to avoid static initialization order fiasco
-static std::vector<xbt_log_setting_t>& xbt_log_settings()
+static auto& xbt_log_settings()
 {
   static std::vector<xbt_log_setting_t> value;
   return value;

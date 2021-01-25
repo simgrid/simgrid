@@ -34,13 +34,6 @@ std::vector<simgrid::kernel::resource::Model*> all_existing_models; /* to destro
 simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
 
-/** set of hosts for which one want to be notified if they ever restart */
-std::set<std::string, std::less<>>& watched_hosts() // avoid static initialization order fiasco
-{
-  static std::set<std::string, std::less<>> value;
-  return value;
-}
-
 extern std::map<std::string, simgrid::kernel::resource::StorageType*, std::less<>> storage_types;
 
 std::vector<surf_model_description_t>* surf_plugin_description = nullptr;

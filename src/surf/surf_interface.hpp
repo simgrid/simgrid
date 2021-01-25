@@ -30,7 +30,13 @@ extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
 extern XBT_PRIVATE std::vector<std::string> surf_path;
 extern XBT_PRIVATE std::unordered_map<std::string, simgrid::kernel::profile::Profile*> traces_set_list;
-XBT_PRIVATE std::set<std::string, std::less<>>& watched_hosts();
+
+/** set of hosts for which one want to be notified if they ever restart */
+inline auto& watched_hosts() // avoid static initialization order fiasco
+{
+  static std::set<std::string, std::less<>> value;
+  return value;
+}
 
 static inline void double_update(double* variable, double value, double precision)
 {
