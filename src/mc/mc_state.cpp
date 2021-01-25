@@ -10,7 +10,7 @@
 #include <boost/range/algorithm.hpp>
 
 using simgrid::mc::remote;
-using mcapi = simgrid::mc::mc_api;
+using api = simgrid::mc::Api;
 
 namespace simgrid {
 namespace mc {
@@ -18,11 +18,11 @@ namespace mc {
 State::State(unsigned long state_number) : num_(state_number)
 {
   this->internal_comm_.clear();
-  auto maxpid = mcapi::get().get_maxpid();
+  auto maxpid = api::get().get_maxpid();
   actor_states_.resize(maxpid);
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    auto snapshot_ptr = mcapi::get().take_snapshot(num_);
+    auto snapshot_ptr = api::get().take_snapshot(num_);
     system_state_ = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
       copy_incomplete_comm_pattern();
@@ -44,7 +44,7 @@ Transition State::get_transition() const
 void State::copy_incomplete_comm_pattern()
 {
   incomplete_comm_pattern_.clear();
-  for (unsigned long i = 0; i < mcapi::get().get_maxpid(); i++) {
+  for (unsigned long i = 0; i < api::get().get_maxpid(); i++) {
     std::vector<simgrid::mc::PatternCommunication> res;
     for (auto const& comm : incomplete_communications_pattern[i])
       res.push_back(comm->dup());

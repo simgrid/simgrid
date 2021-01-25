@@ -23,9 +23,9 @@ namespace mc {
 ** be capable to acquire the required information through the FACADE layer rather than the direct access to the AppSide.
 */
 
-class mc_api {
+class Api {
 private:
-  mc_api() = default;
+  Api() = default;
 
   struct DerefAndCompareByActorsCountAndUsedHeap {
     template <class X, class Y> bool operator()(X const& a, Y const& b) const
@@ -37,13 +37,13 @@ private:
 
 public:
   // No copy:
-  mc_api(mc_api const&) = delete;
-  void operator=(mc_api const&) = delete;
+  Api(Api const&) = delete;
+  void operator=(Api const&) = delete;
 
-  static mc_api& get()
+  static Api& get()
   {
-    static mc_api mcapi;
-    return mcapi;
+    static Api api;
+    return api;
   }
 
   void initialize(char** argv) const;
