@@ -73,6 +73,68 @@ inline simgrid::kernel::activity::CommImpl* get_comm(smx_simcall_t const r)
   }
 }
 
+// Does half the job
+inline bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
+{
+  if (r1->call_ == Simcall::COMM_ISEND && r2->call_ == Simcall::COMM_IRECV)
+    return false;
+
+  if (r1->call_ == Simcall::COMM_IRECV && r2->call_ == Simcall::COMM_ISEND)
+    return false;
+
+  // Those are internal requests, we do not need indirection because those objects are copies:
+  const kernel::activity::CommImpl* synchro1 = get_comm(r1);
+  const kernel::activity::CommImpl* synchro2 = get_comm(r2);
+
+  if ((r1->call_ == Simcall::COMM_ISEND || r1->call_ == Simcall::COMM_IRECV) && r2->call_ == Simcall::COMM_WAIT) {
+    const kernel::activity::MailboxImpl* mbox = get_mbox(r1);
+
+    if (mbox != synchro2->mbox_cpy
+        && simcall_comm_wait__get__timeout(r2) <= 0)
+      return false;
+
+    if ((r1->issuer_ != synchro2->src_actor_.get()) && (r1->issuer_ != synchro2->dst_actor_.get()) &&
+        simcall_comm_wait__get__timeout(r2) <= 0)
+      return false;
+
+    if ((r1->call_ == Simcall::COMM_ISEND) && (synchro2->type_ == kernel::activity::CommImpl::Type::SEND) &&
+        (synchro2->src_buff_ != simcall_comm_isend__get__src_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
+      return false;
+
+    if ((r1->call_ == Simcall::COMM_IRECV) && (synchro2->type_ == kernel::activity::CommImpl::Type::RECEIVE) &&
+        (synchro2->dst_buff_ != simcall_comm_irecv__get__dst_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
+      return false;
+  }
+
+  /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
+   * test call. */
+#if 0
+  if((r1->call == Simcall::COMM_ISEND || r1->call == Simcall::COMM_IRECV)
+      &&  r2->call == Simcall::COMM_TEST)
+    return false;
+#endif
+
+  if (r1->call_ == Simcall::COMM_WAIT && (r2->call_ == Simcall::COMM_WAIT || r2->call_ == Simcall::COMM_TEST) &&
+      (synchro1->src_actor_.get() == nullptr || synchro1->dst_actor_.get() == nullptr))
+    return false;
+
+  if (r1->call_ == Simcall::COMM_TEST &&
+      (simcall_comm_test__get__comm(r1) == nullptr || synchro1->src_buff_ == nullptr || synchro1->dst_buff_ == nullptr))
+    return false;
+
+  if (r1->call_ == Simcall::COMM_TEST && r2->call_ == Simcall::COMM_WAIT &&
+      synchro1->src_buff_ == synchro2->src_buff_ && synchro1->dst_buff_ == synchro2->dst_buff_)
+    return false;
+
+  if (r1->call_ == Simcall::COMM_WAIT && r2->call_ == Simcall::COMM_TEST && synchro1->src_buff_ != nullptr &&
+      synchro1->dst_buff_ != nullptr && synchro2->src_buff_ != nullptr && synchro2->dst_buff_ != nullptr &&
+      synchro1->dst_buff_ != synchro2->src_buff_ && synchro1->dst_buff_ != synchro2->dst_buff_ &&
+      synchro2->dst_buff_ != synchro1->src_buff_)
+    return false;
+
+  return true;
+}
+
 /* Search an enabled transition for the given process.
  *
  * This can be seen as an iterator returning the next transition of the process.
