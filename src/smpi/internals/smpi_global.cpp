@@ -542,7 +542,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   simgrid::instr::init();
   SIMIX_global_init(&argc, argv);
 
-  auto engine = simgrid::s4u::Engine::get_instance();
+  auto engine              = simgrid::s4u::Engine::get_instance();
 
   sg_storage_file_system_init();
   // parse the platform file: get the host list

@@ -15,11 +15,11 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti -trace-file ${bindir:=
 
 #Test replaying the trace, without altering the time.
 #We disable computation, but leave the sleep.
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml -np 3 -replay ${bindir:=.}/smpi_trace.txt ${bindir:=.}/../replay/smpi_replay --cfg=smpi/host-speed:1f --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=log.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml -np 3 -replay ${bindir:=.}/smpi_trace.txt ${bindir:=.}/../replay/smpi_replay --cfg=smpi/host-speed:1f --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no
 > [Fafard:2:(3) 1000.007967] [smpi_replay/INFO] Simulation time 1000.007967
 
 #Test replaying the trace, altering the time to have the sleep much faster (1 instead of 1000).
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/comp-adjustment-file:${srcdir:=.}/trace_call_location/adjust -np 3 -replay ${bindir:=.}/smpi_trace.txt ${bindir:=.}/../replay/smpi_replay  --cfg=smpi/host-speed:1f --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning  --log=log.thres:error --cfg=smpi/simulate-computation:no
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/comp-adjustment-file:${srcdir:=.}/trace_call_location/adjust -np 3 -replay ${bindir:=.}/smpi_trace.txt ${bindir:=.}/../replay/smpi_replay  --cfg=smpi/host-speed:1f --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no
 > [Fafard:2:(3) 1.007967] [smpi_replay/INFO] Simulation time 1.007967
 
 $ rm -f ${bindir:=.}/smpi_trace.tx*

@@ -15,7 +15,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(disk_example, "Messages specific for this simulation");
+XBT_LOG_NEW_DEFAULT_CATEGORY(disk, "Messages specific for this simulation");
 
 static void host(int argc, char* argv[])
 {

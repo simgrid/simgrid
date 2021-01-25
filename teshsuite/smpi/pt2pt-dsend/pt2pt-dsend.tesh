@@ -1,6 +1,6 @@
 p Test dsend
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir:=.}/../hostfile -platform ${platfdir}/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -s --long --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --log=log.thres:error --cfg=smpi/simulate-computation:no
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir:=.}/../hostfile -platform ${platfdir}/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -s --long --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no
 > [Jupiter:1:(2) 0.000000] [dsend/INFO] rank 1: data exchanged
 > [Tremblay:0:(1) 0.005896] [dsend/INFO] rank 0: data exchanged
 > [rank 0] -> Tremblay
@@ -11,7 +11,7 @@ p message size is 4 bytes
 p process 1 will finish at 0.5+2*4 (send) + 1+0.1*4 (isend) = 9.9s
 p process 2 will finish at 0.5+2*4 (time before first send) + 2*(1+0.5*4) (recv+irecv) + 0.005890 (network time, same as before) = 14.505890s
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir:=.}/../hostfile -platform ${platfdir}/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -s --long --log=smpi_config.thres:warning --cfg=smpi/or:0:1:0.5 --cfg=smpi/os:0:0.5:2 --cfg=smpi/ois:0:1:0.1 --cfg=smpi/simulate-computation:no --log=xbt_cfg.thres:warning --log=log.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir:=.}/../hostfile -platform ${platfdir}/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -s --long --log=smpi_config.thres:warning --cfg=smpi/or:0:1:0.5 --cfg=smpi/os:0:0.5:2 --cfg=smpi/ois:0:1:0.1 --cfg=smpi/simulate-computation:no --log=xbt_cfg.thres:warning
 > [Jupiter:1:(2) 9.900000] [dsend/INFO] rank 1: data exchanged
 > [Tremblay:0:(1) 14.505896] [dsend/INFO] rank 0: data exchanged
 > [rank 0] -> Tremblay

@@ -16,7 +16,6 @@
 #include <array>
 #include <mutex>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
@@ -248,16 +247,6 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, const xbt_log_se
   }
 }
 
-/** Asserts that the provided name is unique */
-void _xbt_log_is_name_unique(const char* name, const char* file, int line)
-{
-  static std::unordered_set<std::string> used_names;
-
-  if (used_names.find(name) != used_names.end())
-    XBT_WARN("%s:%d: log category redefined: %s", file, line, name);
-  used_names.insert(std::string(name));
-}
-
 /*
  * This gets called the first time a category is referenced and performs the initialization.
  * Also resets threshold to inherited!
@@ -265,7 +254,6 @@ void _xbt_log_is_name_unique(const char* name, const char* file, int line)
 int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority)
 {
   DISABLE_XBT_LOG_CAT_INIT();
-
   if (category->initialized)
     return priority >= category->threshold;
 
