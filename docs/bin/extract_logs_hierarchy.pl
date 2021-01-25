@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 
-# Copyright (c) 2008-2021. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2008-2021. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -15,6 +14,9 @@ print ".. Generated file, do not edit \n\n";
 print ".. _logging_categories:\n\n";
 print "Existing categories\n";
 print "===================\n\n";
+print "This is the list of all categories existing in the SimGrid implementation. "
+  ."Some of them only exist with specific compile-time options, while your implementation may add new ones. "
+  ."Please add \`\`--help-log-categories\`\` to the command-line of a SimGrid simulator to see the exact list of categories usable with it.\n\n";
 
 # Search for calls to macros defining new channels, and prepare the tree representation
 my %ancestor;

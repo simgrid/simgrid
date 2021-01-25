@@ -1647,6 +1647,16 @@ Let's consider a more complex example: ``--log="root.app:file:all.log s4u.app:fi
 ``iface.log`` file; the logging of the xbt toolbox will be sent to both the ``xbt.log`` file and the ``all.log`` file (because xbt additivity was enabled); and every other loggings
 will only be sent to ``all.log``.
 
+Other options
+.............
+
+``--help-logs`` displays a complete help message about logging in SimGrid.
+
+``--help-log-categories`` displays the actual hierarchy of log categories for this binary.
+
+``--log=no_loc`` hides the source locations (file names and line numbers) from the messages. This is useful to make tests reproducible.
+
+
 .. |br| raw:: html
 
    <br />

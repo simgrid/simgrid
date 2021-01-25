@@ -13,8 +13,8 @@ should use SimGrid's logging facilities, that are inspired from `Log4J <https://
 severity and their topic. There  is four main concepts in SimGrid's logging mechanism:
 
 The **category** of a message represents its topic. These categories are organized as a hierarchy, loosely corresponding to SimGrid's modules architecture. `Existing categories
-<xbt_log_cat>`_ are documented online, but some of them may be disabled depending on the compilation options. Use ``--help-logs`` on the command line to see the categories actually
-provided a given simulator.
+<logging_categories>`_ are documented online, but some of them may be disabled depending on the compilation options. Use ``--help-log-categories`` on the command line to see 
+the categories actually provided a given simulator.
 
 The message **priority** represents its severity. It can be one of ``trace``, ``debug``, ``verb``, ``info``, ``warn``, ``error`` and ``critical``. Every category has a configured
 threshold, and only the messages with a higher severity are displayed (the others are not even evaluated). For example, you may want to see every debugging message of the Host
