@@ -53,7 +53,11 @@ static int number_of_networks = 1;
 
 /* wifi globals */
 static ns3::WifiHelper wifi;
-static ns3::YansWifiPhyHelper wifiPhy         = ns3::YansWifiPhyHelper::Default();
+#if NS3_MINOR_VERSION < 33
+static ns3::YansWifiPhyHelper wifiPhy = ns3::YansWifiPhyHelper::Default();
+#else
+static ns3::YansWifiPhyHelper wifiPhy;
+#endif
 static ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default();
 static ns3::WifiMacHelper wifiMac;
 static ns3::MobilityHelper mobility;
