@@ -163,8 +163,6 @@ public:
       , line_(line)
   {
   }
-  ParseError(const ParseError&)     = default;
-  ParseError(ParseError&&) noexcept = default;
   ~ParseError() override;
 };
 
