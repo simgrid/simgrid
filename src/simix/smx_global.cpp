@@ -136,14 +136,14 @@ namespace simix {
 Timer* Timer::set(double date, xbt::Task<void()>&& callback)
 {
   auto* timer    = new Timer(date, std::move(callback));
-  timer->handle_ = simix_timers.emplace(std::make_pair(date, timer));
+  timer->handle_ = simix_timers().emplace(std::make_pair(date, timer));
   return timer;
 }
 
 /** @brief cancels a timer that was added earlier */
 void Timer::remove()
 {
-  simix_timers.erase(handle_);
+  simix_timers().erase(handle_);
   delete this;
 }
 
@@ -348,9 +348,9 @@ void SIMIX_clean()
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
 
-  while (not simgrid::simix::simix_timers.empty()) {
-    delete simgrid::simix::simix_timers.top().second;
-    simgrid::simix::simix_timers.pop();
+  while (not simgrid::simix::simix_timers().empty()) {
+    delete simgrid::simix::simix_timers().top().second;
+    simgrid::simix::simix_timers().pop();
   }
   /* Free the remaining data structures */
   simix_global->actors_to_run.clear();
@@ -394,11 +394,12 @@ double SIMIX_get_clock()
 static bool SIMIX_execute_timers()
 {
   bool result = false;
-  while (not simgrid::simix::simix_timers.empty() && SIMIX_get_clock() >= simgrid::simix::simix_timers.top().first) {
+  while (not simgrid::simix::simix_timers().empty() &&
+         SIMIX_get_clock() >= simgrid::simix::simix_timers().top().first) {
     result = true;
     // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
-    smx_timer_t timer = simgrid::simix::simix_timers.top().second;
-    simgrid::simix::simix_timers.pop();
+    smx_timer_t timer = simgrid::simix::simix_timers().top().second;
+    simgrid::simix::simix_timers().pop();
     timer->callback();
     delete timer;
   }

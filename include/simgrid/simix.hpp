@@ -96,15 +96,19 @@ template <class R, class F> R simcall_blocking(F&& code, mc::SimcallInspector* t
 namespace simgrid {
 namespace simix {
 
-using TimerQelt = std::pair<double, Timer*>;
-static boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<xbt::HeapComparator<TimerQelt>>> simix_timers;
+inline auto& simix_timers() // avoid static initialization order fiasco
+{
+  using TimerQelt = std::pair<double, Timer*>;
+  static boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<xbt::HeapComparator<TimerQelt>>> value;
+  return value;
+}
 
 /** @brief Timer datatype */
 class Timer {
   double date = 0.0;
 
 public:
-  decltype(simix_timers)::handle_type handle_;
+  std::remove_reference_t<decltype(simix_timers())>::handle_type handle_;
 
   Timer(double date, simgrid::xbt::Task<void()>&& callback) : date(date), callback(std::move(callback)) {}
 
@@ -118,7 +122,7 @@ public:
   }
 
   static Timer* set(double date, simgrid::xbt::Task<void()>&& callback);
-  static double next() { return simix_timers.empty() ? -1.0 : simix_timers.top().first; }
+  static double next() { return simix_timers().empty() ? -1.0 : simix_timers().top().first; }
 };
 
 } // namespace simix
