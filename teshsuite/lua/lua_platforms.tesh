@@ -28,7 +28,7 @@ $ ${bindir:=.}/examples/s4u/app-masterworkers/s4u-app-masterworkers-fun ${srcdir
 > [Bourassa:worker:(6) 5.133855] [s4u_app_masterworker/INFO] Exiting now.
 > [5.133855] [s4u_app_masterworker/INFO] Simulation is over
 
-$ ${bindir:=.}/examples/s4u/app-token-ring/s4u-app-token-ring ${srcdir:=.}/examples/platforms/routing_cluster.lua "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/examples/s4u/app-token-ring/s4u-app-token-ring ${srcdir:=.}/examples/platforms/routing_cluster.lua "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Number of hosts '6'
 > [  0.000000] (1:0@host1) Host "0" send 'Token' to Host "1"
 > [  0.017354] (2:1@host2) Host "1" received "Token"

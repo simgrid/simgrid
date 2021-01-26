@@ -1,4 +1,4 @@
-$ ./pid ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ./pid ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (sendpid@Tremblay) Sending pid of "1".
 > [  0.000000] (sendpid@Tremblay) Sending pid of "2".
 > [  0.000000] (sendpid@Tremblay) Sending pid of "3".

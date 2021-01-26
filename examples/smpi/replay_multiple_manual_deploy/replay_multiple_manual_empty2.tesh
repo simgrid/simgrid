@@ -7,7 +7,7 @@ $ mkfile ${srcdir:=.}/workload_empty2
 
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2 --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2 --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" 0 0
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='2,3'
@@ -35,7 +35,7 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:
 p Workload with two empty jobs (not at the same time, not on the same resources, with noise)
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2 --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2 --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" 7 13
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='2,3'
@@ -71,7 +71,7 @@ $ mkfile ${srcdir:=.}/workload_empty2_same_resources
 
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_resources --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_resources --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" 0 0
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='0,1'
@@ -99,7 +99,7 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:
 p Workload with two empty jobs (not at the same time, but on the same resources, with noise)
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_resources --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_resources --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" 7 13
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=1000, alloc='0,1'
@@ -135,7 +135,7 @@ $ mkfile ${srcdir:=.}/workload_empty2_same_time
 
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" 0 0
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=0, alloc='2,3'
@@ -162,7 +162,7 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:
 p Workload with two empty jobs (at the same time but not on the same resources, with noise)
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" 7 13
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=0, alloc='2,3'
@@ -198,7 +198,7 @@ $ mkfile ${srcdir:=.}/workload_empty2_same_time_and_resources
 
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time_and_resources --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time_and_resources --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" 0 0
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=0, alloc='0,1'
@@ -226,7 +226,7 @@ p Workload with two empty jobs (at the same time and on the same resources, with
 
 ! timeout 120
 ! output sort 25
-$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time_and_resources --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+$ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:=.}/workload_empty2_same_time_and_resources --log=smpi.:info --cfg=smpi/host-speed:100f "--log=root.fmt:[%11.6r]%e(%a@%h)%e%m%n" 7 13
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100f'
 > [   0.000000] (maestro@) Job read: app='job0', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (maestro@) Job read: app='job1', file='empty.txt', size=2, start=0, alloc='0,1'

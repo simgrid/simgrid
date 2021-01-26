@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-comm-host2host ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-comm-host2host ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:sender@Boivin) Send c12 with sendto_async(Tremblay -> Jupiter), and c34 with sendto_init(Fafard -> Ginette)
 > [  0.000000] (1:sender@Boivin) After creation,  c12 is STARTED (remaining: 1.50e+07 bytes); c34 is INITED (remaining: 1.00e+07 bytes)
 > [  1.000000] (1:sender@Boivin) One sec later,   c12 is STARTED (remaining: 8.48e+06 bytes); c34 is INITED (remaining: 1.00e+07 bytes)

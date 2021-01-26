@@ -2,7 +2,7 @@
 
 ! expect return 1
 ! timeout 20
-$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged1 ${platfdir:=.}/model_checker_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=contexts/stack-size:256
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged1 ${platfdir:=.}/model_checker_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=contexts/stack-size:256
 > [  0.000000] (0:maestro@) Check a safety property. Reduction is: dpor.
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (3:client@HostC) Sent!

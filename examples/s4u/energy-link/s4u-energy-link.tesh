@@ -2,7 +2,7 @@
 
 p Testing the mechanism for computing link energy consumption (using CM02 as a network model)
 
-$ ${bindir:=.}/s4u-energy-link ${platfdir}/energy_platform.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
+$ ${bindir:=.}/s4u-energy-link ${platfdir}/energy_platform.xml  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to 'no'
 > [  0.000000] (0:maestro@) Activating the SimGrid link energy plugin
@@ -15,7 +15,7 @@ $ ${bindir:=.}/s4u-energy-link ${platfdir}/energy_platform.xml  "--log=root.fmt:
 
 p And now test with 500000 bytes
 
-$ ${bindir:=.}/s4u-energy-link ${platfdir}/energy_platform.xml 1 50000000 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
+$ ${bindir:=.}/s4u-energy-link ${platfdir}/energy_platform.xml 1 50000000 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to 'no'
 > [  0.000000] (0:maestro@) Activating the SimGrid link energy plugin

@@ -1,4 +1,4 @@
-$ ${javacmd:=java} -classpath ${classpath:=.} sleephostoff.SleepHostOff ${srcdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${javacmd:=java} -classpath ${classpath:=.} sleephostoff.SleepHostOff ${srcdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (1:TestRunner@Fafard) **** **** **** ***** ***** Test Sleep ***** ***** **** **** ****
 > [  0.000000] (1:TestRunner@Fafard) Test sleep: Create a process on Tremblay that simply make periodic sleep, turn off Tremblay

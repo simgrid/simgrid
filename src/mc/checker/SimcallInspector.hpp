@@ -27,6 +27,8 @@ public:
    * If it's a random(), choose the next value to explore.
    */
   virtual void arm() {}
+  virtual void fire() {}
+  virtual bool is_dependend(SimcallInspector& other);
 
   /** Some simcalls may only be observable under some circumstances.
    * Most simcalls are not visible from the MC because they don't have an inspector at all. */

@@ -18,7 +18,7 @@ static constexpr const char* ERRMSG =
     "  what:        %%m: user message  %%c: log category  %%p: log priority\n"
     "  where:\n"
     "    source:    %%F: file          %%L: line          %%M: function  %%l: location (%%F:%%L)\n"
-    "    runtime:   %%h: hostname      %%t: thread        %%P: process   %%i: PID\n"
+    "    runtime:   %%h: hostname      %%a: actor         %%i: PID\n"
     "  when:        %%d: date          %%r: app. age\n"
     "  other:       %%%%: %%             %%n: new line      %%e: plain space\n";
 
@@ -129,10 +129,11 @@ static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_even
           show_string(sg_host_self_get_name());
           break;
         case 't': /* thread/process name; LOG4J compliant */
-        case 'P': /* process name; SimGrid extension */
+        case 'P': /* Used before SimGrid 3.26 and kept for compatiblity. Should not hurt. */
+        case 'a': /* actor name; SimGrid extension */
           show_string(xbt_procname());
           break;
-        case 'i': /* process PID name; SimGrid extension */
+        case 'i': /* actor ID; SimGrid extension */
           show_int(xbt_getpid());
           break;
         case 'F': /* file name; LOG4J compliant */

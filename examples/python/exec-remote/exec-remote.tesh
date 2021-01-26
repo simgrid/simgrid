@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/exec-remote.py ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/exec-remote.py ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:test@Fafard) I'm a wizard! I can run a task on the Ginette host from the Fafard one! Look!
 > [  0.000000] (1:test@Fafard) It started. Running 48.492Mf takes exactly one second on Ginette (but not on Fafard).
 > [  0.100000] (1:test@Fafard) Loads in flops/s: Boivin=0; Fafard=0; Ginette=48492000

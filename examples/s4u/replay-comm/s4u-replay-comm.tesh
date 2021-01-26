@@ -1,12 +1,12 @@
 ! output sort 19
-$ ${bindir:=.}/s4u-replay-comm --log=replay_comm.thres=verbose ${platfdir}/small_platform_fatpipe.xml s4u-replay-comm-split_d.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-replay-comm --log=replay_comm.thres=verbose ${platfdir}/small_platform_fatpipe.xml s4u-replay-comm-split_d.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [ 20.703314] (p0@Tremblay) p0 recv p1 20.703314
 > [ 20.703314] (p1@Ruby) p1 send p0 1e10 20.703314
 > [ 30.897513] (p0@Tremblay) p0 compute 1e9 10.194200
 > [ 30.897513] (p1@Ruby) p1 compute 1e9 10.194200
 > [ 30.897513] (maestro@) Simulation time 30.8975
 
-$ ${bindir:=.}/s4u-replay-comm --log=replay_comm.thres=verbose ${platfdir}/small_platform_fatpipe.xml s4u-replay-comm_d.xml s4u-replay-comm.txt "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-replay-comm --log=replay_comm.thres=verbose ${platfdir}/small_platform_fatpipe.xml s4u-replay-comm_d.xml s4u-replay-comm.txt "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [ 20.703314] (p0@Tremblay) p0 recv p1 20.703314
 > [ 20.703314] (p1@Ruby) p1 send p0 1e10 20.703314
 > [ 30.897513] (p0@Tremblay) p0 compute 1e9 10.194200

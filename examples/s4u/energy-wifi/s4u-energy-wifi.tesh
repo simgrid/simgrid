@@ -2,7 +2,7 @@
 
 p Testing the mechanism for computing link energy consumption (using CM02 as a network model)
 
-$ ${bindir:=.}/s4u-energy-wifi ${platfdir}/wifi_energy.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
+$ ${bindir:=.}/s4u-energy-wifi ${platfdir}/wifi_energy.xml  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=network/model:CM02 --cfg=network/crosstraffic:no
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to 'no'
 > [  0.000000] (0:maestro@) Activating the wifi_energy plugin.

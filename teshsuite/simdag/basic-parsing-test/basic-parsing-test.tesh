@@ -1,36 +1,36 @@
 ! output sort
 
-$ ${bindir:=.}/basic-parsing-test ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 5, link number: 12
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 5, link number: 1
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 1, link number: 5
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 3, link number: 4
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 4, link number: 12
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 4
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 2
 

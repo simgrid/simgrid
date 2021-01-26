@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 ! output sort 19
-$ ${bindir:=.}/c-comm-waitall ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-waitall_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-waitall ${platfdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/comm-waitall_d.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver-0'
 > [  0.000000] (2:receiver@Ruby) Wait for my first message
 > [  0.000000] (3:receiver@Perl) Wait for my first message

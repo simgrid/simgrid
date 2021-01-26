@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-actor-exiting ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n" --log=no_loc
+$ ${bindir:=.}/s4u-actor-exiting ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n" --log=no_loc
 > [  1.000000] (A@Tremblay) I stop now
 > [  1.000000] (maestro@) Actor A terminates now
 > [  2.000000] (maestro@) Actor A gets destroyed now

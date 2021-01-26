@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/corrupt-stack.py ${platfdir}/small_platform_fatpipe.xml corrupt-stack_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/corrupt-stack.py ${platfdir}/small_platform_fatpipe.xml corrupt-stack_d.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:sleeper3@Ruby) 3-Iter 6
 > [  0.000000] (1:sleeper3@Ruby) 5-Iter 5
 > [  0.000000] (1:sleeper3@Ruby) 1-Iter 4

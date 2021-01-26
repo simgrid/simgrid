@@ -1,4 +1,4 @@
-$ ./storage_client_server ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ./storage_client_server ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (server@alice) *** Disk info on alice ***
 > [  0.000000] (server@alice)   Disk name: Disk1, mount name: /
 > [  0.000000] (server@alice)     Free size: 536857690006 bytes

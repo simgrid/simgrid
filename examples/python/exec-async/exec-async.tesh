@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/exec-async.py ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/exec-async.py ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:wait@Fafard) Waiter executes 76296000 flops, should take 1 second.
 > [  0.000000] (2:monitor@Ginette) Monitor executes 48492000 flops, should take 1 second.
 > [  0.000000] (3:cancel@Boivin) Canceller executes 98095000 flops, should take 1 second.

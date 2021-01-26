@@ -3,7 +3,7 @@
 p Testing a simple master/workers example application
 
 ! output sort 19
-$ ${bindir:=.}/s4u-app-masterworkers-class ${platfdir}/small_platform.xml s4u-app-masterworkers_d.xml --trace "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-app-masterworkers-class ${platfdir}/small_platform.xml s4u-app-masterworkers_d.xml --trace "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (master@Tremblay) Got 5 workers and 20 tasks to process
 > [  0.000000] (master@Tremblay) Sending task 0 of 20 to mailbox 'Tremblay'
 > [  0.002265] (master@Tremblay) Sending task 1 of 20 to mailbox 'Jupiter'
@@ -34,7 +34,7 @@ $ ${bindir:=.}/s4u-app-masterworkers-class ${platfdir}/small_platform.xml s4u-ap
 > [  5.133855] (worker@Bourassa) Exiting now.
 
 ! output sort 19
-$ ${bindir:=.}/s4u-app-masterworkers-fun ${platfdir}/small_platform.xml s4u-app-masterworkers_d.xml --trace "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-app-masterworkers-fun ${platfdir}/small_platform.xml s4u-app-masterworkers_d.xml --trace "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (master@Tremblay) Got 5 workers and 20 tasks to process
 > [  0.000000] (master@Tremblay) Sending task 0 of 20 to mailbox 'Tremblay'
 > [  0.002265] (master@Tremblay) Sending task 1 of 20 to mailbox 'Jupiter'

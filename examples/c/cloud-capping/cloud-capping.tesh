@@ -1,5 +1,5 @@
 ! output sort
-$ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:master_@Fafard) # 1. Put a single task on a PM. 
 > [  0.000000] (1:master_@Fafard) ### Test: with/without sg_exec_set_bound
 > [  0.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard

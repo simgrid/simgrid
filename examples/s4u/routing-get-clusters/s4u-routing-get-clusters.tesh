@@ -1,4 +1,4 @@
-$ ${bindir:=.}/s4u-routing-get-clusters ${platfdir}/cluster_multi.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-routing-get-clusters ${platfdir}/cluster_multi.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (maestro@) simple
 > [  0.000000] (maestro@)    node-0.1core.org
 > [  0.000000] (maestro@)    node-1.1core.org
@@ -27,7 +27,7 @@ $ ${bindir:=.}/s4u-routing-get-clusters ${platfdir}/cluster_multi.xml "--log=roo
 > [  0.000000] (maestro@)    node-6.4cores.org
 > [  0.000000] (maestro@)    node-7.4cores.org
 
-$ ${bindir:=.}/s4u-routing-get-clusters ${platfdir}/cluster_dragonfly.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-routing-get-clusters ${platfdir}/cluster_dragonfly.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (maestro@) bob_cluster
 > [  0.000000] (maestro@)    node-0.simgrid.org
 > [  0.000000] (maestro@)    node-1.simgrid.org

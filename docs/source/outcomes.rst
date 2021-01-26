@@ -22,7 +22,7 @@ handling, while filtering out every other messages that are of a lesser priority
 ``--log=root.thresh:error --log=s4u_host.thresh:debug``
 
 You can also change the **layout** used to format the messages, using format directives that are similar to the *printf* ones: ``%r`` prints the time elapsed since the beginning of
-the simulation; ``%P`` gives the actor name, etc. Many such directives :ref:`are available <log/fmt>`. You can have a specific layout per category, and it will be inherited by all
+the simulation; ``%a`` gives the actor name, etc. Many such directives :ref:`are available <log/fmt>`. You can have a specific layout per category, and it will be inherited by all
 its sub-categories.
 
 Finally, the **appender** actually displays the produced messages. SimGrid provides four appenders so far: the default one prints on *stderr*. ``file`` writes to a given file,

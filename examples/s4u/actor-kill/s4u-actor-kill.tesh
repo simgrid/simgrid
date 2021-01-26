@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-actor-kill ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-actor-kill ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (killer@Tremblay) Hello!
 > [  0.000000] (victim A@Fafard) Hello!
 > [  0.000000] (victim A@Fafard) Suspending myself

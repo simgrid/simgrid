@@ -1,6 +1,6 @@
 p sending on different paths test
 ! output sort
 
-$ ${bindir:=.}/comm-mxn-independent ../platforms/platform_4p_1switch.xml --cfg=path:${srcdir} --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/comm-mxn-independent ../platforms/platform_4p_1switch.xml --cfg=path:${srcdir} --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  3.000000] (0:maestro@) 3

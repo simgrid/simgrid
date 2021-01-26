@@ -3,7 +3,7 @@
 p Testing a S4U application with properties in the XML for Hosts, Links and Actors
 
 ! output sort 19
-$ ${bindir:=.}/s4u-platform-properties ${platfdir}/prop.xml s4u-platform-properties_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-platform-properties ${platfdir}/prop.xml s4u-platform-properties_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) There are 7 hosts in the environment
 > [  0.000000] (0:maestro@) Host 'host1' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'host2' runs at 1000000000 flops/s

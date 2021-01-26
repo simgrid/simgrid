@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 p Check different log thresholds
-$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Test with the settings ''
 > [  0.000000] [0:maestro@] val=2
 > [  0.000000] [0:maestro@] false alarm!
@@ -22,7 +22,7 @@ $ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] false alarm!
 
 p Check the "file" log appender
-$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:file:${bindir:=.}/log_usage.log
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:file:${bindir:=.}/log_usage.log
 $ cat ${bindir:=.}/log_usage.log
 > [  0.000000] [0:maestro@] Test with the settings ''
 > [  0.000000] [0:maestro@] val=2
@@ -44,7 +44,7 @@ $ cat ${bindir:=.}/log_usage.log
 > [  0.000000] [0:maestro@] false alarm!
 
 p Check the "rollfile" log appender
-$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:rollfile:500:${bindir:=.}/log_usage.log
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:rollfile:500:${bindir:=.}/log_usage.log
 $ cat ${bindir:=.}/log_usage.log
 > [  0.000000] [0:maestro@] val=2
 > [  0.000000] [0:maestro@] false alarm!
@@ -63,7 +63,7 @@ $ cat ${bindir:=.}/log_usage.log
 >                    
 
 p Check the "splitfile" log appender
-$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n" --log=root.app:splitfile:500:${bindir:=.}/log_usage_%.log
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:splitfile:500:${bindir:=.}/log_usage_%.log
 $ cat ${bindir:=.}/log_usage_0.log
 > [  0.000000] [0:maestro@] Test with the settings ''
 > [  0.000000] [0:maestro@] val=2

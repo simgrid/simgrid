@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 ! output sort
 
-$ ${bindir:=.}/basic-parsing-test ../platforms/one_cluster_splitduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/one_cluster_splitduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 5, link number: 12
 > Route between bob3.hamburger.edu and bob3.hamburger.edu
@@ -156,7 +156,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/one_cluster_splitduplex.xml FULL_
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/two_clusters.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/two_clusters.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 4, link number: 12
 > Route between bob1.hamburger.edu and bob1.hamburger.edu
@@ -273,7 +273,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/two_clusters.xml FULL_LINK "--log
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 2
 > Route between alice and alice
@@ -294,7 +294,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link.xml FULL_LINK 
 >   Route latency = 0.000000, route bandwidth = 10000000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link_splitduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link_splitduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 3
 > Route between alice and alice
@@ -315,7 +315,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link_splitduplex.xm
 >   Route latency = 0.000000, route bandwidth = 10000000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ../platforms/Dijkstra.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic-parsing-test ../platforms/Dijkstra.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 6
 > Route between NODO01 and NODO01

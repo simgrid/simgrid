@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${javacmd:=java} -classpath ${classpath:=.} app/masterworker/Main ${srcdir:=.}/../../platforms/small_platform.xml ${srcdir:=.}/app/masterworker/masterworker.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${javacmd:=java} -classpath ${classpath:=.} app/masterworker/Main ${srcdir:=.}/../../platforms/small_platform.xml ${srcdir:=.}/app/masterworker/masterworker.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (1:app.masterworker.Master@Jacquelin) Hello! My PID is 1. Got 7 workers and 5 tasks to process
 > [  0.860026] (2:app.masterworker.Worker@Tremblay) Received "Task_0". Processing it (my pid is 2).

@@ -1596,7 +1596,7 @@ as the date, or the actor ID, everything. Existing format directives:
  - %p: Priority name (LOG4J compatible)
 
  - %h: Hostname (SimGrid extension)
- - %P: Actor name (SimGrid extension -- note that with SMPI this is the integer value of the process rank)
+ - %a: Actor name (SimGrid extension -- note that with SMPI this is the integer value of the process rank)
  - %i: Actor PID (SimGrid extension -- this is a 'i' as in 'i'dea)
  - %t: Thread "name" (LOG4J compatible -- actually the address of the thread in memory)
 
@@ -1609,7 +1609,7 @@ as the date, or the actor ID, everything. Existing format directives:
  - %r: application age (time elapsed since the beginning of the application)
 
 
-``--log=root.fmt:'[%h:%P:(%i) %r] %l: %m%n'`` gives you the default layout used for info messages while ``--log=root.fmt:'[%h:%P:(%i) %r] %l: [%c/%p] %m%n'`` gives you the default
+``--log=root.fmt:'[%h:%a:(%i) %r] %l: %m%n'`` gives you the default layout used for info messages while ``--log=root.fmt:'[%h:%a:(%i) %r] %l: [%c/%p] %m%n'`` gives you the default
 layout for the other priorities (it adds the source code location). Also, the actor identification is omitted by the default layout for the messages coming directly from the
 SimGrid kernel, so info messages are formatted with ``[%r] [%c/%p] %m%n`` in this case. When specifying the layout manually, such distinctions are currently impossible, and the
 provided layout is used for every messages.

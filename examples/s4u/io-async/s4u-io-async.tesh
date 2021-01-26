@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-io-async ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-io-async ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:test@bob) Hello! read 20000000 bytes from Disk1
 > [  0.000000] (2:test_waitfor@alice) Hello! write 50000000 bytes from Disk1
 > [  0.200000] (1:test@bob) Goodbye now!

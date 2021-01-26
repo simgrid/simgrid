@@ -1,20 +1,20 @@
 p latency check, 2 x 1 byte, same direction, shared link
 ! output sort
 
-$ ${bindir:=.}/comm-p2p-latency-2 ../platforms/platform_2p_1sl.xml --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/comm-p2p-latency-2 ../platforms/platform_2p_1sl.xml --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > 2.5
 
 p latency check, 2 x 1 byte, same direction, fat pipe
 ! output sort
 
-$ ${bindir:=.}/comm-p2p-latency-2 ../platforms/platform_2p_1fl.xml --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/comm-p2p-latency-2 ../platforms/platform_2p_1fl.xml --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > 1.5
 
 p latency check, 2 x 1 byte, same direction, link - switch - link
 ! output sort
 
-$ ${bindir:=.}/comm-p2p-latency-2 ../platforms/platform_2p_1switch.xml --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/comm-p2p-latency-2 ../platforms/platform_2p_1switch.xml --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > 4

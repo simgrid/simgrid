@@ -1,4 +1,4 @@
-$ ./concurrent_rw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ./concurrent_rw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (host@bob) process 1 is writing!
 > [  0.000000] (host@bob) process 2 is writing!
 > [  0.000000] (host@bob) process 3 is writing!

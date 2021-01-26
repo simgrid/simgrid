@@ -87,7 +87,7 @@ inline bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
   const kernel::activity::CommImpl* synchro2 = get_comm(r2);
 
   if ((r1->call_ == Simcall::COMM_ISEND || r1->call_ == Simcall::COMM_IRECV) && r2->call_ == Simcall::COMM_WAIT) {
-    const kernel::activity::MailboxImpl* mbox = get_mbox(r1);
+    const kernel::activity::MailboxImpl* mbox = get_mbox(r1); // r1->get_mboxx')
 
     if (mbox != synchro2->mbox_cpy
         && simcall_comm_wait__get__timeout(r2) <= 0)
@@ -328,10 +328,10 @@ bool Api::comm_addr_equal(const kernel::activity::CommImpl* comm_addr1,
   return remote(comm_addr1) == remote(comm_addr2);
 }
 
-kernel::activity::CommImpl* Api::get_comm_isend_raw_addr(smx_simcall_t request) const
+RemotePtr<kernel::activity::CommImpl> Api::get_comm_isend_raw_addr(smx_simcall_t request) const
 {
   auto comm_addr = simcall_comm_isend__getraw__result(request);
-  return static_cast<kernel::activity::CommImpl*>(comm_addr);
+  return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
 }
 
 kernel::activity::CommImpl* Api::get_comm_wait_raw_addr(smx_simcall_t request) const
