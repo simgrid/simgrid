@@ -340,11 +340,11 @@ RemotePtr<kernel::activity::CommImpl> Api::get_comm_wait_raw_addr(smx_simcall_t 
   return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
 }
 
-kernel::activity::CommImpl* Api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
+RemotePtr<kernel::activity::CommImpl> Api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
 {
-  auto addr =
-      mc_model_checker->get_remote_simulation().read(remote(simcall_comm_waitany__getraw__comms(request) + value));
-  return static_cast<simgrid::kernel::activity::CommImpl*>(addr);
+  auto addr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::CommImpl**>(request->args_[0]) + value;
+  auto comm_addr = mc_model_checker->get_remote_simulation().read(remote(addr));
+  return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
 }
 
 std::string Api::get_pattern_comm_rdv(RemotePtr<kernel::activity::CommImpl> const& addr) const
