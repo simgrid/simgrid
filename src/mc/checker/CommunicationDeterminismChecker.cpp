@@ -399,13 +399,13 @@ void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType 
       break;
     case CallType::WAIT:
     case CallType::WAITANY: {
-      simgrid::kernel::activity::CommImpl* comm_addr = nullptr;
+      RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr;
       if (call_type == CallType::WAIT)
         comm_addr = api::get().get_comm_wait_raw_addr(req);
       else
-        comm_addr = api::get().get_comm_waitany_raw_addr(req, value);
+        comm_addr = remote(api::get().get_comm_waitany_raw_addr(req, value));
       auto simcall_issuer = api::get().simcall_get_issuer(req);
-      complete_comm_pattern(remote(comm_addr), simcall_issuer->get_pid(), backtracking);
+      complete_comm_pattern(comm_addr, simcall_issuer->get_pid(), backtracking);
     } break;
   default:
     xbt_die("Unexpected call type %i", (int)call_type);

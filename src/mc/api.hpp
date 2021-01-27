@@ -57,7 +57,7 @@ public:
   // COMMUNICATION APIs
   bool comm_addr_equal(const kernel::activity::CommImpl* comm_addr1, const kernel::activity::CommImpl* comm_addr2) const;
   RemotePtr<kernel::activity::CommImpl> get_comm_isend_raw_addr(smx_simcall_t request) const;
-  kernel::activity::CommImpl* get_comm_wait_raw_addr(smx_simcall_t request) const;
+  RemotePtr<kernel::activity::CommImpl> get_comm_wait_raw_addr(smx_simcall_t request) const;
   kernel::activity::CommImpl* get_comm_waitany_raw_addr(smx_simcall_t request, int value) const;
   std::string get_pattern_comm_rdv(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   unsigned long get_pattern_comm_src_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
