@@ -111,18 +111,17 @@ static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, a
 }
 
 static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
-                                const simgrid::kernel::activity::CommImpl* comm_addr)
+                                simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> const& comm_addr)
 {
-  auto src_proc = api::get().get_src_actor(comm_addr);
-  auto dst_proc = api::get().get_dst_actor(comm_addr);
+  auto src_proc = api::get().get_src_actor(comm_addr.local());
+  auto dst_proc = api::get().get_dst_actor(comm_addr.local());
   comm_pattern->src_proc = src_proc->get_pid();
   comm_pattern->dst_proc = dst_proc->get_pid();
   comm_pattern->src_host = api::get().get_actor_host_name(src_proc);
   comm_pattern->dst_host = api::get().get_actor_host_name(dst_proc);
 
   if (comm_pattern->data.empty()) {
-    auto comm = const_cast<simgrid::kernel::activity::CommImpl*>(comm_addr);
-    comm_pattern->data = api::get().get_pattern_comm_data(simgrid::mc::remote(comm));
+    comm_pattern->data = api::get().get_pattern_comm_data(comm_addr);
   }
 }
 
@@ -245,7 +244,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activi
   if (current_comm_pattern == std::end(incomplete_pattern))
     xbt_die("Corresponding communication not found!");
 
-  update_comm_pattern(*current_comm_pattern, comm_addr);
+  update_comm_pattern(*current_comm_pattern, remote(const_cast<kernel::activity::CommImpl*>(comm_addr)));
   std::unique_ptr<PatternCommunication> comm_pattern(*current_comm_pattern);
   XBT_DEBUG("Remove incomplete comm pattern for process %ld at cursor %zd", issuer,
             std::distance(begin(incomplete_pattern), current_comm_pattern));
