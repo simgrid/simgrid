@@ -413,10 +413,10 @@ smx_actor_t Api::get_src_actor(RemotePtr<kernel::activity::CommImpl> const& comm
   return src_proc;
 }
 
-smx_actor_t Api::get_dst_actor(const kernel::activity::CommImpl* comm_addr) const
+smx_actor_t Api::get_dst_actor(RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
 {
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_simulation().read(temp_comm, remote((kernel::activity::CommImpl*)comm_addr));
+  mc_model_checker->get_remote_simulation().read(temp_comm, comm_addr);
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
   auto dst_proc = mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));

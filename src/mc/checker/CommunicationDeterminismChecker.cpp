@@ -114,7 +114,7 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
                                 simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> const& comm_addr)
 {
   auto src_proc = api::get().get_src_actor(comm_addr);
-  auto dst_proc = api::get().get_dst_actor(comm_addr.local());
+  auto dst_proc = api::get().get_dst_actor(comm_addr);
   comm_pattern->src_proc = src_proc->get_pid();
   comm_pattern->dst_proc = dst_proc->get_pid();
   comm_pattern->src_host = api::get().get_actor_host_name(src_proc);
