@@ -61,7 +61,7 @@ public:
   kernel::activity::CommImpl* get_comm_waitany_raw_addr(smx_simcall_t request, int value) const;
   std::string get_pattern_comm_rdv(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   unsigned long get_pattern_comm_src_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
-  unsigned long get_pattern_comm_dst_proc(void* addr) const;
+  unsigned long get_pattern_comm_dst_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   std::vector<char> get_pattern_comm_data(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   const char* get_actor_host_name(smx_actor_t actor) const;
 #if HAVE_SMPI

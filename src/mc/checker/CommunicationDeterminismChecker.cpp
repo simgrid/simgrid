@@ -224,7 +224,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
 #endif
     auto comm_addr = pattern->comm_addr;
     pattern->rdv = api::get().get_pattern_comm_rdv(remote(comm_addr));
-    pattern->dst_proc = api::get().get_pattern_comm_dst_proc(comm_addr);
+    pattern->dst_proc = api::get().get_pattern_comm_dst_proc(remote(comm_addr));
     pattern->dst_host = api::get().get_actor_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int)call_type);

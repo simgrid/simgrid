@@ -368,10 +368,10 @@ unsigned long Api::get_pattern_comm_src_proc(RemotePtr<kernel::activity::CommImp
   return src_proc;
 }
 
-unsigned long Api::get_pattern_comm_dst_proc(void* addr) const
+unsigned long Api::get_pattern_comm_dst_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const
 {
   Remote<kernel::activity::CommImpl> temp_synchro;
-  mc_model_checker->get_remote_simulation().read(temp_synchro, remote((simgrid::kernel::activity::CommImpl*)addr));
+  mc_model_checker->get_remote_simulation().read(temp_synchro, remote(addr.local()));
   const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
   auto src_proc =
       mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(synchro->dst_actor_.get()))->get_pid();
