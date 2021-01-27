@@ -37,7 +37,7 @@
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network ns-3 module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns-3");
 
 /*****************
  * Crude globals *

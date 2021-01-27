@@ -14,7 +14,7 @@
 
 constexpr double EPSILON = 0.000000001;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_ti, cpu, "CPU resource, Trace Integration model");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_ti, res_cpu, "CPU resource, Trace Integration model");
 
 namespace simgrid {
 namespace kernel {

@@ -10,8 +10,7 @@
 
 #if SIMGRID_HAVE_JEDULE
 
-XBT_LOG_NEW_CATEGORY(jedule, "Logging specific to Jedule");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule, "Logging specific to Jedule SD binding");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, sd, "Jedule SimDag binding");
 
 jedule_t my_jedule;
 

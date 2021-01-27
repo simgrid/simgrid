@@ -9,7 +9,7 @@
 #include "src/include/surf/surf.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile accross hosts");
 
 simgrid::vm::VMModel* surf_vm_model = nullptr;
 

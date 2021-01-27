@@ -8,7 +8,7 @@
 
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_host, ker_resource, "Host resources agregate CPU, networking and I/O features");
 
 simgrid::surf::HostModel *surf_host_model = nullptr;
 

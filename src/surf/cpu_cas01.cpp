@@ -10,7 +10,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_cas, cpu, "CPU resource, CAS01 model (used by default)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_cas, res_cpu, "CPU resource, CAS01 model (used by default)");
 
 /***********
  * Options *

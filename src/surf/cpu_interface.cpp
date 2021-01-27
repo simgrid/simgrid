@@ -8,7 +8,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu, resource, "CPU resource");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_cpu, ker_resource, "CPU resource, fueling execution activites");
 
 simgrid::kernel::resource::CpuModel* surf_cpu_model_pm;
 simgrid::kernel::resource::CpuModel* surf_cpu_model_vm;

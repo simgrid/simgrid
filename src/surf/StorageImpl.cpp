@@ -9,7 +9,7 @@
 #include "src/kernel/lmm/maxmin.hpp"
 #include "surf_private.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_storage, ker_resource, "Deprecated way of expressing I/O related resources");
 
 simgrid::kernel::resource::StorageModel* surf_storage_model = nullptr;
 
