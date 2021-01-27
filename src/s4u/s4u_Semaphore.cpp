@@ -13,16 +13,13 @@
 namespace simgrid {
 namespace s4u {
 
-Semaphore::Semaphore(unsigned int initial_capacity)
-{
-  sem_ = new kernel::activity::SemaphoreImpl(initial_capacity);
-}
+Semaphore::Semaphore(unsigned int initial_capacity) : pimpl_(new kernel::activity::SemaphoreImpl(initial_capacity)) {}
 
 Semaphore::~Semaphore()
 {
-  if (sem_ != nullptr) {
-    xbt_assert(not sem_->is_used(), "Cannot destroy semaphore since someone is still using it");
-    delete sem_;
+  if (pimpl_ != nullptr) {
+    xbt_assert(not pimpl_->is_used(), "Cannot destroy semaphore since someone is still using it");
+    delete pimpl_;
   }
 }
 
@@ -33,27 +30,27 @@ SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 
 void Semaphore::acquire()
 {
-  simcall_sem_acquire(sem_);
+  simcall_sem_acquire(pimpl_);
 }
 
 int Semaphore::acquire_timeout(double timeout)
 {
-  return simcall_sem_acquire_timeout(sem_, timeout);
+  return simcall_sem_acquire_timeout(pimpl_, timeout);
 }
 
 void Semaphore::release()
 {
-  kernel::actor::simcall([this] { sem_->release(); });
+  kernel::actor::simcall([this] { pimpl_->release(); });
 }
 
 int Semaphore::get_capacity() const
 {
-  return kernel::actor::simcall([this] { return sem_->get_capacity(); });
+  return kernel::actor::simcall([this] { return pimpl_->get_capacity(); });
 }
 
 int Semaphore::would_block() const
 {
-  return kernel::actor::simcall([this] { return sem_->would_block(); });
+  return kernel::actor::simcall([this] { return pimpl_->would_block(); });
 }
 
 void intrusive_ptr_add_ref(Semaphore* sem)
