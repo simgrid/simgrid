@@ -346,10 +346,10 @@ kernel::activity::CommImpl* Api::get_comm_waitany_raw_addr(smx_simcall_t request
   return static_cast<simgrid::kernel::activity::CommImpl*>(addr);
 }
 
-std::string Api::get_pattern_comm_rdv(void* addr) const
+std::string Api::get_pattern_comm_rdv(RemotePtr<kernel::activity::CommImpl> const& addr) const
 {
   Remote<kernel::activity::CommImpl> temp_synchro;
-  mc_model_checker->get_remote_simulation().read(temp_synchro, remote((simgrid::kernel::activity::CommImpl*)addr));
+  mc_model_checker->get_remote_simulation().read(temp_synchro, remote(addr.local()));
   const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
 
   char* remote_name = mc_model_checker->get_remote_simulation().read<char*>(RemotePtr<char*>(
