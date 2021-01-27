@@ -328,10 +328,10 @@ bool Api::comm_addr_equal(const kernel::activity::CommImpl* comm_addr1,
   return remote(comm_addr1) == remote(comm_addr2);
 }
 
-kernel::activity::CommImpl* Api::get_comm_isend_raw_addr(smx_simcall_t request) const
+RemotePtr<kernel::activity::CommImpl> Api::get_comm_isend_raw_addr(smx_simcall_t request) const
 {
   auto comm_addr = simcall_comm_isend__getraw__result(request);
-  return static_cast<kernel::activity::CommImpl*>(comm_addr);
+  return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
 }
 
 kernel::activity::CommImpl* Api::get_comm_wait_raw_addr(smx_simcall_t request) const
