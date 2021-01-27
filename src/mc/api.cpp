@@ -499,11 +499,6 @@ smx_mailbox_t Api::simcall_get_mbox(smx_simcall_t const req) const
   return get_mbox(req);
 }
 
-simgrid::kernel::activity::CommImpl* Api::simcall_get_comm(smx_simcall_t const req) const
-{
-  return get_comm(req);
-}
-
 bool Api::mc_is_null() const
 {
   auto is_null = (mc_model_checker == nullptr) ? true : false;

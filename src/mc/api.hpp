@@ -98,7 +98,6 @@ public:
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   long simcall_get_actor_id(s_smx_simcall const* req) const;
   smx_mailbox_t simcall_get_mbox(smx_simcall_t const req) const;
-  simgrid::kernel::activity::CommImpl* simcall_get_comm(smx_simcall_t const req) const;
   bool simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const;
 
 #if HAVE_SMPI
