@@ -191,15 +191,15 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
   if (call_type == CallType::SEND) {
     /* Create comm pattern */
     pattern->type      = PatternCommunicationType::send;
-    pattern->comm_addr = api::get().get_comm_isend_raw_addr(request).local();
-    pattern->rdv      = api::get().get_pattern_comm_rdv(remote(pattern->comm_addr));
-    pattern->src_proc = api::get().get_pattern_comm_src_proc(remote(pattern->comm_addr));
+    pattern->comm_addr = api::get().get_comm_isend_raw_addr(request);
+    pattern->rdv      = api::get().get_pattern_comm_rdv(pattern->comm_addr);
+    pattern->src_proc = api::get().get_pattern_comm_src_proc(pattern->comm_addr);
     pattern->src_host = Api::get().get_actor_host_name(issuer);
 
 #if HAVE_SMPI
     pattern->tag = api::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_ISEND);
 #endif
-    pattern->data = api::get().get_pattern_comm_data(remote(pattern->comm_addr));
+    pattern->data = api::get().get_pattern_comm_data(pattern->comm_addr);
 
 #if HAVE_SMPI
     auto send_detached = api::get().check_send_request_detached(request);
@@ -217,14 +217,13 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
 #endif
   } else if (call_type == CallType::RECV) {
     pattern->type = PatternCommunicationType::receive;
-    pattern->comm_addr = api::get().get_comm_isend_raw_addr(request).local();
+    pattern->comm_addr = api::get().get_comm_isend_raw_addr(request);
 
 #if HAVE_SMPI
     pattern->tag = api::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_IRECV);
 #endif
-    auto comm_addr = pattern->comm_addr;
-    pattern->rdv = api::get().get_pattern_comm_rdv(remote(comm_addr));
-    pattern->dst_proc = api::get().get_pattern_comm_dst_proc(remote(comm_addr));
+    pattern->rdv = api::get().get_pattern_comm_rdv(pattern->comm_addr);
+    pattern->dst_proc = api::get().get_pattern_comm_dst_proc(pattern->comm_addr);
     pattern->dst_host = api::get().get_actor_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int)call_type);
@@ -240,11 +239,11 @@ void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::ac
   std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer];
   auto current_comm_pattern =
       std::find_if(begin(incomplete_pattern), end(incomplete_pattern),
-                   [&comm_addr](const PatternCommunication* comm) { return (remote(comm->comm_addr) == comm_addr); });
+                   [&comm_addr](const PatternCommunication* comm) { return (comm->comm_addr == comm_addr); });
   if (current_comm_pattern == std::end(incomplete_pattern))
     xbt_die("Corresponding communication not found!");
 
-  update_comm_pattern(*current_comm_pattern, remote(comm_addr.local()));
+  update_comm_pattern(*current_comm_pattern, comm_addr);
   std::unique_ptr<PatternCommunication> comm_pattern(*current_comm_pattern);
   XBT_DEBUG("Remove incomplete comm pattern for process %ld at cursor %zd", issuer,
             std::distance(begin(incomplete_pattern), current_comm_pattern));

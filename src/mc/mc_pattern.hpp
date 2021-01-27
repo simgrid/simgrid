@@ -20,7 +20,7 @@ enum class PatternCommunicationType {
 class PatternCommunication {
 public:
   int num = 0;
-  simgrid::kernel::activity::CommImpl* comm_addr;
+  RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr;
   PatternCommunicationType type = PatternCommunicationType::send;
   unsigned long src_proc        = 0;
   unsigned long dst_proc        = 0;
