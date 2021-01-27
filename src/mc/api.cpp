@@ -330,7 +330,7 @@ bool Api::comm_addr_equal(const kernel::activity::CommImpl* comm_addr1,
 
 RemotePtr<kernel::activity::CommImpl> Api::get_comm_isend_raw_addr(smx_simcall_t request) const
 {
-  auto comm_addr = simcall_comm_isend__getraw__result(request);
+  auto comm_addr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(request->result_);
   return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
 }
 
