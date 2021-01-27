@@ -15,7 +15,7 @@ namespace s4u {
 
 Semaphore::Semaphore(unsigned int initial_capacity)
 {
-  sem_ = kernel::actor::simcall([initial_capacity] { return new kernel::activity::SemaphoreImpl(initial_capacity); });
+  sem_ = new kernel::activity::SemaphoreImpl(initial_capacity);
 }
 
 Semaphore::~Semaphore()
