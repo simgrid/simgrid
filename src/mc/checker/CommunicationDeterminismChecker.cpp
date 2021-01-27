@@ -120,8 +120,10 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   comm_pattern->src_host = api::get().get_actor_host_name(src_proc);
   comm_pattern->dst_host = api::get().get_actor_host_name(dst_proc);
 
-  if (comm_pattern->data.empty())
-    comm_pattern->data = api::get().get_pattern_comm_data(comm_addr);
+  if (comm_pattern->data.empty()) {
+    auto comm = const_cast<simgrid::kernel::activity::CommImpl*>(comm_addr);
+    comm_pattern->data = api::get().get_pattern_comm_data(simgrid::mc::remote(comm));
+  }
 }
 
 namespace simgrid {
@@ -198,7 +200,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
 #if HAVE_SMPI
     pattern->tag = api::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_ISEND);
 #endif
-    pattern->data = api::get().get_pattern_comm_data(pattern->comm_addr);
+    pattern->data = api::get().get_pattern_comm_data(remote(pattern->comm_addr));
 
 #if HAVE_SMPI
     auto send_detached = api::get().check_send_request_detached(request);

@@ -378,24 +378,10 @@ unsigned long Api::get_pattern_comm_dst_proc(void* addr) const
   return src_proc;
 }
 
-std::vector<char> Api::get_pattern_comm_data(void* addr) const
-{
-  Remote<kernel::activity::CommImpl> temp_synchro;
-  mc_model_checker->get_remote_simulation().read(temp_synchro, remote((simgrid::kernel::activity::CommImpl*)addr));
-  const kernel::activity::CommImpl* synchro = temp_synchro.get_buffer();
-
-  std::vector<char> buffer{};
-  if (synchro->src_buff_ != nullptr) {
-    buffer.resize(synchro->src_buff_size_);
-    mc_model_checker->get_remote_simulation().read_bytes(buffer.data(), buffer.size(), remote(synchro->src_buff_));
-  }
-  return buffer;
-}
-
-std::vector<char> Api::get_pattern_comm_data(const kernel::activity::CommImpl* comm_addr) const
+std::vector<char> Api::get_pattern_comm_data(RemotePtr<kernel::activity::CommImpl> const& addr) const
 {
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_simulation().read(temp_comm, remote((kernel::activity::CommImpl*)comm_addr));
+  mc_model_checker->get_remote_simulation().read(temp_comm, remote((addr.local())));
   const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
 
   std::vector<char> buffer{};
