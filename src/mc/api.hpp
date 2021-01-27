@@ -66,7 +66,7 @@ public:
 #if HAVE_SMPI
   bool check_send_request_detached(smx_simcall_t const& simcall) const;
 #endif
-  smx_actor_t get_src_actor(const kernel::activity::CommImpl* comm_addr) const;
+  smx_actor_t get_src_actor(RemotePtr<kernel::activity::CommImpl> const& comm_addr) const;
   smx_actor_t get_dst_actor(const kernel::activity::CommImpl* comm_addr) const;
 
   // REMOTE APIs
