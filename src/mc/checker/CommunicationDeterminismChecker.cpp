@@ -240,7 +240,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::ac
   std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer];
   auto current_comm_pattern =
       std::find_if(begin(incomplete_pattern), end(incomplete_pattern),
-                   [&comm_addr](const PatternCommunication* comm) { return api::get().comm_addr_equal(comm->comm_addr, comm_addr.local()); });
+                   [&comm_addr](const PatternCommunication* comm) { return (remote(comm->comm_addr) == comm_addr); });
   if (current_comm_pattern == std::end(incomplete_pattern))
     xbt_die("Corresponding communication not found!");
 

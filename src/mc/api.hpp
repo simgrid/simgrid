@@ -55,7 +55,6 @@ public:
   int get_actors_size() const;
 
   // COMMUNICATION APIs
-  bool comm_addr_equal(const kernel::activity::CommImpl* comm_addr1, const kernel::activity::CommImpl* comm_addr2) const;
   RemotePtr<kernel::activity::CommImpl> get_comm_isend_raw_addr(smx_simcall_t request) const;
   RemotePtr<kernel::activity::CommImpl> get_comm_wait_raw_addr(smx_simcall_t request) const;
   RemotePtr<kernel::activity::CommImpl> get_comm_waitany_raw_addr(smx_simcall_t request, int value) const;

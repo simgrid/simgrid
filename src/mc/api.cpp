@@ -322,12 +322,6 @@ int Api::get_actors_size() const
   return mc_model_checker->get_remote_simulation().actors().size();
 }
 
-bool Api::comm_addr_equal(const kernel::activity::CommImpl* comm_addr1,
-                             const kernel::activity::CommImpl* comm_addr2) const
-{
-  return remote(comm_addr1) == remote(comm_addr2);
-}
-
 RemotePtr<kernel::activity::CommImpl> Api::get_comm_isend_raw_addr(smx_simcall_t request) const
 {
   auto comm_addr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(request->result_);
