@@ -7,7 +7,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
 /*********
  * Model *

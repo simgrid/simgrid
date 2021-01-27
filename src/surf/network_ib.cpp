@@ -12,7 +12,7 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
 static void IB_create_host_callback(simgrid::s4u::Host const& host)
 {

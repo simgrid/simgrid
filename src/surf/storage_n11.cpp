@@ -12,7 +12,7 @@
 #include "surf/surf.hpp"
 #include "xbt/parse_units.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_storage);
 
 /*************
  * CallBacks *

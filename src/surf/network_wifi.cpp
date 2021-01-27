@@ -7,7 +7,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/surf/surf_interface.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
 namespace simgrid {
 namespace kernel {

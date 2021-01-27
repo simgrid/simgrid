@@ -7,7 +7,7 @@
 #include "simgrid/sg_config.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 
 void surf_host_model_init_current_default()
 {

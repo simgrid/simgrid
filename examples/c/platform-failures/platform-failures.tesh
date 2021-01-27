@@ -3,7 +3,7 @@
 p Testing a simple master/worker example application handling failures TCP crosstraffic DISABLED
 
 ! output sort 19
-$ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../s4u/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=cpu.t:verbose
+$ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../s4u/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose
 > [  0.000000] (0:maestro@) Cannot launch actor 'worker' on failed host 'Fafard'
 > [  0.000000] (0:maestro@) Deployment includes some initially turned off Hosts ... nevermind.
 > [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process
@@ -108,7 +108,7 @@ $ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${p
 p Testing a simple master/worker example application handling failures. TCP crosstraffic ENABLED
 
 ! output sort 19
-$ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../s4u/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=cpu.t:verbose
+$ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../s4u/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose
 > [  0.000000] (0:maestro@) Cannot launch actor 'worker' on failed host 'Fafard'
 > [  0.000000] (0:maestro@) Deployment includes some initially turned off Hosts ... nevermind.
 > [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process
@@ -217,4 +217,4 @@ p   complex with such an integration test. One day, we will setup a set of
 p   unit tests for the surf solver, and such issues will be addressable again.
 p For the time being, I just give up, sorry.
 
-p $ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../s4u/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=cpu.t:verbose
+p $ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../s4u/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose

@@ -9,7 +9,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
 std::vector<s_smpi_factor_t> smpi_bw_factor;
 std::vector<s_smpi_factor_t> smpi_lat_factor;
