@@ -65,7 +65,7 @@ Activity* Activity::resume()
   return this;
 }
 
-const char* Activity::get_state_str()
+const char* Activity::get_state_str() const
 {
   switch (state_) {
     case State::INITED:

@@ -40,7 +40,7 @@ double ActivityImpl::get_remaining() const
   return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
-const char* ActivityImpl::get_state_str()
+const char* ActivityImpl::get_state_str() const
 {
   switch (state_) {
     case State::WAITING:
