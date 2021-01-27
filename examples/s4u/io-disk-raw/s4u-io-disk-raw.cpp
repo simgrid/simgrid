@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_map>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(disk, "Messages specific for this simulation");
+XBT_LOG_NEW_DEFAULT_CATEGORY(disk_test, "Messages specific for this simulation");
 
 static void host()
 {
