@@ -193,7 +193,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     pattern->type      = PatternCommunicationType::send;
     pattern->comm_addr = api::get().get_comm_isend_raw_addr(request).local();
     pattern->rdv      = api::get().get_pattern_comm_rdv(remote(pattern->comm_addr));
-    pattern->src_proc = api::get().get_pattern_comm_src_proc(pattern->comm_addr);
+    pattern->src_proc = api::get().get_pattern_comm_src_proc(remote(pattern->comm_addr));
     pattern->src_host = Api::get().get_actor_host_name(issuer);
 
 #if HAVE_SMPI
