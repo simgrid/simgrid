@@ -233,18 +233,18 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
   incomplete_communications_pattern[issuer->get_pid()].push_back(pattern.release());
 }
 
-void CommunicationDeterminismChecker::complete_comm_pattern(const kernel::activity::CommImpl* comm_addr, aid_t issuer,
+void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr, aid_t issuer,
                                                             int backtracking)
 {
   /* Complete comm pattern */
   std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer];
   auto current_comm_pattern =
       std::find_if(begin(incomplete_pattern), end(incomplete_pattern),
-                   [&comm_addr](const PatternCommunication* comm) { return api::get().comm_addr_equal(comm->comm_addr, comm_addr); });
+                   [&comm_addr](const PatternCommunication* comm) { return api::get().comm_addr_equal(comm->comm_addr, comm_addr.local()); });
   if (current_comm_pattern == std::end(incomplete_pattern))
     xbt_die("Corresponding communication not found!");
 
-  update_comm_pattern(*current_comm_pattern, remote(const_cast<kernel::activity::CommImpl*>(comm_addr)));
+  update_comm_pattern(*current_comm_pattern, remote(comm_addr.local()));
   std::unique_ptr<PatternCommunication> comm_pattern(*current_comm_pattern);
   XBT_DEBUG("Remove incomplete comm pattern for process %ld at cursor %zd", issuer,
             std::distance(begin(incomplete_pattern), current_comm_pattern));
@@ -399,13 +399,13 @@ void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType 
       break;
     case CallType::WAIT:
     case CallType::WAITANY: {
-      const simgrid::kernel::activity::CommImpl* comm_addr = nullptr;
+      simgrid::kernel::activity::CommImpl* comm_addr = nullptr;
       if (call_type == CallType::WAIT)
         comm_addr = api::get().get_comm_wait_raw_addr(req);
       else
         comm_addr = api::get().get_comm_waitany_raw_addr(req, value);
       auto simcall_issuer = api::get().simcall_get_issuer(req);
-      complete_comm_pattern(comm_addr, simcall_issuer->get_pid(), backtracking);
+      complete_comm_pattern(remote(comm_addr), simcall_issuer->get_pid(), backtracking);
     } break;
   default:
     xbt_die("Unexpected call type %i", (int)call_type);
