@@ -31,7 +31,7 @@ public:
   int tag   = 0;
   int index = 0;
 
-  PatternCommunication() { std::memset(&comm_addr, 0, sizeof(comm_addr)); }
+  PatternCommunication() { comm_addr = simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl>(); }
 
   PatternCommunication dup() const
   {
