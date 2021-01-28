@@ -34,6 +34,9 @@ private:
     }
   };
 
+smx_mailbox_t get_mbox(smx_simcall_t const r) const;
+simgrid::kernel::activity::CommImpl* get_comm(smx_simcall_t const r) const;
+bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
 
 public:
   // No copy:
