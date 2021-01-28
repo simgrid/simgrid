@@ -406,7 +406,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     ns3_socket = socket_to_destroy.back();
     socket_to_destroy.pop_back();
     SgFlow* flow = flow_from_sock.at(ns3_socket);
-    if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
+    if (XBT_LOG_ISENABLED(res_ns3, xbt_log_priority_debug)) {
       XBT_DEBUG("Removing socket %s of action %p", ns3_socket.c_str(), flow->action_);
     }
     delete flow;

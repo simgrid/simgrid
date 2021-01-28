@@ -35,7 +35,7 @@ p Dogbone
 ! timeout 10
 $ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/dogbone.xml ${srcdir}/network-ns3/dogbone_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
-> [:maestro(0)] [ns3/WARNING] Ignoring a route between S1 and C1 of length 3: Only routes of length 1 are considered with ns-3.
+> [:maestro(0)] [res_ns3/WARNING] Ignoring a route between S1 and C1 of length 3: Only routes of length 1 are considered with ns-3.
 > WARNING: You can ignore this warning if your hosts can still communicate when only considering routes of length 1.
 > WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently ignored.
 > [C1:worker(3)] [s4u_test/INFO] FLOW[0] : Receive 10000 bytes from S1 to C1
