@@ -465,14 +465,36 @@ void Api::mc_show_deadlock() const
   MC_show_deadlock();
 }
 
+/** Get the issuer of a simcall (`req->issuer`)
+ *
+ *  In split-process mode, it does the black magic necessary to get an address
+ *  of a (shallow) copy of the data structure the issuer SIMIX actor in the local
+ *  address space.
+ *
+ *  @param process the MCed process
+ *  @param req     the simcall (copied in the local process)
+ */
 smx_actor_t Api::simcall_get_issuer(s_smx_simcall const* req) const
 {
-  return MC_smx_simcall_get_issuer(req);
+  xbt_assert(mc_model_checker != nullptr);
+
+  // This is the address of the smx_actor in the MCed process:
+  auto address = simgrid::mc::remote(req->issuer_);
+
+  // Lookup by address:
+  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
+    if (actor.address == address)
+      return actor.copy.get_buffer();
+  for (auto& actor : mc_model_checker->get_remote_simulation().dead_actors())
+    if (actor.address == address)
+      return actor.copy.get_buffer();
+
+  xbt_die("Issuer not found");
 }
 
 long Api::simcall_get_actor_id(s_smx_simcall const* req) const
 {
-  return MC_smx_simcall_get_issuer(req)->get_pid();
+  return simcall_get_issuer(req)->get_pid();
 }
 
 smx_mailbox_t Api::simcall_get_mbox(smx_simcall_t const req) const
@@ -595,7 +617,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
   const char* type = nullptr;
   char* args       = nullptr;
 
-  smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
+  smx_actor_t issuer = simcall_get_issuer(req);
 
   switch (req->call_) {
     case Simcall::COMM_ISEND: {
@@ -765,7 +787,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
 
 std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
 {
-  const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
+  const smx_actor_t issuer = simcall_get_issuer(req);
   const char* color        = get_color(issuer->get_pid() - 1);
 
   if (req->inspector_ != nullptr)
