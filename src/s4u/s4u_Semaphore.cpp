@@ -17,10 +17,8 @@ Semaphore::Semaphore(unsigned int initial_capacity) : pimpl_(new kernel::activit
 
 Semaphore::~Semaphore()
 {
-  if (pimpl_ != nullptr) {
-    xbt_assert(not pimpl_->is_used(), "Cannot destroy semaphore since someone is still using it");
-    delete pimpl_;
-  }
+  xbt_assert(not pimpl_->is_used(), "Cannot destroy semaphore since someone is still using it");
+  delete pimpl_;
 }
 
 SemaphorePtr Semaphore::create(unsigned int initial_capacity)
