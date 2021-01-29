@@ -32,8 +32,10 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_suspend;
 xbt::signal<void(Actor const&)> s4u::Actor::on_resume;
 xbt::signal<void(Actor const&)> s4u::Actor::on_sleep;
 xbt::signal<void(Actor const&)> s4u::Actor::on_wake_up;
+#ifndef DOXYGEN
 xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
 xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329
+#endif
 xbt::signal<void(Actor const&, Host const& previous_location)> s4u::Actor::on_host_change;
 xbt::signal<void(Actor const&)> s4u::Actor::on_termination;
 xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;

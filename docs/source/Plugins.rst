@@ -59,12 +59,10 @@ Partial list of existing signals in s4u:
   :cpp:member:`Actor::on_resume <simgrid::s4u::Actor::on_resume>`
   :cpp:member:`Actor::on_sleep <simgrid::s4u::Actor::on_sleep>`
   :cpp:member:`Actor::on_wake_up <simgrid::s4u::Actor::on_wake_up>`
-  :cpp:member:`Actor::on_migration_start <simgrid::s4u::Actor::on_migration_start>`
-  :cpp:member:`Actor::on_migration_end <simgrid::s4u::Actor::on_migration_end>`
+  :cpp:member:`Actor::on_host_change <simgrid::s4u::Actor::on_host_change>`
   :cpp:member:`Actor::on_termination <simgrid::s4u::Actor::on_termination>`
   :cpp:member:`Actor::on_destruction <simgrid::s4u::Actor::on_destruction>`
-- :cpp:member:`Comm::on_sender_start <simgrid::s4u::Comm::on_sender_start>`
-  :cpp:member:`Comm::on_receiver_start <simgrid::s4u::Comm::on_receiver_start>`
+- :cpp:member:`Comm::on_start <simgrid::s4u::Comm::on_start>`
   :cpp:member:`Comm::on_completion <simgrid::s4u::Comm::on_completion>`
 - :cpp:member:`Engine::on_platform_creation <simgrid::s4u::Engine::on_platform_creation>`
   :cpp:member:`Engine::on_platform_created <simgrid::s4u::Engine::on_platform_created>`

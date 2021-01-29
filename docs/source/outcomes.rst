@@ -32,6 +32,8 @@ its own appender.
 For more information, please refer to the :ref:`programmer's interface <logging_prog>` to learn how to produce messages from your code, or to :ref:`logging_config` to see how to
 change the settings at runtime.
 
+.. _outcome_vizu:
+
 Graphical and statistical logging
 *********************************
 

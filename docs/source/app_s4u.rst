@@ -1466,7 +1466,7 @@ Signals
    .. group-tab:: C++
 
       .. autodoxyvar:: simgrid::s4u::Link::on_bandwidth_change
-      .. cpp:var:: xbt::signal<void(kernel::resource::NetworkAction&, Host* src, Host* dst)> Link::on_communicate
+      .. autodoxyvar:: simgrid::s4u::Link::on_communicate
       .. autodoxyvar:: simgrid::s4u::Link::on_communication_state_change
       .. autodoxyvar:: simgrid::s4u::Link::on_creation
       .. autodoxyvar:: simgrid::s4u::Link::on_destruction
@@ -1938,8 +1938,8 @@ Signals
 
    .. group-tab:: C++
 
-      .. cpp:var:: xbt::signal<void(Actor const&, Exec const&)> Exec::on_completion
-      .. cpp:var:: xbt::signal<void(Actor const&, Exec const&)> Exec::on_start
+      .. autodoxyvar:: simgrid::s4u::Exec::on_start
+      .. autodoxyvar:: simgrid::s4u::Exec::on_completion
 
 .. _API_s4u_Io:
 

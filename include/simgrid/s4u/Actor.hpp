@@ -78,7 +78,7 @@ public:
   /** Signal to others that an actor wakes up for a sleep **/
   static xbt::signal<void(Actor const&)> on_wake_up;
   /** Signal to others that an actor is has been migrated to another host **/
-  static xbt::signal<void(Actor const&, Host const& previous_location)> on_host_change;
+  static xbt::signal<void(const Actor&, const Host& previous_location)> on_host_change;
 #ifndef DOXYGEN
   static xbt::signal<void(Actor const&)> on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
   static xbt::signal<void(Actor const&)> on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329

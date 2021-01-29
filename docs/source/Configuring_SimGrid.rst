@@ -877,10 +877,10 @@ Configuring the Tracing
 -----------------------
 
 The :ref:`tracing subsystem <outcomes_vizu>` can be configured in
-several different ways depending on the nature of the simulator (MSG,
-SimDag, SMPI) and the kind of traces that need to be obtained. See the
+several different ways depending on the used interface (S4U, SMPI, SimDag)
+and the kind of traces that needs to be obtained. See the
 :ref:`Tracing Configuration Options subsection
-<tracing_tracing_options>` to get a detailed description of each
+<tracing_tracing_options>` for a full description of each
 configuration option.
 
 We detail here a simple way to get the traces working for you, even if
@@ -1553,7 +1553,7 @@ to a file).
 This section explains how to configure this logging features. You can also refer to the documentation of the :ref:`programmer's interface <logging_prog>`, that allows to produce
 messages from your code.
 
-Most of the time, the logging mechanism is configured at runtime using the ``--log`` command-line argument, even if you can also use :ref:`xbt_log_control_set()` to control it from
+Most of the time, the logging mechanism is configured at runtime using the ``--log`` command-line argument, even if you can also use :c:func:`xbt_log_control_set()` to control it from
 your program. To pass configure more than one setting, you can either pass several ``--log`` arguments, or separate your settings with spaces, that must be quoted accordingly. In
 practice, the following is equivalent to the above settings: ``--log=root.thresh:error --log=s4u_host.thresh:debug``.
 

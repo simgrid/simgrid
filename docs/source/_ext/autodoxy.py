@@ -536,16 +536,20 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
         rtype_el_ref = rtype_el.find('ref')
         if rtype_el_ref is not None:
             rtype = text(rtype_el) + text(rtype_el_ref) + tail(rtype_el_ref)
+#            print(" --> rtype_el: {}    rtype_el_ref: {}".format(text(rtype_el), text(rtype_el_ref)))
         else:
             rtype = rtype_el.text
 
-#        print("rtype: {}".format(rtype))
+        print("rtype: {}".format(rtype))
         signame = (rtype and (rtype + ' ') or '') + self.klassname + "::" + self.objname
-        return fix_namespaces(self.format_template_name() + signame)
+        res = fix_namespaces(self.format_template_name() + signame)
+#        print("formatted name: {}".format(res))
+        return res
 
     def get_doc(self, encoding=None): # This method is called with 1 parameter in Sphinx 2.x and 2 parameters in Sphinx 1.x
         detaileddescription = self.object.find('detaileddescription')
         doc = [format_xml_paragraph(detaileddescription)]
+#        print ("doc: {}".format(doc))
         return doc
 
     def format_template_name(self):
