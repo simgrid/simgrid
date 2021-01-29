@@ -602,10 +602,7 @@ Signals
 
       .. autodoxyvar:: simgrid::s4u::Actor::on_creation
       .. autodoxyvar:: simgrid::s4u::Actor::on_suspend
-      .. cpp:var:: xbt::signal<void(const simgrid::s4u::Actor&, const simgrid::s4u::Host & previous_location)> Actor::on_host_change
-
-         Signal fired when an actor is migrated from one host to another.
-
+      .. autodoxyvar:: simgrid::s4u::Actor::on_host_change
       .. autodoxyvar:: simgrid::s4u::Actor::on_resume
       .. autodoxyvar:: simgrid::s4u::Actor::on_sleep
       .. autodoxyvar:: simgrid::s4u::Actor::on_wake_up

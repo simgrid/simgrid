@@ -27,7 +27,6 @@ except ImportError:
 from sphinx.errors import ExtensionError
 from sphinx.util import logging
 
-
 ##########################################################################
 # XML utils
 ##########################################################################
@@ -477,6 +476,31 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
     def document_members(self, all_members=False):
         pass
 
+def elm2xml(xelm):
+    """Return the unparsed form of the element"""
+    res = '<{}'.format(xelm.tag)
+    for key in xelm.keys():
+        res += ' {}="{}"'.format(key, xelm.attrib[key])
+    res += ">"
+    if xelm.text is not None: # Text before the first child
+        res += xelm.text
+    for i in xelm.getchildren(): # serialize every subtag
+        res += elm2xml(i)
+    if xelm.tail is not None: # Text after last child
+        res += xelm.tail
+    res += '</{}>'.format(xelm.tag)
+    return res
+def elm2txt(xelm):
+    """Return the content of the element, with all tags removed. Only the text remains"""
+    res = ''
+    if xelm.text is not None: # Text before the first child
+        res += xelm.text
+    for i in xelm.getchildren(): # serialize every subtag
+        res += elm2txt(i)
+    if xelm.tail is not None: # Text after last child
+        res += xelm.tail
+    return res
+    
 class DoxygenVariableDocumenter(DoxygenDocumenter):
     objtype = 'doxyvar'
     directivetype = 'var'
@@ -527,20 +551,9 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
                 return el.text
             return ''
 
-        def tail(el):
-            if el.tail is not None:
-                return el.tail
-            return ''
-
-        rtype_el = self.object.find('type')
-        rtype_el_ref = rtype_el.find('ref')
-        if rtype_el_ref is not None:
-            rtype = text(rtype_el) + text(rtype_el_ref) + tail(rtype_el_ref)
-#            print(" --> rtype_el: {}    rtype_el_ref: {}".format(text(rtype_el), text(rtype_el_ref)))
-        else:
-            rtype = rtype_el.text
-
-        print("rtype: {}".format(rtype))
+        # Remove all tags (such as refs) but keep the text of the element's type
+        rtype = elm2txt(self.object.find('type')).replace("\n", " ")
+        rtype = re.sub(" +", " ", rtype) # s/ +/ /
         signame = (rtype and (rtype + ' ') or '') + self.klassname + "::" + self.objname
         res = fix_namespaces(self.format_template_name() + signame)
 #        print("formatted name: {}".format(res))
