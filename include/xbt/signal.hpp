@@ -16,11 +16,10 @@ namespace xbt {
   template<class S> class signal;
 
   /** A signal/slot mechanism
-  *
-  *  S is expected to be the function signature of the signal.
-  *  I'm not sure we need a return value (it is currently ignored).
-  *  If we don't we might use `signal<P1, P2, ...>` instead.
-  */
+   *
+   *  The template parameter is the function signature of the signal.
+   *  The return value currently ignored.
+   */
   template<class R, class... P>
   class signal<R(P...)> {
     using callback_type = std::function<R(P...)>;
@@ -28,18 +27,23 @@ namespace xbt {
     unsigned int callback_sequence_id = 0;
 
   public:
+    /** Add a new callback to this signal */
     template <class U> unsigned int connect(U slot)
     {
       handlers_.insert({callback_sequence_id, std::move(slot)});
       return callback_sequence_id++;
     }
+    /** Fire that signal, invoking all callbacks */
     R operator()(P... args) const
     {
       for (auto const& handler : handlers_)
         handler.second(args...);
     }
+    /** Remove a callback */
     void disconnect(unsigned int id) { handlers_.erase(id); }
+    /** Remove all callbacks */
     void disconnect_slots() { handlers_.clear(); }
+    /** Get the amount of callbacks */
     int get_slot_count() { return handlers_.size(); }
   };
 

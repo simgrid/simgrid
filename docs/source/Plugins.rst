@@ -37,12 +37,12 @@ objects.
 The host load plugin in 
 `src/plugins/host_load.cpp <https://framagit.org/simgrid/simgrid/tree/master/src/plugins/host_load.cpp>`_
 constitutes a good introductory example. It defines a class
-```HostLoad``` that is meant to be attached to each host. This class
-contains a ```EXTENSION_ID``` field that is mandatory to our extension
-mechanism. Then, the function ```sg_host_load_plugin_init```
+``HostLoad`` that is meant to be attached to each host. This class
+contains a ``EXTENSION_ID`` field that is mandatory to our extension
+mechanism. Then, the function ``sg_host_load_plugin_init``
 initializes the plugin. It first calls
 :cpp:func:`simgrid::s4u::Host::extension_create()` to register its
-extension to the ```s4u::Host``` objects, and then attaches some
+extension to the ``s4u::Host`` objects, and then attaches some
 callbacks to signals.
 
 You can attach your own extension to most kinds of s4u object:
@@ -51,6 +51,20 @@ You can attach your own extension to most kinds of s4u object:
 :cpp:class:`Hosts <simgrid::s4u::Host>` and
 :cpp:class:`Links <simgrid::s4u::Link>`. If you need to extend another
 kind of objects, please let us now.
+
+.. cpp:class:: template<class R, class... P> simgrid::xbt::signal<R(P...)>
+
+  A signal/slot mechanism, where you can attach callbacks to a given signal, and then fire the signal. 
+
+  The template parameter is the function signature of the signal (the return value currently ignored).
+
+.. cpp:function::: template<class R, class... P, class U>  unsigned int simgrid::xbt::signal<R(P...)>::connect(U slot)
+
+  Add a new callback to this signal.
+
+.. cpp:function:: template<class R, class... P> simgrid::xbt::signal<R(P...)>::operator()(P... args)
+
+  Fire that signal, invoking all callbacks.
 
 Partial list of existing signals in s4u:
 

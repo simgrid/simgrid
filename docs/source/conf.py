@@ -117,6 +117,7 @@ nitpick_ignore = [
   ('cpp:identifier', 'simgrid::xbt'),
   ('cpp:identifier', 'this_actor'),
   ('cpp:identifier', 's4u'),
+  ('cpp:identifier', 's4u_Actor'),
   ('cpp:identifier', 's4u_Barrier'),
   ('cpp:identifier', 's4u_ConditionVariable'),
   ('cpp:identifier', 's4u_Host'),
