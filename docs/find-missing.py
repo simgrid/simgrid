@@ -39,6 +39,7 @@ xml_files = [
     'build/xml/classsimgrid_1_1s4u_1_1NetZone.xml',
     'build/xml/classsimgrid_1_1s4u_1_1Semaphore.xml',
     'build/xml/classsimgrid_1_1s4u_1_1VirtualMachine.xml',
+    'build/xml/classsimgrid_1_1xbt_1_1signal_3_01R_07P_8_8_8_08_4.xml',
     'build/xml/namespacesimgrid_1_1s4u_1_1this__actor.xml',
     'build/xml/actor_8h.xml',
     'build/xml/barrier_8h.xml',
