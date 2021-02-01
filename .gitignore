@@ -22,6 +22,12 @@ CMakeDoxygenDefaults.cmake
 smpitmp-*
 simgrid.pc
 __pycache__/
+bin/
+lib/
+.eggs/
+.project
+.pydevproject
+.vscode/
 
 ### cmake
 CTestCustom.cmake
