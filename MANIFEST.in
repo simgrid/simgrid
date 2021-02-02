@@ -1890,8 +1890,6 @@ include docs/source/tuto_smpi/img/lu.S.4.png
 include docs/source/tuto_smpi/roundtrip.c
 include examples/README.rst
 include examples/c/CMakeLists.txt
-include examples/deprecated/java/.classpath
-include examples/deprecated/java/.project
 include examples/deprecated/java/CMakeLists.txt
 include examples/deprecated/msg/mc/CMakeLists.txt
 include examples/deprecated/simdag/CMakeLists.txt

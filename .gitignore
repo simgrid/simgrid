@@ -102,6 +102,7 @@ doc/example_lists/
 ### Specific of project 
 .settings/
 .csettings/
+examples/deprecated/java/.classpath
 .anjuta
 .anjuta_sym_db.db
 simgrid.anjuta
