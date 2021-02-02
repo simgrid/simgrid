@@ -775,7 +775,6 @@ include teshsuite/simdag/comp-only-par/comp-only-par.c
 include teshsuite/simdag/comp-only-par/comp-only-par.tesh
 include teshsuite/simdag/comp-only-seq/comp-only-seq.c
 include teshsuite/simdag/comp-only-seq/comp-only-seq.tesh
-include teshsuite/simdag/flatifier/bogus_disk_attachment.tesh
 include teshsuite/simdag/flatifier/bogus_missing_gateway.tesh
 include teshsuite/simdag/flatifier/bogus_two_hosts_asymetric.tesh
 include teshsuite/simdag/flatifier/flatifier.cpp
@@ -1948,7 +1947,6 @@ include examples/platforms/small_platform_profile.xml
 include examples/platforms/small_platform_with_routers.xml
 include examples/platforms/storage/content/small_content.txt
 include examples/platforms/storage/content/storage_content.txt
-include examples/platforms/storage/storage.xml
 include examples/platforms/syscoord/generate_peer_platform.pl
 include examples/platforms/syscoord/median_harvard.syscoord
 include examples/platforms/syscoord/median_meridian.syscoord
