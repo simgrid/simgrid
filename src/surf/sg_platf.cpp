@@ -50,7 +50,6 @@ static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 /** Module management function: creates all internal data structures */
 void sg_platf_init()
 {
-  simgrid::s4u::Engine::on_platform_created.connect(check_disk_attachment);
 }
 
 /** Module management function: frees all internal data structures */
