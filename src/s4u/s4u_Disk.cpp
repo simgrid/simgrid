@@ -52,7 +52,7 @@ void Disk::set_property(const std::string& key, const std::string& value)
 
 IoPtr Disk::io_init(sg_size_t size, Io::OpType type)
 {
-  return IoPtr(new Io(this, size, type));
+  return Io::init()->set_disk(this)->set_size(size)->set_op_type(type);
 }
 
 IoPtr Disk::read_async(sg_size_t size)

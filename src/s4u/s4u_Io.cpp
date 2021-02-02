@@ -15,16 +15,14 @@ namespace s4u {
 xbt::signal<void(Io const&)> Io::on_start;
 xbt::signal<void(Io const&)> Io::on_completion;
 
-Io::Io(sg_disk_t disk, sg_size_t size, OpType type) : disk_(disk), size_(size), type_(type)
+Io::Io()
 {
-  Activity::set_remaining(size_);
   pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
 }
 
-Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : storage_(storage), size_(size), type_(type)
+IoPtr Io::init()
 {
-  Activity::set_remaining(size_);
-  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
+ return IoPtr(new Io());
 }
 
 Io* Io::start()
@@ -78,6 +76,31 @@ Io* Io::wait_for(double timeout)
   this->release_dependencies();
 
   on_completion(*this);
+  return this;
+}
+
+IoPtr Io::set_disk(sg_disk_t disk)
+{
+  disk_ = disk;
+  return this;
+}
+
+IoPtr Io::set_storage(sg_storage_t storage)
+{
+  storage_ = storage;
+  return this;
+}
+
+IoPtr Io::set_size(sg_size_t size)
+{
+  size_ = size;
+  Activity::set_remaining(size_);
+  return this;
+}
+
+IoPtr Io::set_op_type(OpType type)
+{
+  type_ = type;
   return this;
 }
 
