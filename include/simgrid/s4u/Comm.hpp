@@ -85,23 +85,31 @@ public:
   /** Specify the data to send.
    *
    * This is way will get actually copied over to the receiver.
-   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * That's completely unrelated from the simulated size (given with @ref Comm::set_payload_size()):
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */
   CommPtr set_src_data(void* buff);
-  /** Specify the size of the data to send. Not to be mixed with @ref Activity::set_remaining()
+  /** Specify the size of the data to send. Not to be mixed with @ref Comm::set_payload_size()
    *
    * That's the size of the data to actually copy in the simulator (ie, the data passed with Activity::set_src_data()).
-   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * That's completely unrelated from the simulated size (given with @ref Comm::set_payload_size()):
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */
   CommPtr set_src_data_size(size_t size);
-  /** Specify the data to send and its size. Don't mix the size with @ref Activity::set_remaining()
+
+  /* Specify the amount of bytes which exchange should be simulated. Not to be mixed with @ref Comm::set_src_data_size()
+   *
+   * That's the size of the simulated data, that's completely related from the actual data size (given with @ref
+   * Comm::set_src_data_size()).
+   */
+  Comm* set_payload_size(double bytes);
+
+  /** Specify the data to send and its size. Don't mix the size with @ref Comm::set_payload_size()
    *
    * This is way will get actually copied over to the receiver.
-   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * That's completely unrelated from the simulated size (given with @ref Comm::set_payload_size()):
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */

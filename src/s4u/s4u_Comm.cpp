@@ -118,6 +118,11 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
   dst_buff_size_ = size;
   return this;
 }
+Comm* Comm::set_payload_size(double bytes)
+{
+  set_remaining(bytes);
+  return this;
+}
 
 CommPtr Comm::sendto_init(Host* from, Host* to)
 {
