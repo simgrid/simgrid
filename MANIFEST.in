@@ -783,7 +783,6 @@ include teshsuite/simdag/incomplete/incomplete.c
 include teshsuite/simdag/incomplete/incomplete.tesh
 include teshsuite/simdag/platforms/Dijkstra.xml
 include teshsuite/simdag/platforms/bob.trace
-include teshsuite/simdag/platforms/bogus_disk_attachment.xml
 include teshsuite/simdag/platforms/bogus_missing_dst_gateway.xml
 include teshsuite/simdag/platforms/bogus_missing_src_gateway.xml
 include teshsuite/simdag/platforms/bogus_two_hosts_asymetric.xml

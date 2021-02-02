@@ -52,8 +52,7 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1fl.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1sl.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1sl_hetero.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1switch.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_disk_attachment.xml        PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1switch.xml          PARENT_SCOPE)
 set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/carol.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bob.trace
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/erin.avail
