@@ -39,7 +39,7 @@ public:
  ************/
 /** @ingroup SURF_host_interface
  * @brief SURF Host interface class
- * @details A host represents a machine with an aggregation of a Cpu, a RoutingEdge and a Storage
+ * @details A host represents a machine with an aggregation of a Cpu, a RoutingEdge and Disk(s)
  */
 class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;

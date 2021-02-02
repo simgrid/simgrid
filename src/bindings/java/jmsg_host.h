@@ -54,9 +54,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed (JNIEnv *env, jobje
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber (JNIEnv *env, jobject jhost);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, jobject jhost, jobject jname);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname, jobject jvalue);
-JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEnv * env, jobject jhost);
-JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIEnv * env, jobject jhost);
-JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getStorageContent(JNIEnv * env, jobject jhost);
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv *env, jclass cls);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname);
 

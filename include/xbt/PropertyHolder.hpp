@@ -15,7 +15,7 @@ namespace xbt {
 
 /** @brief a PropertyHolder can be given a set of textual properties
  *
- * Common PropertyHolders are elements of the platform file, such as Host, Link or Storage.
+ * Common PropertyHolders are elements of the platform file, such as Host, Link, or Disk.
  */
 class PropertyHolder { // DO NOT DERIVE THIS CLASS, or the diamond inheritance mayhem will get you
   std::unique_ptr<std::unordered_map<std::string, std::string>> properties_ = nullptr;

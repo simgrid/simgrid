@@ -121,39 +121,12 @@ public:
   double lat;
 };
 
-class StorageCreationArgs {
-public:
-  std::string filename;
-  int lineno;
-  std::string id;
-  std::string type_id;
-  std::string content;
-  std::unordered_map<std::string, std::string>* properties;
-  std::string attach;
-};
-
-class StorageTypeCreationArgs {
-public:
-  std::string id;
-  std::string model;
-  std::string content;
-  std::unordered_map<std::string, std::string>* properties;
-  std::unordered_map<std::string, std::string>* model_properties;
-  sg_size_t size;
-};
-
 class DiskCreationArgs {
 public:
   std::string id;
   std::unordered_map<std::string, std::string>* properties;
   double read_bw;
   double write_bw;
-};
-
-class MountCreationArgs {
-public:
-  std::string storageId;
-  std::string name;
 };
 
 class ProfileCreationArgs {

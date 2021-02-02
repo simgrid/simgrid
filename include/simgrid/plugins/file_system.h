@@ -67,12 +67,6 @@ typedef sg_file_t msg_file_t; // MSG backwards compatibility
 #define MSG_file_rmove(file, host, fullpath) sg_file_rmove((file), (host), (fullpath))
 
 #define MSG_storage_file_system_init() sg_storage_file_system_init()
-#define MSG_storage_get_free_size(st) sg_storage_get_size_free(st)
-#define MSG_storage_get_used_size(st) sg_storage_get_size_used(st)
-#define MSG_storage_get_size(st) sg_storage_get_size(st)
-#define MSG_storage_get_content(st) sg_storage_get_content(st)
-
-#define MSG_host_get_storage_content(st) sg_host_get_storage_content(st)
 
 #endif // SIMGRID_HAVE_MSG
 
@@ -94,9 +88,7 @@ namespace s4u {
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.
  *
- * They are located on @ref simgrid::s4u::Storage that are accessed from a given @ref simgrid::s4u::Host through
- * mountpoints.
- * For now, you cannot change the mountpoints programmatically, and must declare them from your platform file.
+ * They are located on @ref simgrid::s4u::Disk that are accessed from a given @ref simgrid::s4u::Host
  */
 class XBT_PUBLIC File : public xbt::Extendable<File> {
   sg_size_t size_ = 0;
