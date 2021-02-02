@@ -46,13 +46,6 @@ XBT_PUBLIC sg_size_t sg_disk_get_size_used(const_sg_disk_t d);
 XBT_PUBLIC sg_size_t sg_disk_get_size(const_sg_disk_t d);
 XBT_PUBLIC const char* sg_disk_get_mount_point(const_sg_disk_t d);
 
-XBT_PUBLIC sg_size_t sg_storage_get_size_free(const_sg_storage_t st);
-XBT_PUBLIC sg_size_t sg_storage_get_size_used(const_sg_storage_t st);
-XBT_PUBLIC sg_size_t sg_storage_get_size(const_sg_storage_t st);
-XBT_PUBLIC xbt_dict_t sg_storage_get_content(const_sg_storage_t storage);
-
-XBT_PUBLIC xbt_dict_t sg_host_get_storage_content(sg_host_t host);
-
 #if SIMGRID_HAVE_MSG
 
 typedef sg_file_t msg_file_t; // MSG backwards compatibility
