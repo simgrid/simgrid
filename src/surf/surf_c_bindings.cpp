@@ -70,7 +70,7 @@ double surf_solve(double max_date)
 
   for (auto const& model : all_existing_models) {
     if (model != surf_host_model && model != surf_vm_model && model != surf_network_model &&
-        model != surf_storage_model && model != surf_disk_model) {
+        model != surf_disk_model) {
       double next_event_model = model->next_occurring_event(NOW);
       if ((time_delta < 0.0 || next_event_model < time_delta) && next_event_model >= 0.0)
         time_delta = next_event_model;

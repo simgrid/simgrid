@@ -8,7 +8,6 @@
 
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
-#include "src/surf/StorageImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include <xbt/PropertyHolder.hpp>
