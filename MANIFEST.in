@@ -2043,7 +2043,6 @@ include include/simgrid/s4u/Mailbox.hpp
 include include/simgrid/s4u/Mutex.hpp
 include include/simgrid/s4u/NetZone.hpp
 include include/simgrid/s4u/Semaphore.hpp
-include include/simgrid/s4u/Storage.hpp
 include include/simgrid/s4u/VirtualMachine.hpp
 include include/simgrid/semaphore.h
 include include/simgrid/simdag.h
@@ -2051,7 +2050,6 @@ include include/simgrid/simix.h
 include include/simgrid/simix.hpp
 include include/simgrid/simix/blocking_simcall.hpp
 include include/simgrid/smpi/replay.hpp
-include include/simgrid/storage.h
 include include/simgrid/version.h.in
 include include/simgrid/vm.h
 include include/simgrid/zone.h
@@ -2383,7 +2381,6 @@ include src/s4u/s4u_Mailbox.cpp
 include src/s4u/s4u_Mutex.cpp
 include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp
-include src/s4u/s4u_Storage.cpp
 include src/simdag/dax.dtd
 include src/simdag/dax_dtd.c
 include src/simdag/dax_dtd.h
@@ -2596,8 +2593,6 @@ include src/smpi/smpirun.in
 include src/smpi/smpitools.sh
 include src/surf/HostImpl.cpp
 include src/surf/HostImpl.hpp
-include src/surf/StorageImpl.cpp
-include src/surf/StorageImpl.hpp
 include src/surf/cpu_cas01.cpp
 include src/surf/cpu_cas01.hpp
 include src/surf/cpu_interface.cpp
@@ -2627,8 +2622,6 @@ include src/surf/ns3/ns3_simulator.hpp
 include src/surf/ptask_L07.cpp
 include src/surf/ptask_L07.hpp
 include src/surf/sg_platf.cpp
-include src/surf/storage_n11.cpp
-include src/surf/storage_n11.hpp
 include src/surf/surf_c_bindings.cpp
 include src/surf/surf_interface.cpp
 include src/surf/surf_interface.hpp

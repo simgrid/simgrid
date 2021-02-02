@@ -51,8 +51,6 @@ set(EXTRA_DIST
   src/surf/xml/surfxml_sax_cb.cpp
 
   src/surf/disk_s19.hpp
-  src/surf/StorageImpl.hpp
-  src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.hpp
   src/surf/host_clm03.hpp
@@ -351,8 +349,6 @@ set(SURF_SRC
   src/surf/network_interface.cpp
   src/surf/network_wifi.cpp
   src/surf/sg_platf.cpp
-  src/surf/StorageImpl.cpp
-  src/surf/storage_n11.cpp
   src/surf/surf_c_bindings.cpp
   src/surf/surf_interface.cpp
   src/surf/xml/platf.hpp
@@ -454,7 +450,6 @@ set(S4U_SRC
   src/s4u/s4u_Mutex.cpp
   src/s4u/s4u_Netzone.cpp
   src/s4u/s4u_Semaphore.cpp
-  src/s4u/s4u_Storage.cpp
 )
 
 set(SIMGRID_SRC
@@ -709,7 +704,6 @@ set(headers_to_install
   include/simgrid/cond.h
   include/simgrid/mutex.h
   include/simgrid/semaphore.h
-  include/simgrid/storage.h
   include/simgrid/vm.h
   include/simgrid/zone.h
   include/simgrid/s4u/Activity.hpp
@@ -727,7 +721,6 @@ set(headers_to_install
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp
   include/simgrid/s4u/Semaphore.hpp
-  include/simgrid/s4u/Storage.hpp
   include/simgrid/s4u/VirtualMachine.hpp
   include/simgrid/s4u.hpp
 
