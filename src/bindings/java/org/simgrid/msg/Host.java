@@ -125,11 +125,6 @@ public class Host {
 	/** Tests if a host is up and running. */
 	public native boolean isOn();
 
-	/** Returns the list of mount point names on a host */
-	public native Storage[] getMountedStorage();
-	/** This methods returns the list of storages (names) attached to a host */
-	public native String[] getAttachedStorage();
-
 	/** After this call, sg_host_get_consumed_energy() will not interrupt your process
 	 * (until after the next clock update).
 	 */

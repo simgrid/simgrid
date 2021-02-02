@@ -23,7 +23,6 @@ extern "C" {
 /* end of eclipse-mandated pimple */
 
 extern int JAVA_HOST_LEVEL;
-static std::unordered_map<msg_storage_t, jobject> java_storage_map;
 
 JNIEnv* get_current_thread_env();
 /**

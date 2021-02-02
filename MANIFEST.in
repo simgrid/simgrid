@@ -221,12 +221,6 @@ include examples/deprecated/java/energy/vm/energy-vm.tesh
 include examples/deprecated/java/hostload/LoadRunner.java
 include examples/deprecated/java/hostload/Main.java
 include examples/deprecated/java/hostload/hostload.tesh
-include examples/deprecated/java/io/file/Main.java
-include examples/deprecated/java/io/file/Node.java
-include examples/deprecated/java/io/file/io-file.tesh
-include examples/deprecated/java/io/storage/Client.java
-include examples/deprecated/java/io/storage/Main.java
-include examples/deprecated/java/io/storage/io-storage.tesh
 include examples/deprecated/java/process/kill/Killer.java
 include examples/deprecated/java/process/kill/Main.java
 include examples/deprecated/java/process/kill/Victim.java
@@ -2110,14 +2104,10 @@ include src/bindings/java/jmsg_as.cpp
 include src/bindings/java/jmsg_as.hpp
 include src/bindings/java/jmsg_comm.cpp
 include src/bindings/java/jmsg_comm.h
-include src/bindings/java/jmsg_file.cpp
-include src/bindings/java/jmsg_file.h
 include src/bindings/java/jmsg_host.cpp
 include src/bindings/java/jmsg_host.h
 include src/bindings/java/jmsg_process.cpp
 include src/bindings/java/jmsg_process.h
-include src/bindings/java/jmsg_storage.cpp
-include src/bindings/java/jmsg_storage.h
 include src/bindings/java/jmsg_synchro.cpp
 include src/bindings/java/jmsg_synchro.h
 include src/bindings/java/jmsg_task.cpp
@@ -2131,7 +2121,6 @@ include src/bindings/java/jxbt_utilities.hpp
 include src/bindings/java/org/simgrid/NativeLib.java
 include src/bindings/java/org/simgrid/msg/As.java
 include src/bindings/java/org/simgrid/msg/Comm.java
-include src/bindings/java/org/simgrid/msg/File.java
 include src/bindings/java/org/simgrid/msg/Host.java
 include src/bindings/java/org/simgrid/msg/HostFailureException.java
 include src/bindings/java/org/simgrid/msg/HostNotFoundException.java
@@ -2143,8 +2132,6 @@ include src/bindings/java/org/simgrid/msg/Process.java
 include src/bindings/java/org/simgrid/msg/ProcessKilledError.java
 include src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
 include src/bindings/java/org/simgrid/msg/Semaphore.java
-include src/bindings/java/org/simgrid/msg/Storage.java
-include src/bindings/java/org/simgrid/msg/StorageNotFoundException.java
 include src/bindings/java/org/simgrid/msg/Task.java
 include src/bindings/java/org/simgrid/msg/TaskCancelledException.java
 include src/bindings/java/org/simgrid/msg/TimeoutException.java

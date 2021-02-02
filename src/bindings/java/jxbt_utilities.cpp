@@ -180,11 +180,6 @@ void jxbt_throw_host_not_found(JNIEnv* env, const std::string& invalid_name)
   jxbt_throw_by_name(env, "org/simgrid/msg/HostNotFoundException", "No such host: " + invalid_name);
 }
 
-void jxbt_throw_storage_not_found(JNIEnv* env, const std::string& invalid_name)
-{
-  jxbt_throw_by_name(env, "org/simgrid/msg/StorageNotFoundException", "No such storage: " + invalid_name);
-}
-
 void jxbt_throw_process_not_found(JNIEnv* env, const std::string& invalid_name)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/ProcessNotFoundException", "No such process: " + invalid_name);

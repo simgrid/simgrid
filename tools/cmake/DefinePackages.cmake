@@ -487,8 +487,6 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_as.hpp
   src/bindings/java/jmsg_comm.cpp
   src/bindings/java/jmsg_comm.h
-  src/bindings/java/jmsg_file.cpp
-  src/bindings/java/jmsg_file.h
   src/bindings/java/jmsg_host.cpp
   src/bindings/java/jmsg_host.h
   src/bindings/java/jmsg_process.cpp
@@ -503,15 +501,12 @@ set(JMSG_C_SRC
   src/bindings/java/jxbt_utilities.hpp
   src/bindings/java/JavaContext.cpp
   src/bindings/java/JavaContext.hpp
-  src/bindings/java/jmsg_storage.cpp
-  src/bindings/java/jmsg_storage.h
 )
 
 set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/NativeLib.java
   src/bindings/java/org/simgrid/msg/As.java
   src/bindings/java/org/simgrid/msg/Comm.java
-  src/bindings/java/org/simgrid/msg/File.java
   src/bindings/java/org/simgrid/msg/Host.java
   src/bindings/java/org/simgrid/msg/HostFailureException.java
   src/bindings/java/org/simgrid/msg/HostNotFoundException.java
@@ -523,8 +518,6 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
   src/bindings/java/org/simgrid/msg/Semaphore.java
-  src/bindings/java/org/simgrid/msg/Storage.java
-  src/bindings/java/org/simgrid/msg/StorageNotFoundException.java
   src/bindings/java/org/simgrid/msg/Task.java
   src/bindings/java/org/simgrid/msg/TaskCancelledException.java
   src/bindings/java/org/simgrid/msg/TimeoutException.java
