@@ -16,7 +16,6 @@
 #include <simgrid/mutex.h>
 #include <simgrid/plugins/live_migration.h>
 #include <simgrid/semaphore.h>
-#include <simgrid/storage.h>
 #include <simgrid/version.h>
 #include <simgrid/vm.h>
 #include <simgrid/zone.h>
@@ -104,10 +103,6 @@ XBT_PUBLIC void* MSG_host_get_data(const_sg_host_t host);
 /** @brief Sets the user data of this host */
 XBT_PUBLIC void MSG_host_set_data(sg_host_t host, void* data);
 
-XBT_ATTRIB_DEPRECATED_v330("This function will be removed. Speak up if you need it.") XBT_PUBLIC xbt_dict_t
-    MSG_host_get_mounted_storage_list(sg_host_t host);
-
-XBT_PUBLIC xbt_dynar_t MSG_host_get_attached_storage_lists(const_sg_host_t host);
 XBT_PUBLIC double MSG_host_get_speed(const_sg_host_t host);
 XBT_PUBLIC double MSG_host_get_power_peak_at(const_sg_host_t host, int pstate_index);
 XBT_PUBLIC int MSG_host_get_core_number(const_sg_host_t host);

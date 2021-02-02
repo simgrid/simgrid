@@ -87,7 +87,6 @@ protected:
   friend Host;
   friend Link;
   friend Disk;
-  friend Storage;
   friend kernel::routing::NetPoint;
   friend kernel::routing::NetZoneImpl;
   friend kernel::resource::LinkImpl;
@@ -95,8 +94,6 @@ protected:
   void host_unregister(const std::string& name);
   void link_register(const std::string& name, const Link* link);
   void link_unregister(const std::string& name);
-  void storage_register(const std::string& name, const Storage* storage);
-  void storage_unregister(const std::string& name);
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
 #endif /*DOXYGEN*/
@@ -123,13 +120,6 @@ public:
   size_t get_actor_count() const;
   std::vector<ActorPtr> get_all_actors() const;
   std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const;
-
-#ifndef DOXYGEN
-  size_t get_storage_count() const;
-  std::vector<Storage*> get_all_storages() const;
-  Storage* storage_by_name(const std::string& name) const;
-  Storage* storage_by_name_or_null(const std::string& name) const;
-#endif
 
   std::vector<kernel::routing::NetPoint*> get_all_netpoints() const;
   kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name) const;

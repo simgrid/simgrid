@@ -175,11 +175,6 @@ XBT_PUBLIC void surf_host_model_init_current_default();
  */
 XBT_PUBLIC void surf_host_model_init_ptask_L07();
 
-/** @ingroup SURF_models
- *  @brief The storage model
- */
-XBT_PUBLIC void surf_storage_model_init_default();
-
 XBT_PUBLIC void surf_disk_model_init_default();
 
 /* --------------------
@@ -214,8 +209,6 @@ XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_cpu_model_descr
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_network_model_description;
 /** @brief The list of all disk models (pick one with --cfg=disk/model) */
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_disk_model_description;
-/** @brief The list of all storage models (pick one with --cfg=storage/model) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_storage_model_description;
 /** @brief The list of all host models (pick one with --cfg=host/model:) */
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_host_model_description;
 

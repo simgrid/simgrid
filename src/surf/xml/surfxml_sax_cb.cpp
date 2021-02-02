@@ -149,57 +149,20 @@ void STag_surfxml_storage()
 
 void ETag_surfxml_storage()
 {
-  simgrid::kernel::routing::StorageCreationArgs storage;
-
-  storage.properties = property_sets.back();
-  property_sets.pop_back();
-
-  storage.filename     = surf_parsed_filename;
-  storage.lineno       = surf_parse_lineno;
-  storage.id           = A_surfxml_storage_id;
-  storage.type_id      = A_surfxml_storage_typeId;
-  storage.content      = A_surfxml_storage_content;
-  storage.attach       = A_surfxml_storage_attach;
-
-  sg_platf_new_storage(&storage);
 }
 void STag_surfxml_storage___type()
 {
-  XBT_DEBUG("STag_surfxml_storage___type");
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
-  xbt_assert(current_model_property_set == nullptr, "Someone forgot to reset the model property set to nullptr in its closing tag (or XML malformed)");
 }
 void ETag_surfxml_storage___type()
 {
-  simgrid::kernel::routing::StorageTypeCreationArgs storage_type;
-
-  storage_type.properties = property_sets.back();
-  property_sets.pop_back();
-
-  storage_type.model_properties = current_model_property_set;
-  current_model_property_set    = nullptr;
-
-  storage_type.content = A_surfxml_storage___type_content;
-  storage_type.id      = A_surfxml_storage___type_id;
-  storage_type.model   = A_surfxml_storage___type_model;
-  storage_type.size =
-      static_cast<sg_size_t>(surf_parse_get_size(surf_parsed_filename, surf_parse_lineno, A_surfxml_storage___type_size,
-                                                 "size of storage type", storage_type.id.c_str()));
-  sg_platf_new_storage_type(&storage_type);
 }
 
 void STag_surfxml_mount()
 {
-  XBT_DEBUG("STag_surfxml_mount");
 }
 
 void ETag_surfxml_mount()
 {
-  simgrid::kernel::routing::MountCreationArgs mount;
-
-  mount.name      = A_surfxml_mount_name;
-  mount.storageId = A_surfxml_mount_storageId;
-  sg_platf_new_mount(&mount);
 }
 
 void STag_surfxml_include()

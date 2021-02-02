@@ -13,12 +13,10 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_private.hpp" // For access to simix_global->process_list
-#include "src/surf/StorageImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 #include <simgrid/Exception.hpp>
@@ -231,50 +229,6 @@ void Engine::link_register(const std::string& name, const Link* link)
 void Engine::link_unregister(const std::string& name)
 {
   pimpl->links_.erase(name);
-}
-
-/** @brief Returns the amount of storages in the platform */
-size_t Engine::get_storage_count() const
-{
-  return pimpl->storages_.size();
-}
-
-/** @brief Returns the list of all storages found in the platform */
-std::vector<Storage*> Engine::get_all_storages() const
-{
-  std::vector<Storage*> res;
-  for (auto const& kv : pimpl->storages_)
-    res.push_back(kv.second->get_iface());
-  return res;
-}
-
-/** @brief Find a storage from its name.
- *
- *  @throw std::invalid_argument if the searched storage does not exist.
- */
-Storage* Engine::storage_by_name(const std::string& name) const
-{
-  auto storage = pimpl->storages_.find(name);
-  if (storage == pimpl->storages_.end())
-    throw std::invalid_argument(std::string("Storage not found: ") + name);
-  return storage->second->get_iface();
-}
-
-/** @brief Find a storage from its name (or nullptr if that storage does not exist) */
-Storage* Engine::storage_by_name_or_null(const std::string& name) const
-{
-  auto storage = pimpl->storages_.find(name);
-  return storage == pimpl->storages_.end() ? nullptr : storage->second->get_iface();
-}
-
-void Engine::storage_register(const std::string& name, const Storage* storage)
-{
-  pimpl->storages_[name] = storage->get_impl();
-}
-
-void Engine::storage_unregister(const std::string& name)
-{
-  pimpl->storages_.erase(name);
 }
 
 /** @brief Returns the amount of links in the platform */

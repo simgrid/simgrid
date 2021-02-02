@@ -10,7 +10,6 @@
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
-#include "src/surf/StorageImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
@@ -21,7 +20,7 @@ namespace activity {
 
 IoImpl& IoImpl::set_timeout(double timeout)
 {
-  const s4u::Host* host = get_disk() ? get_disk()->get_host() : s4u::Host::by_name(get_storage()->get_host());
+  const s4u::Host* host = get_disk()->get_host();
   timeout_detector_ = host->pimpl_cpu->sleep(timeout);
   timeout_detector_->set_activity(this);
   return *this;
@@ -45,19 +44,10 @@ IoImpl& IoImpl::set_disk(resource::DiskImpl* disk)
   return *this;
 }
 
-IoImpl& IoImpl::set_storage(resource::StorageImpl* storage)
-{
-  storage_ = storage;
-  return *this;
-}
-
 IoImpl* IoImpl::start()
 {
   state_ = State::RUNNING;
-  if (storage_)
-    surf_action_ = storage_->io_start(size_, type_);
-  else
-    surf_action_ = disk_->io_start(size_, type_);
+  surf_action_ = disk_->io_start(size_, type_);
   surf_action_->set_activity(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
@@ -69,7 +59,7 @@ void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
-    if ((storage_ && not storage_->is_on()) || (disk_ && not disk_->is_on()))
+    if (disk_ && not disk_->is_on())
       state_ = State::FAILED;
     else
       state_ = State::CANCELED;

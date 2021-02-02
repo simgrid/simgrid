@@ -20,7 +20,6 @@ namespace kernel {
 class EngineImpl {
   std::map<std::string, s4u::Host*, std::less<>> hosts_;
   std::map<std::string, resource::LinkImpl*, std::less<>> links_;
-  std::map<std::string, resource::StorageImpl*, std::less<>> storages_;
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   std::unordered_map<std::string, actor::ActorCodeFactory> registered_functions; // Maps function names to actor code
   actor::ActorCodeFactory default_function; // Function to use as a fallback when the provided name matches nothing

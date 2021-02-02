@@ -6,7 +6,6 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Io.hpp"
-#include "simgrid/s4u/Storage.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "xbt/log.h"
 
@@ -28,21 +27,12 @@ IoPtr Io::init()
 Io* Io::start()
 {
   kernel::actor::simcall([this] {
-    if (storage_) {
-      (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
-          .set_name(get_name())
-          .set_storage(storage_->get_impl())
-          .set_size(size_)
-          .set_type(type_)
-          .start();
-    } else {
-      (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
-          .set_name(get_name())
-          .set_disk(disk_->get_impl())
-          .set_size(size_)
-          .set_type(type_)
-          .start();
-    }
+    (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
+                  .set_name(get_name())
+                  .set_disk(disk_->get_impl())
+                  .set_size(size_)
+                  .set_type(type_)
+                  .start();
   });
 
   if (suspended_)
@@ -82,12 +72,6 @@ Io* Io::wait_for(double timeout)
 IoPtr Io::set_disk(sg_disk_t disk)
 {
   disk_ = disk;
-  return this;
-}
-
-IoPtr Io::set_storage(sg_storage_t storage)
-{
-  storage_ = storage;
   return this;
 }
 

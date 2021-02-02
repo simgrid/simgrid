@@ -184,19 +184,6 @@ static void _sg_cfg_cb__disk_model(const std::string& value)
   find_model_description(surf_disk_model_description, value);
 }
 
-/* callback of the cpu/model variable */
-static void _sg_cfg_cb__storage_model(const std::string& value)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
-
-  if (value == "help") {
-    model_help("storage", surf_storage_model_description);
-    exit(0);
-  }
-
-  find_model_description(surf_storage_model_description, value);
-}
-
 /* callback of the network_model variable */
 static void _sg_cfg_cb__network_model(const std::string& value)
 {
@@ -258,9 +245,6 @@ void sg_config_init(int *argc, char **argv)
 
   declare_model_flag("disk/model", "default", &_sg_cfg_cb__disk_model, surf_disk_model_description, "model",
                      "The model to use for the disk");
-
-  declare_model_flag("storage/model", "default", &_sg_cfg_cb__storage_model, surf_storage_model_description, "model",
-                     "The model to use for the storage");
 
   declare_model_flag("network/model", "LV08", &_sg_cfg_cb__network_model, surf_network_model_description, "model",
                      "The model to use for the network");

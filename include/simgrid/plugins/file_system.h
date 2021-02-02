@@ -105,13 +105,9 @@ class XBT_PUBLIC File : public xbt::Extendable<File> {
   sg_size_t current_position_ = SEEK_SET;
   int desc_id                 = 0;
   Disk* local_disk_           = nullptr;
-  Storage* local_storage_     = nullptr;
   std::string mount_point_;
 
-  Storage* find_local_storage_on(Host* host);
   Disk* find_local_disk_on(const Host* host);
-  sg_size_t write_on_storage(sg_size_t size, bool write_inside);
-  sg_size_t write_on_disk(sg_size_t size, bool write_inside);
 
 public:
   File(const std::string& fullpath, void* userdata);
@@ -168,24 +164,6 @@ public:
   {
     remote_mount_points_.insert({host, mount_point});
   }
-  sg_size_t get_size() const { return size_; }
-  sg_size_t get_used_size() const { return used_size_; }
-  void decr_used_size(sg_size_t size);
-  void incr_used_size(sg_size_t size);
-};
-
-class XBT_PUBLIC FileSystemStorageExt {
-  std::unique_ptr<std::map<std::string, sg_size_t, std::less<>>> content_;
-  sg_size_t used_size_ = 0;
-  sg_size_t size_      = 0;
-
-public:
-  static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
-  explicit FileSystemStorageExt(const Storage* ptr);
-  FileSystemStorageExt(const FileSystemStorageExt&) = delete;
-  FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
-  std::map<std::string, sg_size_t, std::less<>>* parse_content(const std::string& filename);
-  std::map<std::string, sg_size_t, std::less<>>* get_content() { return content_.get(); }
   sg_size_t get_size() const { return size_; }
   sg_size_t get_used_size() const { return used_size_; }
   void decr_used_size(sg_size_t size);

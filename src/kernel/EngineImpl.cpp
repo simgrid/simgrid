@@ -10,7 +10,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/simix/smx_private.hpp"
-#include "src/surf/StorageImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 
@@ -29,10 +28,6 @@ EngineImpl::~EngineImpl()
   delete netzone_root_;
   for (auto const& kv : netpoints_)
     delete kv.second;
-
-  for (auto const& kv : storages_)
-    if (kv.second)
-      kv.second->destroy();
 
   for (auto const& kv : links_)
     if (kv.second)

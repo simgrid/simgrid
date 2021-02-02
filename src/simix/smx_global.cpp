@@ -17,8 +17,9 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
-#include "src/surf/StorageImpl.hpp"
 #include "src/surf/xml/platf.hpp"
+
+#include "simgrid/kernel/resource/Model.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/remote/AppSide.hpp"
