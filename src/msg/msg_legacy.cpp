@@ -254,52 +254,6 @@ void MSG_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto)
   sg_zone_get_hosts(zone, whereto);
 }
 
-/* ************************** Storages *************************** */
-const char* MSG_storage_get_name(const_sg_storage_t storage)
-{
-  return sg_storage_get_name(storage);
-}
-sg_storage_t MSG_storage_get_by_name(const char* name)
-{
-  return sg_storage_get_by_name(name);
-}
-xbt_dict_t MSG_storage_get_properties(const_sg_storage_t storage)
-{
-  return sg_storage_get_properties(storage);
-}
-void MSG_storage_set_property_value(sg_storage_t storage, const char* name, const char* value)
-{
-  sg_storage_set_property_value(storage, name, value);
-}
-const char* MSG_storage_get_property_value(const_sg_storage_t storage, const char* name)
-{
-  return sg_storage_get_property_value(storage, name);
-}
-xbt_dynar_t MSG_storages_as_dynar()
-{
-  return sg_storages_as_dynar();
-}
-void MSG_storage_set_data(sg_storage_t storage, void* data)
-{
-  sg_storage_set_data(storage, data);
-}
-void* MSG_storage_get_data(const_sg_storage_t storage)
-{
-  return sg_storage_get_data(storage);
-}
-const char* MSG_storage_get_host(const_sg_storage_t storage)
-{
-  return sg_storage_get_host(storage);
-}
-sg_size_t MSG_storage_read(sg_storage_t storage, sg_size_t size)
-{
-  return sg_storage_read(storage, size);
-}
-sg_size_t MSG_storage_write(sg_storage_t storage, sg_size_t size)
-{
-  return sg_storage_write(storage, size);
-}
-
 /* ************************** hosts *************************** */
 xbt_dynar_t MSG_hosts_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
 {
