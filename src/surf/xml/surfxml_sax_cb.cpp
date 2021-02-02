@@ -143,30 +143,30 @@ FILE *surf_file_to_parse = nullptr;
 /* Stuff relative to storage */
 void STag_surfxml_storage()
 {
-  xbt_die("<storage> tag was removed in SimGrid v3.26. Please stop using it now.");
+  xbt_die("<storage> tag was removed in SimGrid v3.27. Please stop using it now.");
 }
 
 void ETag_surfxml_storage()
 {
-  /* Won't happen since <storage> is now removed since v3.26. */
+  /* Won't happen since <storage> is now removed since v3.27. */
 }
 void STag_surfxml_storage___type()
 {
-  xbt_die("<storage_type> tag was removed in SimGrid v3.26. Please stop using it now.");
+  xbt_die("<storage_type> tag was removed in SimGrid v3.27. Please stop using it now.");
 }
 void ETag_surfxml_storage___type()
 {
-  /* Won't happen since <storage_type> is now removed since v3.26. */
+  /* Won't happen since <storage_type> is now removed since v3.27. */
 }
 
 void STag_surfxml_mount()
 {
-  xbt_die("<mount> tag was removed in SimGrid v3.26. Please stop using it now.");
+  xbt_die("<mount> tag was removed in SimGrid v3.27. Please stop using it now.");
 }
 
 void ETag_surfxml_mount()
 {
-  /* Won't happen since <mount> is now removed since v3.26. */
+  /* Won't happen since <mount> is now removed since v3.27. */
 }
 
 void STag_surfxml_include()
