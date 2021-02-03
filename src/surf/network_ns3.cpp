@@ -37,7 +37,7 @@
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network ns-3 module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns-3");
 
 /*****************
  * Crude globals *
@@ -53,7 +53,11 @@ static int number_of_networks = 1;
 
 /* wifi globals */
 static ns3::WifiHelper wifi;
-static ns3::YansWifiPhyHelper wifiPhy         = ns3::YansWifiPhyHelper::Default();
+#if NS3_MINOR_VERSION < 33
+static ns3::YansWifiPhyHelper wifiPhy = ns3::YansWifiPhyHelper::Default();
+#else
+static ns3::YansWifiPhyHelper wifiPhy;
+#endif
 static ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default();
 static ns3::WifiMacHelper wifiMac;
 static ns3::MobilityHelper mobility;
@@ -402,7 +406,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     ns3_socket = socket_to_destroy.back();
     socket_to_destroy.pop_back();
     SgFlow* flow = flow_from_sock.at(ns3_socket);
-    if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
+    if (XBT_LOG_ISENABLED(res_ns3, xbt_log_priority_debug)) {
       XBT_DEBUG("Removing socket %s of action %p", ns3_socket.c_str(), flow->action_);
     }
     delete flow;

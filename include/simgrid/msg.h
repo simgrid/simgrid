@@ -16,7 +16,6 @@
 #include <simgrid/mutex.h>
 #include <simgrid/plugins/live_migration.h>
 #include <simgrid/semaphore.h>
-#include <simgrid/storage.h>
 #include <simgrid/version.h>
 #include <simgrid/vm.h>
 #include <simgrid/zone.h>
@@ -104,10 +103,6 @@ XBT_PUBLIC void* MSG_host_get_data(const_sg_host_t host);
 /** @brief Sets the user data of this host */
 XBT_PUBLIC void MSG_host_set_data(sg_host_t host, void* data);
 
-XBT_ATTRIB_DEPRECATED_v330("This function will be removed. Speak up if you need it.") XBT_PUBLIC xbt_dict_t
-    MSG_host_get_mounted_storage_list(sg_host_t host);
-
-XBT_PUBLIC xbt_dynar_t MSG_host_get_attached_storage_lists(const_sg_host_t host);
 XBT_PUBLIC double MSG_host_get_speed(const_sg_host_t host);
 XBT_PUBLIC double MSG_host_get_power_peak_at(const_sg_host_t host, int pstate_index);
 XBT_PUBLIC int MSG_host_get_core_number(const_sg_host_t host);
@@ -161,21 +156,6 @@ XBT_PUBLIC void MSG_vm_suspend(msg_vm_t vm);
 XBT_PUBLIC void MSG_vm_resume(msg_vm_t vm);
 XBT_PUBLIC void MSG_vm_shutdown(msg_vm_t vm);
 XBT_PUBLIC void MSG_vm_destroy(msg_vm_t vm);
-
-/* ******************************** Storage ********************************* */
-typedef sg_storage_t msg_storage_t;
-
-XBT_PUBLIC const char* MSG_storage_get_name(const_sg_storage_t storage);
-XBT_PUBLIC msg_storage_t MSG_storage_get_by_name(const char* name);
-XBT_PUBLIC xbt_dict_t MSG_storage_get_properties(const_sg_storage_t storage);
-XBT_PUBLIC void MSG_storage_set_property_value(msg_storage_t storage, const char* name, const char* value);
-XBT_PUBLIC const char* MSG_storage_get_property_value(const_sg_storage_t storage, const char* name);
-XBT_PUBLIC xbt_dynar_t MSG_storages_as_dynar();
-XBT_PUBLIC void MSG_storage_set_data(msg_storage_t storage, void* data);
-XBT_PUBLIC void* MSG_storage_get_data(const_sg_storage_t storage);
-XBT_PUBLIC const char* MSG_storage_get_host(const_sg_storage_t storage);
-XBT_PUBLIC sg_size_t MSG_storage_read(msg_storage_t storage, sg_size_t size);
-XBT_PUBLIC sg_size_t MSG_storage_write(msg_storage_t storage, sg_size_t size);
 
 /* ******************************** Actor/process *************************** */
 /** Processes are independent agents that can do stuff on their own.

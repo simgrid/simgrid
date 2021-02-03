@@ -11,7 +11,7 @@
 #include "src/surf/xml/platf.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(disk_kernel);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_disk);
 
 /*********
  * Model *

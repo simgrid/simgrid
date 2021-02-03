@@ -73,6 +73,7 @@ public:
   virtual void register_simcall(smx_simcall_t simcall);
   void clean_action();
   virtual double get_remaining() const;
+  const char* get_state_str() const;
   // Support for the boost::intrusive_ptr<ActivityImpl> datatype
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   friend XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);

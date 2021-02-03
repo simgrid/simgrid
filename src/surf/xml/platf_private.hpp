@@ -121,39 +121,12 @@ public:
   double lat;
 };
 
-class StorageCreationArgs {
-public:
-  std::string filename;
-  int lineno;
-  std::string id;
-  std::string type_id;
-  std::string content;
-  std::unordered_map<std::string, std::string>* properties;
-  std::string attach;
-};
-
-class StorageTypeCreationArgs {
-public:
-  std::string id;
-  std::string model;
-  std::string content;
-  std::unordered_map<std::string, std::string>* properties;
-  std::unordered_map<std::string, std::string>* model_properties;
-  sg_size_t size;
-};
-
 class DiskCreationArgs {
 public:
   std::string id;
   std::unordered_map<std::string, std::string>* properties;
   double read_bw;
   double write_bw;
-};
-
-class MountCreationArgs {
-public:
-  std::string storageId;
-  std::string name;
 };
 
 class ProfileCreationArgs {
@@ -226,10 +199,6 @@ XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs
 
 XBT_PUBLIC simgrid::kernel::resource::DiskImpl*
 sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk); // Add a disk to the current host
-
-XBT_PUBLIC void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage); // Add a storage to the current Zone
-XBT_PUBLIC void sg_platf_new_storage_type(const simgrid::kernel::routing::StorageTypeCreationArgs* storage_type);
-XBT_PUBLIC void sg_platf_new_mount(simgrid::kernel::routing::MountCreationArgs* mount);
 
 XBT_PUBLIC void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor);
 XBT_PRIVATE void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect);

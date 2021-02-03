@@ -15,7 +15,6 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
-  resource::StorageImpl* storage_ = nullptr;
   resource::DiskImpl* disk_       = nullptr;
   sg_size_t size_                 = 0;
   s4u::Io::OpType type_           = s4u::Io::OpType::READ;
@@ -26,12 +25,10 @@ public:
   IoImpl& set_timeout(double timeout) override;
   IoImpl& set_size(sg_size_t size);
   IoImpl& set_type(s4u::Io::OpType type);
-  IoImpl& set_storage(resource::StorageImpl* storage);
   IoImpl& set_disk(resource::DiskImpl* disk);
 
   sg_size_t get_performed_ioops() const { return performed_ioops_; }
   resource::DiskImpl* get_disk() const { return disk_; }
-  resource::StorageImpl* get_storage() const { return storage_; }
 
   IoImpl* start();
   void post() override;

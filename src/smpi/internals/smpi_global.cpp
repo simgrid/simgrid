@@ -473,9 +473,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
 
           // Copy the dynamic library, the new name must be the same length as the old one
           // just replace the name with 7 digits for the rank and the rest of the name.
-          unsigned int pad = 7;
-          if (libname.length() < pad)
-            pad = libname.length();
+          auto pad                   = std::min<unsigned>(7, libname.length());
           std::string target_libname = std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
           std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" + target_libname;
           target_libs.push_back(target_lib);

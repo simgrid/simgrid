@@ -341,7 +341,7 @@ if some do not work for you.
 - **make**: Build the core of SimGrid that gets installed, but not any example.
 - **make tests**: Build the tests and examples.
 - **make simgrid**: Build only the SimGrid library. Not any example nor the helper tools.
-- **make s4u-app-pingpong**: Build only this example (works for any example)
+- **make s4u-comm-pingpong**: Build only this example (works for any example)
 - **make java-all**: Build all Java examples and their dependencies
 - **make clean**: Clean the results of a previous compilation
 - **make install**: Install the project (doc/ bin/ lib/ include/)

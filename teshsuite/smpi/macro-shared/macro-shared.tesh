@@ -1,7 +1,7 @@
 p Test compute
 ! output sort
 ! timeout 5
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-shared --log=xbt_cfg.thres:warning --log=smpi_kernel.thres:verbose "--log=root.fmt:(%P@%h)%e%m%n"
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-shared --log=xbt_cfg.thres:warning --log=smpi_kernel.thres:verbose "--log=root.fmt:(%a@%h)%e%m%n"
 > (maestro@) You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.  Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.
 > (maestro@) Receiver is shared. Let's ignore it.
 > (maestro@) Receiver is shared. Let's ignore it.

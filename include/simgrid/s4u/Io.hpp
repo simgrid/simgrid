@@ -24,18 +24,15 @@ public:
   enum class OpType { READ, WRITE };
 
 private:
-  Storage* storage_ = nullptr;
   Disk* disk_       = nullptr;
   sg_size_t size_   = 0;
   OpType type_      = OpType::READ;
 
-  explicit Io(sg_storage_t storage, sg_size_t size, OpType type);
-  explicit Io(sg_disk_t disk, sg_size_t size, OpType type);
+  Io();
 
 public:
 #ifndef DOXYGEN
   friend Disk;    // Factory of IOs
-  friend Storage; // Factory of IOs
 
   ~Io() override = default;
 #endif
@@ -43,6 +40,7 @@ public:
   static xbt::signal<void(Io const&)> on_start;
   static xbt::signal<void(Io const&)> on_completion;
 
+  static IoPtr init();
   Io* start() override;
   Io* wait() override;
   Io* wait_for(double timeout) override;
@@ -50,6 +48,9 @@ public:
 
   double get_remaining() const override;
   sg_size_t get_performed_ioops() const;
+  IoPtr set_disk(sg_disk_t disk);
+  IoPtr set_size(sg_size_t size);
+  IoPtr set_op_type(OpType type);
 };
 
 } // namespace s4u

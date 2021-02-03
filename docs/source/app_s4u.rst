@@ -187,7 +187,7 @@ communications ongoing.  First, you have to declare a vector in which
 we will store the ongoing communications. It is also useful to have a
 vector of mailboxes.
 
-.. literalinclude:: ../../examples/s4u/async-waitall/s4u-async-waitall.cpp
+.. literalinclude:: ../../examples/s4u/comm-waitall/s4u-comm-waitall.cpp
    :language: c++
    :start-after: init-begin
    :end-before: init-end
@@ -199,7 +199,7 @@ Finally, the actor waits for the completion of all of them at once
 with 
 :cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.  
      
-.. literalinclude:: ../../examples/s4u/async-waitall/s4u-async-waitall.cpp
+.. literalinclude:: ../../examples/s4u/comm-waitall/s4u-comm-waitall.cpp
    :language: c++
    :start-after: put-begin
    :end-before: put-end
@@ -317,7 +317,7 @@ announced (it waits until both :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
 and :cpp:func:`get() <simgrid::s4u::Mailbox::get()>` are posted). 
 In TCP, since you establish connections beforehand, the data starts to
 flow as soon as the sender posts it, even if the receiver did not post
-its :cpp:func:`recv() <simgrid::s4u::Mailbox::recv()>` yet. 
+its :cpp:func:`put() <simgrid::s4u::Mailbox::put()>` yet. 
 
 To model this in SimGrid, you can declare a specific receiver to a
 given mailbox (with the function 
@@ -444,6 +444,7 @@ Creating actors
 
    .. group-tab:: C
 
+      .. autodoxymethod:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, const char *const *argv)
       .. autodoxymethod:: sg_actor_init(const char *name, sg_host_t host)
       .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char *const *argv)
 
@@ -601,10 +602,7 @@ Signals
 
       .. autodoxyvar:: simgrid::s4u::Actor::on_creation
       .. autodoxyvar:: simgrid::s4u::Actor::on_suspend
-      .. cpp:var:: xbt::signal<void(const simgrid::s4u::Actor&, const simgrid::s4u::Host & previous_location)> Actor::on_host_change
-
-         Signal fired when an actor is migrated from one host to another.
-
+      .. autodoxyvar:: simgrid::s4u::Actor::on_host_change
       .. autodoxyvar:: simgrid::s4u::Actor::on_resume
       .. autodoxyvar:: simgrid::s4u::Actor::on_sleep
       .. autodoxyvar:: simgrid::s4u::Actor::on_wake_up
@@ -635,7 +633,7 @@ Querying info
       .. autodoxymethod:: simgrid::s4u::this_actor::is_maestro()
 
       .. autodoxymethod:: simgrid::s4u::this_actor::get_host()
-      .. autodoxymethod:: simgrid::s4u::this_actor::set_host(simgrid::s4u::Host *new_host)
+      .. autodoxymethod:: simgrid::s4u::this_actor::set_host(Host *new_host)
 
    .. group-tab:: Python
 
@@ -666,6 +664,10 @@ Suspending and resuming
 
       .. autofunction:: simgrid.this_actor.suspend
       .. autofunction:: simgrid.this_actor.yield_
+
+   .. group-tab:: C
+
+      .. autodoxymethod:: sg_actor_yield()
 
 Logging messages
 ----------------
@@ -724,7 +726,10 @@ the execution, or start an asynchronous activity.
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_self_execute(double flops)
+      .. autodoxymethod:: sg_actor_execute(double flops)
+      .. autodoxymethod:: sg_actor_execute_with_priority(double flops, double priority)
+      .. autodoxymethod:: sg_actor_exec_init(double computation_amount)
+      .. autodoxymethod:: sg_actor_exec_async(double computation_amount)
 
 Exiting
 -------
@@ -769,9 +774,12 @@ Initialization
       .. autodoxymethod:: simgrid::s4u::Engine::load_platform
       .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name)
       .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name, F code)
-      .. autodoxymethod:: simgrid::s4u::Engine::register_default(void(*code)(int, char **))
-      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, void(*code)(std::vector< std::string >))
-      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, void(*code)(int, char **))
+      .. autodoxymethod:: simgrid::s4u::Engine::register_default(const std::function< void(int, char **)> &code)
+      .. autodoxymethod:: simgrid::s4u::Engine::register_default(const kernel::actor::ActorCodeFactory &factory)
+
+      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, const std::function< void(int, char **)> &code)
+      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, const std::function< void(std::vector< std::string >)> &code)
+      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, const kernel::actor::ActorCodeFactory &factory)
 
    .. group-tab:: Python
    
@@ -917,6 +925,14 @@ Basic management
 
       .. automethod:: simgrid.Mailbox.by_name
 
+      .. code-block:: C
+
+         #include <simgrid/s4u/mailbox.h>
+      
+      .. autodoxymethod:: sg_mailbox_by_name(const char *alias)
+
+   .. group-tab:: C
+
 Querying info
 -------------
 
@@ -949,6 +965,12 @@ Sending data
       .. automethod:: simgrid.Mailbox.put
       .. automethod:: simgrid.Mailbox.put_async
 
+   .. group-tab: C
+
+      .. autodoxymethod:: sg_mailbox_put(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
+      .. autodoxymethod:: sg_mailbox_put_init(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
+      .. autodoxymethod:: sg_mailbox_put_async(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
+
 
 Receiving data
 --------------
@@ -961,7 +983,7 @@ Receiving data
       .. autodoxymethod:: simgrid::s4u::Mailbox::front
       .. autodoxymethod:: simgrid::s4u::Mailbox::get()
       .. autodoxymethod:: simgrid::s4u::Mailbox::get(double timeout)
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_async(void **data)
+      .. autodoxymethod:: simgrid::s4u::Mailbox::get_async(T **data)
       .. autodoxymethod:: simgrid::s4u::Mailbox::get_init()
       .. autodoxymethod:: simgrid::s4u::Mailbox::iprobe(int type, bool(*match_fun)(void *, void *, kernel::activity::CommImpl *), void *data)
       .. autodoxymethod:: simgrid::s4u::Mailbox::listen
@@ -973,6 +995,9 @@ Receiving data
 
    .. group-tab:: C
 
+      .. autodoxymethod:: sg_mailbox_get(sg_mailbox_t mailbox)
+      .. autodoxymethod:: sg_mailbox_get_async(sg_mailbox_t mailbox, void **data)
+      .. autodoxymethod:: sg_mailbox_get_name(const_sg_mailbox_t mailbox)
       .. autodoxymethod:: sg_mailbox_listen(const char *alias)
 
 Receiving actor
@@ -1169,7 +1194,7 @@ User data and properties
 
       .. autodoxymethod:: simgrid::s4u::Host::get_properties() const
       .. autodoxymethod:: simgrid::s4u::Host::get_property(const std::string &key) const
-      .. autodoxymethod:: simgrid::s4u::Host::set_properties(const std::map< std::string, std::string > &properties)
+      .. autodoxymethod:: simgrid::s4u::Host::set_properties(const std::unordered_map< std::string, std::string > &properties)
       .. autodoxymethod:: simgrid::s4u::Host::set_property(const std::string &key, const std::string &value)
 
    .. group-tab:: C
@@ -1187,7 +1212,7 @@ Retrieving components
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::add_disk(const Disk* disk)
+      .. autodoxymethod:: simgrid::s4u::Host::add_disk(const Disk *disk)
       .. autodoxymethod:: simgrid::s4u::Host::get_actor_count() const
       .. autodoxymethod:: simgrid::s4u::Host::get_all_actors() const
       .. autodoxymethod:: simgrid::s4u::Host::get_disks() const
@@ -1377,8 +1402,8 @@ Modifying characteristics
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_set_bandwidth(const_sg_link_t link, double value)
-      .. autodoxymethod:: sg_link_set_latency(const_sg_link_t link, double value)
+      .. autodoxymethod:: sg_link_set_bandwidth(sg_link_t link, double value)
+      .. autodoxymethod:: sg_link_set_latency(sg_link_t link, double value)
 
 User data and properties
 ------------------------
@@ -1438,7 +1463,7 @@ Signals
    .. group-tab:: C++
 
       .. autodoxyvar:: simgrid::s4u::Link::on_bandwidth_change
-      .. cpp:var:: xbt::signal<void(kernel::resource::NetworkAction&, Host* src, Host* dst)> Link::on_communicate
+      .. autodoxyvar:: simgrid::s4u::Link::on_communicate
       .. autodoxyvar:: simgrid::s4u::Link::on_communication_state_change
       .. autodoxyvar:: simgrid::s4u::Link::on_creation
       .. autodoxyvar:: simgrid::s4u::Link::on_destruction
@@ -1790,7 +1815,6 @@ Querying info
       .. autodoxymethod:: simgrid::s4u::Comm::set_src_data(void *buff)
       .. autodoxymethod:: simgrid::s4u::Comm::set_src_data(void *buff, size_t size)
       .. autodoxymethod:: simgrid::s4u::Comm::set_src_data_size(size_t size)
-      .. autodoxymethod:: simgrid::s4u::Comm::set_tracing_category(const std::string &category)
 
 Life cycle
 ----------
@@ -1824,8 +1848,7 @@ Signals
    .. group-tab:: C++
 
       .. autodoxyvar:: simgrid::s4u::Comm::on_completion
-      .. autodoxyvar:: simgrid::s4u::Comm::on_receiver_start
-      .. autodoxyvar:: simgrid::s4u::Comm::on_sender_start
+      .. autodoxyvar:: simgrid::s4u::Comm::on_start
 
 .. _API_s4u_Exec:
 
@@ -1912,8 +1935,8 @@ Signals
 
    .. group-tab:: C++
 
-      .. cpp:var:: xbt::signal<void(Actor const&, Exec const&)> Exec::on_completion
-      .. cpp:var:: xbt::signal<void(Actor const&, Exec const&)> Exec::on_start
+      .. autodoxyvar:: simgrid::s4u::Exec::on_start
+      .. autodoxyvar:: simgrid::s4u::Exec::on_completion
 
 .. _API_s4u_Io:
 

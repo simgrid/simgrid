@@ -15,6 +15,7 @@ from __future__ import print_function, absolute_import, division
 import os.path
 import re
 import sys
+import traceback # debug, big time
 
 from six import itervalues
 from lxml import etree as ET
@@ -26,7 +27,6 @@ except ImportError:
     sphinxVersion = 2
 from sphinx.errors import ExtensionError
 from sphinx.util import logging
-
 
 ##########################################################################
 # XML utils
@@ -46,7 +46,31 @@ def format_xml_paragraph(xmlnode):
     """
     return [l.rstrip() for l in _DoxygenXmlParagraphFormatter().generic_visit(xmlnode).lines]
 
-
+def elm2xml(xelm):
+    """Return the unparsed form of the element"""
+    res = '<{}'.format(xelm.tag)
+    for key in xelm.keys():
+        res += ' {}="{}"'.format(key, xelm.attrib[key])
+    res += ">"
+    if xelm.text is not None: # Text before the first child
+        res += xelm.text
+    for i in xelm.getchildren(): # serialize every subtag
+        res += elm2xml(i)
+    if xelm.tail is not None: # Text after last child
+        res += xelm.tail
+    res += '</{}>'.format(xelm.tag)
+    return res
+def elm2txt(xelm):
+    """Return the content of the element, with all tags removed. Only the text remains"""
+    res = ''
+    if xelm.text is not None: # Text before the first child
+        res += xelm.text
+    for i in xelm.getchildren(): # serialize every subtag
+        res += elm2txt(i)
+    if xelm.tail is not None: # Text after last child
+        res += xelm.tail
+    return res
+    
 class _DoxygenXmlParagraphFormatter(object):
     # This class follows the model of the stdlib's ast.NodeVisitor for tree traversal
     # where you dispatch on the element type to a different method for each node
@@ -378,10 +402,12 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
         return False
 
     def parse_id(self, id_to_parse):
+        print("Parse ID {}".format(id_to_parse))
         xp = './/*[@id="%s"]' % id_to_parse
         match = get_doxygen_root().xpath(xp)
         if match:
             match = match[0]
+            print("ID: {}".format(elm2xml(match)))
             self.fullname = match.find('./definition').text.split()[-1]
             self.modname = self.fullname
             self.objname = match.find('./name').text
@@ -395,6 +421,8 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
             # classname or method name
             return True
 
+#        sys.stderr.write("fullname: {}".format(self.fullname))
+#        traceback.print_stack()
         if '::' in self.fullname:
             (obj, meth) = self.fullname.rsplit('::', 1)
             # 'public-func' and 'public-static-func' are for classes while 'func' alone is for namespaces
@@ -425,6 +453,7 @@ class DoxygenMethodDocumenter(DoxygenDocumenter):
                 logger.warning("[autodoxy] WARNING: Could not find method {}{}{}".format(obj, meth, self.argsstring))
                 if not candidates:
                     logger.warning("[autodoxy] WARNING:  (no candidate found)")
+                    logger.warning("Query was: {}".format(xpath_query))
                 for cand in candidates:
                     logger.warning("[autodoxy] WARNING:   Existing candidate: {}{}{}".format(obj, meth, cand.find('argsstring').text))
             else:
@@ -527,25 +556,18 @@ class DoxygenVariableDocumenter(DoxygenDocumenter):
                 return el.text
             return ''
 
-        def tail(el):
-            if el.tail is not None:
-                return el.tail
-            return ''
-
-        rtype_el = self.object.find('type')
-        rtype_el_ref = rtype_el.find('ref')
-        if rtype_el_ref is not None:
-            rtype = text(rtype_el) + text(rtype_el_ref) + tail(rtype_el_ref)
-        else:
-            rtype = rtype_el.text
-
-#        print("rtype: {}".format(rtype))
+        # Remove all tags (such as refs) but keep the text of the element's type
+        rtype = elm2txt(self.object.find('type')).replace("\n", " ")
+        rtype = re.sub(" +", " ", rtype) # s/ +/ /
         signame = (rtype and (rtype + ' ') or '') + self.klassname + "::" + self.objname
-        return fix_namespaces(self.format_template_name() + signame)
+        res = fix_namespaces(self.format_template_name() + signame)
+#        print("formatted name: {}".format(res))
+        return res
 
     def get_doc(self, encoding=None): # This method is called with 1 parameter in Sphinx 2.x and 2 parameters in Sphinx 1.x
         detaileddescription = self.object.find('detaileddescription')
         doc = [format_xml_paragraph(detaileddescription)]
+#        print ("doc: {}".format(doc))
         return doc
 
     def format_template_name(self):

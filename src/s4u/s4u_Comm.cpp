@@ -23,9 +23,13 @@ Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ &&
       (pimpl_ == nullptr || pimpl_->state_ == kernel::activity::State::RUNNING)) {
-    XBT_INFO("Comm %p freed before its completion. Detached: %d, State: %d", this, detached_, (int)state_);
+    if (not detached_)
+      XBT_INFO("Comm %p freed before its completion. Did you forget to detach it? (state: %s)", this, get_state_str());
+    else
+      XBT_INFO("Detached comm %p freed before its completion, please report that bug along with a MWE (state: %s).",
+               this, get_state_str());
     if (pimpl_ != nullptr)
-      XBT_INFO("pimpl_->state: %d", static_cast<int>(pimpl_->state_));
+      XBT_INFO("pimpl_->state: %s", pimpl_->get_state_str());
     else
       XBT_INFO("pimpl_ is null");
     xbt_backtrace_display_current();
@@ -114,13 +118,42 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
   dst_buff_size_ = size;
   return this;
 }
+Comm* Comm::set_payload_size(double bytes)
+{
+  set_remaining(bytes);
+  return this;
+}
+
+CommPtr Comm::sendto_init(Host* from, Host* to)
+{
+  CommPtr res(new Comm());
+  res->from_ = from;
+  res->to_   = to;
+
+  return res;
+}
+CommPtr Comm::sendto_async(Host* from, Host* to, double simulated_size_in_bytes)
+{
+  auto res = Comm::sendto_init(from, to);
+  res->set_remaining(simulated_size_in_bytes)->start();
+  return res;
+}
 
 Comm* Comm::start()
 {
   xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
              "You cannot use %s() once your communication started (not implemented)", __FUNCTION__);
+  if (from_ != nullptr || to_ != nullptr) {
+    xbt_assert(from_ != nullptr && to_ != nullptr, "When either from_ or to_ is specified, both must be.");
+    xbt_assert(src_buff_ == nullptr && dst_buff_ == nullptr,
+               "Direct host-to-host communications cannot carry any data.");
+    pimpl_ = kernel::actor::simcall([this] {
+      auto res = new kernel::activity::CommImpl(this->from_, this->to_, this->get_remaining());
+      res->start();
+      return res;
+    });
 
-  if (src_buff_ != nullptr) { // Sender side
+  } else if (src_buff_ != nullptr) { // Sender side
     on_start(*this, true /* is_sender*/);
     pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                                 clean_fun_, copy_data_function_, get_user_data(), detached_);
@@ -160,8 +193,10 @@ Comm* Comm::wait_for(double timeout)
       break;
 
     case State::INITED:
-    case State::STARTING: // It's not started yet. Do it in one simcall
-      if (src_buff_ != nullptr) {
+    case State::STARTING: // It's not started yet. Do it in one simcall if it's a regular communication
+      if (from_ != nullptr || to_ != nullptr) {
+        return start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
+      } else if (src_buff_ != nullptr) {
         on_start(*this, true /*is_sender*/);
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                           copy_data_function_, get_user_data(), timeout);
@@ -204,9 +239,9 @@ int Comm::test_any(const std::vector<CommPtr>* comms)
 
 Comm* Comm::detach()
 {
-  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
-             __FUNCTION__);
-  xbt_assert(src_buff_ != nullptr && src_buff_size_ != 0, "You can only detach sends, not recvs");
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication is %s (not implemented)",
+             __FUNCTION__, get_state_str());
+  xbt_assert(dst_buff_ == nullptr && dst_buff_size_ == 0, "You can only detach sends, not recvs");
   detached_ = true;
   vetoable_start();
   return this;

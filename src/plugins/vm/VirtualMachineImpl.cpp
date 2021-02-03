@@ -9,7 +9,7 @@
 #include "src/include/surf/surf.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile accross hosts");
 
 simgrid::vm::VMModel* surf_vm_model = nullptr;
 
@@ -247,7 +247,7 @@ void VirtualMachineImpl::resume()
 void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 {
   if (get_state() != s4u::VirtualMachine::state::RUNNING) {
-    const char* stateName = "(unknown state)";
+    const char* stateName;
     switch (get_state()) {
       case s4u::VirtualMachine::state::CREATED:
         stateName = "created, but not yet started";

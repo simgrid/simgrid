@@ -24,7 +24,6 @@
 #include "jmsg_as.hpp"
 #include "jmsg_host.h"
 #include "jmsg_process.h"
-#include "jmsg_storage.h"
 #include "jmsg_task.h"
 #include "jxbt_utilities.hpp"
 
@@ -144,10 +143,6 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv* env, jclass)
   }
   xbt_free(hosts);
 
-  /* Cleanup java storages */
-  for (auto const& elm : java_storage_map)
-    jstorage_unref(env, elm.second);
-
   /* Display the status of remaining threads. None should survive, but who knows */
   jclass clsProcess = jxbt_get_class(env, "org/simgrid/msg/Process");
   jmethodID idDebug = jxbt_get_static_jmethod(env, clsProcess, "debugAllThreads", "()V");
@@ -236,11 +231,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_deployApplication(JNIEnv* env, j
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
   sg_host_energy_plugin_init();
-}
-
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_fileSystemInit()
-{
-  sg_storage_file_system_init();
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_loadInit() {

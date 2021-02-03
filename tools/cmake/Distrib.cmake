@@ -170,7 +170,6 @@ set(source_to_pack
   ${EXTRA_DIST}
   ${CMAKE_SOURCE_FILES}
   ${CMAKEFILES_TXT}
-  ${DOC_FIGS}
   ${DOC_IMG}
   ${DOC_SOURCES}
   ${DOC_TOOLS}
@@ -201,7 +200,6 @@ add_custom_target(dist-dir
 add_dependencies(dist-dir maintainer_files)
 
 set(dirs_in_tarball "")
-set(PYTHON_SOURCES "include MANIFEST.in")
 foreach(file ${source_to_pack})
   #message(${file})
   # This damn prefix is still set somewhere (seems to be in subdirs)

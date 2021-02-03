@@ -24,7 +24,6 @@ endforeach()
 set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/flatifier/bogus_two_hosts_asymetric.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/flatifier/bogus_missing_gateway.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/flatifier/bogus_disk_attachment.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic-parsing-test/basic-parsing-test-sym-full.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic-parsing-test/basic-parsing-test-bypass.tesh
                                     PARENT_SCOPE)
@@ -53,8 +52,7 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1fl.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1sl.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1sl_hetero.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1switch.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_disk_attachment.xml        PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1switch.xml          PARENT_SCOPE)
 set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/carol.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bob.trace
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/erin.avail
@@ -85,12 +83,10 @@ if(enable_debug)
   # these tests need assertions
   ADD_TESH(tesh-parser-bogus-symmetric         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/flatifier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/flatifier ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/flatifier/bogus_two_hosts_asymetric.tesh)
   ADD_TESH(tesh-parser-bogus-missing-gw        --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/flatifier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/flatifier ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/flatifier/bogus_missing_gateway.tesh)
-  ADD_TESH(tesh-parser-bogus-disk-attachment   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/flatifier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/flatifier ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/flatifier/bogus_disk_attachment.tesh)
 
    #These tests fail on Windows as the signal returned is not the same as Unix would send.
   if(WIN32)
     set_property(TEST tesh-parser-bogus-symmetric PROPERTY WILL_FAIL TRUE)
     set_property(TEST tesh-parser-bogus-missing-gw PROPERTY WILL_FAIL TRUE)
-    set_property(TEST tesh-parser-bogus-disk-attachment PROPERTY WILL_FAIL TRUE)
   endif()
 endif()

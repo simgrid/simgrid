@@ -2,7 +2,7 @@
 
 p Testing a simple master/worker example application
 
-$ ${bindir}/c-app-masterworker  ${platfdir}/vivaldi.xml ${srcdir:=.}/app-masterworker-vivaldi_d.xml --cfg=network/latency-factor:1.0 --cfg=network/bandwidth-factor:1.0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir}/c-app-masterworker  ${platfdir}/vivaldi.xml ${srcdir:=.}/app-masterworker-vivaldi_d.xml --cfg=network/latency-factor:1.0 --cfg=network/bandwidth-factor:1.0 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/latency-factor' to '1.0'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/bandwidth-factor' to '1.0'
 > [  0.000000] (1:master@100030591) Got 15 workers and 10 tasks to process

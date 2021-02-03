@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/network-ns3-wifi/s4u-network-ns3-wifi ${platfdir}/wifi_ns3.xml "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+$ ${bindir:=.}/network-ns3-wifi/s4u-network-ns3-wifi ${platfdir}/wifi_ns3.xml "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
 > [STA0-1:receiver(2)] [ns3_wifi_example/INFO] [1] STA0-1 received 100000 bytes from STA0-0
 > [STA0-0:receiver(4)] [ns3_wifi_example/INFO] [2] STA0-0 received 100000 bytes from STA0-1

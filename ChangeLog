@@ -7,14 +7,24 @@ User-visible changes:
    - 'verbose-exit' is now 'debug/verbose-exit'
    - 'simix/breakpoint' is now 'debug/breakpoint'
    - 'clean-atexit' is now 'debug/clean-atexit'
+ - Removed all that was related to the "Storage" type in all APIs and bindings. 
+   "Disks" have been introduced more than a year ago to replace them for the better.
+   It's time to finish this replacement.  
 
 S4U:
-- Define new template functions Mailbox::get_unique(), returning a std::unique_ptr.
-- Functions Mailbox::get() and Mailbox::get_async() are now templated with the
-  type of the pointee. Untyped functions are deprecated. Use Mailbox::get<void>()
-  or Mailbox::get_async<void>() if you really want to play with void*.
-- Unify the interface of Activity::on_{start/activity}
-- New function: Comm::get_dst_data()
+ - Define new template functions Mailbox::get_unique(), returning a std::unique_ptr.
+ - Functions Mailbox::get() and Mailbox::get_async() are now templated with the
+   type of the pointee. Untyped functions are deprecated. Use Mailbox::get<void>()
+   or Mailbox::get_async<void>() if you really want to play with void*.
+ - Unify the interface of Activity::on_{start/activity}
+ - New function: Comm::get_dst_data()
+ - New function: Comm::set_payload_size() to set the amount of bytes to simulate.
+ - New functions: Comm::sendto_{init,async} to initiate a communication
+   on between two (possibly remote) hosts.
+
+Documentation:
+ - New section: Configuring the logs from the command line.
+ - New section: Programming API of logs.
 
 ----------------------------------------------------------------------------
 

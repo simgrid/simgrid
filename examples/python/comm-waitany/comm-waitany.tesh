@@ -3,7 +3,7 @@
 p Testing Comm.wait_any()
 
 ! output sort 19
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-waitany.py ${platfdir}/small_platform.xml comm-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-waitany.py ${platfdir}/small_platform.xml comm-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'Mailbox(receiver-0)'
 > [  0.000000] (2:receiver@Fafard) Wait for my first message
 > [  0.000000] (3:receiver@Jupiter) Wait for my first message

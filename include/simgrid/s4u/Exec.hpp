@@ -37,9 +37,9 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
   std::vector<double> bytes_amounts_;
   std::vector<Host*> hosts_;
   bool parallel_ = false;
+  Exec();
 
 public:
-  Exec();
   ~Exec() override = default;
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
@@ -49,6 +49,7 @@ public:
   static xbt::signal<void(Exec const&)> on_start;
   static xbt::signal<void(Exec const&)> on_completion;
 
+  static ExecPtr init();
   Exec* start() override;
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */

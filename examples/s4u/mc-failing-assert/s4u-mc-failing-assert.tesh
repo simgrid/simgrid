@@ -2,7 +2,7 @@
 
 ! expect return 1
 ! timeout 20
-$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
 > [  0.000000] (0:maestro@) Check a safety property. Reduction is: dpor.
 > [  0.000000] (2:client1@Bourassa) Sent!
 > [  0.000000] (1:server@Boivin) OK

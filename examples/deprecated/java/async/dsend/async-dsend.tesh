@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 ! timeout 30
-$ ${javacmd:=java} -classpath ${classpath:=.} async/dsend/Main ${srcdir:=.}/../../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${javacmd:=java} -classpath ${classpath:=.} async/dsend/Main ${srcdir:=.}/../../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (1:Sender@Boivin) Hello! Got 6 receivers to contact
 > [  0.000000] (1:Sender@Boivin) Sending "Task_1" to "Bourassa"

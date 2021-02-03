@@ -41,14 +41,14 @@ public:
     return this->send(&message, sizeof(message));
   }
   /** @brief Send a message; returns 0 on success or errno on failure */
-  template <class M> typename std::enable_if<messageType<M>(), int>::type send(M const& m) const
+  template <class M> typename std::enable_if_t<messageType<M>(), int> send(M const& m) const
   {
     return this->send(&m, sizeof(M));
   }
 
   // Receive
   ssize_t receive(void* message, size_t size, bool block = true) const;
-  template <class M> typename std::enable_if<messageType<M>(), ssize_t>::type receive(M& m) const
+  template <class M> typename std::enable_if_t<messageType<M>(), ssize_t> receive(M& m) const
   {
     return this->receive(&m, sizeof(M));
   }

@@ -185,7 +185,7 @@ else
   MAY_DISABLE_SOURCE_CHANGE="-DCMAKE_DISABLE_SOURCE_CHANGES=ON"
 fi
 
-if [ "$os" = "CentOS" ] && [ "$(ld -v | cut -d\  -f4)" = "2.30-85.el8" ]; then
+if [ "$os" = "CentOS" ] && [ "$(ld -v | cut -d\  -f4)" = "2.30-90.el8" ]; then
   echo "Temporary disable LTO, believed to be broken on this system."
   MAY_DISABLE_LTO=-Denable_lto=OFF
 else

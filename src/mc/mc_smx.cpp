@@ -87,33 +87,6 @@ void RemoteSimulation::refresh_simix()
 }
 }
 
-/** Get the issuer of a simcall (`req->issuer`)
- *
- *  In split-process mode, it does the black magic necessary to get an address
- *  of a (shallow) copy of the data structure the issuer SIMIX actor in the local
- *  address space.
- *
- *  @param process the MCed process
- *  @param req     the simcall (copied in the local process)
- */
-smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req)
-{
-  xbt_assert(mc_model_checker != nullptr);
-
-  // This is the address of the smx_actor in the MCed process:
-  auto address = simgrid::mc::remote(req->issuer_);
-
-  // Lookup by address:
-  for (auto& actor : mc_model_checker->get_remote_simulation().actors())
-    if (actor.address == address)
-      return actor.copy.get_buffer();
-  for (auto& actor : mc_model_checker->get_remote_simulation().dead_actors())
-    if (actor.address == address)
-      return actor.copy.get_buffer();
-
-  xbt_die("Issuer not found");
-}
-
 const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 {
   if (mc_model_checker == nullptr)

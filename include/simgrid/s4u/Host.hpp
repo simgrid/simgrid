@@ -149,14 +149,6 @@ public:
   void add_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
 
-  std::vector<const char*> get_attached_storages() const;
-
-  /** Get an associative list [mount point]->[Storage] of all local mount points.
-   *
-   *  This is defined in the platform file, and cannot be modified programmatically (yet).
-   */
-  std::unordered_map<std::string, Storage*> const& get_mounted_storages();
-
   void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
   void route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency) const;
   /** Do a blocking communication between two arbitrary hosts.
@@ -173,7 +165,7 @@ public:
    * There is really no limit on the hosts involved. In particular, the actor does not have to be on one of the involved
    * hosts.
    */
-  ActivityPtr sendto_async(Host* dest, double byte_amount);
+  CommPtr sendto_async(Host* dest, double byte_amount);
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v330("Please use Host::sendto()") void send_to(Host* dest, double byte_amount)
@@ -197,7 +189,6 @@ public:
 
 private:
   xbt::string name_{"noname"};
-  std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
   kernel::routing::NetPoint* pimpl_netpoint_         = nullptr;
 
 public:

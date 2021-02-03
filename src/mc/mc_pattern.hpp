@@ -20,7 +20,7 @@ enum class PatternCommunicationType {
 class PatternCommunication {
 public:
   int num = 0;
-  simgrid::kernel::activity::CommImpl* comm_addr;
+  RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr{nullptr};
   PatternCommunicationType type = PatternCommunicationType::send;
   unsigned long src_proc        = 0;
   unsigned long dst_proc        = 0;
@@ -30,8 +30,6 @@ public:
   std::vector<char> data;
   int tag   = 0;
   int index = 0;
-
-  PatternCommunication() { std::memset(&comm_addr, 0, sizeof(comm_addr)); }
 
   PatternCommunication dup() const
   {

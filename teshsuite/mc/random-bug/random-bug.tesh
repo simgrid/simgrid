@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 ! expect return 1
-$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
 > [  0.000000] (0:maestro@) Check a safety property. Reduction is: dpor.
 > [  0.000000] (0:maestro@) Behavior: assert
 > [  0.000000] (0:maestro@) **************************
@@ -16,7 +16,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug assert ${platfdir
 
 ! expect return 6
 # because SIMGRID_MC_EXIT_PROGRAM_CRASH = 6
-$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug abort ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug abort ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc
 > [  0.000000] (0:maestro@) Check a safety property. Reduction is: dpor.
 > [  0.000000] (0:maestro@) Behavior: abort
 > [  0.000000] (0:maestro@) **************************
@@ -32,7 +32,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug abort ${platfdir}
 > [  0.000000] (0:maestro@) Executed transitions = 2
 > [  0.000000] (0:maestro@) Stack trace not displayed because you passed --log=no_loc
 
-$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug printf ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug printf ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
 > [  0.000000] (0:maestro@) Check a safety property. Reduction is: dpor.
 > [  0.000000] (0:maestro@) Behavior: printf
 > [  0.000000] (1:app@Fafard) Error reached

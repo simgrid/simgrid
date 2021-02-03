@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../../platforms/routing_cluster.xml '--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n'
+$ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../../platforms/routing_cluster.xml '--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n'
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (0:maestro@) Number of hosts '6'
 > [  0.000000] (1:0@host1) Host '0' send 'Token' to Host '1'
@@ -18,7 +18,7 @@ $ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/..
 > [  0.131796] (0:maestro@) Terminating the simulation...
 > [  0.131796] (0:maestro@) Simulation time 0.13179602061855672
 
-$ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../../platforms/two_peers.xml '--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n'
+$ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../../platforms/two_peers.xml '--log=root.fmt:[%12.6r]%e(%i:%a@%h)%e%m%n'
 > [    0.000000] (0:maestro@) Using regular java threads.
 > [    0.000000] (0:maestro@) Number of hosts '2'
 > [    0.000000] (1:0@100030591) Host '0' send 'Token' to Host '1'
@@ -28,7 +28,7 @@ $ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/..
 > [    1.248846] (0:maestro@) Terminating the simulation...
 > [    1.248846] (0:maestro@) Simulation time 1.2488464578972847
 
-$ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../../platforms/meta_cluster.xml '--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n'
+$ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../../platforms/meta_cluster.xml '--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n'
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (0:maestro@) Number of hosts '60'
 > [  0.000000] (1:0@host-1.cluster1) Host '0' send 'Token' to Host '1'

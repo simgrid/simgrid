@@ -44,7 +44,7 @@ bool Mutex::try_lock()
  */
 MutexPtr Mutex::create()
 {
-  kernel::activity::MutexImpl* mutex = kernel::actor::simcall([] { return new kernel::activity::MutexImpl(); });
+  auto* mutex = new kernel::activity::MutexImpl();
   return MutexPtr(&mutex->mutex(), false);
 }
 

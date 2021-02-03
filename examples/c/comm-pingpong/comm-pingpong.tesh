@@ -2,7 +2,7 @@
 
 p Testing with default compound
 
-$ ${bindir:=.}/c-app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-pingpong ${platfdir}/small_platform.xml comm-pingpong_d.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
 > [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
 > [  0.019014] (2:ponger@Jupiter) Task received : small communication (latency bound)
@@ -14,7 +14,7 @@ $ ${bindir:=.}/c-app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml 
 
 p Testing with default compound and Full network optimization
 
-$ ${bindir:=.}/c-app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml "--cfg=network/optim:Full" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-pingpong ${platfdir}/small_platform.xml comm-pingpong_d.xml "--cfg=network/optim:Full" "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/optim' to 'Full'
 > [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
 > [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
@@ -27,7 +27,7 @@ $ ${bindir:=.}/c-app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml 
 
 p Testing the deprecated CM02 network model
 
-$ ${bindir:=.}/c-app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-pingpong ${platfdir}/small_platform.xml comm-pingpong_d.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
@@ -41,7 +41,7 @@ $ ${bindir:=.}/c-app-pingpong ${platfdir}/small_platform.xml app-pingpong_d.xml 
 
 p Testing the surf network constant model
 
-$ ${bindir:=.}/c-app-pingpong ${platfdir}/small_platform_constant.xml app-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Constant" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-pingpong ${platfdir}/small_platform_constant.xml comm-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Constant" "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'

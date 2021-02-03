@@ -187,7 +187,7 @@ same timestamp. Here is a SimGrid example:
 
     # Sort only lines depending on the first 19 chars
     ! output sort 19
-    $ ./some_simgrid_simulator --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+    $ ./some_simgrid_simulator --log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n
 
 This approach may seem surprising at the first glance but it does its job:
 

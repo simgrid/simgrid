@@ -60,17 +60,6 @@ XBT_ATTRIB_DEPRECATED_v328("Please use sg_host_set_data(h, NULL)") XBT_PUBLIC vo
 #endif
 
 // ========= storage related functions ============
-/** @brief Return the list of mount point names on a host.
- * @param host a host
- * @return a dict containing all mount point on the host (mount_name => sg_storage_t)
- */
-XBT_PUBLIC xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host);
-
-/** @brief Return the list of storages attached to a host.
- * @param host a host
- * @return a dynar containing all storages (name) attached to the host
- */
-XBT_PUBLIC xbt_dynar_t sg_host_get_attached_storage_list(const_sg_host_t host);
 XBT_PUBLIC void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks);
 
 // =========== user-level functions ===============

@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-network-wifi ${platfdir}/wifi.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-network-wifi ${platfdir}/wifi.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:sender@Station 1) Send a message to the other station.
 > [  0.000000] (2:receiver@Station 2) Wait for a message.
 > [  3.888889] (1:sender@Station 1) Done.

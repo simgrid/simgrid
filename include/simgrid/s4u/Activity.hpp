@@ -87,6 +87,8 @@ public:
   virtual Activity* cancel() = 0;
   /** Retrieve the current state of the activity */
   Activity::State get_state() const { return state_; }
+  /** Return a string representation of the activity's state (one of INITED, STARTING, STARTED, CANCELED, FINISHED) */
+  const char* get_state_str() const;
   void set_state(Activity::State state) { state_ = state; }
   /** Tests whether the given activity is terminated yet. */
   virtual bool test();

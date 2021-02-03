@@ -2,7 +2,7 @@
 
 p Testing the Pastry implementation
 
-$ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dht-pastry_d.xml --log=pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dht-pastry_d.xml --log=pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [ 20.007806] (1:node@node-0.simgrid.org) Task update from 366680 !!!
 > [ 20.007806] (1:node@node-0.simgrid.org) Node:
 > [ 20.007806] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 

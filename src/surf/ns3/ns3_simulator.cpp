@@ -22,7 +22,7 @@ std::map<std::string, ns3::ApplicationContainer, std::less<>> sink_from_sock; //
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
 static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_ns3);
 
 SgFlow::SgFlow(uint32_t totalBytes, simgrid::kernel::resource::NetworkNS3Action* action)
 {

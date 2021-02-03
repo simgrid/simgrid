@@ -5,7 +5,7 @@
 
 #include "src/plugins/vm/VmHostExt.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_vm);
 
 namespace simgrid {
 namespace vm {

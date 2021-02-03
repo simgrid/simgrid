@@ -28,6 +28,7 @@
 #include <boost/range/algorithm.hpp>
 
 #include <elfutils/libdw.h>
+#include <elfutils/version.h>
 
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -165,20 +166,23 @@ static FormClass classify_form(int form)
   static const std::unordered_map<int, FormClass> map = {
       {DW_FORM_addr, FormClass::Address},
 
-      {DW_FORM_block2, FormClass::Block},       {DW_FORM_block4, FormClass::Block},
-      {DW_FORM_block, FormClass::Block},        {DW_FORM_block1, FormClass::Block},
+      {DW_FORM_block2, FormClass::Block},           {DW_FORM_block4, FormClass::Block},
+      {DW_FORM_block, FormClass::Block},            {DW_FORM_block1, FormClass::Block},
 
-      {DW_FORM_data1, FormClass::Constant},     {DW_FORM_data2, FormClass::Constant},
-      {DW_FORM_data4, FormClass::Constant},     {DW_FORM_data8, FormClass::Constant},
-      {DW_FORM_udata, FormClass::Constant},     {DW_FORM_sdata, FormClass::Constant},
+      {DW_FORM_data1, FormClass::Constant},         {DW_FORM_data2, FormClass::Constant},
+      {DW_FORM_data4, FormClass::Constant},         {DW_FORM_data8, FormClass::Constant},
+      {DW_FORM_udata, FormClass::Constant},         {DW_FORM_sdata, FormClass::Constant},
+#if _ELFUTILS_PREREQ(0, 171)
+      {DW_FORM_implicit_const, FormClass::Constant},
+#endif
 
-      {DW_FORM_string, FormClass::String},      {DW_FORM_strp, FormClass::String},
+      {DW_FORM_string, FormClass::String},          {DW_FORM_strp, FormClass::String},
 
-      {DW_FORM_ref_addr, FormClass::Reference}, {DW_FORM_ref1, FormClass::Reference},
-      {DW_FORM_ref2, FormClass::Reference},     {DW_FORM_ref4, FormClass::Reference},
-      {DW_FORM_ref8, FormClass::Reference},     {DW_FORM_ref_udata, FormClass::Reference},
+      {DW_FORM_ref_addr, FormClass::Reference},     {DW_FORM_ref1, FormClass::Reference},
+      {DW_FORM_ref2, FormClass::Reference},         {DW_FORM_ref4, FormClass::Reference},
+      {DW_FORM_ref8, FormClass::Reference},         {DW_FORM_ref_udata, FormClass::Reference},
 
-      {DW_FORM_flag, FormClass::Flag},          {DW_FORM_flag_present, FormClass::Flag},
+      {DW_FORM_flag, FormClass::Flag},              {DW_FORM_flag_present, FormClass::Flag},
 
       {DW_FORM_exprloc, FormClass::ExprLoc}
 
@@ -296,13 +300,14 @@ static bool MC_dwarf_attr_flag(Dwarf_Die* die, int attribute, bool integrate)
 static uint64_t MC_dwarf_default_lower_bound(int lang)
 {
   const std::unordered_map<int, unsigned> map = {
-      {DW_LANG_C, 0},         {DW_LANG_C89, 0},     {DW_LANG_C99, 0},       {DW_LANG_C_plus_plus, 0},
-      {DW_LANG_D, 0},         {DW_LANG_Java, 0},    {DW_LANG_ObjC, 0},      {DW_LANG_ObjC_plus_plus, 0},
-      {DW_LANG_Python, 0},    {DW_LANG_UPC, 0},
+      {DW_LANG_C, 0},           {DW_LANG_C89, 0},            {DW_LANG_C99, 0},            {DW_LANG_C11, 0},
+      {DW_LANG_C_plus_plus, 0}, {DW_LANG_C_plus_plus_11, 0}, {DW_LANG_C_plus_plus_14, 0}, {DW_LANG_D, 0},
+      {DW_LANG_Java, 0},        {DW_LANG_ObjC, 0},           {DW_LANG_ObjC_plus_plus, 0}, {DW_LANG_Python, 0},
+      {DW_LANG_UPC, 0},
 
-      {DW_LANG_Ada83, 1},     {DW_LANG_Ada95, 1},   {DW_LANG_Fortran77, 1}, {DW_LANG_Fortran90, 1},
-      {DW_LANG_Fortran95, 1}, {DW_LANG_Modula2, 1}, {DW_LANG_Pascal83, 1},  {DW_LANG_PL1, 1},
-      {DW_LANG_Cobol74, 1},   {DW_LANG_Cobol85, 1}};
+      {DW_LANG_Ada83, 1},       {DW_LANG_Ada95, 1},          {DW_LANG_Fortran77, 1},      {DW_LANG_Fortran90, 1},
+      {DW_LANG_Fortran95, 1},   {DW_LANG_Fortran03, 1},      {DW_LANG_Fortran08, 1},      {DW_LANG_Modula2, 1},
+      {DW_LANG_Pascal83, 1},    {DW_LANG_PL1, 1},            {DW_LANG_Cobol74, 1},        {DW_LANG_Cobol85, 1}};
 
   auto res = map.find(lang);
   xbt_assert(res != map.end(), "No default DW_TAG_lower_bound for language %i and none given", lang);

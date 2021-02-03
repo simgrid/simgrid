@@ -19,7 +19,7 @@ find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 if(enable_documentation)
   ADD_CUSTOM_TARGET(documentation
     COMMENT "Generating the SimGrid documentation..."
-    DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
+    DEPENDS ${DOC_SOURCES} ${source_doxygen}
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_BINARY_DIR}/doc/doxygen
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_BINARY_DIR}/doc/example_lists
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/doc/html
@@ -48,22 +48,12 @@ if(enable_documentation)
 
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
 
-  foreach(file ${DOC_FIGS})
-    string(REPLACE ".fig" ".png" tmp_file ${file})
-    string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_BINARY_DIR}/doc/html/" tmp_file ${tmp_file})
-    ADD_CUSTOM_COMMAND(TARGET documentation  COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file})
-  endforeach()
-
   foreach(file ${DOC_IMG})
     ADD_CUSTOM_COMMAND(TARGET documentation COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_BINARY_DIR}/doc/html/)
   endforeach()
 
   ADD_CUSTOM_COMMAND(TARGET documentation
-    COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_BINARY_DIR}/doc/simgrid_modules.map
     COMMAND pwd
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Generate the index files"
-    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/doc/doxygen/logcategories.doc
-    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl ${CMAKE_HOME_DIRECTORY} > ${CMAKE_BINARY_DIR}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_COMMAND} -E echo "XX Generate list of files in examples/ for routing models"
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/doc/example_lists/
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh Floyd > ${CMAKE_BINARY_DIR}/doc/example_lists/example_filelist_routing_floyd
@@ -78,7 +68,6 @@ if(enable_documentation)
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh '<link_ctn ' > ${CMAKE_BINARY_DIR}/doc/example_lists/example_filelist_xmltag_linkctn
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
-    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/doc/simgrid_modules.map
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
   )
 
@@ -91,7 +80,7 @@ if(enable_documentation)
 
     COMMAND ${RSYNC_CMD} doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
 
-    COMMAND ${RSYNC_CMD} doc/html/simgrid_modules2.png doc/html/simgrid_modules.png /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
+    COMMAND ${RSYNC_CMD} /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
     /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
 
     COMMAND ${RSYNC_CMD} ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/

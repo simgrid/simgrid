@@ -245,7 +245,7 @@ So the final platform for our example becomes :
         <link_ctn id="link2"/>
     </route>
 
-.. _understanding_lv08
+.. _understanding_lv08:
 
 Understanding the default TCP model
 ***********************************

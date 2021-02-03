@@ -78,7 +78,7 @@ public:
   /** Signal to others that an actor wakes up for a sleep **/
   static xbt::signal<void(Actor const&)> on_wake_up;
   /** Signal to others that an actor is has been migrated to another host **/
-  static xbt::signal<void(Actor const&, Host const& previous_location)> on_host_change;
+  static xbt::signal<void(const Actor&, const Host& previous_location)> on_host_change;
 #ifndef DOXYGEN
   static xbt::signal<void(Actor const&)> on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
   static xbt::signal<void(Actor const&)> on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329
@@ -120,7 +120,7 @@ public:
    * Note that the arguments will be copied, so move-only parameters are forbidden */
   template <class F, class... Args,
             // This constructor is enabled only if the call code(args...) is valid:
-            typename = typename std::result_of<F(Args...)>::type>
+            typename = typename std::result_of_t<F(Args...)>>
   static ActorPtr create(const std::string& name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, std::bind(std::move(code), std::move(args)...));

@@ -877,10 +877,10 @@ Configuring the Tracing
 -----------------------
 
 The :ref:`tracing subsystem <outcomes_vizu>` can be configured in
-several different ways depending on the nature of the simulator (MSG,
-SimDag, SMPI) and the kind of traces that need to be obtained. See the
+several different ways depending on the used interface (S4U, SMPI, SimDag)
+and the kind of traces that needs to be obtained. See the
 :ref:`Tracing Configuration Options subsection
-<tracing_tracing_options>` to get a detailed description of each
+<tracing_tracing_options>` for a full description of each
 configuration option.
 
 We detail here a simple way to get the traces working for you, even if
@@ -1540,10 +1540,122 @@ the tests: the full file path would makes the tests non-reproducible because
 the paths of source files depend of the build settings. That would
 break most of the tests since their output is continually compared.
 
-Logging Configuration
+.. _logging_config:
+
+Logging configuration
 ---------------------
 
-This can be done by using XBT. Go to :ref:`XBT_log` for more details.
+As introduced in :ref:`outcome_logs`, the SimGrid logging mechanism allows to configure at runtime the messages that should be displayed and those that should be omitted. Each
+message produced in the code is given a category (denoting its topic) and a priority. Then at runtime, each category is given a threshold (only messages of priority higher than
+that threshold are displayed), a layout (deciding how the messages in this category are formatted), and an appender (deciding what to do with the message: either print on stderr or
+to a file).
+
+This section explains how to configure this logging features. You can also refer to the documentation of the :ref:`programmer's interface <logging_prog>`, that allows to produce
+messages from your code.
+
+Most of the time, the logging mechanism is configured at runtime using the ``--log`` command-line argument, even if you can also use :c:func:`xbt_log_control_set()` to control it from
+your program. To pass configure more than one setting, you can either pass several ``--log`` arguments, or separate your settings with spaces, that must be quoted accordingly. In
+practice, the following is equivalent to the above settings: ``--log=root.thresh:error --log=s4u_host.thresh:debug``.
+
+If you want to specify more than one setting, you can either pass several ``--log`` argument to your program as above, or separate them with spaces. In this case, you want to quote
+your settings, as in ``--log="root.thresh:error s4u_host.thresh:debug"``. The parameters are interpreted in order, from left to right.
+
+
+Threshold configuration
+.......................
+
+The keyword ``threshold`` controls which logging event will get displayed in a given category. For example, ``--log=root.threshold:debug`` displays *every* message produced in the
+``root`` category and its subcategories (i.e., every message produced -- this is *extremely* verbose), while ``--log=root.thres:critical`` turns almost everything off. As you can
+see, ``threshold`` can be abbreviated here.
+
+Existing thresholds:
+
+ - ``trace`` some functions display a message at this level when entering or returning
+ - ``debug`` output that is mostly useful when debugging the corresponding module.
+ - ``verbose`` verbose output that is only mildly interesting and can easily be ignored
+ - ``info`` usual output (this is the default threshold of all categories)
+ - ``warning`` minor issue encountered
+ - ``error`` issue encountered
+ - ``critical`` major issue encountered, such as assertions failures
+
+.. _log/fmt:
+
+Format configuration
+....................
+
+The keyword ``fmt`` controls the layout (the format) of a logging category. For example, ``--log=root.fmt:%m`` reduces the output to the user-message only, removing any decoration such
+as the date, or the actor ID, everything. Existing format directives:
+
+ - %%: the % char
+ - %n: line separator (LOG4J compatible)
+ - %e: plain old space (SimGrid extension)
+
+ - %m: user-provided message
+
+ - %c: Category name (LOG4J compatible)
+ - %p: Priority name (LOG4J compatible)
+
+ - %h: Hostname (SimGrid extension)
+ - %a: Actor name (SimGrid extension -- note that with SMPI this is the integer value of the process rank)
+ - %i: Actor PID (SimGrid extension -- this is a 'i' as in 'i'dea)
+ - %t: Thread "name" (LOG4J compatible -- actually the address of the thread in memory)
+
+ - %F: file name where the log event was raised (LOG4J compatible)
+ - %l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as in 'l'etter)
+ - %L: line number where the log event was raised (LOG4J compatible)
+ - %M: function name (LOG4J compatible -- called method name here of course).
+
+ - %d: date (UNIX-like epoch)
+ - %r: application age (time elapsed since the beginning of the application)
+
+
+``--log=root.fmt:'[%h:%a:(%i) %r] %l: %m%n'`` gives you the default layout used for info messages while ``--log=root.fmt:'[%h:%a:(%i) %r] %l: [%c/%p] %m%n'`` gives you the default
+layout for the other priorities (it adds the source code location). Also, the actor identification is omitted by the default layout for the messages coming directly from the
+SimGrid kernel, so info messages are formatted with ``[%r] [%c/%p] %m%n`` in this case. When specifying the layout manually, such distinctions are currently impossible, and the
+provided layout is used for every messages.
+
+As with printf, you can specify the precision and width of the fields. For example, ``%.4r`` limits the date precision to four digits while ``%15h`` limits the host name to at most
+15 chars.
+
+
+If you want to have spaces in your log format, you should protect it. Otherwise, SimGrid will consider that this is a space-separated list of several parameters. But you should
+also protect it from the shell that also splits command line arguments on spaces. At the end, you should use something such as ``--log="'root.fmt:%l: [%p/%c]: %m%n'"``. 
+Another option is to use the ``%e`` directive for spaces, as in ``--log=root.fmt:%l:%e[%p/%c]:%e%m%n``. 
+
+Category appender
+.................
+
+The keyword ``app`` controls the appended of a logging category. For example ``--log=root.app:file:mylogfile`` redirects every output to the file ``mylogfile``.
+
+With the ``splitfile`` appender, a new file is created when the size of the output reaches the specified size. The format is ``--log=root.app:splitfile:<size>:<file name>``. For
+example, ``--log=root.app:splitfile:500:mylog_%`` creates log files of at most 500 bytes, using the names ``mylog_0``, ``mylog_1``, ``mylog_2``, etc.
+
+The ``rollfile`` appender uses one file only, but the file is emptied and recreated when its size reaches the specified maximum. For example, ``--log=root.app:rollfile:500:mylog``
+ensures that the log file ``mylog`` will never overpass 500 bytes in size.
+
+Any appender setup this way have its own layout format, that you may change afterward. When specifying a new appender, its additivity is set to false to prevent log event displayed
+by this appender to "leak" to any other appender higher in the hierarchy. You can naturally change that if you want your messages to be displayed twice.
+
+Category additivity
+...................
+
+The keyword ``add`` controls the additivity of a logging category. By default, the messages are only passed one appender only: the more specific, i.e. the first one found when
+climbing the tree from the category in which they were produced. In Log4J parlance, it is said that the default additivity of appenders is false. If you change this setting to
+``on`` (or ``yes`` or ``1``), the produced messages will also be passed to the upper appender.
+
+Let's consider a more complex example: ``--log="root.app:file:all.log s4u.app:file:iface.log xbt.app:file:xbt.log xbt.add:yes``. Here, the logging of s4u will be sent to the
+``iface.log`` file; the logging of the xbt toolbox will be sent to both the ``xbt.log`` file and the ``all.log`` file (because xbt additivity was enabled); and every other loggings
+will only be sent to ``all.log``.
+
+Other options
+.............
+
+``--help-logs`` displays a complete help message about logging in SimGrid.
+
+``--help-log-categories`` displays the actual hierarchy of log categories for this binary.
+
+``--log=no_loc`` hides the source locations (file names and line numbers) from the messages. This is useful to make tests reproducible.
+
 
 .. |br| raw:: html
 

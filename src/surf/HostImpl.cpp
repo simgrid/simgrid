@@ -8,7 +8,7 @@
 
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_host, ker_resource, "Host resources agregate CPU, networking and I/O features");
 
 simgrid::surf::HostModel *surf_host_model = nullptr;
 
@@ -135,21 +135,5 @@ void HostImpl::remove_disk(const std::string& disk_name)
   }
 }
 
-std::vector<const char*> HostImpl::get_attached_storages()
-{
-  std::vector<const char*> storages;
-  for (auto const& s : storage_)
-    if (s.second->get_host() == piface_->get_cname())
-      storages.push_back(s.second->get_iface()->get_cname());
-  return storages;
-}
-std::unordered_map<std::string, s4u::Storage*>* HostImpl::get_mounted_storages()
-{
-  auto* mounts = new std::unordered_map<std::string, s4u::Storage*>();
-  for (auto const& m : storage_) {
-    mounts->insert({m.first, m.second->get_iface()});
-  }
-  return mounts;
-}
 } // namespace surf
 } // namespace simgrid

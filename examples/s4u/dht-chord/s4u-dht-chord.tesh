@@ -3,7 +3,7 @@
 p Testing the Chord implementation with S4U
 
 ! output sort 19
-$ ${bindir:=.}/s4u-dht-chord -nb_bits=3 ${platfdir}/cluster_backbone.xml s4u-dht-chord_d.xml --log=s4u_chord.thres:verbose "--log=root.fmt:[%10.5r]%e(%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-dht-chord -nb_bits=3 ${platfdir}/cluster_backbone.xml s4u-dht-chord_d.xml --log=s4u_chord.thres:verbose "--log=root.fmt:[%10.5r]%e(%a@%h)%e%m%n"
 > [   0.00000] (node@node-0.simgrid.org) My finger table:
 > [   0.00000] (node@node-0.simgrid.org) Start | Succ
 > [   0.00000] (node@node-0.simgrid.org)    3  |  42

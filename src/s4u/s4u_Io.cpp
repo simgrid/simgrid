@@ -6,7 +6,6 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Io.hpp"
-#include "simgrid/s4u/Storage.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "xbt/log.h"
 
@@ -15,36 +14,25 @@ namespace s4u {
 xbt::signal<void(Io const&)> Io::on_start;
 xbt::signal<void(Io const&)> Io::on_completion;
 
-Io::Io(sg_disk_t disk, sg_size_t size, OpType type) : disk_(disk), size_(size), type_(type)
+Io::Io()
 {
-  Activity::set_remaining(size_);
   pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
 }
 
-Io::Io(sg_storage_t storage, sg_size_t size, OpType type) : storage_(storage), size_(size), type_(type)
+IoPtr Io::init()
 {
-  Activity::set_remaining(size_);
-  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
+ return IoPtr(new Io());
 }
 
 Io* Io::start()
 {
   kernel::actor::simcall([this] {
-    if (storage_) {
-      (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
-          .set_name(get_name())
-          .set_storage(storage_->get_impl())
-          .set_size(size_)
-          .set_type(type_)
-          .start();
-    } else {
-      (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
-          .set_name(get_name())
-          .set_disk(disk_->get_impl())
-          .set_size(size_)
-          .set_type(type_)
-          .start();
-    }
+    (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_))
+                  .set_name(get_name())
+                  .set_disk(disk_->get_impl())
+                  .set_size(size_)
+                  .set_type(type_)
+                  .start();
   });
 
   if (suspended_)
@@ -78,6 +66,25 @@ Io* Io::wait_for(double timeout)
   this->release_dependencies();
 
   on_completion(*this);
+  return this;
+}
+
+IoPtr Io::set_disk(sg_disk_t disk)
+{
+  disk_ = disk;
+  return this;
+}
+
+IoPtr Io::set_size(sg_size_t size)
+{
+  size_ = size;
+  Activity::set_remaining(size_);
+  return this;
+}
+
+IoPtr Io::set_op_type(OpType type)
+{
+  type_ = type;
   return this;
 }
 

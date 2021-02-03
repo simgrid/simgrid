@@ -74,7 +74,7 @@ public:
   lmm::Constraint* get_read_constraint() const { return constraint_read_; }
   lmm::Constraint* get_write_constraint() const { return constraint_write_; }
 
-  /** @brief Check if the Storage is used (if an action currently uses its resources) */
+  /** @brief Check if the Disk is used (if an action currently uses its resources) */
   bool is_used() const override;
   void apply_event(profile::Event* event, double value) override;
   void turn_on() override;
@@ -100,11 +100,11 @@ public:
   /**
    * @brief diskAction constructor
    *
-   * @param model The StorageModel associated to this DiskAction
+   * @param model The DiskModel associated to this DiskAction
    * @param cost The cost of this DiskAction in bytes
    * @param failed [description]
    * @param var The lmm variable associated to this DiskAction if it is part of a LMM component
-   * @param storage The Storage associated to this DiskAction
+   * @param disk The Disk associated to this DiskAction
    * @param type [description]
    */
   DiskAction(kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var, DiskImpl* disk,

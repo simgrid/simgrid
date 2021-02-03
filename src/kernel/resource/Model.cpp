@@ -6,7 +6,7 @@
 #include "simgrid/kernel/resource/Model.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(resource);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_resource);
 
 namespace simgrid {
 namespace kernel {

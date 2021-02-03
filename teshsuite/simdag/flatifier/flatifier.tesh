@@ -1,5 +1,5 @@
 #!/usr/bin/env tesh
-$ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -134,7 +134,7 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -268,7 +268,7 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -302,7 +302,7 @@ $ ${bindir:=.}/flatifier ../platforms/host_attributes.xml "--log=root.fmt:[%10.6
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -320,7 +320,7 @@ $ ${bindir:=.}/flatifier ../platforms/link_attributes.xml "--log=root.fmt:[%10.6
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -363,7 +363,7 @@ $ ${bindir:=.}/flatifier ../platforms/three_hosts_non_symmetric_route.xml "--log
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -498,7 +498,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -525,7 +525,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -550,7 +550,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%1
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
@@ -684,7 +684,7 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">

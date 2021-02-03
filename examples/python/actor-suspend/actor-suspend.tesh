@@ -3,7 +3,7 @@
 p Testing the suspend/resume feature of SimGrid
 
 ! output sort 19
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/actor-suspend.py ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/actor-suspend.py ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (dream_master@Boivin) Let's create a lazy guy.
 > [  0.000000] (Lazy@Boivin) Nobody's watching me ? Let's go to sleep.
 > [  0.000000] (dream_master@Boivin) Let's wait a little bit...

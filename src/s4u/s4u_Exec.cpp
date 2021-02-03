@@ -22,6 +22,11 @@ Exec::Exec()
   pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
 }
 
+ExecPtr Exec::init()
+{
+  return ExecPtr(new Exec());
+}
+
 Exec* Exec::wait()
 {
   return this->wait_for(-1);

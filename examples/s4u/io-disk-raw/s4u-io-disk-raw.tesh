@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir}/s4u-io-disk-raw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir}/s4u-io-disk-raw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) *** alice properties ****
 > [  0.000000] (0:maestro@)   ram -> 100B
 > [  0.000000] (0:maestro@) *** bob properties ****

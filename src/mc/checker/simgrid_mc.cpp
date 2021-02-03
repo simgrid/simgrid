@@ -18,7 +18,7 @@
 #include <memory>
 #include <unistd.h>
 
-using mcapi = simgrid::mc::mc_api;
+using api = simgrid::mc::Api;
 
 static inline
 char** argvdup(int argc, char** argv)
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   smpi_init_options(); // only performed once
 #endif
   sg_config_init(&argc, argv);
-  mcapi::get().initialize(argv_copy);
+  api::get().initialize(argv_copy);
   delete[] argv_copy;
 
   auto checker = create_checker();
@@ -70,6 +70,6 @@ int main(int argc, char** argv)
     res = SIMGRID_MC_EXIT_LIVENESS;
   }
   checker = nullptr;
-  mcapi::get().s_close();
+  api::get().s_close();
   return res;
 }

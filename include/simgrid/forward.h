@@ -90,7 +90,6 @@ XBT_PUBLIC void intrusive_ptr_release(Semaphore* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Semaphore* m);
 
 class Disk;
-class Storage;
 } // namespace s4u
 
 namespace config {
@@ -157,9 +156,6 @@ class LinkImpl;
 class NetworkAction;
 class DiskImpl;
 class DiskModel;
-class StorageImpl;
-class StorageType;
-class StorageModel;
 }
 namespace routing {
 class ClusterCreationArgs;
@@ -204,7 +200,6 @@ using s4u_Mailbox           = simgrid::s4u::Mailbox;
 using s4u_Mutex             = simgrid::s4u::Mutex;
 using s4u_Semaphore         = simgrid::s4u::Semaphore;
 using s4u_Disk              = simgrid::s4u::Disk;
-using s4u_Storage           = simgrid::s4u::Storage;
 using s4u_NetZone           = simgrid::s4u::NetZone;
 using s4u_VM                = simgrid::s4u::VirtualMachine;
 
@@ -230,7 +225,6 @@ typedef struct s4u_Mailbox s4u_Mailbox;
 typedef struct s4u_Mutex s4u_Mutex;
 typedef struct s4u_Semaphore s4u_Semaphore;
 typedef struct s4u_Disk s4u_Disk;
-typedef struct s4u_Storage s4u_Storage;
 typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
 XBT_ATTRIB_DEPRECATED_v330("Please stop using this type alias") typedef enum kernel_activity_state e_smx_state_t;
@@ -269,8 +263,6 @@ typedef s4u_Link* sg_link_t;
 typedef const s4u_Link* const_sg_link_t;
 typedef s4u_Disk* sg_disk_t;
 typedef const s4u_Disk* const_sg_disk_t;
-typedef s4u_Storage* sg_storage_t;
-typedef const s4u_Storage* const_sg_storage_t;
 typedef s4u_File* sg_file_t;
 typedef const s4u_File* const_sg_file_t;
 typedef s4u_VM* sg_vm_t;

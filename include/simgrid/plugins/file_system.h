@@ -46,13 +46,6 @@ XBT_PUBLIC sg_size_t sg_disk_get_size_used(const_sg_disk_t d);
 XBT_PUBLIC sg_size_t sg_disk_get_size(const_sg_disk_t d);
 XBT_PUBLIC const char* sg_disk_get_mount_point(const_sg_disk_t d);
 
-XBT_PUBLIC sg_size_t sg_storage_get_size_free(const_sg_storage_t st);
-XBT_PUBLIC sg_size_t sg_storage_get_size_used(const_sg_storage_t st);
-XBT_PUBLIC sg_size_t sg_storage_get_size(const_sg_storage_t st);
-XBT_PUBLIC xbt_dict_t sg_storage_get_content(const_sg_storage_t storage);
-
-XBT_PUBLIC xbt_dict_t sg_host_get_storage_content(sg_host_t host);
-
 #if SIMGRID_HAVE_MSG
 
 typedef sg_file_t msg_file_t; // MSG backwards compatibility
@@ -74,12 +67,6 @@ typedef sg_file_t msg_file_t; // MSG backwards compatibility
 #define MSG_file_rmove(file, host, fullpath) sg_file_rmove((file), (host), (fullpath))
 
 #define MSG_storage_file_system_init() sg_storage_file_system_init()
-#define MSG_storage_get_free_size(st) sg_storage_get_size_free(st)
-#define MSG_storage_get_used_size(st) sg_storage_get_size_used(st)
-#define MSG_storage_get_size(st) sg_storage_get_size(st)
-#define MSG_storage_get_content(st) sg_storage_get_content(st)
-
-#define MSG_host_get_storage_content(st) sg_host_get_storage_content(st)
 
 #endif // SIMGRID_HAVE_MSG
 
@@ -101,9 +88,7 @@ namespace s4u {
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.
  *
- * They are located on @ref simgrid::s4u::Storage that are accessed from a given @ref simgrid::s4u::Host through
- * mountpoints.
- * For now, you cannot change the mountpoints programmatically, and must declare them from your platform file.
+ * They are located on @ref simgrid::s4u::Disk that are accessed from a given @ref simgrid::s4u::Host
  */
 class XBT_PUBLIC File : public xbt::Extendable<File> {
   sg_size_t size_ = 0;
@@ -112,13 +97,9 @@ class XBT_PUBLIC File : public xbt::Extendable<File> {
   sg_size_t current_position_ = SEEK_SET;
   int desc_id                 = 0;
   Disk* local_disk_           = nullptr;
-  Storage* local_storage_     = nullptr;
   std::string mount_point_;
 
-  Storage* find_local_storage_on(Host* host);
   Disk* find_local_disk_on(const Host* host);
-  sg_size_t write_on_storage(sg_size_t size, bool write_inside);
-  sg_size_t write_on_disk(sg_size_t size, bool write_inside);
 
 public:
   File(const std::string& fullpath, void* userdata);
@@ -175,24 +156,6 @@ public:
   {
     remote_mount_points_.insert({host, mount_point});
   }
-  sg_size_t get_size() const { return size_; }
-  sg_size_t get_used_size() const { return used_size_; }
-  void decr_used_size(sg_size_t size);
-  void incr_used_size(sg_size_t size);
-};
-
-class XBT_PUBLIC FileSystemStorageExt {
-  std::unique_ptr<std::map<std::string, sg_size_t, std::less<>>> content_;
-  sg_size_t used_size_ = 0;
-  sg_size_t size_      = 0;
-
-public:
-  static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
-  explicit FileSystemStorageExt(const Storage* ptr);
-  FileSystemStorageExt(const FileSystemStorageExt&) = delete;
-  FileSystemStorageExt& operator=(const FileSystemStorageExt&) = delete;
-  std::map<std::string, sg_size_t, std::less<>>* parse_content(const std::string& filename);
-  std::map<std::string, sg_size_t, std::less<>>* get_content() { return content_.get(); }
   sg_size_t get_size() const { return size_; }
   sg_size_t get_used_size() const { return used_size_; }
   void decr_used_size(sg_size_t size);

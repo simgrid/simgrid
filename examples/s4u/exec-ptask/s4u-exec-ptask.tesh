@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-exec-ptask ${platfdir}/energy_platform.xml --cfg=host/model:ptask_L07 --cfg=tracing:yes --cfg=tracing/uncategorized:yes --log=instr_resource.t:verbose --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-exec-ptask ${platfdir}/energy_platform.xml --cfg=host/model:ptask_L07 --cfg=tracing:yes --cfg=tracing/uncategorized:yes --log=instr_resource.t:verbose --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] (0:maestro@) Configuration change: Set 'tracing' to 'yes'
 > [  0.000000] (0:maestro@) Configuration change: Set 'tracing/uncategorized' to 'yes'

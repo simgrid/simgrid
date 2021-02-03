@@ -17,7 +17,7 @@ namespace activity {
 
 class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
-  void cleanupSurf();
+  void cleanup_surf();
 
   double rate_       = 0.0;
   double size_       = 0.0;
@@ -26,6 +26,9 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued */
 
 public:
+  CommImpl() = default;
+  CommImpl(s4u::Host* from, s4u::Host* to, double bytes);
+
   enum class Type { SEND = 0, RECEIVE, READY, DONE };
 
   CommImpl& set_type(CommImpl::Type type);
@@ -68,6 +71,8 @@ expectations of the other side, too. See  */
   resource::Action* dst_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */
   actor::ActorImplPtr src_actor_ = nullptr;
   actor::ActorImplPtr dst_actor_ = nullptr;
+  s4u::Host* from_               = nullptr; /* Pre-determined only for direct host-to-host communications */
+  s4u::Host* to_                 = nullptr; /* Otherwise, computed at start() time from the actors */
 
   /* Data to be transferred */
   unsigned char* src_buff_ = nullptr;

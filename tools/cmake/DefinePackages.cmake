@@ -51,8 +51,6 @@ set(EXTRA_DIST
   src/surf/xml/surfxml_sax_cb.cpp
 
   src/surf/disk_s19.hpp
-  src/surf/StorageImpl.hpp
-  src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.hpp
   src/surf/host_clm03.hpp
@@ -78,14 +76,10 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mrealloc.c
   src/xbt/mmalloc/swag.c
   src/xbt/mmalloc/swag.h
-  tools/tesh/generate_tesh
   tools/lualib.patch
   teshsuite/lua/lua_platforms.tesh
   examples/smpi/mc/only_send_deterministic.tesh
   examples/smpi/mc/non_deterministic.tesh
-
-  examples/deprecated/java/.classpath
-  examples/deprecated/java/.project
   )
 
 set(SMPI_SRC
@@ -355,8 +349,6 @@ set(SURF_SRC
   src/surf/network_interface.cpp
   src/surf/network_wifi.cpp
   src/surf/sg_platf.cpp
-  src/surf/StorageImpl.cpp
-  src/surf/storage_n11.cpp
   src/surf/surf_c_bindings.cpp
   src/surf/surf_interface.cpp
   src/surf/xml/platf.hpp
@@ -458,7 +450,6 @@ set(S4U_SRC
   src/s4u/s4u_Mutex.cpp
   src/s4u/s4u_Netzone.cpp
   src/s4u/s4u_Semaphore.cpp
-  src/s4u/s4u_Storage.cpp
 )
 
 set(SIMGRID_SRC
@@ -496,8 +487,6 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_as.hpp
   src/bindings/java/jmsg_comm.cpp
   src/bindings/java/jmsg_comm.h
-  src/bindings/java/jmsg_file.cpp
-  src/bindings/java/jmsg_file.h
   src/bindings/java/jmsg_host.cpp
   src/bindings/java/jmsg_host.h
   src/bindings/java/jmsg_process.cpp
@@ -512,15 +501,12 @@ set(JMSG_C_SRC
   src/bindings/java/jxbt_utilities.hpp
   src/bindings/java/JavaContext.cpp
   src/bindings/java/JavaContext.hpp
-  src/bindings/java/jmsg_storage.cpp
-  src/bindings/java/jmsg_storage.h
 )
 
 set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/NativeLib.java
   src/bindings/java/org/simgrid/msg/As.java
   src/bindings/java/org/simgrid/msg/Comm.java
-  src/bindings/java/org/simgrid/msg/File.java
   src/bindings/java/org/simgrid/msg/Host.java
   src/bindings/java/org/simgrid/msg/HostFailureException.java
   src/bindings/java/org/simgrid/msg/HostNotFoundException.java
@@ -532,8 +518,6 @@ set(JMSG_JAVA_SRC
   src/bindings/java/org/simgrid/msg/ProcessKilledError.java
   src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
   src/bindings/java/org/simgrid/msg/Semaphore.java
-  src/bindings/java/org/simgrid/msg/Storage.java
-  src/bindings/java/org/simgrid/msg/StorageNotFoundException.java
   src/bindings/java/org/simgrid/msg/Task.java
   src/bindings/java/org/simgrid/msg/TaskCancelledException.java
   src/bindings/java/org/simgrid/msg/TimeoutException.java
@@ -659,8 +643,8 @@ set(MC_SRC
   src/mc/mc_comm_pattern.hpp
   src/mc/mc_pattern.hpp
   src/mc/compare.cpp
-  src/mc/mc_api.cpp
-  src/mc/mc_api.hpp
+  src/mc/api.cpp
+  src/mc/api.hpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.hpp
@@ -678,6 +662,7 @@ set(MC_SRC
   src/mc/mc_smx.cpp
   src/mc/mc_exit.hpp
   src/mc/Transition.hpp
+  src/mc/udpor_global.cpp
   src/mc/udpor_global.hpp
   )
 
@@ -712,7 +697,6 @@ set(headers_to_install
   include/simgrid/cond.h
   include/simgrid/mutex.h
   include/simgrid/semaphore.h
-  include/simgrid/storage.h
   include/simgrid/vm.h
   include/simgrid/zone.h
   include/simgrid/s4u/Activity.hpp
@@ -730,7 +714,6 @@ set(headers_to_install
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp
   include/simgrid/s4u/Semaphore.hpp
-  include/simgrid/s4u/Storage.hpp
   include/simgrid/s4u/VirtualMachine.hpp
   include/simgrid/s4u.hpp
 
@@ -875,7 +858,6 @@ set(DOC_SOURCES
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
-  doc/doxygen/outcomes_logs.doc
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
   doc/doxygen/platform_lua.doc
@@ -893,6 +875,7 @@ set(DOC_SOURCES
   docs/manpages/tesh.pod
 
   docs/Build.sh
+  docs/bin/extract_logs_hierarchy.pl
   docs/requirements.txt
   docs/source/conf.py
   docs/source/Doxyfile
@@ -932,6 +915,7 @@ set(DOC_SOURCES
   docs/source/app_msg.rst
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst
+  docs/source/The_XBT_toolbox.rst
   docs/source/community.rst
   docs/source/Configuring_SimGrid.rst
   docs/source/Deploying_your_Application.rst
@@ -977,14 +961,7 @@ set(DOC_SOURCES
   CITATION.bib
   )
 
-set(DOC_FIGS
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
-  )
-
 set(DOC_TOOLS
-  tools/doxygen/fig2dev_postprocessor.pl
-  tools/doxygen/xbt_log_extract_hierarchy.pl
   tools/doxygen/list_routing_models_examples.sh
   )
 
@@ -1194,7 +1171,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/simulacrum_7_hosts.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
-  examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
   examples/platforms/small_platform.lua
   examples/platforms/small_platform_constant.xml

@@ -20,8 +20,10 @@ namespace s4u {
  */
 class XBT_PUBLIC Comm : public Activity_T<Comm> {
   Mailbox* mailbox_                   = nullptr;
-  kernel::actor::ActorImpl* sender_   = nullptr;
+  kernel::actor::ActorImpl* sender_   = nullptr; /* specified for normal mailbox-based communications*/
   kernel::actor::ActorImpl* receiver_ = nullptr;
+  Host* from_                         = nullptr; /* specified only for direct host-to-host communications */
+  Host* to_                           = nullptr;
   double rate_                        = -1;
   void* dst_buff_                     = nullptr;
   size_t dst_buff_size_               = 0;
@@ -41,6 +43,12 @@ public:
 #endif
 
   ~Comm() override;
+
+  /*! Creates a communication beween the two given hosts, bypassing the mailbox mechanism. */
+  static CommPtr sendto_init(Host* from, Host* to);
+  /*! Creates and start a communication of the given amount of bytes beween the two given hosts, bypassing the mailbox
+   * mechanism */
+  static CommPtr sendto_async(Host* from, Host* to, double simulated_size_in_bytes);
 
   static xbt::signal<void(Comm const&, bool is_sender)> on_start;
   static xbt::signal<void(Comm const&)> on_completion;
@@ -77,23 +85,31 @@ public:
   /** Specify the data to send.
    *
    * This is way will get actually copied over to the receiver.
-   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * That's completely unrelated from the simulated size (given with @ref Comm::set_payload_size()):
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */
   CommPtr set_src_data(void* buff);
-  /** Specify the size of the data to send. Not to be mixed with @ref Activity::set_remaining()
+  /** Specify the size of the data to send. Not to be mixed with @ref Comm::set_payload_size()
    *
    * That's the size of the data to actually copy in the simulator (ie, the data passed with Activity::set_src_data()).
-   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * That's completely unrelated from the simulated size (given with @ref Comm::set_payload_size()):
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */
   CommPtr set_src_data_size(size_t size);
-  /** Specify the data to send and its size. Don't mix the size with @ref Activity::set_remaining()
+
+  /* Specify the amount of bytes which exchange should be simulated. Not to be mixed with @ref Comm::set_src_data_size()
+   *
+   * That's the size of the simulated data, that's completely related from the actual data size (given with @ref
+   * Comm::set_src_data_size()).
+   */
+  Comm* set_payload_size(double bytes);
+
+  /** Specify the data to send and its size. Don't mix the size with @ref Comm::set_payload_size()
    *
    * This is way will get actually copied over to the receiver.
-   * That's completely unrelated from the simulated size (given with @ref Activity::set_remaining()):
+   * That's completely unrelated from the simulated size (given with @ref Comm::set_payload_size()):
    * you can send a short buffer in your simulator, that represents a very large message
    * in the simulated world, or the opposite.
    */

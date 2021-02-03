@@ -30,9 +30,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-XBT_PRIVATE std::map<std::string, simgrid::kernel::resource::StorageImpl*, std::less<>> mount_list;
-XBT_PRIVATE std::vector<std::string> known_storages;
-
 namespace simgrid {
 namespace kernel {
 namespace routing {
@@ -42,7 +39,6 @@ xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
 } // namespace simgrid
 
 static int surf_parse_models_setup_already_called = 0;
-std::map<std::string, simgrid::kernel::resource::StorageType*, std::less<>> storage_types;
 
 /** The current AS in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
@@ -54,7 +50,6 @@ static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 /** Module management function: creates all internal data structures */
 void sg_platf_init()
 {
-  simgrid::s4u::Engine::on_platform_created.connect(check_disk_attachment);
 }
 
 /** Module management function: frees all internal data structures */
@@ -79,9 +74,6 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 
   simgrid::s4u::Host* host =
       routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount, &props);
-
-  host->pimpl_->set_storages(mount_list);
-  mount_list.clear();
 
   host->pimpl_->set_disks(args->disks, host);
 
@@ -344,73 +336,6 @@ simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::ro
   return d;
 }
 
-void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage)
-{
-  xbt_assert(std::find(known_storages.begin(), known_storages.end(), storage->id) == known_storages.end(),
-             "Refusing to add a second storage named \"%s\"", storage->id.c_str());
-
-  const simgrid::kernel::resource::StorageType* stype;
-  auto st = storage_types.find(storage->type_id);
-  if (st != storage_types.end()) {
-    stype = st->second;
-  } else {
-    xbt_die("No storage type '%s'", storage->type_id.c_str());
-  }
-
-  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'", storage->id.c_str(),
-            storage->type_id.c_str(), storage->content.c_str());
-
-  known_storages.push_back(storage->id);
-
-  // if storage content is not specified use the content of storage_type if any
-  if (storage->content.empty() && not stype->content.empty()) {
-    storage->content = stype->content;
-    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s)", storage->id.c_str(),
-              stype->id.c_str());
-  }
-
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
-            "\n\t\tmodel '%s' \n\t\tcontent '%s' "
-            "\n\t\tproperties '%p''\n",
-            storage->id.c_str(), stype->model.c_str(), stype->id.c_str(), storage->content.c_str(),
-            storage->properties);
-
-  auto s = surf_storage_model->createStorage(storage->filename, storage->lineno, storage->id, stype->id,
-                                             storage->content, storage->attach);
-
-  if (storage->properties) {
-    s->set_properties(*storage->properties);
-    delete storage->properties;
-  }
-}
-
-void sg_platf_new_storage_type(const simgrid::kernel::routing::StorageTypeCreationArgs* storage_type)
-{
-  xbt_assert(storage_types.find(storage_type->id) == storage_types.end(),
-             "Reading a storage type, processing unit \"%s\" already exists", storage_type->id.c_str());
-
-  auto* stype = new simgrid::kernel::resource::StorageType(storage_type->id, storage_type->model, storage_type->content,
-                                                           storage_type->properties, storage_type->model_properties,
-                                                           storage_type->size);
-
-  XBT_DEBUG("Create a storage type id '%s' with model '%s', content '%s'", storage_type->id.c_str(),
-            storage_type->model.c_str(), storage_type->content.c_str());
-
-  storage_types[storage_type->id] = stype;
-}
-
-void sg_platf_new_mount(simgrid::kernel::routing::MountCreationArgs* mount)
-{
-  xbt_assert(std::find(known_storages.begin(), known_storages.end(), mount->storageId) != known_storages.end(),
-             "Cannot mount non-existent disk \"%s\"", mount->storageId.c_str());
-
-  XBT_DEBUG("Mount '%s' on '%s'", mount->storageId.c_str(), mount->name.c_str());
-
-  if (mount_list.empty())
-    XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
-  mount_list.insert({mount->name, simgrid::s4u::Engine::get_instance()->storage_by_name(mount->storageId)->get_impl()});
-}
-
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
 {
   routing_get_current()->add_route(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
@@ -517,7 +442,6 @@ static void surf_config_models_setup()
   std::string network_model_name = simgrid::config::get_value<std::string>("network/model");
   std::string cpu_model_name     = simgrid::config::get_value<std::string>("cpu/model");
   std::string disk_model_name    = simgrid::config::get_value<std::string>("disk/model");
-  std::string storage_model_name = simgrid::config::get_value<std::string>("storage/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
   if ((not simgrid::config::is_default("network/model") || not simgrid::config::is_default("cpu/model")) &&
@@ -548,10 +472,6 @@ static void surf_config_models_setup()
   XBT_DEBUG("Call disk_model_init");
   int disk_id = find_model_description(surf_disk_model_description, disk_model_name);
   surf_disk_model_description[disk_id].model_init_preparse();
-
-  XBT_DEBUG("Call storage_model_init");
-  int storage_id = find_model_description(surf_storage_model_description, storage_model_name);
-  surf_storage_model_description[storage_id].model_init_preparse();
 }
 
 /**

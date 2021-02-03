@@ -22,16 +22,15 @@ extern double NOW;
 
 void surf_presolve()
 {
-  double next_event_date = -1.0;
-  simgrid::kernel::profile::Event* event        = nullptr;
-  double value = -1.0;
-  simgrid::kernel::resource::Resource* resource = nullptr;
-
   XBT_DEBUG ("Consume all trace events occurring before the starting time.");
+  double next_event_date;
   while ((next_event_date = simgrid::kernel::profile::future_evt_set.next_date()) != -1.0) {
     if (next_event_date > NOW)
       break;
 
+    simgrid::kernel::profile::Event* event;
+    double value                                  = -1.0;
+    simgrid::kernel::resource::Resource* resource = nullptr;
     while ((event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource))) {
       if (value >= 0)
         resource->apply_event(event, value);
@@ -71,7 +70,7 @@ double surf_solve(double max_date)
 
   for (auto const& model : all_existing_models) {
     if (model != surf_host_model && model != surf_vm_model && model != surf_network_model &&
-        model != surf_storage_model && model != surf_disk_model) {
+        model != surf_disk_model) {
       double next_event_model = model->next_occurring_event(NOW);
       if ((time_delta < 0.0 || next_event_model < time_delta) && next_event_model >= 0.0)
         time_delta = next_event_model;
@@ -111,7 +110,7 @@ double surf_solve(double max_date)
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
     while ((event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource))) {
-      if (resource->is_used() || (watched_hosts.find(resource->get_cname()) != watched_hosts.end())) {
+      if (resource->is_used() || (watched_hosts().find(resource->get_cname()) != watched_hosts().end())) {
         time_delta = next_event_date - NOW;
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
                   time_delta);

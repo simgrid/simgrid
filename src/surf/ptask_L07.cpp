@@ -10,7 +10,7 @@
 
 #include <unordered_set>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 
 /**************************************/

@@ -29,7 +29,7 @@ namespace s4u {
  *
  */
 class XBT_PUBLIC Semaphore {
-  smx_sem_t sem_;
+  kernel::activity::SemaphoreImpl* const pimpl_;
   std::atomic_int_fast32_t refcount_{0};
 
   friend void intrusive_ptr_add_ref(Semaphore* sem);

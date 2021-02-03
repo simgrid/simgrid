@@ -71,7 +71,5 @@ void jxbt_throw_host_failure(JNIEnv* env, const std::string& details);
 void jxbt_throw_time_out_failure(JNIEnv* env, const std::string& details);
 /**Thrown when a task is canceled */
 void jxbt_throw_task_cancelled(JNIEnv* env, const std::string& details);
-/** Thrown when looking for a storage from name does not lead to anything */
-void jxbt_throw_storage_not_found(JNIEnv* env, const std::string& invalid_name);
 
 #endif

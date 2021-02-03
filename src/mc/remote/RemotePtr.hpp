@@ -27,7 +27,7 @@ namespace mc {
  */
 template <class T> class Remote {
 private:
-  typename std::aligned_storage<sizeof(T), alignof(T)>::type buffer;
+  typename std::aligned_storage_t<sizeof(T), alignof(T)> buffer;
 
 public:
   Remote() = default;

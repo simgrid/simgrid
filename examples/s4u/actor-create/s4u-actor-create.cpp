@@ -19,6 +19,7 @@
 
 #include <simgrid/s4u.hpp>
 #include <string>
+namespace sg4 = simgrid::s4u;
 
 // This declares a logging channel so that XBT_INFO can be used later
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_create, "The logging channel used in this example");
@@ -29,7 +30,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_create, "The logging channel used in this
  */
 static void receiver(const std::string& mailbox_name)
 {
-  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(mailbox_name);
 
   XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->get_cname());
 
@@ -44,8 +45,8 @@ static void receiver(const std::string& mailbox_name)
 static void forwarder(int argc, char** argv)
 {
   xbt_assert(argc >= 3, "Actor forwarder requires 2 parameters, but got only %d", argc - 1);
-  simgrid::s4u::Mailbox* in    = simgrid::s4u::Mailbox::by_name(argv[1]);
-  simgrid::s4u::Mailbox* out   = simgrid::s4u::Mailbox::by_name(argv[2]);
+  sg4::Mailbox* in             = sg4::Mailbox::by_name(argv[1]);
+  sg4::Mailbox* out            = sg4::Mailbox::by_name(argv[2]);
   auto* msg                    = in->get<std::string>();
   XBT_INFO("Forward '%s'.", msg->c_str());
   out->put(msg, msg->size());
@@ -75,7 +76,7 @@ public:
   void operator()() const /* This is the main code of the actor */
   {
     XBT_INFO("Hello s4u, I have something to send");
-    simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mbox);
+    sg4::Mailbox* mailbox = sg4::Mailbox::by_name(mbox);
 
     mailbox->put(new std::string(msg), msg.size());
     XBT_INFO("I'm done. See you.");
@@ -86,7 +87,7 @@ public:
 int main(int argc, char** argv)
 {
   /* When your program starts, you have to first start a new simulation engine, as follows */
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   /* Then you should load a platform file, describing your simulated platform */
   e.load_platform("../../platforms/small_platform.xml");
@@ -97,15 +98,15 @@ int main(int argc, char** argv)
    * as we do here for the receiver actors. This function can take any kind of parameters, as
    * long as the last parameters of Actor::create() match what your function expects.
    */
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("Fafard"), &receiver, "mb42");
+  sg4::Actor::create("receiver", sg4::Host::by_name("Fafard"), &receiver, "mb42");
 
   /* If your actor is getting more complex, you probably want to implement it as a class instead,
    * as we do here for the sender actors. The main behavior goes into operator()() of the class.
    *
    * You can then directly start your actor, as follows: */
-  simgrid::s4u::Actor::create("sender1", simgrid::s4u::Host::by_name("Tremblay"), Sender());
+  sg4::Actor::create("sender1", sg4::Host::by_name("Tremblay"), Sender());
   /* If you want to pass parameters to your class, that's very easy: just use your constructors */
-  simgrid::s4u::Actor::create("sender2", simgrid::s4u::Host::by_name("Jupiter"), Sender("GloubiBoulga"));
+  sg4::Actor::create("sender2", sg4::Host::by_name("Jupiter"), Sender("GloubiBoulga"));
 
   /* But starting actors directly is considered as a bad experimental habit, since it ties the code
    * you want to test with the experimental scenario. Starting your actors from an external deployment

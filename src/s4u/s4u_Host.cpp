@@ -6,6 +6,7 @@
 #include "simgrid/host.h"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
@@ -44,7 +45,6 @@ Host::~Host()
   if (pimpl_netpoint_ != nullptr) // not removed yet by a children class
     Engine::get_instance()->netpoint_unregister(pimpl_netpoint_);
   delete pimpl_cpu;
-  delete mounts_;
 }
 
 /** @brief Fire the required callbacks and destroy the object
@@ -180,12 +180,9 @@ void Host::sendto(Host* dest, double byte_amount)
   sendto_async(dest, byte_amount)->wait();
 }
 
-ActivityPtr Host::sendto_async(Host* dest, double byte_amount)
+CommPtr Host::sendto_async(Host* dest, double byte_amount)
 {
-  std::vector<Host*> m_host_list   = {this, dest};
-  std::vector<double> flops_amount = {0, 0};
-  std::vector<double> bytes_amount = {0, byte_amount, 0, 0};
-  return this_actor::exec_init(m_host_list, flops_amount, bytes_amount)->start();
+  return Comm::sendto_async(this, dest, byte_amount);
 }
 
 /** Get the properties assigned to a host */
@@ -275,24 +272,6 @@ void Host::add_disk(const Disk* disk)
 void Host::remove_disk(const std::string& disk_name)
 {
   kernel::actor::simcall([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
-}
-/**
- * @ingroup simix_storage_management
- * @brief Returns the list of storages attached to a host.
- * @return a vector containing all storages attached to the host
- */
-std::vector<const char*> Host::get_attached_storages() const
-{
-  return kernel::actor::simcall([this] { return this->pimpl_->get_attached_storages(); });
-}
-
-std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()
-{
-  kernel::actor::simcall([this] {
-    if (mounts_ == nullptr)
-      mounts_ = pimpl_->get_mounted_storages();
-  });
-  return *mounts_;
 }
 
 ExecPtr Host::exec_async(double flops) const
@@ -398,7 +377,7 @@ void sg_host_user_destroy(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v328
   host->set_data(nullptr);
 }
 
-// ========= storage related functions ============
+// ========= Disk related functions ============
 void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks)
 {
   std::vector<sg_disk_t> list = host->get_disks();
@@ -406,28 +385,6 @@ void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t
   *disks                      = static_cast<sg_disk_t*>(xbt_malloc(sizeof(sg_disk_t) * (*disk_count)));
   for (size_t i = 0; i < *disk_count; i++)
     (*disks)[i] = list[i];
-}
-
-xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
-{
-  xbt_assert((host != nullptr), "Invalid parameters");
-  xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
-  for (auto const& elm : host->get_mounted_storages()) {
-    const char* mount_name = elm.first.c_str();
-    const simgrid::s4u::Storage* storage = elm.second;
-    xbt_dict_set(res, mount_name, (void*)storage->get_cname());
-  }
-
-  return res;
-}
-
-xbt_dynar_t sg_host_get_attached_storage_list(const_sg_host_t host)
-{
-  xbt_dynar_t storage_dynar               = xbt_dynar_new(sizeof(const char*), nullptr);
-  std::vector<const char*> storage_vector = host->get_attached_storages();
-  for (auto const& name : storage_vector)
-    xbt_dynar_push(storage_dynar, &name);
-  return storage_dynar;
 }
 
 // =========== user-level functions ===============

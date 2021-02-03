@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-actor-lifetime ${platfdir}/cluster_backbone.xml s4u-actor-lifetime_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-actor-lifetime ${platfdir}/cluster_backbone.xml s4u-actor-lifetime_d.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.simgrid.org) Hello! I go to sleep.
 > [  0.000000] (2:sleeper@node-1.simgrid.org) Hello! I go to sleep.
 > [  2.000000] (3:sleeper@node-0.simgrid.org) Hello! I go to sleep.

@@ -15,6 +15,7 @@ INPUT                 += ../../include/simgrid/mutex.h
 INPUT                 += ../../include/simgrid/semaphore.h
 INPUT                 += ../../include/simgrid/vm.h
 INPUT                 += ../../include/simgrid/zone.h
+INPUT                 += ../../include/xbt/signal.hpp
 INPUT                 += ../../src/msg/
 INPUT                 += ../../src/plugins/
 RECURSIVE              = YES

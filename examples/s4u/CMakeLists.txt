@@ -61,9 +61,9 @@ endif()
 
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
-                 app-bittorrent app-chainsend app-pingpong app-token-ring
-                 comm-ready comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
-                 comm-dependent
+                 app-bittorrent app-chainsend app-token-ring
+                 comm-pingpong comm-ready comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
+                 comm-dependent comm-host2host
                  cloud-capping cloud-migration cloud-simple
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
@@ -210,9 +210,9 @@ foreach (example trace-categories trace-masterworkers trace-platform trace-proce
 endforeach()
 
 if (NOT enable_memcheck AND NOT WIN32)
-  ADD_TESH(simix-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/app-pingpong
+  ADD_TESH(simix-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/comm-pingpong
                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                            ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh)
+                            ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/simix-breakpoint.tesh)
 endif()
 
 if(enable_coverage AND SIMGRID_HAVE_MC)
@@ -227,7 +227,7 @@ endif()
 set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp              
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3-wifi/s4u-network-ns3-wifi.cpp              PARENT_SCOPE)
-set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
+set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/simix-breakpoint.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.tesh

@@ -16,8 +16,6 @@ set(trace-pingpong_files        Main  PingPongTask Receiver Sender)
 set(energy-consumption_files    Main  EnergyConsumer)
 set(energy-pstate_files         Main  PstateRunner)
 set(energy-vm_files             Main  EnergyVMRunner)
-set(io-file_files               Main  Node)
-set(io-storage_files            Main  Client)
 set(process-kill_files          Main  Killer  Victim)
 set(process-migration_files     Main  Emigrant  Policeman)
 set(process-startkilltime_files Main  Sleeper)
@@ -31,7 +29,7 @@ if(enable_java)
 endif()
 
 foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend
-         cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload io-file io-storage
+         cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload
          process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong)
   string (REPLACE "-" "/" example_dir ${example})
   set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/${example_dir})
@@ -71,7 +69,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
 
 if(enable_java)
   foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend
-           cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload io-file io-storage
+           cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload
            process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong)
     string (REPLACE "-" "/" example_dir ${example})
     ADD_TESH(java-${example}  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/java --setenv LD_LIBRARY_PATH=${TESH_LIBRARY_PATH} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/deprecated/java/${example_dir} ${CMAKE_HOME_DIRECTORY}/examples/deprecated/java/${example_dir}/${example}.tesh)

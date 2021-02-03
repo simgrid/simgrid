@@ -1,6 +1,6 @@
 # Test for MPI_File_read and MPI_File_write
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_io -platform ../../../examples/platforms/hosts_with_disks.xml -np 4 --log=xbt_cfg.thres:critical --log=smpi_config.thres:warning --log=smpi_mpi.thres:error --log=s4u_file.thres:error --log=smpi_io.thres:verbose "--log=root.fmt:(%P@%h)%e%m%n" --cfg=smpi/simulate-computation:0 ${bindir:=.}/io-shared
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_io -platform ../../../examples/platforms/hosts_with_disks.xml -np 4 --log=xbt_cfg.thres:critical --log=smpi_config.thres:warning --log=smpi_mpi.thres:error --log=s4u_file.thres:error --log=smpi_io.thres:verbose "--log=root.fmt:(%a@%h)%e%m%n" --cfg=smpi/simulate-computation:0 ${bindir:=.}/io-shared
 > [rank 0] -> bob
 > [rank 1] -> carl
 > [rank 2] -> bob

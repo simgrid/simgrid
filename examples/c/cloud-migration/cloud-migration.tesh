@@ -1,4 +1,4 @@
-$ ${bindir:=.}/c-cloud-migration ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/c-cloud-migration ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:master_@Fafard) Test: Migrate a VM with 1000 Mbytes RAM
 > [132.765801] (1:master_@Fafard) VM0 migrated: Fafard->Tremblay in 132.766 s
 > [132.765801] (1:master_@Fafard) Test: Migrate a VM with 100 Mbytes RAM

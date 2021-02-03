@@ -1,8 +1,6 @@
 # This file lists the content of the python source package
 # Prepared in tools/cmake/Distrib.cmake
-include MANIFEST.in
-include doc/shared/fig/simgrid_modules.fig
-include doc/shared/fig/simgrid_modules2.fig
+
 include doc/webcruft/Paje_MSG_screenshot.jpg
 include doc/webcruft/Paje_MSG_screenshot_thn.jpg
 include doc/webcruft/SGicon.gif
@@ -61,9 +59,6 @@ include examples/c/app-masterworker/app-masterworker-vivaldi_d.xml
 include examples/c/app-masterworker/app-masterworker.c
 include examples/c/app-masterworker/app-masterworker.tesh
 include examples/c/app-masterworker/app-masterworker_d.xml
-include examples/c/app-pingpong/app-pingpong.c
-include examples/c/app-pingpong/app-pingpong.tesh
-include examples/c/app-pingpong/app-pingpong_d.xml
 include examples/c/app-token-ring/app-token-ring.c
 include examples/c/app-token-ring/app-token-ring.tesh
 include examples/c/cloud-capping/cloud-capping.c
@@ -74,6 +69,9 @@ include examples/c/cloud-migration/cloud-migration.c
 include examples/c/cloud-migration/cloud-migration.tesh
 include examples/c/cloud-simple/cloud-simple.c
 include examples/c/cloud-simple/cloud-simple.tesh
+include examples/c/comm-pingpong/comm-pingpong.c
+include examples/c/comm-pingpong/comm-pingpong.tesh
+include examples/c/comm-pingpong/comm-pingpong_d.xml
 include examples/c/comm-wait/comm-wait.c
 include examples/c/comm-wait/comm-wait.tesh
 include examples/c/comm-wait/comm-wait2_d.xml
@@ -223,12 +221,6 @@ include examples/deprecated/java/energy/vm/energy-vm.tesh
 include examples/deprecated/java/hostload/LoadRunner.java
 include examples/deprecated/java/hostload/Main.java
 include examples/deprecated/java/hostload/hostload.tesh
-include examples/deprecated/java/io/file/Main.java
-include examples/deprecated/java/io/file/Node.java
-include examples/deprecated/java/io/file/io-file.tesh
-include examples/deprecated/java/io/storage/Client.java
-include examples/deprecated/java/io/storage/Main.java
-include examples/deprecated/java/io/storage/io-storage.tesh
 include examples/deprecated/java/process/kill/Killer.java
 include examples/deprecated/java/process/kill/Main.java
 include examples/deprecated/java/process/kill/Victim.java
@@ -355,9 +347,6 @@ include examples/s4u/app-masterworkers/s4u-app-masterworkers-class.cpp
 include examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
 include examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh
 include examples/s4u/app-masterworkers/s4u-app-masterworkers_d.xml
-include examples/s4u/app-pingpong/s4u-app-pingpong.cpp
-include examples/s4u/app-pingpong/s4u-app-pingpong.tesh
-include examples/s4u/app-pingpong/simix-breakpoint.tesh
 include examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 include examples/s4u/app-token-ring/s4u-app-token-ring.tesh
 include examples/s4u/cloud-capping/s4u-cloud-capping.cpp
@@ -368,6 +357,11 @@ include examples/s4u/cloud-simple/s4u-cloud-simple.cpp
 include examples/s4u/cloud-simple/s4u-cloud-simple.tesh
 include examples/s4u/comm-dependent/s4u-comm-dependent.cpp
 include examples/s4u/comm-dependent/s4u-comm-dependent.tesh
+include examples/s4u/comm-host2host/s4u-comm-host2host.cpp
+include examples/s4u/comm-host2host/s4u-comm-host2host.tesh
+include examples/s4u/comm-pingpong/s4u-comm-pingpong.cpp
+include examples/s4u/comm-pingpong/s4u-comm-pingpong.tesh
+include examples/s4u/comm-pingpong/simix-breakpoint.tesh
 include examples/s4u/comm-ready/s4u-comm-ready.cpp
 include examples/s4u/comm-ready/s4u-comm-ready.tesh
 include examples/s4u/comm-ready/s4u-comm-ready_d.xml
@@ -781,7 +775,6 @@ include teshsuite/simdag/comp-only-par/comp-only-par.c
 include teshsuite/simdag/comp-only-par/comp-only-par.tesh
 include teshsuite/simdag/comp-only-seq/comp-only-seq.c
 include teshsuite/simdag/comp-only-seq/comp-only-seq.tesh
-include teshsuite/simdag/flatifier/bogus_disk_attachment.tesh
 include teshsuite/simdag/flatifier/bogus_missing_gateway.tesh
 include teshsuite/simdag/flatifier/bogus_two_hosts_asymetric.tesh
 include teshsuite/simdag/flatifier/flatifier.cpp
@@ -790,7 +783,6 @@ include teshsuite/simdag/incomplete/incomplete.c
 include teshsuite/simdag/incomplete/incomplete.tesh
 include teshsuite/simdag/platforms/Dijkstra.xml
 include teshsuite/simdag/platforms/bob.trace
-include teshsuite/simdag/platforms/bogus_disk_attachment.xml
 include teshsuite/simdag/platforms/bogus_missing_dst_gateway.xml
 include teshsuite/simdag/platforms/bogus_missing_src_gateway.xml
 include teshsuite/simdag/platforms/bogus_two_hosts_asymetric.xml
@@ -1738,8 +1730,6 @@ include teshsuite/xbt/signals/signals.tesh
 include tools/MSG_visualization/colorize.pl
 include tools/MSG_visualization/trace2fig.pl
 include tools/address_sanitizer.supp
-include tools/doxygen/fig2dev_postprocessor.pl
-include tools/doxygen/xbt_log_extract_hierarchy.pl
 include tools/fix-paje-trace.sh
 include tools/generate-dwarf-functions
 include tools/graphicator/graphicator.cpp
@@ -1799,7 +1789,6 @@ include doc/doxygen/module-sd.doc
 include doc/doxygen/module-surf.doc
 include doc/doxygen/module-trace.doc
 include doc/doxygen/module-xbt.doc
-include doc/doxygen/outcomes_logs.doc
 include doc/doxygen/outcomes_vizu.doc
 include doc/doxygen/platform.doc
 include doc/doxygen/platform_lua.doc
@@ -1807,6 +1796,7 @@ include doc/doxygen/uhood.doc
 include doc/doxygen/uhood_arch.doc
 include doc/doxygen/uhood_switch.doc
 include docs/Build.sh
+include docs/bin/extract_logs_hierarchy.pl
 include docs/find-missing.ignore
 include docs/find-missing.py
 include docs/ignored_symbols
@@ -1827,6 +1817,7 @@ include docs/source/Platform_Examples.rst
 include docs/source/Platform_Routing.rst
 include docs/source/Plugins.rst
 include docs/source/Start_Your_Own_Project.rst
+include docs/source/The_XBT_toolbox.rst
 include docs/source/Tutorial_Algorithms.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/XML_Reference.rst
@@ -1891,8 +1882,6 @@ include docs/source/tuto_smpi/img/lu.S.4.png
 include docs/source/tuto_smpi/roundtrip.c
 include examples/README.rst
 include examples/c/CMakeLists.txt
-include examples/deprecated/java/.classpath
-include examples/deprecated/java/.project
 include examples/deprecated/java/CMakeLists.txt
 include examples/deprecated/msg/mc/CMakeLists.txt
 include examples/deprecated/simdag/CMakeLists.txt
@@ -1957,7 +1946,6 @@ include examples/platforms/small_platform_profile.xml
 include examples/platforms/small_platform_with_routers.xml
 include examples/platforms/storage/content/small_content.txt
 include examples/platforms/storage/content/storage_content.txt
-include examples/platforms/storage/storage.xml
 include examples/platforms/syscoord/generate_peer_platform.pl
 include examples/platforms/syscoord/median_harvard.syscoord
 include examples/platforms/syscoord/median_meridian.syscoord
@@ -2046,7 +2034,6 @@ include include/simgrid/s4u/Mailbox.hpp
 include include/simgrid/s4u/Mutex.hpp
 include include/simgrid/s4u/NetZone.hpp
 include include/simgrid/s4u/Semaphore.hpp
-include include/simgrid/s4u/Storage.hpp
 include include/simgrid/s4u/VirtualMachine.hpp
 include include/simgrid/semaphore.h
 include include/simgrid/simdag.h
@@ -2054,7 +2041,6 @@ include include/simgrid/simix.h
 include include/simgrid/simix.hpp
 include include/simgrid/simix/blocking_simcall.hpp
 include include/simgrid/smpi/replay.hpp
-include include/simgrid/storage.h
 include include/simgrid/version.h.in
 include include/simgrid/vm.h
 include include/simgrid/zone.h
@@ -2115,14 +2101,10 @@ include src/bindings/java/jmsg_as.cpp
 include src/bindings/java/jmsg_as.hpp
 include src/bindings/java/jmsg_comm.cpp
 include src/bindings/java/jmsg_comm.h
-include src/bindings/java/jmsg_file.cpp
-include src/bindings/java/jmsg_file.h
 include src/bindings/java/jmsg_host.cpp
 include src/bindings/java/jmsg_host.h
 include src/bindings/java/jmsg_process.cpp
 include src/bindings/java/jmsg_process.h
-include src/bindings/java/jmsg_storage.cpp
-include src/bindings/java/jmsg_storage.h
 include src/bindings/java/jmsg_synchro.cpp
 include src/bindings/java/jmsg_synchro.h
 include src/bindings/java/jmsg_task.cpp
@@ -2136,7 +2118,6 @@ include src/bindings/java/jxbt_utilities.hpp
 include src/bindings/java/org/simgrid/NativeLib.java
 include src/bindings/java/org/simgrid/msg/As.java
 include src/bindings/java/org/simgrid/msg/Comm.java
-include src/bindings/java/org/simgrid/msg/File.java
 include src/bindings/java/org/simgrid/msg/Host.java
 include src/bindings/java/org/simgrid/msg/HostFailureException.java
 include src/bindings/java/org/simgrid/msg/HostNotFoundException.java
@@ -2148,8 +2129,6 @@ include src/bindings/java/org/simgrid/msg/Process.java
 include src/bindings/java/org/simgrid/msg/ProcessKilledError.java
 include src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
 include src/bindings/java/org/simgrid/msg/Semaphore.java
-include src/bindings/java/org/simgrid/msg/Storage.java
-include src/bindings/java/org/simgrid/msg/StorageNotFoundException.java
 include src/bindings/java/org/simgrid/msg/Task.java
 include src/bindings/java/org/simgrid/msg/TaskCancelledException.java
 include src/bindings/java/org/simgrid/msg/TimeoutException.java
@@ -2270,6 +2249,8 @@ include src/mc/Session.hpp
 include src/mc/Transition.hpp
 include src/mc/VisitedState.cpp
 include src/mc/VisitedState.hpp
+include src/mc/api.cpp
+include src/mc/api.hpp
 include src/mc/checker/Checker.hpp
 include src/mc/checker/CommunicationDeterminismChecker.cpp
 include src/mc/checker/CommunicationDeterminismChecker.hpp
@@ -2300,9 +2281,6 @@ include src/mc/inspect/mc_member.cpp
 include src/mc/inspect/mc_unw.cpp
 include src/mc/inspect/mc_unw.hpp
 include src/mc/inspect/mc_unw_vmread.cpp
-include src/mc/mc_api.cpp
-include src/mc/mc_api.hpp
-include src/mc/udpor_global.hpp
 include src/mc/mc_base.cpp
 include src/mc/mc_base.h
 include src/mc/mc_client_api.cpp
@@ -2349,6 +2327,8 @@ include src/mc/sosp/Region.hpp
 include src/mc/sosp/Snapshot.cpp
 include src/mc/sosp/Snapshot.hpp
 include src/mc/sosp/Snapshot_test.cpp
+include src/mc/udpor_global.cpp
+include src/mc/udpor_global.hpp
 include src/msg/msg_comm.cpp
 include src/msg/msg_global.cpp
 include src/msg/msg_legacy.cpp
@@ -2385,7 +2365,6 @@ include src/s4u/s4u_Mailbox.cpp
 include src/s4u/s4u_Mutex.cpp
 include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp
-include src/s4u/s4u_Storage.cpp
 include src/simdag/dax.dtd
 include src/simdag/dax_dtd.c
 include src/simdag/dax_dtd.h
@@ -2598,8 +2577,6 @@ include src/smpi/smpirun.in
 include src/smpi/smpitools.sh
 include src/surf/HostImpl.cpp
 include src/surf/HostImpl.hpp
-include src/surf/StorageImpl.cpp
-include src/surf/StorageImpl.hpp
 include src/surf/cpu_cas01.cpp
 include src/surf/cpu_cas01.hpp
 include src/surf/cpu_interface.cpp
@@ -2629,8 +2606,6 @@ include src/surf/ns3/ns3_simulator.hpp
 include src/surf/ptask_L07.cpp
 include src/surf/ptask_L07.hpp
 include src/surf/sg_platf.cpp
-include src/surf/storage_n11.cpp
-include src/surf/storage_n11.hpp
 include src/surf/surf_c_bindings.cpp
 include src/surf/surf_interface.cpp
 include src/surf/surf_interface.hpp
@@ -2777,9 +2752,7 @@ include tools/cmake/test_prog/prog_makecontext.c
 include tools/cmake/test_prog/prog_stackgrowth.c
 include tools/cmake/test_prog/prog_stacksetup.c
 include tools/cmake/test_prog/prog_tsan.cpp
-include tools/doxygen/fig2dev_postprocessor.pl
 include tools/doxygen/list_routing_models_examples.sh
-include tools/doxygen/xbt_log_extract_hierarchy.pl
 include tools/graphicator/CMakeLists.txt
 include tools/lualib.patch
 include tools/smpi/generate_smpi_defines.pl
@@ -2791,4 +2764,3 @@ include tools/stack-cleaner/clean-stack-filter
 include tools/stack-cleaner/compiler-wrapper
 include tools/stack-cleaner/fortran
 include tools/tesh/CMakeLists.txt
-include tools/tesh/generate_tesh

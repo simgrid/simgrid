@@ -358,19 +358,16 @@ public:
    * @exception std::future_error no state is associated with the future
    */
   template <class F>
-  auto then(F continuation) -> typename std::enable_if<not is_future<decltype(continuation(std::move(*this)))>::value,
-                                                       Future<decltype(continuation(std::move(*this)))>>::type
+  auto then(F continuation) -> typename std::enable_if_t<not is_future<decltype(continuation(std::move(*this)))>::value,
+                                                         Future<decltype(continuation(std::move(*this)))>>
   {
     return this->then_no_unwrap(std::move(continuation));
   }
 
   /** Attach a continuation to this future (future chaining) */
-  template<class F>
-  auto then(F continuation)
-  -> typename std::enable_if<
-       is_future<decltype(continuation(std::move(*this)))>::value,
-       decltype(continuation(std::move(*this)))
-     >::type
+  template <class F>
+  auto then(F continuation) -> typename std::enable_if_t<is_future<decltype(continuation(std::move(*this)))>::value,
+                                                         decltype(continuation(std::move(*this)))>
   {
     return unwrap_future(this->then_no_unwrap(std::move(continuation)));
   }

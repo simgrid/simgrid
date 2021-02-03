@@ -17,8 +17,6 @@ enum class RequestType {
   internal,
 };
 
-XBT_PRIVATE bool request_depend(smx_simcall_t req1, smx_simcall_t req2);
-
 XBT_PRIVATE bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
 }
 }

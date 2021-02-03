@@ -2,7 +2,7 @@
 
 p Testing the mechanism for computing host energy consumption
 
-$ ${bindir:=.}/s4u-energy-exec-ptask ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-energy-exec-ptask ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (1:energy_ptask_test@MyHost1) [MyHost1] Energetic profile: 100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0
@@ -43,7 +43,7 @@ $ ${bindir:=.}/s4u-energy-exec-ptask ${platfdir}/energy_platform.xml "--log=root
 > [470.000000] (0:maestro@) Energy consumption of host MyHost3: 47000.000000 Joules
 
 
-$ ${bindir:=.}/s4u-energy-exec-ptask ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-energy-exec-ptask ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (1:energy_ptask_test@MyHost1) [MyHost1] Energetic profile: 100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0

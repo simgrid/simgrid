@@ -3,7 +3,7 @@
 p Testing a simple master/worker example application handling failures TCP crosstraffic DISABLED
 
 ! output sort 19
-$ ${bindir:=.}/s4u-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/s4u-platform-failures_d.xml --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=surf_cpu.t:verbose
+$ ${bindir:=.}/s4u-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/s4u-platform-failures_d.xml --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose
 > [  0.000000] (0:maestro@) Cannot launch actor 'worker' on failed host 'Fafard'
 > [  0.000000] (0:maestro@) Deployment includes some initially turned off Hosts ... nevermind.
 > [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process
@@ -108,7 +108,7 @@ $ ${bindir:=.}/s4u-platform-failures --log=xbt_cfg.thres:critical --log=no_loc $
 p Testing a simple master/worker example application handling failures. TCP crosstraffic ENABLED
 
 ! output sort 19
-$ ${bindir:=.}/s4u-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/s4u-platform-failures_d.xml --cfg=path:${srcdir} "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=surf_cpu.t:verbose
+$ ${bindir:=.}/s4u-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/s4u-platform-failures_d.xml --cfg=path:${srcdir} "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose
 > [  0.000000] (0:maestro@) Cannot launch actor 'worker' on failed host 'Fafard'
 > [  0.000000] (0:maestro@) Deployment includes some initially turned off Hosts ... nevermind.
 > [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process

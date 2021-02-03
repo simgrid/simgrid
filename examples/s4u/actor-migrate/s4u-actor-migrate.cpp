@@ -17,42 +17,42 @@
  */
 
 #include <simgrid/s4u.hpp>
-#include <simgrid/s4u/Mutex.hpp>
+namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_migration, "Messages specific for this s4u example");
 
-static void worker(simgrid::s4u::Host* first, const simgrid::s4u::Host* second)
+static void worker(sg4::Host* first, const sg4::Host* second)
 {
   double flopAmount = first->get_speed() * 5 + second->get_speed() * 5;
 
   XBT_INFO("Let's move to %s to execute %.2f Mflops (5sec on %s and 5sec on %s)", first->get_cname(), flopAmount / 1e6,
            first->get_cname(), second->get_cname());
 
-  simgrid::s4u::this_actor::set_host(first);
-  simgrid::s4u::this_actor::execute(flopAmount);
+  sg4::this_actor::set_host(first);
+  sg4::this_actor::execute(flopAmount);
 
-  XBT_INFO("I wake up on %s. Let's suspend a bit", simgrid::s4u::this_actor::get_host()->get_cname());
+  XBT_INFO("I wake up on %s. Let's suspend a bit", sg4::this_actor::get_host()->get_cname());
 
-  simgrid::s4u::this_actor::suspend();
+  sg4::this_actor::suspend();
 
-  XBT_INFO("I wake up on %s", simgrid::s4u::this_actor::get_host()->get_cname());
+  XBT_INFO("I wake up on %s", sg4::this_actor::get_host()->get_cname());
   XBT_INFO("Done");
 }
 
 static void monitor()
 {
-  simgrid::s4u::Host* boivin    = simgrid::s4u::Host::by_name("Boivin");
-  simgrid::s4u::Host* jacquelin = simgrid::s4u::Host::by_name("Jacquelin");
-  simgrid::s4u::Host* fafard    = simgrid::s4u::Host::by_name("Fafard");
+  sg4::Host* boivin    = sg4::Host::by_name("Boivin");
+  sg4::Host* jacquelin = sg4::Host::by_name("Jacquelin");
+  sg4::Host* fafard    = sg4::Host::by_name("Fafard");
 
-  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("worker", fafard, worker, boivin, jacquelin);
+  sg4::ActorPtr actor = sg4::Actor::create("worker", fafard, worker, boivin, jacquelin);
 
-  simgrid::s4u::this_actor::sleep_for(5);
+  sg4::this_actor::sleep_for(5);
 
   XBT_INFO("After 5 seconds, move the actor to %s", jacquelin->get_cname());
   actor->set_host(jacquelin);
 
-  simgrid::s4u::this_actor::sleep_until(15);
+  sg4::this_actor::sleep_until(15);
   XBT_INFO("At t=15, move the actor to %s and resume it.", fafard->get_cname());
   actor->set_host(fafard);
   actor->resume();
@@ -60,11 +60,11 @@ static void monitor()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("monitor", simgrid::s4u::Host::by_name("Boivin"), monitor);
+  sg4::Actor::create("monitor", sg4::Host::by_name("Boivin"), monitor);
   e.run();
 
   return 0;

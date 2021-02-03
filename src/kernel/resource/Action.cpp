@@ -9,8 +9,8 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_NEW_CATEGORY(kernel, "Logging specific to the internals of SimGrid");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(resource, kernel, "Logging specific to the resources");
+XBT_LOG_NEW_CATEGORY(kernel, "SimGrid internals");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_resource, kernel, "Resources, modeling the platform performance");
 
 namespace simgrid {
 namespace kernel {

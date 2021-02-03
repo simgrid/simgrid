@@ -2,7 +2,7 @@
 
 p Testing the mechanism for computing host energy consumption
 
-$ ${bindir:=.}/s4u-energy-exec ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/s4u-energy-exec ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:dvfs_test@MyHost1) Energetic profile: 100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0
 > [  0.000000] (1:dvfs_test@MyHost1) Initial peak speed=1E+08 flop/s; Energy dissipated =0E+00 J
 > [  0.000000] (1:dvfs_test@MyHost1) Sleep for 10 seconds
@@ -22,7 +22,7 @@ $ ${bindir:=.}/s4u-energy-exec ${platfdir}/energy_platform.xml "--log=root.fmt:[
 > [ 30.000000] (0:maestro@) Energy consumption of host MyHost2: 2100.000000 Joules
 > [ 30.000000] (0:maestro@) Energy consumption of host MyHost3: 3000.000000 Joules
 
-$ ${bindir:=.}/s4u-energy-exec ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=host/model:ptask_L07
+$ ${bindir:=.}/s4u-energy-exec ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=host/model:ptask_L07
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (1:dvfs_test@MyHost1) Energetic profile: 100.0:93.33333333333333:200.0, 93.0:90.0:170.0, 90.0:90.0:150.0

@@ -19,7 +19,7 @@ namespace resource {
 
 /** @ingroup SURF_interface
  * @brief SURF resource interface class
- * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or storage
+ * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or disk
  */
 class XBT_PUBLIC Resource {
   std::string name_;

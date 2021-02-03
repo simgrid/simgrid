@@ -174,15 +174,15 @@ endif()
 
 if(enable_model-checking AND enable_compile_optimizations)
   # Forget it, do not optimize the code (because it confuses the MC):
-  set(optCFLAGS "-O0 ")
+  set(optCFLAGS "-O0")
   # But you can still optimize this:
   foreach(s
       src/simix/popping.cpp src/simix/popping_generated.cpp src/simix/smx_global.cpp
       ${SURF_SRC} ${TRACING_SRC} ${XBT_SRC}
       ${MC_SRC_BASE} ${MC_SRC})
-      set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")
-       if(CMAKE_COMPILER_IS_GNUCC)
-         set (mcCFLAGS "${mcCFLAGS} -finline-functions")
+      set (mcCFLAGS "-O3 -funroll-loops -fno-strict-aliasing")
+      if(CMAKE_COMPILER_IS_GNUCC)
+        set (mcCFLAGS "${mcCFLAGS} -finline-functions")
       endif()
       set_source_files_properties(${s} PROPERTIES COMPILE_FLAGS ${mcCFLAGS})
   endforeach()

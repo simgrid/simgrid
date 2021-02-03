@@ -32,7 +32,7 @@ run() {
   timeout 30s ${bindir:=.}/bugged1_liveness_cleaner_$state \
     ${srcdir:=.}/../../platforms/platform.xml \
     ${srcdir:=.}/deploy_bugged1_liveness.xml \
-    "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" \
+    "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" \
     --cfg=contexts/factory:ucontext \
     --cfg=contexts/stack-size:256
   assert 'test $? = 134'

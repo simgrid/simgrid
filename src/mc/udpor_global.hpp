@@ -53,7 +53,7 @@ public:
   Configuration()                     = default;
   Configuration(const Configuration&) = default;
   Configuration& operator=(Configuration const&) = default;
-  Configuration(Configuration&&) noexcept        = default;
+  Configuration(Configuration&&)                 = default;
   ~Configuration()                               = default;
 };
 
@@ -78,7 +78,8 @@ public:
   bool isImmediateConflict1(UnfoldingEvent* evt, UnfoldingEvent* otherEvt) const;
 
   bool conflictWithConfig(UnfoldingEvent* event, Configuration const& config) const;
-  bool operator==(const UnfoldingEvent& other) const;
+  /* TODO: implement */ 
+  bool operator==(const UnfoldingEvent& other) const { return false; };
   void print() const;
 
   inline int get_state_id() const { return state_id; }

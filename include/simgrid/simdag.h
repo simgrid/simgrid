@@ -187,7 +187,6 @@ XBT_PUBLIC xbt_dynar_t SD_PTG_dotload(const char* filename);
 #define SD_route_get_latency sg_host_get_route_latency
 #define SD_route_get_bandwidth sg_host_get_route_bandwidth
 
-#define SD_workstation_get_mounted_storage_list sg_host_get_mounted_storage_list // XBT_ATTRIB_DEPRECATED_v330
 // Lost functions
 //SD_workstation_get_access_mode
 //SD_workstation_set_access_mode

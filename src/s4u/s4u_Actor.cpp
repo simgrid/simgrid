@@ -32,8 +32,10 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_suspend;
 xbt::signal<void(Actor const&)> s4u::Actor::on_resume;
 xbt::signal<void(Actor const&)> s4u::Actor::on_sleep;
 xbt::signal<void(Actor const&)> s4u::Actor::on_wake_up;
+#ifndef DOXYGEN
 xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
 xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329
+#endif
 xbt::signal<void(Actor const&, Host const& previous_location)> s4u::Actor::on_host_change;
 xbt::signal<void(Actor const&)> s4u::Actor::on_termination;
 xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
@@ -370,9 +372,7 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
 
 ExecPtr exec_init(double flops_amount)
 {
-  ExecPtr exec(new Exec());
-  exec->set_flops_amount(flops_amount)->set_host(get_host());
-  return exec;
+  return Exec::init()->set_flops_amount(flops_amount)->set_host(get_host());
 }
 
 ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
@@ -398,9 +398,7 @@ ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double
   xbt_assert(std::all_of(bytes_amounts.begin(), bytes_amounts.end(), [](double elm) { return std::isfinite(elm); }),
              "flops_amounts comprises infinite values!");
 
-  ExecPtr exec(new Exec());
-  exec->set_flops_amounts(flops_amounts)->set_bytes_amounts(bytes_amounts)->set_hosts(hosts);
-  return exec;
+  return Exec::init()->set_flops_amounts(flops_amounts)->set_bytes_amounts(bytes_amounts)->set_hosts(hosts);
 }
 
 ExecPtr exec_async(double flops)
@@ -873,8 +871,7 @@ sg_exec_t sg_actor_parallel_exec_init(int host_nb, const sg_host_t* host_list, d
   if (bytes_amount != nullptr)
     bytes = std::vector<double>(bytes_amount, bytes_amount + host_nb * host_nb);
 
-  simgrid::s4u::ExecPtr exec(new simgrid::s4u::Exec());
-  exec->set_flops_amounts(flops)->set_bytes_amounts(bytes)->set_hosts(hosts);
+  simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_init(hosts, flops, bytes);
   exec->add_ref();
   return exec.get();
 }

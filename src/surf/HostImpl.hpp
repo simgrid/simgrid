@@ -8,7 +8,6 @@
 
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
-#include "src/surf/StorageImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include <xbt/PropertyHolder.hpp>
@@ -40,12 +39,11 @@ public:
  ************/
 /** @ingroup SURF_host_interface
  * @brief SURF Host interface class
- * @details A host represents a machine with an aggregation of a Cpu, a RoutingEdge and a Storage
+ * @details A host represents a machine with an aggregation of a Cpu, a RoutingEdge and Disk(s)
  */
 class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
   s4u::Host* piface_ = nullptr; // we must have a pointer there because the VM wants to change the piface in its ctor
-  std::map<std::string, kernel::resource::StorageImpl*, std::less<>> storage_;
   std::vector<kernel::resource::DiskImpl*> disks_;
 
 public:
@@ -57,14 +55,6 @@ public:
   void set_disks(const std::vector<kernel::resource::DiskImpl*>& disks, s4u::Host* host);
   void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& disk_name);
-
-  /** @brief Get the vector of storages (by names) attached to the Host */
-  virtual std::vector<const char*> get_attached_storages();
-  std::unordered_map<std::string, s4u::Storage*>* get_mounted_storages();
-  void set_storages(const std::map<std::string, kernel::resource::StorageImpl*, std::less<>>& storages)
-  {
-    storage_ = storages;
-  }
 
   s4u::Host* get_iface() const { return piface_; }
 

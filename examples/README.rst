@@ -78,7 +78,7 @@ Starting and Stopping Actors
 
           This example shows how to attach a callback to:
 
-          - the end of a specific actor: :cpp:func:`simgrid::s4u::this_actor::on_exit()`
+          - the end of a specific actor: :cpp:func:`simgrid::s4u::Actor::on_exit()`
           - the end of any actor: :cpp:member:`simgrid::s4u::Actor::on_termination()`
           - the destruction of any actor: :cpp:member:`simgrid::s4u::Actor::on_destruction()`
 
@@ -95,7 +95,7 @@ Starting and Stopping Actors
        .. example-tab:: examples/s4u/actor-kill/s4u-actor-kill.cpp
 
           See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
-          :cpp:func:`simgrid::s4u::this_actor::exit`, :cpp:func:`simgrid::s4u::this_actor::on_exit`.
+          :cpp:func:`simgrid::s4u::this_actor::exit`, :cpp:func:`simgrid::s4u::Actor::on_exit`.
 
        .. example-tab:: examples/python/actor-kill/actor-kill.py
 
@@ -282,6 +282,18 @@ Activities: what Actors do
 Communications on the Network
 -----------------------------
 
+  - **Basic communications:**
+    This simple example just sends one message back and forth.
+    The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
+    the simulators (as detailed in Section :ref:`options`).
+
+    .. tabs::
+
+       .. example-tab:: examples/s4u/comm-pingpong/s4u-comm-pingpong.cpp
+
+       .. example-tab:: examples/c/comm-pingpong/comm-pingpong.c
+
+
  - **Basic asynchronous communications:**
    Illustrates how to have non-blocking communications, that are
    communications running in the background leaving the process free
@@ -300,6 +312,15 @@ Communications on the Network
       .. example-tab:: examples/c/comm-wait/comm-wait.c
 
          See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm__wait()`.
+
+ - **Waiting communications with timeouts:**
+   This example is very similar to the previous one, simply adding how to declare timeouts when waiting on asynchronous communication.
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/comm-waituntil/s4u-comm-waituntil.cpp
+
+         See also :cpp:func:`simgrid::s4u::Mailbox::wait_until()` and :cpp:func:`simgrid::s4u::Comm::wait_for()`.
 
  - **Suspending communications:**
    The ``suspend()`` and ``resume()`` functions allow to block the
@@ -532,12 +553,19 @@ Classical synchronization objects
 
       .. example-tab:: examples/s4u/synchro-barrier/s4u-synchro-barrier.cpp
 
- - **Condition variable:**
+ - **Condition variable: basic usage**
    Shows how to use :cpp:type:`simgrid::s4u::ConditionVariable` synchronization objects.
 
    .. tabs::
 
       .. example-tab:: examples/s4u/synchro-condition-variable/s4u-synchro-condition-variable.cpp
+
+ - **Condition variable: timeouts**
+   Shows how to specify timeouts when blocking on condition variables.
+
+   .. tabs::
+
+      .. example-tab:: examples/s4u/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.cpp
 
  - **Mutex:**
    Shows how to use :cpp:type:`simgrid::s4u::Mutex` synchronization objects.
@@ -552,6 +580,8 @@ Classical synchronization objects
    .. tabs::
 
       .. example-tab:: examples/s4u/synchro-semaphore/s4u-synchro-semaphore.cpp
+
+      .. example-tab:: examples/c/synchro-semaphore/synchro-semaphore.c
 
 =============================
 Interacting with the Platform
@@ -795,17 +825,6 @@ Larger SimGrid Examplars
 
 This section contains application examples that are somewhat larger
 than the previous examples.
-
-  - **Ping Pong:**
-    This simple example just sends one message back and forth.
-    The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
-    the simulators (as detailed in Section :ref:`options`).
-
-    .. tabs::
-
-       .. example-tab:: examples/s4u/app-pingpong/s4u-app-pingpong.cpp
-
-       .. example-tab:: examples/c/app-pingpong/app-pingpong.c
 
   - **Token ring:**
     Shows how to implement a classical communication pattern, where a

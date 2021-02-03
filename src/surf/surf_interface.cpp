@@ -33,9 +33,6 @@ std::vector<simgrid::kernel::resource::Model*> all_existing_models; /* to destro
 
 simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
-/**  set of hosts for which one want to be notified if they ever restart. */
-std::set<std::string, std::less<>> watched_hosts;
-extern std::map<std::string, simgrid::kernel::resource::StorageType*, std::less<>> storage_types;
 
 std::vector<surf_model_description_t>* surf_plugin_description = nullptr;
 
@@ -113,10 +110,6 @@ const std::vector<surf_model_description_t> surf_optimization_mode_description =
 
 const std::vector<surf_model_description_t> surf_disk_model_description = {
     {"default", "Simplistic disk model.", &surf_disk_model_init_default},
-};
-
-const std::vector<surf_model_description_t> surf_storage_model_description = {
-    {"default", "Simplistic storage model.", &surf_storage_model_init_default},
 };
 
 double NOW = 0;
@@ -227,12 +220,6 @@ void surf_init(int *argc, char **argv)
 void surf_exit()
 {
   simgrid::s4u::Engine::shutdown();
-  for (auto const& e : storage_types) {
-    const simgrid::kernel::resource::StorageType* stype = e.second;
-    delete stype->properties;
-    delete stype->model_properties;
-    delete stype;
-  }
 
   for (auto const& model : all_existing_models)
     delete model;

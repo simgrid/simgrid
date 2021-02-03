@@ -8,8 +8,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
-XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf, "Logging specific to the SURF cpu module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_cpu, ker_resource, "CPU resource, fueling execution activites");
 
 simgrid::kernel::resource::CpuModel* surf_cpu_model_pm;
 simgrid::kernel::resource::CpuModel* surf_cpu_model_vm;
@@ -26,10 +25,10 @@ void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 {
   while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
     auto* action = static_cast<CpuAction*>(get_action_heap().pop());
-    XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
+    XBT_DEBUG("Something happened to action %p", action);
 
     action->finish(kernel::resource::Action::State::FINISHED);
-    XBT_CDEBUG(surf_kernel, "Action %p finished", action);
+    XBT_DEBUG("Action %p finished", action);
   }
 }
 
@@ -154,11 +153,11 @@ void CpuAction::update_remains_lazy(double now)
   double delta = now - get_last_update();
 
   if (get_remains_no_update() > 0) {
-    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, get_remains_no_update(),
-               get_last_update());
+    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, get_remains_no_update(),
+              get_last_update());
     update_remains(get_last_value() * delta);
 
-    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, get_remains_no_update());
+    XBT_DEBUG("Updating action(%p): remains is now %f", this, get_remains_no_update());
   }
 
   set_last_update();
