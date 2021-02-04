@@ -103,7 +103,7 @@ class XBT_PUBLIC File : public xbt::Extendable<File> {
 
 public:
   File(const std::string& fullpath, void* userdata);
-  File(const std::string& fullpath, sg_host_t host, void* userdata);
+  File(const std::string& fullpath, const_sg_host_t host, void* userdata);
   File(const File&) = delete;
   File& operator=(const File&) = delete;
   ~File();

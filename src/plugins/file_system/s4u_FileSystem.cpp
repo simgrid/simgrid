@@ -67,7 +67,7 @@ Disk* File::find_local_disk_on(const Host* host)
 
 File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::current(), userdata) {}
 
-File::File(const std::string& fullpath, sg_host_t host, void* userdata) : fullpath_(fullpath)
+File::File(const std::string& fullpath, const_sg_host_t host, void* userdata) : fullpath_(fullpath)
 {
   kernel::actor::simcall([this, &host, userdata] {
     this->set_data(userdata);
