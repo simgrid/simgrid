@@ -104,7 +104,7 @@ public:
    * That's the size of the simulated data, that's completely related from the actual data size (given with @ref
    * Comm::set_src_data_size()).
    */
-  Comm* set_payload_size(double bytes);
+  CommPtr set_payload_size(double bytes);
 
   /** Specify the data to send and its size. Don't mix the size with @ref Comm::set_payload_size()
    *
