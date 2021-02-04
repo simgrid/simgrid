@@ -133,7 +133,7 @@ public:
 
   Actor* get_sender() const;
 
-  bool is_assigned() { return (to_ != nullptr && from_ != nullptr) || (mailbox_ != nullptr); }
+  bool is_assigned() const override { return (to_ != nullptr && from_ != nullptr) || (mailbox_ != nullptr); }
 };
 } // namespace s4u
 } // namespace simgrid

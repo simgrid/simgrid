@@ -33,7 +33,7 @@ protected:
   Activity()  = default;
   virtual ~Activity() = default;
 
-  virtual bool is_assigned() = 0;
+  virtual bool is_assigned() const = 0;
 
   void release_dependencies()
   {
