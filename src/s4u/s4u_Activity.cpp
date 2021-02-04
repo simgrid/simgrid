@@ -9,6 +9,8 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 
+#include <array>
+
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity, s4u, "S4U activities");
 
@@ -67,23 +69,8 @@ Activity* Activity::resume()
 
 const char* Activity::get_state_str() const
 {
-  switch (state_) {
-    case State::INITED:
-      return "INITED";
-
-    case State::STARTING:
-      return "STARTING";
-
-    case State::STARTED:
-      return "STARTED";
-
-    case State::CANCELED:
-      return "CANCELED";
-
-    case State::FINISHED:
-      return "FINISHED";
-  }
-  THROW_IMPOSSIBLE;
+  constexpr std::array<const char*, 5> names{{"INITED", "STARTING", "STARTED", "CANCELED", "FINISHED"}};
+  return names[static_cast<int>(state_)];
 }
 
 double Activity::get_remaining() const

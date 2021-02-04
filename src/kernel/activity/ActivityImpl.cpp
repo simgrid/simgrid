@@ -7,6 +7,7 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
+#include <array>
 #include <cmath> // isfinite()
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
@@ -42,43 +43,10 @@ double ActivityImpl::get_remaining() const
 
 const char* ActivityImpl::get_state_str() const
 {
-  switch (state_) {
-    case State::WAITING:
-      return "WAITING";
-
-    case State::READY:
-      return "READY";
-
-    case State::RUNNING:
-      return "RUNNING";
-
-    case State::CANCELED:
-      return "CANCELED";
-
-    case State::FAILED:
-      return "FAILED";
-
-    case State::DONE:
-      return "DONE";
-
-    case State::SRC_HOST_FAILURE:
-      return "SRC_HOST_FAILURE";
-
-    case State::DST_HOST_FAILURE:
-      return "DST_HOST_FAILURE";
-
-    case State::TIMEOUT:
-      return "TIMEOUT";
-
-    case State::SRC_TIMEOUT:
-      return "SRC_TIMEOUT";
-    case State::DST_TIMEOUT:
-      return "DST_TIMEOUT";
-
-    case State::LINK_FAILURE:
-      return "LINK_FAILURE";
-  }
-  THROW_IMPOSSIBLE;
+  constexpr std::array<const char*, 12> names{{"WAITING", "READY", "RUNNING", "DONE", "CANCELED", "FAILED",
+                                               "SRC_HOST_FAILURE", "DST_HOST_FAILURE", "TIMEOUT", "SRC_TIMEOUT",
+                                               "DST_TIMEOUT", "LINK_FAILURE"}};
+  return names[static_cast<int>(state_)];
 }
 
 bool ActivityImpl::test()
