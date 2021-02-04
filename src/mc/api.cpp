@@ -909,7 +909,7 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
 
 const char* Api::simcall_get_name(simgrid::simix::Simcall kind) const
 {
-  return SIMIX_simcall_name(kind);
+  return simcall_names[static_cast<int>(kind)];
 }
 
 #if HAVE_SMPI
