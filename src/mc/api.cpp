@@ -227,9 +227,10 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
   const kernel::activity::CommImpl* synchro2 = get_comm(r2);
 
   if ((r1->call_ == Simcall::COMM_ISEND || r1->call_ == Simcall::COMM_IRECV) && r2->call_ == Simcall::COMM_WAIT) {
-    const kernel::activity::MailboxImpl* mbox = get_mbox_remote_addr(r1);
+    auto mbox = get_mbox_remote_addr(r1);;
+    RemotePtr<kernel::activity::MailboxImpl> synchro2_mbox_cpy = remote(synchro2->mbox_cpy);
 
-    if (mbox != synchro2->mbox_cpy
+    if (mbox != synchro2_mbox_cpy
         && simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
 
@@ -489,16 +490,21 @@ long Api::simcall_get_actor_id(s_smx_simcall const* req) const
   return simcall_get_issuer(req)->get_pid();
 }
 
-smx_mailbox_t Api::get_mbox_remote_addr(smx_simcall_t const req) const
+RemotePtr<kernel::activity::MailboxImpl> Api::get_mbox_remote_addr(smx_simcall_t const req) const
 {
+  RemotePtr<kernel::activity::MailboxImpl> mbox_addr;
   switch (req->call_) {
     case Simcall::COMM_ISEND:
-      return simix::unmarshal<smx_mailbox_t>(req->args_[1]); // simcall_comm_isend__get__mbox
-    case Simcall::COMM_IRECV:
-      return simix::unmarshal<smx_mailbox_t>(req->args_[1]); // simcall_comm_irecv__get__mbox
+    case Simcall::COMM_IRECV: {
+      auto mbox_addr_ptr = simix::unmarshal<smx_mailbox_t>(req->args_[1]);
+      mbox_addr = remote(mbox_addr_ptr);
+      break;
+    }
     default:
-      return nullptr;
+      mbox_addr = RemotePtr<kernel::activity::MailboxImpl>();
+      break;
   }
+  return mbox_addr;
 }
 
 RemotePtr<kernel::activity::ActivityImpl> Api::get_comm_remote_addr(smx_simcall_t const req) const

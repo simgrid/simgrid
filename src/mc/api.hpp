@@ -98,7 +98,7 @@ public:
   const char *simcall_get_name(simgrid::simix::Simcall kind) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   long simcall_get_actor_id(s_smx_simcall const* req) const;
-  smx_mailbox_t get_mbox_remote_addr(smx_simcall_t const req) const;
+  RemotePtr<kernel::activity::MailboxImpl> get_mbox_remote_addr(smx_simcall_t const req) const;
   RemotePtr<kernel::activity::ActivityImpl> get_comm_remote_addr(smx_simcall_t const req) const;
   bool simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const;
 
