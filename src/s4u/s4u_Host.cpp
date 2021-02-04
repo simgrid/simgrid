@@ -274,9 +274,14 @@ void Host::remove_disk(const std::string& disk_name)
   kernel::actor::simcall([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
 }
 
-ExecPtr Host::exec_async(double flops) const
+ExecPtr Host::exec_init(double flops) const
 {
   return this_actor::exec_init(flops);
+}
+
+ExecPtr Host::exec_async(double flops) const
+{
+  return this_actor::exec_async(flops);
 }
 
 void Host::execute(double flops) const

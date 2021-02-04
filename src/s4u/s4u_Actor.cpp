@@ -404,7 +404,7 @@ ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double
 ExecPtr exec_async(double flops)
 {
   ExecPtr res = exec_init(flops);
-  res->start();
+  res->vetoable_start();
   return res;
 }
 

@@ -182,6 +182,7 @@ public:
    */
   void execute(double flops) const;
   /** Start an asynchronous computation on that host (possibly remote) */
+  ExecPtr exec_init(double flops_amounts) const;
   ExecPtr exec_async(double flops_amounts) const;
 
   /** Block the calling actor on an execution located on the called host (with explicit priority) */

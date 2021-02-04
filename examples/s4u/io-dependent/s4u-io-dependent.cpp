@@ -16,7 +16,7 @@ static void test()
       simgrid::s4u::Host::current()->get_disks().front()->io_init(4000000, simgrid::s4u::Io::OpType::WRITE);
   simgrid::s4u::IoPtr carl_read =
       simgrid::s4u::Host::by_name("carl")->get_disks().front()->io_init(4000000, simgrid::s4u::Io::OpType::READ);
-  simgrid::s4u::ExecPtr carl_compute = simgrid::s4u::Host::by_name("carl")->exec_async(1e9);
+  simgrid::s4u::ExecPtr carl_compute = simgrid::s4u::Host::by_name("carl")->exec_init(1e9);
 
   // Name the activities (for logging purposes only)
   bob_compute->set_name("bob compute");
