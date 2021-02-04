@@ -176,6 +176,12 @@ public:
   }
 
   void* get_user_data() const { return user_data_; }
+
+  AnyActivity* vetoable_start()
+  {
+    Activity::vetoable_start();
+    return static_cast<AnyActivity*>(this);
+  }
 #ifndef DOXYGEN
   /* The refcounting is done in the ancestor class, Activity, but we want each of the classes benefiting of the CRTP
    * (Exec, Comm, etc) to have smart pointers too, so we define these methods here, that forward the ptr_release and
