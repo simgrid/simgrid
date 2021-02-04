@@ -72,7 +72,12 @@ Io* Io::wait_for(double timeout)
 IoPtr Io::set_disk(sg_disk_t disk)
 {
   disk_ = disk;
-  return this;
+
+  // Setting the disk may allow to start the activity, let's try
+  if (state_ == State::STARTING)
+    vetoable_start();
+
+ return this;
 }
 
 IoPtr Io::set_size(sg_size_t size)

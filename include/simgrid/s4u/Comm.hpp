@@ -132,6 +132,8 @@ public:
   size_t get_dst_data_size() const;
 
   Actor* get_sender() const;
+
+  bool is_assigned() { return (to_ != nullptr && from_ != nullptr) || (mailbox_ != nullptr); }
 };
 } // namespace s4u
 } // namespace simgrid

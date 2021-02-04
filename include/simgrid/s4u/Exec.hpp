@@ -81,6 +81,7 @@ public:
   double get_finish_time() const;
   double get_cost() const;
   bool is_parallel() const { return parallel_; }
+  bool is_assigned() { return not hosts_.empty(); }
 };
 
 } // namespace s4u

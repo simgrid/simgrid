@@ -147,19 +147,34 @@ ExecPtr Exec::set_priority(double priority)
  * The activity cannot be terminated already (but it may be started). */
 ExecPtr Exec::set_host(Host* host)
 {
-  xbt_assert(state_ == State::INITED || state_ == State::STARTED,
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING || state_ == State::STARTED,
              "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
+  hosts_.assign(1, host);
+
   if (state_ == State::STARTED)
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->migrate(host);
+
   boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host);
+
+  if (state_ == State::STARTING)
+  // Setting the host may allow to start the activity, let's try
+    vetoable_start();
+
   return this;
 }
 
 ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the hosts of an exec once it's done (state: %d)", (int)state_);
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the hosts of an exec once it's done (state: %d)", (int)state_);
+
   hosts_    = hosts;
   parallel_ = true;
+
+  // Setting the host may allow to start the activity, let's try
+  if (state_ == State::STARTING)
+     vetoable_start();
+
   return this;
 }
 

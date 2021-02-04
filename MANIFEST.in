@@ -424,6 +424,8 @@ include examples/s4u/exec-ptask/s4u-exec-ptask.cpp
 include examples/s4u/exec-ptask/s4u-exec-ptask.tesh
 include examples/s4u/exec-remote/s4u-exec-remote.cpp
 include examples/s4u/exec-remote/s4u-exec-remote.tesh
+include examples/s4u/exec-unassigned/s4u-exec-unassigned.cpp
+include examples/s4u/exec-unassigned/s4u-exec-unassigned.tesh
 include examples/s4u/exec-waitany/s4u-exec-waitany.cpp
 include examples/s4u/exec-waitany/s4u-exec-waitany.tesh
 include examples/s4u/exec-waitfor/s4u-exec-waitfor.cpp
