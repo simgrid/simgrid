@@ -501,6 +501,23 @@ smx_mailbox_t Api::get_mbox_remote_addr(smx_simcall_t const req) const
   }
 }
 
+RemotePtr<kernel::activity::ActivityImpl> Api::get_comm_remote_addr(smx_simcall_t const req) const
+{
+  RemotePtr<kernel::activity::ActivityImpl> comm_addr;
+  switch (req->call_) {
+    case Simcall::COMM_ISEND:
+    case Simcall::COMM_IRECV: {
+      auto comm_addr_ptr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(req->result_);
+      comm_addr          = remote(comm_addr_ptr);
+      break;
+    }
+    default:
+      comm_addr = RemotePtr<kernel::activity::ActivityImpl>();
+      break;
+  }
+  return comm_addr;
+}
+
 bool Api::mc_is_null() const
 {
   auto is_null = (mc_model_checker == nullptr) ? true : false;
