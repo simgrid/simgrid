@@ -355,7 +355,7 @@ void execute(double flops)
 
 void execute(double flops, double priority)
 {
-  exec_init(flops)->set_priority(priority)->start()->wait();
+  exec_init(flops)->set_priority(priority)->vetoable_start()->wait();
 }
 
 void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,

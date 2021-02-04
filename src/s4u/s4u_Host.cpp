@@ -291,7 +291,7 @@ void Host::execute(double flops) const
 
 void Host::execute(double flops, double priority) const
 {
-  this_actor::exec_init(flops)->set_priority(1 / priority)->start()->wait();
+  this_actor::exec_init(flops)->set_priority(1 / priority)->vetoable_start()->wait();
 }
 
 } // namespace s4u

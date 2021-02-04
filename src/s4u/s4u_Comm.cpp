@@ -196,7 +196,7 @@ Comm* Comm::wait_for(double timeout)
     case State::INITED:
     case State::STARTING: // It's not started yet. Do it in one simcall if it's a regular communication
       if (from_ != nullptr || to_ != nullptr) {
-        return start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
+        return vetoable_start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
       } else if (src_buff_ != nullptr) {
         on_start(*this, true /*is_sender*/);
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
