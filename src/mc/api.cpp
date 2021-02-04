@@ -11,7 +11,6 @@
 #include "src/mc/remote/RemoteSimulation.hpp"
 #include <xbt/asserts.h>
 #include <xbt/log.h>
-// #include <xbt/dynar.h>
 
 #if HAVE_SMPI
 #include "src/smpi/include/smpi_request.hpp"
@@ -202,18 +201,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
   return req;
 }
 
-smx_mailbox_t Api::get_mbox(smx_simcall_t const r) const
-{
-  switch (r->call_) {
-    case Simcall::COMM_ISEND:
-      return simcall_comm_isend__get__mbox(r);
-    case Simcall::COMM_IRECV:
-      return simcall_comm_irecv__get__mbox(r);
-    default:
-      return nullptr;
-  }
-}
-
 simgrid::kernel::activity::CommImpl* Api::get_comm(smx_simcall_t const r) const
 {
   switch (r->call_) {
@@ -240,7 +227,7 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
   const kernel::activity::CommImpl* synchro2 = get_comm(r2);
 
   if ((r1->call_ == Simcall::COMM_ISEND || r1->call_ == Simcall::COMM_IRECV) && r2->call_ == Simcall::COMM_WAIT) {
-    const kernel::activity::MailboxImpl* mbox = get_mbox(r1); // r1->get_mboxx')
+    const kernel::activity::MailboxImpl* mbox = get_mbox_remote_addr(r1);
 
     if (mbox != synchro2->mbox_cpy
         && simcall_comm_wait__get__timeout(r2) <= 0)
@@ -502,9 +489,16 @@ long Api::simcall_get_actor_id(s_smx_simcall const* req) const
   return simcall_get_issuer(req)->get_pid();
 }
 
-smx_mailbox_t Api::simcall_get_mbox(smx_simcall_t const req) const
+smx_mailbox_t Api::get_mbox_remote_addr(smx_simcall_t const req) const
 {
-  return get_mbox(req);
+  switch (req->call_) {
+    case Simcall::COMM_ISEND:
+      return simix::unmarshal<smx_mailbox_t>(req->args_[1]); // simcall_comm_isend__get__mbox
+    case Simcall::COMM_IRECV:
+      return simix::unmarshal<smx_mailbox_t>(req->args_[1]); // simcall_comm_irecv__get__mbox
+    default:
+      return nullptr;
+  }
 }
 
 bool Api::mc_is_null() const
