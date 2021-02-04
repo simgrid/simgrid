@@ -706,18 +706,10 @@ void CommImpl::finish()
     simcall->issuer_->waiting_synchro_ = nullptr;
     simcall->issuer_->activities_.remove(this);
     if (detached_) {
-      if (simcall->issuer_ == src_actor_) {
-        if (dst_actor_)
-          dst_actor_->activities_.remove(this);
-      } else if (simcall->issuer_ == dst_actor_) {
-        if (src_actor_)
-          src_actor_->activities_.remove(this);
-      } else {
-        if (dst_actor_ != nullptr)
-          dst_actor_->activities_.remove(this);
-        if (src_actor_ != nullptr)
-          src_actor_->activities_.remove(this);
-      }
+      if (simcall->issuer_ != dst_actor_ && dst_actor_ != nullptr)
+        dst_actor_->activities_.remove(this);
+      if (simcall->issuer_ != src_actor_ && src_actor_ != nullptr)
+        src_actor_->activities_.remove(this);
     }
   }
 }
