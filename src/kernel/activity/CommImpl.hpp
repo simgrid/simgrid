@@ -26,10 +26,10 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued */
 
 public:
-  CommImpl() = default;
-  CommImpl(s4u::Host* from, s4u::Host* to, double bytes);
-
   enum class Type { SEND = 0, RECEIVE, READY, DONE };
+
+  CommImpl(Type type) : type_(type) {}
+  CommImpl(s4u::Host* from, s4u::Host* to, double bytes);
 
   CommImpl& set_type(CommImpl::Type type);
   CommImpl& set_size(double size);

@@ -41,8 +41,8 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
   XBT_DEBUG("send from mailbox %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
-  simgrid::kernel::activity::CommImplPtr this_comm(new simgrid::kernel::activity::CommImpl());
-  this_comm->set_type(simgrid::kernel::activity::CommImpl::Type::SEND);
+  simgrid::kernel::activity::CommImplPtr this_comm(
+      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::SEND));
 
   /* Look for communication synchro matching our needs. We also provide a description of
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
@@ -114,8 +114,8 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                            double rate)
 {
-  simgrid::kernel::activity::CommImplPtr this_synchro(new simgrid::kernel::activity::CommImpl());
-  this_synchro->set_type(simgrid::kernel::activity::CommImpl::Type::RECEIVE);
+  simgrid::kernel::activity::CommImplPtr this_synchro(
+      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::RECEIVE));
   XBT_DEBUG("recv from mbox %p. this_synchro=%p", mbox, this_synchro.get());
 
   simgrid::kernel::activity::CommImplPtr other_comm;
@@ -408,7 +408,8 @@ CommImpl& CommImpl::detach()
   return *this;
 }
 
-CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes) : size_(bytes), detached_(true), from_(from), to_(to)
+CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes)
+    : size_(bytes), detached_(true), type_(Type::SEND), from_(from), to_(to)
 {
   state_ = State::READY;
 }
