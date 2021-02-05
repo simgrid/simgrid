@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <xbt/signal.hpp>
+#include <xbt/utility.hpp>
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
 
@@ -69,7 +70,8 @@ public:
   Activity& operator=(Activity const&) = delete;
 #endif
 
-  enum class State { INITED = 0, STARTING, STARTED, CANCELED, FINISHED };
+  // enum class State { ... }
+  XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, CANCELED, FINISHED);
 
   /** Starts a previously created activity.
    *
