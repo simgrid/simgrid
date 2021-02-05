@@ -214,7 +214,7 @@ simgrid::kernel::activity::CommImpl* Api::get_comm(smx_simcall_t const r) const
 }
 
 // Does half the job
-bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const 
+bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
 {
   if (r1->call_ == Simcall::COMM_ISEND && r2->call_ == Simcall::COMM_IRECV)
     return false;
@@ -227,11 +227,10 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
   const kernel::activity::CommImpl* synchro2 = get_comm(r2);
 
   if ((r1->call_ == Simcall::COMM_ISEND || r1->call_ == Simcall::COMM_IRECV) && r2->call_ == Simcall::COMM_WAIT) {
-    auto mbox = get_mbox_remote_addr(r1);;
+    auto mbox                                                  = get_mbox_remote_addr(r1);
     RemotePtr<kernel::activity::MailboxImpl> synchro2_mbox_cpy = remote(synchro2->mbox_cpy);
 
-    if (mbox != synchro2_mbox_cpy
-        && simcall_comm_wait__get__timeout(r2) <= 0)
+    if (mbox != synchro2_mbox_cpy && simcall_comm_wait__get__timeout(r2) <= 0)
       return false;
 
     if ((r1->issuer_ != synchro2->src_actor_.get()) && (r1->issuer_ != synchro2->dst_actor_.get()) &&
@@ -329,7 +328,7 @@ RemotePtr<kernel::activity::CommImpl> Api::get_comm_wait_raw_addr(smx_simcall_t 
 
 RemotePtr<kernel::activity::CommImpl> Api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
 {
-  auto addr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::CommImpl**>(request->args_[0]) + value;
+  auto addr      = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::CommImpl**>(request->args_[0]) + value;
   auto comm_addr = mc_model_checker->get_remote_simulation().read(remote(addr));
   return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
 }
@@ -497,7 +496,7 @@ RemotePtr<kernel::activity::MailboxImpl> Api::get_mbox_remote_addr(smx_simcall_t
     case Simcall::COMM_ISEND:
     case Simcall::COMM_IRECV: {
       auto mbox_addr_ptr = simix::unmarshal<smx_mailbox_t>(req->args_[1]);
-      mbox_addr = remote(mbox_addr_ptr);
+      mbox_addr          = remote(mbox_addr_ptr);
       break;
     }
     default:
@@ -586,7 +585,8 @@ bool Api::simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const
   if (req1->issuer_ == req2->issuer_)
     return false;
 
-  /* Wait with timeout transitions are not considered by the independence theorem, thus we consider them as dependent with all other transitions */
+  /* Wait with timeout transitions are not considered by the independence theorem, thus we consider them as dependent
+   * with all other transitions */
   if ((req1->call_ == Simcall::COMM_WAIT && simcall_comm_wait__get__timeout(req1) > 0) ||
       (req2->call_ == Simcall::COMM_WAIT && simcall_comm_wait__get__timeout(req2) > 0))
     return true;

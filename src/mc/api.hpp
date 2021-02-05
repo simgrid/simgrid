@@ -6,9 +6,9 @@
 
 #include "simgrid/forward.h"
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_state.hpp"
-#include "src/mc/mc_record.hpp"
 #include "xbt/automaton.hpp"
 #include "xbt/base.h"
 
@@ -34,8 +34,8 @@ private:
     }
   };
 
-simgrid::kernel::activity::CommImpl* get_comm(smx_simcall_t const r) const;
-bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
+  simgrid::kernel::activity::CommImpl* get_comm(smx_simcall_t const r) const;
+  bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
 
 public:
   // No copy:
@@ -50,7 +50,7 @@ public:
 
   void initialize(char** argv) const;
 
-  // ACTOR APIs  
+  // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   bool actor_is_enabled(aid_t pid) const;
   unsigned long get_maxpid() const;
@@ -95,7 +95,7 @@ public:
   // SIMCALL APIs
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
-  const char *simcall_get_name(simgrid::simix::Simcall kind) const;
+  const char* simcall_get_name(simgrid::simix::Simcall kind) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   long simcall_get_actor_id(s_smx_simcall const* req) const;
   RemotePtr<kernel::activity::MailboxImpl> get_mbox_remote_addr(smx_simcall_t const req) const;
@@ -120,27 +120,27 @@ public:
   void s_close() const;
   void execute(Transition const& transition) const;
 
-  // AUTOMATION APIs
-  #if SIMGRID_HAVE_MC
-  void automaton_load(const char *file) const;
-  #endif
+// AUTOMATION APIs
+#if SIMGRID_HAVE_MC
+  void automaton_load(const char* file) const;
+#endif
   std::vector<int> automaton_propositional_symbol_evaluate() const;
   std::vector<xbt_automaton_state_t> get_automaton_state() const;
   int compare_automaton_exp_label(const xbt_automaton_exp_label* l) const;
   void set_property_automaton(xbt_automaton_state_t const& automaton_state) const;
-  inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const {
+  inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const
+  {
     return DerefAndCompareByActorsCountAndUsedHeap();
   }
-  inline int automaton_state_compare(const_xbt_automaton_state_t const& s1, const_xbt_automaton_state_t const& s2) const {
+  inline int automaton_state_compare(const_xbt_automaton_state_t const& s1, const_xbt_automaton_state_t const& s2) const
+  {
     return xbt_automaton_state_compare(s1, s2);
   }
   xbt_automaton_exp_label_t get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const;
   xbt_automaton_state_t get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const;
 
   // DYNAR APIs
-  inline unsigned long get_dynar_length(const_xbt_dynar_t const& dynar) const {
-    return xbt_dynar_length(dynar);
-  }
+  inline unsigned long get_dynar_length(const_xbt_dynar_t const& dynar) const { return xbt_dynar_length(dynar); }
 };
 
 } // namespace mc
