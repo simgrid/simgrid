@@ -326,7 +326,7 @@ bool ModelChecker::checkDeadlock()
   xbt_assert(s == sizeof(message) && message.type == MessageType::DEADLOCK_CHECK_REPLY,
              "Received unexpected message %s (%i, size=%i) "
              "expected MessageType::DEADLOCK_CHECK_REPLY (%i, size=%i)",
-             MC_message_type_name(message.type), (int)message.type, (int)s, (int)MessageType::DEADLOCK_CHECK_REPLY,
+             to_c_str(message.type), (int)message.type, (int)s, (int)MessageType::DEADLOCK_CHECK_REPLY,
              (int)sizeof(message));
   return message.value != 0;
 }

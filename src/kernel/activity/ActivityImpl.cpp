@@ -7,7 +7,6 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
-#include <array>
 #include <cmath> // isfinite()
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
@@ -43,10 +42,7 @@ double ActivityImpl::get_remaining() const
 
 const char* ActivityImpl::get_state_str() const
 {
-  constexpr std::array<const char*, 12> names{{"WAITING", "READY", "RUNNING", "DONE", "CANCELED", "FAILED",
-                                               "SRC_HOST_FAILURE", "DST_HOST_FAILURE", "TIMEOUT", "SRC_TIMEOUT",
-                                               "DST_TIMEOUT", "LINK_FAILURE"}};
-  return names[static_cast<int>(state_)];
+  return to_c_str(state_);
 }
 
 bool ActivityImpl::test()

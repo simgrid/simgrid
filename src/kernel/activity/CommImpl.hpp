@@ -28,7 +28,7 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
 public:
   enum class Type { SEND, RECEIVE };
 
-  CommImpl(Type type) : type_(type) {}
+  explicit CommImpl(Type type) : type_(type) {}
   CommImpl(s4u::Host* from, s4u::Host* to, double bytes);
 
   CommImpl& set_size(double size);

@@ -9,8 +9,8 @@
 #include <string>
 #include <list>
 
-#include <xbt/base.h>
 #include "simgrid/forward.h"
+#include <xbt/utility.hpp>
 
 #include <atomic>
 #include <simgrid/kernel/resource/Action.hpp>
@@ -19,20 +19,9 @@
 namespace simgrid {
 namespace kernel {
 namespace activity {
-enum class State {
-  WAITING = 0,
-  READY,
-  RUNNING,
-  DONE,
-  CANCELED,
-  FAILED,
-  SRC_HOST_FAILURE,
-  DST_HOST_FAILURE,
-  TIMEOUT,
-  SRC_TIMEOUT,
-  DST_TIMEOUT,
-  LINK_FAILURE
-};
+
+XBT_DECLARE_ENUM_CLASS(State, WAITING, READY, RUNNING, DONE, CANCELED, FAILED, SRC_HOST_FAILURE, DST_HOST_FAILURE,
+                       TIMEOUT, SRC_TIMEOUT, DST_TIMEOUT, LINK_FAILURE);
 
 class XBT_PUBLIC ActivityImpl {
   std::atomic_int_fast32_t refcount_{0};

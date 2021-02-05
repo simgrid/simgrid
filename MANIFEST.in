@@ -2317,7 +2317,6 @@ include src/mc/remote/CheckerSide.hpp
 include src/mc/remote/RemotePtr.hpp
 include src/mc/remote/RemoteSimulation.cpp
 include src/mc/remote/RemoteSimulation.hpp
-include src/mc/remote/mc_protocol.cpp
 include src/mc/remote/mc_protocol.h
 include src/mc/sosp/ChunkedData.cpp
 include src/mc/sosp/ChunkedData.hpp
