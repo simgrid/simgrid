@@ -7,8 +7,23 @@
 #ifndef XBT_UTILITY_HPP
 #define XBT_UTILITY_HPP
 
-#include <tuple>
 #include <functional>
+#include <tuple>
+#include <xbt/base.h>
+
+/** @brief Helper macro to declare enum class
+ *
+ * Declares an enum class EnumType, and a function "const char* to_c_str(EnumType)" to retrieve a C-string description
+ * for each value.
+ */
+#define XBT_DECLARE_ENUM_CLASS(EnumType, ...)                                                                          \
+  enum class EnumType;                                                                                                 \
+  static constexpr char const* to_c_str(EnumType value)                                                                \
+  {                                                                                                                    \
+    constexpr std::array<const char*, _XBT_COUNT_ARGS(__VA_ARGS__)> names{{_XBT_STRINGIFY_ARGS(__VA_ARGS__)}};         \
+    return names[static_cast<int>(value)];                                                                             \
+  }                                                                                                                    \
+  enum class EnumType { __VA_ARGS__ } /* defined here to handle trailing semicolon */
 
 namespace simgrid {
 namespace xbt {
