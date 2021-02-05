@@ -311,6 +311,21 @@ const char* Api::actor_get_host_name(smx_actor_t actor) const
   return info->hostname;
 }
 
+const char* Api::actor_get_name(smx_actor_t actor) const
+{
+  if (mc_model_checker == nullptr)
+    return actor->get_cname();
+
+  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
+
+  simgrid::mc::ActorInformation* info = actor_info_cast(actor);
+  if (info->name.empty()) {
+    simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name_);
+    info->name = process->read_string(remote(string_data.data), string_data.len);
+  }
+  return info->name.c_str();
+}
+
 void Api::initialize(char** argv) const
 {
   simgrid::mc::session = new simgrid::mc::Session([argv] {
@@ -720,9 +735,9 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
       char* bs = buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
       if (issuer->get_host())
         args = bprintf("src=(%ld)%s (%s), buff=%s, size=%s", issuer->get_pid(), actor_get_host_name(issuer),
-                       MC_smx_actor_get_name(issuer), p, bs);
+                       actor_get_name(issuer), p, bs);
       else
-        args = bprintf("src=(%ld)%s, buff=%s, size=%s", issuer->get_pid(), MC_smx_actor_get_name(issuer), p, bs);
+        args = bprintf("src=(%ld)%s, buff=%s, size=%s", issuer->get_pid(), actor_get_name(issuer), p, bs);
       xbt_free(bs);
       xbt_free(p);
       break;
@@ -739,9 +754,9 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
       char* bs = buff_size_to_string(size);
       if (issuer->get_host())
         args = bprintf("dst=(%ld)%s (%s), buff=%s, size=%s", issuer->get_pid(), actor_get_host_name(issuer),
-                       MC_smx_actor_get_name(issuer), p, bs);
+                       actor_get_name(issuer), p, bs);
       else
-        args = bprintf("dst=(%ld)%s, buff=%s, size=%s", issuer->get_pid(), MC_smx_actor_get_name(issuer), p, bs);
+        args = bprintf("dst=(%ld)%s, buff=%s, size=%s", issuer->get_pid(), actor_get_name(issuer), p, bs);
       xbt_free(bs);
       xbt_free(p);
       break;
@@ -772,9 +787,9 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
             mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->dst_actor_.get()));
         args = bprintf("comm=%s [(%ld)%s (%s)-> (%ld)%s (%s)]", p, src_proc ? src_proc->get_pid() : 0,
                        src_proc ? actor_get_host_name(src_proc) : "",
-                       src_proc ? MC_smx_actor_get_name(src_proc) : "", dst_proc ? dst_proc->get_pid() : 0,
+                       src_proc ? actor_get_name(src_proc) : "", dst_proc ? dst_proc->get_pid() : 0,
                        dst_proc ? actor_get_host_name(dst_proc) : "",
-                       dst_proc ? MC_smx_actor_get_name(dst_proc) : "");
+                       dst_proc ? actor_get_name(dst_proc) : "");
       }
       xbt_free(p);
       break;
@@ -804,8 +819,8 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
         smx_actor_t dst_proc =
             mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->dst_actor_.get()));
         args = bprintf("comm=%s [(%ld)%s (%s) -> (%ld)%s (%s)]", p, src_proc->get_pid(),
-                       MC_smx_actor_get_name(src_proc), actor_get_host_name(src_proc), dst_proc->get_pid(),
-                       MC_smx_actor_get_name(dst_proc), actor_get_host_name(dst_proc));
+                       actor_get_name(src_proc), actor_get_host_name(src_proc), dst_proc->get_pid(),
+                       actor_get_name(dst_proc), actor_get_host_name(dst_proc));
       }
       xbt_free(p);
       break;
@@ -871,10 +886,10 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
   std::string str;
   if (args != nullptr)
     str = simgrid::xbt::string_printf("[(%ld)%s (%s)] %s(%s)", issuer->get_pid(), actor_get_host_name(issuer),
-                                      MC_smx_actor_get_name(issuer), type, args);
+                                      actor_get_name(issuer), type, args);
   else
     str = simgrid::xbt::string_printf("[(%ld)%s (%s)] %s ", issuer->get_pid(), actor_get_host_name(issuer),
-                                      MC_smx_actor_get_name(issuer), type);
+                                      actor_get_name(issuer), type);
   xbt_free(args);
   return str;
 }

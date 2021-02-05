@@ -10,21 +10,6 @@
 
 using simgrid::mc::remote;
 
-/** HACK, Statically "upcast" a s_smx_actor_t into an ActorInformation
- *
- *  This gets 'actorInfo' from '&actorInfo->copy'. It upcasts in the
- *  sense that we could achieve the same thing by having ActorInformation
- *  inherit from s_smx_actor_t but we don't really want to do that.
- */
-static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
-{
-  simgrid::mc::ActorInformation temp;
-  std::size_t offset = (char*)temp.copy.get_buffer() - (char*)&temp;
-
-  auto* process_info = reinterpret_cast<simgrid::mc::ActorInformation*>((char*)actor - offset);
-  return process_info;
-}
-
 /** Load the remote list of processes into a vector
  *
  *  @param process      MCed process
@@ -85,21 +70,6 @@ void RemoteSimulation::refresh_simix()
 }
 
 }
-}
-
-const char* MC_smx_actor_get_name(smx_actor_t actor)
-{
-  if (mc_model_checker == nullptr)
-    return actor->get_cname();
-
-  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
-
-  simgrid::mc::ActorInformation* info = actor_info_cast(actor);
-  if (info->name.empty()) {
-    simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name_);
-    info->name = process->read_string(remote(string_data.data), string_data.len);
-  }
-  return info->name.c_str();
 }
 
 unsigned long MC_smx_get_maxpid()

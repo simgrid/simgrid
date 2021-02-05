@@ -50,6 +50,7 @@ private:
   bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
   simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor) const;
   const char* actor_get_host_name(smx_actor_t actor) const;
+  const char* actor_get_name(smx_actor_t actor) const;
 
 public:
   // No copy:
