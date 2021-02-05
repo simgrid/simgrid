@@ -28,16 +28,6 @@
  * MCed code.
  */
 
-/** Get the issuer of  a simcall (`req->issuer`)
- *
- *  In split-process mode, it does the black magic necessary to get an address
- *  of a (shallow) copy of the data structure the issuer SIMIX process in the local
- *  address space.
- *
- *  @param process the MCed process
- *  @param req     the simcall (copied in the local process)
- */
-
 XBT_PRIVATE unsigned long MC_smx_get_maxpid();
 
 #endif
