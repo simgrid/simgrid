@@ -7,7 +7,6 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
-#include <array>
 #include <cmath> // isfinite()
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);

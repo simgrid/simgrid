@@ -9,8 +9,6 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 
-#include <array>
-
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity, s4u, "S4U activities");
 

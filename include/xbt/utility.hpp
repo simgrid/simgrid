@@ -7,6 +7,7 @@
 #ifndef XBT_UTILITY_HPP
 #define XBT_UTILITY_HPP
 
+#include <array>
 #include <functional>
 #include <tuple>
 #include <xbt/base.h>
