@@ -26,12 +26,11 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued */
 
 public:
-  enum class Type { SEND = 0, RECEIVE, READY, DONE };
+  enum class Type { SEND, RECEIVE };
 
   CommImpl(Type type) : type_(type) {}
   CommImpl(s4u::Host* from, s4u::Host* to, double bytes);
 
-  CommImpl& set_type(CommImpl::Type type);
   CommImpl& set_size(double size);
   CommImpl& set_src_buff(unsigned char* buff, size_t size);
   CommImpl& set_dst_buff(unsigned char* buff, size_t* size);
@@ -52,7 +51,7 @@ public:
   void post() override;
   void finish() override;
 
-  CommImpl::Type type_; /* Type of the communication (SEND or RECEIVE) */
+  const CommImpl::Type type_; /* Type of the communication (SEND or RECEIVE) */
 
 #if SIMGRID_HAVE_MC
   MailboxImpl* mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR

@@ -69,7 +69,6 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
     XBT_DEBUG("Receive already pushed");
 
     other_comm->state_ = simgrid::kernel::activity::State::READY;
-    other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
   }
 
   if (detached) {
@@ -136,7 +135,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
       if (other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
         other_comm->state_ = simgrid::kernel::activity::State::DONE;
-        other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::DONE).set_mailbox(nullptr);
+        other_comm->set_mailbox(nullptr);
       }
     }
   } else {
@@ -158,7 +157,6 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
       XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
 
       other_comm->state_ = simgrid::kernel::activity::State::READY;
-      other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
     }
     receiver->activities_.emplace_back(other_comm);
   }
@@ -364,12 +362,6 @@ void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm,
 namespace simgrid {
 namespace kernel {
 namespace activity {
-
-CommImpl& CommImpl::set_type(CommImpl::Type type)
-{
-  type_ = type;
-  return *this;
-}
 
 CommImpl& CommImpl::set_size(double size)
 {
