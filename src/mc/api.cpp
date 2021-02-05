@@ -580,6 +580,42 @@ smx_simcall_t Api::mc_state_choose_request(simgrid::mc::State* state) const
   return nullptr;
 }
 
+std::list<udpor_transition_t> Api::get_enabled_transitions(simgrid::mc::State* state)
+{
+  std::list<udpor_transition_t> tr_list{};
+
+  for (auto& actor : mc_model_checker->get_remote_simulation().actors()) {
+    auto actor_pid  = actor.copy.get_buffer()->get_pid();
+    auto actor_impl = actor.copy.get_buffer();
+
+    // Only consider the actors that were marked as interleaving by the checker algorithm
+    if (not state->actor_states_[actor_pid].is_todo())
+      continue;
+    // Not executable in the application
+    if (not simgrid::mc::actor_is_enabled(actor_impl))
+      continue;
+
+    udpor_transition_t udpor_transition = std::unique_ptr<s_udpor_transition>(new s_udpor_transition());
+    Simcall simcall_call                = actor_impl->simcall_.call_;
+    smx_simcall_t simcall               = &actor_impl->simcall_;
+    udpor_transition->call_             = simcall_call;
+    switch (simcall_call) {
+      case Simcall::COMM_ISEND:
+      case Simcall::COMM_IRECV: {
+        udpor_transition->mbox_remote_addr = get_mbox_remote_addr(simcall);
+        udpor_transition->comm_remote_addr = get_comm_remote_addr(simcall);
+        break;
+      }
+
+      default:
+        break;
+    }
+    tr_list.emplace_back(std::move(udpor_transition));
+  }
+  
+  return tr_list;
+}
+
 bool Api::simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const
 {
   if (req1->issuer_ == req2->issuer_)

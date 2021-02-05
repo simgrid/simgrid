@@ -15,6 +15,18 @@
 namespace simgrid {
 namespace mc {
 
+/**
+ * @brief Maintains the transition's information.
+ */
+struct s_udpor_transition {
+  simgrid::simix::Simcall call_ = simgrid::simix::Simcall::NONE;
+  long issuer_id                = -1;
+  RemotePtr<kernel::activity::MailboxImpl> mbox_remote_addr {}; // used to represent mailbox remote address for isend and ireceive transitions
+  RemotePtr<kernel::activity::ActivityImpl> comm_remote_addr {}; // the communication this transition concerns (to be used only for isend, ireceive, wait and test)
+};
+
+typedef std::unique_ptr<s_udpor_transition> udpor_transition_t;
+
 /*
 ** This class aimes to implement FACADE APIs for simgrid. The FACADE layer sits between the CheckerSide
 ** (Unfolding_Checker, DPOR, ...) layer and the
@@ -91,6 +103,9 @@ public:
   std::string const& mc_get_host_name(std::string const& hostname) const;
   void dump_record_path() const;
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
+
+  // UDPOR APIs
+  std::list<udpor_transition_t> get_enabled_transitions(simgrid::mc::State* state);
 
   // SIMCALL APIs
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
