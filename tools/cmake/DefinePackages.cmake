@@ -623,7 +623,6 @@ set(MC_SRC
   src/mc/remote/RemoteSimulation.cpp
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
-  src/mc/remote/mc_protocol.cpp
 
   src/mc/sosp/PageStore.hpp
   src/mc/sosp/PageStore.cpp
