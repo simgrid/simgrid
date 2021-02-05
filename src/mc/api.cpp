@@ -118,7 +118,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
       const simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();
       if (act->src_actor_.get() && act->dst_actor_.get())
         state->transition_.argument_ = 0; // OK
-      else if (act->src_actor_.get() == nullptr && act->type_ == simgrid::kernel::activity::CommImpl::Type::READY &&
+      else if (act->src_actor_.get() == nullptr && act->state_ == simgrid::kernel::activity::State::READY &&
                act->detached())
         state->transition_.argument_ = 0; // OK
       else

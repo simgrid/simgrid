@@ -12,8 +12,8 @@ Using ``printf`` or ``println`` to display information is possible, but quickly 
 should use SimGrid's logging facilities, that are inspired from `Log4J <https://en.wikipedia.org/wiki/Log4j>`_. This way, you can filter the messages at runtime, based on their
 severity and their topic. There  is four main concepts in SimGrid's logging mechanism:
 
-The **category** of a message represents its topic. These categories are organized as a hierarchy, loosely corresponding to SimGrid's modules architecture. `Existing categories
-<logging_categories>`_ are documented online, but some of them may be disabled depending on the compilation options. Use ``--help-log-categories`` on the command line to see 
+The **category** of a message represents its topic. These categories are organized as a hierarchy, loosely corresponding to SimGrid's modules architecture. :ref:`Existing categories
+<logging_categories>` are documented online, but some of them may be disabled depending on the compilation options. Use ``--help-log-categories`` on the command line to see 
 the categories actually provided a given simulator.
 
 The message **priority** represents its severity. It can be one of ``trace``, ``debug``, ``verb``, ``info``, ``warn``, ``error`` and ``critical``. Every category has a configured
