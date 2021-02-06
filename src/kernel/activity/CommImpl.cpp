@@ -408,7 +408,7 @@ CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes)
 
 CommImpl::~CommImpl()
 {
-  XBT_DEBUG("Really free communication %p in state %d (detached = %d)", this, static_cast<int>(state_), detached_);
+  XBT_DEBUG("Really free communication %p in state %s (detached = %d)", this, get_state_str(), detached_);
 
   cleanup_surf();
 
