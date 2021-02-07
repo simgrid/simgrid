@@ -1,4 +1,4 @@
-foreach(x lmm_usage surf_usage surf_usage2 wifi_usage wifi_usage_decay)
+foreach(x lmm_usage surf_usage surf_usage2)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})

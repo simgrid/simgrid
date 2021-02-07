@@ -1,7 +1,7 @@
 foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle
         comm-get-sender comm-pt2pt wait-any-for
-        cloud-interrupt-migration cloud-sharing cloud-two-execs
+        cloud-interrupt-migration cloud-two-execs
         concurrent_rw 
         host-on-off host-on-off-actors host-on-off-recv
         basic-link-test evaluate-get-route-time evaluate-parse-time is-router
@@ -33,7 +33,7 @@ foreach(x actor actor-autorestart actor-suspend
   ADD_TESH_FACTORIES(tesh-s4u-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
 
-foreach(x basic-link-test host-on-off host-on-off-actors host-on-off-recv is-router listen_async pid storage_client_server cloud-sharing trace-integration)
+foreach(x basic-link-test host-on-off host-on-off-actors host-on-off-recv is-router listen_async pid storage_client_server trace-integration)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH(tesh-s4u-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()

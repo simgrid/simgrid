@@ -1020,6 +1020,7 @@ set(CMAKEFILES_TXT
   teshsuite/kernel/CMakeLists.txt
   teshsuite/lua/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
+  teshsuite/models/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/python/CMakeLists.txt
   teshsuite/s4u/CMakeLists.txt

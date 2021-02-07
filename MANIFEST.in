@@ -667,6 +667,12 @@ include teshsuite/mc/random-bug/random-bug-nocrash.tesh
 include teshsuite/mc/random-bug/random-bug-replay.tesh
 include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
+include teshsuite/models/cloud-sharing/cloud-sharing.cpp
+include teshsuite/models/cloud-sharing/cloud-sharing.tesh
+include teshsuite/models/wifi_usage/wifi_usage.cpp
+include teshsuite/models/wifi_usage/wifi_usage.tesh
+include teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp
+include teshsuite/models/wifi_usage_decay/wifi_usage_decay.tesh
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.c
 include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.tesh
 include teshsuite/python/borken-context/borken-context.py
@@ -693,8 +699,6 @@ include teshsuite/s4u/basic-link-test/basic-link-test.cpp
 include teshsuite/s4u/basic-link-test/basic-link-test.tesh
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.cpp
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.tesh
-include teshsuite/s4u/cloud-sharing/cloud-sharing.cpp
-include teshsuite/s4u/cloud-sharing/cloud-sharing.tesh
 include teshsuite/s4u/cloud-two-execs/cloud-two-execs.cpp
 include teshsuite/s4u/cloud-two-execs/cloud-two-execs.tesh
 include teshsuite/s4u/comm-get-sender/comm-get-sender.cpp
@@ -1707,10 +1711,6 @@ include teshsuite/surf/surf_usage/surf_usage.cpp
 include teshsuite/surf/surf_usage/surf_usage.tesh
 include teshsuite/surf/surf_usage2/surf_usage2.cpp
 include teshsuite/surf/surf_usage2/surf_usage2.tesh
-include teshsuite/surf/wifi_usage/wifi_usage.cpp
-include teshsuite/surf/wifi_usage/wifi_usage.tesh
-include teshsuite/surf/wifi_usage_decay/wifi_usage_decay.cpp
-include teshsuite/surf/wifi_usage_decay/wifi_usage_decay.tesh
 include teshsuite/xbt/cmdline/cmdline.c
 include teshsuite/xbt/cmdline/cmdline.tesh
 include teshsuite/xbt/log_large/log_large.c
@@ -2680,6 +2680,7 @@ include teshsuite/kernel/CMakeLists.txt
 include teshsuite/lua/CMakeLists.txt
 include teshsuite/lua/lua_platforms.tesh
 include teshsuite/mc/CMakeLists.txt
+include teshsuite/models/CMakeLists.txt
 include teshsuite/msg/CMakeLists.txt
 include teshsuite/python/CMakeLists.txt
 include teshsuite/s4u/CMakeLists.txt
