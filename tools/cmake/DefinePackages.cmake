@@ -1025,7 +1025,6 @@ set(CMAKEFILES_TXT
   teshsuite/python/CMakeLists.txt
   teshsuite/s4u/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
-  teshsuite/simix/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt

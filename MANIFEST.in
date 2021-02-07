@@ -656,6 +656,10 @@ include teshsuite/kernel/context-defaults/factory_boost.tesh
 include teshsuite/kernel/context-defaults/factory_raw.tesh
 include teshsuite/kernel/context-defaults/factory_thread.tesh
 include teshsuite/kernel/context-defaults/factory_ucontext.tesh
+include teshsuite/kernel/simcall-generic/simcall-generic.cpp
+include teshsuite/kernel/simcall-generic/simcall-generic.tesh
+include teshsuite/kernel/stack-overflow/stack-overflow.cpp
+include teshsuite/kernel/stack-overflow/stack-overflow.tesh
 include teshsuite/mc/dwarf-expression/dwarf-expression.cpp
 include teshsuite/mc/dwarf-expression/dwarf-expression.tesh
 include teshsuite/mc/dwarf/dwarf.cpp
@@ -819,10 +823,6 @@ include teshsuite/simdag/platforms/two_clusters_router_id.xml
 include teshsuite/simdag/platforms/two_hosts_multi_hop.xml
 include teshsuite/simdag/platforms/two_hosts_one_link.xml
 include teshsuite/simdag/platforms/two_hosts_one_link_splitduplex.xml
-include teshsuite/simix/generic-simcalls/generic-simcalls.cpp
-include teshsuite/simix/generic-simcalls/generic-simcalls.tesh
-include teshsuite/simix/stack-overflow/stack-overflow.cpp
-include teshsuite/simix/stack-overflow/stack-overflow.tesh
 include teshsuite/smpi/auto-shared/auto-shared.c
 include teshsuite/smpi/auto-shared/auto-shared.tesh
 include teshsuite/smpi/bug-17132/bug-17132.c
@@ -2685,7 +2685,6 @@ include teshsuite/msg/CMakeLists.txt
 include teshsuite/python/CMakeLists.txt
 include teshsuite/s4u/CMakeLists.txt
 include teshsuite/simdag/CMakeLists.txt
-include teshsuite/simix/CMakeLists.txt
 include teshsuite/smpi/CMakeLists.txt
 include teshsuite/smpi/isp/umpire/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/CMakeLists.txt
