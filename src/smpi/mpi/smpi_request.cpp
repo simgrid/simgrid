@@ -968,12 +968,11 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
 
 int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
 {
-  std::vector<simgrid::kernel::activity::CommImpl*> comms;
-  comms.reserve(count);
   int index = MPI_UNDEFINED;
 
   if(count > 0) {
     // Wait for a request to complete
+    std::vector<simgrid::kernel::activity::CommImpl*> comms;
     std::vector<int> map;
     XBT_DEBUG("Wait for one of %d", count);
     for(int i = 0; i < count; i++) {
@@ -985,7 +984,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
           map.push_back(i);
         } else {
           // This is a finished detached request, let's return this one
-          comms.clear(); // so we free don't do the waitany call
+          comms.clear(); // don't do the waitany call afterwards
           index = i;
           finish_wait(&requests[i], status); // cleanup if refcount = 0
           if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags_ & MPI_REQ_NON_PERSISTENT))
@@ -1000,7 +999,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
       try{
         i = simcall_comm_waitany(comms.data(), comms.size(), -1);
       } catch (const Exception&) {
-        XBT_INFO("request cancelled ");
+        XBT_INFO("request cancelled");
         i = -1;
       }
 
