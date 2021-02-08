@@ -33,6 +33,8 @@ static std::unique_ptr<simgrid::mc::Checker> create_checker()
 {
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker());
+  else if (_sg_mc_unfolding_checker)
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createUdporChecker());
   else if (_sg_mc_property_file.get().empty())
     return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker());
   else
