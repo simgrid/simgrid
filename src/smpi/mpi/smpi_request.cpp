@@ -996,13 +996,12 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
     }
     if (not comms.empty()) {
       XBT_DEBUG("Enter waitany for %zu comms", comms.size());
-      int i=MPI_UNDEFINED;
+      int i;
       try{
-        // this is not a detached send
         i = simcall_comm_waitany(comms.data(), comms.size(), -1);
       } catch (const Exception&) {
-        XBT_INFO("request %d cancelled ", i);
-        return i;
+        XBT_INFO("request cancelled ");
+        i = -1;
       }
 
       // not MPI_UNDEFINED, as this is a simix return code
