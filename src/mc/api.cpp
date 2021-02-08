@@ -18,7 +18,7 @@
 #include "src/smpi/include/smpi_request.hpp"
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Api, mc, "Logging specific to MC Fasade APIs ");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Api, mc, "Logging specific to MC Facade APIs ");
 
 using Simcall = simgrid::simix::Simcall;
 
