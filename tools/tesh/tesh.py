@@ -95,14 +95,6 @@ def setenv(arg):
 def expandvars2(path):
     return re.sub(r'(?<!\\)\$[A-Za-z_][A-Za-z0-9_]*', '', os.path.expandvars(path))
 
-
-# https://github.com/Cadair/jupyter_environment_kernels/issues/10
-try:
-    FileNotFoundError
-except NameError:
-    # py2
-    FileNotFoundError = OSError
-
 ##############
 #
 # Cleanup on signal
