@@ -116,10 +116,6 @@ unsigned int Exec::get_host_number() const
 {
   return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host_number();
 }
-double Exec::get_start_time() const
-{
-  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_start_time();
-}
 double Exec::get_finish_time() const
 {
   return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_finish_time();
@@ -205,6 +201,7 @@ Exec* Exec::start()
     pimpl_->suspend();
 
   state_ = State::STARTED;
+  start_time_ = pimpl_->surf_action_->get_start_time();
   on_start(*this);
   return this;
 }
