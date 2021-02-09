@@ -10,7 +10,7 @@ endforeach()
 ## Add the easy tests: only simcall-generic for now
 foreach(x simcall-generic)
   set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  ADD_TESH(tesh-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/${x} ${x}.tesh)
+  ADD_TESH_FACTORIES(tesh-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/${x} ${x}.tesh)
 endforeach()
 
 ## Add the tests for stack-overflow
