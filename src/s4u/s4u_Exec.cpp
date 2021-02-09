@@ -73,20 +73,23 @@ Exec* Exec::cancel()
  */
 ExecPtr Exec::set_bound(double bound)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the bound of an exec after its start");
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the bound of an exec after its start");
   bound_ = bound;
   return this;
 }
 ExecPtr Exec::set_timeout(double timeout) // XBT_ATTRIB_DEPRECATED_v329
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the bound of an exec after its start");
+  xbt_assert(state_ == State::INITED|| state_ == State::STARTING,
+      "Cannot change the bound of an exec after its start");
   timeout_ = timeout;
   return this;
 }
 
 ExecPtr Exec::set_flops_amount(double flops_amount)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the flop_amount of an exec after its start");
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the flop_amount of an exec after its start");
   flops_amounts_.assign(1, flops_amount);
   Activity::set_remaining(flops_amounts_.front());
   return this;
@@ -94,7 +97,8 @@ ExecPtr Exec::set_flops_amount(double flops_amount)
 
 ExecPtr Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the flops_amounts of an exec after its start");
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the flops_amounts of an exec after its start");
   flops_amounts_ = flops_amounts;
   parallel_      = true;
   return this;
@@ -102,7 +106,8 @@ ExecPtr Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
 
 ExecPtr Exec::set_bytes_amounts(const std::vector<double>& bytes_amounts)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the bytes_amounts of an exec after its start");
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the bytes_amounts of an exec after its start");
   bytes_amounts_ = bytes_amounts;
   parallel_      = true;
   return this;
