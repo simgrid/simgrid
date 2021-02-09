@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_ACTIVITY_HPP
 
 #include "xbt/asserts.h"
+#include <algorithm>
 #include <atomic>
 #include <set>
 #include <simgrid/forward.h>
@@ -51,8 +52,28 @@ protected:
 
   void add_successor(ActivityPtr a)
   {
+    if(this == a)
+      throw std::invalid_argument("Cannot be its own successor");
+    auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
+    if (p != successors_.end())
+      throw std::invalid_argument("Dependency already exists");
+
     successors_.push_back(a);
     a->dependencies_.insert({this});
+  }
+
+  void remove_successor(ActivityPtr a)
+  {
+    if(this == a)
+      throw std::invalid_argument("Cannot ask to remove its from successors");
+
+    auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
+    if (p != successors_.end()){
+      successors_.erase(p);
+      a->dependencies_.erase({this});
+    } else
+      throw std::invalid_argument("Dependency does not exist. Can not be removed.");
+
   }
 
 public:
@@ -155,7 +176,11 @@ public:
     Activity::add_successor(a);
     return static_cast<AnyActivity*>(this);
   }
-
+  AnyActivity* remove_successor(ActivityPtr a)
+  {
+    Activity::remove_successor(a);
+    return static_cast<AnyActivity*>(this);
+  }
   AnyActivity* set_name(const std::string& name)
   {
     xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");
