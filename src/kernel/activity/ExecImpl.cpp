@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/modelchecker.h"
@@ -57,6 +58,7 @@ namespace activity {
 
 ExecImpl::ExecImpl()
 {
+  piface_ = new s4u::Exec(this);
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
     actor_ = self;
@@ -163,6 +165,8 @@ void ExecImpl::post()
     state_ = State::DONE;
   }
 
+  get_iface()->set_finish_time(surf_action_->get_finish_time());
+
   clean_action();
   timeout_detector_.reset();
   if (actor_) {
@@ -208,7 +212,6 @@ void ExecImpl::finish()
         simcall_execution_waitany_for__set__result(simcall, rank);
       }
     }
-
     switch (state_) {
       case State::DONE:
         /* do nothing, synchro done */

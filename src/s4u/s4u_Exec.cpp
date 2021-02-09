@@ -17,14 +17,15 @@ namespace s4u {
 xbt::signal<void(Exec const&)> Exec::on_start;
 xbt::signal<void(Exec const&)> Exec::on_completion;
 
-Exec::Exec()
+Exec::Exec(kernel::activity::ExecImplPtr pimpl)
 {
-  pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
+  pimpl_ = pimpl;
 }
 
 ExecPtr Exec::init()
 {
-  return ExecPtr(new Exec());
+  auto pimpl = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
+  return ExecPtr(pimpl->get_iface());
 }
 
 Exec* Exec::wait()
@@ -115,10 +116,6 @@ Host* Exec::get_host() const
 unsigned int Exec::get_host_number() const
 {
   return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host_number();
-}
-double Exec::get_finish_time() const
-{
-  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_finish_time();
 }
 double Exec::get_cost() const
 {
