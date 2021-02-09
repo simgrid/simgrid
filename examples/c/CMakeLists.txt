@@ -112,12 +112,12 @@ foreach(x
                   ${CMAKE_HOME_DIRECTORY}/examples/c/${x}/${x}.tesh)
 endforeach()
 
-ADD_TESH_FACTORIES(app-masterworker-multicore   "thread;ucontext;raw;boost" 
+ADD_TESH_FACTORIES(app-masterworker-multicore   "*"
                                                 --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/c/app-masterworker
                                                 --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/app-masterworker
                                                 --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                                ${CMAKE_HOME_DIRECTORY}/examples/c/app-masterworker/app-masterworker-multicore.tesh)
-ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost" 
+ADD_TESH_FACTORIES(app-masterworker-vivaldi     "*"
                                                 --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/c/app-masterworker
                                                 --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/app-masterworker
                                                 --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
@@ -126,9 +126,9 @@ ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost"
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
     # Thread-local storage (TLS) is needed for parallel execution, but it doesn't
     # play well with Ucontexts on 64bit SunOS (at least on x86_64).
-    set(parallel-factories "thread;raw;boost")
+    set(parallel-factories "^ucontext")
 else()
-    set(parallel-factories "thread;ucontext;raw;boost")
+    set(parallel-factories "*")
 endif()
 
 ADD_TESH_FACTORIES(c-app-bittorrent-parallel "raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} 

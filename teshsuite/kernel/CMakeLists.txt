@@ -10,15 +10,15 @@ endforeach()
 ## Add the easy tests: only simcall-generic for now
 foreach(x simcall-generic)
   set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  ADD_TESH_FACTORIES(tesh-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/${x} ${x}.tesh)
+  ADD_TESH_FACTORIES(tesh-${x} "*" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/${x} ${x}.tesh)
 endforeach()
 
 ## Add the tests for stack-overflow
 set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/stack-overflow/stack-overflow.tesh)
 if (NOT enable_memcheck AND NOT enable_address_sanitizer AND NOT enable_thread_sanitizer)
-  ADD_TESH_FACTORIES(stack-overflow   "ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/stack-overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/stack-overflow stack-overflow.tesh)
+  ADD_TESH_FACTORIES(stack-overflow   "^thread" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/stack-overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/stack-overflow stack-overflow.tesh)
   if (WIN32)
-    SET_TESH_PROPERTIES(stack-overflow "ucontext;raw;boost" WILL_FAIL true)
+    SET_TESH_PROPERTIES(stack-overflow "^thread" WILL_FAIL true)
   endif()
 endif()
 

@@ -12,7 +12,7 @@ set(_dht-kademlia_sources dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/s4u-dht
                           dht-kademlia/routing_table.cpp dht-kademlia/routing_table.hpp
                           dht-kademlia/answer.cpp dht-kademlia/answer.hpp dht-kademlia/message.hpp)
 
-set(_actor-stacksize_factories "raw;boost;ucontext") # Threads ignore modifications of the stack size
+set(_actor-stacksize_factories "^thread") # Threads ignore modifications of the stack size
 
 # The maestro-set example only works for threads and when not using windows.
 set(_maestro-set_factories "thread")
@@ -24,7 +24,7 @@ foreach (example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence)
   if(NOT SIMGRID_HAVE_MC)
     set(_${example}_disable 1)
   endif()
-  set(_${example}_factories "ucontext;raw;boost")
+  set(_${example}_factories "^thread")
 endforeach()
 
 if(SIMGRID_HAVE_MC)
@@ -92,7 +92,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 
     # Use default factories unless specified otherwise
     if(NOT DEFINED _${example}_factories)
-      set(_${example}_factories "thread;ucontext;raw;boost")
+      set(_${example}_factories "*")
     endif()
 #    message("Factories of ${example}: ${_${example}_factories}")
 
@@ -161,9 +161,9 @@ ENDIF()
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "i386" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   # Thread-local storage (TLS) is needed for parallel execution, but it doesn't
   # play well with Ucontexts on 64bit SunOS (at least on x86_64).
-  set(parallel-factories "thread;raw;boost")
+  set(parallel-factories "^ucontext")
 else()
-  set(parallel-factories "thread;ucontext;raw;boost")
+  set(parallel-factories "*")
 endif()
 
 foreach(example app-bittorrent app-masterworkers 
@@ -178,12 +178,12 @@ endforeach()
 
 # ns3-tests
 if(SIMGRID_HAVE_NS3)
-  ADD_TESH_FACTORIES(s4u-network-ns3 "thread;ucontext;raw;boost"
+  ADD_TESH_FACTORIES(s4u-network-ns3 "*"
                                      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/s4u
                                      --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u
                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                      ${CMAKE_HOME_DIRECTORY}/examples/s4u/network-ns3/s4u-network-ns3.tesh)
-  ADD_TESH_FACTORIES(s4u-network-ns3-wifi "thread;ucontext;raw;boost"
+  ADD_TESH_FACTORIES(s4u-network-ns3-wifi "*"
                                      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/s4u
                                      --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u
                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
