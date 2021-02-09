@@ -269,7 +269,7 @@ double sg_exec_get_remaining_ratio(const_sg_exec_t exec)
 
 void sg_exec_start(sg_exec_t exec)
 {
-  exec->start();
+  exec->vetoable_start();
 }
 
 void sg_exec_cancel(sg_exec_t exec)
