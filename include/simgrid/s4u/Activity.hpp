@@ -6,11 +6,12 @@
 #ifndef SIMGRID_S4U_ACTIVITY_HPP
 #define SIMGRID_S4U_ACTIVITY_HPP
 
-#include "xbt/asserts.h"
+#include <xbt/asserts.h>
 #include <algorithm>
 #include <atomic>
 #include <set>
 #include <simgrid/forward.h>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <xbt/signal.hpp>
