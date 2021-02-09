@@ -38,8 +38,10 @@ int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
   std::transform(begin(*comms), end(*comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   int changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
-  if (changed_pos != -1)
+  if (changed_pos != -1) {
+    on_completion(*(comms->at(changed_pos)));
     comms->at(changed_pos)->release_dependencies();
+  }
   return changed_pos;
 }
 

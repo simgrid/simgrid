@@ -53,8 +53,10 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
                  [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
 
   int changed_pos = simcall_execution_waitany_for(rexecs.data(), rexecs.size(), timeout);
-  if (changed_pos != -1)
+  if (changed_pos != -1) {
+    on_completion(*(execs->at(changed_pos)));
     execs->at(changed_pos)->release_dependencies();
+  }
   return changed_pos;
 }
 
