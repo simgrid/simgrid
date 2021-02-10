@@ -29,18 +29,25 @@ static bool tester_test(const simgrid::s4u::ActivityPtr& activity)
 // Calls activity->wait_for(Duration / 128.0) and returns true when activity is terminated, just like test()
 template <int Duration> bool tester_wait(const simgrid::s4u::ActivityPtr& activity)
 {
+  constexpr double duration = Duration / 128.0;
+  const double timeout      = simgrid::s4u::Engine::get_clock() + duration;
   bool ret;
   try {
-    activity->wait_for(Duration / 128.0);
+    XBT_DEBUG("calling wait_for(%f)", duration);
+    activity->wait_for(duration);
     XBT_DEBUG("wait_for() returned normally");
     ret = true;
   } catch (const simgrid::TimeoutException& e) {
     XBT_DEBUG("wait_for() timed out (%s)", e.what());
+    INFO("wait_for() timeout should expire at expected date: " << timeout);
+    REQUIRE(simgrid::s4u::Engine::get_clock() == Approx(timeout));
     ret = false;
   } catch (const simgrid::Exception& e) {
     XBT_DEBUG("wait_for() threw an exception: %s", e.what());
     ret = true;
   }
+  INFO("wait_for() should return before timeout expiration at date: " << timeout);
+  REQUIRE(simgrid::s4u::Engine::get_clock() <= Approx(timeout));
   return ret;
 }
 
@@ -88,9 +95,10 @@ template <creator_type Create, tester_type Test> void test_basic()
     assert_exit(true, 6.);
     simgrid::s4u::ActivityPtr activity = Create(5.0);
     for (int i = 0; i < 3; i++) {
+      const double timestep = simgrid::s4u::Engine::get_clock() + 2.0;
       INFO("activity should be still running (i = " << i << ")");
       REQUIRE(not Test(activity));
-      simgrid::s4u::this_actor::sleep_for(2.0);
+      simgrid::s4u::this_actor::sleep_until(timestep);
     }
     INFO("activity should be terminated now");
     REQUIRE(Test(activity));
