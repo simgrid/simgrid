@@ -121,7 +121,7 @@ void Engine::register_function(const std::string& name, const std::function<void
 /** Registers a function as the default main function of actors
  *
  * It will be used as fallback when the function requested from the deployment file was not registered.
- * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
+ * It is used for trace-based simulations (see examples/cpp/replay-comms and similar).
  */
 void Engine::register_default(const std::function<void(int, char**)>& code)
 {

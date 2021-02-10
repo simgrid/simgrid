@@ -262,7 +262,7 @@ XBT_PUBLIC void execute(double flop);
 XBT_PUBLIC void execute(double flop, double priority);
 
 /**
- * @example examples/s4u/exec-ptask/s4u-exec-ptask.cpp
+ * @example examples/cpp/exec-ptask/s4u-exec-ptask.cpp
  */
 
 /** Block the current actor until the built parallel execution terminates
@@ -270,8 +270,8 @@ XBT_PUBLIC void execute(double flop, double priority);
  * \rst
  * .. _API_s4u_parallel_execute:
  *
- * **Example of use:** `examples/s4u/exec-ptask/s4u-exec-ptask.cpp
- * <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
+ * **Example of use:** `examples/cpp/exec-ptask/s4u-exec-ptask.cpp
+ * <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/exec-ptask/s4u-exec-ptask.cpp>`_
  *
  * Parallel executions convenient abstractions of parallel computational kernels that span over several machines,
  * such as a PDGEM and the other ScaLAPACK routines. If you are interested in the effects of such parallel kernel

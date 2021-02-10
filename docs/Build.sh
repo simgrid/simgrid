@@ -65,8 +65,8 @@ perl -pe 's/(xlink:href="(?:http|.*\.html))/target="_top" $1/' \
 echo
 echo "Undocumented examples:"
 for ex in $( (cd .. ; \
-              find examples/s4u/ -name '*.cpp'; \
-              find examples/c/ -name '*.c'; \
+              find examples/cpp/   -name '*.cpp'; \
+              find examples/c/     -name '*.c'; \
               find examples/python -name '*.py'; \
              ) | sort )
 do

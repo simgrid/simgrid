@@ -187,7 +187,7 @@ communications ongoing.  First, you have to declare a vector in which
 we will store the ongoing communications. It is also useful to have a
 vector of mailboxes.
 
-.. literalinclude:: ../../examples/s4u/comm-waitall/s4u-comm-waitall.cpp
+.. literalinclude:: ../../examples/cpp/comm-waitall/s4u-comm-waitall.cpp
    :language: c++
    :start-after: init-begin
    :end-before: init-end
@@ -199,7 +199,7 @@ Finally, the actor waits for the completion of all of them at once
 with 
 :cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.  
      
-.. literalinclude:: ../../examples/s4u/comm-waitall/s4u-comm-waitall.cpp
+.. literalinclude:: ../../examples/cpp/comm-waitall/s4u-comm-waitall.cpp
    :language: c++
    :start-after: put-begin
    :end-before: put-end

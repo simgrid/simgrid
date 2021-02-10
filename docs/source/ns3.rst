@@ -133,7 +133,7 @@ options can be used as usual.
 
 Many other files from the ``examples/platform`` directory are usable with the
 ns-3 model, such as `examples/platforms/dogbone.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/dogbone.xml>`_.
-Check the file  `examples/s4u/network-ns3/network-ns3.tesh <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/network-ns3/network-ns3.tesh>`_
+Check the file  `examples/cpp/network-ns3/network-ns3.tesh <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/network-ns3/network-ns3.tesh>`_
 to see which ones are used in our regression tests.
 
 WiFi platforms
