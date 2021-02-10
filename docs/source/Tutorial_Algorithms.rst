@@ -111,7 +111,7 @@ as a replacement to printf() or to cout to ensure that the messages
 are nicely logged along with the simulated time and actor name.
 
 
-.. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
+.. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
    :language: c++
    :start-after: master-begin
    :end-before: master-end
@@ -127,7 +127,7 @@ The worker retrieves its own host with
 :ref:`simgrid::s4u::this_actor <API_s4u_this_actor>`
 namespace contains many such helping functions.
 
-.. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
+.. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
    :language: c++
    :start-after: worker-begin
    :end-before: worker-end
@@ -146,7 +146,7 @@ functions to the engine (on lines 7 and 8), load the simulated platform
 from its description file (on line 11), map actors onto that platform
 (on line 12) and run the simulation until its completion on line 15.
 
-.. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers-fun.cpp
+.. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
    :language: c++
    :start-after: main-begin
    :end-before: main-end
@@ -192,7 +192,7 @@ Deployment files specify the execution scenario: it lists the actors
 that should be started, along with their parameter. In the following
 example, we start 6 actors: one master and 5 workers.
 
-.. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers_d.xml
+.. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers_d.xml
    :language: xml
 
 Execution Example
@@ -204,7 +204,7 @@ informative messages.
 
 .. "WARNING: Over dedent has detected" is expected here as we remove the $ marker this way
 
-.. literalinclude:: ../../examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh
+.. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers.tesh
    :language: shell
    :start-after: s4u-app-masterworkers-fun
    :prepend: $$$ ./masterworkers platform.xml deploy.xml
@@ -216,7 +216,7 @@ file that presents how to start the example once compiled, along with
 the expected output. These files are used for the automatic testing of
 the framework, but can be used to see the examples' output without
 compiling them. See e.g. the file
-`examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh <https://framagit.org/simgrid/simgrid/-/blob/master/examples/s4u/app-masterworkers/s4u-app-masterworkers.tesh>`_.
+`examples/cpp/app-masterworkers/s4u-app-masterworkers.tesh <https://framagit.org/simgrid/simgrid/-/blob/master/examples/cpp/app-masterworkers/s4u-app-masterworkers.tesh>`_.
 Lines starting with `$` are the commands to execute;
 lines starting with `>` are the expected output of each command while
 lines starting with `!` are configuration items for the test runner.

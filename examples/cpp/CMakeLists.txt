@@ -100,7 +100,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                                       --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
                                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                      ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
   else()
     message(STATUS "Example ${example} disabled, thus not compiled.")
     unset(_${example}_disable)
@@ -136,17 +136,17 @@ if(SIMGRID_HAVE_MC)
     ADD_TESH(s4u-mc-bugged1-liveness-ucontext     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness 
                                                   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
                                                   --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
-                                                  ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh)
+                                                  ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh)
 
 # This example hit the 5' timeout on CI, disable it for now
 #    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness 
 #                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
 #                                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
-#                                                       ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
+#                                                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
     IF(HAVE_C_STACK_CLEANER)
       # This test checks if the stack cleaner is making a difference:
-      ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
-                                                     ${CMAKE_HOME_DIRECTORY}/examples/s4u/mc-bugged1-liveness/ 
+      ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
+                                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/ 
                                                      ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/)
     ENDIF()
   ENDIF()
@@ -173,21 +173,21 @@ foreach(example app-bittorrent app-masterworkers
                                              --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
                                              --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
                                              --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
-                                             ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+                                             ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
 endforeach()
 
 # ns3-tests
 if(SIMGRID_HAVE_NS3)
   ADD_TESH_FACTORIES(s4u-network-ns3 "*"
-                                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/s4u
-                                     --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u
+                                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/cpp
+                                     --setenv bindir=${CMAKE_BINARY_DIR}/examples/cpp
                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                     ${CMAKE_HOME_DIRECTORY}/examples/s4u/network-ns3/s4u-network-ns3.tesh)
+                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3/s4u-network-ns3.tesh)
   ADD_TESH_FACTORIES(s4u-network-ns3-wifi "*"
-                                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/s4u
-                                     --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u
+                                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/cpp
+                                     --setenv bindir=${CMAKE_BINARY_DIR}/examples/cpp
                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                     ${CMAKE_HOME_DIRECTORY}/examples/s4u/network-ns3-wifi/s4u-network-ns3-wifi.tesh)
+                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi.tesh)
 endif()
 # Examples not accepting factories
 ##################################
@@ -206,7 +206,7 @@ foreach (example trace-categories trace-masterworkers trace-platform trace-proce
                           --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                           --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
                           --cd ${CMAKE_CURRENT_BINARY_DIR}/${example}
-                          ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+                          ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
 endforeach()
 
 if (NOT enable_memcheck AND NOT WIN32)

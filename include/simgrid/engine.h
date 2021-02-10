@@ -36,7 +36,7 @@ XBT_PUBLIC void simgrid_register_function(const char* name, void (*code)(int, ch
 /** Registers a function as the default main function of actors
  *
  * It will be used as fallback when the function requested from the deployment file was not registered.
- * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
+ * It is used for trace-based simulations (see examples/cpp/replay-comms and similar).
  */
 XBT_PUBLIC void simgrid_register_default(void (*code)(int, char**));
 /** Retrieve the simulation time (in seconds) */

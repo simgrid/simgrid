@@ -25,7 +25,7 @@ users. In particular, torture test cases should be placed in teshsuite/, not exa
 upon them by error.
 
 The examples/ directory is organized as  follows:
- - examples/s4u/ for examples using the emerging S4U API
+ - examples/cpp/ for examples using the S4U API
  - examples/smpi/ or examples using the SMPI API
  - examples/platforms/ only contains platforms descriptions in the XML format (see @ref platform for details)
  - examples/deprecated/msg/ for examples using the MSG API. Here the naming convention is package-example (e.g., app-masterworker).
