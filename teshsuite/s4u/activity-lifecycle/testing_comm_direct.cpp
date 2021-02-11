@@ -5,18 +5,6 @@
 
 #include "activity-lifecycle.hpp"
 
-// Normally, we should be able use Catch2's REQUIRE_THROWS_AS(...), but it generates errors with Address Sanitizer.
-// They're certainly false positive. Nevermind and use this simpler replacement.
-#define REQUIRE_NETWORK_FAILURE(...)                                                                                   \
-  do {                                                                                                                 \
-    try {                                                                                                              \
-      __VA_ARGS__;                                                                                                     \
-      FAIL("Expected exception NetworkFailureException not caught");                                                   \
-    } catch (simgrid::NetworkFailureException const&) {                                                                \
-      XBT_VERB("got expected NetworkFailureException");                                                                \
-    }                                                                                                                  \
-  } while (0)
-
 TEST_CASE("Activity lifecycle: direct communication activities")
 {
   XBT_INFO("#####[ launch next \"direct-comm\" test ]#####");
