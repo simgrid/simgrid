@@ -147,7 +147,7 @@ Comm* Comm::start()
     xbt_assert(src_buff_ == nullptr && dst_buff_ == nullptr,
                "Direct host-to-host communications cannot carry any data.");
     pimpl_ = kernel::actor::simcall([this] {
-      auto res = new kernel::activity::CommImpl(this->from_, this->to_, this->get_remaining());
+      kernel::activity::CommImplPtr res(new kernel::activity::CommImpl(this->from_, this->to_, this->get_remaining()));
       res->start();
       return res;
     });

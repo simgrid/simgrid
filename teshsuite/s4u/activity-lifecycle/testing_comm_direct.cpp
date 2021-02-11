@@ -126,7 +126,6 @@ TEST_CASE("Activity lifecycle: direct communication activities")
     END_SECTION;
   }
 
-/*
   BEGIN_SECTION("dcomm link restarted at start")
   {
     XBT_INFO("Launch a dcomm(5s), and restart the used link right after start");
@@ -142,7 +141,6 @@ TEST_CASE("Activity lifecycle: direct communication activities")
 
     END_SECTION;
   }
-*/
 
   BEGIN_SECTION("dcomm link restarted in middle")
   {
