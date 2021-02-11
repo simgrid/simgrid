@@ -400,8 +400,7 @@ CommImpl& CommImpl::detach()
   return *this;
 }
 
-CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes)
-    : size_(bytes), detached_(true), type_(Type::SEND), from_(from), to_(to)
+CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes) : size_(bytes), detached_(true), from_(from), to_(to)
 {
   state_ = State::READY;
 }
