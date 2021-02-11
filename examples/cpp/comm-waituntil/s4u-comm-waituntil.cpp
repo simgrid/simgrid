@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_waituntil, "Messages specific for this s4u example");
 
@@ -24,19 +25,19 @@ static void sender(int argc, char** argv)
   long msg_size        = std::stol(argv[2]); /* - message size in bytes */
   long receivers_count = std::stol(argv[3]); /* - number of receivers */
 
-  std::vector<simgrid::s4u::CommPtr> pending_comms;
+  std::vector<sg4::CommPtr> pending_comms;
 
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
     std::string mboxName        = std::string("receiver-") + std::to_string(i % receivers_count);
-    simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+    sg4::Mailbox* mbox          = sg4::Mailbox::by_name(mboxName);
     std::string msgName         = std::string("Message ") + std::to_string(i);
     auto* payload               = new std::string(msgName); // copy the data we send:
 
     // 'msgName' is not a stable storage location
     XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
     /* Create a communication representing the ongoing communication */
-    simgrid::s4u::CommPtr comm = mbox->put_async(payload, msg_size);
+    sg4::CommPtr comm = mbox->put_async(payload, msg_size);
     /* Add this comm to the vector of all known comms */
     pending_comms.push_back(comm);
   }
@@ -44,10 +45,10 @@ static void sender(int argc, char** argv)
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
     std::string mboxName        = std::string("receiver-") + std::to_string(i % receivers_count);
-    simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+    sg4::Mailbox* mbox          = sg4::Mailbox::by_name(mboxName);
     auto* payload               = new std::string("finalize"); // Make a copy of the data we will send
 
-    simgrid::s4u::CommPtr comm = mbox->put_async(payload, 0);
+    sg4::CommPtr comm = mbox->put_async(payload, 0);
     pending_comms.push_back(comm);
     XBT_INFO("Send 'finalize' to 'receiver-%ld'", i % receivers_count);
   }
@@ -55,7 +56,7 @@ static void sender(int argc, char** argv)
 
   /* Now that all message exchanges were initiated, wait for their completion, in order of creation. */
   while (not pending_comms.empty()) {
-    simgrid::s4u::CommPtr comm = pending_comms.back();
+    sg4::CommPtr comm = pending_comms.back();
     comm->wait_for(1);
     pending_comms.pop_back(); // remove it from the list
   }
@@ -67,7 +68,7 @@ static void sender(int argc, char** argv)
 static void receiver(int argc, char** argv)
 {
   xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(std::string("receiver-") + argv[1]);
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name(std::string("receiver-") + argv[1]);
 
   XBT_INFO("Wait for my first message");
   for (bool cont = true; cont;) {
@@ -82,7 +83,7 @@ int main(int argc, char* argv[])
 {
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.register_function("sender", &sender);
   e.register_function("receiver", &receiver);
 

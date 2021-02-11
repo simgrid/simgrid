@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_wait, "Messages specific for this s4u example");
 
@@ -16,20 +17,20 @@ static void sender(int argc, char**)
 {
   xbt_assert(argc == 1, "Expecting no parameter from the XML deployment file but got %d", argc - 1);
 
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("receiver");
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver");
 
   // Copy the data we send: the 'msg_content' variable is not a stable storage location.
   // It will be destroyed when this actor leaves the loop, ie before the receiver gets the data
   auto* payload = new std::string("Sent message");
 
   /* Create a communication representing the ongoing communication and then */
-  simgrid::s4u::CommPtr comm = mbox->put_init(payload, 13194230);
+  sg4::CommPtr comm = mbox->put_init(payload, 13194230);
   XBT_INFO("Suspend the communication before it starts (remaining: %.0f bytes) and wait a second.",
            comm->get_remaining());
-  simgrid::s4u::this_actor::sleep_for(1);
+  sg4::this_actor::sleep_for(1);
   XBT_INFO("Now, start the communication (remaining: %.0f bytes) and wait another second.", comm->get_remaining());
   comm->start();
-  simgrid::s4u::this_actor::sleep_for(1);
+  sg4::this_actor::sleep_for(1);
 
   XBT_INFO("There is still %.0f bytes to transfer in this communication. Suspend it for one second.",
            comm->get_remaining());
@@ -44,7 +45,7 @@ static void sender(int argc, char**)
 
 static void receiver(int, char**)
 {
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("receiver");
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver");
   XBT_INFO("Wait for the message.");
   auto received = mbox->get_unique<std::string>();
 
@@ -55,7 +56,7 @@ int main(int argc, char* argv[])
 {
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.register_function("sender", &sender);
   e.register_function("receiver", &receiver);
 

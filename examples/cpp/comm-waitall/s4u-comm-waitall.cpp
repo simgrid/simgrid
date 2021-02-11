@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_waitall, "Messages specific for this s4u example");
 
@@ -36,12 +37,12 @@ public:
   {
     // sphinx-doc: init-begin (this line helps the doc to build; ignore it)
     /* Vector in which we store all ongoing communications */
-    std::vector<simgrid::s4u::CommPtr> pending_comms;
+    std::vector<sg4::CommPtr> pending_comms;
 
     /* Make a vector of the mailboxes to use */
-    std::vector<simgrid::s4u::Mailbox*> mboxes;
+    std::vector<sg4::Mailbox*> mboxes;
     for (int i = 0; i < receivers_count; i++)
-      mboxes.push_back(simgrid::s4u::Mailbox::by_name(std::string("receiver-") + std::to_string(i)));
+      mboxes.push_back(sg4::Mailbox::by_name(std::string("receiver-") + std::to_string(i)));
     // sphinx-doc: init-end
 
     /* Start dispatching all messages to receivers, in a round robin fashion */
@@ -54,20 +55,20 @@ public:
       XBT_INFO("Send '%s' to '%s'", msg_content.c_str(), mboxes[i % receivers_count]->get_cname());
 
       /* Create a communication representing the ongoing communication, and store it in pending_comms */
-      simgrid::s4u::CommPtr comm = mboxes[i % receivers_count]->put_async(payload, msg_size);
+      sg4::CommPtr comm = mboxes[i % receivers_count]->put_async(payload, msg_size);
       pending_comms.push_back(comm);
     }
 
     /* Start sending messages to let the workers know that they should stop */ // sphinx-doc: put-begin
     for (int i = 0; i < receivers_count; i++) {
       XBT_INFO("Send 'finalize' to 'receiver-%d'", i);
-      simgrid::s4u::CommPtr comm = mboxes[i]->put_async(new std::string("finalize"), 0);
+      sg4::CommPtr comm = mboxes[i]->put_async(new std::string("finalize"), 0);
       pending_comms.push_back(comm);
     }
     XBT_INFO("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion in one single call */
-    simgrid::s4u::Comm::wait_all(&pending_comms);
+    sg4::Comm::wait_all(&pending_comms);
     // sphinx-doc: put-end
 
     XBT_INFO("Goodbye now!");
@@ -76,14 +77,14 @@ public:
 
 /* Receiver actor expects 1 argument: its ID */
 class Receiver {
-  simgrid::s4u::Mailbox* mbox;
+  sg4::Mailbox* mbox;
 
 public:
   explicit Receiver(std::vector<std::string> args)
   {
     xbt_assert(args.size() == 2, "Expecting one parameter from the XML deployment file but got %zu", args.size());
     std::string mboxName = std::string("receiver-") + args[1];
-    mbox                 = simgrid::s4u::Mailbox::by_name(mboxName);
+    mbox                 = sg4::Mailbox::by_name(mboxName);
   }
   void operator()()
   {
@@ -101,7 +102,7 @@ int main(int argc, char* argv[])
 {
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.register_actor<Sender>("sender");
   e.register_actor<Receiver>("receiver");
 

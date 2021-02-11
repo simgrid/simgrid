@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_ready, "Messages specific for this s4u example");
 
@@ -35,17 +36,17 @@ static void peer(int argc, char** argv)
 
   /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put
    * into it */
-  simgrid::s4u::Mailbox* my_mbox = simgrid::s4u::Mailbox::by_name(std::string("peer-") + std::to_string(my_id));
-  my_mbox->set_receiver(simgrid::s4u::Actor::self());
+  sg4::Mailbox* my_mbox = sg4::Mailbox::by_name(std::string("peer-") + std::to_string(my_id));
+  my_mbox->set_receiver(sg4::Actor::self());
 
-  std::vector<simgrid::s4u::CommPtr> pending_comms;
+  std::vector<sg4::CommPtr> pending_comms;
 
   /* Start dispatching all messages to peers others that myself */
   for (int i = 0; i < messages_count; i++) {
     for (int peer_id = 0; peer_id < peers_count; peer_id++) {
       if (peer_id != my_id) {
         std::string mboxName        = std::string("peer-") + std::to_string(peer_id);
-        simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+        sg4::Mailbox* mbox          = sg4::Mailbox::by_name(mboxName);
         std::string msgName =
             std::string("Message ") + std::to_string(i) + std::string(" from peer ") + std::to_string(my_id);
         auto* payload = new std::string(msgName); // copy the data we send:
@@ -61,7 +62,7 @@ static void peer(int argc, char** argv)
   for (int peer_id = 0; peer_id < peers_count; peer_id++) {
     if (peer_id != my_id) {
       std::string mboxName        = std::string("peer-") + std::to_string(peer_id);
-      simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(mboxName);
+      sg4::Mailbox* mbox          = sg4::Mailbox::by_name(mboxName);
       auto* payload               = new std::string("finalize"); // Make a copy of the data we will send
       pending_comms.push_back(mbox->put_async(payload, msg_size));
       XBT_INFO("Send 'finalize' to 'peer-%d'", peer_id);
@@ -74,9 +75,9 @@ static void peer(int argc, char** argv)
   long pending_finalize_messages = peers_count - 1;
   while (pending_finalize_messages > 0) {
     if (my_mbox->ready()) {
-      double start        = simgrid::s4u::Engine::get_clock();
+      double start        = sg4::Engine::get_clock();
       auto received       = my_mbox->get_unique<std::string>();
-      double waiting_time = simgrid::s4u::Engine::get_clock() - start;
+      double waiting_time = sg4::Engine::get_clock() - start;
       xbt_assert(
           waiting_time == 0,
           "Expecting the waiting time to be 0 because the communication was supposedly ready, but got %f instead",
@@ -87,12 +88,12 @@ static void peer(int argc, char** argv)
       }
     } else {
       XBT_INFO("Nothing ready to consume yet, I better sleep for a while");
-      simgrid::s4u::this_actor::sleep_for(.01);
+      sg4::this_actor::sleep_for(.01);
     }
   }
 
   XBT_INFO("I'm done, just waiting for my peers to receive the messages before exiting");
-  simgrid::s4u::Comm::wait_all(&pending_comms);
+  sg4::Comm::wait_all(&pending_comms);
 
   XBT_INFO("Goodbye now!");
 }
@@ -101,7 +102,7 @@ int main(int argc, char* argv[])
 {
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.register_function("peer", &peer);
 
   e.load_platform(argv[1]);
