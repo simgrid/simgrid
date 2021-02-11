@@ -74,7 +74,6 @@ protected:
       a->dependencies_.erase({this});
     } else
       throw std::invalid_argument("Dependency does not exist. Can not be removed.");
-
   }
 
 public:
