@@ -53,6 +53,35 @@ template <int Duration, typename Activity> bool tester_wait(const Activity& acti
   return ret;
 }
 
+// Calls wait_any_for([activity], Duration / 128.0) and returns true when activity is terminated, just like test()
+template <int Duration, typename Activity> bool tester_wait_any(const Activity& activity)
+{
+  constexpr double duration = Duration / 128.0;
+  const double timeout      = simgrid::s4u::Engine::get_clock() + duration;
+  bool ret;
+  try {
+    std::vector<Activity> activities = {activity};
+    XBT_DEBUG("calling wait_any_for(%f)", duration);
+    int index = Activity::element_type::wait_any_for(&activities, duration);
+    if (index == -1) {
+      XBT_DEBUG("wait_any_for() timed out");
+      INFO("wait_any_for() timeout should expire at expected date: " << timeout);
+      REQUIRE(simgrid::s4u::Engine::get_clock() == Approx(timeout));
+      ret = false;
+    } else {
+      XBT_DEBUG("wait_any_for() returned index %d", index);
+      REQUIRE(index == 0);
+      ret = true;
+    }
+  } catch (const simgrid::Exception& e) {
+    XBT_DEBUG("wait_any_for() threw an exception: %s", e.what());
+    ret = true;
+  }
+  INFO("wait_any_for() should return before timeout expiration at date: " << timeout);
+  REQUIRE(simgrid::s4u::Engine::get_clock() <= Approx(timeout));
+  return ret;
+}
+
 //========== Waiters: wait for the completion of an activity
 
 template <typename Activity> using waiter_type = void (*)(const Activity&);
@@ -217,6 +246,46 @@ TEST_CASE("Activity test/wait: using <tester_wait<1>>")
   // exec: host failure and wait<1> / sleep
   // exec: actor failure and wait<1> / wait
   // exec: host failure and wait<1> / wait
+
+  simgrid::s4u::this_actor::sleep_for(10);
+  assert_cleanup();
+}
+
+TEST_CASE("Activity test/wait: using <tester_wait_any<0>>")
+{
+  XBT_INFO("#####[ launch next test ]#####");
+
+  RUN_SECTION("exec: run and wait_any<0> once", test_trivial<ExecPtr, create_exec, tester_wait_any<0>>);
+  RUN_SECTION("exec: run and wait_any<0> many", test_basic<ExecPtr, create_exec, tester_wait_any<0>>);
+  RUN_SECTION("exec: cancel and wait_any<0>", test_cancel<ExecPtr, create_exec, tester_wait_any<1>>);
+  RUN_SECTION("exec: actor failure and wait_any<0> / sleep",
+              test_failure_actor<ExecPtr, create_exec, tester_wait_any<0>, waiter_sleep6>);
+  RUN_SECTION("exec: host failure and wait_any<0> / sleep",
+              test_failure_host<ExecPtr, create_exec, tester_wait_any<0>, waiter_sleep6>);
+  RUN_SECTION("exec: actor failure and wait_any<0> / wait",
+              test_failure_actor<ExecPtr, create_exec, tester_wait_any<0>, waiter_wait>);
+  RUN_SECTION("exec: host failure and wait_any<0> / wait",
+              test_failure_host<ExecPtr, create_exec, tester_wait_any<0>, waiter_wait>);
+
+  simgrid::s4u::this_actor::sleep_for(10);
+  assert_cleanup();
+}
+
+TEST_CASE("Activity test/wait: using <tester_wait_any<1>>")
+{
+  XBT_INFO("#####[ launch next test ]#####");
+
+  RUN_SECTION("exec: run and wait_any<1> once", test_trivial<ExecPtr, create_exec, tester_wait_any<1>>);
+  RUN_SECTION("exec: run and wait_any<1> many", test_basic<ExecPtr, create_exec, tester_wait_any<1>>);
+  RUN_SECTION("exec: cancel and wait_any<1>", test_cancel<ExecPtr, create_exec, tester_wait_any<1>>);
+  RUN_SECTION("exec: actor failure and wait_any<1> / sleep",
+              test_failure_actor<ExecPtr, create_exec, tester_wait_any<1>, waiter_sleep6>);
+  RUN_SECTION("exec: host failure and wait_any<1> / sleep",
+              test_failure_host<ExecPtr, create_exec, tester_wait_any<1>, waiter_sleep6>);
+  RUN_SECTION("exec: actor failure and wait_any<1> / wait",
+              test_failure_actor<ExecPtr, create_exec, tester_wait_any<1>, waiter_wait>);
+  RUN_SECTION("exec: host failure and wait_any<1> / wait",
+              test_failure_host<ExecPtr, create_exec, tester_wait_any<1>, waiter_wait>);
 
   simgrid::s4u::this_actor::sleep_for(10);
   assert_cleanup();
