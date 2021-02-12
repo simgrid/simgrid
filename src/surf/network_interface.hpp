@@ -197,8 +197,8 @@ public:
   void set_state(Action::State state) override;
   virtual std::list<LinkImpl*> get_links() const;
 
-  double latency_    = {};
-  double lat_current_ = {};
+  double latency_         = 0.; // Delay before the action starts
+  double lat_current_     = 0.; // Used to compute the communication RTT, and accordingly limit the communication rate
   double sharing_penalty_ = {};
   double rate_       = {};
   s4u::Host& get_src() const { return src_; }
