@@ -23,13 +23,13 @@ static simgrid::s4u::ActivityPtr create_exec(double duration)
 template <typename Activity> using tester_type = bool (*)(const Activity&);
 
 // Calls activity->test() and returns its result
-static bool tester_test(const simgrid::s4u::ActivityPtr& activity)
+template <typename Activity> bool tester_test(const Activity& activity)
 {
   return activity->test();
 }
 
 // Calls activity->wait_for(Duration / 128.0) and returns true when activity is terminated, just like test()
-template <int Duration> bool tester_wait(const simgrid::s4u::ActivityPtr& activity)
+template <int Duration, typename Activity> bool tester_wait(const Activity& activity)
 {
   constexpr double duration = Duration / 128.0;
   const double timeout      = simgrid::s4u::Engine::get_clock() + duration;
@@ -58,14 +58,14 @@ template <int Duration> bool tester_wait(const simgrid::s4u::ActivityPtr& activi
 template <typename Activity> using waiter_type = void (*)(const Activity&);
 
 // Wait for 6s
-static void waiter_sleep6(const simgrid::s4u::ActivityPtr&)
+template <typename Activity> void waiter_sleep6(const Activity&)
 {
   simgrid::s4u::this_actor::sleep_for(6.0);
   XBT_DEBUG("wake up after 6s sleep");
 }
 
 // Wait for completion of activity
-static void waiter_wait(const simgrid::s4u::ActivityPtr& activity)
+template <typename Activity> void waiter_wait(const Activity& activity)
 {
   activity->wait();
   XBT_DEBUG("end of wait()");
