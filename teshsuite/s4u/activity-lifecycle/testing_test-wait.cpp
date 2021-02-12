@@ -132,9 +132,11 @@ template <creator_type Create, tester_type Test, waiter_type Wait> void test_fai
     Wait(activity);
     FAIL("should not be here!");
   });
-  simgrid::s4u::this_actor::sleep_for(2.0);
+  const double timestep = simgrid::s4u::Engine::get_clock() + 2.0;
+  simgrid::s4u::this_actor::sleep_for(1.0);
   INFO("activity should be still running");
   REQUIRE(not Test(activity));
+  simgrid::s4u::this_actor::sleep_until(timestep);
   actor->kill();
   INFO("activity should be terminated now");
   REQUIRE(Test(activity));
@@ -151,9 +153,11 @@ template <creator_type Create, tester_type Test, waiter_type Wait> void test_fai
     Wait(activity);
     FAIL("should not be here!");
   });
-  simgrid::s4u::this_actor::sleep_for(2.0);
+  const double timestep = simgrid::s4u::Engine::get_clock() + 2.0;
+  simgrid::s4u::this_actor::sleep_for(1.0);
   INFO("activity should be still running");
   REQUIRE(not Test(activity));
+  simgrid::s4u::this_actor::sleep_until(timestep);
   actor->get_host()->turn_off();
   actor->get_host()->turn_on();
   INFO("activity should be terminated now");
