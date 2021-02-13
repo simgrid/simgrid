@@ -33,7 +33,7 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
   friend kernel::activity::ExecImpl;
   double priority_              = 1.0;
   double bound_                 = 0.0;
-  double timeout_               = 0.0;
+  double timeout_               = -1.0; // Infinite timeout by default
   std::vector<double> flops_amounts_;
   std::vector<double> bytes_amounts_;
   std::vector<Host*> hosts_;
