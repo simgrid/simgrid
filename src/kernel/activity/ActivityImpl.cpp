@@ -80,8 +80,12 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   /* If the synchro is already finished then perform the error handling */
   if (state_ != simgrid::kernel::activity::State::RUNNING)
     finish();
-  else {
-    /* we need a sleep action (even when there is no timeout) to be notified of host failures */
+  else if (timeout == 0.) {
+    // still running and timeout == 0 ? We need to report a timeout
+    state_ = simgrid::kernel::activity::State::TIMEOUT;
+    finish();
+  } else {
+    /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
     set_timeout(timeout);
   }
 }

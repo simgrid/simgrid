@@ -224,10 +224,12 @@ TEST_CASE("Activity test/wait: using <tester_wait<0>>")
   XBT_INFO("#####[ launch next test ]#####");
 
   RUN_SECTION("exec: run and wait<0> once", test_trivial<ExecPtr, create_exec, tester_wait<0>>);
-  // exec: run and wait<0> many
+  RUN_SECTION("exec: run and wait<0> many", test_basic<ExecPtr, create_exec, tester_wait<0>>);
   RUN_SECTION("exec: cancel and wait<0>", test_cancel<ExecPtr, create_exec, tester_wait<0>>);
-  // exec: actor failure and wait<0> / sleep
-  // exec: host failure and wait<0> / sleep
+  RUN_SECTION("exec: actor failure and wait<0> / sleep",
+              test_failure_actor<ExecPtr, create_exec, tester_wait<0>, waiter_sleep6>);
+  RUN_SECTION("exec: host failure and wait<0> / sleep",
+              test_failure_host<ExecPtr, create_exec, tester_wait<0>, waiter_sleep6>);
   // exec: actor failure and wait<0> / wait
   // exec: host failure and wait<0> / wait
 
@@ -298,14 +300,6 @@ TEST_CASE("Activity test/wait: tests currently failing", "[.][failing]")
   XBT_INFO("#####[ launch next failing test ]#####");
 
   // with tester_wait<0>
-  // -> wait_for() should return immediately and signal a timeout (timeout == 0)
-  RUN_SECTION("exec: run and wait<0> many", test_basic<ExecPtr, create_exec, tester_wait<0>>);
-  // -> wait_for() should return immediately and signal a timeout (timeout == 0)
-  RUN_SECTION("exec: actor failure and wait<0> / sleep",
-              test_failure_actor<ExecPtr, create_exec, tester_wait<0>, waiter_sleep6>);
-  // -> wait_for() should return immediately and signal a timeout (timeout == 0)
-  RUN_SECTION("exec: host failure and wait<0> / sleep",
-              test_failure_host<ExecPtr, create_exec, tester_wait<0>, waiter_sleep6>);
   // -> wait_for() should return immediately and signal a timeout (timeout == 0)
   RUN_SECTION("exec: actor failure and wait<0> / wait",
               test_failure_actor<ExecPtr, create_exec, tester_wait<0>, waiter_wait>);

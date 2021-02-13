@@ -80,7 +80,7 @@ ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
 
 ExecImpl& ExecImpl::set_timeout(double timeout)
 {
-  if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
+  if (timeout >= 0 && not MC_is_active() && not MC_record_replay_is_active()) {
     timeout_detector_.reset(hosts_.front()->pimpl_cpu->sleep(timeout));
     timeout_detector_->set_activity(this);
   }
