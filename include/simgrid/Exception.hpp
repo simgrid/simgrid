@@ -155,8 +155,12 @@ public:
 /** Exception raised when something is going wrong during the parsing of XML files */
 class ParseError : public Exception {
 public:
+  const std::string file_;
+  const int line_;
   ParseError(const std::string& file, int line, const std::string& msg)
       : Exception(XBT_THROW_POINT, xbt::string_printf("Parse error at %s:%d: %s", file.c_str(), line, msg.c_str()))
+      , file_(file)
+      , line_(line)
   {
   }
   ParseError(const ParseError&)     = default;

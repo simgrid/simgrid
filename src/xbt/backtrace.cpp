@@ -10,6 +10,7 @@
 #include <xbt/sysdep.h>
 #include <xbt/virtu.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <cstdio>
 #include <cstdlib>
 #include <sstream>
@@ -22,9 +23,11 @@
 #if HAVE_BOOST_STACKTRACE_BACKTRACE
 #define BOOST_STACKTRACE_USE_BACKTRACE
 #include <boost/stacktrace.hpp>
+#include <boost/stacktrace/detail/frame_decl.hpp>
 #elif HAVE_BOOST_STACKTRACE_ADDR2LINE
 #define BOOST_STACKTRACE_USE_ADDR2LINE
 #include <boost/stacktrace.hpp>
+#include <boost/stacktrace/detail/frame_decl.hpp>
 #endif
 
 /** @brief show the backtrace of the current point (lovely while debugging) */
@@ -57,7 +60,25 @@ public:
   std::string resolve() const
   {
     std::stringstream ss;
-    ss << st;
+
+    int frame_count = 0;
+    int state       = 0;
+
+    for (boost::stacktrace::frame frame : st) {
+      if (state == 1) {
+        if (boost::starts_with(frame.name(), "simgrid::xbt::MainFunction") ||
+            boost::starts_with(frame.name(), "simgrid::kernel::context::Context::operator()()"))
+          break;
+        ss << "  ->  " << frame_count++ << "# " << frame.name() << " at " << frame.source_file() << ":"
+           << frame.source_line() << std::endl;
+        if (frame.name() == "main")
+          break;
+      } else {
+        if (frame.name() == "simgrid::xbt::Backtrace::Backtrace()")
+          state = 1;
+      }
+    }
+
     return ss.str();
   }
 #else
