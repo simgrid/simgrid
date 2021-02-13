@@ -25,7 +25,7 @@ class Task : public xbt::Extendable<Task> {
   std::string tracing_category_ = "";
   long long int id_;
 
-  double timeout_  = 0.0;
+  double timeout_  = -1;    /* Default timeout is infinite */
   double priority_ = 1.0;
   double bound_    = 0.0;   /* Capping for CPU resource, or 0 for no capping */
   double rate_     = -1;    /* Capping for network resource, or -1 for no capping*/
