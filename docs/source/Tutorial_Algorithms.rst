@@ -5,12 +5,12 @@ Simulating Algorithms
 
 SimGrid was conceived as a tool to study distributed algorithms. Its
 modern :ref:`S4U interface <S4U_doc>` makes it easy to assess Cloud,
-P2P, HPC, IoT and similar settings.
+P2P, HPC, IoT, and similar settings.
 
 A typical SimGrid simulation is composed of several |Actors|_, that
 execute user-provided functions. The actors have to explicitly use the
-S4U interface to express their computation, communication, disk usage
-and other |Activities|_, so that they get reflected within the
+S4U interface to express their computation, communication, disk usage,
+and other |Activities|_ so that they get reflected within the
 simulator. These activities take place on **Resources** (|Hosts|_,
 |Links|_, |Disks|_). SimGrid predicts the time taken by each
 activity and orchestrates accordingly the actors waiting for the
@@ -18,7 +18,7 @@ completion of these activities.
 
 Each actor executes a user-provided function on a simulated |Host|_
 with which it can interact. Communications are not directly sent to
-actors, but posted onto a |Mailbox|_ that serve as rendez-vous point
+actors, but posted onto a |Mailbox|_ that serves as a rendezvous point
 between communicating actors.
 
 .. |Actors| replace:: **Actors**
@@ -58,19 +58,19 @@ between communicating actors.
 .. _Mutex: app_s4u.html#s4u-mutex
 
 **In the remainder of this tutorial**, you will discover a simple yet
-fully functioning example of SimGrid simulation: the Master/Workers
-application. We will detail each part of the code and necessary
-configuration to make it working.  After this tour, several exercises
+fully-functioning example of SimGrid simulation: the Master/Workers
+application. We will detail each part of the code and the necessary
+configuration to make it work.  After this tour, several exercises
 are proposed to let you discover some of the SimGrid features, hands
-on the keyboard. This practical session will be given in C++, that you
+on the keyboard. This practical session will be given in C++, which you
 are supposed to know beforehand.
 
 
 Discover the Master/Workers
 ---------------------------
 
-This section introduces a first example of SimGrid simulation. This
-simple application is composed of two kind of actors: the **master**
+This section introduces an example of SimGrid simulation. This
+simple application is composed of two kinds of actors: the **master**
 is in charge of distributing some computational tasks to a set of
 **workers** that execute them.
 
@@ -79,27 +79,26 @@ is in charge of distributing some computational tasks to a set of
 
 We first present a round-robin version of this application, where the
 master dispatches the tasks to the workers, one after the other, until
-all tasks are dispatched. Later in this tutorial, you will be given
-the opportunity to improve this scheme.
+all tasks are dispatched. You will improve this scheme later in this tutorial.
 
 The Actors
 ..........
 
 Let's start with the code of the master. It is represented by the
 *master* function below. This simple function takes at least 3
-parameters (the amount of tasks to dispatch, their computational size
-in flops to compute and their communication size in bytes to
-exchange). Every parameter after the third one must be the name of an
+parameters (the number of tasks to dispatch, their computational size
+in flops to compute, and their communication size in bytes to
+exchange). Every parameter after the third one must be the name of a
 host on which a worker is waiting for something to compute.
 
 Then, the tasks are sent one after the other, each on a mailbox named
 after the worker's hosts. On the other side, a given worker (which
-code is given below) wait for incoming tasks on its own
+code is given below) waits for incoming tasks on its 
 mailbox.
 
 
 
-At the end, once all tasks are dispatched, the master dispatches
+In the end, once all tasks are dispatched, the master dispatches
 another task per worker, but this time with a negative amount of flops
 to compute. Indeed, this application decided by convention, that the
 workers should stop when encountering such a negative compute_size.
@@ -107,7 +106,7 @@ workers should stop when encountering such a negative compute_size.
 At the end of the day, the only SimGrid specific functions used in
 this example are :cpp:func:`simgrid::s4u::Mailbox::by_name` and
 :cpp:func:`simgrid::s4u::Mailbox::put`. Also, :c:macro:`XBT_INFO` is used
-as a replacement to printf() or to cout to ensure that the messages
+as a replacement to `printf()` or `std::cout` to ensure that the messages
 are nicely logged along with the simulated time and actor name.
 
 
@@ -118,8 +117,8 @@ are nicely logged along with the simulated time and actor name.
 
 Here comes the code of the worker actors. This function expects no
 parameter from its vector of strings. Its code is very simple: it
-expects messages on the mailbox that is named after its own host. As long as it gets valid
-computation requests (whose compute_amount is positive), it compute
+expects messages on the mailbox that is named after its host. As long as it gets valid
+computation requests (whose compute_amount is positive), it computes
 this task and waits for the next one.
 
 The worker retrieves its own host with
@@ -159,15 +158,15 @@ Platform File
 .............
 
 Platform files define the simulated platform on which the provided
-application will take place. In contains one or several **Network
-Zone** |api_s4u_NetZone|_ that contain both |Host|_ and |Link|_
+application will take place. It contains one or several **Network
+Zone** |api_s4u_NetZone|_ that contains both |Host|_ and |Link|_
 Resources, as well as routing information.
 
 Such files can get rather long and boring, so the example below is
-only an excerpts of the full ``examples/platforms/small_platform.xml``
-file. For example, most routing information are missing, and only the
+only an excerpt of the full ``examples/platforms/small_platform.xml``
+file. For example, most routing information is missing, and only the
 route between the hosts Tremblay and Fafard is given. This path
-traverses 6 links (named 4, 3, 2, 0, 1 and 8). There are several
+traverses 6 links (named 4, 3, 2, 0, 1, and 8). There are several
 examples of platforms in the archive under ``examples/platforms``.
 
 .. |api_s4u_NetZone| image:: /img/extlink.png
@@ -189,7 +188,7 @@ Deployment File
 ...............
 
 Deployment files specify the execution scenario: it lists the actors
-that should be started, along with their parameter. In the following
+that should be started, along with their parameters. In the following
 example, we start 6 actors: one master and 5 workers.
 
 .. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers_d.xml
@@ -214,11 +213,11 @@ informative messages.
 Each example included in the SimGrid distribution comes with a `tesh`
 file that presents how to start the example once compiled, along with
 the expected output. These files are used for the automatic testing of
-the framework, but can be used to see the examples' output without
+the framework but can be used to see the examples' output without
 compiling them. See e.g. the file
 `examples/cpp/app-masterworkers/s4u-app-masterworkers.tesh <https://framagit.org/simgrid/simgrid/-/blob/master/examples/cpp/app-masterworkers/s4u-app-masterworkers.tesh>`_.
 Lines starting with `$` are the commands to execute;
-lines starting with `>` are the expected output of each command while
+lines starting with `>` are the expected output of each command, while
 lines starting with `!` are configuration items for the test runner.
 
 
@@ -226,7 +225,7 @@ Improve it Yourself
 -------------------
 
 In this section, you will modify the example presented earlier to
-explore the quality of the proposed algorithm. For now, it works and
+explore the quality of the proposed algorithm. It already works, and
 the simulation prints things, but the truth is that we have no idea of
 whether this is a good algorithm to dispatch tasks to the workers.
 This very simple setting raises many interesting questions:
@@ -249,7 +248,7 @@ This very simple setting raises many interesting questions:
     load balancing will likely get uneven, in particular when
     distributing the last tasks.
 
-- How does the quality of such algorithm dependent on the platform
+- How does the quality of such an algorithm dependent on the platform
   characteristics and on the task characteristics?
 
     Whenever the input communication time is very small compared to
@@ -262,14 +261,14 @@ This very simple setting raises many interesting questions:
   may be quite complicated. How does such a topology impact the
   previous result?
 
-    When data transfers are the bottleneck, it is likely that a good
+    When data transfers are the bottleneck, it is likely that good
     modeling of the platform becomes essential. The SimGrid platform
     models are particularly handy to account for complex platform
     topologies.
 
 - What is the best applicative topology?
 
-    Is a flat master worker deployment sufficient? Should we go for a
+    Is a flat master-worker deployment sufficient? Should we go for a
     hierarchical algorithm, with some forwarders taking large pools of
     tasks from the master, each of them distributing their tasks to a
     sub-pool of workers? Or should we introduce super-peers,
@@ -278,7 +277,7 @@ This very simple setting raises many interesting questions:
 
 - How is such an algorithm sensitive to external workload variation?
 
-    What if bandwidth, latency and computing speed can vary with no
+    What if bandwidth, latency, and computing speed can vary with no
     warning?  Shouldn't you study whether your algorithm is sensitive
     to such load variations?
 
@@ -294,7 +293,7 @@ settings for ages, or do you prefer to sit on the shoulders of a
 giant? With SimGrid, you can focus on your algorithm. The whole
 simulation mechanism is already working.
 
-Here is the visualization of a SimGrid simulation of two master worker
+Here is the visualization of a SimGrid simulation of two master-worker
 applications (one in light gray and the other in dark gray) running in
 concurrence and showing resource usage over a long period of time. It
 was obtained with the Triva software.
@@ -327,7 +326,7 @@ container to enjoy the provided dependencies.
    when you log out of the container, so don't edit the other files!
 
 All needed dependencies are already installed in this container
-(SimGrid, a C++ compiler, cmake, pajeng and R). Vite being only
+(SimGrid, a C++ compiler, CMake, pajeng, and R). Vite being only
 optional in this tutorial, it is not installed to reduce the image
 size.
 
@@ -346,17 +345,17 @@ Using your Computer Natively
 ............................
 
 To take the tutorial on your machine, you first need to :ref:`install 
-a recent version of SimGrid <install>`, a C++ compiler and also
+a recent version of SimGrid <install>`, a C++ compiler, and also
 ``pajeng`` to visualize the traces. You may want to install `Vite
 <http://vite.gforge.inria.fr/>`_ to get a first glance at the traces.
-The provided code template requires cmake to compile. On Debian and
+The provided code template requires CMake to compile. On Debian and
 Ubuntu for example, you can get them as follows:
 
 .. code-block:: shell
 
    sudo apt install simgrid pajeng cmake g++ vite
 
-For R analysis of the produced traces, you may want to install R,
+For R analysis of the produced traces, you may want to install R
 and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
@@ -365,7 +364,7 @@ and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
    Rscript -e "library(devtools); install_github('schnorr/pajengr');"
 
 An initial version of the source code is provided on framagit. This
-template compiles with cmake. If SimGrid is correctly installed, you
+template compiles with CMake. If SimGrid is correctly installed, you
 should be able to clone the `repository
 <https://framagit.org/simgrid/simgrid-template-s4u>`_ and recompile
 everything as follows:
@@ -380,7 +379,7 @@ everything as follows:
    cmake .
    make
 
-If you struggle with the compilation, then you should double check
+If you struggle with the compilation, then you should double-check
 your :ref:`SimGrid installation <install>`.  On need, please refer to
 the :ref:`Troubleshooting your Project Setup
 <install_yours_troubleshooting>` section.
@@ -406,7 +405,7 @@ specify the full path to simgrid-colorizer on the above line, such as
 ``/opt/simgrid/bin/simgrid-colorizer``. If you did not install it at all,
 you can find it in <simgrid_root_directory>/bin/colorize.
 
-For a classical Gantt-Chart vizualisation, you can use `Vite
+For a classical Gantt-Chart visualization, you can use `Vite
 <http://vite.gforge.inria.fr/>`_ if you have it installed, as
 follows. But do not spend too much time installing Vite, because there
 is a better way to visualize SimGrid traces (see below).
@@ -439,7 +438,7 @@ Lab 1: Simpler Deployments
 --------------------------
 
 In the provided example, adding more workers quickly becomes a pain:
-You need to start them (at the bottom of the file), and to inform the
+You need to start them (at the bottom of the file) and inform the
 master of its availability with an extra parameter. This is mandatory
 if you want to inform the master of where the workers are running. But
 actually, the master does not need to have this information.
@@ -451,7 +450,7 @@ using the worker location (which should be filled in two locations),
 we could use their ID (which should be filled in one location
 only).
 
-This could be done with the following deployment file. It's clearly
+This could be done with the following deployment file. It's 
 not shorter than the previous one, but it's still simpler because the
 information is only written once. It thus follows the `DRY
 <https://en.wikipedia.org/wiki/Don't_repeat_yourself>`_ `SPOT
@@ -484,10 +483,10 @@ Wrap up
 .......
 
 The mailboxes are a very powerful mechanism in SimGrid, allowing many
-interesting application settings. They may feel surprising if you are
+interesting application settings. They may feel unusual if you are
 used to BSD sockets or other classical systems, but you will soon
-appreciate their power. They are only used to match the
-communications, but have no impact on the communication
+appreciate their power. They are only used to match 
+communications but have no impact on the communication
 timing. ``put()`` and ``get()`` are matched regardless of their
 initiators' location and then the real communication occurs between
 the involved parties.
@@ -499,7 +498,7 @@ Please refer to the full `Mailboxes' documentation
 Lab 2: Using the Whole Platform
 -------------------------------
 
-It is now easier to add a new worker, but you still has to do it
+It is now easier to add a new worker, but you still have to do it
 manually. It would be much easier if the master could start the
 workers on its own, one per available host in the platform. The new
 deployment file should be as simple as:
@@ -558,9 +557,9 @@ The retrieved value is an ``aid_t``, which is an alias for ``long``.
 Instead of having one mailbox per worker, you could also reorganize
 completely your application to have only one mailbox per master. All
 the workers of a given master would pull their work from the same
-mailbox, which should be passed as parameter to the workers.  This
-reduces the amount of mailboxes, but prevents the master from taking
-any scheduling decision. It really depends on how you want to organize
+mailbox, which should be passed as a parameter to the workers.
+This requires fewer mailboxes but prevents the master from taking
+any scheduling decision. It depends on how you want to organize
 your application and what you want to study with your simulator. In
 this tutorial, that's probably not a good idea.
 
@@ -568,7 +567,7 @@ Wrap up
 .......
 
 In this exercise, we reduced the amount of configuration that our
-simulator requests. This is both a good idea, and a dangerous
+simulator requests. This is both a good idea and a dangerous
 trend. This simplification is another application of the good old DRY/SPOT
 programming principle (`Don't Repeat Yourself / Single Point Of Truth
 <https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_), and you
@@ -577,10 +576,10 @@ engineering principles.
 
 But at the same time, you should be careful in separating your
 scientific contribution (the master/workers algorithm) and the
-artifacts used to test it (platform, deployment and workload). This is
+artifacts used to test it (platform, deployment, and workload). This is
 why SimGrid forces you to express your platform and deployment files
 in XML instead of using a programming interface: it forces a clear
-separation of concerns between things of very different nature.
+separation of concerns between things of different nature.
 
 Lab 3: Fixed Experiment Duration
 --------------------------------
@@ -588,11 +587,11 @@ Lab 3: Fixed Experiment Duration
 In the current version, the number of tasks is defined through the
 worker arguments. Hence, tasks are created at the very beginning of
 the simulation. Instead, have the master dispatching tasks for a
-predetermined amount of time.  The tasks must now be created on demand
+predetermined amount of time.  The tasks must now be created on need
 instead of beforehand.
 
 Of course, usual time functions like ``gettimeofday`` will give you the
-time on your real machine, which is prety useless in the
+time on your real machine, which is pretty useless in the
 simulation. Instead, retrieve the time in the simulated world with
 :cpp:func:`simgrid::s4u::Engine::get_clock`.
 
@@ -633,9 +632,9 @@ It is now time to start several applications at once, with the following ``deplo
    :language: xml
 
 Things happen when you do so, but it remains utterly difficult to
-understand what's happening exactely. Even Gantt visualizations
+understand what's happening exactly. Even Gantt visualizations
 contain too much information to be useful: it is impossible to
-understand which task belong to which application. To fix this, we
+understand which task belongs to which application. To fix this, we
 will categorize the tasks.
 
 Instead of starting the execution in one function call only with
@@ -650,7 +649,7 @@ it and wait for its completion, as follows:
    // exec->start() is optional here as wait() starts the activity on need
    exec->wait();
 
-You can make the same code shorter as follows:
+You can shorten this code as follows:
 
 .. code-block:: cpp
 
@@ -677,15 +676,15 @@ round-robin is completely suboptimal: most of the workers keep waiting
 for more work. We will move to a First-Come First-Served mechanism
 instead.
 
-For that, your workers should explicitly request for work with a
+For that, your workers should explicitly request  work with a
 message sent to a channel that is specific to their master. The name
 of that private channel can be the one used to categorize the
 executions, as it is already specific to each master.
 
 The master should serve in a round-robin manner the requests it
-receives, until the time is up. Changing the communication schema can
+receives until the time is up. Changing the communication schema can
 be a bit hairy, but once it works, you will see that such as simple
-FCFS schema allows one to double the amount of tasks handled over time
+FCFS schema allows one to double the number of tasks handled over time
 here. Things may be different with another platform file.
 
 Further Improvements
@@ -693,7 +692,7 @@ Further Improvements
 
 From this, many things can easily be added. For example, you could:
 
-- Allow workers to have several pending requests so as to overlap
+- Allow workers to have several pending requests  to overlap
   communication and computations as much as possible. Non-blocking
   communication will probably become handy here.
 - Add a performance measurement mechanism, enabling the master to make smart scheduling choices.
@@ -703,16 +702,16 @@ From this, many things can easily be added. For example, you could:
   What is the largest number of tasks requiring 50e6 flops and 1e5
   bytes that you manage to distribute and process in one hour on
   ``g5k.xml`` ?
-- Optimize not only for the amount of tasks handled, but also for the
+- Optimize not only for the number of tasks handled but also for the
   total energy dissipated.
-- And so on. If you come up with a really nice extension, please share
+- And so on. If you come up with a nice extension, please share
   it with us so that we can extend this tutorial.
 
 After this Tutorial
 -------------------
 
-This tutorial is now terminated. You could keep reading the [online documentation][fn:4] or
-[tutorials][fn:7], or you could head up to the example section to read some code.
+This tutorial is now terminated. You could keep reading the online documentation and
+tutorials, or you could head up to the :ref:`example section <s4u_examples>` to read some code.
 
 .. todo::
 

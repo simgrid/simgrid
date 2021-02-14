@@ -3,6 +3,7 @@
 .. This file follows the ReStructured syntax to be included in the
 .. documentation, but it should remain readable directly.
 
+.. _s4u_examples:
 
 Examples
 ********
