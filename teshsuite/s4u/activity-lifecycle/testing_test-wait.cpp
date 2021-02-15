@@ -300,15 +300,15 @@ TEST_CASE("Activity test/wait: tests currently failing", "[.][failing]")
   XBT_INFO("#####[ launch next failing test ]#####");
 
   // with tester_wait<0>
-  // -> wait_for() should return immediately and signal a timeout (timeout == 0)
+  // -> actor should not be killed by TimeoutException
   RUN_SECTION("exec: actor failure and wait<0> / wait",
               test_failure_actor<ExecPtr, create_exec, tester_wait<0>, waiter_wait>);
-  // -> wait_for() should return immediately and signal a timeout (timeout == 0)
+  // -> actor should not be killed by TimeoutException
   RUN_SECTION("exec: host failure and wait<0> / wait",
               test_failure_host<ExecPtr, create_exec, tester_wait<0>, waiter_wait>);
 
   // with tester_wait<1>
-  // -> second call to wait_for() should wait for timeuout and not return immediately
+  // -> second call to wait_for() should wait for timeout and not return immediately
   RUN_SECTION("exec: run and wait<1> many", test_basic<ExecPtr, create_exec, tester_wait<1>>);
   // -> second call to wait_for() should report a failure, and not a timeout
   RUN_SECTION("exec: actor failure and wait<1> / sleep",
