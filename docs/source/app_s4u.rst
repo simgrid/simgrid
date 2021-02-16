@@ -20,8 +20,8 @@ with the full power of C++. This is the preferred interface to describe
 abstract algorithms in the domains of Cloud, P2P, HPC, IoT, and similar
 settings.
 
-Since v3.20 (June 2018), S4U is definitely the way to go for long-term
-projects. It is feature complete, but may still evolve slightly in the
+Since v3.20 (June 2018), S4U is the way to go for long-term
+projects. It is feature complete, but may still evolve slightly in 
 future releases. It can already be used to do everything that can be
 done in SimGrid, but you may have to adapt your code in future
 releases. When this happens, compiling your code will produce
@@ -39,22 +39,22 @@ S4U interface to express their :ref:`computation <API_s4u_Exec>`,
 :ref:`communication <API_s4u_Comm>`, :ref:`disk usage <API_s4u_Io>`,
 and other |API_s4u_Activities|_, so that they get reflected within the
 simulator. These activities take place on resources such as |API_s4u_Hosts|_,
-|API_s4u_Links|_ and |API_s4u_Disks|_. SimGrid predicts the time taken by each
+|API_s4u_Links|_, and |API_s4u_Disks|_. SimGrid predicts the time taken by each
 activity and orchestrates the actors accordingly, waiting for the
 completion of these activities.
 
 
 When **communicating**, data is not directly sent to other actors but
-posted onto a |API_s4u_Mailbox|_ that serves as a rendez-vous point between
+posted onto a |API_s4u_Mailbox|_ that serves as a rendezvous point between
 communicating actors. This means that you don't need to know who you
 are talking to, you just put your communication `Put` request in a
 mailbox, and it will be matched with a complementary `Get`
 request.  Alternatively, actors can interact through **classical
 synchronization mechanisms** such as |API_s4u_Barrier|_, |API_s4u_Semaphore|_,
-|API_s4u_Mutex|_ and |API_s4u_ConditionVariable|_.
+|API_s4u_Mutex|_, and |API_s4u_ConditionVariable|_.
 
 Each actor is located on a simulated |API_s4u_Host|_. Each host is located
-itself in a |API_s4u_NetZone|_, that knows the networking path between one
+in a |API_s4u_NetZone|_, that knows the networking path between one
 resource to another. Each NetZone is included in another one, forming
 a tree of NetZones which root zone contains the whole platform. The
 actors can also be located on a |API_s4U_VirtualMachine|_ that may
@@ -71,7 +71,7 @@ provides many helper functions to simplify the code of actors.
   - :ref:`class Engine <API_s4u_Engine>`
     Simulation engine (singleton).
   - :ref:`class Mailbox <API_s4u_Mailbox>`
-    Communication rendez-vous, with which actors meet each other.
+    Communication rendezvous, with which actors meet each other.
 
 - **Resources**
 
@@ -94,7 +94,7 @@ provides many helper functions to simplify the code of actors.
   - :ref:`class Exec <API_s4u_Exec>`
     Computation activity, started on Host and consuming CPU resources.
   - :ref:`class Io <API_s4u_Io>`
-    I/O activity, started on and consumming disks.
+    I/O activity, started on and consuming disks.
 
 - **Synchronization Objects**: Classical IPC that actors can use
 
@@ -162,7 +162,7 @@ block the actor during their execution but progress on their own.
 
 Once your asynchronous activity is started, you can test for its
 completion using :cpp:func:`s4u::Activity::test() <simgrid::s4u::Activity::test>`.
-This function returns ``true`` if the activity completed already.
+This function returns ``true`` if the activity is completed already.
 You can also use :cpp:func:`s4u::Activity::wait() <simgrid::s4u::Activity::wait>`
 to block until the completion of the activity. To wait for at most a given amount of time,
 use  :cpp:func:`s4u::Activity::wait_for() <simgrid::s4u::Activity::wait_for>`.
@@ -226,14 +226,14 @@ Please also refer to the :ref:`API reference for s4u::Mailbox
 What are Mailboxes?
 ===================
 
-|API_s4u_Mailboxes|_ are rendez-vous points for network communications,
+|API_s4u_Mailboxes|_ are rendezvous points for network communications,
 similar to URLs on which you could post and retrieve data. Actually,
 the mailboxes are not involved in the communication once it starts,
 but only to find the contact with which you want to communicate.
 
 They are similar to many common things: The phone number, which allows
-the caller to find the receiver. The twitter hashtag, which help
-senders and receivers to find each others. In TCP, the pair 
+the caller to find the receiver. The Twitter hashtag, which helps
+senders and receivers to find each other. In TCP, the pair 
 ``{host name, host port}`` to which you can connect to find your peer.
 In HTTP, URLs through which the clients can connect to the servers. 
 In ZeroMQ, the queues are used to match senders and receivers.
@@ -251,9 +251,9 @@ communications do not start right away after a
 for the corresponding :cpp:func:`Mailbox::get() <simgrid::s4u::Mailbox::get>`.
 You can change this by :ref:`declaring a receiving actor <s4u_receiving_actor>`.
 
-A big difference with twitter hashtags is that SimGrid does not
+A big difference with Twitter hashtags is that SimGrid does not
 offer easy support to broadcast a given message to many
-receivers. So that would be like a twitter tag where each message
+receivers. So that would be like a Twitter tag where each message
 is consumed by the first receiver.
 
 A big difference with the ZeroMQ queues is that you cannot filter
@@ -262,10 +262,10 @@ in SimGrid, you'd have one mailbox per potential topic, and subscribe
 to each topic individually with a 
 :cpp:func:`get_async() <simgrid::s4u::Mailbox::get_async>` on each mailbox.
 Then, use :cpp:func:`Comm::wait_any() <simgrid::s4u::Comm::wait_any>` 
-to get the first message on any of the mailbox you are subscribed onto.
+to get the first message on any of the mailboxes you are subscribed to.
 
 The mailboxes are not located on the network, and you can access
-them without any latency. The network delay are only related to the
+them without any latency. The network delays are only related to the
 location of the sender and receiver once the match between them is
 done on the mailbox. This is just like the phone number that you
 can use locally, and the geographical distance only comes into play
@@ -276,8 +276,8 @@ How to use Mailboxes?
 =====================
 
 You can retrieve any existing mailbox from its name (which is a
-unique string, just like a twitter tag). This results in a
-versatile mechanism that can be used to build many different
+unique string, just like a Twitter tag). This results in a
+versatile tool that can be used to build many different
 situations.
 
 To model classical socket communications, use "hostname:port" as
@@ -285,11 +285,11 @@ mailbox names, and make sure that only one actor reads into a given
 mailbox. This does not make it easy to build a perfectly realistic
 model of the TCP sockets, but in most cases, this system is too
 cumbersome for your simulations anyway. You probably want something
-simpler, that turns our to be easy to build with the mailboxes.
+simpler, that turns out to be easy to build with the mailboxes.
 
 Many SimGrid examples use a sort of yellow page system where the
 mailbox names are the name of the service (such as "worker",
-"master" or "reducer"). That way, you don't have to know where your
+"master", or "reducer"). That way, you don't have to know where your
 peer is located to contact it. You don't even need its name. Its
 function is enough for that. This also gives you some sort of load
 balancing for free if more than one actor pulls from the mailbox:
@@ -329,7 +329,7 @@ posts its :cpp:func:`get() <simgrid::s4u::Mailbox::get()>`
 
 Note that being permanent receivers of a mailbox prevents actors to be
 garbage-collected. If your simulation creates many short-lived actors
-that marked as permanent receiver, you should call
+that are marked as permanent receiver, you should call
 ``mailbox->set_receiver(nullptr)`` by the end of the actors so that their
 memory gets properly reclaimed. This call should be at the end of the
 actor's function, not in an on_exit callback.
@@ -362,7 +362,7 @@ Here is a little example:
   
    } // The mutex gets automatically freed because the only existing reference gets out of scope
 
-Note that Mailboxes, Hosts and Links are not handled thought smart
+Note that Mailboxes, Hosts, and Links are not handled through smart
 pointers (yet?). This means that it is currently impossible to destroy a
 mailbox or a link. You can still destroy a host (but probably
 shouldn't), using :cpp:func:`simgrid::s4u::Host::destroy`.
@@ -704,7 +704,7 @@ Simulating executions
 ---------------------
 
 Simulate the execution of some code on this actor. You can either simulate
-parallel or sequential code, and you can either block upon the termination of
+parallel or sequential code and you can either block upon the termination of
 the execution, or start an asynchronous activity.
 
 .. tabs::
@@ -914,7 +914,7 @@ Basic management
 
          #include <simgrid/s4u/Mailbox.hpp>
 
-      Note that there is no MailboxPtr type, and that you cannot use the RAII
+      Note that there is no MailboxPtr type and that you cannot use the RAII
       idiom on mailboxes because they are internal objects to the simulation
       engine. Once created, there is no way to destroy a mailbox before the end
       of the simulation.
@@ -1041,7 +1041,7 @@ Basic management
 
          #include <simgrid/s4u/Disk.hpp>
 
-      Note that there is no DiskPtr type, and that you cannot use the RAII
+      Note that there is no DiskPtr type and that you cannot use the RAII
       idiom on disks because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
          
@@ -1329,7 +1329,7 @@ Basic management
 
          #include <simgrid/s4u/Link.hpp>
 
-      Note that there is no LinkPtr type, and that you cannot use the RAII
+      Note that there is no LinkPtr type and that you cannot use the RAII
       idiom on hosts because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
 
@@ -1488,7 +1488,7 @@ Basic management
 
          #include <simgrid/s4u/NetZone.hpp>
 
-      Note that there is no NetZonePtr type, and that you cannot use the RAII
+      Note that there is no NetZonePtr type and that you cannot use the RAII
       idiom on network zones because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
 

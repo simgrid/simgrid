@@ -10,7 +10,7 @@ Examples
 
 SimGrid comes with an extensive set of examples, documented on this
 page. Most of them only demonstrate one single feature, with some
-larger examplars listed below. 
+larger exemplars listed below. 
 
 The C++ examples can be found under examples/cpp while python examples
 are in examples/python. Each such directory contains the source code (also listed
@@ -33,7 +33,7 @@ Starting and Stopping Actors
 ----------------------------
 
   - **Creating actors:**
-    Most actors are started from the deployment XML file, because this
+    Most actors are started from the deployment XML file because this
     is a :ref:`better scientific habit <howto_science>`, but you can
     also create them directly from your code.
 
@@ -67,9 +67,9 @@ Starting and Stopping Actors
           The following file is used in both C++ and Python.
 
   - **React to the end of actors:** You can attach callbacks to the end of
-    actors. There is several ways of doing so, depending on whether you want to
+    actors. There are several ways of doing so, depending on whether you want to
     attach your callback to a given actor and on how you define the end of a
-    given actor. User code probably want to react to the termination of an actor
+    given actor. User code probably wants to react to the termination of an actor
     while some plugins want to react to the destruction (memory collection) of
     actors.
 
@@ -129,7 +129,8 @@ Starting and Stopping Actors
           This file is not really interesting: the important matter is in the XML file.
 
   - **Daemonize actors:**
-    Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
+    Some actors may be intended to simulate daemons that run in the background.
+    This example shows how to transform a regular
     actor into a daemon that will be automatically killed once the simulation is over.
     
     .. tabs::
@@ -187,7 +188,7 @@ synchronization objects <s4u_ex_IPC>`.
           :cpp:func:`sg_actor_is_suspended()`.
 
   - **Migrating Actors:**
-    Actors can move or be moved from a host to another very easily. It amount to setting them on a new host.
+    Actors can move or be moved from a host to another very easily. It amounts to setting them on a new host.
 
     .. tabs::
 
@@ -243,7 +244,7 @@ Traces Replay as a Workload
 ---------------------------
 
 This section details how to run trace-driven simulations. It is very
-handy when you want to test an algorithm or protocol that only react
+handy when you want to test an algorithm or protocol that only reacts
 to external events. For example, many P2P protocols react to user
 requests, but do nothing if there is no such event.
 
@@ -285,7 +286,7 @@ Communications on the Network
 
   - **Basic communications:**
     This simple example just sends one message back and forth.
-    The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
+    The tesh file laying in the directory shows how to start the simulator binary, highlighting how to pass options to 
     the simulators (as detailed in Section :ref:`options`).
 
     .. tabs::
@@ -314,7 +315,7 @@ Communications on the Network
 
          See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm__wait()`.
 
- - **Waiting communications with timeouts:**
+ - **Waiting for communications with timeouts:**
    This example is very similar to the previous one, simply adding how to declare timeouts when waiting on asynchronous communication.
 
    .. tabs::
@@ -340,7 +341,7 @@ Communications on the Network
 	 
  - **Waiting for all communications in a set:**
    The ``wait_all()`` function is useful when you want to block until
-   all activities in a given set have completed. 
+   all activities in a given set have been completed. 
    
    .. tabs::
 
@@ -382,9 +383,9 @@ Executions on the CPU
 
   - **Basic execution:**
     The computations done in your program are not reported to the
-    simulated world, unless you explicitly request the simulator to pause
+    simulated world unless you explicitly request the simulator to pause
     the actor until a given amount of flops gets computed on its simulated
-    host. Some executions can be given an higher priority so that they
+    host. Some executions can be given a higher priority so that they
     get more resources.
 
     .. tabs::
@@ -463,12 +464,12 @@ Executions on the CPU
     PDGEM and the other ScaLAPACK routines. Note that this only works
     with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``).
     
-    This example demonstrates several kind of parallel tasks: regular
+    This example demonstrates several kinds of parallel tasks: regular
     ones, communication-only (without computation), computation-only
     (without communication), synchronization-only (neither
     communication nor computation). It also shows how to reconfigure a
-    task after its start, to change the amount of hosts it runs onto.
-    This allows to simulate malleable tasks.
+    task after its start, to change the number of hosts it runs onto.
+    This allows simulating malleable tasks.
 
     .. tabs::
 
@@ -477,7 +478,7 @@ Executions on the CPU
           See also :cpp:func:`simgrid::s4u::this_actor::parallel_execute()`.
 
   - **Using Pstates on a host:**
-    This example shows how define a set of pstates in the XML. The current pstate
+    This example shows how to define a set of pstates in the XML. The current pstate
     of a host can then be accessed and changed from the program.
 
     .. tabs::
@@ -520,9 +521,9 @@ write actions on the disk resources.
           This shows how to declare disks in XML.
 
 The FileSystem plugin provides a more detailed view, with the
-classical operations over files: open, move, unlink, and of course
+classical operations over files: open, move, unlink, and of course,
 read and write. The file and disk sizes are also dealt with and can
-result in short reads and short write, as in reality.
+result in short reads and short writes, as in reality.
 
   - **File Management:**
     This example illustrates the use of operations on files
@@ -533,7 +534,7 @@ result in short reads and short write, as in reality.
        .. example-tab:: examples/cpp/io-file-system/s4u-io-file-system.cpp
 
   - **Remote I/O:**
-    I/O operations on files can also be done in a remote fashion, 
+    I/O operations on files can also be done remotely, 
     i.e. when the accessed disk is not mounted on the caller's host.
 
     .. tabs::
@@ -624,15 +625,15 @@ Interacting with the Platform
          .. showfile:: examples/platforms/prop.xml
             :language: xml
 
- - **Retrieving the netzones matching a given criteria:**
+ - **Retrieving the netzones matching given criteria:**
    Shows how to filter the cluster netzones.
 
    .. tabs::
 
       .. example-tab:: examples/cpp/routing-get-clusters/s4u-routing-get-clusters.cpp
 
- - **Retrieving the list of hosts matching a given criteria:**
-   Shows how to filter the actors that match a given criteria.
+ - **Retrieving the list of hosts matching given criteria:**
+   Shows how to filter the actors that match given criteria.
 
    .. tabs::
 
@@ -682,8 +683,8 @@ Energy Simulation
 =================
 
   - **Describing the energy profiles in the platform:**
-    The first platform file contains the energy profile of each links and
-    hosts for a wired network, which is necessary to get energy consumption
+    The first platform file contains the energy profile of each link and
+    host for a wired network, which is necessary to get energy consumption
     predictions. The second platform file is the equivalent for a wireless
     network. As usual, you should not trust our example, and you should
     strive to double-check that your instantiation matches your target
@@ -726,7 +727,7 @@ Energy Simulation
        .. example-tab:: examples/cpp/energy-wifi/s4u-energy-wifi.cpp
 
   - **Modeling the shutdown and boot of hosts:**
-    Simple example of model of model for the energy consumption during
+    Simple example of a model for the energy consumption during
     the host boot and shutdown periods.
 
     .. tabs::
@@ -740,14 +741,14 @@ Tracing and Visualizing
 =======================
 
 Tracing can be activated by various configuration options which
-are illustrated in these example. See also the 
+are illustrated in these examples. See also the 
 :ref:`full list of options related to tracing <tracing_tracing_options>`.
 
 It is interesting to run the process-create example with the following
 options to see the task executions:
 
   - **Platform Tracing:**
-    This program is a toy example just loading the platform, so that
+    This program is a toy example just loading the platform so that
     you can play with the platform visualization. Recommended options:
     ``--cfg=tracing:yes --cfg=tracing/categorized:yes``
 
@@ -756,7 +757,7 @@ options to see the task executions:
        .. example-tab:: examples/cpp/trace-platform/s4u-trace-platform.cpp
 
   - **Setting Categories**
-    This example declares several tracing categories to that are used to
+    This example declares several tracing categories that are used to
     classify its tasks. When the program is executed, the tracing mechanism
     registers the resource utilization of hosts and links according to these
     categories. Recommended options:
@@ -821,7 +822,7 @@ the following options: ``--cfg=tracing:yes --cfg=tracing/platform:yes``
        .. example-tab::  examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 
 ========================
-Larger SimGrid Examplars
+Larger SimGrid Exemplars
 ========================
 
 This section contains application examples that are somewhat larger
@@ -838,7 +839,7 @@ than the previous examples.
        .. example-tab:: examples/c/app-token-ring/app-token-ring.c
 
   - **Master Workers:**
-    Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
+    Another good old example, where one Master process has a bunch of tasks to dispatch to a set of several Worker 
     processes.
 
     .. tabs::
@@ -968,7 +969,7 @@ Simulating Clouds
 -----------------
 
   - **Cloud basics**
-    This example starts some computations both on PMs and VMs, and
+    This example starts some computations both on PMs and VMs and
     migrates some VMs around.
 
     .. tabs::
@@ -995,7 +996,7 @@ Model-Related Examples
     Simulator. The most interesting is probably not the C++ files since
     they are unchanged from the other simulations, but the associated files,
     such as the platform file to see how to declare a platform to be used 
-    with the ns-3 bindings of SimGrid and the tesh file to see how to actually
+    with the ns-3 bindings of SimGrid and the tesh file to see how to 
     start a simulation in these settings.
 
     .. tabs::
@@ -1011,9 +1012,9 @@ Model-Related Examples
 	    
   - **wifi links**
   
-    This demonstrates how to declare a wifi link in your platform and
-    how to use it in your simulation. The basics is to have a link
-    which sharing policy is set to `WIFI`. Such links can have more
+    This demonstrates how to declare a wifi zone in your platform and
+    how to use it in your simulation. For that, you should have a link
+    whose sharing policy is set to `WIFI`. Such links can have more
     than one bandwidth value (separated by commas), corresponding to
     the several SNR level of your wifi link.
     
@@ -1071,15 +1072,15 @@ Model-Checking Examples
 =======================
 
 The model-checker can be used to exhaustively search for issues in the
-tested application. It must be activated at compile time, but this
-mode is rather experimental in SimGrid (as of v3.22). You should not
+tested application. It must be activated at compile-time, but this
+mode is rather experimental in SimGrid (as of v3.25). You should not
 enable it unless you really want to formally verify your applications:
-SimGrid is slower and maybe less robust when MC is enabled.
+SimGrid is slower and may be less robust when MC is enabled.
 
   - **Failing assert**
     In this example, two actors send some data to a central server,
     which asserts that the messages are always received in the same order.
-    This is obviously wrong, and the model-checker correctly finds a
+    This is wrong, and the model-checker correctly finds a
     counter-example to that assertion.
 
     .. tabs::
