@@ -1,8 +1,7 @@
 #!/usr/bin/env tesh
 ! output sort
 
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/one_cluster_splitduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/one_cluster_splitduplex.xml FULL_LINK  --log=root.fmt=%m%n
 > Workstation number: 5, link number: 12
 > Route between bob3.hamburger.edu and bob3.hamburger.edu
 >   Route size 3
@@ -156,8 +155,7 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/one_cluste
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_clusters.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_clusters.xml FULL_LINK  --log=root.fmt=%m%n
 > Workstation number: 4, link number: 12
 > Route between bob1.hamburger.edu and bob1.hamburger.edu
 >   Route size 3
@@ -273,8 +271,7 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_cluste
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_one_link.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_one_link.xml FULL_LINK  --log=root.fmt=%m%n
 > Workstation number: 2, link number: 2
 > Route between alice and alice
 >   Route size 1
@@ -294,8 +291,7 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_
 >   Route latency = 0.000000, route bandwidth = 10000000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_one_link_splitduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_one_link_splitduplex.xml FULL_LINK  --log=root.fmt=%m%n
 > Workstation number: 2, link number: 3
 > Route between alice and alice
 >   Route size 1
@@ -315,8 +311,7 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_
 >   Route latency = 0.000000, route bandwidth = 10000000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/Dijkstra.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/Dijkstra.xml FULL_LINK  --log=root.fmt=%m%n
 > Workstation number: 2, link number: 6
 > Route between NODO01 and NODO01
 >   Route size 1
@@ -338,8 +333,7 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/Dijkstra.x
 >   Route latency = 0.000000, route bandwidth = 10000000000.000000
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/four_hosts_floyd.xml FULL_LINK
-> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/four_hosts_floyd.xml FULL_LINK  --log=root.fmt=%m%n
 > Workstation number: 4, link number: 5
 > Route between host1 and host1
 >   Route size 1
