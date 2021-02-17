@@ -99,10 +99,8 @@ Host Management
 .. doxygenfunction:: MSG_host_by_name
 .. doxygenfunction:: MSG_get_host_by_name
 .. doxygenfunction:: MSG_get_host_number
-.. doxygenfunction:: MSG_host_get_attached_storage_lists
 .. doxygenfunction:: MSG_host_get_core_number
 .. doxygenfunction:: MSG_host_get_data
-.. doxygenfunction:: MSG_host_get_mounted_storage_list
 .. doxygenfunction:: MSG_host_get_name
 .. doxygenfunction:: MSG_host_get_nb_pstates
 .. doxygenfunction:: MSG_host_get_load
@@ -242,23 +240,6 @@ processes.
 .. doxygenfunction:: MSG_vm_shutdown
 .. doxygenfunction:: MSG_vm_start
 .. doxygenfunction:: MSG_vm_suspend
-
-Storage Management
-==================
-Storage structure of MSG (:cpp:type:`msg_storage_t`) and associated functions, inspired from POSIX.
-
-.. doxygentypedef:: msg_storage_t
-.. doxygenfunction:: MSG_storage_get_by_name
-.. doxygenfunction:: MSG_storage_get_data
-.. doxygenfunction:: MSG_storage_get_host
-.. doxygenfunction:: MSG_storage_get_name
-.. doxygenfunction:: MSG_storage_get_properties
-.. doxygenfunction:: MSG_storage_get_property_value
-.. doxygenfunction:: MSG_storage_read
-.. doxygenfunction:: MSG_storages_as_dynar
-.. doxygenfunction:: MSG_storage_set_data
-.. doxygenfunction:: MSG_storage_set_property_value
-.. doxygenfunction:: MSG_storage_write
 
 NetZone Management
 ==================
