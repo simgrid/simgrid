@@ -16,7 +16,7 @@ namespace s4u {
 
 /** Computation Activity, representing the asynchronous executions.
  *
- * @rst
+ * @beginrst
  * Most of them are created with :cpp:func:`simgrid::s4u::this_actor::exec_init()` or
  * :cpp:func:`simgrid::s4u::Host::execute()`, and represent a classical (sequential) execution. This can be used to
  * simulate some computation occurring in another thread when the calling actor is not blocked during the execution.

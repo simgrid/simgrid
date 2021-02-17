@@ -14,7 +14,7 @@ namespace s4u {
 
 /** @brief A classical mutex, but blocking in the simulation world.
  *
- * @rst
+ * @beginrst
  * It is strictly impossible to use a real mutex, such as
  * `std::mutex <http://en.cppreference.com/w/cpp/thread/mutex>`_
  * or `pthread_mutex_t <http://pubs.opengroup.org/onlinepubs/007908775/xsh/pthread_mutex_lock.html>`_,

@@ -76,9 +76,9 @@ double Engine::get_clock()
 /**
  * Creates a new platform, including hosts, links, and the routing table.
  *
- * \rst
+ * @beginrst
  * See also: :ref:`platform`.
- * \endrst
+ * @endrst
  */
 void Engine::load_platform(const std::string& platf) const
 {
@@ -139,9 +139,9 @@ void Engine::register_function(const std::string& name, const kernel::actor::Act
 
 /** Load a deployment file and launch the actors that it contains
  *
- * \rst
+ * @beginrst
  * See also: :ref:`deploy`.
- * \endrst
+ * @endrst
  */
 void Engine::load_deployment(const std::string& deploy) const
 {

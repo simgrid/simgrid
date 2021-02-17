@@ -7,7 +7,7 @@ package org.simgrid.msg;
 
 /** Used internally to interrupt the user code when the process gets killed.
  *
- * \rst
+ * @beginrst
  * You can catch it for cleanups or to debug, but DO NOT BLOCK IT, or your simulation will segfault!
  *
  * .. code-block:: java
@@ -19,7 +19,7 @@ package org.simgrid.msg;
  *      throw e;
  *    }
  *
- * \endrst
+ * @endrst
  */
 
 public class ProcessKilledError extends Error {

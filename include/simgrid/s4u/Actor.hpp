@@ -24,7 +24,7 @@ namespace s4u {
 
 /** An actor is an independent stream of execution in your distributed application.
  *
- * \rst
+ * @beginrst
  * It is located on a (simulated) :cpp:class:`host <simgrid::s4u::Host>`, but can interact
  * with the whole simulated platform.
  *
@@ -37,7 +37,8 @@ namespace s4u {
  * The `documentation of this standard <http://en.cppreference.com/w/cpp/thread>`_
  * may help to understand the philosophy of the SimGrid actors.
  *
- * \endrst */
+ * @endrst
+ */
 class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
 #ifndef DOXYGEN
   friend Exec;
@@ -275,7 +276,7 @@ XBT_PUBLIC void execute(double flop, double priority);
 
 /** Block the current actor until the built parallel execution terminates
  *
- * \rst
+ * @beginrst
  * .. _API_s4u_parallel_execute:
  *
  * **Example of use:** `examples/cpp/exec-ptask/s4u-exec-ptask.cpp
@@ -322,7 +323,7 @@ XBT_PUBLIC void execute(double flop, double priority);
  * models, and you must :ref:`use the ptask_L07 host model <options_model_select>` for that. Note that you can mix
  * regular executions and communications with parallel executions, provided that the host model is ptask_L07.
  *
- * \endrst
+ * @endrst
  */
 /** Block the current actor until the built parallel execution completes */
 XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
