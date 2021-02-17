@@ -10,7 +10,7 @@ SimGrid can not only :ref:`simulate algorithms <usecase_simalgo>`, but
 it can also be used to execute real MPI applications on top of
 virtual, simulated platforms with the SMPI module. Even complex
 C/C++/F77/F90 applications should run out of the box in this
-environment. In fact, almost all proxy apps provided by the `ExaScale
+environment. Almost all proxy apps provided by the `ExaScale
 Project <https://proxyapps.exascaleproject.org/>`_ only require minor
 modifications to `run on top of SMPI
 <https://framagit.org/simgrid/SMPI-proxy-apps>`_.
@@ -57,7 +57,7 @@ global variables, because ``smpirun`` loads one application instance
 per MPI rank as if it was another dynamic library. Then, MPI
 communication calls are implemented using SimGrid: data is exchanged
 through memory copy, while the simulator's performance models are used
-to predict the time taken by each communications. Any computations
+to predict the time taken by each communication. Any computations
 occurring between two MPI calls are benchmarked, and the corresponding
 time is reported into the simulator.
 
@@ -68,8 +68,8 @@ Describing Your Platform
 ------------------------
 
 As an SMPI user, you are supposed to provide a description of your
-simulated platform, that is mostly a set of simulated hosts and network
-links with some performance characteristics. SimGrid provides a plenty
+simulated platform, which is mostly a set of simulated hosts and network
+links with some performance characteristics. SimGrid provides plenty
 of :ref:`documentation <platform>` and examples (in the
 `examples/platforms <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms>`_
 source directory), and this section only shows a small set of introductory
@@ -87,7 +87,7 @@ interconnected as follows:
 .. image:: /tuto_smpi/3hosts.png
    :align: center
 
-This can be done with the following platform file, that considers the
+This can be done with the following platform file, which considers the
 simulated platform as a graph of hosts and network links.
 
 .. literalinclude:: /tuto_smpi/3hosts.xml
@@ -111,18 +111,18 @@ Cluster with a Crossbar
 
 A very common parallel computing platform is a homogeneous cluster in
 which hosts are interconnected via a crossbar switch with as many
-ports as hosts, so that any disjoint pairs of hosts can communicate
+ports as hosts so that any disjoint pairs of hosts can communicate
 concurrently at full speed. For instance:
 
 .. literalinclude:: ../../examples/platforms/cluster_crossbar.xml
    :language: xml
    :lines: 1-3,18-
 
-One specifies a name prefix and suffix for each host, and then give an
-integer range. In the example the cluster contains 65535 hosts (!),
+One specifies a name prefix and suffix for each host and then gives an
+integer range. In the example, the cluster contains 65535 hosts (!),
 named ``node-0.simgrid.org`` to ``node-65534.simgrid.org``. All hosts
 have the same power (1 Gflop/sec) and are connected to the switch via
-links with same bandwidth (125 MBytes/sec) and latency (50
+links with the same bandwidth (125 MBytes/sec) and latency (50
 microseconds).
 
 .. todo::
@@ -134,7 +134,7 @@ Cluster with a Shared Backbone
 
 Another popular model for a parallel platform is that of a set of
 homogeneous hosts connected to a shared communication medium, a
-backbone, with some finite bandwidth capacity and on which
+backbone, with some finite bandwidth capacity, and on which
 communicating host pairs can experience contention. For instance:
 
 
@@ -147,7 +147,7 @@ and ``bb_lat`` attributes that specify the backbone characteristics
 (here, a 500 microseconds latency and a 2.25 GByte/sec
 bandwidth). This link is used for every communication within the
 cluster. The route from ``node-0.simgrid.org`` to ``node-1.simgrid.org``
-counts 3 links: the private link of ``node-0.simgrid.org``, the backbone
+counts 3 links: the private link of ``node-0.simgrid.org``, the backbone,
 and the private link of ``node-1.simgrid.org``.
 
 .. todo::
@@ -161,7 +161,7 @@ Many HPC facilities use torus clusters to reduce sharing and
 performance loss on concurrent internal communications. Modeling this
 in SimGrid is very easy. Simply add a ``topology="TORUS"`` attribute
 to your cluster. Configure it with the ``topo_parameters="X,Y,Z"``
-attribute, where ``X``, ``Y`` and ``Z`` are the dimension of your
+attribute, where ``X``, ``Y``, and ``Z`` are the dimensions of your
 torus.
 
 .. image:: ../../examples/platforms/cluster_torus.svg
@@ -173,7 +173,7 @@ torus.
 Note that in this example, we used ``loopback_bw`` and
 ``loopback_lat`` to specify the characteristics of the loopback link
 of each node (i.e., the link allowing each node to communicate with
-itself). We could have done so in previous example too. When no
+itself). We could have done so in the previous example too. When no
 loopback is given, the communication from a node to itself is handled
 as if it were two distinct nodes: it goes twice through the private
 link and through the backbone (if any).
@@ -181,28 +181,28 @@ link and through the backbone (if any).
 Fat-Tree Cluster
 ................
 
-This topology was introduced to reduce the amount of links in the
+This topology was introduced to reduce the number of links in the
 cluster (and thus reduce its price) while maintaining a high bisection
 bandwidth and a relatively low diameter. To model this in SimGrid,
 pass a ``topology="FAT_TREE"`` attribute to your cluster. The
 ``topo_parameters=#levels;#downlinks;#uplinks;link count`` follows the
-semantic introduced in the `Figure 1B of this article
+semantic introduced in `Figure 1B of this article
 <http://webee.eedev.technion.ac.il/wp-content/uploads/2014/08/publication_574.pdf>`_.
 
 Here is the meaning of this example: ``2 ; 4,4 ; 1,2 ; 1,2``
 
 - That's a two-level cluster (thus the initial ``2``).
-- Routers are connected to 4 elements below them, regardless of its
-  level. Thus the ``4,4`` component that is used as
+- Routers are connected to 4 elements below them, regardless of their
+  level. Thus the ``4,4`` component used as
   ``#downlinks``. This means that the hosts are grouped by 4 on a
-  given router, and that there is 4 level-1 routers (in the middle of
+  given router, and that there are 4 level-1 routers (in the middle of
   the figure).
 - Hosts are connected to only 1 router above them, while these routers
   are connected to 2 routers above them (thus the ``1,2`` used as
   ``#uplink``).
-- Hosts have only one link to their router while every path between a
-  level-1 routers and level-2 routers use 2 parallel links. Thus the
-  ``1,2`` that is used as ``link count``.
+- Hosts have only one link to their router while every path between 
+  level-1 routers and level-2 routers uses 2 parallel links. Thus the
+  ``1,2`` used as ``link count``.
 
 .. image:: ../../examples/platforms/cluster_fat_tree.svg
    :align: center
@@ -215,22 +215,22 @@ Here is the meaning of this example: ``2 ; 4,4 ; 1,2 ; 1,2``
 Dragonfly Cluster
 .................
 
-This topology was introduced to further reduce the amount of links
+This topology was introduced to further reduce the number of links
 while maintaining a high bandwidth for local communications. To model
 this in SimGrid, pass a ``topology="DRAGONFLY"`` attribute to your
 cluster. It's based on the implementation of the topology used on
-Cray XC systems, described in paper
+Cray XC systems, described in the paper
 `Cray Cascade: A scalable HPC system based on a Dragonfly network <https://dl.acm.org/citation.cfm?id=2389136>`_.
 
 System description follows the format ``topo_parameters=#groups;#chassis;#routers;#nodes``
 For example, ``3,4 ; 3,2 ; 3,1 ; 2``:
 
 - ``3,4``: There are 3 groups with 4 links between each (blue level).
-  Links to nth group are attached to the nth router of the group
+  Links to the nth group are attached to the nth router of the group
   on our implementation.
 - ``3,2``: In each group, there are 3 chassis with 2 links between each nth router
   of each group (black level)
-- ``3,1``: In each chassis, 3 routers are connected together with a single link
+- ``3,1``: In each chassis, 3 routers are connected with a single link
   (green level)
 - ``2``: Each router has two nodes attached (single link)
 
@@ -245,7 +245,7 @@ Final Word
 
 We only glanced over the abilities offered by SimGrid to describe the
 platform topology. Other networking zones model non-HPC platforms
-(such as wide area networks, ISP network comprising set-top boxes, or
+(such as wide area networks, ISP networks comprising set-top boxes, or
 even your own routing schema). You can interconnect several networking
 zones in your platform to form a tree of zones, that is both a time-
 and memory-efficient representation of distributed platforms. Please
@@ -287,7 +287,7 @@ All needed dependencies are already installed in this container
 only optional in this tutorial, it is not installed to reduce the
 image size.
 
-The container also include the example platform files from the
+The container also includes the example platform files from the
 previous section as well as the source code of the NAS Parallel
 Benchmarks. These files are available under
 ``/source/simgrid-template-smpi`` in the image. You should copy it to
@@ -302,17 +302,17 @@ Using your Computer Natively
 ............................
 
 To take the tutorial on your machine, you first need to :ref:`install
-SimGrid <install>`, the C/C++/Fortran compilers and also ``pajeng`` to
+SimGrid <install>`, the C/C++/Fortran compilers, and also ``pajeng`` to
 visualize the traces. You may want to install `Vite
 <http://vite.gforge.inria.fr/>`_ to get a first glance at the
-traces. The provided code template requires make to compile. On
-Debian and Ubuntu for example, you can get them as follows:
+traces. The provided code template requires ``make`` to compile. On
+Debian and Ubuntu, you can get them as follows:
 
 .. code-block:: shell
 
    sudo apt install simgrid pajeng make gcc g++ gfortran python3 vite
 
-For R analysis of the produced traces, you may want to install R,
+For R analysis of the produced traces, you may want to install R
 and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
@@ -330,7 +330,7 @@ Benchmarks. Just  clone `this repository
    git clone https://framagit.org/simgrid/simgrid-template-smpi.git
    cd simgrid-template-smpi/
 
-If you struggle with the compilation, then you should double check
+If you struggle with the compilation, then you should double-check
 your :ref:`SimGrid installation <install>`.  On need, please refer to
 the :ref:`Troubleshooting your Project Setup
 <install_yours_troubleshooting>` section.
@@ -349,7 +349,7 @@ that comes with the template.
 Compiling and Executing
 .......................
 
-Compiling the program is straightforward (double check your
+Compiling the program is straightforward (double-check your
 :ref:`SimGrid installation <install>` if you get an error message):
 
 
@@ -383,7 +383,7 @@ easier to compare the executions with the extra option
 for realistic network protocol effects and MPI implementation
 effects. As a result, you may see "unexpected behavior" like in the
 real world (e.g., sending a message 1 byte larger may lead to
-significant higher execution time).
+significantly higher execution time).
 
 Lab 1: Visualizing LU
 ---------------------
@@ -408,7 +408,7 @@ data size
    (execution logs)
 
 To get a better understanding of what is going on, activate the
-vizualization tracing, and convert the produced trace for later
+visualization tracing, and convert the produced trace for later
 use:
 
 .. code-block:: shell
@@ -416,7 +416,7 @@ use:
    smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.S.4.trace bin/lu.S.4
 
 You can then produce a Gantt Chart with the following R chunk. You can
-either copy/paste it in a R session, or `turn it into a Rscript executable
+either copy/paste it in an R session, or `turn it into a Rscript executable
 <https://swcarpentry.github.io/r-novice-inflammation/05-cmdline/>`_ to
 run it again and again.
 
@@ -454,11 +454,11 @@ Now compile and execute the LU benchmark, class A, with 32 nodes.
 
    $ make lu NPROCS=32 CLASS=A
 
-This takes several minutes to to simulate, because all code from all
-processes has to be really executed, and everything is serialized.
+This takes several minutes to simulate, because all code from all
+processes has to be actually executed, and everything is serialized.
 
 SMPI provides several methods to speed things up. One of them is to
-capture a time independent trace of the running application, and
+capture a time-independent trace of the running application and
 replay it on a different platform with the same amount of nodes. The
 replay is much faster than live simulation, as the computations are
 skipped (the application must be network-dependent for this to work).
@@ -494,9 +494,9 @@ Lab 3: Execution Sampling on Matrix Multiplication example
 
 The second method to speed up simulations is to sample the computation
 parts in the code.  This means that the person doing the simulation
-needs to know the application and identify parts that are compute
-intensive and take time, while being regular enough not to ruin
-simulation accuracy. Furthermore there should not be any MPI calls
+needs to know the application and identify parts that are compute-intensive
+and take time while being regular enough not to ruin
+simulation accuracy. Furthermore, there should not be any MPI calls
 inside such parts of the code.
 
 Use for this part the `gemm_mpi.cpp
@@ -516,17 +516,17 @@ The computing part of this example is the matrix multiplication routine
   $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/running-power:1000000000 ./gemm
 
 This should end quite quickly, as the size of each matrix is only 1000x1000. 
-But what happens if we want to simulate larger runs ?
+But what happens if we want to simulate larger runs?
 Replace the size by 2000, 3000, and try again.
 
 The simulation time increases a lot, while there are no more MPI calls performed, only computation.
 
-The ``--cfg=smpi/display-timing`` option gives more details about execution, 
-and advises to use sampling if the time spent in computing loops seems too high.
+The ``--cfg=smpi/display-timing`` option gives more details about execution 
+and advises using sampling if the time spent in computing loops seems too high.
 
 The ``--cfg=smpi/running-power:1000000000`` option sets the speed of the processor used for 
 running the simulation. Here we say that its speed is the same as one of the 
-processors we are simulation (1Gf), so that 1 second of computation is injected 
+processors we are simulating (1Gf), so that 1 second of computation is injected 
 as 1 second in the simulation.
 
 .. code-block:: shell
@@ -538,17 +538,17 @@ as 1 second in the simulation.
   [5.568556] [smpi_kernel/INFO] More than 75% of the time was spent inside the application code.
   You may want to use sampling functions or trace replay to reduce this.
 
-So in our case (size 3000) the simulation ran for 25 seconds, and simulated time was 5.57s at the end.
+So in our case (size 3000), the simulation ran for 25 seconds, and the simulated time was 5.57s at the end.
 Computation by itself took 24 seconds, and can quickly grow with larger sizes 
 (as computation is really performed, there will be variability between similar runs).
 
-SMPI provides sampling macros in order to accelerate simulation by sampling iterations 
+SMPI provides sampling macros to accelerate simulation by sampling iterations 
 of large computation loops, and skip computation after a certain amount of iterations, 
 or when the sampling is stable enough.
 
 The two macros only slightly differ :
 
-- ``SMPI_SAMPLE_GLOBAL`` : specified number of samples is produced by all processors
+- ``SMPI_SAMPLE_GLOBAL`` : the specified number of samples is produced by all processors
 - ``SMPI_SAMPLE_LOCAL`` : each process executes a specified number of iterations
 
 So if the size of the computed part varies between processes (imbalance), 
@@ -566,9 +566,9 @@ by:
 
   SMPI_SAMPLE_GLOBAL(int i = istart, i <= iend, ++i, 10, 0.005)
 
-First three parameters are the ones from the loop, while the two last ones are for sampling.
-They mean that at most 10 iterations will be performed, and that sampling phase can be exited 
-earlier if a certain stability is reached after less samples.
+The first three parameters are the ones from the loop, while the two last ones are for sampling.
+They mean that at most 10 iterations will be performed and that the sampling phase can be exited 
+earlier if the expected stability is reached after fewer samples.
 
 Now run the code again with various sizes and parameters and check the time taken for the 
 simulation, as well as the resulting simulated time.
@@ -579,11 +579,11 @@ simulation, as well as the resulting simulated time.
   The simulation took 1.23698 seconds (after parsing and platform setup)
   0.0319454 seconds were actual computation of the application
 
-In this case the simulation only took 1.2 seconds, while the simulated time 
-stayed almost identical.
+In this case, the simulation only took 1.2 seconds, while the simulated time 
+remained almost identical.
 
-Obviously the results of the computation will be altered as most of it is skipped, 
-so these macros cannot be used when results are critical for the application behavior 
+The computation results will obviously be altered since most computations are skipped.
+These macros thus cannot be used when results are critical for the application behavior
 (convergence estimation for instance will be wrong on some codes).
 
 
@@ -594,16 +594,16 @@ Another issue that can be encountered when simulation with SMPI is lack of memor
 Indeed we are executing all MPI processes on a single node, which can lead to crashes.
 We will use the DT benchmark of the NAS suite to illustrate how to avoid such issues.
 
-With 85 processes and class C, the DT simulated benchmark will try to allocate 35GB of memory
-, which may not be available on the node your are using.
+With 85 processes and class C, the DT simulated benchmark will try to allocate 35GB of memory,
+which may not be available on the node you are using.
 
 To avoid this we can simply replace the largest calls to malloc and free by calls 
 to ``SMPI_SHARED_MALLOC`` and ``SMPI_SHARED_FREE``.
 This means that all processes will share one single instance of this buffer.
-As for sampling, results will be altered, and it shouldn't be used for control structures.
+As for sampling, results will be altered, and this should not be used for control structures.
 
 For DT example, there are three different calls to malloc in the file, and one of them is for a needed structure.
-Find it and replace the two other ones by SMPI_SHARED_MALLOC (there is only one free to replace for both of them).
+Find it and replace the two other ones with ``SMPI_SHARED_MALLOC`` (there is only one free to replace for both of them).
 
 Once done, you can now run
 
@@ -617,9 +617,9 @@ Once done, you can now run
 And simulation should finish without swapping/crashing (Ignore the warning about the return value).
 
 If control structures are also problematic, you can use ``SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsetscount)`` 
-macro, which will shared only specific parts of the structure between processes, 
+macro, which shares only specific parts of the structure between processes, 
 and use specific memory for the important parts.
-It can be freed afterwards with SMPI_SHARED_FREE.
+It can be freed afterward with SMPI_SHARED_FREE.
 
 Further Readings
 ----------------
@@ -632,7 +632,7 @@ this short tutorial.
 
 Finally, we regularly use SimGrid in our teachings on MPI. This way,
 our student can experiment with platforms that they do not have access
-to, and the associated visualisation tools helps them to understand
+to, and the associated visualization tools help them to understand
 their work.  The whole material is available online, in a separate
 project: the `SMPI CourseWare <https://simgrid.github.io/SMPI_CourseWare/>`_.
 
