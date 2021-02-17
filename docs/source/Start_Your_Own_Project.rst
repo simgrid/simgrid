@@ -49,7 +49,7 @@ your project. It builds two simulators from a given set of source files.
 
 For that, you need `FindSimGrid.cmake
 <https://framagit.org/simgrid/simgrid/raw/master/FindSimGrid.cmake>`_,
-that is located at the root of the SimGrid tree. You can either copy
+which is located at the root of the SimGrid tree. You can either copy
 this file into the `cmake/Modules` directory of your project, or use
 the version installed on the disk. Both solutions present advantages
 and drawbacks: if you copy the file, you have to keep it in sync
@@ -58,8 +58,8 @@ trying to compile on a machine where SimGrid is not installed. Please
 also refer to the file header for more information.
 
 MPI projects should include ``find_package (MPI)`` in CMakeLists.txt. Then, the
-variables ``MPI_C_COMPILER``, ``MPI_CXX_COMPILER`` and ``MPI_Fortran_COMPILER`` should
-point to the full path of smpicc, smpicxx and smpiff respectively. Example:
+variables ``MPI_C_COMPILER``, ``MPI_CXX_COMPILER``, and ``MPI_Fortran_COMPILER`` should
+point to the full path of smpicc, smpicxx, and smpiff respectively. Example:
 
 .. code-block:: shell
 
@@ -71,7 +71,7 @@ Building your project with Makefile
 
 Here is a Makefile that will work if your project is composed of three
 C files named ``util.h``, ``util.c`` and ``mysimulator.c``. You should
-take it as a starting point, and adapt it to your code. There are
+take it as a starting point, and adapt it to your code. There is
 plenty of documentation and tutorials on Makefile if the file's
 comments are not enough for you.
 
@@ -121,7 +121,7 @@ Develop in C++ with Eclipse
 If you wish to develop your plugin or modify SimGrid using
 Eclipse. You have to run cmake and import it as a Makefile project.
 
-Next you have to activate C++14 in your build settings, add -std=c++14
+Next, you have to activate C++14 in your build settings, add -std=c++14
 in the CDT GCC Built-in compiler settings.
 
 .. image:: /img/eclipseScreenShot.png
@@ -134,7 +134,7 @@ Building the Java examples in Eclipse
 If you want to build our Java examples in Eclipse, get the whole
 source code and open the archive on your disk. In Eclipse, select
 the menu "File / Import", and then in the wizard "General / Existing
-Project into Workspace". On the Next page, select the directory
+Project into Workspace". On the next page, select the directory
 "examples/deprecated/java" that you can find in the SimGrid source tree as a root
 directory and finish the creation.
 
