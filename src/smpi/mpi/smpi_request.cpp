@@ -118,8 +118,9 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
       receiver->real_src_ = sender->src_;
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
-    if (receiver->real_size_ < sender->real_size_)
+    if (receiver->real_size_ < sender->real_size_){
       receiver->truncated_ = true;
+    }
     if (sender->detached_)
       receiver->detached_sender_ = sender; // tie the sender to the receiver, as it is detached and has to be freed in
                                            // the receiver
@@ -375,6 +376,8 @@ void Request::start()
   flags_ &= ~MPI_REQ_FINISHED;
   this->ref();
 
+  // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
+  real_size_=size_;
   if ((flags_ & MPI_REQ_RECV) != 0) {
     this->print_request("New recv");
 
@@ -418,8 +421,6 @@ void Request::start()
       }
     }
 
-    // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
-    real_size_=size_;
     action_   = simcall_comm_irecv(
         process->get_actor()->get_impl(), mailbox->get_impl(), buf_, &real_size_, &match_recv,
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this, -1.0);
@@ -510,8 +511,6 @@ void Request::start()
       XBT_DEBUG("Send request %p is in the large mailbox %s (buf: %p)", this, mailbox->get_cname(), buf_);
     }
 
-    // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
-    real_size_=size_;
     size_t payload_size_ = size_ + 16;//MPI enveloppe size (tag+dest+communicator)
     action_   = simcall_comm_isend(
         simgrid::s4u::Actor::by_pid(src_)->get_impl(), mailbox->get_impl(), payload_size_, -1.0, buf, real_size_, &match_send,
@@ -892,7 +891,24 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   if (req->flags_ & MPI_REQ_PERSISTENT)
     req->action_ = nullptr;
   req->flags_ |= MPI_REQ_FINISHED;
+
+  if (req->truncated_) {
+    char error_string[MPI_MAX_ERROR_STRING];
+    int error_size;
+    PMPI_Error_string(MPI_ERR_TRUNCATE, error_string, &error_size);
+    MPI_Errhandler err = (req->comm_) ? (req->comm_)->errhandler() : MPI_ERRHANDLER_NULL;
+    if (err == MPI_ERRHANDLER_NULL || err == MPI_ERRORS_RETURN)
+      XBT_WARN("recv - returned %.*s instead of MPI_SUCCESS", error_size, error_string);
+    else if (err == MPI_ERRORS_ARE_FATAL)
+      xbt_die("recv - returned %.*s instead of MPI_SUCCESS", error_size, error_string);
+    else
+      err->call((req->comm_), MPI_ERR_TRUNCATE);
+    if (err != MPI_ERRHANDLER_NULL)
+      simgrid::smpi::Errhandler::unref(err);
+    MC_assert(not MC_is_active()); /* Only fail in MC mode */
+  }
   unref(request);
+
 }
 
 int Request::wait(MPI_Request * request, MPI_Status * status)
