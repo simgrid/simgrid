@@ -142,7 +142,8 @@ Datatype::~Datatype()
 
   if(flags_ & DT_FLAG_PREDEFINED)
     return;
-
+  //prevent further usage
+  flags_ &= ~ DT_FLAG_COMMITED;
   //if still used, mark for deletion
   if(refcount_!=0){
       flags_ |=DT_FLAG_DESTROYED;
