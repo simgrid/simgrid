@@ -27,7 +27,7 @@ extern void assert_cleanup();
 #define BEGIN_SECTION(descr) SECTION(descr) { simgrid::s4u::Actor::create(descr, all_hosts[0], []()
 #define END_SECTION })
 
-#define RUN_SECTION(descr, ...) SECTION(descr) { simgrid::s4u::Actor::create(descr, all_hosts[0], __VA_ARGS__); }
+#define RUN_SECTION(descr, ...) SECTION(descr) simgrid::s4u::Actor::create(descr, all_hosts[0], __VA_ARGS__)
 
 // Normally, we should be able use Catch2's REQUIRE_THROWS_AS(...), but it generates errors with Address Sanitizer.
 // They're certainly false positive. Nevermind and use this simpler replacement.
