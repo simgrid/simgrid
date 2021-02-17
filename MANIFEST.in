@@ -704,6 +704,10 @@ include teshsuite/s4u/actor/actor.cpp
 include teshsuite/s4u/actor/actor.tesh
 include teshsuite/s4u/basic-link-test/basic-link-test.cpp
 include teshsuite/s4u/basic-link-test/basic-link-test.tesh
+include teshsuite/s4u/basic-parsing-test/basic-parsing-test-bypass.tesh
+include teshsuite/s4u/basic-parsing-test/basic-parsing-test-sym-full.tesh
+include teshsuite/s4u/basic-parsing-test/basic-parsing-test.cpp
+include teshsuite/s4u/basic-parsing-test/basic-parsing-test.tesh
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.cpp
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.tesh
 include teshsuite/s4u/cloud-two-execs/cloud-two-execs.cpp
@@ -754,10 +758,6 @@ include teshsuite/s4u/wait-any-for/wait-any-for.cpp
 include teshsuite/s4u/wait-any-for/wait-any-for.tesh
 include teshsuite/simdag/availability/availability.c
 include teshsuite/simdag/availability/availability.tesh
-include teshsuite/simdag/basic-parsing-test/basic-parsing-test-bypass.tesh
-include teshsuite/simdag/basic-parsing-test/basic-parsing-test-sym-full.tesh
-include teshsuite/simdag/basic-parsing-test/basic-parsing-test.c
-include teshsuite/simdag/basic-parsing-test/basic-parsing-test.tesh
 include teshsuite/simdag/basic0/basic0.c
 include teshsuite/simdag/basic0/basic0.tesh
 include teshsuite/simdag/basic1/basic1.c
@@ -1928,6 +1928,7 @@ include examples/platforms/profiles/trace_A.txt
 include examples/platforms/profiles/trace_A_failure.txt
 include examples/platforms/profiles/trace_B.txt
 include examples/platforms/prop.xml
+include examples/platforms/ptask_L07.xml
 include examples/platforms/routing_cluster.lua
 include examples/platforms/routing_cluster.xml
 include examples/platforms/routing_none.xml
