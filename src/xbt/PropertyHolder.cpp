@@ -41,7 +41,7 @@ template <class Assoc> void PropertyHolder::set_properties(const Assoc& properti
 {
   if (not properties_)
     properties_ = std::make_unique<std::unordered_map<std::string, std::string>>();
-  std::unordered_map<std::string, std::string> props(properties.cbegin(), properties.cend());
+  std::unordered_map<std::string, std::string> props(std::cbegin(properties), std::cend(properties));
 #if __cplusplus >= 201703L
   props.merge(properties_);
 #else
