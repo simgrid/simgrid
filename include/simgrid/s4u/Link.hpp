@@ -84,6 +84,9 @@ public:
   /** @brief Check if the Link is used (at least one flow uses the link) */
   bool is_used() const;
 
+  /** @brief Check if the Link is shared (not a FATPIPE) */
+  bool is_shared() const;
+
   void turn_on();
   bool is_on() const;
   void turn_off();

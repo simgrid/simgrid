@@ -51,6 +51,11 @@ bool Link::is_used() const
   return this->pimpl_->is_used();
 }
 
+bool Link::is_shared() const
+{
+  return this->pimpl_->get_sharing_policy() != SharingPolicy::FATPIPE;
+}
+
 double Link::get_latency() const
 {
   return this->pimpl_->get_latency();
@@ -147,7 +152,7 @@ sg_link_t sg_link_by_name(const char* name)
 
 int sg_link_is_shared(const_sg_link_t link)
 {
-  return link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::FATPIPE;
+  return link->is_shared();
 }
 
 double sg_link_get_bandwidth(const_sg_link_t link)

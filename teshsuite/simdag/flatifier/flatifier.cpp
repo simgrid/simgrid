@@ -8,6 +8,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Link.hpp"
 #include "src/surf/network_interface.hpp"
 
 #include <algorithm>
@@ -82,7 +83,7 @@ static void dump_links()
     std::printf("  <link id=\"");
 
     std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->get_cname(), link->get_bandwidth(), link->get_latency());
-    if (sg_link_is_shared(link)) {
+    if (link->is_shared()) {
       std::printf("/>\n");
     } else {
       std::printf(" sharing_policy=\"FATPIPE\"/>\n");
