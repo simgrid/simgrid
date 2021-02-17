@@ -203,7 +203,7 @@ int PMPI_File_write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype
 int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
   CHECK_WRONLY(fh)
-  PASS_ZEROCOUNT(count);
+  PASS_ZEROCOUNT(count)
   smpi_bench_end();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("IO - read", count * datatype->size()));
@@ -235,7 +235,7 @@ int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf, int count,M
 int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUT_OFFSET
   CHECK_RDONLY(fh)
-  PASS_ZEROCOUNT(count);
+  PASS_ZEROCOUNT(count)
   smpi_bench_end();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("IO - write", count * datatype->size()));

@@ -205,7 +205,7 @@ static int fake_xbt_log_cat_init(xbt_log_category_t, e_xbt_log_priority_t)
   return 0;
 }
 #define DISABLE_XBT_LOG_CAT_INIT()                                                                                     \
-  int (*_xbt_log_cat_init)(xbt_log_category_t, e_xbt_log_priority_t) XBT_ATTRIB_UNUSED = fake_xbt_log_cat_init;
+  int (*_xbt_log_cat_init)(xbt_log_category_t, e_xbt_log_priority_t) XBT_ATTRIB_UNUSED = fake_xbt_log_cat_init
 
 static void _xbt_log_cat_apply_set(xbt_log_category_t category, const xbt_log_setting_t& setting)
 {
