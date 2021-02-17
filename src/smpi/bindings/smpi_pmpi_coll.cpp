@@ -120,7 +120,7 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
       real_sendcount = 0;
       real_sendtype  = recvtype;
     } else if(recvtype->size() * recvcount !=  sendtype->size() * sendcount){
-      XBT_WARN("MPI_(I)Gather : received size at root differs from sent size %lu %lu", recvtype->size() * recvcount , sendtype->size() * sendcount);
+      XBT_WARN("MPI_(I)Gather : received size at root differs from sent size : %zu vs %zu", recvtype->size() * recvcount , sendtype->size() * sendcount);
       return MPI_ERR_TRUNCATE;
     }
   }
@@ -237,7 +237,7 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
   }
 
   if(recvtype->size() * recvcount !=  sendtype->size() * sendcount){
-    XBT_WARN("MPI_(I)Allgather : received size from each process differs from sent size");
+    XBT_WARN("MPI_(I)Allgather : received size from each process differs from sent size : %zu vs %zu", recvtype->size() * recvcount, sendtype->size() * sendcount);
     return MPI_ERR_TRUNCATE;
   }
 
@@ -704,7 +704,7 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   }
 
   if(recvtype->size() * recvcount !=  real_sendtype->size() * real_sendcount){
-    XBT_WARN("MPI_(I)Alltoall : receive size from each process differs from sent size");
+    XBT_WARN("MPI_(I)Alltoall : receive size from each process differs from sent size : %zu vs %zu", recvtype->size() * recvcount,  real_sendtype->size() * real_sendcount);
     return MPI_ERR_TRUNCATE;
   }
 
@@ -791,7 +791,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   }
 
   if(recvtype->size() * recvcounts[comm->rank()] !=  real_sendtype->size() * real_sendcounts[comm->rank()]){
-    XBT_WARN("MPI_(I)Alltoallv : receive size from me differs from sent size to me");
+    XBT_WARN("MPI_(I)Alltoallv : receive size from me differs from sent size to me : %zu vs %zu", recvtype->size() * recvcounts[comm->rank()], real_sendtype->size() * real_sendcounts[comm->rank()]);
     smpi_bench_begin();
     return MPI_ERR_TRUNCATE;
   }
@@ -893,7 +893,7 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
 
 
   if(recvtypes[comm->rank()]->size() * recvcounts[comm->rank()] !=  real_sendtypes[comm->rank()]->size() * real_sendcounts[comm->rank()]){
-    XBT_WARN("MPI_(I)Alltoallw : receive size from me differs from sent size to me");
+    XBT_WARN("MPI_(I)Alltoallw : receive size from me differs from sent size to me : %zu vs %zu", recvtypes[comm->rank()]->size() * recvcounts[comm->rank()],  real_sendtypes[comm->rank()]->size() * real_sendcounts[comm->rank()]);
     smpi_bench_begin();
     return MPI_ERR_TRUNCATE;
   }
