@@ -7,6 +7,7 @@ INPUT                 += ../../src/s4u/s4u_Actor.cpp
 INPUT                 += ../../include/simgrid/barrier.h
 INPUT                 += ../../include/simgrid/cond.h
 INPUT                 += ../../include/simgrid/engine.h
+INPUT                 += ../../include/simgrid/exec.h
 INPUT                 += ../../include/simgrid/host.h
 #INPUT                 += ../../include/simgrid/instr.h
 INPUT                 += ../../include/simgrid/link.h

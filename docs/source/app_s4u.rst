@@ -386,7 +386,7 @@ Simulation objects
 ⁣  class Actor
 ==============
 
-.. autodoxyclass:: simgrid::s4u::Actor
+.. doxygenclass:: simgrid::s4u::Actor
 
 .. doxygentypedef:: aid_t
 
@@ -420,8 +420,9 @@ Basic management
 
          Pointer to a constant actor object.
 
-      .. autodoxymethod:: sg_actor_ref(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_unref(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_ref
+      .. doxygenfunction:: sg_actor_unref
+
 
 Creating actors
 ---------------
@@ -430,13 +431,13 @@ Creating actors
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::function< void()> &code)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code, Args... args)
-      .. autodoxymethod:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::string &function, std::vector< std::string > args)
+      .. doxygenfunction:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::function< void()> &code)
+      .. doxygenfunction:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code)
+      .. doxygenfunction:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, F code, Args... args)
+      .. doxygenfunction:: simgrid::s4u::Actor::create(const std::string &name, s4u::Host *host, const std::string &function, std::vector< std::string > args)
 
-      .. autodoxymethod:: simgrid::s4u::Actor::init(const std::string &name, s4u::Host *host)
-      .. autodoxymethod:: simgrid::s4u::Actor::start(const std::function< void()> &code)
+      .. doxygenfunction:: simgrid::s4u::Actor::init(const std::string &name, s4u::Host *host)
+      .. doxygenfunction:: simgrid::s4u::Actor::start(const std::function< void()> &code)
 
    .. group-tab:: Python
 
@@ -444,12 +445,12 @@ Creating actors
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, const char *const *argv)
-      .. autodoxymethod:: sg_actor_init(const char *name, sg_host_t host)
-      .. autodoxymethod:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char *const *argv)
+      .. doxygenfunction:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, const char *const *argv)
+      .. doxygenfunction:: sg_actor_init(const char *name, sg_host_t host)
+      .. doxygenfunction:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char *const *argv)
 
-      .. autodoxymethod:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
-      .. autodoxymethod:: sg_actor_detach()
+      .. doxygenfunction:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
+      .. doxygenfunction:: sg_actor_detach()
 
 Retrieving actors
 -----------------
@@ -458,8 +459,8 @@ Retrieving actors
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Actor::by_pid(aid_t pid)
-      .. autodoxymethod:: simgrid::s4u::Actor::self()
+      .. doxygenfunction:: simgrid::s4u::Actor::by_pid(aid_t pid)
+      .. doxygenfunction:: simgrid::s4u::Actor::self()
 
    .. group-tab:: Python
 
@@ -468,8 +469,8 @@ Retrieving actors
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_by_PID(aid_t pid)
-      .. autodoxymethod:: sg_actor_self()
+      .. doxygenfunction:: sg_actor_by_PID(aid_t pid)
+      .. doxygenfunction:: sg_actor_self()
 
 Querying info
 -------------
@@ -478,19 +479,19 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Actor::get_cname
-      .. autodoxymethod:: simgrid::s4u::Actor::get_name
-      .. autodoxymethod:: simgrid::s4u::Actor::get_pid
-      .. autodoxymethod:: simgrid::s4u::Actor::get_ppid
-      .. autodoxymethod:: simgrid::s4u::Actor::get_properties() const
-      .. autodoxymethod:: simgrid::s4u::Actor::get_property(const std::string &key) const
-      .. autodoxymethod:: simgrid::s4u::Actor::set_property(const std::string &key, const std::string &value) 
+      .. doxygenfunction:: simgrid::s4u::Actor::get_cname
+      .. doxygenfunction:: simgrid::s4u::Actor::get_name
+      .. doxygenfunction:: simgrid::s4u::Actor::get_pid
+      .. doxygenfunction:: simgrid::s4u::Actor::get_ppid
+      .. doxygenfunction:: simgrid::s4u::Actor::get_properties() const
+      .. doxygenfunction:: simgrid::s4u::Actor::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::Actor::set_property(const std::string &key, const std::string &value) 
 
-      .. autodoxymethod:: simgrid::s4u::Actor::get_host
-      .. autodoxymethod:: simgrid::s4u::Actor::set_host
+      .. doxygenfunction:: simgrid::s4u::Actor::get_host
+      .. doxygenfunction:: simgrid::s4u::Actor::set_host
 
-      .. autodoxymethod:: simgrid::s4u::Actor::get_refcount
-      .. autodoxymethod:: simgrid::s4u::Actor::get_impl
+      .. doxygenfunction:: simgrid::s4u::Actor::get_refcount
+      .. doxygenfunction:: simgrid::s4u::Actor::get_impl
 
    .. group-tab:: Python
                   
@@ -501,17 +502,17 @@ Querying info
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_get_name(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_get_PID(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_get_PPID(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_get_properties(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_get_property_value(const_sg_actor_t actor, const char *name)
+      .. doxygenfunction:: sg_actor_get_name(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_get_PID(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_get_PPID(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_get_properties(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_get_property_value(const_sg_actor_t actor, const char *name)
 
-      .. autodoxymethod:: sg_actor_get_host(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_set_host(sg_actor_t actor, sg_host_t host)
+      .. doxygenfunction:: sg_actor_get_host(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_set_host(sg_actor_t actor, sg_host_t host)
 
-      .. autodoxymethod:: sg_actor_get_data(const_sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_set_data(sg_actor_t actor, void *userdata)
+      .. doxygenfunction:: sg_actor_get_data(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_set_data(sg_actor_t actor, void *userdata)
 
 Suspending and resuming actors
 ------------------------------
@@ -520,9 +521,9 @@ Suspending and resuming actors
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Actor::suspend()
-      .. autodoxymethod:: simgrid::s4u::Actor::resume()
-      .. autodoxymethod:: simgrid::s4u::Actor::is_suspended
+      .. doxygenfunction:: simgrid::s4u::Actor::suspend()
+      .. doxygenfunction:: simgrid::s4u::Actor::resume()
+      .. doxygenfunction:: simgrid::s4u::Actor::is_suspended
 
    .. group-tab:: Python
 
@@ -532,9 +533,9 @@ Suspending and resuming actors
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_suspend(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_resume(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_is_suspended(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_suspend(sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_resume(sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_is_suspended(const_sg_actor_t actor)
 
 Specifying when actors should terminate
 ---------------------------------------
@@ -543,14 +544,14 @@ Specifying when actors should terminate
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Actor::kill()
-      .. autodoxymethod:: simgrid::s4u::Actor::kill_all()
-      .. autodoxymethod:: simgrid::s4u::Actor::set_kill_time(double time)
-      .. autodoxymethod:: simgrid::s4u::Actor::get_kill_time
+      .. doxygenfunction:: simgrid::s4u::Actor::kill()
+      .. doxygenfunction:: simgrid::s4u::Actor::kill_all()
+      .. doxygenfunction:: simgrid::s4u::Actor::set_kill_time(double time)
+      .. doxygenfunction:: simgrid::s4u::Actor::get_kill_time
 
-      .. autodoxymethod:: simgrid::s4u::Actor::restart()
-      .. autodoxymethod:: simgrid::s4u::Actor::daemonize()
-      .. autodoxymethod:: simgrid::s4u::Actor::is_daemon
+      .. doxygenfunction:: simgrid::s4u::Actor::restart()
+      .. doxygenfunction:: simgrid::s4u::Actor::daemonize()
+      .. doxygenfunction:: simgrid::s4u::Actor::is_daemon
 
    .. group-tab:: Python
 
@@ -562,13 +563,13 @@ Specifying when actors should terminate
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_kill(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_kill_all()
-      .. autodoxymethod:: sg_actor_set_kill_time(sg_actor_t actor, double kill_time)
+      .. doxygenfunction:: sg_actor_kill(sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_kill_all()
+      .. doxygenfunction:: sg_actor_set_kill_time(sg_actor_t actor, double kill_time)
 
-      .. autodoxymethod:: sg_actor_restart(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_daemonize(sg_actor_t actor)
-      .. autodoxymethod:: sg_actor_is_daemon
+      .. doxygenfunction:: sg_actor_restart(sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_daemonize(sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_is_daemon
 
 .. _API_s4u_Actor_end:
 
@@ -579,10 +580,10 @@ Reacting to the end of actors
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Actor::on_exit
-      .. autodoxymethod:: simgrid::s4u::Actor::join() const
-      .. autodoxymethod:: simgrid::s4u::Actor::join(double timeout) const
-      .. autodoxymethod:: simgrid::s4u::Actor::set_auto_restart(bool autorestart)
+      .. doxygenfunction:: simgrid::s4u::Actor::on_exit
+      .. doxygenfunction:: simgrid::s4u::Actor::join() const
+      .. doxygenfunction:: simgrid::s4u::Actor::join(double timeout) const
+      .. doxygenfunction:: simgrid::s4u::Actor::set_auto_restart(bool autorestart)
 
    .. group-tab:: Python
 
@@ -590,8 +591,8 @@ Reacting to the end of actors
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_join(const_sg_actor_t actor, double timeout)
-      .. autodoxymethod:: sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
+      .. doxygenfunction:: sg_actor_join(const_sg_actor_t actor, double timeout)
+      .. doxygenfunction:: sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
 
 Signals
 -------
@@ -600,14 +601,14 @@ Signals
 
    .. group-tab:: C++
 
-      .. autodoxyvar:: simgrid::s4u::Actor::on_creation
-      .. autodoxyvar:: simgrid::s4u::Actor::on_suspend
-      .. autodoxyvar:: simgrid::s4u::Actor::on_host_change
-      .. autodoxyvar:: simgrid::s4u::Actor::on_resume
-      .. autodoxyvar:: simgrid::s4u::Actor::on_sleep
-      .. autodoxyvar:: simgrid::s4u::Actor::on_wake_up
-      .. autodoxyvar:: simgrid::s4u::Actor::on_termination
-      .. autodoxyvar:: simgrid::s4u::Actor::on_destruction
+      .. doxygenvariable:: simgrid::s4u::Actor::on_creation
+      .. doxygenvariable:: simgrid::s4u::Actor::on_suspend
+      .. doxygenvariable:: simgrid::s4u::Actor::on_host_change
+      .. doxygenvariable:: simgrid::s4u::Actor::on_resume
+      .. doxygenvariable:: simgrid::s4u::Actor::on_sleep
+      .. doxygenvariable:: simgrid::s4u::Actor::on_wake_up
+      .. doxygenvariable:: simgrid::s4u::Actor::on_termination
+      .. doxygenvariable:: simgrid::s4u::Actor::on_destruction
 
 .. _API_s4u_this_actor:
 
@@ -626,14 +627,14 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::this_actor::get_cname()
-      .. autodoxymethod:: simgrid::s4u::this_actor::get_name()
-      .. autodoxymethod:: simgrid::s4u::this_actor::get_pid()
-      .. autodoxymethod:: simgrid::s4u::this_actor::get_ppid()
-      .. autodoxymethod:: simgrid::s4u::this_actor::is_maestro()
+      .. doxygenfunction:: simgrid::s4u::this_actor::get_cname()
+      .. doxygenfunction:: simgrid::s4u::this_actor::get_name()
+      .. doxygenfunction:: simgrid::s4u::this_actor::get_pid()
+      .. doxygenfunction:: simgrid::s4u::this_actor::get_ppid()
+      .. doxygenfunction:: simgrid::s4u::this_actor::is_maestro()
 
-      .. autodoxymethod:: simgrid::s4u::this_actor::get_host()
-      .. autodoxymethod:: simgrid::s4u::this_actor::set_host(Host *new_host)
+      .. doxygenfunction:: simgrid::s4u::this_actor::get_host()
+      .. doxygenfunction:: simgrid::s4u::this_actor::set_host(Host *new_host)
 
    .. group-tab:: Python
 
@@ -642,13 +643,13 @@ Querying info
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_self_get_data()
-      .. autodoxymethod:: sg_actor_self_set_data(void *data)
-      .. autodoxymethod:: sg_actor_self_get_name()
-      .. autodoxymethod:: sg_actor_self_get_pid()
-      .. autodoxymethod:: sg_actor_self_get_ppid()
-      .. autodoxymethod:: sg_host_self()
-      .. autodoxymethod:: sg_host_self_get_name()
+      .. doxygenfunction:: sg_actor_self_get_data()
+      .. doxygenfunction:: sg_actor_self_set_data(void *data)
+      .. doxygenfunction:: sg_actor_self_get_name()
+      .. doxygenfunction:: sg_actor_self_get_pid()
+      .. doxygenfunction:: sg_actor_self_get_ppid()
+      .. doxygenfunction:: sg_host_self()
+      .. doxygenfunction:: sg_host_self_get_name()
 
 Suspending and resuming
 -----------------------
@@ -657,8 +658,8 @@ Suspending and resuming
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::this_actor::suspend()
-      .. autodoxymethod:: simgrid::s4u::this_actor::yield()
+      .. doxygenfunction:: simgrid::s4u::this_actor::suspend()
+      .. doxygenfunction:: simgrid::s4u::this_actor::yield()
 
    .. group-tab:: Python
 
@@ -667,7 +668,7 @@ Suspending and resuming
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_yield()
+      .. doxygenfunction:: sg_actor_yield()
 
 Logging messages
 ----------------
@@ -686,10 +687,10 @@ Sleeping
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::this_actor::sleep_for(double duration)
-      .. autodoxymethod:: simgrid::s4u::this_actor::sleep_for(std::chrono::duration< Rep, Period > duration)
-      .. autodoxymethod:: simgrid::s4u::this_actor::sleep_until(const SimulationTimePoint< Duration > &wakeup_time)
-      .. autodoxymethod:: simgrid::s4u::this_actor::sleep_until(double wakeup_time)
+      .. doxygenfunction:: simgrid::s4u::this_actor::sleep_for(double duration)
+      .. doxygenfunction:: simgrid::s4u::this_actor::sleep_for(std::chrono::duration< Rep, Period > duration)
+      .. doxygenfunction:: simgrid::s4u::this_actor::sleep_until(const SimulationTimePoint< Duration > &wakeup_time)
+      .. doxygenfunction:: simgrid::s4u::this_actor::sleep_until(double wakeup_time)
 
    .. group-tab:: Python
 
@@ -698,7 +699,7 @@ Sleeping
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_sleep_for(double duration)
+      .. doxygenfunction:: sg_actor_sleep_for(double duration)
 
 Simulating executions
 ---------------------
@@ -711,13 +712,13 @@ the execution, or start an asynchronous activity.
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::this_actor::exec_async
-      .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
-      .. autodoxymethod:: simgrid::s4u::this_actor::exec_init(double flops_amounts)
-      .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop)
-      .. autodoxymethod:: simgrid::s4u::this_actor::execute(double flop, double priority)
-      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
-      .. autodoxymethod:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts, double timeout)
+      .. doxygenfunction:: simgrid::s4u::this_actor::exec_async
+      .. doxygenfunction:: simgrid::s4u::this_actor::exec_init(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. doxygenfunction:: simgrid::s4u::this_actor::exec_init(double flops_amounts)
+      .. doxygenfunction:: simgrid::s4u::this_actor::execute(double flop)
+      .. doxygenfunction:: simgrid::s4u::this_actor::execute(double flop, double priority)
+      .. doxygenfunction:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. doxygenfunction:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts, double timeout)
 
    .. group-tab:: Python
 
@@ -726,10 +727,11 @@ the execution, or start an asynchronous activity.
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_actor_execute(double flops)
-      .. autodoxymethod:: sg_actor_execute_with_priority(double flops, double priority)
-      .. autodoxymethod:: sg_actor_exec_init(double computation_amount)
-      .. autodoxymethod:: sg_actor_exec_async(double computation_amount)
+      .. doxygenfunction:: sg_actor_execute(double flops)
+      .. doxygenfunction:: sg_actor_execute_with_priority(double flops, double priority)
+      .. doxygenfunction:: sg_actor_exec_init(double computation_amount)
+      .. doxygenfunction:: sg_actor_exec_async(double computation_amount)
+      .. doxygenfunction:: sg_actor_parallel_exec_init(int host_nb, const sg_host_t* host_list, double* flops_amount, double* bytes_amount);
 
 Exiting
 -------
@@ -738,8 +740,8 @@ Exiting
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::this_actor::exit()
-      .. autodoxymethod:: simgrid::s4u::this_actor::on_exit(const std::function< void(bool)> &fun)
+      .. doxygenfunction:: simgrid::s4u::this_actor::exit()
+      .. doxygenfunction:: simgrid::s4u::this_actor::on_exit(const std::function< void(bool)> &fun)
 
    .. group-tab:: Python
 
@@ -752,7 +754,7 @@ Exiting
 ⁣  Simulation Engine
 ====================
 
-.. autodoxyclass:: simgrid::s4u::Engine
+.. doxygenclass:: simgrid::s4u::Engine
 
 Initialization
 --------------
@@ -761,25 +763,25 @@ Initialization
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::Engine(int *argc, char **argv)
-      .. autodoxymethod:: simgrid::s4u::Engine::is_initialized()
-      .. autodoxymethod:: simgrid::s4u::Engine::shutdown()
-      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &str)
-      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, bool value)
-      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, double value)
-      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, int value)
-      .. autodoxymethod:: simgrid::s4u::Engine::set_config(const std::string &name, const std::string &value)
+      .. doxygenfunction:: simgrid::s4u::Engine::Engine(int *argc, char **argv)
+      .. doxygenfunction:: simgrid::s4u::Engine::is_initialized()
+      .. doxygenfunction:: simgrid::s4u::Engine::shutdown()
+      .. doxygenfunction:: simgrid::s4u::Engine::set_config(const std::string &str)
+      .. doxygenfunction:: simgrid::s4u::Engine::set_config(const std::string &name, bool value)
+      .. doxygenfunction:: simgrid::s4u::Engine::set_config(const std::string &name, double value)
+      .. doxygenfunction:: simgrid::s4u::Engine::set_config(const std::string &name, int value)
+      .. doxygenfunction:: simgrid::s4u::Engine::set_config(const std::string &name, const std::string &value)
 
-      .. autodoxymethod:: simgrid::s4u::Engine::load_deployment
-      .. autodoxymethod:: simgrid::s4u::Engine::load_platform
-      .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name)
-      .. autodoxymethod:: simgrid::s4u::Engine::register_actor(const std::string &name, F code)
-      .. autodoxymethod:: simgrid::s4u::Engine::register_default(const std::function< void(int, char **)> &code)
-      .. autodoxymethod:: simgrid::s4u::Engine::register_default(const kernel::actor::ActorCodeFactory &factory)
+      .. doxygenfunction:: simgrid::s4u::Engine::load_deployment
+      .. doxygenfunction:: simgrid::s4u::Engine::load_platform
+      .. doxygenfunction:: simgrid::s4u::Engine::register_actor(const std::string &name)
+      .. doxygenfunction:: simgrid::s4u::Engine::register_actor(const std::string &name, F code)
+      .. doxygenfunction:: simgrid::s4u::Engine::register_default(const std::function< void(int, char **)> &code)
+      .. doxygenfunction:: simgrid::s4u::Engine::register_default(const kernel::actor::ActorCodeFactory &factory)
 
-      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, const std::function< void(int, char **)> &code)
-      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, const std::function< void(std::vector< std::string >)> &code)
-      .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, const kernel::actor::ActorCodeFactory &factory)
+      .. doxygenfunction:: simgrid::s4u::Engine::register_function(const std::string &name, const std::function< void(int, char **)> &code)
+      .. doxygenfunction:: simgrid::s4u::Engine::register_function(const std::string &name, const std::function< void(std::vector< std::string >)> &code)
+      .. doxygenfunction:: simgrid::s4u::Engine::register_function(const std::string &name, const kernel::actor::ActorCodeFactory &factory)
 
    .. group-tab:: Python
    
@@ -789,12 +791,12 @@ Initialization
 
    .. group-tab:: C
 
-      .. autodoxymethod:: simgrid_init
+      .. doxygenfunction:: simgrid_init
 
-      .. autodoxymethod:: simgrid_load_deployment
-      .. autodoxymethod:: simgrid_load_platform
-      .. autodoxymethod:: simgrid_register_default
-      .. autodoxymethod:: simgrid_register_function
+      .. doxygenfunction:: simgrid_load_deployment
+      .. doxygenfunction:: simgrid_load_platform
+      .. doxygenfunction:: simgrid_register_default
+      .. doxygenfunction:: simgrid_register_function
 
 Run the simulation
 ------------------
@@ -803,8 +805,8 @@ Run the simulation
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_clock()
-      .. autodoxymethod:: simgrid::s4u::Engine::run
+      .. doxygenfunction:: simgrid::s4u::Engine::get_clock()
+      .. doxygenfunction:: simgrid::s4u::Engine::run
 
    .. group-tab:: Python
    
@@ -813,8 +815,8 @@ Run the simulation
 
    .. group-tab:: C
 
-      .. autodoxymethod:: simgrid_get_clock
-      .. autodoxymethod:: simgrid_run
+      .. doxygenfunction:: simgrid_get_clock
+      .. doxygenfunction:: simgrid_run
 
 Retrieving actors
 -----------------
@@ -823,13 +825,13 @@ Retrieving actors
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_actor_count
-      .. autodoxymethod:: simgrid::s4u::Engine::get_all_actors
-      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_actors
+      .. doxygenfunction:: simgrid::s4u::Engine::get_actor_count
+      .. doxygenfunction:: simgrid::s4u::Engine::get_all_actors
+      .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_actors
 
    .. group-tab:: C
 
-      .. autodoxymethod:: simgrid_get_actor_count()
+      .. doxygenfunction:: simgrid_get_actor_count()
 
 Retrieving hosts
 ----------------
@@ -838,11 +840,11 @@ Retrieving hosts
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_all_hosts
-      .. autodoxymethod:: simgrid::s4u::Engine::get_host_count
-      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_hosts
-      .. autodoxymethod:: simgrid::s4u::Engine::host_by_name
-      .. autodoxymethod:: simgrid::s4u::Engine::host_by_name_or_null
+      .. doxygenfunction:: simgrid::s4u::Engine::get_all_hosts
+      .. doxygenfunction:: simgrid::s4u::Engine::get_host_count
+      .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_hosts
+      .. doxygenfunction:: simgrid::s4u::Engine::host_by_name
+      .. doxygenfunction:: simgrid::s4u::Engine::host_by_name_or_null
 
    .. group-tab:: Python
 
@@ -859,11 +861,11 @@ Retrieving links
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_all_links
-      .. autodoxymethod:: simgrid::s4u::Engine::get_link_count
-      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_links
-      .. autodoxymethod:: simgrid::s4u::Engine::link_by_name
-      .. autodoxymethod:: simgrid::s4u::Engine::link_by_name_or_null
+      .. doxygenfunction:: simgrid::s4u::Engine::get_all_links
+      .. doxygenfunction:: simgrid::s4u::Engine::get_link_count
+      .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_links
+      .. doxygenfunction:: simgrid::s4u::Engine::link_by_name
+      .. doxygenfunction:: simgrid::s4u::Engine::link_by_name_or_null
 
 Interacting with the routing
 ----------------------------
@@ -872,13 +874,13 @@ Interacting with the routing
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Engine::get_all_netpoints
-      .. autodoxymethod:: simgrid::s4u::Engine::get_filtered_netzones
-      .. autodoxymethod:: simgrid::s4u::Engine::get_instance()
-      .. autodoxymethod:: simgrid::s4u::Engine::get_netzone_root
-      .. autodoxymethod:: simgrid::s4u::Engine::netpoint_by_name_or_null
-      .. autodoxymethod:: simgrid::s4u::Engine::netzone_by_name_or_null
-      .. autodoxymethod:: simgrid::s4u::Engine::set_netzone_root(const NetZone *netzone)
+      .. doxygenfunction:: simgrid::s4u::Engine::get_all_netpoints
+      .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_netzones
+      .. doxygenfunction:: simgrid::s4u::Engine::get_instance()
+      .. doxygenfunction:: simgrid::s4u::Engine::get_netzone_root
+      .. doxygenfunction:: simgrid::s4u::Engine::netpoint_by_name_or_null
+      .. doxygenfunction:: simgrid::s4u::Engine::netzone_by_name_or_null
+      .. doxygenfunction:: simgrid::s4u::Engine::set_netzone_root(const NetZone *netzone)
 
 Signals
 -------
@@ -887,11 +889,11 @@ Signals
 
    .. group-tab:: C++
 
-      .. autodoxyvar:: simgrid::s4u::Engine::on_deadlock
-      .. autodoxyvar:: simgrid::s4u::Engine::on_platform_created
-      .. autodoxyvar:: simgrid::s4u::Engine::on_platform_creation
-      .. autodoxyvar:: simgrid::s4u::Engine::on_simulation_end
-      .. autodoxyvar:: simgrid::s4u::Engine::on_time_advance
+      .. doxygenvariable:: simgrid::s4u::Engine::on_deadlock
+      .. doxygenvariable:: simgrid::s4u::Engine::on_platform_created
+      .. doxygenvariable:: simgrid::s4u::Engine::on_platform_creation
+      .. doxygenvariable:: simgrid::s4u::Engine::on_simulation_end
+      .. doxygenvariable:: simgrid::s4u::Engine::on_time_advance
 
 .. _API_s4u_Mailbox:
 
@@ -899,7 +901,7 @@ Signals
 ⁣  class Mailbox
 ================
 
-.. autodoxyclass:: simgrid::s4u::Mailbox
+.. doxygenclass:: simgrid::s4u::Mailbox
 
 Please also refer to the :ref:`full doc on s4u::Mailbox <s4u_mailbox>`.
 
@@ -919,7 +921,7 @@ Basic management
       engine. Once created, there is no way to destroy a mailbox before the end
       of the simulation.
          
-      .. autodoxymethod:: simgrid::s4u::Mailbox::by_name(const std::string &name)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::by_name(const std::string &name)
 
    .. group-tab:: Python
 
@@ -929,7 +931,7 @@ Basic management
 
          #include <simgrid/s4u/mailbox.h>
       
-      .. autodoxymethod:: sg_mailbox_by_name(const char *alias)
+      .. doxygenfunction:: sg_mailbox_by_name(const char *alias)
 
    .. group-tab:: C
 
@@ -940,8 +942,8 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_cname
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_name
+      .. doxygenfunction:: simgrid::s4u::Mailbox::get_cname
+      .. doxygenfunction:: simgrid::s4u::Mailbox::get_name
 
    .. group-tab:: Python
 
@@ -954,11 +956,11 @@ Sending data
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Mailbox::put(void *payload, uint64_t simulated_size_in_bytes)
-      .. autodoxymethod:: simgrid::s4u::Mailbox::put(void *payload, uint64_t simulated_size_in_bytes, double timeout)
-      .. autodoxymethod:: simgrid::s4u::Mailbox::put_async(void *data, uint64_t simulated_size_in_bytes)
-      .. autodoxymethod:: simgrid::s4u::Mailbox::put_init()
-      .. autodoxymethod:: simgrid::s4u::Mailbox::put_init(void *data, uint64_t simulated_size_in_bytes)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::put(void *payload, uint64_t simulated_size_in_bytes)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::put(void *payload, uint64_t simulated_size_in_bytes, double timeout)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::put_async(void *data, uint64_t simulated_size_in_bytes)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::put_init()
+      .. doxygenfunction:: simgrid::s4u::Mailbox::put_init(void *data, uint64_t simulated_size_in_bytes)
 
    .. group-tab:: Python
 
@@ -967,9 +969,9 @@ Sending data
 
    .. group-tab: C
 
-      .. autodoxymethod:: sg_mailbox_put(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
-      .. autodoxymethod:: sg_mailbox_put_init(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
-      .. autodoxymethod:: sg_mailbox_put_async(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
+      .. doxygenfunction:: sg_mailbox_put(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
+      .. doxygenfunction:: sg_mailbox_put_init(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
+      .. doxygenfunction:: sg_mailbox_put_async(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
 
 
 Receiving data
@@ -979,15 +981,15 @@ Receiving data
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Mailbox::empty
-      .. autodoxymethod:: simgrid::s4u::Mailbox::front
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get()
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get(double timeout)
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_async(T **data)
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_init()
-      .. autodoxymethod:: simgrid::s4u::Mailbox::iprobe(int type, bool(*match_fun)(void *, void *, kernel::activity::CommImpl *), void *data)
-      .. autodoxymethod:: simgrid::s4u::Mailbox::listen
-      .. autodoxymethod:: simgrid::s4u::Mailbox::ready
+      .. doxygenfunction:: simgrid::s4u::Mailbox::empty
+      .. doxygenfunction:: simgrid::s4u::Mailbox::front
+      .. doxygenfunction:: simgrid::s4u::Mailbox::get()
+      .. doxygenfunction:: simgrid::s4u::Mailbox::get(double timeout)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::get_async(T **data)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::get_init()
+      .. doxygenfunction:: simgrid::s4u::Mailbox::iprobe(int type, bool(*match_fun)(void *, void *, kernel::activity::CommImpl *), void *data)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::listen
+      .. doxygenfunction:: simgrid::s4u::Mailbox::ready
 
    .. group-tab:: Python
 
@@ -995,10 +997,10 @@ Receiving data
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_mailbox_get(sg_mailbox_t mailbox)
-      .. autodoxymethod:: sg_mailbox_get_async(sg_mailbox_t mailbox, void **data)
-      .. autodoxymethod:: sg_mailbox_get_name(const_sg_mailbox_t mailbox)
-      .. autodoxymethod:: sg_mailbox_listen(const char *alias)
+      .. doxygenfunction:: sg_mailbox_get(sg_mailbox_t mailbox)
+      .. doxygenfunction:: sg_mailbox_get_async(sg_mailbox_t mailbox, void **data)
+      .. doxygenfunction:: sg_mailbox_get_name(const_sg_mailbox_t mailbox)
+      .. doxygenfunction:: sg_mailbox_listen(const char *alias)
 
 Receiving actor
 ---------------
@@ -1009,12 +1011,12 @@ See :ref:`s4u_receiving_actor`.
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Mailbox::get_receiver
-      .. autodoxymethod:: simgrid::s4u::Mailbox::set_receiver(ActorPtr actor)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::get_receiver
+      .. doxygenfunction:: simgrid::s4u::Mailbox::set_receiver(ActorPtr actor)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_mailbox_set_receiver(const char *alias)
+      .. doxygenfunction:: sg_mailbox_set_receiver(const char *alias)
                   
 .. _API_s4u_Resource:
 
@@ -1028,7 +1030,7 @@ Resources
 ⁣  class Disk
 =============
 
-.. autodoxyclass:: simgrid::s4u::Disk
+.. doxygenclass:: simgrid::s4u::Disk
 
 Basic management
 ----------------
@@ -1053,14 +1055,14 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Disk::get_cname() const
-      .. autodoxymethod:: simgrid::s4u::Disk::get_host() const
-      .. autodoxymethod:: simgrid::s4u::Disk::get_name() const
-      .. autodoxymethod:: simgrid::s4u::Disk::get_properties() const
-      .. autodoxymethod:: simgrid::s4u::Disk::get_property(const std::string &key) const
-      .. autodoxymethod:: simgrid::s4u::Disk::get_read_bandwidth() const
-      .. autodoxymethod:: simgrid::s4u::Disk::get_write_bandwidth() const
-      .. autodoxymethod:: simgrid::s4u::Disk::set_property(const std::string &, const std::string &value)
+      .. doxygenfunction:: simgrid::s4u::Disk::get_cname() const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_host() const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_name() const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_properties() const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_read_bandwidth() const
+      .. doxygenfunction:: simgrid::s4u::Disk::get_write_bandwidth() const
+      .. doxygenfunction:: simgrid::s4u::Disk::set_property(const std::string &, const std::string &value)
 
 I/O operations
 --------------
@@ -1069,11 +1071,11 @@ I/O operations
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Disk::io_init(sg_size_t size, s4u::Io::OpType type)
-      .. autodoxymethod:: simgrid::s4u::Disk::read(sg_size_t size)
-      .. autodoxymethod:: simgrid::s4u::Disk::read_async(sg_size_t size)
-      .. autodoxymethod:: simgrid::s4u::Disk::write(sg_size_t size)
-      .. autodoxymethod:: simgrid::s4u::Disk::write_async(sg_size_t size)
+      .. doxygenfunction:: simgrid::s4u::Disk::io_init(sg_size_t size, s4u::Io::OpType type)
+      .. doxygenfunction:: simgrid::s4u::Disk::read(sg_size_t size)
+      .. doxygenfunction:: simgrid::s4u::Disk::read_async(sg_size_t size)
+      .. doxygenfunction:: simgrid::s4u::Disk::write(sg_size_t size)
+      .. doxygenfunction:: simgrid::s4u::Disk::write_async(sg_size_t size)
 
 Signals
 -------
@@ -1082,9 +1084,9 @@ Signals
 
    .. group-tab:: C++
 
-      .. autodoxyvar:: simgrid::s4u::Disk::on_creation
-      .. autodoxyvar:: simgrid::s4u::Disk::on_destruction
-      .. autodoxyvar:: simgrid::s4u::Disk::on_state_change
+      .. doxygenvariable:: simgrid::s4u::Disk::on_creation
+      .. doxygenvariable:: simgrid::s4u::Disk::on_destruction
+      .. doxygenvariable:: simgrid::s4u::Disk::on_state_change
 
 
 .. _API_s4u_Host:
@@ -1093,7 +1095,7 @@ Signals
 ⁣  class Host
 =============
 
-.. autodoxyclass:: simgrid::s4u::Host
+.. doxygenclass:: simgrid::s4u::Host
 
 Basic management
 ----------------
@@ -1110,7 +1112,7 @@ Basic management
       idiom on hosts because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
 
-      .. autodoxymethod:: simgrid::s4u::Host::destroy()
+      .. doxygenfunction:: simgrid::s4u::Host::destroy()
 
    .. group-tab:: Python
 
@@ -1138,9 +1140,9 @@ Retrieving hosts
 
       See also :cpp:func:`simgrid::s4u::Engine::get_all_hosts`.
 
-      .. autodoxymethod:: simgrid::s4u::Host::by_name(const std::string &name)
-      .. autodoxymethod:: simgrid::s4u::Host::by_name_or_null(const std::string &name)
-      .. autodoxymethod:: simgrid::s4u::Host::current()
+      .. doxygenfunction:: simgrid::s4u::Host::by_name(const std::string &name)
+      .. doxygenfunction:: simgrid::s4u::Host::by_name_or_null(const std::string &name)
+      .. doxygenfunction:: simgrid::s4u::Host::current()
 
    .. group-tab:: Python
 
@@ -1151,10 +1153,10 @@ Retrieving hosts
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_by_name(const char *name)
-      .. autodoxymethod:: sg_host_count()
-      .. autodoxymethod:: sg_host_list()
-      .. autodoxymethod:: sg_hosts_as_dynar()
+      .. doxygenfunction:: sg_host_by_name(const char *name)
+      .. doxygenfunction:: sg_host_count()
+      .. doxygenfunction:: sg_host_list()
+      .. doxygenfunction:: sg_hosts_as_dynar()
 
 Querying info
 -------------
@@ -1163,12 +1165,12 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::get_cname() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_core_count() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_name() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_available_speed() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_load() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_speed() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_cname() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_core_count() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_name() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_available_speed() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_load() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_speed() const
 
    .. group-tab:: Python
 
@@ -1179,11 +1181,11 @@ Querying info
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_core_count(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_dump(const_sg_host_t ws)
-      .. autodoxymethod:: sg_host_get_name(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_get_load(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_get_speed(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_core_count(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_dump(const_sg_host_t ws)
+      .. doxygenfunction:: sg_host_get_name(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_load(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_speed(const_sg_host_t host)
 
 User data and properties
 ------------------------
@@ -1192,18 +1194,18 @@ User data and properties
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::get_properties() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_property(const std::string &key) const
-      .. autodoxymethod:: simgrid::s4u::Host::set_properties(const std::unordered_map< std::string, std::string > &properties)
-      .. autodoxymethod:: simgrid::s4u::Host::set_property(const std::string &key, const std::string &value)
+      .. doxygenfunction:: simgrid::s4u::Host::get_properties() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::Host::set_properties(const std::unordered_map< std::string, std::string > &properties)
+      .. doxygenfunction:: simgrid::s4u::Host::set_property(const std::string &key, const std::string &value)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_set_property_value(sg_host_t host, const char *name, const char *value)
-      .. autodoxymethod:: sg_host_get_properties(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_get_property_value(const_sg_host_t host, const char *name)
-      .. autodoxymethod:: sg_host_extension_create(void(*deleter)(void *))
-      .. autodoxymethod:: sg_host_extension_get(const_sg_host_t host, size_t rank)
+      .. doxygenfunction:: sg_host_set_property_value(sg_host_t host, const char *name, const char *value)
+      .. doxygenfunction:: sg_host_get_properties(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_property_value(const_sg_host_t host, const char *name)
+      .. doxygenfunction:: sg_host_extension_create(void(*deleter)(void *))
+      .. doxygenfunction:: sg_host_extension_get(const_sg_host_t host, size_t rank)
 
 Retrieving components
 ---------------------
@@ -1212,15 +1214,15 @@ Retrieving components
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::add_disk(const Disk *disk)
-      .. autodoxymethod:: simgrid::s4u::Host::get_actor_count() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_all_actors() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_disks() const
-      .. autodoxymethod:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
+      .. doxygenfunction:: simgrid::s4u::Host::add_disk(const Disk *disk)
+      .. doxygenfunction:: simgrid::s4u::Host::get_actor_count() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_all_actors() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_disks() const
+      .. doxygenfunction:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
+      .. doxygenfunction:: sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
 
 On/Off
 ------
@@ -1229,15 +1231,15 @@ On/Off
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::is_on() const
-      .. autodoxymethod:: simgrid::s4u::Host::turn_off()
-      .. autodoxymethod:: simgrid::s4u::Host::turn_on()
+      .. doxygenfunction:: simgrid::s4u::Host::is_on() const
+      .. doxygenfunction:: simgrid::s4u::Host::turn_off()
+      .. doxygenfunction:: simgrid::s4u::Host::turn_on()
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_is_on(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_turn_off(sg_host_t host)
-      .. autodoxymethod:: sg_host_turn_on(sg_host_t host)
+      .. doxygenfunction:: sg_host_is_on(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_turn_off(sg_host_t host)
+      .. doxygenfunction:: sg_host_turn_on(sg_host_t host)
 
 DVFS
 ----
@@ -1246,12 +1248,12 @@ DVFS
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::get_pstate() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_pstate_count() const
-      .. autodoxymethod:: simgrid::s4u::Host::get_pstate_speed(int pstate_index) const
-      .. autodoxymethod:: simgrid::s4u::Host::set_pstate(int pstate_index)
-      .. autodoxymethod:: simgrid::s4u::Host::set_speed_profile(kernel::profile::Profile *p)
-      .. autodoxymethod:: simgrid::s4u::Host::set_state_profile(kernel::profile::Profile *p)
+      .. doxygenfunction:: simgrid::s4u::Host::get_pstate() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_pstate_count() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_pstate_speed(int pstate_index) const
+      .. doxygenfunction:: simgrid::s4u::Host::set_pstate(int pstate_index)
+      .. doxygenfunction:: simgrid::s4u::Host::set_speed_profile(kernel::profile::Profile *p)
+      .. doxygenfunction:: simgrid::s4u::Host::set_state_profile(kernel::profile::Profile *p)
 
    .. group-tab:: Python
 
@@ -1260,11 +1262,11 @@ DVFS
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_get_available_speed(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_get_nb_pstates(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_get_pstate(const_sg_host_t host)
-      .. autodoxymethod:: sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
-      .. autodoxymethod:: sg_host_set_pstate(sg_host_t host, int pstate)
+      .. doxygenfunction:: sg_host_get_available_speed(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_nb_pstates(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_pstate(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
+      .. doxygenfunction:: sg_host_set_pstate(sg_host_t host, int pstate)
 
 Execution
 ---------
@@ -1273,9 +1275,9 @@ Execution
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::exec_async
-      .. autodoxymethod:: simgrid::s4u::Host::execute(double flops) const
-      .. autodoxymethod:: simgrid::s4u::Host::execute(double flops, double priority) const
+      .. doxygenfunction:: simgrid::s4u::Host::exec_async
+      .. doxygenfunction:: simgrid::s4u::Host::execute(double flops) const
+      .. doxygenfunction:: simgrid::s4u::Host::execute(double flops, double priority) const
 
 Platform and routing
 --------------------
@@ -1284,19 +1286,19 @@ Platform and routing
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Host::get_englobing_zone()
-      .. autodoxymethod:: simgrid::s4u::Host::get_netpoint() const
-      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
-      .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency) const
-      .. autodoxymethod:: simgrid::s4u::Host::sendto(Host *dest, double byte_amount)
-      .. autodoxymethod:: simgrid::s4u::Host::sendto_async(Host *dest, double byte_amount)
+      .. doxygenfunction:: simgrid::s4u::Host::get_englobing_zone()
+      .. doxygenfunction:: simgrid::s4u::Host::get_netpoint() const
+      .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
+      .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency) const
+      .. doxygenfunction:: simgrid::s4u::Host::sendto(Host *dest, double byte_amount)
+      .. doxygenfunction:: simgrid::s4u::Host::sendto_async(Host *dest, double byte_amount)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
-      .. autodoxymethod:: sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
-      .. autodoxymethod:: sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to)
-      .. autodoxymethod:: sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
+      .. doxygenfunction:: sg_host_get_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links)
+      .. doxygenfunction:: sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
+      .. doxygenfunction:: sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to)
+      .. doxygenfunction:: sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
 
 Signals
 -------
@@ -1305,10 +1307,10 @@ Signals
 
    .. group-tab:: C++
 
-      .. autodoxyvar:: simgrid::s4u::Host::on_creation
-      .. autodoxyvar:: simgrid::s4u::Host::on_destruction
-      .. autodoxyvar:: simgrid::s4u::Host::on_speed_change
-      .. autodoxyvar:: simgrid::s4u::Host::on_state_change
+      .. doxygenvariable:: simgrid::s4u::Host::on_creation
+      .. doxygenvariable:: simgrid::s4u::Host::on_destruction
+      .. doxygenvariable:: simgrid::s4u::Host::on_speed_change
+      .. doxygenvariable:: simgrid::s4u::Host::on_state_change
 
 .. _API_s4u_Link:
 
@@ -1316,7 +1318,7 @@ Signals
 ⁣  class Link
 =============
 
-.. autodoxyclass:: simgrid::s4u::Link
+.. doxygenclass:: simgrid::s4u::Link
 
 Basic management
 ----------------
@@ -1359,14 +1361,14 @@ Retrieving links
 
       See also :cpp:func:`simgrid::s4u::Engine::get_all_links`.
 
-      .. autodoxymethod:: simgrid::s4u::Link::by_name(const std::string &name)
-      .. autodoxymethod:: simgrid::s4u::Link::by_name_or_null(const std::string &name)
+      .. doxygenfunction:: simgrid::s4u::Link::by_name(const std::string &name)
+      .. doxygenfunction:: simgrid::s4u::Link::by_name_or_null(const std::string &name)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_by_name(const char *name)
-      .. autodoxymethod:: sg_link_count()
-      .. autodoxymethod:: sg_link_list()
+      .. doxygenfunction:: sg_link_by_name(const char *name)
+      .. doxygenfunction:: sg_link_count()
+      .. doxygenfunction:: sg_link_list()
 
 Querying info
 --------------
@@ -1375,20 +1377,20 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Link::get_bandwidth() const
-      .. autodoxymethod:: simgrid::s4u::Link::get_cname() const
-      .. autodoxymethod:: simgrid::s4u::Link::get_latency() const
-      .. autodoxymethod:: simgrid::s4u::Link::get_name() const
-      .. autodoxymethod:: simgrid::s4u::Link::get_sharing_policy() const
-      .. autodoxymethod:: simgrid::s4u::Link::get_usage() const
-      .. autodoxymethod:: simgrid::s4u::Link::is_used() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_bandwidth() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_cname() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_latency() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_name() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_sharing_policy() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_usage() const
+      .. doxygenfunction:: simgrid::s4u::Link::is_used() const
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_get_bandwidth(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_get_latency(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_get_name(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_is_shared(const_sg_link_t link)
+      .. doxygenfunction:: sg_link_get_bandwidth(const_sg_link_t link)
+      .. doxygenfunction:: sg_link_get_latency(const_sg_link_t link)
+      .. doxygenfunction:: sg_link_get_name(const_sg_link_t link)
+      .. doxygenfunction:: sg_link_is_shared(const_sg_link_t link)
 
 Modifying characteristics
 -------------------------
@@ -1397,13 +1399,13 @@ Modifying characteristics
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Link::set_bandwidth(double value)
-      .. autodoxymethod:: simgrid::s4u::Link::set_latency(double value)
+      .. doxygenfunction:: simgrid::s4u::Link::set_bandwidth(double value)
+      .. doxygenfunction:: simgrid::s4u::Link::set_latency(double value)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_set_bandwidth(sg_link_t link, double value)
-      .. autodoxymethod:: sg_link_set_latency(sg_link_t link, double value)
+      .. doxygenfunction:: sg_link_set_bandwidth(sg_link_t link, double value)
+      .. doxygenfunction:: sg_link_set_latency(sg_link_t link, double value)
 
 User data and properties
 ------------------------
@@ -1412,13 +1414,13 @@ User data and properties
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Link::get_property(const std::string &key) const
-      .. autodoxymethod:: simgrid::s4u::Link::set_property(const std::string &key, const std::string &value)
+      .. doxygenfunction:: simgrid::s4u::Link::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::Link::set_property(const std::string &key, const std::string &value)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_link_get_data(const_sg_link_t link)
-      .. autodoxymethod:: sg_link_set_data(sg_link_t link, void *data)
+      .. doxygenfunction:: sg_link_get_data(const_sg_link_t link)
+      .. doxygenfunction:: sg_link_set_data(sg_link_t link, void *data)
 
 On/Off
 ------
@@ -1429,9 +1431,9 @@ On/Off
 
       See also :cpp:func:`simgrid::s4u::Link::set_state_profile`.
 
-      .. autodoxymethod:: simgrid::s4u::Link::is_on() const
-      .. autodoxymethod:: simgrid::s4u::Link::turn_off()
-      .. autodoxymethod:: simgrid::s4u::Link::turn_on()
+      .. doxygenfunction:: simgrid::s4u::Link::is_on() const
+      .. doxygenfunction:: simgrid::s4u::Link::turn_off()
+      .. doxygenfunction:: simgrid::s4u::Link::turn_on()
 
 Dynamic profiles
 ----------------
@@ -1442,9 +1444,9 @@ See :ref:`howto_churn` for more details.
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Link::set_bandwidth_profile(kernel::profile::Profile *profile)
-      .. autodoxymethod:: simgrid::s4u::Link::set_latency_profile(kernel::profile::Profile *profile)
-      .. autodoxymethod:: simgrid::s4u::Link::set_state_profile(kernel::profile::Profile *profile)
+      .. doxygenfunction:: simgrid::s4u::Link::set_bandwidth_profile(kernel::profile::Profile *profile)
+      .. doxygenfunction:: simgrid::s4u::Link::set_latency_profile(kernel::profile::Profile *profile)
+      .. doxygenfunction:: simgrid::s4u::Link::set_state_profile(kernel::profile::Profile *profile)
 
 WIFI links
 ----------
@@ -1453,7 +1455,7 @@ WIFI links
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Link::set_host_wifi_rate
+      .. doxygenfunction:: simgrid::s4u::Link::set_host_wifi_rate
 
 Signals
 -------
@@ -1462,12 +1464,12 @@ Signals
 
    .. group-tab:: C++
 
-      .. autodoxyvar:: simgrid::s4u::Link::on_bandwidth_change
-      .. autodoxyvar:: simgrid::s4u::Link::on_communicate
-      .. autodoxyvar:: simgrid::s4u::Link::on_communication_state_change
-      .. autodoxyvar:: simgrid::s4u::Link::on_creation
-      .. autodoxyvar:: simgrid::s4u::Link::on_destruction
-      .. autodoxyvar:: simgrid::s4u::Link::on_state_change
+      .. doxygenvariable:: simgrid::s4u::Link::on_bandwidth_change
+      .. doxygenvariable:: simgrid::s4u::Link::on_communicate
+      .. doxygenvariable:: simgrid::s4u::Link::on_communication_state_change
+      .. doxygenvariable:: simgrid::s4u::Link::on_creation
+      .. doxygenvariable:: simgrid::s4u::Link::on_destruction
+      .. doxygenvariable:: simgrid::s4u::Link::on_state_change
 
 .. _API_s4u_NetZone:
 
@@ -1475,7 +1477,7 @@ Signals
 ⁣  class NetZone
 ================
 
-.. autodoxyclass:: simgrid::s4u::NetZone
+.. doxygenclass:: simgrid::s4u::NetZone
 
 Basic management
 ----------------
@@ -1516,8 +1518,8 @@ Retrieving zones
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_zone_get_by_name(const char *name)
-      .. autodoxymethod:: sg_zone_get_root()
+      .. doxygenfunction:: sg_zone_get_by_name(const char *name)
+      .. doxygenfunction:: sg_zone_get_root()
 
 Querying info
 --------------
@@ -1526,12 +1528,12 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::NetZone::get_cname() const
-      .. autodoxymethod:: simgrid::s4u::NetZone::get_name() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_cname() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_name() const
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_zone_get_name(const_sg_netzone_t zone)
+      .. doxygenfunction:: sg_zone_get_name(const_sg_netzone_t zone)
 
 User data and properties
 ------------------------
@@ -1540,14 +1542,14 @@ User data and properties
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::NetZone::get_properties() const
-      .. autodoxymethod:: simgrid::s4u::NetZone::get_property(const std::string &key) const
-      .. autodoxymethod:: simgrid::s4u::NetZone::set_property(const std::string &key, const std::string &value)
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_properties() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::NetZone::set_property(const std::string &key, const std::string &value)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_zone_get_property_value(const_sg_netzone_t as, const char *name)
-      .. autodoxymethod:: sg_zone_set_property_value(sg_netzone_t netzone, const char *name, const char *value)
+      .. doxygenfunction:: sg_zone_get_property_value(const_sg_netzone_t as, const char *name)
+      .. doxygenfunction:: sg_zone_set_property_value(sg_netzone_t netzone, const char *name, const char *value)
 
 Retrieving components
 ---------------------
@@ -1556,12 +1558,12 @@ Retrieving components
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::NetZone::get_all_hosts() const
-      .. autodoxymethod:: simgrid::s4u::NetZone::get_host_count() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_all_hosts() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_host_count() const
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto)
+      .. doxygenfunction:: sg_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto)
 
 Routing data
 ------------
@@ -1570,15 +1572,15 @@ Routing data
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::NetZone::add_bypass_route
-      .. autodoxymethod:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
-      .. autodoxymethod:: simgrid::s4u::NetZone::add_route
-      .. autodoxymethod:: simgrid::s4u::NetZone::get_children() const
-      .. autodoxymethod:: simgrid::s4u::NetZone::get_father()
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_route
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_father()
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_zone_get_sons(const_sg_netzone_t zone, xbt_dict_t whereto)
+      .. doxygenfunction:: sg_zone_get_sons(const_sg_netzone_t zone, xbt_dict_t whereto)
 
 Signals
 -------
@@ -1587,9 +1589,9 @@ Signals
 
   .. group-tab:: C++
 
-     .. autodoxyvar:: simgrid::s4u::NetZone::on_creation
-     .. autodoxyvar:: simgrid::s4u::NetZone::on_route_creation
-     .. autodoxyvar:: simgrid::s4u::NetZone::on_seal
+     .. doxygenvariable:: simgrid::s4u::NetZone::on_creation
+     .. doxygenvariable:: simgrid::s4u::NetZone::on_route_creation
+     .. doxygenvariable:: simgrid::s4u::NetZone::on_seal
 
 .. _API_s4u_VirtualMachine:
 
@@ -1598,7 +1600,7 @@ Signals
 =======================
 
 
-.. autodoxyclass:: simgrid::s4u::VirtualMachine
+.. doxygenclass:: simgrid::s4u::VirtualMachine
 
 Basic management
 ----------------
@@ -1631,15 +1633,15 @@ Creating VMs
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::VirtualMachine(const std::string &name, Host *physical_host, int core_amount)
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::VirtualMachine(const std::string &name, Host *physical_host, int core_amount, size_t ramsize)
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::destroy
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::VirtualMachine(const std::string &name, Host *physical_host, int core_amount)
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::VirtualMachine(const std::string &name, Host *physical_host, int core_amount, size_t ramsize)
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::destroy
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_vm_create_core
-      .. autodoxymethod:: sg_vm_create_multicore
-      .. autodoxymethod:: sg_vm_destroy
+      .. doxygenfunction:: sg_vm_create_core
+      .. doxygenfunction:: sg_vm_create_multicore
+      .. doxygenfunction:: sg_vm_destroy
 
 Querying info
 --------------
@@ -1648,25 +1650,25 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_pm() const
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_ramsize() const
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::get_state() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_pm() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_ramsize() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_state() const
 
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_bound(double bound)
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_pm(Host *pm)
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::set_ramsize(size_t ramsize)
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_bound(double bound)
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_pm(Host *pm)
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_ramsize(size_t ramsize)
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_vm_get_ramsize(const_sg_vm_t vm)
-      .. autodoxymethod:: sg_vm_set_bound(sg_vm_t vm, double bound)
-      .. autodoxymethod:: sg_vm_set_ramsize(sg_vm_t vm, size_t size)
+      .. doxygenfunction:: sg_vm_get_ramsize(const_sg_vm_t vm)
+      .. doxygenfunction:: sg_vm_set_bound(sg_vm_t vm, double bound)
+      .. doxygenfunction:: sg_vm_set_ramsize(sg_vm_t vm, size_t size)
 
-      .. autodoxymethod:: sg_vm_get_name
-      .. autodoxymethod:: sg_vm_get_pm
-      .. autodoxymethod:: sg_vm_is_created
-      .. autodoxymethod:: sg_vm_is_running
-      .. autodoxymethod:: sg_vm_is_suspended
+      .. doxygenfunction:: sg_vm_get_name
+      .. doxygenfunction:: sg_vm_get_pm
+      .. doxygenfunction:: sg_vm_is_created
+      .. doxygenfunction:: sg_vm_is_running
+      .. doxygenfunction:: sg_vm_is_suspended
 
 Life cycle
 ----------
@@ -1675,17 +1677,17 @@ Life cycle
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::resume()
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::shutdown()
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::start()
-      .. autodoxymethod:: simgrid::s4u::VirtualMachine::suspend()
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::resume()
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::shutdown()
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::start()
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::suspend()
 
    .. group-tab:: C
 
-      .. autodoxymethod:: sg_vm_start
-      .. autodoxymethod:: sg_vm_suspend
-      .. autodoxymethod:: sg_vm_resume
-      .. autodoxymethod:: sg_vm_shutdown
+      .. doxygenfunction:: sg_vm_start
+      .. doxygenfunction:: sg_vm_suspend
+      .. doxygenfunction:: sg_vm_resume
+      .. doxygenfunction:: sg_vm_shutdown
 
 Signals
 -------
@@ -1694,13 +1696,13 @@ Signals
 
    .. group-tab:: C++
 
-      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_migration_end
-      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_migration_start
-      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_resume
-      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_shutdown
-      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_start
-      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_started
-      .. autodoxyvar:: simgrid::s4u::VirtualMachine::on_suspend
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_migration_end
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_migration_start
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_resume
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_shutdown
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_start
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_started
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_suspend
 
 .. _API_s4u_Activity:
 
@@ -1708,13 +1710,13 @@ Signals
 class Activity
 ==============
 
-.. autodoxyclass:: simgrid::s4u::Activity
+.. doxygenclass:: simgrid::s4u::Activity
 
-   **Known subclasses:**
-   :ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
-   :ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
-   :ref:`I/O <API_s4u_Io>` (started on and consumming disks).
-   See also the :ref:`section on activities <s4u_Activities>` above.
+**Known subclasses:**
+:ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
+:ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
+:ref:`I/O <API_s4u_Io>` (started on and consumming disks).
+See also the :ref:`section on activities <s4u_Activities>` above.
 
 Basic management
 ----------------
@@ -1736,12 +1738,12 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Activity::get_cname
-      .. autodoxymethod:: simgrid::s4u::Activity::get_name
-      .. autodoxymethod:: simgrid::s4u::Activity::get_remaining() const
-      .. autodoxymethod:: simgrid::s4u::Activity::get_state() const
-      .. autodoxymethod:: simgrid::s4u::Activity::set_remaining(double remains)
-      .. autodoxymethod:: simgrid::s4u::Activity::set_state(Activity::State state)
+      .. doxygenfunction:: simgrid::s4u::Activity::get_cname
+      .. doxygenfunction:: simgrid::s4u::Activity::get_name
+      .. doxygenfunction:: simgrid::s4u::Activity::get_remaining() const
+      .. doxygenfunction:: simgrid::s4u::Activity::get_state() const
+      .. doxygenfunction:: simgrid::s4u::Activity::set_remaining(double remains)
+      .. doxygenfunction:: simgrid::s4u::Activity::set_state(Activity::State state)
 
 
 Activities life cycle
@@ -1751,13 +1753,13 @@ Activities life cycle
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Activity::start
-      .. autodoxymethod:: simgrid::s4u::Activity::cancel
-      .. autodoxymethod:: simgrid::s4u::Activity::test
-      .. autodoxymethod:: simgrid::s4u::Activity::wait
-      .. autodoxymethod:: simgrid::s4u::Activity::wait_for
-      .. autodoxymethod:: simgrid::s4u::Activity::wait_until(double time_limit)
-      .. autodoxymethod:: simgrid::s4u::Activity::vetoable_start()
+      .. doxygenfunction:: simgrid::s4u::Activity::start
+      .. doxygenfunction:: simgrid::s4u::Activity::cancel
+      .. doxygenfunction:: simgrid::s4u::Activity::test
+      .. doxygenfunction:: simgrid::s4u::Activity::wait
+      .. doxygenfunction:: simgrid::s4u::Activity::wait_for
+      .. doxygenfunction:: simgrid::s4u::Activity::wait_until(double time_limit)
+      .. doxygenfunction:: simgrid::s4u::Activity::vetoable_start()
 
 Suspending and resuming an activity
 -----------------------------------
@@ -1766,9 +1768,9 @@ Suspending and resuming an activity
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Activity::suspend
-      .. autodoxymethod:: simgrid::s4u::Activity::resume
-      .. autodoxymethod:: simgrid::s4u::Activity::is_suspended
+      .. doxygenfunction:: simgrid::s4u::Activity::suspend
+      .. doxygenfunction:: simgrid::s4u::Activity::resume
+      .. doxygenfunction:: simgrid::s4u::Activity::is_suspended
 
 .. _API_s4u_Comm:
 
@@ -1776,7 +1778,7 @@ Suspending and resuming an activity
 ⁣  class Comm
 =============
 
-.. autodoxyclass:: simgrid::s4u::Comm
+.. doxygenclass:: simgrid::s4u::Comm
 
 Basic management
 ----------------
@@ -1804,17 +1806,17 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Comm::get_dst_data_size() const
-      .. autodoxymethod:: simgrid::s4u::Comm::get_mailbox() const
-      .. autodoxymethod:: simgrid::s4u::Comm::get_sender() const
-      .. autodoxymethod:: simgrid::s4u::Comm::set_dst_data(void **buff)
-      .. autodoxymethod:: simgrid::s4u::Comm::set_dst_data(void **buff, size_t size)
-      .. autodoxymethod:: simgrid::s4u::Comm::detach()
-      .. autodoxymethod:: simgrid::s4u::Comm::detach(void(*clean_function)(void *))
-      .. autodoxymethod:: simgrid::s4u::Comm::set_rate(double rate)
-      .. autodoxymethod:: simgrid::s4u::Comm::set_src_data(void *buff)
-      .. autodoxymethod:: simgrid::s4u::Comm::set_src_data(void *buff, size_t size)
-      .. autodoxymethod:: simgrid::s4u::Comm::set_src_data_size(size_t size)
+      .. doxygenfunction:: simgrid::s4u::Comm::get_dst_data_size() const
+      .. doxygenfunction:: simgrid::s4u::Comm::get_mailbox() const
+      .. doxygenfunction:: simgrid::s4u::Comm::get_sender() const
+      .. doxygenfunction:: simgrid::s4u::Comm::set_dst_data(void **buff)
+      .. doxygenfunction:: simgrid::s4u::Comm::set_dst_data(void **buff, size_t size)
+      .. doxygenfunction:: simgrid::s4u::Comm::detach()
+      .. doxygenfunction:: simgrid::s4u::Comm::detach(void(*clean_function)(void *))
+      .. doxygenfunction:: simgrid::s4u::Comm::set_rate(double rate)
+      .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff)
+      .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff, size_t size)
+      .. doxygenfunction:: simgrid::s4u::Comm::set_src_data_size(size_t size)
 
 Life cycle
 ----------
@@ -1823,15 +1825,15 @@ Life cycle
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Comm::cancel
-      .. autodoxymethod:: simgrid::s4u::Comm::start
-      .. autodoxymethod:: simgrid::s4u::Comm::test
-      .. autodoxymethod:: simgrid::s4u::Comm::test_any(const std::vector< CommPtr > *comms)
-      .. autodoxymethod:: simgrid::s4u::Comm::wait
-      .. autodoxymethod:: simgrid::s4u::Comm::wait_all(const std::vector< CommPtr > *comms)
-      .. autodoxymethod:: simgrid::s4u::Comm::wait_any(const std::vector< CommPtr > *comms)
-      .. autodoxymethod:: simgrid::s4u::Comm::wait_any_for(const std::vector< CommPtr > *comms_in, double timeout)
-      .. autodoxymethod:: simgrid::s4u::Comm::wait_for
+      .. doxygenfunction:: simgrid::s4u::Comm::cancel
+      .. doxygenfunction:: simgrid::s4u::Comm::start
+      .. doxygenfunction:: simgrid::s4u::Comm::test
+      .. doxygenfunction:: simgrid::s4u::Comm::test_any(const std::vector< CommPtr > *comms)
+      .. doxygenfunction:: simgrid::s4u::Comm::wait
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_all(const std::vector< CommPtr > *comms)
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_any(const std::vector< CommPtr > *comms)
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_any_for(const std::vector< CommPtr > *comms_in, double timeout)
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_for
 
    .. group-tab:: Python
 
@@ -1847,8 +1849,8 @@ Signals
 
    .. group-tab:: C++
 
-      .. autodoxyvar:: simgrid::s4u::Comm::on_completion
-      .. autodoxyvar:: simgrid::s4u::Comm::on_start
+      .. doxygenvariable:: simgrid::s4u::Comm::on_completion
+      .. doxygenvariable:: simgrid::s4u::Comm::on_start
 
 .. _API_s4u_Exec:
 
@@ -1856,7 +1858,7 @@ Signals
 ⁣  class Exec
 =============
 
-.. autodoxyclass:: simgrid::s4u::Exec
+.. doxygenclass:: simgrid::s4u::Exec
 
 Basic management
 ----------------
@@ -1876,6 +1878,12 @@ Basic management
       .. code:: Python
 
          from simgrid import Exec
+	 
+   .. group-tab:: C
+
+      .. code-block:: C
+
+         #include <simgrid/exec.h>
 
 Querying info
 -------------
@@ -1884,26 +1892,35 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Exec::get_cost() const
-      .. autodoxymethod:: simgrid::s4u::Exec::get_finish_time() const
-      .. autodoxymethod:: simgrid::s4u::Exec::get_host() const
-      .. autodoxymethod:: simgrid::s4u::Exec::get_host_number() const
+      .. doxygenfunction:: simgrid::s4u::Exec::get_cost() const
+      .. doxygenfunction:: simgrid::s4u::Exec::get_finish_time() const
+      .. doxygenfunction:: simgrid::s4u::Exec::get_host() const
+      .. doxygenfunction:: simgrid::s4u::Exec::get_host_number() const
       .. cpp:function:: double Exec::get_remaining()
 
          On sequential executions, returns the amount of flops that remain to be done;
          This cannot be used on parallel executions.
       
-      .. autodoxymethod:: simgrid::s4u::Exec::get_remaining_ratio
-      .. autodoxymethod:: simgrid::s4u::Exec::get_start_time() const
-      .. autodoxymethod:: simgrid::s4u::Exec::set_bound(double bound)
-      .. autodoxymethod:: simgrid::s4u::Exec::set_host
-      .. autodoxymethod:: simgrid::s4u::Exec::set_priority(double priority)
+      .. doxygenfunction:: simgrid::s4u::Exec::get_remaining_ratio
+      .. doxygenfunction:: simgrid::s4u::Exec::get_start_time() const
+      .. doxygenfunction:: simgrid::s4u::Exec::set_bound(double bound)
+      .. doxygenfunction:: simgrid::s4u::Exec::set_host
+      .. doxygenfunction:: simgrid::s4u::Exec::set_priority(double priority)
 
    .. group-tab:: Python
 
-       .. autoattribute:: simgrid.Exec.host
-       .. autoattribute:: simgrid.Exec.remaining
-       .. autoattribute:: simgrid.Exec.remaining_ratio
+      .. autoattribute:: simgrid.Exec.host
+      .. autoattribute:: simgrid.Exec.remaining
+      .. autoattribute:: simgrid.Exec.remaining_ratio
+
+   .. group-tab:: C
+   
+      .. doxygenfunction:: sg_exec_set_bound(sg_exec_t exec, double bound)
+      .. doxygenfunction:: sg_exec_get_name(const_sg_exec_t exec)
+      .. doxygenfunction:: sg_exec_set_name(sg_exec_t exec, const char* name)
+      .. doxygenfunction:: sg_exec_set_host(sg_exec_t exec, sg_host_t new_host)
+      .. doxygenfunction:: sg_exec_get_remaining(const_sg_exec_t exec)
+      .. doxygenfunction:: sg_exec_get_remaining_ratio(const_sg_exec_t exec)
 
 Life cycle
 ----------
@@ -1912,14 +1929,14 @@ Life cycle
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Exec::cancel
-      .. autodoxymethod:: simgrid::s4u::Exec::set_timeout(double timeout)
-      .. autodoxymethod:: simgrid::s4u::Exec::start
-      .. autodoxymethod:: simgrid::s4u::Exec::test
-      .. autodoxymethod:: simgrid::s4u::Exec::wait
-      .. autodoxymethod:: simgrid::s4u::Exec::wait_any(std::vector< ExecPtr > *execs)
-      .. autodoxymethod:: simgrid::s4u::Exec::wait_any_for(std::vector< ExecPtr > *execs, double timeout)
-      .. autodoxymethod:: simgrid::s4u::Exec::wait_for
+      .. doxygenfunction:: simgrid::s4u::Exec::cancel
+      .. doxygenfunction:: simgrid::s4u::Exec::set_timeout(double timeout)
+      .. doxygenfunction:: simgrid::s4u::Exec::start
+      .. doxygenfunction:: simgrid::s4u::Exec::test
+      .. doxygenfunction:: simgrid::s4u::Exec::wait
+      .. doxygenfunction:: simgrid::s4u::Exec::wait_any(std::vector< ExecPtr > *execs)
+      .. doxygenfunction:: simgrid::s4u::Exec::wait_any_for(std::vector< ExecPtr > *execs, double timeout)
+      .. doxygenfunction:: simgrid::s4u::Exec::wait_for
 
    .. group-tab:: Python
 
@@ -1928,6 +1945,16 @@ Life cycle
        .. automethod:: simgrid.Exec.test
        .. automethod:: simgrid.Exec.wait
 
+   .. group-tab:: C
+   
+       .. doxygenfunction:: sg_exec_start(sg_exec_t exec)
+       .. doxygenfunction:: sg_exec_cancel(sg_exec_t exec);
+       .. doxygenfunction:: sg_exec_test(sg_exec_t exec);
+       .. doxygenfunction:: sg_exec_wait(sg_exec_t exec);
+       .. doxygenfunction:: sg_exec_wait_for(sg_exec_t exec, double timeout);
+       .. doxygenfunction:: sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout);
+       .. doxygenfunction:: sg_exec_wait_any(sg_exec_t* execs, size_t count);
+
 Signals
 -------
 
@@ -1935,8 +1962,8 @@ Signals
 
    .. group-tab:: C++
 
-      .. autodoxyvar:: simgrid::s4u::Exec::on_start
-      .. autodoxyvar:: simgrid::s4u::Exec::on_completion
+      .. doxygenvariable:: simgrid::s4u::Exec::on_start
+      .. doxygenvariable:: simgrid::s4u::Exec::on_completion
 
 .. _API_s4u_Io:
 
@@ -1944,7 +1971,7 @@ Signals
 ⁣  class Io
 ===========
 
-.. autodoxyclass:: simgrid::s4u::Io
+.. doxygenclass:: simgrid::s4u::Io
 
 Basic management
 ----------------
@@ -1966,8 +1993,8 @@ Querying info
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Io::get_performed_ioops() const
-      .. autodoxymethod:: simgrid::s4u::Io::get_remaining
+      .. doxygenfunction:: simgrid::s4u::Io::get_performed_ioops() const
+      .. doxygenfunction:: simgrid::s4u::Io::get_remaining
 
 Life cycle
 ----------
@@ -1976,11 +2003,11 @@ Life cycle
 
    .. group-tab:: C++
 
-      .. autodoxymethod:: simgrid::s4u::Io::cancel
-      .. autodoxymethod:: simgrid::s4u::Io::start
-      .. autodoxymethod:: simgrid::s4u::Io::test
-      .. autodoxymethod:: simgrid::s4u::Io::wait
-      .. autodoxymethod:: simgrid::s4u::Io::wait_for
+      .. doxygenfunction:: simgrid::s4u::Io::cancel
+      .. doxygenfunction:: simgrid::s4u::Io::start
+      .. doxygenfunction:: simgrid::s4u::Io::test
+      .. doxygenfunction:: simgrid::s4u::Io::wait
+      .. doxygenfunction:: simgrid::s4u::Io::wait_for
 
 .. _API_s4u_Synchronizations:
 
@@ -1994,7 +2021,7 @@ Synchronization Objects
 ⁣  Mutex
 ==============
 
-.. autodoxyclass:: simgrid::s4u::Mutex
+.. doxygenclass:: simgrid::s4u::Mutex
 
 Basic management
 ----------------
@@ -2009,9 +2036,9 @@ Basic management
 
          .. doxygentypedef:: MutexPtr
 
-         .. autodoxymethod:: simgrid::s4u::Mutex::Mutex(kernel::activity::MutexImpl *mutex)
-         .. autodoxymethod:: simgrid::s4u::Mutex::create()
-         .. autodoxymethod:: simgrid::s4u::Mutex::~Mutex()
+         .. doxygenfunction:: simgrid::s4u::Mutex::Mutex(kernel::activity::MutexImpl *mutex)
+         .. doxygenfunction:: simgrid::s4u::Mutex::create()
+         .. doxygenfunction:: simgrid::s4u::Mutex::~Mutex()
 
       .. group-tab:: C
 
@@ -2024,8 +2051,8 @@ Basic management
 
             Pointer to a constant mutex object.
 
-         .. autodoxymethod:: sg_mutex_init()
-         .. autodoxymethod:: sg_mutex_destroy(const_sg_mutex_t mutex)
+         .. doxygenfunction:: sg_mutex_init()
+         .. doxygenfunction:: sg_mutex_destroy(const_sg_mutex_t mutex)
 
 Locking
 -------
@@ -2034,15 +2061,15 @@ Locking
 
       .. group-tab:: C++
 
-         .. autodoxymethod:: simgrid::s4u::Mutex::lock()
-         .. autodoxymethod:: simgrid::s4u::Mutex::try_lock()
-         .. autodoxymethod:: simgrid::s4u::Mutex::unlock()
+         .. doxygenfunction:: simgrid::s4u::Mutex::lock()
+         .. doxygenfunction:: simgrid::s4u::Mutex::try_lock()
+         .. doxygenfunction:: simgrid::s4u::Mutex::unlock()
 
       .. group-tab:: C
 
-         .. autodoxymethod:: sg_mutex_lock(sg_mutex_t mutex)
-         .. autodoxymethod:: sg_mutex_try_lock(sg_mutex_t mutex)
-         .. autodoxymethod:: sg_mutex_unlock(sg_mutex_t mutex)
+         .. doxygenfunction:: sg_mutex_lock(sg_mutex_t mutex)
+         .. doxygenfunction:: sg_mutex_try_lock(sg_mutex_t mutex)
+         .. doxygenfunction:: sg_mutex_unlock(sg_mutex_t mutex)
 
 .. _API_s4u_Barrier:
 
@@ -2050,36 +2077,36 @@ Locking
 ⁣  Barrier
 ================
 
-.. autodoxyclass:: simgrid::s4u::Barrier
+.. doxygenclass:: simgrid::s4u::Barrier
 
-   .. tabs::
+.. tabs::
 
-      .. group-tab:: C++
+   .. group-tab:: C++
 
-         .. code-block:: C++
+      .. code-block:: C++
 
-            #include <simgrid/s4u/Barrier.hpp>
+         #include <simgrid/s4u/Barrier.hpp>
 
-         .. doxygentypedef:: BarrierPtr
+      .. doxygentypedef:: BarrierPtr
 
-         .. autodoxymethod:: simgrid::s4u::Barrier::Barrier(unsigned int expected_actors)
-         .. autodoxymethod:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
-         .. autodoxymethod:: simgrid::s4u::Barrier::wait()
+      .. doxygenfunction:: simgrid::s4u::Barrier::Barrier(unsigned int expected_actors)
+      .. doxygenfunction:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
+      .. doxygenfunction:: simgrid::s4u::Barrier::wait()
 
-      .. group-tab:: C
+   .. group-tab:: C
 
-         .. code-block:: C
+      .. code-block:: C
 
-            #include <simgrid/barrier.hpp>
+         #include <simgrid/barrier.hpp>
 
-         .. doxygentypedef:: sg_bar_t
-         .. cpp:type:: const s4u_Barrier* const_sg_bar_t
+      .. doxygentypedef:: sg_bar_t
+      .. cpp:type:: const s4u_Barrier* const_sg_bar_t
 
-            Pointer to a constant barrier object.
+         Pointer to a constant barrier object.
 
-         .. autodoxymethod:: sg_barrier_init(unsigned int count)
-         .. autodoxymethod:: sg_barrier_destroy(const_sg_bar_t bar)
-         .. autodoxymethod:: sg_barrier_wait(sg_bar_t bar)
+      .. doxygenfunction:: sg_barrier_init(unsigned int count)
+      .. doxygenfunction:: sg_barrier_destroy(const_sg_bar_t bar)
+      .. doxygenfunction:: sg_barrier_wait(sg_bar_t bar)
 
 
 .. _API_s4u_ConditionVariable:
@@ -2088,7 +2115,7 @@ Locking
 ⁣  Condition variable
 ==========================
 
-.. autodoxyclass:: simgrid::s4u::ConditionVariable
+.. doxygenclass:: simgrid::s4u::ConditionVariable
 
 Basic management
 ----------------
@@ -2103,7 +2130,7 @@ Basic management
 
          .. doxygentypedef:: ConditionVariablePtr
 
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::create()
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::create()
 
       .. group-tab:: C
 
@@ -2112,8 +2139,8 @@ Basic management
             #include <simgrid/cond.h>
 
          .. doxygentypedef:: sg_cond_t
-         .. autodoxymethod:: sg_cond_init
-         .. autodoxymethod:: sg_cond_destroy
+         .. doxygenfunction:: sg_cond_init
+         .. doxygenfunction:: sg_cond_destroy
 
 Waiting and notifying
 ---------------------
@@ -2122,26 +2149,26 @@ Waiting and notifying
 
       .. group-tab:: C++
 
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::notify_all()
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::notify_one()
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(s4u::MutexPtr lock)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< s4u::Mutex > &lock)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< Mutex > &lock, P pred)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, double duration)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, double duration, P pred)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, std::chrono::duration< Rep, Period > duration)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, std::chrono::duration< Rep, Period > duration, P pred)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time, P pred)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, double timeout_time)
-         .. autodoxymethod:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, double timeout_time, P pred)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::notify_all()
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::notify_one()
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait(s4u::MutexPtr lock)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< s4u::Mutex > &lock)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait(const std::unique_lock< Mutex > &lock, P pred)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, double duration)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, double duration, P pred)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, std::chrono::duration< Rep, Period > duration)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_for(const std::unique_lock< s4u::Mutex > &lock, std::chrono::duration< Rep, Period > duration, P pred)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, const SimulationTimePoint< Duration > &timeout_time, P pred)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, double timeout_time)
+         .. doxygenfunction:: simgrid::s4u::ConditionVariable::wait_until(const std::unique_lock< s4u::Mutex > &lock, double timeout_time, P pred)
 
       .. group-tab:: C
 
-         .. autodoxymethod:: sg_cond_notify_all
-         .. autodoxymethod:: sg_cond_notify_one
-         .. autodoxymethod:: sg_cond_wait
-         .. autodoxymethod:: sg_cond_wait_for
+         .. doxygenfunction:: sg_cond_notify_all
+         .. doxygenfunction:: sg_cond_notify_one
+         .. doxygenfunction:: sg_cond_wait
+         .. doxygenfunction:: sg_cond_wait_for
 
 .. _API_s4u_Semaphore:
 
@@ -2149,7 +2176,7 @@ Waiting and notifying
 ⁣  Semaphore
 ==================
 
-.. autodoxyclass:: simgrid::s4u::Semaphore
+.. doxygenclass:: simgrid::s4u::Semaphore
 
 
 Basic management
@@ -2164,9 +2191,9 @@ Basic management
             #include <simgrid/s4u/Semaphore.hpp>
 
          .. doxygentypedef:: SemaphorePtr
-         .. autodoxymethod:: simgrid::s4u::Semaphore::Semaphore(unsigned int initial_capacity)
-         .. autodoxymethod:: simgrid::s4u::Semaphore::~Semaphore()
-         .. autodoxymethod:: simgrid::s4u::Semaphore::create(unsigned int initial_capacity)
+         .. doxygenfunction:: simgrid::s4u::Semaphore::Semaphore(unsigned int initial_capacity)
+         .. doxygenfunction:: simgrid::s4u::Semaphore::~Semaphore()
+         .. doxygenfunction:: simgrid::s4u::Semaphore::create(unsigned int initial_capacity)
 
       .. group-tab:: C
 
@@ -2179,8 +2206,8 @@ Basic management
 
             Pointer to a constant semaphore object.
 
-         .. autodoxymethod:: sg_sem_init(int initial_value)
-         .. autodoxymethod:: sg_sem_destroy(const_sg_sem_t sem)
+         .. doxygenfunction:: sg_sem_init(int initial_value)
+         .. doxygenfunction:: sg_sem_destroy(const_sg_sem_t sem)
 
 Locking
 -------
@@ -2189,19 +2216,19 @@ Locking
 
       .. group-tab:: C++
 
-         .. autodoxymethod:: simgrid::s4u::Semaphore::acquire()
-         .. autodoxymethod:: simgrid::s4u::Semaphore::acquire_timeout(double timeout)
-         .. autodoxymethod:: simgrid::s4u::Semaphore::get_capacity() const
-         .. autodoxymethod:: simgrid::s4u::Semaphore::release()
-         .. autodoxymethod:: simgrid::s4u::Semaphore::would_block() const
+         .. doxygenfunction:: simgrid::s4u::Semaphore::acquire()
+         .. doxygenfunction:: simgrid::s4u::Semaphore::acquire_timeout(double timeout)
+         .. doxygenfunction:: simgrid::s4u::Semaphore::get_capacity() const
+         .. doxygenfunction:: simgrid::s4u::Semaphore::release()
+         .. doxygenfunction:: simgrid::s4u::Semaphore::would_block() const
 
       .. group-tab:: C
 
-         .. autodoxymethod:: sg_sem_acquire(sg_sem_t sem)
-         .. autodoxymethod:: sg_sem_acquire_timeout(sg_sem_t sem, double timeout)
-         .. autodoxymethod:: sg_sem_get_capacity(const_sg_sem_t sem)
-         .. autodoxymethod:: sg_sem_release(sg_sem_t sem)
-         .. autodoxymethod:: sg_sem_would_block(const_sg_sem_t sem)
+         .. doxygenfunction:: sg_sem_acquire(sg_sem_t sem)
+         .. doxygenfunction:: sg_sem_acquire_timeout(sg_sem_t sem, double timeout)
+         .. doxygenfunction:: sg_sem_get_capacity(const_sg_sem_t sem)
+         .. doxygenfunction:: sg_sem_release(sg_sem_t sem)
+         .. doxygenfunction:: sg_sem_would_block(const_sg_sem_t sem)
 
 .. |hr| raw:: html
 

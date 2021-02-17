@@ -56,7 +56,6 @@ extensions = [
     'sphinx_tabs.tabs',
     'javasphinx',
     'showfile',
-    'autodoxy',
 ]
 
 todo_include_todos = True
@@ -64,35 +63,6 @@ todo_include_todos = True
 # Setup the breath extension
 breathe_projects = {'simgrid': '../build/xml'}
 breathe_default_project = "simgrid"
-
-# Setup the autodoxy extension
-doxygen_xml = os.path.join(os.path.dirname(__file__), "..", "build", "xml")
-autodoxy_requalified_identifiers =  [ # The first element will be substituted into the second one if it's starting an element or preceded by a space
-    ("Activity",       "simgrid::s4u::Activity"),
-    ("Actor",          "simgrid::s4u::Actor"),
-    ("ActorPtr",       "simgrid::s4u::ActorPtr"),
-    ("Barrier",        "simgrid::s4u::Barrier"),
-    ("BarrierPtr",     "simgrid::s4u::BarrierPtr"),
-    ("Comm",           "simgrid::s4u::Comm"),
-    ("CommPtr",        "simgrid::s4u::CommPtr"),
-    ("ConditionVariable",    "simgrid::s4u::ConditionVariable"),
-    ("ConditionVariablePtr", "simgrid::s4u::ConditionVariablePtr"),
-    ("Disk",           "simgrid::s4u::Disk"),
-    ("Exec",           "simgrid::s4u::Exec"),
-    ("ExecPtr",        "simgrid::s4u::ExecPtr"),
-    ("Host",           "simgrid::s4u::Host"),
-    ("s4u::Host",      "simgrid::s4u::Host"),
-    ("Engine",         "simgrid::s4u::Engine"),
-    ("Io",             "simgrid::s4u::Io"),
-    ("Link",           "simgrid::s4u::Link"),
-    ("Mailbox",        "simgrid::s4u::Mailbox"),
-    ("Mutex",          "simgrid::s4u::Mutex"),
-    ("s4u::Mutex",     "simgrid::s4u::Mutex"),
-    ("s4u::MutexPtr",  "simgrid::s4u::MutexPtr"),
-    ("NetZone",        "simgrid::s4u::NetZone"),
-    ("Semaphore",      "simgrid::s4u::Semaphore"),
-    ("VirtualMachine", "simgrid::s4u::VirtualMachine"),
-  ]
 
 # Generate a warning for all a cross-reference (such as :func:`myfunc`) that cannot be found
 nitpicky = True
