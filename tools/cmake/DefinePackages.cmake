@@ -880,7 +880,6 @@ set(DOC_SOURCES
   docs/source/Doxyfile
   docs/find-missing.ignore
   docs/find-missing.py
-  docs/source/_ext/autodoxy.py
   docs/source/_ext/showfile.css
   docs/source/_ext/showfile.js
   docs/source/_ext/showfile.py

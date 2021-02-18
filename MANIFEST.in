@@ -1816,7 +1816,6 @@ include docs/source/The_XBT_toolbox.rst
 include docs/source/Tutorial_Algorithms.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/XML_Reference.rst
-include docs/source/_ext/autodoxy.py
 include docs/source/_ext/javasphinx/LICENSE
 include docs/source/_ext/javasphinx/MANIFEST.in
 include docs/source/_ext/javasphinx/README.md
