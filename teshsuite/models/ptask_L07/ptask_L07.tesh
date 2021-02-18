@@ -10,6 +10,13 @@ $ ${bindir:=.}/ptask_L07 --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --
 > Actual result: computing 1 flop at 1 flop/s takes 1.00 seconds.
 >
 >
+> TEST: Create and run two concurrent sequential executions.
+> ------------------------------------------------------------
+> Have to compute 2 x 1 flop on a 1 flop/s host.
+> Should be done in exactly 2 seconds because of sharing.
+> Actual result: computing 2x1 flop at 1 flop/s takes 2.00 seconds.
+>
+>
 > TEST: Create and run a parallel execution on 2 homogeneous hosts.
 > ------------------------------------------------------------
 > Have to compute 2 flops across two hosts running at 1 flop/s.

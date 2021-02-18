@@ -31,6 +31,21 @@ static void main_dispatcher()
 
   sg4::this_actor::sleep_for(5);
 
+  XBT_INFO("TEST: Create and run two concurrent sequential executions.");
+  XBT_INFO("------------------------------------------------------------");
+  XBT_INFO("Have to compute 2 x 1 flop on a 1 flop/s host.");
+  XBT_INFO("Should be done in exactly 2 seconds because of sharing.");
+  start_time = e->get_clock();
+  sg4::ExecPtr e1 = sg4::Exec::init()->set_flops_amount(1)->set_host(hosts[0])->start();
+  sg4::ExecPtr e2 = sg4::Exec::init()->set_flops_amount(1)->set_host(hosts[0])->start();
+  e1->wait();
+  e2->wait();
+  end_time = e->get_clock();
+  XBT_INFO("Actual result: computing 2x1 flop at 1 flop/s takes %.2f seconds.", end_time - start_time);
+  XBT_INFO("\n");
+
+  sg4::this_actor::sleep_for(5);
+
   XBT_INFO("TEST: Create and run a parallel execution on 2 homogeneous hosts.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to compute 2 flops across two hosts running at 1 flop/s.");
