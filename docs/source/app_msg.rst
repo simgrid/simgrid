@@ -125,6 +125,7 @@ Task Management
 Task structure of MSG :cpp:type:`msg_task_t` and associated functions.
 
 .. doxygentypedef:: msg_task_t
+.. doxygentypedef:: const_msg_task_t
 .. doxygendefine:: MSG_TASK_UNINITIALIZED
 
 .. doxygenfunction:: MSG_parallel_task_create

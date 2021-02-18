@@ -409,6 +409,8 @@ Basic management
 
          from simgrid import Actor
 
+      .. autoclass:: simgrid.Actor
+
    .. group-tab:: C
 
       .. code:: C
@@ -591,6 +593,7 @@ Reacting to the end of actors
 
    .. group-tab:: C
 
+      .. doxygenfunction:: sg_actor_on_exit
       .. doxygenfunction:: sg_actor_join(const_sg_actor_t actor, double timeout)
       .. doxygenfunction:: sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
 
@@ -747,6 +750,12 @@ Exiting
 
       .. autofunction:: simgrid.this_actor.exit
       .. autofunction:: simgrid.this_actor.on_exit
+
+   .. group-tab:: c
+
+      See also :cpp:func:`sg_actor_on_exit`.
+
+      .. doxygenfunction:: sg_actor_exit
 
 .. _API_s4u_Engine:
 
@@ -925,15 +934,24 @@ Basic management
 
    .. group-tab:: Python
 
+      .. code-block:: C++
+
+         #include <simgrid/mailbox.h>
+
+      .. autoclass:: simgrid.Mailbox
+
       .. automethod:: simgrid.Mailbox.by_name
+
+   .. group-tab:: C
 
       .. code-block:: C
 
          #include <simgrid/s4u/mailbox.h>
       
-      .. doxygenfunction:: sg_mailbox_by_name(const char *alias)
+      .. doxygentypedef:: sg_mailbox_t
+      .. doxygentypedef:: const_sg_mailbox_t
 
-   .. group-tab:: C
+      .. doxygenfunction:: sg_mailbox_by_name(const char *alias)
 
 Querying info
 -------------
@@ -1799,6 +1817,17 @@ Basic management
 
          from simgrid import Comm
 
+      .. autoclass:: simgrid.Comm
+
+   .. group-tab:: c
+
+      .. code:: c
+
+         #include <simgrid/comm.h>
+
+      .. doxygentypedef:: sg_comm_t
+      .. doxygentypedef:: const_sg_comm_t
+
 Querying info
 -------------
 
@@ -1813,6 +1842,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Comm::set_dst_data(void **buff, size_t size)
       .. doxygenfunction:: simgrid::s4u::Comm::detach()
       .. doxygenfunction:: simgrid::s4u::Comm::detach(void(*clean_function)(void *))
+      .. doxygenfunction:: simgrid::s4u::Comm::set_payload_size(double bytes)
       .. doxygenfunction:: simgrid::s4u::Comm::set_rate(double rate)
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff)
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff, size_t size)
@@ -1878,12 +1908,17 @@ Basic management
       .. code:: Python
 
          from simgrid import Exec
-	 
+
+      .. autoclass:: simgrid.Exec
+
    .. group-tab:: C
 
       .. code-block:: C
 
          #include <simgrid/exec.h>
+
+      .. doxygentypedef:: sg_exec_t
+      .. doxygentypedef:: const_sg_exec_t
 
 Querying info
 -------------
@@ -2139,6 +2174,7 @@ Basic management
             #include <simgrid/cond.h>
 
          .. doxygentypedef:: sg_cond_t
+         .. doxygentypedef:: const_sg_cond_t
          .. doxygenfunction:: sg_cond_init
          .. doxygenfunction:: sg_cond_destroy
 

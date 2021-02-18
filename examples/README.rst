@@ -59,7 +59,7 @@ Starting and Stopping Actors
        
           You create actors either:
             
-          - Directly with :cpp:func:`sg_actor_create()` followed by :cpp:func:`sg_actor_start`.
+          - Directly with :cpp:func:`sg_actor_create` followed by :cpp:func:`sg_actor_start`.
           - From XML with :cpp:func:`simgrid_register_function` and then :cpp:func:`simgrid_load_deployment`.
              
        .. example-tab:: examples/python/actor-create/actor-create_d.xml
