@@ -36,7 +36,7 @@ static bool parse_cmdline(int* timings, char** platformFile, int argc, char** ar
   return parse_ok;
 }
 
-static void create_environment(xbt_os_timer_t parse_time, const std::string platformFile)
+static void create_environment(xbt_os_timer_t parse_time, const std::string& platformFile)
 {
   xbt_os_cputimer_start(parse_time);
   sg4::Engine::get_instance()->load_platform(platformFile);
