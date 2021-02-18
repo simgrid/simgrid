@@ -33,6 +33,7 @@ FULL_PATH_NAMES        = NO # Don't leak the path on which it was built
 XML_PROGRAMLISTING     = NO # No program listings, please
 CREATE_SUBDIRS         = NO # Mandatory for exhale
 AUTOLINK_SUPPORT       = NO # Don't try to link words that correspond to documented classes to their corresponding doc
+INLINE_INHERITED_MEMB  = YES # Put the content of superclasses in subclasses
 
 # Allow for rst directives and advanced functions e.g. grid tables
 ALIASES                = "beginrst=\verbatim embed:rst:leading-asterisk"
