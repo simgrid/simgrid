@@ -28,7 +28,6 @@ static void test_one_link(const std::vector<sg4::Host*> hosts)
     XBT_INFO("  Link %s: latency = %f, bandwidth = %f", link->get_cname(), link->get_latency(), bandwidth);
     if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
       min_bandwidth = bandwidth;
-
   }
   XBT_INFO("Route latency = %f, route bandwidth = %f", latency, min_bandwidth);
 }
@@ -52,7 +51,6 @@ static void test_full_link(const std::vector<sg4::Host*> hosts)
         XBT_INFO("  Link %s: latency = %f, bandwidth = %f", link->get_cname(), link->get_latency(), bandwidth);
         if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
           min_bandwidth = bandwidth;
-
       }
       XBT_INFO("  Route latency = %f, route bandwidth = %f", latency, min_bandwidth);
     }

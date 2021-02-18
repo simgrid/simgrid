@@ -7,9 +7,9 @@ User-visible changes:
    - 'verbose-exit' is now 'debug/verbose-exit'
    - 'simix/breakpoint' is now 'debug/breakpoint'
    - 'clean-atexit' is now 'debug/clean-atexit'
- - Removed all that was related to the "Storage" type in all APIs and bindings. 
+ - Removed all that was related to the "Storage" type in all APIs and bindings.
    "Disks" have been introduced more than a year ago to replace them for the better.
-   It's time to finish this replacement.  
+   It's time to finish this replacement.
 
 S4U:
  - Define new template functions Mailbox::get_unique(), returning a std::unique_ptr.

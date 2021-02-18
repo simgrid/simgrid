@@ -24,7 +24,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 #define CHECK_TARGET_DISP(num)\
   if(win->dynamic()==0)\
-    CHECK_NEGATIVE((num), MPI_ERR_RMA_RANGE, target_disp)\
+    CHECK_NEGATIVE((num), MPI_ERR_RMA_RANGE, target_disp)
+
 /* PMPI User level calls */
 
 int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){

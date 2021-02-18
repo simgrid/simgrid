@@ -911,7 +911,6 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     MC_assert(not MC_is_active()); /* Only fail in MC mode */
   }
   unref(request);
-
 }
 
 int Request::wait(MPI_Request * request, MPI_Status * status)
