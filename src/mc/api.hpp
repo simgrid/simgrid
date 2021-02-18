@@ -25,7 +25,7 @@ struct s_transition_detail {
   RemotePtr<kernel::activity::ActivityImpl> comm_remote_addr {}; // the communication this transition concerns (to be used only for isend, ireceive, wait and test)
 };
 
-typedef std::unique_ptr<s_transition_detail> transition_detail_t;
+using transition_detail_t = std::unique_ptr<s_transition_detail>;
 
 /*
 ** This class aimes to implement FACADE APIs for simgrid. The FACADE layer sits between the CheckerSide
