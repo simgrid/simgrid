@@ -85,3 +85,29 @@ $ ${bindir:=.}/ptask_L07 --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --
 > Have to send 1B between two hosts in each direction at 1Bps with a latency of 2 x 500ms + 1s.
 > Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).
 > Actual result: sending 1 byte in both directions on a 3-link route at 1Bps + 2,500ms takes 4.00 seconds.
+> 
+> 
+> TEST: 4-host parallel communication with independent transfers.
+> ------------------------------------------------------------
+> 'cpu0' sends 1B to 'cpu1' and 'cpu2' sends 1B to 'cpu3'. The only shared link is the fatpipe switch.
+> Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).
+> Actual result: sending 2 x 1 byte in a parallel communication without interference takes 3.00 seconds.
+>
+> 
+> TEST: 4-host parallel communication with scatter pattern.
+> ------------------------------------------------------------
+> 'cpu0' sends 1B to 'cpu1', 2B to 'cpu2' and 3B to 'cpu3'.
+> Should be done in 8 seconds: 2 x 500ms + 1s of initial latency and :
+>  - For 3 seconds, three flows share a link to transfer 3 x 1B. 'cpu1' received its payload
+>  - For 2 seconds, two lows share a link to transfer 1 x 1B. 'cpu2' received is payload
+>  - For 1 second, one flow has the full bandwidth to transfer 1B. 'cpu3' received is payload
+> Actual result: scattering an increasing number of bytes to 3 hosts takes 8.00 seconds.
+>
+>
+> TEST: 4-host parallel communication with all-to-all pattern.
+> ------------------------------------------------------------
+> Each host sends 1B to every other hosts.
+> Should be done in 8 seconds: 2 x 500ms + 1s of initial latency and 6 seconds for transfer
+> Each SHARED link is traversed by 6 flows (3 in and 3 out). 
+> Each 1B transfer thus takes 6 seconds on a 1Bps link
+> Actual result: 1-byte all-too-all in a parallel communication takes 8.00 seconds.

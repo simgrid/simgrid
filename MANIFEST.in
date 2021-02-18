@@ -770,12 +770,6 @@ include teshsuite/simdag/basic5/basic5.c
 include teshsuite/simdag/basic5/basic5.tesh
 include teshsuite/simdag/basic6/basic6.c
 include teshsuite/simdag/basic6/basic6.tesh
-include teshsuite/simdag/comm-mxn-all2all/comm-mxn-all2all.c
-include teshsuite/simdag/comm-mxn-all2all/comm-mxn-all2all.tesh
-include teshsuite/simdag/comm-mxn-independent/comm-mxn-independent.c
-include teshsuite/simdag/comm-mxn-independent/comm-mxn-independent.tesh
-include teshsuite/simdag/comm-mxn-scatter/comm-mxn-scatter.c
-include teshsuite/simdag/comm-mxn-scatter/comm-mxn-scatter.tesh
 include teshsuite/simdag/comm-p2p-latency-bound/comm-p2p-latency-bound.c
 include teshsuite/simdag/comm-p2p-latency-bound/comm-p2p-latency-bound.tesh
 include teshsuite/simdag/flatifier/bogus_missing_gateway.tesh
