@@ -110,6 +110,19 @@ static void main_dispatcher()
 
   sg4::this_actor::sleep_for(5);
 
+  XBT_INFO("TEST: Latency test between hosts connected by a link with large latency.");
+  XBT_INFO("------------------------------------------------------------");
+  XBT_INFO("Have to send 1B from one host to another on a link at 2Bps with a latency of 2 x 1024^2s.");
+  XBT_INFO("This latency is half the default TCP window size (4MiB). This limits the bandwidth to 1B");
+  XBT_INFO("Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfert).");
+  start_time = e->get_clock();
+  sg4::Comm::sendto_async(hosts[0], hosts[6], 1.0)->wait();
+  end_time = e->get_clock();
+  XBT_INFO("Actual result: sending 1 byte on a large latency link takes %.2f seconds.", end_time - start_time);
+  XBT_INFO("\n");
+
+  sg4::this_actor::sleep_for(5);
+
    XBT_INFO("TEST: Latency test between hosts connected by a shared link with 2 comms in same direction.");
    XBT_INFO("------------------------------------------------------------");
    XBT_INFO("Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.");

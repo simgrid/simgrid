@@ -768,8 +768,6 @@ include teshsuite/simdag/basic4/basic4.c
 include teshsuite/simdag/basic4/basic4.tesh
 include teshsuite/simdag/basic5/basic5.c
 include teshsuite/simdag/basic5/basic5.tesh
-include teshsuite/simdag/comm-p2p-latency-bound/comm-p2p-latency-bound.c
-include teshsuite/simdag/comm-p2p-latency-bound/comm-p2p-latency-bound.tesh
 include teshsuite/simdag/flatifier/bogus_missing_gateway.tesh
 include teshsuite/simdag/flatifier/bogus_two_hosts_asymetric.tesh
 include teshsuite/simdag/flatifier/flatifier.cpp
@@ -793,7 +791,6 @@ include teshsuite/simdag/platforms/one_cluster.xml
 include teshsuite/simdag/platforms/one_cluster_multicore.xml
 include teshsuite/simdag/platforms/one_cluster_router_id.xml
 include teshsuite/simdag/platforms/one_cluster_splitduplex.xml
-include teshsuite/simdag/platforms/platform_2p_1bb.xml
 include teshsuite/simdag/platforms/properties.xml
 include teshsuite/simdag/platforms/test_of_is_router.xml
 include teshsuite/simdag/platforms/three_hosts_non_symmetric_route.xml

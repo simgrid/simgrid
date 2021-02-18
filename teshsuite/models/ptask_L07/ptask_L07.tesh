@@ -50,6 +50,14 @@ $ ${bindir:=.}/ptask_L07 --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --
 > Have to send 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.
 > Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).
 > Actual result: sending 1 byte on a 3-link route at 1Bps + 2,500ms takes 3.00 seconds.
+>
+>
+> TEST: Latency test between hosts connected by a link with large latency.
+> ------------------------------------------------------------
+> Have to send 1B from one host to another on a link at 2Bps with a latency of 2 x 1024^2s.
+> This latency is half the default TCP window size (4MiB). This limits the bandwidth to 1B
+> Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfert).
+> Actual result: sending 1 byte on a large latency link takes 2097153.00 seconds.
 > 
 > 
 > TEST: Latency test between hosts connected by a shared link with 2 comms in same direction.
