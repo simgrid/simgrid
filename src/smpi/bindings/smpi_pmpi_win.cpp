@@ -21,6 +21,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
   CHECK_NEGATIVE(4, MPI_ERR_RANK, target_rank)\
   CHECK_COUNT(6, target_count)\
   CHECK_TYPE(7, target_datatype)
+
+#define CHECK_TARGET_DISP(num)\
+  if(win->dynamic()==0)\
+    CHECK_NEGATIVE((num), MPI_ERR_RMA_RANGE, target_disp)\
 /* PMPI User level calls */
 
 int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
@@ -160,26 +164,23 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
   CHECK_RMA
   CHECK_WIN(8, win)
+  CHECK_TARGET_DISP(5)
 
   int retval = 0;
   smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Get", target_rank, origin_datatype->is_replayable()
-                                                                               ? origin_count
-                                                                               : origin_count * origin_datatype->size(),
-                                                       simgrid::smpi::Datatype::encode(origin_datatype)));
 
-    retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                           target_datatype);
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData("Get", target_rank, origin_datatype->is_replayable()
+                                                                             ? origin_count
+                                                                             : origin_count * origin_datatype->size(),
+                                                     simgrid::smpi::Datatype::encode(origin_datatype)));
+   retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                         target_datatype);
+  TRACE_smpi_comm_out(my_proc_id);
+ 
   smpi_bench_begin();
   return retval;
 }
@@ -190,28 +191,26 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
     *request = MPI_REQUEST_NULL;
   CHECK_RMA
   CHECK_WIN(8, win)
+  CHECK_TARGET_DISP(5)
   CHECK_NULL(9, MPI_ERR_ARG, request)
 
   int retval = 0;
   smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData(
-                           "Rget", target_rank,
-                           origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
-                           simgrid::smpi::Datatype::encode(origin_datatype)));
 
-    retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                           target_datatype, request);
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData(
+                         "Rget", target_rank,
+                         origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
+                         simgrid::smpi::Datatype::encode(origin_datatype)));
 
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                         target_datatype, request);
+
+  TRACE_smpi_comm_out(my_proc_id);
+
   smpi_bench_begin();
   return retval;
 }
@@ -220,29 +219,27 @@ int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
   CHECK_RMA
   CHECK_WIN(8, win)
+  CHECK_TARGET_DISP(5)
 
   int retval = 0;
   smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    int dst_traced = group->actor(target_rank)->get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Put", target_rank, origin_datatype->is_replayable()
-                                                                               ? origin_count
-                                                                               : origin_count * origin_datatype->size(),
-                                                       simgrid::smpi::Datatype::encode(origin_datatype)));
-    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, SMPI_RMA_TAG, origin_count * origin_datatype->size());
 
-    retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                           target_datatype);
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  int dst_traced = group->actor(target_rank)->get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData("Put", target_rank, origin_datatype->is_replayable()
+                                                                             ? origin_count
+                                                                             : origin_count * origin_datatype->size(),
+                                                     simgrid::smpi::Datatype::encode(origin_datatype)));
+  TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, SMPI_RMA_TAG, origin_count * origin_datatype->size());
 
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                         target_datatype);
+
+  TRACE_smpi_comm_out(my_proc_id);
+
   smpi_bench_begin();
   return retval;
 }
@@ -253,29 +250,27 @@ int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_dat
     *request = MPI_REQUEST_NULL;
   CHECK_RMA
   CHECK_WIN(8, win)
+  CHECK_TARGET_DISP(5)
   CHECK_NULL(9, MPI_ERR_ARG, request)
   int retval = 0;
   smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    int dst_traced = group->actor(target_rank)->get_pid();
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData(
-                           "Rput", target_rank,
-                           origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
-                           simgrid::smpi::Datatype::encode(origin_datatype)));
-    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, SMPI_RMA_TAG, origin_count * origin_datatype->size());
 
-    retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                           target_datatype, request);
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  int dst_traced = group->actor(target_rank)->get_pid();
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData(
+                         "Rput", target_rank,
+                         origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
+                         simgrid::smpi::Datatype::encode(origin_datatype)));
+  TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, SMPI_RMA_TAG, origin_count * origin_datatype->size());
 
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                         target_datatype, request);
+
+  TRACE_smpi_comm_out(my_proc_id);
+
   smpi_bench_begin();
   return retval;
 }
@@ -285,26 +280,24 @@ int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   CHECK_RMA
   CHECK_OP(8)
   CHECK_WIN(9, win)
+  CHECK_TARGET_DISP(5)
 
   int retval = 0;
-  smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData(
-                           "Accumulate", target_rank,
-                           origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
-                           simgrid::smpi::Datatype::encode(origin_datatype)));
-    retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                                  target_datatype, op);
 
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  smpi_bench_end();
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData(
+                         "Accumulate", target_rank,
+                         origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
+                         simgrid::smpi::Datatype::encode(origin_datatype)));
+  retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                                target_datatype, op);
+
+  TRACE_smpi_comm_out(my_proc_id);
+
   smpi_bench_begin();
   return retval;
 }
@@ -316,28 +309,27 @@ int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype ori
   CHECK_RMA
   CHECK_OP(8)
   CHECK_WIN(9, win)
+  CHECK_TARGET_DISP(5)
   CHECK_NULL(10, MPI_ERR_ARG, request)
 
   int retval = 0;
+
   smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData(
-                           "Raccumulate", target_rank,
-                           origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
-                           simgrid::smpi::Datatype::encode(origin_datatype)));
 
-    retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
-                                  target_datatype, op, request);
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData(
+                         "Raccumulate", target_rank,
+                         origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
+                         simgrid::smpi::Datatype::encode(origin_datatype)));
 
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
+                                target_datatype, op, request);
+
+  TRACE_smpi_comm_out(my_proc_id);
+
   smpi_bench_begin();
   return retval;
 }
@@ -359,27 +351,26 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   CHECK_TYPE(10, target_datatype)
   CHECK_OP(11)
   CHECK_WIN(12, win)
+  CHECK_TARGET_DISP(8)
+
   int retval = 0;
   smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData(
-                           "Get_accumulate", target_rank,
-                           target_datatype->is_replayable() ? target_count : target_count * target_datatype->size(),
-                           simgrid::smpi::Datatype::encode(target_datatype)));
 
-    retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
-                                  result_count, result_datatype, target_rank, target_disp,
-                                  target_count, target_datatype, op);
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData(
+                         "Get_accumulate", target_rank,
+                         target_datatype->is_replayable() ? target_count : target_count * target_datatype->size(),
+                         simgrid::smpi::Datatype::encode(target_datatype)));
 
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
+                                result_count, result_datatype, target_rank, target_disp,
+                                target_count, target_datatype, op);
+
+  TRACE_smpi_comm_out(my_proc_id);
+
   smpi_bench_begin();
   return retval;
 }
@@ -402,28 +393,26 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   CHECK_TYPE(10, target_datatype)
   CHECK_OP(11)
   CHECK_WIN(12, win)
+  CHECK_TARGET_DISP(8)
   CHECK_NULL(10, MPI_ERR_ARG, request)
   int retval = 0;
   smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData(
-                           "Rget_accumulate", target_rank,
-                           target_datatype->is_replayable() ? target_count : target_count * target_datatype->size(),
-                           simgrid::smpi::Datatype::encode(target_datatype)));
 
-    retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
-                                  result_count, result_datatype, target_rank, target_disp,
-                                  target_count, target_datatype, op, request);
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData(
+                         "Rget_accumulate", target_rank,
+                         target_datatype->is_replayable() ? target_count : target_count * target_datatype->size(),
+                         simgrid::smpi::Datatype::encode(target_datatype)));
 
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
+                                result_count, result_datatype, target_rank, target_disp,
+                                target_count, target_datatype, op, request);
+
+  TRACE_smpi_comm_out(my_proc_id);
+
   smpi_bench_begin();
   return retval;
 }
@@ -442,24 +431,24 @@ int PMPI_Compare_and_swap(const void* origin_addr, void* compare_addr, void* res
   CHECK_PROC(5, target_rank)
   CHECK_NEGATIVE(5, MPI_ERR_RANK, target_rank)
   CHECK_WIN(6, win)
+  CHECK_TARGET_DISP(6)
+
   int retval = 0;
+
   smpi_bench_end();
-  if (win->dynamic()==0 && target_disp <0){
-    //in case of dynamic window, target_disp can be mistakenly seen as negative, as it is an address
-    retval = MPI_ERR_ARG;
-  } else {
-    int my_proc_id = simgrid::s4u::this_actor::get_pid();
-    MPI_Group group;
-    win->get_group(&group);
-    TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Compare_and_swap", target_rank,
-                                                       datatype->is_replayable() ? 1 : datatype->size(),
-                                                       simgrid::smpi::Datatype::encode(datatype)));
 
-    retval = win->compare_and_swap(origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp);
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  MPI_Group group;
+  win->get_group(&group);
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                     new simgrid::instr::Pt2PtTIData("Compare_and_swap", target_rank,
+                                                     datatype->is_replayable() ? 1 : datatype->size(),
+                                                     simgrid::smpi::Datatype::encode(datatype)));
 
-    TRACE_smpi_comm_out(my_proc_id);
-  }
+  retval = win->compare_and_swap(origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp);
+
+  TRACE_smpi_comm_out(my_proc_id);
+
   smpi_bench_begin();
   return retval;
 }
