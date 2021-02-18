@@ -48,8 +48,10 @@ int reduce_scatter__default(const void *sendbuf, void *recvbuf, const int *recvc
     displs[i] = count;
     count += recvcounts[i];
   }
-  if(not regular)
+  if(not regular){
+    delete[] displs;
     return reduce_scatter__ompi(sendbuf, recvbuf, recvcounts, datatype, op, comm);
+  }
 
   unsigned char* tmpbuf = smpi_get_tmp_sendbuffer(count * datatype->get_extent());
 
