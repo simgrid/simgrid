@@ -279,9 +279,9 @@ static void main_dispatcher()
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine engine(&argc, argv);
+  sg4::Engine engine(&argc, argv);
   engine.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("dispatcher", simgrid::s4u::Host::by_name("cpu0"), main_dispatcher);
+  sg4::Actor::create("dispatcher", sg4::Host::by_name("cpu0"), main_dispatcher);
   engine.run();
 
   return 0;

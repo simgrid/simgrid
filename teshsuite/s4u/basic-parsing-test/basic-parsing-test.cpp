@@ -59,13 +59,13 @@ static void test_full_link(const std::vector<sg4::Host*> hosts)
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   /* creation of the environment */
   e.load_platform(argv[1]);
   XBT_INFO("Workstation number: %zu, link number: %zu", e.get_host_count(), e.get_link_count());
 
-  std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
+  std::vector<sg4::Host*> hosts = e.get_all_hosts();
   if (argc >= 3) {
     if (!strcmp(argv[2], "ONE_LINK"))
       test_one_link(hosts);
