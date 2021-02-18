@@ -44,11 +44,7 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link_splitduplex.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/Dijkstra.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1bb.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1fl.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1sl.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1sl_hetero.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1switch.xml          PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1bb.xml              PARENT_SCOPE)
 set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/carol.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bob.trace
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/erin.avail
