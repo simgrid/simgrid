@@ -31,7 +31,6 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_splitduplex.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_router_id.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_4p_1switch.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/properties.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/test_of_is_router.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/three_hosts_non_symmetric_route.xml

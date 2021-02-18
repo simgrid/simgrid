@@ -794,7 +794,6 @@ include teshsuite/simdag/platforms/one_cluster_multicore.xml
 include teshsuite/simdag/platforms/one_cluster_router_id.xml
 include teshsuite/simdag/platforms/one_cluster_splitduplex.xml
 include teshsuite/simdag/platforms/platform_2p_1bb.xml
-include teshsuite/simdag/platforms/platform_4p_1switch.xml
 include teshsuite/simdag/platforms/properties.xml
 include teshsuite/simdag/platforms/test_of_is_router.xml
 include teshsuite/simdag/platforms/three_hosts_non_symmetric_route.xml
