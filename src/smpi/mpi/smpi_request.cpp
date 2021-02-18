@@ -118,7 +118,7 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
       receiver->real_src_ = sender->src_;
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
-    if (receiver->real_size_ < sender->real_size_){
+    if (receiver->real_size_ < sender->real_size_ && ((receiver->flags_ & MPI_REQ_PROBE) == 0 )){
       XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_, sender->real_size_);
       receiver->truncated_ = true;
     }
@@ -765,7 +765,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   double maxrate      = smpi_cfg_iprobe_cpu_usage();
   auto request        = new Request(nullptr, 0, MPI_CHAR,
                              source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
-                             simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV);
+                             simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV | MPI_REQ_PROBE);
   if (smpi_iprobe_sleep > 0) {
     /** Compute the number of flops we will sleep **/
     s4u::this_actor::exec_init(/*nsleeps: See comment above */ nsleeps *
