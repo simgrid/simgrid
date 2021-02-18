@@ -14,7 +14,7 @@ namespace sg4 = simgrid::s4u;
 /* We need a separate actor so that it can sleep after each test */
 static void main_dispatcher()
 {
-  sg4::Engine* e = sg4::Engine::get_instance();
+  const sg4::Engine* e = sg4::Engine::get_instance();
   double start_time;
   double end_time;
   std::vector<sg4::Host*> hosts = e->get_all_hosts();
