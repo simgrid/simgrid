@@ -119,6 +119,7 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
     if (receiver->real_size_ < sender->real_size_){
+      XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_, sender->real_size_);
       receiver->truncated_ = true;
     }
     if (sender->detached_)
