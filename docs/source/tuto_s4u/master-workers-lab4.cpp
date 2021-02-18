@@ -56,7 +56,7 @@ static void master(std::vector<std::string> args)
   }
 
   int task_id = 0;
-  while (e->get_clock() < simulation_duration) { /* For each task: */
+  while (simgrid::s4u::Engine::get_clock() < simulation_duration) { /* For each task: */
     /* - Select a worker in a round-robin way */
     aid_t worker_pid                 = actors.at(task_id % actors.size())->get_pid();
     std::string mailbox_name         = std::string("worker-") + std::to_string(worker_pid);

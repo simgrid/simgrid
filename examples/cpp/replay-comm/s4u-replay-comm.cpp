@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 
   simgrid::xbt::action_fs = nullptr;
 
-  XBT_INFO("Simulation time %g", e.get_clock());
+  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }
