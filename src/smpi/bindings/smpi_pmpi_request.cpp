@@ -427,8 +427,8 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
     int src_traced         = getPid(comm, src);
 
     // FIXME: Hack the way to trace this one
-    auto* dst_hack = new std::vector<int>();
-    auto* src_hack = new std::vector<int>();
+    auto dst_hack = std::make_shared<std::vector<int>>();
+    auto src_hack = std::make_shared<std::vector<int>>();
     dst_hack->push_back(dst_traced);
     src_hack->push_back(src_traced);
     TRACE_smpi_comm_in(my_proc_id, __func__,

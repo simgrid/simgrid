@@ -187,7 +187,7 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   int rank         = simgrid::s4u::this_actor::get_pid();
   int dt_size_recv = recvtype->is_replayable() ? 1 : recvtype->size();
 
-  auto* trace_recvcounts = new std::vector<int>();
+  auto trace_recvcounts = std::make_shared<std::vector<int>>();
   if (comm->rank() == root) {
     for (int i = 0; i < comm->size(); i++) // copy data to avoid bad free
       trace_recvcounts->push_back(recvcounts[i] * dt_size_recv);
@@ -293,7 +293,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   int rank         = simgrid::s4u::this_actor::get_pid();
   int dt_size_recv = recvtype->is_replayable() ? 1 : recvtype->size();
 
-  auto* trace_recvcounts = new std::vector<int>();
+  auto trace_recvcounts = std::make_shared<std::vector<int>>();
   for (int i = 0; i < comm->size(); i++) { // copy data to avoid bad free
     trace_recvcounts->push_back(recvcounts[i] * dt_size_recv);
   }
@@ -402,7 +402,7 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
   int rank         = simgrid::s4u::this_actor::get_pid();
   int dt_size_send = sendtype->is_replayable() ? 1 : sendtype->size();
 
-  auto* trace_sendcounts = new std::vector<int>();
+  auto trace_sendcounts = std::make_shared<std::vector<int>>();
   if (comm->rank() == root) {
     for (int i = 0; i < comm->size(); i++) { // copy data to avoid bad free
       trace_sendcounts->push_back(sendcounts[i] * dt_size_send);
@@ -601,7 +601,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
 
   smpi_bench_end();
   int rank                           = simgrid::s4u::this_actor::get_pid();
-  auto* trace_recvcounts             = new std::vector<int>();
+  auto trace_recvcounts              = std::make_shared<std::vector<int>>();
   int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
   int totalcount                     = 0;
 
@@ -649,7 +649,7 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
 
   int rank                           = simgrid::s4u::this_actor::get_pid();
   int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
-  auto* trace_recvcounts             = new std::vector<int>(recvcount * dt_send_size); // copy data to avoid bad free
+  auto trace_recvcounts = std::make_shared<std::vector<int>>(recvcount * dt_send_size); // copy data to avoid bad free
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, recvcount * count, datatype);
 
@@ -763,8 +763,8 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   smpi_bench_end();
   int send_size                      = 0;
   int recv_size                      = 0;
-  auto* trace_sendcounts             = new std::vector<int>();
-  auto* trace_recvcounts             = new std::vector<int>();
+  auto trace_sendcounts              = std::make_shared<std::vector<int>>();
+  auto trace_recvcounts              = std::make_shared<std::vector<int>>();
   int dt_size_recv                   = recvtype->size();
 
   const int* real_sendcounts = sendcounts;
@@ -858,19 +858,16 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
 
   int send_size                      = 0;
   int recv_size                      = 0;
-  auto* trace_sendcounts             = new std::vector<int>();
-  auto* trace_recvcounts             = new std::vector<int>();
+  auto trace_sendcounts              = std::make_shared<std::vector<int>>();
+  auto trace_recvcounts              = std::make_shared<std::vector<int>>();
 
   const int* real_sendcounts         = sendcounts;
   const int* real_senddispls          = senddispls;
   const MPI_Datatype* real_sendtypes = sendtypes;
   unsigned long maxsize      = 0;
   for (int i = 0; i < size; i++) { // copy data to avoid bad free
-    if (recvtypes[i] == MPI_DATATYPE_NULL) {
-      delete trace_recvcounts;
-      delete trace_sendcounts;
+    if (recvtypes[i] == MPI_DATATYPE_NULL)
       return MPI_ERR_TYPE;
-    }
     recv_size += recvcounts[i] * recvtypes[i]->size();
     trace_recvcounts->push_back(recvcounts[i] * recvtypes[i]->size());
     if ((recvdispls[i] + (recvcounts[i] * recvtypes[i]->size())) > maxsize)

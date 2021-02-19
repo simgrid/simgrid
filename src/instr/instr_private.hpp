@@ -84,11 +84,6 @@ public:
       , send_type(send_type)
       , recv_type(recv_type){};
   // VarCollTI: gatherv, scatterv, allgatherv, alltoallv (+ reducescatter out of laziness)
-  explicit TIData(const std::string& name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
-                  std::vector<int>* recvcounts, const std::string& send_type, const std::string& recv_type)
-      : TIData(name, root, send_size, std::shared_ptr<std::vector<int>>(sendcounts), recv_size,
-               std::shared_ptr<std::vector<int>>(recvcounts), send_type, recv_type){};
-
   explicit TIData(const std::string& name, int root, int send_size, std::shared_ptr<std::vector<int>> sendcounts,
                   int recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
                   const std::string& recv_type)
@@ -171,10 +166,6 @@ public:
 
 class VarCollTIData : public TIData {
 public:
-  explicit VarCollTIData(const std::string& name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
-                         std::vector<int>* recvcounts, const std::string& send_type, const std::string& recv_type)
-      : TIData(name, root, send_size, sendcounts, recv_size, recvcounts, send_type, recv_type){};
-
   explicit VarCollTIData(const std::string& name, int root, int send_size, std::shared_ptr<std::vector<int>> sendcounts,
                          int recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
                          const std::string& recv_type)
