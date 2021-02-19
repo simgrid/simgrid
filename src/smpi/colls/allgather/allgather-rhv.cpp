@@ -45,7 +45,7 @@ allgather__rhv(const void *sbuf, int send_count,
   recv_chunk = r_extent * recv_count;
 
   if (send_chunk != recv_chunk) {
-    XBT_WARN("MPI_allgather_rhv use default MPI_allgather.");
+    XBT_INFO("MPI_allgather_rhv: send_chunk != recv_chunk, use default MPI_allgather.");
     allgather__default(sbuf, send_count, send_type, rbuf, recv_count,
                        recv_type, comm);
     return MPI_SUCCESS;

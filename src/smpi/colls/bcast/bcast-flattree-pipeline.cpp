@@ -24,7 +24,7 @@ int bcast__flattree_pipeline(void *buff, int count,
   int pipe_length = count / segment;
   int increment = segment * extent;
   if (pipe_length==0) {
-    XBT_WARN("MPI_bcast_flattree_pipeline use default MPI_bcast_flattree.");
+    XBT_INFO("MPI_bcast_flattree_pipeline: pipe_length=0, use default MPI_bcast_flattree.");
     return bcast__flattree(buff, count, data_type, root, comm);
   }
   rank = comm->rank();

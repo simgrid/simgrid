@@ -26,9 +26,8 @@ allgather__NTSLR_NB(const void *sbuf, int scount, MPI_Datatype stype,
   rextent = rtype->get_extent();
   sextent = stype->get_extent();
 
-  // irregular case use default MPI functions
   if (scount * sextent != rcount * rextent) {
-    XBT_WARN("MPI_allgather_NTSLR_NB use default MPI_allgather.");
+    XBT_INFO("MPI_allgather_NTSLR_NB: irregular case, use default MPI_allgather.");
     allgather__default(sbuf, scount, stype, rbuf, rcount, rtype, comm);
     return MPI_SUCCESS;
   }

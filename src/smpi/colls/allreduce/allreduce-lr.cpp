@@ -36,9 +36,8 @@ int allreduce__lr(const void *sbuf, void *rbuf, int rcount,
   MPI_Aint extent;
   extent = dtype->get_extent();
 
-  /* when communication size is smaller than number of process (not support) */
   if (rcount < size) {
-    XBT_WARN("MPI_allreduce_lr use default MPI_allreduce.");
+    XBT_INFO("MPI_allreduce_lr: communication size smaller than number of process, use default MPI_allreduce.");
     allreduce__default(sbuf, rbuf, rcount, dtype, op, comm);
     return MPI_SUCCESS;
   }

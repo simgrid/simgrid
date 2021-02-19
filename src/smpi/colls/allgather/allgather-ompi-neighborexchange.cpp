@@ -87,8 +87,8 @@ allgather__ompi_neighborexchange(const void *sbuf, int scount,
    rank = comm->rank();
 
    if (size % 2) {
-      XBT_DEBUG(
-                   "coll:tuned:allgather_intra_neighborexchange WARNING: odd size %d, switching to ring algorithm",
+      XBT_INFO(
+                   "coll:tuned:allgather_intra_neighborexchange: odd size %d, switching to ring algorithm",
                    size);
       return allgather__ring(sbuf, scount, sdtype,
                              rbuf, rcount, rdtype,

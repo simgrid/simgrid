@@ -348,9 +348,8 @@ int bcast__arrival_pattern_aware(void *buf, int count,
     delete[] recv_status_array;
   }                             /* end pipeline */
 
-  /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    XBT_WARN("MPI_bcast_arrival_pattern_aware use default MPI_bcast.");
+    XBT_INFO("MPI_bcast_arrival_pattern_aware:  count is not divisible by block size, use default MPI_bcast for remainder.");
     colls::bcast((char*)buf + (pipe_length * increment), remainder, datatype, root, comm);
   }
 

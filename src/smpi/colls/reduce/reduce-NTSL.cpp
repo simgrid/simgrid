@@ -130,9 +130,8 @@ int reduce__NTSL(const void *buf, void *rbuf, int count,
     delete[] recv_status_array;
   }                             /* end pipeline */
 
-  /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    XBT_WARN("MPI_reduce_NTSL use default MPI_reduce.");
+    XBT_INFO("MPI_reduce_NTSL: count is not divisible by block size, use default MPI_reduce for remainder.");
     reduce__default((char *)buf + (pipe_length * increment),
                     (char *)rbuf + (pipe_length * increment), remainder, datatype, op, root,
                     comm);
