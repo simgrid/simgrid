@@ -647,9 +647,10 @@ void SMPI_finalize()
                   simgrid::smpi::F2C::lookup()->end(),
                   [n](const std::pair<unsigned int, simgrid::smpi::F2C*> &p) {
                       static int printed = 0;
-                      if(p.first >= simgrid::smpi::F2C::get_num_default_handles() && printed < n)
+                      if(p.first >= simgrid::smpi::F2C::get_num_default_handles() && printed < n){
                         XBT_WARN ("Leak %p of type %s", p.second, boost::core::demangle(typeid(*(p.second)).name()).c_str() );
                         printed++;
+                      }
                   });
       }
     }
