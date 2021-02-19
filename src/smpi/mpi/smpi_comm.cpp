@@ -35,7 +35,7 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, bool smp, int in_id)
   //First creation of comm is done before SIMIX_run, so only do comms for others
   if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
     this->add_f();
-    group->add_f();
+    group->c2f();
     int id;
     if(this->rank()==0){
       static int global_id_ = 0;
