@@ -192,7 +192,7 @@ SMPI:
    allocations' size above which they are considered "shared" by default (as if
    they were performed through SMPI_SHARED_MALLOC macros).
    Default = 0 = disabled feature.
-   Note : malloc, calloc and free are now overriden by smpicc/cxx by default.
+   Note : malloc, calloc and free are now overridden by smpicc/cxx by default.
    This can cause some troubles if codes are already overriding these. If this
    is the case, defining SMPI_NO_OVERRIDE_MALLOC in the compilation flags can
    help, but will make this feature unusable.
