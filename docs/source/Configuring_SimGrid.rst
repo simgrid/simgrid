@@ -168,6 +168,7 @@ Existing Configuration Items
 - **smpi/simulate-computation:** :ref:`cfg=smpi/simulate-computation`
 - **smpi/test:** :ref:`cfg=smpi/test`
 - **smpi/wtime:** :ref:`cfg=smpi/wtime`
+- **smpi/list-leaks** :ref:`cfg=smpi/list-leaks`
 
 - **Tracing configuration options** can be found in Section :ref:`tracing_tracing_options`
 
@@ -1467,6 +1468,16 @@ will slow down your simulations by a tiny bit: the simulation loop has
 to be broken out of and reset each time your code asks for the current time.
 If the simulation speed really matters to you, you can avoid this
 extra delay by setting smpi/wtime to 0.
+
+.. _cfg=smpi/list-leaks:
+
+Report leaked MPI objects
+.........................
+
+**Option** ``smpi/list-leaks`` **default:** 0
+
+This option controls whether to report leaked MPI objects.
+The parameter is the number of leaks to report.
 
 Other Configurations
 --------------------
