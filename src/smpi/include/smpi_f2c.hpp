@@ -34,10 +34,9 @@ public:
   F2C();
   virtual ~F2C() = default;
 
-  // Override these to handle specific values.
-  virtual int add_f();
+  int add_f();
   static void free_f(int id) { f2c_lookup_->erase(id); }
-  virtual int c2f();
+  int c2f();
   static void print_f2c_lookup();
   // This method should be overridden in all subclasses to avoid casting the result when calling it.
   // For the default one, the MPI_*_NULL returned is assumed to be NULL.
