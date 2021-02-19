@@ -25,7 +25,7 @@ void mpi_comm_dup_(int* comm, int* newcomm, int* ierr) {
 
   *ierr = MPI_Comm_dup(simgrid::smpi::Comm::f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = tmp->add_f();
+    *newcomm = tmp->c2f();
   }
 }
 
@@ -33,7 +33,7 @@ void mpi_comm_create_(int* comm, int* group, int* newcomm, int* ierr) {
   MPI_Comm tmp;
   *ierr = MPI_Comm_create(simgrid::smpi::Comm::f2c(*comm),simgrid::smpi::Group::f2c(*group), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = tmp->add_f();
+    *newcomm = tmp->c2f();
   }
 }
 
@@ -51,7 +51,7 @@ void mpi_comm_split_(int* comm, int* color, int* key, int* comm_out, int* ierr) 
 
   *ierr = MPI_Comm_split(simgrid::smpi::Comm::f2c(*comm), *color, *key, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *comm_out = tmp->add_f();
+    *comm_out = tmp->c2f();
   }
 }
 
@@ -156,7 +156,7 @@ void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr){
   MPI_Comm tmp;
   *ierr = MPI_Comm_dup_with_info(simgrid::smpi::Comm::f2c(*comm), simgrid::smpi::Info::f2c(*info),&tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = tmp->add_f();
+    *newcomm = tmp->c2f();
   }
 }
 
@@ -164,7 +164,7 @@ void mpi_comm_split_type_ (int* comm, int* split_type, int* key, int* info, int*
   MPI_Comm tmp;
   *ierr = MPI_Comm_split_type(simgrid::smpi::Comm::f2c(*comm), *split_type, *key, simgrid::smpi::Info::f2c(*info), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = tmp->add_f();
+    *newcomm = tmp->c2f();
   }
 }
 
@@ -196,7 +196,7 @@ void mpi_comm_connect_ ( char *port_name, int* info, int* root, int* comm, int*n
   MPI_Comm tmp;
   *ierr = MPI_Comm_connect( port_name, simgrid::smpi::Info::f2c(*info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = tmp->add_f();
+    *newcomm = tmp->c2f();
   }
 }
 
@@ -204,7 +204,7 @@ void mpi_comm_join_ ( int* fd, int* intercomm, int* ierr){
   MPI_Comm tmp;
   *ierr = MPI_Comm_join( *fd, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *intercomm = tmp->add_f();
+    *intercomm = tmp->c2f();
   }
 }
 
@@ -213,7 +213,7 @@ void mpi_comm_accept_ ( char *port_name, int* info, int* root, int* comm, int*ne
   MPI_Comm tmp;
   *ierr = MPI_Comm_accept( port_name, simgrid::smpi::Info::f2c(*info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newcomm = tmp->add_f();
+    *newcomm = tmp->c2f();
   }
 }
 
@@ -223,7 +223,7 @@ void mpi_comm_spawn_ ( char *command, char *argv, int* maxprocs, int* info, int*
   *ierr = MPI_Comm_spawn( command, &argv, *maxprocs, simgrid::smpi::Info::f2c(*info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp,
                           array_of_errcodes);
   if(*ierr == MPI_SUCCESS) {
-    *intercomm = tmp->add_f();
+    *intercomm = tmp->c2f();
   }
 }
 
@@ -234,7 +234,7 @@ void mpi_comm_spawn_multiple_ ( int* count, char *array_of_commands, char** arra
  *ierr = MPI_Comm_spawn_multiple(* count, &array_of_commands, &array_of_argv, array_of_maxprocs,
  reinterpret_cast<MPI_Info*>(array_of_info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp, array_of_errcodes);
  if(*ierr == MPI_SUCCESS) {
-   *intercomm = tmp->add_f();
+   *intercomm = tmp->c2f();
  }
 }
 

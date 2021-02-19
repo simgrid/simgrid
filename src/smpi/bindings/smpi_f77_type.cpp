@@ -40,7 +40,7 @@ void mpi_type_dup_ (int*  datatype, int* newdatatype, int* ierr){
  MPI_Datatype tmp;
  *ierr = MPI_Type_dup(simgrid::smpi::Datatype::f2c(*datatype), &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newdatatype = tmp->add_f();
+   *newdatatype = tmp->c2f();
  }
 }
 
@@ -102,7 +102,7 @@ void mpi_type_contiguous_ (int* count, int* old_type, int*  newtype, int* ierr) 
   MPI_Datatype tmp;
   *ierr = MPI_Type_contiguous(*count, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -110,7 +110,7 @@ void mpi_type_vector_(int* count, int* blocklen, int* stride, int* old_type, int
   MPI_Datatype tmp;
   *ierr= MPI_Type_vector(*count, *blocklen, *stride, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -118,7 +118,7 @@ void mpi_type_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* old_typ
   MPI_Datatype tmp;
   *ierr= MPI_Type_hvector (*count, *blocklen, *stride, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -126,7 +126,7 @@ void mpi_type_create_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* 
   MPI_Datatype tmp;
   *ierr= MPI_Type_hvector(*count, *blocklen, *stride, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -137,7 +137,7 @@ void mpi_type_hindexed_ (int* count, int* blocklens, int* indices, int* old_type
     indices_aint[i]=indices[i];
   *ierr = MPI_Type_hindexed(*count, blocklens, indices_aint.data(), simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -145,7 +145,7 @@ void mpi_type_create_hindexed_(int* count, int* blocklens, MPI_Aint* indices, in
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_hindexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -154,7 +154,7 @@ void mpi_type_create_hindexed_block_ (int* count, int* blocklength, MPI_Aint* in
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_hindexed_block(*count, *blocklength, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -162,7 +162,7 @@ void mpi_type_indexed_ (int* count, int* blocklens, int* indices, int* old_type,
   MPI_Datatype tmp;
   *ierr = MPI_Type_indexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -170,7 +170,7 @@ void mpi_type_create_indexed_(int* count, int* blocklens, int* indices, int* old
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_indexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -179,7 +179,7 @@ void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_indexed_block(*count, *blocklength, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -193,7 +193,7 @@ void mpi_type_struct_ (int* count, int* blocklens, int* indices, int* old_types,
   }
   *ierr = MPI_Type_struct(*count, blocklens, indices_aint.data(), types.data(), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -205,7 +205,7 @@ void mpi_type_create_struct_(int* count, int* blocklens, MPI_Aint* indices, int*
   }
   *ierr = MPI_Type_create_struct(*count, blocklens, indices, types.data(), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -254,7 +254,7 @@ void mpi_type_create_darray_ (int* size, int* rank, int* ndims, int* array_of_gs
   array_of_distribs,  array_of_dargs,  array_of_psizes,
   *order,  simgrid::smpi::Datatype::f2c(*oldtype), &tmp) ;
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -262,7 +262,7 @@ void mpi_type_create_resized_ (int* oldtype,MPI_Aint* lb, MPI_Aint* extent, int*
   MPI_Datatype tmp;
   *ierr = MPI_Type_create_resized(simgrid::smpi::Datatype::f2c(*oldtype),*lb, *extent, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 
@@ -272,7 +272,7 @@ void mpi_type_create_subarray_ (int* ndims,int *array_of_sizes, int *array_of_su
   *ierr = MPI_Type_create_subarray(*ndims,array_of_sizes, array_of_subsizes, array_of_starts, *order,
                                    simgrid::smpi::Datatype::f2c(*oldtype), &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *newtype = tmp->add_f();
+    *newtype = tmp->c2f();
   }
 }
 

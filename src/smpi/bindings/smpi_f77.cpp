@@ -160,9 +160,6 @@ void mpi_win_free_(int* win, int* ierr)
 {
   MPI_Win tmp = simgrid::smpi::Win::f2c(*win);
   *ierr =  MPI_Win_free(&tmp);
-  if(*ierr == MPI_SUCCESS) {
-    simgrid::smpi::F2C::free_f(*win);
-  }
 }
 
 void mpi_win_create_(int* base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int* win, int* ierr)
@@ -170,7 +167,7 @@ void mpi_win_create_(int* base, MPI_Aint* size, int* disp_unit, int* info, int* 
   MPI_Win tmp;
   *ierr =  MPI_Win_create( static_cast<void*>(base), *size, *disp_unit, simgrid::smpi::Info::f2c(*info), simgrid::smpi::Comm::f2c(*comm),&tmp);
   if (*ierr == MPI_SUCCESS) {
-    *win = tmp->add_f();
+    *win = tmp->c2f();
   }
 }
 
@@ -220,7 +217,7 @@ void mpi_win_allocate_(MPI_Aint* size, int* disp_unit, int* info, int* comm, voi
   *ierr =
       MPI_Win_allocate(*size, *disp_unit, simgrid::smpi::Info::f2c(*info), simgrid::smpi::Comm::f2c(*comm), base, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *win = tmp->add_f();
+   *win = tmp->c2f();
  }
 }
 
@@ -234,7 +231,7 @@ void mpi_win_create_dynamic_(int* info, int* comm, int* win, int* ierr)
   MPI_Win tmp;
   *ierr =  MPI_Win_create_dynamic( simgrid::smpi::Info::f2c(*info), simgrid::smpi::Comm::f2c(*comm),&tmp);
  if(*ierr == MPI_SUCCESS) {
-   *win = tmp->add_f();
+   *win = tmp->c2f();
  }
 }
 
@@ -253,7 +250,7 @@ void mpi_win_get_info_(int* win, int* info, int* ierr)
   MPI_Info tmp;
   *ierr =  MPI_Win_get_info(simgrid::smpi::Win::f2c(*win), &tmp);
   if (*ierr == MPI_SUCCESS) {
-    *info = tmp->add_f();
+    *info = tmp->c2f();
   }
 }
 
@@ -262,7 +259,7 @@ void mpi_win_get_group_(int* win, int* group, int* ierr)
   MPI_Group tmp;
   *ierr =  MPI_Win_get_group(simgrid::smpi::Win::f2c(*win), &tmp);
   if (*ierr == MPI_SUCCESS) {
-    *group = tmp->add_f();
+    *group = tmp->c2f();
   }
 }
 
@@ -358,7 +355,7 @@ void mpi_info_create_(int* info, int* ierr)
   MPI_Info tmp;
   *ierr =  MPI_Info_create(&tmp);
   if(*ierr == MPI_SUCCESS) {
-    *info = tmp->add_f();
+    *info = tmp->c2f();
   }
 }
 
@@ -428,7 +425,7 @@ void mpi_rget_(int* origin_addr, int* origin_count, int* origin_datatype, int* t
   *ierr =  MPI_Rget( static_cast<void*>(origin_addr),*origin_count, simgrid::smpi::Datatype::f2c(*origin_datatype),*target_rank,
       *target_disp, *target_count, simgrid::smpi::Datatype::f2c(*tarsmpi_type_f2c), simgrid::smpi::Win::f2c(*win), &req);
   if(*ierr == MPI_SUCCESS) {
-    *request = req->add_f();
+    *request = req->c2f();
   }
 }
 
@@ -447,7 +444,7 @@ void mpi_raccumulate_(int* origin_addr, int* origin_count, int* origin_datatype,
   *ierr =  MPI_Raccumulate( static_cast<void *>(origin_addr),*origin_count, simgrid::smpi::Datatype::f2c(*origin_datatype),*target_rank,
       *target_disp, *target_count, simgrid::smpi::Datatype::f2c(*tarsmpi_type_f2c), simgrid::smpi::Op::f2c(*op), simgrid::smpi::Win::f2c(*win),&req);
   if(*ierr == MPI_SUCCESS) {
-    *request = req->add_f();
+    *request = req->c2f();
   }
 }
 
@@ -465,7 +462,7 @@ void mpi_rput_(int* origin_addr, int* origin_count, int* origin_datatype, int* t
   *ierr =  MPI_Rput( static_cast<void *>(origin_addr),*origin_count, simgrid::smpi::Datatype::f2c(*origin_datatype),*target_rank,
       *target_disp, *target_count, simgrid::smpi::Datatype::f2c(*tarsmpi_type_f2c), simgrid::smpi::Win::f2c(*win),&req);
   if(*ierr == MPI_SUCCESS) {
-    *request = req->add_f();
+    *request = req->c2f();
   }
 }
 
@@ -507,7 +504,7 @@ void mpi_rget_accumulate_(int* origin_addr, int* origin_count, int* origin_datat
                               *target_count, simgrid::smpi::Datatype::f2c(*target_datatype),
                               simgrid::smpi::Op::f2c(*op), simgrid::smpi::Win::f2c(*win), &req);
   if(*ierr == MPI_SUCCESS) {
-    *request = req->add_f();
+    *request = req->c2f();
   }
 }
 
@@ -555,7 +552,7 @@ void mpi_op_create_(void* function, int* commute, int* op, int* ierr)
   *ierr = MPI_Op_create(reinterpret_cast<MPI_User_function*>(function), *commute, &tmp);
   if (*ierr == MPI_SUCCESS) {
     tmp->set_fortran_op();
-    *op = tmp->add_f();
+    *op = tmp->c2f();
   }
 }
 
@@ -563,9 +560,6 @@ void mpi_op_free_(int* op, int* ierr)
 {
   MPI_Op tmp= simgrid::smpi::Op::f2c(*op);
   *ierr = MPI_Op_free(& tmp);
-  if(*ierr == MPI_SUCCESS) {
-    simgrid::smpi::F2C::free_f(*op);
-  }
 }
 
 void mpi_op_commutative_(int* op, int* commute, int* ierr)
@@ -578,7 +572,6 @@ void mpi_group_free_(int* group, int* ierr)
   MPI_Group tmp = simgrid::smpi::Group::f2c(*group);
   if(tmp != MPI_COMM_WORLD->group() && tmp != MPI_GROUP_EMPTY){
     simgrid::smpi::Group::unref(tmp);
-    simgrid::smpi::F2C::free_f(*group);
   }
   *ierr = MPI_SUCCESS;
 }
@@ -608,7 +601,7 @@ void mpi_group_union_(int* group1, int* group2, int* newgroup, int* ierr)
   MPI_Group tmp;
   *ierr = MPI_Group_union(simgrid::smpi::Group::f2c(*group1), simgrid::smpi::Group::f2c(*group2), &tmp);
   if (*ierr == MPI_SUCCESS) {
-    *newgroup = tmp->add_f();
+    *newgroup = tmp->c2f();
   }
 }
 
@@ -617,7 +610,7 @@ void mpi_group_intersection_(int* group1, int* group2, int* newgroup, int* ierr)
   MPI_Group tmp;
   *ierr = MPI_Group_intersection(simgrid::smpi::Group::f2c(*group1), simgrid::smpi::Group::f2c(*group2), &tmp);
   if (*ierr == MPI_SUCCESS) {
-    *newgroup = tmp->add_f();
+    *newgroup = tmp->c2f();
   }
 }
 
@@ -626,7 +619,7 @@ void mpi_group_difference_(int* group1, int* group2, int* newgroup, int* ierr)
   MPI_Group tmp;
   *ierr = MPI_Group_difference(simgrid::smpi::Group::f2c(*group1), simgrid::smpi::Group::f2c(*group2), &tmp);
   if (*ierr == MPI_SUCCESS) {
-    *newgroup = tmp->add_f();
+    *newgroup = tmp->c2f();
   }
 }
 
@@ -635,7 +628,7 @@ void mpi_group_excl_(int* group, int* n, int* ranks, int* newgroup, int* ierr)
   MPI_Group tmp;
   *ierr = MPI_Group_excl(simgrid::smpi::Group::f2c(*group), *n, ranks, &tmp);
   if (*ierr == MPI_SUCCESS) {
-    *newgroup = tmp->add_f();
+    *newgroup = tmp->c2f();
   }
 }
 
@@ -644,7 +637,7 @@ void mpi_group_range_incl_ (int* group, int* n, int ranges[][3], int* newgroup, 
   MPI_Group tmp;
   *ierr = MPI_Group_range_incl(simgrid::smpi::Group::f2c(*group), *n, ranges, &tmp);
   if (*ierr == MPI_SUCCESS) {
-    *newgroup = tmp->add_f();
+    *newgroup = tmp->c2f();
   }
 }
 
@@ -653,16 +646,13 @@ void mpi_group_range_excl_ (int* group, int* n, int ranges[][3], int* newgroup, 
  MPI_Group tmp;
  *ierr = MPI_Group_range_excl(simgrid::smpi::Group::f2c(*group), *n, ranges, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *newgroup = tmp->add_f();
+   *newgroup = tmp->c2f();
  }
 }
 
 void mpi_request_free_ (int* request, int* ierr){
   MPI_Request tmp=simgrid::smpi::Request::f2c(*request);
  *ierr = MPI_Request_free(&tmp);
- if(*ierr == MPI_SUCCESS) {
-   simgrid::smpi::Request::free_f(*request);
- }
 }
 
 void mpi_pack_size_ (int* incount, int* datatype, int* comm, int* size, int* ierr) {
@@ -677,7 +667,7 @@ void mpi_cart_create_ (int* comm_old, int* ndims, int* dims, int* periods, int* 
   MPI_Comm tmp;
  *ierr = MPI_Cart_create(simgrid::smpi::Comm::f2c(*comm_old), *ndims, dims, periods, *reorder, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *comm_cart = tmp->add_f();
+   *comm_cart = tmp->c2f();
  }
 }
 
@@ -701,7 +691,7 @@ void mpi_cart_sub_ (int* comm, int* remain_dims, int*  comm_new, int* ierr) {
  MPI_Comm tmp;
  *ierr = MPI_Cart_sub(simgrid::smpi::Comm::f2c(*comm), remain_dims, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *comm_new = tmp->add_f();
+   *comm_new = tmp->c2f();
  }
 }
 
@@ -713,7 +703,7 @@ void mpi_graph_create_ (int* comm_old, int* nnodes, int* index, int* edges, int*
   MPI_Comm tmp;
  *ierr = MPI_Graph_create(simgrid::smpi::Comm::f2c(*comm_old), *nnodes, index, edges, *reorder, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *comm_graph = tmp->add_f();
+   *comm_graph = tmp->c2f();
  }
 }
 
@@ -794,7 +784,7 @@ void mpi_intercomm_create_ (int* local_comm, int *local_leader, int* peer_comm, 
   *ierr = MPI_Intercomm_create(simgrid::smpi::Comm::f2c(*local_comm), *local_leader, simgrid::smpi::Comm::f2c(*peer_comm), *remote_leader,
                                *tag, &tmp);
   if(*ierr == MPI_SUCCESS) {
-    *comm_out = tmp->add_f();
+    *comm_out = tmp->c2f();
   }
 }
 
@@ -802,7 +792,7 @@ void mpi_intercomm_merge_ (int* comm, int* high, int*  comm_out, int* ierr) {
  MPI_Comm tmp;
  *ierr = MPI_Intercomm_merge(simgrid::smpi::Comm::f2c(*comm), *high, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *comm_out = tmp->add_f();
+   *comm_out = tmp->c2f();
  }
 }
 
@@ -854,7 +844,7 @@ void mpi_info_dup_ (int* info, int* newinfo, int* ierr){
  MPI_Info tmp;
  *ierr = MPI_Info_dup(simgrid::smpi::Info::f2c(*info), &tmp);
  if(*ierr==MPI_SUCCESS){
-   *newinfo= tmp->add_f();
+   *newinfo= tmp->c2f();
  }
 }
 
@@ -907,7 +897,7 @@ void mpi_grequest_start_ ( void *query_fn, void *free_fn, void *cancel_fn, void 
   *ierr = MPI_Grequest_start( reinterpret_cast<MPI_Grequest_query_function*>(query_fn), reinterpret_cast<MPI_Grequest_free_function*>(free_fn),
                               reinterpret_cast<MPI_Grequest_cancel_function*>(cancel_fn), extra_state, &tmp);
  if(*ierr == MPI_SUCCESS) {
-   *request = tmp->add_f();
+   *request = tmp->c2f();
  }
 }
 
