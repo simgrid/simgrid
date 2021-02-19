@@ -1,4 +1,4 @@
-foreach(x availability basic0 basic1 basic3 basic4 basic5 incomplete)
+foreach(x availability basic1 basic3 basic4 basic5 incomplete)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -50,7 +50,7 @@ set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/carol.
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link.lat                         PARENT_SCOPE)
 
-foreach(x availability basic0 basic1 basic3 basic4 basic5 flatifier incomplete)
+foreach(x availability basic1 basic3 basic4 basic5 flatifier incomplete)
   ADD_TESH(tesh-simdag-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/${x} ${x}.tesh)
 endforeach()
 

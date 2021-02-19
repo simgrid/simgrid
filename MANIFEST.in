@@ -758,8 +758,6 @@ include teshsuite/s4u/wait-any-for/wait-any-for.cpp
 include teshsuite/s4u/wait-any-for/wait-any-for.tesh
 include teshsuite/simdag/availability/availability.c
 include teshsuite/simdag/availability/availability.tesh
-include teshsuite/simdag/basic0/basic0.c
-include teshsuite/simdag/basic0/basic0.tesh
 include teshsuite/simdag/basic1/basic1.c
 include teshsuite/simdag/basic1/basic1.tesh
 include teshsuite/simdag/basic3/basic3.c

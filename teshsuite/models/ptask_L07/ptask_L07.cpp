@@ -275,6 +275,25 @@ static void main_dispatcher()
    XBT_INFO("Actual result: 1-byte all-too-all in a parallel communication takes %.2f seconds.",
              end_time - start_time);
    XBT_INFO("\n");
+
+   sg4::this_actor::sleep_for(5);
+
+   XBT_INFO("TEST: Two concurrent communications, 1 large and 1 small.");
+   XBT_INFO("------------------------------------------------------------");
+   XBT_INFO("A host sends two messages of 100MB and 1B to the other host.");
+   XBT_INFO("Should be done in 0.8001 seconds: 1e8/1.25e8 for transfer + 1e-4 of latency");
+   XBT_INFO("The small communication has a negligible impact on the large one.");
+   XBT_INFO("This corresponds to paying latency once and having the full bandwidth for the large communication.");
+
+   start_time = sg4::Engine::get_clock();
+   c1 = sg4::Comm::sendto_async(hosts[0], hosts[7], 1e8);
+   c2 = sg4::Comm::sendto_async(hosts[0], hosts[7], 1.0);
+   c1->wait();
+   c2->wait();
+   end_time = sg4::Engine::get_clock();
+   XBT_INFO("Actual result: 1 small and 1 large concurrent communication takes %.4f seconds.",
+             end_time - start_time);
+   XBT_INFO("\n");
 }
 
 int main(int argc, char** argv)

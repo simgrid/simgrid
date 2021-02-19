@@ -126,3 +126,12 @@ $ ${bindir:=.}/ptask_L07 --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --
 > Each SHARED link is traversed by 6 flows (3 in and 3 out). 
 > Each 1B transfer thus takes 6 seconds on a 1Bps link
 > Actual result: 1-byte all-too-all in a parallel communication takes 8.00 seconds.
+> 
+> 
+> TEST: Two concurrent communications, 1 large and 1 small.
+> ------------------------------------------------------------
+> A host sends two messages of 100MB and 1B to the other host.
+> Should be done in 0.8001 seconds: 1e8/1.25e8 for transfer + 1e-4 of latency
+> The small communication has a negligible impact on the large one.
+> This corresponds to paying latency once and having the full bandwidth for the large communication.
+> Actual result: 1 small and 1 large concurrent communication takes 0.8001 seconds.

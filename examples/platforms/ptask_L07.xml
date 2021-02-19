@@ -9,6 +9,7 @@
 	<host id="cpu4" speed="1f" />
 	<host id="cpu5" speed="2f" />
 	<host id="cpu6" speed="2f" />
+	<host id="cpu7" speed="2f" />
 
     <link id="switch" bandwidth="2Bps" latency="1s" sharing_policy="FATPIPE"/>
     <link id="link0" bandwidth="1Bps" latency="500ms" sharing_policy="SHARED"/>
@@ -20,6 +21,8 @@
    <!-- large latency link (2*1024^2s) to limit bandwidth by TCP_gamma (4MiB)
          max bw = TCP_gamma / ( 2 * latency ) which is then 1Bps (half the nominal bandwidth) -->    
     <link id="link5" bandwidth="1Bps" latency="2097152s" sharing_policy="FATPIPE" />
+
+    <link id="link6" bandwidth="125MBps" latency="100us" sharing_policy="SHARED"/>
 
     <route src="cpu0" dst="cpu1">
       <link_ctn id="link0"/>
@@ -60,6 +63,9 @@
     </route>
     <route src="cpu0" dst="cpu6">
       <link_ctn id="link5" />
+    </route>
+    <route src="cpu0" dst="cpu7">
+      <link_ctn id="link6" />
     </route>
   </zone>
 </platform>
