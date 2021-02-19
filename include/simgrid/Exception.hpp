@@ -94,6 +94,11 @@ public:
 
   std::string resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
 
+  virtual void rethrow_nested(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message) const
+  {
+    std::throw_with_nested(Exception(throwpoint, message));
+  }
+
   /** Allow to carry a value (used by waitall/waitany) */
   int value = 0;
 
@@ -107,6 +112,10 @@ private:
     using Exception::Exception;                                                                                        \
     __VA_ARGS__                                                                                                        \
     ~AnyException() override;                                                                                          \
+    void rethrow_nested(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message) const override         \
+    {                                                                                                                  \
+      std::throw_with_nested(AnyException(throwpoint, message));                                                       \
+    }                                                                                                                  \
   }
 
 /** Exception raised when a timeout elapsed */
@@ -134,12 +143,8 @@ DECLARE_SIMGRID_EXCEPTION(TracingError);
 
 /** Exception raised when something is going wrong during the parsing of XML files */
 #define PARSE_ERROR_CONSTRUCTOR                                                                                        \
-  const std::string file_;                                                                                             \
-  const int line_;                                                                                                     \
   ParseError(const std::string& file, int line, const std::string& msg)                                                \
       : Exception(XBT_THROW_POINT, xbt::string_printf("Parse error at %s:%d: %s", file.c_str(), line, msg.c_str()))    \
-      , file_(file)                                                                                                    \
-      , line_(line)                                                                                                    \
   {                                                                                                                    \
   }
 

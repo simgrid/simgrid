@@ -321,34 +321,8 @@ void ActorImpl::yield()
     try {
       std::rethrow_exception(std::move(exception));
     } catch (const simgrid::Exception& e) {
-      if (dynamic_cast<const simgrid::TimeoutException*>(&e) != nullptr) {
-        std::throw_with_nested(simgrid::TimeoutException(XBT_THROW_POINT, "Timeout raised in kernel mode."));
-
-      } else if (dynamic_cast<const simgrid::HostFailureException*>(&e) != nullptr) {
-        std::throw_with_nested(simgrid::HostFailureException(XBT_THROW_POINT, "HostFailure raised in kernel mode."));
-
-      } else if (dynamic_cast<const simgrid::NetworkFailureException*>(&e) != nullptr) {
-        std::throw_with_nested(
-            simgrid::NetworkFailureException(XBT_THROW_POINT, "NetworkFailure raised in kernel mode."));
-
-      } else if (dynamic_cast<const simgrid::StorageFailureException*>(&e) != nullptr) {
-        std::throw_with_nested(
-            simgrid::StorageFailureException(XBT_THROW_POINT, "StorageFailure raised in kernel mode."));
-
-      } else if (dynamic_cast<const simgrid::VmFailureException*>(&e) != nullptr) {
-        std::throw_with_nested(simgrid::VmFailureException(XBT_THROW_POINT, "VmFailure raised in kernel mode."));
-
-      } else if (dynamic_cast<const simgrid::CancelException*>(&e) != nullptr) {
-        std::throw_with_nested(simgrid::CancelException(XBT_THROW_POINT, "Cancel raised in kernel mode."));
-
-      } else if (dynamic_cast<const simgrid::TracingError*>(&e) != nullptr) {
-        std::throw_with_nested(simgrid::TracingError(XBT_THROW_POINT, "Tracing error raised in kernel mode."));
-
-      } else if (dynamic_cast<const simgrid::ParseError*>(&e) != nullptr) {
-        auto pe = dynamic_cast<const simgrid::ParseError*>(&e);
-        std::throw_with_nested(simgrid::ParseError(pe->file_, pe->line_, "Parse error raised in kernel mode."));
-      }
-      THROW_IMPOSSIBLE;
+      std::string name = simgrid::xbt::demangle(typeid(e).name()).get();
+      e.rethrow_nested(XBT_THROW_POINT, name + " raised in kernel mode.");
     }
   }
 
