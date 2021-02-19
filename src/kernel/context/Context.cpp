@@ -29,9 +29,7 @@ thread_local Context* Context::current_context_ = nullptr;
 /* Install or disable alternate signal stack, for SIGSEGV handler. */
 int Context::install_sigsegv_stack(stack_t* old_stack, bool enable)
 {
-  static std::vector<unsigned char> sigsegv_stack;
-  if (sigsegv_stack.size() == 0)
-    sigsegv_stack.resize(SIGSTKSZ);
+  static std::vector<unsigned char> sigsegv_stack(SIGSTKSZ);
   stack_t stack;
   stack.ss_sp    = sigsegv_stack.data();
   stack.ss_size  = sigsegv_stack.size();
