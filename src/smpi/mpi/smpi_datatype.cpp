@@ -37,10 +37,14 @@ static std::unordered_map<std::string, simgrid::smpi::Datatype*> id2type_lookup;
   const MPI_Datatype name = &_XBT_CONCAT(mpi_, name);
 
 // Predefined data types
+CREATE_MPI_DATATYPE_NULL(MPI_DATATYPE_NULL, -1)
+CREATE_MPI_DATATYPE(MPI_DOUBLE, 0, double)
+CREATE_MPI_DATATYPE(MPI_INT, 1, int)
 CREATE_MPI_DATATYPE(MPI_CHAR, 2, char)
 CREATE_MPI_DATATYPE(MPI_SHORT, 3, short)
-CREATE_MPI_DATATYPE(MPI_INT, 1, int)
 CREATE_MPI_DATATYPE(MPI_LONG, 4, long)
+CREATE_MPI_DATATYPE(MPI_FLOAT, 5, float)
+CREATE_MPI_DATATYPE(MPI_BYTE, 6, int8_t)
 CREATE_MPI_DATATYPE(MPI_LONG_LONG, 7, long long)
 CREATE_MPI_DATATYPE(MPI_SIGNED_CHAR, 8, signed char)
 CREATE_MPI_DATATYPE(MPI_UNSIGNED_CHAR, 9, unsigned char)
@@ -48,12 +52,9 @@ CREATE_MPI_DATATYPE(MPI_UNSIGNED_SHORT, 10, unsigned short)
 CREATE_MPI_DATATYPE(MPI_UNSIGNED, 11, unsigned int)
 CREATE_MPI_DATATYPE(MPI_UNSIGNED_LONG, 12, unsigned long)
 CREATE_MPI_DATATYPE(MPI_UNSIGNED_LONG_LONG, 13, unsigned long long)
-CREATE_MPI_DATATYPE(MPI_FLOAT, 5, float)
-CREATE_MPI_DATATYPE(MPI_DOUBLE, 0, double)
 CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE, 14, long double)
 CREATE_MPI_DATATYPE(MPI_WCHAR, 15, wchar_t)
 CREATE_MPI_DATATYPE(MPI_C_BOOL, 16, bool)
-CREATE_MPI_DATATYPE(MPI_BYTE, 6, int8_t)
 CREATE_MPI_DATATYPE(MPI_INT8_T, 17, int8_t)
 CREATE_MPI_DATATYPE(MPI_INT16_T, 18, int16_t)
 CREATE_MPI_DATATYPE(MPI_INT32_T, 19, int32_t)
@@ -81,7 +82,6 @@ CREATE_MPI_DATATYPE(MPI_REAL, 38, float)
 CREATE_MPI_DATATYPE(MPI_REAL4, 39, float)
 CREATE_MPI_DATATYPE(MPI_REAL8, 40, double)
 CREATE_MPI_DATATYPE(MPI_REAL16, 41, long double)
-CREATE_MPI_DATATYPE_NULL(MPI_DATATYPE_NULL, -1)
 CREATE_MPI_DATATYPE(MPI_COMPLEX8, 42, float_float)
 CREATE_MPI_DATATYPE(MPI_COMPLEX16, 43, double_double)
 CREATE_MPI_DATATYPE(MPI_COMPLEX32, 44, double_double)
@@ -99,7 +99,7 @@ CREATE_MPI_DATATYPE(MPI_PACKED, 53, char)
 // Internal use only
 CREATE_MPI_DATATYPE(MPI_PTR, 54, void*)
 CREATE_MPI_DATATYPE(MPI_COUNT, 55, long long)
-
+#define NUM_BASIC_DATATYPES 57
 
 namespace simgrid{
 namespace smpi{
@@ -113,6 +113,7 @@ Datatype::Datatype(int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags) : D
 
 Datatype::Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags) : size_(size), lb_(lb), ub_(ub), flags_(flags)
 {
+  this->add_f();
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&(refcount_), sizeof(refcount_));
@@ -133,6 +134,7 @@ Datatype::Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint 
 Datatype::Datatype(Datatype* datatype, int* ret)
     : size_(datatype->size_), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_)
 {
+  this->add_f();
   *ret = this->copy_attrs(datatype);
 }
 
@@ -144,12 +146,12 @@ Datatype::~Datatype()
     return;
   //prevent further usage
   flags_ &= ~ DT_FLAG_COMMITED;
+  F2C::free_f(this->c2f());
   //if still used, mark for deletion
   if(refcount_!=0){
       flags_ |=DT_FLAG_DESTROYED;
       return;
   }
-
   cleanup_attr<Datatype>();
   delete contents_;
 }
@@ -646,5 +648,6 @@ Datatype* Datatype::f2c(int id)
 {
   return static_cast<Datatype*>(F2C::f2c(id));
 }
+
 } // namespace smpi
 } // namespace simgrid

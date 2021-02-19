@@ -52,6 +52,7 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   colls::bcast(&(bar_), sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
 
   colls::barrier(comm);
+  this->add_f();
 }
 
 Win::~Win(){
@@ -77,6 +78,7 @@ Win::~Win(){
   if(allocated_ !=0)
     xbt_free(base_);
 
+  F2C::free_f(this->c2f());
   cleanup_attr<Win>();
 }
 

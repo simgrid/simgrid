@@ -77,6 +77,7 @@ void smpi_init_fortran_types()
 
     MPI_LB->add_f();
     MPI_UB->add_f();
+    simgrid::smpi::F2C::finish_initialization();
   }
 }
 

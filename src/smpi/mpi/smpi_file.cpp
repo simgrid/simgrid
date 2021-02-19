@@ -71,6 +71,7 @@ namespace smpi{
     simgrid::smpi::colls::bcast(&shared_mutex_, 1, MPI_AINT, 0, comm);
     if(comm_->rank() != 0)
       intrusive_ptr_add_ref(&*shared_mutex_);
+    this->add_f();
   }
 
   File::~File(){
@@ -80,6 +81,7 @@ namespace smpi{
     }
     delete win_;
     delete file_;
+    F2C::free_f(this->c2f());
     if (info_ != MPI_INFO_NULL)
       simgrid::smpi::Info::unref(info_);
     if (errhandler_ != MPI_ERRHANDLER_NULL)

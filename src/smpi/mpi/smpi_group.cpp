@@ -10,6 +10,7 @@
 
 simgrid::smpi::Group mpi_MPI_GROUP_EMPTY;
 MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
+extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
 namespace simgrid{
 namespace smpi{
@@ -77,6 +78,8 @@ void Group::unref(Group* group)
 {
   group->refcount_--;
   if (group->refcount_ <= 0) {
+    if (simgrid::smpi::F2C::lookup() != nullptr)
+      F2C::free_f(group->c2f());
     delete group;
   }
 }
@@ -118,6 +121,7 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup)
       s4u::Actor* actor = this->actor(ranks[i]); // ranks[] was passed as a param!
       (*newgroup)->set_mapping(actor, i);
     }
+    (*newgroup)->add_f();
   }
   return MPI_SUCCESS;
 }
@@ -146,6 +150,7 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
       s4u::Actor* actor = group2->actor(i - size2);
       (*newgroup)->set_mapping(actor, i);
     }
+    (*newgroup)->add_f();
   }
   return MPI_SUCCESS;
 }
@@ -172,6 +177,7 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
         (*newgroup)->set_mapping(actor, j);
         j++;
       }
+      (*newgroup)->add_f();
     }
   }
   return MPI_SUCCESS;
@@ -199,6 +205,7 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
         (*newgroup)->set_mapping(actor, i);
       }
     }
+    (*newgroup)->add_f();
   }
   return MPI_SUCCESS;
 }
@@ -218,6 +225,7 @@ int Group::excl(int n, const int *ranks, MPI_Group * newgroup){
       j++;
     }
   }
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
@@ -261,6 +269,7 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
         break;
     }
   }
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
@@ -309,6 +318,7 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
       oldrank++;
     }
   }
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 

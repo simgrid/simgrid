@@ -270,8 +270,10 @@ void Op::ref(){
 void Op::unref(MPI_Op* op){
   if((*op)!=MPI_OP_NULL){
     (*op)->refcount_--;
-    if ((*op)->refcount_ == 0 && not (*op)->is_predefined_)
+    if ((*op)->refcount_ == 0 && not (*op)->is_predefined_){
+      F2C::free_f((*op)->c2f());
       delete(*op);
+    }
   }
 }
 

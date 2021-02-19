@@ -65,6 +65,7 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int
   nbc_requests_=nullptr;
   nbc_requests_size_=0;
   init_buffer(count);
+  this->add_f();
 }
 
 void Request::ref(){
@@ -90,6 +91,7 @@ void Request::unref(MPI_Request* request)
         Op::unref(&(*request)->op_);
 
       (*request)->print_request("Destroying");
+      F2C::free_f((*request)->c2f());
       delete *request;
       *request = MPI_REQUEST_NULL;
     }else{

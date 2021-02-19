@@ -20,7 +20,7 @@ class Op : public F2C{
   bool is_predefined_;
 
 public:
-  Op(MPI_User_function* function, bool commutative, bool predefined=false) : func_(function), is_commutative_(commutative), is_predefined_(predefined) {}
+  Op(MPI_User_function* function, bool commutative, bool predefined=false) : func_(function), is_commutative_(commutative), is_predefined_(predefined) {if(not predefined) this->add_f();}
   bool is_commutative() const { return is_commutative_; }
   bool is_predefined() const { return is_predefined_; }
   bool is_fortran_op() const { return is_fortran_op_; }
