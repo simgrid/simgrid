@@ -642,16 +642,14 @@ void SMPI_finalize()
                "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
                simgrid::smpi::F2C::lookup()->size() - simgrid::smpi::F2C::get_num_default_handles());
       int n = simgrid::config::get_value<int>("smpi/list-leaks");
-      if (n > 0) {
-        std::for_each(simgrid::smpi::F2C::lookup()->begin(),
-                  simgrid::smpi::F2C::lookup()->end(),
-                  [n](const std::pair<unsigned int, simgrid::smpi::F2C*> &p) {
-                      static int printed = 0;
-                      if(p.first >= simgrid::smpi::F2C::get_num_default_handles() && printed < n){
-                        XBT_WARN ("Leak %p of type %s", p.second, boost::core::demangle(typeid(*(p.second)).name()).c_str() );
-                        printed++;
-                      }
-                  });
+      for (auto const& p : *simgrid::smpi::F2C::lookup()) {
+        static int printed = 0;
+        if (printed >= n)
+          break;
+        if (p.first >= simgrid::smpi::F2C::get_num_default_handles()) {
+          XBT_WARN("Leak %p of type %s", p.second, boost::core::demangle(typeid(*(p.second)).name()).c_str());
+          printed++;
+        }
       }
     }
     simgrid::smpi::F2C::delete_lookup();
