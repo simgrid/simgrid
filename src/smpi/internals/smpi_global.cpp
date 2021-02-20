@@ -652,7 +652,6 @@ void SMPI_finalize()
         }
       }
     }
-    simgrid::smpi::F2C::delete_lookup();
   }
 }
 
