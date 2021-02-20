@@ -291,7 +291,7 @@ static void main_dispatcher()
    c1->wait();
    c2->wait();
    end_time = sg4::Engine::get_clock();
-   XBT_INFO("Actual result: 1 small and 1 large concurrent communication takes %.4f seconds.",
+   XBT_INFO("Actual result: 1 small and 1 large concurrent communications take %.4f seconds.",
              end_time - start_time);
    XBT_INFO("\n");
 }

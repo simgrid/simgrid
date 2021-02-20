@@ -134,4 +134,4 @@ $ ${bindir:=.}/ptask_L07 --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --
 > Should be done in 0.8001 seconds: 1e8/1.25e8 for transfer + 1e-4 of latency
 > The small communication has a negligible impact on the large one.
 > This corresponds to paying latency once and having the full bandwidth for the large communication.
-> Actual result: 1 small and 1 large concurrent communication takes 0.8001 seconds.
+> Actual result: 1 small and 1 large concurrent communications take 0.8001 seconds.
