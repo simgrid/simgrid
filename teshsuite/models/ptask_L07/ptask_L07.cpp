@@ -294,6 +294,24 @@ static void main_dispatcher()
    XBT_INFO("Actual result: 1 small and 1 large concurrent communications take %.4f seconds.",
              end_time - start_time);
    XBT_INFO("\n");
+
+   sg4::this_actor::sleep_for(5);
+
+   XBT_INFO("TEST: Concurrent communication and computation.");
+   XBT_INFO("------------------------------------------------------------");
+   XBT_INFO("A host sends 1B to another while the latter compute 2 flop.");
+   XBT_INFO("Should be done in 2 seconds: 1.5s to transfer and 2 seconds to compute.");
+   XBT_INFO("The two activities should overlap smoothly as they use different resources.");
+   XBT_INFO("The completion time is thus the maximum of the time to complete the two activities.");
+
+   start_time = sg4::Engine::get_clock();
+   c1 = sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0);
+   e1 = sg4::Exec::init()->set_flops_amount(2.0)->set_host(hosts[4])->start();
+   e1->wait();
+   c1->wait();
+   end_time = sg4::Engine::get_clock();
+   XBT_INFO("Actual result: Sending 1B while computing 2 flops takes %.4f seconds.", end_time - start_time);
+   XBT_INFO("\n");
 }
 
 int main(int argc, char** argv)
