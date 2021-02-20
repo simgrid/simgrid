@@ -99,7 +99,6 @@ CREATE_MPI_DATATYPE(MPI_PACKED, 53, char)
 // Internal use only
 CREATE_MPI_DATATYPE(MPI_PTR, 54, void*)
 CREATE_MPI_DATATYPE(MPI_COUNT, 55, long long)
-#define NUM_BASIC_DATATYPES 57
 
 namespace simgrid{
 namespace smpi{
