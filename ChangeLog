@@ -22,6 +22,9 @@ S4U:
  - New functions: Comm::sendto_{init,async} to initiate a communication
    on between two (possibly remote) hosts.
 
+XBT:
+ - Drop simgrid::xbt::demangle. Please use boost::core::demangle instead.
+
 Documentation:
  - New section: Configuring the logs from the command line.
  - New section: Programming API of logs.
