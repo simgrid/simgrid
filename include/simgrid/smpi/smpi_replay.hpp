@@ -8,8 +8,8 @@
 #include "src/smpi/include/smpi_actor.hpp"
 
 #include <boost/algorithm/string/join.hpp>
-#include <xbt/replay.hpp>
 #include <xbt/ex.h>
+#include <xbt/replay.hpp>
 
 #include <memory>
 #include <sstream>
@@ -101,7 +101,7 @@ public:
   double comp_size;
   int send_size;
   int recv_size;
-  int root = 0;
+  int root               = 0;
   MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
   MPI_Datatype datatype2 = MPI_DEFAULT_TYPE;
 };

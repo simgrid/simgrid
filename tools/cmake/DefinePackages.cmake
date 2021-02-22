@@ -680,7 +680,7 @@ set(headers_to_install
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
-  include/simgrid/smpi/replay.hpp
+  include/simgrid/smpi/smpi_replay.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
   include/simgrid/simdag.h
