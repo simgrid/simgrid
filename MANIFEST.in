@@ -760,10 +760,6 @@ include teshsuite/simdag/availability/availability.c
 include teshsuite/simdag/availability/availability.tesh
 include teshsuite/simdag/basic1/basic1.c
 include teshsuite/simdag/basic1/basic1.tesh
-include teshsuite/simdag/basic3/basic3.c
-include teshsuite/simdag/basic3/basic3.tesh
-include teshsuite/simdag/basic4/basic4.c
-include teshsuite/simdag/basic4/basic4.tesh
 include teshsuite/simdag/flatifier/bogus_missing_gateway.tesh
 include teshsuite/simdag/flatifier/bogus_two_hosts_asymetric.tesh
 include teshsuite/simdag/flatifier/flatifier.cpp
