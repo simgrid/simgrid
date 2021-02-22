@@ -58,43 +58,8 @@ class TIData {
   double amount_ = 0;
 
 public:
-  int endpoint                 = 0;
-  int send_size                = 0;
-  std::shared_ptr<std::vector<int>> sendcounts = nullptr;
-  int recv_size                = 0;
-  std::shared_ptr<std::vector<int>> recvcounts = nullptr;
-  std::string send_type        = "";
-  std::string recv_type        = "";
-
-  // NoOpTI: init, finalize, test, wait, barrier
   explicit TIData(const std::string& name) : name_(name){};
-  // CPuTI: compute, sleep (+ waitAny and waitall out of laziness)
   explicit TIData(const std::string& name, double amount) : name_(name), amount_(amount){};
-  // Pt2PtTI: send, isend, ssend, issend, recv, irecv
-  explicit TIData(const std::string& name, int endpoint, int size, const std::string& datatype)
-      : name_(name), endpoint(endpoint), send_size(size), send_type(datatype){};
-  // CollTI: bcast, reduce, allreduce, gather, scatter, allgather, alltoall
-  explicit TIData(const std::string& name, int root, double amount, int send_size, int recv_size,
-                  const std::string& send_type, const std::string& recv_type)
-      : name_(name)
-      , amount_(amount)
-      , endpoint(root)
-      , send_size(send_size)
-      , recv_size(recv_size)
-      , send_type(send_type)
-      , recv_type(recv_type){};
-  // VarCollTI: gatherv, scatterv, allgatherv, alltoallv (+ reducescatter out of laziness)
-  explicit TIData(const std::string& name, int root, int send_size, std::shared_ptr<std::vector<int>> sendcounts,
-                  int recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
-                  const std::string& recv_type)
-      : name_(name)
-      , endpoint(root)
-      , send_size(send_size)
-      , sendcounts(sendcounts)
-      , recv_size(recv_size)
-      , recvcounts(recvcounts)
-      , send_type(send_type)
-      , recv_type(recv_type){};
 
   virtual ~TIData() = default;
 
@@ -104,16 +69,22 @@ public:
   virtual std::string display_size() = 0;
 };
 
+// NoOpTI: init, finalize, test, wait, barrier
 class NoOpTIData : public TIData {
+  explicit NoOpTIData(const std::string&, double); // disallow this constructor inherited from TIData
+
 public:
-  explicit NoOpTIData(const std::string& name) : TIData(name){};
+  using TIData::TIData;
   std::string print() override { return get_name(); }
   std::string display_size() override { return "NA"; }
 };
 
+// CPuTI: compute, sleep (+ waitAny and waitall out of laziness)
 class CpuTIData : public TIData {
+  explicit CpuTIData(const std::string&); // disallow this constructor inherited from TIData
+
 public:
-  explicit CpuTIData(const std::string& name, double amount) : TIData(name, amount){};
+  using TIData::TIData;
   std::string print() override
   {
     std::stringstream stream;
@@ -123,75 +94,107 @@ public:
   std::string display_size() override { return std::to_string(get_amount()); }
 };
 
+// Pt2PtTI: send, isend, ssend, issend, recv, irecv
 class Pt2PtTIData : public TIData {
-  int tag = 0;
+  int endpoint_;
+  int size_;
+  std::string type_;
+  int tag_ = 0;
 
 public:
-  explicit Pt2PtTIData(const std::string& name, int endpoint, int size, int tag, const std::string& datatype)
-      : TIData(name, endpoint, size, datatype), tag(tag){};
+  Pt2PtTIData(const std::string& name, int endpoint, int size, const std::string& datatype)
+      : TIData(name), endpoint_(endpoint), size_(size), type_(datatype){};
+  Pt2PtTIData(const std::string& name, int endpoint, int size, int tag, const std::string& datatype)
+      : TIData(name), endpoint_(endpoint), size_(size), type_(datatype), tag_(tag){};
 
-  explicit Pt2PtTIData(const std::string& name, int endpoint, int size, const std::string& datatype)
-      : TIData(name, endpoint, size, datatype){};
   std::string print() override
   {
     std::stringstream stream;
-    stream << get_name() << " " << endpoint << " ";
-    stream << tag << " " << send_size << " " << send_type;
+    stream << get_name() << " " << endpoint_ << " " << tag_ << " " << size_ << " " << type_;
     return stream.str();
   }
-  std::string display_size() override { return std::to_string(send_size); }
+  std::string display_size() override { return std::to_string(size_); }
 };
 
+// CollTI: bcast, reduce, allreduce, gather, scatter, allgather, alltoall
 class CollTIData : public TIData {
+  int root_;
+  int send_size_;
+  int recv_size_;
+  std::string send_type_;
+  std::string recv_type_;
+
 public:
-  explicit CollTIData(const std::string& name, int root, double amount, int send_size, int recv_size,
-                      const std::string& send_type, const std::string& recv_type)
-      : TIData(name, root, amount, send_size, recv_size, send_type, recv_type){};
+  CollTIData(const std::string& name, int root, double amount, int send_size, int recv_size,
+             const std::string& send_type, const std::string& recv_type)
+      : TIData(name, amount)
+      , root_(root)
+      , send_size_(send_size)
+      , recv_size_(recv_size)
+      , send_type_(send_type)
+      , recv_type_(recv_type){};
+
   std::string print() override
   {
     std::stringstream stream;
-    stream << get_name() << " " << send_size << " ";
-    if (recv_size >= 0)
-      stream << recv_size << " ";
+    stream << get_name() << " " << send_size_ << " ";
+    if (recv_size_ >= 0)
+      stream << recv_size_ << " ";
     if (get_amount() >= 0.0)
       stream << get_amount() << " ";
-    if (endpoint > 0 || (endpoint == 0 && not send_type.empty()))
-      stream << endpoint << " ";
-    stream << send_type << " " << recv_type;
+    if (root_ > 0 || (root_ == 0 && not send_type_.empty()))
+      stream << root_ << " ";
+    stream << send_type_ << " " << recv_type_;
 
     return stream.str();
   }
-  std::string display_size() override { return std::to_string(send_size); }
+  std::string display_size() override { return std::to_string(send_size_); }
 };
 
+// VarCollTI: gatherv, scatterv, allgatherv, alltoallv (+ reducescatter out of laziness)
 class VarCollTIData : public TIData {
+  int root_;
+  int send_size_;
+  std::shared_ptr<std::vector<int>> sendcounts_;
+  int recv_size_;
+  std::shared_ptr<std::vector<int>> recvcounts_;
+  std::string send_type_;
+  std::string recv_type_;
+
 public:
-  explicit VarCollTIData(const std::string& name, int root, int send_size, std::shared_ptr<std::vector<int>> sendcounts,
-                         int recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
-                         const std::string& recv_type)
-      : TIData(name, root, send_size, sendcounts, recv_size, recvcounts, send_type, recv_type){};
+  VarCollTIData(const std::string& name, int root, int send_size, std::shared_ptr<std::vector<int>> sendcounts,
+                int recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
+                const std::string& recv_type)
+      : TIData(name)
+      , root_(root)
+      , send_size_(send_size)
+      , sendcounts_(sendcounts)
+      , recv_size_(recv_size)
+      , recvcounts_(recvcounts)
+      , send_type_(send_type)
+      , recv_type_(recv_type){};
 
   std::string print() override
   {
     std::stringstream stream;
     stream << get_name() << " ";
-    if (send_size >= 0)
-      stream << send_size << " ";
-    if (sendcounts != nullptr)
-      for (auto count : *sendcounts)
+    if (send_size_ >= 0)
+      stream << send_size_ << " ";
+    if (sendcounts_ != nullptr)
+      for (auto count : *sendcounts_)
         stream << count << " ";
-    if (recv_size >= 0)
-      stream << recv_size << " ";
-    if (recvcounts != nullptr)
-      for (auto count : *recvcounts)
+    if (recv_size_ >= 0)
+      stream << recv_size_ << " ";
+    if (recvcounts_ != nullptr)
+      for (auto count : *recvcounts_)
         stream << count << " ";
-    if (endpoint > 0 || (endpoint == 0 && not send_type.empty()))
-      stream << endpoint << " ";
-    stream << send_type << " " << recv_type;
+    if (root_ > 0 || (root_ == 0 && not send_type_.empty()))
+      stream << root_ << " ";
+    stream << send_type_ << " " << recv_type_;
 
     return stream.str();
   }
-  std::string display_size() override { return std::to_string(send_size > 0 ? send_size : recv_size); }
+  std::string display_size() override { return std::to_string(send_size_ > 0 ? send_size_ : recv_size_); }
 };
 
 /**
@@ -199,37 +202,34 @@ public:
  * to identify this request. We do this by searching for a request identified by (src, dest, tag).
  */
 class WaitTIData : public TIData {
-  int src;
-  int dest;
-  int tag;
+  int src_;
+  int dest_;
+  int tag_;
 
 public:
-  explicit WaitTIData(int src, int dest, int tag) : TIData("wait"), src(src), dest(dest), tag(tag){};
+  WaitTIData(int src, int dest, int tag) : TIData("wait"), src_(src), dest_(dest), tag_(tag){};
 
   std::string print() override
   {
     std::stringstream stream;
-    stream << get_name() << " " << src << " " << dest << " " << tag;
-
+    stream << get_name() << " " << src_ << " " << dest_ << " " << tag_;
     return stream.str();
   }
-
   std::string display_size() override { return "NA"; }
 };
 
 class AmpiMigrateTIData : public TIData {
-  size_t memory_consumption;
+  size_t memory_consumption_;
+
 public:
-  explicit AmpiMigrateTIData(size_t memory_conso) : TIData("migrate"), memory_consumption(memory_conso) { };
+  explicit AmpiMigrateTIData(size_t memory_conso) : TIData("migrate"), memory_consumption_(memory_conso){};
 
   std::string print() override
   {
     std::stringstream stream;
-    stream << get_name() << " " << memory_consumption;
-
+    stream << get_name() << " " << memory_consumption_;
     return stream.str();
   }
-
   std::string display_size() override { return "NA"; }
 };
 } // namespace instr
