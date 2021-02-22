@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef XBT_FUTURE_HPP
-#define XBT_FUTURE_HPP
+#ifndef XBT_PROMISE_HPP
+#define XBT_PROMISE_HPP
 
 #include <cstddef>
 
@@ -28,25 +28,12 @@ namespace xbt {
  *
  *  Also the name is not so great.
  **/
-template<class T>
-class Result {
+template <class T> class Result {
 public:
-  bool is_valid() const
-  {
-    return value_.which() > 0;
-  }
-  void set_exception(std::exception_ptr e)
-  {
-    value_ = std::move(e);
-  }
-  void set_value(T&& value)
-  {
-    value_ = std::move(value);
-  }
-  void set_value(T const& value)
-  {
-    value_ = value;
-  }
+  bool is_valid() const { return value_.which() > 0; }
+  void set_exception(std::exception_ptr e) { value_ = std::move(e); }
+  void set_value(T&& value) { value_ = std::move(value); }
+  void set_value(T const& value) { value_ = value; }
 
   /** Extract the value from the future
    *
@@ -75,32 +62,16 @@ private:
   boost::variant<boost::blank, T, std::exception_ptr> value_;
 };
 
-template<>
-class Result<void> : public Result<std::nullptr_t>
-{
+template <> class Result<void> : public Result<std::nullptr_t> {
 public:
-  void set_value()
-  {
-    Result<std::nullptr_t>::set_value(nullptr);
-  }
-  void get()
-  {
-    Result<std::nullptr_t>::get();
-  }
+  void set_value() { Result<std::nullptr_t>::set_value(nullptr); }
+  void get() { Result<std::nullptr_t>::get(); }
 };
 
-template<class T>
-class Result<T&> : public Result<std::reference_wrapper<T>>
-{
+template <class T> class Result<T&> : public Result<std::reference_wrapper<T>> {
 public:
-  void set_value(T& value)
-  {
-    Result<std::reference_wrapper<T>>::set_value(std::ref(value));
-  }
-  T& get()
-  {
-    return Result<std::reference_wrapper<T>>::get();
-  }
+  void set_value(T& value) { Result<std::reference_wrapper<T>>::set_value(std::ref(value)); }
+  T& get() { return Result<std::reference_wrapper<T>>::get(); }
 };
 
 /** Execute some code and set a promise or result accordingly
@@ -156,7 +127,6 @@ template <class P, class F> inline void set_promise(P& promise, F&& future)
 {
   fulfill_promise(promise, [&future] { return std::forward<F>(future).get(); });
 }
-
 }
 }
 

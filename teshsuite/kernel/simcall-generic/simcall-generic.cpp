@@ -6,7 +6,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include <xbt/future.hpp>
+#include <xbt/promise.hpp>
 
 #include <simgrid/kernel/future.hpp>
 #include <simgrid/s4u/Actor.hpp>
