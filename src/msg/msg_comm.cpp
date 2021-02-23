@@ -99,13 +99,13 @@ int MSG_comm_testany(const_xbt_dynar_t comms)
   try {
     finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
   } catch (const simgrid::TimeoutException& e) {
-    finished_index = e.value;
+    finished_index = e.get_value();
     status         = MSG_TIMEOUT;
   } catch (const simgrid::CancelException& e) {
-    finished_index = e.value;
+    finished_index = e.get_value();
     status         = MSG_TASK_CANCELED;
   } catch (const simgrid::NetworkFailureException& e) {
-    finished_index = e.value;
+    finished_index = e.get_value();
     status         = MSG_TRANSFER_FAILURE;
   }
 
@@ -176,13 +176,13 @@ int MSG_comm_waitany(const_xbt_dynar_t comms)
   try {
     finished_index = simcall_comm_waitany(s_comms.data(), s_comms.size(), -1);
   } catch (const simgrid::TimeoutException& e) {
-    finished_index = e.value;
+    finished_index = e.get_value();
     status         = MSG_TIMEOUT;
   } catch (const simgrid::CancelException& e) {
-    finished_index = e.value;
+    finished_index = e.get_value();
     status         = MSG_TASK_CANCELED;
   } catch (const simgrid::NetworkFailureException& e) {
-    finished_index = e.value;
+    finished_index = e.get_value();
     status         = MSG_TRANSFER_FAILURE;
   }
 

@@ -686,12 +686,11 @@ void CommImpl::finish()
       }
       CommImpl** element = std::find(comms, comms + count, this);
       int rank           = (element != comms + count) ? element - comms : -1;
-
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer_->exception_);
       } catch (simgrid::Exception& e) {
-        e.value = rank;
+        e.set_value(rank);
       }
     }
 
