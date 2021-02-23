@@ -236,92 +236,52 @@ int Group::excl(int n, const int *ranks, MPI_Group * newgroup){
 
 static bool is_rank_in_range(int rank, int first, int last)
 {
-  if (first < last)
-    return rank <= last;
-  else
-    return rank >= last;
+  return (first <= rank && rank <= last) || (first >= rank && rank >= last);
 }
 
-int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
-  int newsize = 0;
-  for (int i = 0; i < n; i++) {
-    for (int rank = ranges[i][0];                    /* First */
-         rank >= 0 && rank < size_; /* Last */
-         ) {
-      newsize++;
-      if(rank == ranges[i][1]){/*already last ?*/
-        break;
-      }
-      rank += ranges[i][2]; /* Stride */
-      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
-        break;
-    }
-  }
-  *newgroup = new  Group(newsize);
-  int j     = 0;
-  for (int i = 0; i < n; i++) {
-    for (int rank = ranges[i][0];                    /* First */
-         rank >= 0 && rank < size_; /* Last */
-         ) {
-      s4u::Actor* actor = this->actor(rank);
-      (*newgroup)->set_mapping(actor, j);
-      j++;
-      if(rank == ranges[i][1]){/*already last ?*/
-        break;
-      }
-      rank += ranges[i][2]; /* Stride */
-      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
-        break;
-    }
+int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup)
+{
+  std::vector<int> to_incl;
+  for (int i = 0; i < n; i++)
+    for (int j = ranges[i][0]; j >= 0 && j < size_ && is_rank_in_range(j, ranges[i][0], ranges[i][1]);
+         j += ranges[i][2])
+      to_incl.push_back(j);
+
+  int newsize = static_cast<int>(to_incl.size());
+  *newgroup   = new Group(newsize);
+
+  for (int j = 0; j < newsize; j++) {
+    int rank          = to_incl[j];
+    s4u::Actor* actor = this->actor(rank);
+    (*newgroup)->set_mapping(actor, j);
   }
   if((*newgroup)!=MPI_GROUP_EMPTY)
     (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
-int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
+int Group::range_excl(int n, int ranges[][3], MPI_Group* newgroup)
+{
+  std::vector<bool> to_excl(size_, false);
   int newsize = size_;
   for (int i = 0; i < n; i++) {
-    for (int rank = ranges[i][0];                    /* First */
-         rank >= 0 && rank < size_; /* Last */
-         ) {
+    for (int j = ranges[i][0]; j >= 0 && j < size_ && is_rank_in_range(j, ranges[i][0], ranges[i][1]);
+         j += ranges[i][2]) {
+      to_excl[j] = true;
       newsize--;
-      if(rank == ranges[i][1]){/*already last ?*/
-        break;
-      }
-      rank += ranges[i][2]; /* Stride */
-      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
-        break;
     }
   }
   if (newsize == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else {
-    *newgroup = new  Group(newsize);
-    int newrank = 0;
-    int oldrank = 0;
-    while (newrank < newsize) {
-      int add = 1;
-      for (int i = 0; i < n; i++) {
-        for (int rank = ranges[i][0]; rank >= 0 && rank < size_;) {
-          if(rank==oldrank){
-            add = 0;
-            break;
-          }
-          if(rank == ranges[i][1]){/*already last ?*/
-            break;
-          }
-          rank += ranges[i][2]; /* Stride */
-          if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
-            break;
-        }
+    *newgroup = new Group(newsize);
+
+    for (int j = 0, rank = 0; rank < size_; rank++) {
+      if (not to_excl[rank]) {
+        s4u::Actor* actor = this->actor(rank);
+        (*newgroup)->set_mapping(actor, j);
+        j++;
       }
-      if(add==1){
-        s4u::Actor* actor = this->actor(oldrank);
-        (*newgroup)->set_mapping(actor, newrank);
-        newrank++;
-      }
-      oldrank++;
     }
   }
   if((*newgroup)!=MPI_GROUP_EMPTY)
