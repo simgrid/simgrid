@@ -48,22 +48,14 @@ DiskImpl::DiskImpl(kernel::resource::Model* model, const std::string& name, kern
   constraint_write_ = maxminSystem->constraint_new(this, write_bw);
 }
 
-DiskImpl::~DiskImpl()
-{
-  xbt_assert(currently_destroying_, "Don't delete Disks directly. Call destroy() instead.");
-}
-
 /** @brief Fire the required callbacks and destroy the object
  *
  * Don't delete directly a Disk, call d->destroy() instead.
  */
 void DiskImpl::destroy()
 {
-  if (not currently_destroying_) {
-    currently_destroying_ = true;
-    s4u::Disk::on_destruction(this->piface_);
-    delete this;
-  }
+  s4u::Disk::on_destruction(this->piface_);
+  delete this;
 }
 
 bool DiskImpl::is_used() const

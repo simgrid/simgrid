@@ -45,11 +45,8 @@ public:
   explicit Host(const std::string& name);
 
 protected:
-  virtual ~Host();
+  virtual ~Host(); // Call destroy() instead of manually deleting it.
   void set_netpoint(kernel::routing::NetPoint* netpoint) { pimpl_netpoint_ = netpoint; }
-
-private:
-  bool currently_destroying_ = false;
 #endif
 
 public:

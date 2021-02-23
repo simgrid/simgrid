@@ -108,14 +108,13 @@ public:
  * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
  */
 class LinkImpl : public Resource, public xbt::PropertyHolder {
-  bool currently_destroying_ = false;
   s4u::Link piface_;
 
 protected:
   LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint);
   LinkImpl(const LinkImpl&) = delete;
   LinkImpl& operator=(const LinkImpl&) = delete;
-  ~LinkImpl() override;
+  ~LinkImpl() override                 = default; // Use destroy() instead of this destructor.
 
 public:
   void destroy(); // Must be called instead of the destructor
