@@ -15,13 +15,12 @@
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_exception, xbt, "Exceptions");
 
-void _xbt_throw(char* message, int value, const char* file, int line, const char* func)
+void _xbt_throw(char* message, const char* file, int line, const char* func)
 {
   simgrid::Exception e(
       simgrid::xbt::ThrowPoint(file, line, func, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid()),
       message ? message : "");
   xbt_free(message);
-  e.value    = value;
   throw e;
 }
 
