@@ -61,20 +61,20 @@ set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
 
 if(enable_smpi)
   if(NOT WIN32)
-    ADD_TESH_FACTORIES(tesh-smpi-macro-shared "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-shared macro-shared.tesh)
-    ADD_TESH_FACTORIES(tesh-smpi-auto-shared "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/auto-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/auto-shared auto-shared.tesh)
-    ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared macro-partial-shared.tesh)
-    ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared-communication "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared-communication --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared-communication macro-partial-shared-communication.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-macro-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-shared macro-shared.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-auto-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/auto-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/auto-shared auto-shared.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared macro-partial-shared.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared-communication "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared-communication --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared-communication macro-partial-shared-communication.tesh)
   endif()
 
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
 	    type-hvector type-indexed type-struct type-vector bug-17132 timers io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub)
-    ADD_TESH_FACTORIES(tesh-smpi-${x} "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/${x} ${x}.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-${x} "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/${x} ${x}.tesh)
   endforeach()
 
   if(SMPI_FORTRAN)
-    ADD_TESH_FACTORIES(tesh-smpi-fort_args "thread;ucontext;raw;boost" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/fort_args --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/fort_args fort_args.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-fort_args "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/fort_args --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/fort_args fort_args.tesh)
   endif()
 
   foreach (ALLGATHER 2dmesh 3dmesh bruck GB loosely_lr NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS smp_simple spreading_simple
@@ -145,7 +145,7 @@ if(enable_smpi)
   # Simple privatization tests
   if(HAVE_PRIVATIZATION)
     foreach(PRIVATIZATION dlopen mmap)
-      ADD_TESH_FACTORIES(tesh-smpi-privatization-${PRIVATIZATION}  "thread;ucontext;raw;boost" --setenv privatization=${PRIVATIZATION} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization privatization.tesh)
+      ADD_TESH_FACTORIES(tesh-smpi-privatization-${PRIVATIZATION}  "*" --setenv privatization=${PRIVATIZATION} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization privatization.tesh)
     endforeach()
   endif()
 endif()

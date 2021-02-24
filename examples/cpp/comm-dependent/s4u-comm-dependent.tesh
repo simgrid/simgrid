@@ -1,0 +1,11 @@
+#!/usr/bin/env tesh
+
+p Testing with default compound
+
+$ ${bindir:=.}/s4u-comm-dependent ${platfdir}/small_platform.xml  --log=s4u_activity.t:verbose "--log=root.fmt:[%6.2r]%e(%i:%a@%h)%e%m%n"
+> [  2.00] (1:sender@Tremblay) Remove a dependency from 'exec on sender' on 'comm to receiver'
+> [  2.00] (1:sender@Tremblay) 'comm to receiver' is assigned to a resource and all dependencies are solved. Let's start
+> [  3.07] (2:receiver@Jupiter) Remove a dependency from 'comm from sender' on 'exec on receiver'
+> [  3.07] (2:receiver@Jupiter) 'exec on receiver' is assigned to a resource and all dependencies are solved. Let's start
+> [  5.07] (2:receiver@Jupiter) Received: 98095000 flops were computed on sender
+> [  5.07] (0:maestro@) Simulation time: 5.070

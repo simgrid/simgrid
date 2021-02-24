@@ -40,7 +40,7 @@ static void thread_create_wrapper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED 
 
 static void mpi_thread_create(const char* name, void* (*f)(void*), void* param)
 {
-  struct threadwrap* threadwrap = (struct threadwrap*)malloc(sizeof(*threadwrap));
+  struct threadwrap* threadwrap = xbt_malloc(sizeof(*threadwrap));
   threadwrap->f                 = f;
   threadwrap->param             = param;
   sg_actor_t actor              = sg_actor_init(name, sg_host_self());
@@ -50,7 +50,7 @@ static void mpi_thread_create(const char* name, void* (*f)(void*), void* param)
 
 static void mythread_create(const char* name, MPI_Request* req, int rank)
 {
-  struct param* param = (struct param*)malloc(sizeof(*param));
+  struct param* param = xbt_malloc(sizeof(*param));
   param->req          = req;
   param->rank         = rank;
   mpi_thread_create(name, req_wait, param);

@@ -8,13 +8,15 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "simgrid/simdag.h"
+#include "simgrid/s4u/Link.hpp"
 #include "src/surf/network_interface.hpp"
 
 #include <algorithm>
 #include <cstring>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier, "Logging specific to this platform parsing tool");
+
+namespace sg4 = simgrid::s4u;
 
 static bool parse_cmdline(int* timings, char** platformFile, int argc, char** argv)
 {
@@ -34,25 +36,24 @@ static bool parse_cmdline(int* timings, char** platformFile, int argc, char** ar
   return parse_ok;
 }
 
-static void create_environment(xbt_os_timer_t parse_time, const char *platformFile)
+static void create_environment(xbt_os_timer_t parse_time, const std::string& platformFile)
 {
   xbt_os_cputimer_start(parse_time);
-  SD_create_environment(platformFile);
+  sg4::Engine::get_instance()->load_platform(platformFile);
   xbt_os_cputimer_stop(parse_time);
 }
 
 static void dump_hosts()
 {
-  size_t totalHosts = sg_host_count();
-  sg_host_t* hosts  = sg_host_list();
-  std::sort(hosts, hosts + totalHosts,
-            [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
+  std::vector<sg4::Host*> hosts  = sg4::Engine::get_instance()->get_all_hosts();
+  std::sort(hosts.begin(), hosts.end(),
+            [](const sg4::Host* a, const sg4::Host* b) { return a->get_name() < b->get_name(); });
 
-  for (size_t i = 0; i < totalHosts; i++) {
-    std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->get_cname(), sg_host_get_speed(hosts[i]));
-    const std::unordered_map<std::string, std::string>* props = hosts[i]->get_properties();
-    if (hosts[i]->get_core_count() > 1) {
-      std::printf(" core=\"%d\"", hosts[i]->get_core_count());
+  for (auto h : hosts) {
+    std::printf("  <host id=\"%s\" speed=\"%.0f\"", h->get_cname(), h->get_speed());
+    const std::unordered_map<std::string, std::string>* props = h->get_properties();
+    if (h->get_core_count() > 1) {
+      std::printf(" core=\"%d\"", h->get_core_count());
     }
     // Sort the properties before displaying them, so that the tests are perfectly reproducible
     std::vector<std::string> keys;
@@ -68,37 +69,32 @@ static void dump_hosts()
       std::printf("/>\n");
     }
   }
-  xbt_free(hosts);
 }
 
 static void dump_links()
 {
-  size_t totalLinks          = sg_link_count();
-  simgrid::s4u::Link** links = sg_link_list();
+  std::vector<sg4::Link*> links = sg4::Engine::get_instance()->get_all_links();
 
-  std::sort(links, links + totalLinks, [](const simgrid::s4u::Link* a, const simgrid::s4u::Link* b) {
-    return strcmp(sg_link_get_name(a), sg_link_get_name(b)) < 0;
+  std::sort(links.begin(), links.end(), [](const sg4::Link* a, const sg4::Link* b) {
+    return a->get_name() < b->get_name();
   });
 
-  for (size_t i = 0; i < totalLinks; i++) {
-    const simgrid::s4u::Link* link = links[i];
+  for (auto link : links) {
     std::printf("  <link id=\"");
 
     std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->get_cname(), link->get_bandwidth(), link->get_latency());
-    if (sg_link_is_shared(link)) {
+    if (link->is_shared()) {
       std::printf("/>\n");
     } else {
       std::printf(" sharing_policy=\"FATPIPE\"/>\n");
     }
   }
-
-  xbt_free(links);
 }
 
 static void dump_routers()
 {
   std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
-      simgrid::s4u::Engine::get_instance()->get_all_netpoints();
+      sg4::Engine::get_instance()->get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),
             [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
@@ -111,28 +107,25 @@ static void dump_routers()
 
 static void dump_routes()
 {
-  size_t totalHosts = sg_host_count();
-  sg_host_t* hosts  = sg_host_list();
-  std::sort(hosts, hosts + totalHosts,
-            [](const_sg_host_t a, const_sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
+  std::vector<sg4::Host*> hosts  = sg4::Engine::get_instance()->get_all_hosts();
+  std::sort(hosts.begin(), hosts.end(),
+            [](const sg4::Host* a, const sg4::Host* b) { return a->get_name() < b->get_name(); });
   std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
-      simgrid::s4u::Engine::get_instance()->get_all_netpoints();
+      sg4::Engine::get_instance()->get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),
             [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
             });
 
-  for (size_t it_src = 0; it_src < totalHosts; it_src++) { // Routes from host
-    const simgrid::s4u::Host* host1         = hosts[it_src];
-    simgrid::kernel::routing::NetPoint* src = host1->get_netpoint();
-    for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
-      const simgrid::s4u::Host* host2 = hosts[it_dst];
+  for (auto src_host : hosts) { // Routes from host
+    simgrid::kernel::routing::NetPoint* src = src_host->get_netpoint();
+    for (auto dst_host : hosts) { // Routes to host
       std::vector<simgrid::kernel::resource::LinkImpl*> route;
-      simgrid::kernel::routing::NetPoint* dst = host2->get_netpoint();
+      simgrid::kernel::routing::NetPoint* dst = dst_host->get_netpoint();
       simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
       if (route.empty())
         continue;
-      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), host2->get_cname());
+      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src_host->get_cname(), dst_host->get_cname());
       for (auto const& link : route)
         std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
       std::printf("\n  </route>\n");
@@ -141,7 +134,7 @@ static void dump_routes()
     for (auto const& dst : netpoints) { // to router
       if (not dst->is_router())
         continue;
-      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), dst->get_cname());
+      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src_host->get_cname(), dst->get_cname());
       std::vector<simgrid::kernel::resource::LinkImpl*> route;
       simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
       for (auto const& link : route)
@@ -163,18 +156,16 @@ static void dump_routes()
         std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
       std::printf("\n  </route>\n");
     }
-    for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
-      const simgrid::s4u::Host* host2 = hosts[it_dst];
-      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), host2->get_cname());
+    for (auto dst_host : hosts) { // Routes to host
+      std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), dst_host->get_cname());
       std::vector<simgrid::kernel::resource::LinkImpl*> route;
-      simgrid::kernel::routing::NetPoint* netcardDst = host2->get_netpoint();
+      simgrid::kernel::routing::NetPoint* netcardDst = dst_host->get_netpoint();
       simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, netcardDst, route, nullptr);
       for (auto const& link : route)
         std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
       std::printf("\n  </route>\n");
     }
   }
-  xbt_free(hosts);
 }
 
 static void dump_platform()
@@ -209,7 +200,7 @@ int main(int argc, char** argv)
 
   xbt_os_timer_t parse_time = xbt_os_timer_new();
 
-  SD_init(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   if (not parse_cmdline(&timings, &platformFile, argc, argv) || not platformFile)
     xbt_die("Invalid command line arguments: expected [--timings] platformFile");
@@ -219,8 +210,8 @@ int main(int argc, char** argv)
   create_environment(parse_time, platformFile);
 
   if (timings) {
-    XBT_INFO("Parsing time: %fs (%zu hosts, %d links)", xbt_os_timer_elapsed(parse_time), sg_host_count(),
-             sg_link_count());
+    XBT_INFO("Parsing time: %fs (%zu hosts, %zu links)", xbt_os_timer_elapsed(parse_time), e.get_host_count(),
+             e.get_link_count());
   } else {
     dump_platform();
   }

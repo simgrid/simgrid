@@ -88,7 +88,7 @@ allgatherv__ompi_neighborexchange(const void *sbuf, int scount,
     rank = comm->rank();
 
     if (size % 2) {
-        XBT_DEBUG("allgatherv__ompi_neighborexchange WARNING: odd size %d, switching to ring algorithm",
+        XBT_INFO("allgatherv__ompi_neighborexchange: odd size %d, switching to ring algorithm",
                      size);
         return allgatherv__ring(sbuf, scount, sdtype,
                                                      rbuf, rcounts,
@@ -213,7 +213,7 @@ allgatherv__ompi_neighborexchange(const void *sbuf, int scount,
     return MPI_SUCCESS;
 
  err_hndl:
-    XBT_DEBUG(  "%s:%4d\tError occurred %d, rank %2d",
+    XBT_WARN(  "%s:%4d\tError occurred %d, rank %2d",
                  __FILE__, line, err, rank);
     return err;
 }

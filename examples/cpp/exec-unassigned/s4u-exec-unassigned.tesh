@@ -1,0 +1,7 @@
+#!/usr/bin/env tesh
+
+! output sort
+$ ${bindir:=.}/s4u-exec-unassigned ${platfdir}/small_platform.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [ 10.000000] (1:worker@Fafard) 'exec' is assigned to a resource and all dependencies are solved. Let's start
+> [ 11.000000] (1:worker@Fafard) Exec 'exec' is complete
+> [ 11.000000] (0:maestro@) Simulation time 11

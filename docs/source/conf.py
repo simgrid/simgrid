@@ -56,7 +56,6 @@ extensions = [
     'sphinx_tabs.tabs',
     'javasphinx',
     'showfile',
-    'autodoxy',
 ]
 
 todo_include_todos = True
@@ -64,35 +63,6 @@ todo_include_todos = True
 # Setup the breath extension
 breathe_projects = {'simgrid': '../build/xml'}
 breathe_default_project = "simgrid"
-
-# Setup the autodoxy extension
-doxygen_xml = os.path.join(os.path.dirname(__file__), "..", "build", "xml")
-autodoxy_requalified_identifiers =  [ # The first element will be substituted into the second one if it's starting an element or preceded by a space
-    ("Activity",       "simgrid::s4u::Activity"),
-    ("Actor",          "simgrid::s4u::Actor"),
-    ("ActorPtr",       "simgrid::s4u::ActorPtr"),
-    ("Barrier",        "simgrid::s4u::Barrier"),
-    ("BarrierPtr",     "simgrid::s4u::BarrierPtr"),
-    ("Comm",           "simgrid::s4u::Comm"),
-    ("CommPtr",        "simgrid::s4u::CommPtr"),
-    ("ConditionVariable",    "simgrid::s4u::ConditionVariable"),
-    ("ConditionVariablePtr", "simgrid::s4u::ConditionVariablePtr"),
-    ("Disk",           "simgrid::s4u::Disk"),
-    ("Exec",           "simgrid::s4u::Exec"),
-    ("ExecPtr",        "simgrid::s4u::ExecPtr"),
-    ("Host",           "simgrid::s4u::Host"),
-    ("s4u::Host",      "simgrid::s4u::Host"),
-    ("Engine",         "simgrid::s4u::Engine"),
-    ("Io",             "simgrid::s4u::Io"),
-    ("Link",           "simgrid::s4u::Link"),
-    ("Mailbox",        "simgrid::s4u::Mailbox"),
-    ("Mutex",          "simgrid::s4u::Mutex"),
-    ("s4u::Mutex",     "simgrid::s4u::Mutex"),
-    ("s4u::MutexPtr",  "simgrid::s4u::MutexPtr"),
-    ("NetZone",        "simgrid::s4u::NetZone"),
-    ("Semaphore",      "simgrid::s4u::Semaphore"),
-    ("VirtualMachine", "simgrid::s4u::VirtualMachine"),
-  ]
 
 # Generate a warning for all a cross-reference (such as :func:`myfunc`) that cannot be found
 nitpicky = True
@@ -112,16 +82,24 @@ nitpick_ignore = [
   ('cpp:identifier', 'kernel::profile'),
   ('cpp:identifier', 'kernel::resource'),
   ('cpp:identifier', 'kernel::routing'),
+  ('cpp:identifier', 'sg_msg_Comm'),
+  ('cpp:identifier', 'sg_msg_Task'),
   ('cpp:identifier', 'simgrid'),
   ('cpp:identifier', 'simgrid::s4u'),
+  ('cpp:identifier', 'simgrid::s4u::this_actor'),
+  ('cpp:identifier', 'simgrid::s4u::Activity_T<Comm>'),
+  ('cpp:identifier', 'simgrid::s4u::Activity_T<Io>'),
   ('cpp:identifier', 'simgrid::xbt'),
   ('cpp:identifier', 'this_actor'),
   ('cpp:identifier', 's4u'),
   ('cpp:identifier', 's4u_Actor'),
   ('cpp:identifier', 's4u_Barrier'),
+  ('cpp:identifier', 's4u_Comm'),
   ('cpp:identifier', 's4u_ConditionVariable'),
+  ('cpp:identifier', 's4u_Exec'),
   ('cpp:identifier', 's4u_Host'),
   ('cpp:identifier', 's4u_NetZone'),
+  ('cpp:identifier', 's4u_Mailbox'),
   ('cpp:identifier', 's4u_Mutex'),
   ('cpp:identifier', 's4u_Link'),
   ('cpp:identifier', 's4u_Semaphore'),

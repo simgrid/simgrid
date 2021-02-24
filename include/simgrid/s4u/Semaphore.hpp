@@ -14,7 +14,7 @@ namespace s4u {
 
 /** @brief A classical semaphore, but blocking in the simulation world
  *
- * @rst
+ * @beginrst
  * It is strictly impossible to use a real semaphore, such as
  * `sem_init <http://pubs.opengroup.org/onlinepubs/9699919799/functions/sem_init.html>`_,
  * because it would block the whole simulation.

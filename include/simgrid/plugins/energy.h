@@ -27,6 +27,8 @@ XBT_PUBLIC double sg_link_get_consumed_energy(const_sg_link_t link);
 
 XBT_PUBLIC int sg_link_energy_is_inited();
 
+/** @ingroup plugin_link_energy_wifi
+ *  @brief Initialize the wifi energy plugin */
 XBT_PUBLIC void sg_wifi_energy_plugin_init();
 
 #if SIMGRID_HAVE_MSG

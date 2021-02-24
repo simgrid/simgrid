@@ -12,6 +12,7 @@
 
 #include "src/kernel/context/ContextSwapped.hpp"
 
+#include <boost/core/demangle.hpp>
 #include <memory>
 
 #ifdef _WIN32
@@ -51,7 +52,7 @@ void smx_ctx_wrapper(simgrid::kernel::context::SwappedContext* context)
   } catch (simgrid::ForcefulKillException const&) {
     XBT_DEBUG("Caught a ForcefulKillException");
   } catch (simgrid::Exception const& e) {
-    XBT_INFO("Actor killed by an uncaught exception %s", simgrid::xbt::demangle(typeid(e).name()).get());
+    XBT_INFO("Actor killed by an uncaught exception %s", boost::core::demangle(typeid(e).name()).c_str());
     throw;
   }
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT

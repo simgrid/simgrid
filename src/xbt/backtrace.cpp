@@ -10,21 +10,19 @@
 #include <xbt/sysdep.h>
 #include <xbt/virtu.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <cstdio>
 #include <cstdlib>
 #include <sstream>
 
-// Try to detect and use the C++ itanium ABI for name demangling:
-#ifdef __GXX_ABI_VERSION
-#include <cxxabi.h>
-#endif
-
 #if HAVE_BOOST_STACKTRACE_BACKTRACE
 #define BOOST_STACKTRACE_USE_BACKTRACE
 #include <boost/stacktrace.hpp>
+#include <boost/stacktrace/detail/frame_decl.hpp>
 #elif HAVE_BOOST_STACKTRACE_ADDR2LINE
 #define BOOST_STACKTRACE_USE_ADDR2LINE
 #include <boost/stacktrace.hpp>
+#include <boost/stacktrace/detail/frame_decl.hpp>
 #endif
 
 /** @brief show the backtrace of the current point (lovely while debugging) */
@@ -36,31 +34,37 @@ void xbt_backtrace_display_current()
 namespace simgrid {
 namespace xbt {
 
-std::unique_ptr<char, std::function<void(char*)>> demangle(const char* name)
-{
-#ifdef __GXX_ABI_VERSION
-  int status;
-  std::unique_ptr<char, std::function<void(char*)>> res(abi::__cxa_demangle(name, nullptr, nullptr, &status),
-                                                        &std::free);
-  if (res != nullptr)
-    return res;
-  // We did not manage to resolve this. Probably because this is not a mangled symbol:
-#endif
-  // Return the symbol:
-  return std::unique_ptr<char, std::function<void(char*)>>(xbt_strdup(name), &xbt_free_f);
-}
-
 class BacktraceImpl {
 #if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
-  const boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
+  const boost::stacktrace::stacktrace st;
+
 public:
   std::string resolve() const
   {
     std::stringstream ss;
-    ss << st;
+
+    int frame_count = 0;
+    int state       = 0;
+
+    for (boost::stacktrace::frame frame : st) {
+      if (state == 1) {
+        if (boost::starts_with(frame.name(), "simgrid::xbt::MainFunction") ||
+            boost::starts_with(frame.name(), "simgrid::kernel::context::Context::operator()()"))
+          break;
+        ss << "  ->  " << frame_count++ << "# " << frame.name() << " at " << frame.source_file() << ":"
+           << frame.source_line() << std::endl;
+        if (frame.name() == "main")
+          break;
+      } else {
+        if (frame.name() == "simgrid::xbt::Backtrace::Backtrace()")
+          state = 1;
+      }
+    }
+
     return ss.str();
   }
 #else
+
 public:
   std::string resolve() const { return ""; } // fallback value
 #endif

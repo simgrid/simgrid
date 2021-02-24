@@ -20,27 +20,15 @@
 #include "simgrid/forward.h" // aid_t
 #include <array>
 #include <cstdint>
+#include <xbt/utility.hpp>
 
 // ***** Messages
 namespace simgrid {
 namespace mc {
 
-enum class MessageType {
-  NONE,
-  CONTINUE,
-  IGNORE_HEAP,
-  UNIGNORE_HEAP,
-  IGNORE_MEMORY,
-  STACK_REGION,
-  REGISTER_SYMBOL,
-  DEADLOCK_CHECK,
-  DEADLOCK_CHECK_REPLY,
-  WAITING,
-  SIMCALL_HANDLE,
-  ASSERTION_FAILED,
-  ACTOR_ENABLED,
-  ACTOR_ENABLED_REPLY
-};
+XBT_DECLARE_ENUM_CLASS(MessageType, NONE, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY, STACK_REGION,
+                       REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_HANDLE, ASSERTION_FAILED,
+                       ACTOR_ENABLED, ACTOR_ENABLED_REPLY);
 
 } // namespace mc
 } // namespace simgrid
@@ -110,8 +98,6 @@ struct s_mc_message_actor_enabled_t {
   simgrid::mc::MessageType type;
   aid_t aid; // actor ID
 };
-
-XBT_PRIVATE const char* MC_message_type_name(simgrid::mc::MessageType type);
 
 #endif // __cplusplus
 #endif

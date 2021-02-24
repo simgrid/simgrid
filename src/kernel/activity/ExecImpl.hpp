@@ -6,6 +6,7 @@
 #ifndef SIMGRID_KERNEL_ACTIVITY_EXEC_HPP
 #define SIMGRID_KERNEL_ACTIVITY_EXEC_HPP
 
+#include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "surf/surf.hpp"
@@ -23,9 +24,11 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::vector<s4u::Host*> hosts_;
   std::vector<double> flops_amounts_;
   std::vector<double> bytes_amounts_;
+  s4u::Exec* piface_;
 
 public:
   ExecImpl();
+  s4u::Exec* get_iface() { return piface_; }
 
   ExecImpl& set_timeout(double timeout) override;
   ExecImpl& set_bound(double bound);

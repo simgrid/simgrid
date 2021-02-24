@@ -27,6 +27,18 @@ extern void assert_cleanup();
 #define BEGIN_SECTION(descr) SECTION(descr) { simgrid::s4u::Actor::create(descr, all_hosts[0], []()
 #define END_SECTION })
 
-#define RUN_SECTION(descr, ...) SECTION(descr) { simgrid::s4u::Actor::create(descr, all_hosts[0], __VA_ARGS__); }
+#define RUN_SECTION(descr, ...) SECTION(descr) simgrid::s4u::Actor::create(descr, all_hosts[0], __VA_ARGS__)
+
+// Normally, we should be able use Catch2's REQUIRE_THROWS_AS(...), but it generates errors with Address Sanitizer.
+// They're certainly false positive. Nevermind and use this simpler replacement.
+#define REQUIRE_NETWORK_FAILURE(...)                                                                                   \
+  do {                                                                                                                 \
+    try {                                                                                                              \
+      __VA_ARGS__;                                                                                                     \
+      FAIL("Expected exception NetworkFailureException not caught");                                                   \
+    } catch (simgrid::NetworkFailureException const&) {                                                                \
+      XBT_VERB("got expected NetworkFailureException");                                                                \
+    }                                                                                                                  \
+  } while (0)
 
 #endif // ACTIVITY_LIFECYCLE_HPP

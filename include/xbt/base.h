@@ -111,6 +111,32 @@
                          a16, a15, a14, a13, a12, a11, a10, a9,         \
                          a8, a7, a6, a5, a4, a3, a2, a1, N, ...) N
 
+/* Expands to number of arguments. */
+#define _XBT_COUNT_ARGS(...) _XBT_IF_ONE_ARG_(__VA_ARGS__,              \
+                                              64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, \
+                                              48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, \
+                                              32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, \
+                                              16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
+/* Expands to list with each argument rendered as string. Add more cases if needed. */
+#define _XBT_STRINGIFY_ARGS(...) _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_02_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_02_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_03_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_03_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_04_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_04_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_05_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_05_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_06_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_06_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_07_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_07_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_08_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_08_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_09_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_09_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_10_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_10_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_11_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_11_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_12_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_12_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_13_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_13_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_14_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_14_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_15_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_15_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_16_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_16_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_17_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_17_(...) _XBT_STRINGIFY_ARGS("ERROR: MAXIMUM SIZE REACHED")
+
 /* Handle import/export stuff
  *
  * Rationale of XBT_PUBLIC:

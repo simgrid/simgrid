@@ -127,6 +127,8 @@ int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
 {
   CHECK_NULL(4, MPI_ERR_ARG, comm_out)
   CHECK_COMM2(1, comm)
+  if( color != MPI_UNDEFINED)//we use a negative value for MPI_UNDEFINED 
+    CHECK_NEGATIVE(3, MPI_ERR_ARG, color)
   smpi_bench_end();
   *comm_out = comm->split(color, key);
   smpi_bench_begin();

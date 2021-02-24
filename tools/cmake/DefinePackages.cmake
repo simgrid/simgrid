@@ -623,7 +623,6 @@ set(MC_SRC
   src/mc/remote/RemoteSimulation.cpp
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
-  src/mc/remote/mc_protocol.cpp
 
   src/mc/sosp/PageStore.hpp
   src/mc/sosp/PageStore.cpp
@@ -681,7 +680,7 @@ set(headers_to_install
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
-  include/simgrid/smpi/replay.hpp
+  include/simgrid/smpi/smpi_replay.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
   include/simgrid/simdag.h
@@ -759,7 +758,6 @@ set(headers_to_install
   include/xbt/file.hpp
   include/xbt/functional.hpp
   include/xbt/function_types.h
-  include/xbt/future.hpp
   include/xbt/graph.h
   include/xbt/log.h
   include/xbt/log.hpp
@@ -769,6 +767,7 @@ set(headers_to_install
   include/xbt/PropertyHolder.hpp
   include/xbt/parmap.h
   include/xbt/parse_units.hpp
+  include/xbt/promise.hpp
   include/xbt/range.hpp
   include/xbt/random.hpp
   include/xbt/replay.hpp
@@ -881,7 +880,6 @@ set(DOC_SOURCES
   docs/source/Doxyfile
   docs/find-missing.ignore
   docs/find-missing.py
-  docs/source/_ext/autodoxy.py
   docs/source/_ext/showfile.css
   docs/source/_ext/showfile.js
   docs/source/_ext/showfile.py
@@ -1006,7 +1004,7 @@ set(txt_files
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
   examples/c/CMakeLists.txt
-  examples/s4u/CMakeLists.txt
+  examples/cpp/CMakeLists.txt
   examples/smpi/CMakeLists.txt
   examples/smpi/NAS/CMakeLists.txt
   examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
@@ -1021,11 +1019,11 @@ set(CMAKEFILES_TXT
   teshsuite/kernel/CMakeLists.txt
   teshsuite/lua/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
+  teshsuite/models/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/python/CMakeLists.txt
   teshsuite/s4u/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
-  teshsuite/simix/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
@@ -1164,6 +1162,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/multicore_machine.xml
   examples/platforms/ns3-big-cluster.xml
   examples/platforms/onelink.xml
+  examples/platforms/ptask_L07.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
   examples/platforms/routing_cluster.lua

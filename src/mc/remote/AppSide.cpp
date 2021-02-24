@@ -141,8 +141,7 @@ void AppSide::handle_messages() const
         break;
 
       default:
-        xbt_die("Received unexpected message %s (%i)", MC_message_type_name(message->type),
-                static_cast<int>(message->type));
+        xbt_die("Received unexpected message %s (%i)", to_c_str(message->type), static_cast<int>(message->type));
         break;
     }
   }

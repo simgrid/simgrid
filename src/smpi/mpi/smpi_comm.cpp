@@ -34,6 +34,8 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, bool smp, int in_id)
   errhandler_->ref();
   //First creation of comm is done before SIMIX_run, so only do comms for others
   if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
+    this->add_f();
+    group->c2f();
     int id;
     if(this->rank()==0){
       static int global_id_ = 0;
@@ -322,6 +324,8 @@ void Comm::unref(Comm* comm){
   Group::unref(comm->group_);
 
   if(comm->refcount_==0){
+    if(simgrid::smpi::F2C::lookup() != nullptr)
+      F2C::free_f(comm->c2f());
     comm->cleanup_smp();
     comm->cleanup_attr<Comm>();
     if (comm->info_ != MPI_INFO_NULL)

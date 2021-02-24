@@ -92,77 +92,68 @@ public:
   /** Return the information about where the exception was thrown */
   xbt::ThrowPoint const& throw_point() const { return throwpoint_; }
 
+  /** Allow to carry a value (used by testany/waitany) */
+  int get_value() const { return value_; }
+  void set_value(int value) { value_ = value; }
+
   std::string resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
 
-  /** Allow to carry a value (used by waitall/waitany) */
-  int value = 0;
+  virtual void rethrow_nested(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message) const
+  {
+    std::throw_with_nested(Exception(throwpoint, message));
+  }
 
 private:
   xbt::ThrowPoint throwpoint_;
+  int value_ = 0;
 };
 
+#define DECLARE_SIMGRID_EXCEPTION(AnyException, ...)                                                                   \
+  class AnyException : public Exception {                                                                              \
+  public:                                                                                                              \
+    using Exception::Exception;                                                                                        \
+    __VA_ARGS__                                                                                                        \
+    ~AnyException() override;                                                                                          \
+    void rethrow_nested(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message) const override         \
+    {                                                                                                                  \
+      std::throw_with_nested(AnyException(throwpoint, message));                                                       \
+    }                                                                                                                  \
+  }
+
 /** Exception raised when a timeout elapsed */
-class TimeoutException : public Exception {
-public:
-  using Exception::Exception;
-  ~TimeoutException() override;
-};
+DECLARE_SIMGRID_EXCEPTION(TimeoutException);
 
 using TimeoutError XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::TimeoutException") = TimeoutException;
 
 /** Exception raised when a host fails */
-class HostFailureException : public Exception {
-public:
-  using Exception::Exception;
-  ~HostFailureException() override;
-};
+DECLARE_SIMGRID_EXCEPTION(HostFailureException);
 
 /** Exception raised when a communication fails because of the network or because of the remote host */
-class NetworkFailureException : public Exception {
-public:
-  using Exception::Exception;
-  ~NetworkFailureException() override;
-};
+DECLARE_SIMGRID_EXCEPTION(NetworkFailureException);
 
 /** Exception raised when a storage fails */
-class StorageFailureException : public Exception {
-public:
-  using Exception::Exception;
-  ~StorageFailureException() override;
-};
+DECLARE_SIMGRID_EXCEPTION(StorageFailureException);
 
 /** Exception raised when a VM fails */
-class VmFailureException : public Exception {
-public:
-  using Exception::Exception;
-  ~VmFailureException() override;
-};
+DECLARE_SIMGRID_EXCEPTION(VmFailureException);
 
 /** Exception raised when something got canceled before completion */
-class CancelException : public Exception {
-public:
-  using Exception::Exception;
-  ~CancelException() override;
-};
+DECLARE_SIMGRID_EXCEPTION(CancelException);
 
 /** Exception raised when something is going wrong during the simulation tracing */
-class TracingError : public Exception {
-public:
-  using Exception::Exception;
-  ~TracingError() override;
-};
+DECLARE_SIMGRID_EXCEPTION(TracingError);
 
 /** Exception raised when something is going wrong during the parsing of XML files */
-class ParseError : public Exception {
-public:
-  ParseError(const std::string& file, int line, const std::string& msg)
-      : Exception(XBT_THROW_POINT, xbt::string_printf("Parse error at %s:%d: %s", file.c_str(), line, msg.c_str()))
-  {
+#define PARSE_ERROR_CONSTRUCTOR                                                                                        \
+  ParseError(const std::string& file, int line, const std::string& msg)                                                \
+      : Exception(XBT_THROW_POINT, xbt::string_printf("Parse error at %s:%d: %s", file.c_str(), line, msg.c_str()))    \
+  {                                                                                                                    \
   }
-  ParseError(const ParseError&)     = default;
-  ParseError(ParseError&&) noexcept = default;
-  ~ParseError() override;
-};
+
+DECLARE_SIMGRID_EXCEPTION(ParseError, PARSE_ERROR_CONSTRUCTOR);
+#undef PARSE_ERROR_CONSTRUCTOR
+
+#undef DECLARE_SIMGRID_EXCEPTION
 
 class XBT_PUBLIC ForcefulKillException {
   /** @brief Exception launched to kill an actor; DO NOT BLOCK IT!

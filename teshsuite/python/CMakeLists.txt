@@ -4,7 +4,7 @@ foreach(example borken-context corrupt-stack)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
 
   if(enable_python)
-    ADD_TESH_FACTORIES(tesh-python-${example} "thread;ucontext;raw;boost"
+    ADD_TESH_FACTORIES(tesh-python-${example} "*"
                                --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                --setenv pythoncmd=${PYTHON_EXECUTABLE}

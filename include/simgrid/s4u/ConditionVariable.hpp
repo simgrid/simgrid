@@ -17,7 +17,7 @@ namespace simgrid {
 namespace s4u {
 
 /**
- * @rst
+ * @beginrst
  * SimGrid's condition variables are meant to be drop-in replacements of ``std::condition_variable``.
  * Please refer to the `documentation of standard C++ <https://en.cppreference.com/w/cpp/thread/condition_variable>`_
  * for more information on condition variables. A SimGrid example is available in Section :ref:`s4u_ex_IPC`.
@@ -41,7 +41,7 @@ public:
 
   /** Create a new condition variable and return a smart pointer
    *
-   * @rst
+   * @beginrst
    * You should only manipulate :cpp:type:`simgrid::s4u::ConditionVariablePtr`, as created by this function (see also :ref:`s4u_raii`).
    * @endrst
    */

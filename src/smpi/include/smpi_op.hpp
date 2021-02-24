@@ -17,11 +17,12 @@ class Op : public F2C{
   bool is_commutative_;
   bool is_fortran_op_ = false;
   int refcount_ = 1;
-  bool predefined_;
+  bool is_predefined_;
 
 public:
-  Op(MPI_User_function* function, bool commutative, bool predefined=false) : func_(function), is_commutative_(commutative), predefined_(predefined) {}
+  Op(MPI_User_function* function, bool commutative, bool predefined=false) : func_(function), is_commutative_(commutative), is_predefined_(predefined) {if(not predefined) this->add_f();}
   bool is_commutative() const { return is_commutative_; }
+  bool is_predefined() const { return is_predefined_; }
   bool is_fortran_op() const { return is_fortran_op_; }
   // tell that we were created from fortran, so we need to translate the type to fortran when called
   void set_fortran_op() { is_fortran_op_ = true; }

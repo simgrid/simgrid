@@ -11,7 +11,7 @@
 #include "src/simix/smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
-#include <array>
+#include <vector>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
@@ -29,7 +29,7 @@ thread_local Context* Context::current_context_ = nullptr;
 /* Install or disable alternate signal stack, for SIGSEGV handler. */
 int Context::install_sigsegv_stack(stack_t* old_stack, bool enable)
 {
-  static std::array<unsigned char, SIGSTKSZ> sigsegv_stack;
+  static std::vector<unsigned char> sigsegv_stack(SIGSTKSZ);
   stack_t stack;
   stack.ss_sp    = sigsegv_stack.data();
   stack.ss_size  = sigsegv_stack.size();

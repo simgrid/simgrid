@@ -42,43 +42,7 @@ double ActivityImpl::get_remaining() const
 
 const char* ActivityImpl::get_state_str() const
 {
-  switch (state_) {
-    case State::WAITING:
-      return "WAITING";
-
-    case State::READY:
-      return "READY";
-
-    case State::RUNNING:
-      return "RUNNING";
-
-    case State::CANCELED:
-      return "CANCELED";
-
-    case State::FAILED:
-      return "FAILED";
-
-    case State::DONE:
-      return "DONE";
-
-    case State::SRC_HOST_FAILURE:
-      return "SRC_HOST_FAILURE";
-
-    case State::DST_HOST_FAILURE:
-      return "DST_HOST_FAILURE";
-
-    case State::TIMEOUT:
-      return "TIMEOUT";
-
-    case State::SRC_TIMEOUT:
-      return "SRC_TIMEOUT";
-    case State::DST_TIMEOUT:
-      return "DST_TIMEOUT";
-
-    case State::LINK_FAILURE:
-      return "LINK_FAILURE";
-  }
-  THROW_IMPOSSIBLE;
+  return to_c_str(state_);
 }
 
 bool ActivityImpl::test()
@@ -116,8 +80,12 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   /* If the synchro is already finished then perform the error handling */
   if (state_ != simgrid::kernel::activity::State::RUNNING)
     finish();
-  else {
-    /* we need a sleep action (even when there is no timeout) to be notified of host failures */
+  else if (timeout == 0.) {
+    // still running and timeout == 0 ? We need to report a timeout
+    state_ = simgrid::kernel::activity::State::TIMEOUT;
+    finish();
+  } else {
+    /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
     set_timeout(timeout);
   }
 }

@@ -41,8 +41,8 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
   XBT_DEBUG("send from mailbox %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
-  simgrid::kernel::activity::CommImplPtr this_comm(new simgrid::kernel::activity::CommImpl());
-  this_comm->set_type(simgrid::kernel::activity::CommImpl::Type::SEND);
+  simgrid::kernel::activity::CommImplPtr this_comm(
+      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::SEND));
 
   /* Look for communication synchro matching our needs. We also provide a description of
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
@@ -69,7 +69,6 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
     XBT_DEBUG("Receive already pushed");
 
     other_comm->state_ = simgrid::kernel::activity::State::READY;
-    other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
   }
 
   if (detached) {
@@ -114,8 +113,8 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                            double rate)
 {
-  simgrid::kernel::activity::CommImplPtr this_synchro(new simgrid::kernel::activity::CommImpl());
-  this_synchro->set_type(simgrid::kernel::activity::CommImpl::Type::RECEIVE);
+  simgrid::kernel::activity::CommImplPtr this_synchro(
+      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::RECEIVE));
   XBT_DEBUG("recv from mbox %p. this_synchro=%p", mbox, this_synchro.get());
 
   simgrid::kernel::activity::CommImplPtr other_comm;
@@ -136,7 +135,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
       if (other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
         other_comm->state_ = simgrid::kernel::activity::State::DONE;
-        other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::DONE).set_mailbox(nullptr);
+        other_comm->set_mailbox(nullptr);
       }
     }
   } else {
@@ -158,7 +157,6 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
       XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
 
       other_comm->state_ = simgrid::kernel::activity::State::READY;
-      other_comm->set_type(simgrid::kernel::activity::CommImpl::Type::READY);
     }
     receiver->activities_.emplace_back(other_comm);
   }
@@ -365,12 +363,6 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-CommImpl& CommImpl::set_type(CommImpl::Type type)
-{
-  type_ = type;
-  return *this;
-}
-
 CommImpl& CommImpl::set_size(double size)
 {
   size_ = size;
@@ -415,7 +407,7 @@ CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes) : size_(bytes),
 
 CommImpl::~CommImpl()
 {
-  XBT_DEBUG("Really free communication %p in state %d (detached = %d)", this, static_cast<int>(state_), detached_);
+  XBT_DEBUG("Really free communication %p in state %s (detached = %d)", this, get_state_str(), detached_);
 
   cleanup_surf();
 
@@ -694,30 +686,21 @@ void CommImpl::finish()
       }
       CommImpl** element = std::find(comms, comms + count, this);
       int rank           = (element != comms + count) ? element - comms : -1;
-
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer_->exception_);
       } catch (simgrid::Exception& e) {
-        e.value = rank;
+        e.set_value(rank);
       }
     }
 
     simcall->issuer_->waiting_synchro_ = nullptr;
     simcall->issuer_->activities_.remove(this);
     if (detached_) {
-      if (simcall->issuer_ == src_actor_) {
-        if (dst_actor_)
-          dst_actor_->activities_.remove(this);
-      } else if (simcall->issuer_ == dst_actor_) {
-        if (src_actor_)
-          src_actor_->activities_.remove(this);
-      } else {
-        if (dst_actor_ != nullptr)
-          dst_actor_->activities_.remove(this);
-        if (src_actor_ != nullptr)
-          src_actor_->activities_.remove(this);
-      }
+      if (simcall->issuer_ != dst_actor_ && dst_actor_ != nullptr)
+        dst_actor_->activities_.remove(this);
+      if (simcall->issuer_ != src_actor_ && src_actor_ != nullptr)
+        src_actor_->activities_.remove(this);
     }
   }
 }

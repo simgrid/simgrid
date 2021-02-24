@@ -50,25 +50,53 @@ MACRO(ADD_TESH NAME)
   endif()
 ENDMACRO()
 
+# Build a list variable named FACTORIES_LIST with the given arguments, but:
+# - replace wildcard "*" with all known factories
+# - if the list begins with "^", take the complement
+# - finally remove unsupported factories
+#
+# Used by ADD_TESH_FACTORIES, and SET_TESH_PROPERTIES
+MACRO(SETUP_FACTORIES_LIST)
+  set(ALL_KNOWN_FACTORIES "thread;boost;raw;ucontext")
+
+  if("${ARGV}" STREQUAL "*")    # take all known factories
+    SET(FACTORIES_LIST ${ALL_KNOWN_FACTORIES})
+  elseif("${ARGV}" MATCHES "^\\^") # exclude given factories
+    SET(FACTORIES_LIST ${ALL_KNOWN_FACTORIES})
+    STRING(SUBSTRING "${ARGV}" 1 -1 EXCLUDED)
+    LIST(REMOVE_ITEM FACTORIES_LIST ${EXCLUDED})
+  else()                        # take given factories
+    SET(FACTORIES_LIST "${ARGV}")
+  endif()
+
+  # Exclude unsupported factories. Threads are always available, thanks to C++11 threads.
+  if(NOT HAVE_BOOST_CONTEXTS)
+    LIST(REMOVE_ITEM FACTORIES_LIST "boost")
+  endif()
+  if(NOT HAVE_RAW_CONTEXTS)
+    LIST(REMOVE_ITEM FACTORIES_LIST "raw")
+  endif()
+  if(NOT HAVE_UCONTEXT_CONTEXTS)
+    LIST(REMOVE_ITEM FACTORIES_LIST "ucontext")
+  endif()
+
+  # Check that there is no unknown factory
+  FOREACH(FACTORY ${FACTORIES_LIST})
+    if(NOT FACTORY IN_LIST ALL_KNOWN_FACTORIES)
+      message(FATAL_ERROR "Unknown factory: ${FACTORY}")
+    endif()
+  ENDFOREACH()
+ENDMACRO()
+
 MACRO(ADD_TESH_FACTORIES NAME FACTORIES)
   SET(ARGR ${ARGV})
   LIST(REMOVE_AT ARGR 0) # remove name
   FOREACH(I ${FACTORIES}) # remove all factories
     LIST(REMOVE_AT ARGR 0)
   ENDFOREACH()
-  FOREACH(FACTORY ${FACTORIES})
-    if ((${FACTORY} STREQUAL "thread" ) OR # Always available, thanks to C++11 threads
-        (${FACTORY} STREQUAL "boost" AND HAVE_BOOST_CONTEXTS) OR
-        (${FACTORY} STREQUAL "raw" AND HAVE_RAW_CONTEXTS) OR
-        (${FACTORY} STREQUAL "ucontext" AND HAVE_UCONTEXT_CONTEXTS))
-      ADD_TESH("${NAME}-${FACTORY}" "--cfg" "contexts/factory:${FACTORY}" ${ARGR})
-    endif()
-    if ((NOT ${FACTORY} STREQUAL "thread") AND 
-        (NOT ${FACTORY} STREQUAL "boost") AND
-	(NOT ${FACTORY} STREQUAL "raw") AND
-	(NOT ${FACTORY} STREQUAL "ucontext"))
-	message(FATAL_ERROR "Cannot add a tesh for an unknown factory: ${FACTORY}")
-    endif()
+  SETUP_FACTORIES_LIST(${FACTORIES})
+  FOREACH(FACTORY ${FACTORIES_LIST})
+    ADD_TESH("${NAME}-${FACTORY}" "--cfg" "contexts/factory:${FACTORY}" ${ARGR})
   ENDFOREACH()
 ENDMACRO()
 
@@ -78,13 +106,9 @@ MACRO(SET_TESH_PROPERTIES NAME FACTORIES)
   FOREACH(I ${FACTORIES}) # remove all factories
     LIST(REMOVE_AT ARGR 0)
   ENDFOREACH()
-  FOREACH(FACTORY ${FACTORIES})
-    if ((${FACTORY} STREQUAL "thread" ) OR # Always available, thanks to C++11 threads
-        (${FACTORY} STREQUAL "boost" AND HAVE_BOOST_CONTEXTS) OR
-        (${FACTORY} STREQUAL "raw" AND HAVE_RAW_CONTEXTS) OR
-        (${FACTORY} STREQUAL "ucontext" AND HAVE_UCONTEXT_CONTEXTS))
-      set_tests_properties("${NAME}-${FACTORY}" PROPERTIES ${ARGR})
-    endif()
+  SETUP_FACTORIES_LIST(${FACTORIES})
+  FOREACH(FACTORY ${FACTORIES_LIST})
+    set_tests_properties("${NAME}-${FACTORY}" PROPERTIES ${ARGR})
   ENDFOREACH()
 ENDMACRO()      
 

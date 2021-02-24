@@ -115,9 +115,8 @@ int bcast__NTSL_Isend(void *buf, int count, MPI_Datatype datatype,
     delete[] recv_status_array;
   }                             /* end pipeline */
 
-  /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    XBT_WARN("MPI_bcast_NTSL_Isend_nb use default MPI_bcast.");
+    XBT_INFO("MPI_bcast_NTSL_Isend_nb: count is not divisible by block size, use default MPI_bcast for remainder.");
     colls::bcast((char*)buf + (pipe_length * increment), remainder, datatype, root, comm);
   }
 

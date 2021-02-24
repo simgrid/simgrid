@@ -23,11 +23,7 @@ Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ &&
       (pimpl_ == nullptr || pimpl_->state_ == kernel::activity::State::RUNNING)) {
-    if (not detached_)
-      XBT_INFO("Comm %p freed before its completion. Did you forget to detach it? (state: %s)", this, get_state_str());
-    else
-      XBT_INFO("Detached comm %p freed before its completion, please report that bug along with a MWE (state: %s).",
-               this, get_state_str());
+    XBT_INFO("Comm %p freed before its completion. Did you forget to detach it? (state: %s)", this, get_state_str());
     if (pimpl_ != nullptr)
       XBT_INFO("pimpl_->state: %s", pimpl_->get_state_str());
     else
@@ -42,8 +38,10 @@ int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
   std::transform(begin(*comms), end(*comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   int changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
-  if (changed_pos != -1)
+  if (changed_pos != -1) {
+    on_completion(*(comms->at(changed_pos)));
     comms->at(changed_pos)->release_dependencies();
+  }
   return changed_pos;
 }
 
@@ -118,9 +116,9 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
   dst_buff_size_ = size;
   return this;
 }
-Comm* Comm::set_payload_size(double bytes)
+CommPtr Comm::set_payload_size(double bytes)
 {
-  set_remaining(bytes);
+  Activity::set_remaining(bytes);
   return this;
 }
 
@@ -132,10 +130,11 @@ CommPtr Comm::sendto_init(Host* from, Host* to)
 
   return res;
 }
+
 CommPtr Comm::sendto_async(Host* from, Host* to, double simulated_size_in_bytes)
 {
-  auto res = Comm::sendto_init(from, to);
-  res->set_remaining(simulated_size_in_bytes)->start();
+  auto res = Comm::sendto_init(from, to)->set_payload_size(simulated_size_in_bytes);
+  res->vetoable_start();
   return res;
 }
 
@@ -148,7 +147,7 @@ Comm* Comm::start()
     xbt_assert(src_buff_ == nullptr && dst_buff_ == nullptr,
                "Direct host-to-host communications cannot carry any data.");
     pimpl_ = kernel::actor::simcall([this] {
-      auto res = new kernel::activity::CommImpl(this->from_, this->to_, this->get_remaining());
+      kernel::activity::CommImplPtr res(new kernel::activity::CommImpl(this->from_, this->to_, this->get_remaining()));
       res->start();
       return res;
     });
@@ -195,7 +194,7 @@ Comm* Comm::wait_for(double timeout)
     case State::INITED:
     case State::STARTING: // It's not started yet. Do it in one simcall if it's a regular communication
       if (from_ != nullptr || to_ != nullptr) {
-        return start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
+        return vetoable_start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
       } else if (src_buff_ != nullptr) {
         on_start(*this, true /*is_sender*/);
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,

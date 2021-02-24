@@ -20,7 +20,7 @@
 #include <map>
 
 SIMGRID_REGISTER_PLUGIN(link_energy_wifi, "Energy wifi test", &sg_wifi_energy_plugin_init);
-/** @degroup plugin_link_energy_wifi Plugin WiFi energy
+/** @defgroup plugin_link_energy_wifi Plugin WiFi energy
  *
  * This is the WiFi energy plugin, accounting for the dissipated energy of WiFi links.
  */

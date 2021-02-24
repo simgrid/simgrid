@@ -48,7 +48,6 @@ public:
  * Resource *
  ************/
 class DiskImpl : public Resource, public xbt::PropertyHolder {
-  bool currently_destroying_ = false;
   s4u::Host* host_           = nullptr;
   s4u::Disk piface_;
   double read_bw_;
@@ -56,12 +55,13 @@ class DiskImpl : public Resource, public xbt::PropertyHolder {
   lmm::Constraint* constraint_write_; /* Constraint for maximum write bandwidth*/
   lmm::Constraint* constraint_read_;  /* Constraint for maximum read bandwidth*/
 
+protected:
+  ~DiskImpl() override = default; // Disallow direct deletion. Call destroy() instead.
+
 public:
   DiskImpl(Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double read_bw, double bwrite_bw);
   DiskImpl(const DiskImpl&) = delete;
   DiskImpl& operator=(const DiskImpl&) = delete;
-
-  ~DiskImpl() override;
 
   /** @brief Public interface */
   const s4u::Disk* get_iface() const { return &piface_; }

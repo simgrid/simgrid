@@ -424,6 +424,7 @@ static int join(const_node_t node)
   if (err == SG_ERROR_TIMEOUT) {
     XBT_DEBUG("Timeout expired when joining ring with node %d", node->known_id);
     message_free(request);
+    return 0;
   }
 
   return 1;

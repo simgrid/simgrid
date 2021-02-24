@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/modelchecker.h"
@@ -57,6 +58,7 @@ namespace activity {
 
 ExecImpl::ExecImpl()
 {
+  piface_ = new s4u::Exec(this);
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
     actor_ = self;
@@ -78,7 +80,7 @@ ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
 
 ExecImpl& ExecImpl::set_timeout(double timeout)
 {
-  if (timeout > 0 && not MC_is_active() && not MC_record_replay_is_active()) {
+  if (timeout >= 0 && not MC_is_active() && not MC_record_replay_is_active()) {
     timeout_detector_.reset(hosts_.front()->pimpl_cpu->sleep(timeout));
     timeout_detector_->set_activity(this);
   }
@@ -150,11 +152,12 @@ ExecImpl& ExecImpl::set_sharing_penalty(double sharing_penalty)
 
 void ExecImpl::post()
 {
+  xbt_assert(surf_action_ != nullptr);
   if (hosts_.size() == 1 && not hosts_.front()->is_on()) { /* FIXME: handle resource failure for parallel tasks too */
     /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     state_ = State::FAILED;
-  } else if (surf_action_ && surf_action_->get_state() == resource::Action::State::FAILED) {
+  } else if (surf_action_->get_state() == resource::Action::State::FAILED) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state_ = State::CANCELED;
   } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED) {
@@ -162,6 +165,8 @@ void ExecImpl::post()
   } else {
     state_ = State::DONE;
   }
+
+  get_iface()->set_finish_time(surf_action_->get_finish_time());
 
   clean_action();
   timeout_detector_.reset();
@@ -208,7 +213,6 @@ void ExecImpl::finish()
         simcall_execution_waitany_for__set__result(simcall, rank);
       }
     }
-
     switch (state_) {
       case State::DONE:
         /* do nothing, synchro done */

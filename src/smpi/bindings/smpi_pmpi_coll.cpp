@@ -112,14 +112,21 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
   CHECK_ROOT(7)
   CHECK_REQUEST(9)
 
-  smpi_bench_end();
   const void* real_sendbuf   = sendbuf;
   int real_sendcount         = sendcount;
   MPI_Datatype real_sendtype = sendtype;
-  if ((comm->rank() == root) && (sendbuf == MPI_IN_PLACE)) {
-    real_sendcount = 0;
-    real_sendtype  = recvtype;
+  if (comm->rank() == root){
+    if (sendbuf == MPI_IN_PLACE) {
+      real_sendcount = 0;
+      real_sendtype  = recvtype;
+    } else if(recvtype->size() * recvcount !=  sendtype->size() * sendcount){
+      XBT_WARN("MPI_(I)Gather : received size at root differs from sent size : %zu vs %zu", recvtype->size() * recvcount , sendtype->size() * sendcount);
+      return MPI_ERR_TRUNCATE;
+    }
   }
+
+  smpi_bench_end();
+
   int rank = simgrid::s4u::this_actor::get_pid();
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Gather" : "PMPI_Igather",
@@ -180,7 +187,7 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   int rank         = simgrid::s4u::this_actor::get_pid();
   int dt_size_recv = recvtype->is_replayable() ? 1 : recvtype->size();
 
-  auto* trace_recvcounts = new std::vector<int>();
+  auto trace_recvcounts = std::make_shared<std::vector<int>>();
   if (comm->rank() == root) {
     for (int i = 0; i < comm->size(); i++) // copy data to avoid bad free
       trace_recvcounts->push_back(recvcounts[i] * dt_size_recv);
@@ -223,12 +230,19 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
   CHECK_COUNT(5, recvcount)
   CHECK_REQUEST(8)
 
-  smpi_bench_end();
   if (sendbuf == MPI_IN_PLACE) {
     sendbuf   = static_cast<char*>(recvbuf) + recvtype->get_extent() * recvcount * comm->rank();
     sendcount = recvcount;
     sendtype  = recvtype;
   }
+
+  if(recvtype->size() * recvcount !=  sendtype->size() * sendcount){
+    XBT_WARN("MPI_(I)Allgather : received size from each process differs from sent size : %zu vs %zu", recvtype->size() * recvcount, sendtype->size() * sendcount);
+    return MPI_ERR_TRUNCATE;
+  }
+
+  smpi_bench_end();
+
   int rank = simgrid::s4u::this_actor::get_pid();
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallggather",
@@ -279,7 +293,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   int rank         = simgrid::s4u::this_actor::get_pid();
   int dt_size_recv = recvtype->is_replayable() ? 1 : recvtype->size();
 
-  auto* trace_recvcounts = new std::vector<int>();
+  auto trace_recvcounts = std::make_shared<std::vector<int>>();
   for (int i = 0; i < comm->size(); i++) { // copy data to avoid bad free
     trace_recvcounts->push_back(recvcounts[i] * dt_size_recv);
   }
@@ -323,11 +337,18 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   CHECK_ROOT(8)
   CHECK_REQUEST(9)
 
-  smpi_bench_end();
   if (recvbuf == MPI_IN_PLACE) {
     recvtype  = sendtype;
     recvcount = sendcount;
   }
+
+  if((comm->rank() == root) && (recvtype->size() * recvcount !=  sendtype->size() * sendcount)){
+    XBT_WARN("MPI_(I)Scatter : sent size to each process differs from receive size");
+    return MPI_ERR_TRUNCATE;
+  }
+
+  smpi_bench_end();
+
   int rank = simgrid::s4u::this_actor::get_pid();
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Scatter" : "PMPI_Iscatter",
@@ -381,7 +402,7 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
   int rank         = simgrid::s4u::this_actor::get_pid();
   int dt_size_send = sendtype->is_replayable() ? 1 : sendtype->size();
 
-  auto* trace_sendcounts = new std::vector<int>();
+  auto trace_sendcounts = std::make_shared<std::vector<int>>();
   if (comm->rank() == root) {
     for (int i = 0; i < comm->size(); i++) { // copy data to avoid bad free
       trace_sendcounts->push_back(sendcounts[i] * dt_size_send);
@@ -580,7 +601,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
 
   smpi_bench_end();
   int rank                           = simgrid::s4u::this_actor::get_pid();
-  auto* trace_recvcounts             = new std::vector<int>();
+  auto trace_recvcounts              = std::make_shared<std::vector<int>>();
   int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
   int totalcount                     = 0;
 
@@ -628,7 +649,7 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
 
   int rank                           = simgrid::s4u::this_actor::get_pid();
   int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
-  auto* trace_recvcounts             = new std::vector<int>(recvcount * dt_send_size); // copy data to avoid bad free
+  auto trace_recvcounts = std::make_shared<std::vector<int>>(recvcount * dt_send_size); // copy data to avoid bad free
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, recvcount * count, datatype);
 
@@ -670,7 +691,6 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   CHECK_COUNT(5, recvcount)
   CHECK_REQUEST(8)
 
-  smpi_bench_end();
   int rank                 = simgrid::s4u::this_actor::get_pid();
   int real_sendcount         = sendcount;
   MPI_Datatype real_sendtype = sendtype;
@@ -682,6 +702,13 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
     real_sendcount = recvcount;
     real_sendtype  = recvtype;
   }
+
+  if(recvtype->size() * recvcount !=  real_sendtype->size() * real_sendcount){
+    XBT_WARN("MPI_(I)Alltoall : receive size from each process differs from sent size : %zu vs %zu", recvtype->size() * recvcount,  real_sendtype->size() * real_sendcount);
+    return MPI_ERR_TRUNCATE;
+  }
+
+  smpi_bench_end();
 
   TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall",
                      new simgrid::instr::CollTIData(
@@ -736,8 +763,8 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   smpi_bench_end();
   int send_size                      = 0;
   int recv_size                      = 0;
-  auto* trace_sendcounts             = new std::vector<int>();
-  auto* trace_recvcounts             = new std::vector<int>();
+  auto trace_sendcounts              = std::make_shared<std::vector<int>>();
+  auto trace_recvcounts              = std::make_shared<std::vector<int>>();
   int dt_size_recv                   = recvtype->size();
 
   const int* real_sendcounts = sendcounts;
@@ -761,6 +788,12 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
     tmp_senddispls.assign(recvdispls, recvdispls + size);
     real_senddispls = tmp_senddispls.data();
     real_sendtype  = recvtype;
+  }
+
+  if(recvtype->size() * recvcounts[comm->rank()] !=  real_sendtype->size() * real_sendcounts[comm->rank()]){
+    XBT_WARN("MPI_(I)Alltoallv : receive size from me differs from sent size to me : %zu vs %zu", recvtype->size() * recvcounts[comm->rank()], real_sendtype->size() * real_sendcounts[comm->rank()]);
+    smpi_bench_begin();
+    return MPI_ERR_TRUNCATE;
   }
 
   int dt_size_send = real_sendtype->size();
@@ -825,19 +858,16 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
 
   int send_size                      = 0;
   int recv_size                      = 0;
-  auto* trace_sendcounts             = new std::vector<int>();
-  auto* trace_recvcounts             = new std::vector<int>();
+  auto trace_sendcounts              = std::make_shared<std::vector<int>>();
+  auto trace_recvcounts              = std::make_shared<std::vector<int>>();
 
   const int* real_sendcounts         = sendcounts;
   const int* real_senddispls          = senddispls;
   const MPI_Datatype* real_sendtypes = sendtypes;
   unsigned long maxsize      = 0;
   for (int i = 0; i < size; i++) { // copy data to avoid bad free
-    if (recvtypes[i] == MPI_DATATYPE_NULL) {
-      delete trace_recvcounts;
-      delete trace_sendcounts;
+    if (recvtypes[i] == MPI_DATATYPE_NULL)
       return MPI_ERR_TYPE;
-    }
     recv_size += recvcounts[i] * recvtypes[i]->size();
     trace_recvcounts->push_back(recvcounts[i] * recvtypes[i]->size());
     if ((recvdispls[i] + (recvcounts[i] * recvtypes[i]->size())) > maxsize)
@@ -856,6 +886,13 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
     real_senddispls = tmp_senddispls.data();
     tmp_sendtypes.assign(recvtypes, recvtypes + size);
     real_sendtypes = tmp_sendtypes.data();
+  }
+
+
+  if(recvtypes[comm->rank()]->size() * recvcounts[comm->rank()] !=  real_sendtypes[comm->rank()]->size() * real_sendcounts[comm->rank()]){
+    XBT_WARN("MPI_(I)Alltoallw : receive size from me differs from sent size to me : %zu vs %zu", recvtypes[comm->rank()]->size() * recvcounts[comm->rank()],  real_sendtypes[comm->rank()]->size() * real_sendcounts[comm->rank()]);
+    smpi_bench_begin();
+    return MPI_ERR_TRUNCATE;
   }
 
   for (int i = 0; i < size; i++) { // copy data to avoid bad free

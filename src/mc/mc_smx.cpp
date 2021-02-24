@@ -10,21 +10,6 @@
 
 using simgrid::mc::remote;
 
-/** HACK, Statically "upcast" a s_smx_actor_t into an ActorInformation
- *
- *  This gets 'actorInfo' from '&actorInfo->copy'. It upcasts in the
- *  sense that we could achieve the same thing by having ActorInformation
- *  inherit from s_smx_actor_t but we don't really want to do that.
- */
-static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
-{
-  simgrid::mc::ActorInformation temp;
-  std::size_t offset = (char*)temp.copy.get_buffer() - (char*)&temp;
-
-  auto* process_info = reinterpret_cast<simgrid::mc::ActorInformation*>((char*)actor - offset);
-  return process_info;
-}
-
 /** Load the remote list of processes into a vector
  *
  *  @param process      MCed process
@@ -85,40 +70,6 @@ void RemoteSimulation::refresh_simix()
 }
 
 }
-}
-
-const char* MC_smx_actor_get_host_name(smx_actor_t actor)
-{
-  if (mc_model_checker == nullptr)
-    return actor->get_host()->get_cname();
-
-  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
-
-  // Read the simgrid::xbt::string in the MCed process:
-  simgrid::mc::ActorInformation* info     = actor_info_cast(actor);
-  auto remote_string_address =
-      remote(reinterpret_cast<const simgrid::xbt::string_data*>(&actor->get_host()->get_name()));
-  simgrid::xbt::string_data remote_string = process->read(remote_string_address);
-  std::vector<char> hostname(remote_string.len + 1);
-  // no need to read the terminating null byte, and thus hostname[remote_string.len] is guaranteed to be '\0'
-  process->read_bytes(hostname.data(), remote_string.len, remote(remote_string.data));
-  info->hostname = mc_model_checker->get_host_name(hostname.data()).c_str();
-  return info->hostname;
-}
-
-const char* MC_smx_actor_get_name(smx_actor_t actor)
-{
-  if (mc_model_checker == nullptr)
-    return actor->get_cname();
-
-  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
-
-  simgrid::mc::ActorInformation* info = actor_info_cast(actor);
-  if (info->name.empty()) {
-    simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name_);
-    info->name = process->read_string(remote(string_data.data), string_data.len);
-  }
-  return info->name.c_str();
 }
 
 unsigned long MC_smx_get_maxpid()

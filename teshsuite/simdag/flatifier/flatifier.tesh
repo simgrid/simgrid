@@ -1,6 +1,5 @@
 #!/usr/bin/env tesh
 $ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -135,7 +134,6 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e
 > </platform>
 
 $ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -269,7 +267,6 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:
 > </platform>
 
 $ ${bindir:=.}/flatifier ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -303,7 +300,6 @@ $ ${bindir:=.}/flatifier ../platforms/host_attributes.xml "--log=root.fmt:[%10.6
 > </platform>
 
 $ ${bindir:=.}/flatifier ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -321,7 +317,6 @@ $ ${bindir:=.}/flatifier ../platforms/link_attributes.xml "--log=root.fmt:[%10.6
 > </platform>
 
 $ ${bindir:=.}/flatifier ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -364,7 +359,6 @@ $ ${bindir:=.}/flatifier ../platforms/three_hosts_non_symmetric_route.xml "--log
 > </platform>
 
 $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -499,7 +493,6 @@ $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%
 > </platform>
 
 $ ${bindir:=.}/flatifier ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -526,7 +519,6 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%
 > </platform>
 
 $ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -551,7 +543,6 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%1
 > </platform>
 
 $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -685,7 +676,6 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--
 > </platform>
 
 $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">

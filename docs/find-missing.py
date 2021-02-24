@@ -192,7 +192,7 @@ for arg in xml_files:
                 print ("member {}::{} is of kind {}".format(compoundname, name, kind))
 
 # Forget about the declarations that are done in the RST
-with os.popen('grep autodoxymethod:: find-missing.ignore source/*rst|sed \'s/^.*autodoxymethod:: //\'') as pse:
+with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.*doxygenfunction:: //\'') as pse:
     for line in (l.strip() for l in pse):
         (klass, obj, args) = (None, None, None)
         if "(" in line:
@@ -238,7 +238,7 @@ with os.popen('grep autodoxyvar:: find-missing.ignore source/*rst|sed \'s/^.*aut
 for obj in sorted(doxy_funs):
     for meth in sorted(doxy_funs[obj]):
         for args in sorted(doxy_funs[obj][meth]):
-            print(".. autodoxymethod:: {}::{}{}".format(obj, meth, args))
+            print(".. doxygenfunction:: {}::{}{}".format(obj, meth, args))
 
 for obj in doxy_vars:
     for meth in sorted(doxy_vars[obj]):

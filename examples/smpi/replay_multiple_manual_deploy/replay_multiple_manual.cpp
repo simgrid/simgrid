@@ -239,7 +239,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::create("workload", hosts[0], workload_executor_process, &jobs);
 
   e.run();
-  XBT_INFO("Simulation finished! Final time: %g", e.get_clock());
+  XBT_INFO("Simulation finished! Final time: %g", simgrid::s4u::Engine::get_clock());
 
   SMPI_finalize();
 

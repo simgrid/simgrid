@@ -26,7 +26,7 @@ void mpi_file_open_ ( int* comm, char* filename, int* amode, int* info, int* fh,
   MPI_File tmp;
   *ierr= MPI_File_open(simgrid::smpi::Comm::f2c(*comm), filename, *amode, simgrid::smpi::Info::f2c(*info), &tmp);
   if (*ierr == MPI_SUCCESS) {
-    *fh = tmp->add_f();
+    *fh = tmp->c2f();
   }
 }
 

@@ -92,12 +92,10 @@ CommImplPtr MailboxImpl::iprobe(int type, bool (*match_fun)(void*, void*, CommIm
   CommImplPtr this_comm;
   CommImpl::Type smx_type;
   if (type == 1) {
-    this_comm = CommImplPtr(new CommImpl());
-    this_comm->set_type(CommImpl::Type::SEND);
+    this_comm = CommImplPtr(new CommImpl(CommImpl::Type::SEND));
     smx_type  = CommImpl::Type::RECEIVE;
   } else {
-    this_comm = CommImplPtr(new CommImpl());
-    this_comm->set_type(CommImpl::Type::RECEIVE);
+    this_comm = CommImplPtr(new CommImpl(CommImpl::Type::RECEIVE));
     smx_type  = CommImpl::Type::SEND;
   }
   CommImplPtr other_comm = nullptr;

@@ -45,11 +45,8 @@ public:
   explicit Host(const std::string& name);
 
 protected:
-  virtual ~Host();
+  virtual ~Host(); // Call destroy() instead of manually deleting it.
   void set_netpoint(kernel::routing::NetPoint* netpoint) { pimpl_netpoint_ = netpoint; }
-
-private:
-  bool currently_destroying_ = false;
 #endif
 
 public:
@@ -182,6 +179,7 @@ public:
    */
   void execute(double flops) const;
   /** Start an asynchronous computation on that host (possibly remote) */
+  ExecPtr exec_init(double flops_amounts) const;
   ExecPtr exec_async(double flops_amounts) const;
 
   /** Block the calling actor on an execution located on the called host (with explicit priority) */

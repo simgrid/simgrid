@@ -67,23 +67,7 @@ Activity* Activity::resume()
 
 const char* Activity::get_state_str() const
 {
-  switch (state_) {
-    case State::INITED:
-      return "INITED";
-
-    case State::STARTING:
-      return "STARTING";
-
-    case State::STARTED:
-      return "STARTED";
-
-    case State::CANCELED:
-      return "CANCELED";
-
-    case State::FINISHED:
-      return "FINISHED";
-  }
-  THROW_IMPOSSIBLE;
+  return to_c_str(state_);
 }
 
 double Activity::get_remaining() const

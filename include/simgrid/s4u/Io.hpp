@@ -51,6 +51,8 @@ public:
   IoPtr set_disk(sg_disk_t disk);
   IoPtr set_size(sg_size_t size);
   IoPtr set_op_type(OpType type);
+
+  bool is_assigned() const override { return disk_ != nullptr; }
 };
 
 } // namespace s4u

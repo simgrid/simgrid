@@ -199,6 +199,22 @@ typedef enum {
 
 /* Functions you may call */
 
+/** Provide a log setting as if it were passed on the command line.
+ *
+ * Expected syntax:
+ *      ( [category] "." [keyword] ":" value (" ")... )...
+ *
+ * where [category] is one the category names (see @ref XBT_log_cats for a complete list of the ones defined in the
+ * SimGrid library) and keyword is one of the following:
+ *
+ *    - threshold: category's threshold priority. Possible values:
+ *             TRACE,DEBUG,VERBOSE,INFO,WARNING,ERROR,CRITICAL
+ *    - add or additivity: whether the logging actions must be passed to the parent category.
+ *      Possible values: 0, 1, no, yes, on, off.
+ *      Default value: yes.
+ *    - fmt: the format to use. See @ref log_use_conf_fmt for more information.
+ *    - app or appender: the appender to use. See @ref log_use_conf_app for more information.
+ */
 XBT_PUBLIC void xbt_log_control_set(const char* cs);
 
 /* Forward declarations */
@@ -287,6 +303,8 @@ XBT_PUBLIC xbt_log_appender_t xbt_log_appender2_file_new(const char* arg, int ro
 /* ********************************** */
 /* Functions that you shouldn't call  */
 /* ********************************** */
+
+/** Retrieve and parse all log settings from the command line (don't call it directly) */
 XBT_PUBLIC void xbt_log_init(int* argc, char** argv);
 XBT_PUBLIC void _xbt_log_event_log(xbt_log_event_t ev, const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);
 XBT_PUBLIC int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority);

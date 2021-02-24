@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/maxmin.hpp"
-#include "xbt/backtrace.hpp"
+#include <boost/core/demangle.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 
@@ -145,8 +145,8 @@ System::~System()
   Constraint* cnst;
 
   while ((var = extract_variable())) {
-    auto demangled = simgrid::xbt::demangle(var->id_ ? typeid(*var->id_).name() : "(unidentified)");
-    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled.get(),
+    std::string demangled = boost::core::demangle(var->id_ ? typeid(*var->id_).name() : "(unidentified)");
+    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled.c_str(),
              var->rank_);
     var_free(var);
   }

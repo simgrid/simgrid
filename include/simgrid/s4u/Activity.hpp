@@ -6,13 +6,16 @@
 #ifndef SIMGRID_S4U_ACTIVITY_HPP
 #define SIMGRID_S4U_ACTIVITY_HPP
 
-#include "xbt/asserts.h"
+#include <xbt/asserts.h>
+#include <algorithm>
 #include <atomic>
 #include <set>
 #include <simgrid/forward.h>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <xbt/signal.hpp>
+#include <xbt/utility.hpp>
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
 
@@ -33,6 +36,8 @@ protected:
   Activity()  = default;
   virtual ~Activity() = default;
 
+  virtual bool is_assigned() const = 0;
+
   void release_dependencies()
   {
     while (not successors_.empty()) {
@@ -48,16 +53,35 @@ protected:
 
   void add_successor(ActivityPtr a)
   {
+    if(this == a)
+      throw std::invalid_argument("Cannot be its own successor");
+    auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
+    if (p != successors_.end())
+      throw std::invalid_argument("Dependency already exists");
+
     successors_.push_back(a);
     a->dependencies_.insert({this});
+  }
+
+  void remove_successor(ActivityPtr a)
+  {
+    if(this == a)
+      throw std::invalid_argument("Cannot ask to remove its from successors");
+
+    auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
+    if (p != successors_.end()){
+      successors_.erase(p);
+      a->dependencies_.erase({this});
+    } else
+      throw std::invalid_argument("Dependency does not exist. Can not be removed.");
   }
 
 public:
   void vetoable_start()
   {
     state_ = State::STARTING;
-    if (dependencies_.empty()) {
-      XBT_CVERB(s4u_activity, "All dependencies are solved, let's start '%s'", get_cname());
+    if (dependencies_.empty() && is_assigned()) {
+      XBT_CVERB(s4u_activity, "'%s' is assigned to a resource and all dependencies are solved. Let's start", get_cname());
       start();
     }
   }
@@ -67,7 +91,8 @@ public:
   Activity& operator=(Activity const&) = delete;
 #endif
 
-  enum class State { INITED = 0, STARTING, STARTED, CANCELED, FINISHED };
+  // enum class State { ... }
+  XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, CANCELED, FINISHED);
 
   /** Starts a previously created activity.
    *
@@ -151,7 +176,11 @@ public:
     Activity::add_successor(a);
     return static_cast<AnyActivity*>(this);
   }
-
+  AnyActivity* remove_successor(ActivityPtr a)
+  {
+    Activity::remove_successor(a);
+    return static_cast<AnyActivity*>(this);
+  }
   AnyActivity* set_name(const std::string& name)
   {
     xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");
@@ -176,6 +205,12 @@ public:
   }
 
   void* get_user_data() const { return user_data_; }
+
+  AnyActivity* vetoable_start()
+  {
+    Activity::vetoable_start();
+    return static_cast<AnyActivity*>(this);
+  }
 #ifndef DOXYGEN
   /* The refcounting is done in the ancestor class, Activity, but we want each of the classes benefiting of the CRTP
    * (Exec, Comm, etc) to have smart pointers too, so we define these methods here, that forward the ptr_release and

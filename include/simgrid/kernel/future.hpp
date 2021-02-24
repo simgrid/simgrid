@@ -17,7 +17,7 @@
 
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
-#include <xbt/future.hpp>
+#include <xbt/promise.hpp>
 
 namespace simgrid {
 namespace kernel {

@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mpitest.h"
+#include "xbt/log.h"
 
 /*
 static char MTEST_Descrip[] = "Test of various send cancel calls";
@@ -28,6 +29,7 @@ int main(int argc, char *argv[])
     int cs, flag, n;
 
     MTest_Init(&argc, &argv);
+    xbt_log_control_set("smpi_kernel.thr:critical");
 
     comm = MPI_COMM_WORLD;
     MPI_Comm_rank(comm, &rank);

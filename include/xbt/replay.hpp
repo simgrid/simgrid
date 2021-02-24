@@ -1,4 +1,4 @@
-/* xbt/replay_reader.h -- Tools to parse a replay file                */
+/* xbt/replay.hpp -- Tools to parse a replay file                           */
 
 /* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
 

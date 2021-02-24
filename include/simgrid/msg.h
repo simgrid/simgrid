@@ -223,9 +223,9 @@ XBT_PUBLIC void MSG_process_unref(const_sg_actor_t process);
 
 /** @brief Object representing an ongoing communication between processes.
  *
- * \rst
+ * @beginrst
  * Such beast is usually obtained by using :cpp:func:`MSG_task_isend`, :cpp:func:`MSG_task_irecv` or friends.
- * \endrst
+ * @endrst
  */
 typedef sg_msg_Comm* msg_comm_t;
 typedef const sg_msg_Comm* const_msg_comm_t;

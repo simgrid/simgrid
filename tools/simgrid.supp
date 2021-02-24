@@ -66,6 +66,17 @@
    fun:_dl_init
 }
 
+{
+   Leaks in test-help-version and test-help-logs (early call to exit())
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN7simgrid3s4u6EngineC1EPiPPc
+   fun:main
+   ...
+   obj:*/basic-parsing-test
+}
+
 #Ignore leaks in SMPI sample codes
 {
    Leaks in SMPI sample codes

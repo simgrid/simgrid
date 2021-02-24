@@ -52,6 +52,7 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   colls::bcast(&(bar_), sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
 
   colls::barrier(comm);
+  this->add_f();
 }
 
 Win::~Win(){
@@ -77,6 +78,7 @@ Win::~Win(){
   if(allocated_ !=0)
     xbt_free(base_);
 
+  F2C::free_f(this->c2f());
   cleanup_attr<Win>();
 }
 
@@ -209,8 +211,10 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
       return MPI_ERR_WIN;
   }
 
-  if(target_count*target_datatype->get_extent()>recv_win->size_)
-    return MPI_ERR_ARG;
+  if(target_count*target_datatype->get_extent()>recv_win->size_){
+    XBT_WARN("Trying to put more than the window size - Bailing out.");
+    return MPI_ERR_RMA_RANGE;
+  }
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
 
@@ -269,8 +273,10 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
       return MPI_ERR_WIN;
   }
 
-  if(target_count*target_datatype->get_extent()>send_win->size_)
-    return MPI_ERR_ARG;
+  if(target_count*target_datatype->get_extent()>send_win->size_){
+    XBT_WARN("Trying to get more than the window size - Bailing out.");
+    return MPI_ERR_RMA_RANGE;
+  }
 
   const void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
@@ -329,8 +335,10 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   }
   //FIXME: local version
 
-  if(target_count*target_datatype->get_extent()>recv_win->size_)
-    return MPI_ERR_ARG;
+  if(target_count*target_datatype->get_extent()>recv_win->size_){
+    XBT_WARN("Trying to accumulate more than the window size - Bailing out.");
+    return MPI_ERR_RMA_RANGE;
+  }
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
@@ -384,8 +392,11 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
       return MPI_ERR_WIN;
   }
 
-  if(target_count*target_datatype->get_extent()>send_win->size_)
-    return MPI_ERR_ARG;
+  if(target_count*target_datatype->get_extent()>send_win->size_){
+    XBT_WARN("Trying to get_accumulate more than the window size - Bailing out.");
+    return MPI_ERR_RMA_RANGE;
+  }
+
 
   XBT_DEBUG("Entering MPI_Get_accumulate from %d", target_rank);
   //need to be sure ops are correctly ordered, so finish request here ? slow.

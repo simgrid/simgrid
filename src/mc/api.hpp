@@ -6,14 +6,26 @@
 
 #include "simgrid/forward.h"
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_state.hpp"
-#include "src/mc/mc_record.hpp"
 #include "xbt/automaton.hpp"
 #include "xbt/base.h"
 
 namespace simgrid {
 namespace mc {
+
+/**
+ * @brief Maintains the transition's information.
+ */
+struct s_transition_detail {
+  simgrid::simix::Simcall call_ = simgrid::simix::Simcall::NONE;
+  long issuer_id                = -1;
+  RemotePtr<kernel::activity::MailboxImpl> mbox_remote_addr {}; // used to represent mailbox remote address for isend and ireceive transitions
+  RemotePtr<kernel::activity::ActivityImpl> comm_remote_addr {}; // the communication this transition concerns (to be used only for isend, ireceive, wait and test)
+};
+
+using transition_detail_t = std::unique_ptr<s_transition_detail>;
 
 /*
 ** This class aimes to implement FACADE APIs for simgrid. The FACADE layer sits between the CheckerSide
@@ -34,9 +46,11 @@ private:
     }
   };
 
-smx_mailbox_t get_mbox(smx_simcall_t const r) const;
-simgrid::kernel::activity::CommImpl* get_comm(smx_simcall_t const r) const;
-bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
+  simgrid::kernel::activity::CommImpl* get_comm(smx_simcall_t const r) const;
+  bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
+  simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor) const;
+  const char* actor_get_host_name(smx_actor_t actor) const;
+  const char* actor_get_name(smx_actor_t actor) const;
 
 public:
   // No copy:
@@ -51,7 +65,7 @@ public:
 
   void initialize(char** argv) const;
 
-  // ACTOR APIs  
+  // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   bool actor_is_enabled(aid_t pid) const;
   unsigned long get_maxpid() const;
@@ -93,13 +107,17 @@ public:
   void dump_record_path() const;
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 
+  // UDPOR APIs
+  std::list<transition_detail_t> get_enabled_transitions(simgrid::mc::State* state);
+
   // SIMCALL APIs
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
-  const char *simcall_get_name(simgrid::simix::Simcall kind) const;
+  const char* simcall_get_name(simgrid::simix::Simcall kind) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   long simcall_get_actor_id(s_smx_simcall const* req) const;
-  smx_mailbox_t simcall_get_mbox(smx_simcall_t const req) const;
+  RemotePtr<kernel::activity::MailboxImpl> get_mbox_remote_addr(smx_simcall_t const req) const;
+  RemotePtr<kernel::activity::ActivityImpl> get_comm_remote_addr(smx_simcall_t const req) const;
   bool simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const;
 
 #if HAVE_SMPI
@@ -120,27 +138,27 @@ public:
   void s_close() const;
   void execute(Transition const& transition) const;
 
-  // AUTOMATION APIs
-  #if SIMGRID_HAVE_MC
-  void automaton_load(const char *file) const;
-  #endif
+// AUTOMATION APIs
+#if SIMGRID_HAVE_MC
+  void automaton_load(const char* file) const;
+#endif
   std::vector<int> automaton_propositional_symbol_evaluate() const;
   std::vector<xbt_automaton_state_t> get_automaton_state() const;
   int compare_automaton_exp_label(const xbt_automaton_exp_label* l) const;
   void set_property_automaton(xbt_automaton_state_t const& automaton_state) const;
-  inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const {
+  inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const
+  {
     return DerefAndCompareByActorsCountAndUsedHeap();
   }
-  inline int automaton_state_compare(const_xbt_automaton_state_t const& s1, const_xbt_automaton_state_t const& s2) const {
+  inline int automaton_state_compare(const_xbt_automaton_state_t const& s1, const_xbt_automaton_state_t const& s2) const
+  {
     return xbt_automaton_state_compare(s1, s2);
   }
   xbt_automaton_exp_label_t get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const;
   xbt_automaton_state_t get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const;
 
   // DYNAR APIs
-  inline unsigned long get_dynar_length(const_xbt_dynar_t const& dynar) const {
-    return xbt_dynar_length(dynar);
-  }
+  inline unsigned long get_dynar_length(const_xbt_dynar_t const& dynar) const { return xbt_dynar_length(dynar); }
 };
 
 } // namespace mc

@@ -1,8 +1,7 @@
 .. _intro_concepts:
 
-Main Concepts
-=============
-
+Introduction
+============
 
 .. raw:: html
 
@@ -10,20 +9,20 @@ Main Concepts
    <br/>
    <br/>
 
-Introduction
-============
+Main Concepts
+-------------
 
 Typical Study based on SimGrid
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Any SimGrid study entails the following components:
 
- - The studied **Application**. This can be either a distributed
-   algorithm described in our simple APIs, or a full featured real
+ - The studied **application**. This can be either a distributed
+   algorithm described in our simple APIs or a full-featured real
    parallel application using for example the MPI interface
    :ref:`(more info) <application>`.
 
- - The **Simulated Platform**. This is a description of a given
+ - The **simulated platform**. This is a description of a given
    distributed system (machines, links, disks, clusters, etc). Most of
    the platform files are written in XML although a Lua interface is
    under development.  SimGrid makes it easy to augment the Simulated
@@ -33,14 +32,14 @@ Any SimGrid study entails the following components:
    to feed to your application
    :ref:`(more info) <platform>`.
 
- - The application's **Deployment Description**. In SimGrid
+ - The application's **deployment description**. In SimGrid
    terminology, the application is an inert set of source files and
    binaries. To make it run, you have to describe how your application
    should be deployed on the simulated platform. You need to specify
    which process is mapped onto which machine, along with their parameters
    :ref:`(more info) <scenario>`.
 
- - The **Platform Models**. They describe how the simulated platform
+ - The **platform models**. They describe how the simulated platform
    reacts to the actions of the application. For example, they compute
    the time taken by a given communication on the simulated platform.
    These models are already included in SimGrid, and you only need to
@@ -48,9 +47,9 @@ Any SimGrid study entails the following components:
    :ref:`(more info) <models>`.
 
 These components are put together to run a **simulation**, that is an
-experiment or a probe. The result of one or many simulation provides
-an **outcome** (logs, visualization, or statistical analysis) that help
-answering the **question** targeted by this study.
+experiment or a probe. Simulations produce **outcomes** (logs,
+visualization, or statistical analysis) that help to answer the
+**question** targeted by this study.
 
 Here are some questions on which SimGrid is particularly relevant:
 
@@ -61,7 +60,7 @@ Here are some questions on which SimGrid is particularly relevant:
 
  - **Design the best [Simulated] Platform for a given Application.**
    Tweaking the platform file is much easier than building a new real
-   platform for testing purpose. SimGrid also allows for the co-design 
+   platform for testing purposes. SimGrid also allows for the co-design 
    of the platform and the application by modifying both of them.
 
  - **Debug Real Applications**. With real systems, is sometimes
@@ -82,14 +81,14 @@ check) the provided performance models.
 
 To ease such questioning, you really should logically separate these
 parts in your experimental setup. It is seen as a very bad practice to
-merge the application, the platform, and the deployment all together.
+merge the application, the platform, and the deployment altogether.
 SimGrid is versatile and your mileage may vary, but you should start
 with your Application specified as a C++ or Java program, using one of
-the provided XML platform file, and with your deployment in a separate
+the provided XML platform files, and with your deployment in a separate
 XML file.
 
 SimGrid Execution Modes
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Depending on the intended study, SimGrid can be run in several execution modes.
 
@@ -107,7 +106,7 @@ explored. In some sense, this mode tests your application for all
 possible platforms that you could imagine (and more).
 
 You just provide the application and its deployment (number of
-processes and parameters), and the model checker will literally
+processes and parameters), and the model checker will 
 explore all possible outcomes by testing all possible message
 interleavings: if at some point a given process can either receive the
 message A first or the message B depending on the platform
@@ -116,7 +115,7 @@ arrives first, and then rewind to the same point to explore the
 scenario where B arrives first.
 
 This is a very powerful mode, where you can evaluate the correctness of
-your application. It can verify either **safety properties** (asserts)
+your application. It can verify either **safety properties** (assertions)
 or **liveness properties** stating for example that if a given event
 occurs, then another given event will occur in a finite amount of
 steps. This mode is not only usable with the abstract algorithms
@@ -132,13 +131,13 @@ carefully adapt your application to this mode.
 A classical trap is that the Model Checker can only verify whether
 your application fits the properties provided, which is useless if you
 have a bug in your property. Remember also that one way for your
-application to never violate a given assert is to not start at all,
+application to never violate a given assertion is to not start at all,
 because of a stupid bug.
 
 Another limit of this mode is that it does not use the performance
 models of the simulation mode. Time becomes discrete: You can say for
 example that the application took 42 steps to run, but there is no way
-to know how much time it took or the amount of watts that were dissipated.
+to know how much time it took or the number of watts that were dissipated.
 
 Finally, the model checker only explores the interleavings of
 computations and communications. Other factors such as thread
@@ -162,14 +161,14 @@ simulated platform will take this block into account without requesting
 the actual hosting machine to benchmark it.
 
 SimGrid Limits
---------------
+^^^^^^^^^^^^^^
 
-This framework is by no means the holly grail, able to solve
+This framework is by no means the holy grail, able to solve
 every problem on Earth.
 
 **SimGrid scope is limited to distributed systems.** Real-time
 multi-threaded systems are out of this scope. You could probably tweak
-SimGrid for such studies (or the framework could possibly be extended
+SimGrid for such studies (or the framework could be extended
 in this direction), but another framework specifically targeting such a
 use case would probably be more suited.
 
@@ -195,12 +194,12 @@ SimGrid**:
    malicious agents.
 
 SimGrid Success Stories
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
-SimGrid was cited in over 1,500 scientific papers (according to Google
-Scholar). Among them
-`over 200 publications <https://simgrid.org/Usages.html>`_
-(written by about 300 individuals) use SimGrid as a scientific
+SimGrid was cited in over 3,000 scientific papers (according to Google
+Scholar). Among them,
+`over 500 publications <https://simgrid.org/Usages.html>`_
+(written by hundreds of individuals) use SimGrid as a scientific
 instrument to conduct their experimental evaluation. These
 numbers do not include the articles contributing to SimGrid.
 This instrument was used in many research communities, such as
@@ -234,8 +233,8 @@ applications.
 computing the electronic structure of chemical elements developed by
 the CEA), `StarPU <http://starpu.gforge.inria.fr/>`_ (a
 Unified Runtime System for Heterogeneous Multicore Architectures
-developed by Inria Bordeaux) and
-`TomP2P <https://tomp2p.net/dev/simgrid/>`_ (a high performance
+developed by Inria Bordeaux), and
+`TomP2P <https://tomp2p.net/dev/simgrid/>`_ (a high-performance
 key-value pair storage library developed at the University of Zurich).
 Some of these applications enjoy large user communities themselves.
 

@@ -16,7 +16,7 @@ namespace s4u {
 
 /** Computation Activity, representing the asynchronous executions.
  *
- * @rst
+ * @beginrst
  * Most of them are created with :cpp:func:`simgrid::s4u::this_actor::exec_init()` or
  * :cpp:func:`simgrid::s4u::Host::execute()`, and represent a classical (sequential) execution. This can be used to
  * simulate some computation occurring in another thread when the calling actor is not blocked during the execution.
@@ -30,14 +30,19 @@ namespace s4u {
  * @endrst
  */
 class XBT_PUBLIC Exec : public Activity_T<Exec> {
+  friend kernel::activity::ExecImpl;
   double priority_              = 1.0;
   double bound_                 = 0.0;
-  double timeout_               = 0.0;
+  double timeout_               = -1.0; // Infinite timeout by default
   std::vector<double> flops_amounts_;
   std::vector<double> bytes_amounts_;
   std::vector<Host*> hosts_;
   bool parallel_ = false;
-  Exec();
+  double start_time_ = -1.0;
+  double finish_time_ = -1.0;
+
+protected:
+  explicit Exec(kernel::activity::ExecImplPtr pimpl);
 
 public:
   ~Exec() override = default;
@@ -77,10 +82,12 @@ public:
   Exec* cancel() override;
   Host* get_host() const;
   unsigned int get_host_number() const;
-  double get_start_time() const;
-  double get_finish_time() const;
+  double get_start_time() const { return start_time_; }
+  double get_finish_time() const { return finish_time_; }
+  void set_finish_time(double finish_time) { finish_time_ = finish_time; }
   double get_cost() const;
   bool is_parallel() const { return parallel_; }
+  bool is_assigned() const override { return not hosts_.empty(); }
 };
 
 } // namespace s4u

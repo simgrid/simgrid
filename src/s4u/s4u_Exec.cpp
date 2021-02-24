@@ -17,14 +17,15 @@ namespace s4u {
 xbt::signal<void(Exec const&)> Exec::on_start;
 xbt::signal<void(Exec const&)> Exec::on_completion;
 
-Exec::Exec()
+Exec::Exec(kernel::activity::ExecImplPtr pimpl)
 {
-  pimpl_ = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
+  pimpl_ = pimpl;
 }
 
 ExecPtr Exec::init()
 {
-  return ExecPtr(new Exec());
+  auto pimpl = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
+  return ExecPtr(pimpl->get_iface());
 }
 
 Exec* Exec::wait()
@@ -52,8 +53,10 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
                  [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
 
   int changed_pos = simcall_execution_waitany_for(rexecs.data(), rexecs.size(), timeout);
-  if (changed_pos != -1)
+  if (changed_pos != -1) {
+    on_completion(*(execs->at(changed_pos)));
     execs->at(changed_pos)->release_dependencies();
+  }
   return changed_pos;
 }
 
@@ -70,20 +73,23 @@ Exec* Exec::cancel()
  */
 ExecPtr Exec::set_bound(double bound)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the bound of an exec after its start");
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the bound of an exec after its start");
   bound_ = bound;
   return this;
 }
 ExecPtr Exec::set_timeout(double timeout) // XBT_ATTRIB_DEPRECATED_v329
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the bound of an exec after its start");
+  xbt_assert(state_ == State::INITED|| state_ == State::STARTING,
+      "Cannot change the bound of an exec after its start");
   timeout_ = timeout;
   return this;
 }
 
 ExecPtr Exec::set_flops_amount(double flops_amount)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the flop_amount of an exec after its start");
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the flop_amount of an exec after its start");
   flops_amounts_.assign(1, flops_amount);
   Activity::set_remaining(flops_amounts_.front());
   return this;
@@ -91,7 +97,8 @@ ExecPtr Exec::set_flops_amount(double flops_amount)
 
 ExecPtr Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the flops_amounts of an exec after its start");
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the flops_amounts of an exec after its start");
   flops_amounts_ = flops_amounts;
   parallel_      = true;
   return this;
@@ -99,7 +106,8 @@ ExecPtr Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
 
 ExecPtr Exec::set_bytes_amounts(const std::vector<double>& bytes_amounts)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the bytes_amounts of an exec after its start");
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the bytes_amounts of an exec after its start");
   bytes_amounts_ = bytes_amounts;
   parallel_      = true;
   return this;
@@ -115,14 +123,6 @@ Host* Exec::get_host() const
 unsigned int Exec::get_host_number() const
 {
   return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host_number();
-}
-double Exec::get_start_time() const
-{
-  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_start_time();
-}
-double Exec::get_finish_time() const
-{
-  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_finish_time();
 }
 double Exec::get_cost() const
 {
@@ -147,19 +147,34 @@ ExecPtr Exec::set_priority(double priority)
  * The activity cannot be terminated already (but it may be started). */
 ExecPtr Exec::set_host(Host* host)
 {
-  xbt_assert(state_ == State::INITED || state_ == State::STARTED,
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING || state_ == State::STARTED,
              "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
+  hosts_.assign(1, host);
+
   if (state_ == State::STARTED)
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->migrate(host);
+
   boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host);
+
+  if (state_ == State::STARTING)
+  // Setting the host may allow to start the activity, let's try
+    vetoable_start();
+
   return this;
 }
 
 ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the hosts of an exec once it's done (state: %d)", (int)state_);
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+      "Cannot change the hosts of an exec once it's done (state: %d)", (int)state_);
+
   hosts_    = hosts;
   parallel_ = true;
+
+  // Setting the host may allow to start the activity, let's try
+  if (state_ == State::STARTING)
+     vetoable_start();
+
   return this;
 }
 
@@ -190,6 +205,7 @@ Exec* Exec::start()
     pimpl_->suspend();
 
   state_ = State::STARTED;
+  start_time_ = pimpl_->surf_action_->get_start_time();
   on_start(*this);
   return this;
 }
@@ -253,7 +269,7 @@ double sg_exec_get_remaining_ratio(const_sg_exec_t exec)
 
 void sg_exec_start(sg_exec_t exec)
 {
-  exec->start();
+  exec->vetoable_start();
 }
 
 void sg_exec_cancel(sg_exec_t exec)

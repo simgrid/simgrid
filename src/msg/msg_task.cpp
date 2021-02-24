@@ -220,10 +220,10 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
  *
  * A constructor for #msg_task_t taking six arguments.
  *
- * \rst
+ * @beginrst
  * See :cpp:func:`void simgrid::s4u::this_actor::parallel_execute(int, s4u::Host**, double*, double*)` for
  * the exact semantic of the parameters.
- * \endrst
+ * @endrst
  *
  * @param name a name for the object. It is for user-level information and can be nullptr.
  * @param host_nb the number of hosts implied in the parallel task.

@@ -95,14 +95,6 @@ def setenv(arg):
 def expandvars2(path):
     return re.sub(r'(?<!\\)\$[A-Za-z_][A-Za-z0-9_]*', '', os.path.expandvars(path))
 
-
-# https://github.com/Cadair/jupyter_environment_kernels/issues/10
-try:
-    FileNotFoundError
-except NameError:
-    # py2
-    FileNotFoundError = OSError
-
 ##############
 #
 # Cleanup on signal
@@ -286,17 +278,16 @@ class Cmd(object):
     # Return False if nothing has been ran.
 
     def run_if_possible(self):
-        if self.can_run():
-            if self.background:
-                lock = _thread.allocate_lock()
-                lock.acquire()
-                TeshState().add_thread(lock)
-                _thread.start_new_thread(Cmd._run, (self, lock))
-            else:
-                self._run()
-            return True
-        else:
+        if not self.can_run():
             return False
+        if self.background:
+            lock = _thread.allocate_lock()
+            lock.acquire()
+            TeshState().add_thread(lock)
+            _thread.start_new_thread(Cmd._run, (self, lock))
+        else:
+            self._run()
+        return True
 
     def _run(self, lock=None):
         # Python threads loose the cwd
@@ -490,15 +481,15 @@ class Cmd(object):
                 return_code = max(2, return_code)
                 print('\n'.join(logs))
                 return
-            else:
-                logs.append("Test suite `{file}': NOK (<{cmd}> got signal {sig})".format(
-                    file=FileReader().filename, cmd=cmdName,
-                    sig=SIGNALS_TO_NAMES_DICT[-proc.returncode]))
-                if lock is not None:
-                    lock.release()
-                return_code = max(max(-proc.returncode, 1), return_code)
-                print('\n'.join(logs))
-                return
+
+            logs.append("Test suite `{file}': NOK (<{cmd}> got signal {sig})".format(
+                file=FileReader().filename, cmd=cmdName,
+                sig=SIGNALS_TO_NAMES_DICT[-proc.returncode]))
+            if lock is not None:
+                lock.release()
+            return_code = max(max(-proc.returncode, 1), return_code)
+            print('\n'.join(logs))
+            return
 
         if lock is not None:
             lock.release()

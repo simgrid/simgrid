@@ -15,16 +15,16 @@ int mpi_statuses_ignore_;
 namespace simgrid{
 namespace smpi{
 
-std::unordered_map<int, F2C*>* F2C::f2c_lookup_ = nullptr;
+std::unique_ptr<F2C::f2c_lookup_type> F2C::f2c_lookup_    = nullptr;
 int F2C::f2c_id_ = 0;
+F2C::f2c_lookup_type::size_type F2C::num_default_handles_ = 0;
 
 // Keep it non trivially-constructible, or it will break MC+smpi on FreeBSD with Clang (don't ask why)
 F2C::F2C() = default;
 
 int F2C::add_f()
 {
-  if (f2c_lookup_ == nullptr)
-    f2c_lookup_ = new std::unordered_map<int, F2C*>();
+  allocate_lookup();
 
   my_f2c_id_                 = f2c_id();
   (*f2c_lookup_)[my_f2c_id_] = this;
@@ -34,9 +34,7 @@ int F2C::add_f()
 
 int F2C::c2f()
 {
-  if (f2c_lookup_ == nullptr) {
-    f2c_lookup_ = new std::unordered_map<int, F2C*>();
-  }
+  allocate_lookup();
 
   if(my_f2c_id_==-1)
     /* this function wasn't found, add it */
@@ -47,8 +45,7 @@ int F2C::c2f()
 
 F2C* F2C::f2c(int id)
 {
-  if (f2c_lookup_ == nullptr)
-    f2c_lookup_ = new std::unordered_map<int, F2C*>();
+  allocate_lookup();
 
   if(id >= 0){
     auto comm = f2c_lookup_->find(id);

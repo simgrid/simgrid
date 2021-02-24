@@ -21,11 +21,6 @@
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static std::recursive_mutex* log_cat_init_mutex = nullptr;
 
-/** @addtogroup XBT_log
- *
- *  For more information, please refer to @ref outcomes_logs Section.
- */
-
 xbt_log_appender_t xbt_log_default_appender = nullptr; /* set in log_init */
 xbt_log_layout_t xbt_log_default_layout     = nullptr; /* set in log_init */
 
@@ -77,10 +72,6 @@ void xbt_log_preinit(void)
 static void xbt_log_help();
 static void xbt_log_help_categories();
 
-/** @brief Get all logging settings from the command line
- *
- * xbt_log_control_set() is called on each string we got from cmd line
- */
 void xbt_log_init(int *argc, char **argv)
 {
   unsigned help_requested = 0;  /* 1: logs; 2: categories */
@@ -214,7 +205,7 @@ static int fake_xbt_log_cat_init(xbt_log_category_t, e_xbt_log_priority_t)
   return 0;
 }
 #define DISABLE_XBT_LOG_CAT_INIT()                                                                                     \
-  int (*_xbt_log_cat_init)(xbt_log_category_t, e_xbt_log_priority_t) XBT_ATTRIB_UNUSED = fake_xbt_log_cat_init;
+  int (*_xbt_log_cat_init)(xbt_log_category_t, e_xbt_log_priority_t) XBT_ATTRIB_UNUSED = fake_xbt_log_cat_init
 
 static void _xbt_log_cat_apply_set(xbt_log_category_t category, const xbt_log_setting_t& setting)
 {
@@ -451,25 +442,6 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, const c
   return nullptr;
 }
 
-/**
- * @ingroup XBT_log
- * @param control_string What to parse
- *
- * Typically passed a command-line argument. The string has the syntax:
- *
- *      ( [category] "." [keyword] ":" value (" ")... )...
- *
- * where [category] is one the category names (see @ref XBT_log_cats for a complete list of the ones defined in the
- * SimGrid library) and keyword is one of the following:
- *
- *    - thres: category's threshold priority. Possible values:
- *             TRACE,DEBUG,VERBOSE,INFO,WARNING,ERROR,CRITICAL
- *    - add or additivity: whether the logging actions must be passed to the parent category.
- *      Possible values: 0, 1, no, yes, on, off.
- *      Default value: yes.
- *    - fmt: the format to use. See @ref log_use_conf_fmt for more information.
- *    - app or appender: the appender to use. See @ref log_use_conf_app for more information.
- */
 void xbt_log_control_set(const char *control_string)
 {
   /* To split the string in commands, and the cursors */

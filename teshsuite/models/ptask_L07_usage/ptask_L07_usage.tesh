@@ -1,0 +1,146 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/ptask_L07_usage --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --log=root.fmt=%m%n
+> Configuration change: Set 'host/model' to 'ptask_L07'
+> Switching to the L07 model to handle parallel tasks.
+> TEST: Create and run a sequential execution.
+> ------------------------------------------------------------
+> Have to compute 1 flop on a 1 flop/s host.
+> Should be done in exactly one second.
+> Actual result: computing 1 flop at 1 flop/s takes 1.00 seconds.
+>
+>
+> TEST: Create and run two concurrent sequential executions.
+> ------------------------------------------------------------
+> Have to compute 2 x 1 flop on a 1 flop/s host.
+> Should be done in exactly 2 seconds because of sharing.
+> Actual result: computing 2x1 flop at 1 flop/s takes 2.00 seconds.
+>
+>
+> TEST: Create and run a parallel execution on 2 homogeneous hosts.
+> ------------------------------------------------------------
+> Have to compute 2 flops across two hosts running at 1 flop/s.
+> Should be done in exactly one second.
+> Actual result: computing 2 flops on 2 hosts at 1 flop/s takes 1.00 seconds.
+> 
+> 
+> TEST: Create and run a parallel execution on 2 heterogeneous hosts.
+> ------------------------------------------------------------
+> Have to compute 2 flops across two hosts, one running at 1 flop/s and one at 2 flop/s.
+> Should be done in exactly one second.
+> Actual result: computing 2 flops on 2 heterogeneous hosts takes 1.00 seconds.
+> 
+> 
+> TEST: Latency test between hosts connected by a shared link.
+> ------------------------------------------------------------
+> Have to send 1B from one host to another at 1Bps with a latency of 500ms.
+> Should be done in 1.5 seconds (500ms latency + 1s transfert).
+> Actual result: sending 1 byte on a shared link at 1Bps + 500ms takes 1.50 seconds.
+> 
+> 
+> TEST: Latency test between hosts connected by a fatpipe link.
+> ------------------------------------------------------------
+> Have to send 1B from one host to another at 1Bps with a latency of 500ms.
+> Should be done in 1.5 seconds (500ms latency + 1s transfert).
+> Actual result: sending 1 byte on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
+> 
+> 
+> TEST: Latency test between hosts connected by a 3-link route.
+> ------------------------------------------------------------
+> Have to send 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.
+> Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).
+> Actual result: sending 1 byte on a 3-link route at 1Bps + 2,500ms takes 3.00 seconds.
+>
+>
+> TEST: Latency test between hosts connected by a link with large latency.
+> ------------------------------------------------------------
+> Have to send 1B from one host to another on a link at 2Bps with a latency of 2 x 1024^2s.
+> This latency is half the default TCP window size (4MiB). This limits the bandwidth to 1B
+> Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfert).
+> Actual result: sending 1 byte on a large latency link takes 2097153.00 seconds.
+> 
+> 
+> TEST: Latency test between hosts connected by a shared link with 2 comms in same direction.
+> ------------------------------------------------------------
+> Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.
+> Should be done in 2.5 seconds (500ms latency + 2s transfert).
+> Actual result: sending 2x1 bytes on a shared link at 1Bps + 500ms takes 2.50 seconds.
+> 
+> 
+> TEST: Latency test between hosts connected by a fatpipe link with 2 comms in same direction.
+> ------------------------------------------------------------
+> Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.
+> Should be done in 1.5 seconds (500ms latency + 1s transfert).
+> Actual result: sending 2x1 bytes on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
+>
+> 
+> TEST: Latency test between hosts connected by a 3-link route with 2 comms in same direction.
+> ------------------------------------------------------------
+> Have to send 2 x 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.
+> Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).
+> Actual result: sending 2x1 bytes on a 3-link route at 1Bps + 2,500ms takes 4.00 seconds.
+> 
+> 
+> TEST: Latency test between hosts connected by a shared link with 2 comms in opposite direction.
+> ------------------------------------------------------------
+> Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.
+> Should be done in 2.5 seconds (500ms latency + 2s transfert).
+> Actual result: sending 1 byte in both directions on a shared link at 1Bps + 500ms takes 2.50 seconds.
+> 
+> 
+> TEST: Latency test between hosts connected by a fatpipe link with 2 comms in opposite direction.
+> ------------------------------------------------------------
+> Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.
+> Should be done in 1.5 seconds (500ms latency + 1s transfert).
+> Actual result: sending 1 byte in both directions on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
+>
+> 
+> TEST: Latency test between hosts connected by a 3-link route with 2 comms in opposite direction.
+> ------------------------------------------------------------
+> Have to send 1B between two hosts in each direction at 1Bps with a latency of 2 x 500ms + 1s.
+> Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).
+> Actual result: sending 1 byte in both directions on a 3-link route at 1Bps + 2,500ms takes 4.00 seconds.
+> 
+> 
+> TEST: 4-host parallel communication with independent transfers.
+> ------------------------------------------------------------
+> 'cpu0' sends 1B to 'cpu1' and 'cpu2' sends 1B to 'cpu3'. The only shared link is the fatpipe switch.
+> Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).
+> Actual result: sending 2 x 1 byte in a parallel communication without interference takes 3.00 seconds.
+>
+> 
+> TEST: 4-host parallel communication with scatter pattern.
+> ------------------------------------------------------------
+> 'cpu0' sends 1B to 'cpu1', 2B to 'cpu2' and 3B to 'cpu3'.
+> Should be done in 8 seconds: 2 x 500ms + 1s of initial latency and :
+>  - For 3 seconds, three flows share a link to transfer 3 x 1B. 'cpu1' received its payload
+>  - For 2 seconds, two lows share a link to transfer 1 x 1B. 'cpu2' received is payload
+>  - For 1 second, one flow has the full bandwidth to transfer 1B. 'cpu3' received is payload
+> Actual result: scattering an increasing number of bytes to 3 hosts takes 8.00 seconds.
+>
+>
+> TEST: 4-host parallel communication with all-to-all pattern.
+> ------------------------------------------------------------
+> Each host sends 1B to every other hosts.
+> Should be done in 8 seconds: 2 x 500ms + 1s of initial latency and 6 seconds for transfer
+> Each SHARED link is traversed by 6 flows (3 in and 3 out). 
+> Each 1B transfer thus takes 6 seconds on a 1Bps link
+> Actual result: 1-byte all-too-all in a parallel communication takes 8.00 seconds.
+> 
+> 
+> TEST: Two concurrent communications, 1 large and 1 small.
+> ------------------------------------------------------------
+> A host sends two messages of 100MB and 1B to the other host.
+> Should be done in 0.8001 seconds: 1e8/1.25e8 for transfer + 1e-4 of latency
+> The small communication has a negligible impact on the large one.
+> This corresponds to paying latency once and having the full bandwidth for the large communication.
+> Actual result: 1 small and 1 large concurrent communications take 0.8001 seconds.
+> 
+> 
+> TEST: Concurrent communication and computation.
+> ------------------------------------------------------------
+> A host sends 1B to another while the latter compute 2 flop.
+> Should be done in 2 seconds: 1.5s to transfer and 2 seconds to compute.
+> The two activities should overlap smoothly as they use different resources.
+> The completion time is thus the maximum of the time to complete the two activities.
+> Actual result: Sending 1B while computing 2 flops takes 2.0000 seconds.

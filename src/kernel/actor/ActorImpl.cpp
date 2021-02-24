@@ -18,6 +18,7 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
+#include <boost/core/demangle.hpp>
 #include <boost/range/algorithm.hpp>
 #include <utility>
 
@@ -318,7 +319,11 @@ void ActorImpl::yield()
     XBT_DEBUG("Wait, maestro left me an exception");
     std::exception_ptr exception = std::move(exception_);
     exception_                   = nullptr;
-    std::rethrow_exception(std::move(exception));
+    try {
+      std::rethrow_exception(std::move(exception));
+    } catch (const simgrid::Exception& e) {
+      e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
+    }
   }
 
   if (SMPI_switch_data_segment && not finished_) {

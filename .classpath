@@ -5,7 +5,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="simgrid/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="*/CMakeFiles/|CMakeFiles/" kind="src" path="examples/java"/>
+	<classpathentry excluding="*/CMakeFiles/|CMakeFiles/" kind="src" path="examples/deprecated/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

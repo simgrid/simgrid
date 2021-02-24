@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("Fafard"), sender, "box", mutex, 2);
 
   e.run();
-  XBT_INFO("Simulation time %g", e.get_clock());
+  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }

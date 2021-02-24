@@ -1,3 +1,0 @@
-$ ${bindir:=.}/basic0 ../../../examples/platforms/two_hosts_platform_shared.xml "--log=root.fmt:[%10.6r]%e%m%n"
-> [  0.000000] Switching to the L07 model to handle parallel tasks.
-> [  0.800100] Simulation time: 0.800100

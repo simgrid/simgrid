@@ -29,11 +29,11 @@ public:
   static EventSet plus(EventSet events, UnfoldingEvent* e);
 };
 
-typedef struct s_evset_in {
+struct s_evset_in_t {
   EventSet causuality_events;
   EventSet cause;
   EventSet ancestorSet;
-} s_evset_in_t;
+};
 
 class Configuration {
 public:

@@ -76,9 +76,9 @@ double Engine::get_clock()
 /**
  * Creates a new platform, including hosts, links, and the routing table.
  *
- * \rst
+ * @beginrst
  * See also: :ref:`platform`.
- * \endrst
+ * @endrst
  */
 void Engine::load_platform(const std::string& platf) const
 {
@@ -121,7 +121,7 @@ void Engine::register_function(const std::string& name, const std::function<void
 /** Registers a function as the default main function of actors
  *
  * It will be used as fallback when the function requested from the deployment file was not registered.
- * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
+ * It is used for trace-based simulations (see examples/cpp/replay-comms and similar).
  */
 void Engine::register_default(const std::function<void(int, char**)>& code)
 {
@@ -139,9 +139,9 @@ void Engine::register_function(const std::string& name, const kernel::actor::Act
 
 /** Load a deployment file and launch the actors that it contains
  *
- * \rst
+ * @beginrst
  * See also: :ref:`deploy`.
- * \endrst
+ * @endrst
  */
 void Engine::load_deployment(const std::string& deploy) const
 {

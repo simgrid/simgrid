@@ -57,22 +57,22 @@ IoPtr Disk::io_init(sg_size_t size, Io::OpType type)
 
 IoPtr Disk::read_async(sg_size_t size)
 {
-  return IoPtr(io_init(size, Io::OpType::READ))->start();
+  return IoPtr(io_init(size, Io::OpType::READ))->vetoable_start();
 }
 
 sg_size_t Disk::read(sg_size_t size)
 {
-  return IoPtr(io_init(size, Io::OpType::READ))->start()->wait()->get_performed_ioops();
+  return IoPtr(io_init(size, Io::OpType::READ))->vetoable_start()->wait()->get_performed_ioops();
 }
 
 IoPtr Disk::write_async(sg_size_t size)
 {
-  return IoPtr(io_init(size, Io::OpType::WRITE)->start());
+  return IoPtr(io_init(size, Io::OpType::WRITE)->vetoable_start());
 }
 
 sg_size_t Disk::write(sg_size_t size)
 {
-  return IoPtr(io_init(size, Io::OpType::WRITE))->start()->wait()->get_performed_ioops();
+  return IoPtr(io_init(size, Io::OpType::WRITE))->vetoable_start()->wait()->get_performed_ioops();
 }
 
 } // namespace s4u

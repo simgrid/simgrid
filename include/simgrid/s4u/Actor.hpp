@@ -24,7 +24,7 @@ namespace s4u {
 
 /** An actor is an independent stream of execution in your distributed application.
  *
- * \rst
+ * @beginrst
  * It is located on a (simulated) :cpp:class:`host <simgrid::s4u::Host>`, but can interact
  * with the whole simulated platform.
  *
@@ -37,7 +37,8 @@ namespace s4u {
  * The `documentation of this standard <http://en.cppreference.com/w/cpp/thread>`_
  * may help to understand the philosophy of the SimGrid actors.
  *
- * \endrst */
+ * @endrst
+ */
 class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
 #ifndef DOXYGEN
   friend Exec;
@@ -118,9 +119,13 @@ public:
   /** Create an actor using a callable thing and its arguments.
    *
    * Note that the arguments will be copied, so move-only parameters are forbidden */
+
   template <class F, class... Args,
             // This constructor is enabled only if the call code(args...) is valid:
-            typename = typename std::result_of_t<F(Args...)>>
+#ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
+            typename = typename std::result_of_t<F(Args...)>
+#endif
+            >
   static ActorPtr create(const std::string& name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, std::bind(std::move(code), std::move(args)...));
@@ -224,10 +229,14 @@ public:
   /** Returns the internal implementation of this actor */
   kernel::actor::ActorImpl* get_impl() const { return pimpl_; }
 
-  /** Retrieve the property value (or nullptr if not set) */
+  /** Retrieve the list of properties for that actor */
   const std::unordered_map<std::string, std::string>*
   get_properties() const; // FIXME: do not export the map, but only the keys or something
+
+  /** Retrieve the property value (or nullptr if not set) */
   const char* get_property(const std::string& key) const;
+
+  /** Set a property (old values will be overwritten) */
   void set_property(const std::string& key, const std::string& value);
 };
 
@@ -262,16 +271,16 @@ XBT_PUBLIC void execute(double flop);
 XBT_PUBLIC void execute(double flop, double priority);
 
 /**
- * @example examples/s4u/exec-ptask/s4u-exec-ptask.cpp
+ * @example examples/cpp/exec-ptask/s4u-exec-ptask.cpp
  */
 
 /** Block the current actor until the built parallel execution terminates
  *
- * \rst
+ * @beginrst
  * .. _API_s4u_parallel_execute:
  *
- * **Example of use:** `examples/s4u/exec-ptask/s4u-exec-ptask.cpp
- * <https://framagit.org/simgrid/simgrid/tree/master/examples/s4u/exec-ptask/s4u-exec-ptask.cpp>`_
+ * **Example of use:** `examples/cpp/exec-ptask/s4u-exec-ptask.cpp
+ * <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/exec-ptask/s4u-exec-ptask.cpp>`_
  *
  * Parallel executions convenient abstractions of parallel computational kernels that span over several machines,
  * such as a PDGEM and the other ScaLAPACK routines. If you are interested in the effects of such parallel kernel
@@ -314,7 +323,7 @@ XBT_PUBLIC void execute(double flop, double priority);
  * models, and you must :ref:`use the ptask_L07 host model <options_model_select>` for that. Note that you can mix
  * regular executions and communications with parallel executions, provided that the host model is ptask_L07.
  *
- * \endrst
+ * @endrst
  */
 /** Block the current actor until the built parallel execution completes */
 XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
