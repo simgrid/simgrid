@@ -66,15 +66,12 @@ void sg_platf_exit() {
 /** @brief Add a host to the current AS */
 void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  std::unordered_map<std::string, std::string> props;
+  simgrid::s4u::Host* host = routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount);
+
   if (args->properties) {
-    for (auto const& elm : *args->properties)
-      props.insert({elm.first, elm.second});
+    host->set_properties(*args->properties);
     delete args->properties;
   }
-
-  simgrid::s4u::Host* host =
-      routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount, &props);
 
   host->pimpl_->set_disks(args->disks, host);
 
@@ -87,6 +84,8 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
     host->set_pstate(args->pstate);
   if (not args->coord.empty())
     new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
+
+  simgrid::s4u::Host::on_creation(*host); // notify the signal
 }
 
 /** @brief Add a "router" to the network element list */
@@ -110,13 +109,10 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 
 static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args, const std::string& link_name)
 {
-  std::unordered_map<std::string, std::string> props;
-  if (args->properties)
-    for (auto const& elm : *args->properties)
-      props.insert({elm.first, elm.second});
+  simgrid::s4u::Link* link = routing_get_current()->create_link(link_name, args->bandwidths, args->latency, args->policy);
 
-  const simgrid::s4u::Link* link =
-      routing_get_current()->create_link(link_name, args->bandwidths, args->latency, args->policy, &props);
+  if (args->properties)
+    link->set_properties(*args->properties);
 
   simgrid::kernel::resource::LinkImpl* l = link->get_impl();
   if (args->latency_trace)
@@ -425,7 +421,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
 
   std::vector<double> speed_per_pstate;
   speed_per_pstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = as->create_host(peer->id, speed_per_pstate, 1, nullptr);
+  simgrid::s4u::Host* host = as->create_host(peer->id, speed_per_pstate, 1);
 
   as->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
 
@@ -434,6 +430,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
     host->set_state_profile(peer->state_trace);
   if (peer->speed_trace)
     host->set_speed_profile(peer->speed_trace);
+  simgrid::s4u::Host::on_creation(*host); // notify the signal
 }
 
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */

@@ -28,8 +28,7 @@ public:
   void seal() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
-                         s4u::Link::SharingPolicy policy,
-                         const std::unordered_map<std::string, std::string>* props) override;
+                         s4u::Link::SharingPolicy policy) override;
   NetPoint* get_access_point() {return access_point_;}
 
 private:

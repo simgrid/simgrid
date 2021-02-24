@@ -46,7 +46,7 @@ public:
 
 protected:
   virtual ~Host(); // Call destroy() instead of manually deleting it.
-  void set_netpoint(kernel::routing::NetPoint* netpoint) { pimpl_netpoint_ = netpoint; }
+  Host* set_netpoint(kernel::routing::NetPoint* netpoint);
 #endif
 
 public:
@@ -100,9 +100,9 @@ public:
   bool is_on() const;
 
   const char* get_property(const std::string& key) const;
-  void set_property(const std::string& key, const std::string& value);
+  Host* set_property(const std::string& key, const std::string& value);
   const std::unordered_map<std::string, std::string>* get_properties() const;
-  void set_properties(const std::unordered_map<std::string, std::string>& properties);
+  Host* set_properties(const std::unordered_map<std::string, std::string>& properties);
 
   void set_state_profile(kernel::profile::Profile* p);
   void set_speed_profile(kernel::profile::Profile* p);

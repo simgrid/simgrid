@@ -37,6 +37,12 @@ Host::Host(const std::string& name) : name_(name)
   new surf::HostImpl(this);
 }
 
+Host* Host::set_netpoint(kernel::routing::NetPoint* netpoint)
+{
+  pimpl_netpoint_ = netpoint;
+  return this;
+}
+
 Host::~Host()
 {
   delete pimpl_;
@@ -192,14 +198,16 @@ const char* Host::get_property(const std::string& key) const
   return this->pimpl_->get_property(key);
 }
 
-void Host::set_property(const std::string& key, const std::string& value)
+Host* Host::set_property(const std::string& key, const std::string& value)
 {
   kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  return this;
 }
 
-void Host::set_properties(const std::unordered_map<std::string, std::string>& properties)
+Host* Host::set_properties(const std::unordered_map<std::string, std::string>& properties)
 {
   kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
+  return this;
 }
 
 /** Specify a profile turning the host on and off according to an exhaustive list or a stochastic law.
