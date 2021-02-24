@@ -557,26 +557,26 @@ void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std:
 }
 
 /**
- * @brief Specify that the description of the current AS is finished
+ * @brief Specify that the description of the current Zone is finished
  *
- * Once you've declared all the content of your AS, you have to seal
- * it with this call. Your AS is not usable until you call this function.
+ * Once you've declared all the content of your Zone, you have to seal
+ * it with this call. Your Zone is not usable until you call this function.
  */
 void sg_platf_new_Zone_seal()
 {
-  xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
+  xbt_assert(current_routing, "Cannot seal the current Zone: zone under construction");
   current_routing->seal();
   simgrid::s4u::NetZone::on_seal(*current_routing->get_iface());
   current_routing = current_routing->get_father();
 }
 
-/** @brief Add a link connecting a host to the rest of its AS (which must be cluster or vivaldi) */
+/** @brief Add a link connecting a host to the rest of its Zone (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
 {
   const simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
-             "Only hosts from Cluster and Vivaldi ASes can get a host_link.");
+             "Only hosts from Cluster and Vivaldi Zones can get a host_link.");
 
   const simgrid::s4u::Link* linkUp   = simgrid::s4u::Link::by_name_or_null(hostlink->link_up);
   const simgrid::s4u::Link* linkDown = simgrid::s4u::Link::by_name_or_null(hostlink->link_down);
