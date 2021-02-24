@@ -276,7 +276,8 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group* newgroup)
   } else {
     *newgroup = new Group(newsize);
 
-    for (int j = 0, rank = 0; rank < size_; rank++) {
+    int j = 0;
+    for (int rank = 0; rank < size_; rank++) {
       if (not to_excl[rank]) {
         s4u::Actor* actor = this->actor(rank);
         (*newgroup)->set_mapping(actor, j);
