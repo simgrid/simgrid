@@ -307,7 +307,6 @@ void SIMIX_global_init(int *argc, char **argv)
     atexit(SIMIX_clean);
 }
 
-int smx_cleaned = 0;
 /**
  * @ingroup SIMIX_API
  * @brief Clean the SIMIX simulation
@@ -316,10 +315,11 @@ int smx_cleaned = 0;
  */
 void SIMIX_clean()
 {
+  static bool smx_cleaned = false;
   if (smx_cleaned)
     return; // to avoid double cleaning by java and C
 
-  smx_cleaned = 1;
+  smx_cleaned = true;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
   if (not simix_global->actors_to_run.empty() && SIMIX_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");

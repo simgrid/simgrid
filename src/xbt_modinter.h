@@ -22,7 +22,6 @@ void xbt_dict_postexit(void);
 void *mmalloc_preinit(void);
 void mmalloc_postexit(void);
 
-extern int smx_cleaned;
 extern int xbt_initialized;
 
 SG_END_DECL
