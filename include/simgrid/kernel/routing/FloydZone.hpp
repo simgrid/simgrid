@@ -31,7 +31,6 @@ public:
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                  std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
-  void seal() override;
 
 private:
   /* vars to compute the Floyd algorithm. */
@@ -40,6 +39,7 @@ private:
   std::vector<RouteCreationArgs*> link_table_;
 
   void init_tables(unsigned int table_size);
+  void do_seal() override;
 };
 } // namespace routing
 } // namespace kernel

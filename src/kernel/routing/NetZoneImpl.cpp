@@ -401,6 +401,13 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
   if (route.gw_dst != dst)
     get_global_route(route.gw_dst, dst, links, latency);
 }
+
+void NetZoneImpl::seal()
+{
+  do_seal(); // derived class' specific sealing procedure
+  sealed_ = true;
+}
+
 } // namespace routing
 } // namespace kernel
 } // namespace simgrid

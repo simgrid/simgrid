@@ -130,7 +130,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
 /* This function makes the assumption that parse_specific_arguments() and
  * addNodes() have already been called
  */
-void FatTreeZone::seal()
+void FatTreeZone::do_seal()
 {
   if (this->levels_ == 0) {
     return;

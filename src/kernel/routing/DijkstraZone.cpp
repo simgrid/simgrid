@@ -38,7 +38,7 @@ void DijkstraZone::route_graph_delete(xbt_graph_t g)
                        [](void* e) { delete static_cast<simgrid::kernel::routing::RouteCreationArgs*>(e); }, nullptr);
 }
 
-void DijkstraZone::seal()
+void DijkstraZone::do_seal()
 {
   unsigned int cursor;
   xbt_node_t node = nullptr;

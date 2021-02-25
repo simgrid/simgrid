@@ -124,7 +124,7 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 }
 
 /* Generate the cluster once every node is created */
-void DragonflyZone::seal()
+void DragonflyZone::do_seal()
 {
   if (this->num_nodes_per_blade_ == 0) {
     return;

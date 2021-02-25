@@ -75,6 +75,8 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   resource::CpuModel* cpu_model_pm_;
   resource::DiskModel* disk_model_;
   simgrid::surf::HostModel* host_model_;
+  /** @brief Perform sealing procedure for derived classes, if necessary */
+  virtual void do_seal(){};
 
 protected:
   explicit NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model);
@@ -145,7 +147,7 @@ public:
                                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
 
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
-  virtual void seal() { sealed_ = true; };
+  void seal();
   virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
   virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,

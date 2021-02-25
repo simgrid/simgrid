@@ -21,7 +21,7 @@ WifiZone::WifiZone(NetZoneImpl* father, const std::string& name, resource::Netwo
 {
 }
 
-void WifiZone::seal()
+void WifiZone::do_seal()
 {
   const char* AP_name = get_property("access_point");
   if (AP_name != nullptr) {

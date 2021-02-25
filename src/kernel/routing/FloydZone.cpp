@@ -139,7 +139,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
   }
 }
 
-void FloydZone::seal()
+void FloydZone::do_seal()
 {
   /* set the size of table routing */
   unsigned int table_size = get_table_size();

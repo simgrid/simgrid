@@ -70,13 +70,13 @@ public:
   explicit DragonflyZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
-  void seal() override;
 
   Coords rankId_to_coords(int rank_id) const;
   XBT_ATTRIB_DEPRECATED_v330("Please use rankId_to_coords(int)") void rankId_to_coords(int rank_id,
                                                                                        unsigned int coords[4]) const;
 
 private:
+  void do_seal() override;
   void generate_routers();
   void generate_links();
   void generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,

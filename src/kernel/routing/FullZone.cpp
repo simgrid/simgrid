@@ -21,7 +21,7 @@ FullZone::FullZone(NetZoneImpl* father, const std::string& name, resource::Netwo
 {
 }
 
-void FullZone::seal()
+void FullZone::do_seal()
 {
   unsigned int table_size = get_table_size();
 
