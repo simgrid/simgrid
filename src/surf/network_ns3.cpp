@@ -150,14 +150,10 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
 
     const char* start_time = wifizone->get_property("start_time");
     int start_time_value = start_time ? atoi(start_time) : 0;
-    auto resume = [](ns3::Ptr<ns3::WifiNetDevice> device){device->GetPhy()->ResumeFromOff();};
-    for (int i = 0; i < netDevices.GetN(); i++) {
-        ns3::Ptr<ns3::WifiNetDevice> device = ns3::StaticCast<ns3::WifiNetDevice>(netDevices.Get(i));
-        device->GetPhy()->SetOffMode();
-        ns3::Simulator::Schedule(
-            ns3::Seconds(start_time_value),
-            &resumeWifiDevice,
-            device);
+    for (uint32_t i = 0; i < netDevices.GetN(); i++) {
+      ns3::Ptr<ns3::WifiNetDevice> device = ns3::StaticCast<ns3::WifiNetDevice>(netDevices.Get(i));
+      device->GetPhy()->SetOffMode();
+      ns3::Simulator::Schedule(ns3::Seconds(start_time_value), &resumeWifiDevice, device);
     }
 
     ns3::Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue(40));
