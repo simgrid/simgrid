@@ -66,8 +66,7 @@ int NetZoneImpl::get_host_count() const
 }
 
 s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
-                                    s4u::Link::SharingPolicy policy,
-                                    const std::unordered_map<std::string, std::string>* props)
+                                    s4u::Link::SharingPolicy policy)
 {
   static double last_warned_latency = sg_surf_precision;
   if (latency != 0.0 && latency < last_warned_latency) {
@@ -79,27 +78,18 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
 
   auto* l = surf_network_model->create_link(name, bandwidths, latency, policy);
 
-  if (props)
-    l->set_properties(*props);
-
   return l->get_iface();
 }
-s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate,
-                                    int coreAmount, const std::unordered_map<std::string, std::string>* props)
-{
-  auto* res = new s4u::Host(name);
 
+s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate,
+                                    int coreAmount)
+{
   if (hierarchy_ == RoutingMode::unset)
     hierarchy_ = RoutingMode::base;
 
-  res->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
+  auto* res = (new s4u::Host(name))->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
 
   surf_cpu_model_pm->create_cpu(res, speed_per_pstate, coreAmount);
-
-  if (props != nullptr)
-    res->set_properties(*props);
-
-  s4u::Host::on_creation(*res); // notify the signal
 
   return res;
 }

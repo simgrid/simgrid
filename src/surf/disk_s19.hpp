@@ -29,7 +29,7 @@ class XBT_PRIVATE DiskS19Action;
 class DiskS19Model : public DiskModel {
 public:
   DiskS19Model();
-  DiskImpl* createDisk(const std::string& id, double read_bw, double write_bw) override;
+  DiskImpl* create_disk() override;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 };
@@ -40,9 +40,7 @@ public:
 
 class DiskS19 : public DiskImpl {
 public:
-  DiskS19(DiskModel* model, const std::string& name, kernel::lmm::System* maxminSystem, double read_bw,
-          double write_bw);
-  ~DiskS19() override = default;
+  DiskS19() = default;
   DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) override;
   DiskAction* read(sg_size_t size) override;
   DiskAction* write(sg_size_t size) override;

@@ -673,8 +673,8 @@ include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
 include teshsuite/models/cloud-sharing/cloud-sharing.cpp
 include teshsuite/models/cloud-sharing/cloud-sharing.tesh
-include teshsuite/models/ptask_L07/ptask_L07.cpp
-include teshsuite/models/ptask_L07/ptask_L07.tesh
+include teshsuite/models/ptask_L07_usage/ptask_L07_usage.cpp
+include teshsuite/models/ptask_L07_usage/ptask_L07_usage.tesh
 include teshsuite/models/wifi_usage/wifi_usage.cpp
 include teshsuite/models/wifi_usage/wifi_usage.tesh
 include teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp
@@ -758,14 +758,6 @@ include teshsuite/s4u/wait-any-for/wait-any-for.cpp
 include teshsuite/s4u/wait-any-for/wait-any-for.tesh
 include teshsuite/simdag/availability/availability.c
 include teshsuite/simdag/availability/availability.tesh
-include teshsuite/simdag/basic1/basic1.c
-include teshsuite/simdag/basic1/basic1.tesh
-include teshsuite/simdag/basic3/basic3.c
-include teshsuite/simdag/basic3/basic3.tesh
-include teshsuite/simdag/basic4/basic4.c
-include teshsuite/simdag/basic4/basic4.tesh
-include teshsuite/simdag/basic5/basic5.c
-include teshsuite/simdag/basic5/basic5.tesh
 include teshsuite/simdag/flatifier/bogus_missing_gateway.tesh
 include teshsuite/simdag/flatifier/bogus_two_hosts_asymetric.tesh
 include teshsuite/simdag/flatifier/flatifier.cpp
@@ -2017,7 +2009,7 @@ include include/simgrid/simdag.h
 include include/simgrid/simix.h
 include include/simgrid/simix.hpp
 include include/simgrid/simix/blocking_simcall.hpp
-include include/simgrid/smpi/replay.hpp
+include include/simgrid/smpi/smpi_replay.hpp
 include include/simgrid/version.h.in
 include include/simgrid/vm.h
 include include/simgrid/zone.h
@@ -2047,7 +2039,6 @@ include include/xbt/ex.h
 include include/xbt/file.hpp
 include include/xbt/function_types.h
 include include/xbt/functional.hpp
-include include/xbt/future.hpp
 include include/xbt/graph.h
 include include/xbt/log.h
 include include/xbt/log.hpp
@@ -2056,6 +2047,7 @@ include include/xbt/misc.h
 include include/xbt/module.h
 include include/xbt/parmap.h
 include include/xbt/parse_units.hpp
+include include/xbt/promise.hpp
 include include/xbt/random.hpp
 include include/xbt/range.hpp
 include include/xbt/replay.hpp

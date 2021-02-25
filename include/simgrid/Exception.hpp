@@ -92,6 +92,10 @@ public:
   /** Return the information about where the exception was thrown */
   xbt::ThrowPoint const& throw_point() const { return throwpoint_; }
 
+  /** Allow to carry a value (used by testany/waitany) */
+  int get_value() const { return value_; }
+  void set_value(int value) { value_ = value; }
+
   std::string resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
 
   virtual void rethrow_nested(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message) const
@@ -99,11 +103,9 @@ public:
     std::throw_with_nested(Exception(throwpoint, message));
   }
 
-  /** Allow to carry a value (used by waitall/waitany) */
-  int value = 0;
-
 private:
   xbt::ThrowPoint throwpoint_;
+  int value_ = 0;
 };
 
 #define DECLARE_SIMGRID_EXCEPTION(AnyException, ...)                                                                   \

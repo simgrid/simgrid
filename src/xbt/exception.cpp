@@ -8,19 +8,19 @@
 #include <xbt/config.hpp>
 #include <xbt/log.hpp>
 
+#include <boost/core/demangle.hpp>
 #include <mutex>
 #include <sstream>
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_exception, xbt, "Exceptions");
 
-void _xbt_throw(char* message, int value, const char* file, int line, const char* func)
+void _xbt_throw(char* message, const char* file, int line, const char* func)
 {
   simgrid::Exception e(
       simgrid::xbt::ThrowPoint(file, line, func, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid()),
       message ? message : "");
   xbt_free(message);
-  e.value    = value;
   throw e;
 }
 
@@ -34,11 +34,11 @@ UnimplementedError::~UnimplementedError()   = default;
 void log_exception(e_xbt_log_priority_t prio, const char* context, std::exception const& exception)
 {
   try {
-    auto name = simgrid::xbt::demangle(typeid(exception).name());
+    std::string name = boost::core::demangle(typeid(exception).name());
 
     auto* with_context = dynamic_cast<const simgrid::Exception*>(&exception);
     if (with_context != nullptr) {
-      XBT_LOG(prio, "%s %s by %s/%d: %s", context, name.get(), with_context->throw_point().procname_.c_str(),
+      XBT_LOG(prio, "%s %s by %s/%d: %s", context, name.c_str(), with_context->throw_point().procname_.c_str(),
               with_context->throw_point().pid_, exception.what());
       // Do we have a backtrace?
       if (not simgrid::config::get_value<bool>("exception/cutpath")) {
@@ -46,7 +46,7 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
         XBT_LOG(prio, "Backtrace:\n%s", backtrace.c_str());
       }
     } else {
-      XBT_LOG(prio, "%s %s: %s", context, name.get(), exception.what());
+      XBT_LOG(prio, "%s %s: %s", context, name.c_str(), exception.what());
     }
   } catch (...) {
     // Don't log exceptions we got when trying to log exception

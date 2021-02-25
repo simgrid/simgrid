@@ -66,15 +66,12 @@ void sg_platf_exit() {
 /** @brief Add a host to the current AS */
 void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  std::unordered_map<std::string, std::string> props;
+  simgrid::s4u::Host* host = routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount);
+
   if (args->properties) {
-    for (auto const& elm : *args->properties)
-      props.insert({elm.first, elm.second});
+    host->set_properties(*args->properties);
     delete args->properties;
   }
-
-  simgrid::s4u::Host* host =
-      routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount, &props);
 
   host->pimpl_->set_disks(args->disks, host);
 
@@ -87,6 +84,8 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
     host->set_pstate(args->pstate);
   if (not args->coord.empty())
     new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
+
+  simgrid::s4u::Host::on_creation(*host); // notify the signal
 }
 
 /** @brief Add a "router" to the network element list */
@@ -110,13 +109,10 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 
 static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args, const std::string& link_name)
 {
-  std::unordered_map<std::string, std::string> props;
-  if (args->properties)
-    for (auto const& elm : *args->properties)
-      props.insert({elm.first, elm.second});
+  simgrid::s4u::Link* link = routing_get_current()->create_link(link_name, args->bandwidths, args->latency, args->policy);
 
-  const simgrid::s4u::Link* link =
-      routing_get_current()->create_link(link_name, args->bandwidths, args->latency, args->policy, &props);
+  if (args->properties)
+    link->set_properties(*args->properties);
 
   simgrid::kernel::resource::LinkImpl* l = link->get_impl();
   if (args->latency_trace)
@@ -328,13 +324,31 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* c
 
 simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  simgrid::kernel::resource::DiskImpl* d = surf_disk_model->createDisk(disk->id, disk->read_bw, disk->write_bw);
+  simgrid::kernel::lmm::System* maxmin_system = surf_disk_model->get_maxmin_system();
+  simgrid::kernel::resource::DiskImpl* pimpl = surf_disk_model->create_disk();
+
+  // This should be done using s4u::Disk methods and passed to the pimpl
+  pimpl->set_read_bandwidth(disk->read_bw)
+      ->set_write_bandwidth(disk->write_bw)
+      ->set_name(disk->id);
   if (disk->properties) {
-    d->set_properties(*disk->properties);
+    pimpl->set_properties(*disk->properties);
     delete disk->properties;
   }
-  simgrid::s4u::Disk::on_creation(*d->get_iface());
-  return d;
+
+  // This should be done in the seal() of a Disk creation
+  pimpl->set_read_constraint(maxmin_system->constraint_new(pimpl,disk->read_bw))
+      ->set_write_constraint(maxmin_system->constraint_new(pimpl, disk->write_bw))
+      ->set_model(surf_disk_model)
+      ->set_constraint(maxmin_system->constraint_new(pimpl, std::max(disk->read_bw, disk->write_bw)));
+
+  XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", disk->read_bw, disk->write_bw);
+  pimpl->turn_on();
+
+  // Temporary hack
+  pimpl->get_iface()->set_name(disk->id);
+  simgrid::s4u::Disk::on_creation(*pimpl->get_iface());
+  return pimpl;
 }
 
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
@@ -425,7 +439,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
 
   std::vector<double> speed_per_pstate;
   speed_per_pstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = as->create_host(peer->id, speed_per_pstate, 1, nullptr);
+  simgrid::s4u::Host* host = as->create_host(peer->id, speed_per_pstate, 1);
 
   as->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
 
@@ -434,6 +448,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
     host->set_state_profile(peer->state_trace);
   if (peer->speed_trace)
     host->set_speed_profile(peer->speed_trace);
+  simgrid::s4u::Host::on_creation(*host); // notify the signal
 }
 
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
@@ -560,26 +575,26 @@ void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std:
 }
 
 /**
- * @brief Specify that the description of the current AS is finished
+ * @brief Specify that the description of the current Zone is finished
  *
- * Once you've declared all the content of your AS, you have to seal
- * it with this call. Your AS is not usable until you call this function.
+ * Once you've declared all the content of your Zone, you have to seal
+ * it with this call. Your Zone is not usable until you call this function.
  */
 void sg_platf_new_Zone_seal()
 {
-  xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
+  xbt_assert(current_routing, "Cannot seal the current Zone: zone under construction");
   current_routing->seal();
   simgrid::s4u::NetZone::on_seal(*current_routing->get_iface());
   current_routing = current_routing->get_father();
 }
 
-/** @brief Add a link connecting a host to the rest of its AS (which must be cluster or vivaldi) */
+/** @brief Add a link connecting a host to the rest of its Zone (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
 {
   const simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
-             "Only hosts from Cluster and Vivaldi ASes can get a host_link.");
+             "Only hosts from Cluster and Vivaldi Zones can get a host_link.");
 
   const simgrid::s4u::Link* linkUp   = simgrid::s4u::Link::by_name_or_null(hostlink->link_up);
   const simgrid::s4u::Link* linkDown = simgrid::s4u::Link::by_name_or_null(hostlink->link_down);

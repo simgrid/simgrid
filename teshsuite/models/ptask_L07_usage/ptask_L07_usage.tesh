@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/ptask_L07 --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/ptask_L07_usage --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --log=root.fmt=%m%n
 > Configuration change: Set 'host/model' to 'ptask_L07'
 > Switching to the L07 model to handle parallel tasks.
 > TEST: Create and run a sequential execution.
@@ -135,3 +135,12 @@ $ ${bindir:=.}/ptask_L07 --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.xml --
 > The small communication has a negligible impact on the large one.
 > This corresponds to paying latency once and having the full bandwidth for the large communication.
 > Actual result: 1 small and 1 large concurrent communications take 0.8001 seconds.
+> 
+> 
+> TEST: Concurrent communication and computation.
+> ------------------------------------------------------------
+> A host sends 1B to another while the latter compute 2 flop.
+> Should be done in 2 seconds: 1.5s to transfer and 2 seconds to compute.
+> The two activities should overlap smoothly as they use different resources.
+> The completion time is thus the maximum of the time to complete the two activities.
+> Actual result: Sending 1B while computing 2 flops takes 2.0000 seconds.

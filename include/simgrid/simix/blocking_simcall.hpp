@@ -13,10 +13,10 @@
 
 #include <xbt/sysdep.h>
 
-#include <xbt/future.hpp>
 #include <simgrid/kernel/future.hpp>
 #include <simgrid/simix.h>
 #include <simgrid/simix.hpp>
+#include <xbt/promise.hpp>
 
 namespace simgrid {
 namespace simix {

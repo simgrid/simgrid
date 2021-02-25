@@ -7,21 +7,17 @@
 
 #include "src/internal_config.h" // HAVE_FUTEX_H
 #include <simgrid/s4u/Engine.hpp>
-#include <xbt.h>
+#include <xbt/log.h>
 #include <xbt/parmap.hpp>
 
 #include <algorithm>
+#include <chrono>
 #include <cstdlib>
 #include <numeric> // std::iota
 #include <thread>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(parmap_test, "Test for parmap");
-
-static void fun_double(unsigned* arg)
-{
-  *arg = 2 * *arg + 1;
-}
 
 static int test_parmap_basic(e_xbt_parmap_mode_t mode)
 {
@@ -37,7 +33,7 @@ static int test_parmap_basic(e_xbt_parmap_mode_t mode)
     std::iota(begin(data), end(data), &a[0]);
 
     for (unsigned i = 0; i < num; i++)
-      parmap.apply(fun_double, data);
+      parmap.apply([](unsigned* arg) { *arg = 2 * *arg + 1; }, data);
 
     for (unsigned i = 0; i < len; i++) {
       unsigned expected = (1U << num) * (i + 1) - 1;
@@ -49,12 +45,6 @@ static int test_parmap_basic(e_xbt_parmap_mode_t mode)
     }
   }
   return ret;
-}
-
-static void fun_get_id(std::thread::id* arg)
-{
-  *arg = std::this_thread::get_id();
-  xbt_os_sleep(0.05);
 }
 
 static int test_parmap_extended(e_xbt_parmap_mode_t mode)
@@ -69,10 +59,22 @@ static int test_parmap_extended(e_xbt_parmap_mode_t mode)
     std::vector<std::thread::id*> data(len);
     std::iota(begin(data), end(data), &a[0]);
 
-    parmap.apply(fun_get_id, data);
-
-    std::sort(begin(a), end(a));
-    unsigned count = static_cast<unsigned>(std::distance(begin(a), std::unique(begin(a), end(a))));
+    unsigned sleep_ms = 10;
+    unsigned count;
+    while (true) {
+      parmap.apply(
+          [sleep_ms](std::thread::id* arg) {
+            *arg = std::this_thread::get_id();
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
+          },
+          data);
+      std::sort(begin(a), end(a));
+      count = static_cast<unsigned>(std::distance(begin(a), std::unique(begin(a), end(a))));
+      if (count == num_workers || sleep_ms > 250)
+        break;
+      sleep_ms *= 2;
+      XBT_DEBUG("Failure. Try again with duration = %ums", sleep_ms);
+    }
     if (count != num_workers) {
       XBT_CRITICAL("only %u/%u threads did some work", count, num_workers);
       ret = 1;

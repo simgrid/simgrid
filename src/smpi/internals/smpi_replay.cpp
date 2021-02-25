@@ -9,7 +9,7 @@
 #include "smpi_group.hpp"
 #include "smpi_request.hpp"
 #include "xbt/replay.hpp"
-#include <simgrid/smpi/replay.hpp>
+#include <simgrid/smpi/smpi_replay.hpp>
 #include <src/smpi/include/private.hpp>
 
 #include <memory>

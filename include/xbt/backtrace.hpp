@@ -20,12 +20,6 @@ SG_END_DECL
 namespace simgrid {
 namespace xbt {
 
-/** Try to demangle a C++ name
- *
- *  Return the origin string if this fails.
- */
-XBT_PUBLIC std::unique_ptr<char, std::function<void(char*)>> demangle(const char* name);
-
 class BacktraceImpl;
 /** A backtrace
  *

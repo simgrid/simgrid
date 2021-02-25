@@ -74,8 +74,9 @@ double NetworkModel::next_occurring_event_full(double now)
  ************/
 
 LinkImpl::LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint)
-    : Resource(model, name, constraint), piface_(this)
+    : piface_(this)
 {
+  this->set_name(name)->set_model(model)->set_constraint(constraint);
   if (name != "__loopback__")
     xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
 
@@ -86,22 +87,14 @@ LinkImpl::LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint
   XBT_DEBUG("Create link '%s'", name.c_str());
 }
 
-/** @brief use destroy() instead of this destructor */
-LinkImpl::~LinkImpl()
-{
-  xbt_assert(currently_destroying_, "Don't delete Links directly. Call destroy() instead.");
-}
 /** @brief Fire the required callbacks and destroy the object
  *
  * Don't delete directly a Link, call l->destroy() instead.
  */
 void LinkImpl::destroy()
 {
-  if (not currently_destroying_) {
-    currently_destroying_ = true;
-    s4u::Link::on_destruction(this->piface_);
-    delete this;
-  }
+  s4u::Link::on_destruction(this->piface_);
+  delete this;
 }
 
 bool LinkImpl::is_used() const

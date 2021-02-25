@@ -37,10 +37,14 @@ Host::Host(const std::string& name) : name_(name)
   new surf::HostImpl(this);
 }
 
+Host* Host::set_netpoint(kernel::routing::NetPoint* netpoint)
+{
+  pimpl_netpoint_ = netpoint;
+  return this;
+}
+
 Host::~Host()
 {
-  xbt_assert(currently_destroying_, "Please call h->destroy() instead of manually deleting it.");
-
   delete pimpl_;
   if (pimpl_netpoint_ != nullptr) // not removed yet by a children class
     Engine::get_instance()->netpoint_unregister(pimpl_netpoint_);
@@ -56,12 +60,9 @@ Host::~Host()
  */
 void Host::destroy()
 {
-  if (not currently_destroying_) {
-    currently_destroying_ = true;
-    on_destruction(*this);
-    Engine::get_instance()->host_unregister(std::string(name_));
-    delete this;
-  }
+  on_destruction(*this);
+  Engine::get_instance()->host_unregister(std::string(name_));
+  delete this;
 }
 
 Host* Host::by_name(const std::string& name)
@@ -197,14 +198,16 @@ const char* Host::get_property(const std::string& key) const
   return this->pimpl_->get_property(key);
 }
 
-void Host::set_property(const std::string& key, const std::string& value)
+Host* Host::set_property(const std::string& key, const std::string& value)
 {
   kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  return this;
 }
 
-void Host::set_properties(const std::unordered_map<std::string, std::string>& properties)
+Host* Host::set_properties(const std::unordered_map<std::string, std::string>& properties)
 {
   kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
+  return this;
 }
 
 /** Specify a profile turning the host on and off according to an exhaustive list or a stochastic law.
@@ -262,6 +265,12 @@ int Host::get_pstate() const
 std::vector<Disk*> Host::get_disks() const
 {
   return kernel::actor::simcall([this] { return this->pimpl_->get_disks(); });
+}
+
+Disk* Host::create_disk()
+{
+  auto pimpl = surf_disk_model->create_disk();
+  return pimpl->get_iface();
 }
 
 void Host::add_disk(const Disk* disk)

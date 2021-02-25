@@ -18,9 +18,9 @@
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/AppSide.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
-#include "xbt/backtrace.hpp"
 
 #include <array>
+#include <boost/core/demangle.hpp>
 #include <libunwind.h>
 #endif
 
@@ -115,17 +115,17 @@ void dumpStack(FILE* file, unw_cursor_t* cursor)
   do {
     const char* name = not unw_get_proc_name(cursor, buffer.data(), buffer.size(), &off) ? buffer.data() : "?";
     // Unmangle C++ names:
-    auto realname = simgrid::xbt::demangle(name);
+    std::string realname = boost::core::demangle(name);
 
 #if defined(__x86_64__)
     unw_word_t rip = 0;
     unw_word_t rsp = 0;
     unw_get_reg(cursor, UNW_X86_64_RIP, &rip);
     unw_get_reg(cursor, UNW_X86_64_RSP, &rsp);
-    fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n", nframe, realname.get(), (std::uint64_t)rip,
+    fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n", nframe, realname.c_str(), (std::uint64_t)rip,
             (std::uint64_t)rsp);
 #else
-    fprintf(file, "  %i: %s\n", nframe, realname.get());
+    fprintf(file, "  %i: %s\n", nframe, realname.c_str());
 #endif
 
     ++nframe;

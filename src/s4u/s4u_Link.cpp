@@ -126,10 +126,23 @@ const char* Link::get_property(const std::string& key) const
 {
   return this->pimpl_->get_property(key);
 }
-void Link::set_property(const std::string& key, const std::string& value)
+Link* Link::set_property(const std::string& key, const std::string& value)
 {
   simgrid::kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  return this;
 }
+
+const std::unordered_map<std::string, std::string>* Link::get_properties() const
+{
+  return this->pimpl_->get_properties();
+}
+
+Link* Link::set_properties(const std::unordered_map<std::string, std::string>& properties)
+{
+  kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
+  return this;
+}
+
 } // namespace s4u
 } // namespace simgrid
 

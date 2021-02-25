@@ -15,11 +15,6 @@
 #include <cstdlib>
 #include <sstream>
 
-// Try to detect and use the C++ itanium ABI for name demangling:
-#ifdef __GXX_ABI_VERSION
-#include <cxxabi.h>
-#endif
-
 #if HAVE_BOOST_STACKTRACE_BACKTRACE
 #define BOOST_STACKTRACE_USE_BACKTRACE
 #include <boost/stacktrace.hpp>
@@ -39,23 +34,9 @@ void xbt_backtrace_display_current()
 namespace simgrid {
 namespace xbt {
 
-std::unique_ptr<char, std::function<void(char*)>> demangle(const char* name)
-{
-#ifdef __GXX_ABI_VERSION
-  int status;
-  std::unique_ptr<char, std::function<void(char*)>> res(abi::__cxa_demangle(name, nullptr, nullptr, &status),
-                                                        &std::free);
-  if (res != nullptr)
-    return res;
-  // We did not manage to resolve this. Probably because this is not a mangled symbol:
-#endif
-  // Return the symbol:
-  return std::unique_ptr<char, std::function<void(char*)>>(xbt_strdup(name), &xbt_free_f);
-}
-
 class BacktraceImpl {
 #if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
-  const boost::stacktrace::stacktrace st = boost::stacktrace::stacktrace();
+  const boost::stacktrace::stacktrace st;
 
 public:
   std::string resolve() const

@@ -58,11 +58,12 @@ Cpu::Cpu(Model* model, s4u::Host* host, const std::vector<double>& speed_per_pst
 
 Cpu::Cpu(Model* model, s4u::Host* host, lmm::Constraint* constraint, const std::vector<double>& speed_per_pstate,
          int core)
-    : Resource(model, host->get_cname(), constraint)
-    , core_count_(core)
+    : core_count_(core)
     , host_(host)
     , speed_per_pstate_(speed_per_pstate)
 {
+  this->set_name(host->get_cname())->set_model(model)->set_constraint(constraint);
+
   xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->get_cname());
 
   speed_.peak     = speed_per_pstate_.front();

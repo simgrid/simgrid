@@ -18,6 +18,7 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
+#include <boost/core/demangle.hpp>
 #include <boost/range/algorithm.hpp>
 #include <utility>
 
@@ -321,8 +322,7 @@ void ActorImpl::yield()
     try {
       std::rethrow_exception(std::move(exception));
     } catch (const simgrid::Exception& e) {
-      std::string name = simgrid::xbt::demangle(typeid(e).name()).get();
-      e.rethrow_nested(XBT_THROW_POINT, name + " raised in kernel mode.");
+      e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
     }
   }
 

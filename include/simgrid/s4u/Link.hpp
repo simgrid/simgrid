@@ -101,7 +101,9 @@ public:
   void set_latency_profile(kernel::profile::Profile* profile);
 
   const char* get_property(const std::string& key) const;
-  void set_property(const std::string& key, const std::string& value);
+  Link* set_property(const std::string& key, const std::string& value);
+  const std::unordered_map<std::string, std::string>* get_properties() const;
+  Link* set_properties(const std::unordered_map<std::string, std::string>& properties);
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */

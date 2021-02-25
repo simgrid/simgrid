@@ -680,7 +680,7 @@ set(headers_to_install
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
-  include/simgrid/smpi/replay.hpp
+  include/simgrid/smpi/smpi_replay.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
   include/simgrid/simdag.h
@@ -758,7 +758,6 @@ set(headers_to_install
   include/xbt/file.hpp
   include/xbt/functional.hpp
   include/xbt/function_types.h
-  include/xbt/future.hpp
   include/xbt/graph.h
   include/xbt/log.h
   include/xbt/log.hpp
@@ -768,6 +767,7 @@ set(headers_to_install
   include/xbt/PropertyHolder.hpp
   include/xbt/parmap.h
   include/xbt/parse_units.hpp
+  include/xbt/promise.hpp
   include/xbt/range.hpp
   include/xbt/random.hpp
   include/xbt/replay.hpp

@@ -9,7 +9,7 @@
 
 #include <simgrid/simix.h>
 #include <xbt/functional.hpp>
-#include <xbt/future.hpp>
+#include <xbt/promise.hpp>
 #include <xbt/signal.hpp>
 #include <xbt/utility.hpp>
 
