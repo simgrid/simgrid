@@ -29,7 +29,7 @@ class XBT_PRIVATE DiskS19Action;
 class DiskS19Model : public DiskModel {
 public:
   DiskS19Model();
-  DiskImpl* create_disk();
+  DiskImpl* create_disk() override;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 };
