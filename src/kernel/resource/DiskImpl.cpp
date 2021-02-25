@@ -37,11 +37,11 @@ DiskModel::~DiskModel()
 
 DiskImpl::DiskImpl(kernel::resource::Model* model, const std::string& name, kernel::lmm::System* maxminSystem,
                    double read_bw, double write_bw)
-    : Resource(model, name, maxminSystem->constraint_new(this, std::max(read_bw, write_bw)))
-    , piface_(name, this)
+    : piface_(name, this)
     , read_bw_(read_bw)
     , write_bw_(write_bw)
 {
+  this->set_name(name)->set_model(model)->set_constraint(maxminSystem->constraint_new(this, std::max(read_bw, write_bw)));
   DiskImpl::turn_on();
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_, write_bw_);
   constraint_read_  = maxminSystem->constraint_new(this, read_bw);

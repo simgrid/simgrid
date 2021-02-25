@@ -22,11 +22,11 @@ namespace resource {
  * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or disk
  */
 class XBT_PUBLIC Resource {
-  std::string name_;
-  Model* model_;
-  bool is_on_ = true;
+  std::string name_ = "unnamed";
+  Model* model_     = nullptr;
+  bool is_on_       = true;
 
-  lmm::Constraint* const constraint_;
+  lmm::Constraint* constraint_ = nullptr;
 
 protected:
   struct Metric {
@@ -37,27 +37,22 @@ protected:
   profile::Event* state_event_ = nullptr;
 
 public:
-  /**
-   * @brief Constructor of LMM Resources
-   *
-   * @param model Model associated to this Resource
-   * @param name The name of the Resource
-   * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
-   */
-  Resource(Model* model, const std::string& name, lmm::Constraint* constraint)
-      : name_(name), model_(model), constraint_(constraint)
-  {
-  }
-
+  Resource() = default;
   virtual ~Resource() = default;
 
   /** @brief Get the Model of the current Resource */
   Model* get_model() const { return model_; }
+  Resource* set_model(Model* model);
 
   /** @brief Get the name of the current Resource */
   const std::string& get_name() const { return name_; }
   /** @brief Get the name of the current Resource */
   const char* get_cname() const { return name_.c_str(); }
+  Resource* set_name(const std::string& name);
+
+  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
+  lmm::Constraint* get_constraint() const { return constraint_; }
+  Resource* set_constraint(lmm::Constraint* constraint);
 
   bool operator==(const Resource& other) const { return name_ == other.name_; }
 
@@ -81,8 +76,6 @@ public:
   /** @brief setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
   virtual void set_state_profile(profile::Profile* profile);
 
-  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
-  lmm::Constraint* get_constraint() const { return constraint_; }
 };
 } // namespace resource
 } // namespace kernel

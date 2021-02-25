@@ -13,6 +13,24 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
+Resource* Resource::set_name(const std::string& name)
+{
+  name_ = name;
+  return this;
+}
+
+Resource* Resource::set_model(Model* model)
+{
+  model_ = model;
+  return this;
+}
+
+Resource* Resource::set_constraint(lmm::Constraint* constraint)
+{
+  constraint_ = constraint;
+  return this;
+}
+
 double Resource::get_load() const
 {
   return constraint_->get_usage();
