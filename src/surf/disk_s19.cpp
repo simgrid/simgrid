@@ -35,7 +35,7 @@ DiskImpl* DiskS19Model::createDisk(const std::string& id, double read_bw, double
 {
   XBT_DEBUG("SURF disk create resource\n\t\tid '%s'\n\t\tread_bw '%f'\n", id.c_str(), read_bw);
 
-  return new DiskS19(this, id, get_maxmin_system(), read_bw, write_bw);
+  return new DiskS19(this, id, read_bw, write_bw);
 }
 
 double DiskS19Model::next_occurring_event(double now)
@@ -62,10 +62,19 @@ void DiskS19Model::update_actions_state(double /*now*/, double delta)
  * Resource *
  ************/
 
-DiskS19::DiskS19(DiskModel* model, const std::string& name, lmm::System* maxminSystem, double read_bw, double write_bw)
-    : DiskImpl(model, name, maxminSystem, read_bw, write_bw)
+DiskS19::DiskS19(DiskModel* model, const std::string& name, double read_bw, double write_bw)
+    : DiskImpl(name)
 {
+  lmm::System* maxmin_system = model->get_maxmin_system();
+  this->set_read_bandwidth(read_bw)
+      ->set_write_bandwidth(write_bw)
+      ->set_read_constraint(maxmin_system->constraint_new(this, read_bw))
+      ->set_write_constraint(maxmin_system->constraint_new(this, write_bw))
+      ->set_name(name)
+      ->set_model(model)
+      ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw, write_bw)));
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw, write_bw);
+  DiskImpl::turn_on();
 }
 
 DiskAction* DiskS19::io_start(sg_size_t size, s4u::Io::OpType type)

@@ -50,16 +50,16 @@ public:
 class DiskImpl : public Resource, public xbt::PropertyHolder {
   s4u::Host* host_           = nullptr;
   s4u::Disk piface_;
-  double read_bw_;
-  double write_bw_;
-  lmm::Constraint* constraint_write_; /* Constraint for maximum write bandwidth*/
-  lmm::Constraint* constraint_read_;  /* Constraint for maximum read bandwidth*/
+  double read_bw_ = -1.0;
+  double write_bw_ = 1.0;
+  lmm::Constraint* constraint_write_ = nullptr; /* Constraint for maximum write bandwidth*/
+  lmm::Constraint* constraint_read_ = nullptr;  /* Constraint for maximum read bandwidth*/
 
 protected:
   ~DiskImpl() override = default; // Disallow direct deletion. Call destroy() instead.
 
 public:
-  DiskImpl(Model* model, const std::string& name, kernel::lmm::System* maxmin_system, double read_bw, double bwrite_bw);
+  DiskImpl(const std::string& name) : piface_(name, this){}
   DiskImpl(const DiskImpl&) = delete;
   DiskImpl& operator=(const DiskImpl&) = delete;
 
@@ -69,9 +69,13 @@ public:
   s4u::Host* get_host() const { return host_; }
   void set_host(s4u::Host* host) { host_ = host; }
 
+  DiskImpl* set_read_bandwidth(double read_bw);
+  DiskImpl* set_write_bandwidth(double write_bw);
   double get_read_bandwidth() const { return read_bw_; }
   double get_write_bandwidth() const { return write_bw_; }
+  DiskImpl* set_read_constraint(lmm::Constraint* constraint_read);
   lmm::Constraint* get_read_constraint() const { return constraint_read_; }
+  DiskImpl* set_write_constraint(lmm::Constraint* constraint_write);
   lmm::Constraint* get_write_constraint() const { return constraint_write_; }
 
   /** @brief Check if the Disk is used (if an action currently uses its resources) */

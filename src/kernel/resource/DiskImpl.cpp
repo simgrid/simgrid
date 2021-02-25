@@ -35,17 +35,28 @@ DiskModel::~DiskModel()
  * Resource *
  ************/
 
-DiskImpl::DiskImpl(kernel::resource::Model* model, const std::string& name, kernel::lmm::System* maxminSystem,
-                   double read_bw, double write_bw)
-    : piface_(name, this)
-    , read_bw_(read_bw)
-    , write_bw_(write_bw)
+DiskImpl* DiskImpl::set_read_bandwidth(double read_bw)
 {
-  this->set_name(name)->set_model(model)->set_constraint(maxminSystem->constraint_new(this, std::max(read_bw, write_bw)));
-  DiskImpl::turn_on();
-  XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_, write_bw_);
-  constraint_read_  = maxminSystem->constraint_new(this, read_bw);
-  constraint_write_ = maxminSystem->constraint_new(this, write_bw);
+  read_bw_ = read_bw;
+  return this;
+}
+
+DiskImpl* DiskImpl::set_write_bandwidth(double write_bw)
+{
+  write_bw_ = write_bw;
+  return this;
+}
+
+DiskImpl* DiskImpl::set_read_constraint(lmm::Constraint* constraint_read)
+{
+  constraint_read_  = constraint_read;
+  return this;
+}
+
+DiskImpl* DiskImpl::set_write_constraint(lmm::Constraint* constraint_write)
+{
+  constraint_write_  = constraint_write;
+  return this;
 }
 
 /** @brief Fire the required callbacks and destroy the object
