@@ -1,7 +1,7 @@
 # Address sanitizer suppressions for stuff that we cannot control
 
-# ignore libunwind cruft
-#interceptor_via_lib:libunwind.so
+# ignore libunwind cruft (seen with clang)
+interceptor_via_lib:libunwind.so
 
 # __gnu_cxx::__to_xstring
 #interceptor_via_fun:__to_xstring

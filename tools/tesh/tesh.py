@@ -545,7 +545,7 @@ if __name__ == '__main__':
             re.compile(r"Picked up JAVA_TOOL_OPTIONS: "),
             re.compile(r"Picked up _JAVA_OPTIONS: "),
             re.compile(r"==[0-9]+== ?WARNING: ASan doesn't fully support"),
-            re.compile(r"==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
+            re.compile(r"==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack "),
             re.compile(r"False positive error reports may follow"),
             re.compile(r"For details see http://code\.google\.com/p/address-sanitizer/issues/detail\?id=189"),
             re.compile(r"For details see https://github\.com/google/sanitizers/issues/189"),
