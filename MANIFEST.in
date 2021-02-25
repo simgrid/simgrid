@@ -3,17 +3,11 @@
 
 include doc/webcruft/Paje_MSG_screenshot.jpg
 include doc/webcruft/Paje_MSG_screenshot_thn.jpg
-include doc/webcruft/SGicon.gif
-include doc/webcruft/SGicon.icns
-include doc/webcruft/SGicon.ico
-include doc/webcruft/awstats_logo3.png
 include doc/webcruft/eclipseScreenShot.png
 include doc/webcruft/output.goal.pdf
-include doc/webcruft/poster_thumbnail.png
 include doc/webcruft/simgrid_logo_2011.gif
 include doc/webcruft/simgrid_logo_2011.png
 include doc/webcruft/simgrid_logo_2011_small.png
-include doc/webcruft/storage_sample_scenario.png
 include examples/c/actor-create/actor-create.c
 include examples/c/actor-create/actor-create.tesh
 include examples/c/actor-create/actor-create_d.xml

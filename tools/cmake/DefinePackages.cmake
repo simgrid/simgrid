@@ -968,13 +968,7 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/eclipseScreenShot.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/storage_sample_scenario.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
