@@ -76,6 +76,10 @@ NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
   stack.Install(ns3_node_);
 }
 
+void resumeWifiDevice(ns3::Ptr<ns3::WifiNetDevice> device) {
+    device->GetPhy()->ResumeFromOff();
+}
+
 /*************
  * Callbacks *
  *************/
@@ -142,6 +146,18 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone) {
         station_ns3_node = station_netpoint_ns3->ns3_node_;
         nodes.Add(station_ns3_node);
         netDevices.Add(wifi.Install(wifiPhy, wifiMac, station_ns3_node));
+    }
+
+    const char* start_time = wifizone->get_property("start_time");
+    int start_time_value = start_time ? atoi(start_time) : 0;
+    auto resume = [](ns3::Ptr<ns3::WifiNetDevice> device){device->GetPhy()->ResumeFromOff();};
+    for (int i = 0; i < netDevices.GetN(); i++) {
+        ns3::Ptr<ns3::WifiNetDevice> device = ns3::StaticCast<ns3::WifiNetDevice>(netDevices.Get(i));
+        device->GetPhy()->SetOffMode();
+        ns3::Simulator::Schedule(
+            ns3::Seconds(start_time_value),
+            &resumeWifiDevice,
+            device);
     }
 
     ns3::Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue(40));
