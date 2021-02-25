@@ -267,6 +267,12 @@ std::vector<Disk*> Host::get_disks() const
   return kernel::actor::simcall([this] { return this->pimpl_->get_disks(); });
 }
 
+Disk* Host::create_disk()
+{
+  auto pimpl = surf_disk_model->create_disk();
+  return pimpl->get_iface();
+}
+
 void Host::add_disk(const Disk* disk)
 {
   kernel::actor::simcall([this, disk] { this->pimpl_->add_disk(disk); });

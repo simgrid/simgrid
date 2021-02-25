@@ -41,7 +41,7 @@ public:
   DiskModel& operator=(const DiskModel&) = delete;
   ~DiskModel() override;
 
-  virtual DiskImpl* createDisk(const std::string& id, double read_bw, double write_bw) = 0;
+  virtual DiskImpl* create_disk() = 0;
 };
 
 /************
@@ -59,7 +59,7 @@ protected:
   ~DiskImpl() override = default; // Disallow direct deletion. Call destroy() instead.
 
 public:
-  DiskImpl(const std::string& name) : piface_(name, this){}
+  DiskImpl() : piface_(this){}
   DiskImpl(const DiskImpl&) = delete;
   DiskImpl& operator=(const DiskImpl&) = delete;
 
@@ -70,11 +70,14 @@ public:
   void set_host(s4u::Host* host) { host_ = host; }
 
   DiskImpl* set_read_bandwidth(double read_bw);
-  DiskImpl* set_write_bandwidth(double write_bw);
   double get_read_bandwidth() const { return read_bw_; }
+
+  DiskImpl* set_write_bandwidth(double write_bw);
   double get_write_bandwidth() const { return write_bw_; }
+
   DiskImpl* set_read_constraint(lmm::Constraint* constraint_read);
   lmm::Constraint* get_read_constraint() const { return constraint_read_; }
+
   DiskImpl* set_write_constraint(lmm::Constraint* constraint_write);
   lmm::Constraint* get_write_constraint() const { return constraint_write_; }
 

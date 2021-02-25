@@ -43,7 +43,7 @@ protected:
 
 public:
 #ifndef DOXYGEN
-  explicit Disk(const std::string& name, kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl), name_(name) {}
+  explicit Disk(kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl) {}
 #endif
 
   /** @brief Callback signal fired when a new Disk is created */
@@ -54,11 +54,17 @@ public:
   static xbt::signal<void(Disk const&)> on_state_change;
 
   /** @brief Retrieves the name of that disk as a C++ string */
+  Disk* set_name(std::string const& name);
   std::string const& get_name() const { return name_; }
   /** @brief Retrieves the name of that disk as a C string */
   const char* get_cname() const { return name_.c_str(); }
+
+  Disk* set_read_bandwidth(double read_bw);
   double get_read_bandwidth() const;
+
+  Disk* set_write_bandwidth(double write_bw);
   double get_write_bandwidth() const;
+
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
   void set_property(const std::string&, const std::string& value);

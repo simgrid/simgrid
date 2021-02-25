@@ -324,14 +324,31 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* c
 
 simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
+  simgrid::kernel::lmm::System* maxmin_system = surf_disk_model->get_maxmin_system();
+  simgrid::kernel::resource::DiskImpl* pimpl = surf_disk_model->create_disk();
 
-  simgrid::kernel::resource::DiskImpl* d = surf_disk_model->createDisk(disk->id, disk->read_bw, disk->write_bw);
+  // This should be done using s4u::Disk methods and passed to the pimpl
+  pimpl->set_read_bandwidth(disk->read_bw)
+      ->set_write_bandwidth(disk->write_bw)
+      ->set_name(disk->id);
   if (disk->properties) {
-    d->set_properties(*disk->properties);
+    pimpl->set_properties(*disk->properties);
     delete disk->properties;
   }
-  simgrid::s4u::Disk::on_creation(*d->get_iface());
-  return d;
+
+  // This should be done in the seal() of a Disk creation
+  pimpl->set_read_constraint(maxmin_system->constraint_new(pimpl,disk->read_bw))
+      ->set_write_constraint(maxmin_system->constraint_new(pimpl, disk->write_bw))
+      ->set_model(surf_disk_model)
+      ->set_constraint(maxmin_system->constraint_new(pimpl, std::max(disk->read_bw, disk->write_bw)));
+
+  XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", disk->read_bw, disk->write_bw);
+  pimpl->turn_on();
+
+  // Temporary hack
+  pimpl->get_iface()->set_name(disk->id);
+  simgrid::s4u::Disk::on_creation(*pimpl->get_iface());
+  return pimpl;
 }
 
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
