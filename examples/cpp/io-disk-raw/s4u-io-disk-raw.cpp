@@ -11,6 +11,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(disk_test, "Messages specific for this simulation")
 
 static void host()
 {
+  /* -Add an extra disk in a programmatic way */
+  simgrid::s4u::Host::current()->create_disk()
+       ->set_name("Disk3")
+       ->set_read_bandwidth(9.6e7)
+       ->set_write_bandwidth(6.4e7)
+       ->seal();
+
   /* - Display information on the disks mounted by the current host */
   XBT_INFO("*** Storage info on %s ***", simgrid::s4u::Host::current()->get_cname());
 
@@ -30,6 +37,11 @@ static void host()
   /*  - Now read 200,000 bytes */
   sg_size_t read = disk->read(200000);
   XBT_INFO("Read %llu bytes on '%s'", read, disk->get_cname());
+
+  /* - Write 800,000 bytes on Disk3 */
+  simgrid::s4u::Disk* disk3 = disk_list.back();
+  sg_size_t write_on_disk3  = disk3->write(800000);
+  XBT_INFO("Wrote %llu bytes on '%s'", write_on_disk3, disk3->get_cname());
 
   /* - Attach some user data to disk1 */
   XBT_INFO("*** Get/set data for storage element: Disk1 ***");
@@ -55,6 +67,7 @@ int main(int argc, char** argv)
     for (auto const& kv : *h->get_properties())
       XBT_INFO("  %s -> %s", kv.first.c_str(), kv.second.c_str());
   }
+
 
   simgrid::s4u::Actor::create("", simgrid::s4u::Host::by_name("bob"), host);
 
