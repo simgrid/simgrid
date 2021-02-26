@@ -270,6 +270,7 @@ std::vector<Disk*> Host::get_disks() const
 Disk* Host::create_disk()
 {
   auto pimpl = surf_disk_model->create_disk();
+  pimpl->set_host(this);
   return pimpl->get_iface();
 }
 

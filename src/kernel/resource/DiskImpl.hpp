@@ -87,6 +87,7 @@ public:
   void turn_on() override;
   void turn_off() override;
 
+  void seal();
   void destroy(); // Must be called instead of the destructor
   virtual DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) = 0;
   virtual DiskAction* read(sg_size_t size)                           = 0;
