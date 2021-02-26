@@ -9,8 +9,8 @@
 #include <src/instr/instr_smpi.hpp>
 #include <src/smpi/include/smpi_actor.hpp>
 
-static std::map<std::string, std::string, std::less<>> ampi_colors = {{"migrate", "0.2 0.5 0.2"},
-                                                                      {"iteration", "0.5 0.5 0.5"}};
+static const std::map<std::string, std::string, std::less<>> ampi_colors = {{"migrate", "0.2 0.5 0.2"},
+                                                                            {"iteration", "0.5 0.5 0.5"}};
 
 void TRACE_Iteration_in(int rank, simgrid::instr::TIData* extra)
 {
@@ -18,7 +18,7 @@ void TRACE_Iteration_in(int rank, simgrid::instr::TIData* extra)
     delete extra;
     return;
   }
-  smpi_container(rank)->get_state("MPI_STATE")->add_entity_value("iteration", ampi_colors["iteration"]);
+  smpi_container(rank)->get_state("MPI_STATE")->add_entity_value("iteration", ampi_colors.at("iteration"));
   smpi_container(rank)->get_state("MPI_STATE")->push_event("iteration", extra);
 }
 
@@ -49,7 +49,7 @@ void TRACE_migration_call(int rank, simgrid::instr::TIData* extra)
       delete extra;
       return;
     }
-    smpi_container(rank)->get_state("MIGRATE_STATE")->add_entity_value(operation, ampi_colors[operation.c_str()]);
+    smpi_container(rank)->get_state("MIGRATE_STATE")->add_entity_value(operation, ampi_colors.at(operation));
     smpi_container(rank)->get_state("MIGRATE_STATE")->push_event(operation, extra);
     smpi_container(rank)->get_state("MIGRATE_STATE")->pop_event();
   }
