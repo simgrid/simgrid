@@ -81,8 +81,8 @@ public:
 /** Ancestor class of all SimGrid exception */
 class Exception : public std::runtime_error {
 public:
-  Exception(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message)
-      : std::runtime_error(message), throwpoint_(throwpoint)
+  Exception(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message)
+      : std::runtime_error(std::move(message)), throwpoint_(std::move(throwpoint))
   {
   }
   Exception(const Exception&)     = default;
@@ -98,9 +98,9 @@ public:
 
   std::string resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
 
-  virtual void rethrow_nested(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message) const
+  virtual void rethrow_nested(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message) const
   {
-    std::throw_with_nested(Exception(throwpoint, message));
+    std::throw_with_nested(Exception(std::move(throwpoint), std::move(message)));
   }
 
 private:
@@ -114,9 +114,9 @@ private:
     using Exception::Exception;                                                                                        \
     __VA_ARGS__                                                                                                        \
     ~AnyException() override;                                                                                          \
-    void rethrow_nested(const simgrid::xbt::ThrowPoint& throwpoint, const std::string& message) const override         \
+    void rethrow_nested(simgrid::xbt::ThrowPoint&& throwpoint, std::string&& message) const override                   \
     {                                                                                                                  \
-      std::throw_with_nested(AnyException(throwpoint, message));                                                       \
+      std::throw_with_nested(AnyException(std::move(throwpoint), std::move(message)));                                 \
     }                                                                                                                  \
   }
 
