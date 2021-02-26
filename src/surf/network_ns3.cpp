@@ -76,8 +76,9 @@ NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
   stack.Install(ns3_node_);
 }
 
-void resumeWifiDevice(ns3::Ptr<ns3::WifiNetDevice> device) {
-    device->GetPhy()->ResumeFromOff();
+static void resumeWifiDevice(ns3::Ptr<ns3::WifiNetDevice> device)
+{
+  device->GetPhy()->ResumeFromOff();
 }
 
 /*************
