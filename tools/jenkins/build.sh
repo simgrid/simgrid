@@ -145,7 +145,12 @@ mkdir "$WORKSPACE"/build
 cd "$WORKSPACE"/build
 
 have_NS3="no"
-if [ "$os" = "Debian" ] || [ "$os" = "Ubuntu" ] || [ "$os" = "NixOS" ] ; then
+if [ "$os" = "Debian" ] || [ "$os" = "Ubuntu" ] ; then
+  if dpkg --compare-versions "$(dpkg-query -f '${Version}' -W libns3-dev)" ge 3.28; then
+    have_NS3="yes"
+  fi
+fi
+if [ "$os" = "NixOS" ] ; then
   have_NS3="yes"
 fi
 echo "XX have_NS3: ${have_NS3}"
