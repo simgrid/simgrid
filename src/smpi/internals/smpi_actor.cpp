@@ -12,7 +12,6 @@
 
 #if HAVE_PAPI
 #include "papi.h"
-extern std::string papi_default_config_name;
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
@@ -40,7 +39,7 @@ ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
     // TODO: Implement host/process/thread based counters. This implementation
     // just always takes the values passed via "default", like this:
     // "default:COUNTER1:COUNTER2:COUNTER3;".
-    auto it = units2papi_setup.find(papi_default_config_name);
+    auto it = units2papi_setup.find("default");
     if (it != units2papi_setup.end()) {
       papi_event_set_    = it->second.event_set;
       papi_counter_data_ = it->second.counter_data;

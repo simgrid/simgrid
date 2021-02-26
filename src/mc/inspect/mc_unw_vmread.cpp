@@ -94,25 +94,24 @@ static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word
 namespace simgrid {
 namespace unw {
 
-/** Virtual table for our `libunwind-process_vm_readv` implementation.
- *
- *  This implementation reuse most the code of `libunwind-ptrace` but
- *  does not use ptrace() to read the target process memory by
- *  `process_vm_readv()` or `/dev/${pid}/mem` if possible.
- *
- *  Does not support any MC-specific behavior (privatization, snapshots)
- *  and `ucontext_t`.
- *
- *  It works with `void*` contexts allocated with `_UPT_create(pid)`.
- */
-// TODO, we could get rid of this if we properly stop the model-checked
-// process before reading the memory.
-static unw_accessors_t accessors = {&_UPT_find_proc_info, &_UPT_put_unwind_info, &_UPT_get_dyn_info_list_addr,
-                                    &access_mem,          &_UPT_access_reg,      &_UPT_access_fpreg,
-                                    &_UPT_resume,         &_UPT_get_proc_name};
-
 unw_addr_space_t create_addr_space()
 {
+  /** Virtual table for our `libunwind-process_vm_readv` implementation.
+   *
+   *  This implementation reuse most the code of `libunwind-ptrace` but
+   *  does not use ptrace() to read the target process memory by
+   *  `process_vm_readv()` or `/dev/${pid}/mem` if possible.
+   *
+   *  Does not support any MC-specific behavior (privatization, snapshots)
+   *  and `ucontext_t`.
+   *
+   *  It works with `void*` contexts allocated with `_UPT_create(pid)`.
+   */
+  // TODO, we could get rid of this if we properly stop the model-checked
+  // process before reading the memory.
+  unw_accessors_t accessors = {&_UPT_find_proc_info, &_UPT_put_unwind_info, &_UPT_get_dyn_info_list_addr,
+                               &access_mem,          &_UPT_access_reg,      &_UPT_access_fpreg,
+                               &_UPT_resume,         &_UPT_get_proc_name};
   return unw_create_addr_space(&accessors, BYTE_ORDER);
 }
 

@@ -65,7 +65,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #endif
 
 #if HAVE_PAPI
-std::string papi_default_config_name = "default";
 std::map</* computation unit name */ std::string, papi_process_data, std::less<>> units2papi_setup;
 #endif
 

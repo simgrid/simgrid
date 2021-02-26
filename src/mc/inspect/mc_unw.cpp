@@ -205,22 +205,20 @@ int UnwindContext::get_proc_name(unw_addr_space_t /*as*/, unw_word_t addr, char*
 
 // ***** Init
 
-/** Virtual table for our `libunwind` implementation
- *
- *  Stack unwinding on a `simgrid::mc::Process*` (for memory, unwinding information)
- *  and `ucontext_t` (for processor registers).
- *
- * It works with the `simgrid::mc::UnwindContext` context.
- *
- * Use nullptr as access_fpreg and resume, as we don't need them.
- */
-unw_accessors_t UnwindContext::accessors = {&find_proc_info, &put_unwind_info, &get_dyn_info_list_addr,
-                                            &access_mem,     &access_reg,      nullptr,
-                                            nullptr,         &get_proc_name};
-
 unw_addr_space_t UnwindContext::createUnwindAddressSpace()
 {
-  return unw_create_addr_space(&UnwindContext::accessors, BYTE_ORDER);
+  /** Virtual table for our `libunwind` implementation
+   *
+   *  Stack unwinding on a `simgrid::mc::Process*` (for memory, unwinding information)
+   *  and `ucontext_t` (for processor registers).
+   *
+   * It works with the `simgrid::mc::UnwindContext` context.
+   *
+   * Use nullptr as access_fpreg and resume, as we don't need them.
+   */
+  unw_accessors_t accessors = {&find_proc_info, &put_unwind_info, &get_dyn_info_list_addr, &access_mem, &access_reg,
+                               nullptr,         nullptr,          &get_proc_name};
+  return unw_create_addr_space(&accessors, BYTE_ORDER);
 }
 
 void UnwindContext::initialize(simgrid::mc::RemoteSimulation* process, unw_context_t* c)

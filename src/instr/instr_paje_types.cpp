@@ -9,9 +9,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
-// to check if variables were previously set to 0, otherwise paje won't simulate them
-static std::set<std::string, std::less<>> platform_variables;
-
 namespace simgrid {
 namespace instr {
 
@@ -67,6 +64,9 @@ void VariableType::instr_event(double now, double delta, const char* resource, d
    * initial value of all variables for subsequent adds/subs. If we don't do so, the first AddEvent would be added to a
    * non-determined value, hence causing analysis problems.
    */
+
+  // to check if variables were previously set to 0, otherwise paje won't simulate them
+  static std::set<std::string, std::less<>> platform_variables;
 
   // create a key considering the resource and variable
   std::string key = std::string(resource) + get_name();

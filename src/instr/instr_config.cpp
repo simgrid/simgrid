@@ -24,7 +24,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 std::ofstream tracing_file;
 std::map<const simgrid::instr::Container*, std::ofstream*> tracing_files; // TI specific
-double prefix = 0.0;                                 // TI specific
 
 constexpr char OPT_TRACING_BASIC[]             = "tracing/basic";
 constexpr char OPT_TRACING_COMMENT_FILE[]      = "tracing/comment-file";
@@ -269,6 +268,7 @@ static void on_container_creation_ti(const Container& c)
             SIMIX_get_clock());
   // if we are in the mode with only one file
   static std::ofstream* ti_unique_file = nullptr;
+  static double prefix                 = 0.0;
 
   if (tracing_files.empty()) {
     // generate unique run id with time

@@ -603,8 +603,6 @@ static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf
     info->full_types_by_name[t.name] = &t;
 }
 
-static int mc_anonymous_variable_index = 0;
-
 static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::ObjectInformation* info, Dwarf_Die* die,
                                                                  const Dwarf_Die* /*unit*/,
                                                                  const simgrid::mc::Frame* frame, const char* ns)
@@ -694,6 +692,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::Ob
 
   // The current code needs a variable name,
   // generate a fake one:
+  static int mc_anonymous_variable_index = 0;
   if (variable->name.empty()) {
     variable->name = "@anonymous#" + std::to_string(mc_anonymous_variable_index);
     mc_anonymous_variable_index++;
