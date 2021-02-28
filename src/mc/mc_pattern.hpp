@@ -78,7 +78,7 @@ public:
   bool is_done() const { return this->state == InterleavingType::done; }
   bool is_todo() const { return this->state == InterleavingType::todo; }
   /** Mark that we should try executing this process at some point in the future of the checker algorithm */
-  void consider()
+  void mark_todo()
   {
     this->state            = InterleavingType::todo;
     this->times_considered = 0;

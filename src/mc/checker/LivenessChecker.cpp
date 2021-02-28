@@ -264,8 +264,8 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   auto actors = api::get().get_actors();
   for (auto& actor : actors)
     if (api::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
-      next_pair->graph_state->add_interleaving_set(actor.copy.get_buffer());
-  next_pair->requests = next_pair->graph_state->interleave_size();
+      next_pair->graph_state->mark_todo(actor.copy.get_buffer());
+  next_pair->requests = next_pair->graph_state->count_todo();
   /* FIXME : get search_cycle value for each accepting state */
   if (next_pair->automaton_state->type == 1 || (current_pair && current_pair->search_cycle))
     next_pair->search_cycle = true;
@@ -326,8 +326,8 @@ void LivenessChecker::run()
 
     XBT_DEBUG(
         "********************* ( Depth = %d, search_cycle = %d, interleave size = %zu, pair_num = %d, requests = %d)",
-        current_pair->depth, current_pair->search_cycle, current_pair->graph_state->interleave_size(),
-        current_pair->num, current_pair->requests);
+        current_pair->depth, current_pair->search_cycle, current_pair->graph_state->count_todo(), current_pair->num,
+        current_pair->requests);
 
     if (current_pair->requests == 0) {
       this->backtrack();

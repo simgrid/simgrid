@@ -46,11 +46,8 @@ public:
 
   explicit State(unsigned long state_number);
 
-  std::size_t interleave_size() const;
-  void add_interleaving_set(const simgrid::kernel::actor::ActorImpl* actor)
-  {
-    this->actor_states_[actor->get_pid()].consider();
-  }
+  std::size_t count_todo() const;
+  void mark_todo(const simgrid::kernel::actor::ActorImpl* actor) { this->actor_states_[actor->get_pid()].mark_todo(); }
   Transition get_transition() const;
 
 private:

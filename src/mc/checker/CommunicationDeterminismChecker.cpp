@@ -321,7 +321,7 @@ void CommunicationDeterminismChecker::prepare()
   auto actors = api::get().get_actors();
   for (auto& actor : actors)
     if (api::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
-      initial_state->add_interleaving_set(actor.copy.get_buffer());
+      initial_state->mark_todo(actor.copy.get_buffer());
 
   stack_.push_back(std::move(initial_state));
 }
@@ -422,7 +422,7 @@ void CommunicationDeterminismChecker::real_run()
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth = %zu (state = %d, interleaved processes = %zu)", stack_.size(), cur_state->num_,
-              cur_state->interleave_size());
+              cur_state->count_todo());
 
     /* Update statistics */
     api::get().mc_inc_visited_states();
@@ -476,7 +476,7 @@ void CommunicationDeterminismChecker::real_run()
         auto actors = api::get().get_actors();
         for (auto& actor : actors)
           if (api::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
-            next_state->add_interleaving_set(actor.copy.get_buffer());
+            next_state->mark_todo(actor.copy.get_buffer());
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", cur_state->num_, next_state->num_, req_str.c_str());
@@ -512,7 +512,7 @@ void CommunicationDeterminismChecker::real_run()
       while (not stack_.empty()) {
         std::unique_ptr<State> state(std::move(stack_.back()));
         stack_.pop_back();
-        if (state->interleave_size() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
+        if (state->count_todo() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %zu", state->num_, stack_.size() + 1);
           stack_.push_back(std::move(state));

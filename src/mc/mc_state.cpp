@@ -31,7 +31,7 @@ State::State(unsigned long state_number) : num_(state_number)
   }
 }
 
-std::size_t State::interleave_size() const
+std::size_t State::count_todo() const
 {
   return boost::range::count_if(this->actor_states_, [](simgrid::mc::ActorState const& a) { return a.is_todo(); });
 }

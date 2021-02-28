@@ -86,7 +86,7 @@ void SafetyChecker::run()
 
     XBT_DEBUG("**************************************************");
     XBT_VERB("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num_,
-             state->interleave_size());
+             state->count_todo());
 
     api::get().mc_inc_visited_states();
 
@@ -151,7 +151,7 @@ void SafetyChecker::run()
       for (auto& remoteActor : actors) {
         auto actor = remoteActor.copy.get_buffer();
         if (api::get().actor_is_enabled(actor->get_pid())) {
-          next_state->add_interleaving_set(actor);
+          next_state->mark_todo(actor);
           if (reductionMode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
         }
@@ -212,7 +212,7 @@ void SafetyChecker::backtrack()
           }
 
           if (not prev_state->actor_states_[issuer->get_pid()].is_done())
-            prev_state->add_interleaving_set(issuer);
+            prev_state->mark_todo(issuer);
           else
             XBT_DEBUG("Process %p is in done set", req->issuer_);
           break;
@@ -229,7 +229,7 @@ void SafetyChecker::backtrack()
       }
     }
 
-    if (state->interleave_size() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
+    if (state->count_todo() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
       /* We found a back-tracking point, let's loop */
       XBT_DEBUG("Back-tracking to state %d at depth %zu", state->num_, stack_.size() + 1);
       stack_.push_back(std::move(state));
@@ -294,7 +294,7 @@ SafetyChecker::SafetyChecker() : Checker()
   auto actors = api::get().get_actors();
   for (auto& actor : actors)
     if (api::get().actor_is_enabled(actor.copy.get_buffer()->get_pid())) {
-      initial_state->add_interleaving_set(actor.copy.get_buffer());
+      initial_state->mark_todo(actor.copy.get_buffer());
       if (reductionMode_ != ReductionMode::none)
         break;
     }
