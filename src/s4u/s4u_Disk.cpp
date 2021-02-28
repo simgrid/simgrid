@@ -48,6 +48,12 @@ double Disk::get_write_bandwidth() const
   return pimpl_->get_write_bandwidth();
 }
 
+Disk* Disk::set_host(Host* host)
+{
+  pimpl_->set_host(host);
+  return this;
+}
+
 Host* Disk::get_host() const
 {
   return pimpl_->get_host();
@@ -93,6 +99,12 @@ sg_size_t Disk::write(sg_size_t size)
   return IoPtr(io_init(size, Io::OpType::WRITE))->vetoable_start()->wait()->get_performed_ioops();
 }
 
+void Disk::seal()
+{
+  kernel::actor::simcall([this]{ pimpl_->seal(); });
+  get_host()->add_disk(this);
+  Disk::on_creation(*this);
+}
 } // namespace s4u
 } // namespace simgrid
 

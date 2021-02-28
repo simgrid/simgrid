@@ -68,6 +68,7 @@ public:
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
   void set_property(const std::string&, const std::string& value);
+  Disk* set_host(Host* host);
   Host* get_host() const;
 
   IoPtr io_init(sg_size_t size, s4u::Io::OpType type);
@@ -77,6 +78,8 @@ public:
 
   IoPtr write_async(sg_size_t size);
   sg_size_t write(sg_size_t size);
+  void seal();
+
 #ifndef DOXYGEN
   kernel::resource::DiskImpl* get_impl() const { return pimpl_; }
 #endif
