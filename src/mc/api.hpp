@@ -136,7 +136,7 @@ public:
   // SESSION APIs
   void session_initialize() const;
   void s_close() const;
-  void execute(Transition const& transition) const;
+  void execute(Transition& transition, smx_simcall_t simcall) const;
 
 // AUTOMATION APIs
 #if SIMGRID_HAVE_MC

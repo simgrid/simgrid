@@ -1049,11 +1049,14 @@ void Api::restore_initial_state() const
   session->restore_initial_state();
 }
 
-void Api::execute(Transition const& transition) const
+void Api::execute(Transition& transition, smx_simcall_t simcall) const
 {
-  session->execute(transition);
-  auto textual = mc_model_checker->simcall_to_string(transition.pid_, transition.times_considered_);
+  /* FIXME: once all simcalls have observers, kill the simcall parameter and use mc_model_checker->simcall_to_string() */
+  auto textual =
+      simgrid::mc::Api::get().request_to_string(simcall, transition.times_considered_, RequestType::executed);
   strcpy((char*)transition.textual, textual.c_str());
+
+  session->execute(transition);
 }
 
 #if SIMGRID_HAVE_MC

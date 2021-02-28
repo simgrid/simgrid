@@ -143,7 +143,7 @@ void LivenessChecker::replay()
       XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
                 api::get().request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
 
-      api::get().execute(state->transition_);
+      api::get().execute(state->transition_, req);
     }
 
     /* Update statistics */

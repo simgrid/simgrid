@@ -131,7 +131,7 @@ void SafetyChecker::run()
     api::get().mc_inc_executed_trans();
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    api::get().execute(state->transition_);
+    api::get().execute(state->transition_, &state->executed_req_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     ++expanded_states_count_;
@@ -258,7 +258,7 @@ void SafetyChecker::restore_state()
   for (std::unique_ptr<State> const& state : stack_) {
     if (state == stack_.back())
       break;
-    api::get().execute(state->transition_);
+    api::get().execute(state->transition_, &state->executed_req_);
     /* Update statistics */
     api::get().mc_inc_visited_states();
     api::get().mc_inc_executed_trans();
