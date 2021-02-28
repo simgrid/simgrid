@@ -348,12 +348,12 @@ if __name__ == '__main__':
     fd.write(' * This function is generated from src/simix/simcalls.in\n')
     fd.write(' */\n')
     fd.write(
-        'void simgrid::kernel::actor::ActorImpl::simcall_handle(int value) {\n')
+        'void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered_) {\n')
     fd.write(
         '  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_.call_));\n')
-    fd.write('  SIMCALL_SET_MC_VALUE(simcall_, value);\n')
+    fd.write('  SIMCALL_SET_MC_VALUE(simcall_, times_considered_);\n')
     fd.write('  if (simcall_.inspector_ != nullptr)\n')
-    fd.write('    simcall_.inspector_->is_pending(value);\n')
+    fd.write('    simcall_.inspector_->is_pending(times_considered_);\n')
 
     fd.write('  if (context_->wannadie())\n')
     fd.write('    return;\n')

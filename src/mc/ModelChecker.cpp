@@ -308,35 +308,12 @@ void ModelChecker::handle_simcall(Transition const& transition)
   s_mc_message_simcall_handle_t m;
   memset(&m, 0, sizeof(m));
   m.type  = MessageType::SIMCALL_HANDLE;
-  m.pid   = transition.pid_;
-  m.value = transition.times_considered_;
+  m.pid_              = transition.pid_;
+  m.times_considered_ = transition.times_considered_;
   checker_side_.get_channel().send(m);
   this->remote_simulation_->clear_cache();
   if (this->remote_simulation_->running())
     checker_side_.dispatch();
-}
-bool ModelChecker::simcall_is_pending(int aid, int times_considered)
-{
-  s_mc_message_simcall_is_pending_t m;
-  memset(&m, 0, sizeof(m));
-  m.type            = MessageType::SIMCALL_IS_PENDING;
-  m.aid             = aid;
-  m.time_considered = times_considered;
-  checker_side_.get_channel().send(m);
-
-  s_mc_message_simcall_is_pending_answer_t answer;
-  ssize_t s = checker_side_.get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_IS_PENDING_ANSWER,
-             "Received unexpected message %s (%i, size=%i) "
-             "expected MessageType::SIMCALL_IS_PENDING_ANSWER (%i, size=%i)",
-             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_IS_PENDING_ANSWER,
-             (int)sizeof(answer));
-
-  XBT_DEBUG("is_pending(%d, %d) is returning %s", aid, times_considered, answer.value ? "true" : "false");
-
-  this->remote_simulation_->clear_cache();
-  return answer.value;
 }
 bool ModelChecker::simcall_is_visible(int aid)
 {

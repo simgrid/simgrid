@@ -26,25 +26,24 @@ public:
    */
   virtual bool is_enabled() { return true; }
 
-  /** Check whether the simcall will still be firable on this execution path
+  /** Returns the amount of time that this transition can be used.
    *
-   * Return true if the simcall can be fired another time, and false if it gave all its content already.
-   *
-   * This is not to be mixed with is_enabled(). Even if is_pending() returns true,
-   * is_enabled() may return false at a given point but will eventually return true further
-   * on that execution path.
-   *
-   * If is_pending() returns false the first time, it means that the execution path is not branching
-   * on that transition. Only one execution path goes out of that simcall.
-   *
-   * is_pending() is to decide whether we should branch a new execution path with this transition while
-   * is_enabled() is about continuing the current execution path with that transition or saving it for later.
-   *
-   * This function should also do the choices that the platform would have done in non-MC settings.
-   * For example if it's a waitany, pick the communication that should finish first.
-   * If it's a random(), choose the next value to explore.
+   * If it's 1 (as with send/wait), there is no need to fork the state space exploration on this point.
+   * If it's more than one (as with mc_random or waitany), we need to consider this transition several times to start
+   * differing branches
    */
-  virtual bool is_pending(int times_considered) { return false; }
+  virtual int get_max_consider() { return 1; }
+
+  /** Prepares the simcall to be used.
+   *
+   * For most simcalls, this does nothing. Once enabled, there is nothing to do to prepare a send().
+   *
+   * It is useful only for the simcalls that can be used several times, such as waitany() or random().
+   * For them, prepare() selects the right outcome for the time being considered.
+   *
+   * The first time a simcall is considered, times_considered is 0, not 1.
+   */
+  virtual void prepare(int times_considered) {}
 
   /** Some simcalls may only be observable under some circumstances.
    * Most simcalls are not visible from the MC because they don't have an inspector at all. */
@@ -60,7 +59,8 @@ class RandomSimcall : public SimcallInspector {
 
 public:
   RandomSimcall(smx_actor_t actor, int min, int max) : SimcallInspector(actor), min_(min), max_(max) {}
-  bool is_pending(int times_considered) override;
+  int get_max_consider() override;
+  void prepare(int times_considered) override;
   std::string to_string(int times_considered) override;
   std::string dot_label() override;
   int get_value();

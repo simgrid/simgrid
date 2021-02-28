@@ -52,7 +52,10 @@ void wait_for_requests()
 #if SIMGRID_HAVE_MC
   xbt_dynar_reset(simix_global->actors_vector);
   for (std::pair<const aid_t, smx_actor_t> const& kv : simix_global->process_list) {
-    xbt_dynar_push_as(simix_global->actors_vector, smx_actor_t, kv.second);
+    auto actor = kv.second;
+    if (actor->simcall_.inspector_ != nullptr)
+      actor->simcall_.mc_max_consider_ = actor->simcall_.inspector_->get_max_consider();
+    xbt_dynar_push_as(simix_global->actors_vector, smx_actor_t, actor);
   }
 #endif
 }

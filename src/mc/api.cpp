@@ -75,11 +75,9 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
 
   smx_simcall_t req = nullptr;
   if (actor->simcall_.inspector_ != nullptr) {
-    bool pending = mc_model_checker->simcall_is_pending(actor->get_pid(), procstate->times_considered);
-
-    ++procstate->times_considered;
     state->transition_.times_considered_ = procstate->times_considered;
-    if (not pending)
+    procstate->times_considered++;
+    if (actor->simcall_.mc_max_consider_ <= procstate->times_considered)
       procstate->set_done();
     req = &actor->simcall_;
   } else

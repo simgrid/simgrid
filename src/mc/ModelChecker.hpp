@@ -52,7 +52,6 @@ public:
   void handle_simcall(Transition const& transition);
 
   /* Interactions with the simcall observer */
-  bool simcall_is_pending(int aid, int times_considered);
   bool simcall_is_visible(int aid);
   std::string simcall_to_string(int aid, int times_considered);
   std::string simcall_dot_label(int aid, int times_considered);

@@ -91,9 +91,9 @@ void AppSide::handle_continue(const s_mc_message_t*) const
 }
 void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message) const
 {
-  kernel::actor::ActorImpl* process = kernel::actor::ActorImpl::by_PID(message->pid);
-  xbt_assert(process != nullptr, "Invalid pid %lu", message->pid);
-  process->simcall_handle(message->value);
+  kernel::actor::ActorImpl* process = kernel::actor::ActorImpl::by_PID(message->pid_);
+  xbt_assert(process != nullptr, "Invalid pid %lu", message->pid_);
+  process->simcall_handle(message->times_considered_);
   if (channel_.send(MessageType::WAITING))
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
 }
@@ -135,20 +135,6 @@ void AppSide::handle_messages() const
         assert_msg_size("SIMCALL_HANDLE", s_mc_message_simcall_handle_t);
         handle_simcall((s_mc_message_simcall_handle_t*)message_buffer.data());
         break;
-
-      case MessageType::SIMCALL_IS_PENDING: {
-        assert_msg_size("SIMCALL_IS_PENDING", s_mc_message_simcall_is_pending_t);
-        auto msg_simcall                = (s_mc_message_simcall_is_pending_t*)message_buffer.data();
-        kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
-        xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
-        xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
-        bool value = actor->simcall_.inspector_->is_pending(msg_simcall->time_considered);
-
-        // Send result:
-        s_mc_message_simcall_is_pending_answer_t answer{MessageType::SIMCALL_IS_PENDING_ANSWER, value};
-        xbt_assert(channel_.send(answer) == 0, "Could not send response");
-        break;
-      }
 
       case MessageType::SIMCALL_IS_VISIBLE: {
         assert_msg_size("SIMCALL_IS_VISIBLE", s_mc_message_simcall_is_visible_t);
