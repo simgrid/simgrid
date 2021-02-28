@@ -173,7 +173,7 @@ void AppSide::handle_messages() const
         std::string value = actor->simcall_.inspector_->to_string(msg_simcall->time_considered);
 
         // Send result:
-        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, 0};
+        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
         strcat(answer.value, value.c_str());
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
@@ -188,7 +188,7 @@ void AppSide::handle_messages() const
         std::string value = actor->simcall_.inspector_->dot_label();
 
         // Send result:
-        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, 0};
+        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
         strcat(answer.value, value.c_str());
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
