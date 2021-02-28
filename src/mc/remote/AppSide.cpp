@@ -169,8 +169,12 @@ void AppSide::handle_messages() const
         auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
         kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
-        xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
-        std::string value = actor->simcall_.inspector_->to_string(msg_simcall->time_considered);
+        //        xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
+        std::string value;
+        if (actor->simcall_.inspector_ == nullptr)
+          value = "no inspector, no string. Please report that bug.";
+        else
+          value = actor->simcall_.inspector_->to_string(msg_simcall->time_considered);
 
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
