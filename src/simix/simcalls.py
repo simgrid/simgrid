@@ -68,7 +68,7 @@ class Simcall(object):
                 print ('{')
                 print ('  // Your code handling the simcall')
                 print ('}')
-                return False
+#                return False
         else:
             if self.name in self.simcalls_pre:
                 print (
@@ -325,6 +325,7 @@ if __name__ == '__main__':
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#endif\n')
     fd.write('#include "src/kernel/activity/ConditionVariableImpl.hpp"\n')
+    fd.write('#include "src/mc/checker/SimcallInspector.hpp"\n')
 
     fd.write('\n')
     fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')
@@ -351,8 +352,10 @@ if __name__ == '__main__':
     fd.write(
         '  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_.call_));\n')
     fd.write('  SIMCALL_SET_MC_VALUE(simcall_, value);\n')
-    fd.write(
-        '  if (context_->wannadie())\n')
+    fd.write('  if (simcall_.inspector_ != nullptr)\n')
+    fd.write('    simcall_.inspector_->is_pending(value);\n')
+
+    fd.write('  if (context_->wannadie())\n')
     fd.write('    return;\n')
     fd.write('  switch (simcall_.call_) {\n')
 

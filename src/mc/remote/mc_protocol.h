@@ -27,8 +27,10 @@ namespace simgrid {
 namespace mc {
 
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY, STACK_REGION,
-                       REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_HANDLE, ASSERTION_FAILED,
-                       ACTOR_ENABLED, ACTOR_ENABLED_REPLY);
+                       REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_HANDLE,
+                       SIMCALL_IS_PENDING, SIMCALL_IS_PENDING_ANSWER, SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER,
+                       SIMCALL_TO_STRING, SIMCALL_TO_STRING_ANSWER, SIMCALL_DOT_LABEL, ASSERTION_FAILED, ACTOR_ENABLED,
+                       ACTOR_ENABLED_REPLY);
 
 } // namespace mc
 } // namespace simgrid
@@ -97,6 +99,36 @@ struct s_mc_message_restore_t {
 struct s_mc_message_actor_enabled_t {
   simgrid::mc::MessageType type;
   aid_t aid; // actor ID
+};
+
+/* RPC */
+struct s_mc_message_simcall_is_pending_t { // MessageType::SIMCALL_IS_PENDING
+  simgrid::mc::MessageType type;
+  int aid;
+  int time_considered;
+};
+struct s_mc_message_simcall_is_pending_answer_t { // MessageType::SIMCALL_IS_PENDING_ANSWER
+  simgrid::mc::MessageType type;
+  bool value;
+};
+
+struct s_mc_message_simcall_is_visible_t { // MessageType::SIMCALL_IS_VISIBLE
+  simgrid::mc::MessageType type;
+  int aid;
+};
+struct s_mc_message_simcall_is_visible_answer_t { // MessageType::SIMCALL_IS_VISIBLE_ANSWER
+  simgrid::mc::MessageType type;
+  bool value;
+};
+
+struct s_mc_message_simcall_to_string_t { // MessageType::SIMCALL_TO_STRING or MessageType::SIMCALL_DOT_LABEL
+  simgrid::mc::MessageType type;
+  int aid;
+  int time_considered;
+};
+struct s_mc_message_simcall_to_string_answer_t { // MessageType::SIMCALL_TO_STRING_ANSWER
+  simgrid::mc::MessageType type;
+  char value[1024];
 };
 
 #endif // __cplusplus

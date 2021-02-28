@@ -156,23 +156,15 @@ bool request_is_visible(const s_smx_simcall* req)
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
 #endif
+  if (req->inspector_ != nullptr)
+    return req->inspector_->is_visible();
 
   using simix::Simcall;
-  return (req->inspector_ != nullptr && req->inspector_->is_visible()) || req->call_ == Simcall::COMM_ISEND ||
-         req->call_ == Simcall::COMM_IRECV || req->call_ == Simcall::COMM_WAIT || req->call_ == Simcall::COMM_WAITANY ||
-         req->call_ == Simcall::COMM_TEST || req->call_ == Simcall::COMM_TESTANY || req->call_ == Simcall::MC_RANDOM ||
-         req->call_ == Simcall::MUTEX_LOCK || req->call_ == Simcall::MUTEX_TRYLOCK ||
-         req->call_ == Simcall::MUTEX_UNLOCK;
+  return req->call_ == Simcall::COMM_ISEND || req->call_ == Simcall::COMM_IRECV || req->call_ == Simcall::COMM_WAIT ||
+         req->call_ == Simcall::COMM_WAITANY || req->call_ == Simcall::COMM_TEST ||
+         req->call_ == Simcall::COMM_TESTANY || req->call_ == Simcall::MUTEX_LOCK ||
+         req->call_ == Simcall::MUTEX_TRYLOCK || req->call_ == Simcall::MUTEX_UNLOCK;
 }
 
 }
-}
-
-int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
-{
-  if (not MC_is_active() && not MC_record_replay_is_active()) {
-    static simgrid::xbt::random::XbtRandom prng;
-    return prng.uniform_int(min, max);
-  }
-  return simcall->mc_value_;
 }

@@ -309,11 +309,106 @@ void ModelChecker::handle_simcall(Transition const& transition)
   memset(&m, 0, sizeof(m));
   m.type  = MessageType::SIMCALL_HANDLE;
   m.pid   = transition.pid_;
-  m.value = transition.argument_;
+  m.value = transition.times_considered_;
   checker_side_.get_channel().send(m);
   this->remote_simulation_->clear_cache();
   if (this->remote_simulation_->running())
     checker_side_.dispatch();
+}
+bool ModelChecker::simcall_is_pending(int aid, int times_considered)
+{
+  s_mc_message_simcall_is_pending_t m;
+  memset(&m, 0, sizeof(m));
+  m.type            = MessageType::SIMCALL_IS_PENDING;
+  m.aid             = aid;
+  m.time_considered = times_considered;
+  checker_side_.get_channel().send(m);
+
+  s_mc_message_simcall_is_pending_answer_t answer;
+  ssize_t s = checker_side_.get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_IS_PENDING_ANSWER,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MessageType::SIMCALL_IS_PENDING_ANSWER (%i, size=%i)",
+             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_IS_PENDING_ANSWER,
+             (int)sizeof(answer));
+
+  XBT_DEBUG("is_pending(%d, %d) is returning %s", aid, times_considered, answer.value ? "true" : "false");
+
+  this->remote_simulation_->clear_cache();
+  return answer.value;
+}
+bool ModelChecker::simcall_is_visible(int aid)
+{
+  xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
+
+  s_mc_message_simcall_is_visible_t m;
+  memset(&m, 0, sizeof(m));
+  m.type = MessageType::SIMCALL_IS_VISIBLE;
+  m.aid  = aid;
+  checker_side_.get_channel().send(m);
+
+  s_mc_message_simcall_is_visible_answer_t answer;
+  ssize_t s = checker_side_.get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_IS_VISIBLE_ANSWER,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MessageType::SIMCALL_IS_VISIBLE_ANSWER (%i, size=%i)",
+             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_IS_VISIBLE_ANSWER,
+             (int)sizeof(answer));
+
+  XBT_DEBUG("is_visible(%d) is returning %s", aid, answer.value ? "true" : "false");
+
+  this->remote_simulation_->clear_cache();
+  return answer.value;
+}
+std::string ModelChecker::simcall_to_string(int aid, int times_considered)
+{
+  xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
+
+  s_mc_message_simcall_to_string_t m;
+  memset(&m, 0, sizeof(m));
+  m.type            = MessageType::SIMCALL_TO_STRING;
+  m.aid             = aid;
+  m.time_considered = times_considered;
+  checker_side_.get_channel().send(m);
+
+  s_mc_message_simcall_to_string_answer_t answer;
+  ssize_t s = checker_side_.get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_TO_STRING_ANSWER,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MessageType::SIMCALL_TO_STRING_ANSWER (%i, size=%i)",
+             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_TO_STRING_ANSWER,
+             (int)sizeof(answer));
+
+  XBT_DEBUG("to_string(%d) is returning %s", aid, answer.value);
+
+  return std::string(answer.value);
+}
+std::string ModelChecker::simcall_dot_label(int aid, int times_considered)
+{
+  xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
+
+  s_mc_message_simcall_to_string_t m;
+  memset(&m, 0, sizeof(m));
+  m.type            = MessageType::SIMCALL_DOT_LABEL;
+  m.aid             = aid;
+  m.time_considered = times_considered;
+  checker_side_.get_channel().send(m);
+
+  s_mc_message_simcall_to_string_answer_t answer;
+  ssize_t s = checker_side_.get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_TO_STRING_ANSWER,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MessageType::SIMCALL_TO_STRING_ANSWER (%i, size=%i)",
+             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_TO_STRING_ANSWER,
+             (int)sizeof(answer));
+
+  XBT_DEBUG("dot_label(%d) is returning %s", aid, answer.value);
+
+  return std::string(answer.value);
 }
 
 bool ModelChecker::checkDeadlock()

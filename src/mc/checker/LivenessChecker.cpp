@@ -129,7 +129,7 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->graph_state;
 
     if (pair->exploration_started) {
-      int req_num             = state->transition_.argument_;
+      int req_num                    = state->transition_.times_considered_;
       const s_smx_simcall* saved_req = &state->executed_req_;
 
       smx_simcall_t req = nullptr;
@@ -239,7 +239,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
-    int req_num       = pair->graph_state->transition_.argument_;
+    int req_num       = pair->graph_state->transition_.times_considered_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
     if (req->call_ != simix::Simcall::NONE)
       trace.push_back(api::get().request_to_string(req, req_num, RequestType::executed));
@@ -360,7 +360,7 @@ void LivenessChecker::run()
     }
 
     smx_simcall_t req = api::get().mc_state_choose_request(current_pair->graph_state.get());
-    int req_num       = current_pair->graph_state->transition_.argument_;
+    int req_num       = current_pair->graph_state->transition_.times_considered_;
 
     if (dot_output != nullptr) {
       if (this->previous_pair_ != 0 && this->previous_pair_ != current_pair->num) {

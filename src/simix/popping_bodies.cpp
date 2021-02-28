@@ -153,13 +153,6 @@ inline static int simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeout
   return simcall<int, smx_sem_t, double>(Simcall::SEM_ACQUIRE_TIMEOUT, sem, timeout);
 }
 
-inline static int simcall_BODY_mc_random(int min, int max)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_mc_random(&SIMIX_process_self()->simcall_, min, max);
-  return simcall<int, int, int>(Simcall::MC_RANDOM, min, max);
-}
-
 inline static void simcall_BODY_run_kernel(std::function<void()> const* code)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */

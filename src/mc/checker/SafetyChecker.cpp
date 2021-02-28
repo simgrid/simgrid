@@ -62,11 +62,8 @@ RecordTrace SafetyChecker::get_record_trace() // override
 std::vector<std::string> SafetyChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
-  for (auto const& state : stack_) {
-    int value         = state->transition_.argument_;
-    smx_simcall_t req = &state->executed_req_;
-    trace.push_back(api::get().request_to_string(req, value, RequestType::executed));
-  }
+  for (auto const& state : stack_)
+    trace.push_back(state->transition_.textual);
   return trace;
 }
 
@@ -124,11 +121,12 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", api::get().request_to_string(req, state->transition_.argument_, RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s",
+              api::get().request_to_string(req, state->transition_.times_considered_, RequestType::simix).c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = api::get().request_get_dot_output(req, state->transition_.argument_);
+      req_str = api::get().request_get_dot_output(req, state->transition_.times_considered_);
 
     api::get().mc_inc_executed_trans();
 
@@ -203,11 +201,11 @@ void SafetyChecker::backtrack()
         if (api::get().simcall_check_dependency(req, &prev_state->internal_req_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            int value              = prev_state->transition_.argument_;
+            int value              = prev_state->transition_.times_considered_;
             smx_simcall_t prev_req = &prev_state->executed_req_;
             XBT_DEBUG("%s (state=%d)", api::get().request_to_string(prev_req, value, RequestType::internal).c_str(),
                       prev_state->num_);
-            value    = state->transition_.argument_;
+            value    = state->transition_.times_considered_;
             prev_req = &state->executed_req_;
             XBT_DEBUG("%s (state=%d)", api::get().request_to_string(prev_req, value, RequestType::executed).c_str(),
                       state->num_);

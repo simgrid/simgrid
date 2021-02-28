@@ -18,8 +18,10 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/mc/checker/SimcallInspector.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "xbt/random.hpp"
 
 #include "popping_bodies.cpp"
 
@@ -362,7 +364,12 @@ void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::Simcal
 }
 
 int simcall_mc_random(int min, int max) {
-  return simcall_BODY_mc_random(min, max);
+  if (not MC_is_active() && not MC_record_replay_is_active()) { // no need to do a simcall in this case
+    static simgrid::xbt::random::XbtRandom prng;
+    return prng.uniform_int(min, max);
+  }
+  auto observer = new simgrid::mc::RandomSimcall(SIMIX_process_self(), min, max);
+  return simgrid::kernel::actor::simcall([observer] { return observer->get_value(); }, observer);
 }
 
 /* ************************************************************************** */

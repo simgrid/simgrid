@@ -588,6 +588,7 @@ set(MC_SRC
   src/mc/checker/CommunicationDeterminismChecker.hpp
   src/mc/checker/SafetyChecker.cpp
   src/mc/checker/SafetyChecker.hpp
+  src/mc/checker/SimcallInspector.cpp
   src/mc/checker/SimcallInspector.hpp
   src/mc/checker/LivenessChecker.cpp
   src/mc/checker/LivenessChecker.hpp

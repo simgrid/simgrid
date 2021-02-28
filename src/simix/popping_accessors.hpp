@@ -859,43 +859,6 @@ static inline void simcall_sem_acquire_timeout__set__result(smx_simcall_t simcal
   simgrid::simix::marshal<int>(simcall->result_, result);
 }
 
-static inline int simcall_mc_random__get__min(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->args_[0]);
-}
-static inline int simcall_mc_random__getraw__min(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->args_[0]);
-}
-static inline void simcall_mc_random__set__min(smx_simcall_t simcall, int arg)
-{
-  simgrid::simix::marshal<int>(simcall->args_[0], arg);
-}
-static inline int simcall_mc_random__get__max(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->args_[1]);
-}
-static inline int simcall_mc_random__getraw__max(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->args_[1]);
-}
-static inline void simcall_mc_random__set__max(smx_simcall_t simcall, int arg)
-{
-  simgrid::simix::marshal<int>(simcall->args_[1], arg);
-}
-static inline int simcall_mc_random__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int>(simcall->result_);
-}
-static inline int simcall_mc_random__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int>(simcall->result_);
-}
-static inline void simcall_mc_random__set__result(smx_simcall_t simcall, int result)
-{
-  simgrid::simix::marshal<int>(simcall->result_, result);
-}
-
 static inline std::function<void()> const* simcall_run_kernel__get__code(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<std::function<void()> const*>(simcall->args_[0]);
@@ -940,4 +903,3 @@ XBT_PRIVATE void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t con
 XBT_PRIVATE void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
-XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);

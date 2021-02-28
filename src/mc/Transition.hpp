@@ -30,7 +30,10 @@ public:
    *
    * * random can produce different values.
    */
-  int argument_ = 0;
+  int times_considered_ = 0;
+
+  /* Textual representation of the transition, to display backtraces */
+  char textual[200];
 };
 
 } // namespace mc

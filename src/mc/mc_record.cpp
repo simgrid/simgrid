@@ -28,7 +28,7 @@ void replay(RecordTrace const& trace)
   simgrid::mc::wait_for_requests();
 
   for (simgrid::mc::Transition const& transition : trace) {
-    XBT_DEBUG("Executing %i$%i", transition.pid_, transition.argument_);
+    XBT_DEBUG("Executing %i$%i", transition.pid_, transition.times_considered_);
 
     // Choose a request:
     kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(transition.pid_);
@@ -41,7 +41,7 @@ void replay(RecordTrace const& trace)
       xbt_die("Unexpected simcall.");
 
     // Execute the request:
-    simcall->issuer_->simcall_handle(transition.argument_);
+    simcall->issuer_->simcall_handle(transition.times_considered_);
     simgrid::mc::wait_for_requests();
   }
 }
@@ -64,7 +64,7 @@ RecordTrace parseRecordTrace(const char* data)
   const char* current = data;
   while (*current) {
     simgrid::mc::Transition item;
-    int count = sscanf(current, "%d/%d", &item.pid_, &item.argument_);
+    int count = sscanf(current, "%d/%d", &item.pid_, &item.times_considered_);
 
     if(count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");
@@ -90,8 +90,8 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
     if (i != trace.begin())
       stream << ';';
     stream << i->pid_;
-    if (i->argument_)
-      stream << '/' << i->argument_;
+    if (i->times_considered_)
+      stream << '/' << i->times_considered_;
   }
   return stream.str();
 }
