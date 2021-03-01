@@ -31,9 +31,9 @@ DiskS19Model::DiskS19Model()
   all_existing_models.push_back(this);
 }
 
-DiskImpl* DiskS19Model::create_disk()
+DiskImpl* DiskS19Model::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  return new DiskS19();
+  return new DiskS19(name, read_bandwidth, write_bandwidth);
 }
 
 double DiskS19Model::next_occurring_event(double now)
@@ -59,7 +59,6 @@ void DiskS19Model::update_actions_state(double /*now*/, double delta)
 /************
  * Resource *
  ************/
-
 DiskAction* DiskS19::io_start(sg_size_t size, s4u::Io::OpType type)
 {
   return new DiskS19Action(get_model(), static_cast<double>(size), not is_on(), this, type);

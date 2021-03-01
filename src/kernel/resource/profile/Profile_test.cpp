@@ -24,7 +24,7 @@ class MockedResource : public simgrid::kernel::resource::Resource {
 public:
   static double the_date;
 
-  explicit MockedResource() { this->set_name("fake"); }
+  explicit MockedResource() : Resource("fake"){}
   void apply_event(simgrid::kernel::profile::Event* event, double value) override
   {
     XBT_VERB("t=%.1f: Change value to %lg (idx: %u)", the_date, value, event->idx);

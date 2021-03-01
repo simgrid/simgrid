@@ -12,11 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(disk_test, "Messages specific for this simulation")
 static void host()
 {
   /* -Add an extra disk in a programmatic way */
-  simgrid::s4u::Host::current()->create_disk()
-       ->set_name("Disk3")
-       ->set_read_bandwidth(9.6e7)
-       ->set_write_bandwidth(6.4e7)
-       ->seal();
+  simgrid::s4u::Host::current()->create_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/6.4e7)->seal();
 
   /* - Display information on the disks mounted by the current host */
   XBT_INFO("*** Storage info on %s ***", simgrid::s4u::Host::current()->get_cname());

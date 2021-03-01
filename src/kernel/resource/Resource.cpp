@@ -13,12 +13,6 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-Resource* Resource::set_name(const std::string& name)
-{
-  name_ = name;
-  return this;
-}
-
 Resource* Resource::set_model(Model* model)
 {
   model_ = model;

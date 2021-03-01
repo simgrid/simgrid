@@ -43,7 +43,7 @@ protected:
 
 public:
 #ifndef DOXYGEN
-  explicit Disk(kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl) {}
+  explicit Disk(const std::string& name, kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl), name_(name) {}
 #endif
 
   /** @brief Callback signal fired when a new Disk is created */

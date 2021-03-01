@@ -324,19 +324,13 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* c
 
 simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  simgrid::kernel::resource::DiskImpl* pimpl = surf_disk_model->create_disk();
+  simgrid::kernel::resource::DiskImpl* pimpl = surf_disk_model->create_disk(disk->id, disk->read_bw, disk->write_bw);
 
-  // This should be done using s4u::Disk methods and passed to the pimpl
-  pimpl->set_read_bandwidth(disk->read_bw)
-      ->set_write_bandwidth(disk->write_bw)
-      ->set_name(disk->id);
   if (disk->properties) {
     pimpl->set_properties(*disk->properties);
     delete disk->properties;
   }
-  pimpl->get_iface()->set_name(disk->id);
 
-  // This should be done in the seal() of a Disk creation
   pimpl->seal();
   simgrid::s4u::Disk::on_creation(*pimpl->get_iface());
   return pimpl;

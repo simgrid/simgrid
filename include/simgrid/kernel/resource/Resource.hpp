@@ -37,7 +37,7 @@ protected:
   profile::Event* state_event_ = nullptr;
 
 public:
-  Resource() = default;
+  Resource(const std::string& name) : name_(name){};
   virtual ~Resource() = default;
 
   /** @brief Get the Model of the current Resource */
@@ -48,7 +48,6 @@ public:
   const std::string& get_name() const { return name_; }
   /** @brief Get the name of the current Resource */
   const char* get_cname() const { return name_.c_str(); }
-  Resource* set_name(const std::string& name);
 
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
   lmm::Constraint* get_constraint() const { return constraint_; }
