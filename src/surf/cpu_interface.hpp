@@ -112,6 +112,7 @@ public:
    */
   virtual CpuAction* sleep(double duration) = 0;
 
+  Cpu* set_core_count(int core_count);
   /** @brief Get the amount of cores */
   virtual int get_core_count();
 

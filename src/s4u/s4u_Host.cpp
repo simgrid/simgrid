@@ -251,6 +251,12 @@ int Host::get_core_count() const
   return this->pimpl_cpu->get_core_count();
 }
 
+Host* Host::set_core_count(int core_count)
+{
+  this->pimpl_cpu->set_core_count(core_count);
+  return this;
+}
+
 /** @brief Set the pstate at which the host should run */
 void Host::set_pstate(int pstate_index)
 {

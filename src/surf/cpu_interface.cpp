@@ -129,6 +129,13 @@ void Cpu::on_speed_change()
   s4u::Host::on_speed_change(*host_);
 }
 
+Cpu* Cpu::set_core_count(int core_count)
+{
+  xbt_assert(core_count > 0, "Host %s must have at least one core, not 0.", host_->get_cname());
+  core_count_ = core_count;
+  return this;
+}
+
 int Cpu::get_core_count()
 {
   return core_count_;

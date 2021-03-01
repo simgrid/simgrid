@@ -128,8 +128,11 @@ public:
    * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_profile()).
    */
   double get_available_speed() const;
+
   /** Returns the number of core of the processor. */
   int get_core_count() const;
+  Host* set_core_count(int core_count);
+
   /** Returns the current computation load (in flops per second)
    *
    * The external load (coming from an availability trace) is not taken in account.
