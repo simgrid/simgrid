@@ -61,6 +61,7 @@ namespace resource {
 CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
 {
   all_existing_models.push_back(this);
+  models_by_type[simgrid::kernel::resource::Model::Type::CPU].push_back(this);
 
   bool select = config::get_value<bool>("cpu/maxmin-selective-update");
 

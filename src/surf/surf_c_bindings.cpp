@@ -42,6 +42,16 @@ void surf_presolve()
     model->update_actions_state(NOW, 0.0);
 }
 
+static void surf_update_next_event(std::vector<simgrid::kernel::resource::Model*> const& models, double& time_delta)
+{
+  for (auto* model : models) {
+    double next_event = model->next_occurring_event(NOW);
+    if ((time_delta < 0.0 || next_event < time_delta) && next_event >= 0.0) {
+      time_delta = next_event;
+    }
+  }
+}
+
 double surf_solve(double max_date)
 {
   double time_delta                             = -1.0; /* duration */
@@ -57,24 +67,12 @@ double surf_solve(double max_date)
 
   /* Physical models MUST be resolved first */
   XBT_DEBUG("Looking for next event in physical models");
-  double next_event_phy = surf_host_model->next_occurring_event(NOW);
-  if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
-    time_delta = next_event_phy;
-  }
-  if (surf_vm_model != nullptr) {
-    XBT_DEBUG("Looking for next event in virtual models");
-    double next_event_virt = surf_vm_model->next_occurring_event(NOW);
-    if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
-      time_delta = next_event_virt;
-  }
+  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::HOST], time_delta);
+  XBT_DEBUG("Looking for next event in virtual models");
+  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::VM], time_delta);
 
-  for (auto const& model : all_existing_models) {
-    if (model != surf_host_model && model != surf_vm_model && model != surf_network_model && model != surf_disk_model) {
-      double next_event_model = model->next_occurring_event(NOW);
-      if ((time_delta < 0.0 || next_event_model < time_delta) && next_event_model >= 0.0)
-        time_delta = next_event_model;
-    }
-  }
+  XBT_DEBUG("Looking for next event in CPU models");
+  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::CPU], time_delta);
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
 

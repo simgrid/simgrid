@@ -24,6 +24,7 @@ void surf_host_model_init_ptask_L07()
 
   surf_host_model = new simgrid::surf::HostL07Model();
   all_existing_models.push_back(surf_host_model);
+  models_by_type[simgrid::kernel::resource::Model::Type::HOST].push_back(surf_host_model);
 }
 
 namespace simgrid {

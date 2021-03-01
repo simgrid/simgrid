@@ -279,6 +279,7 @@ void CpuTiModel::create_pm_vm_models()
 CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
 {
   all_existing_models.push_back(this);
+  models_by_type[simgrid::kernel::resource::Model::Type::CPU].push_back(this);
 }
 
 CpuTiModel::~CpuTiModel()

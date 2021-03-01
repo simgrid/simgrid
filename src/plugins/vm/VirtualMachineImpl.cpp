@@ -104,6 +104,7 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
 VMModel::VMModel()
 {
   all_existing_models.push_back(this);
+  models_by_type[simgrid::kernel::resource::Model::Type::VM].push_back(this);
   s4u::Host::on_state_change.connect(host_state_change);
   s4u::Exec::on_start.connect(add_active_exec);
   s4u::Exec::on_completion.connect(remove_active_exec);

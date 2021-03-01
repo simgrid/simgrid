@@ -29,6 +29,7 @@ namespace resource {
 DiskS19Model::DiskS19Model()
 {
   all_existing_models.push_back(this);
+  models_by_type[simgrid::kernel::resource::Model::Type::DISK].push_back(this);
 }
 
 DiskImpl* DiskS19Model::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)

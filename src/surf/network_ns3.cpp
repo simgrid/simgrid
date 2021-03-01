@@ -293,6 +293,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
              "LinkEnergy plugin and ns-3 network models are not compatible. Are you looking for Ecofen, maybe?");
 
   all_existing_models.push_back(this);
+  models_by_type[simgrid::kernel::resource::Model::Type::NETWORK].push_back(this);
 
   NetPointNs3::EXTENSION_ID = routing::NetPoint::extension_create<NetPointNs3>();
 

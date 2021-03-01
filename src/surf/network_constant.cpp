@@ -25,6 +25,7 @@ namespace resource {
 NetworkConstantModel::NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::FULL)
 {
   all_existing_models.push_back(this);
+  models_by_type[simgrid::kernel::resource::Model::Type::NETWORK].push_back(this);
 }
 
 LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,

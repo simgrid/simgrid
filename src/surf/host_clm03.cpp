@@ -29,6 +29,7 @@ namespace surf {
 HostCLM03Model::HostCLM03Model()
 {
   all_existing_models.push_back(this);
+  models_by_type[simgrid::kernel::resource::Model::Type::HOST].push_back(this);
 }
 
 double HostCLM03Model::next_occurring_event(double now)

@@ -76,6 +76,7 @@ NetworkCm02Model::NetworkCm02Model()
                                                                              : Model::UpdateAlgo::LAZY)
 {
   all_existing_models.push_back(this);
+  models_by_type[simgrid::kernel::resource::Model::Type::NETWORK].push_back(this);
 
   std::string optim = config::get_value<std::string>("network/optim");
   bool select       = config::get_value<bool>("network/maxmin-selective-update");
