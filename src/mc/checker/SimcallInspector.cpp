@@ -7,10 +7,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 
-#include "src/mc/api.hpp"
-#include "src/mc/mc_smx.hpp"
-#include "xbt/string.hpp"
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_inspector, mc, "Logging specific to MC simcall inspection");
 
 namespace simgrid {
