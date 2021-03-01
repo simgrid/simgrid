@@ -580,6 +580,8 @@ set(MC_SRC_BASE
   src/mc/mc_config.cpp
   src/mc/mc_config.hpp
   src/mc/mc_global.cpp
+  src/mc/checker/SimcallInspector.cpp
+  src/mc/checker/SimcallInspector.hpp
   )
 
 set(MC_SRC
@@ -588,8 +590,6 @@ set(MC_SRC
   src/mc/checker/CommunicationDeterminismChecker.hpp
   src/mc/checker/SafetyChecker.cpp
   src/mc/checker/SafetyChecker.hpp
-  src/mc/checker/SimcallInspector.cpp
-  src/mc/checker/SimcallInspector.hpp
   src/mc/checker/LivenessChecker.cpp
   src/mc/checker/LivenessChecker.hpp
   src/mc/checker/UdporChecker.cpp
