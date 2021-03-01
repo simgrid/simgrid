@@ -292,8 +292,13 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
 
 const char* Api::actor_get_host_name(smx_actor_t actor) const
 {
+  return get_actor_host_name(actor).c_str();
+}
+
+xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
+{
   if (mc_model_checker == nullptr)
-    return actor->get_host()->get_cname();
+    return actor->get_host()->get_name();
 
   const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
 
@@ -305,8 +310,8 @@ const char* Api::actor_get_host_name(smx_actor_t actor) const
   std::vector<char> hostname(remote_string.len + 1);
   // no need to read the terminating null byte, and thus hostname[remote_string.len] is guaranteed to be '\0'
   process->read_bytes(hostname.data(), remote_string.len, remote(remote_string.data));
-  info->hostname = mc_model_checker->get_host_name(hostname.data()).c_str();
-  return info->hostname;
+  info->hostname = &mc_model_checker->get_host_name(hostname.data());
+  return *info->hostname;
 }
 
 const char* Api::actor_get_name(smx_actor_t actor) const
@@ -426,12 +431,6 @@ std::vector<char> Api::get_pattern_comm_data(RemotePtr<kernel::activity::CommImp
     mc_model_checker->get_remote_simulation().read_bytes(buffer.data(), buffer.size(), remote(comm->src_buff_));
   }
   return buffer;
-}
-
-const char* Api::get_actor_host_name(smx_actor_t actor) const
-{
-  const char* host_name = actor_get_host_name(actor);
-  return host_name;
 }
 
 #if HAVE_SMPI
@@ -603,11 +602,6 @@ void Api::mc_wait_for_requests() const
 void Api::mc_exit(int status) const
 {
   mc_model_checker->exit(status);
-}
-
-std::string const& Api::mc_get_host_name(std::string const& hostname) const
-{
-  return mc_model_checker->get_host_name(hostname);
 }
 
 void Api::dump_record_path() const

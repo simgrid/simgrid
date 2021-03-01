@@ -80,7 +80,7 @@ public:
   unsigned long get_pattern_comm_src_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   unsigned long get_pattern_comm_dst_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   std::vector<char> get_pattern_comm_data(RemotePtr<kernel::activity::CommImpl> const& addr) const;
-  const char* get_actor_host_name(smx_actor_t actor) const;
+  xbt::string const& get_actor_host_name(smx_actor_t actor) const;
 #if HAVE_SMPI
   bool check_send_request_detached(smx_simcall_t const& simcall) const;
 #endif
@@ -103,7 +103,6 @@ public:
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
-  std::string const& mc_get_host_name(std::string const& hostname) const;
   void dump_record_path() const;
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 

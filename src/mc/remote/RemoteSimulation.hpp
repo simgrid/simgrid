@@ -26,7 +26,7 @@ public:
   Remote<kernel::actor::ActorImpl> copy;
 
   /** Hostname (owned by `mc_modelchecker->hostnames`) */
-  const char* hostname = nullptr;
+  const xbt::string* hostname = nullptr;
   std::string name;
 
   void clear()

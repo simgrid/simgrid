@@ -24,8 +24,8 @@ public:
   PatternCommunicationType type = PatternCommunicationType::send;
   unsigned long src_proc        = 0;
   unsigned long dst_proc        = 0;
-  const char* src_host          = nullptr;
-  const char* dst_host          = nullptr;
+  const xbt::string* src_host   = nullptr;
+  const xbt::string* dst_host   = nullptr;
   std::string rdv;
   std::vector<char> data;
   int tag   = 0;
