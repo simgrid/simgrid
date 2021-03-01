@@ -553,11 +553,9 @@ RemotePtr<kernel::activity::MailboxImpl> Api::get_mbox_remote_addr(smx_simcall_t
   RemotePtr<kernel::activity::MailboxImpl> mbox_addr;
   switch (req->call_) {
     case Simcall::COMM_ISEND:
-    case Simcall::COMM_IRECV: {
-      auto mbox_addr_ptr = simix::unmarshal<smx_mailbox_t>(req->args_[1]);
-      mbox_addr          = remote(mbox_addr_ptr);
+    case Simcall::COMM_IRECV:
+      mbox_addr = remote(simix::unmarshal<smx_mailbox_t>(req->args_[1]));
       break;
-    }
     default:
       mbox_addr = RemotePtr<kernel::activity::MailboxImpl>();
       break;
@@ -570,11 +568,9 @@ RemotePtr<kernel::activity::ActivityImpl> Api::get_comm_remote_addr(smx_simcall_
   RemotePtr<kernel::activity::ActivityImpl> comm_addr;
   switch (req->call_) {
     case Simcall::COMM_ISEND:
-    case Simcall::COMM_IRECV: {
-      auto comm_addr_ptr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(req->result_);
-      comm_addr          = remote(comm_addr_ptr);
+    case Simcall::COMM_IRECV:
+      comm_addr = remote(simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(req->result_));
       break;
-    }
     default:
       comm_addr = RemotePtr<kernel::activity::ActivityImpl>();
       break;
@@ -655,11 +651,10 @@ std::list<transition_detail_t> Api::get_enabled_transitions(simgrid::mc::State* 
     transition->call_             = simcall_call;
     switch (simcall_call) {
       case Simcall::COMM_ISEND:
-      case Simcall::COMM_IRECV: {
+      case Simcall::COMM_IRECV:
         transition->mbox_remote_addr = get_mbox_remote_addr(simcall);
         transition->comm_remote_addr = get_comm_remote_addr(simcall);
         break;
-      }
 
       default:
         break;

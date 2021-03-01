@@ -87,6 +87,8 @@ static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_even
     // *q == '%'
     q++;
     do {
+      int sz;
+      int len;
       switch (*q) {
         case '\0':
           fprintf(stderr, "Layout format (%s) ending with %%\n", (char*)l->data);
@@ -139,13 +141,11 @@ static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_even
         case 'F': /* file name; LOG4J compliant */
           show_string(ev->fileName);
           break;
-        case 'l': { /* location; LOG4J compliant */
-          int sz;
+        case 'l': /* location; LOG4J compliant */
           set_sz_from_precision();
-          int len = snprintf(p, sz, "%s:%d", ev->fileName, ev->lineNum);
+          len = snprintf(p, sz, "%s:%d", ev->fileName, ev->lineNum);
           check_overflow(std::min(sz, len));
           break;
-        }
         case 'L': /* line number; LOG4J compliant */
           show_int(ev->lineNum);
           break;
@@ -156,16 +156,14 @@ static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_even
         case 'r': /* application age; LOG4J compliant */
           show_double(simgrid_get_clock());
           break;
-        case 'm': { /* user-provided message; LOG4J compliant */
-          int sz;
+        case 'm': /* user-provided message; LOG4J compliant */
           set_sz_from_precision();
           va_list ap;
           va_copy(ap, ev->ap);
-          int len = vsnprintf(p, sz, msg_fmt, ap);
+          len = vsnprintf(p, sz, msg_fmt, ap);
           va_end(ap);
           check_overflow(std::min(sz, len));
           break;
-        }
         default:
           fprintf(stderr, ERRMSG, *q, (char*)l->data);
           xbt_abort();
