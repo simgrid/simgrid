@@ -192,9 +192,9 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     /* Create comm pattern */
     pattern->type      = PatternCommunicationType::send;
     pattern->comm_addr = api::get().get_comm_isend_raw_addr(request);
-    pattern->rdv      = api::get().get_pattern_comm_rdv(pattern->comm_addr);
-    pattern->src_proc = api::get().get_pattern_comm_src_proc(pattern->comm_addr);
-    pattern->src_host = Api::get().get_actor_host_name(issuer);
+    pattern->rdv       = api::get().get_pattern_comm_rdv(pattern->comm_addr);
+    pattern->src_proc  = api::get().get_pattern_comm_src_proc(pattern->comm_addr);
+    pattern->src_host  = api::get().get_actor_host_name(issuer);
 
 #if HAVE_SMPI
     pattern->tag = api::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_ISEND);
@@ -343,7 +343,7 @@ void CommunicationDeterminismChecker::restoreState()
   /* Intermediate backtracking */
   State* last_state = stack_.back().get();
   if (last_state->system_state_) {
-    Api::get().restore_state(last_state->system_state_);
+    api::get().restore_state(last_state->system_state_);
     restore_communications_pattern(last_state);
     return;
   }
