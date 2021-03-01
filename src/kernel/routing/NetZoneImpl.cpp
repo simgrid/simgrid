@@ -68,7 +68,7 @@ int NetZoneImpl::get_host_count() const
 s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths,
                                     s4u::Link::SharingPolicy policy)
 {
-  auto* l = surf_network_model->create_link(name, bandwidths, policy);
+  auto* l = network_model_->create_link(name, bandwidths, policy);
 
   return l->get_iface();
 }

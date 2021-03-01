@@ -6,6 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/host.h"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp" // full type for NetZoneImpl object
+#include "simgrid/zone.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -35,7 +37,9 @@ int main(int argc, char** argv)
   hostB->pimpl_cpu->execution_start(1000.0);
   hostB->pimpl_cpu->sleep(7.32);
 
-  surf_network_model->communicate(hostA, hostB, 150.0, -1.0);
+  sg_netzone_t as_zone                               = sg_zone_get_by_name("AS0");
+  simgrid::kernel::resource::NetworkModel* net_model = as_zone->get_impl()->get_network_model();
+  net_model->communicate(hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0); /* Takes traces into account. Returns 0.0 */
   do {

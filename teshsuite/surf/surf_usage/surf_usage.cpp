@@ -6,6 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/host.h"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp" // full type for NetZoneImpl object
+#include "simgrid/zone.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp"
@@ -40,8 +42,11 @@ int main(int argc, char** argv)
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   parse_platform_file(argv[1]);
 
+  sg_netzone_t as_zone                               = sg_zone_get_by_name("AS0");
+  simgrid::kernel::resource::NetworkModel* net_model = as_zone->get_impl()->get_network_model();
+
   XBT_DEBUG("CPU model: %p", surf_cpu_model_pm);
-  XBT_DEBUG("Network model: %p", surf_network_model);
+  XBT_DEBUG("Network model: %p", net_model);
   simgrid::s4u::Host* hostA = sg_host_by_name("Cpu A");
   simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 
@@ -60,7 +65,7 @@ int main(int argc, char** argv)
   XBT_INFO("actionC state: %s", string_action(stateActionC));
 
   /* Let's do something on it */
-  surf_network_model->communicate(hostA, hostB, 150.0, -1.0);
+  net_model->communicate(hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0);
   do {
@@ -83,7 +88,7 @@ int main(int argc, char** argv)
       action.unref();
     }
 
-    action_list = surf_network_model->get_failed_action_set();
+    action_list = net_model->get_failed_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   Network Failed action");
@@ -91,16 +96,15 @@ int main(int argc, char** argv)
       action.unref();
     }
 
-    action_list = surf_network_model->get_finished_action_set();
+    action_list = net_model->get_finished_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   Network Done action");
       XBT_DEBUG("\t * Done : %p", &action);
       action.unref();
     }
-  } while (
-      (surf_network_model->get_started_action_set()->size() || surf_cpu_model_pm->get_started_action_set()->size()) &&
-      surf_solve(-1.0) >= 0.0);
+  } while ((net_model->get_started_action_set()->size() || surf_cpu_model_pm->get_started_action_set()->size()) &&
+           surf_solve(-1.0) >= 0.0);
 
   XBT_DEBUG("Simulation Terminated");
 

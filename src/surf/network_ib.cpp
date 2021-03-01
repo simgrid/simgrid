@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/surf/network_ib.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
@@ -20,8 +21,8 @@ static void IB_create_host_callback(simgrid::s4u::Host const& host)
   using simgrid::kernel::resource::NetworkIBModel;
 
   static int id = 0;
-
-  ((NetworkIBModel*)surf_network_model)->active_nodes.emplace(host.get_name(), IBNode(id));
+  auto* ibModel = static_cast<NetworkIBModel*>(host.get_netpoint()->get_englobing_zone()->get_network_model());
+  ibModel->active_nodes.emplace(host.get_name(), IBNode(id));
   id++;
 }
 
@@ -29,21 +30,21 @@ static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkA
                                              simgrid::kernel::resource::Action::State /*previous*/)
 {
   using simgrid::kernel::resource::IBNode;
-  using simgrid::kernel::resource::NetworkIBModel;
 
   if (action.get_state() != simgrid::kernel::resource::Action::State::FINISHED)
     return;
-  std::pair<IBNode*, IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[&action];
+  auto* ibModel                    = static_cast<simgrid::kernel::resource::NetworkIBModel*>(action.get_model());
+  std::pair<IBNode*, IBNode*> pair = ibModel->active_comms[&action];
   XBT_DEBUG("IB callback - action %p finished", &action);
 
-  ((NetworkIBModel*)surf_network_model)->updateIBfactors(&action, pair.first, pair.second, 1);
+  ibModel->updateIBfactors(&action, pair.first, pair.second, 1);
 
-  ((NetworkIBModel*)surf_network_model)->active_comms.erase(&action);
+  ibModel->active_comms.erase(&action);
 }
 
 static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& action)
 {
-  auto* ibModel = static_cast<simgrid::kernel::resource::NetworkIBModel*>(surf_network_model);
+  auto* ibModel = static_cast<simgrid::kernel::resource::NetworkIBModel*>(action.get_model());
   auto* act_src = &ibModel->active_nodes.at(action.get_src().get_name());
   auto* act_dst = &ibModel->active_nodes.at(action.get_dst().get_name());
 

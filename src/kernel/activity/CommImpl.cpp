@@ -6,6 +6,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
@@ -430,7 +431,12 @@ CommImpl* CommImpl::start()
     from_ = from_ != nullptr ? from_ : src_actor_->get_host();
     to_   = to_ != nullptr ? to_ : dst_actor_->get_host();
 
-    surf_action_ = surf_network_model->communicate(from_, to_, size_, rate_);
+    /* FIXME[donassolo]: getting the network_model from the origin host
+     * Soon we need to change this function to first get the routes and later
+     * create the respective surf actions */
+    auto* net_model = from_->get_netpoint()->get_englobing_zone()->get_network_model();
+
+    surf_action_ = net_model->communicate(from_, to_, size_, rate_);
     surf_action_->set_activity(this);
     surf_action_->set_category(get_tracing_category());
     state_ = State::RUNNING;

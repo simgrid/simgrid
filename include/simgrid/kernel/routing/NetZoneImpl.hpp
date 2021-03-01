@@ -103,6 +103,7 @@ public:
 
   resource::NetworkModel* network_model_;
 
+  resource::NetworkModel* get_network_model() const { return network_model_; }
   const s4u::NetZone* get_iface() const { return &piface_; }
   s4u::NetZone* get_iface() { return &piface_; }
   unsigned int get_table_size() const { return vertices_.size(); }
