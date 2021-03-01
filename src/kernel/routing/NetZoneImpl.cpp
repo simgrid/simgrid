@@ -74,14 +74,14 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
 }
 
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate,
-                                    int coreAmount)
+                                    int core_amount)
 {
   if (hierarchy_ == RoutingMode::unset)
     hierarchy_ = RoutingMode::base;
 
   auto* res = (new s4u::Host(name))->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
 
-  surf_cpu_model_pm->create_cpu(res, speed_per_pstate, coreAmount);
+  surf_cpu_model_pm->create_cpu(res, speed_per_pstate, core_amount);
 
   return res;
 }

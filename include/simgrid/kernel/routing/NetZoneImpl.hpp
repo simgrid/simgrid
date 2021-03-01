@@ -120,7 +120,7 @@ public:
   int get_host_count() const;
 
   /** @brief Make a host within that NetZone */
-  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate, int core_count);
+  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate, int core_amount);
   /** @brief Make a link within that NetZone */
   virtual s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths,
                                  s4u::Link::SharingPolicy policy);
