@@ -21,7 +21,7 @@ public:
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bws, double lat,
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bws,
                         s4u::Link::SharingPolicy policy) override;
 };
 

@@ -89,18 +89,18 @@ NetworkCm02Model::NetworkCm02Model()
   set_maxmin_system(new lmm::System(select));
   loopback_ = NetworkCm02Model::create_link("__loopback__", 
                                             std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
-                                            simgrid::config::get_value<double>("network/loopback-lat"),
-                                            s4u::Link::SharingPolicy::FATPIPE);
+                                            s4u::Link::SharingPolicy::FATPIPE)->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
+  loopback_->seal();
 }
 
-LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
+LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
                                         s4u::Link::SharingPolicy policy)
 {
   if (policy == s4u::Link::SharingPolicy::WIFI)
     return new NetworkWifiLink(this, name, bandwidths, get_maxmin_system());
 
   xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
-  return new NetworkCm02Link(this, name, bandwidths[0], latency, policy, get_maxmin_system());
+  return new NetworkCm02Link(this, name, bandwidths[0], policy, get_maxmin_system());
 }
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
@@ -308,20 +308,15 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 /************
  * Resource *
  ************/
-NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
+NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth,
                                  s4u::Link::SharingPolicy policy, kernel::lmm::System* system)
     : LinkImpl(model, name, system->constraint_new(this, sg_bandwidth_factor * bandwidth))
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;
 
-  latency_.scale = 1.0;
-  latency_.peak  = latency;
-
   if (policy == s4u::Link::SharingPolicy::FATPIPE)
     get_constraint()->unshare();
-
-  simgrid::s4u::Link::on_creation(*get_iface());
 }
 
 void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double value)
@@ -374,14 +369,17 @@ void NetworkCm02Link::set_bandwidth(double value)
   }
 }
 
-void NetworkCm02Link::set_latency(double value)
+LinkImpl* NetworkCm02Link::set_latency(double value)
 {
+  latency_check(value);
+
   double delta                 = value - latency_.peak;
   const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
   int numelem                  = 0;
 
+  latency_.scale = 1.0;
   latency_.peak = value;
 
   while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
@@ -404,6 +402,7 @@ void NetworkCm02Link::set_latency(double value)
     if (not action->is_suspended())
       get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
   }
+  return this;
 }
 
 /**********

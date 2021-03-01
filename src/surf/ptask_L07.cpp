@@ -59,8 +59,8 @@ NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
   set_maxmin_system(sys);
   loopback_ = NetworkL07Model::create_link("__loopback__", 
                                             std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
-                                            simgrid::config::get_value<double>("network/loopback-lat"),
-                                            s4u::Link::SharingPolicy::FATPIPE);
+                                            s4u::Link::SharingPolicy::FATPIPE)->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
+  loopback_->seal();
 }
 
 NetworkL07Model::~NetworkL07Model()
@@ -228,10 +228,10 @@ kernel::resource::Cpu* CpuL07Model::create_cpu(s4u::Host* host, const std::vecto
 }
 
 kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                                         double latency, s4u::Link::SharingPolicy policy)
+                                                         s4u::Link::SharingPolicy policy)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  return new LinkL07(this, name, bandwidths[0], latency, policy);
+  return new LinkL07(this, name, bandwidths[0], policy);
 }
 
 /************
@@ -246,17 +246,13 @@ CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, const std::vector<d
 
 CpuL07::~CpuL07()=default;
 
-LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
-                 s4u::Link::SharingPolicy policy)
+LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy)
     : LinkImpl(model, name, model->get_maxmin_system()->constraint_new(this, bandwidth))
 {
   bandwidth_.peak = bandwidth;
-  latency_.peak   = latency;
 
   if (policy == s4u::Link::SharingPolicy::FATPIPE)
     get_constraint()->unshare();
-
-  s4u::Link::on_creation(*get_iface());
 }
 
 kernel::resource::CpuAction* CpuL07::execution_start(double size)
@@ -362,8 +358,9 @@ void LinkL07::set_bandwidth(double value)
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), bandwidth_.peak * bandwidth_.scale);
 }
 
-void LinkL07::set_latency(double value)
+kernel::resource::LinkImpl* LinkL07::set_latency(double value)
 {
+  latency_check(value);
   const kernel::lmm::Variable* var;
   L07Action *action;
   const kernel::lmm::Element* elem = nullptr;
@@ -373,6 +370,7 @@ void LinkL07::set_latency(double value)
     action = static_cast<L07Action*>(var->get_id());
     action->updateBound();
   }
+  return this;
 }
 LinkL07::~LinkL07() = default;
 

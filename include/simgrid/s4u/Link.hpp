@@ -90,7 +90,7 @@ public:
   void turn_on();
   bool is_on() const;
   void turn_off();
-
+  void seal();
   /** Setup the profile with states events (ON or OFF). The profile must contain boolean values. */
   void set_state_profile(kernel::profile::Profile* profile);
   /** Setup the profile with bandwidth events (peak speed changes due to external load).

@@ -117,6 +117,17 @@ s4u::Link::SharingPolicy LinkImpl::get_sharing_policy() const
   return get_constraint()->get_sharing_policy();
 }
 
+void LinkImpl::latency_check(double latency)
+{
+  static double last_warned_latency = sg_surf_precision;
+  if (latency != 0.0 && latency < last_warned_latency) {
+    XBT_WARN("Latency for link %s is smaller than surf/precision (%g < %g)."
+        " For more accuracy, consider setting \"--cfg=surf/precision:%g\".",
+        get_cname(), latency, sg_surf_precision, latency);
+    last_warned_latency = latency;
+  }
+}
+
 void LinkImpl::turn_on()
 {
   if (not is_on()) {
@@ -143,7 +154,10 @@ void LinkImpl::turn_off()
     }
   }
 }
-
+void LinkImpl::seal()
+{
+  simgrid::s4u::Link::on_creation(*get_iface());
+}
 void LinkImpl::on_bandwidth_change() const
 {
   s4u::Link::on_bandwidth_change(this->piface_);

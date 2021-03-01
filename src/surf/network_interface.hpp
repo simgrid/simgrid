@@ -45,10 +45,9 @@ public:
    *
    * @param name The name of the Link
    * @param bandwidth The initial bandwidth of the Link in bytes per second
-   * @param latency The initial latency of the Link in seconds
    * @param policy The sharing policy of the Link
    */
-  virtual LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
+  virtual LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
                                 s4u::Link::SharingPolicy policy) = 0;
 
   /**
@@ -119,6 +118,8 @@ protected:
 public:
   void destroy(); // Must be called instead of the destructor
 
+  void latency_check(double latency);
+
   /** @brief Public interface */
   const s4u::Link* get_iface() const { return &piface_; }
   s4u::Link* get_iface() { return &piface_; }
@@ -133,7 +134,7 @@ public:
   double get_latency() const;
 
   /** @brief Update the latency in seconds of current Link */
-  virtual void set_latency(double value) = 0;
+  virtual LinkImpl* set_latency(double value) = 0;
 
   /** @brief The sharing policy */
   virtual s4u::Link::SharingPolicy get_sharing_policy() const;
@@ -143,6 +144,8 @@ public:
 
   void turn_on() override;
   void turn_off() override;
+
+  void seal();
 
   void on_bandwidth_change() const;
 

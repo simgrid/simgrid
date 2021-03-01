@@ -103,6 +103,10 @@ void Link::turn_off()
 {
   simgrid::kernel::actor::simcall([this]() { this->pimpl_->turn_off(); });
 }
+void Link::seal()
+{
+  simgrid::kernel::actor::simcall([this]() { this->pimpl_->seal(); });
+}
 
 bool Link::is_on() const
 {

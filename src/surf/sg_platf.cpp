@@ -109,7 +109,9 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 
 static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args, const std::string& link_name)
 {
-  simgrid::s4u::Link* link = routing_get_current()->create_link(link_name, args->bandwidths, args->latency, args->policy);
+  simgrid::s4u::Link* link = routing_get_current()->create_link(link_name, args->bandwidths, args->policy);
+  if (args->policy != simgrid::s4u::Link::SharingPolicy::WIFI)
+    link->get_impl()->set_latency(args->latency);
 
   if (args->properties)
     link->set_properties(*args->properties);
@@ -121,6 +123,8 @@ static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* 
     l->set_bandwidth_profile(args->bandwidth_trace);
   if (args->state_trace)
     l->set_state_profile(args->state_trace);
+
+  link->seal();
 }
 
 void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link)

@@ -64,7 +64,7 @@ public:
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model() override;
   kernel::resource::LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                          double latency, s4u::Link::SharingPolicy policy) override;
+                                          s4u::Link::SharingPolicy policy) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 
@@ -97,15 +97,14 @@ protected:
 
 class LinkL07 : public kernel::resource::LinkImpl {
 public:
-  LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
-          s4u::Link::SharingPolicy policy);
+  LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy);
   LinkL07(const LinkL07&) = delete;
   LinkL07& operator=(const LinkL07&) = delete;
   ~LinkL07() override;
   bool is_used() const override;
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
-  void set_latency(double value) override;
+  LinkImpl* set_latency(double value) override;
 };
 
 /**********

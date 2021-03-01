@@ -32,7 +32,7 @@ class NetworkCm02Model : public NetworkModel {
 public:
   NetworkCm02Model();
   ~NetworkCm02Model() override = default;
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
                         s4u::Link::SharingPolicy policy) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
@@ -45,12 +45,12 @@ public:
 
 class NetworkCm02Link : public LinkImpl {
 public:
-  NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
+  NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth,
                   s4u::Link::SharingPolicy policy, lmm::System* system);
   ~NetworkCm02Link() override = default;
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
-  void set_latency(double value) override;
+  LinkImpl* set_latency(double value) override;
 };
 
 /**********

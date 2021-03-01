@@ -65,18 +65,10 @@ int NetZoneImpl::get_host_count() const
   return count;
 }
 
-s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths, double latency,
+s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths,
                                     s4u::Link::SharingPolicy policy)
 {
-  static double last_warned_latency = sg_surf_precision;
-  if (latency != 0.0 && latency < last_warned_latency) {
-    XBT_WARN("Latency for link %s is smaller than surf/precision (%g < %g)."
-             " For more accuracy, consider setting \"--cfg=surf/precision:%g\".",
-             name.c_str(), latency, sg_surf_precision, latency);
-    last_warned_latency = latency;
-  }
-
-  auto* l = surf_network_model->create_link(name, bandwidths, latency, policy);
+  auto* l = surf_network_model->create_link(name, bandwidths, policy);
 
   return l->get_iface();
 }
