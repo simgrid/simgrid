@@ -2221,6 +2221,7 @@ include src/mc/checker/LivenessChecker.cpp
 include src/mc/checker/LivenessChecker.hpp
 include src/mc/checker/SafetyChecker.cpp
 include src/mc/checker/SafetyChecker.hpp
+include src/mc/checker/SimcallInspector.cpp
 include src/mc/checker/SimcallInspector.hpp
 include src/mc/checker/UdporChecker.cpp
 include src/mc/checker/UdporChecker.hpp
