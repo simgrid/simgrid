@@ -87,9 +87,10 @@ Cpu* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed
  * Resource *
  ************/
 CpuCas01::CpuCas01(CpuCas01Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
-    : Cpu(model, host, model->get_maxmin_system()->constraint_new(this, core * speed_per_pstate.front()),
-          speed_per_pstate, core)
+    : Cpu(host, speed_per_pstate)
 {
+  this->set_core_count(core)->set_model(model)->set_constraint(
+      model->get_maxmin_system()->constraint_new(this, core * speed_per_pstate.front()));
 }
 
 CpuCas01::~CpuCas01() = default;
@@ -133,8 +134,8 @@ void CpuCas01::apply_event(profile::Event* event, double value)
 
     if (value > 0) {
       if (not is_on()) {
-        XBT_VERB("Restart actors on host %s", get_host()->get_cname());
-        get_host()->turn_on();
+        XBT_VERB("Restart actors on host %s", get_iface()->get_cname());
+        get_iface()->turn_on();
       }
     } else {
       const lmm::Constraint* cnst = get_constraint();
@@ -142,7 +143,7 @@ void CpuCas01::apply_event(profile::Event* event, double value)
       const lmm::Element* elem = nullptr;
       double date              = surf_get_clock();
 
-      get_host()->turn_off();
+      get_iface()->turn_off();
 
       while ((var = cnst->get_variable(&elem))) {
         Action* action = var->get_id();

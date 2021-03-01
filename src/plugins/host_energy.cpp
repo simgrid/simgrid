@@ -473,7 +473,7 @@ static void on_action_state_change(simgrid::kernel::resource::CpuAction const& a
                                    simgrid::kernel::resource::Action::State /*previous*/)
 {
   for (simgrid::kernel::resource::Cpu* const& cpu : action.cpus()) {
-    simgrid::s4u::Host* host = cpu->get_host();
+    simgrid::s4u::Host* host = cpu->get_iface();
     if (host != nullptr) {
       // If it's a VM, take the corresponding PM
       const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);

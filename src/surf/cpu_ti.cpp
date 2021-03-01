@@ -324,9 +324,10 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
  * Resource *
  ************/
 CpuTi::CpuTi(CpuTiModel* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
-    : Cpu(model, host, speed_per_pstate, core)
+    : Cpu(host, speed_per_pstate)
 {
   xbt_assert(core == 1, "Multi-core not handled by this model yet");
+  this->set_model(model);
 
   speed_.peak = speed_per_pstate.front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
@@ -374,11 +375,11 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
   } else if (event == state_event_) {
     if (value > 0) {
       if (not is_on()) {
-        XBT_VERB("Restart actors on host %s", get_host()->get_cname());
-        get_host()->turn_on();
+        XBT_VERB("Restart actors on host %s", get_iface()->get_cname());
+        get_iface()->turn_on();
       }
     } else {
-      get_host()->turn_off();
+      get_iface()->turn_off();
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */

@@ -51,26 +51,12 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
 /************
  * Resource *
  ************/
-Cpu::Cpu(Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
-    : Cpu(model, host, nullptr /*constraint*/, speed_per_pstate, core)
+Cpu::Cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
+    : Resource(host->get_cname()), piface_(host), speed_per_pstate_(speed_per_pstate)
 {
-}
-
-Cpu::Cpu(Model* model, s4u::Host* host, lmm::Constraint* constraint, const std::vector<double>& speed_per_pstate,
-         int core)
-    : Resource(host->get_cname())
-    , core_count_(core)
-    , host_(host)
-    , speed_per_pstate_(speed_per_pstate)
-{
-  this->set_model(model)->set_constraint(constraint);
-
-  xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->get_cname());
-
-  speed_.peak     = speed_per_pstate_.front();
   speed_.scale = 1;
+  speed_.peak     = speed_per_pstate_.front();
   host->pimpl_cpu = this;
-  xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->get_cname());
 }
 
 void Cpu::reset_vcpu(Cpu* that)
@@ -79,11 +65,6 @@ void Cpu::reset_vcpu(Cpu* that)
   this->speed_  = that->speed_;
   this->speed_per_pstate_.clear();
   this->speed_per_pstate_.assign(that->speed_per_pstate_.begin(), that->speed_per_pstate_.end());
-}
-
-int Cpu::get_pstate_count() const
-{
-  return speed_per_pstate_.size();
 }
 
 void Cpu::set_pstate(int pstate_index)
@@ -100,11 +81,6 @@ void Cpu::set_pstate(int pstate_index)
   on_speed_change();
 }
 
-int Cpu::get_pstate() const
-{
-  return pstate_;
-}
-
 double Cpu::get_pstate_peak_speed(int pstate_index) const
 {
   xbt_assert((pstate_index <= static_cast<int>(speed_per_pstate_.size())),
@@ -113,25 +89,14 @@ double Cpu::get_pstate_peak_speed(int pstate_index) const
   return speed_per_pstate_[pstate_index];
 }
 
-double Cpu::get_speed(double load) const
-{
-  return load * speed_.peak;
-}
-
-double Cpu::get_speed_ratio()
-{
-/* number between 0 and 1 */
-  return speed_.scale;
-}
-
 void Cpu::on_speed_change()
 {
-  s4u::Host::on_speed_change(*host_);
+  s4u::Host::on_speed_change(*piface_);
 }
 
 Cpu* Cpu::set_core_count(int core_count)
 {
-  xbt_assert(core_count > 0, "Host %s must have at least one core, not 0.", host_->get_cname());
+  xbt_assert(core_count > 0, "Host %s must have at least one core, not 0.", piface_->get_cname());
   core_count_ = core_count;
   return this;
 }
@@ -143,11 +108,10 @@ int Cpu::get_core_count()
 
 void Cpu::set_speed_profile(kernel::profile::Profile* profile)
 {
-  xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->get_cname());
+  xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", piface_->get_cname());
 
   speed_.event = profile->schedule(&profile::future_evt_set, this);
 }
-
 
 /**********
  * Action *

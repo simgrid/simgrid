@@ -21,10 +21,11 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-/** @ingroup SURF_cpu_interface
- * @brief SURF cpu model interface class
- * @details A model is an object which handle the interactions between its Resources and its Actions
- */
+class CpuAction;
+
+/*********
+ * Model *
+ *********/
 class XBT_PUBLIC CpuModel : public Model {
 public:
   using Model::Model;
@@ -47,45 +48,60 @@ public:
  * Resource *
  ************/
 
-class CpuAction;
-
-/** @ingroup SURF_cpu_interface
-* @brief SURF cpu resource interface class
-* @details A Cpu represent a cpu associated to a host
-*/
 class XBT_PUBLIC Cpu : public Resource {
+  friend vm::VirtualMachineImpl; // Resets the VCPU
+
+  s4u::Host* piface_;
   int core_count_ = 1;
-  s4u::Host* host_;
   int pstate_ = 0;                       /*< Current pstate (index in the speed_per_pstate_)*/
   std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related). Not 'const' because VCPU
                                             get modified on migration */
-  friend simgrid::vm::VirtualMachineImpl; // Resets the VCPU
 
 public:
   /**
    * @brief Cpu constructor
    *
-   * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
-   * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-   * @param speedPerPstate Processor speed (in flop per second) for each pstate
-   * @param core The number of core of this Cpu
+   * @param speed_per_pstate Processor speed (in flop per second) for each pstate
    */
-  Cpu(Model* model, s4u::Host* host, lmm::Constraint* constraint, const std::vector<double>& speed_per_pstate,
-      int core);
-
-  /**
-   * @brief Cpu constructor
-   *
-   * @param model The CpuModel associated to this Cpu
-   * @param host The host in which this Cpu should be plugged
-   * @param speedPerPstate Processor speed (in flop per second) for each pstate
-   * @param core The number of core of this Cpu
-   */
-  Cpu(Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
+  Cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate);
 
   Cpu(const Cpu&) = delete;
   Cpu& operator=(const Cpu&) = delete;
+
+  /** @brief Public interface */
+  s4u::Host* get_iface() { return piface_; }
+
+  Cpu* set_core_count(int core_count);
+  virtual int get_core_count();
+
+  /** @brief Get a forecast of the speed (in flops/s) if the load were as provided.
+   *
+   * The provided load should encompasses both the application's activities and the external load that come from a
+   * trace.
+   *
+   * Use a load of 1.0 to compute the amount of flops that the Cpu would deliver with one CPU-bound task.
+   * If you use a load of 0, this function will return 0: when nobody is using the Cpu, it delivers nothing.
+   *
+   * If you want to know the amount of flops currently delivered, use  load = get_load()*get_speed_ratio()
+   */
+  virtual double get_speed(double load) const { return load * speed_.peak; }
+
+  /** @brief Get the available speed ratio, in [0:1]. This accounts for external load (see @ref set_speed_profile()). */
+  virtual double get_speed_ratio() { return speed_.scale; }
+
+  /** @brief Get the peak processor speed (in flops/s), at the specified pstate */
+  virtual double get_pstate_peak_speed(int pstate_index) const;
+
+  virtual int get_pstate_count() const { return speed_per_pstate_.size(); }
+
+  virtual void set_pstate(int pstate_index);
+  virtual int get_pstate() const { return pstate_; }
+
+  /*< @brief Setup the trace file with availability events (peak speed changes due to external load).
+   * Trace must contain relative values (ratio between 0 and 1)
+   */
+  virtual void set_speed_profile(profile::Profile* profile);
 
   /**
    * @brief Execute some quantity of computation
@@ -112,21 +128,6 @@ public:
    */
   virtual CpuAction* sleep(double duration) = 0;
 
-  Cpu* set_core_count(int core_count);
-  /** @brief Get the amount of cores */
-  virtual int get_core_count();
-
-  /** @brief Get a forecast of the speed (in flops/s) if the load were as provided.
-   *
-   * The provided load should encompasses both the application's activities and the external load that come from a trace.
-   *
-   * Use a load of 1.0 to compute the amount of flops that the Cpu would deliver with one CPU-bound task.
-   * If you use a load of 0, this function will return 0: when nobody is using the Cpu, it delivers nothing.
-   *
-   * If you want to know the amount of flops currently delivered, use  load = get_load()*get_speed_ratio()
-   */
-  virtual double get_speed(double load) const;
-
 protected:
   /** @brief Take speed changes (either load or max) into account */
   virtual void on_speed_change();
@@ -138,28 +139,6 @@ protected:
    **/
   virtual void reset_vcpu(Cpu* that);
 
-public:
-  /** @brief Get the available speed ratio, between 0 and 1.
-   *
-   * This accounts for external load (see @ref set_speed_trace()).
-   */
-  virtual double get_speed_ratio();
-
-  /** @brief Get the peak processor speed (in flops/s), at the specified pstate */
-  virtual double get_pstate_peak_speed(int pstate_index) const;
-
-  virtual int get_pstate_count() const;
-  virtual void set_pstate(int pstate_index);
-  virtual int get_pstate() const;
-
-  s4u::Host* get_host() { return host_; }
-
-  /*< @brief Setup the trace file with availability events (peak speed changes due to external load).
-   * Trace must contain relative values (ratio between 0 and 1)
-   */
-  virtual void set_speed_profile(profile::Profile* profile);
-
-protected:
   Metric speed_                  = {1.0, 0, nullptr};
 };
 

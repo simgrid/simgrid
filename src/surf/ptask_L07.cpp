@@ -239,9 +239,10 @@ kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name
  ************/
 
 CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
-    : Cpu(model, host, model->get_maxmin_system()->constraint_new(this, speed_per_pstate.front()), speed_per_pstate,
-          core)
+    : Cpu(host, speed_per_pstate)
 {
+  this->set_core_count(core)->set_model(model)->set_constraint(
+      model->get_maxmin_system()->constraint_new(this, speed_per_pstate.front()));
 }
 
 CpuL07::~CpuL07()=default;
@@ -257,7 +258,7 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
 
 kernel::resource::CpuAction* CpuL07::execution_start(double size)
 {
-  std::vector<s4u::Host*> host_list = {get_host()};
+  std::vector<s4u::Host*> host_list = {get_iface()};
 
   auto* flops_amount = new double[host_list.size()]();
   flops_amount[0] = size;
@@ -315,11 +316,11 @@ void CpuL07::apply_event(kernel::profile::Event* triggered, double value)
   } else if (triggered == state_event_) {
     if (value > 0) {
       if (not is_on()) {
-        XBT_VERB("Restart actors on host %s", get_host()->get_cname());
-        get_host()->turn_on();
+        XBT_VERB("Restart actors on host %s", get_iface()->get_cname());
+        get_iface()->turn_on();
       }
     } else
-      get_host()->turn_off();
+      get_iface()->turn_off();
     tmgr_trace_event_unref(&state_event_);
 
   } else {
