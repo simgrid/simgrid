@@ -70,8 +70,8 @@ public:
   /** @brief Public interface */
   const s4u::Disk* get_iface() const { return &piface_; }
   s4u::Disk* get_iface() { return &piface_; }
+  DiskImpl* set_host(s4u::Host* host);
   s4u::Host* get_host() const { return host_; }
-  void set_host(s4u::Host* host) { host_ = host; }
 
   DiskImpl* set_read_bandwidth(double read_bw);
   double get_read_bandwidth() const { return read_bw_; }

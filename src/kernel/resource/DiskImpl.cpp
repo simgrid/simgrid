@@ -34,6 +34,11 @@ DiskModel::~DiskModel()
 /************
  * Resource *
  ************/
+DiskImpl* DiskImpl::set_host(s4u::Host* host)
+{
+  host_ = host;
+  return this;
+}
 
 DiskImpl* DiskImpl::set_read_bandwidth(double read_bw)
 {

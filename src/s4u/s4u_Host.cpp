@@ -269,9 +269,7 @@ std::vector<Disk*> Host::get_disks() const
 
 Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  auto pimpl = surf_disk_model->create_disk(name, read_bandwidth, write_bandwidth);
-  pimpl->set_host(this);
-  return pimpl->get_iface();
+  return surf_disk_model->create_disk(name, read_bandwidth, write_bandwidth)->set_host(this)->get_iface();
 }
 
 void Host::add_disk(const Disk* disk)
