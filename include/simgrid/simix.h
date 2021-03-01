@@ -224,7 +224,7 @@ XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::test()") XBT_PUBLIC
 #endif
 /************************** MC simcalls   **********************************/
 SG_BEGIN_DECL
-XBT_PUBLIC int simcall_mc_random(int min, int max);
+XBT_ATTRIB_DEPRECATED_v331("Please use MC_random") XBT_PUBLIC int simcall_mc_random(int min, int max);
 SG_END_DECL
 
 #endif

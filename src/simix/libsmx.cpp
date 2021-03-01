@@ -363,13 +363,9 @@ void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::Simcal
   simcall_BODY_run_blocking(&code);
 }
 
-int simcall_mc_random(int min, int max) {
-  if (not MC_is_active() && not MC_record_replay_is_active()) { // no need to do a simcall in this case
-    static simgrid::xbt::random::XbtRandom prng;
-    return prng.uniform_int(min, max);
-  }
-  auto observer = new simgrid::mc::RandomSimcall(SIMIX_process_self(), min, max);
-  return simgrid::kernel::actor::simcall([observer] { return observer->get_value(); }, observer);
+int simcall_mc_random(int min, int max) // XBT_ATTRIB_DEPRECATD_v331
+{
+  return MC_random(min, max);
 }
 
 /* ************************************************************************** */

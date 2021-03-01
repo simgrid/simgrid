@@ -29,8 +29,12 @@ int MC_random(int min, int max)
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr);
 #endif
-  /* TODO, if the MC is disabled we do not really need to make a simcall for this :) */
-  return simcall_mc_random(min, max);
+  if (not MC_is_active() && not MC_record_replay_is_active()) { // no need to do a simcall in this case
+    static simgrid::xbt::random::XbtRandom prng;
+    return prng.uniform_int(min, max);
+  }
+  auto observer = new simgrid::mc::RandomSimcall(SIMIX_process_self(), min, max);
+  return simgrid::kernel::actor::simcall([observer] { return observer->get_value(); }, observer);
 }
 
 namespace simgrid {
