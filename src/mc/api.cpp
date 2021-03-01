@@ -999,11 +999,6 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
   return xbt::string_printf("label = \"%s\", color = %s, fontcolor = %s", label.c_str(), color, color);
 }
 
-const char* Api::simcall_get_name(simgrid::simix::Simcall kind) const
-{
-  return simcall_names[static_cast<int>(kind)];
-}
-
 #if HAVE_SMPI
 int Api::get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const
 {

@@ -217,14 +217,14 @@ void SafetyChecker::backtrack()
             XBT_DEBUG("Process %p is in done set", req->issuer_);
           break;
         } else if (req->issuer_ == prev_state->internal_req_.issuer_) {
-          XBT_DEBUG("Simcall %s and %s with same issuer", api::get().simcall_get_name(req->call_),
-                    api::get().simcall_get_name(prev_state->internal_req_.call_));
+          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(req->call_),
+                    SIMIX_simcall_name(prev_state->internal_req_.call_));
           break;
         } else {
           const kernel::actor::ActorImpl* previous_issuer = api::get().simcall_get_issuer(&prev_state->internal_req_);
           XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
-                    api::get().simcall_get_name(req->call_), issuer->get_pid(), state->num_,
-                    api::get().simcall_get_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
+                    SIMIX_simcall_name(req->call_), issuer->get_pid(), state->num_,
+                    SIMIX_simcall_name(prev_state->internal_req_.call_), previous_issuer->get_pid(), prev_state->num_);
         }
       }
     }
