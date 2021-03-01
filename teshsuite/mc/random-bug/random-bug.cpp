@@ -35,7 +35,7 @@ static void app()
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc == 3, "Usage: random-bug raise|assert <platformfile>");
+  xbt_assert(argc == 3, "Usage: random-bug abort|assert|printf <platformfile>");
   if (strcmp(argv[1], "abort") == 0) {
     XBT_INFO("Behavior: abort");
     behavior = Behavior::ABORT;
