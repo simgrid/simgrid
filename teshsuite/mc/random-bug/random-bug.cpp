@@ -19,7 +19,7 @@ static void app()
 {
   int x = MC_random(0, 5);
   int y = MC_random(0, 5);
-  // XBT_INFO("got %d %d",x,y);
+  XBT_DEBUG("got %d %d", x, y);
 
   if (behavior == Behavior::ASSERT) {
     MC_assert(x != 3 || y != 4);
