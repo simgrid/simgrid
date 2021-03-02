@@ -28,6 +28,9 @@ class ModelChecker {
   std::unique_ptr<RemoteSimulation> remote_simulation_;
   Checker* checker_ = nullptr;
 
+  // Expect MessageType::SIMCALL_TO_STRING or MessageType::SIMCALL_DOT_LABEL
+  std::string simcall_to_string(MessageType type, int aid, int times_considered);
+
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
