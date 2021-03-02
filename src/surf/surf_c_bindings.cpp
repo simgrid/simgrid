@@ -42,6 +42,12 @@ void surf_presolve()
     model->update_actions_state(NOW, 0.0);
 }
 
+/**
+ * @brief Auxiliary function to get next event from a list of models
+ *
+ * @param models list of models to explore (cpu, host, vm) (IN)
+ * @param time_delta delta for the next event (IN/OUT)
+ */
 static void surf_update_next_event(std::vector<simgrid::kernel::resource::Model*> const& models, double& time_delta)
 {
   for (auto* model : models) {
@@ -82,7 +88,11 @@ double surf_solve(double max_date)
     double next_event_date = simgrid::kernel::profile::future_evt_set.next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    if (not surf_network_model->next_occurring_event_is_idempotent()) { // NS3, I see you
+    for (auto* model : models_by_type[simgrid::kernel::resource::Model::Type::NETWORK]) {
+      if (model->next_occurring_event_is_idempotent())
+        continue;
+
+      // NS3, I see you
       if (next_event_date != -1.0) {
         time_delta = std::min(next_event_date - NOW, time_delta);
       } else {
@@ -91,7 +101,7 @@ double surf_solve(double max_date)
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
       // run until min or next flow
-      double model_next_action_end = surf_network_model->next_occurring_event(time_delta);
+      double model_next_action_end = model->next_occurring_event(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if (model_next_action_end >= 0.0)
