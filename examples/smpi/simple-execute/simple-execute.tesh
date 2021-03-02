@@ -1,0 +1,39 @@
+p Simple pingpong test with execute calls to demonstrate SMPI
+! output sort
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml -np 2 ${bindir:=.}/smpi_simple-execute -s --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=smpi_mpi.:verbose --log=smpi_bench.thresh:debug --log=no_loc
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [Tremblay:0:(1) 0.000000] [smpi_bench/DEBUG] Handle real computation time: 490475000.000000 flops
+> [Jupiter:1:(2) 0.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [Jupiter:1:(2) 0.002948] [smpi_bench/DEBUG] Handle real computation time: 762960000.000000 flops
+> [Tremblay:0:(1) 5.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [Jupiter:1:(2) 10.002948] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [Jupiter:1:(2) 10.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [Jupiter:1:(2) 10.002948] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [Jupiter:1:(2) 10.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+> [Tremblay:0:(1) 10.005896] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [Tremblay:0:(1) 10.005896] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [Tremblay:0:(1) 10.005896] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+> 
+>     *** Ping-pong test (MPI_Send/MPI_Recv) ***
+> 
+> [0] About to send 1st message '99' to process [1]
+> [1] Received 1st message '99' from process [0]
+> [1] After a nap, increment message's value to  '100'
+> [1] About to send back message '100' to process [0]
+> [0] Received reply message '100' from process [1]

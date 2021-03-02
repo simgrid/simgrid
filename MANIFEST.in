@@ -631,6 +631,8 @@ include examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive
 include examples/smpi/replay_multiple_manual_deploy/workload_compute_simple
 include examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time
 include examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources
+include examples/smpi/simple-execute/simple-execute.c
+include examples/smpi/simple-execute/simple-execute.tesh
 include examples/smpi/smpi_s4u_masterworker/deployment_masterworker_mailbox_smpi.xml
 include examples/smpi/smpi_s4u_masterworker/masterworker_mailbox_smpi.cpp
 include examples/smpi/smpi_s4u_masterworker/s4u_smpi.tesh
