@@ -45,11 +45,15 @@ void Errhandler::ref()
 }
 
 void Errhandler::unref(Errhandler* errhandler){
+  if(errhandler == MPI_ERRORS_ARE_FATAL || errhandler == MPI_ERRORS_RETURN)
+    return;
   errhandler->refcount_--;
   if(errhandler->refcount_==0){
+    F2C::free_f(errhandler->c2f());
     delete errhandler;
   }
 }
 
 }
+
 }

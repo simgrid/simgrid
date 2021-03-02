@@ -20,8 +20,8 @@ class Info : public F2C{
   int refcount_ = 1;
 
 public:
-  Info() = default;
-  explicit Info(const Info* orig) : map_(orig->map_) {}
+  explicit Info() {this->add_f();}
+  explicit Info(const Info* orig) : map_(orig->map_) {this->add_f();}
   ~Info() override = default;
   void ref();
   static void unref(MPI_Info info);

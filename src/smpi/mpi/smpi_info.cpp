@@ -17,6 +17,7 @@ void Info::ref()
 void Info::unref(Info* info){
   info->refcount_--;
   if(info->refcount_==0){
+    F2C::free_f(info->c2f());
     delete info;
   }
 }

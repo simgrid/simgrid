@@ -275,6 +275,7 @@ int PMPI_Errhandler_free(MPI_Errhandler* errhandler){
 int PMPI_Errhandler_create(MPI_Handler_function* function, MPI_Errhandler* errhandler){
   CHECK_NULL(2, MPI_ERR_ARG, errhandler)
   *errhandler=new simgrid::smpi::Errhandler(function);
+  (*errhandler)->add_f();
   return MPI_SUCCESS;
 }
 
