@@ -37,6 +37,7 @@ class Comm : public F2C, public Keyval{
   MPI_Info info_ = MPI_INFO_NULL;
   int id_;
   MPI_Errhandler errhandler_ = MPI_ERRORS_ARE_FATAL;
+  MPI_Errhandler* errhandlers_ = nullptr; //for MPI_COMM_WORLD only
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;

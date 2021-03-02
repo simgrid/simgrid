@@ -321,7 +321,6 @@ void Comm::unref(Comm* comm){
     return;
   }
   comm->refcount_--;
-  Group::unref(comm->group_);
 
   if(comm->refcount_==0){
     if(simgrid::smpi::F2C::lookup() != nullptr)
@@ -330,10 +329,17 @@ void Comm::unref(Comm* comm){
     comm->cleanup_attr<Comm>();
     if (comm->info_ != MPI_INFO_NULL)
       simgrid::smpi::Info::unref(comm->info_);
-    if (comm->errhandler_ != MPI_ERRHANDLER_NULL)
+    if(comm->errhandlers_!=nullptr){
+      for (int i=0; i<comm->size(); i++)
+	if (comm->errhandlers_[i]!=MPI_ERRHANDLER_NULL)
+          simgrid::smpi::Errhandler::unref(comm->errhandlers_[i]);
+      delete[] comm->errhandlers_;
+    } else if (comm->errhandler_ != MPI_ERRHANDLER_NULL)
       simgrid::smpi::Errhandler::unref(comm->errhandler_);
-    delete comm;
   }
+  Group::unref(comm->group_);
+  if(comm->refcount_==0)
+    delete comm;
 }
 
 MPI_Comm Comm::find_intra_comm(int * leader){
@@ -552,18 +558,36 @@ void Comm::set_info(MPI_Info info)
 
 MPI_Errhandler Comm::errhandler()
 {
-  if (errhandler_ != MPI_ERRHANDLER_NULL)
-    errhandler_->ref();
-  return errhandler_;
+  if (this != MPI_COMM_WORLD){
+    if (errhandler_ != MPI_ERRHANDLER_NULL)
+      errhandler_->ref();
+    return errhandler_;
+  } else {
+    if(errhandlers_==nullptr)
+      return MPI_ERRORS_ARE_FATAL;
+    else {
+      if(errhandlers_[this->rank()] != MPI_ERRHANDLER_NULL)
+        errhandlers_[this->rank()]->ref();
+      return errhandlers_[this->rank()];
+    }
+  }
 }
 
 void Comm::set_errhandler(MPI_Errhandler errhandler)
 {
-  if (errhandler_ != MPI_ERRHANDLER_NULL)
-    simgrid::smpi::Errhandler::unref(errhandler_);
-  errhandler_ = errhandler;
-  if (errhandler_ != MPI_ERRHANDLER_NULL)
-    errhandler_->ref();
+  if(this != MPI_COMM_WORLD){
+    if (errhandler_ != MPI_ERRHANDLER_NULL)
+      simgrid::smpi::Errhandler::unref(errhandler_);
+    errhandler_ = errhandler;
+  }else{
+    if(errhandlers_==nullptr)
+      errhandlers_= new MPI_Errhandler[this->size()]{MPI_ERRHANDLER_NULL};
+    if(errhandlers_[this->rank()] != MPI_ERRHANDLER_NULL)
+      simgrid::smpi::Errhandler::unref(errhandlers_[this->rank()]);
+    errhandlers_[this->rank()]=errhandler;
+  }
+  if (errhandler != MPI_ERRHANDLER_NULL && this != MPI_COMM_SELF)
+    errhandler->ref();
 }
 
 MPI_Comm Comm::split_type(int type, int /*key*/, const Info*)
