@@ -42,6 +42,12 @@ public:
  * @details A host represents a machine with an aggregation of a Cpu, a RoutingEdge and Disk(s)
  */
 class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
+  using ActorList = boost::intrusive::list<
+      kernel::actor::ActorImpl,
+      boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
+                                    &kernel::actor::ActorImpl::host_actor_list_hook>>;
+
+  ActorList actor_list_;
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
   s4u::Host* piface_ = nullptr; // we must have a pointer there because the VM wants to change the piface in its ctor
   std::vector<kernel::resource::DiskImpl*> disks_;
@@ -66,13 +72,11 @@ public:
   void remove_actor(kernel::actor::ActorImpl* actor) { xbt::intrusive_erase(actor_list_, *actor); }
   void add_actor_at_boot(kernel::actor::ProcessArg* arg) { actors_at_boot_.emplace_back(arg); }
 
-  using ActorList = boost::intrusive::list<
-      kernel::actor::ActorImpl,
-      boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
-                                    &kernel::actor::ActorImpl::host_actor_list_hook>>;
-
-  // FIXME: make these private
-  ActorList actor_list_;
+  template <class F> void foreach_actor(F function)
+  {
+    for (auto& actor : actor_list_)
+      function(actor);
+  }
 };
 }
 }

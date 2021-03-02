@@ -209,10 +209,10 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 
   action_->suspend();
 
-  for (auto& actor : actor_list_) {
+  foreach_actor([](auto& actor) {
     XBT_DEBUG("suspend %s", actor.get_cname());
     actor.suspend();
-  }
+  });
 
   XBT_DEBUG("suspend all actors on the VM done done");
 
@@ -229,10 +229,10 @@ void VirtualMachineImpl::resume()
 
   action_->resume();
 
-  for (auto& actor : actor_list_) {
+  foreach_actor([](auto& actor) {
     XBT_DEBUG("resume %s", actor.get_cname());
     actor.resume();
-  }
+  });
 
   vm_state_ = s4u::VirtualMachine::state::RUNNING;
 }
@@ -266,11 +266,11 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 
   XBT_DEBUG("shutdown VM %s, that contains %zu actors", piface_->get_cname(), get_actor_count());
 
-  for (auto& actor : actor_list_) {
+  foreach_actor([issuer](auto& actor) {
     XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", actor.get_cname(), actor.get_host()->get_cname(),
               issuer->get_cname());
     issuer->kill(&actor);
-  }
+  });
 
   set_state(s4u::VirtualMachine::state::DESTROYED);
 
