@@ -573,7 +573,7 @@ set(JEDULE_SRC
 
 set(MC_SRC_BASE
   src/mc/mc_base.cpp
-  src/mc/mc_base.h
+  src/mc/mc_base.hpp
   src/mc/mc_record.hpp
   src/mc/mc_replay.hpp
   src/mc/mc_record.cpp

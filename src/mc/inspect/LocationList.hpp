@@ -10,7 +10,7 @@
 #include "xbt/range.hpp"
 
 #include "src/mc/inspect/DwarfExpression.hpp"
-#include "src/mc/mc_base.h"
+#include "src/mc/mc_base.hpp"
 #include "src/mc/mc_forward.hpp"
 
 #include <cstdint>

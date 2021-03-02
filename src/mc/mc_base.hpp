@@ -3,13 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_BASE_H
-#define SIMGRID_MC_BASE_H
+#ifndef SIMGRID_MC_BASE_HPP
+#define SIMGRID_MC_BASE_HPP
 
 #include "simgrid/forward.h"
-
-#ifdef __cplusplus
-
 #include <vector>
 
 namespace simgrid {
@@ -41,9 +38,7 @@ XBT_PRIVATE bool actor_is_enabled(smx_actor_t process);
 
 /** Check if the given simcall is visible */
 XBT_PRIVATE bool request_is_visible(const s_smx_simcall* req);
-}
-}
-
-#endif
+} // namespace mc
+} // namespace simgrid
 
 #endif

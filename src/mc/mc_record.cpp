@@ -7,7 +7,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/mc/Transition.hpp"
-#include "src/mc/mc_base.h"
+#include "src/mc/mc_base.hpp"
 #include "src/mc/mc_replay.hpp"
 
 #if SIMGRID_HAVE_MC
