@@ -51,7 +51,7 @@ private:
   simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor) const;
   std::string get_actor_name(smx_actor_t actor) const;
   std::string get_actor_string(smx_actor_t actor) const;
-  std::string get_actor_string2(smx_actor_t actor) const;
+  std::string get_actor_dot_label(smx_actor_t actor) const;
 
 public:
   // No copy:

@@ -320,14 +320,6 @@ std::string Api::get_actor_name(smx_actor_t actor) const
 
 std::string Api::get_actor_string(smx_actor_t actor) const
 {
-  std::string res = "(" + std::to_string(actor->get_pid()) + ")";
-  if (actor->get_host())
-    res += get_actor_host_name(actor);
-  return res;
-}
-
-std::string Api::get_actor_string2(smx_actor_t actor) const
-{
   std::string res;
   if (actor) {
     res = "(" + std::to_string(actor->get_pid()) + ")";
@@ -337,6 +329,14 @@ std::string Api::get_actor_string2(smx_actor_t actor) const
       res += get_actor_name(actor);
   } else
     res = "(0) ()";
+  return res;
+}
+
+std::string Api::get_actor_dot_label(smx_actor_t actor) const
+{
+  std::string res = "(" + std::to_string(actor->get_pid()) + ")";
+  if (actor->get_host())
+    res += get_actor_host_name(actor);
   return res;
 }
 
@@ -729,7 +729,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
   switch (req->call_) {
     case Simcall::COMM_ISEND:
       type = "iSend";
-      args = "src=" + get_actor_string2(issuer);
+      args = "src=" + get_actor_string(issuer);
       args += ", buff=" + pointer_to_string(simcall_comm_isend__get__src_buff(req));
       args += ", size=" + buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
       break;
@@ -741,7 +741,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
         mc_model_checker->get_remote_simulation().read_bytes(&size, sizeof(size), remote(remote_size));
 
       type = "iRecv";
-      args = "dst=" + get_actor_string2(issuer);
+      args = "dst=" + get_actor_string(issuer);
       args += ", buff=" + pointer_to_string(simcall_comm_irecv__get__dst_buff(req));
       args += ", size=" + buff_size_to_string(size);
       break;
@@ -768,7 +768,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
         smx_actor_t dst_proc =
             mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->dst_actor_.get()));
         args = "comm=" + pointer_to_string(remote_act);
-        args += " [" + get_actor_string2(src_proc) + "-> " + get_actor_string2(dst_proc) + "]";
+        args += " [" + get_actor_string(src_proc) + "-> " + get_actor_string(dst_proc) + "]";
       }
       break;
     }
@@ -794,7 +794,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
         smx_actor_t dst_proc =
             mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->dst_actor_.get()));
         args = "comm=" + pointer_to_string(remote_act);
-        args += " [" + get_actor_string2(src_proc) + " -> " + get_actor_string2(dst_proc) + "]";
+        args += " [" + get_actor_string(src_proc) + " -> " + get_actor_string(dst_proc) + "]";
       }
       break;
     }
@@ -851,7 +851,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
       break;
   }
 
-  return "[" + get_actor_string2(issuer) + "] " + type + "(" + args + ")";
+  return "[" + get_actor_string(issuer) + "] " + type + "(" + args + ")";
 }
 
 std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
@@ -866,16 +866,16 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
   } else
     switch (req->call_) {
       case Simcall::COMM_ISEND:
-        label = "[" + get_actor_string(issuer) + "] iSend";
+        label = "[" + get_actor_dot_label(issuer) + "] iSend";
         break;
 
       case Simcall::COMM_IRECV:
-        label = "[" + get_actor_string(issuer) + "] iRecv";
+        label = "[" + get_actor_dot_label(issuer) + "] iRecv";
         break;
 
       case Simcall::COMM_WAIT:
         if (value == -1) {
-          label = "[" + get_actor_string(issuer) + "] WaitTimeout";
+          label = "[" + get_actor_dot_label(issuer) + "] WaitTimeout";
         } else {
           kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__getraw__comm(req);
           Remote<kernel::activity::CommImpl> temp_comm;
@@ -887,7 +887,7 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
               mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->src_actor_.get()));
           const kernel::actor::ActorImpl* dst_proc =
               mc_model_checker->get_remote_simulation().resolve_actor(mc::remote(comm->dst_actor_.get()));
-          label = "[" + get_actor_string(issuer) + "] Wait";
+          label = "[" + get_actor_dot_label(issuer) + "] Wait";
           label += " [(" + std::to_string(src_proc ? src_proc->get_pid() : 0) + ")";
           label += "->(" + std::to_string(dst_proc ? dst_proc->get_pid() : 0) + ")]";
         }
@@ -900,33 +900,33 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
                                                        remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
         const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
         if (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr) {
-          label = "[" + get_actor_string(issuer) + "] Test FALSE";
+          label = "[" + get_actor_dot_label(issuer) + "] Test FALSE";
         } else {
-          label = "[" + get_actor_string(issuer) + "] Test TRUE";
+          label = "[" + get_actor_dot_label(issuer) + "] Test TRUE";
         }
         break;
       }
 
       case Simcall::COMM_WAITANY:
-        label = "[" + get_actor_string(issuer) + "] WaitAny";
+        label = "[" + get_actor_dot_label(issuer) + "] WaitAny";
         label += xbt::string_printf(" [%d of %zu]", value + 1, simcall_comm_waitany__get__count(req));
         break;
 
       case Simcall::COMM_TESTANY:
         if (value == -1) {
-          label = "[" + get_actor_string(issuer) + "] TestAny FALSE";
+          label = "[" + get_actor_dot_label(issuer) + "] TestAny FALSE";
         } else {
-          label = "[" + get_actor_string(issuer) + "] TestAny TRUE";
+          label = "[" + get_actor_dot_label(issuer) + "] TestAny TRUE";
           label += xbt::string_printf(" [%d of %zu]", value + 1, simcall_comm_testany__get__count(req));
         }
         break;
 
       case Simcall::MUTEX_TRYLOCK:
-        label = "[" + get_actor_string(issuer) + "] Mutex TRYLOCK";
+        label = "[" + get_actor_dot_label(issuer) + "] Mutex TRYLOCK";
         break;
 
       case Simcall::MUTEX_LOCK:
-        label = "[" + get_actor_string(issuer) + "] Mutex LOCK";
+        label = "[" + get_actor_dot_label(issuer) + "] Mutex LOCK";
         break;
 
       default:
