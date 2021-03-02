@@ -51,6 +51,9 @@ void surf_presolve()
 static void surf_update_next_event(std::vector<simgrid::kernel::resource::Model*> const& models, double& time_delta)
 {
   for (auto* model : models) {
+    if (not model->next_occurring_event_is_idempotent()) {
+      continue;
+    }
     double next_event = model->next_occurring_event(NOW);
     if ((time_delta < 0.0 || next_event < time_delta) && next_event >= 0.0) {
       time_delta = next_event;
@@ -74,11 +77,17 @@ double surf_solve(double max_date)
   /* Physical models MUST be resolved first */
   XBT_DEBUG("Looking for next event in physical models");
   surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::HOST], time_delta);
-  XBT_DEBUG("Looking for next event in virtual models");
-  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::VM], time_delta);
 
+  // following the order it was done in HostCLM03Model->next_occurring_event
   XBT_DEBUG("Looking for next event in CPU models");
   surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::CPU], time_delta);
+  XBT_DEBUG("Looking for next event in network models");
+  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::NETWORK], time_delta);
+  XBT_DEBUG("Looking for next event in disk models");
+  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::DISK], time_delta);
+
+  XBT_DEBUG("Looking for next event in virtual models");
+  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::VM], time_delta);
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
 
