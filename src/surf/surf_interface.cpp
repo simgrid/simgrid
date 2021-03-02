@@ -73,16 +73,19 @@ const std::vector<surf_model_description_t> surf_network_model_description = {
      &surf_network_model_init_NS3},
 };
 
-#if ! HAVE_SMPI
-void surf_network_model_init_SMPI() {
+#if !HAVE_SMPI
+void surf_network_model_init_SMPI()
+{
   xbt_die("Please activate SMPI support in cmake to use the SMPI network model.");
 }
-void surf_network_model_init_IB() {
+void surf_network_model_init_IB()
+{
   xbt_die("Please activate SMPI support in cmake to use the IB network model.");
 }
 #endif
 #if !SIMGRID_HAVE_NS3
-void surf_network_model_init_NS3() {
+void surf_network_model_init_NS3()
+{
   xbt_die("Please activate ns-3 support in cmake and install the dependencies to use the NS3 network model.");
 }
 #endif
@@ -102,8 +105,9 @@ const std::vector<surf_model_description_t> surf_host_model_description = {
 
 const std::vector<surf_model_description_t> surf_optimization_mode_description = {
     {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", nullptr},
-    {"TI", "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU "
-           "model for now).",
+    {"TI",
+     "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU "
+     "model for now).",
      nullptr},
     {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr},
 };
@@ -161,7 +165,7 @@ std::ifstream* surf_ifsopen(const std::string& name)
 
 FILE* surf_fopen(const std::string& name, const char* mode)
 {
-  FILE *file = nullptr;
+  FILE* file = nullptr;
 
   if (is_absolute_file_path(name)) /* don't mess with absolute file names */
     return fopen(name.c_str(), mode);
@@ -206,8 +210,7 @@ int find_model_description(const std::vector<surf_model_description_t>& table, c
   return -1;
 }
 
-
-void surf_init(int *argc, char **argv)
+void surf_init(int* argc, char** argv)
 {
   if (xbt_initialized > 0)
     return;
@@ -227,5 +230,5 @@ void surf_exit()
   tmgr_finalize();
   sg_platf_exit();
 
-  NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
+  NOW = 0; /* Just in case the user plans to restart the simulation afterward */
 }

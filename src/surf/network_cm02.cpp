@@ -16,9 +16,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
-double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
-double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or from command line */
-double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or from command line */
+double sg_latency_factor     = 1.0; /* default value; can be set by model or from command line */
+double sg_bandwidth_factor   = 1.0; /* default value; can be set by model or from command line */
+double sg_weight_S_parameter = 0.0; /* default value; can be set by model or from command line */
 
 /************************************************************************/
 /* New model based on optimizations discussed during Pedro Velho's thesis*/
@@ -216,8 +216,8 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     action = new NetworkCm02Action(this, *src, *dst, size, failed);
   else
     action = new NetworkWifiAction(this, *src, *dst, size, failed, src_wifi_link, dst_wifi_link);
-  action->sharing_penalty_  = latency;
-  action->latency_ = latency;
+  action->sharing_penalty_ = latency;
+  action->latency_         = latency;
   action->set_user_bound(rate);
 
   if (is_update_lazy()) {
@@ -361,7 +361,7 @@ void NetworkCm02Link::set_bandwidth(double value)
     const kernel::lmm::Variable* var;
     const kernel::lmm::Element* elem     = nullptr;
     const kernel::lmm::Element* nextelem = nullptr;
-    int numelem                  = 0;
+    int numelem                          = 0;
     while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
       auto* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->sharing_penalty_ += delta;
@@ -375,14 +375,14 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
 {
   latency_check(value);
 
-  double delta                 = value - latency_.peak;
+  double delta = value - latency_.peak;
   const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
-  int numelem                  = 0;
+  int numelem                          = 0;
 
   latency_.scale = 1.0;
-  latency_.peak = value;
+  latency_.peak  = value;
 
   while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
     auto* action = static_cast<NetworkCm02Action*>(var->get_id());

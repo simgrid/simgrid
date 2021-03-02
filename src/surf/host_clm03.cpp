@@ -38,9 +38,8 @@ double HostCLM03Model::next_occurring_event(double now)
       surf_network_model->next_occurring_event_is_idempotent() ? surf_network_model->next_occurring_event(now) : -1;
   double min_by_dsk = surf_disk_model->next_occurring_event(now);
 
-  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_dsk %f", this,
-            typeid(surf_cpu_model_pm).name(), min_by_cpu, typeid(surf_network_model).name(), min_by_net,
-            typeid(surf_disk_model).name(), min_by_dsk);
+  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_dsk %f", this, typeid(surf_cpu_model_pm).name(),
+            min_by_cpu, typeid(surf_network_model).name(), min_by_net, typeid(surf_disk_model).name(), min_by_dsk);
 
   double res = min_by_cpu;
   if (res < 0 || (min_by_net >= 0.0 && min_by_net < res))

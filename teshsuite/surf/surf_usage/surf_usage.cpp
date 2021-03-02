@@ -31,9 +31,9 @@ static const char* string_action(simgrid::kernel::resource::Action::State state)
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-  surf_init(&argc, argv);       /* Initialize some common structures */
+  surf_init(&argc, argv); /* Initialize some common structures */
   simgrid::config::set_parse("cpu/model:Cas01");
   simgrid::config::set_parse("network/model:CM02");
 
@@ -58,7 +58,6 @@ int main(int argc, char **argv)
   XBT_INFO("actionA state: %s", string_action(stateActionA));
   XBT_INFO("actionB state: %s", string_action(stateActionB));
   XBT_INFO("actionC state: %s", string_action(stateActionC));
-
 
   /* Let's do something on it */
   surf_network_model->communicate(hostA, hostB, 150.0, -1.0);

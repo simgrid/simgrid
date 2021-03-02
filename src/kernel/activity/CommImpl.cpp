@@ -80,8 +80,8 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
   }
 
   /* Setup the communication synchro */
-  other_comm->src_actor_     = src_proc;
-  other_comm->src_data_      = data;
+  other_comm->src_actor_ = src_proc;
+  other_comm->src_data_  = data;
   (*other_comm).set_src_buff(src_buff, src_buff_size).set_size(task_size).set_rate(rate);
 
   other_comm->match_fun     = match_fun;
@@ -162,8 +162,8 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
   }
 
   /* Setup communication synchro */
-  other_comm->dst_actor_     = receiver;
-  other_comm->dst_data_      = data;
+  other_comm->dst_actor_ = receiver;
+  other_comm->dst_data_  = data;
   other_comm->set_dst_buff(dst_buff, dst_buff_size);
 
   if (rate > -1.0 && (other_comm->get_rate() < 0.0 || rate < other_comm->get_rate()))

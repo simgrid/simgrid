@@ -85,7 +85,7 @@ static void add_active_activity(kernel::activity::ActivityImpl const& act)
 {
   const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
-    VirtualMachineImpl *vm_impl = vm->get_impl();
+    VirtualMachineImpl* vm_impl = vm->get_impl();
     vm_impl->add_active_exec();
     vm_impl->update_action_weight();
   }
@@ -95,7 +95,7 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
 {
   const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
-    VirtualMachineImpl *vm_impl = vm->get_impl();
+    VirtualMachineImpl* vm_impl = vm->get_impl();
     vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
@@ -324,7 +324,8 @@ void VirtualMachineImpl::set_bound(double bound)
   update_action_weight();
 }
 
-void VirtualMachineImpl::update_action_weight(){
+void VirtualMachineImpl::update_action_weight()
+{
   /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
   int impact = std::min(active_execs_, get_core_amount());
 
@@ -338,5 +339,5 @@ void VirtualMachineImpl::update_action_weight(){
   action_->set_bound(std::min(impact * physical_host_->get_speed(), user_bound_));
 }
 
-}
-}
+} // namespace vm
+} // namespace simgrid

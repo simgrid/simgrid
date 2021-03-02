@@ -54,13 +54,13 @@ DiskImpl* DiskImpl::set_write_bandwidth(double write_bw)
 
 DiskImpl* DiskImpl::set_read_constraint(lmm::Constraint* constraint_read)
 {
-  constraint_read_  = constraint_read;
+  constraint_read_ = constraint_read;
   return this;
 }
 
 DiskImpl* DiskImpl::set_write_constraint(lmm::Constraint* constraint_write)
 {
-  constraint_write_  = constraint_write;
+  constraint_write_ = constraint_write;
   return this;
 }
 

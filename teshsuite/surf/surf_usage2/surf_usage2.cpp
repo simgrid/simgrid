@@ -14,11 +14,11 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   int running;
 
-  surf_init(&argc, argv);       /* Initialize some common structures */
+  surf_init(&argc, argv); /* Initialize some common structures */
 
   simgrid::config::set_parse("network/model:CM02");
   simgrid::config::set_parse("cpu/model:Cas01");
@@ -37,10 +37,10 @@ int main(int argc, char **argv)
 
   surf_network_model->communicate(hostA, hostB, 150.0, -1.0);
 
-  surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
+  surf_solve(-1.0); /* Takes traces into account. Returns 0.0 */
   do {
     simgrid::kernel::resource::Action* action = nullptr;
-    running = 0;
+    running                                   = 0;
 
     double now = surf_get_clock();
     XBT_INFO("Next Event : %g", now);
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
       }
 
       action = model->extract_done_action();
-      while (action != nullptr){
+      while (action != nullptr) {
         XBT_INFO("   * Done Action");
         XBT_DEBUG("\t * Done Action: %p", action);
         action->unref();

@@ -296,14 +296,14 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
   for (int max = 0; max <= max_index && not bypassedRoute; max++) {
     for (int i = 0; i < max && not bypassedRoute; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
-        key = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
+        key      = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
         auto bpr = bypass_routes_.find(key);
         if (bpr != bypass_routes_.end()) {
           bypassedRoute = bpr->second;
         }
       }
       if (not bypassedRoute && max <= max_index_src && i <= max_index_dst) {
-        key = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
+        key      = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
         auto bpr = bypass_routes_.find(key);
         if (bpr != bypass_routes_.end()) {
           bypassedRoute = bpr->second;
@@ -312,7 +312,7 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
     }
 
     if (not bypassedRoute && max <= max_index_src && max <= max_index_dst) {
-      key = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
+      key      = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
       auto bpr = bypass_routes_.find(key);
       if (bpr != bypass_routes_.end()) {
         bypassedRoute = bpr->second;
@@ -348,9 +348,9 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
   XBT_DEBUG("Resolve route from '%s' to '%s'", src->get_cname(), dst->get_cname());
 
   /* Find how src and dst are interconnected */
-  NetZoneImpl *common_ancestor;
-  NetZoneImpl *src_ancestor;
-  NetZoneImpl *dst_ancestor;
+  NetZoneImpl* common_ancestor;
+  NetZoneImpl* src_ancestor;
+  NetZoneImpl* dst_ancestor;
   find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor);
   XBT_DEBUG("elements_father: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", common_ancestor->get_cname(),
             src_ancestor->get_cname(), dst_ancestor->get_cname());

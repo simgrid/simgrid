@@ -210,7 +210,7 @@ int CpuCas01Action::requested_core() const
   return requested_core_;
 }
 
-CpuCas01Action::~CpuCas01Action()=default;
+CpuCas01Action::~CpuCas01Action() = default;
 
 } // namespace resource
 } // namespace kernel

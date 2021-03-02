@@ -19,7 +19,7 @@ static void IB_create_host_callback(simgrid::s4u::Host const& host)
   using simgrid::kernel::resource::IBNode;
   using simgrid::kernel::resource::NetworkIBModel;
 
-  static int id=0;
+  static int id = 0;
 
   ((NetworkIBModel*)surf_network_model)->active_nodes.emplace(host.get_name(), IBNode(id));
   id++;

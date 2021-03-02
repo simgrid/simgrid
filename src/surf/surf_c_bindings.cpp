@@ -22,7 +22,7 @@ extern double NOW;
 
 void surf_presolve()
 {
-  XBT_DEBUG ("Consume all trace events occurring before the starting time.");
+  XBT_DEBUG("Consume all trace events occurring before the starting time.");
   double next_event_date;
   while ((next_event_date = simgrid::kernel::profile::future_evt_set.next_date()) != -1.0) {
     if (next_event_date > NOW)
@@ -37,15 +37,15 @@ void surf_presolve()
     }
   }
 
-  XBT_DEBUG ("Set every models in the right state by updating them to 0.");
+  XBT_DEBUG("Set every models in the right state by updating them to 0.");
   for (auto const& model : all_existing_models)
     model->update_actions_state(NOW, 0.0);
 }
 
 double surf_solve(double max_date)
 {
-  double time_delta = -1.0; /* duration */
-  double value = -1.0;
+  double time_delta                             = -1.0; /* duration */
+  double value                                  = -1.0;
   simgrid::kernel::resource::Resource* resource = nullptr;
   simgrid::kernel::profile::Event* event        = nullptr;
 
@@ -69,8 +69,7 @@ double surf_solve(double max_date)
   }
 
   for (auto const& model : all_existing_models) {
-    if (model != surf_host_model && model != surf_vm_model && model != surf_network_model &&
-        model != surf_disk_model) {
+    if (model != surf_host_model && model != surf_vm_model && model != surf_network_model && model != surf_disk_model) {
       double next_event_model = model->next_occurring_event(NOW);
       if ((time_delta < 0.0 || next_event_model < time_delta) && next_event_model >= 0.0)
         time_delta = next_event_model;
@@ -115,9 +114,10 @@ double surf_solve(double max_date)
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
                   time_delta);
       }
-      // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min will work
+      // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min
+      // will work
       double round_start = NOW;
-      NOW = next_event_date;
+      NOW                = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       XBT_DEBUG("Calling update_resource_state for resource %s", resource->get_cname());
@@ -126,9 +126,11 @@ double surf_solve(double max_date)
     }
   }
 
-  /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are with availability = 0.
-   * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
-   * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
+  /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are
+   * with availability = 0. This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a
+   * trace with periodicity > 0.
+   * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed
+   */
   if (time_delta < 0) {
     XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
