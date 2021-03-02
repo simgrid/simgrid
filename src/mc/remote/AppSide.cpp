@@ -160,7 +160,7 @@ void AppSide::handle_messages() const
 
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
-        strcat(answer.value, value.c_str());
+        value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }
@@ -175,7 +175,7 @@ void AppSide::handle_messages() const
 
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
-        strcat(answer.value, value.c_str());
+        value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }
