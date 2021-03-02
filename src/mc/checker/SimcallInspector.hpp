@@ -17,14 +17,14 @@ class SimcallInspector {
   kernel::actor::ActorImpl* issuer_;
 
 public:
-  SimcallInspector(kernel::actor::ActorImpl* issuer) : issuer_(issuer) {}
-  kernel::actor::ActorImpl* get_issuer() { return issuer_; }
+  explicit SimcallInspector(kernel::actor::ActorImpl* issuer) : issuer_(issuer) {}
+  kernel::actor::ActorImpl* get_issuer() const { return issuer_; }
   /** Whether this transition can currently be taken without blocking.
    *
    * For example, a mutex_lock is not enabled when the mutex is not free.
    * A comm_receive is not enabled before the corresponding send has been issued.
    */
-  virtual bool is_enabled() { return true; }
+  virtual bool is_enabled() const { return true; }
 
   /** Returns the amount of time that this transition can be used.
    *
@@ -32,7 +32,7 @@ public:
    * If it's more than one (as with mc_random or waitany), we need to consider this transition several times to start
    * differing branches
    */
-  virtual int get_max_consider() { return 1; }
+  virtual int get_max_consider() const { return 1; }
 
   /** Prepares the simcall to be used.
    *
@@ -43,13 +43,13 @@ public:
    *
    * The first time a simcall is considered, times_considered is 0, not 1.
    */
-  virtual void prepare(int times_considered) {}
+  virtual void prepare(int times_considered) { /* Nothing to do by default */}
 
   /** Some simcalls may only be observable under some circumstances.
    * Most simcalls are not visible from the MC because they don't have an inspector at all. */
-  virtual bool is_visible() { return true; }
-  virtual std::string to_string(int times_considered);
-  virtual std::string dot_label() = 0;
+  virtual bool is_visible() const { return true; }
+  virtual std::string to_string(int times_considered) const;
+  virtual std::string dot_label() const;
 };
 
 class RandomSimcall : public SimcallInspector {
@@ -59,11 +59,11 @@ class RandomSimcall : public SimcallInspector {
 
 public:
   RandomSimcall(smx_actor_t actor, int min, int max) : SimcallInspector(actor), min_(min), max_(max) {}
-  int get_max_consider() override;
+  int get_max_consider() const override;
   void prepare(int times_considered) override;
-  std::string to_string(int times_considered) override;
-  std::string dot_label() override;
-  int get_value();
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+  int get_value() const;
 };
 } // namespace mc
 } // namespace simgrid

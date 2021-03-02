@@ -630,7 +630,7 @@ smx_simcall_t Api::mc_state_choose_request(simgrid::mc::State* state) const
   return nullptr;
 }
 
-std::list<transition_detail_t> Api::get_enabled_transitions(simgrid::mc::State* state)
+std::list<transition_detail_t> Api::get_enabled_transitions(simgrid::mc::State* state) const
 {
   std::list<transition_detail_t> tr_list{};
 

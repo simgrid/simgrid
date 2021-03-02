@@ -108,7 +108,7 @@ public:
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 
   // UDPOR APIs
-  std::list<transition_detail_t> get_enabled_transitions(simgrid::mc::State* state);
+  std::list<transition_detail_t> get_enabled_transitions(simgrid::mc::State* state) const;
 
   // SIMCALL APIs
   std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
