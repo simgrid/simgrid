@@ -984,10 +984,7 @@ void Api::restore_initial_state() const
 void Api::execute(Transition& transition, smx_simcall_t simcall) const
 {
   /* FIXME: once all simcalls have observers, kill the simcall parameter and use mc_model_checker->simcall_to_string() */
-  auto textual =
-      simgrid::mc::Api::get().request_to_string(simcall, transition.times_considered_, RequestType::executed);
-  strcpy((char*)transition.textual, textual.c_str());
-
+  transition.textual = request_to_string(simcall, transition.times_considered_, RequestType::executed);
   session->execute(transition);
 }
 

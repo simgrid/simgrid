@@ -7,6 +7,8 @@
 #ifndef SIMGRID_MC_TRANSITION_HPP
 #define SIMGRID_MC_TRANSITION_HPP
 
+#include <string>
+
 namespace simgrid {
 namespace mc {
 
@@ -33,7 +35,7 @@ public:
   int times_considered_ = 0;
 
   /* Textual representation of the transition, to display backtraces */
-  char textual[200];
+  std::string textual;
 };
 
 } // namespace mc
