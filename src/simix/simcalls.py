@@ -68,7 +68,7 @@ class Simcall(object):
                 print ('{')
                 print ('  // Your code handling the simcall')
                 print ('}')
-#                return False
+                return False
         else:
             if self.name in self.simcalls_pre:
                 print (
