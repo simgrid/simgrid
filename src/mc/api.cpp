@@ -645,10 +645,10 @@ std::list<transition_detail_t> Api::get_enabled_transitions(simgrid::mc::State* 
     if (not simgrid::mc::actor_is_enabled(actor_impl))
       continue;
 
-    transition_detail_t transition = std::unique_ptr<s_transition_detail>(new s_transition_detail());
-    Simcall simcall_call                = actor_impl->simcall_.call_;
-    smx_simcall_t simcall               = &actor_impl->simcall_;
-    transition->call_             = simcall_call;
+    auto transition       = std::make_unique<s_transition_detail>();
+    Simcall simcall_call  = actor_impl->simcall_.call_;
+    smx_simcall_t simcall = &actor_impl->simcall_;
+    transition->call_     = simcall_call;
     switch (simcall_call) {
       case Simcall::COMM_ISEND:
       case Simcall::COMM_IRECV:
