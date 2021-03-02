@@ -16,11 +16,9 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed) : Action(model, cost, failed, nullptr)
-{
-}
+Action::Action(Model* model, double cost, bool failed) : Action(model, cost, failed, nullptr) {}
 
-Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
+Action::Action(Model* model, double cost, bool failed, lmm::Variable* var)
     : remains_(cost), start_time_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
 {
   if (failed)
@@ -34,14 +32,14 @@ Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed
 Action::~Action()
 {
   if (state_set_hook_.is_linked())
-    simgrid::xbt::intrusive_erase(*state_set_, *this);
+    xbt::intrusive_erase(*state_set_, *this);
   if (get_variable())
     model_->get_maxmin_system()->variable_free(get_variable());
 
   /* remove from heap on need (ie, if selective update) */
   model_->get_action_heap().remove(this);
   if (modified_set_hook_.is_linked())
-    simgrid::xbt::intrusive_erase(*model_->get_modified_set(), *this);
+    xbt::intrusive_erase(*model_->get_modified_set(), *this);
 }
 
 void Action::finish(Action::State state)
@@ -68,7 +66,7 @@ Action::State Action::get_state() const
 
 void Action::set_state(Action::State state)
 {
-  simgrid::xbt::intrusive_erase(*state_set_, *this);
+  xbt::intrusive_erase(*state_set_, *this);
   switch (state) {
     case Action::State::INITED:
       state_set_ = model_->get_inited_action_set();
