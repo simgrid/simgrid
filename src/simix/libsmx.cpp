@@ -355,12 +355,14 @@ void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallI
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = t;
   simcall_BODY_run_kernel(&code);
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = nullptr;
 }
 
 void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallInspector* t = nullptr)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = t;
   simcall_BODY_run_blocking(&code);
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = nullptr;
 }
 
 int simcall_mc_random(int min, int max) // XBT_ATTRIB_DEPRECATD_v331
