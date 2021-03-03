@@ -14,8 +14,15 @@ namespace mc {
 
 std::string SimcallInspector::to_string(int /*time_considered*/) const
 {
-  return simgrid::xbt::string_printf("[(%ld)%s (%s)] ", get_issuer()->get_pid(), issuer_->get_host()->get_cname(),
+  return simgrid::xbt::string_printf("[(%ld)%s (%s)] ", issuer_->get_pid(), issuer_->get_host()->get_cname(),
                                      issuer_->get_cname());
+}
+
+std::string SimcallInspector::dot_label() const
+{
+  if (issuer_->get_host())
+    return xbt::string_printf("[(%ld)%s] ", issuer_->get_pid(), issuer_->get_cname());
+  return xbt::string_printf("[(%ld)] ", issuer_->get_pid());
 }
 
 std::string RandomSimcall::to_string(int time_considered) const
@@ -23,16 +30,9 @@ std::string RandomSimcall::to_string(int time_considered) const
   return SimcallInspector::to_string(time_considered) + "MC_RANDOM(" + std::to_string(time_considered) + ")";
 }
 
-std::string SimcallInspector::dot_label() const
-{
-  if (issuer_->get_host())
-    return xbt::string_printf("[(%ld)%s]", issuer_->get_pid(), issuer_->get_cname());
-  return xbt::string_printf("[(%ld)]", issuer_->get_pid());
-}
-
 std::string RandomSimcall::dot_label() const
 {
-  return SimcallInspector::dot_label() + " MC_RANDOM (" + std::to_string(next_value_) + ")";
+  return SimcallInspector::dot_label() + "MC_RANDOM(" + std::to_string(next_value_) + ")";
 }
 
 void RandomSimcall::prepare(int times_considered)

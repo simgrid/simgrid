@@ -48,8 +48,8 @@ public:
   /** Some simcalls may only be observable under some circumstances.
    * Most simcalls are not visible from the MC because they don't have an inspector at all. */
   virtual bool is_visible() const { return true; }
-  virtual std::string to_string(int times_considered) const;
-  virtual std::string dot_label() const;
+  virtual std::string to_string(int times_considered) const = 0;
+  virtual std::string dot_label() const                     = 0;
 };
 
 class RandomSimcall : public SimcallInspector {
