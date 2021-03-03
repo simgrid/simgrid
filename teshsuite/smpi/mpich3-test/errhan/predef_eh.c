@@ -31,5 +31,6 @@ int main(int argc, char **argv)
     MPI_Comm_set_errhandler(MPI_COMM_SELF, errh);
     MPI_Errhandler_free(&errh);
     MTest_Finalize(0);
+    MPI_Finalize();
     return 0;
 }
