@@ -14,8 +14,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
  *********/
 void surf_network_model_init_Constant()
 {
-  xbt_assert(surf_network_model == nullptr);
-  surf_network_model = new simgrid::kernel::resource::NetworkConstantModel();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::kernel::resource::NetworkConstantModel();
 }
 
 namespace simgrid {

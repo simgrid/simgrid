@@ -36,9 +36,10 @@ double sg_weight_S_parameter = 0.0; /* default value; can be set by model or fro
 /*  } */
 void surf_network_model_init_LegrandVelho()
 {
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
-  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::kernel::resource::NetworkCm02Model();
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
   simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
@@ -58,13 +59,14 @@ void surf_network_model_init_LegrandVelho()
 /* } */
 void surf_network_model_init_CM02()
 {
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
   simgrid::config::set_default<double>("network/latency-factor", 1.0);
   simgrid::config::set_default<double>("network/bandwidth-factor", 1.0);
   simgrid::config::set_default<double>("network/weight-S", 0.0);
 
-  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::kernel::resource::NetworkCm02Model();
 }
 
 namespace simgrid {

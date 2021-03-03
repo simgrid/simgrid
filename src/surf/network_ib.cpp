@@ -68,9 +68,10 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& ac
 /*  } */
 void surf_network_model_init_IB()
 {
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
-  surf_network_model = new simgrid::kernel::resource::NetworkIBModel();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::kernel::resource::NetworkIBModel();
   simgrid::s4u::Link::on_communication_state_change.connect(IB_action_state_changed_callback);
   simgrid::s4u::Link::on_communicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::on_creation.connect(IB_create_host_callback);

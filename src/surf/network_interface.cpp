@@ -19,8 +19,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, t
  * Model *
  *********/
 
-simgrid::kernel::resource::NetworkModel* surf_network_model = nullptr;
-
 namespace simgrid {
 namespace kernel {
 namespace resource {

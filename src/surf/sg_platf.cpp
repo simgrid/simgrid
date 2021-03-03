@@ -514,7 +514,10 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
   /* search the routing model */
   simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
   simgrid::kernel::resource::NetworkModel* netmodel =
-      current_routing == nullptr ? surf_network_model : current_routing->network_model_;
+      current_routing == nullptr ? static_cast<simgrid::kernel::resource::NetworkModel*>(
+                                       models_by_type[simgrid::kernel::resource::Model::Type::NETWORK][0])
+                                 : current_routing->network_model_;
+
   if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
     new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id, netmodel);
   } else if (strcasecmp(zone->routing.c_str(), "ClusterDragonfly") == 0) {

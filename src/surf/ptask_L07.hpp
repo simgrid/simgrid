@@ -44,6 +44,10 @@ public:
   void update_actions_state(double now, double delta) override;
   kernel::resource::CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                                 const double* bytes_amount, double rate) override;
+
+private:
+  std::unique_ptr<NetworkL07Model> network_model_;
+  std::unique_ptr<CpuL07Model> cpu_model_pm_;
 };
 
 class CpuL07Model : public kernel::resource::CpuModel {

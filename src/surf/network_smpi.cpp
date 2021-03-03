@@ -31,9 +31,10 @@ std::vector<s_smpi_factor_t> smpi_lat_factor;
 /*  } */
 void surf_network_model_init_SMPI()
 {
-  if (surf_network_model)
-    return;
-  surf_network_model = new simgrid::kernel::resource::NetworkSmpiModel();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::kernel::resource::NetworkSmpiModel();
 
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }

@@ -258,9 +258,10 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
  *********/
 void surf_network_model_init_NS3()
 {
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
-  surf_network_model = new simgrid::kernel::resource::NetworkNS3Model();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::kernel::resource::NetworkNS3Model();
 }
 
 static simgrid::config::Flag<std::string>
