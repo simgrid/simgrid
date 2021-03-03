@@ -139,7 +139,7 @@ void AppSide::handle_messages() const
       case MessageType::SIMCALL_IS_VISIBLE: {
         assert_msg_size("SIMCALL_IS_VISIBLE", s_mc_message_simcall_is_visible_t);
         auto msg_simcall                = (s_mc_message_simcall_is_visible_t*)message_buffer.data();
-        kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
+        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
         xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
         bool value = actor->simcall_.inspector_->is_visible();
@@ -153,7 +153,7 @@ void AppSide::handle_messages() const
       case MessageType::SIMCALL_TO_STRING: {
         assert_msg_size("SIMCALL_TO_STRING", s_mc_message_simcall_to_string_t);
         auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
-        kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
+        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
         xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
         std::string value = actor->simcall_.inspector_->to_string(msg_simcall->time_considered);
@@ -168,7 +168,7 @@ void AppSide::handle_messages() const
       case MessageType::SIMCALL_DOT_LABEL: {
         assert_msg_size("SIMCALL_DOT_LABEL", s_mc_message_simcall_to_string_t);
         auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
-        kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
+        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
         xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
         std::string value = actor->simcall_.inspector_->dot_label();
