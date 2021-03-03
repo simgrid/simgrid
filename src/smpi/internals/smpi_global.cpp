@@ -634,9 +634,10 @@ void SMPI_finalize()
 
   if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP)
     smpi_destroy_global_memory_segments();
+
   if (simgrid::smpi::F2C::lookup() != nullptr &&
       simgrid::smpi::F2C::lookup()->size() > simgrid::smpi::F2C::get_num_default_handles()) {
-    XBT_WARN("Probable Leaks in your code: SMPI detected %zu unfreed MPI handles : "
+    XBT_WARN("Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles : "
              "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
              "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
              simgrid::smpi::F2C::lookup()->size() - simgrid::smpi::F2C::get_num_default_handles());
