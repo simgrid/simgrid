@@ -47,6 +47,7 @@ endforeach()
 set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/fort_args/fort_args.f90 PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-papi.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-alltoall/clusters.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh
@@ -134,8 +135,13 @@ if(enable_smpi)
   ADD_TESH(tesh-smpi-coll-allreduce-large --cfg smpi/allreduce:ompi_ring_segmented --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce coll-allreduce-large.tesh)
   ADD_TESH(tesh-smpi-coll-allreduce-automatic --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce coll-allreduce-automatic.tesh)
 
-  # Extra allreduce test: cluster-types
+  # Extra alltoall test: cluster-types
   ADD_TESH(tesh-smpi-cluster-types --cfg smpi/alltoall:mvapich2 --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoall --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-alltoall clusters.tesh)
+
+  # Extra allreduce test : PAPI tracing
+  if (HAVE_PAPI)
+    ADD_TESH(tesh-smpi-papi-tracing --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce/coll-allreduce-papi.tesh)
+  endif()
 
   # Extra pt2pt pingpong test: broken usage ti-tracing
   ADD_TESH_FACTORIES(tesh-smpi-broken  "thread"   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong broken_hostfiles.tesh)
