@@ -97,7 +97,7 @@ protected:
 
 class LinkL07 : public kernel::resource::LinkImpl {
 public:
-  LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy);
+  LinkL07(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy, kernel::lmm::System* system);
   LinkL07(const LinkL07&) = delete;
   LinkL07& operator=(const LinkL07&) = delete;
   ~LinkL07() override;

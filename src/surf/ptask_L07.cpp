@@ -231,7 +231,7 @@ kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name
                                                          s4u::Link::SharingPolicy policy)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  return new LinkL07(this, name, bandwidths[0], policy);
+  return new LinkL07(name, bandwidths[0], policy, get_maxmin_system());
 }
 
 /************
@@ -247,8 +247,9 @@ CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, const std::vector<d
 
 CpuL07::~CpuL07()=default;
 
-LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy)
-    : LinkImpl(model, name, model->get_maxmin_system()->constraint_new(this, bandwidth))
+LinkL07::LinkL07(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy,
+                 kernel::lmm::System* system)
+    : LinkImpl(name, system->constraint_new(this, bandwidth))
 {
   bandwidth_.peak = bandwidth;
 
@@ -416,5 +417,5 @@ void L07Action::updateBound()
   }
 }
 
-}
-}
+} // namespace surf
+} // namespace simgrid

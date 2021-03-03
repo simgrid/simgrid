@@ -110,7 +110,7 @@ class LinkImpl : public Resource, public xbt::PropertyHolder {
   s4u::Link piface_;
 
 protected:
-  LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint);
+  LinkImpl(const std::string& name, lmm::Constraint* constraint);
   LinkImpl(const LinkImpl&) = delete;
   LinkImpl& operator=(const LinkImpl&) = delete;
   ~LinkImpl() override                 = default; // Use destroy() instead of this destructor.

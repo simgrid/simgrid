@@ -31,8 +31,7 @@ public:
  ************/
 class LinkNS3 : public LinkImpl {
 public:
-  explicit LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth,
-                   s4u::Link::SharingPolicy policy);
+  explicit LinkNS3(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy);
   ~LinkNS3() override;
   s4u::Link::SharingPolicy sharing_policy_;
 

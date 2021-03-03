@@ -332,7 +332,7 @@ LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vecto
                                        s4u::Link::SharingPolicy policy)
 {
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
-  return new LinkNS3(this, name, bandwidths[0], policy);
+  return new LinkNS3(name, bandwidths[0], policy);
 }
 
 Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -432,8 +432,8 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
  * Resource *
  ************/
 
-LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy)
-    : LinkImpl(model, name, nullptr), sharing_policy_(policy)
+LinkNS3::LinkNS3(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy)
+    : LinkImpl(name, nullptr), sharing_policy_(policy)
 {
   bandwidth_.peak = bandwidth;
 }
