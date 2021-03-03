@@ -7,6 +7,7 @@
 #include "simgrid/mutex.h"
 #include "simgrid/s4u/Mutex.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/mc/checker/SimcallInspector.hpp"
 
 namespace simgrid {
 namespace s4u {
@@ -29,7 +30,9 @@ void Mutex::lock()
  */
 void Mutex::unlock()
 {
-  simcall_mutex_unlock(pimpl_);
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  mc::MutexUnlockSimcall observer{issuer};
+  kernel::actor::simcall([this, issuer] { this->pimpl_->unlock(issuer); }, &observer);
 }
 
 /** @brief Acquire the mutex if it's free, and return false (without blocking) if not */

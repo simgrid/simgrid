@@ -65,6 +65,14 @@ public:
   std::string dot_label() const override;
   int get_value() const;
 };
+
+class MutexUnlockSimcall : public SimcallInspector {
+  using SimcallInspector::SimcallInspector;
+
+public:
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+};
 } // namespace mc
 } // namespace simgrid
 

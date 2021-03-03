@@ -201,7 +201,7 @@ SG_BEGIN_DECL
 XBT_ATTRIB_DEPRECATED_v330("Please use sg_mutex_init()") XBT_PUBLIC smx_mutex_t simcall_mutex_init();
 XBT_PUBLIC void simcall_mutex_lock(smx_mutex_t mutex);
 XBT_PUBLIC int simcall_mutex_trylock(smx_mutex_t mutex);
-XBT_PUBLIC void simcall_mutex_unlock(smx_mutex_t mutex);
+XBT_ATTRIB_DEPRECATED_v331("Please use s4u::Mutex::unlock()") XBT_PUBLIC void simcall_mutex_unlock(smx_mutex_t mutex);
 
 XBT_ATTRIB_DEPRECATED_v330("Please use sg_cond_init()") XBT_PUBLIC smx_cond_t simcall_cond_init();
 XBT_PUBLIC void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);

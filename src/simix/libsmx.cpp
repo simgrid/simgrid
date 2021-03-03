@@ -273,9 +273,9 @@ int simcall_mutex_trylock(smx_mutex_t mutex)
  * @ingroup simix_synchro_management
  *
  */
-void simcall_mutex_unlock(smx_mutex_t mutex)
+void simcall_mutex_unlock(smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATD_v331
 {
-  simcall_BODY_mutex_unlock(mutex);
+  mutex->mutex().unlock();
 }
 
 /**

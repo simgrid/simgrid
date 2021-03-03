@@ -32,7 +32,6 @@ enum class Simcall {
   COMM_TESTANY,
   MUTEX_LOCK,
   MUTEX_TRYLOCK,
-  MUTEX_UNLOCK,
   COND_WAIT,
   COND_WAIT_TIMEOUT,
   SEM_ACQUIRE,
@@ -41,6 +40,6 @@ enum class Simcall {
   RUN_BLOCKING,
 };
 
-constexpr int NUM_SIMCALLS = 19;
+constexpr int NUM_SIMCALLS = 18;
 } // namespace simix
 } // namespace simgrid

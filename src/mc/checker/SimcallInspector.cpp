@@ -51,5 +51,15 @@ int RandomSimcall::get_value() const
   return next_value_;
 }
 
+std::string MutexUnlockSimcall::to_string(int time_considered) const
+{
+  return SimcallInspector::to_string(time_considered) + "Mutex UNLOCK";
+}
+
+std::string MutexUnlockSimcall::dot_label() const
+{
+  return SimcallInspector::dot_label() + "Mutex UNLOCK";
+}
+
 } // namespace mc
 } // namespace simgrid

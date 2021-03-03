@@ -108,8 +108,3 @@ int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex)
 {
   return mutex->try_lock(simcall->issuer_);
 }
-
-void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex)
-{
-  mutex->unlock(simcall->issuer_);
-}
