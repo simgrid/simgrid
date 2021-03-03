@@ -586,7 +586,7 @@ void Comm::set_errhandler(MPI_Errhandler errhandler)
       simgrid::smpi::Errhandler::unref(errhandlers_[this->rank()]);
     errhandlers_[this->rank()]=errhandler;
   }
-  if (errhandler != MPI_ERRHANDLER_NULL && this != MPI_COMM_SELF)
+  if (errhandler != MPI_ERRHANDLER_NULL)
     errhandler->ref();
 }
 

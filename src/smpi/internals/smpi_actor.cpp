@@ -54,12 +54,6 @@ ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
 
 ActorExt::~ActorExt()
 {
-  if (info_env_ != MPI_INFO_NULL)
-    simgrid::smpi::Info::unref(info_env_);
-  if (comm_self_ != MPI_COMM_NULL)
-    simgrid::smpi::Comm::destroy(comm_self_);
-  if (comm_intra_ != MPI_COMM_NULL)
-    simgrid::smpi::Comm::destroy(comm_intra_);
   xbt_os_timer_free(timer_);
 }
 
@@ -68,7 +62,12 @@ void ActorExt::finalize()
 {
   state_ = SmpiProcessState::FINALIZED;
   XBT_DEBUG("<%ld> Process left the game", actor_->get_pid());
-
+  if (info_env_ != MPI_INFO_NULL)
+    simgrid::smpi::Info::unref(info_env_);
+  if (comm_self_ != MPI_COMM_NULL)
+    simgrid::smpi::Comm::destroy(comm_self_);
+  if (comm_intra_ != MPI_COMM_NULL)
+    simgrid::smpi::Comm::destroy(comm_intra_);
   smpi_deployment_unregister_process(instance_id_);
 }
 
