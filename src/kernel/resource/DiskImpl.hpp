@@ -47,7 +47,7 @@ public:
 /************
  * Resource *
  ************/
-class DiskImpl : public Resource, public xbt::PropertyHolder {
+class DiskImpl : public Resource_T<DiskImpl>, public xbt::PropertyHolder {
   s4u::Host* host_           = nullptr;
   s4u::Disk piface_;
   double read_bw_ = -1.0;
@@ -60,10 +60,9 @@ protected:
 
 public:
   DiskImpl(const std::string& name, double read_bandwidth, double write_bandwidth)
-    : Resource(name),
-      piface_(name, this),
-      read_bw_(read_bandwidth),
-      write_bw_(write_bandwidth){}
+      : Resource_T(name), piface_(name, this), read_bw_(read_bandwidth), write_bw_(write_bandwidth)
+  {
+  }
   DiskImpl(const DiskImpl&) = delete;
   DiskImpl& operator=(const DiskImpl&) = delete;
 

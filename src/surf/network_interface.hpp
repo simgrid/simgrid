@@ -106,7 +106,7 @@ public:
  * @brief SURF network link interface class
  * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
  */
-class LinkImpl : public Resource, public xbt::PropertyHolder {
+class LinkImpl : public Resource_T<LinkImpl>, public xbt::PropertyHolder {
   s4u::Link piface_;
 
 protected:

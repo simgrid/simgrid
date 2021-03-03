@@ -52,7 +52,7 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
  * Resource *
  ************/
 Cpu::Cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
-    : Resource(host->get_cname()), piface_(host), speed_per_pstate_(speed_per_pstate)
+    : Resource_T(host->get_cname()), piface_(host), speed_per_pstate_(speed_per_pstate)
 {
   speed_.scale = 1;
   speed_.peak     = speed_per_pstate_.front();

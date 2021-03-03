@@ -73,7 +73,7 @@ double NetworkModel::next_occurring_event_full(double now)
  * Resource *
  ************/
 
-LinkImpl::LinkImpl(const std::string& name, lmm::Constraint* constraint) : Resource(name), piface_(this)
+LinkImpl::LinkImpl(const std::string& name, lmm::Constraint* constraint) : Resource_T(name), piface_(this)
 {
   this->set_constraint(constraint);
   if (name != "__loopback__")

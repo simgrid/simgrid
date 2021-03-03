@@ -101,11 +101,10 @@ void DiskImpl::turn_off()
 
 void DiskImpl::seal()
 {
-  lmm::System* maxmin_system = surf_disk_model->get_maxmin_system();
+  lmm::System* maxmin_system = get_model()->get_maxmin_system();
   this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_))
-          ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_))
-          ->set_model(surf_disk_model)
-          ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw_, write_bw_)));
+      ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_))
+      ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw_, write_bw_)));
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_, write_bw_);
   turn_on();
 }

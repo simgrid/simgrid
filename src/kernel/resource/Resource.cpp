@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/kernel/resource/Resource.hpp"
-#include "src/kernel/lmm/maxmin.hpp" // Constraint
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -12,23 +11,6 @@
 namespace simgrid {
 namespace kernel {
 namespace resource {
-
-Resource* Resource::set_model(Model* model)
-{
-  model_ = model;
-  return this;
-}
-
-Resource* Resource::set_constraint(lmm::Constraint* constraint)
-{
-  constraint_ = constraint;
-  return this;
-}
-
-double Resource::get_load() const
-{
-  return constraint_->get_usage();
-}
 
 void Resource::set_state_profile(profile::Profile* profile)
 {

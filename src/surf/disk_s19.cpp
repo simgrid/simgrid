@@ -33,7 +33,7 @@ DiskS19Model::DiskS19Model()
 
 DiskImpl* DiskS19Model::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  return new DiskS19(name, read_bandwidth, write_bandwidth);
+  return (new DiskS19(name, read_bandwidth, write_bandwidth))->set_model(this);
 }
 
 double DiskS19Model::next_occurring_event(double now)

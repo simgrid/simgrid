@@ -48,7 +48,7 @@ public:
  * Resource *
  ************/
 
-class XBT_PUBLIC Cpu : public Resource {
+class XBT_PUBLIC Cpu : public Resource_T<Cpu> {
   friend vm::VirtualMachineImpl; // Resets the VCPU
 
   s4u::Host* piface_;
