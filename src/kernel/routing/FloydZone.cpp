@@ -146,12 +146,12 @@ void FloydZone::seal()
   init_tables(table_size);
 
   /* Add the loopback if needed */
-  if (network_model_->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (get_network_model()->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       RouteCreationArgs* route = TO_FLOYD_LINK(i, i);
       if (not route) {
         route = new RouteCreationArgs();
-        route->link_list.push_back(network_model_->loopback_);
+        route->link_list.push_back(get_network_model()->loopback_);
         TO_FLOYD_LINK(i, i) = route;
         TO_FLOYD_PRED(i, i) = i;
         TO_FLOYD_COST(i, i) = 1;

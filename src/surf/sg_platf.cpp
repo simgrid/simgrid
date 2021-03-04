@@ -516,7 +516,7 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
   simgrid::kernel::resource::NetworkModel* netmodel =
       current_routing == nullptr ? static_cast<simgrid::kernel::resource::NetworkModel*>(
                                        models_by_type[simgrid::kernel::resource::Model::Type::NETWORK][0])
-                                 : current_routing->network_model_;
+                                 : current_routing->get_network_model();
 
   if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
     new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id, netmodel);
