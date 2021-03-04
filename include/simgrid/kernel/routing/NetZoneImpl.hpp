@@ -72,6 +72,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   routing::NetPoint* netpoint_ = nullptr;                                 // Our representative in the father NetZone
   resource::NetworkModel* network_model_;
   resource::CpuModel* cpu_model_vm_;
+  resource::CpuModel* cpu_model_pm_;
 
 protected:
   explicit NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model);
@@ -103,8 +104,13 @@ public:
   /* FIXME: protect the following fields once the construction madness is sorted out */
   RoutingMode hierarchy_ = RoutingMode::unset;
 
+  /** @brief Retrieves the network model associated to this NetZone */
   resource::NetworkModel* get_network_model() const { return network_model_; }
+  /** @brief Retrieves the CPU model for virtual machines associated to this NetZone */
   resource::CpuModel* get_cpu_vm_model() const { return cpu_model_vm_; }
+  /** @brief Retrieves the CPU model for physical machines associated to this NetZone */
+  resource::CpuModel* get_cpu_pm_model() const { return cpu_model_pm_; }
+
   const s4u::NetZone* get_iface() const { return &piface_; }
   s4u::NetZone* get_iface() { return &piface_; }
   unsigned int get_table_size() const { return vertices_.size(); }

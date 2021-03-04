@@ -44,8 +44,9 @@ int main(int argc, char** argv)
 
   sg_netzone_t as_zone                               = sg_zone_get_by_name("AS0");
   simgrid::kernel::resource::NetworkModel* net_model = as_zone->get_impl()->get_network_model();
+  simgrid::kernel::resource::CpuModel* cpu_model_pm  = as_zone->get_impl()->get_cpu_pm_model();
 
-  XBT_DEBUG("CPU model: %p", surf_cpu_model_pm);
+  XBT_DEBUG("CPU model: %p", cpu_model_pm);
   XBT_DEBUG("Network model: %p", net_model);
   simgrid::s4u::Host* hostA = sg_host_by_name("Cpu A");
   simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
@@ -72,7 +73,7 @@ int main(int argc, char** argv)
     XBT_INFO("Next Event : %g", surf_get_clock());
     XBT_DEBUG("\t CPU actions");
 
-    simgrid::kernel::resource::Action::StateSet* action_list = surf_cpu_model_pm->get_failed_action_set();
+    simgrid::kernel::resource::Action::StateSet* action_list = cpu_model_pm->get_failed_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   CPU Failed action");
@@ -80,7 +81,7 @@ int main(int argc, char** argv)
       action.unref();
     }
 
-    action_list = surf_cpu_model_pm->get_finished_action_set();
+    action_list = cpu_model_pm->get_finished_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   CPU Done action");
@@ -103,7 +104,7 @@ int main(int argc, char** argv)
       XBT_DEBUG("\t * Done : %p", &action);
       action.unref();
     }
-  } while ((net_model->get_started_action_set()->size() || surf_cpu_model_pm->get_started_action_set()->size()) &&
+  } while ((net_model->get_started_action_set()->size() || cpu_model_pm->get_started_action_set()->size()) &&
            surf_solve(-1.0) >= 0.0);
 
   XBT_DEBUG("Simulation Terminated");

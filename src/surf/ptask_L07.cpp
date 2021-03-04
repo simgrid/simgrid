@@ -19,7 +19,6 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
-  xbt_assert(not surf_cpu_model_pm, "Cannot switch to ptasks: CPU model already defined");
 
   surf_host_model = new simgrid::surf::HostL07Model();
   all_existing_models.push_back(surf_host_model);
@@ -36,7 +35,7 @@ HostL07Model::HostL07Model() : HostModel()
   network_model_ = std::make_unique<NetworkL07Model>(this, maxmin_system);
   models_by_type[simgrid::kernel::resource::Model::Type::NETWORK].push_back(network_model_.get());
   cpu_model_pm_     = std::make_unique<CpuL07Model>(this, maxmin_system);
-  surf_cpu_model_pm = cpu_model_pm_.get();
+  models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM].push_back(cpu_model_pm_.get());
 }
 
 HostL07Model::~HostL07Model() {}

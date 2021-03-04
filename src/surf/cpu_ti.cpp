@@ -269,10 +269,8 @@ int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 
 void CpuTiModel::create_pm_vm_models()
 {
-  xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
-
-  surf_cpu_model_pm = new CpuTiModel();
-  models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM].push_back(surf_cpu_model_pm);
+  auto cpu_model_pm = new CpuTiModel();
+  models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM].push_back(cpu_model_pm);
   auto cpu_model_vm = new CpuTiModel();
   models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM].push_back(cpu_model_vm);
 }
@@ -284,7 +282,6 @@ CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
 
 CpuTiModel::~CpuTiModel()
 {
-  surf_cpu_model_pm = nullptr;
 }
 
 Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
@@ -408,7 +405,7 @@ void CpuTi::update_actions_finish_time(double now)
   sum_priority_ = 0.0;
   for (CpuTiAction const& action : action_set_) {
     /* action not running, skip it */
-    if (action.get_state_set() != surf_cpu_model_pm->get_started_action_set())
+    if (action.get_state_set() != get_model()->get_started_action_set())
       continue;
 
     /* bogus priority, skip it */
@@ -425,7 +422,7 @@ void CpuTi::update_actions_finish_time(double now)
   for (CpuTiAction& action : action_set_) {
     double min_finish = -1;
     /* action not running, skip it */
-    if (action.get_state_set() != surf_cpu_model_pm->get_started_action_set())
+    if (action.get_state_set() != get_model()->get_started_action_set())
       continue;
 
     /* verify if the action is really running on cpu */

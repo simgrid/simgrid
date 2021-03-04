@@ -11,8 +11,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_cpu, ker_resource, "CPU resource, fueling execution activites");
 
-simgrid::kernel::resource::CpuModel* surf_cpu_model_pm;
-
 namespace simgrid {
 namespace kernel {
 namespace resource {

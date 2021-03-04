@@ -20,7 +20,6 @@ void surf_host_model_init_current_default()
 
 void surf_host_model_init_compound()
 {
-  xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
   /* FIXME[donassolo]: this smells bad, but works
    * (the constructor saves its pointer in all_existing_models and models_by_type :O).
    * We need a manager for these models */

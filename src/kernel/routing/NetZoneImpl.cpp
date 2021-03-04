@@ -29,6 +29,8 @@ NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource:
     cpu_model_vm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
         models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM][0]);
   }
+  cpu_model_pm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
+      models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM][0]);
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 
@@ -86,7 +88,7 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   auto* res = new s4u::Host(name);
   res->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
 
-  surf_cpu_model_pm->create_cpu(res, speed_per_pstate)->set_core_count(core_amount)->seal();
+  cpu_model_pm_->create_cpu(res, speed_per_pstate)->set_core_count(core_amount)->seal();
 
   return res;
 }
