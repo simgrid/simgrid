@@ -18,7 +18,7 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/mc/checker/SimcallInspector.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "xbt/random.hpp"
@@ -351,18 +351,18 @@ bool simcall_io_test(const simgrid::kernel::activity::ActivityImplPtr& io) // XB
   return simgrid::kernel::actor::simcall([io] { return io->test(); });
 }
 
-void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t)
+void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallObserver* t)
 {
-  simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = t;
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = t;
   simcall_BODY_run_kernel(&code);
-  simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = nullptr;
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
-void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallInspector* t = nullptr)
+void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* t = nullptr)
 {
-  simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = t;
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = t;
   simcall_BODY_run_blocking(&code);
-  simgrid::kernel::actor::ActorImpl::self()->simcall_.inspector_ = nullptr;
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
 int simcall_mc_random(int min, int max) // XBT_ATTRIB_DEPRECATD_v331

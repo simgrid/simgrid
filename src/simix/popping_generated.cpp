@@ -21,7 +21,7 @@
 #include "src/mc/mc_forward.hpp"
 #endif
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
-#include "src/mc/checker/SimcallInspector.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
@@ -57,8 +57,8 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered_)
 {
   XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_.call_));
   SIMCALL_SET_MC_VALUE(simcall_, times_considered_);
-  if (simcall_.inspector_ != nullptr)
-    simcall_.inspector_->prepare(times_considered_);
+  if (simcall_.observer_ != nullptr)
+    simcall_.observer_->prepare(times_considered_);
   if (context_->wannadie())
     return;
   switch (simcall_.call_) {

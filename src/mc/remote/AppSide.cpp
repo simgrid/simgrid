@@ -6,7 +6,7 @@
 #include "src/mc/remote/AppSide.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/mc/checker/SimcallInspector.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>
@@ -141,8 +141,8 @@ void AppSide::handle_messages() const
         auto msg_simcall                = (s_mc_message_simcall_is_visible_t*)message_buffer.data();
         const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
-        xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
-        bool value = actor->simcall_.inspector_->is_visible();
+        xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
+        bool value = actor->simcall_.observer_->is_visible();
 
         // Send result:
         s_mc_message_simcall_is_visible_answer_t answer{MessageType::SIMCALL_IS_VISIBLE_ANSWER, value};
@@ -155,8 +155,8 @@ void AppSide::handle_messages() const
         auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
         const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
-        xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
-        std::string value = actor->simcall_.inspector_->to_string(msg_simcall->time_considered);
+        xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
+        std::string value = actor->simcall_.observer_->to_string(msg_simcall->time_considered);
 
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
@@ -170,8 +170,8 @@ void AppSide::handle_messages() const
         auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
         const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
-        xbt_assert(actor->simcall_.inspector_, "The transition of %s has no inspector", actor->get_cname());
-        std::string value = actor->simcall_.inspector_->dot_label();
+        xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
+        std::string value = actor->simcall_.observer_->dot_label();
 
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};

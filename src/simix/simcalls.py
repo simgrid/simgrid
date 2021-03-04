@@ -314,7 +314,7 @@ if __name__ == '__main__':
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#endif\n')
     fd.write('#include "src/kernel/activity/ConditionVariableImpl.hpp"\n')
-    fd.write('#include "src/mc/checker/SimcallInspector.hpp"\n')
+    fd.write('#include "src/mc/checker/SimcallObserver.hpp"\n')
 
     fd.write('\n')
     fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')
@@ -338,8 +338,8 @@ if __name__ == '__main__':
     fd.write('{\n')
     fd.write('  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_.call_));\n')
     fd.write('  SIMCALL_SET_MC_VALUE(simcall_, times_considered_);\n')
-    fd.write('  if (simcall_.inspector_ != nullptr)\n')
-    fd.write('    simcall_.inspector_->prepare(times_considered_);\n')
+    fd.write('  if (simcall_.observer_ != nullptr)\n')
+    fd.write('    simcall_.observer_->prepare(times_considered_);\n')
 
     fd.write('  if (context_->wannadie())\n')
     fd.write('    return;\n')

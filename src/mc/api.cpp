@@ -3,7 +3,7 @@
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/Session.hpp"
-#include "src/mc/checker/SimcallInspector.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_pattern.hpp"
@@ -69,7 +69,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
     return nullptr; // Not executable in the application
 
   smx_simcall_t req = nullptr;
-  if (actor->simcall_.inspector_ != nullptr) {
+  if (actor->simcall_.observer_ != nullptr) {
     state->transition_.times_considered_ = procstate->times_considered;
     procstate->times_considered++;
     if (actor->simcall_.mc_max_consider_ <= procstate->times_considered)
@@ -722,7 +722,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
 
   smx_actor_t issuer = simcall_get_issuer(req);
 
-  if (issuer->simcall_.inspector_ != nullptr)
+  if (issuer->simcall_.observer_ != nullptr)
     return mc_model_checker->simcall_to_string(issuer->get_pid(), value);
 
   switch (req->call_) {
@@ -860,7 +860,7 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
 
   std::string label;
 
-  if (req->inspector_ != nullptr) {
+  if (req->observer_ != nullptr) {
     label = mc_model_checker->simcall_dot_label(issuer->get_pid(), value);
   } else
     switch (req->call_) {

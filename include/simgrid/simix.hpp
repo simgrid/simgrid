@@ -17,8 +17,8 @@
 #include <string>
 #include <unordered_map>
 
-XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallInspector* t);
-XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallInspector* t);
+XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallObserver* t);
+XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* t);
 
 namespace simgrid {
 namespace kernel {
@@ -43,7 +43,7 @@ namespace actor {
  * you may need to wait for that mutex to be unlocked by its current owner.
  * Potentially blocking simcall must be issued using simcall_blocking(), right below in this file.
  */
-template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallInspector* t = nullptr)
+template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallObserver* t = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall marshalling/unmarshalling/dispatch:
@@ -76,7 +76,7 @@ template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallI
  *
  * If your code never calls actor->simcall_answer() itself, the actor will never return from its simcall.
  */
-template <class R, class F> R simcall_blocking(F&& code, mc::SimcallInspector* t = nullptr)
+template <class R, class F> R simcall_blocking(F&& code, mc::SimcallObserver* t = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall marshalling/unmarshalling/dispatch:

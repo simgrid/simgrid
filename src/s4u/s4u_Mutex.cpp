@@ -7,7 +7,7 @@
 #include "simgrid/mutex.h"
 #include "simgrid/s4u/Mutex.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/mc/checker/SimcallInspector.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 
 namespace simgrid {
 namespace s4u {

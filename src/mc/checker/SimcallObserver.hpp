@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_SIMCALL_INSPECTOR_HPP
-#define SIMGRID_MC_SIMCALL_INSPECTOR_HPP
+#ifndef SIMGRID_MC_SIMCALL_OBSERVER_HPP
+#define SIMGRID_MC_SIMCALL_OBSERVER_HPP
 
 #include "simgrid/forward.h"
 
@@ -13,11 +13,11 @@
 namespace simgrid {
 namespace mc {
 
-class SimcallInspector {
+class SimcallObserver {
   kernel::actor::ActorImpl* issuer_;
 
 public:
-  explicit SimcallInspector(kernel::actor::ActorImpl* issuer) : issuer_(issuer) {}
+  explicit SimcallObserver(kernel::actor::ActorImpl* issuer) : issuer_(issuer) {}
   kernel::actor::ActorImpl* get_issuer() const { return issuer_; }
   /** Whether this transition can currently be taken without blocking.
    *
@@ -46,19 +46,19 @@ public:
   virtual void prepare(int times_considered) { /* Nothing to do by default */}
 
   /** Some simcalls may only be observable under some circumstances.
-   * Most simcalls are not visible from the MC because they don't have an inspector at all. */
+   * Most simcalls are not visible from the MC because they don't have an observer at all. */
   virtual bool is_visible() const { return true; }
   virtual std::string to_string(int times_considered) const = 0;
   virtual std::string dot_label() const                     = 0;
 };
 
-class RandomSimcall : public SimcallInspector {
+class RandomSimcall : public SimcallObserver {
   int min_;
   int max_;
   int next_value_ = 0;
 
 public:
-  RandomSimcall(smx_actor_t actor, int min, int max) : SimcallInspector(actor), min_(min), max_(max) {}
+  RandomSimcall(smx_actor_t actor, int min, int max) : SimcallObserver(actor), min_(min), max_(max) {}
   int get_max_consider() const override;
   void prepare(int times_considered) override;
   std::string to_string(int times_considered) const override;
@@ -66,8 +66,8 @@ public:
   int get_value() const;
 };
 
-class MutexUnlockSimcall : public SimcallInspector {
-  using SimcallInspector::SimcallInspector;
+class MutexUnlockSimcall : public SimcallObserver {
+  using SimcallObserver::SimcallObserver;
 
 public:
   std::string to_string(int times_considered) const override;

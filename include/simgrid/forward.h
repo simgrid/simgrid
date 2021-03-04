@@ -180,7 +180,7 @@ namespace surf {
 }
 namespace mc {
 class CommunicationDeterminismChecker;
-class SimcallInspector;
+class SimcallObserver;
 }
 namespace vm {
 class VMModel;

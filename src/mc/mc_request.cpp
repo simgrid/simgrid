@@ -8,7 +8,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/checker/SimcallInspector.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/mc_smx.hpp"
 #include <array>
 

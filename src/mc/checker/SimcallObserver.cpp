@@ -3,22 +3,22 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/checker/SimcallInspector.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_inspector, mc, "Logging specific to MC simcall inspection");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_observer, mc, "Logging specific to MC simcall observation");
 
 namespace simgrid {
 namespace mc {
 
-std::string SimcallInspector::to_string(int /*time_considered*/) const
+std::string SimcallObserver::to_string(int /*time_considered*/) const
 {
   return simgrid::xbt::string_printf("[(%ld)%s (%s)] ", issuer_->get_pid(), issuer_->get_host()->get_cname(),
                                      issuer_->get_cname());
 }
 
-std::string SimcallInspector::dot_label() const
+std::string SimcallObserver::dot_label() const
 {
   if (issuer_->get_host())
     return xbt::string_printf("[(%ld)%s] ", issuer_->get_pid(), issuer_->get_cname());
@@ -27,12 +27,12 @@ std::string SimcallInspector::dot_label() const
 
 std::string RandomSimcall::to_string(int time_considered) const
 {
-  return SimcallInspector::to_string(time_considered) + "MC_RANDOM(" + std::to_string(time_considered) + ")";
+  return SimcallObserver::to_string(time_considered) + "MC_RANDOM(" + std::to_string(time_considered) + ")";
 }
 
 std::string RandomSimcall::dot_label() const
 {
-  return SimcallInspector::dot_label() + "MC_RANDOM(" + std::to_string(next_value_) + ")";
+  return SimcallObserver::dot_label() + "MC_RANDOM(" + std::to_string(next_value_) + ")";
 }
 
 void RandomSimcall::prepare(int times_considered)
@@ -53,12 +53,12 @@ int RandomSimcall::get_value() const
 
 std::string MutexUnlockSimcall::to_string(int time_considered) const
 {
-  return SimcallInspector::to_string(time_considered) + "Mutex UNLOCK";
+  return SimcallObserver::to_string(time_considered) + "Mutex UNLOCK";
 }
 
 std::string MutexUnlockSimcall::dot_label() const
 {
-  return SimcallInspector::dot_label() + "Mutex UNLOCK";
+  return SimcallObserver::dot_label() + "Mutex UNLOCK";
 }
 
 } // namespace mc
