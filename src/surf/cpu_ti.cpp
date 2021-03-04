@@ -270,16 +270,16 @@ int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 void CpuTiModel::create_pm_vm_models()
 {
   xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
-  xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
 
   surf_cpu_model_pm = new CpuTiModel();
-  surf_cpu_model_vm = new CpuTiModel();
+  models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM].push_back(surf_cpu_model_pm);
+  auto cpu_model_vm = new CpuTiModel();
+  models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM].push_back(cpu_model_vm);
 }
 
 CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
 {
   all_existing_models.push_back(this);
-  models_by_type[simgrid::kernel::resource::Model::Type::CPU].push_back(this);
 }
 
 CpuTiModel::~CpuTiModel()

@@ -12,7 +12,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_cpu, ker_resource, "CPU resource, fueling execution activites");
 
 simgrid::kernel::resource::CpuModel* surf_cpu_model_pm;
-simgrid::kernel::resource::CpuModel* surf_cpu_model_vm;
 
 namespace simgrid {
 namespace kernel {
@@ -57,6 +56,7 @@ Cpu::Cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   speed_.scale = 1;
   speed_.peak     = speed_per_pstate_.front();
+  // FIXME[donassolo]: don't set here.. everytime I take half an hour to discover where it comes
   host->pimpl_cpu = this;
 }
 

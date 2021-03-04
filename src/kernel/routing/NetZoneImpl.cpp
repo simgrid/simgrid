@@ -25,6 +25,10 @@ NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource:
              "Refusing to create a second NetZone called '%s'.", get_cname());
 
   netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone, father_);
+  if (models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM].size() > 0) {
+    cpu_model_vm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
+        models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM][0]);
+  }
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 

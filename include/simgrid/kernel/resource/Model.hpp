@@ -24,7 +24,8 @@ public:
   enum class Type {
     HOST,    /**< Host models: see surf_host_model_description for more details */
     NETWORK, /**< Network models: see surf_network_model_description for more details */
-    CPU,     /**< CPU models: see surf_cpu_model_description for more details */
+    CPU_PM,  /**< CPU model for physical machines: see surf_cpu_model_description for more details */
+    CPU_VM,  /**< CPU model for virtual machines: see surf_cpu_model_description for more details */
     DISK,    /**< Disk models: see surf_disk_model_description for more details */
     VM       /**< VM model */
   };

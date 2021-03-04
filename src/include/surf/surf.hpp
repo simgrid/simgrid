@@ -14,11 +14,6 @@
 XBT_PUBLIC_DATA simgrid::kernel::resource::CpuModel* surf_cpu_model_pm;
 
 /** @ingroup SURF_models
- *  @brief The CPU model object for the virtual machine layer
- */
-XBT_PUBLIC_DATA simgrid::kernel::resource::CpuModel* surf_cpu_model_vm;
-
-/** @ingroup SURF_models
  *  @brief The host model
  *
  *  Note that when you create an API on top of SURF, the host model should be the only one you use

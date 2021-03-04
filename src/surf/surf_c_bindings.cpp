@@ -80,7 +80,7 @@ double surf_solve(double max_date)
 
   // following the order it was done in HostCLM03Model->next_occurring_event
   XBT_DEBUG("Looking for next event in CPU models");
-  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::CPU], time_delta);
+  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM], time_delta);
   XBT_DEBUG("Looking for next event in network models");
   surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::NETWORK], time_delta);
   XBT_DEBUG("Looking for next event in disk models");
@@ -88,6 +88,7 @@ double surf_solve(double max_date)
 
   XBT_DEBUG("Looking for next event in virtual models");
   surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::VM], time_delta);
+  surf_update_next_event(models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM], time_delta);
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
 

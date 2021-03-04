@@ -71,6 +71,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
   routing::NetPoint* netpoint_ = nullptr;                                 // Our representative in the father NetZone
   resource::NetworkModel* network_model_;
+  resource::CpuModel* cpu_model_vm_;
 
 protected:
   explicit NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model);
@@ -103,6 +104,7 @@ public:
   RoutingMode hierarchy_ = RoutingMode::unset;
 
   resource::NetworkModel* get_network_model() const { return network_model_; }
+  resource::CpuModel* get_cpu_vm_model() const { return cpu_model_vm_; }
   const s4u::NetZone* get_iface() const { return &piface_; }
   s4u::NetZone* get_iface() { return &piface_; }
   unsigned int get_table_size() const { return vertices_.size(); }

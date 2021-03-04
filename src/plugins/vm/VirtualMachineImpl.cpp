@@ -11,12 +11,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile accross hosts");
 
-simgrid::vm::VMModel* surf_vm_model = nullptr;
-
 void surf_vm_model_init_HL13()
 {
-  if (surf_cpu_model_vm != nullptr)
-    surf_vm_model = new simgrid::vm::VMModel();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::vm::VMModel();
 }
 
 namespace simgrid {
@@ -149,13 +149,12 @@ double VMModel::next_occurring_event(double now)
     double solved_value = ws_vm->get_impl()->get_action()->get_variable()->get_value();
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->get_pm()->get_cname());
 
-    xbt_assert(cpu->get_model() == surf_cpu_model_vm);
     kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
     vcpu_system->update_constraint_bound(cpu->get_constraint(), virt_overhead * solved_value);
   }
 
-  /* 2. Ready. Get the next occurring event */
-  return surf_cpu_model_vm->next_occurring_event(now);
+  /* actual next occurring event is determined by VM CPU model at surf_solve */
+  return -1.0;
 }
 
 /************

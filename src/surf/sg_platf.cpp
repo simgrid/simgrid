@@ -475,6 +475,8 @@ static void surf_config_models_setup()
   surf_host_model_description[host_id].model_init_preparse();
 
   XBT_DEBUG("Call vm_model_init");
+  // FIXME[donassolo]: maybe remove it, find a way to create the object and leave the
+  // dependency with surf_cpu_model_vm explicity
   surf_vm_model_init_HL13();
 
   XBT_DEBUG("Call disk_model_init");

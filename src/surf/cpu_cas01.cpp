@@ -37,7 +37,6 @@ static simgrid::config::Flag<std::string>
 void surf_cpu_model_init_Cas01()
 {
   xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
-  xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
 
   if (cpu_optim_opt == "TI") {
     simgrid::kernel::resource::CpuTiModel::create_pm_vm_models();
@@ -51,7 +50,9 @@ void surf_cpu_model_init_Cas01()
     algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
 
   surf_cpu_model_pm = new simgrid::kernel::resource::CpuCas01Model(algo);
-  surf_cpu_model_vm = new simgrid::kernel::resource::CpuCas01Model(algo);
+  models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM].push_back(surf_cpu_model_pm);
+  auto cpu_model_vm = new simgrid::kernel::resource::CpuCas01Model(algo);
+  models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM].push_back(cpu_model_vm);
 }
 
 namespace simgrid {
@@ -61,7 +62,6 @@ namespace resource {
 CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
 {
   all_existing_models.push_back(this);
-  models_by_type[simgrid::kernel::resource::Model::Type::CPU].push_back(this);
 
   bool select = config::get_value<bool>("cpu/maxmin-selective-update");
 
