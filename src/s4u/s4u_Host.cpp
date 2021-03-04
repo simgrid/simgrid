@@ -319,7 +319,8 @@ size_t sg_host_count()
 sg_host_t* sg_host_list()
 {
   const simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
-  size_t host_count       = e->get_host_count();
+  size_t host_count             = e->get_host_count();
+
   xbt_assert(host_count > 0, "There is no host!");
   std::vector<simgrid::s4u::Host*> hosts = e->get_all_hosts();
 
@@ -512,8 +513,9 @@ int sg_host_is_on(const_sg_host_t host)
 /** @brief Get the properties of a host */
 xbt_dict_t sg_host_get_properties(const_sg_host_t host)
 {
-  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
   const std::unordered_map<std::string, std::string>* props = host->get_properties();
+  xbt_dict_t as_dict                                        = xbt_dict_new_homogeneous(xbt_free_f);
+
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {
