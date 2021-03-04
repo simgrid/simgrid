@@ -2,7 +2,7 @@
 ! output sort
 
 p Test allreduce with papi events activated - needs papi installed, simgrid compiled with it, and sudo or sudo sh -c "echo 0 > /proc/sys/kernel/perf_event_paranoid"
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ${platfdir:=.}/small_platform.xml -np 16 -trace --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/papi-events:default:PAPI_L3_LDM:PAPI_L2_LDM  
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ${platfdir:=.}/small_platform.xml -np 16 -trace --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/papi-events:default:PAPI_L1_TCM:PAPI_TOT_CYC
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay
 > [rank 2] -> Tremblay
@@ -53,7 +53,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll 
 > [15] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
 
 p Just check we have events in the trace, we can't check anything else.
-$ grep -q "PAPI_L3_LDM" ${bindir:=.}/smpi_simgrid.trace
+$ grep -q " PAPI_L1_TCM " ${bindir:=.}/smpi_simgrid.trace
 
 $ grep -q "^8 " ${bindir:=.}/smpi_simgrid.trace
 
