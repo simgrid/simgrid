@@ -503,11 +503,7 @@ void CommunicationDeterminismChecker::real_run()
 
       visited_state = nullptr;
 
-      /* Check for deadlocks */
-      if (api::get().mc_check_deadlock()) {
-        api::get().mc_show_deadlock();
-        throw simgrid::mc::DeadlockError();
-      }
+      api::get().mc_check_deadlock();
 
       while (not stack_.empty()) {
         std::unique_ptr<State> state(std::move(stack_.back()));

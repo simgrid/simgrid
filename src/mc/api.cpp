@@ -5,6 +5,7 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/checker/SimcallInspector.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
+#include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_pattern.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
@@ -506,14 +507,12 @@ unsigned long Api::mc_get_executed_trans() const
   return mc_model_checker->executed_transitions;
 }
 
-bool Api::mc_check_deadlock() const
+void Api::mc_check_deadlock() const
 {
-  return mc_model_checker->checkDeadlock();
-}
-
-void Api::mc_show_deadlock() const
-{
-  MC_show_deadlock();
+  if (mc_model_checker->checkDeadlock()) {
+    MC_show_deadlock();
+    throw DeadlockError();
+  }
 }
 
 /** Get the issuer of a simcall (`req->issuer`)

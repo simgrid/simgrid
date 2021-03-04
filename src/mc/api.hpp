@@ -96,8 +96,7 @@ public:
   void mc_inc_executed_trans() const;
   unsigned long mc_get_visited_states() const;
   unsigned long mc_get_executed_trans() const;
-  bool mc_check_deadlock() const;
-  void mc_show_deadlock() const;
+  void mc_check_deadlock() const;
   bool mc_is_null() const;
   Checker* mc_get_checker() const;
   void set_checker(Checker* const checker) const;
