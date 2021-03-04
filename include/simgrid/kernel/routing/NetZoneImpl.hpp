@@ -74,6 +74,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   resource::CpuModel* cpu_model_vm_;
   resource::CpuModel* cpu_model_pm_;
   resource::DiskModel* disk_model_;
+  simgrid::surf::HostModel* host_model_;
 
 protected:
   explicit NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model);
@@ -113,6 +114,9 @@ public:
   resource::CpuModel* get_cpu_pm_model() const { return cpu_model_pm_; }
   /** @brief Retrieves the disk model associated to this NetZone */
   resource::DiskModel* get_disk_model() const { return disk_model_; }
+  /** @brief Retrieves the host model associated to this NetZone */
+  // FIXME[donassolo]: why HostModel isn't in resource namespace?
+  simgrid::surf::HostModel* get_host_model() const { return host_model_; }
 
   const s4u::NetZone* get_iface() const { return &piface_; }
   s4u::NetZone* get_iface() { return &piface_; }

@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -34,6 +35,9 @@ NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource:
       models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM][0]);
   disk_model_ = static_cast<simgrid::kernel::resource::DiskModel*>(
       models_by_type[simgrid::kernel::resource::Model::Type::DISK][0]);
+  // FIXME[donassolo]: we probably need some validation of the coherence among
+  // the different models in each netZone
+  host_model_ = static_cast<simgrid::surf::HostModel*>(models_by_type[simgrid::kernel::resource::Model::Type::HOST][0]);
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 

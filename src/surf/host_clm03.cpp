@@ -12,7 +12,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 
 void surf_host_model_init_current_default()
 {
-  surf_host_model = new simgrid::surf::HostCLM03Model();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::surf::HostCLM03Model();
   simgrid::config::set_default<bool>("network/crosstraffic", true);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();

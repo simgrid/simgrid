@@ -10,8 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_host, ker_resource, "Host resources agregate CPU, networking and I/O features");
 
-simgrid::surf::HostModel *surf_host_model = nullptr;
-
 /*************
  * Callbacks *t
  *************/

@@ -81,6 +81,4 @@ public:
 }
 }
 
-XBT_PUBLIC_DATA simgrid::surf::HostModel* surf_host_model;
-
 #endif /* SURF_HOST_INTERFACE_HPP */

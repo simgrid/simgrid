@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simdag_private.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include <algorithm>
@@ -801,8 +802,10 @@ void SD_task_run(SD_task_t task)
   XBT_VERB("Executing task '%s'", task->name);
 
   /* Beware! The scheduling data are now used by the surf action directly! no copy was done */
+  // FIXME[donassolo]: verify if all hosts belongs to the same netZone?
+  auto host_model = (*task->allocation).front()->get_netpoint()->get_englobing_zone()->get_host_model();
   task->surf_action =
-      surf_host_model->execute_parallel(*task->allocation, task->flops_amount, task->bytes_amount, task->rate);
+      host_model->execute_parallel(*task->allocation, task->flops_amount, task->bytes_amount, task->rate);
 
   task->surf_action->set_data(task);
 

@@ -20,9 +20,9 @@ void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
-  surf_host_model = new simgrid::surf::HostL07Model();
-  all_existing_models.push_back(surf_host_model);
-  models_by_type[simgrid::kernel::resource::Model::Type::HOST].push_back(surf_host_model);
+  auto host_model = new simgrid::surf::HostL07Model();
+  all_existing_models.push_back(host_model);
+  models_by_type[simgrid::kernel::resource::Model::Type::HOST].push_back(host_model);
 }
 
 namespace simgrid {

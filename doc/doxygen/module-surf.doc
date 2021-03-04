@@ -43,6 +43,7 @@
 	- the CPU resource,
 	- the timer resource.
 
+    FIXME[donassolo]: fix doc
     The implementation of these resources depends on the platform
     models you choose.  You can select your model by calling
     #surf_host_model_init_current_default() (which will give you a

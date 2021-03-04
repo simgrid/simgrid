@@ -5,6 +5,7 @@
 
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "simgrid/Exception.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -120,7 +121,9 @@ ExecImpl* ExecImpl::start()
         surf_action_->set_user_bound(bound_);
       }
     } else {
-      surf_action_ = surf_host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
+      // FIXME[donassolo]: verify if all hosts belongs to the same netZone?
+      auto host_model = hosts_.front()->get_netpoint()->get_englobing_zone()->get_host_model();
+      surf_action_    = host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
     }
     surf_action_->set_activity(this);
   }
