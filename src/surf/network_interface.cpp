@@ -153,6 +153,7 @@ void LinkImpl::turn_off()
 
 void LinkImpl::seal()
 {
+  xbt_assert(this->get_model(), "Cannot seal Link(%s) without setting the Network model first", this->get_cname());
   Resource::seal();
   simgrid::s4u::Link::on_creation(*get_iface());
 }

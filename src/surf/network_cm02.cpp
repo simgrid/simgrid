@@ -100,11 +100,16 @@ NetworkCm02Model::NetworkCm02Model()
 LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
                                         s4u::Link::SharingPolicy policy)
 {
-  if (policy == s4u::Link::SharingPolicy::WIFI)
-    return (new NetworkWifiLink(name, bandwidths, get_maxmin_system()))->set_model(this);
+  LinkImpl* link;
+  if (policy == s4u::Link::SharingPolicy::WIFI) {
+    link = new NetworkWifiLink(name, bandwidths, get_maxmin_system());
+  } else {
+    xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
+    link = new NetworkCm02Link(name, bandwidths[0], policy, get_maxmin_system());
+  }
 
-  xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
-  return (new NetworkCm02Link(name, bandwidths[0], policy, get_maxmin_system()))->set_model(this);
+  link->set_model(this);
+  return link;
 }
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)

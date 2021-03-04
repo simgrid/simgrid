@@ -237,7 +237,9 @@ kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name
                                                          s4u::Link::SharingPolicy policy)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  return new LinkL07(name, bandwidths[0], policy, get_maxmin_system());
+  auto link = new LinkL07(name, bandwidths[0], policy, get_maxmin_system());
+  link->set_model(this);
+  return link;
 }
 
 /************
