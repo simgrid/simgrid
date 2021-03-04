@@ -275,7 +275,9 @@ std::vector<Disk*> Host::get_disks() const
 
 Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  return surf_disk_model->create_disk(name, read_bandwidth, write_bandwidth)->set_host(this)->get_iface();
+  auto disk =
+      this->get_netpoint()->get_englobing_zone()->get_disk_model()->create_disk(name, read_bandwidth, write_bandwidth);
+  return disk->set_host(this)->get_iface();
 }
 
 void Host::add_disk(const Disk* disk)

@@ -11,8 +11,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_disk, ker_resource, "Disk resources, fuelling I/O activities");
 
-simgrid::kernel::resource::DiskModel* surf_disk_model = nullptr;
-
 namespace simgrid {
 namespace kernel {
 namespace resource {
@@ -28,7 +26,6 @@ DiskModel::DiskModel() : Model(Model::UpdateAlgo::FULL)
 
 DiskModel::~DiskModel()
 {
-  surf_disk_model = nullptr;
 }
 
 /************
@@ -101,6 +98,7 @@ void DiskImpl::turn_off()
 
 void DiskImpl::seal()
 {
+  xbt_assert(this->get_model(), "Cannot seal Disk (%s) without setting the model first", this->get_cname());
   lmm::System* maxmin_system = get_model()->get_maxmin_system();
   this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_))
       ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_))

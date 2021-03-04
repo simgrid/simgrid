@@ -20,8 +20,6 @@
  * Model *
  *********/
 
-XBT_PUBLIC_DATA simgrid::kernel::resource::DiskModel* surf_disk_model;
-
 namespace simgrid {
 namespace kernel {
 namespace resource {

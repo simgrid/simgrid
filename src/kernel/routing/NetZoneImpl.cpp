@@ -7,6 +7,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -31,6 +32,8 @@ NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource:
   }
   cpu_model_pm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
       models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM][0]);
+  disk_model_ = static_cast<simgrid::kernel::resource::DiskModel*>(
+      models_by_type[simgrid::kernel::resource::Model::Type::DISK][0]);
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 
@@ -69,6 +72,13 @@ int NetZoneImpl::get_host_count() const
       count++;
   }
   return count;
+}
+
+s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+{
+  auto* l = disk_model_->create_disk(name, read_bandwidth, write_bandwidth);
+
+  return l->get_iface();
 }
 
 s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths,

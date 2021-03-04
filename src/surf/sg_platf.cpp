@@ -331,7 +331,8 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* c
 
 simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  simgrid::kernel::resource::DiskImpl* pimpl = surf_disk_model->create_disk(disk->id, disk->read_bw, disk->write_bw);
+  simgrid::kernel::resource::DiskImpl* pimpl =
+      routing_get_current()->create_disk(disk->id, disk->read_bw, disk->write_bw)->get_impl();
 
   if (disk->properties) {
     pimpl->set_properties(*disk->properties);

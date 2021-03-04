@@ -19,7 +19,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_disk);
 
 void surf_disk_model_init_default()
 {
-  surf_disk_model = new simgrid::kernel::resource::DiskS19Model();
+  /* FIXME[donassolo]: this smells bad, but works
+   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
+   * We need a manager for these models */
+  new simgrid::kernel::resource::DiskS19Model();
 }
 
 namespace simgrid {
