@@ -91,7 +91,7 @@ void smpi_bench_begin()
   if (not smpi_cfg_papi_events_file().empty()) {
     int event_set = smpi_process()->papi_event_set();
     // PAPI_start sets everything to 0! See man(3) PAPI_start
-    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && PAPI_start(event_set) != PAPI_OK) {
+    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && event_set && PAPI_start(event_set) != PAPI_OK) {
       // TODO This needs some proper handling.
       XBT_CRITICAL("Could not start PAPI counters.\n");
       xbt_die("Error.");
@@ -132,7 +132,7 @@ void smpi_bench_end()
     int event_set                       = smpi_process()->papi_event_set();
     std::vector<long long> event_values(counter_data.size());
 
-    if (PAPI_stop(event_set, &event_values[0]) != PAPI_OK) { // Error
+    if (event_set && PAPI_stop(event_set, &event_values[0]) != PAPI_OK) { // Error
       XBT_CRITICAL("Could not stop PAPI counters.\n");
       xbt_die("Error.");
     } else {
