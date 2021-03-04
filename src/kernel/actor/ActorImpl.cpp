@@ -138,8 +138,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 void ActorImpl::detach()
 {
   auto* context = dynamic_cast<context::AttachContext*>(context::Context::self());
-  if (context == nullptr)
-    xbt_die("Not a suitable context");
+  xbt_assert(context != nullptr, "Not a suitable context");
 
   context->get_actor()->cleanup();
   context->attach_stop();
