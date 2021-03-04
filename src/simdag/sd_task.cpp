@@ -33,36 +33,36 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
  * @return the new task
  * @see SD_task_destroy()
  */
-SD_task_t SD_task_create(const char *name, void *data, double amount)
+SD_task_t SD_task_create(const char* name, void* data, double amount)
 {
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
-  task->kind = SD_TASK_NOT_TYPED;
-  task->state= SD_NOT_SCHEDULED;
+  task->kind     = SD_TASK_NOT_TYPED;
+  task->state    = SD_NOT_SCHEDULED;
   sd_global->initial_tasks.insert(task);
 
   task->marked       = false;
-  task->start_time = -1.0;
-  task->finish_time = -1.0;
-  task->surf_action = nullptr;
+  task->start_time   = -1.0;
+  task->finish_time  = -1.0;
+  task->surf_action  = nullptr;
   task->watch_points = 0;
 
-  task->inputs = new std::set<SD_task_t>();
-  task->outputs = new std::set<SD_task_t>();
+  task->inputs       = new std::set<SD_task_t>();
+  task->outputs      = new std::set<SD_task_t>();
   task->predecessors = new std::set<SD_task_t>();
-  task->successors = new std::set<SD_task_t>();
+  task->successors   = new std::set<SD_task_t>();
 
-  task->data = data;
-  task->name = xbt_strdup(name);
-  task->amount = amount;
+  task->data       = data;
+  task->name       = xbt_strdup(name);
+  task->amount     = amount;
   task->allocation = new std::vector<sg_host_t>();
-  task->rate = -1;
+  task->rate       = -1;
   return task;
 }
 
-static inline SD_task_t SD_task_create_sized(const char *name, void *data, double amount, int count)
+static inline SD_task_t SD_task_create_sized(const char* name, void* data, double amount, int count)
 {
-  SD_task_t task = SD_task_create(name, data, amount);
-  task->bytes_amount = xbt_new0(double, count * count);
+  SD_task_t task     = SD_task_create(name, data, amount);
+  task->bytes_amount = xbt_new0(double, count* count);
   task->flops_amount = xbt_new0(double, count);
   return task;
 }
@@ -76,11 +76,11 @@ static inline SD_task_t SD_task_create_sized(const char *name, void *data, doubl
  * A end-to-end communication must be scheduled on 2 hosts, and the amount specified at creation is sent from hosts[0]
  * to hosts[1].
  */
-SD_task_t SD_task_create_comm_e2e(const char *name, void *data, double amount)
+SD_task_t SD_task_create_comm_e2e(const char* name, void* data, double amount)
 {
-  SD_task_t res = SD_task_create_sized(name, data, amount, 2);
+  SD_task_t res        = SD_task_create_sized(name, data, amount, 2);
   res->bytes_amount[2] = amount;
-  res->kind = SD_TASK_COMM_E2E;
+  res->kind            = SD_TASK_COMM_E2E;
 
   return res;
 }
@@ -98,11 +98,11 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data, double amount)
  * @param flops_amount amount of compute work to be done by the task
  * @return the new SD_TASK_COMP_SEQ typed task
  */
-SD_task_t SD_task_create_comp_seq(const char *name, void *data, double flops_amount)
+SD_task_t SD_task_create_comp_seq(const char* name, void* data, double flops_amount)
 {
-  SD_task_t res = SD_task_create_sized(name, data, flops_amount, 1);
+  SD_task_t res        = SD_task_create_sized(name, data, flops_amount, 1);
   res->flops_amount[0] = flops_amount;
-  res->kind = SD_TASK_COMP_SEQ;
+  res->kind            = SD_TASK_COMP_SEQ;
 
   return res;
 }
@@ -122,13 +122,13 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data, double flops_amo
  * @param alpha purely serial fraction of the work to be done (in [0.;1.[)
  * @return the new task
  */
-SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data, double flops_amount, double alpha)
+SD_task_t SD_task_create_comp_par_amdahl(const char* name, void* data, double flops_amount, double alpha)
 {
   xbt_assert(alpha < 1. && alpha >= 0., "Invalid parameter: alpha must be in [0.;1.[");
 
   SD_task_t res = SD_task_create(name, data, flops_amount);
-  res->alpha = alpha;
-  res->kind = SD_TASK_COMP_PAR_AMDAHL;
+  res->alpha    = alpha;
+  res->kind     = SD_TASK_COMP_PAR_AMDAHL;
 
   return res;
 }
@@ -147,10 +147,10 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data, double fl
  * @param amount amount of data to redistribute by the task
  * @return the new task
  */
-SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data, double amount)
+SD_task_t SD_task_create_comm_par_mxn_1d_block(const char* name, void* data, double amount)
 {
   SD_task_t res = SD_task_create(name, data, amount);
-  res->kind = SD_TASK_COMM_PAR_MXN_1D_BLOCK;
+  res->kind     = SD_TASK_COMM_PAR_MXN_1D_BLOCK;
 
   return res;
 }
@@ -218,7 +218,7 @@ void* SD_task_get_data(const_SD_task_t task)
  * @param data the new data you want to associate with this task
  * @see SD_task_get_data()
  */
-void SD_task_set_data(SD_task_t task, void *data)
+void SD_task_set_data(SD_task_t task, void* data)
 {
   task->data = data;
 }
@@ -239,7 +239,7 @@ void SD_task_set_data(SD_task_t task, void *data)
 void SD_task_set_rate(SD_task_t task, double rate)
 {
   xbt_assert(task->kind == SD_TASK_COMM_E2E, "The rate can be modified for end-to-end communications only.");
-  if(task->state < SD_RUNNING) {
+  if (task->state < SD_RUNNING) {
     task->rate = rate;
   } else {
     XBT_WARN("Task %p has started. Changing rate is ineffective.", task);
@@ -265,17 +265,17 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 {
   std::set<SD_task_t>::iterator idx;
   XBT_DEBUG("Set state of '%s' to %d", task->name, new_state);
-  if ((new_state == SD_NOT_SCHEDULED || new_state == SD_SCHEDULABLE) && task->state == SD_FAILED){
+  if ((new_state == SD_NOT_SCHEDULED || new_state == SD_SCHEDULABLE) && task->state == SD_FAILED) {
     sd_global->completed_tasks.erase(task);
     sd_global->initial_tasks.insert(task);
   }
 
-  if (new_state == SD_SCHEDULED && task->state == SD_RUNNABLE){
+  if (new_state == SD_SCHEDULED && task->state == SD_RUNNABLE) {
     sd_global->initial_tasks.insert(task);
     sd_global->runnable_tasks.erase(task);
   }
 
-  if (new_state == SD_RUNNABLE){
+  if (new_state == SD_RUNNABLE) {
     idx = sd_global->initial_tasks.find(task);
     if (idx != sd_global->initial_tasks.end()) {
       sd_global->runnable_tasks.insert(*idx);
@@ -286,10 +286,10 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   if (new_state == SD_RUNNING)
     sd_global->runnable_tasks.erase(task);
 
-  if (new_state == SD_DONE || new_state == SD_FAILED){
+  if (new_state == SD_DONE || new_state == SD_FAILED) {
     sd_global->completed_tasks.insert(task);
     task->start_time = task->surf_action->get_start_time();
-    if (new_state == SD_DONE){
+    if (new_state == SD_DONE) {
       task->finish_time = task->surf_action->get_finish_time();
 #if SIMGRID_HAVE_JEDULE
       jedule_log_sd_event(task);
@@ -306,7 +306,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   if (task->watch_points & new_state) {
     XBT_VERB("Watch point reached with task '%s'!", task->name);
     sd_global->watch_point_reached = true;
-    SD_task_unwatch(task, new_state);   /* remove the watch point */
+    SD_task_unwatch(task, new_state); /* remove the watch point */
   }
 }
 
@@ -322,7 +322,7 @@ const char* SD_task_get_name(const_SD_task_t task)
 }
 
 /** @brief Allows to change the name of a task */
-void SD_task_set_name(SD_task_t task, const char *name)
+void SD_task_set_name(SD_task_t task, const char* name)
 {
   xbt_free(task->name);
   task->name = xbt_strdup(name);
@@ -459,28 +459,28 @@ void SD_task_dump(const_SD_task_t task)
 
   if (task->kind != 0) {
     switch (task->kind) {
-    case SD_TASK_COMM_E2E:
-      XBT_INFO("  - kind: end-to-end communication");
-      break;
-    case SD_TASK_COMP_SEQ:
-      XBT_INFO("  - kind: sequential computation");
-      break;
-    case SD_TASK_COMP_PAR_AMDAHL:
-      XBT_INFO("  - kind: parallel computation following Amdahl's law");
-      break;
-    case SD_TASK_COMM_PAR_MXN_1D_BLOCK:
-      XBT_INFO("  - kind: MxN data redistribution assuming 1D block distribution");
-      break;
-    default:
-      XBT_INFO("  - (unknown kind %d)", task->kind);
+      case SD_TASK_COMM_E2E:
+        XBT_INFO("  - kind: end-to-end communication");
+        break;
+      case SD_TASK_COMP_SEQ:
+        XBT_INFO("  - kind: sequential computation");
+        break;
+      case SD_TASK_COMP_PAR_AMDAHL:
+        XBT_INFO("  - kind: parallel computation following Amdahl's law");
+        break;
+      case SD_TASK_COMM_PAR_MXN_1D_BLOCK:
+        XBT_INFO("  - kind: MxN data redistribution assuming 1D block distribution");
+        break;
+      default:
+        XBT_INFO("  - (unknown kind %d)", task->kind);
     }
   }
 
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
     XBT_INFO("  - alpha: %.2f", task->alpha);
-  XBT_INFO("  - Dependencies to satisfy: %zu", task->inputs->size()+ task->predecessors->size());
-  if ((task->inputs->size()+ task->predecessors->size()) > 0) {
+  XBT_INFO("  - Dependencies to satisfy: %zu", task->inputs->size() + task->predecessors->size());
+  if ((task->inputs->size() + task->predecessors->size()) > 0) {
     XBT_INFO("  - pre-dependencies:");
     for (auto const& it : *task->predecessors)
       XBT_INFO("    %s", it->name);
@@ -504,16 +504,16 @@ void SD_task_dotty(const_SD_task_t task, void* out)
   auto* fout = static_cast<FILE*>(out);
   fprintf(fout, "  T%p [label=\"%.20s\"", task, task->name);
   switch (task->kind) {
-  case SD_TASK_COMM_E2E:
-  case SD_TASK_COMM_PAR_MXN_1D_BLOCK:
-    fprintf(fout, ", shape=box");
-    break;
-  case SD_TASK_COMP_SEQ:
-  case SD_TASK_COMP_PAR_AMDAHL:
-    fprintf(fout, ", shape=circle");
-    break;
-  default:
-    xbt_die("Unknown task type!");
+    case SD_TASK_COMM_E2E:
+    case SD_TASK_COMM_PAR_MXN_1D_BLOCK:
+      fprintf(fout, ", shape=box");
+      break;
+    case SD_TASK_COMP_SEQ:
+    case SD_TASK_COMP_PAR_AMDAHL:
+      fprintf(fout, ", shape=circle");
+      break;
+    default:
+      xbt_die("Unknown task type!");
   }
   fprintf(fout, "];\n");
   for (auto const& it : *task->predecessors)
@@ -553,14 +553,14 @@ void SD_task_dependency_add(SD_task_t src, SD_task_t dst)
 
   XBT_DEBUG("SD_task_dependency_add: src = %s, dst = %s", src->name, dst->name);
 
-  if (src->kind == SD_TASK_COMM_E2E || src->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
+  if (src->kind == SD_TASK_COMM_E2E || src->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK) {
     if (dst->kind == SD_TASK_COMP_SEQ || dst->kind == SD_TASK_COMP_PAR_AMDAHL)
-        dst->inputs->insert(src);
+      dst->inputs->insert(src);
     else
       dst->predecessors->insert(src);
     src->successors->insert(dst);
   } else {
-    if (dst->kind == SD_TASK_COMM_E2E|| dst->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
+    if (dst->kind == SD_TASK_COMM_E2E || dst->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
       src->outputs->insert(dst);
     else
       src->successors->insert(dst);
@@ -614,14 +614,14 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
         "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'", src->name,
         dst->name, dst->name, src->name));
 
-  if (src->kind == SD_TASK_COMM_E2E || src->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
+  if (src->kind == SD_TASK_COMM_E2E || src->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK) {
     if (dst->kind == SD_TASK_COMP_SEQ || dst->kind == SD_TASK_COMP_PAR_AMDAHL)
       dst->inputs->erase(src);
     else
       dst->predecessors->erase(src);
     src->successors->erase(dst);
   } else {
-    if (dst->kind == SD_TASK_COMM_E2E|| dst->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
+    if (dst->kind == SD_TASK_COMM_E2E || dst->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
       src->outputs->erase(dst);
     else
       src->successors->erase(dst);
@@ -726,8 +726,8 @@ static inline void SD_task_do_schedule(SD_task_t task)
  * @param rate task execution speed rate
  * @see SD_task_unschedule()
  */
-void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * host_list,
-                      const double *flops_amount, const double *bytes_amount, double rate)
+void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t* host_list, const double* flops_amount,
+                      const double* bytes_amount, double rate)
 {
   xbt_assert(host_count > 0, "host_count must be positive");
 
@@ -750,7 +750,7 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * host_lis
     task->bytes_amount = nullptr;
   }
 
-  for(int i =0; i<host_count; i++)
+  for (int i = 0; i < host_count; i++)
     task->allocation->push_back(host_list[i]);
 
   SD_task_do_schedule(task);
@@ -795,7 +795,7 @@ void SD_task_unschedule(SD_task_t task)
 /* Runs a task. */
 void SD_task_run(SD_task_t task)
 {
-  xbt_assert(task->state == SD_RUNNABLE, "Task '%s' is not runnable! Task state: %d", task->name, (int) task->state);
+  xbt_assert(task->state == SD_RUNNABLE, "Task '%s' is not runnable! Task state: %d", task->name, (int)task->state);
   xbt_assert(task->allocation != nullptr, "Task '%s': host_list is nullptr!", task->name);
 
   XBT_VERB("Executing task '%s'", task->name);
@@ -840,7 +840,7 @@ double SD_task_get_start_time(const_SD_task_t task)
  */
 double SD_task_get_finish_time(const_SD_task_t task)
 {
-  if (task->surf_action)        /* should never happen as actions are destroyed right after their completion */
+  if (task->surf_action) /* should never happen as actions are destroyed right after their completion */
     return task->surf_action->get_finish_time();
   else
     return task->finish_time;
@@ -848,34 +848,39 @@ double SD_task_get_finish_time(const_SD_task_t task)
 
 void SD_task_distribute_comp_amdahl(SD_task_t task, int count)
 {
-  xbt_assert(task->kind == SD_TASK_COMP_PAR_AMDAHL, "Task %s is not a SD_TASK_COMP_PAR_AMDAHL typed task."
-              "Cannot use this function.", task->name);
+  xbt_assert(task->kind == SD_TASK_COMP_PAR_AMDAHL,
+             "Task %s is not a SD_TASK_COMP_PAR_AMDAHL typed task."
+             "Cannot use this function.",
+             task->name);
   task->flops_amount = xbt_new0(double, count);
-  task->bytes_amount = xbt_new0(double, count * count);
+  task->bytes_amount = xbt_new0(double, count* count);
 
-  for (int i=0; i<count; i++){
-    task->flops_amount[i] = (task->alpha + (1 - task->alpha)/count) * task->amount;
+  for (int i = 0; i < count; i++) {
+    task->flops_amount[i] = (task->alpha + (1 - task->alpha) / count) * task->amount;
   }
 }
 
-void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb){
-  xbt_assert(task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK, "Task %s is not a SD_TASK_COMM_PAR_MXN_1D_BLOCK typed task."
-              "Cannot use this function.", task->name);
+void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb)
+{
+  xbt_assert(task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK,
+             "Task %s is not a SD_TASK_COMM_PAR_MXN_1D_BLOCK typed task."
+             "Cannot use this function.",
+             task->name);
   xbt_free(task->bytes_amount);
-  task->bytes_amount = xbt_new0(double,task->allocation->size() * task->allocation->size());
+  task->bytes_amount = xbt_new0(double, task->allocation->size() * task->allocation->size());
 
-  for (int i=0; i<src_nb; i++) {
-    double src_start = i*task->amount/src_nb;
-    double src_end = src_start + task->amount/src_nb;
-    for (int j=0; j<dst_nb; j++) {
-      double dst_start = j*task->amount/dst_nb;
-      double dst_end = dst_start + task->amount/dst_nb;
+  for (int i = 0; i < src_nb; i++) {
+    double src_start = i * task->amount / src_nb;
+    double src_end   = src_start + task->amount / src_nb;
+    for (int j = 0; j < dst_nb; j++) {
+      double dst_start = j * task->amount / dst_nb;
+      double dst_end   = dst_start + task->amount / dst_nb;
       XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
-      task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
+      task->bytes_amount[i * (src_nb + dst_nb) + src_nb + j] = 0.0;
       if ((src_end > dst_start) && (dst_end > src_start)) { /* There is something to send */
         task->bytes_amount[i * (src_nb + dst_nb) + src_nb + j] =
             std::min(src_end, dst_end) - std::max(src_start, dst_start);
-        XBT_VERB("==> %.2f", task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
+        XBT_VERB("==> %.2f", task->bytes_amount[i * (src_nb + dst_nb) + src_nb + j]);
       }
     }
   }
@@ -889,19 +894,19 @@ void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb){
  *
  * To be auto-schedulable, a task must be a typed computation SD_TASK_COMP_SEQ or SD_TASK_COMP_PAR_AMDAHL.
  */
-void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
+void SD_task_schedulev(SD_task_t task, int count, const sg_host_t* list)
 {
   xbt_assert(task->kind == SD_TASK_COMP_SEQ || task->kind == SD_TASK_COMP_PAR_AMDAHL,
-      "Task %s is not typed. Cannot automatically schedule it.", SD_task_get_name(task));
+             "Task %s is not typed. Cannot automatically schedule it.", SD_task_get_name(task));
 
-  for(int i =0; i<count; i++)
+  for (int i = 0; i < count; i++)
     task->allocation->push_back(list[i]);
 
   XBT_VERB("Schedule computation task %s on %zu host(s)", task->name, task->allocation->size());
 
   if (task->kind == SD_TASK_COMP_SEQ) {
     if (not task->flops_amount) { /*This task has failed and is rescheduled. Reset the flops_amount*/
-      task->flops_amount = xbt_new0(double, 1);
+      task->flops_amount    = xbt_new0(double, 1);
       task->flops_amount[0] = task->amount;
     }
     XBT_VERB("It costs %.f flops", task->flops_amount[0]);
@@ -921,16 +926,16 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
     if (input->allocation->empty())
       XBT_VERB("Sender side of '%s' not scheduled. Set receiver side to '%s''s allocation", input->name, task->name);
 
-    for (int i=0; i<count;i++)
+    for (int i = 0; i < count; i++)
       input->allocation->push_back(task->allocation->at(i));
 
-    if (input->allocation->size () > task->allocation->size()) {
+    if (input->allocation->size() > task->allocation->size()) {
       if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
         SD_task_build_MxN_1D_block_matrix(input, src_nb, dst_nb);
 
       SD_task_do_schedule(input);
-      XBT_VERB ("Auto-Schedule Communication task '%s'. Send %.f bytes from %d hosts to %d hosts.",
-          input->name,input->amount, src_nb, dst_nb);
+      XBT_VERB("Auto-Schedule Communication task '%s'. Send %.f bytes from %d hosts to %d hosts.", input->name,
+               input->amount, src_nb, dst_nb);
     }
   }
 
@@ -940,16 +945,16 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
     if (output->allocation->empty())
       XBT_VERB("Receiver side of '%s' not scheduled. Set sender side to '%s''s allocation", output->name, task->name);
 
-    for (int i=0; i<count;i++)
-      output->allocation->insert(output->allocation->begin()+i, task->allocation->at(i));
+    for (int i = 0; i < count; i++)
+      output->allocation->insert(output->allocation->begin() + i, task->allocation->at(i));
 
-    if (output->allocation->size () > task->allocation->size()) {
+    if (output->allocation->size() > task->allocation->size()) {
       if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
         SD_task_build_MxN_1D_block_matrix(output, src_nb, dst_nb);
 
       SD_task_do_schedule(output);
-      XBT_VERB ("Auto-Schedule Communication task %s. Send %.f bytes from %d hosts to %d hosts.",
-                output->name, output->amount, src_nb, dst_nb);
+      XBT_VERB("Auto-Schedule Communication task %s. Send %.f bytes from %d hosts to %d hosts.", output->name,
+               output->amount, src_nb, dst_nb);
     }
   }
 }
@@ -964,7 +969,7 @@ void SD_task_schedulel(SD_task_t task, int count, ...)
   va_list ap;
   std::vector<sg_host_t> list(count);
   va_start(ap, count);
-  for (int i=0; i<count; i++)
+  for (int i = 0; i < count; i++)
     list[i] = va_arg(ap, sg_host_t);
 
   va_end(ap);

@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/modelchecker.h"
+#include "simgrid/s4u/Exec.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -58,7 +58,7 @@ namespace activity {
 
 ExecImpl::ExecImpl()
 {
-  piface_ = new s4u::Exec(this);
+  piface_                = new s4u::Exec(this);
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
     actor_ = self;
@@ -196,7 +196,7 @@ void ExecImpl::finish()
      * simcall */
 
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
-      continue;                        // if process handling comm is killed
+      continue;                                 // if process handling comm is killed
     if (simcall->call_ == simix::Simcall::EXECUTION_WAITANY_FOR) {
       simgrid::kernel::activity::ExecImpl** execs = simcall_execution_waitany_for__get__execs(simcall);
       size_t count                                = simcall_execution_waitany_for__get__count(simcall);
