@@ -172,7 +172,7 @@ void find_object_address(std::vector<xbt::VmMap> const& maps, ObjectInformation*
     else if (reg.prot == PROT_READ) {
       xbt_assert(not result->start_ro,
                  "Multiple read-only segments for %s, not supported. Compiling with the following may help: "
-                 "-Wl,-znorelro -Wl,-znoseparate-code",
+                 "-g -Wl,-znorelro -Wl,-znoseparate-code",
                  maps[i].pathname.c_str());
       result->start_ro = (char*)reg.start_addr;
       result->end_ro   = (char*)reg.end_addr;
