@@ -822,18 +822,11 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
       }
       break;
 
-    case Simcall::MUTEX_TRYLOCK:
     case Simcall::MUTEX_LOCK: {
-      if (req->call_ == Simcall::MUTEX_LOCK)
-        type = "Mutex LOCK";
-      else
-        type = "Mutex TRYLOCK";
-
+      type = "Mutex LOCK";
       simgrid::mc::Remote<simgrid::kernel::activity::MutexImpl> mutex;
       mc_model_checker->get_remote_simulation().read_bytes(mutex.get_buffer(), sizeof(mutex),
-                                                           remote(req->call_ == Simcall::MUTEX_LOCK
-                                                                      ? simcall_mutex_lock__get__mutex(req)
-                                                                      : simcall_mutex_trylock__get__mutex(req)));
+                                                           remote(simcall_mutex_lock__get__mutex(req)));
       args = "locked = " + std::to_string(mutex.get_buffer()->is_locked()) + ", owner = ";
       if (mutex.get_buffer()->get_owner() != nullptr)
         args += std::to_string(mc_model_checker->get_remote_simulation()
@@ -919,10 +912,6 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
           label = "[" + get_actor_dot_label(issuer) + "] TestAny TRUE";
           label += xbt::string_printf(" [%d of %zu]", value + 1, simcall_comm_testany__get__count(req));
         }
-        break;
-
-      case Simcall::MUTEX_TRYLOCK:
-        label = "[" + get_actor_dot_label(issuer) + "] Mutex TRYLOCK";
         break;
 
       case Simcall::MUTEX_LOCK:

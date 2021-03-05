@@ -111,13 +111,6 @@ inline static void simcall_BODY_mutex_lock(smx_mutex_t mutex)
   return simcall<void, smx_mutex_t>(Simcall::MUTEX_LOCK, mutex);
 }
 
-inline static int simcall_BODY_mutex_trylock(smx_mutex_t mutex)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_mutex_trylock(&SIMIX_process_self()->simcall_, mutex);
-  return simcall<int, smx_mutex_t>(Simcall::MUTEX_TRYLOCK, mutex);
-}
-
 inline static void simcall_BODY_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */

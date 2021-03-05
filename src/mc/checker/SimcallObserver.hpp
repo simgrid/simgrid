@@ -73,6 +73,16 @@ public:
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
 };
+
+class MutexTrylockSimcall : public SimcallObserver {
+  kernel::activity::MutexImpl* mutex_;
+
+public:
+  MutexTrylockSimcall(smx_actor_t actor, kernel::activity::MutexImpl* mutex) : SimcallObserver(actor), mutex_(mutex) {}
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+  kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
+};
 } // namespace mc
 } // namespace simgrid
 

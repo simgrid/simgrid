@@ -47,7 +47,6 @@ bool           comm_test(simgrid::kernel::activity::CommImpl* comm) [[block]];
 int            comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count) [[block]];
 
 void        mutex_lock(smx_mutex_t mutex) [[block]];
-int         mutex_trylock(smx_mutex_t mutex);
 
 void       cond_wait(smx_cond_t cond, smx_mutex_t mutex) [[block]];
 int        cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) [[block]];

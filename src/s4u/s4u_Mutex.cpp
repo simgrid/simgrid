@@ -38,7 +38,10 @@ void Mutex::unlock()
 /** @brief Acquire the mutex if it's free, and return false (without blocking) if not */
 bool Mutex::try_lock()
 {
-  return simcall_mutex_trylock(pimpl_);
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  mc::MutexTrylockSimcall observer{issuer, pimpl_};
+  return kernel::actor::simcall([&observer] { return observer.get_mutex()->try_lock(observer.get_issuer()); },
+                                &observer);
 }
 
 /** @brief Create a new mutex
