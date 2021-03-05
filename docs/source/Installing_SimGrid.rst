@@ -233,10 +233,10 @@ enable_compile_warnings (on/OFF)
 
 enable_debug (ON/off)
   Disabling this option discards all log messages of severity
-  debug or below at compile time (see @ref XBT_log). The resulting
-  code is faster than if you discard these messages at
-  runtime. However, it obviously becomes impossible to get any debug
-  info from SimGrid if something goes wrong.
+  debug or below at compile time (see :ref:`outcome_logs`). The resulting
+  code is marginaly faster than if you discard these messages at
+  runtime, but it obviously becomes impossible to get any debug
+  info from SimGrid when things go wrong.
 
 enable_documentation (on/OFF)
   Generates the documentation pages. Building the documentation is not
