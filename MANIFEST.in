@@ -796,6 +796,7 @@ include teshsuite/smpi/coll-allgatherv/coll-allgatherv.c
 include teshsuite/smpi/coll-allgatherv/coll-allgatherv.tesh
 include teshsuite/smpi/coll-allreduce/coll-allreduce-automatic.tesh
 include teshsuite/smpi/coll-allreduce/coll-allreduce-large.tesh
+include teshsuite/smpi/coll-allreduce/coll-allreduce-papi.tesh
 include teshsuite/smpi/coll-allreduce/coll-allreduce.c
 include teshsuite/smpi/coll-allreduce/coll-allreduce.tesh
 include teshsuite/smpi/coll-alltoall/clusters.tesh
@@ -2223,8 +2224,8 @@ include src/mc/checker/LivenessChecker.cpp
 include src/mc/checker/LivenessChecker.hpp
 include src/mc/checker/SafetyChecker.cpp
 include src/mc/checker/SafetyChecker.hpp
-include src/mc/checker/SimcallInspector.cpp
-include src/mc/checker/SimcallInspector.hpp
+include src/mc/checker/SimcallObserver.cpp
+include src/mc/checker/SimcallObserver.hpp
 include src/mc/checker/UdporChecker.cpp
 include src/mc/checker/UdporChecker.hpp
 include src/mc/checker/simgrid_mc.cpp
