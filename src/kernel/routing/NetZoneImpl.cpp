@@ -79,7 +79,8 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   if (hierarchy_ == RoutingMode::unset)
     hierarchy_ = RoutingMode::base;
 
-  auto* res = (new s4u::Host(name))->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
+  auto* res = new s4u::Host(name);
+  res->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
 
   surf_cpu_model_pm->create_cpu(res, speed_per_pstate, core_amount);
 
