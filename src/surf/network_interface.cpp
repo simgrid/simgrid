@@ -153,12 +153,14 @@ void LinkImpl::turn_off()
     }
   }
 }
+
 void LinkImpl::seal()
 {
   this->set_model(surf_network_model);
-
+  Resource::seal();
   simgrid::s4u::Link::on_creation(*get_iface());
 }
+
 void LinkImpl::on_bandwidth_change() const
 {
   s4u::Link::on_bandwidth_change(this->piface_);

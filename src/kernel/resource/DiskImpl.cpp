@@ -106,6 +106,7 @@ void DiskImpl::seal()
       ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_))
       ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw_, write_bw_)));
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_, write_bw_);
+  Resource::seal();
   turn_on();
 }
 xbt::signal<void(DiskAction const&, Action::State, Action::State)> DiskAction::on_state_change;

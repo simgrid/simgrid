@@ -75,6 +75,8 @@ public:
   Cpu* set_core_count(int core_count);
   virtual int get_core_count();
 
+  void seal();
+
   /** @brief Get a forecast of the speed (in flops/s) if the load were as provided.
    *
    * The provided load should encompasses both the application's activities and the external load that come from a

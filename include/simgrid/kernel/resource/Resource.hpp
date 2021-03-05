@@ -25,6 +25,7 @@ namespace resource {
 class XBT_PUBLIC Resource {
   std::string name_ = "unnamed";
   bool is_on_       = true;
+  bool sealed_      = false;
 
 protected:
   struct Metric {
@@ -37,6 +38,7 @@ protected:
 public:
   Resource(const std::string& name) : name_(name){};
   virtual ~Resource() = default;
+  virtual void seal() { sealed_ = true; }
 
   /** @brief Get the name of the current Resource */
   const std::string& get_name() const { return name_; }
@@ -53,6 +55,8 @@ public:
 
   /** @brief Check if the current Resource is active */
   virtual bool is_on() const { return is_on_; }
+  virtual bool is_sealed() const { return sealed_; }
+
   /** @brief Turn on the current Resource */
   virtual void turn_on() { is_on_ = true; }
   /** @brief Turn off the current Resource */

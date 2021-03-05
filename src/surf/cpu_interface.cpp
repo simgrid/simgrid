@@ -96,6 +96,7 @@ void Cpu::on_speed_change()
 
 Cpu* Cpu::set_core_count(int core_count)
 {
+  xbt_assert(not is_sealed(), "Core count cannot be changed once CPU has been sealed");
   xbt_assert(core_count > 0, "Host %s must have at least one core, not 0.", piface_->get_cname());
   core_count_ = core_count;
   return this;
@@ -111,6 +112,11 @@ void Cpu::set_speed_profile(kernel::profile::Profile* profile)
   xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", piface_->get_cname());
 
   speed_.event = profile->schedule(&profile::future_evt_set, this);
+}
+
+void Cpu::seal()
+{
+  Resource::seal();
 }
 
 /**********
