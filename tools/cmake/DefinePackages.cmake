@@ -932,6 +932,7 @@ set(DOC_SOURCES
   docs/source/Platform_Routing.rst
   docs/source/Plugins.rst
   docs/source/XML_Reference.rst
+  docs/source/Design_goals.rst
 
   docs/source/Tutorial_Algorithms.rst
   docs/source/tuto_s4u/deployment1.xml

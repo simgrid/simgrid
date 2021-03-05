@@ -85,7 +85,12 @@ of every page. Bugs in the code should be reported
       The SimGrid Ccmmunity <community.rst>
       Frequently asked questions <faq.rst>
 
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: SimGrid's Internals:
 
+      Design goals <Design_goals.rst>
 
 .. Cheat Sheet on the sublevels
 ..

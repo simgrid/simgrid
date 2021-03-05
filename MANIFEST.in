@@ -1775,6 +1775,7 @@ include docs/manpages/tesh.pod
 include docs/requirements.txt
 include docs/source/Configuring_SimGrid.rst
 include docs/source/Deploying_your_Application.rst
+include docs/source/Design_goals.rst
 include docs/source/Doxyfile
 include docs/source/Experimental_Setup.rst
 include docs/source/Installing_SimGrid.rst
