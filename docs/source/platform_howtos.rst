@@ -56,6 +56,49 @@ Unsupported claims, (6) Toy duck approach, and (7) The tunnel view. As
 you can see, this article is a must read. It's a pity that it's not
 freely available, though.
 
+.. _howto_calibration:
+
+Getting realistic results
+*************************
+
+The simulation models in SimGrid have been developed with care and the
+object of thorough validation/invalidation campaigns. These models
+come with parameters that configure their behaviors. The values of
+these parameters are set based on the :ref:`XML platform description
+file <platform>` and on parameters passed via :ref:`--cfg=Item:Value
+command-line arguments <options>`. A simulator may also include any
+number of custom model parameters that are used to instantiate
+particular simulated activities (e.g., a simulator developed with the
+S4U API typically defines volumes of computation, communication, and
+time to pass to methods such as :cpp:func:`execute()
+<simgrid::s4u::this_actor::execute>`, :cpp:func:`put()
+<simgrid::s4u::Mailbox::put>`, or :cpp:func:`sleep_for()
+<simgrid::s4u::this_actor::sleep_for>`).  Regardless of the potential
+accuracy of the simulation models, if they are instantiated with
+unrealistic parameter values, then the simulation will be inaccurate.
+The provided default values may or may not be appropriate for
+simulating a particular system.
+
+Given the above, an integral and crucial part of simulation-driven
+research is **simulation calibration**: the process by which one picks
+simulation parameter values based on observed real-world executions so
+that simulated executions have high accuracy.  We then say that a
+simulator is "calibrated".  Once a simulator is calibrated for a
+real-world system, it can be used to simulate that system accurately.
+But it can also be used to simulate different but structurally
+similar systems (e.g., different scales, different basic hardware
+characteristics, different application workloads) with high confidence.
+
+Research conclusions derived from simulation results obtained with an
+uncalibrated simulator are questionable in terms of their relevance
+for real-world systems. Unfortunately, because simulation calibration
+is often a painstaking process, is it often not performed sufficiently
+thoroughly (or at all!). We strongly urge SimGrid users to perform
+simulation calibration. Here is an example of a research publication
+in which the authors have calibrated their (SimGrid) simulators:
+https://hal.inria.fr/hal-01523608
+
+
 .. _howto_churn:
 
 Modeling Churn (e.g., in P2P)

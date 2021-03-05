@@ -733,7 +733,8 @@ the form ``X/a;Y/b``, the X and Y are the selected pids while the a
 and b are the return values of their simcalls. In the previous
 example, ``1/3;1/4``, you can see from the full output that the actor
 1 is doing MC_RANDOM simcalls, so the 3 and 4 simply denote the values
-that these simcall return.
+that these simcall return on the execution branch leading to the
+violation.
 
 Configuring the User Code Virtualization
 ----------------------------------------

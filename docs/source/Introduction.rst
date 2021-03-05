@@ -75,9 +75,10 @@ Depending on the context, you may see some parts of this process as
 less important, but you should pay close attention if you want to be
 confident in the results coming out of your simulations. In
 particular, you should not blindly trust your results but always
-strive to double-check them. Likewise, you should question the realism
-of your input configuration, and we even encourage you to doubt (and
-check) the provided performance models.
+strive to double-check them. Likewise, :ref:`you should question the
+realism of your input configuration <howto_calibration>`, and we even
+encourage you to :ref:`doubt (and check) the provided performance models
+<howto_science>`.
 
 To ease such questioning, you really should logically separate these
 parts in your experimental setup. It is seen as a very bad practice to
