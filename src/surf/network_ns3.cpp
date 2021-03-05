@@ -433,7 +433,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
  ************/
 
 LinkNS3::LinkNS3(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy)
-    : LinkImpl(name, nullptr), sharing_policy_(policy)
+    : LinkImpl(name), sharing_policy_(policy)
 {
   bandwidth_.peak = bandwidth;
 }

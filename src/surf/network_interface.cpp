@@ -73,9 +73,8 @@ double NetworkModel::next_occurring_event_full(double now)
  * Resource *
  ************/
 
-LinkImpl::LinkImpl(const std::string& name, lmm::Constraint* constraint) : Resource_T(name), piface_(this)
+LinkImpl::LinkImpl(const std::string& name) : Resource_T(name), piface_(this)
 {
-  this->set_constraint(constraint);
   if (name != "__loopback__")
     xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
 
@@ -156,7 +155,6 @@ void LinkImpl::turn_off()
 
 void LinkImpl::seal()
 {
-  this->set_model(surf_network_model);
   Resource::seal();
   simgrid::s4u::Link::on_creation(*get_iface());
 }

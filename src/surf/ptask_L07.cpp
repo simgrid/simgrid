@@ -247,16 +247,6 @@ CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, const std::vector<d
 
 CpuL07::~CpuL07()=default;
 
-LinkL07::LinkL07(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy,
-                 kernel::lmm::System* system)
-    : LinkImpl(name, system->constraint_new(this, bandwidth))
-{
-  bandwidth_.peak = bandwidth;
-
-  if (policy == s4u::Link::SharingPolicy::FATPIPE)
-    get_constraint()->unshare();
-}
-
 kernel::resource::CpuAction* CpuL07::execution_start(double size)
 {
   std::vector<s4u::Host*> host_list = {get_iface()};
@@ -299,6 +289,17 @@ void CpuL07::on_speed_change()
   }
 
   Cpu::on_speed_change();
+}
+
+LinkL07::LinkL07(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy,
+                 kernel::lmm::System* system)
+    : LinkImpl(name)
+{
+  this->set_constraint(system->constraint_new(this, bandwidth));
+  bandwidth_.peak = bandwidth;
+
+  if (policy == s4u::Link::SharingPolicy::FATPIPE)
+    get_constraint()->unshare();
 }
 
 bool LinkL07::is_used() const

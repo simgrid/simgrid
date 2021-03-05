@@ -18,8 +18,9 @@ namespace resource {
  ************/
 
 NetworkWifiLink::NetworkWifiLink(const std::string& name, std::vector<double> bandwidths, lmm::System* system)
-    : LinkImpl(name, system->constraint_new(this, 1))
+    : LinkImpl(name)
 {
+  this->set_constraint(system->constraint_new(this, 1));
   for (auto bandwidth : bandwidths)
     bandwidths_.push_back({bandwidth, 1.0, nullptr});
 }
