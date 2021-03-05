@@ -145,7 +145,7 @@ public:
   void turn_on() override;
   void turn_off() override;
 
-  void seal();
+  void seal() override;
 
   void on_bandwidth_change() const;
 

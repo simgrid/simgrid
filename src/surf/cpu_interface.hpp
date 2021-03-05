@@ -75,7 +75,7 @@ public:
   Cpu* set_core_count(int core_count);
   virtual int get_core_count();
 
-  void seal();
+  void seal() override;
 
   /** @brief Get a forecast of the speed (in flops/s) if the load were as provided.
    *
