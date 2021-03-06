@@ -17,7 +17,6 @@ namespace mc {
 
 State::State(unsigned long state_number) : num_(state_number)
 {
-  this->internal_comm_.clear();
   auto maxpid = api::get().get_maxpid();
   actor_states_.resize(maxpid);
   /* Stateful model checking */
