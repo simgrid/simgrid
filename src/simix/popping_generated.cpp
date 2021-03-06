@@ -56,7 +56,7 @@ constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
 void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered_)
 {
   XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_.call_));
-  SIMCALL_SET_MC_VALUE(simcall_, times_considered_);
+  simcall_.mc_value_ = times_considered_;
   if (simcall_.observer_ != nullptr)
     simcall_.observer_->prepare(times_considered_);
   if (context_->wannadie())

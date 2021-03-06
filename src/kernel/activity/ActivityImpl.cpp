@@ -63,7 +63,7 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   register_simcall(&issuer->simcall_);
 
   if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = SIMCALL_GET_MC_VALUE(issuer->simcall_);
+    int idx = issuer->simcall_.mc_value_;
     if (idx == 0) {
       state_ = simgrid::kernel::activity::State::DONE;
     } else {

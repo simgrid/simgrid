@@ -54,9 +54,6 @@ struct s_smx_simcall {
   u_smx_scalar result_                    = {};
 };
 
-#define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall).mc_value_ = (value))
-#define SIMCALL_GET_MC_VALUE(simcall) ((simcall).mc_value_)
-
 /******************************** General *************************************/
 
 XBT_PRIVATE const char* SIMIX_simcall_name(simgrid::simix::Simcall kind);

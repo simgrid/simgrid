@@ -337,7 +337,7 @@ if __name__ == '__main__':
     fd.write('void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered_)\n')
     fd.write('{\n')
     fd.write('  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_.call_));\n')
-    fd.write('  SIMCALL_SET_MC_VALUE(simcall_, times_considered_);\n')
+    fd.write('  simcall_.mc_value_ = times_considered_;\n')
     fd.write('  if (simcall_.observer_ != nullptr)\n')
     fd.write('    simcall_.observer_->prepare(times_considered_);\n')
 
