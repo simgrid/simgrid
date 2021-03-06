@@ -144,7 +144,9 @@ void Session::close()
 
 bool Session::actor_is_enabled(aid_t pid) const
 {
-  s_mc_message_actor_enabled_t msg{simgrid::mc::MessageType::ACTOR_ENABLED, pid};
+  s_mc_message_actor_enabled_t msg{};
+  msg.type = simgrid::mc::MessageType::ACTOR_ENABLED;
+  msg.aid  = pid;
   model_checker_->channel().send(msg);
   std::array<char, MC_MESSAGE_LENGTH> buff;
   ssize_t received = model_checker_->channel().receive(buff.data(), buff.size(), true);
