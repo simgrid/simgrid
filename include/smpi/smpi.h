@@ -473,7 +473,9 @@ MPI_CALL(XBT_PUBLIC int, MPI_Type_free, (MPI_Datatype * datatype));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_size, (MPI_Datatype datatype, int* size));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_size_x, (MPI_Datatype datatype, MPI_Count* size));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_get_extent, (MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint* extent));
+MPI_CALL(XBT_PUBLIC int, MPI_Type_get_extent_x, (MPI_Datatype datatype, MPI_Count* lb, MPI_Count* extent));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_get_true_extent, (MPI_Datatype datatype, MPI_Aint* lb, MPI_Aint* extent));
+MPI_CALL(XBT_PUBLIC int, MPI_Type_get_true_extent_x, (MPI_Datatype datatype, MPI_Count* lb, MPI_Count* extent));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_extent, (MPI_Datatype datatype, MPI_Aint* extent));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_lb, (MPI_Datatype datatype, MPI_Aint* disp));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_ub, (MPI_Datatype datatype, MPI_Aint* disp));
@@ -786,6 +788,7 @@ MPI_CALL(XBT_PUBLIC int, MPI_Grequest_start,
 MPI_CALL(XBT_PUBLIC int, MPI_Grequest_complete, (MPI_Request request));
 MPI_CALL(XBT_PUBLIC int, MPI_Status_set_cancelled, (MPI_Status * status, int flag));
 MPI_CALL(XBT_PUBLIC int, MPI_Status_set_elements, (MPI_Status * status, MPI_Datatype datatype, int count));
+MPI_CALL(XBT_PUBLIC int, MPI_Status_set_elements_x, (MPI_Status * status, MPI_Datatype datatype, MPI_Count count));
 MPI_CALL(XBT_PUBLIC int, MPI_Type_create_subarray,
          (int ndims, const int* array_of_sizes, const int* array_of_subsizes, const int* array_of_starts, int order, MPI_Datatype oldtype,
           MPI_Datatype* newtype));

@@ -762,7 +762,15 @@ int PMPI_Status_set_elements(MPI_Status* status, MPI_Datatype datatype, int coun
     return MPI_ERR_ARG;
   }
   simgrid::smpi::Status::set_elements(status,datatype, count);
-  return MPI_SUCCESS;  
+  return MPI_SUCCESS;
+}
+
+int PMPI_Status_set_elements_x(MPI_Status* status, MPI_Datatype datatype, MPI_Count count){
+  if(status==MPI_STATUS_IGNORE){
+    return MPI_ERR_ARG;
+  }
+  simgrid::smpi::Status::set_elements(status,datatype, static_cast<int>(count));
+  return MPI_SUCCESS;
 }
 
 int PMPI_Grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){

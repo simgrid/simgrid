@@ -46,9 +46,23 @@ int PMPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent
   return datatype->extent(lb, extent);
 }
 
+int PMPI_Type_get_extent_x(MPI_Datatype datatype, MPI_Count * lb, MPI_Count * extent)
+{
+  MPI_Aint tmplb, tmpext;
+  int ret = PMPI_Type_get_extent(datatype, &tmplb, &tmpext);
+  *lb = static_cast<MPI_Count>(tmplb);
+  *extent = static_cast<MPI_Count>(tmpext);
+  return ret;
+}
+
 int PMPI_Type_get_true_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent)
 {
   return PMPI_Type_get_extent(datatype, lb, extent);
+}
+
+int PMPI_Type_get_true_extent_x(MPI_Datatype datatype, MPI_Count * lb, MPI_Count * extent)
+{
+  return PMPI_Type_get_extent_x(datatype, lb, extent);
 }
 
 int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
