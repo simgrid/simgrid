@@ -94,7 +94,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
         break;
 
       case Simcall::COMM_TESTANY: {
-        unsigned start_count                 = procstate->times_considered;
         state->transition_.times_considered_ = -1;
         while (procstate->times_considered < simcall_comm_testany__get__count(&actor->simcall_)) {
           if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall_, procstate->times_considered)) {
@@ -107,10 +106,8 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
 
         if (procstate->times_considered >= simcall_comm_testany__get__count(&actor->simcall_))
           procstate->set_done();
-
-        if (state->transition_.times_considered_ != -1 || start_count == 0)
+        if (state->transition_.times_considered_ != -1)
           req = &actor->simcall_;
-
         break;
       }
 
@@ -161,18 +158,16 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
       break;
     }
 
-    case Simcall::COMM_TESTANY:
+    case Simcall::COMM_TESTANY: {
       state->internal_req_.call_ = Simcall::COMM_TEST;
+      simgrid::kernel::activity::CommImpl* chosen_comm = mc_model_checker->get_remote_simulation().read(
+          remote(simcall_comm_testany__get__comms(req) + state->transition_.times_considered_));
 
-      if (state->transition_.times_considered_ > 0) {
-        simgrid::kernel::activity::CommImpl* chosen_comm = mc_model_checker->get_remote_simulation().read(
-            remote(simcall_comm_testany__get__comms(req) + state->transition_.times_considered_));
-        mc_model_checker->get_remote_simulation().read(state->internal_comm_, remote(chosen_comm));
-      }
-
+      mc_model_checker->get_remote_simulation().read(state->internal_comm_, remote(chosen_comm));
       simcall_comm_test__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
       simcall_comm_test__set__result(&state->internal_req_, state->transition_.times_considered_);
       break;
+    }
 
     case Simcall::COMM_WAIT:
       mc_model_checker->get_remote_simulation().read(state->internal_comm_, remote(simcall_comm_wait__getraw__comm(req)));
