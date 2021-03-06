@@ -46,11 +46,6 @@ int RandomSimcall::get_max_consider() const
   return max_ - min_ + 1;
 }
 
-int RandomSimcall::get_value() const
-{
-  return next_value_;
-}
-
 std::string MutexUnlockSimcall::to_string(int time_considered) const
 {
   return SimcallObserver::to_string(time_considered) + "Mutex UNLOCK";

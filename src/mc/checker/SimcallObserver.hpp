@@ -63,7 +63,7 @@ public:
   void prepare(int times_considered) override;
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
-  int get_value() const;
+  int get_value() const { return next_value_; }
 };
 
 class MutexUnlockSimcall : public SimcallObserver {
