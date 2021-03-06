@@ -15,7 +15,6 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_safety.hpp"
-#include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/AppSide.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 

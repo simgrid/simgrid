@@ -7,7 +7,6 @@
 
 #include "src/mc/remote/RemoteSimulation.hpp"
 
-#include "src/mc/mc_smx.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"

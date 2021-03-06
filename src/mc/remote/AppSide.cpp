@@ -7,6 +7,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/checker/SimcallObserver.hpp"
+#include "src/mc/remote/RemoteSimulation.hpp"
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>
@@ -16,9 +17,6 @@
 #include <sys/ptrace.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-
-// We won't need those once the separation MCer/MCed is complete:
-#include "src/mc/mc_smx.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 

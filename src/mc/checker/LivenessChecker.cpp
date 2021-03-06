@@ -8,7 +8,6 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
-#include "src/mc/mc_smx.hpp"
 
 #include <boost/range/algorithm.hpp>
 #include <cstring>

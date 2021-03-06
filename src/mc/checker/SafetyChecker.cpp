@@ -21,7 +21,6 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_request.hpp"
-#include "src/mc/mc_smx.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 

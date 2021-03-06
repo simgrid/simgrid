@@ -6,7 +6,6 @@
 #include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_hash.hpp"
-#include "src/mc/mc_smx.hpp"
 
 #include <cstddef> /* std::size_t */
 

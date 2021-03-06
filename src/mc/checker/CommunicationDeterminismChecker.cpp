@@ -9,11 +9,6 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
-#include "src/mc/mc_smx.hpp"
-
-#if HAVE_SMPI
-#include "smpi_request.hpp"
-#endif
 
 #include <cstdint>
 

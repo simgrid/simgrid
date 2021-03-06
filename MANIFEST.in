@@ -2271,7 +2271,6 @@ include src/mc/mc_request.cpp
 include src/mc/mc_request.hpp
 include src/mc/mc_safety.hpp
 include src/mc/mc_smx.cpp
-include src/mc/mc_smx.hpp
 include src/mc/mc_state.cpp
 include src/mc/mc_state.hpp
 include src/mc/remote/AppSide.cpp

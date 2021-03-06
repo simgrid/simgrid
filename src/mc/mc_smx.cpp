@@ -6,9 +6,28 @@
 #include "simgrid/s4u/Host.hpp"
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_smx.hpp"
+#include "src/mc/remote/RemoteSimulation.hpp"
 
 using simgrid::mc::remote;
+/** @file
+ *  @brief (Cross-process, MCer/MCed) Access to SMX structures
+ *
+ *  We copy some C data structure from the MCed process in the MCer process.
+ *  This is implemented by:
+ *
+ *   - `model_checker->process.smx_process_infos`
+ *      (copy of `simix_global->process_list`);
+ *
+ *   - `model_checker->process.smx_old_process_infos`
+ *      (copy of `simix_global->actors_to_destroy`);
+ *
+ *   - `model_checker->hostnames`.
+ *
+ * The process lists are currently refreshed each time MCed code is executed.
+ * We don't try to give a persistent MCer address for a given MCed process.
+ * For this reason, a MCer simgrid::mc::Process* is currently not reusable after
+ * MCed code.
+ */
 
 /** Load the remote list of processes into a vector
  *
@@ -70,14 +89,4 @@ void RemoteSimulation::refresh_simix()
 }
 
 }
-}
-
-unsigned long MC_smx_get_maxpid()
-{
-  unsigned long maxpid;
-  const char* name = "simgrid::kernel::actor::maxpid";
-  if (mc_model_checker->get_remote_simulation().find_variable(name) == nullptr)
-    name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
-  mc_model_checker->get_remote_simulation().read_variable(name, &maxpid, sizeof(maxpid));
-  return maxpid;
 }

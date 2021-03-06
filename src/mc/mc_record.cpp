@@ -14,7 +14,6 @@
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
-#include "src/mc/mc_smx.hpp"
 #include "src/mc/mc_state.hpp"
 #endif
 

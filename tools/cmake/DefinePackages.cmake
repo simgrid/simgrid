@@ -658,7 +658,6 @@ set(MC_SRC
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/mc_client_api.cpp
-  src/mc/mc_smx.hpp
   src/mc/mc_smx.cpp
   src/mc/mc_exit.hpp
   src/mc/Transition.hpp

@@ -8,9 +8,8 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_pattern.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_smx.hpp"
-
 #include "src/mc/remote/RemoteSimulation.hpp"
+
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 #include "simgrid/s4u/Host.hpp"
@@ -366,7 +365,12 @@ bool Api::actor_is_enabled(aid_t pid) const
 
 unsigned long Api::get_maxpid() const
 {
-  return MC_smx_get_maxpid();
+  unsigned long maxpid;
+  const char* name = "simgrid::kernel::actor::maxpid";
+  if (mc_model_checker->get_remote_simulation().find_variable(name) == nullptr)
+    name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
+  mc_model_checker->get_remote_simulation().read_variable(name, &maxpid, sizeof(maxpid));
+  return maxpid;
 }
 
 int Api::get_actors_size() const

@@ -7,7 +7,6 @@
 
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_smx.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 
 #include <algorithm>
