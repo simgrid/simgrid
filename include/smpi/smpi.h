@@ -459,6 +459,8 @@ MPI_CALL(XBT_PUBLIC int, MPI_Buffer_attach, (void* buffer, int size));
 MPI_CALL(XBT_PUBLIC int, MPI_Buffer_detach, (void* buffer, int* size));
 MPI_CALL(XBT_PUBLIC int, MPI_Address, (const void* location, MPI_Aint* address));
 MPI_CALL(XBT_PUBLIC int, MPI_Get_address, (const void* location, MPI_Aint* address));
+MPI_CALL(XBT_PUBLIC MPI_Aint, MPI_Aint_diff, (MPI_Aint base, MPI_Aint disp));
+MPI_CALL(XBT_PUBLIC MPI_Aint, MPI_Aint_add, (MPI_Aint base, MPI_Aint disp));
 MPI_CALL(XBT_PUBLIC int, MPI_Error_class, (int errorcode, int* errorclass));
 MPI_CALL(XBT_PUBLIC int, MPI_Error_string, (int errorcode, char* string, int* resultlen));
 
