@@ -48,7 +48,6 @@ class Request : public F2C {
   MPI_Request detached_sender_;
   int refcount_;
   MPI_Op op_;
-  int cancelled_; // tri-state
   std::unique_ptr<smpi_mpi_generalized_request_funcs_t> generalized_funcs;
   MPI_Request* nbc_requests_;
   int nbc_requests_size_;

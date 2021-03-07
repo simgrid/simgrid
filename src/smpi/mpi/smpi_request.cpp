@@ -61,7 +61,6 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int
     refcount_ = 1;
   else
     refcount_ = 0;
-  cancelled_ = 0;
   nbc_requests_=nullptr;
   nbc_requests_size_=0;
   init_buffer(count);
@@ -127,8 +126,7 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
     if (sender->detached_)
       receiver->detached_sender_ = sender; // tie the sender to the receiver, as it is detached and has to be freed in
                                            // the receiver
-    if (req->cancelled_ == 0)
-      req->cancelled_ = -1; // mark as uncancelable
+    req->flags_ |= MPI_REQ_MATCHED; // mark as impossible to cancel anymore
     XBT_DEBUG("match succeeded");
     return true;
   }
@@ -581,8 +579,7 @@ void Request::startall(int count, MPI_Request * requests)
 
 void Request::cancel()
 {
-  if(cancelled_!=-1)
-    cancelled_=1;
+  this->flags_ |= MPI_REQ_CANCELLED;
   if (this->action_ != nullptr)
     (boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(this->action_))->cancel();
 }
@@ -616,7 +613,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   Status::empty(status);
   *flag = 1;
   if (((*request)->flags_ & (MPI_REQ_PREPARED | MPI_REQ_FINISHED)) == 0) {
-    if ((*request)->action_ != nullptr && (*request)->cancelled_ != 1){
+    if ((*request)->action_ != nullptr && ((*request)->flags_ & MPI_REQ_CANCELLED) == 0){
       try{
         *flag = simcall_comm_test((*request)->action_.get());
       } catch (const Exception&) {
@@ -859,14 +856,15 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 {
   MPI_Request req = *request;
   Status::empty(status);
-  
-  if (req->cancelled_==1){
+  if((req->flags_ & MPI_REQ_CANCELLED) != 0 && (req->flags_ & MPI_REQ_MATCHED) == 0) {
     if (status!=MPI_STATUS_IGNORE)
       status->cancelled=1;
     if(req->detached_sender_ != nullptr)
       unref(&(req->detached_sender_));
     unref(request);
     return;
+  } else if ((req->flags_ & MPI_REQ_CANCELLED) != 0){
+    XBT_WARN("tatatata");
   }
 
   if ((req->flags_ & (MPI_REQ_PREPARED | MPI_REQ_GENERALIZED | MPI_REQ_FINISHED)) == 0) {

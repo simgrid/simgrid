@@ -27,6 +27,8 @@ constexpr unsigned MPI_REQ_ACCUMULATE     = 0x400;
 constexpr unsigned MPI_REQ_GENERALIZED    = 0x800;
 constexpr unsigned MPI_REQ_COMPLETE       = 0x1000;
 constexpr unsigned MPI_REQ_BSEND          = 0x2000;
+constexpr unsigned MPI_REQ_MATCHED        = 0x4000;
+constexpr unsigned MPI_REQ_CANCELLED      = 0x8000;
 
 enum class SmpiProcessState { UNINITIALIZED, INITIALIZING, INITIALIZED /*(=MPI_Init called)*/, FINALIZED };
 
