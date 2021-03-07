@@ -863,8 +863,6 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       unref(&(req->detached_sender_));
     unref(request);
     return;
-  } else if ((req->flags_ & MPI_REQ_CANCELLED) != 0){
-    XBT_WARN("tatatata");
   }
 
   if ((req->flags_ & (MPI_REQ_PREPARED | MPI_REQ_GENERALIZED | MPI_REQ_FINISHED)) == 0) {
