@@ -64,24 +64,24 @@ of every page. Bugs in the code should be reported
 
       Introduction <Introduction.rst>
          Installing SimGrid <Installing_SimGrid.rst>
-         Start your own project <Start_Your_Own_Project.rst>
+         Start your own project <Start_your_own_project.rst>
+         The SimGrid community <community.rst>
       Describing your application <application.rst>
          The S4U interface <app_s4u.rst>
          The SMPI interface <app_smpi.rst>
          The MSG interface <app_msg.rst>
          The XBT toolbox <The_XBT_toolbox.rst>
-      Describing the simulated platform <platform.rst>
-         Examples <Platform_Examples.rst>
-         Modeling hints <platform_howtos.rst>
-         Defining a routing <Platform_Routing.rst>
-         XML reference <XML_Reference.rst>
-      Describing the experimental setup <Experimental_Setup.rst>
+      Describing the simulated platform <Platform.rst>
+         Examples <Platform_examples.rst>
+         Modeling hints <Platform_howtos.rst>
+         Defining a routing <Platform_routing.rst>
+         XML reference <XML_reference.rst>
+      Describing the experimental setup <Experimental_setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
-         Deploying your application <Deploying_your_Application.rst>
-         The SimGrid models <models.rst>
+         Deploying your application <Deploying_your_application.rst>
+         The SimGrid models <Models.rst>
       SimGrid plugins <Plugins.rst>
-      Simulation outcomes <outcomes.rst>
-      The SimGrid Community <community.rst>
+      Simulation outcomes <Outcomes.rst>
       Frequently asked questions <faq.rst>
 
 .. toctree::
