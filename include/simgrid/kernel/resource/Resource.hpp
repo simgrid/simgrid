@@ -36,7 +36,7 @@ protected:
   profile::Event* state_event_ = nullptr;
 
 public:
-  Resource(const std::string& name) : name_(name){};
+  explicit Resource(const std::string& name) : name_(name){};
   virtual ~Resource() = default;
   virtual void seal() { sealed_ = true; }
 
