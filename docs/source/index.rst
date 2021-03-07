@@ -78,11 +78,10 @@ of every page. Bugs in the code should be reported
       Describing the experimental setup <Experimental_Setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
          Deploying your application <Deploying_your_Application.rst>
-      The SimGrid models <models.rst>
-         ns-3 as a SimGrid model <ns3.rst>
+         The SimGrid models <models.rst>
       SimGrid plugins <Plugins.rst>
       Simulation outcomes <outcomes.rst>
-      The SimGrid Ccmmunity <community.rst>
+      The SimGrid Community <community.rst>
       Frequently asked questions <faq.rst>
 
 .. toctree::
