@@ -22,8 +22,8 @@ static int getPid(MPI_Comm comm, int id)
   CHECK_BUFFER(1, buf, count)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
-  CHECK_PROC(4, dst)\
-  CHECK_RANK(4, dst, comm)\
+  if(dst!= MPI_PROC_NULL)\
+    CHECK_RANK(4, dst, comm)\
   CHECK_TAG(5, tag)\
   CHECK_COMM(6)\
 
@@ -38,8 +38,7 @@ static int getPid(MPI_Comm comm, int id)
   CHECK_BUFFER(1, buf, count)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
-  CHECK_PROC(4, src)\
-  if(src!=MPI_ANY_SOURCE)\
+  if(src!=MPI_ANY_SOURCE && src!=MPI_PROC_NULL)\
     CHECK_RANK(4, src, comm)\
   CHECK_TAG(5, tag)\
   CHECK_COMM(6)
