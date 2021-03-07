@@ -359,10 +359,13 @@ bool Api::actor_is_enabled(aid_t pid) const
 
 unsigned long Api::get_maxpid() const
 {
+  static const char* name = nullptr;
+  if (not name) {
+    name = "simgrid::kernel::actor::maxpid";
+    if (mc_model_checker->get_remote_simulation().find_variable(name) == nullptr)
+      name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
+  }
   unsigned long maxpid;
-  const char* name = "simgrid::kernel::actor::maxpid";
-  if (mc_model_checker->get_remote_simulation().find_variable(name) == nullptr)
-    name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
   mc_model_checker->get_remote_simulation().read_variable(name, &maxpid, sizeof(maxpid));
   return maxpid;
 }
