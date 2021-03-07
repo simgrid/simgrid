@@ -93,7 +93,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
           req = &actor->simcall_;
         break;
 
-      case Simcall::COMM_TESTANY: {
+      case Simcall::COMM_TESTANY:
         state->transition_.times_considered_ = -1;
         while (procstate->times_considered < simcall_comm_testany__get__count(&actor->simcall_)) {
           if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall_, procstate->times_considered)) {
@@ -109,7 +109,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
         if (state->transition_.times_considered_ != -1)
           req = &actor->simcall_;
         break;
-      }
 
       case Simcall::COMM_WAIT: {
         simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> remote_act =
