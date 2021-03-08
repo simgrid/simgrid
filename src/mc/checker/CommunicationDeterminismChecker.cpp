@@ -271,7 +271,7 @@ std::vector<std::string> CommunicationDeterminismChecker::get_textual_trace() //
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
     smx_simcall_t req = &state->executed_req_;
-    trace.push_back(api::get().request_to_string(req, state->transition_.times_considered_, RequestType::executed));
+    trace.push_back(api::get().request_to_string(req, state->transition_.times_considered_));
   }
   return trace;
 }
@@ -430,7 +430,7 @@ void CommunicationDeterminismChecker::real_run()
     if (req != nullptr && visited_state == nullptr) {
       int req_num = cur_state->transition_.times_considered_;
 
-      XBT_DEBUG("Execute: %s", api::get().request_to_string(req, req_num, RequestType::simix).c_str());
+      XBT_DEBUG("Execute: %s", api::get().request_to_string(req, req_num).c_str());
 
       std::string req_str;
       if (dot_output != nullptr)

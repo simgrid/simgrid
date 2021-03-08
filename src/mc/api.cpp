@@ -171,14 +171,12 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
     case Simcall::COMM_WAIT:
       chosen_comm = simcall_comm_wait__getraw__comm(req);
       mc_model_checker->get_remote_simulation().read(state->internal_comm_, remote(chosen_comm));
-      simcall_comm_wait__set__comm(&state->executed_req_, state->internal_comm_.get_buffer());
       simcall_comm_wait__set__comm(&state->internal_req_, state->internal_comm_.get_buffer());
       break;
 
     case Simcall::COMM_TEST:
       chosen_comm = simcall_comm_test__getraw__comm(req);
       mc_model_checker->get_remote_simulation().read(remote_comm, remote(chosen_comm));
-      simcall_comm_test__set__comm(&state->executed_req_, remote_comm.get_buffer());
       simcall_comm_test__set__comm(&state->internal_req_, remote_comm.get_buffer());
       break;
 
@@ -699,22 +697,9 @@ bool Api::simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const
   }
 }
 
-std::string Api::request_to_string(smx_simcall_t req, int value, RequestType request_type) const
+std::string Api::request_to_string(smx_simcall_t req, int value) const
 {
   xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
-
-  bool use_remote_comm = true;
-  switch (request_type) {
-    case simgrid::mc::RequestType::simix:
-      use_remote_comm = true;
-      break;
-    case simgrid::mc::RequestType::executed:
-    case simgrid::mc::RequestType::internal:
-      use_remote_comm = false;
-      break;
-    default:
-      THROW_IMPOSSIBLE;
-  }
 
   std::string type;
   std::string args;
@@ -755,11 +740,8 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
 
         simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
         const simgrid::kernel::activity::CommImpl* act;
-        if (use_remote_comm) {
-          mc_model_checker->get_remote_simulation().read(temp_synchro, remote(remote_act));
-          act = temp_synchro.get_buffer();
-        } else
-          act = remote_act;
+        mc_model_checker->get_remote_simulation().read(temp_synchro, remote(remote_act));
+        act = temp_synchro.get_buffer();
 
         smx_actor_t src_proc =
             mc_model_checker->get_remote_simulation().resolve_actor(simgrid::mc::remote(act->src_actor_.get()));
@@ -775,11 +757,8 @@ std::string Api::request_to_string(smx_simcall_t req, int value, RequestType req
       simgrid::kernel::activity::CommImpl* remote_act = simcall_comm_test__getraw__comm(req);
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_synchro;
       const simgrid::kernel::activity::CommImpl* act;
-      if (use_remote_comm) {
-        mc_model_checker->get_remote_simulation().read(temp_synchro, remote(remote_act));
-        act = temp_synchro.get_buffer();
-      } else
-        act = remote_act;
+      mc_model_checker->get_remote_simulation().read(temp_synchro, remote(remote_act));
+      act = temp_synchro.get_buffer();
 
       if (act->src_actor_.get() == nullptr || act->dst_actor_.get() == nullptr) {
         type = "Test FALSE";
@@ -982,7 +961,7 @@ void Api::restore_initial_state() const
 void Api::execute(Transition& transition, smx_simcall_t simcall) const
 {
   /* FIXME: once all simcalls have observers, kill the simcall parameter and use mc_model_checker->simcall_to_string() */
-  transition.textual = request_to_string(simcall, transition.times_considered_, RequestType::executed);
+  transition.textual = request_to_string(simcall, transition.times_considered_);
   session->execute(transition);
 }
 

@@ -110,7 +110,7 @@ public:
   std::list<transition_detail_t> get_enabled_transitions(simgrid::mc::State* state) const;
 
   // SIMCALL APIs
-  std::string request_to_string(smx_simcall_t req, int value, RequestType request_type) const;
+  std::string request_to_string(smx_simcall_t req, int value) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   long simcall_get_actor_id(s_smx_simcall const* req) const;

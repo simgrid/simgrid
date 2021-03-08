@@ -139,8 +139,8 @@ void LivenessChecker::replay()
       req                      = &issuer->simcall_;
 
       /* Debug information */
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
-                api::get().request_to_string(req, req_num, simgrid::mc::RequestType::simix).c_str(), state.get());
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, api::get().request_to_string(req, req_num).c_str(),
+                state.get());
 
       api::get().execute(state->transition_, req);
     }
@@ -241,7 +241,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
     int req_num       = pair->graph_state->transition_.times_considered_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
     if (req->call_ != simix::Simcall::NONE)
-      trace.push_back(api::get().request_to_string(req, req_num, RequestType::executed));
+      trace.push_back(api::get().request_to_string(req, req_num));
   }
   return trace;
 }
@@ -374,7 +374,7 @@ void LivenessChecker::run()
       fflush(dot_output);
     }
 
-    XBT_DEBUG("Execute: %s", api::get().request_to_string(req, req_num, RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", api::get().request_to_string(req, req_num).c_str());
 
     /* Update stats */
     api::get().mc_inc_executed_trans();

@@ -120,8 +120,7 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s",
-              api::get().request_to_string(req, state->transition_.times_considered_, RequestType::simix).c_str());
+    XBT_DEBUG("Execute: %s", api::get().request_to_string(req, state->transition_.times_considered_).c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
@@ -202,12 +201,10 @@ void SafetyChecker::backtrack()
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.times_considered_;
             smx_simcall_t prev_req = &prev_state->executed_req_;
-            XBT_DEBUG("%s (state=%d)", api::get().request_to_string(prev_req, value, RequestType::internal).c_str(),
-                      prev_state->num_);
+            XBT_DEBUG("%s (state=%d)", api::get().request_to_string(prev_req, value).c_str(), prev_state->num_);
             value    = state->transition_.times_considered_;
             prev_req = &state->executed_req_;
-            XBT_DEBUG("%s (state=%d)", api::get().request_to_string(prev_req, value, RequestType::executed).c_str(),
-                      state->num_);
+            XBT_DEBUG("%s (state=%d)", api::get().request_to_string(prev_req, value).c_str(), state->num_);
           }
 
           if (not prev_state->actor_states_[issuer->get_pid()].is_done())
