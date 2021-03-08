@@ -64,8 +64,8 @@ class CpuCas01Action : public CpuAction {
   friend CpuAction* CpuCas01::sleep(double duration);
 
 public:
-  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint, int core_count);
-  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint);
+  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint,
+                 int requested_core = 1);
   CpuCas01Action(const CpuCas01Action&) = delete;
   CpuCas01Action& operator=(const CpuCas01Action&) = delete;
   ~CpuCas01Action() override;

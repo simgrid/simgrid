@@ -214,11 +214,6 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
   model->get_maxmin_system()->expand(constraint, get_variable(), 1.0);
 }
 
-CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint)
-    : CpuCas01Action(model, cost, failed, speed, constraint, /* requested_core */ 1)
-{
-}
-
 int CpuCas01Action::requested_core() const
 {
   return requested_core_;
