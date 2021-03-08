@@ -243,66 +243,131 @@ typedef SMPI_Info* MPI_Info;
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUS_SIZE 5
 
-XBT_PUBLIC_DATA const MPI_Datatype MPI_DATATYPE_NULL;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_CHAR;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_SHORT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_LONG;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_LONG_LONG;
+#if !defined(DLL_EXPORT)
+#if defined(c_plusplus) || defined(__cplusplus)
+#define SMPI_PREDEFINED_POINTER(type, internal) (static_cast<type> (static_cast<void*> (&(internal))))
+#else
+#define SMPI_PREDEFINED_POINTER(type, internal) ((type) ((void *) &(internal)))
+#endif
+#else
+#define SMPI_PREDEFINED_POINTER(type, internal) ((type) &(internal))
+#endif
+
+extern SMPI_Datatype smpi_MPI_DATATYPE_NULL;
+extern SMPI_Datatype smpi_MPI_CHAR;
+extern SMPI_Datatype smpi_MPI_SHORT;
+extern SMPI_Datatype smpi_MPI_INT;
+extern SMPI_Datatype smpi_MPI_LONG;
+extern SMPI_Datatype smpi_MPI_LONG_LONG;
+extern SMPI_Datatype smpi_MPI_SIGNED_CHAR;
+extern SMPI_Datatype smpi_MPI_UNSIGNED_CHAR;
+extern SMPI_Datatype smpi_MPI_UNSIGNED_SHORT;
+extern SMPI_Datatype smpi_MPI_UNSIGNED;
+extern SMPI_Datatype smpi_MPI_UNSIGNED_LONG;
+extern SMPI_Datatype smpi_MPI_UNSIGNED_LONG_LONG;
+extern SMPI_Datatype smpi_MPI_FLOAT;
+extern SMPI_Datatype smpi_MPI_DOUBLE;
+extern SMPI_Datatype smpi_MPI_LONG_DOUBLE;
+extern SMPI_Datatype smpi_MPI_WCHAR;
+extern SMPI_Datatype smpi_MPI_C_BOOL;
+extern SMPI_Datatype smpi_MPI_INT8_T;
+extern SMPI_Datatype smpi_MPI_INT16_T;
+extern SMPI_Datatype smpi_MPI_INT32_T;
+extern SMPI_Datatype smpi_MPI_INT64_T;
+extern SMPI_Datatype smpi_MPI_UINT8_T;
+extern SMPI_Datatype smpi_MPI_BYTE;
+extern SMPI_Datatype smpi_MPI_UINT16_T;
+extern SMPI_Datatype smpi_MPI_UINT32_T;
+extern SMPI_Datatype smpi_MPI_UINT64_T;
+extern SMPI_Datatype smpi_MPI_C_FLOAT_COMPLEX;
+extern SMPI_Datatype smpi_MPI_C_DOUBLE_COMPLEX;
+extern SMPI_Datatype smpi_MPI_C_LONG_DOUBLE_COMPLEX;
+extern SMPI_Datatype smpi_MPI_AINT;
+extern SMPI_Datatype smpi_MPI_OFFSET;
+extern SMPI_Datatype smpi_MPI_LB;
+extern SMPI_Datatype smpi_MPI_UB;
+extern SMPI_Datatype smpi_MPI_FLOAT_INT;
+extern SMPI_Datatype smpi_MPI_LONG_INT;
+extern SMPI_Datatype smpi_MPI_DOUBLE_INT;
+extern SMPI_Datatype smpi_MPI_SHORT_INT;
+extern SMPI_Datatype smpi_MPI_2INT;
+extern SMPI_Datatype smpi_MPI_LONG_DOUBLE_INT;
+extern SMPI_Datatype smpi_MPI_2FLOAT;
+extern SMPI_Datatype smpi_MPI_2DOUBLE;
+extern SMPI_Datatype smpi_MPI_2LONG;
+extern SMPI_Datatype smpi_MPI_REAL;
+extern SMPI_Datatype smpi_MPI_REAL4;
+extern SMPI_Datatype smpi_MPI_REAL8;
+extern SMPI_Datatype smpi_MPI_REAL16;
+extern SMPI_Datatype smpi_MPI_COMPLEX8;
+extern SMPI_Datatype smpi_MPI_COMPLEX16;
+extern SMPI_Datatype smpi_MPI_COMPLEX32;
+extern SMPI_Datatype smpi_MPI_INTEGER1;
+extern SMPI_Datatype smpi_MPI_INTEGER2;
+extern SMPI_Datatype smpi_MPI_INTEGER4;
+extern SMPI_Datatype smpi_MPI_INTEGER8;
+extern SMPI_Datatype smpi_MPI_INTEGER16;
+extern SMPI_Datatype smpi_MPI_COUNT;
+
+#define MPI_DATATYPE_NULL SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_DATATYPE_NULL)
+#define MPI_CHAR SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_CHAR)
+#define MPI_SHORT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_SHORT)
+#define MPI_INT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INT)
+#define MPI_LONG SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_LONG)
+#define MPI_LONG_LONG SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_LONG_LONG)
 #define MPI_LONG_LONG_INT MPI_LONG_LONG
-XBT_PUBLIC_DATA const MPI_Datatype MPI_SIGNED_CHAR;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UNSIGNED_CHAR;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UNSIGNED_SHORT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UNSIGNED;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UNSIGNED_LONG;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UNSIGNED_LONG_LONG;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_FLOAT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_DOUBLE;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_LONG_DOUBLE;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_WCHAR;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_C_BOOL;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INT8_T;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INT16_T;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INT32_T;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INT64_T;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UINT8_T;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_BYTE;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UINT16_T;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UINT32_T;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UINT64_T;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_C_FLOAT_COMPLEX;
+#define MPI_SIGNED_CHAR SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_SIGNED_CHAR)
+#define MPI_UNSIGNED_CHAR SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UNSIGNED_CHAR)
+#define MPI_UNSIGNED_SHORT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UNSIGNED_SHORT)
+#define MPI_UNSIGNED SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UNSIGNED)
+#define MPI_UNSIGNED_LONG SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UNSIGNED_LONG)
+#define MPI_UNSIGNED_LONG_LONG SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UNSIGNED_LONG_LONG)
+#define MPI_FLOAT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_FLOAT)
+#define MPI_DOUBLE SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_DOUBLE)
+#define MPI_LONG_DOUBLE SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_LONG_DOUBLE)
+#define MPI_WCHAR SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_WCHAR)
+#define MPI_C_BOOL SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_C_BOOL)
+#define MPI_INT8_T SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INT8_T)
+#define MPI_INT16_T SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INT16_T)
+#define MPI_INT32_T SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INT32_T)
+#define MPI_INT64_T SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INT64_T)
+#define MPI_UINT8_T SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UINT8_T)
+#define MPI_BYTE SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_BYTE)
+#define MPI_UINT16_T SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UINT16_T)
+#define MPI_UINT32_T SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UINT32_T)
+#define MPI_UINT64_T SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UINT64_T)
+#define MPI_C_FLOAT_COMPLEX SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_C_FLOAT_COMPLEX)
 #define MPI_C_COMPLEX MPI_C_FLOAT_COMPLEX
-XBT_PUBLIC_DATA const MPI_Datatype MPI_C_DOUBLE_COMPLEX;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_C_LONG_DOUBLE_COMPLEX;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_AINT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_OFFSET;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_LB;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_UB;
+#define MPI_C_DOUBLE_COMPLEX SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_C_DOUBLE_COMPLEX)
+#define MPI_C_LONG_DOUBLE_COMPLEX SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_C_LONG_DOUBLE_COMPLEX)
+#define MPI_AINT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_AINT)
+#define MPI_OFFSET SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_OFFSET)
+#define MPI_LB SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_LB)
+#define MPI_UB SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_UB)
 //The following are datatypes for the MPI functions MPI_MAXLOC  and MPI_MINLOC.
-XBT_PUBLIC_DATA const MPI_Datatype MPI_FLOAT_INT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_LONG_INT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_DOUBLE_INT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_SHORT_INT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_2INT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_LONG_DOUBLE_INT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_2FLOAT;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_2DOUBLE;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_2LONG; // only for compatibility with Fortran
-
-XBT_PUBLIC_DATA const MPI_Datatype MPI_REAL;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_REAL4;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_REAL8;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_REAL16;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_COMPLEX8;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_COMPLEX16;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_COMPLEX32;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER1;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER2;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER4;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER8;
-XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER16;
-
-XBT_PUBLIC_DATA const MPI_Datatype MPI_COUNT;
+#define MPI_FLOAT_INT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_FLOAT_INT)
+#define MPI_LONG_INT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_LONG_INT)
+#define MPI_DOUBLE_INT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_DOUBLE_INT)
+#define MPI_SHORT_INT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_SHORT_INT)
+#define MPI_2INT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_2INT)
+#define MPI_LONG_DOUBLE_INT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_LONG_DOUBLE_INT)
+#define MPI_2FLOAT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_2FLOAT)
+#define MPI_2DOUBLE SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_2DOUBLE)
+#define MPI_2LONG SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_2LONG)
+ // only for compatibility with Fortran
+#define MPI_REAL SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_REAL)
+#define MPI_REAL4 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_REAL4)
+#define MPI_REAL8 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_REAL8)
+#define MPI_REAL16 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_REAL16)
+#define MPI_COMPLEX8 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_COMPLEX8)
+#define MPI_COMPLEX16 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_COMPLEX16)
+#define MPI_COMPLEX32 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_COMPLEX32)
+#define MPI_INTEGER1 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INTEGER1)
+#define MPI_INTEGER2 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INTEGER2)
+#define MPI_INTEGER4 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INTEGER4)
+#define MPI_INTEGER8 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INTEGER8)
+#define MPI_INTEGER16 SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_INTEGER16)
+#define MPI_COUNT SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_COUNT)
 
 //defines for fortran compatibility
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__) || defined(__aarch64__)
@@ -898,7 +963,9 @@ typedef void* MPI_Message;
 #define MPI_TYPE_DUP_FN ((MPI_Type_copy_attr_function*)MPI_DUP_FN)
 #define MPI_COMM_DUP_FN  ((MPI_Comm_copy_attr_function *)MPI_DUP_FN)
 #define MPI_INFO_ENV smpi_process_info_env()
-XBT_PUBLIC_DATA const MPI_Datatype MPI_PACKED;
+extern SMPI_Datatype smpi_MPI_PACKED;
+#define MPI_PACKED SMPI_PREDEFINED_POINTER(MPI_Datatype, smpi_MPI_PACKED)
+
 
 MPI_CALL(XBT_PUBLIC int, MPI_Cart_map, (MPI_Comm comm_old, int ndims, const int* dims, const int* periods, int* newrank));
 MPI_CALL(XBT_PUBLIC int, MPI_Graph_create,

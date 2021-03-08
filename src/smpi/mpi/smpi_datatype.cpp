@@ -21,84 +21,84 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (
 static std::unordered_map<std::string, simgrid::smpi::Datatype*> id2type_lookup;
 
 #define CREATE_MPI_DATATYPE(name, id, type)                                                                            \
-  static simgrid::smpi::Datatype _XBT_CONCAT(mpi_, name)((char*)_XBT_STRINGIFY(name), (id), sizeof(type), /* size */   \
+  simgrid::smpi::Datatype _XBT_CONCAT(smpi_MPI_, name)((char*)"MPI_"#name, (id), sizeof(type), /* size */   \
                                                          0,                                               /* lb */     \
                                                          sizeof(type), /* ub = lb + size */                            \
                                                          DT_FLAG_BASIC /* flags */                                     \
-                                                         );                                                            \
-  const MPI_Datatype name = &_XBT_CONCAT(mpi_, name);
+                                                         );
 
 #define CREATE_MPI_DATATYPE_NULL(name, id)                                                                             \
-  static simgrid::smpi::Datatype _XBT_CONCAT(mpi_, name)((char*)_XBT_STRINGIFY(name), (id), 0, /* size */              \
+  simgrid::smpi::Datatype _XBT_CONCAT(smpi_MPI_, name)((char*)"MPI_"#name, (id), 0, /* size */              \
                                                          0,                                    /* lb */                \
                                                          0,                                    /* ub = lb + size */    \
                                                          DT_FLAG_BASIC                         /* flags */             \
-                                                         );                                                            \
-  const MPI_Datatype name = &_XBT_CONCAT(mpi_, name);
+                                                         );
 
 // Predefined data types
-CREATE_MPI_DATATYPE_NULL(MPI_DATATYPE_NULL, -1)
-CREATE_MPI_DATATYPE(MPI_DOUBLE, 0, double)
-CREATE_MPI_DATATYPE(MPI_INT, 1, int)
-CREATE_MPI_DATATYPE(MPI_CHAR, 2, char)
-CREATE_MPI_DATATYPE(MPI_SHORT, 3, short)
-CREATE_MPI_DATATYPE(MPI_LONG, 4, long)
-CREATE_MPI_DATATYPE(MPI_FLOAT, 5, float)
-CREATE_MPI_DATATYPE(MPI_BYTE, 6, int8_t)
-CREATE_MPI_DATATYPE(MPI_LONG_LONG, 7, long long)
-CREATE_MPI_DATATYPE(MPI_SIGNED_CHAR, 8, signed char)
-CREATE_MPI_DATATYPE(MPI_UNSIGNED_CHAR, 9, unsigned char)
-CREATE_MPI_DATATYPE(MPI_UNSIGNED_SHORT, 10, unsigned short)
-CREATE_MPI_DATATYPE(MPI_UNSIGNED, 11, unsigned int)
-CREATE_MPI_DATATYPE(MPI_UNSIGNED_LONG, 12, unsigned long)
-CREATE_MPI_DATATYPE(MPI_UNSIGNED_LONG_LONG, 13, unsigned long long)
-CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE, 14, long double)
-CREATE_MPI_DATATYPE(MPI_WCHAR, 15, wchar_t)
-CREATE_MPI_DATATYPE(MPI_C_BOOL, 16, bool)
-CREATE_MPI_DATATYPE(MPI_INT8_T, 17, int8_t)
-CREATE_MPI_DATATYPE(MPI_INT16_T, 18, int16_t)
-CREATE_MPI_DATATYPE(MPI_INT32_T, 19, int32_t)
-CREATE_MPI_DATATYPE(MPI_INT64_T, 20, int64_t)
-CREATE_MPI_DATATYPE(MPI_UINT8_T, 21, uint8_t)
-CREATE_MPI_DATATYPE(MPI_UINT16_T, 22, uint16_t)
-CREATE_MPI_DATATYPE(MPI_UINT32_T, 23, uint32_t)
-CREATE_MPI_DATATYPE(MPI_UINT64_T, 24, uint64_t)
-CREATE_MPI_DATATYPE(MPI_C_FLOAT_COMPLEX, 25, float _Complex)
-CREATE_MPI_DATATYPE(MPI_C_DOUBLE_COMPLEX, 26, double _Complex)
-CREATE_MPI_DATATYPE(MPI_C_LONG_DOUBLE_COMPLEX, 27, long double _Complex)
-CREATE_MPI_DATATYPE(MPI_AINT, 28, MPI_Aint)
-CREATE_MPI_DATATYPE(MPI_OFFSET, 29, MPI_Offset)
+CREATE_MPI_DATATYPE_NULL(DATATYPE_NULL, -1)
+CREATE_MPI_DATATYPE(DOUBLE, 0, double)
+CREATE_MPI_DATATYPE(INT, 1, int)
+CREATE_MPI_DATATYPE(CHAR, 2, char)
+CREATE_MPI_DATATYPE(SHORT, 3, short)
+CREATE_MPI_DATATYPE(LONG, 4, long)
+CREATE_MPI_DATATYPE(FLOAT, 5, float)
+CREATE_MPI_DATATYPE(BYTE, 6, int8_t)
+CREATE_MPI_DATATYPE(LONG_LONG, 7, long long)
+CREATE_MPI_DATATYPE(SIGNED_CHAR, 8, signed char)
+CREATE_MPI_DATATYPE(UNSIGNED_CHAR, 9, unsigned char)
+CREATE_MPI_DATATYPE(UNSIGNED_SHORT, 10, unsigned short)
+CREATE_MPI_DATATYPE(UNSIGNED, 11, unsigned int)
+CREATE_MPI_DATATYPE(UNSIGNED_LONG, 12, unsigned long)
+CREATE_MPI_DATATYPE(UNSIGNED_LONG_LONG, 13, unsigned long long)
+CREATE_MPI_DATATYPE(LONG_DOUBLE, 14, long double)
+CREATE_MPI_DATATYPE(WCHAR, 15, wchar_t)
+CREATE_MPI_DATATYPE(C_BOOL, 16, bool)
+CREATE_MPI_DATATYPE(INT8_T, 17, int8_t)
+CREATE_MPI_DATATYPE(INT16_T, 18, int16_t)
+CREATE_MPI_DATATYPE(INT32_T, 19, int32_t)
+CREATE_MPI_DATATYPE(INT64_T, 20, int64_t)
+CREATE_MPI_DATATYPE(UINT8_T, 21, uint8_t)
+CREATE_MPI_DATATYPE(UINT16_T, 22, uint16_t)
+CREATE_MPI_DATATYPE(UINT32_T, 23, uint32_t)
+CREATE_MPI_DATATYPE(UINT64_T, 24, uint64_t)
+CREATE_MPI_DATATYPE(C_FLOAT_COMPLEX, 25, float _Complex)
+CREATE_MPI_DATATYPE(C_DOUBLE_COMPLEX, 26, double _Complex)
+CREATE_MPI_DATATYPE(C_LONG_DOUBLE_COMPLEX, 27, long double _Complex)
+CREATE_MPI_DATATYPE(AINT, 28, MPI_Aint)
+CREATE_MPI_DATATYPE(OFFSET, 29, MPI_Offset)
 
-CREATE_MPI_DATATYPE(MPI_FLOAT_INT, 30, float_int)
-CREATE_MPI_DATATYPE(MPI_LONG_INT, 31, long_int)
-CREATE_MPI_DATATYPE(MPI_DOUBLE_INT, 32, double_int)
-CREATE_MPI_DATATYPE(MPI_SHORT_INT, 33, short_int)
-CREATE_MPI_DATATYPE(MPI_2INT, 34, int_int)
-CREATE_MPI_DATATYPE(MPI_2FLOAT, 35, float_float)
-CREATE_MPI_DATATYPE(MPI_2DOUBLE, 36, double_double)
-CREATE_MPI_DATATYPE(MPI_2LONG, 37, long_long)
+CREATE_MPI_DATATYPE(FLOAT_INT, 30, float_int)
+CREATE_MPI_DATATYPE(LONG_INT, 31, long_int)
+CREATE_MPI_DATATYPE(DOUBLE_INT, 32, double_int)
+CREATE_MPI_DATATYPE(SHORT_INT, 33, short_int)
+CREATE_MPI_DATATYPE(2INT, 34, int_int)
+CREATE_MPI_DATATYPE(2FLOAT, 35, float_float)
+CREATE_MPI_DATATYPE(2DOUBLE, 36, double_double)
+CREATE_MPI_DATATYPE(2LONG, 37, long_long)
 
-CREATE_MPI_DATATYPE(MPI_REAL, 38, float)
-CREATE_MPI_DATATYPE(MPI_REAL4, 39, float)
-CREATE_MPI_DATATYPE(MPI_REAL8, 40, double)
-CREATE_MPI_DATATYPE(MPI_REAL16, 41, long double)
-CREATE_MPI_DATATYPE(MPI_COMPLEX8, 42, float_float)
-CREATE_MPI_DATATYPE(MPI_COMPLEX16, 43, double_double)
-CREATE_MPI_DATATYPE(MPI_COMPLEX32, 44, double_double)
-CREATE_MPI_DATATYPE(MPI_INTEGER1, 45, int)
-CREATE_MPI_DATATYPE(MPI_INTEGER2, 46, int16_t)
-CREATE_MPI_DATATYPE(MPI_INTEGER4, 47, int32_t)
-CREATE_MPI_DATATYPE(MPI_INTEGER8, 48, int64_t)
-CREATE_MPI_DATATYPE(MPI_INTEGER16, 49, integer128_t)
+CREATE_MPI_DATATYPE(REAL, 38, float)
+CREATE_MPI_DATATYPE(REAL4, 39, float)
+CREATE_MPI_DATATYPE(REAL8, 40, double)
+CREATE_MPI_DATATYPE(REAL16, 41, long double)
+CREATE_MPI_DATATYPE(COMPLEX8, 42, float_float)
+CREATE_MPI_DATATYPE(COMPLEX16, 43, double_double)
+CREATE_MPI_DATATYPE(COMPLEX32, 44, double_double)
+CREATE_MPI_DATATYPE(INTEGER1, 45, int)
+CREATE_MPI_DATATYPE(INTEGER2, 46, int16_t)
+CREATE_MPI_DATATYPE(INTEGER4, 47, int32_t)
+CREATE_MPI_DATATYPE(INTEGER8, 48, int64_t)
+CREATE_MPI_DATATYPE(INTEGER16, 49, integer128_t)
 
-CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT, 50, long_double_int)
+CREATE_MPI_DATATYPE(LONG_DOUBLE_INT, 50, long_double_int)
 
-CREATE_MPI_DATATYPE_NULL(MPI_UB, 51)
-CREATE_MPI_DATATYPE_NULL(MPI_LB, 52)
-CREATE_MPI_DATATYPE(MPI_PACKED, 53, char)
+CREATE_MPI_DATATYPE_NULL(UB, 51)
+CREATE_MPI_DATATYPE_NULL(LB, 52)
+CREATE_MPI_DATATYPE(PACKED, 53, char)
 // Internal use only
-CREATE_MPI_DATATYPE(MPI_PTR, 54, void*)
-CREATE_MPI_DATATYPE(MPI_COUNT, 55, long long)
+CREATE_MPI_DATATYPE(PTR, 54, void*)
+CREATE_MPI_DATATYPE(COUNT, 55, long long)
+MPI_Datatype MPI_PTR = &smpi_MPI_PTR;
+
 
 namespace simgrid{
 namespace smpi{

@@ -30,7 +30,7 @@ constexpr unsigned DT_FLAG_DERIVED     = 0x0800; /**< is the datatype derived ? 
 constexpr unsigned DT_FLAG_BASIC =
     (DT_FLAG_PREDEFINED | DT_FLAG_CONTIGUOUS | DT_FLAG_NO_GAPS | DT_FLAG_DATA | DT_FLAG_COMMITED);
 
-extern const MPI_Datatype MPI_PTR;
+extern MPI_Datatype MPI_PTR;
 
 //The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
 struct float_int {
