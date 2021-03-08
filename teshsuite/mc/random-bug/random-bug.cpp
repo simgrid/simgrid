@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "For this example");
 
-enum class Behavior { ABORT, ASSERT, PRINTF };
+enum class Behavior { ABORT, ASSERT, PRINTF, SEGV };
 
 Behavior behavior;
 
@@ -26,8 +26,15 @@ static void app()
   } else if (behavior == Behavior::PRINTF) {
     if (x == 3 && y == 4)
       XBT_ERROR("Error reached");
-  } else { // behavior == Behavior::ABORT
-    abort();
+  } else if (behavior == Behavior::ABORT) {
+    if (x == 3 && y == 4)
+      abort();
+  } else if (behavior == Behavior::SEGV) {
+    int* A = 0;
+    if (x == 3 && y == 4)
+      *A = 1;
+  } else {
+    DIE_IMPOSSIBLE;
   }
 }
 
@@ -35,7 +42,7 @@ static void app()
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc == 3, "Usage: random-bug abort|assert|printf <platformfile>");
+  xbt_assert(argc == 3, "Usage: random-bug abort|assert|printf|segv <platformfile>");
   if (strcmp(argv[1], "abort") == 0) {
     XBT_INFO("Behavior: abort");
     behavior = Behavior::ABORT;
@@ -45,8 +52,12 @@ int main(int argc, char* argv[])
   } else if (strcmp(argv[1], "printf") == 0) {
     XBT_INFO("Behavior: printf");
     behavior = Behavior::PRINTF;
+  } else if (strcmp(argv[1], "segv") == 0) {
+    XBT_INFO("Behavior: segv");
+    behavior = Behavior::SEGV;
   } else {
-    xbt_die("Please use either 'abort', 'assert' or 'printf' as first parameter, to specify what to do when the error "
+    xbt_die("Please use either 'abort', 'assert', 'printf', or 'segv' as first parameter, to specify what to do when "
+            "the error "
             "is found.");
   }
 
