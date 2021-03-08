@@ -71,5 +71,23 @@ std::string MutexTrylockSimcall::dot_label() const
   return SimcallObserver::dot_label() + "Mutex TRYLOCK";
 }
 
+std::string MutexLockSimcall::to_string(int time_considered) const
+{
+  std::string res = SimcallObserver::to_string(time_considered) + "Mutex LOCK";
+  res += "(locked = " + std::to_string(mutex_->is_locked());
+  res += ", owner = " + std::to_string(mutex_->get_owner() ? mutex_->get_owner()->get_pid() : -1);
+  res += ", sleeping = n/a)";
+  return res;
+}
+
+std::string MutexLockSimcall::dot_label() const
+{
+  return SimcallObserver::dot_label() + "Mutex LOCK";
+}
+
+bool MutexLockSimcall::is_enabled() const
+{
+  return mutex_->get_owner() == nullptr || mutex_->get_owner() == get_issuer();
+}
 } // namespace mc
 } // namespace simgrid

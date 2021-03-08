@@ -108,10 +108,3 @@ void MutexImpl::unref()
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid
-
-// Simcall handlers:
-
-void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
-{
-  mutex->lock(simcall->issuer_);
-}

@@ -255,9 +255,9 @@ smx_mutex_t simcall_mutex_init() // XBT_ATTRIB_DEPRECATED_v330
  * @ingroup simix_synchro_management
  *
  */
-void simcall_mutex_lock(smx_mutex_t mutex)
+void simcall_mutex_lock(smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATD_v331
 {
-  simcall_BODY_mutex_lock(mutex);
+  mutex->mutex().lock();
 }
 
 /**

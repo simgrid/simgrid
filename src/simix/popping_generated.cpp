@@ -38,7 +38,6 @@ constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
     "Simcall::COMM_WAIT",
     "Simcall::COMM_TEST",
     "Simcall::COMM_TESTANY",
-    "Simcall::MUTEX_LOCK",
     "Simcall::COND_WAIT",
     "Simcall::COND_WAIT_TIMEOUT",
     "Simcall::SEM_ACQUIRE",
@@ -97,10 +96,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered_)
 
     case Simcall::COMM_TESTANY:
       simcall_HANDLER_comm_testany(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl**>(simcall_.args_[0]), simgrid::simix::unmarshal<size_t>(simcall_.args_[1]));
-      break;
-
-    case Simcall::MUTEX_LOCK:
-      simcall_HANDLER_mutex_lock(&simcall_, simgrid::simix::unmarshal<smx_mutex_t>(simcall_.args_[0]));
       break;
 
     case Simcall::COND_WAIT:

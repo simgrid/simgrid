@@ -125,14 +125,6 @@ bool actor_is_enabled(smx_actor_t actor)
       return false;
     }
 
-    case Simcall::MUTEX_LOCK: {
-      const kernel::activity::MutexImpl* mutex = simcall_mutex_lock__get__mutex(req);
-
-      if (mutex->get_owner() == nullptr)
-        return true;
-      return mutex->get_owner()->get_pid() == req->issuer_->get_pid();
-    }
-
     case Simcall::SEM_ACQUIRE: {
       static bool warned = false;
       if (not warned)
@@ -168,8 +160,7 @@ bool request_is_visible(const s_smx_simcall* req)
 
   using simix::Simcall;
   return req->call_ == Simcall::COMM_ISEND || req->call_ == Simcall::COMM_IRECV || req->call_ == Simcall::COMM_WAIT ||
-         req->call_ == Simcall::COMM_WAITANY || req->call_ == Simcall::COMM_TEST ||
-         req->call_ == Simcall::COMM_TESTANY || req->call_ == Simcall::MUTEX_LOCK;
+         req->call_ == Simcall::COMM_WAITANY || req->call_ == Simcall::COMM_TEST || req->call_ == Simcall::COMM_TESTANY;
 }
 
 }

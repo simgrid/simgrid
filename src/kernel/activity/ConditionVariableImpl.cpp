@@ -55,7 +55,7 @@ void ConditionVariableImpl::signal()
       simcall_mutex = simcall_cond_wait__get__mutex(simcall);
     else
       simcall_mutex = simcall_cond_wait_timeout__get__mutex(simcall);
-    simcall->call_ = simix::Simcall::MUTEX_LOCK;
+    simcall->call_ = simix::Simcall::RUN_BLOCKING;
 
     simcall_mutex->lock(simcall->issuer_);
   }
