@@ -30,7 +30,6 @@ public:
   bool exploration_started = false;
 
   explicit Pair(unsigned long expanded_pairs);
-  ~Pair() = default;
 
   Pair(Pair const&) = delete;
   Pair& operator=(Pair const&) = delete;
@@ -48,13 +47,11 @@ public:
 
   VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
               std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> graph_state);
-  ~VisitedPair() = default;
 };
 
 class XBT_PRIVATE LivenessChecker : public Checker {
 public:
   explicit LivenessChecker();
-  ~LivenessChecker() override = default;
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;

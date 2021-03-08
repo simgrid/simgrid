@@ -35,8 +35,6 @@ public:
   static simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergyWifi> EXTENSION_ID;
 
   explicit LinkEnergyWifi(simgrid::s4u::Link* ptr) : link_(ptr) {}
-
-  ~LinkEnergyWifi() = default;
   LinkEnergyWifi()  = delete;
 
   /**

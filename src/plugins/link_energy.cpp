@@ -50,7 +50,6 @@ public:
   static simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergy> EXTENSION_ID;
 
   explicit LinkEnergy(simgrid::s4u::Link* ptr) : link_(ptr), last_updated_(surf_get_clock()) {}
-  ~LinkEnergy() = default;
 
   void init_watts_range_list();
   double get_consumed_energy();

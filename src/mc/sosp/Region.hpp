@@ -37,7 +37,6 @@ private:
 
 public:
   Region(RegionType type, void* start_addr, size_t size);
-  ~Region()             = default;
   Region(Region const&) = delete;
   Region& operator=(Region const&) = delete;
   Region(Region&& that)            = delete;

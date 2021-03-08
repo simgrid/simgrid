@@ -32,7 +32,6 @@ public:
   /** Creates a barrier for the given amount of actors */
   explicit Barrier(unsigned int expected_actors) : expected_actors_(expected_actors) {}
 #ifndef DOXYGEN
-  ~Barrier()              = default;
   Barrier(Barrier const&) = delete;
   Barrier& operator=(Barrier const&) = delete;
 #endif

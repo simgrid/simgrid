@@ -42,7 +42,6 @@ public:
 class CpuCas01 : public Cpu {
 public:
   CpuCas01(s4u::Host* host, const std::vector<double>& speed_per_pstate) : Cpu(host, speed_per_pstate) {}
-  ~CpuCas01()               = default;
   CpuCas01(const CpuCas01&) = delete;
   CpuCas01& operator=(const CpuCas01&) = delete;
   void apply_event(profile::Event* event, double value) override;

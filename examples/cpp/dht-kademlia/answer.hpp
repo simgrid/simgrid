@@ -19,7 +19,6 @@ class Answer {
 
 public:
   explicit Answer(unsigned int destination_id) : destination_id_(destination_id) {}
-  virtual ~Answer() = default;
   unsigned int getDestinationId() const { return destination_id_; }
   size_t getSize() const { return nodes_.size(); }
   const std::vector<std::pair<unsigned int, unsigned int>>& getNodes() const { return nodes_; }

@@ -182,7 +182,6 @@ public:
   TypedConfigurationElement(const std::string& key, const std::string& desc, T value, std::function<void(T&)> callback)
       : ConfigurationElement(key, desc), content(std::move(value)), callback(std::move(callback))
   {}
-  ~TypedConfigurationElement() override = default;
 
   std::string get_string_value() override;
   const char* get_type_name() override;

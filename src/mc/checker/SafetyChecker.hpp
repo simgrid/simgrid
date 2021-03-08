@@ -24,7 +24,6 @@ class XBT_PRIVATE SafetyChecker : public Checker {
 
 public:
   explicit SafetyChecker();
-  ~SafetyChecker() override = default;
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;

@@ -279,7 +279,6 @@ class Future {
 public:
   Future() = default;
   explicit Future(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
-  ~Future() = default;
 
   // Move type:
   Future(Future&) = delete;

@@ -25,7 +25,6 @@ class XBT_PUBLIC ConditionVariableImpl {
 
 public:
   ConditionVariableImpl() : piface_(this){};
-  ~ConditionVariableImpl() = default;
 
   void remove_sleeping_actor(actor::ActorImpl& actor) { xbt::intrusive_erase(sleeping_, actor); }
   const s4u::ConditionVariable* get_iface() const { return &piface_; }

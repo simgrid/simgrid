@@ -45,11 +45,9 @@ protected:
   explicit Exec(kernel::activity::ExecImplPtr pimpl);
 
 public:
-  ~Exec() override = default;
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
-
 #endif
   static xbt::signal<void(Exec const&)> on_start;
   static xbt::signal<void(Exec const&)> on_completion;

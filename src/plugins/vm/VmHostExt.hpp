@@ -14,7 +14,6 @@ namespace vm {
 class VmHostExt {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, VmHostExt> EXTENSION_ID;
-  virtual ~VmHostExt() = default;
 
   sg_size_t ramsize = 0;    /* available ramsize (0= not taken into account) */
   bool overcommit   = true; /* Whether the host allows overcommiting more VM than the avail ramsize allows */

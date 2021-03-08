@@ -78,7 +78,6 @@ public:
 class CpuL07 : public kernel::resource::Cpu {
 public:
   CpuL07(s4u::Host* host, const std::vector<double>& speed_per_pstate) : Cpu(host, speed_per_pstate){};
-  ~CpuL07()             = default;
   CpuL07(const CpuL07&) = delete;
   CpuL07& operator=(const CpuL07&) = delete;
 

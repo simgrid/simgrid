@@ -19,7 +19,6 @@ public:
   s4u::ActorPtr tx_     = nullptr;
   s4u::ActorPtr rx_     = nullptr;
   static simgrid::xbt::Extension<simgrid::s4u::Host, VmMigrationExt> EXTENSION_ID;
-  virtual ~VmMigrationExt() = default;
   explicit VmMigrationExt(s4u::ActorPtr issuer, s4u::ActorPtr rx, s4u::ActorPtr tx) : issuer_(issuer), tx_(tx), rx_(rx)
   {
   }

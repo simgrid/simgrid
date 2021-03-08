@@ -26,7 +26,6 @@ public:
   static xbt::Extension<s4u::Host, smpi::Host> EXTENSION_ID;
 
   explicit Host(s4u::Host* ptr);
-  ~Host() = default;
 
   double orecv(size_t size);
   double osend(size_t size);
