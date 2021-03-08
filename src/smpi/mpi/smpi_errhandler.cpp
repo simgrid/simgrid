@@ -8,10 +8,8 @@
 
 #include <cstdio>
 
-simgrid::smpi::Errhandler mpi_MPI_ERRORS_RETURN;
-MPI_Errhandler MPI_ERRORS_RETURN=&mpi_MPI_ERRORS_RETURN;
-simgrid::smpi::Errhandler mpi_MPI_ERRORS_ARE_FATAL;
-MPI_Errhandler MPI_ERRORS_ARE_FATAL=&mpi_MPI_ERRORS_ARE_FATAL;
+simgrid::smpi::Errhandler smpi_MPI_ERRORS_RETURN;
+simgrid::smpi::Errhandler smpi_MPI_ERRORS_ARE_FATAL;
 
 namespace simgrid{
 namespace smpi{

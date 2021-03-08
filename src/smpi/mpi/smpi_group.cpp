@@ -8,8 +8,7 @@
 #include "smpi_comm.hpp"
 #include <string>
 
-simgrid::smpi::Group mpi_MPI_GROUP_EMPTY;
-MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
+simgrid::smpi::Group smpi_MPI_GROUP_EMPTY;
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
 namespace simgrid{

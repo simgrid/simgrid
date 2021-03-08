@@ -217,23 +217,22 @@ static void no_func(void*, void*, int*, MPI_Datatype*)
 }
 
 #define CREATE_MPI_OP(name, func)                                                                                      \
-  static SMPI_Op _XBT_CONCAT(mpi_, name)(&(func) /* func */, true, true);                                              \
-  MPI_Op name = &_XBT_CONCAT(mpi_, name);
+  SMPI_Op _XBT_CONCAT(smpi_MPI_, name)(&(func) /* func */, true, true);                                              \
 
-CREATE_MPI_OP(MPI_MAX, max_func)
-CREATE_MPI_OP(MPI_MIN, min_func)
-CREATE_MPI_OP(MPI_SUM, sum_func)
-CREATE_MPI_OP(MPI_PROD, prod_func)
-CREATE_MPI_OP(MPI_LAND, land_func)
-CREATE_MPI_OP(MPI_LOR, lor_func)
-CREATE_MPI_OP(MPI_LXOR, lxor_func)
-CREATE_MPI_OP(MPI_BAND, band_func)
-CREATE_MPI_OP(MPI_BOR, bor_func)
-CREATE_MPI_OP(MPI_BXOR, bxor_func)
-CREATE_MPI_OP(MPI_MAXLOC, maxloc_func)
-CREATE_MPI_OP(MPI_MINLOC, minloc_func)
-CREATE_MPI_OP(MPI_REPLACE, replace_func)
-CREATE_MPI_OP(MPI_NO_OP, no_func)
+CREATE_MPI_OP(MAX, max_func)
+CREATE_MPI_OP(MIN, min_func)
+CREATE_MPI_OP(SUM, sum_func)
+CREATE_MPI_OP(PROD, prod_func)
+CREATE_MPI_OP(LAND, land_func)
+CREATE_MPI_OP(LOR, lor_func)
+CREATE_MPI_OP(LXOR, lxor_func)
+CREATE_MPI_OP(BAND, band_func)
+CREATE_MPI_OP(BOR, bor_func)
+CREATE_MPI_OP(BXOR, bxor_func)
+CREATE_MPI_OP(MAXLOC, maxloc_func)
+CREATE_MPI_OP(MINLOC, minloc_func)
+CREATE_MPI_OP(REPLACE, replace_func)
+CREATE_MPI_OP(NO_OP, no_func)
 
 namespace simgrid{
 namespace smpi{
