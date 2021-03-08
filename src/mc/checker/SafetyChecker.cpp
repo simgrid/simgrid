@@ -193,7 +193,11 @@ void SafetyChecker::backtrack()
 
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
-        if (api::get().simcall_check_dependency(&state->internal_req_, &prev_state->internal_req_)) {
+        if (state->executed_req_.issuer_ == prev_state->executed_req_.issuer_) {
+          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(call),
+                    SIMIX_simcall_name(prev_state->executed_req_.call_));
+          break;
+        } else if (api::get().simcall_check_dependency(&state->internal_req_, &prev_state->internal_req_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.times_considered_;
@@ -210,10 +214,6 @@ void SafetyChecker::backtrack()
             prev_state->mark_todo(issuer);
           else
             XBT_DEBUG("Actor %s %ld is in done set", issuer->get_cname(), issuer->get_pid());
-          break;
-        } else if (state->executed_req_.issuer_ == prev_state->executed_req_.issuer_) {
-          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(call),
-                    SIMIX_simcall_name(prev_state->executed_req_.call_));
           break;
         } else {
           const kernel::actor::ActorImpl* previous_issuer = api::get().simcall_get_issuer(&prev_state->executed_req_);
