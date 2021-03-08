@@ -56,9 +56,8 @@ int main(int argc, char* argv[])
     XBT_INFO("Behavior: segv");
     behavior = Behavior::SEGV;
   } else {
-    xbt_die("Please use either 'abort', 'assert', 'printf', or 'segv' as first parameter, to specify what to do when "
-            "the error "
-            "is found.");
+    xbt_die("Please use either 'abort', 'assert', 'printf', or 'segv' as first parameter,"
+            " to specify what to do when the error is found.");
   }
 
   e.load_platform(argv[2]);
