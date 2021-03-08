@@ -1,0 +1,10 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-exec-ptask-multicore ${platfdir}/energy_platform.xml --cfg=host/model:ptask_L07 --log=no_loc "--log=root.fmt:[%10.6r]%e%m%n"
+> [  0.000000] Configuration change: Set 'host/model' to 'ptask_L07'
+> [  0.000000] Switching to the L07 model to handle parallel tasks.
+> [ 10.000000] Computed 2-core activity on two different hosts. Took 10 s
+> [ 30.000000] Computed 2-core activity one 1-core host. Took 20 s
+> [ 40.000000] Computed 2-core activity on one 2-core host. Took 10 s
+> [ 55.000000] Computed 6-core activity of a 4-core host. Took 15 s
+> [ 55.000000] Simulation done.
