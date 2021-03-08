@@ -141,6 +141,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
   state->executed_req_    = *req;
   // Fetch the data of the request and translate it:
   state->internal_req_ = *req;
+  state->executed_req_.mc_value_ = state->transition_.times_considered_;
   simgrid::kernel::activity::CommImpl* chosen_comm;
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> remote_comm;
 
@@ -150,7 +151,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
     case Simcall::COMM_WAITANY:
       state->internal_req_.call_ = Simcall::COMM_WAIT;
       chosen_comm                = mc_model_checker->get_remote_simulation().read(
-          remote(simcall_comm_waitany__get__comms(req) + state->transition_.times_considered_));
+          remote(simcall_comm_waitany__get__comms(req) + state->executed_req_.mc_value_));
 
       mc_model_checker->get_remote_simulation().read(remote_comm, remote(chosen_comm));
       simcall_comm_wait__set__comm(&state->internal_req_, remote_comm.get_buffer());
@@ -160,11 +161,11 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
     case Simcall::COMM_TESTANY:
       state->internal_req_.call_ = Simcall::COMM_TEST;
       chosen_comm                = mc_model_checker->get_remote_simulation().read(
-          remote(simcall_comm_testany__get__comms(req) + state->transition_.times_considered_));
+          remote(simcall_comm_testany__get__comms(req) + state->executed_req_.mc_value_));
 
       mc_model_checker->get_remote_simulation().read(remote_comm, remote(chosen_comm));
       simcall_comm_test__set__comm(&state->internal_req_, remote_comm.get_buffer());
-      simcall_comm_test__set__result(&state->internal_req_, state->transition_.times_considered_);
+      simcall_comm_test__set__result(&state->internal_req_, state->executed_req_.mc_value_);
       break;
 
     case Simcall::COMM_WAIT:
