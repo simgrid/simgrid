@@ -80,12 +80,15 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
     host->set_state_profile(args->state_trace);
   if (args->speed_trace)
     host->set_speed_profile(args->speed_trace);
-  if (args->pstate != 0)
-    host->set_pstate(args->pstate);
   if (not args->coord.empty())
     new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
 
   simgrid::s4u::Host::on_creation(*host); // notify the signal
+
+  /* When energy plugin is activated, changing the pstate requires to already have the HostEnergy extension whose
+   * allocation is triggered by the on_creation signal. Then set_pstate must be called after the signal emition */
+  if (args->pstate != 0)
+    host->set_pstate(args->pstate);
 }
 
 /** @brief Add a "router" to the network element list */
