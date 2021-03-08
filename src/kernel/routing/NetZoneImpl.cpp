@@ -82,7 +82,7 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   auto* res = new s4u::Host(name);
   res->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
 
-  surf_cpu_model_pm->create_cpu(res, speed_per_pstate, core_amount);
+  surf_cpu_model_pm->create_cpu(res, speed_per_pstate)->set_core_count(core_amount)->seal();
 
   return res;
 }

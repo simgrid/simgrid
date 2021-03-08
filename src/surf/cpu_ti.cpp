@@ -284,9 +284,9 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
 }
 
-Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
-  return new CpuTi(this, host, speed_per_pstate, core);
+  return (new CpuTi(host, speed_per_pstate))->set_model(this);
 }
 
 double CpuTiModel::next_occurring_event(double now)
@@ -323,12 +323,8 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModel* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
-    : Cpu(host, speed_per_pstate)
+CpuTi::CpuTi(s4u::Host* host, const std::vector<double>& speed_per_pstate) : Cpu(host, speed_per_pstate)
 {
-  xbt_assert(core == 1, "Multi-core not handled by this model yet");
-  this->set_model(model);
-
   speed_.peak = speed_per_pstate.front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 

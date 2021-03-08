@@ -41,7 +41,7 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
   for (int i = 0; i < physical_host->get_pstate_count(); i++)
     speeds.push_back(physical_host->get_pstate_speed(i));
 
-  surf_cpu_model_vm->create_cpu(this, speeds, core_amount);
+  surf_cpu_model_vm->create_cpu(this, speeds)->set_core_count(core_amount)->seal();
   if (physical_host->get_pstate() != 0)
     set_pstate(physical_host->get_pstate());
 
