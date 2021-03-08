@@ -50,8 +50,10 @@ int PMPI_Type_get_extent_x(MPI_Datatype datatype, MPI_Count * lb, MPI_Count * ex
 {
   MPI_Aint tmplb, tmpext;
   int ret = PMPI_Type_get_extent(datatype, &tmplb, &tmpext);
-  *lb = static_cast<MPI_Count>(tmplb);
-  *extent = static_cast<MPI_Count>(tmpext);
+  if(ret == MPI_SUCCESS){
+    *lb = static_cast<MPI_Count>(tmplb);
+    *extent = static_cast<MPI_Count>(tmpext);
+  }
   return ret;
 }
 
