@@ -169,8 +169,7 @@ bool request_is_visible(const s_smx_simcall* req)
   using simix::Simcall;
   return req->call_ == Simcall::COMM_ISEND || req->call_ == Simcall::COMM_IRECV || req->call_ == Simcall::COMM_WAIT ||
          req->call_ == Simcall::COMM_WAITANY || req->call_ == Simcall::COMM_TEST ||
-         req->call_ == Simcall::COMM_TESTANY || req->call_ == Simcall::MUTEX_LOCK ||
-         req->call_ == Simcall::MUTEX_TRYLOCK;
+         req->call_ == Simcall::COMM_TESTANY || req->call_ == Simcall::MUTEX_LOCK;
 }
 
 }

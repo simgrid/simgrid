@@ -35,7 +35,6 @@ public:
   // number of comms the node is receiving
   int nbActiveCommsDown = 0;
   explicit IBNode(int id) : id(id){};
-  virtual ~IBNode() = default;
 };
 
 class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {

@@ -24,7 +24,6 @@ public:
   int original_num = -1; // num field of the VisitedState to which I was declared equal to (used for dot_output)
 
   explicit VisitedState(unsigned long state_number);
-  ~VisitedState() = default;
 };
 
 class XBT_PRIVATE VisitedStates {

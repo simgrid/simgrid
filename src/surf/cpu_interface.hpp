@@ -38,7 +38,7 @@ public:
    *                         This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) = 0;
+  virtual Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) = 0;
 
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;

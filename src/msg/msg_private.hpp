@@ -49,7 +49,6 @@ public:
 
   Task(const Task&) = delete;
   Task& operator=(const Task&) = delete;
-  ~Task()                      = default;
 
   bool is_used() const { return is_used_; }
   bool is_parallel() const { return parallel_; }

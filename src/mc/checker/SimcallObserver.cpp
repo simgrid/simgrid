@@ -5,6 +5,7 @@
 
 #include "src/mc/checker/SimcallObserver.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_observer, mc, "Logging specific to MC simcall observation");
@@ -54,6 +55,20 @@ std::string MutexUnlockSimcall::to_string(int time_considered) const
 std::string MutexUnlockSimcall::dot_label() const
 {
   return SimcallObserver::dot_label() + "Mutex UNLOCK";
+}
+
+std::string MutexTrylockSimcall::to_string(int time_considered) const
+{
+  std::string res = SimcallObserver::to_string(time_considered) + "Mutex TRYLOCK";
+  res += "(locked = " + std::to_string(mutex_->is_locked());
+  res += ", owner = " + std::to_string(mutex_->get_owner() ? mutex_->get_owner()->get_pid() : -1);
+  res += ", sleeping = n/a)";
+  return res;
+}
+
+std::string MutexTrylockSimcall::dot_label() const
+{
+  return SimcallObserver::dot_label() + "Mutex TRYLOCK";
 }
 
 } // namespace mc

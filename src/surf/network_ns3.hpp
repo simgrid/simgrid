@@ -17,7 +17,6 @@ namespace resource {
 class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
-  ~NetworkNS3Model() override = default;
   LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth,
                         s4u::Link::SharingPolicy policy) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;

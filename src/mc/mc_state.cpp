@@ -17,7 +17,7 @@ namespace mc {
 
 State::State(unsigned long state_number) : num_(state_number)
 {
-  auto maxpid = api::get().get_maxpid();
+  const unsigned long maxpid = api::get().get_maxpid();
   actor_states_.resize(maxpid);
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
@@ -43,7 +43,8 @@ Transition State::get_transition() const
 void State::copy_incomplete_comm_pattern()
 {
   incomplete_comm_pattern_.clear();
-  for (unsigned long i = 0; i < api::get().get_maxpid(); i++) {
+  const unsigned long maxpid = api::get().get_maxpid();
+  for (unsigned long i = 0; i < maxpid; i++) {
     std::vector<simgrid::mc::PatternCommunication> res;
     for (auto const& comm : incomplete_communications_pattern[i])
       res.push_back(comm->dup());

@@ -32,7 +32,7 @@ public:
   CpuCas01Model& operator=(const CpuCas01Model&) = delete;
   ~CpuCas01Model() override;
 
-  Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
+  Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
 };
 
 /************
@@ -41,10 +41,9 @@ public:
 
 class CpuCas01 : public Cpu {
 public:
-  CpuCas01(CpuCas01Model* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
+  CpuCas01(s4u::Host* host, const std::vector<double>& speed_per_pstate) : Cpu(host, speed_per_pstate) {}
   CpuCas01(const CpuCas01&) = delete;
   CpuCas01& operator=(const CpuCas01&) = delete;
-  ~CpuCas01() override;
   void apply_event(profile::Event* event, double value) override;
   CpuAction* execution_start(double size) override;
   CpuAction* execution_start(double size, int requested_cores) override;

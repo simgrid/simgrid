@@ -38,7 +38,6 @@ public:
   double get_max_downtime() const { return max_downtime_; }
 
   static simgrid::xbt::Extension<VirtualMachineImpl, DirtyPageTrackingExt> EXTENSION_ID;
-  virtual ~DirtyPageTrackingExt() = default;
   DirtyPageTrackingExt()          = default;
 };
 

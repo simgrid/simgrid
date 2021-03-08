@@ -18,7 +18,6 @@ namespace resource {
 class XBT_PRIVATE NetworkSmpiModel : public NetworkCm02Model {
 public:
   NetworkSmpiModel();
-  ~NetworkSmpiModel() override = default;
 
   double get_latency_factor(double size) override;
   double get_bandwidth_factor(double size) override;

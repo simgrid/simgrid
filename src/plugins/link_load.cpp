@@ -43,7 +43,6 @@ public:
   static simgrid::xbt::Extension<simgrid::s4u::Link, LinkLoad> EXTENSION_ID;
 
   explicit LinkLoad(simgrid::s4u::Link* ptr);
-  ~LinkLoad() = default;
 
   void track();
   void untrack();

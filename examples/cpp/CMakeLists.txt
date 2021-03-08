@@ -68,10 +68,11 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering
-                 exec-async exec-basic exec-dvfs exec-ptask exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
+                 exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
+                 exec-ptask exec-ptask-multicore
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
-		 network-wifi
+		 		 network-wifi
                  io-async io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-host-load plugin-link-load

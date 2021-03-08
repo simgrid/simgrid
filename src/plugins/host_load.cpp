@@ -63,7 +63,6 @@ public:
       , current_flops_(host_->get_load())
   {
   }
-  ~HostLoad() = default;
   HostLoad() = delete;
   explicit HostLoad(simgrid::s4u::Host& ptr) = delete;
   explicit HostLoad(simgrid::s4u::Host&& ptr) = delete;

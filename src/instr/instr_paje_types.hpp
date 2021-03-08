@@ -88,7 +88,6 @@ public:
       : Type(event_type, name, alias, "", father){};
   ValueType(PajeEventType event_type, const std::string& name, Type* father)
       : Type(event_type, name, name, "", father){};
-  ~ValueType() override = default;
   void add_entity_value(const std::string& name, const std::string& color);
   void add_entity_value(const std::string& name);
   EntityValue* get_entity_value(const std::string& name);

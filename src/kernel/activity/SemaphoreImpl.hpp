@@ -23,7 +23,6 @@ class XBT_PUBLIC SemaphoreImpl {
 
 public:
   explicit SemaphoreImpl(unsigned int value) : value_(value){};
-  ~SemaphoreImpl() = default;
 
   SemaphoreImpl(SemaphoreImpl const&) = delete;
   SemaphoreImpl& operator=(SemaphoreImpl const&) = delete;

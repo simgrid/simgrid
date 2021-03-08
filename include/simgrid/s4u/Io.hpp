@@ -33,8 +33,6 @@ private:
 public:
 #ifndef DOXYGEN
   friend Disk;    // Factory of IOs
-
-  ~Io() override = default;
 #endif
 
   static xbt::signal<void(Io const&)> on_start;

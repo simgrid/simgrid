@@ -21,13 +21,11 @@ public:
       : prev_(prev), next_(next), num_pieces(num_pieces)
   {
   }
-  ~ChainMessage() = default;
 };
 
 class FilePiece {
 public:
   FilePiece()  = default;
-  ~FilePiece() = default;
 };
 
 class Peer {
@@ -43,7 +41,6 @@ public:
   unsigned int total_pieces         = 0;
 
   Peer() { me = simgrid::s4u::Mailbox::by_name(simgrid::s4u::Host::current()->get_cname()); }
-  ~Peer()     = default;
 
   void joinChain()
   {
@@ -130,8 +127,6 @@ public:
       mailboxes.push_back(simgrid::s4u::Mailbox::by_name(name));
     }
   }
-
-  ~Broadcaster() = default;
 };
 
 static void peer()

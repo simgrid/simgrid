@@ -54,7 +54,6 @@ public:
   Configuration(const Configuration&) = default;
   Configuration& operator=(Configuration const&) = default;
   Configuration(Configuration&&)                 = default;
-  ~Configuration()                               = default;
 };
 
 class UnfoldingEvent {
@@ -65,7 +64,6 @@ public:
   UnfoldingEvent(const UnfoldingEvent&) = default;
   UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
   UnfoldingEvent(UnfoldingEvent&&)                 = default;
-  ~UnfoldingEvent()                                = default;
 
   EventSet getHistory() const;
 

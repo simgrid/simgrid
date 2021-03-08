@@ -110,7 +110,7 @@ class LinkImpl : public Resource_T<LinkImpl>, public xbt::PropertyHolder {
   s4u::Link piface_;
 
 protected:
-  LinkImpl(const std::string& name);
+  explicit LinkImpl(const std::string& name);
   LinkImpl(const LinkImpl&) = delete;
   LinkImpl& operator=(const LinkImpl&) = delete;
   ~LinkImpl() override                 = default; // Use destroy() instead of this destructor.

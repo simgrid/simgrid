@@ -23,7 +23,6 @@ public:
   explicit WifiZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
   WifiZone(const WifiZone&) = delete;
   WifiZone& operator=(const WifiZone) = delete;
-  ~WifiZone() override                = default;
 
   void seal() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;

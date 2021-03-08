@@ -31,7 +31,6 @@ class XBT_PRIVATE NetworkSmpiModel;
 class NetworkCm02Model : public NetworkModel {
 public:
   NetworkCm02Model();
-  ~NetworkCm02Model() override = default;
   LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
                         s4u::Link::SharingPolicy policy) override;
   void update_actions_state_lazy(double now, double delta) override;
@@ -46,7 +45,6 @@ public:
 class NetworkCm02Link : public LinkImpl {
 public:
   NetworkCm02Link(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy, lmm::System* system);
-  ~NetworkCm02Link() override = default;
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
   LinkImpl* set_latency(double value) override;
@@ -60,7 +58,6 @@ class NetworkCm02Action : public NetworkAction {
 
 public:
   using NetworkAction::NetworkAction;
-  ~NetworkCm02Action() override = default;
   void update_remains_lazy(double now) override;
 };
 }

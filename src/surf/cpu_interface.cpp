@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_interface.hpp"
+#include "cpu_ti.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
@@ -98,6 +99,9 @@ Cpu* Cpu::set_core_count(int core_count)
 {
   xbt_assert(not is_sealed(), "Core count cannot be changed once CPU has been sealed");
   xbt_assert(core_count > 0, "Host %s must have at least one core, not 0.", piface_->get_cname());
+  if (dynamic_cast<CpuTiModel*>(get_model()) != nullptr)
+    xbt_assert(core_count == 1, "Multi-core not handled by this model yet");
+
   core_count_ = core_count;
   return this;
 }
@@ -116,6 +120,9 @@ void Cpu::set_speed_profile(kernel::profile::Profile* profile)
 
 void Cpu::seal()
 {
+  lmm::System* lmm = get_model()->get_maxmin_system();
+  if (dynamic_cast<CpuTiModel*>(get_model()) == nullptr)
+    this->set_constraint(lmm->constraint_new(this, core_count_ * speed_per_pstate_.front()));
   Resource::seal();
 }
 

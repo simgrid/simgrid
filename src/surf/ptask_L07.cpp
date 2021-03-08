@@ -187,9 +187,16 @@ L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host
 
   /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
-  for (size_t i = 0; i < host_list.size(); i++)
+  double bound = std::numeric_limits<double>::max();
+  for (size_t i = 0; i < host_list.size(); i++) {
     model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(),
                                        (flops_amount == nullptr ? 0.0 : flops_amount[i]));
+    if (flops_amount && flops_amount[i] > 0)
+      bound = std::min(bound, host_list[i]->pimpl_cpu->get_speed(1.0) * host_list[i]->pimpl_cpu->get_speed_ratio() /
+                                  flops_amount[i]);
+  }
+  if (bound < std::numeric_limits<double>::max())
+    model->get_maxmin_system()->update_variable_bound(get_variable(), bound);
 
   if (bytes_amount != nullptr) {
     for (size_t k = 0; k < host_list.size() * host_list.size(); k++) {
@@ -222,9 +229,9 @@ kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host
   return res;
 }
 
-kernel::resource::Cpu* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
+kernel::resource::Cpu* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
-  return new CpuL07(this, host, speed_per_pstate, core);
+  return (new CpuL07(host, speed_per_pstate))->set_model(this);
 }
 
 kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
@@ -237,15 +244,6 @@ kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name
 /************
  * Resource *
  ************/
-
-CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, const std::vector<double>& speed_per_pstate, int core)
-    : Cpu(host, speed_per_pstate)
-{
-  this->set_core_count(core)->set_model(model)->set_constraint(
-      model->get_maxmin_system()->constraint_new(this, speed_per_pstate.front()));
-}
-
-CpuL07::~CpuL07()=default;
 
 kernel::resource::CpuAction* CpuL07::execution_start(double size)
 {

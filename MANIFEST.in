@@ -237,6 +237,8 @@ include examples/cpp/exec-dependent/s4u-exec-dependent.cpp
 include examples/cpp/exec-dependent/s4u-exec-dependent.tesh
 include examples/cpp/exec-dvfs/s4u-exec-dvfs.cpp
 include examples/cpp/exec-dvfs/s4u-exec-dvfs.tesh
+include examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore.cpp
+include examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore.tesh
 include examples/cpp/exec-ptask/s4u-exec-ptask.cpp
 include examples/cpp/exec-ptask/s4u-exec-ptask.tesh
 include examples/cpp/exec-remote/s4u-exec-remote.cpp

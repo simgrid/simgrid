@@ -100,7 +100,7 @@ using ActionTiList = boost::intrusive::list<CpuTiAction, ActionTiListOptions>;
  ************/
 class CpuTi : public Cpu {
 public:
-  CpuTi(CpuTiModel* model, s4u::Host* host, const std::vector<double>& speed_per_pstate, int core);
+  CpuTi(s4u::Host* host, const std::vector<double>& speed_per_pstate);
   CpuTi(const CpuTi&)            = delete;
   CpuTi& operator&(const CpuTi&) = delete;
   ~CpuTi() override;
@@ -146,7 +146,7 @@ public:
   CpuTiModel(const CpuTiModel&) = delete;
   CpuTiModel& operator=(const CpuTiModel&) = delete;
   ~CpuTiModel() override;
-  Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate, int core) override;
+  Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
