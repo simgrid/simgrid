@@ -16,8 +16,18 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
-simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
-MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
+simgrid::smpi::Comm smpi_MPI_COMM_UNINITIALIZED;
+MPI_Comm MPI_COMM_UNINITIALIZED=&smpi_MPI_COMM_UNINITIALIZED;
+/**
+ * Setting MPI_COMM_WORLD to MPI_COMM_UNINITIALIZED (it's a variable)
+ * is important because the implementation of MPI_Comm checks
+ * "this == MPI_COMM_UNINITIALIZED"? If yes, it uses smpi_process()->comm_world()
+ * instead of "this".
+ * This is basically how we only have one global variable but all processes have
+ * different communicators (the one their SMPI instance uses).
+ *
+ */
+MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
 
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
  * support them, we have to add a field SMPI_Topo_type, and replace the MPI_Topology field by an union. */

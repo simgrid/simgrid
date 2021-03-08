@@ -74,17 +74,7 @@ static int smpi_exit_status = 0;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
 static std::vector<std::string> privatize_libs_paths;
-/**
- * Setting MPI_COMM_WORLD to MPI_COMM_UNINITIALIZED (it's a variable)
- * is important because the implementation of MPI_Comm checks
- * "this == MPI_COMM_UNINITIALIZED"? If yes, it uses smpi_process()->comm_world()
- * instead of "this".
- * This is basically how we only have one global variable but all processes have
- * different communicators (the one their SMPI instance uses).
- *
- * See smpi_comm.cpp and the functions therein for details.
- */
-MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
+
 // No instance gets manually created; check also the smpirun.in script as
 // this default name is used there as well (when the <actor> tag is generated).
 static const std::string smpi_default_instance_name("smpirun");
