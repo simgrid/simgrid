@@ -916,21 +916,20 @@ set(DOC_SOURCES
   docs/source/The_XBT_toolbox.rst
   docs/source/community.rst
   docs/source/Configuring_SimGrid.rst
-  docs/source/Deploying_your_Application.rst
-  docs/source/Experimental_Setup.rst
+  docs/source/Deploying_your_application.rst
+  docs/source/Experimental_setup.rst
   docs/source/index.rst
   docs/source/Introduction.rst
   docs/source/Installing_SimGrid.rst
-  docs/source/Start_Your_Own_Project.rst
-  docs/source/models.rst
-  docs/source/ns3.rst
-  docs/source/outcomes.rst
-  docs/source/platform.rst
-  docs/source/Platform_Examples.rst
-  docs/source/platform_howtos.rst
-  docs/source/Platform_Routing.rst
+  docs/source/Start_your_own_project.rst
+  docs/source/Models.rst
+  docs/source/Outcomes.rst
+  docs/source/Platform.rst
+  docs/source/Platform_examples.rst
+  docs/source/Platform_howtos.rst
+  docs/source/Platform_routing.rst
   docs/source/Plugins.rst
-  docs/source/XML_Reference.rst
+  docs/source/XML_reference.rst
   docs/source/Design_goals.rst
 
   docs/source/Tutorial_Algorithms.rst
