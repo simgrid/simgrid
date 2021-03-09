@@ -48,6 +48,8 @@ void SleepImpl::post()
   } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
     state_ = State::DONE;
   }
+
+  clean_action();
   /* Answer all simcalls associated with the synchro */
   finish();
 }
@@ -67,8 +69,6 @@ void SleepImpl::finish()
       simcall->issuer_->simcall_answer();
     }
   }
-
-  clean_action();
 }
 } // namespace activity
 } // namespace kernel

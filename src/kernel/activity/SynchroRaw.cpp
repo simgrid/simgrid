@@ -61,6 +61,9 @@ void RawImpl::post()
   } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
     state_ = State::SRC_TIMEOUT;
   }
+
+  clean_action();
+  /* Answer all simcalls associated with the synchro */
   finish();
 }
 
