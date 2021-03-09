@@ -97,15 +97,15 @@ double Link::get_usage() const
 
 void Link::turn_on()
 {
-  simgrid::kernel::actor::simcall([this]() { this->pimpl_->turn_on(); });
+  kernel::actor::simcall([this]() { this->pimpl_->turn_on(); });
 }
 void Link::turn_off()
 {
-  simgrid::kernel::actor::simcall([this]() { this->pimpl_->turn_off(); });
+  kernel::actor::simcall([this]() { this->pimpl_->turn_off(); });
 }
 void Link::seal()
 {
-  simgrid::kernel::actor::simcall([this]() { this->pimpl_->seal(); });
+  kernel::actor::simcall([this]() { this->pimpl_->seal(); });
 }
 
 bool Link::is_on() const
@@ -115,15 +115,15 @@ bool Link::is_on() const
 
 void Link::set_state_profile(kernel::profile::Profile* profile)
 {
-  simgrid::kernel::actor::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
+  kernel::actor::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
 }
 void Link::set_bandwidth_profile(kernel::profile::Profile* profile)
 {
-  simgrid::kernel::actor::simcall([this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
+  kernel::actor::simcall([this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
 }
 void Link::set_latency_profile(kernel::profile::Profile* trace)
 {
-  simgrid::kernel::actor::simcall([this, trace]() { this->pimpl_->set_latency_profile(trace); });
+  kernel::actor::simcall([this, trace]() { this->pimpl_->set_latency_profile(trace); });
 }
 
 const char* Link::get_property(const std::string& key) const
@@ -132,7 +132,7 @@ const char* Link::get_property(const std::string& key) const
 }
 Link* Link::set_property(const std::string& key, const std::string& value)
 {
-  simgrid::kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
   return this;
 }
 
