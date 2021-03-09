@@ -72,24 +72,25 @@ namespace kernel {
 namespace resource {
 
 NetworkCm02Model::NetworkCm02Model()
-    : NetworkModel(simgrid::config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::FULL
-                                                                                      : Model::UpdateAlgo::LAZY)
+    : NetworkModel(config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::FULL
+                                                                             : Model::UpdateAlgo::LAZY)
 {
   all_existing_models.push_back(this);
 
-  std::string optim = simgrid::config::get_value<std::string>("network/optim");
-  bool select       = simgrid::config::get_value<bool>("network/maxmin-selective-update");
+  std::string optim = config::get_value<std::string>("network/optim");
+  bool select       = config::get_value<bool>("network/maxmin-selective-update");
 
   if (optim == "Lazy") {
-    xbt_assert(select || simgrid::config::is_default("network/maxmin-selective-update"),
+    xbt_assert(select || config::is_default("network/maxmin-selective-update"),
                "You cannot disable network selective update when using the lazy update mechanism");
     select = true;
   }
 
   set_maxmin_system(new lmm::System(select));
-  loopback_ = NetworkCm02Model::create_link("__loopback__", 
-                                            std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
-                                            s4u::Link::SharingPolicy::FATPIPE)->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
+  loopback_ = NetworkCm02Model::create_link("__loopback__",
+                                            std::vector<double>{config::get_value<double>("network/loopback-bw")},
+                                            s4u::Link::SharingPolicy::FATPIPE)
+                  ->set_latency(config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }
 
