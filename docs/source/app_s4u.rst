@@ -334,6 +334,26 @@ that are marked as permanent receiver, you should call
 memory gets properly reclaimed. This call should be at the end of the
 actor's function, not in an on_exit callback.
 
+===============================
+Communicating without Mailboxes
+===============================
+
+Sometimes you don't want to simulate communications between actors as
+allowed by mailboxes, but you want to create a direct communication
+between two arbitrary hosts. This can arise when you write a
+high-level model of a centralized scheduler, or when you model direct
+communications such as one-sided communications in MPI or remote
+memory direct access in PGAS.
+
+For that, :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`
+simulates a direct communication between the two specified hosts. No
+mailbox is used, and there is no rendezvous between actors. You can
+freely mix such direct communications and rendezvous-based
+communications. Alternatively, :cpp:func:`Comm::sendto_init()
+<simgrid::s4u::Comm::sendto_init()>` and
+:cpp:func:`Comm::sendto_async() <simgrid::s4u::Comm::sendto_async()>`
+create asynchronous direct communications.
+
 .. _s4u_raii:
 
 Memory Management
@@ -1300,6 +1320,9 @@ Execution
 Platform and routing
 --------------------
 
+You can also start direct communications between two arbitrary hosts
+using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
+
 .. tabs::
 
    .. group-tab:: C++
@@ -1308,8 +1331,6 @@ Platform and routing
       .. doxygenfunction:: simgrid::s4u::Host::get_netpoint() const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency) const
-      .. doxygenfunction:: simgrid::s4u::Host::sendto(Host *dest, double byte_amount)
-      .. doxygenfunction:: simgrid::s4u::Host::sendto_async(Host *dest, double byte_amount)
 
    .. group-tab:: C
 
@@ -1851,10 +1872,17 @@ Querying info
 Life cycle
 ----------
 
+Most communications are created using :ref:`s4u_mailbox`, but you can
+also start direct communications as shown below.
+
 .. tabs::
 
    .. group-tab:: C++
 
+      .. doxygenfunction:: simgrid::s4u::Comm::sendto
+      .. doxygenfunction:: simgrid::s4u::Comm::sendto_init
+      .. doxygenfunction:: simgrid::s4u::Comm::sendto_async
+      
       .. doxygenfunction:: simgrid::s4u::Comm::cancel
       .. doxygenfunction:: simgrid::s4u::Comm::start
       .. doxygenfunction:: simgrid::s4u::Comm::test

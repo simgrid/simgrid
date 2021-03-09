@@ -138,6 +138,11 @@ CommPtr Comm::sendto_async(Host* from, Host* to, double simulated_size_in_bytes)
   return res;
 }
 
+void Comm::sendto(Host* from, Host* to, double simulated_size_in_bytes)
+{
+  sendto_async(from, to, simulated_size_in_bytes)->wait();
+}
+
 Comm* Comm::start()
 {
   xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,

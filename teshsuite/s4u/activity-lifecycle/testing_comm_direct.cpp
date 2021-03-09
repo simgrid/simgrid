@@ -16,7 +16,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
 
     simgrid::s4u::ActorPtr dcomm5 = simgrid::s4u::Actor::create("dcomm5", all_hosts[1], [&global]() {
       assert_exit(true, 5.);
-      all_hosts[1]->sendto(all_hosts[2], 5000);
+      simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000);
       global = true;
     });
 
@@ -32,7 +32,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
     XBT_INFO("Launch a dcomm(5s), and kill it right after start");
     simgrid::s4u::ActorPtr dcomm5 = simgrid::s4u::Actor::create("dcomm5_killed", all_hosts[1], []() {
       assert_exit(false, 0);
-      all_hosts[1]->sendto(all_hosts[2], 5000);
+      simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000);
       FAIL("I should be dead now");
     });
 
@@ -47,7 +47,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
     XBT_INFO("Launch a dcomm(5s), and kill it after 2 secs");
     simgrid::s4u::ActorPtr dcomm5 = simgrid::s4u::Actor::create("dcomm5_killed", all_hosts[1], []() {
       assert_exit(false, 2);
-      all_hosts[1]->sendto(all_hosts[2], 5000);
+      simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000);
       FAIL("I should be dead now");
     });
 
@@ -62,7 +62,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
     XBT_INFO("Launch a dcomm(5s), and restart its host right after start");
     simgrid::s4u::ActorPtr dcomm5 = simgrid::s4u::Actor::create("dcomm5_restarted", all_hosts[1], []() {
       assert_exit(false, 0);
-      all_hosts[1]->sendto(all_hosts[2], 5000);
+      simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000);
       FAIL("I should be dead now");
     });
 
@@ -78,7 +78,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
     XBT_INFO("Launch a dcomm(5s), and restart its host after 2 secs");
     simgrid::s4u::ActorPtr dcomm5 = simgrid::s4u::Actor::create("dcomm5_restarted", all_hosts[1], []() {
       assert_exit(false, 2);
-      all_hosts[1]->sendto(all_hosts[2], 5000);
+      simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000);
       FAIL("I should be dead now");
     });
 
@@ -96,7 +96,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
 
     simgrid::s4u::Actor::create("dcomm5_restarted", all_hosts[1], [&execution_done]() {
       assert_exit(true, 5);
-      all_hosts[1]->sendto(all_hosts[2], 5000);
+      simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000);
       execution_done = true;
     });
 
@@ -119,7 +119,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
     XBT_INFO("Launch a dcomm(5s), and restart the used link right after start");
     simgrid::s4u::ActorPtr dcomm5 = simgrid::s4u::Actor::create("dcomm5_restarted", all_hosts[1], []() {
       assert_exit(true, 0);
-      REQUIRE_NETWORK_FAILURE(all_hosts[1]->sendto(all_hosts[2], 5000));
+      REQUIRE_NETWORK_FAILURE(simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000));
     });
 
     simgrid::s4u::this_actor::yield();
@@ -135,7 +135,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
     XBT_INFO("Launch a dcomm(5s), and restart the used link after 2 secs");
     simgrid::s4u::ActorPtr dcomm5 = simgrid::s4u::Actor::create("dcomm5_restarted", all_hosts[1], []() {
       assert_exit(true, 2);
-      REQUIRE_NETWORK_FAILURE(all_hosts[1]->sendto(all_hosts[2], 5000));
+      REQUIRE_NETWORK_FAILURE(simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000));
     });
 
     simgrid::s4u::this_actor::sleep_for(2);
@@ -153,7 +153,7 @@ TEST_CASE("Activity lifecycle: direct communication activities")
 
     simgrid::s4u::Actor::create("dcomm5_restarted", all_hosts[1], [&execution_done]() {
       assert_exit(true, 5);
-      all_hosts[1]->sendto(all_hosts[2], 5000);
+      simgrid::s4u::Comm::sendto(all_hosts[1], all_hosts[2], 5000);
       execution_done = true;
     });
 

@@ -176,14 +176,19 @@ NetZone* Host::get_englobing_zone()
   return pimpl_netpoint_->get_englobing_zone()->get_iface();
 }
 
-void Host::sendto(Host* dest, double byte_amount)
+void Host::sendto(Host* dest, double byte_amount) // deprecated 331
 {
-  sendto_async(dest, byte_amount)->wait();
+  Comm::sendto_async(this, dest, byte_amount)->wait();
 }
 
-CommPtr Host::sendto_async(Host* dest, double byte_amount)
+CommPtr Host::sendto_async(Host* dest, double byte_amount) // deprecated 331
 {
   return Comm::sendto_async(this, dest, byte_amount);
+}
+
+void Host::send_to(Host* dest, double byte_amount) // deprecated 330
+{
+  Comm::sendto(this, dest, byte_amount);
 }
 
 /** Get the properties assigned to a host */
@@ -607,7 +612,7 @@ double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to) // XBT_
 
 void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
 {
-  from->sendto(to, byte_amount);
+  simgrid::s4u::Comm::sendto(from, to, byte_amount);
 }
 
 /** @brief Displays debugging information about a host */

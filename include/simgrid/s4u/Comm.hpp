@@ -46,9 +46,20 @@ public:
 
   /*! Creates a communication beween the two given hosts, bypassing the mailbox mechanism. */
   static CommPtr sendto_init(Host* from, Host* to);
-  /*! Creates and start a communication of the given amount of bytes beween the two given hosts, bypassing the mailbox
-   * mechanism */
+  /** Do an asynchronous communication between two arbitrary hosts.
+   *
+   * This initializes a communication that completely bypass the mailbox and actors mechanism.
+   * There is really no limit on the hosts involved. In particular, the actor does not have to be on one of the involved
+   * hosts.
+   */
   static CommPtr sendto_async(Host* from, Host* to, double simulated_size_in_bytes);
+  /** Do a blocking communication between two arbitrary hosts.
+   *
+   * This starts a blocking communication right away, bypassing the mailbox and actors mechanism.
+   * The calling actor is blocked until the end of the communication; there is really no limit on the hosts involved.
+   * In particular, the actor does not have to be on one of the involved hosts. Enjoy the comfort of the simulator :)
+   */
+  static void sendto(Host* from, Host* to, double simulated_size_in_bytes);
 
   static xbt::signal<void(Comm const&, bool is_sender)> on_start;
   static xbt::signal<void(Comm const&)> on_completion;

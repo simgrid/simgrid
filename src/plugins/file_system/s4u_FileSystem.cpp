@@ -5,6 +5,7 @@
 
 #include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Actor.hpp"
+#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -141,7 +142,7 @@ sg_size_t File::read(sg_size_t size)
   if (host && host->get_name() != Host::current()->get_name() && read_size > 0) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
-    host->sendto(Host::current(), read_size);
+    Comm::sendto(host, Host::current(), read_size);
   }
 
   return read_size;
@@ -165,7 +166,7 @@ sg_size_t File::write(sg_size_t size, bool write_inside)
   if (host && host->get_name() != Host::current()->get_name()) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
-    Host::current()->sendto(host, size);
+    Comm::sendto(Host::current(), host, size);
   }
   XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu' '%llu:%llu'", get_path(), local_disk_->get_cname(), size, size_,
             sg_disk_get_size_used(local_disk_), sg_disk_get_size(local_disk_));
@@ -307,7 +308,7 @@ int File::remote_copy(sg_host_t host, const std::string& fullpath)
   if (src_host) {
     XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
               dst_host->get_cname());
-    src_host->sendto(dst_host, read_size);
+    Comm::sendto(src_host, dst_host, read_size);
   }
 
   /* Create file on remote host, write it and close it */
