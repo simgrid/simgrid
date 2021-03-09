@@ -15,7 +15,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
  *********/
 void surf_network_model_init_Constant()
 {
-  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkConstantModel>();
+  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkConstantModel>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
                                                          std::move(net_model), true);
 }

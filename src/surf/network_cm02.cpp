@@ -37,7 +37,7 @@ double sg_weight_S_parameter = 0.0; /* default value; can be set by model or fro
 /*  } */
 void surf_network_model_init_LegrandVelho()
 {
-  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkCm02Model>();
+  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
                                                          std::move(net_model), true);
 
@@ -63,7 +63,7 @@ void surf_network_model_init_CM02()
   simgrid::config::set_default<double>("network/bandwidth-factor", 1.0);
   simgrid::config::set_default<double>("network/weight-S", 0.0);
 
-  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkCm02Model>();
+  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
                                                          std::move(net_model), true);
 }

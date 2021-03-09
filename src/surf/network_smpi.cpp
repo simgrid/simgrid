@@ -33,7 +33,7 @@ std::vector<s_smpi_factor_t> smpi_lat_factor;
 /*  } */
 void surf_network_model_init_SMPI()
 {
-  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkSmpiModel>();
+  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkSmpiModel>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
                                                          std::move(net_model), true);
 

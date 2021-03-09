@@ -21,7 +21,7 @@ void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
-  auto host_model = std::make_unique<simgrid::surf::HostL07Model>();
+  auto host_model = std::make_shared<simgrid::surf::HostL07Model>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
                                                          std::move(host_model), true);
 }

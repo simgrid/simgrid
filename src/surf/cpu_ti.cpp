@@ -270,10 +270,10 @@ int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 
 void CpuTiModel::create_pm_vm_models()
 {
-  auto cpu_model_pm = std::make_unique<CpuTiModel>();
+  auto cpu_model_pm = std::make_shared<CpuTiModel>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM,
                                                          std::move(cpu_model_pm), true);
-  auto cpu_model_vm = std::make_unique<CpuTiModel>();
+  auto cpu_model_vm = std::make_shared<CpuTiModel>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM,
                                                          std::move(cpu_model_vm), true);
 }

@@ -136,7 +136,7 @@ public:
    * @param type Model type (network, disk, etc)
    * @param model Pointer to model
    */
-  void add_model(simgrid::kernel::resource::Model::Type type, std::unique_ptr<simgrid::kernel::resource::Model> model);
+  void add_model(simgrid::kernel::resource::Model::Type type, std::shared_ptr<simgrid::kernel::resource::Model> model);
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones() const
