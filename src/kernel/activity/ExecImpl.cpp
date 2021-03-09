@@ -115,8 +115,10 @@ ExecImpl* ExecImpl::start()
       surf_action_->set_sharing_penalty(sharing_penalty_);
       surf_action_->set_category(get_tracing_category());
 
-      if (bound_ > 0)
+      if (bound_ > 0) {
         surf_action_->set_bound(bound_);
+        surf_action_->set_user_bound(bound_);
+      }
     } else {
       surf_action_ = surf_host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
     }

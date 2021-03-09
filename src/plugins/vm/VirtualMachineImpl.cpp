@@ -320,6 +320,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 void VirtualMachineImpl::set_bound(double bound)
 {
   user_bound_ = bound;
+  action_->set_user_bound(user_bound_);
   update_action_weight();
 }
 
