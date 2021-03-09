@@ -158,12 +158,12 @@ ExecImpl& ExecImpl::set_sharing_penalty(double sharing_penalty)
 void ExecImpl::post()
 {
   xbt_assert(surf_action_ != nullptr);
-  if (hosts_.size() == 1 && not hosts_.front()->is_on()) { /* FIXME: handle resource failure for parallel tasks too */
-    /* If the host running the synchro failed, notice it. This way, the asking
+  if (std::any_of(hosts_.begin(), hosts_.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
+    /* If one of the hosts running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     state_ = State::FAILED;
   } else if (surf_action_->get_state() == resource::Action::State::FAILED) {
-    /* If the host running the synchro didn't fail, then the synchro was canceled */
+    /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
     state_ = State::CANCELED;
   } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED) {
     if (surf_action_->get_remains() > 0.0) {
