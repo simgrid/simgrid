@@ -210,11 +210,6 @@ public:
 } // namespace kernel
 } // namespace simgrid
 
-/** @ingroup SURF_models
- *  @brief The network model
- */
-XBT_PUBLIC_DATA simgrid::kernel::resource::NetworkModel* surf_network_model;
-
 #endif /* SURF_NETWORK_INTERFACE_HPP_ */
 
 

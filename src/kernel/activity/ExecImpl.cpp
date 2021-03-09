@@ -3,10 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "simgrid/Exception.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
+#include "simgrid/s4u/Exec.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -58,7 +59,7 @@ namespace activity {
 
 ExecImpl::ExecImpl()
 {
-  piface_ = new s4u::Exec(this);
+  piface_                = new s4u::Exec(this);
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
     actor_ = self;
@@ -120,7 +121,9 @@ ExecImpl* ExecImpl::start()
         surf_action_->set_user_bound(bound_);
       }
     } else {
-      surf_action_ = surf_host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
+      // FIXME[donassolo]: verify if all hosts belongs to the same netZone?
+      auto host_model = hosts_.front()->get_netpoint()->get_englobing_zone()->get_host_model();
+      surf_action_    = host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
     }
     surf_action_->set_activity(this);
   }
@@ -196,7 +199,7 @@ void ExecImpl::finish()
      * simcall */
 
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
-      continue;                        // if process handling comm is killed
+      continue;                                 // if process handling comm is killed
     if (simcall->call_ == simix::Simcall::EXECUTION_WAITANY_FOR) {
       simgrid::kernel::activity::ExecImpl** execs = simcall_execution_waitany_for__get__execs(simcall);
       size_t count                                = simcall_execution_waitany_for__get__count(simcall);

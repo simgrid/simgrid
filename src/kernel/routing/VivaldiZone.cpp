@@ -76,10 +76,10 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out,
   std::string link_up      = "link_" + netpoint->get_name() + "_UP";
   std::string link_down    = "link_" + netpoint->get_name() + "_DOWN";
   resource::LinkImpl* linkUp =
-      network_model_->create_link(link_up, std::vector<double>(1, bw_out), s4u::Link::SharingPolicy::SHARED);
+      get_network_model()->create_link(link_up, std::vector<double>(1, bw_out), s4u::Link::SharingPolicy::SHARED);
   linkUp->seal();
   resource::LinkImpl* linkDown =
-      network_model_->create_link(link_down, std::vector<double>(1, bw_in), s4u::Link::SharingPolicy::SHARED);
+      get_network_model()->create_link(link_down, std::vector<double>(1, bw_in), s4u::Link::SharingPolicy::SHARED);
   linkDown->seal();
   private_links_.insert({netpoint->id(), {linkUp, linkDown}});
 }

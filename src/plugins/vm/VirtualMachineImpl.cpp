@@ -7,16 +7,16 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/include/surf/surf.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile accross hosts");
 
-simgrid::vm::VMModel* surf_vm_model = nullptr;
-
 void surf_vm_model_init_HL13()
 {
-  if (surf_cpu_model_vm != nullptr)
-    surf_vm_model = new simgrid::vm::VMModel();
+  auto vm_model = std::make_unique<simgrid::vm::VMModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::VM,
+                                                         std::move(vm_model), true);
 }
 
 namespace simgrid {
@@ -85,7 +85,7 @@ static void add_active_activity(kernel::activity::ActivityImpl const& act)
 {
   const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
-    VirtualMachineImpl *vm_impl = vm->get_impl();
+    VirtualMachineImpl* vm_impl = vm->get_impl();
     vm_impl->add_active_exec();
     vm_impl->update_action_weight();
   }
@@ -95,7 +95,7 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
 {
   const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
-    VirtualMachineImpl *vm_impl = vm->get_impl();
+    VirtualMachineImpl* vm_impl = vm->get_impl();
     vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
@@ -103,7 +103,6 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
 
 VMModel::VMModel()
 {
-  all_existing_models.push_back(this);
   s4u::Host::on_state_change.connect(host_state_change);
   s4u::Exec::on_start.connect(add_active_exec);
   s4u::Exec::on_completion.connect(remove_active_exec);
@@ -148,13 +147,12 @@ double VMModel::next_occurring_event(double now)
     double solved_value = ws_vm->get_impl()->get_action()->get_variable()->get_value();
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->get_pm()->get_cname());
 
-    xbt_assert(cpu->get_model() == surf_cpu_model_vm);
     kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
     vcpu_system->update_constraint_bound(cpu->get_constraint(), virt_overhead * solved_value);
   }
 
-  /* 2. Ready. Get the next occurring event */
-  return surf_cpu_model_vm->next_occurring_event(now);
+  /* actual next occurring event is determined by VM CPU model at surf_solve */
+  return -1.0;
 }
 
 /************
@@ -324,7 +322,8 @@ void VirtualMachineImpl::set_bound(double bound)
   update_action_weight();
 }
 
-void VirtualMachineImpl::update_action_weight(){
+void VirtualMachineImpl::update_action_weight()
+{
   /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
   int impact = std::min(active_execs_, get_core_amount());
 
@@ -338,5 +337,5 @@ void VirtualMachineImpl::update_action_weight(){
   action_->set_bound(std::min(impact * physical_host_->get_speed(), user_bound_));
 }
 
-}
-}
+} // namespace vm
+} // namespace simgrid

@@ -4,50 +4,41 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/surf/host_clm03.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 
 void surf_host_model_init_current_default()
 {
-  surf_host_model = new simgrid::surf::HostCLM03Model();
+  auto host_model = std::make_unique<simgrid::surf::HostCLM03Model>();
   simgrid::config::set_default<bool>("network/crosstraffic", true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
+                                                         std::move(host_model), true);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 }
 
 void surf_host_model_init_compound()
 {
-  xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
-  xbt_assert(surf_network_model, "No network model defined yet!");
-  surf_host_model = new simgrid::surf::HostCLM03Model();
+  auto host_model = std::make_unique<simgrid::surf::HostCLM03Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
+                                                         std::move(host_model), true);
 }
 
 namespace simgrid {
 namespace surf {
 HostCLM03Model::HostCLM03Model()
 {
-  all_existing_models.push_back(this);
 }
 
 double HostCLM03Model::next_occurring_event(double now)
 {
-  double min_by_cpu = surf_cpu_model_pm->next_occurring_event(now);
-  double min_by_net =
-      surf_network_model->next_occurring_event_is_idempotent() ? surf_network_model->next_occurring_event(now) : -1;
-  double min_by_dsk = surf_disk_model->next_occurring_event(now);
-
-  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_dsk %f", this,
-            typeid(surf_cpu_model_pm).name(), min_by_cpu, typeid(surf_network_model).name(), min_by_net,
-            typeid(surf_disk_model).name(), min_by_dsk);
-
-  double res = min_by_cpu;
-  if (res < 0 || (min_by_net >= 0.0 && min_by_net < res))
-    res = min_by_net;
-  if (res < 0 || (min_by_dsk >= 0.0 && min_by_dsk < res))
-    res = min_by_dsk;
-  return res;
+  /* nothing specific to be done here
+   * surf_solve already calls all the models next_occuring_event properly */
+  return -1.0;
 }
 
 void HostCLM03Model::update_actions_state(double /*now*/, double /*delta*/)
@@ -68,10 +59,14 @@ kernel::resource::Action* HostCLM03Model::execute_parallel(const std::vector<s4u
                                                            double rate)
 {
   kernel::resource::Action* action = nullptr;
+  /* FIXME[donassolo]: getting the network_model from the origin host
+   * Soon we need to change this function to first get the routes and later
+   * create the respective surf actions */
+  auto* net_model = host_list[0]->get_netpoint()->get_englobing_zone()->get_network_model();
   if ((host_list.size() == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
     action = host_list[0]->pimpl_cpu->execution_start(flops_amount[0]);
   } else if ((host_list.size() == 1) && (has_cost(flops_amount, 0) <= 0)) {
-    action = surf_network_model->communicate(host_list[0], host_list[0], bytes_amount[0], rate);
+    action = net_model->communicate(host_list[0], host_list[0], bytes_amount[0], rate);
   } else if ((host_list.size() == 2) && (has_cost(flops_amount, 0) <= 0) && (has_cost(flops_amount, 1) <= 0)) {
     int nb       = 0;
     double value = 0.0;
@@ -83,7 +78,7 @@ kernel::resource::Action* HostCLM03Model::execute_parallel(const std::vector<s4u
       }
     }
     if (nb == 1) {
-      action = surf_network_model->communicate(host_list[0], host_list[1], value, rate);
+      action = net_model->communicate(host_list[0], host_list[1], value, rate);
     } else if (nb == 0) {
       xbt_die("Cannot have a communication with no flop to exchange in this model. You should consider using the "
               "ptask model");

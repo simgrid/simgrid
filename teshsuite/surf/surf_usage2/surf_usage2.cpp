@@ -6,6 +6,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/host.h"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp" // full type for NetZoneImpl object
+#include "simgrid/zone.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -14,11 +17,11 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   int running;
 
-  surf_init(&argc, argv);       /* Initialize some common structures */
+  surf_init(&argc, argv); /* Initialize some common structures */
 
   simgrid::config::set_parse("network/model:CM02");
   simgrid::config::set_parse("cpu/model:Cas01");
@@ -35,17 +38,19 @@ int main(int argc, char **argv)
   hostB->pimpl_cpu->execution_start(1000.0);
   hostB->pimpl_cpu->sleep(7.32);
 
-  surf_network_model->communicate(hostA, hostB, 150.0, -1.0);
+  sg_netzone_t as_zone                               = sg_zone_get_by_name("AS0");
+  simgrid::kernel::resource::NetworkModel* net_model = as_zone->get_impl()->get_network_model();
+  net_model->communicate(hostA, hostB, 150.0, -1.0);
 
-  surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
+  surf_solve(-1.0); /* Takes traces into account. Returns 0.0 */
   do {
     simgrid::kernel::resource::Action* action = nullptr;
-    running = 0;
+    running                                   = 0;
 
     double now = surf_get_clock();
     XBT_INFO("Next Event : %g", now);
 
-    for (auto const& model : all_existing_models) {
+    for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
       if (model->get_started_action_set()->size() != 0) {
         XBT_DEBUG("\t Running that model");
         running = 1;
@@ -60,7 +65,7 @@ int main(int argc, char **argv)
       }
 
       action = model->extract_done_action();
-      while (action != nullptr){
+      while (action != nullptr) {
         XBT_INFO("   * Done Action");
         XBT_DEBUG("\t * Done Action: %p", action);
         action->unref();

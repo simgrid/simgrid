@@ -7,6 +7,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "surf/surf.hpp"
@@ -19,7 +20,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_disk);
 
 void surf_disk_model_init_default()
 {
-  surf_disk_model = new simgrid::kernel::resource::DiskS19Model();
+  auto disk_model = std::make_unique<simgrid::kernel::resource::DiskS19Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::DISK,
+                                                         std::move(disk_model), true);
 }
 
 namespace simgrid {
@@ -28,7 +31,6 @@ namespace resource {
 
 DiskS19Model::DiskS19Model()
 {
-  all_existing_models.push_back(this);
 }
 
 DiskImpl* DiskS19Model::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)

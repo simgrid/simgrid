@@ -6,6 +6,7 @@
 #include "src/surf/network_cm02.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/network_wifi.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -16,9 +17,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
-double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
-double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or from command line */
-double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or from command line */
+double sg_latency_factor     = 1.0; /* default value; can be set by model or from command line */
+double sg_bandwidth_factor   = 1.0; /* default value; can be set by model or from command line */
+double sg_weight_S_parameter = 0.0; /* default value; can be set by model or from command line */
 
 /************************************************************************/
 /* New model based on optimizations discussed during Pedro Velho's thesis*/
@@ -36,9 +37,9 @@ double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or
 /*  } */
 void surf_network_model_init_LegrandVelho()
 {
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
-  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
+  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkCm02Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
+                                                         std::move(net_model), true);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
   simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
@@ -58,13 +59,13 @@ void surf_network_model_init_LegrandVelho()
 /* } */
 void surf_network_model_init_CM02()
 {
-  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
-
   simgrid::config::set_default<double>("network/latency-factor", 1.0);
   simgrid::config::set_default<double>("network/bandwidth-factor", 1.0);
   simgrid::config::set_default<double>("network/weight-S", 0.0);
 
-  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
+  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkCm02Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
+                                                         std::move(net_model), true);
 }
 
 namespace simgrid {
@@ -75,8 +76,6 @@ NetworkCm02Model::NetworkCm02Model()
     : NetworkModel(config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::FULL
                                                                              : Model::UpdateAlgo::LAZY)
 {
-  all_existing_models.push_back(this);
-
   std::string optim = config::get_value<std::string>("network/optim");
   bool select       = config::get_value<bool>("network/maxmin-selective-update");
 
@@ -97,11 +96,16 @@ NetworkCm02Model::NetworkCm02Model()
 LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
                                         s4u::Link::SharingPolicy policy)
 {
-  if (policy == s4u::Link::SharingPolicy::WIFI)
-    return (new NetworkWifiLink(name, bandwidths, get_maxmin_system()))->set_model(this);
+  LinkImpl* link;
+  if (policy == s4u::Link::SharingPolicy::WIFI) {
+    link = new NetworkWifiLink(name, bandwidths, get_maxmin_system());
+  } else {
+    xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
+    link = new NetworkCm02Link(name, bandwidths[0], policy, get_maxmin_system());
+  }
 
-  xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
-  return (new NetworkCm02Link(name, bandwidths[0], policy, get_maxmin_system()))->set_model(this);
+  link->set_model(this);
+  return link;
 }
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
@@ -216,8 +220,8 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     action = new NetworkCm02Action(this, *src, *dst, size, failed);
   else
     action = new NetworkWifiAction(this, *src, *dst, size, failed, src_wifi_link, dst_wifi_link);
-  action->sharing_penalty_  = latency;
-  action->latency_ = latency;
+  action->sharing_penalty_ = latency;
+  action->latency_         = latency;
   action->set_user_bound(rate);
 
   if (is_update_lazy()) {
@@ -361,7 +365,7 @@ void NetworkCm02Link::set_bandwidth(double value)
     const kernel::lmm::Variable* var;
     const kernel::lmm::Element* elem     = nullptr;
     const kernel::lmm::Element* nextelem = nullptr;
-    int numelem                  = 0;
+    int numelem                          = 0;
     while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
       auto* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->sharing_penalty_ += delta;
@@ -375,14 +379,14 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
 {
   latency_check(value);
 
-  double delta                 = value - latency_.peak;
+  double delta = value - latency_.peak;
   const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
-  int numelem                  = 0;
+  int numelem                          = 0;
 
   latency_.scale = 1.0;
-  latency_.peak = value;
+  latency_.peak  = value;
 
   while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
     auto* action = static_cast<NetworkCm02Action*>(var->get_id());

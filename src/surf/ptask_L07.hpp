@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/surf/HostImpl.hpp"
 #include <cstdlib>
 #include <vector>
 #include <xbt/base.h>
-#include "src/surf/HostImpl.hpp"
 
 #ifndef HOST_L07_HPP_
 #define HOST_L07_HPP_
@@ -44,6 +44,10 @@ public:
   void update_actions_state(double now, double delta) override;
   kernel::resource::CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                                 const double* bytes_amount, double rate) override;
+
+private:
+  std::unique_ptr<NetworkL07Model> net_model_;
+  std::unique_ptr<CpuL07Model> cpu_model_;
 };
 
 class CpuL07Model : public kernel::resource::CpuModel {
@@ -54,7 +58,7 @@ public:
   ~CpuL07Model() override;
 
   kernel::resource::Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
-  HostL07Model *hostModel_;
+  HostL07Model* hostModel_;
 };
 
 class NetworkL07Model : public kernel::resource::NetworkModel {
@@ -68,7 +72,7 @@ public:
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 
-  HostL07Model *hostModel_;
+  HostL07Model* hostModel_;
 };
 
 /************

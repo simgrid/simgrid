@@ -19,8 +19,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, t
  * Model *
  *********/
 
-simgrid::kernel::resource::NetworkModel* surf_network_model = nullptr;
-
 namespace simgrid {
 namespace kernel {
 namespace resource {
@@ -155,6 +153,7 @@ void LinkImpl::turn_off()
 
 void LinkImpl::seal()
 {
+  xbt_assert(this->get_model(), "Cannot seal Link(%s) without setting the Network model first", this->get_cname());
   Resource::seal();
   simgrid::s4u::Link::on_creation(*get_iface());
 }

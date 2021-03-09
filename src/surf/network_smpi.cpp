@@ -6,6 +6,7 @@
 #include "network_smpi.hpp"
 #include "simgrid/sg_config.hpp"
 #include "smpi_utils.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -22,7 +23,8 @@ std::vector<s_smpi_factor_t> smpi_lat_factor;
 /* New model based on LV08 and experimental results of MPI ping-pongs   */
 /************************************************************************/
 /* @Inproceedings{smpi_ipdps, */
-/*  author={Pierre-Nicolas Clauss and Mark Stillwell and Stéphane Genaud and Frédéric Suter and Henri Casanova and Martin Quinson}, */
+/*  author={Pierre-Nicolas Clauss and Mark Stillwell and Stéphane Genaud and Frédéric Suter and Henri Casanova and
+ * Martin Quinson}, */
 /*  title={Single Node On-Line Simulation of {MPI} Applications with SMPI}, */
 /*  booktitle={25th IEEE International Parallel and Distributed Processing Symposium (IPDPS'11)}, */
 /*  address={Anchorage (Alaska) USA}, */
@@ -31,9 +33,9 @@ std::vector<s_smpi_factor_t> smpi_lat_factor;
 /*  } */
 void surf_network_model_init_SMPI()
 {
-  if (surf_network_model)
-    return;
-  surf_network_model = new simgrid::kernel::resource::NetworkSmpiModel();
+  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkSmpiModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
+                                                         std::move(net_model), true);
 
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
@@ -44,7 +46,6 @@ namespace resource {
 
 NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model()
 {
-  /* Do not add this into all_existing_models: our ancestor already does so */
 }
 
 double NetworkSmpiModel::get_bandwidth_factor(double size)

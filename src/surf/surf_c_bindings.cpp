@@ -6,6 +6,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/include/surf/surf.hpp"
 #include "src/instr/instr_private.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
@@ -22,7 +23,7 @@ extern double NOW;
 
 void surf_presolve()
 {
-  XBT_DEBUG ("Consume all trace events occurring before the starting time.");
+  XBT_DEBUG("Consume all trace events occurring before the starting time.");
   double next_event_date;
   while ((next_event_date = simgrid::kernel::profile::future_evt_set.next_date()) != -1.0) {
     if (next_event_date > NOW)
@@ -37,15 +38,34 @@ void surf_presolve()
     }
   }
 
-  XBT_DEBUG ("Set every models in the right state by updating them to 0.");
-  for (auto const& model : all_existing_models)
+  XBT_DEBUG("Set every models in the right state by updating them to 0.");
+  for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models())
     model->update_actions_state(NOW, 0.0);
+}
+
+/**
+ * @brief Auxiliary function to get next event from a list of models
+ *
+ * @param models list of models to explore (cpu, host, vm) (IN)
+ * @param time_delta delta for the next event (IN/OUT)
+ */
+static void surf_update_next_event(std::vector<simgrid::kernel::resource::Model*> const& models, double& time_delta)
+{
+  for (auto* model : models) {
+    if (not model->next_occurring_event_is_idempotent()) {
+      continue;
+    }
+    double next_event = model->next_occurring_event(NOW);
+    if ((time_delta < 0.0 || next_event < time_delta) && next_event >= 0.0) {
+      time_delta = next_event;
+    }
+  }
 }
 
 double surf_solve(double max_date)
 {
-  double time_delta = -1.0; /* duration */
-  double value = -1.0;
+  double time_delta                             = -1.0; /* duration */
+  double value                                  = -1.0;
   simgrid::kernel::resource::Resource* resource = nullptr;
   simgrid::kernel::profile::Event* event        = nullptr;
 
@@ -57,25 +77,21 @@ double surf_solve(double max_date)
 
   /* Physical models MUST be resolved first */
   XBT_DEBUG("Looking for next event in physical models");
-  double next_event_phy = surf_host_model->next_occurring_event(NOW);
-  if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
-    time_delta = next_event_phy;
-  }
-  if (surf_vm_model != nullptr) {
-    XBT_DEBUG("Looking for next event in virtual models");
-    double next_event_virt = surf_vm_model->next_occurring_event(NOW);
-    if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
-      time_delta = next_event_virt;
-  }
+  auto engine = simgrid::kernel::EngineImpl::get_instance();
+  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::HOST), time_delta);
 
-  for (auto const& model : all_existing_models) {
-    if (model != surf_host_model && model != surf_vm_model && model != surf_network_model &&
-        model != surf_disk_model) {
-      double next_event_model = model->next_occurring_event(NOW);
-      if ((time_delta < 0.0 || next_event_model < time_delta) && next_event_model >= 0.0)
-        time_delta = next_event_model;
-    }
-  }
+  // following the order it was done in HostCLM03Model->next_occurring_event
+  XBT_DEBUG("Looking for next event in CPU models");
+  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::CPU_PM), time_delta);
+
+  XBT_DEBUG("Looking for next event in network models");
+  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::NETWORK), time_delta);
+  XBT_DEBUG("Looking for next event in disk models");
+  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::DISK), time_delta);
+
+  XBT_DEBUG("Looking for next event in virtual models");
+  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::VM), time_delta);
+  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::CPU_VM), time_delta);
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
 
@@ -85,7 +101,11 @@ double surf_solve(double max_date)
     double next_event_date = simgrid::kernel::profile::future_evt_set.next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    if (not surf_network_model->next_occurring_event_is_idempotent()) { // NS3, I see you
+    for (auto* model : engine->get_model_list(simgrid::kernel::resource::Model::Type::NETWORK)) {
+      if (model->next_occurring_event_is_idempotent())
+        continue;
+
+      // NS3, I see you
       if (next_event_date != -1.0) {
         time_delta = std::min(next_event_date - NOW, time_delta);
       } else {
@@ -94,7 +114,7 @@ double surf_solve(double max_date)
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
       // run until min or next flow
-      double model_next_action_end = surf_network_model->next_occurring_event(time_delta);
+      double model_next_action_end = model->next_occurring_event(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if (model_next_action_end >= 0.0)
@@ -115,9 +135,10 @@ double surf_solve(double max_date)
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
                   time_delta);
       }
-      // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min will work
+      // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min
+      // will work
       double round_start = NOW;
-      NOW = next_event_date;
+      NOW                = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       XBT_DEBUG("Calling update_resource_state for resource %s", resource->get_cname());
@@ -126,9 +147,11 @@ double surf_solve(double max_date)
     }
   }
 
-  /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are with availability = 0.
-   * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
-   * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
+  /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are
+   * with availability = 0. This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a
+   * trace with periodicity > 0.
+   * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed
+   */
   if (time_delta < 0) {
     XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
@@ -140,7 +163,7 @@ double surf_solve(double max_date)
   NOW = NOW + time_delta;
 
   // Inform the models of the date change
-  for (auto const& model : all_existing_models)
+  for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models())
     model->update_actions_state(NOW, time_delta);
 
   simgrid::s4u::Engine::on_time_advance(time_delta);

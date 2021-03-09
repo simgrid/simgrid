@@ -30,12 +30,12 @@ void FullZone::seal()
     routing_table_.resize(table_size * table_size, nullptr);
 
   /* Add the loopback if needed */
-  if (network_model_->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (get_network_model()->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       RouteCreationArgs* route = TO_ROUTE_FULL(i, i);
       if (not route) {
         route = new RouteCreationArgs();
-        route->link_list.push_back(network_model_->loopback_);
+        route->link_list.push_back(get_network_model()->loopback_);
         TO_ROUTE_FULL(i, i) = route;
       }
     }

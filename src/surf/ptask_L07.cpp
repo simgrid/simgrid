@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ptask_L07.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "surf/surf.hpp"
 #include "xbt/config.hpp"
@@ -18,29 +19,30 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 /**************************************/
 void surf_host_model_init_ptask_L07()
 {
-  XBT_CINFO(xbt_cfg,"Switching to the L07 model to handle parallel tasks.");
-  xbt_assert(not surf_cpu_model_pm, "Cannot switch to ptasks: CPU model already defined");
-  xbt_assert(not surf_network_model, "Cannot switch to ptasks: network model already defined");
+  XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
-  surf_host_model = new simgrid::surf::HostL07Model();
-  all_existing_models.push_back(surf_host_model);
+  auto host_model = std::make_unique<simgrid::surf::HostL07Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
+                                                         std::move(host_model), true);
 }
 
 namespace simgrid {
 namespace surf {
 
-HostL07Model::HostL07Model() : HostModel() {
+HostL07Model::HostL07Model() : HostModel()
+{
   auto* maxmin_system = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
   set_maxmin_system(maxmin_system);
-  surf_network_model = new NetworkL07Model(this, maxmin_system);
-  surf_cpu_model_pm  = new CpuL07Model(this, maxmin_system);
+
+  net_model_  = std::make_unique<NetworkL07Model>(this, maxmin_system);
+  auto engine = simgrid::kernel::EngineImpl::get_instance();
+  engine->add_model_ptask(simgrid::kernel::resource::Model::Type::NETWORK, net_model_.get(), true);
+
+  cpu_model_ = std::make_unique<CpuL07Model>(this, maxmin_system);
+  engine->add_model_ptask(simgrid::kernel::resource::Model::Type::CPU_PM, cpu_model_.get(), true);
 }
 
-HostL07Model::~HostL07Model()
-{
-  delete surf_network_model;
-  delete surf_cpu_model_pm;
-}
+HostL07Model::~HostL07Model() {}
 
 CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
     : CpuModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
@@ -57,9 +59,10 @@ NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
     : NetworkModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
-  loopback_ = NetworkL07Model::create_link("__loopback__", 
-                                            std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
-                                            s4u::Link::SharingPolicy::FATPIPE)->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
+  loopback_ = NetworkL07Model::create_link(
+                  "__loopback__", std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
+                  s4u::Link::SharingPolicy::FATPIPE)
+                  ->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }
 
@@ -120,7 +123,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
     }
 
     /* Need to check that none of the model has failed */
-    int i                         = 0;
+    int i                               = 0;
     const kernel::lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
     while (cnst != nullptr) {
       i++;
@@ -148,7 +151,7 @@ L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host
 {
   size_t link_nb      = 0;
   size_t used_host_nb = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
-  double latency = 0.0;
+  double latency      = 0.0;
   this->set_last_update();
 
   hostList_.insert(hostList_.end(), host_list.begin(), host_list.end());
@@ -157,7 +160,7 @@ L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host
     used_host_nb += std::count_if(flops_amount, flops_amount + host_list.size(), [](double x) { return x > 0.0; });
 
   /* Compute the number of affected resources... */
-  if(bytes_amount != nullptr) {
+  if (bytes_amount != nullptr) {
     std::unordered_set<const char*> affected_links;
 
     for (size_t k = 0; k < host_list.size() * host_list.size(); k++) {
@@ -238,7 +241,9 @@ kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name
                                                          s4u::Link::SharingPolicy policy)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  return new LinkL07(name, bandwidths[0], policy, get_maxmin_system());
+  auto link = new LinkL07(name, bandwidths[0], policy, get_maxmin_system());
+  link->set_model(this);
+  return link;
 }
 
 /************
@@ -250,7 +255,7 @@ kernel::resource::CpuAction* CpuL07::execution_start(double size)
   std::vector<s4u::Host*> host_list = {get_iface()};
 
   auto* flops_amount = new double[host_list.size()]();
-  flops_amount[0] = size;
+  flops_amount[0]    = size;
 
   kernel::resource::CpuAction* res =
       static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(host_list, flops_amount, nullptr, -1);
@@ -363,7 +368,7 @@ kernel::resource::LinkImpl* LinkL07::set_latency(double value)
 {
   latency_check(value);
   const kernel::lmm::Variable* var;
-  L07Action *action;
+  L07Action* action;
   const kernel::lmm::Element* elem = nullptr;
 
   latency_.peak = value;

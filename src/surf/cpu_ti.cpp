@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -26,8 +27,8 @@ namespace resource {
 
 CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
 {
-  double integral = 0;
-  double time = 0;
+  double integral    = 0;
+  double time        = 0;
   unsigned nb_points = profile->event_list.size() + 1;
   time_points_.reserve(nb_points);
   integral_.reserve(nb_points);
@@ -55,7 +56,8 @@ double CpuTiTmgr::integrate(double a, double b) const
 {
   if ((a < 0.0) || (a > b)) {
     xbt_die("Error, invalid integration interval [%.2f,%.2f]. "
-        "You probably have a task executing with negative computation amount. Check your code.", a, b);
+            "You probably have a task executing with negative computation amount. Check your code.",
+            a, b);
   }
   if (fabs(a - b) < EPSILON)
     return 0.0;
@@ -71,7 +73,7 @@ double CpuTiTmgr::integrate(double a, double b) const
     a_index = ceil(a / last_time_);
   double b_index = floor(b / last_time_);
 
-  if (a_index > b_index) {      /* Same chunk */
+  if (a_index > b_index) { /* Same chunk */
     return profile_->integrate_simple(a - (a_index - 1) * last_time_, b - b_index * last_time_);
   }
 
@@ -102,7 +104,7 @@ double CpuTiProfile::integrate_simple(double a, double b) const
 double CpuTiProfile::integrate_simple_point(double a) const
 {
   double integral = 0;
-  double a_aux = a;
+  double a_aux    = a;
   int ind         = binary_search(time_points_, a);
   integral += integral_[ind];
 
@@ -138,8 +140,9 @@ double CpuTiTmgr::solve(double a, double amount) const
 
   /* Sanity checks */
   if ((a < 0.0) || (amount < 0.0)) {
-    XBT_CRITICAL ("Error, invalid parameters [a = %.2f, amount = %.2f]. "
-        "You probably have a task executing with negative computation amount. Check your code.", a, amount);
+    XBT_CRITICAL("Error, invalid parameters [a = %.2f, amount = %.2f]. "
+                 "You probably have a task executing with negative computation amount. Check your code.",
+                 a, amount);
     xbt_abort();
   }
 
@@ -202,7 +205,7 @@ double CpuTiProfile::solve_simple(double a, double amount) const
  */
 double CpuTiTmgr::get_power_scale(double a) const
 {
-  double reduced_a          = a - floor(a / last_time_) * last_time_;
+  double reduced_a                = a - floor(a / last_time_) * last_time_;
   int point                       = CpuTiProfile::binary_search(profile_->time_points_, reduced_a);
   kernel::profile::DatedValue val = speed_profile_->event_list.at(point);
   return val.value_;
@@ -267,22 +270,19 @@ int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 
 void CpuTiModel::create_pm_vm_models()
 {
-  xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
-  xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
-
-  surf_cpu_model_pm = new CpuTiModel();
-  surf_cpu_model_vm = new CpuTiModel();
+  auto cpu_model_pm = std::make_unique<CpuTiModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM,
+                                                         std::move(cpu_model_pm), true);
+  auto cpu_model_vm = std::make_unique<CpuTiModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM,
+                                                         std::move(cpu_model_vm), true);
 }
 
 CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
 {
-  all_existing_models.push_back(this);
 }
 
-CpuTiModel::~CpuTiModel()
-{
-  surf_cpu_model_pm = nullptr;
-}
+CpuTiModel::~CpuTiModel() {}
 
 Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
@@ -405,7 +405,7 @@ void CpuTi::update_actions_finish_time(double now)
   sum_priority_ = 0.0;
   for (CpuTiAction const& action : action_set_) {
     /* action not running, skip it */
-    if (action.get_state_set() != surf_cpu_model_pm->get_started_action_set())
+    if (action.get_state_set() != get_model()->get_started_action_set())
       continue;
 
     /* bogus priority, skip it */
@@ -422,7 +422,7 @@ void CpuTi::update_actions_finish_time(double now)
   for (CpuTiAction& action : action_set_) {
     double min_finish = -1;
     /* action not running, skip it */
-    if (action.get_state_set() != surf_cpu_model_pm->get_started_action_set())
+    if (action.get_state_set() != get_model()->get_started_action_set())
       continue;
 
     /* verify if the action is really running on cpu */

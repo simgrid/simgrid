@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_constant.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -14,8 +15,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
  *********/
 void surf_network_model_init_Constant()
 {
-  xbt_assert(surf_network_model == nullptr);
-  surf_network_model = new simgrid::kernel::resource::NetworkConstantModel();
+  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkConstantModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
+                                                         std::move(net_model), true);
 }
 
 namespace simgrid {
@@ -24,7 +26,6 @@ namespace resource {
 
 NetworkConstantModel::NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::FULL)
 {
-  all_existing_models.push_back(this);
 }
 
 LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,

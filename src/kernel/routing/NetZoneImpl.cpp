@@ -7,6 +7,9 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/DiskImpl.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -24,7 +27,15 @@ NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource:
   xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
 
-  netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone, father_);
+  netpoint_     = new NetPoint(name_, NetPoint::Type::NetZone, father_);
+  cpu_model_vm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
+      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::CPU_VM));
+  cpu_model_pm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
+      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::CPU_PM));
+  disk_model_ = static_cast<simgrid::kernel::resource::DiskModel*>(
+      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::DISK));
+  host_model_ = static_cast<simgrid::surf::HostModel*>(
+      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::HOST));
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 
@@ -65,10 +76,17 @@ int NetZoneImpl::get_host_count() const
   return count;
 }
 
+s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+{
+  auto* l = disk_model_->create_disk(name, read_bandwidth, write_bandwidth);
+
+  return l->get_iface();
+}
+
 s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths,
                                     s4u::Link::SharingPolicy policy)
 {
-  auto* l = surf_network_model->create_link(name, bandwidths, policy);
+  auto* l = network_model_->create_link(name, bandwidths, policy);
 
   return l->get_iface();
 }
@@ -82,7 +100,7 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   auto* res = new s4u::Host(name);
   res->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
 
-  surf_cpu_model_pm->create_cpu(res, speed_per_pstate)->set_core_count(core_amount)->seal();
+  cpu_model_pm_->create_cpu(res, speed_per_pstate)->set_core_count(core_amount)->seal();
 
   return res;
 }
@@ -296,14 +314,14 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
   for (int max = 0; max <= max_index && not bypassedRoute; max++) {
     for (int i = 0; i < max && not bypassedRoute; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
-        key = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
+        key      = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
         auto bpr = bypass_routes_.find(key);
         if (bpr != bypass_routes_.end()) {
           bypassedRoute = bpr->second;
         }
       }
       if (not bypassedRoute && max <= max_index_src && i <= max_index_dst) {
-        key = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
+        key      = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
         auto bpr = bypass_routes_.find(key);
         if (bpr != bypass_routes_.end()) {
           bypassedRoute = bpr->second;
@@ -312,7 +330,7 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
     }
 
     if (not bypassedRoute && max <= max_index_src && max <= max_index_dst) {
-      key = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
+      key      = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
       auto bpr = bypass_routes_.find(key);
       if (bpr != bypass_routes_.end()) {
         bypassedRoute = bpr->second;
@@ -348,9 +366,9 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
   XBT_DEBUG("Resolve route from '%s' to '%s'", src->get_cname(), dst->get_cname());
 
   /* Find how src and dst are interconnected */
-  NetZoneImpl *common_ancestor;
-  NetZoneImpl *src_ancestor;
-  NetZoneImpl *dst_ancestor;
+  NetZoneImpl* common_ancestor;
+  NetZoneImpl* src_ancestor;
+  NetZoneImpl* dst_ancestor;
   find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor);
   XBT_DEBUG("elements_father: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", common_ancestor->get_cname(),
             src_ancestor->get_cname(), dst_ancestor->get_cname());

@@ -5,6 +5,7 @@
 
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -36,9 +37,6 @@ static simgrid::config::Flag<std::string>
  *********/
 void surf_cpu_model_init_Cas01()
 {
-  xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
-  xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
-
   if (cpu_optim_opt == "TI") {
     simgrid::kernel::resource::CpuTiModel::create_pm_vm_models();
     return;
@@ -50,8 +48,12 @@ void surf_cpu_model_init_Cas01()
   else
     algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
 
-  surf_cpu_model_pm = new simgrid::kernel::resource::CpuCas01Model(algo);
-  surf_cpu_model_vm = new simgrid::kernel::resource::CpuCas01Model(algo);
+  auto cpu_model_pm = std::make_unique<simgrid::kernel::resource::CpuCas01Model>(algo);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM,
+                                                         std::move(cpu_model_pm), true);
+  auto cpu_model_vm = std::make_unique<simgrid::kernel::resource::CpuCas01Model>(algo);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM,
+                                                         std::move(cpu_model_vm), true);
 }
 
 namespace simgrid {
@@ -60,8 +62,6 @@ namespace resource {
 
 CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
 {
-  all_existing_models.push_back(this);
-
   bool select = config::get_value<bool>("cpu/maxmin-selective-update");
 
   if (is_update_lazy()) {
@@ -73,10 +73,7 @@ CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
   set_maxmin_system(new lmm::System(select));
 }
 
-CpuCas01Model::~CpuCas01Model()
-{
-  surf_cpu_model_pm = nullptr;
-}
+CpuCas01Model::~CpuCas01Model() {}
 
 Cpu* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
@@ -210,7 +207,7 @@ int CpuCas01Action::requested_core() const
   return requested_core_;
 }
 
-CpuCas01Action::~CpuCas01Action()=default;
+CpuCas01Action::~CpuCas01Action() = default;
 
 } // namespace resource
 } // namespace kernel

@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <simgrid/kernel/resource/Action.hpp>
+#include <unordered_map>
 
 namespace simgrid {
 namespace kernel {
@@ -19,6 +20,16 @@ namespace resource {
  */
 class XBT_PUBLIC Model {
 public:
+  /** @brief Possible model types */
+  enum class Type {
+    HOST,    /**< Host models: see surf_host_model_description for more details */
+    NETWORK, /**< Network models: see surf_network_model_description for more details */
+    CPU_PM,  /**< CPU model for physical machines: see surf_cpu_model_description for more details */
+    CPU_VM,  /**< CPU model for virtual machines: see surf_cpu_model_description for more details */
+    DISK,    /**< Disk models: see surf_disk_model_description for more details */
+    VM       /**< VM model */
+  };
+
   /** @brief Possible update mechanisms */
   enum class UpdateAlgo {
     FULL, /**< Full update mechanism: the remaining time of every action is recomputed at each step */
@@ -139,10 +150,5 @@ private:
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid
-
-/** @ingroup SURF_models
- *  @brief List of initialized models
- */
-XBT_PUBLIC_DATA std::vector<simgrid::kernel::resource::Model*> all_existing_models;
 
 #endif
