@@ -218,7 +218,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     action = new NetworkWifiAction(this, *src, *dst, size, failed, src_wifi_link, dst_wifi_link);
   action->sharing_penalty_  = latency;
   action->latency_ = latency;
-  action->rate_ = rate;
+  action->set_user_bound(rate);
 
   if (is_update_lazy()) {
     action->set_last_update();
@@ -238,7 +238,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   action->lat_current_ = action->latency_;
   action->latency_ *= get_latency_factor(size);
-  action->rate_ = get_bandwidth_constraint(action->rate_, bandwidth_bound, size);
+  action->set_user_bound(get_bandwidth_constraint(action->get_user_bound(), bandwidth_bound, size));
 
   size_t constraints_per_variable = route.size();
   constraints_per_variable += back_route.size();
@@ -257,14 +257,14 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   } else
     action->set_variable(get_maxmin_system()->variable_new(action, 1.0, -1.0, constraints_per_variable));
 
-  if (action->rate_ < 0) {
+  if (action->get_user_bound() < 0) {
     get_maxmin_system()->update_variable_bound(
         action->get_variable(), (action->lat_current_ > 0) ? cfg_tcp_gamma / (2.0 * action->lat_current_) : -1.0);
   } else {
     get_maxmin_system()->update_variable_bound(
         action->get_variable(), (action->lat_current_ > 0)
-                                    ? std::min(action->rate_, cfg_tcp_gamma / (2.0 * action->lat_current_))
-                                    : action->rate_);
+                                    ? std::min(action->get_user_bound(), cfg_tcp_gamma / (2.0 * action->lat_current_))
+                                    : action->get_user_bound());
   }
 
   if (src_wifi_link != nullptr)
@@ -388,14 +388,15 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
     auto* action = static_cast<NetworkCm02Action*>(var->get_id());
     action->lat_current_ += delta;
     action->sharing_penalty_ += delta;
-    if (action->rate_ < 0)
+    if (action->get_user_bound() < 0)
       get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), NetworkModel::cfg_tcp_gamma /
                                                                                           (2.0 * action->lat_current_));
     else {
       get_model()->get_maxmin_system()->update_variable_bound(
-          action->get_variable(), std::min(action->rate_, NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)));
+          action->get_variable(),
+          std::min(action->get_user_bound(), NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)));
 
-      if (action->rate_ < NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)) {
+      if (action->get_user_bound() < NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)) {
         XBT_INFO("Flow is limited BYBANDWIDTH");
       } else {
         XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);

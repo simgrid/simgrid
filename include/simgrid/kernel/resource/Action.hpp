@@ -58,14 +58,36 @@ public:
 class XBT_PUBLIC Action {
   friend ActionHeap;
 
+  int refcount_           = 1;
+  double sharing_penalty_ = 1.0;             /**< priority (1.0 by default) */
+  double max_duration_    = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
+  double remains_;          /**< How much of that cost remains to be done in the currently running task */
+  double start_time_;       /**< start time  */
+  double finish_time_ = -1; /**< finish time (may fluctuate until the task is completed) */
+  std::string category_;    /**< tracing category for categorized resource utilization monitoring */
+
+  double cost_;
+  Model* model_;
+  void* data_                       = nullptr; /**< for your convenience */
+  activity::ActivityImpl* activity_ = nullptr;
+
+  /* LMM */
+  double last_update_      = 0;
+  double last_value_       = 0;
+  lmm::Variable* variable_ = nullptr;
+  double user_bound_       = -1;
+
+  ActionHeap::Type type_                              = ActionHeap::Type::unset;
+  boost::optional<ActionHeap::handle_type> heap_hook_ = boost::none;
+  boost::intrusive::list_member_hook<> modified_set_hook_;
+  boost::intrusive::list_member_hook<> state_set_hook_;
+
 public:
   /* Lazy update needs this Set hook to maintain a list of the tracked actions */
-  boost::intrusive::list_member_hook<> modified_set_hook_;
   bool is_within_modified_set() const { return modified_set_hook_.is_linked(); }
   using ModifiedSet = boost::intrusive::list<
       Action, boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::modified_set_hook_>>;
 
-  boost::intrusive::list_member_hook<> state_set_hook_;
   using StateSet = boost::intrusive::list<
       Action, boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::state_set_hook_>>;
 
@@ -84,6 +106,11 @@ public:
     SLEEPING
   };
 
+private:
+  StateSet* state_set_;
+  Action::SuspendStates suspended_ = Action::SuspendStates::RUNNING;
+
+public:
   /**
    * @brief Action constructor
    *
@@ -206,35 +233,13 @@ public:
 
   Model* get_model() const { return model_; }
 
-private:
-  StateSet* state_set_;
-  Action::SuspendStates suspended_ = Action::SuspendStates::RUNNING;
-  int refcount_            = 1;
-  double sharing_penalty_          = 1.0;             /**< priority (1.0 by default) */
-  double max_duration_   = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
-  double remains_;           /**< How much of that cost remains to be done in the currently running task */
-  double start_time_;        /**< start time  */
-  double finish_time_ = -1;  /**< finish time (may fluctuate until the task is completed) */
-  std::string category_;     /**< tracing category for categorized resource utilization monitoring */
-
-  double cost_;
-  Model* model_;
-  void* data_                       = nullptr; /**< for your convenience */
-  activity::ActivityImpl* activity_ = nullptr;
-
-  /* LMM */
-  double last_update_      = 0;
-  double last_value_       = 0;
-  lmm::Variable* variable_ = nullptr;
-
-  ActionHeap::Type type_                              = ActionHeap::Type::unset;
-  boost::optional<ActionHeap::handle_type> heap_hook_ = boost::none;
-
-public:
   ActionHeap::Type get_type() const { return type_; }
 
   lmm::Variable* get_variable() const { return variable_; }
   void set_variable(lmm::Variable* var) { variable_ = var; }
+
+  double get_user_bound() const { return user_bound_; }
+  void set_user_bound(double bound) { user_bound_ = bound; }
 
   double get_last_update() const { return last_update_; }
   void set_last_update();
