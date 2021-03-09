@@ -8,6 +8,16 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mutex, simix_synchro, "Mutex kernel-space implementation");
 
+#if SIMGRID_HAVE_MC
+#include "simgrid/modelchecker.h"
+#include "src/mc/mc_safety.hpp"
+#define MC_CHECK_NO_DPOR()                                                                                             \
+  xbt_assert(not MC_is_active() || simgrid::mc::reduction_mode != simgrid::mc::ReductionMode::dpor,                    \
+             "Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none")
+#else
+#define MC_CHECK_NO_DPOR() (void)0
+#endif
+
 namespace simgrid {
 namespace kernel {
 namespace activity {
@@ -15,6 +25,7 @@ namespace activity {
 void MutexImpl::lock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p; %p)", this, issuer);
+  MC_CHECK_NO_DPOR();
   /* FIXME: check where to validate the arguments */
   RawImplPtr synchro = nullptr;
 
@@ -43,6 +54,7 @@ void MutexImpl::lock(actor::ActorImpl* issuer)
 bool MutexImpl::try_lock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
+  MC_CHECK_NO_DPOR();
   if (locked_) {
     XBT_OUT();
     return false;
