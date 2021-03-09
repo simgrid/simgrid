@@ -127,6 +127,32 @@ static void runner()
            host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
            host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
 
+  old_energy_host1 = new_energy_host1;
+  old_energy_host2 = new_energy_host2;
+
+  // ========= A new ptask with computation and a timeout =========
+  start             = simgrid::s4u::Engine::get_clock();
+  std::vector<double> cpu_amounts5{flopAmount, flopAmount};
+  std::vector<double> com_amounts5{0, 0, 0, 0};
+  XBT_INFO("Run a task with computation on two hosts and a timeout of 20s.");
+  try {
+    simgrid::s4u::this_actor::exec_init(hosts, cpu_amounts5, com_amounts5)->wait_for(20);
+  } catch (const simgrid::TimeoutException &){
+    XBT_INFO("Finished WITH timeout");
+  }
+
+  new_energy_host1 = sg_host_get_consumed_energy(host1);
+  new_energy_host2 = sg_host_get_consumed_energy(host2);
+  XBT_INFO("Task ended (duration: %.2f s).\n"
+           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
+           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n",
+           simgrid::s4u::Engine::get_clock() - start,
+           host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
+           host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
+
+  old_energy_host1 = new_energy_host1;
+  old_energy_host2 = new_energy_host2;
+
   XBT_INFO("Now is time to quit!");
 }
 

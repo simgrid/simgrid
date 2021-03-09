@@ -35,12 +35,18 @@ $ ${bindir:=.}/s4u-energy-exec-ptask ${platfdir}/energy_platform.xml "--log=root
 > [MyHost1] Current peak speed=2E+07 flop/s; Energy dissipated during this step=18000.00 J; Total energy dissipated=44200 J
 > [MyHost2] Current peak speed=2E+07 flop/s; Energy dissipated during this step=18000.00 J; Total energy dissipated=58500 J
 >
-> [470.000000] (1:energy_ptask_test@MyHost1) Now is time to quit!
-> [470.000000] (0:maestro@) Total energy consumption: 149700.000000 Joules (used hosts: 102700.000000 Joules; unused/idle hosts: 47000.000000)
-> [470.000000] (0:maestro@) End of simulation.
-> [470.000000] (0:maestro@) Energy consumption of host MyHost1: 44200.000000 Joules
-> [470.000000] (0:maestro@) Energy consumption of host MyHost2: 58500.000000 Joules
-> [470.000000] (0:maestro@) Energy consumption of host MyHost3: 47000.000000 Joules
+> [470.000000] (1:energy_ptask_test@MyHost1) Run a task with computation on two hosts and a timeout of 20s.
+> [490.000000] (1:energy_ptask_test@MyHost1) Finished WITH timeout
+> [490.000000] (1:energy_ptask_test@MyHost1) Task ended (duration: 20.00 s).
+> [MyHost1] Current peak speed=2E+07 flop/s; Energy dissipated during this step=2100.00 J; Total energy dissipated=46300 J
+> [MyHost2] Current peak speed=2E+07 flop/s; Energy dissipated during this step=3000.00 J; Total energy dissipated=61500 J
+>
+> [490.000000] (1:energy_ptask_test@MyHost1) Now is time to quit!
+> [490.000000] (0:maestro@) Total energy consumption: 156800.000000 Joules (used hosts: 107800.000000 Joules; unused/idle hosts: 49000.000000)
+> [490.000000] (0:maestro@) End of simulation.
+> [490.000000] (0:maestro@) Energy consumption of host MyHost1: 46300.000000 Joules
+> [490.000000] (0:maestro@) Energy consumption of host MyHost2: 61500.000000 Joules
+> [490.000000] (0:maestro@) Energy consumption of host MyHost3: 49000.000000 Joules
 
 
 $ ${bindir:=.}/s4u-energy-exec-ptask ${platfdir}/energy_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
@@ -76,8 +82,14 @@ $ ${bindir:=.}/s4u-energy-exec-ptask ${platfdir}/energy_cluster.xml "--log=root.
 > [MyHost1] Current peak speed=2E+07 flop/s; Energy dissipated during this step=7.25 J; Total energy dissipated=12707 J
 > [MyHost2] Current peak speed=2E+07 flop/s; Energy dissipated during this step=7.25 J; Total energy dissipated=12707 J
 >
-> [120.081200] (1:energy_ptask_test@MyHost1) Now is time to quit!
-> [120.081200] (0:maestro@) Total energy consumption: 25414.634000 Joules (used hosts: 25414.634000 Joules; unused/idle hosts: 0.000000)
-> [120.081200] (0:maestro@) End of simulation.
-> [120.081200] (0:maestro@) Energy consumption of host MyHost1: 12707.317000 Joules
-> [120.081200] (0:maestro@) Energy consumption of host MyHost2: 12707.317000 Joules
+> [120.081200] (1:energy_ptask_test@MyHost1) Run a task with computation on two hosts and a timeout of 20s.
+> [140.081200] (1:energy_ptask_test@MyHost1) Finished WITH timeout
+> [140.081200] (1:energy_ptask_test@MyHost1) Task ended (duration: 20.00 s).
+> [MyHost1] Current peak speed=2E+07 flop/s; Energy dissipated during this step=2100.00 J; Total energy dissipated=14807 J
+> [MyHost2] Current peak speed=2E+07 flop/s; Energy dissipated during this step=2100.00 J; Total energy dissipated=14807 J
+>
+> [140.081200] (1:energy_ptask_test@MyHost1) Now is time to quit!
+> [140.081200] (0:maestro@) Total energy consumption: 29614.634000 Joules (used hosts: 29614.634000 Joules; unused/idle hosts: 0.000000)
+> [140.081200] (0:maestro@) End of simulation.
+> [140.081200] (0:maestro@) Energy consumption of host MyHost1: 14807.317000 Joules
+> [140.081200] (0:maestro@) Energy consumption of host MyHost2: 14807.317000 Joules
