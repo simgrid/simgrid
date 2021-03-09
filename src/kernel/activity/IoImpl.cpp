@@ -63,10 +63,15 @@ void IoImpl::post()
       state_ = State::FAILED;
     else
       state_ = State::CANCELED;
-  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
-    state_ = State::DONE;
   } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED) {
-    state_ = State::TIMEOUT;
+    if (surf_action_->get_remains() > 0.0) {
+      surf_action_->set_state(resource::Action::State::FAILED);
+      state_ = State::TIMEOUT;
+    } else {
+      state_ = State::DONE;
+    }
+  } else {
+    state_ = State::DONE;
   }
 
   clean_action();
