@@ -74,21 +74,15 @@ public:
   std::string dot_label() const override;
 };
 
-class MutexTrylockSimcall : public SimcallObserver {
-  kernel::activity::MutexImpl* mutex_;
-
-public:
-  MutexTrylockSimcall(smx_actor_t actor, kernel::activity::MutexImpl* mutex) : SimcallObserver(actor), mutex_(mutex) {}
-  std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
-  kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
-};
-
 class MutexLockSimcall : public SimcallObserver {
   kernel::activity::MutexImpl* mutex_;
+  bool blocking_;
 
 public:
-  MutexLockSimcall(smx_actor_t actor, kernel::activity::MutexImpl* mutex) : SimcallObserver(actor), mutex_(mutex) {}
+  MutexLockSimcall(smx_actor_t actor, kernel::activity::MutexImpl* mutex, bool blocking = true)
+      : SimcallObserver(actor), mutex_(mutex), blocking_(blocking)
+  {
+  }
   bool is_enabled() const override;
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;

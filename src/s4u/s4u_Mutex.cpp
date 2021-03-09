@@ -41,7 +41,7 @@ void Mutex::unlock()
 bool Mutex::try_lock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  mc::MutexTrylockSimcall observer{issuer, pimpl_};
+  mc::MutexLockSimcall observer{issuer, pimpl_, false};
   return kernel::actor::simcall([&observer] { return observer.get_mutex()->try_lock(observer.get_issuer()); },
                                 &observer);
 }
