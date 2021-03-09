@@ -222,7 +222,7 @@ echo "XX Run the tests"
 echo "XX   pwd: "$(pwd)
 echo "XX"
 
-ctest -T test --output-on-failure --no-compress-output || true
+ctest -T test --output-on-failure --no-compress-output -j $NUMBER_OF_PROCESSORS || true
 
 if test -n "$INSTALL" && [ "${branch_name}" = "origin/master" ] ; then
   echo "XX"
