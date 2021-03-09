@@ -73,6 +73,11 @@ double Engine::get_clock()
   return SIMIX_get_clock();
 }
 
+void Engine::add_model(simgrid::kernel::resource::Model::Type type,
+                       std::unique_ptr<simgrid::kernel::resource::Model> model)
+{
+  simgrid::kernel::actor::simcall([this, type, &model] { pimpl->add_model(type, std::move(model)); });
+}
 /**
  * Creates a new platform, including hosts, links, and the routing table.
  *

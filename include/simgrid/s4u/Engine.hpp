@@ -10,6 +10,7 @@
 
 #include <simgrid/forward.h>
 
+#include <simgrid/kernel/resource/Model.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 
 #include <string>
@@ -128,6 +129,14 @@ public:
   void set_netzone_root(const NetZone* netzone);
 
   NetZone* netzone_by_name_or_null(const std::string& name) const;
+
+  /**
+   * @brief Add a model to engine list
+   *
+   * @param type Model type (network, disk, etc)
+   * @param model Pointer to model
+   */
+  void add_model(simgrid::kernel::resource::Model::Type type, std::unique_ptr<simgrid::kernel::resource::Model> model);
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones() const
