@@ -30,9 +30,11 @@ static void app()
     if (x == 3 && y == 4)
       abort();
   } else if (behavior == Behavior::SEGV) {
+#ifndef __clang_analyzer__
     int* A = 0;
     if (x == 3 && y == 4)
       *A = 1;
+#endif
   } else {
     DIE_IMPOSSIBLE;
   }
