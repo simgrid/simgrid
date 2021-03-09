@@ -21,7 +21,7 @@ void MutexImpl::lock(actor::ActorImpl* issuer)
   if (locked_) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
-    synchro = RawImplPtr(new RawImpl());
+    synchro = RawImplPtr(new RawImpl([this, issuer]() { this->remove_sleeping_actor(*issuer); }));
     (*synchro).set_host(issuer->get_host()).start();
     synchro->simcalls_.push_back(&issuer->simcall_);
     issuer->waiting_synchro_ = synchro;

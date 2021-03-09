@@ -8,6 +8,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "surf/surf.hpp"
+#include <functional>
 
 namespace simgrid {
 namespace kernel {
@@ -17,8 +18,10 @@ namespace activity {
 class XBT_PUBLIC RawImpl : public ActivityImpl_T<RawImpl> {
   sg_host_t host_ = nullptr;
   double timeout_ = -1;
+  std::function<void()> finish_callback_;
 
 public:
+  explicit RawImpl(const std::function<void()>& finish_callback) : finish_callback_(finish_callback) {}
   RawImpl& set_host(s4u::Host* host);
   RawImpl& set_timeout(double timeout) override;
 

@@ -80,32 +80,7 @@ void RawImpl::finish()
     xbt_die("Internal error in RawImpl::finish() unexpected synchro state %d", static_cast<int>(state_));
   }
 
-  switch (simcall->call_) {
-    case simix::Simcall::MUTEX_LOCK:
-      simcall_mutex_lock__get__mutex(simcall)->remove_sleeping_actor(*simcall->issuer_);
-      break;
-
-    case simix::Simcall::COND_WAIT:
-      simcall_cond_wait_timeout__get__cond(simcall)->remove_sleeping_actor(*simcall->issuer_);
-      break;
-
-    case simix::Simcall::COND_WAIT_TIMEOUT:
-      simcall_cond_wait_timeout__get__cond(simcall)->remove_sleeping_actor(*simcall->issuer_);
-      simcall_cond_wait_timeout__set__result(simcall, 1); // signal a timeout
-      break;
-
-    case simix::Simcall::SEM_ACQUIRE:
-      simcall_sem_acquire_timeout__get__sem(simcall)->remove_sleeping_actor(*simcall->issuer_);
-      break;
-
-    case simix::Simcall::SEM_ACQUIRE_TIMEOUT:
-      simcall_sem_acquire_timeout__get__sem(simcall)->remove_sleeping_actor(*simcall->issuer_);
-      simcall_sem_acquire_timeout__set__result(simcall, 1); // signal a timeout
-      break;
-
-    default:
-      THROW_IMPOSSIBLE;
-  }
+  finish_callback_();
   simcall->issuer_->waiting_synchro_ = nullptr;
   simcall->issuer_->simcall_answer();
 }
