@@ -270,9 +270,7 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     new_action->set_remains(old_action->get_remains());
     new_action->set_activity(this);
     new_action->set_sharing_penalty(old_action->get_sharing_penalty());
-
-    // FIXME: the user-defined bound seem to not be kept by LMM, that seem to overwrite it for the multi-core modeling.
-    // I hope that the user did not provide any.
+    new_action->set_user_bound(old_action->get_user_bound());
 
     old_action->set_activity(nullptr);
     old_action->cancel();
