@@ -69,7 +69,7 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& ac
 /*  } */
 void surf_network_model_init_IB()
 {
-  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkIBModel>();
+  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkIBModel>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
                                                          std::move(net_model), true);
 

@@ -61,7 +61,7 @@ void EngineImpl::add_model_ptask(resource::Model::Type type, resource::Model* mo
     models_by_type_[type].push_back(model);
 }
 
-void EngineImpl::add_model(resource::Model::Type type, std::unique_ptr<resource::Model> model, bool is_default)
+void EngineImpl::add_model(resource::Model::Type type, std::shared_ptr<resource::Model> model, bool is_default)
 {
   add_model_ptask(type, model.get(), is_default);
   models_.push_back(std::move(model));

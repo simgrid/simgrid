@@ -20,7 +20,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_disk);
 
 void surf_disk_model_init_default()
 {
-  auto disk_model = std::make_unique<simgrid::kernel::resource::DiskS19Model>();
+  auto disk_model = std::make_shared<simgrid::kernel::resource::DiskS19Model>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::DISK,
                                                          std::move(disk_model), true);
 }

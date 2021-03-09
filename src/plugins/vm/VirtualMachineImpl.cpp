@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, contain
 
 void surf_vm_model_init_HL13()
 {
-  auto vm_model = std::make_unique<simgrid::vm::VMModel>();
+  auto vm_model = std::make_shared<simgrid::vm::VMModel>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::VM,
                                                          std::move(vm_model), true);
 }

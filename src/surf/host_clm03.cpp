@@ -13,7 +13,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 
 void surf_host_model_init_current_default()
 {
-  auto host_model = std::make_unique<simgrid::surf::HostCLM03Model>();
+  auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>();
   simgrid::config::set_default<bool>("network/crosstraffic", true);
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
                                                          std::move(host_model), true);
@@ -23,7 +23,7 @@ void surf_host_model_init_current_default()
 
 void surf_host_model_init_compound()
 {
-  auto host_model = std::make_unique<simgrid::surf::HostCLM03Model>();
+  auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
                                                          std::move(host_model), true);
 }

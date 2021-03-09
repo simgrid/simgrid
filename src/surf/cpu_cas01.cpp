@@ -48,10 +48,10 @@ void surf_cpu_model_init_Cas01()
   else
     algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
 
-  auto cpu_model_pm = std::make_unique<simgrid::kernel::resource::CpuCas01Model>(algo);
+  auto cpu_model_pm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>(algo);
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM,
                                                          std::move(cpu_model_pm), true);
-  auto cpu_model_vm = std::make_unique<simgrid::kernel::resource::CpuCas01Model>(algo);
+  auto cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>(algo);
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM,
                                                          std::move(cpu_model_vm), true);
 }
