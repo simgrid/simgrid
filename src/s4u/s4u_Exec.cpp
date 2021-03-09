@@ -64,6 +64,7 @@ Exec* Exec::cancel()
 {
   kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
   state_ = State::CANCELED;
+  on_completion(*this);
   return this;
 }
 
@@ -178,7 +179,6 @@ ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
   return this;
 }
 
-///////////// SEQUENTIAL EXECUTIONS ////////
 Exec* Exec::start()
 {
   if (is_parallel())
@@ -236,6 +236,7 @@ double Exec::get_remaining_ratio() const
 
 } // namespace s4u
 } // namespace simgrid
+
 /* **************************** Public C interface *************************** */
 void sg_exec_set_bound(sg_exec_t exec, double bound)
 {

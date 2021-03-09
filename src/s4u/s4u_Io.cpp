@@ -47,6 +47,7 @@ Io* Io::cancel()
 {
   simgrid::kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->cancel(); });
   state_ = State::CANCELED;
+  on_completion(*this);
   return this;
 }
 
