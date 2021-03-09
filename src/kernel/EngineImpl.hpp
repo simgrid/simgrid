@@ -24,9 +24,8 @@ class EngineImpl {
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   std::unordered_map<std::string, actor::ActorCodeFactory> registered_functions; // Maps function names to actor code
   actor::ActorCodeFactory default_function; // Function to use as a fallback when the provided name matches nothing
-  std::vector<std::unique_ptr<simgrid::kernel::resource::Model>> models_;
-  std::unordered_map<simgrid::kernel::resource::Model::Type, std::vector<simgrid::kernel::resource::Model*>>
-      models_by_type_;
+  std::vector<std::unique_ptr<resource::Model>> models_;
+  std::unordered_map<resource::Model::Type, std::vector<resource::Model*>> models_by_type_;
 
   friend s4u::Engine;
 
@@ -48,8 +47,7 @@ public:
    * @param model Pointer to model
    * @param is_default Is this the default model for this type of resource in this exp
    */
-  void add_model(simgrid::kernel::resource::Model::Type type, std::unique_ptr<simgrid::kernel::resource::Model> model,
-                 bool is_default = false);
+  void add_model(resource::Model::Type type, std::unique_ptr<resource::Model> model, bool is_default = false);
   /**
    * @brief Add a model (specific for ptask)
    *
@@ -59,18 +57,14 @@ public:
    *
    * This methods does this job while we cannot handle ptask as the remaining models
    */
-  void add_model_ptask(simgrid::kernel::resource::Model::Type type, simgrid::kernel::resource::Model* model,
-                       bool is_default);
+  void add_model_ptask(resource::Model::Type type, resource::Model* model, bool is_default);
   /** @brief Get current default model for a resource type */
-  simgrid::kernel::resource::Model* get_default_model(simgrid::kernel::resource::Model::Type type);
+  resource::Model* get_default_model(resource::Model::Type type);
 
   /** @brief Get list of models created for a resource type */
-  const std::vector<simgrid::kernel::resource::Model*>& get_model_list(simgrid::kernel::resource::Model::Type type)
-  {
-    return models_by_type_[type];
-  }
+  const std::vector<resource::Model*>& get_model_list(resource::Model::Type type) { return models_by_type_[type]; }
   /** @brief Get list of all models managed by this engine */
-  const std::vector<std::unique_ptr<simgrid::kernel::resource::Model>>& get_all_models() { return models_; }
+  const std::vector<std::unique_ptr<resource::Model>>& get_all_models() { return models_; }
 
   routing::NetZoneImpl* netzone_root_ = nullptr;
   static EngineImpl* get_instance() { return simgrid::s4u::Engine::get_instance()->pimpl; }

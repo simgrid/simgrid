@@ -53,8 +53,7 @@ void EngineImpl::register_default(const actor::ActorCodeFactory& code)
   default_function = code;
 }
 
-void EngineImpl::add_model_ptask(simgrid::kernel::resource::Model::Type type, simgrid::kernel::resource::Model* model,
-                                 bool is_default)
+void EngineImpl::add_model_ptask(resource::Model::Type type, resource::Model* model, bool is_default)
 {
   if (is_default)
     models_by_type_[type].insert(models_by_type_[type].begin(), model);
@@ -62,14 +61,13 @@ void EngineImpl::add_model_ptask(simgrid::kernel::resource::Model::Type type, si
     models_by_type_[type].push_back(model);
 }
 
-void EngineImpl::add_model(simgrid::kernel::resource::Model::Type type,
-                           std::unique_ptr<simgrid::kernel::resource::Model> model, bool is_default)
+void EngineImpl::add_model(resource::Model::Type type, std::unique_ptr<resource::Model> model, bool is_default)
 {
   add_model_ptask(type, model.get(), is_default);
   models_.push_back(std::move(model));
 }
 
-simgrid::kernel::resource::Model* EngineImpl::get_default_model(simgrid::kernel::resource::Model::Type type)
+resource::Model* EngineImpl::get_default_model(resource::Model::Type type)
 {
   if (models_by_type_[type].size() > 0)
     return models_by_type_[type][0];
