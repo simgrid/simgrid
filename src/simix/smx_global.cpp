@@ -9,6 +9,7 @@
 #include "src/smpi/include/smpi_actor.hpp"
 
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
@@ -36,9 +37,7 @@ void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
 namespace simgrid {
 namespace simix {
-config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit",
-                                    "Display the actor status at exit",
-                                    true};
+config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
 } // namespace simix
 } // namespace simgrid
 
@@ -48,8 +47,7 @@ XBT_ATTRIB_NORETURN static void inthandler(int)
     XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option "
              "'debug/verbose-exit').");
     simix_global->display_all_actor_status();
-  }
-  else {
+  } else {
     XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'debug/verbose-exit' is set to false.");
   }
   exit(1);
@@ -73,7 +71,7 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
             "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
             "of the fault captured with gdb or valgrind.\n",
             smx_context_stack_size / 1024);
-  } else  if (siginfo->si_signo == SIGSEGV) {
+  } else if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
 #if HAVE_SMPI
     if (smpi_enabled() && smpi_cfg_privatization() == SmpiPrivStrategies::NONE) {
@@ -109,7 +107,7 @@ static void install_segvhandler()
   struct sigaction action;
   struct sigaction old_action;
   action.sa_sigaction = &segvhandler;
-  action.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
+  action.sa_flags     = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
   sigemptyset(&action.sa_mask);
 
   /* Linux tend to raise only SIGSEGV where other systems also raise SIGBUS on severe error */
@@ -198,7 +196,7 @@ void Global::run_all_actors()
 /** Wake up all actors waiting for a Surf action to finish */
 void Global::wake_all_waiting_actors() const
 {
-  for (auto const& model : all_existing_models) {
+  for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
     kernel::resource::Action* action;
 
     XBT_DEBUG("Handling the failed actions (if any)");
@@ -255,8 +253,7 @@ void Global::display_all_actor_status() const
 }
 
 config::Flag<double> cfg_breakpoint{"debug/breakpoint",
-                                    "When non-negative, raise a SIGTRAP after given (simulated) time",
-                                    -1.0};
+                                    "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 } // namespace simix
 } // namespace simgrid
 
@@ -264,7 +261,8 @@ static simgrid::kernel::actor::ActorCode maestro_code;
 void SIMIX_set_maestro(void (*code)(void*), void* data)
 {
 #ifdef _WIN32
-  XBT_INFO("WARNING, SIMIX_set_maestro is believed to not work on windows. Please help us investigating this issue if you need that feature");
+  XBT_INFO("WARNING, SIMIX_set_maestro is believed to not work on windows. Please help us investigating this issue if "
+           "you need that feature");
 #endif
   maestro_code = std::bind(code, data);
 }
@@ -273,7 +271,7 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
  * @ingroup SIMIX_API
  * @brief Initialize SIMIX internal data.
  */
-void SIMIX_global_init(int *argc, char **argv)
+void SIMIX_global_init(int* argc, char** argv)
 {
 #if SIMGRID_HAVE_MC
   // The communication initialization is done ASAP.
@@ -330,9 +328,9 @@ void SIMIX_clean()
 
 #if HAVE_SMPI
   if (not simix_global->process_list.empty()) {
-    if(smpi_process()->initialized()){
+    if (smpi_process()->initialized()) {
       xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
-    }else{
+    } else {
       XBT_WARN("Process called exit when leaving - Skipping cleanups");
       return;
     }
@@ -382,9 +380,9 @@ void SIMIX_clean()
  */
 double SIMIX_get_clock()
 {
-  if(MC_is_active() || MC_record_replay_is_active()){
+  if (MC_is_active() || MC_record_replay_is_active()) {
     return MC_process_clock_get(SIMIX_process_self());
-  }else{
+  } else {
     return surf_get_clock();
   }
 }

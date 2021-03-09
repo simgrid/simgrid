@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ptask_L07.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "surf/surf.hpp"
 #include "xbt/config.hpp"
@@ -20,9 +21,9 @@ void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
-  auto host_model = new simgrid::surf::HostL07Model();
-  all_existing_models.push_back(host_model);
-  models_by_type[simgrid::kernel::resource::Model::Type::HOST].push_back(host_model);
+  auto host_model = std::make_unique<simgrid::surf::HostL07Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
+                                                         std::move(host_model), true);
 }
 
 namespace simgrid {
@@ -32,10 +33,13 @@ HostL07Model::HostL07Model() : HostModel()
 {
   auto* maxmin_system = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
   set_maxmin_system(maxmin_system);
-  network_model_ = std::make_unique<NetworkL07Model>(this, maxmin_system);
-  models_by_type[simgrid::kernel::resource::Model::Type::NETWORK].push_back(network_model_.get());
-  cpu_model_pm_     = std::make_unique<CpuL07Model>(this, maxmin_system);
-  models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM].push_back(cpu_model_pm_.get());
+
+  net_model_  = std::make_unique<NetworkL07Model>(this, maxmin_system);
+  auto engine = simgrid::kernel::EngineImpl::get_instance();
+  engine->add_model_ptask(simgrid::kernel::resource::Model::Type::NETWORK, net_model_.get(), true);
+
+  cpu_model_ = std::make_unique<CpuL07Model>(this, maxmin_system);
+  engine->add_model_ptask(simgrid::kernel::resource::Model::Type::CPU_PM, cpu_model_.get(), true);
 }
 
 HostL07Model::~HostL07Model() {}

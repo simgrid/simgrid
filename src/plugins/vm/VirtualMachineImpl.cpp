@@ -7,16 +7,16 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/include/surf/surf.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile accross hosts");
 
 void surf_vm_model_init_HL13()
 {
-  /* FIXME[donassolo]: this smells bad, but works
-   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
-   * We need a manager for these models */
-  new simgrid::vm::VMModel();
+  auto vm_model = std::make_unique<simgrid::vm::VMModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::VM,
+                                                         std::move(vm_model), true);
 }
 
 namespace simgrid {
@@ -103,8 +103,6 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
 
 VMModel::VMModel()
 {
-  all_existing_models.push_back(this);
-  models_by_type[simgrid::kernel::resource::Model::Type::VM].push_back(this);
   s4u::Host::on_state_change.connect(host_state_change);
   s4u::Exec::on_start.connect(add_active_exec);
   s4u::Exec::on_completion.connect(remove_active_exec);

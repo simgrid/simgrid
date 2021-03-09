@@ -115,7 +115,6 @@ public:
   /** @brief Retrieves the disk model associated to this NetZone */
   resource::DiskModel* get_disk_model() const { return disk_model_; }
   /** @brief Retrieves the host model associated to this NetZone */
-  // FIXME[donassolo]: why HostModel isn't in resource namespace?
   simgrid::surf::HostModel* get_host_model() const { return host_model_; }
 
   const s4u::NetZone* get_iface() const { return &piface_; }

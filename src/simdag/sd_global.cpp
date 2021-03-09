@@ -8,6 +8,7 @@
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <array>
@@ -15,12 +16,13 @@
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd, "Logging specific to SimDag (kernel)");
 
-simgrid::sd::Global *sd_global = nullptr;
+simgrid::sd::Global* sd_global = nullptr;
 
-namespace simgrid{
-namespace sd{
+namespace simgrid {
+namespace sd {
 
-std::set<SD_task_t>* simulate(double how_long){
+std::set<SD_task_t>* simulate(double how_long)
+{
   XBT_VERB("Run simulation for %f seconds", how_long);
 
   sd_global->watch_point_reached = false;
@@ -31,19 +33,19 @@ std::set<SD_task_t>* simulate(double how_long){
     SD_task_run(*(sd_global->runnable_tasks.begin()));
 
   double elapsed_time = 0.0;
-  double total_time = 0.0;
+  double total_time   = 0.0;
   /* main loop */
   while (elapsed_time >= 0 && (how_long < 0 || 0.00001 < (how_long - total_time)) &&
          not sd_global->watch_point_reached) {
     XBT_DEBUG("Total time: %f", total_time);
 
-    elapsed_time = surf_solve(how_long > 0 ? surf_get_clock() + how_long - total_time: -1.0);
+    elapsed_time = surf_solve(how_long > 0 ? surf_get_clock() + how_long - total_time : -1.0);
     XBT_DEBUG("surf_solve() returns %f", elapsed_time);
     if (elapsed_time > 0.0)
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    for (auto const& model : all_existing_models) {
+    for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
       const simgrid::kernel::resource::Action* action = model->extract_done_action();
       while (action != nullptr && action->get_data() != nullptr) {
         auto* task = static_cast<SD_task_t>(action->get_data());
@@ -58,7 +60,7 @@ std::set<SD_task_t>* simulate(double how_long){
           succ->predecessors->erase(task);
           succ->inputs->erase(task);
           XBT_DEBUG("Release dependency on %s: %zu remain(s). Becomes schedulable if %zu=0", SD_task_get_name(succ),
-              succ->predecessors->size()+succ->inputs->size(), succ->predecessors->size());
+                    succ->predecessors->size() + succ->inputs->size(), succ->predecessors->size());
 
           if (SD_task_get_state(succ) == SD_NOT_SCHEDULED && succ->predecessors->empty())
             SD_task_set_state(succ, SD_SCHEDULABLE);
@@ -75,14 +77,14 @@ std::set<SD_task_t>* simulate(double how_long){
           output->start_time = task->finish_time;
           output->predecessors->erase(task);
           if (SD_task_get_state(output) == SD_SCHEDULED)
-             SD_task_set_state(output, SD_RUNNABLE);
+            SD_task_set_state(output, SD_RUNNABLE);
           else
-             SD_task_set_state(output, SD_SCHEDULABLE);
+            SD_task_set_state(output, SD_SCHEDULABLE);
 
           SD_task_t comm_dst = *(output->successors->begin());
-          if (SD_task_get_state(comm_dst) == SD_NOT_SCHEDULED && comm_dst->predecessors->empty()){
-            XBT_DEBUG("%s is a transfer, %s may be ready now if %zu=0",
-                SD_task_get_name(output), SD_task_get_name(comm_dst), comm_dst->predecessors->size());
+          if (SD_task_get_state(comm_dst) == SD_NOT_SCHEDULED && comm_dst->predecessors->empty()) {
+            XBT_DEBUG("%s is a transfer, %s may be ready now if %zu=0", SD_task_get_name(output),
+                      SD_task_get_name(comm_dst), comm_dst->predecessors->size());
             SD_task_set_state(comm_dst, SD_SCHEDULABLE);
           }
           if (SD_task_get_state(output) == SD_RUNNABLE && not sd_global->watch_point_reached)
@@ -110,21 +112,22 @@ std::set<SD_task_t>* simulate(double how_long){
       XBT_WARN("%s is in %s state", SD_task_get_name(t), __get_state_name(SD_task_get_state(t)));
   }
 
-  XBT_DEBUG("elapsed_time = %f, total_time = %f, watch_point_reached = %d",
-             elapsed_time, total_time, sd_global->watch_point_reached);
+  XBT_DEBUG("elapsed_time = %f, total_time = %f, watch_point_reached = %d", elapsed_time, total_time,
+            sd_global->watch_point_reached);
   XBT_DEBUG("current time = %f", surf_get_clock());
 
   return &sd_global->return_set;
 }
-}
-}
+} // namespace sd
+} // namespace simgrid
 
 /**
  * @brief helper for pretty printing of task state
  * @param state the state of a task
  * @return the equivalent as a readable string
  */
-const char *__get_state_name(e_SD_task_state_t state){
+const char* __get_state_name(e_SD_task_state_t state)
+{
   static constexpr std::array<const char*, 7> state_names{
       {"not scheduled", "schedulable", "scheduled", "runnable", "running", "done", "failed"}};
   return state_names.at(static_cast<int>(log2(static_cast<double>(state))));
@@ -139,7 +142,7 @@ const char *__get_state_name(e_SD_task_state_t state){
  * @param argv argument list
  * @see SD_create_environment(), SD_exit()
  */
-void SD_init_nocheck(int *argc, char **argv)
+void SD_init_nocheck(int* argc, char** argv)
 {
   xbt_assert(sd_global == nullptr, "SD_init() already called");
 
@@ -159,8 +162,9 @@ void SD_init_nocheck(int *argc, char **argv)
  *
  * Example: SD_config("host/model","default")
  */
-void SD_config(const char *key, const char *value){
-  xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");
+void SD_config(const char* key, const char* value)
+{
+  xbt_assert(sd_global, "ERROR: Please call SD_init() before using SD_config()");
   simgrid::config::set_as_string(key, value);
 }
 
@@ -181,7 +185,7 @@ void SD_config(const char *key, const char *value){
  *
  *     @include small_platform.xml
  */
-void SD_create_environment(const char *platform_file)
+void SD_create_environment(const char* platform_file)
 {
   simgrid::s4u::Engine::get_instance()->load_platform(platform_file);
 
@@ -190,7 +194,7 @@ void SD_create_environment(const char *platform_file)
   jedule_sd_init();
 #endif
   XBT_VERB("Starting simulation...");
-  surf_presolve();            /* Takes traces into account */
+  surf_presolve(); /* Takes traces into account */
 }
 
 /**
@@ -220,7 +224,8 @@ void SD_simulate_with_update(double how_long, xbt_dynar_t changed_tasks_dynar)
 }
 
 /** @brief Returns the current clock, in seconds */
-double SD_get_clock() {
+double SD_get_clock()
+{
   return surf_get_clock();
 }
 

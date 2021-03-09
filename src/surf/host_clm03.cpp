@@ -6,35 +6,32 @@
 #include "src/surf/host_clm03.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 
 void surf_host_model_init_current_default()
 {
-  /* FIXME[donassolo]: this smells bad, but works
-   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
-   * We need a manager for these models */
-  new simgrid::surf::HostCLM03Model();
+  auto host_model = std::make_unique<simgrid::surf::HostCLM03Model>();
   simgrid::config::set_default<bool>("network/crosstraffic", true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
+                                                         std::move(host_model), true);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 }
 
 void surf_host_model_init_compound()
 {
-  /* FIXME[donassolo]: this smells bad, but works
-   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
-   * We need a manager for these models */
-  new simgrid::surf::HostCLM03Model();
+  auto host_model = std::make_unique<simgrid::surf::HostCLM03Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
+                                                         std::move(host_model), true);
 }
 
 namespace simgrid {
 namespace surf {
 HostCLM03Model::HostCLM03Model()
 {
-  all_existing_models.push_back(this);
-  models_by_type[simgrid::kernel::resource::Model::Type::HOST].push_back(this);
 }
 
 double HostCLM03Model::next_occurring_event(double now)

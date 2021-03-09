@@ -6,6 +6,7 @@
 #include "src/surf/network_ib.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "surf/surf.hpp"
@@ -68,10 +69,10 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& ac
 /*  } */
 void surf_network_model_init_IB()
 {
-  /* FIXME[donassolo]: this smells bad, but works
-   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
-   * We need a manager for these models */
-  new simgrid::kernel::resource::NetworkIBModel();
+  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkIBModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
+                                                         std::move(net_model), true);
+
   simgrid::s4u::Link::on_communication_state_change.connect(IB_action_state_changed_callback);
   simgrid::s4u::Link::on_communicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::on_creation.connect(IB_create_host_callback);
@@ -84,8 +85,6 @@ namespace resource {
 
 NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
-  /* Do not add this into all_existing_models: our ancestor already does so */
-
   std::string IB_factors_string = config::get_value<std::string>("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));

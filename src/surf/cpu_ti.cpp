@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -269,20 +270,19 @@ int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 
 void CpuTiModel::create_pm_vm_models()
 {
-  auto cpu_model_pm = new CpuTiModel();
-  models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM].push_back(cpu_model_pm);
-  auto cpu_model_vm = new CpuTiModel();
-  models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM].push_back(cpu_model_vm);
+  auto cpu_model_pm = std::make_unique<CpuTiModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM,
+                                                         std::move(cpu_model_pm), true);
+  auto cpu_model_vm = std::make_unique<CpuTiModel>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM,
+                                                         std::move(cpu_model_vm), true);
 }
 
 CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
 {
-  all_existing_models.push_back(this);
 }
 
-CpuTiModel::~CpuTiModel()
-{
-}
+CpuTiModel::~CpuTiModel() {}
 
 Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {

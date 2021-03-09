@@ -8,6 +8,7 @@
 #include "simgrid/host.h"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp" // full type for NetZoneImpl object
 #include "simgrid/zone.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -49,7 +50,7 @@ int main(int argc, char** argv)
     double now = surf_get_clock();
     XBT_INFO("Next Event : %g", now);
 
-    for (auto const& model : all_existing_models) {
+    for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
       if (model->get_started_action_set()->size() != 0) {
         XBT_DEBUG("\t Running that model");
         running = 1;

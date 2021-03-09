@@ -151,15 +151,4 @@ private:
 } // namespace kernel
 } // namespace simgrid
 
-/** @ingroup SURF_models
- *  @brief List of initialized models
- */
-XBT_PUBLIC_DATA std::vector<simgrid::kernel::resource::Model*> all_existing_models;
-/** @ingroup SURF_models
- *  @brief Map of initialized models by category
- */
-XBT_PUBLIC_DATA
-std::unordered_map<simgrid::kernel::resource::Model::Type, std::vector<simgrid::kernel::resource::Model*>>
-    models_by_type;
-
 #endif

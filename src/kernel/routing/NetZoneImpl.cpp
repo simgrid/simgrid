@@ -7,6 +7,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -26,18 +27,15 @@ NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource:
   xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
 
-  netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone, father_);
-  if (models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM].size() > 0) {
-    cpu_model_vm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
-        models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM][0]);
-  }
+  netpoint_     = new NetPoint(name_, NetPoint::Type::NetZone, father_);
+  cpu_model_vm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
+      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::CPU_VM));
   cpu_model_pm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
-      models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM][0]);
+      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::CPU_PM));
   disk_model_ = static_cast<simgrid::kernel::resource::DiskModel*>(
-      models_by_type[simgrid::kernel::resource::Model::Type::DISK][0]);
-  // FIXME[donassolo]: we probably need some validation of the coherence among
-  // the different models in each netZone
-  host_model_ = static_cast<simgrid::surf::HostModel*>(models_by_type[simgrid::kernel::resource::Model::Type::HOST][0]);
+      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::DISK));
+  host_model_ = static_cast<simgrid::surf::HostModel*>(
+      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::HOST));
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 

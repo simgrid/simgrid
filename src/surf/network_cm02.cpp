@@ -6,6 +6,7 @@
 #include "src/surf/network_cm02.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/network_wifi.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -36,10 +37,9 @@ double sg_weight_S_parameter = 0.0; /* default value; can be set by model or fro
 /*  } */
 void surf_network_model_init_LegrandVelho()
 {
-  /* FIXME[donassolo]: this smells bad, but works
-   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
-   * We need a manager for these models */
-  new simgrid::kernel::resource::NetworkCm02Model();
+  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkCm02Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
+                                                         std::move(net_model), true);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
   simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
@@ -63,10 +63,9 @@ void surf_network_model_init_CM02()
   simgrid::config::set_default<double>("network/bandwidth-factor", 1.0);
   simgrid::config::set_default<double>("network/weight-S", 0.0);
 
-  /* FIXME[donassolo]: this smells bad, but works
-   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
-   * We need a manager for these models */
-  new simgrid::kernel::resource::NetworkCm02Model();
+  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkCm02Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
+                                                         std::move(net_model), true);
 }
 
 namespace simgrid {
@@ -77,9 +76,6 @@ NetworkCm02Model::NetworkCm02Model()
     : NetworkModel(config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::FULL
                                                                              : Model::UpdateAlgo::LAZY)
 {
-  all_existing_models.push_back(this);
-  models_by_type[simgrid::kernel::resource::Model::Type::NETWORK].push_back(this);
-
   std::string optim = config::get_value<std::string>("network/optim");
   bool select       = config::get_value<bool>("network/maxmin-selective-update");
 

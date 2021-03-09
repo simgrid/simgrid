@@ -476,8 +476,6 @@ static void surf_config_models_setup()
   surf_host_model_description[host_id].model_init_preparse();
 
   XBT_DEBUG("Call vm_model_init");
-  // FIXME[donassolo]: maybe remove it, find a way to create the object and leave the
-  // dependency with surf_cpu_model_vm explicity
   surf_vm_model_init_HL13();
 
   XBT_DEBUG("Call disk_model_init");
@@ -518,7 +516,8 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
   simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
   simgrid::kernel::resource::NetworkModel* netmodel =
       current_routing == nullptr ? static_cast<simgrid::kernel::resource::NetworkModel*>(
-                                       models_by_type[simgrid::kernel::resource::Model::Type::NETWORK][0])
+                                       simgrid::kernel::EngineImpl::get_instance()->get_default_model(
+                                           simgrid::kernel::resource::Model::Type::NETWORK))
                                  : current_routing->get_network_model();
 
   if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {

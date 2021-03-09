@@ -29,10 +29,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
  * Utils *
  *********/
 
-std::vector<simgrid::kernel::resource::Model*> all_existing_models; /* to destroy models correctly */
-std::unordered_map<simgrid::kernel::resource::Model::Type, std::vector<simgrid::kernel::resource::Model*>>
-    models_by_type;
-
 simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
 
@@ -225,9 +221,6 @@ void surf_init(int* argc, char** argv)
 void surf_exit()
 {
   simgrid::s4u::Engine::shutdown();
-
-  for (auto const& model : all_existing_models)
-    delete model;
 
   tmgr_finalize();
   sg_platf_exit();

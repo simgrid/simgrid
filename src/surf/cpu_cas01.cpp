@@ -5,6 +5,7 @@
 
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -47,10 +48,12 @@ void surf_cpu_model_init_Cas01()
   else
     algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
 
-  auto cpu_model_pm = new simgrid::kernel::resource::CpuCas01Model(algo);
-  models_by_type[simgrid::kernel::resource::Model::Type::CPU_PM].push_back(cpu_model_pm);
-  auto cpu_model_vm = new simgrid::kernel::resource::CpuCas01Model(algo);
-  models_by_type[simgrid::kernel::resource::Model::Type::CPU_VM].push_back(cpu_model_vm);
+  auto cpu_model_pm = std::make_unique<simgrid::kernel::resource::CpuCas01Model>(algo);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM,
+                                                         std::move(cpu_model_pm), true);
+  auto cpu_model_vm = std::make_unique<simgrid::kernel::resource::CpuCas01Model>(algo);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM,
+                                                         std::move(cpu_model_vm), true);
 }
 
 namespace simgrid {
@@ -59,8 +62,6 @@ namespace resource {
 
 CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
 {
-  all_existing_models.push_back(this);
-
   bool select = config::get_value<bool>("cpu/maxmin-selective-update");
 
   if (is_update_lazy()) {
@@ -72,9 +73,7 @@ CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
   set_maxmin_system(new lmm::System(select));
 }
 
-CpuCas01Model::~CpuCas01Model()
-{
-}
+CpuCas01Model::~CpuCas01Model() {}
 
 Cpu* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {

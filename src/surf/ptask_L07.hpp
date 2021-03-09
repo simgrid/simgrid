@@ -46,8 +46,8 @@ public:
                                                 const double* bytes_amount, double rate) override;
 
 private:
-  std::unique_ptr<NetworkL07Model> network_model_;
-  std::unique_ptr<CpuL07Model> cpu_model_pm_;
+  std::unique_ptr<NetworkL07Model> net_model_;
+  std::unique_ptr<CpuL07Model> cpu_model_;
 };
 
 class CpuL07Model : public kernel::resource::CpuModel {

@@ -33,6 +33,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/kernel/EngineImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
@@ -258,10 +259,9 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
  *********/
 void surf_network_model_init_NS3()
 {
-  /* FIXME[donassolo]: this smells bad, but works
-   * (the constructor saves its pointer in all_existing_models and models_by_type :O).
-   * We need a manager for these models */
-  new simgrid::kernel::resource::NetworkNS3Model();
+  auto net_model = std::make_unique<simgrid::kernel::resource::NetworkNS3Model>();
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
+                                                         std::move(net_model), true);
 }
 
 static simgrid::config::Flag<std::string>
@@ -292,9 +292,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 {
   xbt_assert(not sg_link_energy_is_inited(),
              "LinkEnergy plugin and ns-3 network models are not compatible. Are you looking for Ecofen, maybe?");
-
-  all_existing_models.push_back(this);
-  models_by_type[simgrid::kernel::resource::Model::Type::NETWORK].push_back(this);
 
   NetPointNs3::EXTENSION_ID = routing::NetPoint::extension_create<NetPointNs3>();
 
