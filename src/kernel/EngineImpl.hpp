@@ -48,23 +48,14 @@ public:
    * @param is_default Is this the default model for this type of resource in this exp
    */
   void add_model(resource::Model::Type type, std::shared_ptr<resource::Model> model, bool is_default = false);
-  /**
-   * @brief Add a model (specific for ptask)
-   *
-   * Ptask is special. The CPU and NETWORK models need to be in the managed
-   * resources by surf_solve (model_by_type) but cannot be in the list of
-   * all models (old all_existing_models global variable)
-   *
-   * This methods does this job while we cannot handle ptask as the remaining models
-   */
-  void add_model_ptask(resource::Model::Type type, resource::Model* model, bool is_default);
   /** @brief Get current default model for a resource type */
-  resource::Model* get_default_model(resource::Model::Type type);
+  resource::Model* get_default_model(resource::Model::Type type) const;
 
   /** @brief Get list of models created for a resource type */
-  const std::vector<resource::Model*>& get_model_list(resource::Model::Type type) { return models_by_type_[type]; }
+  const std::vector<resource::Model*>& get_model_list(resource::Model::Type type);
+
   /** @brief Get list of all models managed by this engine */
-  const std::vector<std::shared_ptr<resource::Model>>& get_all_models() { return models_; }
+  const std::vector<std::shared_ptr<resource::Model>>& get_all_models() const { return models_; }
 
   routing::NetZoneImpl* netzone_root_ = nullptr;
   static EngineImpl* get_instance() { return simgrid::s4u::Engine::get_instance()->pimpl; }

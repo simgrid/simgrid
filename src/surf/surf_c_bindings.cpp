@@ -102,10 +102,11 @@ double surf_solve(double max_date)
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
     for (auto* model : engine->get_model_list(simgrid::kernel::resource::Model::Type::NETWORK)) {
+      /* Skip all idempotent models, they were already treated above
+       * NS3 is the one to handled here */
       if (model->next_occurring_event_is_idempotent())
         continue;
 
-      // NS3, I see you
       if (next_event_date != -1.0) {
         time_delta = std::min(next_event_date - NOW, time_delta);
       } else {

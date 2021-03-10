@@ -44,10 +44,6 @@ public:
   void update_actions_state(double now, double delta) override;
   kernel::resource::CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                                 const double* bytes_amount, double rate) override;
-
-private:
-  std::unique_ptr<NetworkL07Model> net_model_;
-  std::unique_ptr<CpuL07Model> cpu_model_;
 };
 
 class CpuL07Model : public kernel::resource::CpuModel {
@@ -56,6 +52,10 @@ public:
   CpuL07Model(const CpuL07Model&) = delete;
   CpuL07Model& operator=(const CpuL07Model&) = delete;
   ~CpuL07Model() override;
+  /* this action is done by HostL07Model which shares the LMM system with the CPU model
+   * Overriding to an empty function here allows us to handle the Cpu07Model as a regular
+   * method in surf_presolve */
+  void update_actions_state(double now, double delta) override{};
 
   kernel::resource::Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
   HostL07Model* hostModel_;
@@ -71,6 +71,10 @@ public:
                                           s4u::Link::SharingPolicy policy) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  /* this action is done by HostL07Model which shares the LMM system with the CPU model
+   * Overriding to an empty function here allows us to handle the Cpu07Model as a regular
+   * method in surf_presolve */
+  void update_actions_state(double now, double delta) override{};
 
   HostL07Model* hostModel_;
 };
