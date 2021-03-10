@@ -59,12 +59,13 @@ public:
    */
   void add_model_ptask(resource::Model::Type type, resource::Model* model, bool is_default);
   /** @brief Get current default model for a resource type */
-  resource::Model* get_default_model(resource::Model::Type type);
+  resource::Model* get_default_model(resource::Model::Type type) const;
 
   /** @brief Get list of models created for a resource type */
-  const std::vector<resource::Model*>& get_model_list(resource::Model::Type type) { return models_by_type_[type]; }
+  const std::vector<resource::Model*>& get_model_list(resource::Model::Type type);
+
   /** @brief Get list of all models managed by this engine */
-  const std::vector<std::shared_ptr<resource::Model>>& get_all_models() { return models_; }
+  const std::vector<std::shared_ptr<resource::Model>>& get_all_models() const { return models_; }
 
   routing::NetZoneImpl* netzone_root_ = nullptr;
   static EngineImpl* get_instance() { return simgrid::s4u::Engine::get_instance()->pimpl; }

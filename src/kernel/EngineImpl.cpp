@@ -67,12 +67,17 @@ void EngineImpl::add_model(resource::Model::Type type, std::shared_ptr<resource:
   models_.push_back(std::move(model));
 }
 
-resource::Model* EngineImpl::get_default_model(resource::Model::Type type)
+resource::Model* EngineImpl::get_default_model(resource::Model::Type type) const
 {
-  if (models_by_type_[type].size() > 0)
-    return models_by_type_[type][0];
-  else
-    return nullptr;
+  resource::Model* model = nullptr;
+  if (models_by_type_.find(type) != models_by_type_.end() and models_by_type_.at(type).size() > 0)
+    return models_by_type_.at(type)[0];
+  return model;
+}
+
+const std::vector<resource::Model*>& EngineImpl::get_model_list(resource::Model::Type type)
+{
+  return models_by_type_[type];
 }
 
 } // namespace kernel
