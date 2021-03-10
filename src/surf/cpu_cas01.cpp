@@ -73,8 +73,6 @@ CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
   set_maxmin_system(new lmm::System(select));
 }
 
-CpuCas01Model::~CpuCas01Model() {}
-
 Cpu* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   return (new CpuCas01(host, speed_per_pstate))->set_model(this);
@@ -206,8 +204,6 @@ int CpuCas01Action::requested_core() const
 {
   return requested_core_;
 }
-
-CpuCas01Action::~CpuCas01Action() = default;
 
 } // namespace resource
 } // namespace kernel

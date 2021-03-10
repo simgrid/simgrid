@@ -150,9 +150,6 @@ static void runner()
            host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
            host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
 
-  old_energy_host1 = new_energy_host1;
-  old_energy_host2 = new_energy_host2;
-
   XBT_INFO("Now is time to quit!");
 }
 

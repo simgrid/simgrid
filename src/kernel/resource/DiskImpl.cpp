@@ -24,10 +24,6 @@ DiskModel::DiskModel() : Model(Model::UpdateAlgo::FULL)
   set_maxmin_system(new simgrid::kernel::lmm::System(true /* selective update */));
 }
 
-DiskModel::~DiskModel()
-{
-}
-
 /************
  * Resource *
  ************/

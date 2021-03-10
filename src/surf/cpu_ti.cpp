@@ -280,8 +280,6 @@ CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
 {
 }
 
-CpuTiModel::~CpuTiModel() {}
-
 Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   return (new CpuTi(host, speed_per_pstate))->set_model(this);
