@@ -317,6 +317,13 @@ int PMPI_File_get_size(MPI_File  fh, MPI_Offset* size)
   return MPI_SUCCESS;
 }
 
+int PMPI_File_set_size(MPI_File  fh, MPI_Offset size)
+{
+  CHECK_FILE(1, fh)
+  fh->set_size(size);
+  return MPI_SUCCESS;
+}
+
 int PMPI_File_get_amode(MPI_File  fh, int* amode)
 {
   CHECK_FILE(1, fh)

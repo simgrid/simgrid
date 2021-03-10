@@ -284,6 +284,11 @@ namespace smpi{
     return file_->size();
   }
 
+  void File::set_size(int size)
+  {
+    file_->write(size, true);
+  }
+
   int File::flags() const
   {
     return flags_;

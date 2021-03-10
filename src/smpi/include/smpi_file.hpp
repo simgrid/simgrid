@@ -49,6 +49,7 @@ class File : public F2C{
   int get_view(MPI_Offset* disp, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep) const;
   MPI_Info info();
   void set_info( MPI_Info info);
+  void set_size(int size);
   static int read(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status);
   static int read_shared(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status);
   static int read_ordered(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status);
