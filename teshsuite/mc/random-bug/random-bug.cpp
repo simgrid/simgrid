@@ -31,7 +31,7 @@ static void app()
       abort();
   } else if (behavior == Behavior::SEGV) {
 #ifndef __clang_analyzer__
-    int* A = 0;
+    int* A = nullptr;
     if (x == 3 && y == 4)
       *A = 1;
 #endif
