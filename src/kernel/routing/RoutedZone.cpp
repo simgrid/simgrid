@@ -55,7 +55,7 @@ namespace kernel {
 namespace routing {
 
 RoutedZone::RoutedZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : NetZoneImpl(father, name, netmodel)
+    : NetZoneImpl(name)
 {
 }
 

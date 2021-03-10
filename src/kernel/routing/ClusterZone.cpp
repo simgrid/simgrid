@@ -18,7 +18,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 ClusterZone::ClusterZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : NetZoneImpl(father, name, netmodel)
+    : NetZoneImpl(name)
 {
 }
 

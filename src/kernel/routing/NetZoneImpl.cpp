@@ -21,13 +21,11 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-NetZoneImpl::NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model)
-    : piface_(this), father_(father), name_(name), network_model_(network_model)
+NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
   xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
-
-  netpoint_     = new NetPoint(name_, NetPoint::Type::NetZone, father_);
+  netpoint_     = new NetPoint(name_, NetPoint::Type::NetZone);
   cpu_model_vm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
       simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::CPU_VM));
   cpu_model_pm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
@@ -98,7 +96,7 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
     hierarchy_ = RoutingMode::base;
 
   auto* res = new s4u::Host(name);
-  res->set_netpoint(new NetPoint(name, NetPoint::Type::Host, this));
+  res->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
 
   cpu_model_pm_->create_cpu(res, speed_per_pstate)->set_core_count(core_amount)->seal();
 
@@ -406,6 +404,18 @@ void NetZoneImpl::seal()
 {
   do_seal(); // derived class' specific sealing procedure
   sealed_ = true;
+}
+
+void NetZoneImpl::set_parent(NetZoneImpl* parent)
+{
+  xbt_assert(sealed_ == false, "Impossible to set father to an already sealed NetZone(%s)", this->get_cname());
+  father_ = parent;
+  netpoint_->set_englobing_zone(father_);
+}
+
+void NetZoneImpl::set_network_model(simgrid::kernel::resource::NetworkModel* netmodel)
+{
+  network_model_ = netmodel;
 }
 
 } // namespace routing

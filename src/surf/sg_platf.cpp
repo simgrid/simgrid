@@ -100,8 +100,8 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
-  auto* netpoint =
-      new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
+  auto* netpoint = new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router);
+  netpoint->set_englobing_zone(current_routing);
   XBT_DEBUG("Router '%s' has the id %u", netpoint->get_cname(), netpoint->id());
 
   if (coords && strcmp(coords, ""))
@@ -545,6 +545,8 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
   } else {
     xbt_die("Not a valid model!");
   }
+  new_zone->set_parent(current_routing);
+  new_zone->set_network_model(netmodel);
 
   if (current_routing == nullptr) { /* it is the first one */
     simgrid::s4u::Engine::get_instance()->set_netzone_root(new_zone->get_iface());

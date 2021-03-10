@@ -79,7 +79,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   virtual void do_seal(){};
 
 protected:
-  explicit NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model);
+  explicit NetZoneImpl(const std::string& name);
   NetZoneImpl(const NetZoneImpl&) = delete;
   NetZoneImpl& operator=(const NetZoneImpl&) = delete;
   virtual ~NetZoneImpl();
@@ -152,6 +152,10 @@ public:
   virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                          std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+  /** @brief Set parent of this Netzone */
+  void set_parent(NetZoneImpl* parent);
+  /** @brief Set network model for this Netzone */
+  void set_network_model(simgrid::kernel::resource::NetworkModel* netmodel);
 
   /* @brief get the route between two nodes in the full platform
    *
