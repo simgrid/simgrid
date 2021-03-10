@@ -9,8 +9,6 @@
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 
-#include <cstdlib> /* abort */
-
 jclass jxbt_get_class(JNIEnv * env, const char *name)
 {
   jclass cls = env->FindClass(name);

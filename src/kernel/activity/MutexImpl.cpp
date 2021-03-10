@@ -6,8 +6,6 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mutex, simix_synchro, "Mutex kernel-space implementation");
-
 #if SIMGRID_HAVE_MC
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_safety.hpp"
@@ -17,6 +15,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mutex, simix_synchro, "Mutex kernel-space 
 #else
 #define MC_CHECK_NO_DPOR() (void)0
 #endif
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mutex, simix_synchro, "Mutex kernel-space implementation");
 
 namespace simgrid {
 namespace kernel {
