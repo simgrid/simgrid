@@ -8,9 +8,10 @@
 #include <xbt/log.h>
 
 #include <cerrno>
-#include <unistd.h>
+#include <cstring>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Channel, mc, "MC interprocess communication");
 
@@ -28,8 +29,10 @@ int Channel::send(const void* message, size_t size) const
 {
   XBT_DEBUG("Send %s", to_c_str(*(MessageType*)message));
   while (::send(this->socket_, message, size, 0) == -1) {
-    if (errno != EINTR)
+    if (errno != EINTR) {
+      XBT_ERROR("Channel::send failure: %s", strerror(errno));
       return errno;
+    }
   }
   return 0;
 }
@@ -39,6 +42,8 @@ ssize_t Channel::receive(void* message, size_t size, bool block) const
   ssize_t res = recv(this->socket_, message, size, block ? 0 : MSG_DONTWAIT);
   if (res != -1)
     XBT_DEBUG("Receive %s", to_c_str(*(MessageType*)message));
+  else
+    XBT_ERROR("Channel::receive failure: %s", strerror(errno));
   return res;
 }
 }

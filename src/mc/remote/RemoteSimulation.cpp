@@ -16,6 +16,8 @@
 #include <sys/mman.h> // PROT_*
 
 #include <algorithm>
+#include <cerrno>
+#include <cstring>
 #include <memory>
 #include <string>
 
@@ -177,7 +179,7 @@ static ssize_t pread_whole(int fd, void* buf, size_t count, off_t offset)
     } else if (res == 0)
       return -1;
     else if (errno != EINTR) {
-      perror("pread_whole");
+      XBT_ERROR("pread_whole: %s", strerror(errno));
       return -1;
     }
   }
@@ -196,8 +198,10 @@ static ssize_t pwrite_whole(int fd, const void* buf, size_t count, off_t offset)
       offset += res;
     } else if (res == 0)
       return -1;
-    else if (errno != EINTR)
+    else if (errno != EINTR) {
+      XBT_ERROR("pwrite_whole: %s", strerror(errno));
       return -1;
+    }
   }
   return real_count;
 }

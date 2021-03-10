@@ -51,6 +51,14 @@
 
 #include "memory_map.hpp"
 
+// abort with a message if `expr' is false
+#define CHECK(expr)                                                                                                    \
+  if (not(expr)) {                                                                                                     \
+    fprintf(stderr, "CHECK FAILED: %s:%d: %s\n", __FILE__, __LINE__, #expr);                                           \
+    abort();                                                                                                           \
+  } else                                                                                                               \
+    ((void)0)
+
 namespace simgrid {
 namespace xbt {
 
@@ -209,21 +217,17 @@ std::vector<VmMap> get_memory_map(pid_t pid)
     char *endptr;
     memreg.start_addr = std::strtoull(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
-    if (*endptr != '\0')
-      abort();
+    CHECK(*endptr == '\0');
 
     tok = strtok_r(nullptr, "-", &saveptr);
-    if (tok == nullptr)
-      abort();
+    CHECK(tok != nullptr);
 
     memreg.end_addr = std::strtoull(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
-    if (*endptr != '\0')
-      abort();
+    CHECK(*endptr == '\0');
 
     /* Get the permissions flags */
-    if (std::strlen(lfields[1]) < 4)
-      abort();
+    CHECK(std::strlen(lfields[1]) >= 4);
 
     memreg.prot = 0;
     for (i = 0; i < 3; i++){
@@ -259,32 +263,26 @@ std::vector<VmMap> get_memory_map(pid_t pid)
     /* Get the offset value */
     memreg.offset = std::strtoull(lfields[2], &endptr, 16);
     /* Make sure that the entire string was an hex number */
-    if (*endptr != '\0')
-      abort();
+    CHECK(*endptr == '\0');
 
     /* Get the device major:minor bytes */
     tok = strtok_r(lfields[3], ":", &saveptr);
-    if (tok == nullptr)
-      abort();
+    CHECK(tok != nullptr);
 
     memreg.dev_major = (char) strtoul(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
-    if (*endptr != '\0')
-      abort();
+    CHECK(*endptr == '\0');
 
     tok = strtok_r(nullptr, ":", &saveptr);
-    if (tok == nullptr)
-      abort();
+    CHECK(tok != nullptr);
 
     memreg.dev_minor = (char) std::strtoul(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
-    if (*endptr != '\0')
-      abort();
+    CHECK(*endptr == '\0');
 
     /* Get the inode number and make sure that the entire string was a long int */
     memreg.inode = strtoul(lfields[4], &endptr, 10);
-    if (*endptr != '\0')
-      abort();
+    CHECK(*endptr == '\0');
 
     /* And finally get the pathname */
     if (lfields[5])
