@@ -139,12 +139,10 @@ double CpuTiTmgr::solve(double a, double amount) const
   }
 
   /* Sanity checks */
-  if ((a < 0.0) || (amount < 0.0)) {
-    XBT_CRITICAL("Error, invalid parameters [a = %.2f, amount = %.2f]. "
-                 "You probably have a task executing with negative computation amount. Check your code.",
-                 a, amount);
-    xbt_abort();
-  }
+  xbt_assert(a >= 0.0 && amount >= 0.0,
+             "Error, invalid parameters [a = %.2f, amount = %.2f]. "
+             "You probably have a task executing with negative computation amount. Check your code.",
+             a, amount);
 
   /* At this point, a and amount are positive */
   if (amount < EPSILON)

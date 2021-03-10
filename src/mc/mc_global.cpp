@@ -20,6 +20,8 @@
 
 #include <array>
 #include <boost/core/demangle.hpp>
+#include <cerrno>
+#include <cstring>
 #include <libunwind.h>
 #endif
 
@@ -61,11 +63,7 @@ FILE *dot_output = nullptr;
 void MC_init_dot_output()
 {
   dot_output = fopen(_sg_mc_dot_output_file.get().c_str(), "w");
-
-  if (dot_output == nullptr) {
-    perror("Error open dot output file");
-    xbt_abort();
-  }
+  xbt_assert(dot_output != nullptr, "Error open dot output file: %s", strerror(errno));
 
   fprintf(dot_output,
           "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
