@@ -48,16 +48,6 @@ public:
    * @param is_default Is this the default model for this type of resource in this exp
    */
   void add_model(resource::Model::Type type, std::shared_ptr<resource::Model> model, bool is_default = false);
-  /**
-   * @brief Add a model (specific for ptask)
-   *
-   * Ptask is special. The CPU and NETWORK models need to be in the managed
-   * resources by surf_solve (model_by_type) but cannot be in the list of
-   * all models (old all_existing_models global variable)
-   *
-   * This methods does this job while we cannot handle ptask as the remaining models
-   */
-  void add_model_ptask(resource::Model::Type type, resource::Model* model, bool is_default);
   /** @brief Get current default model for a resource type */
   resource::Model* get_default_model(resource::Model::Type type) const;
 

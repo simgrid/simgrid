@@ -34,12 +34,12 @@ HostL07Model::HostL07Model() : HostModel()
   auto* maxmin_system = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
   set_maxmin_system(maxmin_system);
 
-  net_model_  = std::make_unique<NetworkL07Model>(this, maxmin_system);
-  auto engine = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model_ptask(simgrid::kernel::resource::Model::Type::NETWORK, net_model_.get(), true);
+  auto net_model = std::make_shared<NetworkL07Model>(this, maxmin_system);
+  auto engine    = simgrid::kernel::EngineImpl::get_instance();
+  engine->add_model(simgrid::kernel::resource::Model::Type::NETWORK, std::move(net_model), true);
 
-  cpu_model_ = std::make_unique<CpuL07Model>(this, maxmin_system);
-  engine->add_model_ptask(simgrid::kernel::resource::Model::Type::CPU_PM, cpu_model_.get(), true);
+  auto cpu_model = std::make_shared<CpuL07Model>(this, maxmin_system);
+  engine->add_model(simgrid::kernel::resource::Model::Type::CPU_PM, std::move(cpu_model), true);
 }
 
 HostL07Model::~HostL07Model() {}
