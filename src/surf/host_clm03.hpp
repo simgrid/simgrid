@@ -17,7 +17,7 @@ namespace surf {
 
 class XBT_PRIVATE HostCLM03Model : public HostModel {
 public:
-  HostCLM03Model();
+  HostCLM03Model() = default;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
   kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,

@@ -38,7 +38,6 @@ public:
   HostL07Model();
   HostL07Model(const HostL07Model&) = delete;
   HostL07Model& operator=(const HostL07Model&) = delete;
-  ~HostL07Model() override;
 
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;

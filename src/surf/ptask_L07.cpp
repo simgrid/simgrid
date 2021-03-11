@@ -42,8 +42,6 @@ HostL07Model::HostL07Model() : HostModel()
   engine->add_model(simgrid::kernel::resource::Model::Type::CPU_PM, std::move(cpu_model), true);
 }
 
-HostL07Model::~HostL07Model() {}
-
 CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
     : CpuModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
 {
