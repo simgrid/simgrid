@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
@@ -269,16 +271,16 @@ int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 void CpuTiModel::create_pm_vm_models()
 {
   auto cpu_model_pm = std::make_shared<CpuTiModel>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM,
-                                                         std::move(cpu_model_pm), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM, cpu_model_pm,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model_pm);
   auto cpu_model_vm = std::make_shared<CpuTiModel>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM,
-                                                         std::move(cpu_model_vm), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM, cpu_model_vm,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_vm_model(cpu_model_vm);
 }
 
-CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
-{
-}
+CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL) {}
 
 Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {

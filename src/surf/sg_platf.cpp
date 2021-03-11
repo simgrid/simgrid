@@ -484,41 +484,17 @@ static void surf_config_models_setup()
 }
 
 /**
- * @brief Add a Zone to the platform
+ * @brief Auxiliary function to build the object NetZoneImpl
  *
- * Add a new autonomous system to the platform. Any elements (such as host, router or sub-Zone) added after this call
- * and before the corresponding call to sg_platf_new_Zone_seal() will be added to this Zone.
- *
- * Once this function was called, the configuration concerning the used models cannot be changed anymore.
- *
+ * Builds the objects, setting its father properties and root netzone if needed
  * @param zone the parameters defining the Zone to build.
+ * @return Pointer to recently created netzone
  */
-simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
+static simgrid::kernel::routing::NetZoneImpl*
+sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
-  if (not surf_parse_models_setup_already_called) {
-    simgrid::s4u::Engine::on_platform_creation();
-
-    /* Initialize the surf models. That must be done after we got all config, and before we need the models.
-     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_connect
-     *
-     * I'm not sure for <trace> and <trace_connect>, there may be a bug here
-     * (FIXME: check it out by creating a file beginning with one of these tags)
-     * but cluster and peer come down to zone creations, so putting this verification here is correct.
-     */
-    surf_parse_models_setup_already_called = 1;
-    surf_config_models_setup();
-  }
-
-  _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
-                            * any further config now that we created some real content */
-
   /* search the routing model */
   simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
-  simgrid::kernel::resource::NetworkModel* netmodel =
-      current_routing == nullptr ? static_cast<simgrid::kernel::resource::NetworkModel*>(
-                                       simgrid::kernel::EngineImpl::get_instance()->get_default_model(
-                                           simgrid::kernel::resource::Model::Type::NETWORK))
-                                 : current_routing->get_network_model();
 
   if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
     new_zone = new simgrid::kernel::routing::ClusterZone(zone->id);
@@ -546,7 +522,6 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
     xbt_die("Not a valid model!");
   }
   new_zone->set_parent(current_routing);
-  new_zone->set_network_model(netmodel);
 
   if (current_routing == nullptr) { /* it is the first one */
     simgrid::s4u::Engine::get_instance()->set_netzone_root(new_zone->get_iface());
@@ -556,7 +531,50 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
     current_routing->get_children()->push_back(new_zone);
+    /* set models from parent netzone */
+    new_zone->set_network_model(current_routing->get_network_model());
+    new_zone->set_cpu_pm_model(current_routing->get_cpu_pm_model());
+    new_zone->set_cpu_vm_model(current_routing->get_cpu_vm_model());
+    new_zone->set_disk_model(current_routing->get_disk_model());
+    new_zone->set_host_model(current_routing->get_host_model());
   }
+  return new_zone;
+}
+
+/**
+ * @brief Add a Zone to the platform
+ *
+ * Add a new autonomous system to the platform. Any elements (such as host, router or sub-Zone) added after this call
+ * and before the corresponding call to sg_platf_new_Zone_seal() will be added to this Zone.
+ *
+ * Once this function was called, the configuration concerning the used models cannot be changed anymore.
+ *
+ * @param zone the parameters defining the Zone to build.
+ */
+simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
+{
+  /* First create the zone.
+   * This order is important to assure that root netzone is set when models are setting
+   * the default mode for each resource (CPU, network, etc)
+   */
+  auto* new_zone = sg_platf_create_zone(zone);
+
+  if (not surf_parse_models_setup_already_called) {
+    simgrid::s4u::Engine::on_platform_creation();
+
+    /* Initialize the surf models. That must be done after we got all config, and before we need the models.
+     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_connect
+     *
+     * I'm not sure for <trace> and <trace_connect>, there may be a bug here
+     * (FIXME: check it out by creating a file beginning with one of these tags)
+     * but cluster and peer come down to zone creations, so putting this verification here is correct.
+     */
+    surf_parse_models_setup_already_called = 1;
+    surf_config_models_setup();
+  }
+
+  _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
+                            * any further config now that we created some real content */
 
   /* set the new current component of the tree */
   current_routing = new_zone;

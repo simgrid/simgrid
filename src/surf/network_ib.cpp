@@ -22,7 +22,7 @@ static void IB_create_host_callback(simgrid::s4u::Host const& host)
   using simgrid::kernel::resource::NetworkIBModel;
 
   static int id = 0;
-  auto* ibModel = static_cast<NetworkIBModel*>(host.get_netpoint()->get_englobing_zone()->get_network_model());
+  auto* ibModel = static_cast<NetworkIBModel*>(host.get_netpoint()->get_englobing_zone()->get_network_model().get());
   ibModel->active_nodes.emplace(host.get_name(), IBNode(id));
   id++;
 }
@@ -70,8 +70,9 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& ac
 void surf_network_model_init_IB()
 {
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkIBModel>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
-                                                         std::move(net_model), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK, net_model,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
   simgrid::s4u::Link::on_communication_state_change.connect(IB_action_state_changed_callback);
   simgrid::s4u::Link::on_communicate.connect(IB_action_init_callback);

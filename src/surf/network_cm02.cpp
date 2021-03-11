@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/surf/network_cm02.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
@@ -38,8 +40,9 @@ double sg_weight_S_parameter = 0.0; /* default value; can be set by model or fro
 void surf_network_model_init_LegrandVelho()
 {
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
-                                                         std::move(net_model), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK, net_model,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
   simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
@@ -64,8 +67,9 @@ void surf_network_model_init_CM02()
   simgrid::config::set_default<double>("network/weight-S", 0.0);
 
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
-                                                         std::move(net_model), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK, net_model,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 }
 
 namespace simgrid {

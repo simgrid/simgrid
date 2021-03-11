@@ -26,14 +26,6 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
   xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
   netpoint_     = new NetPoint(name_, NetPoint::Type::NetZone);
-  cpu_model_vm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
-      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::CPU_VM));
-  cpu_model_pm_ = static_cast<simgrid::kernel::resource::CpuModel*>(
-      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::CPU_PM));
-  disk_model_ = static_cast<simgrid::kernel::resource::DiskModel*>(
-      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::DISK));
-  host_model_ = static_cast<simgrid::surf::HostModel*>(
-      simgrid::kernel::EngineImpl::get_instance()->get_default_model(simgrid::kernel::resource::Model::Type::HOST));
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
 }
 
@@ -413,10 +405,34 @@ void NetZoneImpl::set_parent(NetZoneImpl* parent)
   netpoint_->set_englobing_zone(father_);
 }
 
-void NetZoneImpl::set_network_model(simgrid::kernel::resource::NetworkModel* netmodel)
+void NetZoneImpl::set_network_model(std::shared_ptr<resource::NetworkModel> netmodel)
 {
   xbt_assert(sealed_ == false, "Impossible to set network model to an already sealed NetZone(%s)", this->get_cname());
-  network_model_ = netmodel;
+  network_model_ = std::move(netmodel);
+}
+
+void NetZoneImpl::set_cpu_vm_model(std::shared_ptr<resource::CpuModel> cpu_model)
+{
+  xbt_assert(sealed_ == false, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
+  cpu_model_vm_ = std::move(cpu_model);
+}
+
+void NetZoneImpl::set_cpu_pm_model(std::shared_ptr<resource::CpuModel> cpu_model)
+{
+  xbt_assert(sealed_ == false, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
+  cpu_model_pm_ = std::move(cpu_model);
+}
+
+void NetZoneImpl::set_disk_model(std::shared_ptr<resource::DiskModel> disk_model)
+{
+  xbt_assert(sealed_ == false, "Impossible to set disk model to an already sealed NetZone(%s)", this->get_cname());
+  disk_model_ = std::move(disk_model);
+}
+
+void NetZoneImpl::set_host_model(std::shared_ptr<surf::HostModel> host_model)
+{
+  xbt_assert(sealed_ == false, "Impossible to set host model to an already sealed NetZone(%s)", this->get_cname());
+  host_model_ = std::move(host_model);
 }
 
 } // namespace routing
