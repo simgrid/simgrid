@@ -38,7 +38,7 @@ private:
   void do_seal() override;
 
 public:
-  DijkstraZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel, bool cached);
+  DijkstraZone(const std::string& name, bool cached);
 
   /* For each vertex (node) already in the graph,
    * make sure it also has a loopback link; this loopback

@@ -12,7 +12,6 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 
-
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
@@ -22,8 +21,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FatTreeZone::FatTreeZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : ClusterZone(father, name, netmodel)
+FatTreeZone::FatTreeZone(const std::string& name) : ClusterZone(name)
 {
   XBT_DEBUG("Creating a new fat tree.");
 }
@@ -178,9 +176,9 @@ void FatTreeZone::do_seal()
 
 int FatTreeZone::connect_node_to_parents(FatTreeNode* node)
 {
-  auto currentParentNode                                = this->nodes_.begin();
-  int connectionsNumber                                 = 0;
-  const int level                                       = node->level;
+  auto currentParentNode = this->nodes_.begin();
+  int connectionsNumber  = 0;
+  const int level        = node->level;
   XBT_DEBUG("We are connecting node %d(%u,%u) to his parents.", node->id, node->level, node->position);
   currentParentNode += this->get_level_position(level + 1);
   for (unsigned int i = 0; i < this->nodes_by_level_[level + 1]; i++) {
@@ -444,17 +442,17 @@ FatTreeNode::FatTreeNode(const ClusterCreationArgs* cluster, int id, int level, 
   LinkCreationArgs linkTemplate;
   if (cluster->limiter_link != 0.0) {
     linkTemplate.bandwidths.push_back(cluster->limiter_link);
-    linkTemplate.latency   = 0;
-    linkTemplate.policy    = s4u::Link::SharingPolicy::SHARED;
-    linkTemplate.id        = "limiter_"+std::to_string(id);
+    linkTemplate.latency = 0;
+    linkTemplate.policy  = s4u::Link::SharingPolicy::SHARED;
+    linkTemplate.id      = "limiter_" + std::to_string(id);
     sg_platf_new_link(&linkTemplate);
     this->limiter_link_ = s4u::Link::by_name(linkTemplate.id)->get_impl();
   }
   if (cluster->loopback_bw != 0.0 || cluster->loopback_lat != 0.0) {
     linkTemplate.bandwidths.push_back(cluster->loopback_bw);
-    linkTemplate.latency   = cluster->loopback_lat;
-    linkTemplate.policy    = s4u::Link::SharingPolicy::FATPIPE;
-    linkTemplate.id        = "loopback_"+ std::to_string(id);
+    linkTemplate.latency = cluster->loopback_lat;
+    linkTemplate.policy  = s4u::Link::SharingPolicy::FATPIPE;
+    linkTemplate.id      = "loopback_" + std::to_string(id);
     sg_platf_new_link(&linkTemplate);
     this->loopback = s4u::Link::by_name(linkTemplate.id)->get_impl();
   }
@@ -466,8 +464,8 @@ FatTreeLink::FatTreeLink(const ClusterCreationArgs* cluster, FatTreeNode* downNo
   static int uniqueId = 0;
   LinkCreationArgs linkTemplate;
   linkTemplate.bandwidths.push_back(cluster->bw);
-  linkTemplate.latency   = cluster->lat;
-  linkTemplate.policy    = cluster->sharing_policy; // sthg to do with that ?
+  linkTemplate.latency = cluster->lat;
+  linkTemplate.policy  = cluster->sharing_policy; // sthg to do with that ?
   linkTemplate.id =
       "link_from_" + std::to_string(downNode->id) + "_" + std::to_string(upNode->id) + "_" + std::to_string(uniqueId);
   sg_platf_new_link(&linkTemplate);

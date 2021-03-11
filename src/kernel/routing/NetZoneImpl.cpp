@@ -408,13 +408,14 @@ void NetZoneImpl::seal()
 
 void NetZoneImpl::set_parent(NetZoneImpl* parent)
 {
-  xbt_assert(sealed_ == false, "Impossible to set father to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(sealed_ == false, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
   father_ = parent;
   netpoint_->set_englobing_zone(father_);
 }
 
 void NetZoneImpl::set_network_model(simgrid::kernel::resource::NetworkModel* netmodel)
 {
+  xbt_assert(sealed_ == false, "Impossible to set network model to an already sealed NetZone(%s)", this->get_cname());
   network_model_ = netmodel;
 }
 

@@ -27,15 +27,13 @@ public:
   int graph_id_ = -1; /* used for caching internal graph id's */
 };
 
-DijkstraZone::DijkstraZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel, bool cached)
-    : RoutedZone(father, name, netmodel), cached_(cached)
-{
-}
+DijkstraZone::DijkstraZone(const std::string& name, bool cached) : RoutedZone(name), cached_(cached) {}
 
 void DijkstraZone::route_graph_delete(xbt_graph_t g)
 {
-  xbt_graph_free_graph(g, [](void* n) { delete static_cast<simgrid::kernel::routing::GraphNodeData*>(n); },
-                       [](void* e) { delete static_cast<simgrid::kernel::routing::RouteCreationArgs*>(e); }, nullptr);
+  xbt_graph_free_graph(
+      g, [](void* n) { delete static_cast<simgrid::kernel::routing::GraphNodeData*>(n); },
+      [](void* e) { delete static_cast<simgrid::kernel::routing::RouteCreationArgs*>(e); }, nullptr);
 }
 
 void DijkstraZone::do_seal()
@@ -46,7 +44,7 @@ void DijkstraZone::do_seal()
   /* Add the loopback if needed */
   if (get_network_model()->loopback_ && hierarchy_ == RoutingMode::base) {
     xbt_dynar_foreach (xbt_graph_get_nodes(route_graph_.get()), cursor, node) {
-      bool found = false;
+      bool found      = false;
       xbt_edge_t edge = nullptr;
       unsigned int cursor2;
       xbt_dynar_foreach (xbt_graph_node_get_outedges(node), cursor2, edge) {
@@ -68,8 +66,8 @@ void DijkstraZone::do_seal()
   const_xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_.get());
 
   xbt_dynar_foreach (nodes, cursor, node) {
-    auto* data          = static_cast<GraphNodeData*>(xbt_graph_node_get_data(node));
-    data->graph_id_     = cursor;
+    auto* data      = static_cast<GraphNodeData*>(xbt_graph_node_get_data(node));
+    data->graph_id_ = cursor;
   }
 }
 
@@ -126,7 +124,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
   std::vector<int>& pred_arr = elm.first->second;
 
   if (elm.second) { /* new element was inserted (not cached mode, or cache miss) */
-    int nr_nodes      = xbt_dynar_length(nodes);
+    int nr_nodes = xbt_dynar_length(nodes);
     std::vector<double> cost_arr(nr_nodes); /* link cost from src to other hosts */
     pred_arr.resize(nr_nodes);              /* predecessors in path from src */
     using Qelt = std::pair<double, int>;
@@ -151,15 +149,15 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
       int v_id = pqueue.top().second;
       pqueue.pop();
       const s_xbt_node_t* v_node = xbt_dynar_get_as(nodes, v_id, xbt_node_t);
-      xbt_edge_t edge   = nullptr;
+      xbt_edge_t edge            = nullptr;
       unsigned int cursor;
 
       xbt_dynar_foreach (xbt_graph_node_get_outedges(v_node), cursor, edge) {
         const s_xbt_node_t* u_node           = xbt_graph_edge_get_target(edge);
         const GraphNodeData* data            = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
-        int u_id                           = data->graph_id_;
+        int u_id                             = data->graph_id_;
         const RouteCreationArgs* tmp_e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
-        int cost_v_u                       = tmp_e_route->link_list.size(); /* count of links, old model assume 1 */
+        int cost_v_u                         = tmp_e_route->link_list.size(); /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = v_id;
@@ -185,8 +183,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     const RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
     const NetPoint* prev_gw_src = gw_src;
-    gw_src                = e_route->gw_src;
-    NetPoint* gw_dst      = e_route->gw_dst;
+    gw_src                      = e_route->gw_src;
+    NetPoint* gw_dst            = e_route->gw_dst;
 
     if (v == dst_node_id)
       first_gw = gw_dst;

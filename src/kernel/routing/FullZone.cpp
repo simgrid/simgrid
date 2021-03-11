@@ -16,10 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 namespace simgrid {
 namespace kernel {
 namespace routing {
-FullZone::FullZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : RoutedZone(father, name, netmodel)
-{
-}
+FullZone::FullZone(const std::string& name) : RoutedZone(name) {}
 
 void FullZone::do_seal()
 {
@@ -53,7 +50,7 @@ void FullZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
 {
   XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
-  unsigned int table_size        = get_table_size();
+  unsigned int table_size          = get_table_size();
   const RouteCreationArgs* e_route = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route != nullptr) {
@@ -109,6 +106,6 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
     TO_ROUTE_FULL(dst->id(), src->id()) = new_extended_route(hierarchy_, gw_src, gw_dst, link_list, false);
   }
 }
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid

@@ -98,7 +98,7 @@ public:
  */
 class XBT_PRIVATE FatTreeZone : public ClusterZone {
 public:
-  explicit FatTreeZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
+  explicit FatTreeZone(const std::string& name);
   FatTreeZone(const FatTreeZone&) = delete;
   FatTreeZone& operator=(const FatTreeZone&) = delete;
   ~FatTreeZone() override;

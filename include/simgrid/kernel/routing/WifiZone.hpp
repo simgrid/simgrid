@@ -20,14 +20,14 @@ namespace routing {
  */
 class XBT_PRIVATE WifiZone : public RoutedZone {
 public:
-  explicit WifiZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
+  explicit WifiZone(const std::string& name);
   WifiZone(const WifiZone&) = delete;
   WifiZone& operator=(const WifiZone) = delete;
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths,
                          s4u::Link::SharingPolicy policy) override;
-  NetPoint* get_access_point() {return access_point_;}
+  NetPoint* get_access_point() { return access_point_; }
 
 private:
   void do_seal() override;

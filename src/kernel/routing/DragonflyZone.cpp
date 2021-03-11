@@ -18,10 +18,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-DragonflyZone::DragonflyZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : ClusterZone(father, name, netmodel)
-{
-}
+DragonflyZone::DragonflyZone(const std::string& name) : ClusterZone(name) {}
 
 DragonflyZone::Coords DragonflyZone::rankId_to_coords(int rankId) const
 {
@@ -150,9 +147,9 @@ void DragonflyZone::generate_link(const std::string& id, int numlinks, resource:
   *linkdown = nullptr;
   LinkCreationArgs linkTemplate;
   linkTemplate.bandwidths.push_back(this->bw_ * numlinks);
-  linkTemplate.latency   = this->lat_;
-  linkTemplate.policy    = this->sharing_policy_;
-  linkTemplate.id        = id;
+  linkTemplate.latency = this->lat_;
+  linkTemplate.policy  = this->sharing_policy_;
+  linkTemplate.id      = id;
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", linkTemplate.id.c_str());
   resource::LinkImpl* link;
@@ -215,7 +212,7 @@ void DragonflyZone::generate_links()
       for (unsigned int k = j + 1; k < this->num_chassis_per_group_; k++) {
         for (unsigned int l = 0; l < this->num_blades_per_chassis_; l++) {
           std::string id = "black_link_in_group_" + std::to_string(i) + "_between_chassis_" + std::to_string(j) +
-              "_and_" + std::to_string(k) +"_blade_" + std::to_string(l) + "_" + std::to_string(uniqueId);
+                           "_and_" + std::to_string(k) + "_blade_" + std::to_string(l) + "_" + std::to_string(uniqueId);
           this->generate_link(id, this->num_links_black_, &linkup, &linkdown);
 
           this->routers_[i * num_blades_per_chassis_ * num_chassis_per_group_ + j * num_blades_per_chassis_ + l]
@@ -233,10 +230,11 @@ void DragonflyZone::generate_links()
   // FIXME: in reality blue links may be attached to several different routers
   for (unsigned int i = 0; i < this->num_groups_; i++) {
     for (unsigned int j = i + 1; j < this->num_groups_; j++) {
-      unsigned int routernumi                 = i * num_blades_per_chassis_ * num_chassis_per_group_ + j;
-      unsigned int routernumj                 = j * num_blades_per_chassis_ * num_chassis_per_group_ + i;
-      std::string id = "blue_link_between_group_"+ std::to_string(i) +"_and_" + std::to_string(j) +"_routers_" +
-          std::to_string(routernumi) + "_and_" + std::to_string(routernumj) + "_" + std::to_string(uniqueId);
+      unsigned int routernumi = i * num_blades_per_chassis_ * num_chassis_per_group_ + j;
+      unsigned int routernumj = j * num_blades_per_chassis_ * num_chassis_per_group_ + i;
+      std::string id = "blue_link_between_group_" + std::to_string(i) + "_and_" + std::to_string(j) + "_routers_" +
+                       std::to_string(routernumi) + "_and_" + std::to_string(routernumj) + "_" +
+                       std::to_string(uniqueId);
       this->generate_link(id, this->num_links_blue_, &linkup, &linkdown);
 
       this->routers_[routernumi].blue_link_ = linkup;
@@ -273,9 +271,9 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   XBT_DEBUG("dst : %u group, %u chassis, %u blade, %u node", targetCoords.group, targetCoords.chassis,
             targetCoords.blade, targetCoords.node);
 
-  DragonflyRouter* myRouter = &routers_[myCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +
+  DragonflyRouter* myRouter      = &routers_[myCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +
                                         myCoords.chassis * num_blades_per_chassis_ + myCoords.blade];
-  DragonflyRouter* targetRouter = &routers_[targetCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +
+  DragonflyRouter* targetRouter  = &routers_[targetCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +
                                             targetCoords.chassis * num_blades_per_chassis_ + targetCoords.blade];
   DragonflyRouter* currentRouter = myRouter;
 
@@ -348,6 +346,6 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
     *latency +=
         targetRouter->my_nodes_[targetCoords.node * num_links_per_link_ + num_links_per_link_ - 1]->get_latency();
 }
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid

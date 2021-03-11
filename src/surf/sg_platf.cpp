@@ -521,27 +521,27 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
                                  : current_routing->get_network_model();
 
   if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
-    new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::ClusterZone(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "ClusterDragonfly") == 0) {
-    new_zone = new simgrid::kernel::routing::DragonflyZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::DragonflyZone(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "ClusterTorus") == 0) {
-    new_zone = new simgrid::kernel::routing::TorusZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::TorusZone(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "ClusterFatTree") == 0) {
-    new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::FatTreeZone(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "Dijkstra") == 0) {
-    new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, false);
+    new_zone = new simgrid::kernel::routing::DijkstraZone(zone->id, false);
   } else if (strcasecmp(zone->routing.c_str(), "DijkstraCache") == 0) {
-    new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, true);
+    new_zone = new simgrid::kernel::routing::DijkstraZone(zone->id, true);
   } else if (strcasecmp(zone->routing.c_str(), "Floyd") == 0) {
-    new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::FloydZone(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "Full") == 0) {
-    new_zone = new simgrid::kernel::routing::FullZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::FullZone(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "None") == 0) {
-    new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::EmptyZone(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "Vivaldi") == 0) {
-    new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::VivaldiZone(zone->id);
   } else if (strcasecmp(zone->routing.c_str(), "Wifi") == 0) {
-    new_zone = new simgrid::kernel::routing::WifiZone(current_routing, zone->id, netmodel);
+    new_zone = new simgrid::kernel::routing::WifiZone(zone->id);
   } else {
     xbt_die("Not a valid model!");
   }

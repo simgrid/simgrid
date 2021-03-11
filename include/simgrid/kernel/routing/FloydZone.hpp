@@ -23,7 +23,7 @@ namespace routing {
  */
 class XBT_PRIVATE FloydZone : public RoutedZone {
 public:
-  explicit FloydZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
+  explicit FloydZone(const std::string& name);
   FloydZone(const FloydZone&) = delete;
   FloydZone& operator=(const FloydZone&) = delete;
   ~FloydZone() override;

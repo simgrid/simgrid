@@ -67,7 +67,7 @@ public:
     unsigned node;
   };
 
-  explicit DragonflyZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
+  explicit DragonflyZone(const std::string& name);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
 

@@ -17,10 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 namespace simgrid {
 namespace kernel {
 namespace routing {
-ClusterZone::ClusterZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : NetZoneImpl(name)
-{
-}
+ClusterZone::ClusterZone(const std::string& name) : NetZoneImpl(name) {}
 
 void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
@@ -41,7 +38,7 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   }
 
   if (not src->is_router()) { // No private link for the private router
-    if (has_limiter_) {      // limiter for sender
+    if (has_limiter_) {       // limiter for sender
       std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
       route->link_list.push_back(info.first);
     }
@@ -128,10 +125,10 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
   std::string link_id = cluster->id + "_link_" + std::to_string(id);
 
   LinkCreationArgs link;
-  link.id        = link_id;
+  link.id = link_id;
   link.bandwidths.push_back(cluster->bw);
-  link.latency   = cluster->lat;
-  link.policy    = cluster->sharing_policy;
+  link.latency = cluster->lat;
+  link.policy  = cluster->sharing_policy;
   sg_platf_new_link(&link);
 
   const s4u::Link* linkUp;
@@ -145,6 +142,6 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
   }
   private_links_.insert({position, {linkUp->get_impl(), linkDown->get_impl()}});
 }
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid

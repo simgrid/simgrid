@@ -23,10 +23,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FloydZone::FloydZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : RoutedZone(father, name, netmodel)
-{
-}
+FloydZone::FloydZone(const std::string& name) : RoutedZone(name) {}
 
 FloydZone::~FloydZone()
 {
@@ -172,6 +169,6 @@ void FloydZone::do_seal()
     }
   }
 }
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
