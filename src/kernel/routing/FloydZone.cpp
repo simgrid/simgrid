@@ -23,10 +23,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FloydZone::FloydZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : RoutedZone(father, name, netmodel)
-{
-}
+FloydZone::FloydZone(const std::string& name) : RoutedZone(name) {}
 
 FloydZone::~FloydZone()
 {
@@ -139,7 +136,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
   }
 }
 
-void FloydZone::seal()
+void FloydZone::do_seal()
 {
   /* set the size of table routing */
   unsigned int table_size = get_table_size();
@@ -172,6 +169,6 @@ void FloydZone::seal()
     }
   }
 }
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid

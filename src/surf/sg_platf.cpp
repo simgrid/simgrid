@@ -100,8 +100,8 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
-  auto* netpoint =
-      new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router, current_routing);
+  auto* netpoint = new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router);
+  netpoint->set_englobing_zone(current_routing);
   XBT_DEBUG("Router '%s' has the id %u", netpoint->get_cname(), netpoint->id());
 
   if (coords && strcmp(coords, ""))
@@ -484,6 +484,64 @@ static void surf_config_models_setup()
 }
 
 /**
+ * @brief Auxiliary function to build the object NetZoneImpl
+ *
+ * Builds the objects, setting its father properties and root netzone if needed
+ * @param zone the parameters defining the Zone to build.
+ * @return Pointer to recently created netzone
+ */
+static simgrid::kernel::routing::NetZoneImpl*
+sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
+{
+  /* search the routing model */
+  simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
+
+  if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
+    new_zone = new simgrid::kernel::routing::ClusterZone(zone->id);
+  } else if (strcasecmp(zone->routing.c_str(), "ClusterDragonfly") == 0) {
+    new_zone = new simgrid::kernel::routing::DragonflyZone(zone->id);
+  } else if (strcasecmp(zone->routing.c_str(), "ClusterTorus") == 0) {
+    new_zone = new simgrid::kernel::routing::TorusZone(zone->id);
+  } else if (strcasecmp(zone->routing.c_str(), "ClusterFatTree") == 0) {
+    new_zone = new simgrid::kernel::routing::FatTreeZone(zone->id);
+  } else if (strcasecmp(zone->routing.c_str(), "Dijkstra") == 0) {
+    new_zone = new simgrid::kernel::routing::DijkstraZone(zone->id, false);
+  } else if (strcasecmp(zone->routing.c_str(), "DijkstraCache") == 0) {
+    new_zone = new simgrid::kernel::routing::DijkstraZone(zone->id, true);
+  } else if (strcasecmp(zone->routing.c_str(), "Floyd") == 0) {
+    new_zone = new simgrid::kernel::routing::FloydZone(zone->id);
+  } else if (strcasecmp(zone->routing.c_str(), "Full") == 0) {
+    new_zone = new simgrid::kernel::routing::FullZone(zone->id);
+  } else if (strcasecmp(zone->routing.c_str(), "None") == 0) {
+    new_zone = new simgrid::kernel::routing::EmptyZone(zone->id);
+  } else if (strcasecmp(zone->routing.c_str(), "Vivaldi") == 0) {
+    new_zone = new simgrid::kernel::routing::VivaldiZone(zone->id);
+  } else if (strcasecmp(zone->routing.c_str(), "Wifi") == 0) {
+    new_zone = new simgrid::kernel::routing::WifiZone(zone->id);
+  } else {
+    xbt_die("Not a valid model!");
+  }
+  new_zone->set_parent(current_routing);
+
+  if (current_routing == nullptr) { /* it is the first one */
+    simgrid::s4u::Engine::get_instance()->set_netzone_root(new_zone->get_iface());
+  } else {
+    /* set the father behavior */
+    if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
+      current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
+    /* add to the sons dictionary */
+    current_routing->get_children()->push_back(new_zone);
+    /* set models from parent netzone */
+    new_zone->set_network_model(current_routing->get_network_model());
+    new_zone->set_cpu_pm_model(current_routing->get_cpu_pm_model());
+    new_zone->set_cpu_vm_model(current_routing->get_cpu_vm_model());
+    new_zone->set_disk_model(current_routing->get_disk_model());
+    new_zone->set_host_model(current_routing->get_host_model());
+  }
+  return new_zone;
+}
+
+/**
  * @brief Add a Zone to the platform
  *
  * Add a new autonomous system to the platform. Any elements (such as host, router or sub-Zone) added after this call
@@ -495,6 +553,12 @@ static void surf_config_models_setup()
  */
 simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
+  /* First create the zone.
+   * This order is important to assure that root netzone is set when models are setting
+   * the default mode for each resource (CPU, network, etc)
+   */
+  auto* new_zone = sg_platf_create_zone(zone);
+
   if (not surf_parse_models_setup_already_called) {
     simgrid::s4u::Engine::on_platform_creation();
 
@@ -511,50 +575,6 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
 
   _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
                             * any further config now that we created some real content */
-
-  /* search the routing model */
-  simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
-  simgrid::kernel::resource::NetworkModel* netmodel =
-      current_routing == nullptr ? static_cast<simgrid::kernel::resource::NetworkModel*>(
-                                       simgrid::kernel::EngineImpl::get_instance()->get_default_model(
-                                           simgrid::kernel::resource::Model::Type::NETWORK))
-                                 : current_routing->get_network_model();
-
-  if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
-    new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id, netmodel);
-  } else if (strcasecmp(zone->routing.c_str(), "ClusterDragonfly") == 0) {
-    new_zone = new simgrid::kernel::routing::DragonflyZone(current_routing, zone->id, netmodel);
-  } else if (strcasecmp(zone->routing.c_str(), "ClusterTorus") == 0) {
-    new_zone = new simgrid::kernel::routing::TorusZone(current_routing, zone->id, netmodel);
-  } else if (strcasecmp(zone->routing.c_str(), "ClusterFatTree") == 0) {
-    new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id, netmodel);
-  } else if (strcasecmp(zone->routing.c_str(), "Dijkstra") == 0) {
-    new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, false);
-  } else if (strcasecmp(zone->routing.c_str(), "DijkstraCache") == 0) {
-    new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, true);
-  } else if (strcasecmp(zone->routing.c_str(), "Floyd") == 0) {
-    new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id, netmodel);
-  } else if (strcasecmp(zone->routing.c_str(), "Full") == 0) {
-    new_zone = new simgrid::kernel::routing::FullZone(current_routing, zone->id, netmodel);
-  } else if (strcasecmp(zone->routing.c_str(), "None") == 0) {
-    new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id, netmodel);
-  } else if (strcasecmp(zone->routing.c_str(), "Vivaldi") == 0) {
-    new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id, netmodel);
-  } else if (strcasecmp(zone->routing.c_str(), "Wifi") == 0) {
-    new_zone = new simgrid::kernel::routing::WifiZone(current_routing, zone->id, netmodel);
-  } else {
-    xbt_die("Not a valid model!");
-  }
-
-  if (current_routing == nullptr) { /* it is the first one */
-    simgrid::s4u::Engine::get_instance()->set_netzone_root(new_zone->get_iface());
-  } else {
-    /* set the father behavior */
-    if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
-      current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
-    /* add to the sons dictionary */
-    current_routing->get_children()->push_back(new_zone);
-  }
 
   /* set the new current component of the tree */
   current_routing = new_zone;

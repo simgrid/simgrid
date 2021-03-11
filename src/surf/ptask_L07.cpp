@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ptask_L07.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "surf/surf.hpp"
@@ -22,8 +24,9 @@ void surf_host_model_init_ptask_L07()
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
   auto host_model = std::make_shared<simgrid::surf::HostL07Model>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
-                                                         std::move(host_model), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST, host_model,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_host_model(host_model);
 }
 
 namespace simgrid {
@@ -36,10 +39,12 @@ HostL07Model::HostL07Model() : HostModel()
 
   auto net_model = std::make_shared<NetworkL07Model>(this, maxmin_system);
   auto engine    = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(simgrid::kernel::resource::Model::Type::NETWORK, std::move(net_model), true);
+  engine->add_model(simgrid::kernel::resource::Model::Type::NETWORK, net_model, true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
   auto cpu_model = std::make_shared<CpuL07Model>(this, maxmin_system);
-  engine->add_model(simgrid::kernel::resource::Model::Type::CPU_PM, std::move(cpu_model), true);
+  engine->add_model(simgrid::kernel::resource::Model::Type::CPU_PM, cpu_model, true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model);
 }
 
 CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)

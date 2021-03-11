@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/kernel/routing/RoutedZone.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
+#include "src/surf/network_interface.hpp"
+#include "src/surf/xml/platf_private.hpp"
 #include "xbt/dict.h"
 #include "xbt/graph.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/kernel/routing/RoutedZone.hpp"
-#include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
@@ -54,10 +54,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-RoutedZone::RoutedZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : NetZoneImpl(father, name, netmodel)
-{
-}
+RoutedZone::RoutedZone(const std::string& name) : NetZoneImpl(name) {}
 
 void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                            std::map<std::string, xbt_edge_t, std::less<>>* edges)
@@ -77,8 +74,8 @@ void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt
 
       xbt_node_t current;
       xbt_node_t previous;
-      const char *previous_name;
-      const char *current_name;
+      const char* previous_name;
+      const char* current_name;
 
       if (route.gw_src) {
         previous      = new_xbt_graph_node(graph, route.gw_src->get_cname(), nodes);
@@ -192,7 +189,7 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                gw_dst->get_cname(), dstName);
     xbt_assert(not link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName, gw_src->get_cname(),
                dstName, gw_dst->get_cname());
-    s4u::NetZone::on_route_creation(symmetrical,  gw_src, gw_dst, gw_src, gw_dst, link_list);
+    s4u::NetZone::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, link_list);
   }
 }
 } // namespace routing

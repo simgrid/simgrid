@@ -5,6 +5,8 @@
 
 #include "src/surf/host_clm03.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "surf/surf.hpp"
@@ -15,8 +17,9 @@ void surf_host_model_init_current_default()
 {
   auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>();
   simgrid::config::set_default<bool>("network/crosstraffic", true);
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
-                                                         std::move(host_model), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST, host_model,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_host_model(host_model);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 }
@@ -24,8 +27,9 @@ void surf_host_model_init_current_default()
 void surf_host_model_init_compound()
 {
   auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST,
-                                                         std::move(host_model), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::HOST, host_model,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_host_model(host_model);
 }
 
 namespace simgrid {
@@ -58,7 +62,7 @@ kernel::resource::Action* HostCLM03Model::execute_parallel(const std::vector<s4u
   /* FIXME[donassolo]: getting the network_model from the origin host
    * Soon we need to change this function to first get the routes and later
    * create the respective surf actions */
-  auto* net_model = host_list[0]->get_netpoint()->get_englobing_zone()->get_network_model();
+  auto net_model = host_list[0]->get_netpoint()->get_englobing_zone()->get_network_model();
   if ((host_list.size() == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
     action = host_list[0]->pimpl_cpu->execution_start(flops_amount[0]);
   } else if ((host_list.size() == 1) && (has_cost(flops_amount, 0) <= 0)) {

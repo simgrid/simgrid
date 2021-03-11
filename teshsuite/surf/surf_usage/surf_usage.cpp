@@ -42,12 +42,12 @@ int main(int argc, char** argv)
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   parse_platform_file(argv[1]);
 
-  const_sg_netzone_t as_zone                         = sg_zone_get_by_name("AS0");
-  simgrid::kernel::resource::NetworkModel* net_model = as_zone->get_impl()->get_network_model();
-  simgrid::kernel::resource::CpuModel* cpu_model_pm  = as_zone->get_impl()->get_cpu_pm_model();
+  const_sg_netzone_t as_zone = sg_zone_get_by_name("AS0");
+  auto net_model             = as_zone->get_impl()->get_network_model();
+  auto cpu_model_pm          = as_zone->get_impl()->get_cpu_pm_model();
 
-  XBT_DEBUG("CPU model: %p", cpu_model_pm);
-  XBT_DEBUG("Network model: %p", net_model);
+  XBT_DEBUG("CPU model: %p", cpu_model_pm.get());
+  XBT_DEBUG("Network model: %p", net_model.get());
   simgrid::s4u::Host* hostA = sg_host_by_name("Cpu A");
   simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 

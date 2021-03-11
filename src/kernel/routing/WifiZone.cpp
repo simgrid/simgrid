@@ -16,12 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_wifi, surf, "Routing part of surf");
 namespace simgrid {
 namespace kernel {
 namespace routing {
-WifiZone::WifiZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : RoutedZone(father, name, netmodel)
-{
-}
+WifiZone::WifiZone(const std::string& name) : RoutedZone(name) {}
 
-void WifiZone::seal()
+void WifiZone::do_seal()
 {
   const char* AP_name = get_property("access_point");
   if (AP_name != nullptr) {

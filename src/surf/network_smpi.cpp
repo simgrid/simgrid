@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_smpi.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
 #include "smpi_utils.hpp"
 #include "src/kernel/EngineImpl.hpp"
@@ -34,8 +36,9 @@ std::vector<s_smpi_factor_t> smpi_lat_factor;
 void surf_network_model_init_SMPI()
 {
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkSmpiModel>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK,
-                                                         std::move(net_model), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK, net_model,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
@@ -44,9 +47,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model()
-{
-}
+NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model() {}
 
 double NetworkSmpiModel::get_bandwidth_factor(double size)
 {

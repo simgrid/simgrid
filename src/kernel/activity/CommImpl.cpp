@@ -434,7 +434,7 @@ CommImpl* CommImpl::start()
     /* FIXME[donassolo]: getting the network_model from the origin host
      * Soon we need to change this function to first get the routes and later
      * create the respective surf actions */
-    auto* net_model = from_->get_netpoint()->get_englobing_zone()->get_network_model();
+    auto net_model = from_->get_netpoint()->get_englobing_zone()->get_network_model();
 
     surf_action_ = net_model->communicate(from_, to_, size_, rate_);
     surf_action_->set_activity(this);

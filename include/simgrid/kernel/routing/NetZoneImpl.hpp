@@ -70,14 +70,16 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
 
   std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
   routing::NetPoint* netpoint_ = nullptr;                                 // Our representative in the father NetZone
-  resource::NetworkModel* network_model_;
-  resource::CpuModel* cpu_model_vm_;
-  resource::CpuModel* cpu_model_pm_;
-  resource::DiskModel* disk_model_;
-  simgrid::surf::HostModel* host_model_;
+  std::shared_ptr<resource::NetworkModel> network_model_;
+  std::shared_ptr<resource::CpuModel> cpu_model_vm_;
+  std::shared_ptr<resource::CpuModel> cpu_model_pm_;
+  std::shared_ptr<resource::DiskModel> disk_model_;
+  std::shared_ptr<simgrid::surf::HostModel> host_model_;
+  /** @brief Perform sealing procedure for derived classes, if necessary */
+  virtual void do_seal(){};
 
 protected:
-  explicit NetZoneImpl(NetZoneImpl* father, const std::string& name, resource::NetworkModel* network_model);
+  explicit NetZoneImpl(const std::string& name);
   NetZoneImpl(const NetZoneImpl&) = delete;
   NetZoneImpl& operator=(const NetZoneImpl&) = delete;
   virtual ~NetZoneImpl();
@@ -107,15 +109,15 @@ public:
   RoutingMode hierarchy_ = RoutingMode::unset;
 
   /** @brief Retrieves the network model associated to this NetZone */
-  resource::NetworkModel* get_network_model() const { return network_model_; }
+  const std::shared_ptr<resource::NetworkModel>& get_network_model() const { return network_model_; }
   /** @brief Retrieves the CPU model for virtual machines associated to this NetZone */
-  resource::CpuModel* get_cpu_vm_model() const { return cpu_model_vm_; }
+  const std::shared_ptr<resource::CpuModel>& get_cpu_vm_model() const { return cpu_model_vm_; }
   /** @brief Retrieves the CPU model for physical machines associated to this NetZone */
-  resource::CpuModel* get_cpu_pm_model() const { return cpu_model_pm_; }
+  const std::shared_ptr<resource::CpuModel>& get_cpu_pm_model() const { return cpu_model_pm_; }
   /** @brief Retrieves the disk model associated to this NetZone */
-  resource::DiskModel* get_disk_model() const { return disk_model_; }
+  const std::shared_ptr<resource::DiskModel>& get_disk_model() const { return disk_model_; }
   /** @brief Retrieves the host model associated to this NetZone */
-  simgrid::surf::HostModel* get_host_model() const { return host_model_; }
+  const std::shared_ptr<surf::HostModel>& get_host_model() const { return host_model_; }
 
   const s4u::NetZone* get_iface() const { return &piface_; }
   s4u::NetZone* get_iface() { return &piface_; }
@@ -145,11 +147,19 @@ public:
                                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
 
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
-  virtual void seal() { sealed_ = true; };
+  void seal();
   virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
   virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                          std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+  /** @brief Set parent of this Netzone */
+  void set_parent(NetZoneImpl* parent);
+  /** @brief Set network model for this Netzone */
+  void set_network_model(std::shared_ptr<resource::NetworkModel> netmodel);
+  void set_cpu_vm_model(std::shared_ptr<resource::CpuModel> cpu_model);
+  void set_cpu_pm_model(std::shared_ptr<resource::CpuModel> cpu_model);
+  void set_disk_model(std::shared_ptr<resource::DiskModel> disk_model);
+  void set_host_model(std::shared_ptr<surf::HostModel> host_model);
 
   /* @brief get the route between two nodes in the full platform
    *

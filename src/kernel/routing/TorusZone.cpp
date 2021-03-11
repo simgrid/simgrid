@@ -18,10 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "T
 namespace simgrid {
 namespace kernel {
 namespace routing {
-TorusZone::TorusZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel)
-    : ClusterZone(father, name, netmodel)
-{
-}
+TorusZone::TorusZone(const std::string& name) : ClusterZone(name) {}
 
 void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position)
 {
@@ -39,10 +36,10 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
     std::string link_id =
         std::string(cluster->id) + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
-    link.id        = link_id;
+    link.id = link_id;
     link.bandwidths.push_back(cluster->bw);
-    link.latency   = cluster->lat;
-    link.policy    = cluster->sharing_policy;
+    link.latency = cluster->lat;
+    link.policy  = cluster->sharing_policy;
     sg_platf_new_link(&link);
     resource::LinkImpl* linkUp;
     resource::LinkImpl* linkDown;
@@ -134,9 +131,9 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
       if ((current_node / dim_product) % cur_dim != (dst->id() / dim_product) % cur_dim) {
         if ((targetCoords[j] > myCoords[j] &&
              targetCoords[j] <= myCoords[j] + cur_dim / 2) // Is the target node on the right, without the wrap-around?
-            || (myCoords[j] > cur_dim / 2 &&
-                (myCoords[j] + cur_dim / 2) % cur_dim >=
-                    targetCoords[j])) { // Or do we need to use the wrap around to reach it?
+            ||
+            (myCoords[j] > cur_dim / 2 && (myCoords[j] + cur_dim / 2) % cur_dim >=
+                                              targetCoords[j])) { // Or do we need to use the wrap around to reach it?
           if ((current_node / dim_product) % cur_dim == cur_dim - 1)
             next_node = (current_node + dim_product - dim_product * cur_dim);
           else
@@ -175,7 +172,7 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
       route->link_list.push_back(info.first);
     }
 
-    info = private_links_.at(linkOffset);
+    info                    = private_links_.at(linkOffset);
     resource::LinkImpl* lnk = use_lnk_up ? info.first : info.second;
 
     route->link_list.push_back(lnk);

@@ -67,7 +67,7 @@ namespace routing {
 
 class ClusterZone : public NetZoneImpl {
 public:
-  explicit ClusterZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel);
+  explicit ClusterZone(const std::string& name);
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,

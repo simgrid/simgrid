@@ -35,9 +35,10 @@ private:
   xbt_node_t route_graph_new_node(int id);
   xbt_node_t node_map_search(int id);
   void new_edge(int src_id, int dst_id, RouteCreationArgs* e_route);
+  void do_seal() override;
 
 public:
-  DijkstraZone(NetZoneImpl* father, const std::string& name, resource::NetworkModel* netmodel, bool cached);
+  DijkstraZone(const std::string& name, bool cached);
 
   /* For each vertex (node) already in the graph,
    * make sure it also has a loopback link; this loopback
@@ -50,7 +51,6 @@ public:
    * After this function returns, any node in the graph
    * will have a loopback attached to it.
    */
-  void seal() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                  std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;

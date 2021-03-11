@@ -38,8 +38,8 @@ int main(int argc, char** argv)
   hostB->pimpl_cpu->execution_start(1000.0);
   hostB->pimpl_cpu->sleep(7.32);
 
-  const_sg_netzone_t as_zone                         = sg_zone_get_by_name("AS0");
-  simgrid::kernel::resource::NetworkModel* net_model = as_zone->get_impl()->get_network_model();
+  const_sg_netzone_t as_zone = sg_zone_get_by_name("AS0");
+  auto net_model             = as_zone->get_impl()->get_network_model();
   net_model->communicate(hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0); /* Takes traces into account. Returns 0.0 */

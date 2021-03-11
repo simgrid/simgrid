@@ -5,6 +5,7 @@
 
 #include "disk_s19.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/EngineImpl.hpp"
@@ -21,8 +22,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_disk);
 void surf_disk_model_init_default()
 {
   auto disk_model = std::make_shared<simgrid::kernel::resource::DiskS19Model>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::DISK,
-                                                         std::move(disk_model), true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::DISK, disk_model,
+                                                         true);
+  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_disk_model(disk_model);
 }
 
 namespace simgrid {
