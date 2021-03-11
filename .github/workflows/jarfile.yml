@@ -1,7 +1,10 @@
 name: SimGrid complete jar file generation
 
-on: [workflow_dispatch]
-
+on:
+  workflow_dispatch:
+  schedule:
+  # * is a special character in YAML so you have to quote this string
+      - cron:  '0 18 * * 0'
 jobs:
   build:
     runs-on: ${{ matrix.config.os }}-latest
@@ -28,10 +31,18 @@ jobs:
       if: matrix.config.os == 'windows'
       run: |
         Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+        (Get-Content ~\scoop\buckets\main\bucket\gcc.json).replace('http://repo.msys2.org/', 'http://mirrors.huaweicloud.com/msys2/') | Set-Content  ~\scoop\buckets\main\bucket\gcc.json
         scoop install gcc --global
-        echo "BOOST_ROOT=${env:BOOST_ROOT_1_72_0}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        echo "BOOST_INCLUDEDIR=${env:BOOST_ROOT_1_72_0}\boost\include" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        echo "BOOST_LIBRARYDIR=${env:BOOST_ROOT_1_72_0}\lib" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        # Use the boost-1.72.0-win32-msvc14.1-x86_64.tar.gz for Windows 2016
+        $url = "https://github.com/actions/boost-versions/releases/download/1.72.0-20200608.4/boost-1.72.0-win32-msvc14.2-x86_64.tar.gz"
+        (New-Object System.Net.WebClient).DownloadFile($url, "$env:TEMP\boost.tar.gz")
+        7z.exe x "$env:TEMP\boost.tar.gz" -o"$env:TEMP\boostArchive" -y | Out-Null
+        7z.exe x "$env:TEMP\boostArchive" -o"$env:TEMP\boost" -y | Out-Null
+        Push-Location -Path "$env:TEMP\boost"
+        Invoke-Expression .\setup.ps1
+        echo "BOOST_ROOT=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        echo "BOOST_INCLUDEDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\boost\include" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        echo "BOOST_LIBRARYDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\lib" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
     - name: Build jar with Cmake
       run: |
           mkdir build
