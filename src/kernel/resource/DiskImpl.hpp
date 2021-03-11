@@ -37,7 +37,6 @@ public:
   DiskModel();
   DiskModel(const DiskModel&) = delete;
   DiskModel& operator=(const DiskModel&) = delete;
-  ~DiskModel() = default;
 
   virtual DiskImpl* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth) = 0;
 };
