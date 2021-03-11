@@ -113,7 +113,7 @@ s4u::Link::SharingPolicy LinkImpl::get_sharing_policy() const
   return get_constraint()->get_sharing_policy();
 }
 
-void LinkImpl::latency_check(double latency)
+void LinkImpl::latency_check(double latency) const
 {
   static double last_warned_latency = sg_surf_precision;
   if (latency != 0.0 && latency < last_warned_latency) {

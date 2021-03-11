@@ -118,7 +118,7 @@ protected:
 public:
   void destroy(); // Must be called instead of the destructor
 
-  void latency_check(double latency);
+  void latency_check(double latency) const;
 
   /** @brief Public interface */
   const s4u::Link* get_iface() const { return &piface_; }

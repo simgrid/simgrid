@@ -85,7 +85,7 @@ const std::vector<simgrid::kernel::resource::Model*>& Engine::get_model_list(sim
   return pimpl->get_model_list(type);
 }
 
-const std::vector<std::shared_ptr<simgrid::kernel::resource::Model>>& Engine::get_all_models()
+const std::vector<std::shared_ptr<simgrid::kernel::resource::Model>>& Engine::get_all_models() const
 {
   return pimpl->get_all_models();
 }

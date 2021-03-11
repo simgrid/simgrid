@@ -142,7 +142,7 @@ public:
   const std::vector<simgrid::kernel::resource::Model*>& get_model_list(simgrid::kernel::resource::Model::Type type);
 
   /** @brief Get list of all models managed by this engine */
-  const std::vector<std::shared_ptr<simgrid::kernel::resource::Model>>& get_all_models();
+  const std::vector<std::shared_ptr<simgrid::kernel::resource::Model>>& get_all_models() const;
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones() const
