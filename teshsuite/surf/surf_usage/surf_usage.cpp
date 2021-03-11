@@ -42,7 +42,7 @@ int main(int argc, char** argv)
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   parse_platform_file(argv[1]);
 
-  sg_netzone_t as_zone                               = sg_zone_get_by_name("AS0");
+  const_sg_netzone_t as_zone                         = sg_zone_get_by_name("AS0");
   simgrid::kernel::resource::NetworkModel* net_model = as_zone->get_impl()->get_network_model();
   simgrid::kernel::resource::CpuModel* cpu_model_pm  = as_zone->get_impl()->get_cpu_pm_model();
 
