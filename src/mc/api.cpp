@@ -384,25 +384,17 @@ int Api::get_actors_size() const
 
 RemotePtr<kernel::activity::CommImpl> Api::get_comm_isend_raw_addr(smx_simcall_t request) const
 {
-  auto comm_addr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(request->result_);
-  return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
-}
-
-RemotePtr<kernel::activity::CommImpl> Api::get_comm_irecv_raw_addr(smx_simcall_t request) const
-{
-  auto comm_addr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(request->result_);
-  return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
+  return remote(static_cast<kernel::activity::CommImpl*>(simcall_comm_isend__getraw__result(request)));
 }
 
 RemotePtr<kernel::activity::CommImpl> Api::get_comm_wait_raw_addr(smx_simcall_t request) const
 {
-  auto comm_addr = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::CommImpl*>(request->args_[0]);
-  return RemotePtr<kernel::activity::CommImpl>(comm_addr);
+  return remote(simcall_comm_wait__getraw__comm(request));
 }
 
 RemotePtr<kernel::activity::CommImpl> Api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
 {
-  auto addr      = simgrid::simix::unmarshal_raw<simgrid::kernel::activity::CommImpl**>(request->args_[0]) + value;
+  auto addr      = simcall_comm_waitany__getraw__comms(request) + value;
   auto comm_addr = mc_model_checker->get_remote_simulation().read(remote(addr));
   return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
 }
@@ -557,32 +549,20 @@ long Api::simcall_get_actor_id(s_smx_simcall const* req) const
 
 RemotePtr<kernel::activity::MailboxImpl> Api::get_mbox_remote_addr(smx_simcall_t const req) const
 {
-  RemotePtr<kernel::activity::MailboxImpl> mbox_addr;
-  switch (req->call_) {
-    case Simcall::COMM_ISEND:
-    case Simcall::COMM_IRECV:
-      mbox_addr = remote(simix::unmarshal<smx_mailbox_t>(req->args_[1]));
-      break;
-    default:
-      mbox_addr = RemotePtr<kernel::activity::MailboxImpl>();
-      break;
-  }
-  return mbox_addr;
+  if (req->call_ == Simcall::COMM_ISEND)
+    return remote(simcall_comm_isend__get__mbox(req));
+  if (req->call_ == Simcall::COMM_IRECV)
+    return remote(simcall_comm_irecv__get__mbox(req));
+  THROW_IMPOSSIBLE;
 }
 
 RemotePtr<kernel::activity::ActivityImpl> Api::get_comm_remote_addr(smx_simcall_t const req) const
 {
-  RemotePtr<kernel::activity::ActivityImpl> comm_addr;
-  switch (req->call_) {
-    case Simcall::COMM_ISEND:
-    case Simcall::COMM_IRECV:
-      comm_addr = remote(simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(req->result_));
-      break;
-    default:
-      comm_addr = RemotePtr<kernel::activity::ActivityImpl>();
-      break;
-  }
-  return comm_addr;
+  if (req->call_ == Simcall::COMM_ISEND)
+    return remote(simcall_comm_isend__getraw__result(req));
+  if (req->call_ == Simcall::COMM_IRECV)
+    return remote(simcall_comm_irecv__getraw__result(req));
+  THROW_IMPOSSIBLE;
 }
 
 bool Api::mc_is_null() const
