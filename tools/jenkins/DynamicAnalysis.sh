@@ -1,11 +1,25 @@
 #!/usr/bin/env sh
 
-set -e
-
 die() {
     echo "$@"
     exit 1
 }
+
+[ -n "$WORKSPACE" ] || die "No WORKSPACE"
+[ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
+
+echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
+rm -f /tmp/cc*
+rm -f /tmp/*.so
+rm -rf /tmp/simgrid-java*
+rm -rf /var/tmp/simgrid-java*
+rm -rf /tmp/jvm-*
+find "$WORKSPACE" -name "hs_err_pid*.log" -exec rm -f {} +
+ls /tmp
+df -h
+echo "XXXX Let's go"
+
+set -e
 
 ### Check the node installation
 
@@ -24,9 +38,6 @@ pkg_check() {
 pkg_check valgrind pcregrep
 
 ### Cleanup previous runs
-
-[ -n "$WORKSPACE" ] || die "No WORKSPACE"
-[ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
 do_cleanup() {
   for d
