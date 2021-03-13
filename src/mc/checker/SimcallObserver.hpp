@@ -92,11 +92,12 @@ public:
 class ConditionWaitSimcall : public SimcallObserver {
   kernel::activity::ConditionVariableImpl* const cond_;
   kernel::activity::MutexImpl* const mutex_;
+  const double timeout_;
 
 public:
   ConditionWaitSimcall(smx_actor_t actor, kernel::activity::ConditionVariableImpl* cond,
-                       kernel::activity::MutexImpl* mutex)
-      : SimcallObserver(actor), cond_(cond), mutex_(mutex)
+                       kernel::activity::MutexImpl* mutex, double timeout = -1.0)
+      : SimcallObserver(actor), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
   }
   bool is_enabled() const override;
@@ -105,18 +106,24 @@ public:
   std::string dot_label() const override;
   kernel::activity::ConditionVariableImpl* get_cond() const { return cond_; }
   kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
+  double get_timeout() const { return timeout_; }
 };
 
 class SemAcquireSimcall : public SimcallObserver {
   kernel::activity::SemaphoreImpl* const sem_;
+  const double timeout_;
 
 public:
-  SemAcquireSimcall(smx_actor_t actor, kernel::activity::SemaphoreImpl* sem) : SimcallObserver(actor), sem_(sem) {}
+  SemAcquireSimcall(smx_actor_t actor, kernel::activity::SemaphoreImpl* sem, double timeout = -1.0)
+      : SimcallObserver(actor), sem_(sem), timeout_(timeout)
+  {
+  }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
   kernel::activity::SemaphoreImpl* get_sem() const { return sem_; }
+  double get_timeout() const { return timeout_; }
 };
 } // namespace mc
 } // namespace simgrid

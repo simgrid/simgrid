@@ -78,7 +78,9 @@ bool MutexLockSimcall::is_enabled() const
 
 std::string ConditionWaitSimcall::to_string(int time_considered) const
 {
-  return SimcallObserver::to_string(time_considered) + "Condition WAIT";
+  std::string res = SimcallObserver::to_string(time_considered) + "Condition WAIT";
+  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
+  return res;
 }
 
 std::string ConditionWaitSimcall::dot_label() const
@@ -98,7 +100,9 @@ bool ConditionWaitSimcall::is_enabled() const
 
 std::string SemAcquireSimcall::to_string(int time_considered) const
 {
-  return SimcallObserver::to_string(time_considered) + "Sem ACQUIRE";
+  std::string res = SimcallObserver::to_string(time_considered) + "Sem ACQUIRE";
+  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
+  return res;
 }
 
 std::string SemAcquireSimcall::dot_label() const
