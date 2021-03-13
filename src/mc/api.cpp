@@ -221,68 +221,6 @@ simgrid::mc::ActorInformation* Api::actor_info_cast(smx_actor_t actor) const
   return process_info;
 }
 
-// Does half the job. precondition: r1->call_ < r2->call_
-bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
-{
-  if (r1->call_ == Simcall::COMM_IRECV && r2->call_ == Simcall::COMM_ISEND)
-    return false;
-
-  // Those are internal requests, we do not need indirection because those objects are copies:
-  auto comm1 = get_comm_or_nullptr(r1);
-  auto comm2 = get_comm_or_nullptr(r2);
-
-  if ((r1->call_ == Simcall::COMM_IRECV || r1->call_ == Simcall::COMM_ISEND) && r2->call_ == Simcall::COMM_WAIT) {
-    auto mbox1 = get_mbox_remote_addr(r1);
-    auto mbox2 = remote(comm2->mbox_cpy);
-
-    if (mbox1 != mbox2 && simcall_comm_wait__get__timeout(r2) <= 0)
-      return false;
-
-    if ((r1->issuer_ != comm2->src_actor_.get()) && (r1->issuer_ != comm2->dst_actor_.get()) &&
-        simcall_comm_wait__get__timeout(r2) <= 0)
-      return false;
-
-    if ((r1->call_ == Simcall::COMM_ISEND) && (comm2->type_ == kernel::activity::CommImpl::Type::SEND) &&
-        (comm2->src_buff_ != simcall_comm_isend__get__src_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
-      return false;
-
-    if ((r1->call_ == Simcall::COMM_IRECV) && (comm2->type_ == kernel::activity::CommImpl::Type::RECEIVE) &&
-        (comm2->dst_buff_ != simcall_comm_irecv__get__dst_buff(r1)) && simcall_comm_wait__get__timeout(r2) <= 0)
-      return false;
-  }
-
-  /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
-   * test call. */
-#if 0
-  if((r1->call == Simcall::COMM_ISEND || r1->call == Simcall::COMM_IRECV)
-      &&  r2->call == Simcall::COMM_TEST)
-    return false;
-#endif
-
-  if (r1->call_ == Simcall::COMM_TEST && r2->call_ == Simcall::COMM_WAIT &&
-      (comm1->src_actor_.get() == nullptr || comm1->dst_actor_.get() == nullptr))
-    return false;
-
-  if (r1->call_ == Simcall::COMM_TEST &&
-      (simcall_comm_test__get__comm(r1) == nullptr || comm1->src_buff_ == nullptr || comm1->dst_buff_ == nullptr))
-    return false;
-  if (r2->call_ == Simcall::COMM_TEST &&
-      (simcall_comm_test__get__comm(r2) == nullptr || comm2->src_buff_ == nullptr || comm2->dst_buff_ == nullptr))
-    return false;
-
-  if (r1->call_ == Simcall::COMM_TEST && r2->call_ == Simcall::COMM_WAIT && comm1->src_buff_ == comm2->src_buff_ &&
-      comm1->dst_buff_ == comm2->dst_buff_)
-    return false;
-
-  if (r1->call_ == Simcall::COMM_TEST && r2->call_ == Simcall::COMM_WAIT && comm1->src_buff_ != nullptr &&
-      comm1->dst_buff_ != nullptr && comm2->src_buff_ != nullptr && comm2->dst_buff_ != nullptr &&
-      comm1->dst_buff_ != comm2->src_buff_ && comm1->dst_buff_ != comm2->dst_buff_ &&
-      comm2->dst_buff_ != comm1->src_buff_)
-    return false;
-
-  return true;
-}
-
 bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
 {
   const auto IRECV = Simcall::COMM_IRECV;
@@ -307,22 +245,76 @@ bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
   /* Make sure that req1 and req2 are in alphabetic order */
   if (req1->call_ > req2->call_) {
     auto temp = req1;
-    req1 = req2;
-    req2 = temp;
+    req1      = req2;
+    req2      = temp;
   }
-  if (req1->call_ != req2->call_)
-    return request_depend_asymmetric(req1, req2);
 
-  // Those are internal requests, we do not need indirection because those objects are copies:
-  const auto comm1 = get_comm_or_nullptr(req1);
-  const auto comm2 = get_comm_or_nullptr(req2);
+  auto comm1 = get_comm_or_nullptr(req1);
+  auto comm2 = get_comm_or_nullptr(req2);
 
+  /* First case: that's not the same kind of request (we also know that req1 < req2 alphabetically) */
+  if (req1->call_ != req2->call_) {
+    if (req1->call_ == IRECV && req2->call_ == ISEND)
+      return false;
+
+    if ((req1->call_ == IRECV || req1->call_ == ISEND) && req2->call_ == WAIT) {
+      auto mbox1 = get_mbox_remote_addr(req1);
+      auto mbox2 = remote(comm2->mbox_cpy);
+
+      if (mbox1 != mbox2 && simcall_comm_wait__get__timeout(req2) <= 0)
+        return false;
+
+      if ((req1->issuer_ != comm2->src_actor_.get()) && (req1->issuer_ != comm2->dst_actor_.get()) &&
+          simcall_comm_wait__get__timeout(req2) <= 0)
+        return false;
+
+      if ((req1->call_ == ISEND) && (comm2->type_ == kernel::activity::CommImpl::Type::SEND) &&
+          (comm2->src_buff_ != simcall_comm_isend__get__src_buff(req1)) && simcall_comm_wait__get__timeout(req2) <= 0)
+        return false;
+
+      if ((req1->call_ == IRECV) && (comm2->type_ == kernel::activity::CommImpl::Type::RECEIVE) &&
+          (comm2->dst_buff_ != simcall_comm_irecv__get__dst_buff(req1)) && simcall_comm_wait__get__timeout(req2) <= 0)
+        return false;
+    }
+
+    /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
+     * test call. */
+#if 0
+  if((req1->call == ISEND || req1->call == IRECV)
+      &&  req2->call == TEST)
+    return false;
+#endif
+
+    if (req1->call_ == TEST && req2->call_ == WAIT &&
+        (comm1->src_actor_.get() == nullptr || comm1->dst_actor_.get() == nullptr))
+      return false;
+
+    if (req1->call_ == TEST &&
+        (simcall_comm_test__get__comm(req1) == nullptr || comm1->src_buff_ == nullptr || comm1->dst_buff_ == nullptr))
+      return false;
+    if (req2->call_ == TEST &&
+        (simcall_comm_test__get__comm(req2) == nullptr || comm2->src_buff_ == nullptr || comm2->dst_buff_ == nullptr))
+      return false;
+
+    if (req1->call_ == TEST && req2->call_ == WAIT && comm1->src_buff_ == comm2->src_buff_ &&
+        comm1->dst_buff_ == comm2->dst_buff_)
+      return false;
+
+    if (req1->call_ == TEST && req2->call_ == WAIT && comm1->src_buff_ != nullptr && comm1->dst_buff_ != nullptr &&
+        comm2->src_buff_ != nullptr && comm2->dst_buff_ != nullptr && comm1->dst_buff_ != comm2->src_buff_ &&
+        comm1->dst_buff_ != comm2->dst_buff_ && comm2->dst_buff_ != comm1->src_buff_)
+      return false;
+
+    return true;
+  }
+
+  /* Second case: req1 and req2 are of the same call type */
   switch (req1->call_) {
-    case Simcall::COMM_ISEND:
+    case ISEND:
       return simcall_comm_isend__get__mbox(req1) == simcall_comm_isend__get__mbox(req2);
-    case Simcall::COMM_IRECV:
+    case IRECV:
       return simcall_comm_irecv__get__mbox(req1) == simcall_comm_irecv__get__mbox(req2);
-    case Simcall::COMM_WAIT:
+    case WAIT:
       if (comm1->src_buff_ == comm2->src_buff_ && comm1->dst_buff_ == comm2->dst_buff_)
         return false;
       if (comm1->src_buff_ != nullptr && comm1->dst_buff_ != nullptr && comm2->src_buff_ != nullptr &&
