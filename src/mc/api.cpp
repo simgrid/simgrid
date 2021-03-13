@@ -221,7 +221,7 @@ simgrid::mc::ActorInformation* Api::actor_info_cast(smx_actor_t actor) const
   return process_info;
 }
 
-// Does half the job
+// Does half the job. precondition: r1->call_ < r2->call_
 bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
 {
   if (r1->call_ == Simcall::COMM_IRECV && r2->call_ == Simcall::COMM_ISEND)
@@ -231,7 +231,7 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
   auto comm1 = get_comm_or_nullptr(r1);
   auto comm2 = get_comm_or_nullptr(r2);
 
-  if ((r1->call_ == Simcall::COMM_ISEND || r1->call_ == Simcall::COMM_IRECV) && r2->call_ == Simcall::COMM_WAIT) {
+  if ((r1->call_ == Simcall::COMM_IRECV || r1->call_ == Simcall::COMM_ISEND) && r2->call_ == Simcall::COMM_WAIT) {
     auto mbox1 = get_mbox_remote_addr(r1);
     auto mbox2 = remote(comm2->mbox_cpy);
 
@@ -266,6 +266,9 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
   if (r1->call_ == Simcall::COMM_TEST &&
       (simcall_comm_test__get__comm(r1) == nullptr || comm1->src_buff_ == nullptr || comm1->dst_buff_ == nullptr))
     return false;
+  if (r2->call_ == Simcall::COMM_TEST &&
+      (simcall_comm_test__get__comm(r2) == nullptr || comm2->src_buff_ == nullptr || comm2->dst_buff_ == nullptr))
+    return false;
 
   if (r1->call_ == Simcall::COMM_TEST && r2->call_ == Simcall::COMM_WAIT && comm1->src_buff_ == comm2->src_buff_ &&
       comm1->dst_buff_ == comm2->dst_buff_)
@@ -282,8 +285,8 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
 
 bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
 {
-  const auto ISEND = Simcall::COMM_ISEND;
   const auto IRECV = Simcall::COMM_IRECV;
+  const auto ISEND = Simcall::COMM_ISEND;
   const auto TEST  = Simcall::COMM_TEST;
   const auto WAIT  = Simcall::COMM_WAIT;
 
@@ -301,13 +304,14 @@ bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
       (req2->call_ == WAIT && simcall_comm_wait__get__timeout(req2) > 0))
     return true;
 
-  if (req1->call_ < req2->call_) {
+  /* Make sure that req1 and req2 are in alphabetic order */
+  if (req1->call_ > req2->call_) {
     auto temp = req1;
     req1 = req2;
     req2 = temp;
   }
   if (req1->call_ != req2->call_)
-    return request_depend_asymmetric(req1, req2) && request_depend_asymmetric(req2, req1);
+    return request_depend_asymmetric(req1, req2);
 
   // Those are internal requests, we do not need indirection because those objects are copies:
   const auto comm1 = get_comm_or_nullptr(req1);
