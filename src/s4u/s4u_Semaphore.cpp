@@ -31,7 +31,7 @@ void Semaphore::acquire()
   simcall_sem_acquire(pimpl_);
 }
 
-int Semaphore::acquire_timeout(double timeout)
+bool Semaphore::acquire_timeout(double timeout)
 {
   return simcall_sem_acquire_timeout(pimpl_, timeout);
 }
@@ -46,7 +46,7 @@ int Semaphore::get_capacity() const
   return kernel::actor::simcall([this] { return pimpl_->get_capacity(); });
 }
 
-int Semaphore::would_block() const
+bool Semaphore::would_block() const
 {
   return kernel::actor::simcall([this] { return pimpl_->would_block(); });
 }
