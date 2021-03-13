@@ -84,17 +84,17 @@ public:
  */
 class AddressSpace {
 private:
-  RemoteSimulation* remote_simulation_;
+  RemoteProcess* remote_process_;
 
 public:
-  explicit AddressSpace(RemoteSimulation* remote_simulation) : remote_simulation_(remote_simulation) {}
+  explicit AddressSpace(RemoteProcess* remote_simulation) : remote_process_(remote_simulation) {}
   virtual ~AddressSpace() = default;
 
   /** The process of this address space
    *
    *  This is where we can get debug information, memory layout, etc.
    */
-  simgrid::mc::RemoteSimulation* get_remote_simulation() const { return remote_simulation_; }
+  simgrid::mc::RemoteProcess* get_remote_simulation() const { return remote_process_; }
 
   /** Read data from the address space
    *

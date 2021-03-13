@@ -15,7 +15,7 @@ namespace mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-void Snapshot::snapshot_regions(RemoteSimulation* process)
+void Snapshot::snapshot_regions(RemoteProcess* process)
 {
   snapshot_regions_.clear();
 
@@ -96,7 +96,7 @@ static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
 {
-  const RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
+  const RemoteProcess* process = &mc_model_checker->get_remote_simulation();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -148,7 +148,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_
   return result;
 }
 
-void Snapshot::snapshot_stacks(RemoteSimulation* process)
+void Snapshot::snapshot_stacks(RemoteProcess* process)
 {
   for (auto const& stack : process->stack_areas()) {
     s_mc_snapshot_stack_t st;
@@ -197,7 +197,7 @@ static void snapshot_ignore_restore(const simgrid::mc::Snapshot* snapshot)
                                                    remote(ignored_data.start));
 }
 
-Snapshot::Snapshot(int num_state, RemoteSimulation* process) : AddressSpace(process), num_state_(num_state)
+Snapshot::Snapshot(int num_state, RemoteProcess* process) : AddressSpace(process), num_state_(num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
@@ -272,7 +272,7 @@ Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
     return get_region(addr);
 }
 
-void Snapshot::restore(RemoteSimulation* process) const
+void Snapshot::restore(RemoteProcess* process) const
 {
   XBT_DEBUG("Restore snapshot %i", num_state_);
 

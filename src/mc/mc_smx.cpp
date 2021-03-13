@@ -6,7 +6,7 @@
 #include "simgrid/s4u/Host.hpp"
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/remote/RemoteProcess.hpp"
 
 using simgrid::mc::remote;
 /** @file
@@ -35,7 +35,7 @@ using simgrid::mc::remote;
  *  @param target       Local vector (to be filled with copies of `s_smx_actor_t`)
  *  @param remote_dynar Address of the process dynar in the remote list
  */
-static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteSimulation* process,
+static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteProcess* process,
                                                  std::vector<simgrid::mc::ActorInformation>& target,
                                                  simgrid::mc::RemotePtr<s_xbt_dynar_t> remote_dynar)
 {
@@ -61,9 +61,9 @@ static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteSimula
 namespace simgrid {
 namespace mc {
 
-void RemoteSimulation::refresh_simix()
+void RemoteProcess::refresh_simix()
 {
-  if (this->cache_flags_ & RemoteSimulation::cache_simix_processes)
+  if (this->cache_flags_ & RemoteProcess::cache_simix_processes)
     return;
 
   // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
@@ -85,7 +85,7 @@ void RemoteSimulation::refresh_simix()
   MC_process_refresh_simix_actor_dynar(this, this->smx_dead_actors_infos,
                                        remote(simix_global.get_buffer()->dead_actors_vector));
 
-  this->cache_flags_ |= RemoteSimulation::cache_simix_processes;
+  this->cache_flags_ |= RemoteProcess::cache_simix_processes;
 }
 
 }

@@ -10,7 +10,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/remote/RemoteProcess.hpp"
 #include "xbt/automaton.hpp"
 #include "xbt/system_error.hpp"
 
@@ -33,8 +33,8 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<RemoteSimulation> remote_simulation, int sockfd)
-    : checker_side_(sockfd), remote_simulation_(std::move(remote_simulation))
+ModelChecker::ModelChecker(std::unique_ptr<RemoteProcess> remote_simulation, int sockfd)
+    : checker_side_(sockfd), remote_process_(std::move(remote_simulation))
 {
 }
 
@@ -62,13 +62,13 @@ void ModelChecker::start()
   int status;
 
   // The model-checked process SIGSTOP itself to signal it's ready:
-  const pid_t pid = remote_simulation_->pid();
+  const pid_t pid = remote_process_->pid();
 
   pid_t res = waitpid(pid, &status, WAITPID_CHECKED_FLAGS);
   if (res < 0 || not WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
-  remote_simulation_->init();
+  remote_process_->init();
 
   if (not _sg_mc_dot_output_file.get().empty())
     MC_init_dot_output();
@@ -95,7 +95,7 @@ static constexpr auto ignored_local_variables = {
 
 void ModelChecker::setup_ignore()
 {
-  const RemoteSimulation& process = this->get_remote_simulation();
+  const RemoteProcess& process = this->get_remote_simulation();
   for (auto const& var : ignored_local_variables)
     process.ignore_local_variable(var.first, var.second);
 
@@ -107,7 +107,7 @@ void ModelChecker::shutdown()
 {
   XBT_DEBUG("Shutting down model-checker");
 
-  RemoteSimulation* process = &this->get_remote_simulation();
+  RemoteProcess* process = &this->get_remote_simulation();
   if (process->running()) {
     XBT_DEBUG("Killing process");
     kill(process->pid(), SIGKILL);
@@ -115,7 +115,7 @@ void ModelChecker::shutdown()
   }
 }
 
-void ModelChecker::resume(RemoteSimulation& process)
+void ModelChecker::resume(RemoteProcess& process)
 {
   int res = checker_side_.get_channel().send(MessageType::CONTINUE);
   if (res)
@@ -213,7 +213,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       if (property_automaton == nullptr)
         property_automaton = xbt_automaton_new();
 
-      const RemoteSimulation* process = &this->get_remote_simulation();
+      const RemoteProcess* process    = &this->get_remote_simulation();
       RemotePtr<int> address          = remote((int*)message.data);
       xbt::add_proposition(property_automaton, message.name.data(),
                            [process, address]() { return process->read(address); });
@@ -264,8 +264,7 @@ void ModelChecker::handle_waitpid()
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
-        xbt_assert(ptrace(PTRACE_GETEVENTMSG, remote_simulation_->pid(), 0, &status) != -1,
-                   "Could not get exit status");
+        xbt_assert(ptrace(PTRACE_GETEVENTMSG, remote_process_->pid(), 0, &status) != -1, "Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
           mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
@@ -278,9 +277,9 @@ void ModelChecker::handle_waitpid()
         XBT_DEBUG("Stopped with signal %i", (int) WSTOPSIG(status));
         errno = 0;
 #ifdef __linux__
-        ptrace(PTRACE_CONT, remote_simulation_->pid(), 0, WSTOPSIG(status));
+        ptrace(PTRACE_CONT, remote_process_->pid(), 0, WSTOPSIG(status));
 #elif defined BSD
-        ptrace(PT_CONTINUE, remote_simulation_->pid(), (caddr_t)1, WSTOPSIG(status));
+        ptrace(PT_CONTINUE, remote_process_->pid(), (caddr_t)1, WSTOPSIG(status));
 #endif
         xbt_assert(errno == 0, "Could not PTRACE_CONT");
       }
@@ -311,8 +310,8 @@ void ModelChecker::handle_simcall(Transition const& transition)
   m.pid_              = transition.pid_;
   m.times_considered_ = transition.times_considered_;
   checker_side_.get_channel().send(m);
-  this->remote_simulation_->clear_cache();
-  if (this->remote_simulation_->running())
+  this->remote_process_->clear_cache();
+  if (this->remote_process_->running())
     checker_side_.dispatch();
 }
 bool ModelChecker::simcall_is_visible(int aid)
@@ -336,7 +335,7 @@ bool ModelChecker::simcall_is_visible(int aid)
 
   XBT_DEBUG("is_visible(%d) is returning %s", aid, answer.value ? "true" : "false");
 
-  this->remote_simulation_->clear_cache();
+  this->remote_process_->clear_cache();
   return answer.value;
 }
 

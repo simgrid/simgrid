@@ -7,7 +7,7 @@
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/remote/RemoteProcess.hpp"
 
 #include <cstdlib>
 #include <sys/mman.h>

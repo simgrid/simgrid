@@ -7,7 +7,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/checker/SimcallObserver.hpp"
-#include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/remote/RemoteProcess.hpp"
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>

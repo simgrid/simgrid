@@ -9,7 +9,7 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_pattern.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/remote/RemoteProcess.hpp"
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
@@ -333,7 +333,7 @@ xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
   if (mc_model_checker == nullptr)
     return actor->get_host()->get_name();
 
-  const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
+  const simgrid::mc::RemoteProcess* process = &mc_model_checker->get_remote_simulation();
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info = actor_info_cast(actor);
@@ -354,7 +354,7 @@ std::string Api::get_actor_name(smx_actor_t actor) const
 
   simgrid::mc::ActorInformation* info = actor_info_cast(actor);
   if (info->name.empty()) {
-    const simgrid::mc::RemoteSimulation* process = &mc_model_checker->get_remote_simulation();
+    const simgrid::mc::RemoteProcess* process = &mc_model_checker->get_remote_simulation();
 
     simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name_);
     info->name = process->read_string(remote(string_data.data), string_data.len);
@@ -540,7 +540,7 @@ smx_actor_t Api::get_dst_actor(RemotePtr<kernel::activity::CommImpl> const& comm
 
 std::size_t Api::get_remote_heap_bytes() const
 {
-  RemoteSimulation& process = mc_model_checker->get_remote_simulation();
+  RemoteProcess& process    = mc_model_checker->get_remote_simulation();
   auto heap_bytes_used      = mmalloc_get_bytes_used_remote(process.get_heap()->heaplimit, process.get_malloc_info());
   return heap_bytes_used;
 }

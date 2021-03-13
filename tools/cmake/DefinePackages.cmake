@@ -620,8 +620,8 @@ set(MC_SRC
   src/mc/remote/Channel.hpp
   src/mc/remote/CheckerSide.cpp
   src/mc/remote/CheckerSide.hpp
-  src/mc/remote/RemoteSimulation.hpp
-  src/mc/remote/RemoteSimulation.cpp
+  src/mc/remote/RemoteProcess.hpp
+  src/mc/remote/RemoteProcess.cpp
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
 

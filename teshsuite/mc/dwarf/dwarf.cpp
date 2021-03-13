@@ -15,7 +15,7 @@
 #include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/inspect/Type.hpp"
 #include "src/mc/inspect/Variable.hpp"
-#include "src/mc/remote/RemoteSimulation.hpp"
+#include "src/mc/remote/RemoteProcess.hpp"
 
 #include <cassert>
 #include <cstring>
@@ -72,7 +72,7 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
   xbt_assert(location.address() == address, "Bad resolution of local variable %s of %s", variable, function);
 }
 
-static const simgrid::mc::Variable* test_global_variable(const simgrid::mc::RemoteSimulation& process,
+static const simgrid::mc::Variable* test_global_variable(const simgrid::mc::RemoteProcess& process,
                                                          const simgrid::mc::ObjectInformation* info, const char* name,
                                                          void* address, long byte_size)
 {
@@ -104,7 +104,7 @@ struct s_foo {
   int i;
 };
 
-static void test_type_by_name(const simgrid::mc::RemoteSimulation& process, s_foo /*my_foo*/)
+static void test_type_by_name(const simgrid::mc::RemoteProcess& process, s_foo /*my_foo*/)
 {
   assert(process.binary_info->full_types_by_name.find("struct s_foo") != process.binary_info->full_types_by_name.end());
 }
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
   const simgrid::mc::Variable* var;
   simgrid::mc::Type* type;
 
-  simgrid::mc::RemoteSimulation process(getpid());
+  simgrid::mc::RemoteProcess process(getpid());
   process.init();
 
   test_global_variable(process, process.binary_info.get(), "some_local_variable", &some_local_variable, sizeof(int));
