@@ -115,7 +115,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
 
       case Simcall::COMM_WAIT: {
         simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> remote_act =
-            remote(simcall_comm_wait__getraw__comm(&actor->simcall_));
+            remote(simcall_comm_wait__get__comm(&actor->simcall_));
         simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_act;
         mc_model_checker->get_remote_simulation().read(temp_act, remote_act);
         const simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();
@@ -180,13 +180,13 @@ static void simcall_translate(smx_simcall_t req,
       break;
 
     case Simcall::COMM_WAIT:
-      chosen_comm = simcall_comm_wait__getraw__comm(req);
+      chosen_comm = simcall_comm_wait__get__comm(req);
       mc_model_checker->get_remote_simulation().read(buffered_comm, remote(chosen_comm));
       simcall_comm_wait__set__comm(req, buffered_comm.get_buffer());
       break;
 
     case Simcall::COMM_TEST:
-      chosen_comm = simcall_comm_test__getraw__comm(req);
+      chosen_comm = simcall_comm_test__get__comm(req);
       mc_model_checker->get_remote_simulation().read(buffered_comm, remote(chosen_comm));
       simcall_comm_test__set__comm(req, buffered_comm.get_buffer());
       break;
@@ -200,9 +200,9 @@ static void simcall_translate(smx_simcall_t req,
 simgrid::kernel::activity::CommImpl* Api::get_comm_or_nullptr(smx_simcall_t const r) const
 {
   if (r->call_ == Simcall::COMM_WAIT)
-    return simcall_comm_wait__getraw__comm(r);
+    return simcall_comm_wait__get__comm(r);
   if (r->call_ == Simcall::COMM_TEST)
-    return simcall_comm_test__getraw__comm(r);
+    return simcall_comm_test__get__comm(r);
   return nullptr;
 }
 
@@ -723,7 +723,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value) const
     }
 
     case Simcall::COMM_WAIT: {
-      simgrid::kernel::activity::CommImpl* remote_act = simcall_comm_wait__getraw__comm(req);
+      simgrid::kernel::activity::CommImpl* remote_act = simcall_comm_wait__get__comm(req);
       if (value == -1) {
         type = "WaitTimeout";
         args = "comm=" + pointer_to_string(remote_act);
@@ -746,7 +746,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value) const
     }
 
     case Simcall::COMM_TEST: {
-      simgrid::kernel::activity::CommImpl* remote_act = simcall_comm_test__getraw__comm(req);
+      simgrid::kernel::activity::CommImpl* remote_act = simcall_comm_test__get__comm(req);
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_activity;
       const simgrid::kernel::activity::CommImpl* act;
       mc_model_checker->get_remote_simulation().read(temp_activity, remote(remote_act));
@@ -823,7 +823,7 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
         if (value == -1) {
           label = "[" + get_actor_dot_label(issuer) + "] WaitTimeout";
         } else {
-          kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__getraw__comm(req);
+          kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__get__comm(req);
           Remote<kernel::activity::CommImpl> temp_comm;
           mc_model_checker->get_remote_simulation().read(temp_comm,
                                                          remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
@@ -840,7 +840,7 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
         break;
 
       case Simcall::COMM_TEST: {
-        kernel::activity::ActivityImpl* remote_act = simcall_comm_test__getraw__comm(req);
+        kernel::activity::ActivityImpl* remote_act = simcall_comm_test__get__comm(req);
         Remote<simgrid::kernel::activity::CommImpl> temp_comm;
         mc_model_checker->get_remote_simulation().read(temp_comm,
                                                        remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
