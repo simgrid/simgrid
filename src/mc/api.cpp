@@ -431,11 +431,6 @@ RemotePtr<kernel::activity::CommImpl> Api::get_comm_isend_raw_addr(smx_simcall_t
   return remote(static_cast<kernel::activity::CommImpl*>(simcall_comm_isend__getraw__result(request)));
 }
 
-RemotePtr<kernel::activity::CommImpl> Api::get_comm_wait_raw_addr(smx_simcall_t request) const
-{
-  return remote(simcall_comm_wait__getraw__comm(request));
-}
-
 RemotePtr<kernel::activity::CommImpl> Api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
 {
   auto addr      = simcall_comm_waitany__getraw__comms(request) + value;

@@ -396,7 +396,7 @@ void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType 
     case CallType::WAITANY: {
       RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr;
       if (call_type == CallType::WAIT)
-        comm_addr = api::get().get_comm_wait_raw_addr(req);
+        comm_addr = remote(simcall_comm_wait__getraw__comm(req));
       else
         comm_addr = api::get().get_comm_waitany_raw_addr(req, value);
       auto simcall_issuer = api::get().simcall_get_issuer(req);
