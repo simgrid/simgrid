@@ -14,7 +14,7 @@ namespace simgrid {
 namespace mc {
 
 class SimcallObserver {
-  kernel::actor::ActorImpl* issuer_;
+  kernel::actor::ActorImpl* const issuer_;
 
 public:
   explicit SimcallObserver(kernel::actor::ActorImpl* issuer) : issuer_(issuer) {}
@@ -53,8 +53,8 @@ public:
 };
 
 class RandomSimcall : public SimcallObserver {
-  int min_;
-  int max_;
+  const int min_;
+  const int max_;
   int next_value_ = 0;
 
 public:
@@ -75,8 +75,8 @@ public:
 };
 
 class MutexLockSimcall : public SimcallObserver {
-  kernel::activity::MutexImpl* mutex_;
-  bool blocking_;
+  kernel::activity::MutexImpl* const mutex_;
+  const bool blocking_;
 
 public:
   MutexLockSimcall(smx_actor_t actor, kernel::activity::MutexImpl* mutex, bool blocking = true)
