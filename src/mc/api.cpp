@@ -262,7 +262,7 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
     return false;
 #endif
 
-  if (r1->call_ == Simcall::COMM_WAIT && (r2->call_ == Simcall::COMM_WAIT || r2->call_ == Simcall::COMM_TEST) &&
+  if (r1->call_ == Simcall::COMM_WAIT && r2->call_ == Simcall::COMM_TEST &&
       (comm1->src_actor_.get() == nullptr || comm1->dst_actor_.get() == nullptr))
     return false;
 
