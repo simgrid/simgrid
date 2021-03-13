@@ -91,10 +91,7 @@ void intrusive_ptr_release(const ConditionVariable* cond)
 /* **************************** Public C interface *************************** */
 sg_cond_t sg_cond_init()
 {
-  simgrid::kernel::activity::ConditionVariableImpl* cond =
-      simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
-
-  return new simgrid::s4u::ConditionVariable(cond);
+  return simgrid::s4u::ConditionVariable::create().detach();
 }
 
 void sg_cond_wait(sg_cond_t cond, sg_mutex_t mutex)
@@ -120,5 +117,5 @@ void sg_cond_notify_all(sg_cond_t cond)
 
 void sg_cond_destroy(const_sg_cond_t cond)
 {
-  delete cond;
+  intrusive_ptr_release(cond);
 }

@@ -28,7 +28,6 @@ private:
   friend kernel::activity::ConditionVariableImpl;
   kernel::activity::ConditionVariableImpl* const pimpl_;
 
-public:
 #ifndef DOXYGEN
   explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : pimpl_(cond) {}
 
@@ -39,6 +38,7 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(const ConditionVariable* cond);
 #endif
 
+public:
   /** Create a new condition variable and return a smart pointer
    *
    * @beginrst
