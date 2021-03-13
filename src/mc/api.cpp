@@ -3,6 +3,7 @@
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/Session.hpp"
+#include "src/mc/checker/Checker.hpp"
 #include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -383,7 +384,7 @@ std::string Api::get_actor_dot_label(smx_actor_t actor) const
   return res;
 }
 
-void Api::initialize(char** argv) const
+simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const
 {
   simgrid::mc::session = new simgrid::mc::Session([argv] {
     int i = 1;
@@ -394,6 +395,31 @@ void Api::initialize(char** argv) const
     execvp(argv[i], argv + i);
     xbt_die("The model-checked process failed to exec(): %s", strerror(errno));
   });
+
+  simgrid::mc::Checker* checker;
+  switch (algo) {
+    case CheckerAlgorithm::CommDeterminism:
+      checker = simgrid::mc::createCommunicationDeterminismChecker();
+      break;
+
+    case CheckerAlgorithm::UDPOR:
+      checker = simgrid::mc::createUdporChecker();
+      break;
+
+    case CheckerAlgorithm::Safety:
+      checker = simgrid::mc::createSafetyChecker();
+      break;
+
+    case CheckerAlgorithm::Liveness:
+      checker = simgrid::mc::createLivenessChecker();
+      break;
+
+    default:
+      THROW_IMPOSSIBLE;
+  }
+
+  mc_model_checker->setChecker(checker);
+  return checker;
 }
 
 std::vector<simgrid::mc::ActorInformation>& Api::get_actors() const
@@ -611,13 +637,6 @@ bool Api::mc_is_null() const
 Checker* Api::mc_get_checker() const
 {
   return mc_model_checker->getChecker();
-}
-
-void Api::set_checker(Checker* const checker) const
-{
-  xbt_assert(mc_model_checker);
-  xbt_assert(mc_model_checker->getChecker() == nullptr);
-  mc_model_checker->setChecker(checker);
 }
 
 void Api::handle_simcall(Transition const& transition) const

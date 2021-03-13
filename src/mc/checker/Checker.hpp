@@ -27,7 +27,7 @@ namespace mc {
 // abstract
 class Checker {
 public:
-  inline explicit Checker() { Api::get().set_checker(this); }
+  explicit Checker() = default;
 
   // No copy:
   Checker(Checker const&) = delete;

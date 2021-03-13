@@ -29,18 +29,6 @@ char** argvdup(int argc, char** argv)
   return argv_copy;
 }
 
-static std::unique_ptr<simgrid::mc::Checker> create_checker()
-{
-  if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker());
-  else if (_sg_mc_unfolding_checker)
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createUdporChecker());
-  else if (_sg_mc_property_file.get().empty())
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker());
-  else
-    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker());
-}
-
 int main(int argc, char** argv)
 {
   if (argc < 2)
@@ -52,16 +40,25 @@ int main(int argc, char** argv)
   // The initialization function can touch argv.
   // We make a copy of argv before modifying it in order to pass the original value to the model-checked application:
   char** argv_copy = argvdup(argc, argv);
+
   xbt_log_init(&argc, argv);
 #if HAVE_SMPI
   smpi_init_options(); // only performed once
 #endif
   sg_config_init(&argc, argv);
-  api::get().initialize(argv_copy);
-  delete[] argv_copy;
 
-  auto checker = create_checker();
+  simgrid::mc::CheckerAlgorithm algo;
+  if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
+    algo = simgrid::mc::CheckerAlgorithm::CommDeterminism;
+  else if (_sg_mc_unfolding_checker)
+    algo = simgrid::mc::CheckerAlgorithm::UDPOR;
+  else if (_sg_mc_property_file.get().empty())
+    algo = simgrid::mc::CheckerAlgorithm::Safety;
+  else
+    algo = simgrid::mc::CheckerAlgorithm::Liveness;
+
   int res      = SIMGRID_MC_EXIT_SUCCESS;
+  auto checker = api::get().initialize(argv_copy, algo);
   try {
     checker->run();
   } catch (const simgrid::mc::DeadlockError&) {
@@ -73,5 +70,6 @@ int main(int argc, char** argv)
   }
   checker = nullptr;
   api::get().s_close();
+  delete[] argv_copy;
   return res;
 }

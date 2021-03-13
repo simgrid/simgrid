@@ -15,6 +15,8 @@
 namespace simgrid {
 namespace mc {
 
+XBT_DECLARE_ENUM_CLASS(CheckerAlgorithm, Safety, UDPOR, Liveness, CommDeterminism);
+
 /**
  * @brief Maintains the transition's information.
  */
@@ -64,7 +66,7 @@ public:
     return api;
   }
 
-  void initialize(char** argv) const;
+  simgrid::mc::Checker* initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const;
 
   // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
@@ -97,7 +99,6 @@ public:
   void mc_check_deadlock() const;
   bool mc_is_null() const;
   Checker* mc_get_checker() const;
-  void set_checker(Checker* const checker) const;
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
