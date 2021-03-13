@@ -28,12 +28,12 @@ ConditionVariablePtr ConditionVariable::create()
  */
 void ConditionVariable::wait(MutexPtr lock)
 {
-  simcall_cond_wait(cond_, lock->pimpl_);
+  simcall_cond_wait(pimpl_, lock->pimpl_);
 }
 
 void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
 {
-  simcall_cond_wait(cond_, lock.mutex()->pimpl_);
+  simcall_cond_wait(pimpl_, lock.mutex()->pimpl_);
 }
 
 std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
@@ -42,7 +42,7 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
   if (timeout < 0)
     timeout = 0.0;
 
-  if (simcall_cond_wait_timeout(cond_, lock.mutex()->pimpl_, timeout)) {
+  if (simcall_cond_wait_timeout(pimpl_, lock.mutex()->pimpl_, timeout)) {
     // If we reached the timeout, we have to take the lock again:
     lock.mutex()->lock();
     return std::cv_status::timeout;
@@ -67,22 +67,22 @@ std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock
  */
 void ConditionVariable::notify_one()
 {
-  simgrid::kernel::actor::simcall([this]() { cond_->signal(); });
+  simgrid::kernel::actor::simcall([this]() { pimpl_->signal(); });
 }
 
 void ConditionVariable::notify_all()
 {
-  simgrid::kernel::actor::simcall([this]() { cond_->broadcast(); });
+  simgrid::kernel::actor::simcall([this]() { pimpl_->broadcast(); });
 }
 
 void intrusive_ptr_add_ref(const ConditionVariable* cond)
 {
-  intrusive_ptr_add_ref(cond->cond_);
+  intrusive_ptr_add_ref(cond->pimpl_);
 }
 
 void intrusive_ptr_release(const ConditionVariable* cond)
 {
-  intrusive_ptr_release(cond->cond_);
+  intrusive_ptr_release(cond->pimpl_);
 }
 
 } // namespace s4u
