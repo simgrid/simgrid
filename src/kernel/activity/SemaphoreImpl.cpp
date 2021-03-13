@@ -43,19 +43,24 @@ void SemaphoreImpl::release()
   }
 }
 
+/** Increase the refcount for this semaphore */
+SemaphoreImpl* SemaphoreImpl::ref()
+{
+  intrusive_ptr_add_ref(this);
+  return this;
+}
+
+/** Decrease the refcount for this mutex */
+void SemaphoreImpl::unref()
+{
+  intrusive_ptr_release(this);
+}
+
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid
 
 // Simcall handlers:
-/**
- * @brief Handles a sem acquire simcall without timeout.
- */
-void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
-{
-  sem->acquire(simcall->issuer_, -1);
-}
-
 /**
  * @brief Handles a sem acquire simcall with timeout.
  */

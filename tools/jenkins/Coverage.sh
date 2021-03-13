@@ -1,13 +1,27 @@
 #!/usr/bin/env sh
 
-set -e
-
-BUILDFOLDER=$WORKSPACE/build
-
 die() {
     echo "$@"
     exit 1
 }
+
+[ -n "$WORKSPACE" ] || die "No WORKSPACE"
+[ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
+
+echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
+rm -f /tmp/cc*
+rm -f /tmp/*.so
+rm -rf /tmp/simgrid-java*
+rm -rf /var/tmp/simgrid-java*
+rm -rf /tmp/jvm-*
+find "$WORKSPACE" -name "hs_err_pid*.log" -exec rm -f {} +
+ls /tmp
+df -h
+echo "XXXX Let's go"
+
+set -e
+
+BUILDFOLDER=$WORKSPACE/build
 
 ### Check the node installation
 
@@ -26,9 +40,6 @@ pkg_check() {
 pkg_check xsltproc gcovr ant cover2cover.py
 
 ### Cleanup previous runs
-
-[ -n "$WORKSPACE" ] || die "No WORKSPACE"
-[ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
 do_cleanup() {
   for d

@@ -7,16 +7,11 @@
 #include "simgrid/Exception.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_condition, simix_synchro, "Condition variables");
 
 /********************************* Condition **********************************/
-
-/** @brief Handle a condition waiting simcall without timeouts */
-void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex)
-{
-  cond->wait(mutex, -1, simcall->issuer_);
-}
 
 /** @brief Handle a condition waiting simcall with timeouts */
 void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout)
@@ -51,10 +46,14 @@ void ConditionVariableImpl::signal()
     /* Now transform the cond wait simcall into a mutex lock one */
     smx_simcall_t simcall = &proc.simcall_;
     MutexImpl* simcall_mutex;
-    if (simcall->call_ == simix::Simcall::COND_WAIT)
-      simcall_mutex = simcall_cond_wait__get__mutex(simcall);
-    else
+    if (simcall->call_ == simix::Simcall::COND_WAIT_TIMEOUT)
       simcall_mutex = simcall_cond_wait_timeout__get__mutex(simcall);
+    else {
+      // FIXME? using here the MC observer to solve a problem not related to MC
+      auto* observer = dynamic_cast<mc::ConditionWaitSimcall*>(simcall->observer_);
+      xbt_assert(observer != nullptr);
+      simcall_mutex = observer->get_mutex();
+    }
     simcall->call_ = simix::Simcall::RUN_BLOCKING;
 
     simcall_mutex->lock(simcall->issuer_);

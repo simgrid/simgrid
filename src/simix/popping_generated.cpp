@@ -38,9 +38,7 @@ constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
     "Simcall::COMM_TESTANY",
     "Simcall::COMM_WAITANY",
     "Simcall::COMM_WAIT",
-    "Simcall::COND_WAIT",
     "Simcall::COND_WAIT_TIMEOUT",
-    "Simcall::SEM_ACQUIRE",
     "Simcall::SEM_ACQUIRE_TIMEOUT",
     "Simcall::RUN_KERNEL",
     "Simcall::RUN_BLOCKING",
@@ -98,16 +96,8 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered_)
       simcall_HANDLER_comm_wait(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl*>(simcall_.args_[0]), simgrid::simix::unmarshal<double>(simcall_.args_[1]));
       break;
 
-    case Simcall::COND_WAIT:
-      simcall_HANDLER_cond_wait(&simcall_, simgrid::simix::unmarshal<smx_cond_t>(simcall_.args_[0]), simgrid::simix::unmarshal<smx_mutex_t>(simcall_.args_[1]));
-      break;
-
     case Simcall::COND_WAIT_TIMEOUT:
       simcall_HANDLER_cond_wait_timeout(&simcall_, simgrid::simix::unmarshal<smx_cond_t>(simcall_.args_[0]), simgrid::simix::unmarshal<smx_mutex_t>(simcall_.args_[1]), simgrid::simix::unmarshal<double>(simcall_.args_[2]));
-      break;
-
-    case Simcall::SEM_ACQUIRE:
-      simcall_HANDLER_sem_acquire(&simcall_, simgrid::simix::unmarshal<smx_sem_t>(simcall_.args_[0]));
       break;
 
     case Simcall::SEM_ACQUIRE_TIMEOUT:

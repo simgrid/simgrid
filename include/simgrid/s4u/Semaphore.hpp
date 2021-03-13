@@ -29,29 +29,28 @@ namespace s4u {
  *
  */
 class XBT_PUBLIC Semaphore {
+  friend kernel::activity::SemaphoreImpl;
+
   kernel::activity::SemaphoreImpl* const pimpl_;
-  std::atomic_int_fast32_t refcount_{0};
 
-  friend void intrusive_ptr_add_ref(Semaphore* sem);
-  friend void intrusive_ptr_release(Semaphore* sem);
+  friend void intrusive_ptr_add_ref(const Semaphore* sem);
+  friend void intrusive_ptr_release(const Semaphore* sem);
 
-public:
-  explicit Semaphore(unsigned int initial_capacity);
-  ~Semaphore();
-
+  explicit Semaphore(kernel::activity::SemaphoreImpl* sem) : pimpl_(sem) {}
 #ifndef DOXYGEN
   Semaphore(Semaphore const&) = delete;            // No copy constructor. Use SemaphorePtr instead
   Semaphore& operator=(Semaphore const&) = delete; // No direct assignment either. Use SemaphorePtr instead
 #endif
 
+public:
   /** Constructs a new semaphore */
   static SemaphorePtr create(unsigned int initial_capacity);
 
   void acquire();
-  int acquire_timeout(double timeout);
+  bool acquire_timeout(double timeout);
   void release();
   int get_capacity() const;
-  int would_block() const;
+  bool would_block() const;
 };
 
 } // namespace s4u

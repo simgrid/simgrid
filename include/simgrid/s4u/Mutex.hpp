@@ -37,14 +37,13 @@ class XBT_PUBLIC Mutex {
   friend XBT_PUBLIC void intrusive_ptr_add_ref(const Mutex* mutex);
   friend XBT_PUBLIC void intrusive_ptr_release(const Mutex* mutex);
 
-public:
   explicit Mutex(kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
-  ~Mutex();
 #ifndef DOXYGEN
   Mutex(Mutex const&) = delete;            // No copy constructor; Use MutexPtr instead
   Mutex& operator=(Mutex const&) = delete; // No direct assignment either. Use MutexPtr instead
 #endif
 
+public:
   /** Constructs a new mutex */
   static MutexPtr create();
   void lock();

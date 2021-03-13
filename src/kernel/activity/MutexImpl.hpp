@@ -6,7 +6,7 @@
 #ifndef SIMGRID_KERNEL_ACTIVITY_MUTEX_HPP
 #define SIMGRID_KERNEL_ACTIVITY_MUTEX_HPP
 
-#include "simgrid/s4u/ConditionVariable.hpp"
+#include "simgrid/s4u/Mutex.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include <boost/intrusive/list.hpp>
 

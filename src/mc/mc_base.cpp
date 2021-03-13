@@ -125,22 +125,6 @@ bool actor_is_enabled(smx_actor_t actor)
       return false;
     }
 
-    case Simcall::SEM_ACQUIRE: {
-      static bool warned = false;
-      if (not warned)
-        XBT_INFO("Using semaphore in model-checked code is still experimental. Use at your own risk");
-      warned = true;
-      return true;
-    }
-
-    case Simcall::COND_WAIT: {
-      static bool warned = false;
-      if (not warned)
-        XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
-      warned = true;
-      return true;
-    }
-
     default:
       /* The rest of the requests are always enabled */
       return true;

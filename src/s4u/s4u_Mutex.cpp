@@ -12,12 +12,6 @@
 namespace simgrid {
 namespace s4u {
 
-Mutex::~Mutex()
-{
-  if (pimpl_ != nullptr)
-    pimpl_->unref();
-}
-
 /** @brief Blocks the calling actor until the mutex can be obtained */
 void Mutex::lock()
 {
@@ -60,14 +54,12 @@ MutexPtr Mutex::create()
 void intrusive_ptr_add_ref(const Mutex* mutex)
 {
   xbt_assert(mutex);
-  if (mutex->pimpl_)
-    mutex->pimpl_->ref();
+  mutex->pimpl_->ref();
 }
 void intrusive_ptr_release(const Mutex* mutex)
 {
   xbt_assert(mutex);
-  if (mutex->pimpl_)
-    mutex->pimpl_->unref();
+  mutex->pimpl_->unref();
 }
 
 } // namespace s4u
@@ -76,10 +68,7 @@ void intrusive_ptr_release(const Mutex* mutex)
 /* **************************** Public C interface *************************** */
 sg_mutex_t sg_mutex_init()
 {
-  simgrid::kernel::activity::MutexImpl* mutex =
-      simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
-
-  return new simgrid::s4u::Mutex(mutex);
+  return simgrid::s4u::Mutex::create().detach();
 }
 
 void sg_mutex_lock(sg_mutex_t mutex)
@@ -99,5 +88,5 @@ int sg_mutex_try_lock(sg_mutex_t mutex)
 
 void sg_mutex_destroy(const_sg_mutex_t mutex)
 {
-  delete mutex;
+  intrusive_ptr_release(mutex);
 }

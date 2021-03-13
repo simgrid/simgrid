@@ -18,6 +18,7 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
@@ -291,9 +292,9 @@ smx_cond_t simcall_cond_init() // XBT_ATTRIB_DEPRECATED_v330
  * @ingroup simix_synchro_management
  *
  */
-void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
+void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATED_v331
 {
-  simcall_BODY_cond_wait(cond, mutex);
+  cond->get_iface()->wait(std::unique_lock<simgrid::s4u::Mutex>(mutex->mutex()));
 }
 
 /**
@@ -310,9 +311,9 @@ int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout
  * @ingroup simix_synchro_management
  *
  */
-void simcall_sem_acquire(smx_sem_t sem)
+void simcall_sem_acquire(smx_sem_t sem) // XBT_ATTRIB_DEPRECATD_v331
 {
-  simcall_BODY_sem_acquire(sem);
+  return sem->sem().acquire();
 }
 
 /**

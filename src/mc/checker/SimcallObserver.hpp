@@ -14,7 +14,7 @@ namespace simgrid {
 namespace mc {
 
 class SimcallObserver {
-  kernel::actor::ActorImpl* issuer_;
+  kernel::actor::ActorImpl* const issuer_;
 
 public:
   explicit SimcallObserver(kernel::actor::ActorImpl* issuer) : issuer_(issuer) {}
@@ -53,8 +53,8 @@ public:
 };
 
 class RandomSimcall : public SimcallObserver {
-  int min_;
-  int max_;
+  const int min_;
+  const int max_;
   int next_value_ = 0;
 
 public:
@@ -75,8 +75,8 @@ public:
 };
 
 class MutexLockSimcall : public SimcallObserver {
-  kernel::activity::MutexImpl* mutex_;
-  bool blocking_;
+  kernel::activity::MutexImpl* const mutex_;
+  const bool blocking_;
 
 public:
   MutexLockSimcall(smx_actor_t actor, kernel::activity::MutexImpl* mutex, bool blocking = true)
@@ -87,6 +87,43 @@ public:
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
   kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
+};
+
+class ConditionWaitSimcall : public SimcallObserver {
+  kernel::activity::ConditionVariableImpl* const cond_;
+  kernel::activity::MutexImpl* const mutex_;
+  const double timeout_;
+
+public:
+  ConditionWaitSimcall(smx_actor_t actor, kernel::activity::ConditionVariableImpl* cond,
+                       kernel::activity::MutexImpl* mutex, double timeout = -1.0)
+      : SimcallObserver(actor), cond_(cond), mutex_(mutex), timeout_(timeout)
+  {
+  }
+  bool is_enabled() const override;
+  bool is_visible() const override { return false; }
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+  kernel::activity::ConditionVariableImpl* get_cond() const { return cond_; }
+  kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
+  double get_timeout() const { return timeout_; }
+};
+
+class SemAcquireSimcall : public SimcallObserver {
+  kernel::activity::SemaphoreImpl* const sem_;
+  const double timeout_;
+
+public:
+  SemAcquireSimcall(smx_actor_t actor, kernel::activity::SemaphoreImpl* sem, double timeout = -1.0)
+      : SimcallObserver(actor), sem_(sem), timeout_(timeout)
+  {
+  }
+  bool is_enabled() const override;
+  bool is_visible() const override { return false; }
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+  kernel::activity::SemaphoreImpl* get_sem() const { return sem_; }
+  double get_timeout() const { return timeout_; }
 };
 } // namespace mc
 } // namespace simgrid

@@ -26,11 +26,10 @@ namespace s4u {
 class XBT_PUBLIC ConditionVariable {
 private:
   friend kernel::activity::ConditionVariableImpl;
-  kernel::activity::ConditionVariableImpl* const cond_;
+  kernel::activity::ConditionVariableImpl* const pimpl_;
 
-public:
 #ifndef DOXYGEN
-  explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : cond_(cond) {}
+  explicit ConditionVariable(kernel::activity::ConditionVariableImpl* cond) : pimpl_(cond) {}
 
   ConditionVariable(ConditionVariable const&) = delete;
   ConditionVariable& operator=(ConditionVariable const&) = delete;
@@ -39,6 +38,7 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(const ConditionVariable* cond);
 #endif
 
+public:
   /** Create a new condition variable and return a smart pointer
    *
    * @beginrst

@@ -75,5 +75,49 @@ bool MutexLockSimcall::is_enabled() const
 {
   return not blocking_ || mutex_->get_owner() == nullptr || mutex_->get_owner() == get_issuer();
 }
+
+std::string ConditionWaitSimcall::to_string(int time_considered) const
+{
+  std::string res = SimcallObserver::to_string(time_considered) + "Condition WAIT";
+  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
+  return res;
+}
+
+std::string ConditionWaitSimcall::dot_label() const
+{
+  return SimcallObserver::dot_label() + "Condition WAIT";
+}
+
+bool ConditionWaitSimcall::is_enabled() const
+{
+  static bool warned = false;
+  if (not warned) {
+    XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
+    warned = true;
+  }
+  return true;
+}
+
+std::string SemAcquireSimcall::to_string(int time_considered) const
+{
+  std::string res = SimcallObserver::to_string(time_considered) + "Sem ACQUIRE";
+  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
+  return res;
+}
+
+std::string SemAcquireSimcall::dot_label() const
+{
+  return SimcallObserver::dot_label() + "Sem ACQUIRE";
+}
+
+bool SemAcquireSimcall::is_enabled() const
+{
+  static bool warned = false;
+  if (not warned) {
+    XBT_INFO("Using semaphore in model-checked code is still experimental. Use at your own risk");
+    warned = true;
+  }
+  return true;
+}
 } // namespace mc
 } // namespace simgrid
