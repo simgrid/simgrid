@@ -224,9 +224,6 @@ simgrid::mc::ActorInformation* Api::actor_info_cast(smx_actor_t actor) const
 // Does half the job
 bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
 {
-  if (r1->call_ == Simcall::COMM_ISEND && r2->call_ == Simcall::COMM_IRECV)
-    return false;
-
   if (r1->call_ == Simcall::COMM_IRECV && r2->call_ == Simcall::COMM_ISEND)
     return false;
 
@@ -262,7 +259,7 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
     return false;
 #endif
 
-  if (r1->call_ == Simcall::COMM_WAIT && r2->call_ == Simcall::COMM_TEST &&
+  if (r1->call_ == Simcall::COMM_TEST && r2->call_ == Simcall::COMM_WAIT &&
       (comm1->src_actor_.get() == nullptr || comm1->dst_actor_.get() == nullptr))
     return false;
 
@@ -274,7 +271,7 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
       comm1->dst_buff_ == comm2->dst_buff_)
     return false;
 
-  if (r1->call_ == Simcall::COMM_WAIT && r2->call_ == Simcall::COMM_TEST && comm1->src_buff_ != nullptr &&
+  if (r1->call_ == Simcall::COMM_TEST && r2->call_ == Simcall::COMM_WAIT && comm1->src_buff_ != nullptr &&
       comm1->dst_buff_ != nullptr && comm2->src_buff_ != nullptr && comm2->dst_buff_ != nullptr &&
       comm1->dst_buff_ != comm2->src_buff_ && comm1->dst_buff_ != comm2->dst_buff_ &&
       comm2->dst_buff_ != comm1->src_buff_)
