@@ -54,14 +54,12 @@ MutexPtr Mutex::create()
 void intrusive_ptr_add_ref(const Mutex* mutex)
 {
   xbt_assert(mutex);
-  if (mutex->pimpl_)
-    mutex->pimpl_->ref();
+  mutex->pimpl_->ref();
 }
 void intrusive_ptr_release(const Mutex* mutex)
 {
   xbt_assert(mutex);
-  if (mutex->pimpl_)
-    mutex->pimpl_->unref();
+  mutex->pimpl_->unref();
 }
 
 } // namespace s4u
