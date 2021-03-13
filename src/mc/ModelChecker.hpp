@@ -38,10 +38,7 @@ public:
 
   RemoteProcess& get_remote_simulation() { return *remote_process_; }
   Channel& channel() { return checker_side_.get_channel(); }
-  PageStore& page_store()
-  {
-    return page_store_;
-  }
+  PageStore& page_store() { return page_store_; }
 
   xbt::string const& get_host_name(const char* hostname)
   {
@@ -50,7 +47,7 @@ public:
 
   void start();
   void shutdown();
-  void resume(simgrid::mc::RemoteProcess& get_remote_simulation);
+  void resume(simgrid::mc::RemoteProcess& process);
   void wait_for_requests();
   void handle_simcall(Transition const& transition);
 
