@@ -292,9 +292,9 @@ smx_cond_t simcall_cond_init() // XBT_ATTRIB_DEPRECATED_v330
  * @ingroup simix_synchro_management
  *
  */
-void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
+void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATED_v331
 {
-  simcall_BODY_cond_wait(cond, mutex);
+  cond->get_iface()->wait(std::unique_lock<simgrid::s4u::Mutex>(mutex->mutex()));
 }
 
 /**

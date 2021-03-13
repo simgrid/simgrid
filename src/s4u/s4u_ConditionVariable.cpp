@@ -8,6 +8,7 @@
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/simix.h"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 #include "xbt/log.hpp"
 
 #include <exception>
@@ -28,12 +29,18 @@ ConditionVariablePtr ConditionVariable::create()
  */
 void ConditionVariable::wait(MutexPtr lock)
 {
-  simcall_cond_wait(pimpl_, lock->pimpl_);
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  mc::ConditionWaitSimcall observer{issuer, pimpl_, lock->pimpl_};
+  kernel::actor::simcall_blocking<void>(
+      [&observer] { observer.get_cond()->wait(observer.get_mutex(), -1.0, observer.get_issuer()); }, &observer);
 }
 
 void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
 {
-  simcall_cond_wait(pimpl_, lock.mutex()->pimpl_);
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  mc::ConditionWaitSimcall observer{issuer, pimpl_, lock.mutex()->pimpl_};
+  kernel::actor::simcall_blocking<void>(
+      [&observer] { observer.get_cond()->wait(observer.get_mutex(), -1.0, observer.get_issuer()); }, &observer);
 }
 
 std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)

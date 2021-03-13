@@ -104,13 +104,6 @@ inline static int simcall_BODY_comm_testany(simgrid::kernel::activity::CommImpl*
   return simcall<int, simgrid::kernel::activity::CommImpl**, size_t>(Simcall::COMM_TESTANY, comms, count);
 }
 
-inline static void simcall_BODY_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_cond_wait(&SIMIX_process_self()->simcall_, cond, mutex);
-  return simcall<void, smx_cond_t, smx_mutex_t>(Simcall::COND_WAIT, cond, mutex);
-}
-
 inline static int simcall_BODY_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */

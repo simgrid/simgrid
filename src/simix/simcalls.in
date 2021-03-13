@@ -46,7 +46,6 @@ void           comm_wait(simgrid::kernel::activity::CommImpl* comm, double timeo
 bool           comm_test(simgrid::kernel::activity::CommImpl* comm) [[block]];
 int            comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count) [[block]];
 
-void       cond_wait(smx_cond_t cond, smx_mutex_t mutex) [[block]];
 int        cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) [[block]];
 
 int       sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];

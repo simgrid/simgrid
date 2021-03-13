@@ -89,6 +89,24 @@ public:
   kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
 };
 
+class ConditionWaitSimcall : public SimcallObserver {
+  kernel::activity::ConditionVariableImpl* const cond_;
+  kernel::activity::MutexImpl* const mutex_;
+
+public:
+  ConditionWaitSimcall(smx_actor_t actor, kernel::activity::ConditionVariableImpl* cond,
+                       kernel::activity::MutexImpl* mutex)
+      : SimcallObserver(actor), cond_(cond), mutex_(mutex)
+  {
+  }
+  bool is_enabled() const override;
+  bool is_visible() const override { return false; }
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+  kernel::activity::ConditionVariableImpl* get_cond() const { return cond_; }
+  kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
+};
+
 class SemAcquireSimcall : public SimcallObserver {
   kernel::activity::SemaphoreImpl* const sem_;
 
