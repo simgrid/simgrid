@@ -18,11 +18,12 @@ namespace activity {
 
 class XBT_PUBLIC SemaphoreImpl {
   std::atomic_int_fast32_t refcount_{1};
+  s4u::Semaphore piface_;
   unsigned int value_;
   actor::SynchroList sleeping_; /* list of sleeping actors*/
 
 public:
-  explicit SemaphoreImpl(unsigned int value) : value_(value){};
+  explicit SemaphoreImpl(unsigned int value) : piface_(this), value_(value){};
 
   SemaphoreImpl(SemaphoreImpl const&) = delete;
   SemaphoreImpl& operator=(SemaphoreImpl const&) = delete;
@@ -35,6 +36,9 @@ public:
   unsigned int get_capacity() const { return value_; }
   bool is_used() const { return not sleeping_.empty(); }
 
+  SemaphoreImpl* ref();
+  void unref();
+
   friend void intrusive_ptr_add_ref(SemaphoreImpl* sem)
   {
     XBT_ATTRIB_UNUSED auto previous = sem->refcount_.fetch_add(1);
@@ -42,9 +46,13 @@ public:
   }
   friend void intrusive_ptr_release(SemaphoreImpl* sem)
   {
-    if (sem->refcount_.fetch_sub(1) == 1)
+    if (sem->refcount_.fetch_sub(1) == 1) {
+      xbt_assert(not sem->is_used(), "Cannot destroy semaphore since someone is still using it");
       delete sem;
+    }
   }
+
+  s4u::Semaphore& sem() { return piface_; }
 };
 } // namespace activity
 } // namespace kernel

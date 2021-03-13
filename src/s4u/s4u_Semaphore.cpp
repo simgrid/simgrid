@@ -13,17 +13,10 @@
 namespace simgrid {
 namespace s4u {
 
-Semaphore::Semaphore(unsigned int initial_capacity) : pimpl_(new kernel::activity::SemaphoreImpl(initial_capacity)) {}
-
-Semaphore::~Semaphore()
-{
-  xbt_assert(not pimpl_->is_used(), "Cannot destroy semaphore since someone is still using it");
-  delete pimpl_;
-}
-
 SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 {
-  return SemaphorePtr(new Semaphore(initial_capacity));
+  auto* sem = new kernel::activity::SemaphoreImpl(initial_capacity);
+  return SemaphorePtr(&sem->sem(), false);
 }
 
 void Semaphore::acquire()
@@ -51,19 +44,17 @@ bool Semaphore::would_block() const
   return kernel::actor::simcall([this] { return pimpl_->would_block(); });
 }
 
-void intrusive_ptr_add_ref(Semaphore* sem)
+/* refcounting of the intrusive_ptr is delegated to the implementation object */
+void intrusive_ptr_add_ref(const Semaphore* sem)
 {
   xbt_assert(sem);
-  sem->refcount_.fetch_add(1, std::memory_order_relaxed);
+  sem->pimpl_->ref();
 }
 
-void intrusive_ptr_release(Semaphore* sem)
+void intrusive_ptr_release(const Semaphore* sem)
 {
   xbt_assert(sem);
-  if (sem->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-    std::atomic_thread_fence(std::memory_order_acquire);
-    delete sem;
-  }
+  sem->pimpl_->unref();
 }
 
 } // namespace s4u
@@ -73,7 +64,7 @@ void intrusive_ptr_release(Semaphore* sem)
 /** @brief creates a semaphore object of the given initial capacity */
 sg_sem_t sg_sem_init(int initial_value)
 {
-  return new simgrid::s4u::Semaphore(initial_value);
+  return simgrid::s4u::Semaphore::create(initial_value).detach();
 }
 
 /** @brief locks on a semaphore object */
@@ -101,7 +92,7 @@ int sg_sem_get_capacity(const_sg_sem_t sem)
 
 void sg_sem_destroy(const_sg_sem_t sem)
 {
-  delete sem;
+  intrusive_ptr_release(sem);
 }
 
 /** @brief returns a boolean indicating if this semaphore would block at this very specific time

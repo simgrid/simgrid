@@ -86,8 +86,8 @@ class File;
 class Semaphore;
 /** Smart pointer to a simgrid::s4u::Semaphore */
 using SemaphorePtr = boost::intrusive_ptr<Semaphore>;
-XBT_PUBLIC void intrusive_ptr_release(Semaphore* m);
-XBT_PUBLIC void intrusive_ptr_add_ref(Semaphore* m);
+XBT_PUBLIC void intrusive_ptr_release(const Semaphore* m);
+XBT_PUBLIC void intrusive_ptr_add_ref(const Semaphore* m);
 
 class Disk;
 } // namespace s4u

@@ -43,6 +43,19 @@ void SemaphoreImpl::release()
   }
 }
 
+/** Increase the refcount for this semaphore */
+SemaphoreImpl* SemaphoreImpl::ref()
+{
+  intrusive_ptr_add_ref(this);
+  return this;
+}
+
+/** Decrease the refcount for this mutex */
+void SemaphoreImpl::unref()
+{
+  intrusive_ptr_release(this);
+}
+
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid
