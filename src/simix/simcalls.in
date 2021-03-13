@@ -49,7 +49,6 @@ int            comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t 
 void       cond_wait(smx_cond_t cond, smx_mutex_t mutex) [[block]];
 int        cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) [[block]];
 
-void      sem_acquire(smx_sem_t sem) [[block]];
 int       sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];
 
 void       run_kernel(std::function<void()> const* code) [[nohandler]];

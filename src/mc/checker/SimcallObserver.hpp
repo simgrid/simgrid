@@ -88,6 +88,18 @@ public:
   std::string dot_label() const override;
   kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
 };
+
+class SemAcquireSimcall : public SimcallObserver {
+  kernel::activity::SemaphoreImpl* const sem_;
+
+public:
+  SemAcquireSimcall(smx_actor_t actor, kernel::activity::SemaphoreImpl* sem) : SimcallObserver(actor), sem_(sem) {}
+  bool is_enabled() const override;
+  bool is_visible() const override { return false; }
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+  kernel::activity::SemaphoreImpl* get_sem() const { return sem_; }
+};
 } // namespace mc
 } // namespace simgrid
 

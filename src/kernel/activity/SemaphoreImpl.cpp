@@ -62,14 +62,6 @@ void SemaphoreImpl::unref()
 
 // Simcall handlers:
 /**
- * @brief Handles a sem acquire simcall without timeout.
- */
-void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
-{
-  sem->acquire(simcall->issuer_, -1);
-}
-
-/**
  * @brief Handles a sem acquire simcall with timeout.
  */
 void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)

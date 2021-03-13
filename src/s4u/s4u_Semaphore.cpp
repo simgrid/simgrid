@@ -9,6 +9,7 @@
 #include "simgrid/forward.h"
 #include "simgrid/s4u/Semaphore.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 
 namespace simgrid {
 namespace s4u {
@@ -21,7 +22,10 @@ SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 
 void Semaphore::acquire()
 {
-  simcall_sem_acquire(pimpl_);
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  mc::SemAcquireSimcall observer{issuer, pimpl_};
+  kernel::actor::simcall_blocking<void>([&observer] { observer.get_sem()->acquire(observer.get_issuer(), -1.0); },
+                                        &observer);
 }
 
 bool Semaphore::acquire_timeout(double timeout)

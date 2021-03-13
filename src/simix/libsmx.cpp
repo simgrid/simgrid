@@ -18,6 +18,7 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
@@ -310,9 +311,9 @@ int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout
  * @ingroup simix_synchro_management
  *
  */
-void simcall_sem_acquire(smx_sem_t sem)
+void simcall_sem_acquire(smx_sem_t sem) // XBT_ATTRIB_DEPRECATD_v331
 {
-  simcall_BODY_sem_acquire(sem);
+  return sem->sem().acquire();
 }
 
 /**

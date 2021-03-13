@@ -75,5 +75,25 @@ bool MutexLockSimcall::is_enabled() const
 {
   return not blocking_ || mutex_->get_owner() == nullptr || mutex_->get_owner() == get_issuer();
 }
+
+std::string SemAcquireSimcall::to_string(int time_considered) const
+{
+  return SimcallObserver::to_string(time_considered) + "Sem ACQUIRE";
+}
+
+std::string SemAcquireSimcall::dot_label() const
+{
+  return SimcallObserver::dot_label() + "Sem ACQUIRE";
+}
+
+bool SemAcquireSimcall::is_enabled() const
+{
+  static bool warned = false;
+  if (not warned) {
+    XBT_INFO("Using semaphore in model-checked code is still experimental. Use at your own risk");
+    warned = true;
+  }
+  return true;
+}
 } // namespace mc
 } // namespace simgrid

@@ -207,7 +207,7 @@ XBT_ATTRIB_DEPRECATED_v330("Please use sg_cond_init()") XBT_PUBLIC smx_cond_t si
 XBT_PUBLIC void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
 XBT_PUBLIC int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double max_duration);
 
-XBT_PUBLIC void simcall_sem_acquire(smx_sem_t sem);
+XBT_ATTRIB_DEPRECATED_v331("Please use sg_sem_acquire()") XBT_PUBLIC void simcall_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC int simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
 SG_END_DECL
 
