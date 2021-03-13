@@ -285,13 +285,23 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
 
 bool Api::simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const
 {
+  const auto ISEND = Simcall::COMM_ISEND;
+  const auto IRECV = Simcall::COMM_IRECV;
+  const auto TEST  = Simcall::COMM_TEST;
+  const auto WAIT  = Simcall::COMM_WAIT;
+
   if (req1->issuer_ == req2->issuer_)
     return false;
 
-  /* Wait with timeout transitions are not considered by the independence theorem, thus we consider them as dependent
-   * with all other transitions */
-  if ((req1->call_ == Simcall::COMM_WAIT && simcall_comm_wait__get__timeout(req1) > 0) ||
-      (req2->call_ == Simcall::COMM_WAIT && simcall_comm_wait__get__timeout(req2) > 0))
+  /* The independence theorem only consider 4 simcalls. All others are dependent with anything. */
+  if (req1->call_ != ISEND && req1->call_ != IRECV && req1->call_ != TEST && req1->call_ != WAIT)
+    return true;
+  if (req2->call_ != ISEND && req2->call_ != IRECV && req2->call_ != TEST && req2->call_ != WAIT)
+    return true;
+
+  /* Timeouts in wait transitions are not considered by the independence theorem, thus assumed dependent */
+  if ((req1->call_ == WAIT && simcall_comm_wait__get__timeout(req1) > 0) ||
+      (req2->call_ == WAIT && simcall_comm_wait__get__timeout(req2) > 0))
     return true;
 
   if (req1->call_ != req2->call_)
