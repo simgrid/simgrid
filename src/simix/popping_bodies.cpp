@@ -48,20 +48,6 @@ inline static int simcall_BODY_execution_waitany_for(simgrid::kernel::activity::
   return simcall<int, simgrid::kernel::activity::ExecImpl**, size_t, double>(Simcall::EXECUTION_WAITANY_FOR, execs, count, timeout);
 }
 
-inline static void simcall_BODY_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_send(&SIMIX_process_self()->simcall_, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, copy_data_fun, data, timeout);
-  return simcall<void, smx_actor_t, smx_mailbox_t, double, double, unsigned char*, size_t, simix_match_func_t, simix_copy_data_func_t, void*, double>(Simcall::COMM_SEND, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, copy_data_fun, data, timeout);
-}
-
-inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_BODY_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, bool detached)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_isend(&SIMIX_process_self()->simcall_, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
-  return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, smx_actor_t, smx_mailbox_t, double, double, unsigned char*, size_t, simix_match_func_t, simix_clean_func_t, simix_copy_data_func_t, void*, bool>(Simcall::COMM_ISEND, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
-}
-
 inline static void simcall_BODY_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */
@@ -76,18 +62,18 @@ inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simc
   return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, smx_actor_t, smx_mailbox_t, unsigned char*, size_t*, simix_match_func_t, simix_copy_data_func_t, void*, double>(Simcall::COMM_IRECV, receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
 }
 
-inline static int simcall_BODY_comm_waitany(simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout)
+inline static void simcall_BODY_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_waitany(&SIMIX_process_self()->simcall_, comms, count, timeout);
-  return simcall<int, simgrid::kernel::activity::CommImpl**, size_t, double>(Simcall::COMM_WAITANY, comms, count, timeout);
+    simcall_HANDLER_comm_send(&SIMIX_process_self()->simcall_, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, copy_data_fun, data, timeout);
+  return simcall<void, smx_actor_t, smx_mailbox_t, double, double, unsigned char*, size_t, simix_match_func_t, simix_copy_data_func_t, void*, double>(Simcall::COMM_SEND, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, copy_data_fun, data, timeout);
 }
 
-inline static void simcall_BODY_comm_wait(simgrid::kernel::activity::CommImpl* comm, double timeout)
+inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_BODY_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, bool detached)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_wait(&SIMIX_process_self()->simcall_, comm, timeout);
-  return simcall<void, simgrid::kernel::activity::CommImpl*, double>(Simcall::COMM_WAIT, comm, timeout);
+    simcall_HANDLER_comm_isend(&SIMIX_process_self()->simcall_, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
+  return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, smx_actor_t, smx_mailbox_t, double, double, unsigned char*, size_t, simix_match_func_t, simix_clean_func_t, simix_copy_data_func_t, void*, bool>(Simcall::COMM_ISEND, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
 }
 
 inline static bool simcall_BODY_comm_test(simgrid::kernel::activity::CommImpl* comm)
@@ -102,6 +88,20 @@ inline static int simcall_BODY_comm_testany(simgrid::kernel::activity::CommImpl*
   if (false) /* Go to that function to follow the code flow through the simcall barrier */
     simcall_HANDLER_comm_testany(&SIMIX_process_self()->simcall_, comms, count);
   return simcall<int, simgrid::kernel::activity::CommImpl**, size_t>(Simcall::COMM_TESTANY, comms, count);
+}
+
+inline static int simcall_BODY_comm_waitany(simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout)
+{
+  if (false) /* Go to that function to follow the code flow through the simcall barrier */
+    simcall_HANDLER_comm_waitany(&SIMIX_process_self()->simcall_, comms, count, timeout);
+  return simcall<int, simgrid::kernel::activity::CommImpl**, size_t, double>(Simcall::COMM_WAITANY, comms, count, timeout);
+}
+
+inline static void simcall_BODY_comm_wait(simgrid::kernel::activity::CommImpl* comm, double timeout)
+{
+  if (false) /* Go to that function to follow the code flow through the simcall barrier */
+    simcall_HANDLER_comm_wait(&SIMIX_process_self()->simcall_, comm, timeout);
+  return simcall<void, simgrid::kernel::activity::CommImpl*, double>(Simcall::COMM_WAIT, comm, timeout);
 }
 
 inline static void simcall_BODY_cond_wait(smx_cond_t cond, smx_mutex_t mutex)

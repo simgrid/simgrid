@@ -283,7 +283,7 @@ bool Api::request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const
   return true;
 }
 
-bool Api::simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const
+bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
 {
   const auto ISEND = Simcall::COMM_ISEND;
   const auto IRECV = Simcall::COMM_IRECV;
@@ -304,6 +304,11 @@ bool Api::simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const
       (req2->call_ == WAIT && simcall_comm_wait__get__timeout(req2) > 0))
     return true;
 
+  if (req1->call_ < req2->call_) {
+    auto temp = req1;
+    req1 = req2;
+    req2 = temp;
+  }
   if (req1->call_ != req2->call_)
     return request_depend_asymmetric(req1, req2) && request_depend_asymmetric(req2, req1);
 
