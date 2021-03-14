@@ -82,6 +82,10 @@ public:
   RemoteProcess& operator=(RemoteProcess const&) = delete;
   RemoteProcess& operator=(RemoteProcess&&) = delete;
 
+  /* ************* */
+  /* Low-level API */
+  /* ************* */
+
   // Read memory:
   void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
                    ReadOptions options = ReadOptions::none()) const override;
@@ -156,6 +160,11 @@ public:
   void unignore_heap(void* address, size_t size);
 
   void ignore_local_variable(const char* var_name, const char* frame_name) const;
+
+  /* ***************** */
+  /* SIMIX-related API */
+  /* ***************** */
+
   std::vector<ActorInformation>& actors();
   std::vector<ActorInformation>& dead_actors();
 
@@ -184,6 +193,8 @@ public:
     else
       return nullptr;
   }
+
+  unsigned long get_maxpid() const;
 
   void dump_stack() const;
 

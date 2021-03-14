@@ -458,15 +458,7 @@ std::vector<simgrid::mc::ActorInformation>& Api::get_actors() const
 
 unsigned long Api::get_maxpid() const
 {
-  static const char* name = nullptr;
-  if (not name) {
-    name = "simgrid::kernel::actor::maxpid";
-    if (mc_model_checker->get_remote_process().find_variable(name) == nullptr)
-      name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
-  }
-  unsigned long maxpid;
-  mc_model_checker->get_remote_process().read_variable(name, &maxpid, sizeof(maxpid));
-  return maxpid;
+  return mc_model_checker->get_remote_process().get_maxpid();
 }
 
 int Api::get_actors_size() const

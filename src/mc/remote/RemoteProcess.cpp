@@ -569,5 +569,19 @@ void RemoteProcess::dump_stack() const
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
 }
+
+unsigned long RemoteProcess::get_maxpid() const
+{
+  static const char* name = nullptr;
+  if (not name) {
+    name = "simgrid::kernel::actor::maxpid";
+    if (find_variable(name) == nullptr)
+      name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
+  }
+  unsigned long maxpid;
+  read_variable(name, &maxpid, sizeof(maxpid));
+  return maxpid;
+}
+
 } // namespace mc
 } // namespace simgrid
