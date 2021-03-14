@@ -359,7 +359,7 @@ void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallO
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
-void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* t = nullptr)
+void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* t)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = t;
   simcall_BODY_run_blocking(&code);
