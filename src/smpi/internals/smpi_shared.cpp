@@ -49,7 +49,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include "smpi_utils.hpp"
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -99,7 +99,6 @@ int smpi_shared_malloc_bogusfile_huge_page = -1;
 unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
 #endif
 }
-
 
 void smpi_shared_destroy()
 {
@@ -305,20 +304,26 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
 
 void* smpi_shared_malloc_intercept(size_t size, const char* file, int line)
 {
-  if( smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh())
+  if( smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh()){
+    simgrid::smpi::utils::account_malloc_size(size, file, line);
     return ::operator new(size);
-  else
+  } else {
+    simgrid::smpi::utils::account_shared_size(size);
     return smpi_shared_malloc(size, file, line);
+  }
 }
 
 void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line)
 {
   if( smpi_cfg_auto_shared_malloc_thresh() == 0 || elem_size*num_elm < smpi_cfg_auto_shared_malloc_thresh()){
+    simgrid::smpi::utils::account_malloc_size(elem_size*num_elm, file, line);
     void* ptr = ::operator new(elem_size*num_elm);
     memset(ptr, 0, elem_size*num_elm);
     return ptr;
-  } else
+  } else {
+    simgrid::smpi::utils::account_shared_size(elem_size*num_elm);
     return smpi_shared_malloc(elem_size*num_elm, file, line);
+  }
 }
 
 void* smpi_shared_malloc(size_t size, const char* file, int line)

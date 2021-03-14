@@ -71,7 +71,6 @@ std::map</* computation unit name */ std::string, papi_process_data, std::less<>
 std::unordered_map<std::string, double> location2speedup;
 
 static int smpi_exit_status = 0;
-extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
 static std::vector<std::string> privatize_libs_paths;
 
@@ -570,17 +569,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
     SIMIX_run();
 
     xbt_os_walltimer_stop(global_timer);
-    if (simgrid::config::get_value<bool>("smpi/display-timing")) {
-      double global_time = xbt_os_timer_elapsed(global_timer);
-      XBT_INFO("Simulated time: %g seconds. \n\n"
-          "The simulation took %g seconds (after parsing and platform setup)\n"
-          "%g seconds were actual computation of the application",
-          SIMIX_get_clock(), global_time , smpi_total_benched_time);
-
-      if (smpi_total_benched_time/global_time>=0.75)
-      XBT_INFO("More than 75%% of the time was spent inside the application code.\n"
-      "You may want to use sampling functions or trace replay to reduce this.");
-    }
+    simgrid::smpi::utils::print_time_analysis(xbt_os_timer_elapsed(global_timer));
   }
   SMPI_finalize();
 
@@ -625,23 +614,7 @@ void SMPI_finalize()
   if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP)
     smpi_destroy_global_memory_segments();
 
-  if (simgrid::smpi::F2C::lookup() != nullptr &&
-      simgrid::smpi::F2C::lookup()->size() > simgrid::smpi::F2C::get_num_default_handles()) {
-    XBT_INFO("Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles : "
-             "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
-             "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
-             simgrid::smpi::F2C::lookup()->size() - simgrid::smpi::F2C::get_num_default_handles());
-    int n = simgrid::config::get_value<int>("smpi/list-leaks");
-    for (auto const& p : *simgrid::smpi::F2C::lookup()) {
-      static int printed = 0;
-      if (printed >= n)
-        break;
-      if (p.first >= simgrid::smpi::F2C::get_num_default_handles()) {
-        XBT_WARN("Leak %p of type %s", p.second, boost::core::demangle(typeid(*(p.second)).name()).c_str());
-        printed++;
-      }
-    }
-  }
+  simgrid::smpi::utils::print_memory_analysis();
 }
 
 void smpi_mpi_init() {
