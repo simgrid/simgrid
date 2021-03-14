@@ -583,5 +583,18 @@ unsigned long RemoteProcess::get_maxpid() const
   return maxpid;
 }
 
+void RemoteProcess::get_actor_vectors(RemotePtr<s_xbt_dynar_t>& actors, RemotePtr<s_xbt_dynar_t>& dead_actors)
+{
+  static_assert(std::is_same<std::unique_ptr<simgrid::simix::Global>, decltype(simix_global)>::value,
+                "Unexpected type for simix_global");
+  static_assert(sizeof(simix_global) == sizeof(simgrid::simix::Global*), "Bad size for simix_global");
+
+  // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
+  RemotePtr<simgrid::simix::Global> simix_global_p{this->read_variable<simgrid::simix::Global*>("simix_global")};
+  Remote<simgrid::simix::Global> simix_global = this->read<simgrid::simix::Global>(simix_global_p);
+
+  actors      = remote(simix_global.get_buffer()->actors_vector);
+  dead_actors = remote(simix_global.get_buffer()->dead_actors_vector);
+}
 } // namespace mc
 } // namespace simgrid

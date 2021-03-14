@@ -66,24 +66,12 @@ void RemoteProcess::refresh_simix()
   if (this->cache_flags_ & RemoteProcess::cache_simix_processes)
     return;
 
-  // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
+  RemotePtr<s_xbt_dynar_t> actor_vector;
+  RemotePtr<s_xbt_dynar_t> dead_actor_vector;
+  get_actor_vectors(actor_vector, dead_actor_vector);
 
-  static_assert(std::is_same<
-      std::unique_ptr<simgrid::simix::Global>,
-      decltype(simix_global)
-    >::value, "Unexpected type for simix_global");
-  static_assert(sizeof(simix_global) == sizeof(simgrid::simix::Global*),
-    "Bad size for simix_global");
-
-  RemotePtr<simgrid::simix::Global> simix_global_p{this->read_variable<simgrid::simix::Global*>("simix_global")};
-
-  // simix_global = REMOTE(*simix_global)
-  Remote<simgrid::simix::Global> simix_global =
-    this->read<simgrid::simix::Global>(simix_global_p);
-
-  MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, remote(simix_global.get_buffer()->actors_vector));
-  MC_process_refresh_simix_actor_dynar(this, this->smx_dead_actors_infos,
-                                       remote(simix_global.get_buffer()->dead_actors_vector));
+  MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, actor_vector);
+  MC_process_refresh_simix_actor_dynar(this, this->smx_dead_actors_infos, dead_actor_vector);
 
   this->cache_flags_ |= RemoteProcess::cache_simix_processes;
 }

@@ -195,6 +195,7 @@ public:
   }
 
   unsigned long get_maxpid() const;
+  void get_actor_vectors(RemotePtr<s_xbt_dynar_t>& actors, RemotePtr<s_xbt_dynar_t>& dead_actors);
 
   void dump_stack() const;
 
