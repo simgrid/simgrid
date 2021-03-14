@@ -147,18 +147,6 @@ static void MC_report_crash(int status)
   }
 }
 
-static void MC_report_assertion_error()
-{
-  XBT_INFO("**************************");
-  XBT_INFO("*** PROPERTY NOT VALID ***");
-  XBT_INFO("**************************");
-  XBT_INFO("Counter-example execution trace:");
-  for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
-    XBT_INFO("  %s", s.c_str());
-  dumpRecordPath();
-  session->log_state();
-}
-
 bool ModelChecker::handle_message(const char* buffer, ssize_t size)
 {
   s_mc_message_t base_message;
@@ -225,7 +213,15 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       return false;
 
     case MessageType::ASSERTION_FAILED:
-      MC_report_assertion_error();
+      XBT_INFO("**************************");
+      XBT_INFO("*** PROPERTY NOT VALID ***");
+      XBT_INFO("**************************");
+      XBT_INFO("Counter-example execution trace:");
+      for (auto const& s : getChecker()->get_textual_trace())
+        XBT_INFO("  %s", s.c_str());
+      dumpRecordPath();
+      session->log_state();
+
       this->exit(SIMGRID_MC_EXIT_SAFETY);
 
     default:
@@ -267,7 +263,7 @@ void ModelChecker::handle_waitpid()
         xbt_assert(ptrace(PTRACE_GETEVENTMSG, remote_process_->pid(), 0, &status) != -1, "Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
-          exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
+          this->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
 #endif
@@ -286,7 +282,7 @@ void ModelChecker::handle_waitpid()
 
       else if (WIFSIGNALED(status)) {
         MC_report_crash(status);
-        mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
+        this->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
       } else if (WIFEXITED(status)) {
         XBT_DEBUG("Child process is over");
         this->get_remote_process().terminate();
