@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/checker/LivenessChecker.hpp"
+#include "src/mc/Session.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -115,8 +116,7 @@ void LivenessChecker::replay()
     }
   }
 
-  /* Restore the initial state */
-  api::get().restore_initial_state();
+  session->restore_initial_state();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
@@ -298,7 +298,7 @@ void LivenessChecker::run()
   api::get().automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
-  api::get().session_initialize();
+  get_session()->take_initial_snapshot();
 
   /* Initialize */
   this->previous_pair_ = 0;

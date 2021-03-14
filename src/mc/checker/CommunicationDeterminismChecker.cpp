@@ -5,6 +5,7 @@
 
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "src/mc/Session.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -343,8 +344,7 @@ void CommunicationDeterminismChecker::restoreState()
     return;
   }
 
-  /* Restore the initial state */
-  api::get().restore_initial_state();
+  session->restore_initial_state();
 
   const unsigned long maxpid = api::get().get_maxpid();
   assert(maxpid == incomplete_communications_pattern.size());
@@ -526,7 +526,7 @@ void CommunicationDeterminismChecker::real_run()
 void CommunicationDeterminismChecker::run()
 {
   XBT_INFO("Check communication determinism");
-  api::get().session_initialize();
+  get_session()->take_initial_snapshot();
 
   this->prepare();
   this->real_run();

@@ -123,14 +123,12 @@ public:
   // STATE APIs
   void restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const;
   void log_state() const;
-  void restore_initial_state() const;
 
   // SNAPSHOT APIs
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
   simgrid::mc::Snapshot* take_snapshot(int num_state) const;
 
   // SESSION APIs
-  void session_initialize() const;
   void s_close() const;
   void execute(Transition& transition, smx_simcall_t simcall) const;
 

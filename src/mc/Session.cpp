@@ -98,8 +98,8 @@ Session::~Session()
   this->close();
 }
 
-/** Take the initial snapshot of the application, that must be stopped. */
-void Session::initialize()
+/** The application must be stopped. */
+void Session::take_initial_snapshot()
 {
   xbt_assert(initial_snapshot_ == nullptr);
   model_checker_->wait_for_requests();

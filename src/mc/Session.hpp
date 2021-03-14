@@ -44,7 +44,7 @@ public:
   ~Session();
   void close();
 
-  void initialize();
+  void take_initial_snapshot();
   void execute(Transition const& transition) const;
   void log_state() const;
 

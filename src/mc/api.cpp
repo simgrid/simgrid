@@ -573,11 +573,6 @@ std::size_t Api::get_remote_heap_bytes() const
   return heap_bytes_used;
 }
 
-void Api::session_initialize() const
-{
-  session->initialize();
-}
-
 void Api::mc_inc_visited_states() const
 {
   mc_model_checker->visited_states++;
@@ -960,11 +955,6 @@ simgrid::mc::Snapshot* Api::take_snapshot(int num_state) const
 void Api::s_close() const
 {
   session->close();
-}
-
-void Api::restore_initial_state() const
-{
-  session->restore_initial_state();
 }
 
 void Api::execute(Transition& transition, smx_simcall_t simcall) const

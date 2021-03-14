@@ -13,6 +13,7 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
+#include "src/mc/Session.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/SafetyChecker.hpp"
@@ -238,8 +239,7 @@ void SafetyChecker::restore_state()
     return;
   }
 
-  /* Restore the initial state */
-  api::get().restore_initial_state();
+  session->restore_initial_state();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (std::unique_ptr<State> const& state : stack_) {
@@ -266,8 +266,8 @@ SafetyChecker::SafetyChecker(Session* session) : Checker(session)
     XBT_INFO("Check a safety property. Reduction is: %s.",
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
-  
-  api::get().session_initialize();  
+
+  get_session()->take_initial_snapshot();
 
   XBT_DEBUG("Starting the safety algorithm");
 
