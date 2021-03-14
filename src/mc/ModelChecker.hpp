@@ -47,7 +47,7 @@ public:
 
   void start();
   void shutdown();
-  void resume(simgrid::mc::RemoteProcess& process);
+  void resume();
   void wait_for_requests();
   void handle_simcall(Transition const& transition);
 

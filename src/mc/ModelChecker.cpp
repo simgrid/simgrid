@@ -115,12 +115,12 @@ void ModelChecker::shutdown()
   }
 }
 
-void ModelChecker::resume(RemoteProcess& process)
+void ModelChecker::resume()
 {
   int res = checker_side_.get_channel().send(MessageType::CONTINUE);
   if (res)
     throw xbt::errno_error();
-  process.clear_cache();
+  remote_process_->clear_cache();
 }
 
 static void MC_report_crash(int status)
@@ -297,7 +297,7 @@ void ModelChecker::handle_waitpid()
 
 void ModelChecker::wait_for_requests()
 {
-  this->resume(get_remote_process());
+  this->resume();
   if (this->get_remote_process().running())
     checker_side_.dispatch();
 }
