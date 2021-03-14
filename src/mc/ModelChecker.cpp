@@ -154,7 +154,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
   switch(base_message.type) {
     case MessageType::INITIAL_ADDRESSES: {
       s_mc_message_initial_addresses_t message;
-      xbt_assert(size == sizeof(message), "Broken message. Got %zd bytes instead of %zd.", size, sizeof(message));
+      xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size, (int)sizeof(message));
       memcpy(&message, buffer, sizeof(message));
 
       get_remote_process().init(message.mmalloc_default_mdp, message.maxpid, message.actors, message.dead_actors);
