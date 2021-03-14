@@ -256,11 +256,13 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
     next_pair->depth = current_pair->depth + 1;
   else
     next_pair->depth = 1;
-  /* Get enabled actors and insert them in the interleave set of the next graph_state */
-  auto actors = api::get().get_actors();
-  for (auto& actor : actors)
-    if (api::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
-      next_pair->graph_state->mark_todo(actor.copy.get_buffer());
+  /* Add all enabled actors to the interleave set of the initial state */
+  for (auto& act : api::get().get_actors()) {
+    auto actor = act.copy.get_buffer();
+    if (api::get().actor_is_enabled(actor->get_pid()))
+      next_pair->graph_state->mark_todo(actor);
+  }
+
   next_pair->requests = next_pair->graph_state->count_todo();
   /* FIXME : get search_cycle value for each accepting state */
   if (next_pair->automaton_state->type == 1 || (current_pair && current_pair->search_cycle))

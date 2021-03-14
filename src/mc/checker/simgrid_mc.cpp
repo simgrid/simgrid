@@ -68,7 +68,6 @@ int main(int argc, char** argv)
   } catch (const simgrid::mc::LivenessError&) {
     res = SIMGRID_MC_EXIT_LIVENESS;
   }
-  checker = nullptr;
   api::get().s_close();
   delete[] argv_copy;
   return res;

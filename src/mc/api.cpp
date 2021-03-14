@@ -421,7 +421,7 @@ simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm
     xbt_assert(argv[i] != nullptr,
                "Unable to find a binary to exec on the command line. Did you only pass config flags?");
     execvp(argv[i], argv + i);
-    xbt_die("The model-checked process failed to exec(): %s", strerror(errno));
+    xbt_die("The model-checked process failed to exec(%s): %s", argv[i], strerror(errno));
   });
 
   simgrid::mc::Checker* checker;
@@ -964,12 +964,10 @@ void Api::execute(Transition& transition, smx_simcall_t simcall) const
   session->execute(transition);
 }
 
-#if SIMGRID_HAVE_MC
 void Api::automaton_load(const char* file) const
 {
   MC_automaton_load(file);
 }
-#endif
 
 std::vector<int> Api::automaton_propositional_symbol_evaluate() const
 {

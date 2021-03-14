@@ -313,11 +313,12 @@ void CommunicationDeterminismChecker::prepare()
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
-  /* Get an enabled actor and insert it in the interleave set of the initial state */
-  auto actors = api::get().get_actors();
-  for (auto& actor : actors)
-    if (api::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
-      initial_state->mark_todo(actor.copy.get_buffer());
+  /* Add all enabled actors to the interleave set of the initial state */
+  for (auto& act : api::get().get_actors()) {
+    auto actor = act.copy.get_buffer();
+    if (api::get().actor_is_enabled(actor->get_pid()))
+      initial_state->mark_todo(actor);
+  }
 
   stack_.push_back(std::move(initial_state));
 }
@@ -467,11 +468,12 @@ void CommunicationDeterminismChecker::real_run()
         visited_state = nullptr;
 
       if (visited_state == nullptr) {
-        /* Get enabled actors and insert them in the interleave set of the next state */
-        auto actors = api::get().get_actors();
-        for (auto& actor : actors)
-          if (api::get().actor_is_enabled(actor.copy.get_buffer()->get_pid()))
-            next_state->mark_todo(actor.copy.get_buffer());
+        /* Add all enabled actors to the interleave set of the next state */
+        for (auto& act : api::get().get_actors()) {
+          auto actor = act.copy.get_buffer();
+          if (api::get().actor_is_enabled(actor->get_pid()))
+            next_state->mark_todo(actor);
+        }
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", cur_state->num_, next_state->num_, req_str.c_str());
