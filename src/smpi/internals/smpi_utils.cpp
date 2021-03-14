@@ -31,7 +31,7 @@ unsigned long total_shared_size=0;
 unsigned int total_shared_calls=0;
 struct max_malloc{
   size_t size;
-  int numcall;
+  unsigned int numcall;
   int line;
   std::string file;
 } max_malloc = {0, 0, 0, std::string()};
@@ -148,14 +148,14 @@ void print_memory_analysis(){
     }
   }
   if (simgrid::config::get_value<bool>("smpi/display-analysis")) {
-    XBT_INFO("Memory Usage: Simulated application allocated %zu bytes during its lifetime through malloc/calloc calls.\n"
-           "Largest allocation at once from a single process was %zu bytes, at %s:%d. It was called %d times during the whole simulation.\n" 
+    XBT_INFO("Memory Usage: Simulated application allocated %lu bytes during its lifetime through malloc/calloc calls.\n"
+           "Largest allocation at once from a single process was %zu bytes, at %s:%d. It was called %u times during the whole simulation.\n" 
            "If this is too much, consider sharing allocations for computation buffers.\n"
            "This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)\n", 
            total_malloc_size, max_malloc.size, simgrid::xbt::Path(max_malloc.file).get_base_name().c_str(), max_malloc.line, max_malloc.numcall
     );
     if(total_shared_size != 0)
-      XBT_INFO("%zu bytes were automatically shared between processes, in %u calls\n", total_shared_size, total_shared_calls);
+      XBT_INFO("%lu bytes were automatically shared between processes, in %u calls\n", total_shared_size, total_shared_calls);
   }
 }
 
