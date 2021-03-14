@@ -38,6 +38,24 @@ void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 namespace simgrid {
 namespace simix {
 config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
+
+void* simix_global_get_actors_addr()
+{
+#if SIMGRID_HAVE_MC
+  return simix_global->actors_vector;
+#else
+  xbt_die("This function is intended to be used when compiling with MC");
+#endif
+}
+void* simix_global_get_dead_actors_addr()
+{
+#if SIMGRID_HAVE_MC
+  return simix_global->dead_actors_vector;
+#else
+  xbt_die("This function is intended to be used when compiling with MC");
+#endif
+}
+
 } // namespace simix
 } // namespace simgrid
 
@@ -267,22 +285,19 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
   maestro_code = std::bind(code, data);
 }
 
-/**
- * @ingroup SIMIX_API
- * @brief Initialize SIMIX internal data.
- */
 void SIMIX_global_init(int* argc, char** argv)
 {
+  if (simix_global == nullptr) {
+    simix_global = std::make_unique<simgrid::simix::Global>();
+
 #if SIMGRID_HAVE_MC
-  // The communication initialization is done ASAP.
-  // We need to communicate  initialization of the different layers to the model-checker.
-  simgrid::mc::AppSide::initialize();
+    // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different layers.
+    // But simix_global needs to be created, as we send the address of some of its fields to the MC that wants to read them directly.
+    simgrid::mc::AppSide::initialize();
 #endif
 
-  if (simix_global == nullptr) {
     surf_init(argc, argv); /* Initialize SURF structures */
 
-    simix_global           = std::make_unique<simgrid::simix::Global>();
     simix_global->maestro_ = nullptr;
     SIMIX_context_mod_init();
 

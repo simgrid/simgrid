@@ -68,8 +68,6 @@ void ModelChecker::start()
   if (res < 0 || not WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
-  remote_process_->init();
-
   if (not _sg_mc_dot_output_file.get().empty())
     MC_init_dot_output();
 
@@ -154,6 +152,15 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
   memcpy(&base_message, buffer, sizeof(base_message));
 
   switch(base_message.type) {
+    case MessageType::INITIAL_ADDRESSES: {
+      s_mc_message_initial_addresses_t message;
+      xbt_assert(size == sizeof(message), "Broken message. Got %zd bytes instead of %zd.", size, sizeof(message));
+      memcpy(&message, buffer, sizeof(message));
+
+      get_remote_process().init(message.mmalloc_default_mdp, message.maxpid, message.actors, message.dead_actors);
+      break;
+    }
+
     case MessageType::IGNORE_HEAP: {
       s_mc_message_ignore_heap_t message;
       xbt_assert(size == sizeof(message), "Broken message");

@@ -26,8 +26,8 @@
 namespace simgrid {
 namespace mc {
 
-XBT_DECLARE_ENUM_CLASS(MessageType, NONE, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY, STACK_REGION,
-                       REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_HANDLE,
+XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY,
+                       STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_HANDLE,
                        SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, SIMCALL_TO_STRING, SIMCALL_TO_STRING_ANSWER,
                        SIMCALL_DOT_LABEL, ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY);
 
@@ -57,6 +57,14 @@ struct s_mc_message_int_t {
 };
 
 /* Client->Server */
+struct s_mc_message_initial_addresses_t {
+  simgrid::mc::MessageType type;
+  void* mmalloc_default_mdp;
+  void* maxpid;
+  void* actors;
+  void* dead_actors;
+};
+
 struct s_mc_message_ignore_heap_t {
   simgrid::mc::MessageType type;
   int block;

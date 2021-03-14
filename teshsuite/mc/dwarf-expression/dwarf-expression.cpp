@@ -146,7 +146,7 @@ static void test_deref(simgrid::dwarf::ExpressionContext const& state)
 int main()
 {
   auto* process = new simgrid::mc::RemoteProcess(getpid());
-  process->init();
+  process->init(nullptr, nullptr, nullptr, nullptr);
 
   simgrid::dwarf::ExpressionContext state;
   state.address_space = (simgrid::mc::AddressSpace*) process;

@@ -231,20 +231,19 @@ int open_vm(pid_t pid, int flags)
 
 RemoteProcess::RemoteProcess(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
 
-void RemoteProcess::init()
+void RemoteProcess::init(void* mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors)
 {
+  this->heap_address      = mmalloc_default_mdp;
+  this->maxpid_addr_      = maxpid;
+  this->actors_addr_      = actors;
+  this->dead_actors_addr_ = dead_actors;
+
   this->memory_map_ = simgrid::xbt::get_memory_map(this->pid_);
   this->init_memory_map_info();
 
   int fd = open_vm(this->pid_, O_RDWR);
   xbt_assert(fd >= 0, "Could not open file for process virtual address space");
   this->memory_file = fd;
-
-  // Read std_heap (is a struct mdesc*):
-  const simgrid::mc::Variable* std_heap_var = this->find_variable("__mmalloc_default_mdp");
-  xbt_assert(std_heap_var, "No heap information in the target process");
-  xbt_assert(std_heap_var->address, "No constant address for this variable");
-  this->read_bytes(&this->heap_address, sizeof(mdesc*), remote(std_heap_var->address));
 
   this->smx_actors_infos.clear();
   this->smx_dead_actors_infos.clear();
@@ -572,37 +571,15 @@ void RemoteProcess::dump_stack() const
 
 unsigned long RemoteProcess::get_maxpid() const
 {
-  static void* maxpid_addr = nullptr;
-  if (maxpid_addr == nullptr) {
-    const Variable* maxpid_var = find_variable("simgrid::kernel::actor::maxpid");
-    if (maxpid_var == nullptr)
-      maxpid_var = find_variable("maxpid"); // GCC sometimes eats the namespaces
-    maxpid_addr = maxpid_var->address;
-  }
   unsigned long maxpid;
-  this->read_bytes(&maxpid, sizeof(unsigned long), remote(maxpid_addr));
-
+  this->read_bytes(&maxpid, sizeof(unsigned long), remote(maxpid_addr_));
   return maxpid;
 }
 
 void RemoteProcess::get_actor_vectors(RemotePtr<s_xbt_dynar_t>& actors, RemotePtr<s_xbt_dynar_t>& dead_actors)
 {
-  static_assert(std::is_same<std::unique_ptr<simgrid::simix::Global>, decltype(simix_global)>::value,
-                "Unexpected type for simix_global");
-  static_assert(sizeof(simix_global) == sizeof(simgrid::simix::Global*), "Bad size for simix_global");
-
-  static RemotePtr<s_xbt_dynar_t> actors_;
-  static RemotePtr<s_xbt_dynar_t> dead_actors_;
-  static bool inited = false;
-  if (not inited) {
-    RemotePtr<simgrid::simix::Global> simix_global_p{this->read_variable<simgrid::simix::Global*>("simix_global")};
-    Remote<simgrid::simix::Global> simix_global = this->read<simgrid::simix::Global>(simix_global_p);
-
-    actors_      = remote(simix_global.get_buffer()->actors_vector);
-    dead_actors_ = remote(simix_global.get_buffer()->dead_actors_vector);
-  }
-  actors      = actors_;
-  dead_actors = dead_actors_;
+  actors      = remote(static_cast<s_xbt_dynar_t*>(actors_addr_));
+  dead_actors = remote(static_cast<s_xbt_dynar_t*>(dead_actors_addr_));
 }
 } // namespace mc
 } // namespace simgrid

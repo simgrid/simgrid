@@ -75,7 +75,7 @@ private:
 public:
   explicit RemoteProcess(pid_t pid);
   ~RemoteProcess() override;
-  void init();
+  void init(void* mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors);
 
   RemoteProcess(RemoteProcess const&) = delete;
   RemoteProcess(RemoteProcess&&)      = delete;
@@ -164,7 +164,13 @@ public:
   /* ***************** */
   /* SIMIX-related API */
   /* ***************** */
+private:
+  // Cache the address of the variables we read directly in the memory of remote
+  void* maxpid_addr_;
+  void* actors_addr_;
+  void* dead_actors_addr_;
 
+public:
   std::vector<ActorInformation>& actors();
   std::vector<ActorInformation>& dead_actors();
 

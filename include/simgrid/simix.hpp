@@ -125,6 +125,10 @@ public:
   static double next() { return simix_timers().empty() ? -1.0 : simix_timers().top().first; }
 };
 
+// In MC mode, the application sends these pointers to the MC
+void* simix_global_get_actors_addr();
+void* simix_global_get_dead_actors_addr();
+
 } // namespace simix
 } // namespace simgrid
 

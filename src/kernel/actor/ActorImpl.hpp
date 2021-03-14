@@ -198,6 +198,8 @@ using SynchroList =
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
 XBT_PUBLIC unsigned long get_maxpid();
+XBT_PUBLIC void* get_maxpid_addr(); // In MC mode, the application sends this pointers to the MC
+
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

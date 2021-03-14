@@ -8,6 +8,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
+#include "src/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>
@@ -62,6 +63,11 @@ AppSide* AppSide::initialize()
 #endif
   if (errno != 0 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker (errno = %d: %s)", errno, strerror(errno));
+
+  s_mc_message_initial_addresses_t message{
+      MessageType::INITIAL_ADDRESSES, mmalloc_preinit(), simgrid::kernel::actor::get_maxpid_addr(),
+      simgrid::simix::simix_global_get_actors_addr(), simgrid::simix::simix_global_get_dead_actors_addr()};
+  xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
 
   instance_->handle_messages();
   return instance_.get();

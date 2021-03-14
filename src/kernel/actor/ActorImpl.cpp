@@ -45,6 +45,10 @@ unsigned long get_maxpid()
 {
   return maxpid;
 }
+void* get_maxpid_addr()
+{
+  return &maxpid;
+}
 ActorImpl* ActorImpl::by_PID(aid_t PID)
 {
   auto item = simix_global->process_list.find(PID);
