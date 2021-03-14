@@ -202,9 +202,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker() : Checker()
-{
-}
+LivenessChecker::LivenessChecker(Session* session) : Checker(session) {}
 
 RecordTrace LivenessChecker::get_record_trace() // override
 {
@@ -408,9 +406,9 @@ void LivenessChecker::run()
   api::get().log_state();
 }
 
-Checker* createLivenessChecker()
+Checker* createLivenessChecker(Session* session)
 {
-  return new LivenessChecker();
+  return new LivenessChecker(session);
 }
 
 } // namespace mc

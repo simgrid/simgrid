@@ -255,7 +255,7 @@ void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::ac
   }
 }
 
-CommunicationDeterminismChecker::CommunicationDeterminismChecker() : Checker() {}
+CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session* session) : Checker(session) {}
 
 CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
 
@@ -533,9 +533,9 @@ void CommunicationDeterminismChecker::run()
   this->real_run();
 }
 
-Checker* createCommunicationDeterminismChecker()
+Checker* createCommunicationDeterminismChecker(Session* session)
 {
-  return new CommunicationDeterminismChecker();
+  return new CommunicationDeterminismChecker(session);
 }
 
 } // namespace mc

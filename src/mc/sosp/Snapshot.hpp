@@ -60,7 +60,7 @@ namespace mc {
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   /* Initialization */
-  Snapshot(int num_state, RemoteProcess* get_remote_simulation = &mc_model_checker->get_remote_process());
+  Snapshot(int num_state, RemoteProcess* process = &mc_model_checker->get_remote_process());
 
   /* Regular use */
   bool on_heap(const void* address) const
@@ -73,7 +73,7 @@ public:
                    ReadOptions options = ReadOptions::none()) const override;
   Region* get_region(const void* addr) const;
   Region* get_region(const void* addr, Region* hinted_region) const;
-  void restore(RemoteProcess* get_remote_simulation) const;
+  void restore(RemoteProcess* process) const;
 
   // To be private
   int num_state_;
@@ -88,8 +88,8 @@ public:
 
 private:
   void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
-  void snapshot_regions(RemoteProcess* get_remote_simulation);
-  void snapshot_stacks(RemoteProcess* get_remote_simulation);
+  void snapshot_regions(RemoteProcess* process);
+  void snapshot_stacks(RemoteProcess* process);
 };
 } // namespace mc
 } // namespace simgrid

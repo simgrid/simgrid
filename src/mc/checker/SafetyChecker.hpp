@@ -23,7 +23,7 @@ class XBT_PRIVATE SafetyChecker : public Checker {
   ReductionMode reductionMode_ = ReductionMode::unset;
 
 public:
-  explicit SafetyChecker();
+  explicit SafetyChecker(Session* session);
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;

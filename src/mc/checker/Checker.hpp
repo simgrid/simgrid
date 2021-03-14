@@ -26,8 +26,10 @@ namespace mc {
  *  have all the necessary features). */
 // abstract
 class Checker {
+  Session* session_;
+
 public:
-  explicit Checker() = default;
+  explicit Checker(Session* session) : session_(session) {}
 
   // No copy:
   Checker(Checker const&) = delete;
@@ -52,13 +54,15 @@ public:
 
   /** Log additional information about the state of the model-checker */
   virtual void log_state() = 0;
+
+  Session* get_session() { return session_; }
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC Checker* createLivenessChecker();
-XBT_PUBLIC Checker* createSafetyChecker();
-XBT_PUBLIC Checker* createCommunicationDeterminismChecker();
-XBT_PUBLIC Checker* createUdporChecker();
+XBT_PUBLIC Checker* createLivenessChecker(Session* session);
+XBT_PUBLIC Checker* createSafetyChecker(Session* session);
+XBT_PUBLIC Checker* createCommunicationDeterminismChecker(Session* session);
+XBT_PUBLIC Checker* createUdporChecker(Session* session);
 
 } // namespace mc
 } // namespace simgrid

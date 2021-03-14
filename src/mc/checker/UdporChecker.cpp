@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to MC safety ver
 namespace simgrid {
 namespace mc {
 
-UdporChecker::UdporChecker() : Checker() {}
+UdporChecker::UdporChecker(Session* session) : Checker(session) {}
 
 void UdporChecker::run() {}
 
@@ -29,9 +29,9 @@ std::vector<std::string> UdporChecker::get_textual_trace()
 
 void UdporChecker::log_state() {}
 
-Checker* createUdporChecker()
+Checker* createUdporChecker(Session* session)
 {
-  return new UdporChecker();
+  return new UdporChecker(session);
 }
 
 } // namespace mc

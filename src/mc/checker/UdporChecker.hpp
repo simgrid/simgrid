@@ -15,7 +15,7 @@ namespace mc {
 
 class XBT_PRIVATE UdporChecker : public Checker {
 public:
-  explicit UdporChecker();
+  explicit UdporChecker(Session* session);
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;
