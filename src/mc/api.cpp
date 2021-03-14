@@ -59,7 +59,8 @@ static void simcall_translate(smx_simcall_t req,
  * Things can get muddled with the WAITANY and TESTANY simcalls, that are rewritten on the fly to a bunch of WAIT
  * (resp TEST) transitions using the transition.argument field to remember what was the last returned sub-transition.
  */
-static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::State* state, smx_actor_t actor)
+static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProcess& process, simgrid::mc::State* state,
+                                                                smx_actor_t actor)
 {
   /* reset the outgoing transition */
   simgrid::mc::ActorState* procstate = &state->actor_states_[actor->get_pid()];
@@ -83,7 +84,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
       case Simcall::COMM_WAITANY:
         state->transition_.times_considered_ = -1;
         while (procstate->times_considered < simcall_comm_waitany__get__count(&actor->simcall_)) {
-          if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall_, procstate->times_considered)) {
+          if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->times_considered)) {
             state->transition_.times_considered_ = procstate->times_considered;
             ++procstate->times_considered;
             break;
@@ -100,7 +101,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
       case Simcall::COMM_TESTANY:
         state->transition_.times_considered_ = -1;
         while (procstate->times_considered < simcall_comm_testany__get__count(&actor->simcall_)) {
-          if (simgrid::mc::request_is_enabled_by_idx(&actor->simcall_, procstate->times_considered)) {
+          if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->times_considered)) {
             state->transition_.times_considered_ = procstate->times_considered;
             ++procstate->times_considered;
             break;
@@ -118,7 +119,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(simgrid::mc::Sta
         simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> remote_act =
             remote(simcall_comm_wait__get__comm(&actor->simcall_));
         simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_act;
-        mc_model_checker->get_remote_process().read(temp_act, remote_act);
+        process.read(temp_act, remote_act);
         const simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();
         if (act->src_actor_.get() && act->dst_actor_.get())
           state->transition_.times_considered_ = 0; // OK
@@ -661,12 +662,13 @@ void Api::dump_record_path() const
 
 smx_simcall_t Api::mc_state_choose_request(simgrid::mc::State* state) const
 {
-  for (auto& actor : mc_model_checker->get_remote_process().actors()) {
+  RemoteProcess& process = mc_model_checker->get_remote_process();
+  for (auto& actor : process.actors()) {
     /* Only consider the actors that were marked as interleaving by the checker algorithm */
     if (not state->actor_states_[actor.copy.get_buffer()->get_pid()].is_todo())
       continue;
 
-    smx_simcall_t res = MC_state_choose_request_for_process(state, actor.copy.get_buffer());
+    smx_simcall_t res = MC_state_choose_request_for_process(process, state, actor.copy.get_buffer());
     if (res)
       return res;
   }

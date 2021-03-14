@@ -6,12 +6,13 @@
 #ifndef SIMGRID_MC_REQUEST_HPP
 #define SIMGRID_MC_REQUEST_HPP
 
+#include "src/mc/remote/RemoteProcess.hpp"
 #include "src/simix/smx_private.hpp"
 
 namespace simgrid {
 namespace mc {
 
-XBT_PRIVATE bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
+XBT_PRIVATE bool request_is_enabled_by_idx(const RemoteProcess& process, smx_simcall_t req, unsigned int idx);
 }
 }
 

@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc, "Logging specific to MC (request
 namespace simgrid {
 namespace mc {
 
-bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
+bool request_is_enabled_by_idx(const RemoteProcess& process, smx_simcall_t req, unsigned int idx)
 {
   kernel::activity::CommImpl* remote_act = nullptr;
   switch (req->call_) {
@@ -31,11 +31,11 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
       break;
 
     case Simcall::COMM_WAITANY:
-      remote_act = mc_model_checker->get_remote_process().read(remote(simcall_comm_waitany__get__comms(req) + idx));
+      remote_act = process.read(remote(simcall_comm_waitany__get__comms(req) + idx));
       break;
 
     case Simcall::COMM_TESTANY:
-      remote_act = mc_model_checker->get_remote_process().read(remote(simcall_comm_testany__get__comms(req) + idx));
+      remote_act = process.read(remote(simcall_comm_testany__get__comms(req) + idx));
       break;
 
     default:
@@ -43,7 +43,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   }
 
   Remote<kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_process().read(temp_comm, remote(remote_act));
+  process.read(temp_comm, remote(remote_act));
   const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
   return comm->src_actor_.get() && comm->dst_actor_.get();
 }

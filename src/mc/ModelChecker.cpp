@@ -267,7 +267,7 @@ void ModelChecker::handle_waitpid()
         xbt_assert(ptrace(PTRACE_GETEVENTMSG, remote_process_->pid(), 0, &status) != -1, "Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
-          mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
+          exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
 #endif
