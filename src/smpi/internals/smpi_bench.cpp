@@ -207,7 +207,7 @@ int smpi_nanosleep(const struct timespec* tp, struct timespec* t)
 
 int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
 {
-  if (not smpi_process())
+  if (not smpi_process()->initialized() || smpi_process()->finalized() || smpi_process()->sampling())
     return gettimeofday(tv, tz);
 
   smpi_bench_end();
@@ -233,7 +233,7 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     errno = EFAULT;
     return -1;
   }
-  if (not smpi_process())
+  if (not smpi_process()->initialized() || smpi_process()->finalized() || smpi_process()->sampling())
     return clock_gettime(clk_id, tp);
   //there is only one time in SMPI, so clk_id is ignored.
   smpi_bench_end();
