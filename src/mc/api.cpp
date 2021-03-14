@@ -47,6 +47,33 @@ static std::string buff_size_to_string(size_t buff_size)
 static void simcall_translate(smx_simcall_t req,
                               simgrid::mc::Remote<simgrid::kernel::activity::CommImpl>& buffered_comm);
 
+static bool request_is_enabled_by_idx(const RemoteProcess& process, smx_simcall_t req, unsigned int idx)
+{
+  kernel::activity::CommImpl* remote_act = nullptr;
+  switch (req->call_) {
+    case Simcall::COMM_WAIT:
+      /* FIXME: check also that src and dst processes are not suspended */
+      remote_act = simcall_comm_wait__getraw__comm(req);
+      break;
+
+    case Simcall::COMM_WAITANY:
+      remote_act = process.read(remote(simcall_comm_waitany__get__comms(req) + idx));
+      break;
+
+    case Simcall::COMM_TESTANY:
+      remote_act = process.read(remote(simcall_comm_testany__get__comms(req) + idx));
+      break;
+
+    default:
+      return true;
+  }
+
+  Remote<kernel::activity::CommImpl> temp_comm;
+  process.read(temp_comm, remote(remote_act));
+  const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
+  return comm->src_actor_.get() && comm->dst_actor_.get();
+}
+
 /* Search an enabled transition for the given process.
  *
  * This can be seen as an iterator returning the next transition of the process.

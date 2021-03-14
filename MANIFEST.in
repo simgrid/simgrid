@@ -2268,8 +2268,6 @@ include src/mc/mc_private.hpp
 include src/mc/mc_record.cpp
 include src/mc/mc_record.hpp
 include src/mc/mc_replay.hpp
-include src/mc/mc_request.cpp
-include src/mc/mc_request.hpp
 include src/mc/mc_safety.hpp
 include src/mc/mc_smx.cpp
 include src/mc/mc_state.cpp

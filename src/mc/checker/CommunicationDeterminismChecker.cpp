@@ -8,7 +8,6 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_request.hpp"
 
 #include <cstdint>
 
