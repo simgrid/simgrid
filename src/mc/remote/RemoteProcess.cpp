@@ -572,14 +572,16 @@ void RemoteProcess::dump_stack() const
 
 unsigned long RemoteProcess::get_maxpid() const
 {
-  static const char* name = nullptr;
-  if (not name) {
-    name = "simgrid::kernel::actor::maxpid";
-    if (find_variable(name) == nullptr)
-      name = "maxpid"; // We seem to miss the namespaces when compiling with GCC
+  static void* maxpid_addr = nullptr;
+  if (maxpid_addr == nullptr) {
+    const Variable* maxpid_var = find_variable("simgrid::kernel::actor::maxpid");
+    if (maxpid_var == nullptr)
+      maxpid_var = find_variable("maxpid"); // GCC sometimes eats the namespaces
+    maxpid_addr = maxpid_var->address;
   }
   unsigned long maxpid;
-  read_variable(name, &maxpid, sizeof(maxpid));
+  this->read_bytes(&maxpid, sizeof(unsigned long), remote(maxpid_addr));
+
   return maxpid;
 }
 
@@ -589,12 +591,18 @@ void RemoteProcess::get_actor_vectors(RemotePtr<s_xbt_dynar_t>& actors, RemotePt
                 "Unexpected type for simix_global");
   static_assert(sizeof(simix_global) == sizeof(simgrid::simix::Global*), "Bad size for simix_global");
 
-  // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
-  RemotePtr<simgrid::simix::Global> simix_global_p{this->read_variable<simgrid::simix::Global*>("simix_global")};
-  Remote<simgrid::simix::Global> simix_global = this->read<simgrid::simix::Global>(simix_global_p);
+  static RemotePtr<s_xbt_dynar_t> actors_;
+  static RemotePtr<s_xbt_dynar_t> dead_actors_;
+  static bool inited = false;
+  if (not inited) {
+    RemotePtr<simgrid::simix::Global> simix_global_p{this->read_variable<simgrid::simix::Global*>("simix_global")};
+    Remote<simgrid::simix::Global> simix_global = this->read<simgrid::simix::Global>(simix_global_p);
 
-  actors      = remote(simix_global.get_buffer()->actors_vector);
-  dead_actors = remote(simix_global.get_buffer()->dead_actors_vector);
+    actors_      = remote(simix_global.get_buffer()->actors_vector);
+    dead_actors_ = remote(simix_global.get_buffer()->dead_actors_vector);
+  }
+  actors      = actors_;
+  dead_actors = dead_actors_;
 }
 } // namespace mc
 } // namespace simgrid
