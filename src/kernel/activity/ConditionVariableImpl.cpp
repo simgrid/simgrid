@@ -50,7 +50,7 @@ void ConditionVariableImpl::signal()
       simcall_mutex = simcall_cond_wait_timeout__get__mutex(simcall);
     else {
       // FIXME? using here the MC observer to solve a problem not related to MC
-      auto* observer = dynamic_cast<mc::ConditionWaitSimcall*>(simcall->observer_);
+      const auto* observer = dynamic_cast<mc::ConditionWaitSimcall*>(simcall->observer_);
       xbt_assert(observer != nullptr);
       simcall_mutex = observer->get_mutex();
     }
