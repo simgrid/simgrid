@@ -357,10 +357,6 @@ void RemoteProcess::init_memory_map_info()
       this->binary_info = info;
   }
 
-  // Resolve time (including across different objects):
-  for (auto const& object_info : this->object_infos)
-    postProcessObjectInformation(this, object_info.get());
-
   xbt_assert(this->maestro_stack_start_, "Did not find maestro_stack_start");
   xbt_assert(this->maestro_stack_end_, "Did not find maestro_stack_end");
 
@@ -426,9 +422,14 @@ void RemoteProcess::read_variable(const char* name, void* target, size_t size) c
   const simgrid::mc::Variable* var = this->find_variable(name);
   xbt_assert(var, "Variable %s not found", name);
   xbt_assert(var->address, "No simple location for this variable");
-  xbt_assert(var->type->full_type, "Partial type for %s, cannot check size", name);
-  xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zu, was %zu)", name,
-             size, (size_t)var->type->full_type->byte_size);
+
+  if (not var->type->full_type) // Try to resolve this type. The needed ObjectInfo was maybe (lazily) loaded recently
+    for (auto const& object_info : this->object_infos)
+      postProcessObjectInformation(this, object_info.get());
+  xbt_assert(var->type->full_type, "Partial type for %s (even after re-resolving types), cannot retrieve its size.",
+             name);
+  xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zu, received %zu).",
+             name, size, (size_t)var->type->full_type->byte_size);
   this->read_bytes(target, size, remote(var->address));
 }
 

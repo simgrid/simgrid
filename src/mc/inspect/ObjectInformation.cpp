@@ -40,8 +40,10 @@ void* ObjectInformation::base_address() const
   return result;
 }
 
-Frame* ObjectInformation::find_function(const void* ip) const
+Frame* ObjectInformation::find_function(const void* ip)
 {
+  ensure_dwarf_loaded();
+
   /* This is implemented by binary search on a sorted array.
    *
    * We do quite a lot of those so we want this to be cache efficient.
@@ -64,8 +66,10 @@ Frame* ObjectInformation::find_function(const void* ip) const
              : nullptr;
 }
 
-const Variable* ObjectInformation::find_variable(const char* var_name) const
+const Variable* ObjectInformation::find_variable(const char* var_name)
 {
+  ensure_dwarf_loaded();
+
   auto pos = std::lower_bound(this->global_variables.begin(), this->global_variables.end(), var_name,
                               [](auto const& var, const char* name) { return var.name < name; });
   return (pos != this->global_variables.end() && pos->name == var_name) ? &(*pos) : nullptr;

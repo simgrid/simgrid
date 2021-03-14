@@ -73,7 +73,7 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
 }
 
 static const simgrid::mc::Variable* test_global_variable(const simgrid::mc::RemoteProcess& process,
-                                                         const simgrid::mc::ObjectInformation* info, const char* name,
+                                                         simgrid::mc::ObjectInformation* info, const char* name,
                                                          void* address, long byte_size)
 {
   const simgrid::mc::Variable* variable = info->find_variable(name);
