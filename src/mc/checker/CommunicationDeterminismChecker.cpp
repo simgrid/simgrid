@@ -316,7 +316,7 @@ void CommunicationDeterminismChecker::prepare()
   /* Add all enabled actors to the interleave set of the initial state */
   for (auto& act : api::get().get_actors()) {
     auto actor = act.copy.get_buffer();
-    if (api::get().actor_is_enabled(actor->get_pid()))
+    if (get_session().actor_is_enabled(actor->get_pid()))
       initial_state->mark_todo(actor);
   }
 
@@ -471,7 +471,7 @@ void CommunicationDeterminismChecker::real_run()
         /* Add all enabled actors to the interleave set of the next state */
         for (auto& act : api::get().get_actors()) {
           auto actor = act.copy.get_buffer();
-          if (api::get().actor_is_enabled(actor->get_pid()))
+          if (get_session().actor_is_enabled(actor->get_pid()))
             next_state->mark_todo(actor);
         }
 
@@ -528,7 +528,7 @@ void CommunicationDeterminismChecker::real_run()
 void CommunicationDeterminismChecker::run()
 {
   XBT_INFO("Check communication determinism");
-  get_session()->take_initial_snapshot();
+  get_session().take_initial_snapshot();
 
   this->prepare();
   this->real_run();

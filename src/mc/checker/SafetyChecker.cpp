@@ -147,7 +147,7 @@ void SafetyChecker::run()
       auto actors = api::get().get_actors(); 
       for (auto& remoteActor : actors) {
         auto actor = remoteActor.copy.get_buffer();
-        if (api::get().actor_is_enabled(actor->get_pid())) {
+        if (get_session().actor_is_enabled(actor->get_pid())) {
           next_state->mark_todo(actor);
           if (reductionMode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
@@ -267,7 +267,7 @@ SafetyChecker::SafetyChecker(Session* session) : Checker(session)
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
 
-  get_session()->take_initial_snapshot();
+  get_session().take_initial_snapshot();
 
   XBT_DEBUG("Starting the safety algorithm");
 
@@ -280,7 +280,7 @@ SafetyChecker::SafetyChecker(Session* session) : Checker(session)
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   auto actors = api::get().get_actors();
   for (auto& actor : actors)
-    if (api::get().actor_is_enabled(actor.copy.get_buffer()->get_pid())) {
+    if (get_session().actor_is_enabled(actor.copy.get_buffer()->get_pid())) {
       initial_state->mark_todo(actor.copy.get_buffer());
       if (reductionMode_ != ReductionMode::none)
         break;

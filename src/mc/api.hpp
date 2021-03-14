@@ -69,7 +69,6 @@ public:
 
   // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
-  bool actor_is_enabled(aid_t pid) const;
   unsigned long get_maxpid() const;
   int get_actors_size() const;
 

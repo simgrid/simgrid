@@ -455,11 +455,6 @@ std::vector<simgrid::mc::ActorInformation>& Api::get_actors() const
   return mc_model_checker->get_remote_process().actors();
 }
 
-bool Api::actor_is_enabled(aid_t pid) const
-{
-  return session->actor_is_enabled(pid);
-}
-
 unsigned long Api::get_maxpid() const
 {
   static const char* name = nullptr;

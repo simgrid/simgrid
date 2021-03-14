@@ -259,7 +259,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   /* Add all enabled actors to the interleave set of the initial state */
   for (auto& act : api::get().get_actors()) {
     auto actor = act.copy.get_buffer();
-    if (api::get().actor_is_enabled(actor->get_pid()))
+    if (get_session().actor_is_enabled(actor->get_pid()))
       next_pair->graph_state->mark_todo(actor);
   }
 
@@ -300,7 +300,7 @@ void LivenessChecker::run()
   api::get().automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
-  get_session()->take_initial_snapshot();
+  get_session().take_initial_snapshot();
 
   /* Initialize */
   this->previous_pair_ = 0;
