@@ -138,7 +138,7 @@ static void MC_report_crash(int status)
   for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
   dumpRecordPath();
-  session->log_state();
+  session_singleton->log_state();
   if (xbt_log_no_loc) {
     XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
   } else {
@@ -220,7 +220,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       for (auto const& s : getChecker()->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
       dumpRecordPath();
-      session->log_state();
+      session_singleton->log_state();
 
       this->exit(SIMGRID_MC_EXIT_SAFETY);
 

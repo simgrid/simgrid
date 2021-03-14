@@ -154,7 +154,6 @@ bool Session::actor_is_enabled(aid_t pid) const
   return ((s_mc_message_int_t*)buff.data())->value;
 }
 
-simgrid::mc::Session* session;
-
+simgrid::mc::Session* session_singleton;
 }
 }

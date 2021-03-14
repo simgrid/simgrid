@@ -53,8 +53,7 @@ public:
 };
 
 // Temporary :)
-extern simgrid::mc::Session* session;
-
+extern simgrid::mc::Session* session_singleton;
 }
 }
 

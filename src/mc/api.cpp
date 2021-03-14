@@ -414,7 +414,7 @@ std::string Api::get_actor_dot_label(smx_actor_t actor) const
 
 simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const
 {
-  simgrid::mc::session = new simgrid::mc::Session([argv] {
+  auto session = new simgrid::mc::Session([argv] {
     int i = 1;
     while (argv[i] != nullptr && argv[i][0] == '-')
       i++;
@@ -446,6 +446,7 @@ simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm
       THROW_IMPOSSIBLE;
   }
 
+  simgrid::mc::session_singleton = session;
   mc_model_checker->setChecker(checker);
   return checker;
 }
@@ -933,7 +934,7 @@ void Api::restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) con
 
 void Api::log_state() const
 {
-  session->log_state();
+  session_singleton->log_state();
 }
 
 bool Api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
@@ -949,14 +950,14 @@ simgrid::mc::Snapshot* Api::take_snapshot(int num_state) const
 
 void Api::s_close() const
 {
-  session->close();
+  session_singleton->close();
 }
 
 void Api::execute(Transition& transition, smx_simcall_t simcall) const
 {
   /* FIXME: once all simcalls have observers, kill the simcall parameter and use mc_model_checker->simcall_to_string() */
   transition.textual = request_to_string(simcall, transition.times_considered_);
-  session->execute(transition);
+  session_singleton->execute(transition);
 }
 
 void Api::automaton_load(const char* file) const

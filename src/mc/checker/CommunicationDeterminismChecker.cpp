@@ -345,7 +345,7 @@ void CommunicationDeterminismChecker::restoreState()
     return;
   }
 
-  session->restore_initial_state();
+  get_session().restore_initial_state();
 
   const unsigned long maxpid = api::get().get_maxpid();
   assert(maxpid == incomplete_communications_pattern.size());

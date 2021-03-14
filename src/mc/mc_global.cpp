@@ -88,7 +88,7 @@ void MC_show_deadlock()
   for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
   simgrid::mc::dumpRecordPath();
-  simgrid::mc::session->log_state();
+  simgrid::mc::session_singleton->log_state();
 }
 
 void MC_automaton_load(const char *file)
