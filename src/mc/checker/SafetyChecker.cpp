@@ -40,8 +40,7 @@ void SafetyChecker::check_non_termination(const State* current_state)
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
       XBT_INFO("******************************************");
       XBT_INFO("Counter-example execution trace:");
-      auto checker = api::get().mc_get_checker();
-      for (auto const& s : checker->get_textual_trace())
+      for (auto const& s : get_textual_trace())
         XBT_INFO("  %s", s.c_str());
       api::get().dump_record_path();
       api::get().log_state();
