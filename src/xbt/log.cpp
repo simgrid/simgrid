@@ -39,7 +39,7 @@ static auto& xbt_log_settings()
   return value;
 }
 
-constexpr std::array<const char*, 8> xbt_log_priority_names{
+constexpr std::array<const char*, xbt_log_priority_infinite> xbt_log_priority_names{
     {"NONE", "TRACE", "DEBUG", "VERBOSE", "INFO", "WARNING", "ERROR", "CRITICAL"}};
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {

@@ -21,7 +21,7 @@ struct xbt_log_layout_s {
   void *data;
 };
 
-extern const std::array<const char*, 8> xbt_log_priority_names;
+extern const std::array<const char*, xbt_log_priority_infinite> xbt_log_priority_names;
 
 /**
  * @ingroup XBT_log_implem
