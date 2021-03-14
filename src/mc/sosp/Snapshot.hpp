@@ -60,12 +60,12 @@ namespace mc {
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   /* Initialization */
-  Snapshot(int num_state, RemoteProcess* get_remote_simulation = &mc_model_checker->get_remote_simulation());
+  Snapshot(int num_state, RemoteProcess* get_remote_simulation = &mc_model_checker->get_remote_process());
 
   /* Regular use */
   bool on_heap(const void* address) const
   {
-    const s_xbt_mheap_t* heap = get_remote_simulation()->get_heap();
+    const s_xbt_mheap_t* heap = get_remote_process()->get_heap();
     return address >= heap->heapbase && address < heap->breakval;
   }
 

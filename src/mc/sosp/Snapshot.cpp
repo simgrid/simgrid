@@ -70,7 +70,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
     else if (not current_variable.location_list.empty()) {
       dwarf::Location location = simgrid::dwarf::resolve(current_variable.location_list, current_variable.object_info,
                                                          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base,
-                                                         &mc_model_checker->get_remote_simulation());
+                                                         &mc_model_checker->get_remote_process());
 
       if (not location.in_memory())
         xbt_die("Cannot handle non-address variable");
@@ -96,7 +96,7 @@ static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
 {
-  const RemoteProcess* process = &mc_model_checker->get_remote_simulation();
+  const RemoteProcess* process = &mc_model_checker->get_remote_process();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -173,28 +173,28 @@ void Snapshot::snapshot_stacks(RemoteProcess* process)
 
 static void snapshot_handle_ignore(Snapshot* snapshot)
 {
-  xbt_assert(snapshot->get_remote_simulation());
+  xbt_assert(snapshot->get_remote_process());
 
   // Copy the memory:
-  for (auto const& region : snapshot->get_remote_simulation()->ignored_regions()) {
+  for (auto const& region : snapshot->get_remote_process()->ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
-    snapshot->get_remote_simulation()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
+    snapshot->get_remote_process()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
     snapshot->ignored_data_.push_back(std::move(ignored_data));
   }
 
   // Zero the memory:
-  for (auto const& region : snapshot->get_remote_simulation()->ignored_regions())
-    snapshot->get_remote_simulation()->clear_bytes(remote(region.addr), region.size);
+  for (auto const& region : snapshot->get_remote_process()->ignored_regions())
+    snapshot->get_remote_process()->clear_bytes(remote(region.addr), region.size);
 }
 
 static void snapshot_ignore_restore(const simgrid::mc::Snapshot* snapshot)
 {
   for (auto const& ignored_data : snapshot->ignored_data_)
-    snapshot->get_remote_simulation()->write_bytes(ignored_data.data.data(), ignored_data.data.size(),
-                                                   remote(ignored_data.start));
+    snapshot->get_remote_process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(),
+                                                remote(ignored_data.start));
 }
 
 Snapshot::Snapshot(int num_state, RemoteProcess* process) : AddressSpace(process), num_state_(num_state)
@@ -243,7 +243,7 @@ void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> addre
       return buffer;
     }
   } else
-    return this->get_remote_simulation()->read_bytes(buffer, size, address, options);
+    return this->get_remote_process()->read_bytes(buffer, size, address, options);
 }
 /** @brief Find the snapshotted region from a pointer
  *

@@ -36,7 +36,7 @@ public:
   ModelChecker& operator=(ModelChecker const&) = delete;
   explicit ModelChecker(std::unique_ptr<RemoteProcess> remote_simulation, int sockfd);
 
-  RemoteProcess& get_remote_simulation() { return *remote_process_; }
+  RemoteProcess& get_remote_process() { return *remote_process_; }
   Channel& channel() { return checker_side_.get_channel(); }
   PageStore& page_store() { return page_store_; }
 

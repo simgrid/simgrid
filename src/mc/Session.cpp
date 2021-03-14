@@ -114,7 +114,7 @@ void Session::execute(Transition const& transition) const
 
 void Session::restore_initial_state() const
 {
-  this->initial_snapshot_->restore(&model_checker_->get_remote_simulation());
+  this->initial_snapshot_->restore(&model_checker_->get_remote_process());
 }
 
 void Session::log_state() const

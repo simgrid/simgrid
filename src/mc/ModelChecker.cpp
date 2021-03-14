@@ -95,7 +95,7 @@ static constexpr auto ignored_local_variables = {
 
 void ModelChecker::setup_ignore()
 {
-  const RemoteProcess& process = this->get_remote_simulation();
+  const RemoteProcess& process = this->get_remote_process();
   for (auto const& var : ignored_local_variables)
     process.ignore_local_variable(var.first, var.second);
 
@@ -107,7 +107,7 @@ void ModelChecker::shutdown()
 {
   XBT_DEBUG("Shutting down model-checker");
 
-  RemoteProcess* process = &this->get_remote_simulation();
+  RemoteProcess* process = &this->get_remote_process();
   if (process->running()) {
     XBT_DEBUG("Killing process");
     kill(process->pid(), SIGKILL);
@@ -143,7 +143,7 @@ static void MC_report_crash(int status)
     XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
   } else {
     XBT_INFO("Stack trace:");
-    mc_model_checker->get_remote_simulation().dump_stack();
+    mc_model_checker->get_remote_process().dump_stack();
   }
 }
 
@@ -176,7 +176,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       region.fragment = message.fragment;
       region.address  = message.address;
       region.size     = message.size;
-      get_remote_simulation().ignore_heap(region);
+      get_remote_process().ignore_heap(region);
       break;
     }
 
@@ -184,7 +184,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       s_mc_message_ignore_memory_t message;
       xbt_assert(size == sizeof(message), "Broken message");
       memcpy(&message, buffer, sizeof(message));
-      get_remote_simulation().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+      get_remote_process().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
       break;
     }
 
@@ -192,7 +192,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       s_mc_message_ignore_memory_t message;
       xbt_assert(size == sizeof(message), "Broken message");
       memcpy(&message, buffer, sizeof(message));
-      this->get_remote_simulation().ignore_region(message.addr, message.size);
+      this->get_remote_process().ignore_region(message.addr, message.size);
       break;
     }
 
@@ -200,7 +200,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       s_mc_message_stack_region_t message;
       xbt_assert(size == sizeof(message), "Broken message");
       memcpy(&message, buffer, sizeof(message));
-      this->get_remote_simulation().stack_areas().push_back(message.stack_region);
+      this->get_remote_process().stack_areas().push_back(message.stack_region);
     } break;
 
     case MessageType::REGISTER_SYMBOL: {
@@ -213,7 +213,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       if (property_automaton == nullptr)
         property_automaton = xbt_automaton_new();
 
-      const RemoteProcess* process    = &this->get_remote_simulation();
+      const RemoteProcess* process    = &this->get_remote_process();
       RemotePtr<int> address          = remote((int*)message.data);
       xbt::add_proposition(property_automaton, message.name.data(),
                            [process, address]() { return process->read(address); });
@@ -238,8 +238,8 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
 void ModelChecker::exit(int status)
 {
   // TODO, terminate the model checker politely instead of exiting rudely
-  if (get_remote_simulation().running())
-    kill(get_remote_simulation().pid(), SIGKILL);
+  if (get_remote_process().running())
+    kill(get_remote_process().pid(), SIGKILL);
   ::exit(status);
 }
 
@@ -252,7 +252,7 @@ void ModelChecker::handle_waitpid()
     if (pid == -1) {
       if (errno == ECHILD) {
         // No more children:
-        xbt_assert(not this->get_remote_simulation().running(), "Inconsistent state");
+        xbt_assert(not this->get_remote_process().running(), "Inconsistent state");
         break;
       } else {
         XBT_ERROR("Could not wait for pid");
@@ -260,7 +260,7 @@ void ModelChecker::handle_waitpid()
       }
     }
 
-    if (pid == this->get_remote_simulation().pid()) {
+    if (pid == this->get_remote_process().pid()) {
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
@@ -289,7 +289,7 @@ void ModelChecker::handle_waitpid()
         mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
       } else if (WIFEXITED(status)) {
         XBT_DEBUG("Child process is over");
-        this->get_remote_simulation().terminate();
+        this->get_remote_process().terminate();
       }
     }
   }
@@ -297,8 +297,8 @@ void ModelChecker::handle_waitpid()
 
 void ModelChecker::wait_for_requests()
 {
-  this->resume(get_remote_simulation());
-  if (this->get_remote_simulation().running())
+  this->resume(get_remote_process());
+  if (this->get_remote_process().running())
     checker_side_.dispatch();
 }
 

@@ -23,7 +23,7 @@ Region::Region(RegionType region_type, void* start_addr, size_t size)
 {
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
 
-  chunks_ = ChunkedData(mc_model_checker->page_store(), mc_model_checker->get_remote_simulation(),
+  chunks_ = ChunkedData(mc_model_checker->page_store(), mc_model_checker->get_remote_process(),
                         RemotePtr<void>(start_addr), mmu::chunk_count(size));
 }
 
@@ -39,7 +39,7 @@ void Region::restore() const
   for (size_t i = 0; i != get_chunks().page_count(); ++i) {
     void* target_page       = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)start().address());
     const void* source_page = get_chunks().page(i);
-    mc_model_checker->get_remote_simulation().write_bytes(source_page, xbt_pagesize, remote(target_page));
+    mc_model_checker->get_remote_process().write_bytes(source_page, xbt_pagesize, remote(target_page));
   }
 }
 
