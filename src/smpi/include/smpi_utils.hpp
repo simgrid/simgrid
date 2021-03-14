@@ -20,12 +20,6 @@ struct s_smpi_factor_t {
 namespace simgrid {
 namespace smpi {
 namespace utils {
-
-  extern double total_benched_time;
-  extern size_t total_malloc_size;
-  extern size_t total_shared_size;
-  extern size_t max_malloc_size;
-
   XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string);
   XBT_PUBLIC void add_benched_time(double time);
   XBT_PUBLIC void account_malloc_size(size_t size, const char* file, int line);
