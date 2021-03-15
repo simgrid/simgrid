@@ -1871,6 +1871,7 @@ include examples/cpp/CMakeLists.txt
 include examples/deprecated/java/CMakeLists.txt
 include examples/deprecated/msg/mc/CMakeLists.txt
 include examples/deprecated/simdag/CMakeLists.txt
+include examples/platforms/CMakeLists.txt
 include examples/platforms/bypassRoute.xml
 include examples/platforms/bypassZoneRoute.xml
 include examples/platforms/cloud.xml
@@ -1923,6 +1924,7 @@ include examples/platforms/routing_cluster.lua
 include examples/platforms/routing_cluster.xml
 include examples/platforms/routing_none.xml
 include examples/platforms/simulacrum_7_hosts.xml
+include examples/platforms/small_platform.cpp
 include examples/platforms/small_platform.lua
 include examples/platforms/small_platform.xml
 include examples/platforms/small_platform_constant.xml

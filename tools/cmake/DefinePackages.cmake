@@ -998,6 +998,7 @@ set(txt_files
 # The list of cmake build directories is constructed from the following list.
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
+  examples/platforms/CMakeLists.txt
   examples/c/CMakeLists.txt
   examples/cpp/CMakeLists.txt
   examples/smpi/CMakeLists.txt
@@ -1167,6 +1168,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/storage/content/storage_content.txt
   examples/platforms/small_platform.xml
   examples/platforms/small_platform.lua
+  examples/platforms/small_platform.cpp
   examples/platforms/small_platform_constant.xml
   examples/platforms/small_platform_failures.xml
   examples/platforms/small_platform_fatpipe.xml

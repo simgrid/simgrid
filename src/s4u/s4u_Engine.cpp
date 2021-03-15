@@ -19,9 +19,11 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
+#include <boost/algorithm/string/predicate.hpp>
 #include <simgrid/Exception.hpp>
 
 #include <algorithm>
+#include <dlfcn.h>
 #include <string>
 
 XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
@@ -109,7 +111,19 @@ const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() c
 void Engine::load_platform(const std::string& platf) const
 {
   double start = xbt_os_time();
-  parse_platform_file(platf);
+  if (boost::algorithm::ends_with(platf, ".so")) {
+    void* handle = dlopen(platf.c_str(), RTLD_LAZY);
+    xbt_assert(handle, "Impossible to open platform file: %s", platf.c_str());
+    typedef void (*load_fct_t)(const Engine&);
+    dlerror();
+    load_fct_t callable     = (load_fct_t)dlsym(handle, "load_platform");
+    const char* dlsym_error = dlerror();
+    xbt_assert(not dlsym_error, "Error: %s", dlsym_error);
+    callable(*this);
+    dlclose(handle);
+  } else {
+    parse_platform_file(platf);
+  }
 
   double end = xbt_os_time();
   XBT_DEBUG("PARSE TIME: %g", (end - start));

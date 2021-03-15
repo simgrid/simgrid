@@ -45,9 +45,9 @@ static void receiver(const std::string& mailbox_name)
 static void forwarder(int argc, char** argv)
 {
   xbt_assert(argc >= 3, "Actor forwarder requires 2 parameters, but got only %d", argc - 1);
-  sg4::Mailbox* in             = sg4::Mailbox::by_name(argv[1]);
-  sg4::Mailbox* out            = sg4::Mailbox::by_name(argv[2]);
-  auto* msg                    = in->get<std::string>();
+  sg4::Mailbox* in  = sg4::Mailbox::by_name(argv[1]);
+  sg4::Mailbox* out = sg4::Mailbox::by_name(argv[2]);
+  auto* msg         = in->get<std::string>();
   XBT_INFO("Forward '%s'.", msg->c_str());
   out->put(msg, msg->size());
 }
@@ -60,9 +60,11 @@ static void forwarder(int argc, char** argv)
 class Sender {
 public:
   std::string mbox  = "mb42";
-  std::string msg = "GaBuZoMeu";
+  std::string msg   = "GaBuZoMeu";
   explicit Sender() = default; /* Sending the default message */
-  explicit Sender(const std::string& arg) : msg(arg) { /* Sending the specified message */}
+  explicit Sender(const std::string& arg) : msg(arg)
+  { /* Sending the specified message */
+  }
   explicit Sender(std::vector<std::string> args)
   {
     /* This constructor is used when we start the actor from the deployment file */
@@ -90,7 +92,7 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
 
   /* Then you should load a platform file, describing your simulated platform */
-  e.load_platform("../../platforms/small_platform.xml");
+  e.load_platform(argv[1]);
 
   /* And now you have to ask SimGrid to actually start your actors.
    *

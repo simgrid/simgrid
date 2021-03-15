@@ -90,6 +90,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
   if(NOT DEFINED _${example}_disable)
     add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${_${example}_sources})
     add_dependencies     (tests s4u-${example})
+    add_dependencies     (s4u-${example} platf_cpp)
     target_link_libraries(s4u-${example} simgrid)
     set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
@@ -101,6 +102,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 
     ADD_TESH_FACTORIES(s4u-${example} "${_${example}_factories}"
                                       --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
                                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
