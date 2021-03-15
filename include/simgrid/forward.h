@@ -116,6 +116,9 @@ namespace activity {
   XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
 
   class ConditionVariableImpl;
+  using ConditionVariableImplPtr = boost::intrusive_ptr<ConditionVariableImpl>;
+  XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariableImpl* cond);
+  XBT_PUBLIC void intrusive_ptr_release(ConditionVariableImpl* cond);
 
   class CommImpl;
   using CommImplPtr = boost::intrusive_ptr<CommImpl>;
