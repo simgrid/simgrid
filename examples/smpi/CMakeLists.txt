@@ -75,7 +75,10 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.t
 if(enable_smpi)
   # MC is currently broken with threads (deadlock => timeout)
   if(SIMGRID_HAVE_MC)
+    add_dependencies(tests-mc smpimain)
+    add_dependencies(tests-mc smpi_only_send_deterministic)
     ADD_TESH(smpi-mc-only-send-determinism --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/only_send_deterministic.tesh)
+    add_dependencies(tests-mc smpi_sendsend)
     ADD_TESH_FACTORIES(smpi-mc-sendsend "^thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/sendsend.tesh)
   endif()
 

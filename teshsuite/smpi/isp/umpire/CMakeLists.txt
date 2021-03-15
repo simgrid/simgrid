@@ -205,7 +205,7 @@ if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
 
   foreach (test ${umpire_tests_passing} ${umpire_tests_deadlock} ${umpire_tests_problematic} )
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.c)
-    add_dependencies(tests ${test})
+    add_dependencies(tests-mc ${test})
     target_link_libraries(${test} simgrid)
     set_source_files_properties(${test}.c PROPERTIES COMPILE_FLAGS "-Dlint -Wno-error -Wno-return-type")
     set(umpire_tesh ${umpire_tesh} ${test})
