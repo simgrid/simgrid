@@ -1,4 +1,4 @@
 p Test timers
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 1 ${bindir:=.}/timers -q --log=smpi_config.thres:warning --cfg=smpi/simulate-computation:no --cfg=smpi/host-speed:100Gf --log=xbt_cfg.thres:warning --cfg=smpi/wtime:0
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ${platfdir:=.}/small_platform.xml -np 1 ${bindir:=.}/timers -q --log=smpi_config.thres:warning --cfg=smpi/simulate-computation:no --cfg=smpi/host-speed:100Gf --log=xbt_cfg.thres:warning --cfg=smpi/wtime:0
 > [rank 0] -> Tremblay
 

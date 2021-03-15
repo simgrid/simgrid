@@ -1,7 +1,7 @@
 p Test compute
 ! output sort
 ! timeout 5
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-partial-shared --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/macro-partial-shared --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [0] The result of the shared check for block (0x0, 0x123456) is: 1
 > [0] The result of the shared check for block (0x130000, 0x130001) is: 1
 > [0] The result of the shared check for block (0x345678, 0x345789) is: 1

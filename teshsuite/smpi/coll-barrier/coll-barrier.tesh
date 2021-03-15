@@ -2,7 +2,7 @@
 ! output sort
 
 p Test barrier
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-barrier --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ${platfdir:=.}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-barrier --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
 > ... Barrier ....
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay

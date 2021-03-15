@@ -2,7 +2,7 @@
 
 p Test allreduce
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_config.thres:warning --log=smpi_coll.thres:error --cfg=smpi/allreduce:automatic --cfg=smpi/async-small-thresh:65536 --cfg=smpi/send-is-detached-thresh:128000 --cfg=smpi/simulate-computation:no "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ${platfdir:=.}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_config.thres:warning --log=smpi_coll.thres:error --cfg=smpi/allreduce:automatic --cfg=smpi/async-small-thresh:65536 --cfg=smpi/send-is-detached-thresh:128000 --cfg=smpi/simulate-computation:no "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay
 > [rank 2] -> Tremblay

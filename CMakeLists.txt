@@ -652,6 +652,8 @@ if(NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_cluster ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_cluster COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_coll ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_coll COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_io ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_io COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_empty ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_empty COPYONLY)
 
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/description_file ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/description_file COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/README ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/README COPYONLY)

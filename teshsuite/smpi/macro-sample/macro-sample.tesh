@@ -1,7 +1,7 @@
 p Test compute and bench
 ! output sort
 ! timeout 45
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform_with_routers.xml -np 3 --log=root.thres:warning ${bindir:=.}/macro-sample quiet --log=smpi_config.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ${platfdir:=.}/small_platform_with_routers.xml -np 3 --log=root.thres:warning ${bindir:=.}/macro-sample quiet --log=smpi_config.thres:warning
 > (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)
 > (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)
 > (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)

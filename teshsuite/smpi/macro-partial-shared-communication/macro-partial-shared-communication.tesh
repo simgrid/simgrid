@@ -1,7 +1,7 @@
 p Test compute
 ! output sort
 ! timeout 5
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-partial-shared-communication --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/macro-partial-shared-communication --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [3] The result of the (normal) communication check for block (0x123456, 0x130000) is: 1
 > [3] The result of the (normal) communication check for block (0x130001, 0x345678) is: 1
 > [3] The result of the (normal) communication check for block (0x345789, 0x444444) is: 1

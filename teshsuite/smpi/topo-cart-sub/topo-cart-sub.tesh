@@ -1,5 +1,5 @@
 p Test cart_sub
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/topo-cart-sub -q --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/topo-cart-sub -q --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
