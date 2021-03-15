@@ -70,11 +70,12 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
 }
 
 /** A blocking (`wait()`-based) future for SIMIX processes */
-// TODO, .wait_for
-// TODO, .wait_until
-// TODO, SharedFuture
-// TODO, simgrid::simix::when_all - wait for all future to be ready (this one is simple!)
-// TODO, simgrid::simix::when_any - wait for any future to be ready
+// TODO:
+// - .wait_for
+// - .wait_until
+// - SharedFuture
+// - simgrid::simix::when_all - wait for all future to be ready (this one is simple!)
+// - simgrid::simix::when_any - wait for any future to be ready
 template <class T>
 class Future {
 public:
