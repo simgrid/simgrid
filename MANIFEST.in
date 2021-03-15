@@ -796,6 +796,8 @@ include teshsuite/smpi/coll-allgather/coll-allgather.c
 include teshsuite/smpi/coll-allgather/coll-allgather.tesh
 include teshsuite/smpi/coll-allgatherv/coll-allgatherv.c
 include teshsuite/smpi/coll-allgatherv/coll-allgatherv.tesh
+include teshsuite/smpi/coll-allreduce-with-leaks/coll-allreduce-with-leaks.c
+include teshsuite/smpi/coll-allreduce-with-leaks/coll-allreduce-with-leaks.tesh
 include teshsuite/smpi/coll-allreduce/coll-allreduce-automatic.tesh
 include teshsuite/smpi/coll-allreduce/coll-allreduce-large.tesh
 include teshsuite/smpi/coll-allreduce/coll-allreduce-papi.tesh
