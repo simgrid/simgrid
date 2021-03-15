@@ -131,6 +131,8 @@ namespace activity {
   using RawImplPtr = boost::intrusive_ptr<RawImpl>;
   class SemaphoreImpl;
   using SemaphoreImplPtr = boost::intrusive_ptr<SemaphoreImpl>;
+  XBT_PUBLIC void intrusive_ptr_add_ref(SemaphoreImpl* sem);
+  XBT_PUBLIC void intrusive_ptr_release(SemaphoreImpl* sem);
   class SleepImpl;
   using SleepImplPtr = boost::intrusive_ptr<SleepImpl>;
 

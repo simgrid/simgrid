@@ -30,6 +30,7 @@ namespace s4u {
  */
 class XBT_PUBLIC Semaphore {
   friend kernel::activity::SemaphoreImpl;
+  friend void kernel::activity::intrusive_ptr_release(kernel::activity::SemaphoreImpl* sem);
 
   kernel::activity::SemaphoreImpl* const pimpl_;
 
@@ -37,6 +38,7 @@ class XBT_PUBLIC Semaphore {
   friend void intrusive_ptr_release(const Semaphore* sem);
 
   explicit Semaphore(kernel::activity::SemaphoreImpl* sem) : pimpl_(sem) {}
+  ~Semaphore() = default;
 #ifndef DOXYGEN
   Semaphore(Semaphore const&) = delete;            // No copy constructor. Use SemaphorePtr instead
   Semaphore& operator=(Semaphore const&) = delete; // No direct assignment either. Use SemaphorePtr instead
