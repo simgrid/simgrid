@@ -46,12 +46,10 @@ XBT_PUBLIC void unblock(smx_actor_t process);
 template <class F> auto kernel_sync(F code) -> decltype(code().get())
 {
   using T = decltype(code().get());
-  if (SIMIX_is_maestro())
-    xbt_die("Can't execute blocking call in kernel mode");
+  xbt_assert(not SIMIX_is_maestro(), "Cannot execute blocking call in kernel mode");
 
   smx_actor_t self = SIMIX_process_self();
   simgrid::xbt::Result<T> result;
-
   simcall_run_blocking(
       [&result, self, &code] {
         try {

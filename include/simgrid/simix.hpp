@@ -78,10 +78,7 @@ template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallO
  */
 template <class R, class F> R simcall_blocking(F&& code, mc::SimcallObserver* t = nullptr)
 {
-  // If we are in the maestro, we take the fast path and execute the
-  // code directly without simcall marshalling/unmarshalling/dispatch:
-  if (SIMIX_is_maestro())
-    return std::forward<F>(code)();
+  xbt_assert(not SIMIX_is_maestro(), "Cannot execute blocking call in kernel mode");
 
   // If we are in the application, pass the code to the maestro which
   // executes it for us and reports the result. We use a std::future which
