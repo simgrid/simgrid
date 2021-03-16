@@ -30,7 +30,11 @@ void Semaphore::acquire()
 
 bool Semaphore::acquire_timeout(double timeout)
 {
-  return simcall_sem_acquire_timeout(pimpl_, timeout);
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  mc::SemAcquireSimcall observer{issuer, pimpl_};
+  kernel::actor::simcall_blocking<void>(
+      [&observer] { observer.get_sem()->acquire(observer.get_issuer(), observer.get_timeout()); }, &observer);
+  return simgrid::simix::unmarshal<bool>(issuer->simcall_.result_);
 }
 
 void Semaphore::release()

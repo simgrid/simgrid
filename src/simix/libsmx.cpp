@@ -320,10 +320,9 @@ void simcall_sem_acquire(smx_sem_t sem) // XBT_ATTRIB_DEPRECATD_v331
  * @ingroup simix_synchro_management
  *
  */
-int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
+int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout) // XBT_ATTRIB_DEPRECATD_v331
 {
-  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  return simcall_BODY_sem_acquire_timeout(sem, timeout);
+  return sem->sem().acquire_timeout(timeout);
 }
 
 simgrid::kernel::activity::State simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io,

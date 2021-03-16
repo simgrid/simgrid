@@ -104,13 +104,6 @@ inline static void simcall_BODY_comm_wait(simgrid::kernel::activity::CommImpl* c
   return simcall<void, simgrid::kernel::activity::CommImpl*, double>(Simcall::COMM_WAIT, comm, timeout);
 }
 
-inline static int simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeout)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_sem_acquire_timeout(&SIMIX_process_self()->simcall_, sem, timeout);
-  return simcall<int, smx_sem_t, double>(Simcall::SEM_ACQUIRE_TIMEOUT, sem, timeout);
-}
-
 inline static void simcall_BODY_run_kernel(std::function<void()> const* code)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */

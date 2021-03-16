@@ -5,6 +5,7 @@
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include <cmath> // std::isfinite
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_semaphore, simix_synchro, "Semaphore kernel-space implementation");
 
@@ -15,11 +16,13 @@ namespace activity {
 void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
 {
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
+  simix::marshal<bool>(issuer->simcall_.result_, false); // default result, will be set to 'true' on timeout
+
   if (value_ <= 0) {
     RawImplPtr synchro(new RawImpl([this, issuer]() {
       this->remove_sleeping_actor(*issuer);
-      if (issuer->simcall_.call_ == simix::Simcall::SEM_ACQUIRE_TIMEOUT)
-        simcall_sem_acquire_timeout__set__result(&issuer->simcall_, 1);
+      simix::marshal<bool>(issuer->simcall_.result_, true);
     }));
     synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
     synchro->register_simcall(&issuer->simcall_);
@@ -59,13 +62,3 @@ void SemaphoreImpl::unref()
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid
-
-// Simcall handlers:
-/**
- * @brief Handles a sem acquire simcall with timeout.
- */
-void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
-{
-  simcall_sem_acquire_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
-  sem->acquire(simcall->issuer_, timeout);
-}
