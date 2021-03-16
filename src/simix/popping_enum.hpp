@@ -30,12 +30,11 @@ enum class Simcall {
   COMM_TESTANY,
   COMM_WAITANY,
   COMM_WAIT,
-  COND_WAIT_TIMEOUT,
   SEM_ACQUIRE_TIMEOUT,
   RUN_KERNEL,
   RUN_BLOCKING,
 };
 
-constexpr int NUM_SIMCALLS = 14;
+constexpr int NUM_SIMCALLS = 13;
 } // namespace simix
 } // namespace simgrid

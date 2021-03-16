@@ -301,10 +301,10 @@ void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex) // XBT_ATTRIB_DEPRECA
  * @ingroup simix_synchro_management
  *
  */
-int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
+int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) // XBT_ATTRIB_DEPRECATD_v331
 {
-  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  return simcall_BODY_cond_wait_timeout(cond, mutex, timeout);
+  return cond->get_iface()->wait_for(std::unique_lock<simgrid::s4u::Mutex>(mutex->mutex()), timeout) ==
+         std::cv_status::timeout;
 }
 
 /**

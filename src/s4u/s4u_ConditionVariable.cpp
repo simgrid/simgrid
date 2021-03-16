@@ -8,6 +8,7 @@
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/simix.h"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/checker/SimcallObserver.hpp"
 #include "xbt/log.hpp"
 
@@ -49,7 +50,13 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
   if (timeout < 0)
     timeout = 0.0;
 
-  if (simcall_cond_wait_timeout(pimpl_, lock.mutex()->pimpl_, timeout)) {
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  mc::ConditionWaitSimcall observer{issuer, pimpl_, lock.mutex()->pimpl_, timeout};
+  kernel::actor::simcall_blocking<void>(
+      [&observer] { observer.get_cond()->wait(observer.get_mutex(), observer.get_timeout(), observer.get_issuer()); },
+      &observer);
+  bool timed_out = simgrid::simix::unmarshal<bool>(issuer->simcall_.result_);
+  if (timed_out) {
     // If we reached the timeout, we have to take the lock again:
     lock.mutex()->lock();
     return std::cv_status::timeout;
@@ -109,7 +116,7 @@ void sg_cond_wait(sg_cond_t cond, sg_mutex_t mutex)
 int sg_cond_wait_for(sg_cond_t cond, sg_mutex_t mutex, double delay)
 {
   std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
-  return cond->wait_for(lock, delay) == std::cv_status::timeout ? 1 : 0;
+  return cond->wait_for(lock, delay) == std::cv_status::timeout;
 }
 
 void sg_cond_notify_one(sg_cond_t cond)
