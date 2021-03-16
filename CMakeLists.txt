@@ -788,7 +788,9 @@ endif()
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
   "${generated_files_to_clean}")
 
-add_custom_target(tests COMMENT "Recompiling the tests")
+add_custom_target(tests    COMMENT "Recompiling the tests")
+add_custom_target(tests-mc COMMENT "Recompiling the MC tests and tools.")
+add_dependencies(tests tests-mc)
 
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)

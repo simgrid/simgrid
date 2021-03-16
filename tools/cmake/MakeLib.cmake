@@ -27,9 +27,6 @@ set_property(TARGET simgrid
 add_dependencies(simgrid maintainer_files)
 
 if(enable_model-checking)
-  add_custom_target(tests-mc COMMENT "Recompiling the MC tests and tools.")
-  add_dependencies(tests tests-mc)
-
   add_executable(simgrid-mc ${MC_SIMGRID_MC_SRC})
   target_link_libraries(simgrid-mc simgrid)
   set_target_properties(simgrid-mc
