@@ -40,7 +40,7 @@ static simgrid::config::Flag<std::string>
 void surf_cpu_model_init_Cas01()
 {
   if (cpu_optim_opt == "TI") {
-    simgrid::kernel::resource::CpuTiModel::create_pm_vm_models();
+    simgrid::kernel::resource::CpuTiModel::create_pm_models();
     return;
   }
 
@@ -54,11 +54,6 @@ void surf_cpu_model_init_Cas01()
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM, cpu_model_pm,
                                                          true);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model_pm);
-
-  auto cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>(algo);
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM, cpu_model_vm,
-                                                         true);
-  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_vm_model(cpu_model_vm);
 }
 
 namespace simgrid {

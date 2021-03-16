@@ -140,7 +140,7 @@ using CpuTiList = boost::intrusive::list<CpuTi, CpuTiListOptions>;
  *********/
 class CpuTiModel : public CpuModel {
 public:
-  static void create_pm_vm_models(); // Make both models be TI models
+  static void create_pm_models(); // Make CPU PM model
 
   CpuTiModel();
   CpuTiModel(const CpuTiModel&) = delete;
