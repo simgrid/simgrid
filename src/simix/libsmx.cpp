@@ -352,16 +352,16 @@ bool simcall_io_test(const simgrid::kernel::activity::ActivityImplPtr& io) // XB
   return simgrid::kernel::actor::simcall([io] { return io->test(); });
 }
 
-void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallObserver* t)
+void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallObserver* observer)
 {
-  simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = t;
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   simcall_BODY_run_kernel(&code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
-void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* t)
+void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* observer)
 {
-  simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = t;
+  simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   simcall_BODY_run_blocking(&code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }

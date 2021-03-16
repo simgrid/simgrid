@@ -17,8 +17,8 @@
 #include <string>
 #include <unordered_map>
 
-XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallObserver* t);
-XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* t);
+XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallObserver* observer);
+XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* observer);
 
 namespace simgrid {
 namespace kernel {
@@ -43,7 +43,7 @@ namespace actor {
  * you may need to wait for that mutex to be unlocked by its current owner.
  * Potentially blocking simcall must be issued using simcall_blocking(), right below in this file.
  */
-template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallObserver* t = nullptr)
+template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallObserver* observer = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall marshalling/unmarshalling/dispatch:
@@ -55,7 +55,7 @@ template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallO
   // conveniently handles the success/failure value for us.
   using R = typename std::result_of_t<F()>;
   simgrid::xbt::Result<R> result;
-  simcall_run_kernel([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, t);
+  simcall_run_kernel([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, observer);
   return result.get();
 }
 
@@ -76,7 +76,7 @@ template <class F> typename std::result_of_t<F()> simcall(F&& code, mc::SimcallO
  *
  * If your code never calls actor->simcall_answer() itself, the actor will never return from its simcall.
  */
-template <class R, class F> R simcall_blocking(F&& code, mc::SimcallObserver* t = nullptr)
+template <class R, class F> R simcall_blocking(F&& code, mc::SimcallObserver* observer = nullptr)
 {
   xbt_assert(not SIMIX_is_maestro(), "Cannot execute blocking call in kernel mode");
 
@@ -84,7 +84,7 @@ template <class R, class F> R simcall_blocking(F&& code, mc::SimcallObserver* t 
   // executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
   simgrid::xbt::Result<R> result;
-  simcall_run_blocking([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, t);
+  simcall_run_blocking([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, observer);
   return result.get();
 }
 } // namespace actor
