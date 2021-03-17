@@ -24,10 +24,7 @@ void surf_vm_model_init_HL13()
   if (cpu_optim == "TI") {
     cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuTiModel>();
   } else {
-    simgrid::kernel::resource::Model::UpdateAlgo algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
-    if (cpu_optim == "Lazy")
-      algo = simgrid::kernel::resource::Model::UpdateAlgo::LAZY;
-    cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>(algo);
+    cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>();
   }
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM, cpu_model_vm,
                                                          true);

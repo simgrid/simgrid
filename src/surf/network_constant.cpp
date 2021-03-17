@@ -27,8 +27,6 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkConstantModel::NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::FULL) {}
-
 LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,
                                             s4u::Link::SharingPolicy)
 {

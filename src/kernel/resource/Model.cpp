@@ -12,8 +12,13 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-Model::Model(Model::UpdateAlgo algo) : update_algorithm_(algo) {}
 Model::~Model() = default; // Don't move this declaration to the header, or it will break external projects such as SimGrid-FMI
+
+Model* Model::set_update_algorithm(Model::UpdateAlgo algo)
+{
+  update_algorithm_ = algo;
+  return this;
+}
 
 Action::ModifiedSet* Model::get_modified_set() const
 {

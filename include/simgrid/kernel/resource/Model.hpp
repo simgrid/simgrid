@@ -38,14 +38,14 @@ public:
                    gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
                    a simple full update.  */
   };
-
-  explicit Model(Model::UpdateAlgo algo);
+  Model()             = default;
   Model(const Model&) = delete;
   Model& operator=(const Model&) = delete;
 
   virtual ~Model();
 
   bool is_update_lazy() const { return update_algorithm_ == UpdateAlgo::LAZY; }
+  Model* set_update_algorithm(UpdateAlgo algo);
 
   /** @brief Get the set of [actions](@ref Action) in *inited* state */
   Action::StateSet* get_inited_action_set() { return &inited_action_set_; }
@@ -136,8 +136,8 @@ public:
   }
 
 private:
+  UpdateAlgo update_algorithm_ = UpdateAlgo::FULL;
   std::unique_ptr<lmm::System> maxmin_system_;
-  const UpdateAlgo update_algorithm_;
   Action::StateSet inited_action_set_;   /**< Created not started */
   Action::StateSet started_action_set_;  /**< Started not done */
   Action::StateSet failed_action_set_;   /**< Done with failure */

@@ -47,8 +47,7 @@ HostL07Model::HostL07Model() : HostModel()
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model);
 }
 
-CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
-    : CpuModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
+CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys) : hostModel_(hmodel)
 {
   set_maxmin_system(sys);
 }
@@ -58,8 +57,7 @@ CpuL07Model::~CpuL07Model()
   set_maxmin_system(nullptr);
 }
 
-NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
-    : NetworkModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
+NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys) : hostModel_(hmodel)
 {
   set_maxmin_system(sys);
   loopback_ = NetworkL07Model::create_link(

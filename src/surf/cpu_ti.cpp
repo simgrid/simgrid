@@ -276,8 +276,6 @@ void CpuTiModel::create_pm_models()
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model_pm);
 }
 
-CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL) {}
-
 Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   return (new CpuTi(host, speed_per_pstate))->set_model(this);

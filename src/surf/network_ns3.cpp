@@ -290,7 +290,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
+NetworkNS3Model::NetworkNS3Model()
 {
   xbt_assert(not sg_link_energy_is_inited(),
              "LinkEnergy plugin and ns-3 network models are not compatible. Are you looking for Ecofen, maybe?");

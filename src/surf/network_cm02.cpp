@@ -77,9 +77,10 @@ namespace kernel {
 namespace resource {
 
 NetworkCm02Model::NetworkCm02Model()
-    : NetworkModel(config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::FULL
-                                                                             : Model::UpdateAlgo::LAZY)
 {
+  if (config::get_value<std::string>("network/optim") == "Lazy")
+    set_update_algorithm(Model::UpdateAlgo::LAZY);
+
   std::string optim = config::get_value<std::string>("network/optim");
   bool select       = config::get_value<bool>("network/maxmin-selective-update");
 

@@ -19,9 +19,9 @@ namespace resource {
  * Model *
  *********/
 
-DiskModel::DiskModel() : Model(Model::UpdateAlgo::FULL)
+DiskModel::DiskModel()
 {
-  set_maxmin_system(new simgrid::kernel::lmm::System(true /* selective update */));
+  set_maxmin_system(new lmm::System(true /* selective update */));
 }
 
 /************

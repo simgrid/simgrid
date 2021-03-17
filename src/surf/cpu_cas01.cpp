@@ -44,13 +44,7 @@ void surf_cpu_model_init_Cas01()
     return;
   }
 
-  simgrid::kernel::resource::Model::UpdateAlgo algo;
-  if (cpu_optim_opt == "Lazy")
-    algo = simgrid::kernel::resource::Model::UpdateAlgo::LAZY;
-  else
-    algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
-
-  auto cpu_model_pm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>(algo);
+  auto cpu_model_pm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>();
   simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM, cpu_model_pm,
                                                          true);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model_pm);
@@ -60,8 +54,11 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-CpuCas01Model::CpuCas01Model(Model::UpdateAlgo algo) : CpuModel(algo)
+CpuCas01Model::CpuCas01Model()
 {
+  if (config::get_value<std::string>("cpu/optim") == "Lazy")
+    set_update_algorithm(Model::UpdateAlgo::LAZY);
+
   bool select = config::get_value<bool>("cpu/maxmin-selective-update");
 
   if (is_update_lazy()) {
