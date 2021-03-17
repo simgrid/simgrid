@@ -23,8 +23,14 @@ static void peer(int argc, char* argv[])
     double wait_time = xbt_str_parse_double(argv[i], "Invalid wait time: %s");
     i++;
     sg_actor_sleep_for(wait_time);
-    XBT_INFO("Trying to acquire %d", i);
-    sg_sem_acquire(sem);
+    XBT_INFO("Trying to acquire %d (%sblocking)", i, sg_sem_would_block(sem) ? "" : "not ");
+    // cover the two cases: with and without timeout
+    if (i > 1) {
+      while (sg_sem_acquire_timeout(sem, 3.0))
+        XBT_INFO("Timeout.. Try again %d", i);
+    } else {
+      sg_sem_acquire(sem);
+    }
     XBT_INFO("Acquired %d", i);
 
     wait_time = xbt_str_parse_double(argv[i], "Invalid wait time: %s");
@@ -46,6 +52,7 @@ int main(int argc, char* argv[])
   sg_host_t h = sg_host_by_name("Fafard");
 
   sem                      = sg_sem_init(1);
+  XBT_INFO("Semaphore initialized with capacity = %d", sg_sem_get_capacity(sem));
   const char* aliceTimes[] = {"0", "1", "3", "5", "1", "2", "5", "0"};
   const char* bobTimes[]   = {"0.9", "1", "1", "2", "2", "0", "0", "5"};
 
