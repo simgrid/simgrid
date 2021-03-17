@@ -29,7 +29,7 @@ void replay(RecordTrace const& trace)
     XBT_DEBUG("Executing %i$%i", transition.pid_, transition.times_considered_);
 
     // Choose a request:
-    kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(transition.pid_);
+    kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(transition.pid_);
     if (actor == nullptr)
       xbt_die("Unexpected actor (id:%d).", transition.pid_);
     const s_smx_simcall* simcall = &(actor->simcall_);

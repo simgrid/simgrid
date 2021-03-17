@@ -36,7 +36,7 @@ public:
   ~ActorImpl();
 
   /** Retrieve the actor implementation from its PID (or nullptr if non-existent) */
-  static ActorImpl* by_PID(aid_t PID);
+  static ActorImpl* by_pid(aid_t pid);
 
   static ActorImpl* self();
   double get_kill_time() const;

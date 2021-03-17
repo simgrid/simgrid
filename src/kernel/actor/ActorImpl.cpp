@@ -49,15 +49,15 @@ void* get_maxpid_addr()
 {
   return &maxpid;
 }
-ActorImpl* ActorImpl::by_PID(aid_t PID)
+ActorImpl* ActorImpl::by_pid(aid_t pid)
 {
-  auto item = simix_global->process_list.find(PID);
+  auto item = simix_global->process_list.find(pid);
   if (item != simix_global->process_list.end())
     return item->second;
 
   // Search the trash
   for (auto& a : simix_global->actors_to_destroy)
-    if (a.get_pid() == PID)
+    if (a.get_pid() == pid)
       return &a;
   return nullptr; // Not found, even in the trash
 }
@@ -583,9 +583,9 @@ const char* SIMIX_process_self_get_name()
 }
 
 /** @brief Returns the process from PID. */
-smx_actor_t SIMIX_process_from_PID(aid_t PID)
+smx_actor_t SIMIX_process_from_PID(aid_t pid)
 {
-  return simgrid::kernel::actor::ActorImpl::by_PID(PID);
+  return simgrid::kernel::actor::ActorImpl::by_pid(pid);
 }
 
 void SIMIX_process_on_exit(smx_actor_t actor,

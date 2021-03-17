@@ -95,7 +95,7 @@ void AppSide::handle_continue(const s_mc_message_t*) const
 }
 void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message) const
 {
-  kernel::actor::ActorImpl* process = kernel::actor::ActorImpl::by_PID(message->pid_);
+  kernel::actor::ActorImpl* process = kernel::actor::ActorImpl::by_pid(message->pid_);
   xbt_assert(process != nullptr, "Invalid pid %lu", message->pid_);
   process->simcall_handle(message->times_considered_);
   if (channel_.send(MessageType::WAITING))
@@ -104,7 +104,7 @@ void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message) const
 
 void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const
 {
-  bool res = simgrid::mc::actor_is_enabled(kernel::actor::ActorImpl::by_PID(msg->aid));
+  bool res = simgrid::mc::actor_is_enabled(kernel::actor::ActorImpl::by_pid(msg->aid));
   s_mc_message_int_t answer{MessageType::ACTOR_ENABLED_REPLY, res};
   channel_.send(answer);
 }
@@ -143,7 +143,7 @@ void AppSide::handle_messages() const
       case MessageType::SIMCALL_IS_VISIBLE: {
         assert_msg_size("SIMCALL_IS_VISIBLE", s_mc_message_simcall_is_visible_t);
         auto msg_simcall                = (s_mc_message_simcall_is_visible_t*)message_buffer.data();
-        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
+        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
         xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
         bool value = actor->simcall_.observer_->is_visible();
@@ -157,7 +157,7 @@ void AppSide::handle_messages() const
       case MessageType::SIMCALL_TO_STRING: {
         assert_msg_size("SIMCALL_TO_STRING", s_mc_message_simcall_to_string_t);
         auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
-        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
+        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
         xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
         std::string value = actor->simcall_.observer_->to_string(msg_simcall->time_considered);
@@ -172,7 +172,7 @@ void AppSide::handle_messages() const
       case MessageType::SIMCALL_DOT_LABEL: {
         assert_msg_size("SIMCALL_DOT_LABEL", s_mc_message_simcall_to_string_t);
         auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
-        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_PID(msg_simcall->aid);
+        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %d", msg_simcall->aid);
         xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
         std::string value = actor->simcall_.observer_->dot_label();
