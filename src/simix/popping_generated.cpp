@@ -57,7 +57,7 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered_)
     return;
   switch (simcall_.call_) {
     case Simcall::EXECUTION_WAITANY_FOR:
-      simcall_HANDLER_execution_waitany_for(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl**>(simcall_.args_[0]), simgrid::simix::unmarshal<size_t>(simcall_.args_[1]), simgrid::simix::unmarshal<double>(simcall_.args_[2]));
+      simcall_HANDLER_execution_waitany_for(&simcall_, simgrid::simix::unmarshal<const std::vector<simgrid::kernel::activity::ExecImpl*>*>(simcall_.args_[0]), simgrid::simix::unmarshal<double>(simcall_.args_[1]));
       break;
 
     case Simcall::COMM_RECV:

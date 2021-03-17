@@ -62,7 +62,8 @@ bool simcall_execution_test(const simgrid::kernel::activity::ActivityImplPtr& ex
 
 unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count, double timeout)
 {
-  return simcall_BODY_execution_waitany_for(execs, count, timeout);
+  std::vector<simgrid::kernel::activity::ExecImpl*> execsv(execs, execs + count);
+  return simcall_BODY_execution_waitany_for(&execsv, timeout);
 }
 
 void simcall_process_join(smx_actor_t process, double timeout) // XBT_ATTRIB_DEPRECATED_v328

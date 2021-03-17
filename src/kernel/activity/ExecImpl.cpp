@@ -19,18 +19,18 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl* execs[],
-                                           size_t count, double timeout)
+void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall,
+                                           const std::vector<simgrid::kernel::activity::ExecImpl*>* execs,
+                                           double timeout)
 {
   if (timeout < 0.0) {
     simcall->timeout_cb_ = nullptr;
   } else {
-    simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall, execs, count]() {
+    simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall, execs]() {
       simcall->timeout_cb_ = nullptr;
-      for (size_t i = 0; i < count; i++) {
+      for (auto* exec : *execs) {
         // Remove the first occurrence of simcall:
-        auto* exec = execs[i];
-        auto j     = boost::range::find(exec->simcalls_, simcall);
+        auto j = boost::range::find(exec->simcalls_, simcall);
         if (j != exec->simcalls_.end())
           exec->simcalls_.erase(j);
       }
@@ -39,9 +39,8 @@ void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kerne
     });
   }
 
-  for (size_t i = 0; i < count; i++) {
+  for (auto* exec : *execs) {
     /* associate this simcall to the the synchro */
-    auto* exec = execs[i];
     exec->simcalls_.push_back(simcall);
 
     /* see if the synchro is already finished */
@@ -201,13 +200,12 @@ void ExecImpl::finish()
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                                 // if process handling comm is killed
     if (simcall->call_ == simix::Simcall::EXECUTION_WAITANY_FOR) {
-      simgrid::kernel::activity::ExecImpl** execs = simcall_execution_waitany_for__get__execs(simcall);
-      size_t count                                = simcall_execution_waitany_for__get__count(simcall);
+      const std::vector<simgrid::kernel::activity::ExecImpl*>* execs =
+          simcall_execution_waitany_for__get__execs(simcall);
 
-      for (size_t i = 0; i < count; i++) {
+      for (auto* exec : *execs) {
         // Remove the first occurrence of simcall:
-        auto* exec = execs[i];
-        auto j     = boost::range::find(exec->simcalls_, simcall);
+        auto j = boost::range::find(exec->simcalls_, simcall);
         if (j != exec->simcalls_.end())
           exec->simcalls_.erase(j);
 
@@ -218,8 +216,8 @@ void ExecImpl::finish()
       }
 
       if (not MC_is_active() && not MC_record_replay_is_active()) {
-        ExecImpl** element = std::find(execs, execs + count, this);
-        int rank           = (element != execs + count) ? element - execs : -1;
+        auto element = std::find(execs->begin(), execs->end(), this);
+        int rank     = (element != execs->end()) ? std::distance(execs->begin(), element) : -1;
         simcall_execution_waitany_for__set__result(simcall, rank);
       }
     }

@@ -15,41 +15,29 @@
  */
 
 #include "src/simix/popping_private.hpp"
-static inline simgrid::kernel::activity::ExecImpl** simcall_execution_waitany_for__get__execs(smx_simcall_t simcall)
+static inline const std::vector<simgrid::kernel::activity::ExecImpl*>* simcall_execution_waitany_for__get__execs(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal<simgrid::kernel::activity::ExecImpl**>(simcall->args_[0]);
+  return simgrid::simix::unmarshal<const std::vector<simgrid::kernel::activity::ExecImpl*>*>(simcall->args_[0]);
 }
-static inline simgrid::kernel::activity::ExecImpl** simcall_execution_waitany_for__getraw__execs(smx_simcall_t simcall)
+static inline const std::vector<simgrid::kernel::activity::ExecImpl*>* simcall_execution_waitany_for__getraw__execs(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ExecImpl**>(simcall->args_[0]);
+  return simgrid::simix::unmarshal_raw<const std::vector<simgrid::kernel::activity::ExecImpl*>*>(simcall->args_[0]);
 }
-static inline void simcall_execution_waitany_for__set__execs(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl** arg)
+static inline void simcall_execution_waitany_for__set__execs(smx_simcall_t simcall, const std::vector<simgrid::kernel::activity::ExecImpl*>* arg)
 {
-  simgrid::simix::marshal<simgrid::kernel::activity::ExecImpl**>(simcall->args_[0], arg);
-}
-static inline size_t simcall_execution_waitany_for__get__count(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<size_t>(simcall->args_[1]);
-}
-static inline size_t simcall_execution_waitany_for__getraw__count(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<size_t>(simcall->args_[1]);
-}
-static inline void simcall_execution_waitany_for__set__count(smx_simcall_t simcall, size_t arg)
-{
-  simgrid::simix::marshal<size_t>(simcall->args_[1], arg);
+  simgrid::simix::marshal<const std::vector<simgrid::kernel::activity::ExecImpl*>*>(simcall->args_[0], arg);
 }
 static inline double simcall_execution_waitany_for__get__timeout(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal<double>(simcall->args_[2]);
+  return simgrid::simix::unmarshal<double>(simcall->args_[1]);
 }
 static inline double simcall_execution_waitany_for__getraw__timeout(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal_raw<double>(simcall->args_[2]);
+  return simgrid::simix::unmarshal_raw<double>(simcall->args_[1]);
 }
 static inline void simcall_execution_waitany_for__set__timeout(smx_simcall_t simcall, double arg)
 {
-  simgrid::simix::marshal<double>(simcall->args_[2], arg);
+  simgrid::simix::marshal<double>(simcall->args_[1], arg);
 }
 static inline int simcall_execution_waitany_for__get__result(smx_simcall_t simcall)
 {
@@ -712,7 +700,7 @@ static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::f
 
 /* The prototype of all simcall handlers, automatically generated for you */
 
-XBT_PRIVATE void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, simgrid::kernel::activity::ExecImpl** execs, size_t count, double timeout);
+XBT_PRIVATE void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall, const std::vector<simgrid::kernel::activity::ExecImpl*>* execs, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate);
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);
