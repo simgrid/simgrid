@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "xbt/log.h"
 
 namespace simgrid {
@@ -61,7 +62,7 @@ Io* Io::wait_for(double timeout)
   if (state_ == State::INITED)
     vetoable_start();
 
-  kernel::actor::ActorImpl* issuer = Actor::self()->get_impl();
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::simcall_blocking<void>([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
   state_ = State::FINISHED;
   this->release_dependencies();
