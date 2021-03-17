@@ -17,12 +17,12 @@ using EventSet = std::deque<UnfoldingEvent*>;
 
 class EvtSetTools {
 public:
-  static bool contains(const EventSet events, const UnfoldingEvent* e);
+  static bool contains(const EventSet& events, const UnfoldingEvent* e);
   static UnfoldingEvent* find(const EventSet events, const UnfoldingEvent* e);
   static void subtract(EventSet& events, EventSet const& otherSet);
   static bool depends(EventSet const& events, EventSet const& otherSet);
   static bool isEmptyIntersection(EventSet evtS1, EventSet evtS2);
-  static EventSet makeUnion(EventSet s1, EventSet s2);
+  static EventSet makeUnion(const EventSet& s1, const EventSet& s2);
   static void pushBack(EventSet& events, UnfoldingEvent* e);
   static void remove(EventSet& events, UnfoldingEvent* e);
   static EventSet minus(EventSet events, UnfoldingEvent* e);
@@ -58,7 +58,6 @@ public:
 
 class UnfoldingEvent {
 public:
-  int id = -1;
   EventSet causes; // used to store directed ancestors of event e
   UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& causes, int sid = -1);
   UnfoldingEvent(const UnfoldingEvent&) = default;
@@ -76,8 +75,8 @@ public:
   bool isImmediateConflict1(UnfoldingEvent* evt, UnfoldingEvent* otherEvt) const;
 
   bool conflictWithConfig(UnfoldingEvent* event, Configuration const& config) const;
-  /* TODO: implement */ 
-  bool operator==(const UnfoldingEvent& other) const { return false; };
+  /* TODO: implement */
+  bool operator==(const UnfoldingEvent&) const { return false; };
   void print() const;
 
   inline int get_state_id() const { return state_id; }
@@ -87,6 +86,7 @@ public:
   inline void set_transition_tag(std::string const& tr_tag) { transition_tag = tr_tag; }
 
 private:
+  int id = -1;
   int state_id{-1};
   std::string transition_tag{""}; // The tag of the last transition that lead to creating the event
   bool transition_is_IReceive(const UnfoldingEvent* testedEvt, const UnfoldingEvent* SdRcEvt) const;

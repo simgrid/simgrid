@@ -5,13 +5,14 @@
 
 #include "udpor_global.hpp"
 #include "xbt/log.h"
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor_global, mc, "udpor_global");
 
 namespace simgrid {
 namespace mc {
 
-EventSet EvtSetTools::makeUnion(EventSet s1, EventSet s2)
+EventSet EvtSetTools::makeUnion(const EventSet& s1, const EventSet& s2)
 {
   EventSet res = s1;
   for (auto evt : s2)
@@ -25,12 +26,9 @@ void EvtSetTools::pushBack(EventSet& events, UnfoldingEvent* e)
     events.push_back(e);
 }
 
-bool EvtSetTools::contains(const EventSet events, const UnfoldingEvent* e)
+bool EvtSetTools::contains(const EventSet& events, const UnfoldingEvent* e)
 {
-  for (auto evt : events)
-    if (*evt == *e)
-      return true;
-  return false;
+  return std::any_of(events.begin(), events.end(), [e](const UnfoldingEvent* evt) { return *evt == *e; });
 }
 
 } // namespace mc
