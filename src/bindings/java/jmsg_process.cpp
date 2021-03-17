@@ -111,7 +111,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv* env, jclass 
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jclass cls, jint pid)
 {
-  auto const* actor = sg_actor_by_PID(pid);
+  auto const* actor = sg_actor_by_pid(pid);
 
   if (not actor) {
     jxbt_throw_process_not_found(env, std::string("PID = ") + std::to_string(static_cast<int>(pid)));
@@ -131,7 +131,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_nativeGetPID(JNIEnv* env, jobject jprocess)
 {
   const_sg_actor_t actor = jprocess_to_native(jprocess, env);
-  return sg_actor_get_PID(actor);
+  return sg_actor_get_pid(actor);
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, jobject jprocess, jobject jname) {

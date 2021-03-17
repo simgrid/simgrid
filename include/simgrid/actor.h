@@ -35,9 +35,14 @@ XBT_PUBLIC void sg_actor_set_stacksize(sg_actor_t actor, unsigned size);
 XBT_PUBLIC void sg_actor_exit();
 XBT_PUBLIC void sg_actor_on_exit(void_f_int_pvoid_t fun, void* data);
 
-XBT_PUBLIC aid_t sg_actor_get_PID(const_sg_actor_t actor);
-XBT_PUBLIC aid_t sg_actor_get_PPID(const_sg_actor_t actor);
-XBT_PUBLIC sg_actor_t sg_actor_by_PID(aid_t pid);
+XBT_PUBLIC aid_t sg_actor_get_pid(const_sg_actor_t actor);
+XBT_PUBLIC aid_t sg_actor_get_ppid(const_sg_actor_t actor);
+XBT_PUBLIC sg_actor_t sg_actor_by_pid(aid_t pid);
+XBT_ATTRIB_DEPRECATED_v331("Please use sg_actor_get_pid() instead") XBT_PUBLIC aid_t
+    sg_actor_get_PID(const_sg_actor_t actor);
+XBT_ATTRIB_DEPRECATED_v331("Please use sg_actor_get_ppid() instead") XBT_PUBLIC aid_t
+    sg_actor_get_PPID(const_sg_actor_t actor);
+XBT_ATTRIB_DEPRECATED_v331("Please use sg_actor_by_pid() instead") XBT_PUBLIC sg_actor_t sg_actor_by_PID(aid_t pid);
 XBT_PUBLIC const char* sg_actor_get_name(const_sg_actor_t actor);
 XBT_PUBLIC sg_host_t sg_actor_get_host(const_sg_actor_t actor);
 XBT_PUBLIC const char* sg_actor_get_property_value(const_sg_actor_t actor, const char* name);

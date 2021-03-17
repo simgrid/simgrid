@@ -491,7 +491,7 @@ Retrieving actors
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_actor_by_PID(aid_t pid)
+      .. doxygenfunction:: sg_actor_by_pid(aid_t pid)
       .. doxygenfunction:: sg_actor_self()
 
 Querying info
@@ -525,8 +525,8 @@ Querying info
    .. group-tab:: C
 
       .. doxygenfunction:: sg_actor_get_name(const_sg_actor_t actor)
-      .. doxygenfunction:: sg_actor_get_PID(const_sg_actor_t actor)
-      .. doxygenfunction:: sg_actor_get_PPID(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_get_pid(const_sg_actor_t actor)
+      .. doxygenfunction:: sg_actor_get_ppid(const_sg_actor_t actor)
       .. doxygenfunction:: sg_actor_get_properties(const_sg_actor_t actor)
       .. doxygenfunction:: sg_actor_get_property_value(const_sg_actor_t actor, const char *name)
 

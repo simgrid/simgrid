@@ -522,7 +522,7 @@ void sg_actor_exit()
  * This function checks whether @a actor is a valid pointer and return its PID (or 0 in case of problem).
  */
 
-aid_t sg_actor_get_PID(const_sg_actor_t actor)
+aid_t sg_actor_get_pid(const_sg_actor_t actor)
 {
   /* Do not raise an exception here: this function is called by the logs
    * and the exceptions, so it would be called back again and again */
@@ -537,7 +537,7 @@ aid_t sg_actor_get_PID(const_sg_actor_t actor)
  * This function checks whether @a actor is a valid pointer and return its parent's PID.
  * Returns -1 if the actor has not been created by any other actor.
  */
-aid_t sg_actor_get_PPID(const_sg_actor_t actor)
+aid_t sg_actor_get_ppid(const_sg_actor_t actor)
 {
   return actor->get_ppid();
 }
@@ -549,9 +549,24 @@ aid_t sg_actor_get_PPID(const_sg_actor_t actor)
  * If none is found, @c nullptr is returned.
    Note that the PID are unique in the whole simulation, not only on a given host.
  */
-sg_actor_t sg_actor_by_PID(aid_t pid)
+sg_actor_t sg_actor_by_pid(aid_t pid)
 {
   return simgrid::s4u::Actor::by_pid(pid).get();
+}
+
+aid_t sg_actor_get_PID(const_sg_actor_t actor) // XBT_ATTRIB_DEPRECATED_v331
+{
+  return sg_actor_get_pid(actor);
+}
+
+aid_t sg_actor_get_PPID(const_sg_actor_t actor) // XBT_ATTRIB_DEPRECATED_v331
+{
+  return sg_actor_get_ppid(actor);
+}
+
+sg_actor_t sg_actor_by_PID(aid_t pid) // XBT_ATTRIB_DEPRECATED_v331
+{
+  return sg_actor_by_pid(pid);
 }
 
 /** @brief Return the name of an actor. */

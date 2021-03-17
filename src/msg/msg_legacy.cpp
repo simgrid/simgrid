@@ -62,15 +62,15 @@ void MSG_process_on_exit(int_f_int_pvoid_t fun, void* data)
 
 int MSG_process_get_PID(const_sg_actor_t actor)
 {
-  return sg_actor_get_PID(actor);
+  return sg_actor_get_pid(actor);
 }
 int MSG_process_get_PPID(const_sg_actor_t actor)
 {
-  return sg_actor_get_PPID(actor);
+  return sg_actor_get_ppid(actor);
 }
-msg_process_t MSG_process_from_PID(int PID)
+msg_process_t MSG_process_from_PID(int pid)
 {
-  return sg_actor_by_PID(PID);
+  return sg_actor_by_pid(pid);
 }
 const char* MSG_process_get_name(const_sg_actor_t actor)
 {

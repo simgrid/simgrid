@@ -25,6 +25,9 @@ S4U:
 XBT:
  - Drop simgrid::xbt::demangle. Please use boost::core::demangle instead.
 
+C binding and interface:
+ - Rename (lowercase) functions sg_actor_get_PID, sg_actor_get_PPID, sg_actor_by_PID.
+
 Documentation:
  - New section: Configuring the logs from the command line.
  - New section: Programming API of logs.
