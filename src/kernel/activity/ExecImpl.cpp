@@ -23,33 +23,7 @@ void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall,
                                            const std::vector<simgrid::kernel::activity::ExecImpl*>* execs,
                                            double timeout)
 {
-  if (timeout < 0.0) {
-    simcall->timeout_cb_ = nullptr;
-  } else {
-    simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall, execs]() {
-      simcall->timeout_cb_ = nullptr;
-      for (auto* exec : *execs) {
-        // Remove the first occurrence of simcall:
-        auto j = boost::range::find(exec->simcalls_, simcall);
-        if (j != exec->simcalls_.end())
-          exec->simcalls_.erase(j);
-      }
-      simcall_execution_waitany_for__set__result(simcall, -1);
-      simcall->issuer_->simcall_answer();
-    });
-  }
-
-  for (auto* exec : *execs) {
-    /* associate this simcall to the the synchro */
-    exec->simcalls_.push_back(simcall);
-
-    /* see if the synchro is already finished */
-    if (exec->state_ != simgrid::kernel::activity::State::WAITING &&
-        exec->state_ != simgrid::kernel::activity::State::RUNNING) {
-      exec->finish();
-      break;
-    }
-  }
+  simgrid::kernel::activity::ExecImpl::wait_any_for(simcall->issuer_, execs, timeout);
 }
 
 namespace simgrid {
@@ -278,6 +252,37 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
 
   on_migration(*this, to);
   return this;
+}
+
+void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl*>* execs, double timeout)
+{
+  if (timeout < 0.0) {
+    issuer->simcall_.timeout_cb_ = nullptr;
+  } else {
+    issuer->simcall_.timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, execs]() {
+      issuer->simcall_.timeout_cb_ = nullptr;
+      for (auto* exec : *execs) {
+        // Remove the first occurrence of simcall:
+        auto j = boost::range::find(exec->simcalls_, &issuer->simcall_);
+        if (j != exec->simcalls_.end())
+          exec->simcalls_.erase(j);
+      }
+      simcall_execution_waitany_for__set__result(&issuer->simcall_, -1);
+      issuer->simcall_answer();
+    });
+  }
+
+  for (auto* exec : *execs) {
+    /* associate this simcall to the the synchro */
+    exec->simcalls_.push_back(&issuer->simcall_);
+
+    /* see if the synchro is already finished */
+    if (exec->state_ != simgrid::kernel::activity::State::WAITING &&
+        exec->state_ != simgrid::kernel::activity::State::RUNNING) {
+      exec->finish();
+      break;
+    }
+  }
 }
 
 /*************

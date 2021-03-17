@@ -51,6 +51,8 @@ public:
   void post() override;
   void finish() override;
 
+  static void wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl*>* execs, double timeout);
+
   static xbt::signal<void(ExecImpl const&, s4u::Host*)> on_migration;
 };
 } // namespace activity
