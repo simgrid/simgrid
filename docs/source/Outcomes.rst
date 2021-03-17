@@ -42,6 +42,6 @@ To be written. For now, see `this page <https://simgrid.org/contrib/R_visualizat
 Building your own logging
 *************************
 
-You can add callbacks to the existing signals to get informed of each and every even occuring in the simulator. These callbacks can be used to write logs on disk in the format that
+You can add callbacks to the existing signals to get informed of each and every even occurring in the simulator. These callbacks can be used to write logs on disk in the format that
 you want. Some users did so to visualize the behavior of their simulators with `Jaeger <https://www.jaegertracing.io/>`_.
 

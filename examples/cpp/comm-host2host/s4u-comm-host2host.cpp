@@ -12,7 +12,7 @@
    while the _async variant creates and start it. In both cases, you need to wait() it.
 
    It is mostly useful when you want to have a centralized simulation of your settings,
-   with a central actor declaring all communications occuring on your distributed system.
+   with a central actor declaring all communications occurring on your distributed system.
   */
 
 #include <simgrid/s4u.hpp>
