@@ -29,12 +29,13 @@ double total_benched_time=0;
 unsigned long total_malloc_size=0;
 unsigned long total_shared_size=0;
 unsigned int total_shared_calls=0;
-struct max_malloc{
-  size_t size;
-  unsigned int numcall;
-  int line;
+struct MaxMalloc {
+  size_t size          = 0;
+  unsigned int numcall = 0;
+  int line             = 0;
   std::string file;
-} max_malloc = {0, 0, 0, std::string()};
+};
+MaxMalloc max_malloc;
 
 std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
 {
@@ -161,4 +162,4 @@ void print_memory_analysis(){
 
 }
 }
-}
+} // namespace simgrid
