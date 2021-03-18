@@ -37,16 +37,7 @@ int main(int argc, char *argv[])
     rb[i] = 0;
   }
 
-  printf("[%d] sndbuf=[", rank);
-  for (i = 0; i < size *mult; i++)
-    printf("%d ", sb[i]);
-  printf("]\n");
   status = MPI_Allreduce(sb, rb, size *maxlen, MPI_INT, MPI_SUM, dup);
-
-  printf("[%d] rcvbuf=[", rank);
-  for (i =  0; i < size *mult; i++)//do not print everything
-    printf("%d ", rb[i]);
-  printf("]\n");
 
   if (rank == 0 && status != MPI_SUCCESS) {
     printf("all_to_all returned %d\n", status);

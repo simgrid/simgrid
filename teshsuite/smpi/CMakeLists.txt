@@ -15,7 +15,7 @@ if(enable_smpi)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
     add_dependencies(tests ${x})
   endforeach()
-
+  
   if(NOT WIN32)
     foreach(x macro-shared auto-shared macro-partial-shared macro-partial-shared-communication )
       add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
@@ -146,6 +146,11 @@ if(enable_smpi)
   # Extra allreduce test : with leak : don't run on asan (and ignore leaks on valgrind)
   if (NOT HAVE_SANITIZER_ADDRESS)
     ADD_TESH(tesh-smpi-coll-allreduce-with-leaks --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce-with-leaks --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce-with-leaks ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce-with-leaks/coll-allreduce-with-leaks.tesh)
+    
+    if(enable_model-checking)
+      add_dependencies(tests-mc coll-allreduce-with-leaks)
+      ADD_TESH(tesh-mc-smpi-coll-allreduce-with-leaks --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce-with-leaks --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce-with-leaks ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce-with-leaks/mc-coll-allreduce-with-leaks.tesh)
+    endif()
   endif()
 
   # Extra pt2pt pingpong test: broken usage ti-tracing
