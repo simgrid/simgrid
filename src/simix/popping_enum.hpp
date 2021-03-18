@@ -21,7 +21,6 @@ namespace simix {
  */
 enum class Simcall {
   NONE,
-  EXECUTION_WAITANY_FOR,
   COMM_RECV,
   COMM_IRECV,
   COMM_SEND,
@@ -34,6 +33,6 @@ enum class Simcall {
   RUN_BLOCKING,
 };
 
-constexpr int NUM_SIMCALLS = 12;
+constexpr int NUM_SIMCALLS = 11;
 } // namespace simix
 } // namespace simgrid

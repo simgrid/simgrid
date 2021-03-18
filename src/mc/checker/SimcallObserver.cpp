@@ -119,5 +119,17 @@ bool SemAcquireSimcall::is_enabled() const
   }
   return true;
 }
+
+std::string ExecutionWaitanySimcall::to_string(int time_considered) const
+{
+  std::string res = SimcallObserver::to_string(time_considered) + "Execution WAITANY";
+  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
+  return res;
+}
+
+std::string ExecutionWaitanySimcall::dot_label() const
+{
+  return SimcallObserver::dot_label() + "Execution WAITANY";
+}
 } // namespace mc
 } // namespace simgrid

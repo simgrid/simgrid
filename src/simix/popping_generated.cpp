@@ -29,7 +29,6 @@ using simgrid::simix::Simcall;
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
     "Simcall::NONE",
-    "Simcall::EXECUTION_WAITANY_FOR",
     "Simcall::COMM_RECV",
     "Simcall::COMM_IRECV",
     "Simcall::COMM_SEND",
@@ -56,10 +55,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered_)
   if (context_->wannadie())
     return;
   switch (simcall_.call_) {
-    case Simcall::EXECUTION_WAITANY_FOR:
-      simcall_HANDLER_execution_waitany_for(&simcall_, simgrid::simix::unmarshal<const std::vector<simgrid::kernel::activity::ExecImpl*>*>(simcall_.args_[0]), simgrid::simix::unmarshal<double>(simcall_.args_[1]));
-      break;
-
     case Simcall::COMM_RECV:
       simcall_HANDLER_comm_recv(&simcall_, simgrid::simix::unmarshal<smx_actor_t>(simcall_.args_[0]), simgrid::simix::unmarshal<smx_mailbox_t>(simcall_.args_[1]), simgrid::simix::unmarshal<unsigned char*>(simcall_.args_[2]), simgrid::simix::unmarshal<size_t*>(simcall_.args_[3]), simgrid::simix::unmarshal<simix_match_func_t>(simcall_.args_[4]), simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall_.args_[5]), simgrid::simix::unmarshal<void*>(simcall_.args_[6]), simgrid::simix::unmarshal<double>(simcall_.args_[7]), simgrid::simix::unmarshal<double>(simcall_.args_[8]));
       break;

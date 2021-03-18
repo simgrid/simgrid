@@ -41,13 +41,6 @@ inline static R simcall(Simcall call, T const&... t)
   return simgrid::simix::unmarshal<R>(self->simcall_.result_);
 }
 
-inline static int simcall_BODY_execution_waitany_for(const std::vector<simgrid::kernel::activity::ExecImpl*>* execs, double timeout)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_execution_waitany_for(&SIMIX_process_self()->simcall_, execs, timeout);
-  return simcall<int, const std::vector<simgrid::kernel::activity::ExecImpl*>*, double>(Simcall::EXECUTION_WAITANY_FOR, execs, timeout);
-}
-
 inline static void simcall_BODY_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */

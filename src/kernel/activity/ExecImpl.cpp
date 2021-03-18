@@ -8,6 +8,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
 #include "simgrid/s4u/Exec.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -18,13 +19,6 @@
 #include <boost/range/algorithm.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
-
-void simcall_HANDLER_execution_waitany_for(smx_simcall_t simcall,
-                                           const std::vector<simgrid::kernel::activity::ExecImpl*>* execs,
-                                           double timeout)
-{
-  simgrid::kernel::activity::ExecImpl::wait_any_for(simcall->issuer_, execs, timeout);
-}
 
 namespace simgrid {
 namespace kernel {
@@ -173,9 +167,8 @@ void ExecImpl::finish()
 
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                                 // if process handling comm is killed
-    if (simcall->call_ == simix::Simcall::EXECUTION_WAITANY_FOR) {
-      const std::vector<simgrid::kernel::activity::ExecImpl*>* execs =
-          simcall_execution_waitany_for__get__execs(simcall);
+    if (const auto* observer = dynamic_cast<mc::ExecutionWaitanySimcall*>(simcall->observer_)) {
+      const auto* execs = observer->get_execs();
 
       for (auto* exec : *execs) {
         // Remove the first occurrence of simcall:
@@ -192,7 +185,7 @@ void ExecImpl::finish()
       if (not MC_is_active() && not MC_record_replay_is_active()) {
         auto element = std::find(execs->begin(), execs->end(), this);
         int rank     = (element != execs->end()) ? std::distance(execs->begin(), element) : -1;
-        simcall_execution_waitany_for__set__result(simcall, rank);
+        simix::marshal<int>(simcall->result_, rank);
       }
     }
     switch (state_) {
@@ -267,7 +260,7 @@ void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl
         if (j != exec->simcalls_.end())
           exec->simcalls_.erase(j);
       }
-      simcall_execution_waitany_for__set__result(&issuer->simcall_, -1);
+      simix::marshal<int>(issuer->simcall_.result_, -1);
       issuer->simcall_answer();
     });
   }

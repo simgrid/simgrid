@@ -60,10 +60,19 @@ bool simcall_execution_test(const simgrid::kernel::activity::ActivityImplPtr& ex
   return simgrid::kernel::actor::simcall([execution] { return execution->test(); });
 }
 
-unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count, double timeout)
+unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
+                                           double timeout) // XBT_ATTRIB_DEPRECATED_v331
 {
   std::vector<simgrid::kernel::activity::ExecImpl*> execsv(execs, execs + count);
-  return simcall_BODY_execution_waitany_for(&execsv, timeout);
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::mc::ExecutionWaitanySimcall observer{issuer, &execsv, timeout};
+  simgrid::kernel::actor::simcall_blocking<void>(
+      [&observer] {
+        simgrid::kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(),
+                                                          observer.get_timeout());
+      },
+      &observer);
+  return simgrid::simix::unmarshal<int>(issuer->simcall_.result_);
 }
 
 void simcall_process_join(smx_actor_t process, double timeout) // XBT_ATTRIB_DEPRECATED_v328

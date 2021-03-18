@@ -117,8 +117,9 @@ XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::wait_for()") XBT_PUBLIC simgri
     simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* execution, double timeout);
 XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
     simcall_execution_wait(const simgrid::kernel::activity::ActivityImplPtr& execution, double timeout);
-XBT_PUBLIC unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
-                                                      double timeout);
+XBT_ATTRIB_DEPRECATED_v331("Please use s4u::Exec::wait_any_for()") XBT_PUBLIC
+    unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
+                                               double timeout);
 XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::test()") XBT_PUBLIC
     bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution);
 XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::test()") XBT_PUBLIC
