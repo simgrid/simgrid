@@ -173,13 +173,12 @@ double VMModel::next_occurring_event(double now)
  * Resource *
  ************/
 
-VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM,
-                                       int core_amount, size_t ramsize)
-    : HostImpl(piface), physical_host_(host_PM), core_amount_(core_amount), ramsize_(ramsize)
+VirtualMachineImpl::VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface,
+                                       simgrid::s4u::Host* host_PM, int core_amount, size_t ramsize)
+    : HostImpl(name, piface), piface_(piface), physical_host_(host_PM), core_amount_(core_amount), ramsize_(ramsize)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(piface);
-
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ?
    * The value for GUESTOS_NOISE corresponds to the cost of the global action associated to the VM.  It corresponds to
@@ -190,7 +189,7 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   // It's empty for now, so it should not request resources in the PM
   update_action_weight();
 
-  XBT_VERB("Create VM(%s)@PM(%s)", piface->get_cname(), physical_host_->get_cname());
+  XBT_VERB("Create VM(%s)@PM(%s)", name.c_str(), physical_host_->get_cname());
   on_creation(*this);
 }
 

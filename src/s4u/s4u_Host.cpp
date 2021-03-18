@@ -32,13 +32,6 @@ xbt::signal<void(Host const&)> Host::on_destruction;
 xbt::signal<void(Host const&)> Host::on_state_change;
 xbt::signal<void(Host const&)> Host::on_speed_change;
 
-Host::Host(const std::string& name) : name_(name)
-{
-  xbt_assert(Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
-  Engine::get_instance()->host_register(name_, this);
-  new surf::HostImpl(this);
-}
-
 Host* Host::set_netpoint(kernel::routing::NetPoint* netpoint)
 {
   pimpl_netpoint_ = netpoint;
@@ -47,7 +40,6 @@ Host* Host::set_netpoint(kernel::routing::NetPoint* netpoint)
 
 Host::~Host()
 {
-  delete pimpl_;
   if (pimpl_netpoint_ != nullptr) // not removed yet by a children class
     Engine::get_instance()->netpoint_unregister(pimpl_netpoint_);
   delete pimpl_cpu;
@@ -62,9 +54,7 @@ Host::~Host()
  */
 void Host::destroy()
 {
-  on_destruction(*this);
-  Engine::get_instance()->host_unregister(std::string(name_));
-  delete this;
+  kernel::actor::simcall([this] { this->pimpl_->destroy(); });
 }
 
 Host* Host::by_name(const std::string& name)
@@ -82,6 +72,16 @@ Host* Host::current()
   if (self == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
   return self->get_host();
+}
+
+xbt::string const& Host::get_name() const
+{
+  return this->pimpl_->get_name();
+}
+
+const char* Host::get_cname() const
+{
+  return this->pimpl_->get_cname();
 }
 
 void Host::turn_on()

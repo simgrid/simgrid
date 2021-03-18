@@ -30,7 +30,8 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
 }
 
 VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount, size_t ramsize)
-    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
+    : Host(new vm::VirtualMachineImpl(name, this, physical_host, core_amount, ramsize))
+    , pimpl_vm_(dynamic_cast<vm::VirtualMachineImpl*>(Host::get_impl()))
 {
   XBT_DEBUG("Create VM %s", get_cname());
 
@@ -42,7 +43,12 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
   for (int i = 0; i < physical_host->get_pstate_count(); i++)
     speeds.push_back(physical_host->get_pstate_speed(i));
 
-  physical_host->get_netpoint()->get_englobing_zone()->get_cpu_vm_model()->create_cpu(this, speeds)->set_core_count(core_amount)->seal();
+  physical_host->get_netpoint()
+      ->get_englobing_zone()
+      ->get_cpu_vm_model()
+      ->create_cpu(this, speeds)
+      ->set_core_count(core_amount)
+      ->seal();
   if (physical_host->get_pstate() != 0)
     set_pstate(physical_host->get_pstate());
 
@@ -124,7 +130,8 @@ void VirtualMachine::destroy()
   shutdown();
 
   /* Then, destroy the VM object */
-  Host::destroy();
+  get_impl()->destroy();
+  delete this;
 }
 
 simgrid::s4u::Host* VirtualMachine::get_pm() const
@@ -185,8 +192,8 @@ VirtualMachine* VirtualMachine::set_bound(double bound)
   return this;
 }
 
-} // namespace simgrid
 } // namespace s4u
+} // namespace simgrid
 
 /* **************************** Public C interface *************************** */
 
@@ -280,12 +287,13 @@ void sg_vm_resume(sg_vm_t vm)
 /** @brief Immediately kills all processes within the given VM.
  *
  @beginrst
- 
+
  The memory allocated by these actors is leaked, unless you used :cpp:func:`simgrid::s4u::Actor::on_exit`.
-  
+
  @endrst
- * 
- * No extra delay occurs by default. You may let your actor sleep by a specific amount to simulate any extra delay that you want.
+ *
+ * No extra delay occurs by default. You may let your actor sleep by a specific amount to simulate any extra delay that
+ you want.
  */
 void sg_vm_shutdown(sg_vm_t vm)
 {

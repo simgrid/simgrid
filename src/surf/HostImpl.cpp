@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_private.hpp"
 
@@ -23,11 +25,16 @@ namespace surf {
 /************
  * Resource *
  ************/
-HostImpl::HostImpl(s4u::Host* host) : piface_(host)
+HostImpl::HostImpl(const std::string& name, s4u::Host* piface) : piface_(this), name_(name)
 {
-  /* The VM wants to reinstall a new HostImpl, but we don't want to leak the previously existing one */
-  delete piface_->pimpl_;
-  piface_->pimpl_ = this;
+  xbt_assert(s4u::Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
+  s4u::Engine::get_instance()->host_register(name_, piface);
+}
+
+HostImpl::HostImpl(const std::string& name) : piface_(this), name_(name)
+{
+  xbt_assert(s4u::Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
+  s4u::Engine::get_instance()->host_register(name_, &piface_);
 }
 
 HostImpl::~HostImpl()
@@ -47,6 +54,17 @@ HostImpl::~HostImpl()
 
   for (auto const& d : disks_)
     d->destroy();
+}
+
+/** @brief Fire the required callbacks and destroy the object
+ *
+ * Don't delete directly a Host, call h->destroy() instead.
+ */
+void HostImpl::destroy()
+{
+  s4u::Host::on_destruction(*this->get_iface());
+  s4u::Engine::get_instance()->host_unregister(std::string(name_));
+  delete this;
 }
 
 /** Re-starts all the actors that are marked as restartable.
@@ -132,6 +150,5 @@ void HostImpl::remove_disk(const std::string& disk_name)
     position++;
   }
 }
-
 } // namespace surf
 } // namespace simgrid

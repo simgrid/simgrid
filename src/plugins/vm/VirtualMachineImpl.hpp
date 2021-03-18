@@ -38,7 +38,8 @@ public:
 
   static std::deque<s4u::VirtualMachine*> allVms_;
 
-  explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host, int core_amount, size_t ramsize);
+  explicit VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface, s4u::Host* host, int core_amount,
+                              size_t ramsize);
   ~VirtualMachineImpl() override;
 
   virtual void suspend(kernel::actor::ActorImpl* issuer);
@@ -59,6 +60,9 @@ public:
   unsigned int get_core_amount() const { return core_amount_; }
   kernel::resource::Action* get_action() const { return action_; }
 
+  const s4u::VirtualMachine* get_iface() const override { return piface_; }
+  s4u::VirtualMachine* get_iface() override { return piface_; }
+
   virtual void set_bound(double bound);
 
   void update_action_weight();
@@ -71,6 +75,7 @@ public:
   bool is_migrating() const { return is_migrating_; }
 
 private:
+  s4u::VirtualMachine* piface_;
   kernel::resource::Action* action_ = nullptr;
   unsigned int active_execs_        = 0;
   s4u::Host* physical_host_;
@@ -100,7 +105,7 @@ public:
     return nullptr;
   };
 };
-}
-}
+} // namespace vm
+} // namespace simgrid
 
 #endif /* VM_INTERFACE_HPP_ */

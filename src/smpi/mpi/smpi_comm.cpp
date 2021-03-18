@@ -356,7 +356,7 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   //get the indices of all processes sharing the same simix host
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
-  sg_host_self()->pimpl_->foreach_actor([this, &intra_comm_size, &min_index](auto& actor) {
+  sg_host_self()->get_impl()->foreach_actor([this, &intra_comm_size, &min_index](auto& actor) {
     int index = actor.get_pid();
     if (this->group()->rank(actor.get_ciface()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
@@ -367,7 +367,7 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
   auto* group_intra = new Group(intra_comm_size);
   int i = 0;
-  sg_host_self()->pimpl_->foreach_actor([this, group_intra, &i](auto& actor) {
+  sg_host_self()->get_impl()->foreach_actor([this, group_intra, &i](auto& actor) {
     if (this->group()->rank(actor.get_ciface()) != MPI_UNDEFINED) {
       group_intra->set_mapping(actor.get_ciface(), i);
       i++;

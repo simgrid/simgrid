@@ -85,6 +85,7 @@ public:
 
 protected:
 #ifndef DOXYGEN
+  friend surf::HostImpl;
   friend Host;
   friend Link;
   friend Disk;

@@ -74,7 +74,7 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
     delete args->properties;
   }
 
-  host->pimpl_->set_disks(args->disks, host);
+  host->get_impl()->set_disks(args->disks, host);
 
   /* Change from the defaults */
   host->set_state_profile(args->state_trace)->set_speed_profile(args->speed_trace);
@@ -381,7 +381,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   auto* arg =
       new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
 
-  host->pimpl_->add_actor_at_boot(arg);
+  host->get_impl()->add_actor_at_boot(arg);
 
   if (start_time > SIMIX_get_clock()) {
     arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);

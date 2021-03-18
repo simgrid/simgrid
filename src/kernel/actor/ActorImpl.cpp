@@ -115,7 +115,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
     actor->set_properties(*properties);
 
   /* Add the actor to it's host actor list */
-  host->pimpl_->add_actor(actor);
+  host->get_impl()->add_actor(actor);
 
   /* Now insert it in the global actor list and in the actors to run list */
   simix_global->process_list[actor->get_pid()] = actor;
@@ -152,7 +152,7 @@ void ActorImpl::cleanup_from_simix()
   const std::lock_guard<std::mutex> lock(simix_global->mutex);
   simix_global->process_list.erase(pid_);
   if (host_ && host_actor_list_hook.is_linked())
-    host_->pimpl_->remove_actor(this);
+    host_->get_impl()->remove_actor(this);
   if (not smx_destroy_list_hook.is_linked()) {
 #if SIMGRID_HAVE_MC
     xbt_dynar_push_as(simix_global->dead_actors_vector, ActorImpl*, this);
@@ -464,9 +464,9 @@ void ActorImpl::simcall_answer()
 
 void ActorImpl::set_host(s4u::Host* dest)
 {
-  host_->pimpl_->remove_actor(this);
+  host_->get_impl()->remove_actor(this);
   host_ = dest;
-  dest->pimpl_->add_actor(this);
+  dest->get_impl()->add_actor(this);
 }
 
 ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
@@ -498,7 +498,7 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
   XBT_DEBUG("Start context '%s'", get_cname());
 
   /* Add the actor to its host's actor list */
-  host_->pimpl_->add_actor(this);
+  host_->get_impl()->add_actor(this);
   simix_global->process_list[pid_] = this;
 
   /* Now insert it in the global actor list and in the actor to run list */
