@@ -3,16 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cassert>
-#include <cstdio>
-
-#include <memory>
-#include <string>
-#include <vector>
-
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
-
 #include "src/mc/Session.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
@@ -23,6 +13,15 @@
 #include "src/mc/mc_record.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
+
+#include <cassert>
+#include <cstdio>
+
+#include <memory>
+#include <string>
+#include <vector>
 
 using api = simgrid::mc::Api;
 
