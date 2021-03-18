@@ -19,6 +19,23 @@ namespace kernel {
 namespace routing {
 ClusterZone::ClusterZone(const std::string& name) : NetZoneImpl(name) {}
 
+void ClusterZone::set_loopback()
+{
+  num_links_per_node_++;
+  has_loopback_ = true;
+}
+
+void ClusterZone::set_limiter()
+{
+  num_links_per_node_++;
+  has_limiter_ = true;
+}
+
+void ClusterZone::add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link)
+{
+  private_links_.insert({position, link});
+}
+
 void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());

@@ -255,12 +255,12 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   XBT_VERB("dragonfly getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(),
            dst->id());
 
-  if ((src->id() == dst->id()) && has_loopback_) {
-    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos(src->id()));
+  if ((src->id() == dst->id()) && has_loopback()) {
+    resource::LinkImpl* uplink = get_uplink_from(node_pos(src->id()));
 
-    route->link_list.push_back(info.first);
+    route->link_list.push_back(uplink);
     if (latency)
-      *latency += info.first->get_latency();
+      *latency += uplink->get_latency();
     return;
   }
 
@@ -282,9 +282,8 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   if (latency)
     *latency += myRouter->my_nodes_[myCoords.node * num_links_per_link_]->get_latency();
 
-  if (has_limiter_) { // limiter for sender
-    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
-    route->link_list.push_back(info.first);
+  if (has_limiter()) { // limiter for sender
+    route->link_list.push_back(get_uplink_from(node_pos_with_loopback(src->id())));
   }
 
   if (targetRouter != myRouter) {
@@ -334,9 +333,8 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
     }
   }
 
-  if (has_limiter_) { // limiter for receiver
-    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos_with_loopback(dst->id()));
-    route->link_list.push_back(info.first);
+  if (has_limiter()) { // limiter for receiver
+    route->link_list.push_back(get_downlink_to(node_pos_with_loopback(dst->id())));
   }
 
   // router->node local link

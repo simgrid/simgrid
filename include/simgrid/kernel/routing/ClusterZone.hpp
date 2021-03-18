@@ -66,8 +66,35 @@ namespace routing {
  */
 
 class ClusterZone : public NetZoneImpl {
+  /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
+  /* The pair is {link_up, link_down} */
+  std::unordered_map<unsigned int, std::pair<resource::LinkImpl*, resource::LinkImpl*>> private_links_;
+  resource::LinkImpl* backbone_    = nullptr;
+  NetPoint* router_                = nullptr;
+  bool has_limiter_                = false;
+  bool has_loopback_               = false;
+  unsigned int num_links_per_node_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
+
+protected:
+  void set_num_links_per_node(unsigned int num) { num_links_per_node_ = num; }
+  resource::LinkImpl* get_uplink_from(unsigned int position) const { return private_links_.at(position).first; }
+  resource::LinkImpl* get_downlink_to(unsigned int position) const { return private_links_.at(position).second; }
+
 public:
   explicit ClusterZone(const std::string& name);
+
+  void set_loopback();
+  bool has_loopback() const { return has_loopback_; }
+  void set_limiter();
+  bool has_limiter() const { return has_limiter_; }
+  void set_backbone(resource::LinkImpl* bb) { backbone_ = bb; }
+  bool has_backbone() const { return backbone_ != nullptr; }
+  void set_router(NetPoint* router) { router_ = router; }
+  void add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link);
+  bool private_link_exists_at(unsigned int position) const
+  {
+    return private_links_.find(position) != private_links_.end();
+  }
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
@@ -79,22 +106,12 @@ public:
     /* this routing method does not require any specific argument */
   }
 
-  /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
-  /* The pair is {link_up, link_down} */
-  std::unordered_map<unsigned int, std::pair<kernel::resource::LinkImpl*, kernel::resource::LinkImpl*>> private_links_;
-
   unsigned int node_pos(int id) const { return id * num_links_per_node_; }
   unsigned int node_pos_with_loopback(int id) const { return node_pos(id) + (has_loopback_ ? 1 : 0); }
   unsigned int node_pos_with_loopback_limiter(int id) const
   {
     return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0);
   }
-
-  kernel::resource::LinkImpl* backbone_ = nullptr;
-  NetPoint* router_              = nullptr;
-  bool has_limiter_                = false;
-  bool has_loopback_               = false;
-  unsigned int num_links_per_node_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
 };
 } // namespace routing
 } // namespace kernel

@@ -78,7 +78,7 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out,
   resource::LinkImpl* linkDown =
       get_network_model()->create_link(link_down, std::vector<double>(1, bw_in), s4u::Link::SharingPolicy::SHARED);
   linkDown->seal();
-  private_links_.insert({netpoint->id(), {linkUp, linkDown}});
+  add_private_link_at(netpoint->id(), {linkUp, linkDown});
 }
 
 void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
@@ -93,30 +93,19 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   }
 
   /* Retrieve the private links */
-  auto src_link = private_links_.find(src->id());
-  if (src_link != private_links_.end()) {
-    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = src_link->second;
-    if (info.first) {
-      route->link_list.push_back(info.first);
-      if (lat)
-        *lat += info.first->get_latency();
-    }
-  } else {
-    XBT_DEBUG("Source of private link (%u) doesn't exist", src->id());
+  if (private_link_exists_at(src->id())) {
+    auto src_link = get_uplink_from(src->id());
+    route->link_list.push_back(src_link);
+    if (lat)
+      *lat += src_link->get_latency();
   }
 
-  auto dst_link = private_links_.find(dst->id());
-  if (dst_link != private_links_.end()) {
-    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = dst_link->second;
-    if (info.second) {
-      route->link_list.push_back(info.second);
-      if (lat)
-        *lat += info.second->get_latency();
-    }
-  } else {
-    XBT_DEBUG("Destination of private link (%u) doesn't exist", dst->id());
+  if (private_link_exists_at(dst->id())) {
+    auto dst_link = get_downlink_to(dst->id());
+    route->link_list.push_back(dst_link);
+    if (lat)
+      *lat += dst_link->get_latency();
   }
-
   /* Compute the extra latency due to the euclidean distance if needed */
   if (lat) {
     std::vector<double>* srcCoords = netpoint_get_coords(src);
