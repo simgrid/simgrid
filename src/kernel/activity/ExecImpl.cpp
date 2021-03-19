@@ -184,7 +184,7 @@ void ExecImpl::finish()
 
       if (not MC_is_active() && not MC_record_replay_is_active()) {
         auto element = std::find(execs->begin(), execs->end(), this);
-        int rank     = (element != execs->end()) ? std::distance(execs->begin(), element) : -1;
+        int rank     = element != execs->end() ? static_cast<int>(std::distance(execs->begin(), element)) : -1;
         simix::marshal<int>(simcall->result_, rank);
       }
     }
