@@ -456,6 +456,11 @@ void LinkNS3::set_latency_profile(profile::Profile*)
   xbt_die("The ns-3 network model doesn't support latency profiles");
 }
 
+LinkImpl* LinkNS3::set_latency(double latency)
+{
+  latency_.peak = latency;
+  return this;
+}
 /**********
  * Action *
  **********/
