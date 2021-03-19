@@ -14,8 +14,6 @@ int main(int argc, char *argv[])
 {
   int rank;
   int size;
-  int i;
-  int status;
 
   MPI_Init(&argc, &argv);
   int maxlen = argc >= 2 ? atoi(argv[1]) : 1;
@@ -29,12 +27,12 @@ int main(int argc, char *argv[])
   int* sb = xbt_new0(int, size * maxlen);
   int* rb = xbt_new0(int, size * maxlen);
 
-  for (i = 0; i < size *maxlen; ++i) {
+  for (int i = 0; i < size * maxlen; ++i) {
     sb[i] = rank*size + i;
     rb[i] = 0;
   }
 
-  status = MPI_Allreduce(sb, rb, size *maxlen, MPI_INT, MPI_SUM, dup);
+  int status = MPI_Allreduce(sb, rb, size * maxlen, MPI_INT, MPI_SUM, dup);
 
   if (rank == 0 && status != MPI_SUCCESS) {
     printf("all_to_all returned %d\n", status);
