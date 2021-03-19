@@ -31,10 +31,10 @@ CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
 {
   double integral    = 0;
   double time        = 0;
-  unsigned nb_points = profile->event_list.size() + 1;
+  unsigned nb_points = profile->get_event_list().size() + 1;
   time_points_.reserve(nb_points);
   integral_.reserve(nb_points);
-  for (auto const& val : profile->event_list) {
+  for (auto const& val : profile->get_event_list()) {
     time_points_.push_back(time);
     integral_.push_back(integral);
     time += val.date_;
@@ -207,7 +207,7 @@ double CpuTiTmgr::get_power_scale(double a) const
 {
   double reduced_a                = a - floor(a / last_time_) * last_time_;
   int point                       = CpuTiProfile::binary_search(profile_->time_points_, reduced_a);
-  kernel::profile::DatedValue val = speed_profile_->event_list.at(point);
+  kernel::profile::DatedValue val = speed_profile_->get_event_list().at(point);
   return val.value_;
 }
 
@@ -231,15 +231,15 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
   }
 
   /* only one point available, fixed trace */
-  if (speed_profile->event_list.size() == 1) {
-    value_ = speed_profile->event_list.front().value_;
+  if (speed_profile->get_event_list().size() == 1) {
+    value_ = speed_profile->get_event_list().front().value_;
     return;
   }
 
   type_ = Type::DYNAMIC;
 
   /* count the total time of trace file */
-  for (auto const& val : speed_profile->event_list)
+  for (auto const& val : speed_profile->get_event_list())
     total_time += val.date_;
 
   profile_   = std::make_unique<CpuTiProfile>(speed_profile);
@@ -335,8 +335,8 @@ void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
   speed_integrated_trace_ = new CpuTiTmgr(profile, speed_.scale);
 
   /* add a fake trace event if periodicity == 0 */
-  if (profile && profile->event_list.size() > 1) {
-    kernel::profile::DatedValue val = profile->event_list.back();
+  if (profile && profile->get_event_list().size() > 1) {
+    kernel::profile::DatedValue val = profile->get_event_list().back();
     if (val.date_ < 1e-12) {
       auto* prof   = new kernel::profile::Profile();
       speed_.event = prof->schedule(&profile::future_evt_set, this);

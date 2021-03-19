@@ -41,7 +41,7 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
   simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
   XBT_VERB("---------------------------------------------------------");
   XBT_VERB("data>>\n%s<<data\n", str);
-  for (auto const& evt : trace->event_list)
+  for (auto const& evt : trace->get_event_list())
     XBT_VERB("event: d:%lg v:%lg", evt.date_, evt.value_);
 
   MockedResource daResource;
@@ -71,7 +71,7 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
 static std::vector<simgrid::kernel::profile::StochasticDatedValue> trace2selist(const char* str)
 {
   const simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
-  std::vector<simgrid::kernel::profile::StochasticDatedValue> stocevlist = trace->stochastic_event_list;
+  std::vector<simgrid::kernel::profile::StochasticDatedValue> stocevlist = trace->get_stochastic_event_list();
   tmgr_finalize();
   return stocevlist;
 }
