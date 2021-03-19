@@ -20,14 +20,16 @@ class Node {
   RoutingTable table;            // node routing table
   unsigned int find_node_success = 0; // Number of find_node which have succeeded.
   unsigned int find_node_failed  = 0; // Number of find_node which have failed.
-public:
   simgrid::s4u::CommPtr receive_comm = nullptr;
   Message* received_msg              = nullptr;
+
+public:
   explicit Node(unsigned int node_id) : id_(node_id), table(node_id) {}
   Node(const Node&) = delete;
   Node& operator=(const Node&) = delete;
   unsigned int getId() const { return id_; }
 
+  Message* receive(simgrid::s4u::Mailbox* mailbox);
   bool join(unsigned int known_id);
   void sendFindNode(unsigned int id, unsigned int destination) const;
   unsigned int sendFindNodeToBest(const Answer* node_list) const;

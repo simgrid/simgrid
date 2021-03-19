@@ -38,6 +38,19 @@ void node_free(node_t node)
 }
 
 /**
+  * Try to asynchronously get a new message from given mailbox. Return null if none available.
+  */
+kademlia_message_t receive(node_t node, sg_mailbox_t mailbox)
+{
+  if (node->receive_comm == NULL)
+    node->receive_comm = sg_mailbox_get_async(mailbox, &node->received_msg);
+  if (!sg_comm_test(node->receive_comm))
+    return NULL;
+  node->receive_comm = NULL;
+  return node->received_msg;
+}
+
+/**
  * @brief Tries to join the network
  * @param node node data
  * @param id_known id of the node I know in the network.
@@ -56,14 +69,11 @@ unsigned int join(node_t node, unsigned int id_known)
   /* First step: Send a "FIND_NODE" request to the node we know */
   send_find_node(node, id_known, node->id);
   do {
-    if (node->receive_comm == NULL)
-      node->receive_comm = sg_mailbox_get_async(mailbox, &node->received_msg);
-
-    if (sg_comm_test(node->receive_comm)) {
+    const kademlia_message_t msg = receive(node, mailbox);
+    if (msg) {
       XBT_DEBUG("Received an answer from the node I know.");
       got_answer = 1;
       // retrieve the node list and ping them.
-      const kademlia_message_t msg = (kademlia_message_t)(node->received_msg);
       const s_answer_t* node_list  = msg->answer;
       if (node_list != NULL) {
         node_contact_t contact;
@@ -75,7 +85,6 @@ unsigned int join(node_t node, unsigned int id_known)
       }
       answer_free(msg->answer);
       free(msg);
-      node->receive_comm = NULL;
     } else {
       sg_actor_sleep_for(1);
     }
@@ -227,13 +236,9 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
     double time_beginreceive = simgrid_get_clock();
 
     do {
-      if (node->receive_comm == NULL)
-        node->receive_comm = sg_mailbox_get_async(mailbox, &node->received_msg);
-
-      if (sg_comm_test(node->receive_comm)) {
+      const kademlia_message_t msg = receive(node, mailbox);
+      if (msg) {
         // Figure out if we received an answer or something else
-        const kademlia_message_t msg = (kademlia_message_t)(node->received_msg);
-
         // Check if what we have received is what we are looking for.
         if (msg->answer != NULL && msg->answer->destination_id == id_to_find) {
           // Handle the answer
@@ -261,7 +266,6 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
         }
         answer_free(msg->answer);
         free(msg);
-        node->receive_comm = NULL;
       } else {
         sg_actor_sleep_for(1);
       }

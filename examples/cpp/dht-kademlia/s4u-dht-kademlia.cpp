@@ -47,17 +47,10 @@ static void node(std::vector<std::string> args)
     simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(node.getId()));
 
     while (simgrid::s4u::Engine::get_clock() < deadline) {
-      if (node.receive_comm == nullptr)
-        node.receive_comm = mailbox->get_async<kademlia::Message>(&node.received_msg);
-
-      if (node.receive_comm->test()) {
+      if (kademlia::Message* msg = node.receive(mailbox)) {
         // There has been a message, we need to handle it !
-        if (node.received_msg) {
-          node.handleFindNode(node.received_msg);
-          delete node.received_msg;
-          node.receive_comm = nullptr;
-        } else
-          simgrid::s4u::this_actor::sleep_for(1);
+        node.handleFindNode(msg);
+        delete msg;
       } else {
         /* We search for a pseudo random node */
         if (simgrid::s4u::Engine::get_clock() >= next_lookup_time) {

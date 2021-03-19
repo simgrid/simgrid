@@ -60,6 +60,7 @@ node_contact_t node_contact_new(unsigned int id, unsigned int distance);
 node_contact_t node_contact_copy(const_node_contact_t node_contact);
 void node_contact_free(node_contact_t contact);
 
+kademlia_message_t receive(node_t node, sg_mailbox_t mailbox);
 unsigned int join(node_t node, unsigned int id_known);
 unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_in_stats);
 void random_lookup(node_t node);

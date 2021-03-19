@@ -50,20 +50,12 @@ static void node(int argc, char* argv[])
     sg_mailbox_t mailbox = get_node_mailbox(node->id);
 
     while (simgrid_get_clock() < deadline) {
-      if (node->receive_comm == NULL)
-        node->receive_comm = sg_mailbox_get_async(mailbox, &node->received_msg);
-
-      if (sg_comm_test(node->receive_comm)) {
+      const kademlia_message_t msg = receive(node, mailbox);
+      if (msg) {
         // There has been a transfer, we need to handle it !
-        const kademlia_message_t msg = (kademlia_message_t)(node->received_msg);
-        if (msg) {
-          handle_find_node(node, msg);
-          answer_free(msg->answer);
-          free(msg);
-          node->receive_comm = NULL;
-        } else {
-          sg_actor_sleep_for(1);
-        }
+        handle_find_node(node, msg);
+        answer_free(msg->answer);
+        free(msg);
       } else {
         /* We search for a pseudo random node */
         if (simgrid_get_clock() >= next_lookup_time) {
