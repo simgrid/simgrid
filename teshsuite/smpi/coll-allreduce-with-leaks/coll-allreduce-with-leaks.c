@@ -16,7 +16,6 @@ int main(int argc, char *argv[])
   int size;
   int i;
   int status;
-  int mult=1;
 
   MPI_Init(&argc, &argv);
   int maxlen = argc >= 2 ? atoi(argv[1]) : 1;
@@ -27,8 +26,6 @@ int main(int argc, char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_set_errhandler(dup, MPI_ERRORS_RETURN);
 
-  if (maxlen > 1)
-    mult = maxlen > size ? size : maxlen;
   int* sb = xbt_new0(int, size * maxlen);
   int* rb = xbt_new0(int, size * maxlen);
 
