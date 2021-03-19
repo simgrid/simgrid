@@ -24,6 +24,8 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   bool detached_     = false;   /* If detached or not */
   bool copied_       = false;   /* whether the data were already copied */
   MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued */
+  s4u::Host* from_   = nullptr; /* Pre-determined only for direct host-to-host communications */
+  s4u::Host* to_     = nullptr; /* Otherwise, computed at start() time from the actors */
 
 public:
   enum class Type { SEND, RECEIVE };
@@ -70,8 +72,6 @@ expectations of the other side, too. See  */
   resource::Action* dst_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */
   actor::ActorImplPtr src_actor_ = nullptr;
   actor::ActorImplPtr dst_actor_ = nullptr;
-  s4u::Host* from_               = nullptr; /* Pre-determined only for direct host-to-host communications */
-  s4u::Host* to_                 = nullptr; /* Otherwise, computed at start() time from the actors */
 
   /* Data to be transferred */
   unsigned char* src_buff_ = nullptr;
