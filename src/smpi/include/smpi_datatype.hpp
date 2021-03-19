@@ -100,11 +100,17 @@ class Datatype : public F2C, public Keyval{
   MPI_Aint ub_;
   int flags_;
   int refcount_ = 1;
+  std::unique_ptr<Datatype_contents> contents_ = nullptr;
+
+protected:
+  template <typename... Args> void set_contents(Args&&... args)
+  {
+    contents_ = std::make_unique<Datatype_contents>(std::forward<Args>(args)...);
+  }
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
-  Datatype_contents* contents_ = nullptr;
 
   Datatype(int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags);

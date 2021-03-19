@@ -26,7 +26,7 @@ Datatype_contents::Datatype_contents(int combiner, int number_of_integers, const
 Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type)
     : Datatype(size, lb, ub, flags), block_count_(block_count), old_type_(old_type)
 {
-  contents_ = new Datatype_contents(MPI_COMBINER_CONTIGUOUS, 1, &block_count, 0, nullptr, 1, &old_type);
+  set_contents(MPI_COMBINER_CONTIGUOUS, 1, &block_count, 0, nullptr, 1, &old_type);
   old_type_->ref();
 }
 
@@ -60,7 +60,7 @@ void Type_Contiguous::unserialize(const void* contiguous_buf, void* noncontiguou
 
 Type_Hvector::Type_Hvector(int size,MPI_Aint lb, MPI_Aint ub, int flags, int count, int block_length, MPI_Aint stride, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(count), block_length_(block_length), block_stride_(stride), old_type_(old_type){
   const std::array<int, 2> ints = {{count, block_length}};
-  contents_                     = new Datatype_contents(MPI_COMBINER_HVECTOR, 2, ints.data(), 1, &stride, 1, &old_type);
+  set_contents(MPI_COMBINER_HVECTOR, 2, ints.data(), 1, &stride, 1, &old_type);
   old_type->ref();
 }
 Type_Hvector::~Type_Hvector(){
@@ -116,9 +116,8 @@ Type_Vector::Type_Vector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
                          MPI_Datatype old_type)
     : Type_Hvector(size, lb, ub, flags, count, block_length, stride * old_type->get_extent(), old_type)
 {
-  delete contents_;
   const std::array<int, 3> ints = {{count, block_length, stride}};
-  contents_                     = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints.data(), 0, nullptr, 1, &old_type);
+  set_contents(MPI_COMBINER_VECTOR, 3, ints.data(), 0, nullptr, 1, &old_type);
 }
 
 int Type_Vector::clone(MPI_Datatype* type)
@@ -140,7 +139,7 @@ Type_Hindexed::Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int 
   ints[0]=count;
   for(int i=1;i<=count;i++)
     ints[i]=block_lengths[i-1];
-  contents_ = new Datatype_contents(MPI_COMBINER_HINDEXED, count + 1, ints.data(), count, block_indices, 1, &old_type);
+  set_contents(MPI_COMBINER_HINDEXED, count + 1, ints.data(), count, block_indices, 1, &old_type);
   old_type_->ref();
   for (int i = 0; i < count; i++) {
     block_lengths_[i] = block_lengths[i];
@@ -228,14 +227,13 @@ Type_Indexed::Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int co
                            const int* block_indices, MPI_Datatype old_type)
     : Type_Hindexed(size, lb, ub, flags, count, block_lengths, block_indices, old_type, old_type->get_extent())
 {
-  delete contents_;
   std::vector<int> ints(2 * count + 1);
   ints[0]=count;
   for(int i=1;i<=count;i++)
     ints[i]=block_lengths[i-1];
   for(int i=count+1;i<=2*count;i++)
     ints[i]=block_indices[i-count-1];
-  contents_ = new Datatype_contents(MPI_COMBINER_INDEXED, 2 * count + 1, ints.data(), 0, nullptr, 1, &old_type);
+  set_contents(MPI_COMBINER_INDEXED, 2 * count + 1, ints.data(), 0, nullptr, 1, &old_type);
 }
 
 int Type_Indexed::clone(MPI_Datatype* type)
@@ -257,8 +255,7 @@ Type_Struct::Type_Struct(int size, MPI_Aint lb, MPI_Aint ub, int flags, int coun
   ints[0]=count;
   for(int i=1;i<=count;i++)
     ints[i]=block_lengths[i-1];
-  contents_ =
-      new Datatype_contents(MPI_COMBINER_INDEXED, count + 1, ints.data(), count, block_indices, count, old_types);
+  set_contents(MPI_COMBINER_INDEXED, count + 1, ints.data(), count, block_indices, count, old_types);
   for (int i = 0; i < count; i++) {
     block_lengths_[i]=block_lengths[i];
     block_indices_[i]=block_indices[i];

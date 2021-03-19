@@ -152,7 +152,6 @@ Datatype::~Datatype()
       return;
   }
   cleanup_attr<Datatype>();
-  delete contents_;
 }
 
 int Datatype::copy_attrs(Datatype* datatype){
@@ -187,8 +186,7 @@ int Datatype::copy_attrs(Datatype* datatype){
       }
     }
   }
-  delete contents_;
-  contents_ = new Datatype_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
+  set_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
   return ret;
 }
 
@@ -424,7 +422,7 @@ int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatyp
     *new_type = new Datatype(count * block_length * old_type->size(), 0, ((count -1) * stride + block_length)*
                          old_type->size(), DT_FLAG_CONTIGUOUS);
     const std::array<int, 3> ints = {{count, block_length, stride}};
-    (*new_type)->contents_ = new Datatype_contents(MPI_COMBINER_VECTOR, 3, ints.data(), 0, nullptr, 1, &old_type);
+    (*new_type)->set_contents(MPI_COMBINER_VECTOR, 3, ints.data(), 0, nullptr, 1, &old_type);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -450,7 +448,7 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
     *new_type = new Datatype(count * block_length * old_type->size(), 0, count * block_length * old_type->size(), DT_FLAG_CONTIGUOUS);
     const std::array<int, 2> ints = {{count, block_length}};
-    (*new_type)->contents_ = new Datatype_contents(MPI_COMBINER_HVECTOR, 2, ints.data(), 1, &stride, 1, &old_type);
+    (*new_type)->set_contents(MPI_COMBINER_HVECTOR, 2, ints.data(), 1, &stride, 1, &old_type);
     retval=MPI_SUCCESS;
   }
   return retval;
