@@ -536,7 +536,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   sg_storage_file_system_init();
   // parse the platform file: get the host list
   engine->load_platform(argv[1]);
-  SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
+  simgrid::kernel::activity::CommImpl::set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   if (smpi_cfg_privatization() == SmpiPrivStrategies::DLOPEN)
     smpi_init_privatization_dlopen(executable);

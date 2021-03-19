@@ -19,6 +19,8 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
   void cleanup_surf();
 
+  static void (*copy_data_callback_)(CommImpl*, void*, size_t);
+
   double rate_       = 0.0;
   double size_       = 0.0;
   bool detached_     = false;   /* If detached or not */
@@ -29,6 +31,8 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
 
 public:
   enum class Type { SEND, RECEIVE };
+
+  static void set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t));
 
   explicit CommImpl(Type type) : type_(type) {}
   CommImpl(s4u::Host* from, s4u::Host* to, double bytes);

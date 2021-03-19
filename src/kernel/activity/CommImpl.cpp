@@ -335,8 +335,10 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activi
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/
-static void (*SIMIX_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*, void*,
-                                             size_t) = &SIMIX_comm_copy_pointer_callback;
+void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*, size_t))
+{
+  simgrid::kernel::activity::CommImpl::set_copy_data_callback(callback);
+}
 
 void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
@@ -349,11 +351,6 @@ void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, 
   }
 }
 
-void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*, size_t))
-{
-  SIMIX_comm_copy_data_callback = callback;
-}
-
 void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
   xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
@@ -363,6 +360,13 @@ void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm,
 namespace simgrid {
 namespace kernel {
 namespace activity {
+
+void (*CommImpl::copy_data_callback_)(CommImpl*, void*, size_t) = &SIMIX_comm_copy_pointer_callback;
+
+void CommImpl::set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t))
+{
+  copy_data_callback_ = callback;
+}
 
 CommImpl& CommImpl::set_size(double size)
 {
@@ -495,7 +499,7 @@ void CommImpl::copy_data()
     if (copy_data_fun)
       copy_data_fun(this, src_buff_, buff_size);
     else
-      SIMIX_comm_copy_data_callback(this, src_buff_, buff_size);
+      copy_data_callback_(this, src_buff_, buff_size);
   }
 
   /* Set the copied flag so we copy data only once */
