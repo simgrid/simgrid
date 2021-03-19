@@ -18,7 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "T
 namespace simgrid {
 namespace kernel {
 namespace routing {
-TorusZone::TorusZone(const std::string& name) : ClusterZone(name) {}
 
 void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position)
 {

@@ -15,10 +15,6 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-EmptyZone::EmptyZone(const std::string& name) : NetZoneImpl(name) {}
-
-EmptyZone::~EmptyZone() = default;
-
 void EmptyZone::get_graph(const s_xbt_graph_t* /*graph*/, std::map<std::string, xbt_node_t, std::less<>>* /*nodes*/,
                           std::map<std::string, xbt_edge_t, std::less<>>* /*edges*/)
 {

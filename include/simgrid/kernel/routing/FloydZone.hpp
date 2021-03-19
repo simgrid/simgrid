@@ -22,17 +22,6 @@ namespace routing {
  *  (somewhere between the one of @{DijkstraZone} and the one of @{FullZone}).
  */
 class XBT_PRIVATE FloydZone : public RoutedZone {
-public:
-  explicit FloydZone(const std::string& name);
-  FloydZone(const FloydZone&) = delete;
-  FloydZone& operator=(const FloydZone&) = delete;
-  ~FloydZone() override;
-
-  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
-  void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
-
-private:
   /* vars to compute the Floyd algorithm. */
   std::vector<int> predecessor_table_;
   std::vector<double> cost_table_;
@@ -40,6 +29,16 @@ private:
 
   void init_tables(unsigned int table_size);
   void do_seal() override;
+
+public:
+  explicit FloydZone(const std::string& name) : RoutedZone(name) {}
+  FloydZone(const FloydZone&) = delete;
+  FloydZone& operator=(const FloydZone&) = delete;
+  ~FloydZone() override;
+
+  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
+  void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 };
 } // namespace routing
 } // namespace kernel

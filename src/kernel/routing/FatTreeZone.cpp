@@ -21,19 +21,12 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FatTreeZone::FatTreeZone(const std::string& name) : ClusterZone(name)
-{
-  XBT_DEBUG("Creating a new fat tree.");
-}
-
 FatTreeZone::~FatTreeZone()
 {
-  for (FatTreeNode const* node : this->nodes_) {
+  for (FatTreeNode const* node : this->nodes_)
     delete node;
-  }
-  for (FatTreeLink const* link : this->links_) {
+  for (FatTreeLink const* link : this->links_)
     delete link;
-  }
 }
 
 bool FatTreeZone::is_in_sub_tree(FatTreeNode* root, FatTreeNode* node) const

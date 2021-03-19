@@ -61,8 +61,6 @@ static std::vector<double>* netpoint_get_coords(NetPoint* np)
   return &coords->coords;
 }
 
-VivaldiZone::VivaldiZone(const std::string& name) : ClusterZone(name) {}
-
 void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, const std::string& coord)
 {
   xbt_assert(netpoint->get_englobing_zone() == this,

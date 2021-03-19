@@ -27,8 +27,6 @@ public:
   int graph_id_ = -1; /* used for caching internal graph id's */
 };
 
-DijkstraZone::DijkstraZone(const std::string& name, bool cached) : RoutedZone(name), cached_(cached) {}
-
 void DijkstraZone::route_graph_delete(xbt_graph_t g)
 {
   xbt_graph_free_graph(

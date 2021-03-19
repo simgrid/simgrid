@@ -16,7 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_wifi, surf, "Routing part of surf");
 namespace simgrid {
 namespace kernel {
 namespace routing {
-WifiZone::WifiZone(const std::string& name) : RoutedZone(name) {}
 
 void WifiZone::do_seal()
 {
@@ -52,6 +51,7 @@ void WifiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
     }
   }
 }
+
 s4u::Link* WifiZone::create_link(const std::string& name, const std::vector<double>& bandwidths,
                                  s4u::Link::SharingPolicy policy)
 {

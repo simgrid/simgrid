@@ -23,8 +23,6 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FloydZone::FloydZone(const std::string& name) : RoutedZone(name) {}
-
 FloydZone::~FloydZone()
 {
   /* Delete link_table */

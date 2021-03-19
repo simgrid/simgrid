@@ -23,7 +23,6 @@ namespace routing {
  * long path resolution times.
  */
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
-private:
   static void route_graph_delete(xbt_graph_t);
 
   std::unique_ptr<s_xbt_graph_t, decltype(&DijkstraZone::route_graph_delete)> route_graph_{
@@ -38,7 +37,7 @@ private:
   void do_seal() override;
 
 public:
-  DijkstraZone(const std::string& name, bool cached);
+  DijkstraZone(const std::string& name, bool cached) : RoutedZone(name), cached_(cached) {}
 
   /* For each vertex (node) already in the graph,
    * make sure it also has a loopback link; this loopback

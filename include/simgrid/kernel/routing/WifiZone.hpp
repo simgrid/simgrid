@@ -19,20 +19,20 @@ namespace routing {
  *  That link is used for all communications within the zone.
  */
 class XBT_PRIVATE WifiZone : public RoutedZone {
+  resource::LinkImpl* wifi_link_ = nullptr; // Representing the air media (there is no such thing in NS-3)
+  NetPoint* access_point_        = nullptr; // Zone's gateway to the external world
+
+  void do_seal() override;
+
 public:
-  explicit WifiZone(const std::string& name);
+  explicit WifiZone(const std::string& name) : RoutedZone(name){};
   WifiZone(const WifiZone&) = delete;
   WifiZone& operator=(const WifiZone) = delete;
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths,
                          s4u::Link::SharingPolicy policy) override;
-  NetPoint* get_access_point() { return access_point_; }
-
-private:
-  void do_seal() override;
-  resource::LinkImpl* wifi_link_ = nullptr; // Representing the air media (there is no such thing in NS-3)
-  NetPoint* access_point_        = nullptr; // Zone's gateway to the external world
+  NetPoint* get_access_point() const { return access_point_; }
 };
 } // namespace routing
 } // namespace kernel
