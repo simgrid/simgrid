@@ -102,15 +102,13 @@ inline auto& simix_timers() // avoid static initialization order fiasco
 
 /** @brief Timer datatype */
 class Timer {
-  double date = 0.0;
-
 public:
+  const double date;
   std::remove_reference_t<decltype(simix_timers())>::handle_type handle_;
 
   Timer(double date, simgrid::xbt::Task<void()>&& callback) : date(date), callback(std::move(callback)) {}
 
   simgrid::xbt::Task<void()> callback;
-  double get_date() const { return date; }
   void remove();
 
   template <class F> static inline Timer* set(double date, F callback)

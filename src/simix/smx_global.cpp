@@ -600,7 +600,7 @@ void SIMIX_timer_remove(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
 double SIMIX_timer_get_date(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
 {
-  return timer ? timer->get_date() : 0;
+  return timer ? timer->date : 0.0;
 }
 
 void SIMIX_display_process_status() // XBT_ATTRIB_DEPRECATED_v329

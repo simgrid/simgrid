@@ -288,7 +288,7 @@ void ActorImpl::set_kill_time(double kill_time)
 
 double ActorImpl::get_kill_time() const
 {
-  return kill_timer_ ? kill_timer_->get_date() : 0;
+  return kill_timer_ ? kill_timer_->date : 0.0;
 }
 
 void ActorImpl::yield()
