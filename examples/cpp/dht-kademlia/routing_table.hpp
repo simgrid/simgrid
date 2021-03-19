@@ -14,8 +14,8 @@ namespace kademlia {
 
 /* Routing table bucket */
 class Bucket {
-  unsigned int id_; // bucket id
 public:
+  const unsigned int id_;          // bucket id
   std::deque<unsigned int> nodes_; // Nodes in the bucket.
   unsigned int getId() const { return id_; }
   explicit Bucket(unsigned int id) noexcept : id_(id) {}

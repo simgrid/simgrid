@@ -26,6 +26,7 @@ class EngineImpl {
   actor::ActorCodeFactory default_function; // Function to use as a fallback when the provided name matches nothing
   std::vector<std::shared_ptr<resource::Model>> models_;
   std::unordered_map<resource::Model::Type, std::vector<resource::Model*>> models_by_type_;
+  routing::NetZoneImpl* netzone_root_ = nullptr;
 
   friend s4u::Engine;
 
@@ -57,7 +58,6 @@ public:
   /** @brief Get list of all models managed by this engine */
   const std::vector<std::shared_ptr<resource::Model>>& get_all_models() const { return models_; }
 
-  routing::NetZoneImpl* netzone_root_ = nullptr;
   static EngineImpl* get_instance() { return simgrid::s4u::Engine::get_instance()->pimpl; }
   actor::ActorCodeFactory get_function(const std::string& name)
   {

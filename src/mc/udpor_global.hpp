@@ -58,7 +58,6 @@ public:
 
 class UnfoldingEvent {
 public:
-  EventSet causes; // used to store directed ancestors of event e
   UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& causes, int sid = -1);
   UnfoldingEvent(const UnfoldingEvent&) = default;
   UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
@@ -86,6 +85,7 @@ public:
   inline void set_transition_tag(std::string const& tr_tag) { transition_tag = tr_tag; }
 
 private:
+  EventSet causes; // used to store directed ancestors of event e
   int id = -1;
   int state_id{-1};
   std::string transition_tag{""}; // The tag of the last transition that lead to creating the event
