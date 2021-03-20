@@ -83,7 +83,7 @@ while [ $# -gt 0 ]; do
             ORIGFILE="${FILENAME%.f}"
             filter_and_compile_f77
             ;;
-        *.F)$
+        *.F)
             FILENAME=$(basename "${ARG}")
             TMPFILE=$(mymktemp "${ARG}" ".F")
             ORIGFILE="${FILENAME%.F}"
@@ -95,7 +95,7 @@ while [ $# -gt 0 ]; do
             ORIGFILE="${FILENAME%.f90}"
             filter_and_compile_f90
             ;;
-        *.F90)$
+        *.F90)
             FILENAME=$(basename "${ARG}")
             TMPFILE=$(mymktemp "${ARG}" ".F90")
             ORIGFILE="${FILENAME%.F90}"
