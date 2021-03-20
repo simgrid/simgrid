@@ -7,6 +7,7 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
+#include <boost/range/algorithm.hpp>
 #include <cmath> // isfinite()
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
@@ -25,6 +26,14 @@ void ActivityImpl::register_simcall(smx_simcall_t simcall)
 {
   simcalls_.push_back(simcall);
   simcall->issuer_->waiting_synchro_ = this;
+}
+
+void ActivityImpl::unregister_simcall(smx_simcall_t simcall)
+{
+  // Remove the first occurrence of simcall:
+  auto j = boost::range::find(simcalls_, simcall);
+  if (j != simcalls_.end())
+    simcalls_.erase(j);
 }
 
 void ActivityImpl::clean_action()

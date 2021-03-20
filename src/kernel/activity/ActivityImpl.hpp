@@ -60,6 +60,7 @@ public:
                              // the model or because it terminated without waiting for the model
 
   virtual void register_simcall(smx_simcall_t simcall);
+  void unregister_simcall(smx_simcall_t simcall);
   void clean_action();
   virtual double get_remaining() const;
   const char* get_state_str() const;

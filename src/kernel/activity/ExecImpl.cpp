@@ -16,8 +16,6 @@
 
 #include "simgrid/s4u/Host.hpp"
 
-#include <boost/range/algorithm.hpp>
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
 namespace simgrid {
@@ -171,10 +169,7 @@ void ExecImpl::finish()
       const auto* execs = observer->get_execs();
 
       for (auto* exec : *execs) {
-        // Remove the first occurrence of simcall:
-        auto j = boost::range::find(exec->simcalls_, simcall);
-        if (j != exec->simcalls_.end())
-          exec->simcalls_.erase(j);
+        exec->unregister_simcall(simcall);
 
         if (simcall->timeout_cb_) {
           simcall->timeout_cb_->remove();
@@ -254,12 +249,8 @@ void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl
   } else {
     issuer->simcall_.timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, execs]() {
       issuer->simcall_.timeout_cb_ = nullptr;
-      for (auto* exec : *execs) {
-        // Remove the first occurrence of simcall:
-        auto j = boost::range::find(exec->simcalls_, &issuer->simcall_);
-        if (j != exec->simcalls_.end())
-          exec->simcalls_.erase(j);
-      }
+      for (auto* exec : *execs)
+        exec->unregister_simcall(&issuer->simcall_);
       simix::marshal<int>(issuer->simcall_.result_, -1);
       issuer->simcall_answer();
     });

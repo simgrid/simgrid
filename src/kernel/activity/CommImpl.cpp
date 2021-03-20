@@ -16,7 +16,6 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 
-#include <boost/range/algorithm.hpp>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t src, smx_mailbox_t mbox, double task_size,
@@ -284,13 +283,8 @@ static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
   simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(simcall);
   size_t count                                = simcall_comm_waitany__get__count(simcall);
 
-  for (size_t i = 0; i < count; i++) {
-    // Remove the first occurrence of simcall:
-    auto* comm = comms[i];
-    auto j     = boost::range::find(comm->simcalls_, simcall);
-    if (j != comm->simcalls_.end())
-      comm->simcalls_.erase(j);
-  }
+  for (size_t i = 0; i < count; i++)
+    comms[i]->unregister_simcall(simcall);
 }
 void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count,
                                   double timeout)

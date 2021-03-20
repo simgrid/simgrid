@@ -19,7 +19,6 @@
 #include "src/surf/cpu_interface.hpp"
 
 #include <boost/core/demangle.hpp>
-#include <boost/range/algorithm.hpp>
 #include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");
@@ -227,10 +226,7 @@ void ActorImpl::exit()
     if (exec != nullptr) {
       exec->clean_action();
     } else if (comm != nullptr) {
-      // Remove first occurrence of &actor->simcall:
-      auto i = boost::range::find(waiting_synchro_->simcalls_, &simcall_);
-      if (i != waiting_synchro_->simcalls_.end())
-        waiting_synchro_->simcalls_.remove(&simcall_);
+      comm->unregister_simcall(&simcall_);
     } else {
       activity::ActivityImplPtr(waiting_synchro_)->finish();
     }
