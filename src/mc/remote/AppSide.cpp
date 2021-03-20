@@ -184,6 +184,18 @@ void AppSide::handle_messages() const
         handle_actor_enabled((s_mc_message_actor_enabled_t*)message_buffer.data());
         break;
 
+      case MessageType::FINALIZE: {
+#if HAVE_SMPI
+        XBT_INFO("Finalize. Smpi_enabled: %d", (int)smpi_enabled());
+        simix_global->display_all_actor_status();
+        if (smpi_enabled())
+          SMPI_finalize();
+#endif
+        s_mc_message_int_t answer{MessageType::DEADLOCK_CHECK_REPLY, 0};
+        xbt_assert(channel_.send(answer) == 0, "Could answer to FINALIZE");
+        break;
+      }
+
       default:
         xbt_die("Received unexpected message %s (%i)", to_c_str(message->type), static_cast<int>(message->type));
         break;

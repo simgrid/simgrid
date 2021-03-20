@@ -379,6 +379,15 @@ std::string ModelChecker::simcall_dot_label(int aid, int times_considered)
   return answer;
 }
 
+void ModelChecker::finalize_app()
+{
+  int res = checker_side_.get_channel().send(MessageType::FINALIZE);
+  xbt_assert(res == 0, "Could not ask the app to finalize MPI on need");
+  s_mc_message_int_t message;
+  ssize_t s = checker_side_.get_channel().receive(message);
+  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
+}
+
 bool ModelChecker::checkDeadlock()
 {
   int res = checker_side_.get_channel().send(MessageType::DEADLOCK_CHECK);

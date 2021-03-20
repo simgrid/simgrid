@@ -112,6 +112,7 @@ void SafetyChecker::run()
     if (req == nullptr) {
       XBT_DEBUG("There are no more processes to interleave. (depth %zu)", stack_.size() + 1);
 
+//      mc_model_checker->finalize_app();
       this->backtrack();
       continue;
     }
