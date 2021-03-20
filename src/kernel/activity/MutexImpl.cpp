@@ -34,8 +34,7 @@ void MutexImpl::lock(actor::ActorImpl* issuer)
     /* Somebody using the mutex, use a synchronization to get host failures */
     synchro = RawImplPtr(new RawImpl([this, issuer]() { this->remove_sleeping_actor(*issuer); }));
     (*synchro).set_host(issuer->get_host()).start();
-    synchro->simcalls_.push_back(&issuer->simcall_);
-    issuer->waiting_synchro_ = synchro;
+    synchro->register_simcall(&issuer->simcall_);
     sleeping_.push_back(*issuer);
   } else {
     /* mutex free */

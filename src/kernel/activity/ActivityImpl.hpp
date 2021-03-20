@@ -59,7 +59,7 @@ public:
   virtual void finish() = 0; // Unlock all simcalls blocked on that activity, either because it was marked as done by
                              // the model or because it terminated without waiting for the model
 
-  virtual void register_simcall(smx_simcall_t simcall);
+  void register_simcall(smx_simcall_t simcall);
   void unregister_simcall(smx_simcall_t simcall);
   void clean_action();
   virtual double get_remaining() const;
