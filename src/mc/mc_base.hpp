@@ -18,7 +18,7 @@ namespace mc {
  *  iteratively until there doesn't remain any. At this point, the function
  *  returns to the caller which can handle the visible (and ready) simcalls.
  */
-XBT_PRIVATE void wait_for_requests();
+XBT_PRIVATE void execute_actors();
 
 XBT_PRIVATE extern std::vector<double> processes_time;
 

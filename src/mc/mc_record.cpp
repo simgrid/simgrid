@@ -23,7 +23,7 @@ namespace mc {
 
 void replay(RecordTrace const& trace)
 {
-  simgrid::mc::wait_for_requests();
+  simgrid::mc::execute_actors();
 
   for (simgrid::mc::Transition const& transition : trace) {
     XBT_DEBUG("Executing %i$%i", transition.pid_, transition.times_considered_);
@@ -40,7 +40,7 @@ void replay(RecordTrace const& trace)
 
     // Execute the request:
     simcall->issuer_->simcall_handle(transition.times_considered_);
-    simgrid::mc::wait_for_requests();
+    simgrid::mc::execute_actors();
   }
 }
 

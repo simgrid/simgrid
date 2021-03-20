@@ -89,11 +89,7 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
   s_mc_message_int_t answer{MessageType::DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
-void AppSide::handle_continue(const s_mc_message_t*) const
-{
-  /* Nothing to do */
-}
-void AppSide::handle_simcall(const s_mc_message_simcall_handle_t* message) const
+void AppSide::handle_simcall_execute(const s_mc_message_simcall_handle_t* message) const
 {
   kernel::actor::ActorImpl* process = kernel::actor::ActorImpl::by_pid(message->pid_);
   xbt_assert(process != nullptr, "Invalid pid %lu", message->pid_);
@@ -115,7 +111,7 @@ void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) cons
 
 void AppSide::handle_messages() const
 {
-  while (true) {
+  while (true) { // Until we get a CONTINUE message
     XBT_DEBUG("Waiting messages from model-checker");
 
     std::array<char, MC_MESSAGE_LENGTH> message_buffer;
@@ -132,12 +128,11 @@ void AppSide::handle_messages() const
 
       case MessageType::CONTINUE:
         assert_msg_size("MESSAGE_CONTINUE", s_mc_message_t);
-        handle_continue(message);
         return;
 
       case MessageType::SIMCALL_HANDLE:
         assert_msg_size("SIMCALL_HANDLE", s_mc_message_simcall_handle_t);
-        handle_simcall((s_mc_message_simcall_handle_t*)message_buffer.data());
+        handle_simcall_execute((s_mc_message_simcall_handle_t*)message_buffer.data());
         break;
 
       case MessageType::SIMCALL_IS_VISIBLE: {
@@ -199,7 +194,7 @@ void AppSide::handle_messages() const
 void AppSide::main_loop() const
 {
   while (true) {
-    simgrid::mc::wait_for_requests();
+    simgrid::mc::execute_actors();
     xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send WAITING message to model-checker");
     this->handle_messages();
   }
