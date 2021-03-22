@@ -14,7 +14,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 namespace simgrid {
 namespace xbt {
 
-std::ifstream* action_fs = nullptr;
+static std::ifstream action_fs;
+static bool action_fs_inited = false;
+
 std::unordered_map<std::string, action_fun> action_funs;
 static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
 
@@ -61,8 +63,8 @@ static ReplayAction* get_action(const char* name)
     // Read lines until I reach something for me (which breaks in loop body) or end of file reached
     while (true) {
       std::string action_line;
-      read_and_trim_line(*action_fs, &action_line);
-      if (action_fs->eof())
+      read_and_trim_line(action_fs, &action_line);
+      if (action_fs.eof())
         break;
       /* we cannot split in place here because we parse&store several lines for the colleagues... */
       action = new ReplayAction();
@@ -113,8 +115,18 @@ static void handle_action(ReplayAction& action)
  */
 int replay_runner(const char* actor_name, const char* trace_filename)
 {
+  if (trace_filename == nullptr) {
+    xbt_assert(simgrid::xbt::action_fs_inited,
+               "Passing nullptr to replay_runner() means that you want to use a shared trace, but you did not provide "
+               "any. Please use xbt_replay_set_tracefile().");
+  } else {
+    xbt_assert(not simgrid::xbt::action_fs_inited,
+               "Trace replay cannot mix shared and unshared traces for now. Please don't set a shared tracefile with "
+               "xbt_replay_set_tracefile() if you use actor-specific trace files using the second parameter of "
+               "replay_runner().");
+  }
   std::string actor_name_string(actor_name);
-  if (simgrid::xbt::action_fs) { // <A unique trace file
+  if (simgrid::xbt::action_fs_inited) { // <A unique trace file
     while (true) {
       simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(actor_name);
       if (!evt)
@@ -170,4 +182,11 @@ void xbt_replay_action_register(const char* action_name, const action_fun& funct
 action_fun xbt_replay_action_get(const char* action_name)
 {
   return simgrid::xbt::action_funs.at(std::string(action_name));
+}
+
+void xbt_replay_set_tracefile(std::string filename)
+{
+  xbt_assert(not simgrid::xbt::action_fs_inited, "Tracefile already set");
+  simgrid::xbt::action_fs.open(filename, std::ifstream::in);
+  simgrid::xbt::action_fs_inited = true;
 }

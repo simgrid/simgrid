@@ -28,10 +28,13 @@ static void overriding_send(simgrid::xbt::ReplayAction& args)
 
 int main(int argc, char* argv[])
 {
-  const char* instance_id = simgrid::s4u::Actor::self()->get_property("instance_id");
-  const int rank =
-      static_cast<int>(xbt_str_parse_int(simgrid::s4u::Actor::self()->get_property("rank"), "Cannot parse rank"));
-  const char* trace_filename = argv[1];
+  auto properties = simgrid::s4u::Actor::self()->get_properties();
+
+  const char* instance_id = properties->at("instance_id").c_str();
+  const int rank          = static_cast<int>(xbt_str_parse_int(properties->at("rank").c_str(), "Cannot parse rank"));
+  const char* shared_trace =
+      simgrid::s4u::Actor::self()->get_property("tracefile"); // Cannot use properties because this can be nullptr
+  const char* private_trace  = argv[1];
   double start_delay_flops   = 0;
 
   if (argc > 2) {
@@ -54,6 +57,8 @@ int main(int argc, char* argv[])
     xbt_replay_action_register("send", overriding_send);
   }
   /* The regular run of the replayer */
-  smpi_replay_main(rank, trace_filename);
+  if (shared_trace != nullptr)
+    xbt_replay_set_tracefile(shared_trace);
+  smpi_replay_main(rank, private_trace);
   return 0;
 }

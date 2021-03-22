@@ -1,7 +1,7 @@
 if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_executable       (replay_multiple EXCLUDE_FROM_ALL replay_multiple.c)
+  add_executable       (replay_multiple EXCLUDE_FROM_ALL replay_multiple.cpp)
   target_link_libraries(replay_multiple simgrid)
   ADD_TESH(smpi-replay-multiple --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} --cd ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple.tesh)
   add_dependencies(tests replay_multiple)

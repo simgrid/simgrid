@@ -490,9 +490,11 @@ do
     if [ ${REPLAY} = 1 ]; then
         echo "    <prop id=\"smpi_replay\" value=\"true\"/>"
         if  [ "${NUMTRACES}" -gt 1 ]; then
+	    # Give each process its trace file (as an argument)
             echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f$j)\"/>"
-        else
-            echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f1)\"/>"
+        elif [ ${i} = 0 ]; then
+	    # Give the shared trace file to rank 0 (as a property)
+            echo "    <prop id=\"tracefile\" value=\"$(echo "$hosttraces"|cut -d' ' -f1)\"/>"
         fi
     else
     echo "${XML_ARGS}"

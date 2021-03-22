@@ -808,13 +808,13 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
 }
 
 /** @brief actually run the replay after initialization */
-void smpi_replay_main(int rank, const char* trace_filename)
+void smpi_replay_main(int rank, const char* private_trace_filename)
 {
   static int active_processes = 0;
   active_processes++;
   storage[simgrid::s4u::this_actor::get_pid()] = simgrid::smpi::replay::RequestStorage();
   std::string rank_string                      = std::to_string(rank);
-  simgrid::xbt::replay_runner(rank_string.c_str(), trace_filename);
+  simgrid::xbt::replay_runner(rank_string.c_str(), private_trace_filename);
 
   /* and now, finalize everything */
   /* One active process will stop. Decrease the counter*/
@@ -847,8 +847,8 @@ void smpi_replay_main(int rank, const char* trace_filename)
 }
 
 /** @brief chain a replay initialization and a replay start */
-void smpi_replay_run(const char* instance_id, int rank, double start_delay_flops, const char* trace_filename)
+void smpi_replay_run(const char* instance_id, int rank, double start_delay_flops, const char* private_trace_filename)
 {
   smpi_replay_init(instance_id, rank, start_delay_flops);
-  smpi_replay_main(rank, trace_filename);
+  smpi_replay_main(rank, private_trace_filename);
 }

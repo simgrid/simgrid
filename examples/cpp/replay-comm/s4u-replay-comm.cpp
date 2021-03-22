@@ -32,8 +32,12 @@ public:
   explicit Replayer(std::vector<std::string> args)
   {
     const char* actor_name     = args.at(0).c_str();
-    const char* trace_filename = args.size() > 1 ? args[1].c_str() : nullptr;
-    simgrid::xbt::replay_runner(actor_name, trace_filename);
+    if (args.size() > 1) { // split mode, the trace file was provided in the deployment file
+      const char* trace_filename = args[1].c_str();
+      simgrid::xbt::replay_runner(actor_name, trace_filename);
+    } else { // Merged mode
+      simgrid::xbt::replay_runner(actor_name);
+    }
   }
 
   void operator()() const
@@ -92,21 +96,15 @@ int main(int argc, char* argv[])
   e.register_actor<Replayer>("p0");
   e.register_actor<Replayer>("p1");
   e.load_deployment(argv[2]);
+  if (argv[3] != nullptr)
+    xbt_replay_set_tracefile(argv[3]);
 
   /*   Action registration */
   xbt_replay_action_register("compute", Replayer::compute);
   xbt_replay_action_register("send", Replayer::send);
   xbt_replay_action_register("recv", Replayer::recv);
 
-  std::ifstream ifs;
-  if (argv[3]) {
-    ifs.open(argv[3], std::ifstream::in);
-    simgrid::xbt::action_fs = &ifs;
-  }
-
   e.run();
-
-  simgrid::xbt::action_fs = nullptr;
 
   XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
 
