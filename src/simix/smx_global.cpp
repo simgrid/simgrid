@@ -264,7 +264,6 @@ void Global::display_all_actor_status() const
                actor->waiting_synchro_->get_cname(), (int)actor->waiting_synchro_->state_);
     } else {
       XBT_INFO("Actor %ld (%s@%s) simcall %s", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname(), SIMIX_simcall_name(actor->simcall_.call_));
-
     }
   }
 }

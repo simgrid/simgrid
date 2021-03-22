@@ -91,6 +91,7 @@ public:
 
 class ConditionWaitSimcall : public SimcallObserver {
   friend kernel::activity::ConditionVariableImpl;
+
   kernel::activity::ConditionVariableImpl* const cond_;
   kernel::activity::MutexImpl* const mutex_;
   const double timeout_;
