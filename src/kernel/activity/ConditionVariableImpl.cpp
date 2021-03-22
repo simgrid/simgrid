@@ -66,7 +66,6 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
 {
   XBT_DEBUG("Wait condition %p", this);
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  simix::marshal<bool>(issuer->simcall_.result_, false); // default result, will be set to 'true' on timeout
 
   /* If there is a mutex unlock it */
   if (mutex != nullptr) {
@@ -79,7 +78,9 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
 
   RawImplPtr synchro(new RawImpl([this, issuer]() {
     this->remove_sleeping_actor(*issuer);
-    simix::marshal<bool>(issuer->simcall_.result_, true);
+    auto* observer = dynamic_cast<mc::ConditionWaitSimcall*>(issuer->simcall_.observer_);
+    xbt_assert(observer != nullptr);
+    observer->set_result(true);
   }));
   synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
   synchro->register_simcall(&issuer->simcall_);

@@ -55,7 +55,7 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
   kernel::actor::simcall_blocking<void>(
       [&observer] { observer.get_cond()->wait(observer.get_mutex(), observer.get_timeout(), observer.get_issuer()); },
       &observer);
-  bool timed_out = simgrid::simix::unmarshal<bool>(issuer->simcall_.result_);
+  bool timed_out = observer.get_result();
   if (timed_out) {
     // If we reached the timeout, we have to take the lock again:
     lock.mutex()->lock();

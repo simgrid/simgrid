@@ -90,9 +90,13 @@ public:
 };
 
 class ConditionWaitSimcall : public SimcallObserver {
+  friend kernel::activity::ConditionVariableImpl;
   kernel::activity::ConditionVariableImpl* const cond_;
   kernel::activity::MutexImpl* const mutex_;
   const double timeout_;
+  bool result_ = false; // default result for simcall, will be set to 'true' on timeout
+
+  void set_result(bool res) { result_ = res; }
 
 public:
   ConditionWaitSimcall(smx_actor_t actor, kernel::activity::ConditionVariableImpl* cond,
@@ -107,11 +111,18 @@ public:
   kernel::activity::ConditionVariableImpl* get_cond() const { return cond_; }
   kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
   double get_timeout() const { return timeout_; }
+
+  bool get_result() const { return result_; }
 };
 
 class SemAcquireSimcall : public SimcallObserver {
+  friend kernel::activity::SemaphoreImpl;
+
   kernel::activity::SemaphoreImpl* const sem_;
   const double timeout_;
+  bool result_ = false; // default result for simcall, will be set to 'true' on timeout
+
+  void set_result(bool res) { result_ = res; }
 
 public:
   SemAcquireSimcall(smx_actor_t actor, kernel::activity::SemaphoreImpl* sem, double timeout = -1.0)
@@ -124,11 +135,18 @@ public:
   std::string dot_label() const override;
   kernel::activity::SemaphoreImpl* get_sem() const { return sem_; }
   double get_timeout() const { return timeout_; }
+
+  bool get_result() const { return result_; }
 };
 
 class ExecutionWaitanySimcall : public SimcallObserver {
+  friend kernel::activity::ExecImpl;
+
   const std::vector<kernel::activity::ExecImpl*>* const execs_;
   const double timeout_;
+  int result_ = -1; // default result for simcall
+
+  void set_result(int res) { result_ = res; }
 
 public:
   ExecutionWaitanySimcall(smx_actor_t actor, const std::vector<kernel::activity::ExecImpl*>* execs, double timeout)
@@ -140,6 +158,8 @@ public:
   std::string dot_label() const override;
   const std::vector<kernel::activity::ExecImpl*>* get_execs() const { return execs_; }
   double get_timeout() const { return timeout_; }
+
+  int get_result() const { return result_; }
 };
 } // namespace mc
 } // namespace simgrid

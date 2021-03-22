@@ -61,7 +61,7 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
         kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(), observer.get_timeout());
       },
       &observer);
-  int changed_pos = simgrid::simix::unmarshal<int>(issuer->simcall_.result_);
+  int changed_pos = observer.get_result();
   if (changed_pos != -1) {
     on_completion(*(execs->at(changed_pos)));
     execs->at(changed_pos)->release_dependencies();

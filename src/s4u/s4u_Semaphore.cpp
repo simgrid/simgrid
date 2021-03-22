@@ -34,7 +34,7 @@ bool Semaphore::acquire_timeout(double timeout)
   mc::SemAcquireSimcall observer{issuer, pimpl_, timeout};
   kernel::actor::simcall_blocking<void>(
       [&observer] { observer.get_sem()->acquire(observer.get_issuer(), observer.get_timeout()); }, &observer);
-  return simgrid::simix::unmarshal<bool>(issuer->simcall_.result_);
+  return observer.get_result();
 }
 
 void Semaphore::release()

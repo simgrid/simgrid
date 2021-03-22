@@ -72,7 +72,7 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
                                                           observer.get_timeout());
       },
       &observer);
-  return simgrid::simix::unmarshal<int>(issuer->simcall_.result_);
+  return observer.get_result();
 }
 
 void simcall_process_join(smx_actor_t process, double timeout) // XBT_ATTRIB_DEPRECATED_v328

@@ -5,6 +5,7 @@
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/mc/checker/SimcallObserver.hpp"
 #include <cmath> // std::isfinite
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_semaphore, simix_synchro, "Semaphore kernel-space implementation");
@@ -17,12 +18,13 @@ void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
 {
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", this, timeout);
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  simix::marshal<bool>(issuer->simcall_.result_, false); // default result, will be set to 'true' on timeout
 
   if (value_ <= 0) {
     RawImplPtr synchro(new RawImpl([this, issuer]() {
       this->remove_sleeping_actor(*issuer);
-      simix::marshal<bool>(issuer->simcall_.result_, true);
+      auto* observer = dynamic_cast<mc::SemAcquireSimcall*>(issuer->simcall_.observer_);
+      xbt_assert(observer != nullptr);
+      observer->set_result(true);
     }));
     synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
     synchro->register_simcall(&issuer->simcall_);
