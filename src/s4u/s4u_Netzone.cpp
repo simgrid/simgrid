@@ -45,17 +45,36 @@ std::vector<NetZone*> NetZone::get_children() const
   return res;
 }
 
+NetZone* NetZone::add_child(NetZone* new_zone)
+{
+  pimpl_->add_child(new_zone->get_impl());
+  return this;
+}
+
 const std::string& NetZone::get_name() const
 {
   return pimpl_->get_name();
 }
+
 const char* NetZone::get_cname() const
 {
   return pimpl_->get_cname();
 }
+
 NetZone* NetZone::get_father()
 {
-  return pimpl_->get_father()->get_iface();
+  return pimpl_->get_parent()->get_iface();
+}
+
+NetZone* NetZone::get_parent() const
+{
+  return pimpl_->get_parent()->get_iface();
+}
+
+NetZone* NetZone::set_parent(NetZone* parent)
+{
+  pimpl_->set_parent(parent->get_impl());
+  return this;
 }
 
 /** @brief Returns the list of the hosts found in this NetZone (not recursively)

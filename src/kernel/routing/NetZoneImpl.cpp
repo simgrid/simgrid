@@ -212,13 +212,13 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
   NetZoneImpl* current = src->get_englobing_zone();
   while (current != nullptr) {
     path_src.push_back(current);
-    current = current->get_father();
+    current = current->get_parent();
   }
   std::vector<NetZoneImpl*> path_dst;
   current = dst->get_englobing_zone();
   while (current != nullptr) {
     path_dst.push_back(current);
-    current = current->get_father();
+    current = current->get_parent();
   }
 
   /* (3) find the common father.
@@ -276,14 +276,14 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
   NetZoneImpl* current = src->get_englobing_zone();
   while (current != nullptr) {
     path_src.push_back(current);
-    current = current->father_;
+    current = current->parent_;
   }
 
   std::vector<NetZoneImpl*> path_dst;
   current = dst->get_englobing_zone();
   while (current != nullptr) {
     path_dst.push_back(current);
-    current = current->father_;
+    current = current->parent_;
   }
 
   /* (2) find the common father */
@@ -401,8 +401,8 @@ void NetZoneImpl::seal()
 void NetZoneImpl::set_parent(NetZoneImpl* parent)
 {
   xbt_assert(sealed_ == false, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
-  father_ = parent;
-  netpoint_->set_englobing_zone(father_);
+  parent_ = parent;
+  netpoint_->set_englobing_zone(parent_);
 }
 
 void NetZoneImpl::set_network_model(std::shared_ptr<resource::NetworkModel> netmodel)

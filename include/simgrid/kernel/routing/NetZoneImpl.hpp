@@ -63,7 +63,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
   std::vector<kernel::routing::NetPoint*> vertices_;
 
-  NetZoneImpl* father_ = nullptr;
+  NetZoneImpl* parent_ = nullptr;
   std::vector<NetZoneImpl*> children_; // sub-netzones
   std::string name_;
   bool sealed_ = false; // We cannot add more content when sealed
@@ -123,10 +123,13 @@ public:
   s4u::NetZone* get_iface() { return &piface_; }
   unsigned int get_table_size() const { return vertices_.size(); }
   std::vector<kernel::routing::NetPoint*> get_vertices() const { return vertices_; }
-  NetZoneImpl* get_father() const { return father_; }
+  XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZoneImpl* get_father() const { return parent_; }
+  NetZoneImpl* get_parent() const { return parent_; }
   /** @brief Returns the list of direct children (no grand-children). This returns the internal data, no copy.
    * Don't mess with it.*/
   std::vector<NetZoneImpl*>* get_children() { return &children_; }
+  void add_child(NetZoneImpl* new_zone) { children_.push_back(new_zone); }
+
   /** @brief Retrieves the name of that netzone as a C++ string */
   const std::string& get_name() const { return name_; }
   /** @brief Retrieves the name of that netzone as a C string */

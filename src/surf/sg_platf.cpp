@@ -528,7 +528,7 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
     if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
-    current_routing->get_children()->push_back(new_zone);
+    current_routing->add_child(new_zone);
     /* set models from parent netzone */
     new_zone->set_network_model(current_routing->get_network_model());
     new_zone->set_cpu_pm_model(current_routing->get_cpu_pm_model());
@@ -600,7 +600,7 @@ void sg_platf_new_Zone_seal()
   xbt_assert(current_routing, "Cannot seal the current Zone: zone under construction");
   current_routing->seal();
   simgrid::s4u::NetZone::on_seal(*current_routing->get_iface());
-  current_routing = current_routing->get_father();
+  current_routing = current_routing->get_parent();
 }
 
 /** @brief Add a link connecting a host to the rest of its Zone (which must be cluster or vivaldi) */

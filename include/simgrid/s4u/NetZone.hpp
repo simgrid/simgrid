@@ -26,6 +26,8 @@ namespace s4u {
  * s4u::Engine).
  */
 class XBT_PUBLIC NetZone {
+  kernel::routing::NetZoneImpl* const pimpl_;
+
 protected:
   friend kernel::routing::NetZoneImpl;
 
@@ -37,17 +39,15 @@ public:
   /** @brief Retrieves the name of that netzone as a C string */
   const char* get_cname() const;
 
-  NetZone* get_father();
+  XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZone* get_father();
+  NetZone* get_parent() const;
+  NetZone* set_parent(NetZone* parent);
 
   std::vector<Host*> get_all_hosts() const;
   int get_host_count() const;
 
   kernel::routing::NetZoneImpl* get_impl() const { return pimpl_; }
 
-private:
-  kernel::routing::NetZoneImpl* const pimpl_;
-
-public:
   /** Get the properties assigned to a netzone */
   const std::unordered_map<std::string, std::string>* get_properties() const;
   /** Retrieve the property value (or nullptr if not set) */
@@ -55,6 +55,8 @@ public:
   void set_property(const std::string& key, const std::string& value);
 
   std::vector<NetZone*> get_children() const;
+  NetZone* add_child(NetZone* new_zone);
+
   void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges);
 
