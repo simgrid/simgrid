@@ -134,7 +134,6 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
 
   auto const* wifi_link = static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
 
-  const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem = nullptr;
 
   /**
@@ -147,7 +146,7 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
    * used by the flow with the longest active time since the previous update
    */
   double durUsage = 0;
-  while((var = wifi_link->get_constraint()->get_variable(&elem))) {
+  while (const auto* var = wifi_link->get_constraint()->get_variable(&elem)) {
     auto* action = static_cast<kernel::resource::NetworkWifiAction*>(var->get_id());
     XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(), action->get_variable()->get_value(), wifi_link->get_host_rate(&action->get_src()),wifi_link->get_host_rate(&action->get_dst()));
 

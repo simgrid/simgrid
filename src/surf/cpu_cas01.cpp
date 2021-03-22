@@ -86,13 +86,12 @@ bool CpuCas01::is_used() const
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::on_speed_change()
 {
-  const lmm::Variable* var;
   const lmm::Element* elem = nullptr;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
                                                             get_core_count() * speed_.scale * speed_.peak);
-  while ((var = get_constraint()->get_variable(&elem))) {
-    const CpuCas01Action* action = static_cast<CpuCas01Action*>(var->get_id());
+  while (const auto* var = get_constraint()->get_variable(&elem)) {
+    const auto* action = static_cast<CpuCas01Action*>(var->get_id());
 
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
                                                             action->requested_core() * speed_.scale * speed_.peak);
@@ -121,14 +120,12 @@ void CpuCas01::apply_event(profile::Event* event, double value)
         get_iface()->turn_on();
       }
     } else {
-      const lmm::Constraint* cnst = get_constraint();
-      const lmm::Variable* var;
       const lmm::Element* elem = nullptr;
       double date              = surf_get_clock();
 
       get_iface()->turn_off();
 
-      while ((var = cnst->get_variable(&elem))) {
+      while (const auto* var = get_constraint()->get_variable(&elem)) {
         Action* action = var->get_id();
 
         if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED ||

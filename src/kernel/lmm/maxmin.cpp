@@ -141,16 +141,13 @@ System::System(bool selective_update) : selective_update_active(selective_update
 
 System::~System()
 {
-  Variable* var;
-  Constraint* cnst;
-
-  while ((var = extract_variable())) {
+  while (Variable* var = extract_variable()) {
     std::string demangled = boost::core::demangle(var->id_ ? typeid(*var->id_).name() : "(unidentified)");
     XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled.c_str(),
              var->rank_);
     var_free(var);
   }
-  while ((cnst = extract_constraint()))
+  while (Constraint* cnst = extract_constraint())
     cnst_free(cnst);
 
   xbt_mallocator_free(variable_mallocator_);
@@ -208,8 +205,7 @@ void System::variable_free(Variable* var)
 
 void System::variable_free_all()
 {
-  Variable* var;
-  while ((var = extract_variable()))
+  while (Variable* var = extract_variable())
     variable_free(var);
 }
 

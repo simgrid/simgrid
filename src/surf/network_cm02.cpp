@@ -367,11 +367,10 @@ void NetworkCm02Link::set_bandwidth(double value)
   if (sg_weight_S_parameter > 0) {
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
 
-    const kernel::lmm::Variable* var;
     const kernel::lmm::Element* elem     = nullptr;
     const kernel::lmm::Element* nextelem = nullptr;
     int numelem                          = 0;
-    while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
+    while (const auto* var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem)) {
       auto* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->sharing_penalty_ += delta;
       if (not action->is_suspended())
@@ -385,7 +384,6 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
   latency_check(value);
 
   double delta = value - latency_.peak;
-  const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
   int numelem                          = 0;
@@ -393,7 +391,7 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
   latency_.scale = 1.0;
   latency_.peak  = value;
 
-  while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
+  while (const auto* var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem)) {
     auto* action = static_cast<NetworkCm02Action*>(var->get_id());
     action->lat_current_ += delta;
     action->sharing_penalty_ += delta;

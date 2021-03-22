@@ -215,16 +215,14 @@ void Global::run_all_actors()
 void Global::wake_all_waiting_actors() const
 {
   for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
-    kernel::resource::Action* action;
-
     XBT_DEBUG("Handling the failed actions (if any)");
-    while ((action = model->extract_failed_action())) {
+    while (auto* action = model->extract_failed_action()) {
       XBT_DEBUG("   Handling Action %p", action);
       if (action->get_activity() != nullptr)
         kernel::activity::ActivityImplPtr(action->get_activity())->post();
     }
     XBT_DEBUG("Handling the terminated actions (if any)");
-    while ((action = model->extract_done_action())) {
+    while (auto* action = model->extract_done_action()) {
       XBT_DEBUG("   Handling Action %p", action);
       if (action->get_activity() == nullptr)
         XBT_DEBUG("probably vcpu's action %p, skip", action);

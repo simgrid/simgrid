@@ -29,10 +29,9 @@ void surf_presolve()
     if (next_event_date > NOW)
       break;
 
-    simgrid::kernel::profile::Event* event;
     double value                                  = -1.0;
     simgrid::kernel::resource::Resource* resource = nullptr;
-    while ((event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource))) {
+    while (auto* event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
       if (value >= 0)
         resource->apply_event(event, value);
     }
@@ -67,7 +66,6 @@ double surf_solve(double max_date)
   double time_delta                             = -1.0; /* duration */
   double value                                  = -1.0;
   simgrid::kernel::resource::Resource* resource = nullptr;
-  simgrid::kernel::profile::Event* event        = nullptr;
 
   if (max_date != -1.0) {
     xbt_assert(max_date >= NOW, "You asked to simulate up to %f, but that's in the past already", max_date);
@@ -130,7 +128,7 @@ double surf_solve(double max_date)
 
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
-    while ((event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource))) {
+    while (auto* event = simgrid::kernel::profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
       if (resource->is_used() || (watched_hosts().find(resource->get_cname()) != watched_hosts().end())) {
         time_delta = next_event_date - NOW;
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",

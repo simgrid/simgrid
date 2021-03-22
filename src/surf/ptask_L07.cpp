@@ -282,11 +282,10 @@ bool CpuL07::is_used() const
 /** @brief take into account changes of speed (either load or max) */
 void CpuL07::on_speed_change()
 {
-  const kernel::lmm::Variable* var;
   const kernel::lmm::Element* elem = nullptr;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), speed_.peak * speed_.scale);
-  while ((var = get_constraint()->get_variable(&elem))) {
+  while (const auto* var = get_constraint()->get_variable(&elem)) {
     const kernel::resource::Action* action = var->get_id();
 
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
@@ -368,13 +367,11 @@ void LinkL07::set_bandwidth(double value)
 kernel::resource::LinkImpl* LinkL07::set_latency(double value)
 {
   latency_check(value);
-  const kernel::lmm::Variable* var;
-  L07Action* action;
   const kernel::lmm::Element* elem = nullptr;
 
   latency_.peak = value;
-  while ((var = get_constraint()->get_variable(&elem))) {
-    action = static_cast<L07Action*>(var->get_id());
+  while (const auto* var = get_constraint()->get_variable(&elem)) {
+    auto* action = static_cast<L07Action*>(var->get_id());
     action->updateBound();
   }
   return this;
