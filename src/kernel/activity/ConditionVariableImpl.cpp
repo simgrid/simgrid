@@ -39,7 +39,6 @@ void ConditionVariableImpl::signal()
 
     /* Now transform the cond wait simcall into a mutex lock one */
     smx_simcall_t simcall = &proc.simcall_;
-    // FIXME? using here the MC observer to solve a problem not related to MC
     const auto* observer = dynamic_cast<mc::ConditionWaitSimcall*>(simcall->observer_);
     xbt_assert(observer != nullptr);
     observer->get_mutex()->lock(simcall->issuer_);
