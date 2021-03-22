@@ -568,7 +568,7 @@ include examples/smpi/replay/split_traces
 include examples/smpi/replay_multiple/README
 include examples/smpi/replay_multiple/description_file
 include examples/smpi/replay_multiple/generate_multiple_deployment.sh
-include examples/smpi/replay_multiple/replay_multiple.c
+include examples/smpi/replay_multiple/replay_multiple.cpp
 include examples/smpi/replay_multiple/replay_multiple.tesh
 include examples/smpi/replay_multiple/smpi_replay.txt
 include examples/smpi/replay_multiple/ti_traces_32_1/ti_trace0.txt

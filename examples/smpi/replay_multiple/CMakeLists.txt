@@ -44,4 +44,4 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/generate_multiple
                                    ${CMAKE_CURRENT_SOURCE_DIR}/ti_traces_32_1/ti_trace30.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/ti_traces_32_1/ti_trace31.txt  PARENT_SCOPE)
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple.tesh           PARENT_SCOPE)
-set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple.c              PARENT_SCOPE)
+set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple.cpp            PARENT_SCOPE)
