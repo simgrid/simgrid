@@ -40,6 +40,12 @@ NetZoneImpl::~NetZoneImpl()
   s4u::Engine::get_instance()->netpoint_unregister(netpoint_);
 }
 
+void NetZoneImpl::add_child(NetZoneImpl* new_zone)
+{
+  xbt_assert(not sealed_, "Cannot add a new child to the sealed zone %s", get_cname(););
+  children_.push_back(new_zone);
+}
+
 /** @brief Returns the list of the hosts found in this NetZone (not recursively)
  *
  * Only the hosts that are directly contained in this NetZone are retrieved,
