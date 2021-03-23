@@ -46,8 +46,7 @@ namespace routing {
 
 class XBT_PRIVATE VivaldiZone : public ClusterZone {
 public:
-  explicit VivaldiZone(const std::string& name) : ClusterZone(name) {}
-
+  using ClusterZone::ClusterZone;
   void set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, const std::string& coord);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
 };

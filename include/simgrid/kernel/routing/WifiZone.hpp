@@ -25,7 +25,7 @@ class XBT_PRIVATE WifiZone : public RoutedZone {
   void do_seal() override;
 
 public:
-  explicit WifiZone(const std::string& name) : RoutedZone(name){};
+  using RoutedZone::RoutedZone;
   WifiZone(const WifiZone&) = delete;
   WifiZone& operator=(const WifiZone) = delete;
 

@@ -31,7 +31,7 @@ class XBT_PRIVATE FloydZone : public RoutedZone {
   void do_seal() override;
 
 public:
-  explicit FloydZone(const std::string& name) : RoutedZone(name) {}
+  using RoutedZone::RoutedZone;
   FloydZone(const FloydZone&) = delete;
   FloydZone& operator=(const FloydZone&) = delete;
   ~FloydZone() override;

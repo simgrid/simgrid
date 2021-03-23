@@ -127,7 +127,7 @@ class XBT_PRIVATE FatTreeZone : public ClusterZone {
   void do_seal() override;
 
 public:
-  explicit FatTreeZone(const std::string& name) : ClusterZone(name) {}
+  using ClusterZone::ClusterZone;
   FatTreeZone(const FatTreeZone&) = delete;
   FatTreeZone& operator=(const FatTreeZone&) = delete;
   ~FatTreeZone() override;

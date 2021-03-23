@@ -23,7 +23,7 @@ class XBT_PRIVATE TorusZone : public ClusterZone {
   std::vector<unsigned int> dimensions_;
 
 public:
-  explicit TorusZone(const std::string& name) : ClusterZone(name){};
+  using ClusterZone::ClusterZone;
   void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position) override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;

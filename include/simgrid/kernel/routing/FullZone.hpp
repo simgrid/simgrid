@@ -20,7 +20,7 @@ namespace routing {
  */
 class XBT_PRIVATE FullZone : public RoutedZone {
 public:
-  explicit FullZone(const std::string& name) : RoutedZone(name){};
+  using RoutedZone::RoutedZone;
   FullZone(const FullZone&) = delete;
   FullZone& operator=(const FullZone) = delete;
   ~FullZone() override;
