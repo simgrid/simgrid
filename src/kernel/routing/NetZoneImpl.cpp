@@ -42,7 +42,7 @@ NetZoneImpl::~NetZoneImpl()
 
 void NetZoneImpl::add_child(NetZoneImpl* new_zone)
 {
-  xbt_assert(not sealed_, "Cannot add a new child to the sealed zone %s", get_cname(););
+  xbt_assert(not sealed_, "Cannot add a new child to the sealed zone %s", get_cname());
   children_.push_back(new_zone);
 }
 
