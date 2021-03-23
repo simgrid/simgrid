@@ -10,15 +10,16 @@
 #include "xbt/replay.hpp"
 #include "xbt/str.h"
 
-#include <stdio.h>
-#include <string.h>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 static void smpi_replay(int argc, char* argv[])
 {
   const char* instance_id = argv[1];
-  int rank                = (int)xbt_str_parse_int(argv[2], "Cannot parse rank '%s'");
+  int rank                = static_cast<int>(xbt_str_parse_int(argv[2], "Cannot parse rank '%s'"));
   const char* shared_trace =
       simgrid::s4u::Actor::self()->get_property("tracefile"); // Cannot use properties because this can be nullptr
   const char* private_trace = argv[3];
@@ -47,26 +48,24 @@ int main(int argc, char* argv[])
   simgrid_load_platform(argv[2]);
 
   /*   Application deployment: read the description file in order to identify instances to launch */
-  FILE* fp = fopen(argv[1], "r");
-  xbt_assert(fp != NULL, "Cannot open %s", argv[1]);
+  std::ifstream f(argv[1]);
+  xbt_assert(f.is_open(), "Cannot open file '%s'", argv[1]);
 
-  char line[2048];
-  while (fgets(line, sizeof line, fp)) {
-    xbt_assert(1 + strlen(line) < sizeof line, "input buffer too short (read: %s)", line);
-    xbt_dynar_t elems = xbt_str_split_quoted_in_place(line);
-    xbt_assert(xbt_dynar_length(elems) >= 3, "Not enough elements in the line");
+  std::string line;
+  while (std::getline(f, line)) {
+    std::string instance_id;
+    std::string filename;
+    int instance_size;
 
-    const char** line_char  = static_cast<const char**>(xbt_dynar_to_array(elems));
-    const char* instance_id = line_char[0];
-    int instance_size       = (int)xbt_str_parse_int(line_char[2], "Invalid size: %s");
+    std::istringstream is(line);
+    is >> instance_id >> filename >> instance_size;
+    xbt_assert(is, "Not enough elements in the line");
 
-    XBT_INFO("Initializing instance %s of size %d", instance_id, instance_size);
-    SMPI_app_instance_register(instance_id, smpi_replay, instance_size);
-
-    xbt_free(line_char);
+    XBT_INFO("Initializing instance %s of size %d", instance_id.c_str(), instance_size);
+    SMPI_app_instance_register(instance_id.c_str(), smpi_replay, instance_size);
   }
 
-  fclose(fp);
+  f.close();
 
   simgrid_load_deployment(argv[3]);
   simgrid_run();
