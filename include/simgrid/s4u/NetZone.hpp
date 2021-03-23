@@ -41,7 +41,7 @@ public:
 
   XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZone* get_father();
   NetZone* get_parent() const;
-  NetZone* set_parent(NetZone* parent);
+  NetZone* set_parent(const NetZone* parent);
 
   std::vector<Host*> get_all_hosts() const;
   int get_host_count() const;
@@ -55,7 +55,7 @@ public:
   void set_property(const std::string& key, const std::string& value);
 
   std::vector<NetZone*> get_children() const;
-  NetZone* add_child(NetZone* new_zone);
+  NetZone* add_child(const NetZone* new_zone);
 
   void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges);

@@ -45,7 +45,7 @@ std::vector<NetZone*> NetZone::get_children() const
   return res;
 }
 
-NetZone* NetZone::add_child(NetZone* new_zone)
+NetZone* NetZone::add_child(const NetZone* new_zone)
 {
   pimpl_->add_child(new_zone->get_impl());
   return this;
@@ -71,7 +71,7 @@ NetZone* NetZone::get_parent() const
   return pimpl_->get_parent()->get_iface();
 }
 
-NetZone* NetZone::set_parent(NetZone* parent)
+NetZone* NetZone::set_parent(const NetZone* parent)
 {
   pimpl_->set_parent(parent->get_impl());
   return this;
