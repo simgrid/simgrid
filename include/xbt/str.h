@@ -24,9 +24,6 @@ SG_BEGIN_DECL
  * @{
  */
 
-XBT_PUBLIC xbt_dynar_t xbt_str_split_quoted(const char* s);
-XBT_PUBLIC xbt_dynar_t xbt_str_split_quoted_in_place(char* s);
-
 XBT_PUBLIC long int xbt_str_parse_int(const char* str, const char* error_mesg);
 XBT_PUBLIC double xbt_str_parse_double(const char* str, const char* error_mesg);
 

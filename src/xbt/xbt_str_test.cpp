@@ -14,18 +14,6 @@
 #include <vector>
 
 namespace {
-void test_split_quoted(const std::string& name, const char* input, const std::vector<std::string>& expected)
-{
-  INFO(name);
-  xbt_dynar_t a = xbt_str_split_quoted(input);
-  REQUIRE(xbt_dynar_length(a) == expected.size());
-  unsigned i;
-  char* token;
-  xbt_dynar_foreach (a, i, token)
-    REQUIRE(token == expected[i]);
-  xbt_dynar_free(&a);
-}
-
 template <typename F> void test_parse_error(F function, const std::string& name, const char* str)
 {
   INFO(name);
@@ -43,22 +31,6 @@ template <typename F, typename T> void test_parse_ok(F function, const std::stri
 
 TEST_CASE("xbt::str: String Handling", "xbt_str")
 {
-  SECTION("Test the function xbt_str_split_quoted")
-  {
-    test_split_quoted("Empty", "", {});
-    test_split_quoted("Basic test", "toto tutu", {"toto", "tutu"});
-    test_split_quoted("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u", {"toto", "tutu"});
-    test_split_quoted("Protected space", "toto\\ tutu", {"toto tutu"});
-    test_split_quoted("Several spaces", "toto   tutu", {"toto", "tutu"});
-    test_split_quoted("LTrimming", "  toto tatu", {"toto", "tatu"});
-    test_split_quoted("Trimming", "  toto   tutu  ", {"toto", "tutu"});
-    test_split_quoted("Single quotes", "'toto tutu' tata", {"toto tutu", "tata"});
-    test_split_quoted("Double quotes", "\"toto tutu\" tata", {"toto tutu", "tata"});
-    test_split_quoted("Mixed quotes", "\"toto' 'tutu\" tata", {"toto' 'tutu", "tata"});
-    test_split_quoted("Backslashed quotes", "\\'toto tutu\\' tata", {"'toto", "tutu'", "tata"});
-    test_split_quoted("Backslashed quotes + quotes", "'toto \\'tutu' tata", {"toto 'tutu", "tata"});
-  }
-
   SECTION("Test the parsing functions")
   {
     test_parse_ok(xbt_str_parse_int, "Parse int", "42", 42);
