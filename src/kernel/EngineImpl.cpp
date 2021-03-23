@@ -53,27 +53,31 @@ void EngineImpl::register_default(const actor::ActorCodeFactory& code)
   default_function = code;
 }
 
-void EngineImpl::add_model(resource::Model::Type type, std::shared_ptr<resource::Model> model, bool is_default)
+void EngineImpl::add_model(std::shared_ptr<resource::Model> model, std::vector<std::string>&& dep_models)
 {
-  if (is_default)
-    models_by_type_[type].insert(models_by_type_[type].begin(), model.get());
-  else
-    models_by_type_[type].push_back(model.get());
+  auto model_name = model->get_name();
+  xbt_assert(models_prio_.find(model_name) == models_prio_.end(),
+             "Model %s already exists, use model.set_name() to change its name", model_name.c_str());
+  int order = -1;
+  for (const auto& dep_name : dep_models) {
+    xbt_assert(models_prio_.find(dep_name) != models_prio_.end(),
+               "Model %s doesn't exists. Impossible to use it as dependency.", dep_name.c_str());
+    if (models_prio_[dep_name].prio > order) {
+      order = models_prio_[dep_name].prio;
+    }
+  }
+  models_prio_[model_name] = {++order, std::move(model)};
 
-  models_.push_back(std::move(model));
-}
-
-resource::Model* EngineImpl::get_default_model(resource::Model::Type type) const
-{
-  resource::Model* model = nullptr;
-  if (models_by_type_.find(type) != models_by_type_.end() and models_by_type_.at(type).size() > 0)
-    return models_by_type_.at(type)[0];
-  return model;
-}
-
-const std::vector<resource::Model*>& EngineImpl::get_model_list(resource::Model::Type type)
-{
-  return models_by_type_[type];
+  auto sorted_models = std::vector<std::pair<std::string, ModelStruct>>(models_prio_.begin(), models_prio_.end());
+  std::sort(
+      sorted_models.begin(), sorted_models.end(),
+      [](const std::pair<std::string, ModelStruct>& first, const std::pair<std::string, ModelStruct>& second) -> bool {
+        return first.second.prio < second.second.prio;
+      });
+  models_.clear();
+  for (const auto& model : sorted_models) {
+    models_.push_back(model.second.ptr.get());
+  }
 }
 
 } // namespace kernel

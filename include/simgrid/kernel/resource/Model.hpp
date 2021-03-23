@@ -20,16 +20,6 @@ namespace resource {
  */
 class XBT_PUBLIC Model {
 public:
-  /** @brief Possible model types */
-  enum class Type {
-    HOST,    /**< Host models: see surf_host_model_description for more details */
-    NETWORK, /**< Network models: see surf_network_model_description for more details */
-    CPU_PM,  /**< CPU model for physical machines: see surf_cpu_model_description for more details */
-    CPU_VM,  /**< CPU model for virtual machines: see surf_cpu_model_description for more details */
-    DISK,    /**< Disk models: see surf_disk_model_description for more details */
-    VM       /**< VM model */
-  };
-
   /** @brief Possible update mechanisms */
   enum class UpdateAlgo {
     FULL, /**< Full update mechanism: the remaining time of every action is recomputed at each step */
@@ -135,6 +125,11 @@ public:
     return next_occurring_event_is_idempotent();
   }
 
+  /** @brief Gets the model name */
+  std::string get_name() const { return name_; }
+  /** @brief Sets the model name */
+  Model* set_name(const std::string& name);
+
 private:
   UpdateAlgo update_algorithm_ = UpdateAlgo::FULL;
   std::unique_ptr<lmm::System> maxmin_system_;
@@ -143,6 +138,7 @@ private:
   Action::StateSet failed_action_set_;   /**< Done with failure */
   Action::StateSet finished_action_set_; /**< Done successful */
   Action::StateSet ignored_action_set_;  /**< not considered (failure detectors?) */
+  std::string name_ = "Unnamed";         /**< Model name */
 
   ActionHeap action_heap_;
 };

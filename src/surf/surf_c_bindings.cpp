@@ -42,25 +42,6 @@ void surf_presolve()
     model->update_actions_state(NOW, 0.0);
 }
 
-/**
- * @brief Auxiliary function to get next event from a list of models
- *
- * @param models list of models to explore (cpu, host, vm) (IN)
- * @param time_delta delta for the next event (IN/OUT)
- */
-static void surf_update_next_event(std::vector<simgrid::kernel::resource::Model*> const& models, double& time_delta)
-{
-  for (auto* model : models) {
-    if (not model->next_occurring_event_is_idempotent()) {
-      continue;
-    }
-    double next_event = model->next_occurring_event(NOW);
-    if ((time_delta < 0.0 || next_event < time_delta) && next_event >= 0.0) {
-      time_delta = next_event;
-    }
-  }
-}
-
 double surf_solve(double max_date)
 {
   double time_delta                             = -1.0; /* duration */
@@ -73,23 +54,17 @@ double surf_solve(double max_date)
     time_delta = max_date - NOW;
   }
 
-  /* Physical models MUST be resolved first */
-  XBT_DEBUG("Looking for next event in physical models");
+  XBT_DEBUG("Looking for next event in all models");
   auto engine = simgrid::kernel::EngineImpl::get_instance();
-  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::HOST), time_delta);
-
-  // following the order it was done in HostCLM03Model->next_occurring_event
-  XBT_DEBUG("Looking for next event in CPU models");
-  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::CPU_PM), time_delta);
-
-  XBT_DEBUG("Looking for next event in network models");
-  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::NETWORK), time_delta);
-  XBT_DEBUG("Looking for next event in disk models");
-  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::DISK), time_delta);
-
-  XBT_DEBUG("Looking for next event in virtual models");
-  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::VM), time_delta);
-  surf_update_next_event(engine->get_model_list(simgrid::kernel::resource::Model::Type::CPU_VM), time_delta);
+  for (auto model : engine->get_all_models()) {
+    if (not model->next_occurring_event_is_idempotent()) {
+      continue;
+    }
+    double next_event = model->next_occurring_event(NOW);
+    if ((time_delta < 0.0 || next_event < time_delta) && next_event >= 0.0) {
+      time_delta = next_event;
+    }
+  }
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
 
@@ -99,7 +74,7 @@ double surf_solve(double max_date)
     double next_event_date = simgrid::kernel::profile::future_evt_set.next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    for (auto* model : engine->get_model_list(simgrid::kernel::resource::Model::Type::NETWORK)) {
+    for (auto model : engine->get_all_models()) {
       /* Skip all idempotent models, they were already treated above
        * NS3 is the one to handled here */
       if (model->next_occurring_event_is_idempotent())

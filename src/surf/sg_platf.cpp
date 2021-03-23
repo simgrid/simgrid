@@ -474,7 +474,11 @@ static void surf_config_models_setup()
   surf_host_model_description[host_id].model_init_preparse();
 
   XBT_DEBUG("Call vm_model_init");
-  surf_vm_model_init_HL13();
+  /* ideally we should get back the pointer to CpuModel from model_init_preparse(), but this
+   * requires changing the declaration of surf_cpu_model_description.
+   * To be reviewed in the future */
+  surf_vm_model_init_HL13(
+      simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get());
 
   XBT_DEBUG("Call disk_model_init");
   int disk_id = find_model_description(surf_disk_model_description, disk_model_name);

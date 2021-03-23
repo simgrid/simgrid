@@ -24,8 +24,12 @@ class EngineImpl {
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   std::unordered_map<std::string, actor::ActorCodeFactory> registered_functions; // Maps function names to actor code
   actor::ActorCodeFactory default_function; // Function to use as a fallback when the provided name matches nothing
-  std::vector<std::shared_ptr<resource::Model>> models_;
-  std::unordered_map<resource::Model::Type, std::vector<resource::Model*>> models_by_type_;
+  std::vector<resource::Model*> models_;
+  struct ModelStruct {
+    int prio;
+    std::shared_ptr<resource::Model> ptr;
+  };
+  std::unordered_map<std::string, struct ModelStruct> models_prio_;
   routing::NetZoneImpl* netzone_root_ = nullptr;
 
   friend s4u::Engine;
@@ -44,19 +48,13 @@ public:
   /**
    * @brief Add a model to engine list
    *
-   * @param type Model type (network, disk, etc)
    * @param model Pointer to model
-   * @param is_default Is this the default model for this type of resource in this exp
+   * @param list  List of dependencies for this model
    */
-  void add_model(resource::Model::Type type, std::shared_ptr<resource::Model> model, bool is_default = false);
-  /** @brief Get current default model for a resource type */
-  resource::Model* get_default_model(resource::Model::Type type) const;
-
-  /** @brief Get list of models created for a resource type */
-  const std::vector<resource::Model*>& get_model_list(resource::Model::Type type);
+  void add_model(std::shared_ptr<simgrid::kernel::resource::Model> model, std::vector<std::string>&& dep_models);
 
   /** @brief Get list of all models managed by this engine */
-  const std::vector<std::shared_ptr<resource::Model>>& get_all_models() const { return models_; }
+  const std::vector<resource::Model*>& get_all_models() const { return models_; }
 
   static EngineImpl* get_instance() { return simgrid::s4u::Engine::get_instance()->pimpl; }
   actor::ActorCodeFactory get_function(const std::string& name)

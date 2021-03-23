@@ -36,8 +36,8 @@ std::vector<s_smpi_factor_t> smpi_lat_factor;
 void surf_network_model_init_SMPI()
 {
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkSmpiModel>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK, net_model,
-                                                         true);
+  net_model->set_name("Network_SMPI");
+  simgrid::kernel::EngineImpl::get_instance()->add_model(net_model, {});
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
   simgrid::config::set_default<double>("network/weight-S", 8775);

@@ -17,22 +17,25 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile accross hosts");
 
-void surf_vm_model_init_HL13()
+void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
 {
-  auto cpu_optim = simgrid::config::get_value<std::string>("cpu/optim");
+  auto vm_model = std::make_shared<simgrid::vm::VMModel>();
+  vm_model->set_name("VM_HL13");
+
+  simgrid::kernel::EngineImpl::get_instance()->add_model(vm_model, {cpu_pm_model->get_name()});
   std::shared_ptr<simgrid::kernel::resource::CpuModel> cpu_model_vm;
+
+  auto cpu_optim = simgrid::config::get_value<std::string>("cpu/optim");
   if (cpu_optim == "TI") {
     cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuTiModel>();
+    cpu_model_vm->set_name("VmCpu_TI");
   } else {
     cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>();
+    cpu_model_vm->set_name("VmCpu_Cas01");
   }
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_VM, cpu_model_vm,
-                                                         true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(cpu_model_vm,
+                                                         {cpu_pm_model->get_name(), vm_model->get_name()});
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_vm_model(cpu_model_vm);
-
-  auto vm_model = std::make_shared<simgrid::vm::VMModel>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::VM,
-                                                         std::move(vm_model), true);
 }
 
 namespace simgrid {
@@ -166,7 +169,6 @@ double VMModel::next_occurring_event(double now)
     kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
     vcpu_system->update_constraint_bound(cpu->get_constraint(), virt_overhead * solved_value);
   }
-
   /* actual next occurring event is determined by VM CPU model at surf_solve */
   return -1.0;
 }

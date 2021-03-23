@@ -141,14 +141,14 @@ XBT_ATTRIB_NORETURN
 XBT_PUBLIC void surf_network_model_init_NS3();
 
 /** @ingroup SURF_models
- *  @brief Initializes the platform with the current best network and cpu models at hand
+ *  @brief Initializes the VM model used in the platform
  *
- *  This platform model separates the host model and the network model.
- *  The host model will be initialized with the model compound, the network model with the model LV08 (with cross
- *  traffic support) and the CPU model with the model Cas01.
+ *  A VM model depends on the physical CPU model to share the resources inside the VM
+ *  It will also creates the CPU model for actions running inside the VM
+ *
  *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  */
-XBT_PUBLIC void surf_vm_model_init_HL13();
+XBT_PUBLIC void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model);
 
 /** @ingroup SURF_models
  *  @brief Initializes the platform with a compound host model
