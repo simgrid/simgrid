@@ -8,12 +8,11 @@
 #include "src/xbt/log_private.hpp"
 #include "src/xbt_modinter.h"
 #include "xbt/asserts.h"
-#include "xbt/dynar.h"
-#include "xbt/str.h"
 #include "xbt/string.hpp"
 
 #include <algorithm>
 #include <array>
+#include <boost/tokenizer.hpp>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -444,11 +443,6 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, const c
 
 void xbt_log_control_set(const char *control_string)
 {
-  /* To split the string in commands, and the cursors */
-  xbt_dynar_t set_strings;
-  char *str;
-  unsigned int cpt;
-
   if (!control_string)
     return;
   XBT_DEBUG("Parse log settings '%s'", control_string);
@@ -458,17 +452,16 @@ void xbt_log_control_set(const char *control_string)
     xbt_log_no_loc = 1;
     return;
   }
-  /* split the string, and remove empty entries */
-  set_strings = xbt_str_split_quoted(control_string);
+  /* Split the string, and remove empty entries
+     Parse each entry and either use it right now (if the category was already created), or store it for further use */
+  std::string parsed_control_string(control_string);
+  boost::escaped_list_separator<char> sep("\\", " ", "\"'");
+  boost::tokenizer<boost::escaped_list_separator<char>> tok(parsed_control_string, sep);
+  for (const auto& str : tok) {
+    if (str.empty())
+      continue;
 
-  if (xbt_dynar_is_empty(set_strings)) {     /* vicious user! */
-    xbt_dynar_free(&set_strings);
-    return;
-  }
-
-  /* Parse each entry and either use it right now (if the category was already created), or store it for further use */
-  xbt_dynar_foreach(set_strings, cpt, str) {
-    xbt_log_setting_t set  = _xbt_log_parse_setting(str);
+    xbt_log_setting_t set  = _xbt_log_parse_setting(str.c_str());
     xbt_log_category_t cat = _xbt_log_cat_searchsub(&_XBT_LOGV(XBT_LOG_ROOT_CAT), set.catname.c_str());
 
     if (cat) {
@@ -480,7 +473,6 @@ void xbt_log_control_set(const char *control_string)
       xbt_log_settings().emplace_back(std::move(set));
     }
   }
-  xbt_dynar_free(&set_strings);
 }
 
 void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app)
