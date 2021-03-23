@@ -15,7 +15,6 @@ namespace simgrid {
 namespace xbt {
 
 static std::ifstream action_fs;
-static bool action_fs_inited = false;
 
 std::unordered_map<std::string, action_fun> action_funs;
 static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
@@ -115,18 +114,11 @@ static void handle_action(ReplayAction& action)
  */
 int replay_runner(const char* actor_name, const char* trace_filename)
 {
-  if (trace_filename == nullptr) {
-    xbt_assert(simgrid::xbt::action_fs_inited,
+  std::string actor_name_string(actor_name);
+  if (simgrid::xbt::action_fs.is_open()) { // <A unique trace file
+    xbt_assert(trace_filename == nullptr,
                "Passing nullptr to replay_runner() means that you want to use a shared trace, but you did not provide "
                "any. Please use xbt_replay_set_tracefile().");
-  } else {
-    xbt_assert(not simgrid::xbt::action_fs_inited,
-               "Trace replay cannot mix shared and unshared traces for now. Please don't set a shared tracefile with "
-               "xbt_replay_set_tracefile() if you use actor-specific trace files using the second parameter of "
-               "replay_runner().");
-  }
-  std::string actor_name_string(actor_name);
-  if (simgrid::xbt::action_fs_inited) { // <A unique trace file
     while (true) {
       simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(actor_name);
       if (!evt)
@@ -139,7 +131,10 @@ int replay_runner(const char* actor_name, const char* trace_filename)
       action_queues.erase(actor_name_string);
     }
   } else { // Should have got my trace file in argument
-    xbt_assert(trace_filename != nullptr);
+    xbt_assert(trace_filename != nullptr,
+               "Trace replay cannot mix shared and unshared traces for now. Please don't set a shared tracefile with "
+               "xbt_replay_set_tracefile() if you use actor-specific trace files using the second parameter of "
+               "replay_runner().");
     simgrid::xbt::ReplayAction evt;
     simgrid::xbt::ReplayReader reader(trace_filename);
     while (reader.get(&evt)) {
@@ -186,7 +181,7 @@ action_fun xbt_replay_action_get(const char* action_name)
 
 void xbt_replay_set_tracefile(const std::string& filename)
 {
-  xbt_assert(not simgrid::xbt::action_fs_inited, "Tracefile already set");
+  xbt_assert(not simgrid::xbt::action_fs.is_open(), "Tracefile already set");
   simgrid::xbt::action_fs.open(filename, std::ifstream::in);
-  simgrid::xbt::action_fs_inited = true;
+  xbt_assert(simgrid::xbt::action_fs.is_open(), "Failed to open file: %s", filename.c_str());
 }
