@@ -184,7 +184,7 @@ action_fun xbt_replay_action_get(const char* action_name)
   return simgrid::xbt::action_funs.at(std::string(action_name));
 }
 
-void xbt_replay_set_tracefile(std::string filename)
+void xbt_replay_set_tracefile(const std::string& filename)
 {
   xbt_assert(not simgrid::xbt::action_fs_inited, "Tracefile already set");
   simgrid::xbt::action_fs.open(filename, std::ifstream::in);

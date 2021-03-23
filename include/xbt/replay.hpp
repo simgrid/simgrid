@@ -32,6 +32,6 @@ XBT_PUBLIC int replay_runner(const char* actor_name, const char* trace_filename 
 using action_fun = std::function<void(simgrid::xbt::ReplayAction&)>;
 XBT_PUBLIC void xbt_replay_action_register(const char* action_name, const action_fun& function);
 XBT_PUBLIC action_fun xbt_replay_action_get(const char* action_name);
-XBT_PUBLIC void xbt_replay_set_tracefile(std::string filename);
+XBT_PUBLIC void xbt_replay_set_tracefile(const std::string& filename);
 
 #endif
