@@ -52,9 +52,8 @@ SG_BEGIN_DECL
  * @skip end_of_doxygen
  * @until }
  *
- * Note that if you use dynars to store pointed data, the xbt_dynar_search(), xbt_dynar_search_or_negative() and
- * xbt_dynar_member() won't be for you. Instead of comparing your pointed elements, they compare the pointer to them.
- * See the documentation of xbt_dynar_search() for more info.
+ * Note that if you use dynars to store pointed data, xbt_dynar_member() won't be for you. Instead of comparing your
+ * pointed elements, it compares the pointer to them.
  */
 /** @defgroup XBT_dynar_cons Dynar constructor and destructor
  *  @ingroup XBT_dynar
@@ -82,10 +81,8 @@ XBT_PUBLIC void xbt_dynar_get_cpy(const_xbt_dynar_t dynar, unsigned long idx, vo
 XBT_PUBLIC void xbt_dynar_insert_at(xbt_dynar_t dynar, int idx, const void* src);
 XBT_PUBLIC void xbt_dynar_remove_at(xbt_dynar_t dynar, int idx, void* dst);
 
-XBT_PUBLIC signed int xbt_dynar_search_or_negative(const_xbt_dynar_t dynar, const void* elem);
 XBT_PUBLIC int xbt_dynar_member(const_xbt_dynar_t dynar, const void* elem);
 XBT_PUBLIC void xbt_dynar_sort(const_xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn);
-XBT_PUBLIC void* xbt_dynar_to_array(xbt_dynar_t dynar);
 
 /** @} */
 /** @defgroup XBT_dynar_misc Dynar miscellaneous functions
@@ -163,15 +160,10 @@ XBT_PUBLIC void* xbt_dynar_pop_ptr(xbt_dynar_t dynar);
 /** @defgroup XBT_dynar_cursor Cursors on dynar
  *  @ingroup XBT_dynar
  *
- * Cursors are used to iterate over the structure. Never add elements to the DynArr during the traversal. To remove
- * elements, use the xbt_dynar_cursor_rm() function.
- *
- * Do not call these function directly, but only within the xbt_dynar_foreach macro.
+ * Cursors are used to iterate over the structure. Never add elements to the DynArr during the traversal.
  *
  *  @{
  */
-
-XBT_PUBLIC void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int* cursor);
 
 /*
  * @warning DO NOT USE THIS STRUCTURE DIRECTLY! Instead, use the public interface:

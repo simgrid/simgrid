@@ -290,28 +290,10 @@ void xbt_dynar_remove_at(xbt_dynar_t dynar, int idx, void* object)
   dynar->used--;
 }
 
-/** @brief Returns the position of the element in the dynar (or -1 if not found)
- *
- * Beware that if your dynar contains pointed values (such as strings) instead of scalar, this function is probably not
- * what you want. Check the documentation of xbt_dynar_search() for more info.
- *
- * Note that usually, the dynar indices are unsigned integers. If you have more than 2 million elements in your dynar,
- * this very function will not work (but the other will).
- */
-signed int xbt_dynar_search_or_negative(const_xbt_dynar_t dynar, const void* elem)
-{
-  for (unsigned long it = 0; it < dynar->used; it++)
-    if (not memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
-      return it;
-    }
-
-  return -1;
-}
-
 /** @brief Returns a boolean indicating whether the element is part of the dynar
  *
  * Beware that if your dynar contains pointed values (such as strings) instead of scalar, this function is probably not
- * what you want. Check the documentation of xbt_dynar_search() for more info.
+ * what you want.
  */
 int xbt_dynar_member(const_xbt_dynar_t dynar, const void* elem)
 {
@@ -399,16 +381,6 @@ void xbt_dynar_map(const_xbt_dynar_t dynar, void_f_pvoid_t op)
   }
 }
 
-/** @brief Removes and free the entry pointed by the cursor
- *
- * This function can be used while traversing without problem.
- */
-void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int* cursor)
-{
-  xbt_dynar_remove_at(dynar, *cursor, nullptr);
-  *cursor -= 1;
-}
-
 /** @brief Sorts a dynar according to the function <tt>compar_fn</tt>
  *
  * This function simply apply the classical qsort(3) function to the data stored in the dynar.
@@ -439,21 +411,4 @@ void xbt_dynar_sort(const_xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn)
 {
   if (dynar->data != nullptr)
     qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
-}
-
-/** @brief Transform a dynar into a nullptr terminated array.
- *
- *  @param dynar the dynar to transform
- *  @return pointer to the first element of the array
- *
- *  Note: The dynar won't be usable afterwards.
- */
-void* xbt_dynar_to_array(xbt_dynar_t dynar)
-{
-  void *res;
-  xbt_dynar_shrink(dynar, 1);
-  memset(xbt_dynar_push_ptr(dynar), 0, dynar->elmsize);
-  res = dynar->data;
-  xbt_free(dynar);
-  return res;
 }
