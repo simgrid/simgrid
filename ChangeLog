@@ -24,8 +24,9 @@ S4U:
 
 XBT:
  - Drop simgrid::xbt::demangle(). Please use boost::core::demangle() instead.
- - Drop xbt_dynar_cursor_rm(), xbt_dynar_search_or_negative(), xbt_dynar_to_array(),
+ - Drop xbt_dynar_cursor_rm(), xbt_dynar_search_or_negative(),
    xbt_str_split_quoted(), xbt_str_split_quoted_in_place().
+ - Deprecate xbt_dynar_to_array().
 
 C binding and interface:
  - Rename (lowercase) functions sg_actor_get_PID, sg_actor_get_PPID, sg_actor_by_PID.

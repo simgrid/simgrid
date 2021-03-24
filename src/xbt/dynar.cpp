@@ -412,3 +412,20 @@ void xbt_dynar_sort(const_xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn)
   if (dynar->data != nullptr)
     qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
 }
+
+/** @brief Transform a dynar into a nullptr terminated array.
+ *
+ *  @param dynar the dynar to transform
+ *  @return pointer to the first element of the array
+ *
+ *  Note: The dynar won't be usable afterwards.
+ */
+void* xbt_dynar_to_array(xbt_dynar_t dynar)
+{
+  void* res;
+  xbt_dynar_shrink(dynar, 1);
+  memset(xbt_dynar_push_ptr(dynar), 0, dynar->elmsize);
+  res = dynar->data;
+  xbt_free(dynar);
+  return res;
+}

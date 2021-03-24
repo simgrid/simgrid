@@ -83,6 +83,7 @@ XBT_PUBLIC void xbt_dynar_remove_at(xbt_dynar_t dynar, int idx, void* dst);
 
 XBT_PUBLIC int xbt_dynar_member(const_xbt_dynar_t dynar, const void* elem);
 XBT_PUBLIC void xbt_dynar_sort(const_xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn);
+XBT_ATTRIB_DEPRECATED_v331("This function will be removed") XBT_PUBLIC void* xbt_dynar_to_array(xbt_dynar_t dynar);
 
 /** @} */
 /** @defgroup XBT_dynar_misc Dynar miscellaneous functions
