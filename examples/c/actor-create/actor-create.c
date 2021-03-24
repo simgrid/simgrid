@@ -88,16 +88,16 @@ int main(int argc, char** argv)
    */
   int recv_argc           = 2;
   const char* recv_argv[] = {"receiver", "mb42", NULL};
-  sg_actor_create("receiver", sg_host_by_name("Fafard"), receiver, recv_argc, recv_argv);
+  sg_actor_create("receiver", sg_host_by_name("Fafard"), receiver, recv_argc, (char**)recv_argv);
 
   int sender1_argc           = 3;
   const char* sender1_argv[] = {"sender", "GaBuZoMeu", "mb42", NULL};
-  sg_actor_create("sender1", sg_host_by_name("Tremblay"), sender, sender1_argc, sender1_argv);
+  sg_actor_create("sender1", sg_host_by_name("Tremblay"), sender, sender1_argc, (char**)sender1_argv);
 
   int sender2_argc           = 3;
   const char* sender2_argv[] = {"sender", "GloubiBoulga", "mb42", NULL};
   sg_actor_t sender2         = sg_actor_init("sender2", sg_host_by_name("Jupiter"));
-  sg_actor_start(sender2, sender, sender2_argc, sender2_argv);
+  sg_actor_start(sender2, sender, sender2_argc, (char**)sender2_argv);
 
   /* But starting actors directly is considered as a bad experimental habit, since it ties the code
    * you want to test with the experimental scenario. Starting your actors from an external deployment

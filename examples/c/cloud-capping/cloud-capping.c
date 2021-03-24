@@ -50,7 +50,7 @@ static void launch_worker(sg_host_t host, const char* pr_name, double computatio
   char* argv3        = bprintf("%f", bound);
   const char* argv[] = {pr_name, argv1, argv2, argv3, NULL};
 
-  sg_actor_create(pr_name, host, worker_main, 4, argv);
+  sg_actor_create(pr_name, host, worker_main, 4, (char**)argv);
 
   free(argv1);
   free(argv2);
@@ -92,11 +92,11 @@ static void test_dynamic_change()
   sg_vm_start(vm1);
 
   const char* w0_argv[] = {"worker0", "Task0", "-1.0", NULL};
-  sg_actor_create("worker0", (sg_host_t)vm0, worker_busy_loop, 3, w0_argv);
+  sg_actor_create("worker0", (sg_host_t)vm0, worker_busy_loop, 3, (char**)w0_argv);
 
   char* speed           = bprintf("%f", sg_host_get_speed(pm0));
   const char* w1_argv[] = {"worker1", "Task1", speed, NULL};
-  sg_actor_create("worker1", (sg_host_t)vm1, worker_busy_loop, 3, w1_argv);
+  sg_actor_create("worker1", (sg_host_t)vm1, worker_busy_loop, 3, (char**)w1_argv);
 
   sg_actor_sleep_for(3000); // let the tasks end
 

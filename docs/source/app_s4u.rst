@@ -467,9 +467,9 @@ Creating actors
 
    .. group-tab:: C
 
-      .. doxygenfunction:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, const char *const *argv)
+      .. doxygenfunction:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, char *const *argv)
       .. doxygenfunction:: sg_actor_init(const char *name, sg_host_t host)
-      .. doxygenfunction:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char *const *argv)
+      .. doxygenfunction:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char *const *argv)
 
       .. doxygenfunction:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
       .. doxygenfunction:: sg_actor_detach()

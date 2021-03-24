@@ -24,12 +24,12 @@ XBT_PUBLIC size_t sg_actor_count();
 XBT_PUBLIC sg_actor_t* sg_actor_list();
 
 XBT_PUBLIC sg_actor_t sg_actor_create(const char* name, sg_host_t host, xbt_main_func_t code, int argc,
-                                      const char* const* argv);
+                                      char* const* argv);
 XBT_PUBLIC sg_actor_t sg_actor_init(const char* name, sg_host_t host);
 /** Start the previously initialized actor.
  *
  * Note that argv is copied over, so you should free your own copy once the actor is started. */
-XBT_PUBLIC void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, const char* const* argv);
+XBT_PUBLIC void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char* const* argv);
 XBT_PUBLIC void sg_actor_set_stacksize(sg_actor_t actor, unsigned size);
 
 XBT_PUBLIC void sg_actor_exit();

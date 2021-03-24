@@ -67,10 +67,10 @@ int main(int argc, char* argv[])
   simgrid_load_platform(argv[1]);
 
   const char* worker_argv[] = {"worker", "false"};
-  sg_actor_create("worker", sg_host_by_name("Tremblay"), worker, 2, worker_argv);
+  sg_actor_create("worker", sg_host_by_name("Tremblay"), worker, 2, (char**)worker_argv);
 
   worker_argv[1] = "true";
-  sg_actor_create("worker_timeout", sg_host_by_name("Tremblay"), worker, 2, worker_argv);
+  sg_actor_create("worker_timeout", sg_host_by_name("Tremblay"), worker, 2, (char**)worker_argv);
 
   simgrid_run();
   return 0;
