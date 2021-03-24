@@ -841,9 +841,6 @@ else()
 endif()
 
 set(DOC_SOURCES
-  doc/Doxyfile.in
-  doc/Layout.xml
-
   doc/doxygen/FAQ.doc
   doc/doxygen/inside.doc
   doc/doxygen/inside_tests.doc
@@ -967,9 +964,6 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
   )
 
 set(bin_files

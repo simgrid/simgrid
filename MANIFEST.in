@@ -5,9 +5,6 @@ include doc/webcruft/Paje_MSG_screenshot.jpg
 include doc/webcruft/Paje_MSG_screenshot_thn.jpg
 include doc/webcruft/eclipseScreenShot.png
 include doc/webcruft/output.goal.pdf
-include doc/webcruft/simgrid_logo_2011.gif
-include doc/webcruft/simgrid_logo_2011.png
-include doc/webcruft/simgrid_logo_2011_small.png
 include examples/c/actor-create/actor-create.c
 include examples/c/actor-create/actor-create.tesh
 include examples/c/actor-create/actor-create_d.xml
@@ -1747,8 +1744,6 @@ include MANIFEST.in
 include MANIFEST.in.in
 include NEWS
 include README.md
-include doc/Doxyfile.in
-include doc/Layout.xml
 include doc/doxygen/FAQ.doc
 include doc/doxygen/inside.doc
 include doc/doxygen/inside_cmake.doc

@@ -31,13 +31,6 @@ if(enable_documentation)
 
   message(STATUS "Doxygen version: ${DOXYGEN_VERSION}")
 
-  # This is a workaround for older cmake versions (such as 2.8.7 on Ubuntu 12.04). These cmake versions do not provide
-  # the DOXYGEN_VERSION variable and hence, building the documentation will always  fail. This code is the same as used
-  # in the cmake library, version 3.
-  if(DOXYGEN_EXECUTABLE)
-    execute_process(COMMAND ${DOXYGEN_EXECUTABLE} "--version" OUTPUT_VARIABLE DOXYGEN_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-  endif()
-
   if(DOXYGEN_VERSION VERSION_LESS "1.8")
     ADD_CUSTOM_TARGET(error_doxygen
         COMMAND ${CMAKE_COMMAND} -E echo "Doxygen must be at least version 1.8 to generate documentation. Version found: ${DOXYGEN_VERSION}"
@@ -45,8 +38,6 @@ if(enable_documentation)
     )
     add_dependencies(documentation error_doxygen)
   endif()
-
-  configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
 
   foreach(file ${DOC_IMG})
     ADD_CUSTOM_COMMAND(TARGET documentation COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_BINARY_DIR}/doc/html/)
@@ -70,25 +61,6 @@ if(enable_documentation)
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
   )
-
-  ### Fill in the "make gforge-sync" target ###
-
-  set(RSYNC_CMD rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --times --omit-dir-times --perms --chmod=a+rX,ug+w,o-w,Dg+s)
-
-  add_custom_target(gforge-sync
-    COMMAND ssh scm.gforge.inria.fr mkdir -p -m 2775 /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true
-
-    COMMAND ${RSYNC_CMD} doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
-
-    COMMAND ${RSYNC_CMD} /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
-    /${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
-
-    COMMAND ${RSYNC_CMD} ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/
-    COMMAND ${RSYNC_CMD} ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
-
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-  )
-  add_dependencies(gforge-sync documentation)
 
   if (Java_FOUND)
     find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
