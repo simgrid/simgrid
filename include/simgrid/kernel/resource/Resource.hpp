@@ -7,6 +7,8 @@
 #define SIMGRID_KERNEL_RESOURCE_RESOURCE_HPP
 
 #include "src/kernel/lmm/maxmin.hpp" // Constraint
+#include "src/kernel/resource/profile/FutureEvtSet.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include <simgrid/forward.h>
 #include <xbt/signal.hpp>
 #include <xbt/str.h>
@@ -61,8 +63,6 @@ public:
   virtual void turn_on() { is_on_ = true; }
   /** @brief Turn off the current Resource */
   virtual void turn_off() { is_on_ = false; }
-  /** @brief setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
-  virtual void set_state_profile(profile::Profile* profile);
 };
 
 template <class AnyResource> class Resource_T : public Resource {
@@ -71,6 +71,17 @@ template <class AnyResource> class Resource_T : public Resource {
 
 public:
   using Resource::Resource;
+  /** @brief setup the profile file with states events (ON or OFF). The profile must contain boolean values. */
+  AnyResource* set_state_profile(profile::Profile* profile)
+  {
+    if (profile) {
+      xbt_assert(state_event_ == nullptr, "Cannot set a second state profile to %s", get_cname());
+      state_event_ = profile->schedule(&profile::future_evt_set, this);
+    }
+
+    return static_cast<AnyResource*>(this);
+  }
+
   AnyResource* set_model(Model* model)
   {
     model_ = model;

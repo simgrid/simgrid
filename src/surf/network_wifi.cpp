@@ -91,7 +91,11 @@ bool NetworkWifiLink::toggle_decay_model(){
   return(use_decay_model_);
 }
 
-  
+LinkImpl* NetworkWifiLink::set_latency(double value)
+{
+  xbt_assert(value == 0, "Latency cannot be set for WiFi Links.");
+  return this;
+}
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid

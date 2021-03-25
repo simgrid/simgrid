@@ -162,16 +162,22 @@ void LinkImpl::on_bandwidth_change() const
   s4u::Link::on_bandwidth_change(this->piface_);
 }
 
-void LinkImpl::set_bandwidth_profile(profile::Profile* profile)
+LinkImpl* LinkImpl::set_bandwidth_profile(profile::Profile* profile)
 {
-  xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth profile to Link %s", get_cname());
-  bandwidth_.event = profile->schedule(&profile::future_evt_set, this);
+  if (profile) {
+    xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth profile to Link %s", get_cname());
+    bandwidth_.event = profile->schedule(&profile::future_evt_set, this);
+  }
+  return this;
 }
 
-void LinkImpl::set_latency_profile(profile::Profile* profile)
+LinkImpl* LinkImpl::set_latency_profile(profile::Profile* profile)
 {
-  xbt_assert(latency_.event == nullptr, "Cannot set a second latency profile to Link %s", get_cname());
-  latency_.event = profile->schedule(&profile::future_evt_set, this);
+  if (profile) {
+    xbt_assert(latency_.event == nullptr, "Cannot set a second latency profile to Link %s", get_cname());
+    latency_.event = profile->schedule(&profile::future_evt_set, this);
+  }
+  return this;
 }
 
 /**********

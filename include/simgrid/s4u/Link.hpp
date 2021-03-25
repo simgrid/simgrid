@@ -52,18 +52,30 @@ public:
   /** @brief Retrieves the name of that link as a C string */
   const char* get_cname() const;
 
-  /** Get the bandwidth of the current Link (in bytes per second) */
+  /** Get/Set the bandwidth of the current Link (in bytes per second) */
   double get_bandwidth() const;
-  /** Set the bandwidth of the current Link (in bytes per second) */
-  void set_bandwidth(double value);
+  Link* set_bandwidth(double value);
 
-  /** Get the latency of the current Link (in seconds) */
+  /** Get/Set the latency of the current Link (in seconds) */
   double get_latency() const;
-  /** Set the latency of the current Link (in seconds) */
-  void set_latency(double value);
+  Link* set_latency(double value);
 
   /** @brief Describes how the link is shared between flows */
   SharingPolicy get_sharing_policy() const;
+
+  /** Setup the profile with states events (ON or OFF). The profile must contain boolean values. */
+  Link* set_state_profile(kernel::profile::Profile* profile);
+  /** Setup the profile with bandwidth events (peak speed changes due to external load).
+   * The profile must contain percentages (value between 0 and 1). */
+  Link* set_bandwidth_profile(kernel::profile::Profile* profile);
+  /** Setup the profile file with latency events (peak latency changes due to external load).
+   * The profile must contain absolute values */
+  Link* set_latency_profile(kernel::profile::Profile* profile);
+
+  const std::unordered_map<std::string, std::string>* get_properties() const;
+  const char* get_property(const std::string& key) const;
+  Link* set_properties(const std::unordered_map<std::string, std::string>& properties);
+  Link* set_property(const std::string& key, const std::string& value);
 
   /** @brief Set the level of communication speed of the given host on this wifi link.
    *
@@ -88,22 +100,10 @@ public:
   bool is_shared() const;
 
   void turn_on();
-  bool is_on() const;
   void turn_off();
-  void seal();
-  /** Setup the profile with states events (ON or OFF). The profile must contain boolean values. */
-  void set_state_profile(kernel::profile::Profile* profile);
-  /** Setup the profile with bandwidth events (peak speed changes due to external load).
-   * The profile must contain percentages (value between 0 and 1). */
-  void set_bandwidth_profile(kernel::profile::Profile* profile);
-  /** Setup the profile file with latency events (peak latency changes due to external load).
-   * The profile must contain absolute values */
-  void set_latency_profile(kernel::profile::Profile* profile);
+  bool is_on() const;
 
-  const char* get_property(const std::string& key) const;
-  Link* set_property(const std::string& key, const std::string& value);
-  const std::unordered_map<std::string, std::string>* get_properties() const;
-  Link* set_properties(const std::unordered_map<std::string, std::string>& properties);
+  void seal();
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */

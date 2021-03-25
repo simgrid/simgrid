@@ -149,14 +149,12 @@ public:
 
   void on_bandwidth_change() const;
 
-  virtual void
-  set_bandwidth_profile(kernel::profile::Profile* profile); /*< setup the profile file with bandwidth events
-                                                   (peak speed changes due to external load). Trace must
-                                                   contain percentages (value between 0 and 1). */
-  virtual void
-  set_latency_profile(kernel::profile::Profile* profile); /*< setup the trace file with latency events (peak
-                                                 latency changes due to external load).   Trace must contain
-                                                 absolute values */
+  /* setup the profile file with bandwidth events (peak speed changes due to external load).
+   * Profile must contain percentages (value between 0 and 1). */
+  virtual LinkImpl* set_bandwidth_profile(kernel::profile::Profile* profile);
+  /* setup the profile file with latency events (peak latency changes due to external load).
+   * Profile must contain absolute values */
+  virtual LinkImpl* set_latency_profile(kernel::profile::Profile* profile);
 
   Metric latency_                   = {0.0, 0, nullptr};
   Metric bandwidth_                 = {1.0, 0, nullptr};

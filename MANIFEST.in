@@ -2183,7 +2183,6 @@ include src/kernel/resource/Action.cpp
 include src/kernel/resource/DiskImpl.cpp
 include src/kernel/resource/DiskImpl.hpp
 include src/kernel/resource/Model.cpp
-include src/kernel/resource/Resource.cpp
 include src/kernel/resource/profile/DatedValue.cpp
 include src/kernel/resource/profile/DatedValue.hpp
 include src/kernel/resource/profile/Event.hpp

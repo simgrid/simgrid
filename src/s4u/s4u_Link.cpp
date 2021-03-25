@@ -61,9 +61,10 @@ double Link::get_latency() const
   return this->pimpl_->get_latency();
 }
 
-void Link::set_latency(double value)
+Link* Link::set_latency(double value)
 {
   kernel::actor::simcall([this, value] { pimpl_->set_latency(value); });
+  return this;
 }
 
 double Link::get_bandwidth() const
@@ -71,9 +72,10 @@ double Link::get_bandwidth() const
   return this->pimpl_->get_bandwidth();
 }
 
-void Link::set_bandwidth(double value)
+Link* Link::set_bandwidth(double value)
 {
   kernel::actor::simcall([this, value] { pimpl_->set_bandwidth(value); });
+  return this;
 }
 
 Link::SharingPolicy Link::get_sharing_policy() const
@@ -113,17 +115,25 @@ bool Link::is_on() const
   return this->pimpl_->is_on();
 }
 
-void Link::set_state_profile(kernel::profile::Profile* profile)
+Link* Link::set_state_profile(kernel::profile::Profile* profile)
 {
+  xbt_assert(not pimpl_->is_sealed(), "Cannot set a state profile once the Link is sealed");
   kernel::actor::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
+  return this;
 }
-void Link::set_bandwidth_profile(kernel::profile::Profile* profile)
+
+Link* Link::set_bandwidth_profile(kernel::profile::Profile* profile)
 {
+  xbt_assert(not pimpl_->is_sealed(), "Cannot set a bandwidth profile once the Link is sealed");
   kernel::actor::simcall([this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
+  return this;
 }
-void Link::set_latency_profile(kernel::profile::Profile* trace)
+
+Link* Link::set_latency_profile(kernel::profile::Profile* profile)
 {
-  kernel::actor::simcall([this, trace]() { this->pimpl_->set_latency_profile(trace); });
+  xbt_assert(not pimpl_->is_sealed(), "Cannot set a latency profile once the Link is sealed");
+  kernel::actor::simcall([this, profile]() { this->pimpl_->set_latency_profile(profile); });
+  return this;
 }
 
 const char* Link::get_property(const std::string& key) const
@@ -179,7 +189,7 @@ double sg_link_get_bandwidth(const_sg_link_t link)
 
 void sg_link_set_bandwidth(sg_link_t link, double value)
 {
-  return link->set_bandwidth(value);
+  link->set_bandwidth(value);
 }
 
 double sg_link_bandwidth(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
@@ -189,7 +199,7 @@ double sg_link_bandwidth(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
 
 void sg_link_bandwidth_set(sg_link_t link, double value) // XBT_ATTRIB_DEPRECATED_v330
 {
-  return sg_link_set_bandwidth(link, value);
+  sg_link_set_bandwidth(link, value);
 }
 
 double sg_link_get_latency(const_sg_link_t link)
@@ -199,7 +209,7 @@ double sg_link_get_latency(const_sg_link_t link)
 
 void sg_link_set_latency(sg_link_t link, double value)
 {
-  return link->set_latency(value);
+  link->set_latency(value);
 }
 
 double sg_link_latency(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
@@ -209,7 +219,7 @@ double sg_link_latency(const_sg_link_t link) // XBT_ATTRIB_DEPRECATED_v330
 
 void sg_link_latency_set(sg_link_t link, double value) // XBT_ATTRIB_DEPRECATED_v330
 {
-  return sg_link_set_latency(link, value);
+  sg_link_set_latency(link, value);
 }
 
 void* sg_link_get_data(const_sg_link_t link)

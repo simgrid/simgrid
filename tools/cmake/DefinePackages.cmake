@@ -309,7 +309,6 @@ set(SURF_SRC
 
   src/kernel/resource/Action.cpp
   src/kernel/resource/Model.cpp
-  src/kernel/resource/Resource.cpp
   src/kernel/resource/DiskImpl.cpp
   src/kernel/resource/DiskImpl.hpp
 

@@ -446,13 +446,17 @@ void LinkNS3::apply_event(profile::Event*, double)
 {
   THROW_UNIMPLEMENTED;
 }
-void LinkNS3::set_bandwidth_profile(profile::Profile*)
+
+LinkImpl* LinkNS3::set_bandwidth_profile(profile::Profile* profile)
 {
-  xbt_die("The ns-3 network model doesn't support bandwidth profiles");
+  xbt_assert(profile == nullptr, "The ns-3 network model doesn't support bandwidth profiles");
+  return this;
 }
-void LinkNS3::set_latency_profile(profile::Profile*)
+
+LinkImpl* LinkNS3::set_latency_profile(profile::Profile* profile)
 {
-  xbt_die("The ns-3 network model doesn't support latency profiles");
+  xbt_assert(profile == nullptr, "The ns-3 network model doesn't support latency profiles");
+  return this;
 }
 
 LinkImpl* LinkNS3::set_latency(double latency)
