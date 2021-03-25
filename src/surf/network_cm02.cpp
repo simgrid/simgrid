@@ -41,7 +41,7 @@ void surf_network_model_init_LegrandVelho()
 {
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>();
   net_model->set_name("Network_LegrandVelho");
-  simgrid::kernel::EngineImpl::get_instance()->add_model(net_model, {});
+  simgrid::kernel::EngineImpl::get_instance()->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
@@ -68,7 +68,7 @@ void surf_network_model_init_CM02()
 
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>();
   net_model->set_name("Network_CM02");
-  simgrid::kernel::EngineImpl::get_instance()->add_model(net_model, {});
+  simgrid::kernel::EngineImpl::get_instance()->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 }
 

@@ -23,7 +23,7 @@ void surf_disk_model_init_default()
 {
   auto disk_model = std::make_shared<simgrid::kernel::resource::DiskS19Model>();
   disk_model->set_name("Disk");
-  simgrid::kernel::EngineImpl::get_instance()->add_model(disk_model, {});
+  simgrid::kernel::EngineImpl::get_instance()->add_model(disk_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_disk_model(disk_model);
 }
 

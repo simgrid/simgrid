@@ -51,7 +51,7 @@ public:
    * @param model Pointer to model
    * @param list  List of dependencies for this model
    */
-  void add_model(std::shared_ptr<simgrid::kernel::resource::Model> model, std::vector<std::string>&& dep_models);
+  void add_model(std::shared_ptr<simgrid::kernel::resource::Model> model, std::vector<std::string>&& dep_models = {});
 
   /** @brief Get list of all models managed by this engine */
   const std::vector<resource::Model*>& get_all_models() const { return models_; }

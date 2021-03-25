@@ -25,7 +25,7 @@ void surf_host_model_init_ptask_L07()
 
   auto host_model = std::make_shared<simgrid::surf::HostL07Model>();
   host_model->set_name("Host_Ptask");
-  simgrid::kernel::EngineImpl::get_instance()->add_model(host_model, {});
+  simgrid::kernel::EngineImpl::get_instance()->add_model(host_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_host_model(host_model);
 }
 
@@ -40,12 +40,12 @@ HostL07Model::HostL07Model() : HostModel()
   auto net_model = std::make_shared<NetworkL07Model>(this, maxmin_system);
   auto engine    = simgrid::kernel::EngineImpl::get_instance();
   net_model->set_name("Network_Ptask");
-  engine->add_model(net_model, {});
+  engine->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
   auto cpu_model = std::make_shared<CpuL07Model>(this, maxmin_system);
   cpu_model->set_name("Cpu_Ptask");
-  engine->add_model(cpu_model, {});
+  engine->add_model(cpu_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model);
 }
 

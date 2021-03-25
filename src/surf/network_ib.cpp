@@ -71,7 +71,7 @@ void surf_network_model_init_IB()
 {
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkIBModel>();
   net_model->set_name("Network_IB");
-  simgrid::kernel::EngineImpl::get_instance()->add_model(net_model, {});
+  simgrid::kernel::EngineImpl::get_instance()->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
   simgrid::s4u::Link::on_communication_state_change.connect(IB_action_state_changed_callback);

@@ -46,7 +46,7 @@ void surf_cpu_model_init_Cas01()
 
   auto cpu_model_pm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>();
   cpu_model_pm->set_name("Cpu_Cas01");
-  simgrid::kernel::EngineImpl::get_instance()->add_model(cpu_model_pm, {});
+  simgrid::kernel::EngineImpl::get_instance()->add_model(cpu_model_pm);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model_pm);
 }
 
