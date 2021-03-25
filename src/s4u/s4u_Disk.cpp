@@ -28,19 +28,19 @@ Disk* Disk::set_name(const std::string& name)
 
 Disk* Disk::set_read_bandwidth(double read_bw)
 {
-  pimpl_->set_read_bandwidth(read_bw);
+  kernel::actor::simcall([this, read_bw] { pimpl_->set_read_bandwidth(read_bw); });
   return this;
 }
 
 Disk* Disk::set_write_bandwidth(double write_bw)
 {
-  pimpl_->set_write_bandwidth(write_bw);
+  kernel::actor::simcall([this, write_bw] { pimpl_->set_write_bandwidth(write_bw); });
   return this;
 }
 
 double Disk::get_read_bandwidth() const
 {
-  return this->pimpl_->get_read_bandwidth();
+  return pimpl_->get_read_bandwidth();
 }
 
 double Disk::get_write_bandwidth() const
@@ -66,7 +66,7 @@ const std::unordered_map<std::string, std::string>* Disk::get_properties() const
 
 const char* Disk::get_property(const std::string& key) const
 {
-  return this->pimpl_->get_property(key);
+  return pimpl_->get_property(key);
 }
 
 void Disk::set_property(const std::string& key, const std::string& value)
