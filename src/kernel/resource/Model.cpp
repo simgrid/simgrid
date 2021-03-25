@@ -12,7 +12,9 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-Model::Model(std::string name) : maxmin_system_(nullptr), name_(name) {}
+Model::Model(const std::string& name) : name_(name)
+{
+}
 
 Model::~Model() =
     default; // Don't move this declaration to the header, or it will break external projects such as SimGrid-FMI

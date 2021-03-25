@@ -53,7 +53,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-CpuCas01Model::CpuCas01Model(std::string name) : CpuModel(name)
+CpuCas01Model::CpuCas01Model(const std::string& name) : CpuModel(name)
 {
   if (config::get_value<std::string>("cpu/optim") == "Lazy")
     set_update_algorithm(Model::UpdateAlgo::LAZY);

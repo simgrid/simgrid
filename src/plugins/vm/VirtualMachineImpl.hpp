@@ -90,7 +90,7 @@ private:
  */
 class XBT_PRIVATE VMModel : public surf::HostModel {
 public:
-  explicit VMModel(std::string name);
+  explicit VMModel(const std::string& name);
 
   double next_occurring_event(double now) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{};

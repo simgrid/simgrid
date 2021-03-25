@@ -83,7 +83,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkIBModel::NetworkIBModel(std::string name) : NetworkSmpiModel(name)
+NetworkIBModel::NetworkIBModel(const std::string& name) : NetworkSmpiModel(name)
 {
   std::string IB_factors_string = config::get_value<std::string>("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;

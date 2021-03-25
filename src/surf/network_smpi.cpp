@@ -46,8 +46,6 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkSmpiModel::NetworkSmpiModel(std::string name) : NetworkCm02Model(name) {}
-
 double NetworkSmpiModel::get_bandwidth_factor(double size)
 {
   if (smpi_bw_factor.empty())

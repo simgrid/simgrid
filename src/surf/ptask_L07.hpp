@@ -35,7 +35,7 @@ class XBT_PRIVATE L07Action;
  *********/
 class HostL07Model : public HostModel {
 public:
-  explicit HostL07Model(std::string name);
+  explicit HostL07Model(const std::string& name);
   HostL07Model(const HostL07Model&) = delete;
   HostL07Model& operator=(const HostL07Model&) = delete;
 
@@ -47,7 +47,7 @@ public:
 
 class CpuL07Model : public kernel::resource::CpuModel {
 public:
-  CpuL07Model(std::string name, HostL07Model* hmodel, kernel::lmm::System* sys);
+  CpuL07Model(const std::string& name, HostL07Model* hmodel, kernel::lmm::System* sys);
   CpuL07Model(const CpuL07Model&) = delete;
   CpuL07Model& operator=(const CpuL07Model&) = delete;
   ~CpuL07Model() override;
@@ -63,7 +63,7 @@ public:
 
 class NetworkL07Model : public kernel::resource::NetworkModel {
 public:
-  NetworkL07Model(std::string name, HostL07Model* hmodel, kernel::lmm::System* sys);
+  NetworkL07Model(const std::string& name, HostL07Model* hmodel, kernel::lmm::System* sys);
   NetworkL07Model(const NetworkL07Model&) = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model() override;

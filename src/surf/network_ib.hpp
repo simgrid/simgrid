@@ -45,7 +45,7 @@ class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {
   void computeIBfactors(IBNode* root) const;
 
 public:
-  explicit NetworkIBModel(std::string name);
+  explicit NetworkIBModel(const std::string& name);
   NetworkIBModel(const NetworkIBModel&) = delete;
   NetworkIBModel& operator=(const NetworkIBModel&) = delete;
   void updateIBfactors(NetworkAction* action, IBNode* from, IBNode* to, int remove) const;

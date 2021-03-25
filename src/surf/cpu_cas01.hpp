@@ -27,7 +27,7 @@ class XBT_PRIVATE CpuCas01Action;
 
 class CpuCas01Model : public CpuModel {
 public:
-  explicit CpuCas01Model(std::string name);
+  explicit CpuCas01Model(const std::string& name);
   CpuCas01Model(const CpuCas01Model&) = delete;
   CpuCas01Model& operator=(const CpuCas01Model&) = delete;
 

@@ -31,7 +31,7 @@ void surf_host_model_init_ptask_L07()
 namespace simgrid {
 namespace surf {
 
-HostL07Model::HostL07Model(std::string name) : HostModel(name)
+HostL07Model::HostL07Model(const std::string& name) : HostModel(name)
 {
   auto* maxmin_system = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
   set_maxmin_system(maxmin_system);
@@ -46,7 +46,7 @@ HostL07Model::HostL07Model(std::string name) : HostModel(name)
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model);
 }
 
-CpuL07Model::CpuL07Model(std::string name, HostL07Model* hmodel, kernel::lmm::System* sys)
+CpuL07Model::CpuL07Model(const std::string& name, HostL07Model* hmodel, kernel::lmm::System* sys)
     : CpuModel(name), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
@@ -57,7 +57,7 @@ CpuL07Model::~CpuL07Model()
   set_maxmin_system(nullptr);
 }
 
-NetworkL07Model::NetworkL07Model(std::string name, HostL07Model* hmodel, kernel::lmm::System* sys)
+NetworkL07Model::NetworkL07Model(const std::string& name, HostL07Model* hmodel, kernel::lmm::System* sys)
     : NetworkModel(name), hostModel_(hmodel)
 {
   set_maxmin_system(sys);

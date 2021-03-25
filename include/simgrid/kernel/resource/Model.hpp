@@ -28,7 +28,7 @@ public:
                    gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
                    a simple full update.  */
   };
-  explicit Model(std::string name);
+  explicit Model(const std::string& name);
   Model(const Model&) = delete;
   Model& operator=(const Model&) = delete;
 

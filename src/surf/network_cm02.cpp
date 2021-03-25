@@ -74,7 +74,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkCm02Model::NetworkCm02Model(std::string name) : NetworkModel(name)
+NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
 {
   if (config::get_value<std::string>("network/optim") == "Lazy")
     set_update_algorithm(Model::UpdateAlgo::LAZY);
