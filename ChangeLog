@@ -14,11 +14,15 @@ User-visible changes:
     *****************************************
     *DO NOT MIX 3.27 RESULTS WITH OLDER ONES*
     *****************************************
-	The order in which the different models (CPU, network, disk, etc) are
-	solved internally has changed in this version. Although rare (no current
-	test raises the problem), this change can result in slightest different simulations
-	results. Take care when comparing simulations from different SimGrid's
-	versions. Sorry for the inconvenience.
+    The order in which the different models (CPU, network, disk, etc) are
+    solved internally has changed in this version. Although rare (no current
+    test raises the problem), this change can result in slightest different simulations
+    results. Take care when comparing simulations from different SimGrid's
+    versions. Sorry for the inconvenience.
+ - SMPI API break from previous version: MPI global handles (predefined datatypes, 
+   ops, COMM_WORLD) are now defined differently, and can be used in initializers, 
+   avoiding "initializer element is not constant" errors with some codes. Please be
+   careful to recompile your MPI codes if switching to this new SimGrid version.
 
 S4U:
  - Define new template functions Mailbox::get_unique(), returning a std::unique_ptr.
@@ -36,6 +40,39 @@ XBT:
  - Drop xbt_dynar_cursor_rm(), xbt_dynar_search_or_negative(),
    xbt_str_split_quoted(), xbt_str_split_quoted_in_place().
  - Deprecate xbt_dynar_to_array().
+
+SMPI:
+ - Handle leak checking (experimental): SMPI will now display a message if MPI 
+   handles are still present at the end of a simulation. This may be nothing, 
+   but if the number is high it could be a problem. To display more information
+   about the type of leaked handle, option --cfg=smpi/list-leaks:n. will display 
+   the n first leaked pointers and their types. Known issue: MPI_Cancel usage 
+   may trigger handle leaks in SMPI.
+   Using smpirun with -wrapper "valgrind --leak-check=full --track-origins=yes" 
+   can provide more information to help locate precisely the leaks.
+ - Memory allocations analysis (experimental): MPI codes using malloc/calloc to
+   allocate memory, and not compiled with SMPI_NO_OVERRIDE_MALLOC, can use 
+   smpi/display-analysis option to show at the end of execution the amount of 
+   memory allocated through these calls, and locate the most expensive one.
+   This helps finding the targets for manual memory sharing, or the threshold
+   to use for smpi/auto-shared-malloc-thresh option.
+ - New implemented MPI calls: MPI_File_set_size, MPI_Aint_add, MPI_Aint_diff, 
+   MPI_Type_get_extent_x, MPI_Type_get_true_extent_x, MPI_Status_set_elements_x
+ - Misc fixes : 
+   - better handling of MPI_PROC_NULL
+   - MPI_Group_incl was broken in some cases
+   - PAPI tracing was fixed
+   - MPI_Errhandlers are properly handled for MPI_COMM_WORLD
+   - SMPI will now fail properly when receive size < sent size, instead of 
+     just setting MPI_ERR_TRUNCATE and keep going.
+ - Proxy Apps ( https://framagit.org/simgrid/SMPI-proxy-apps ): 
+   - Remove useless build patches and split build/run patches on the page
+   - Build in parallel when possible
+   - Test on yum-based systems
+   - New nightly tested Proxy-apps: 
+     - OpenMPI mpi-test-suite
+     - Coral MCB, LSMS, Qbox
+     - ECP/Mantevo Cloverleaf3D
 
 C binding and interface:
  - Rename (lowercase) functions sg_actor_get_PID, sg_actor_get_PPID, sg_actor_by_PID.
