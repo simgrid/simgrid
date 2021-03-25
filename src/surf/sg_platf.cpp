@@ -40,7 +40,7 @@ xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
 
 static int surf_parse_models_setup_already_called = 0;
 
-/** The current AS in the parsing */
+/** The current NetZone in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
 static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 {
@@ -64,7 +64,7 @@ void sg_platf_exit()
   surf_parse_lex_destroy();
 }
 
-/** @brief Add a host to the current AS */
+/** @brief Add a host to the current NetZone */
 void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
   simgrid::s4u::Host* host = routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount);
@@ -144,7 +144,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
   int rankId = 0;
 
-  // What an inventive way of initializing the AS that I have as ancestor :-(
+  // What an inventive way of initializing the NetZone that I have as ancestor :-(
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id = cluster->id;
   switch (cluster->topology) {
@@ -162,18 +162,18 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       break;
   }
   sg_platf_new_Zone_begin(&zone);
-  auto* current_as = static_cast<ClusterZone*>(routing_get_current());
-  current_as->parse_specific_arguments(cluster);
+  auto* current_zone = static_cast<ClusterZone*>(routing_get_current());
+  current_zone->parse_specific_arguments(cluster);
   if (cluster->properties != nullptr)
     for (auto const& elm : *cluster->properties)
-      current_as->get_iface()->set_property(elm.first, elm.second);
+      current_zone->get_iface()->set_property(elm.first, elm.second);
 
   if (cluster->loopback_bw > 0 || cluster->loopback_lat > 0) {
-    current_as->set_loopback();
+    current_zone->set_loopback();
   }
 
   if (cluster->limiter_link > 0) {
-    current_as->set_limiter();
+    current_zone->set_limiter();
   }
 
   for (int const& i : *cluster->radicals) {
@@ -222,8 +222,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       linkUp   = simgrid::s4u::Link::by_name_or_null(tmp_link);
       linkDown = simgrid::s4u::Link::by_name_or_null(tmp_link);
 
-      ClusterZone* as_cluster = current_as;
-      as_cluster->add_private_link_at(as_cluster->node_pos(rankId), {linkUp->get_impl(), linkDown->get_impl()});
+      current_zone->add_private_link_at(current_zone->node_pos(rankId), {linkUp->get_impl(), linkDown->get_impl()});
     }
 
     // add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -241,15 +240,15 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       sg_platf_new_link(&link);
       linkDown = simgrid::s4u::Link::by_name_or_null(tmp_link);
       linkUp   = linkDown;
-      current_as->add_private_link_at(current_as->node_pos_with_loopback(rankId),
-                                      {linkUp->get_impl(), linkDown->get_impl()});
+      current_zone->add_private_link_at(current_zone->node_pos_with_loopback(rankId),
+                                        {linkUp->get_impl(), linkDown->get_impl()});
     }
 
     // call the cluster function that adds the others links
     if (cluster->topology == simgrid::kernel::routing::ClusterTopology::FAT_TREE) {
-      static_cast<FatTreeZone*>(current_as)->add_processing_node(i);
+      static_cast<FatTreeZone*>(current_zone)->add_processing_node(i);
     } else {
-      current_as->create_links_for_node(cluster, i, rankId, current_as->node_pos_with_loopback_limiter(rankId));
+      current_zone->create_links_for_node(cluster, i, rankId, current_zone->node_pos_with_loopback_limiter(rankId));
     }
     rankId++;
   }
@@ -260,7 +259,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
   if (cluster->router_id.empty())
     cluster->router_id = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
-  current_as->set_router(sg_platf_new_router(cluster->router_id, nullptr));
+  current_zone->set_router(sg_platf_new_router(cluster->router_id, nullptr));
 
   // Make the backbone
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
@@ -276,7 +275,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     routing_cluster_add_backbone(simgrid::s4u::Link::by_name(link.id)->get_impl());
   }
 
-  XBT_DEBUG("</AS>");
+  XBT_DEBUG("</zone>");
   sg_platf_new_Zone_seal();
 
   simgrid::kernel::routing::on_cluster_creation(*cluster);
@@ -291,7 +290,7 @@ void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb)
   xbt_assert(not cluster->has_backbone(), "Cluster %s already has a backbone link!", cluster->get_cname());
 
   cluster->set_backbone(bb);
-  XBT_DEBUG("Add a backbone to AS '%s'", current_routing->get_cname());
+  XBT_DEBUG("Add a backbone to zone '%s'", current_routing->get_cname());
 }
 
 void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabinet)
@@ -419,14 +418,14 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
 void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
 {
-  auto* as = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
-  xbt_assert(as, "<peer> tag can only be used in Vivaldi netzones.");
+  auto* zone = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
+  xbt_assert(zone, "<peer> tag can only be used in Vivaldi netzones.");
 
   std::vector<double> speed_per_pstate;
   speed_per_pstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = as->create_host(peer->id, speed_per_pstate, 1);
+  simgrid::s4u::Host* host = zone->create_host(peer->id, speed_per_pstate, 1);
 
-  as->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
+  zone->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
 
   /* Change from the defaults */
   if (peer->state_trace)
@@ -615,13 +614,13 @@ void sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs*
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up.c_str());
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down.c_str());
 
-  auto* as_cluster = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
+  auto* cluster_zone = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
-  if (as_cluster->private_link_exists_at(netpoint->id()))
+  if (cluster_zone->private_link_exists_at(netpoint->id()))
     surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");
 
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->get_cname(), netpoint->id());
-  as_cluster->add_private_link_at(netpoint->id(), {linkUp->get_impl(), linkDown->get_impl()});
+  cluster_zone->add_private_link_at(netpoint->id(), {linkUp->get_impl(), linkDown->get_impl()});
 }
 
 void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* profile)
