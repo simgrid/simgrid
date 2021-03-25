@@ -261,8 +261,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
 void surf_network_model_init_NS3()
 {
   auto net_model = std::make_shared<simgrid::kernel::resource::NetworkNS3Model>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::NETWORK, net_model,
-                                                         true);
+  simgrid::kernel::EngineImpl::get_instance()->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 }
 

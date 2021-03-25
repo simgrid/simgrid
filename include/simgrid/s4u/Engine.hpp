@@ -133,16 +133,13 @@ public:
   /**
    * @brief Add a model to engine list
    *
-   * @param type Model type (network, disk, etc)
    * @param model Pointer to model
+   * @param list  List of dependencies for this model (optional)
    */
-  void add_model(simgrid::kernel::resource::Model::Type type, std::shared_ptr<simgrid::kernel::resource::Model> model);
-
-  /** @brief Get list of models created for a resource type */
-  const std::vector<simgrid::kernel::resource::Model*>& get_model_list(simgrid::kernel::resource::Model::Type type);
+  void add_model(std::shared_ptr<simgrid::kernel::resource::Model> model, std::vector<std::string>&& dep_models = {});
 
   /** @brief Get list of all models managed by this engine */
-  const std::vector<std::shared_ptr<simgrid::kernel::resource::Model>>& get_all_models() const;
+  const std::vector<simgrid::kernel::resource::Model*>& get_all_models() const;
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones() const

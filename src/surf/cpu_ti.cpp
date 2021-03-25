@@ -271,8 +271,8 @@ int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 void CpuTiModel::create_pm_models()
 {
   auto cpu_model_pm = std::make_shared<CpuTiModel>();
-  simgrid::kernel::EngineImpl::get_instance()->add_model(simgrid::kernel::resource::Model::Type::CPU_PM, cpu_model_pm,
-                                                         true);
+  cpu_model_pm->set_name("Cpu_TI");
+  simgrid::kernel::EngineImpl::get_instance()->add_model(cpu_model_pm, {});
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model_pm);
 }
 
