@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/host.h"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Actor.hpp"
@@ -12,6 +13,7 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "xbt/parse_units.hpp"
 
 #include <algorithm>
 #include <string>
@@ -261,6 +263,27 @@ int Host::get_core_count() const
 Host* Host::set_core_count(int core_count)
 {
   kernel::actor::simcall([this, core_count] { this->pimpl_cpu->set_core_count(core_count); });
+  return this;
+}
+
+Host* Host::set_pstate_speed(const std::vector<double>& speed_per_state)
+{
+  kernel::actor::simcall([this, &speed_per_state] { pimpl_cpu->set_pstate_speed(speed_per_state); });
+  return this;
+}
+
+Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
+{
+  std::vector<double> speed_list(speed_per_state.size());
+  for (const auto& speed_str : speed_per_state) {
+    try {
+      double speed = xbt_parse_get_speed("", 0, speed_str.c_str(), nullptr, "");
+      speed_list.push_back(speed);
+    } catch (const simgrid::ParseError& e) {
+      xbt_die("Host(%s): Impossible to set_pstate_speed, invalid speed %s", get_cname(), speed_str.c_str());
+    }
+  }
+  set_pstate_speed(speed_list);
   return this;
 }
 

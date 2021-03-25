@@ -52,7 +52,7 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
 Cpu::Cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
     : Resource_T(host->get_cname()), piface_(host), speed_per_pstate_(speed_per_pstate)
 {
-  speed_.scale = 1;
+  speed_.scale    = 1;
   speed_.peak     = speed_per_pstate_.front();
   host->pimpl_cpu = this;
 }
@@ -73,10 +73,18 @@ Cpu* Cpu::set_pstate(int pstate_index)
              get_cname(), pstate_index, static_cast<int>(speed_per_pstate_.size()));
 
   double new_peak_speed = speed_per_pstate_[pstate_index];
-  pstate_ = pstate_index;
-  speed_.peak = new_peak_speed;
+  pstate_               = pstate_index;
+  speed_.peak           = new_peak_speed;
 
   on_speed_change();
+  return this;
+}
+
+Cpu* Cpu::set_pstate_speed(const std::vector<double>& speed_per_state)
+{
+  xbt_assert(speed_per_state.size() > 0, "CPU %s: processor speed vector cannot be empty", get_cname());
+  xbt_assert(not is_sealed(), "CPU %s: processor speed cannot be changed once CPU has been sealed", get_cname());
+  speed_per_pstate_ = speed_per_state;
   return this;
 }
 
@@ -152,13 +160,15 @@ void CpuAction::update_remains_lazy(double now)
 
 xbt::signal<void(CpuAction const&, Action::State)> CpuAction::on_state_change;
 
-void CpuAction::suspend(){
+void CpuAction::suspend()
+{
   Action::State previous = get_state();
   on_state_change(*this, previous);
   Action::suspend();
 }
 
-void CpuAction::resume(){
+void CpuAction::resume()
+{
   Action::State previous = get_state();
   on_state_change(*this, previous);
   Action::resume();

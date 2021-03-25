@@ -106,6 +106,13 @@ public:
   virtual Cpu* set_speed_profile(profile::Profile* profile);
 
   /**
+   * @brief Set the CPU's speed
+   *
+   * @param speed_per_state list of powers for this processor (default power is at index 0)
+   */
+  Cpu* set_pstate_speed(const std::vector<double>& speed_per_state);
+
+  /**
    * @brief Execute some quantity of computation
    *
    * @param size The value of the processing amount (in flop) needed to process

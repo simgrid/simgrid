@@ -107,6 +107,15 @@ public:
   Host* set_state_profile(kernel::profile::Profile* p);
   Host* set_speed_profile(kernel::profile::Profile* p);
 
+  /**
+   * @brief Set the CPU's speed
+   *
+   * @param speed_per_state list of powers for this processor (default power is at index 0)
+   */
+  Host* set_pstate_speed(const std::vector<double>& speed_per_state);
+  /** @brief Set the CPU's speed (string version) */
+  Host* set_pstate_speed(const std::vector<std::string>& speed_per_state);
+
   /** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
    *
    *  The amount of flops per second available for computing depends on several things:
@@ -177,7 +186,7 @@ public:
 
 private:
   xbt::string name_{"noname"};
-  kernel::routing::NetPoint* pimpl_netpoint_         = nullptr;
+  kernel::routing::NetPoint* pimpl_netpoint_ = nullptr;
 
 public:
 #ifndef DOXYGEN
