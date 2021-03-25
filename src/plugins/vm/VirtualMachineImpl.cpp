@@ -22,7 +22,7 @@ void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
   auto vm_model = std::make_shared<simgrid::vm::VMModel>();
   vm_model->set_name("VM_HL13");
 
-  simgrid::kernel::EngineImpl::get_instance()->add_model(vm_model, {cpu_pm_model->get_name()});
+  simgrid::kernel::EngineImpl::get_instance()->add_model(vm_model, {cpu_pm_model});
   std::shared_ptr<simgrid::kernel::resource::CpuModel> cpu_model_vm;
 
   auto cpu_optim = simgrid::config::get_value<std::string>("cpu/optim");
@@ -33,8 +33,7 @@ void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
     cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>();
     cpu_model_vm->set_name("VmCpu_Cas01");
   }
-  simgrid::kernel::EngineImpl::get_instance()->add_model(cpu_model_vm,
-                                                         {cpu_pm_model->get_name(), vm_model->get_name()});
+  simgrid::kernel::EngineImpl::get_instance()->add_model(cpu_model_vm, {cpu_pm_model, vm_model.get()});
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_vm_model(cpu_model_vm);
 }
 

@@ -53,17 +53,17 @@ void EngineImpl::register_default(const actor::ActorCodeFactory& code)
   default_function = code;
 }
 
-void EngineImpl::add_model(std::shared_ptr<resource::Model> model, std::vector<std::string>&& dep_models)
+void EngineImpl::add_model(std::shared_ptr<resource::Model> model, std::vector<resource::Model*>&& dependencies)
 {
   auto model_name = model->get_name();
   xbt_assert(models_prio_.find(model_name) == models_prio_.end(),
              "Model %s already exists, use model.set_name() to change its name", model_name.c_str());
   int order = -1;
-  for (const auto& dep_name : dep_models) {
-    xbt_assert(models_prio_.find(dep_name) != models_prio_.end(),
-               "Model %s doesn't exists. Impossible to use it as dependency.", dep_name.c_str());
-    if (models_prio_[dep_name].prio > order) {
-      order = models_prio_[dep_name].prio;
+  for (const auto dep : dependencies) {
+    xbt_assert(models_prio_.find(dep->get_name()) != models_prio_.end(),
+               "Model %s doesn't exists. Impossible to use it as dependency.", dep->get_name().c_str());
+    if (models_prio_[dep->get_name()].prio > order) {
+      order = models_prio_[dep->get_name()].prio;
     }
   }
   models_prio_[model_name] = {++order, std::move(model)};
