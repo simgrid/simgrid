@@ -104,8 +104,8 @@ public:
   const std::unordered_map<std::string, std::string>* get_properties() const;
   Host* set_properties(const std::unordered_map<std::string, std::string>& properties);
 
-  void set_state_profile(kernel::profile::Profile* p);
-  void set_speed_profile(kernel::profile::Profile* p);
+  Host* set_state_profile(kernel::profile::Profile* p);
+  Host* set_speed_profile(kernel::profile::Profile* p);
 
   /** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
    *
@@ -140,10 +140,10 @@ public:
    */
   double get_load() const;
 
-  double get_pstate_speed(int pstate_index) const;
   int get_pstate_count() const;
-  void set_pstate(int pstate_index);
   int get_pstate() const;
+  double get_pstate_speed(int pstate_index) const;
+  Host* set_pstate(int pstate_index);
 
   std::vector<Disk*> get_disks() const;
   Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);

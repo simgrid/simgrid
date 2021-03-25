@@ -217,9 +217,10 @@ Host* Host::set_properties(const std::unordered_map<std::string, std::string>& p
 
 /** Specify a profile turning the host on and off according to an exhaustive list or a stochastic law.
  * The profile must contain boolean values. */
-void Host::set_state_profile(kernel::profile::Profile* p)
+Host* Host::set_state_profile(kernel::profile::Profile* p)
 {
-  return kernel::actor::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
+  kernel::actor::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
+  return this;
 }
 /** Specify a profile modeling the external load according to an exhaustive list or a stochastic law.
  *
@@ -227,9 +228,10 @@ void Host::set_state_profile(kernel::profile::Profile* p)
  * of the initial value. This means that the actual value is obtained by multiplying the initial value (the peek speed
  * at this pstate level) by the rate coming from the profile.
  */
-void Host::set_speed_profile(kernel::profile::Profile* p)
+Host* Host::set_speed_profile(kernel::profile::Profile* p)
 {
-  return kernel::actor::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
+  kernel::actor::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
+  return this;
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
@@ -258,15 +260,17 @@ int Host::get_core_count() const
 
 Host* Host::set_core_count(int core_count)
 {
-  this->pimpl_cpu->set_core_count(core_count);
+  kernel::actor::simcall([this, core_count] { this->pimpl_cpu->set_core_count(core_count); });
   return this;
 }
 
 /** @brief Set the pstate at which the host should run */
-void Host::set_pstate(int pstate_index)
+Host* Host::set_pstate(int pstate_index)
 {
   kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
+  return this;
 }
+
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::get_pstate() const
 {
@@ -275,7 +279,7 @@ int Host::get_pstate() const
 
 std::vector<Disk*> Host::get_disks() const
 {
-  return kernel::actor::simcall([this] { return this->pimpl_->get_disks(); });
+  return this->pimpl_->get_disks();
 }
 
 Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)

@@ -105,7 +105,7 @@ public:
   CpuTi& operator&(const CpuTi&) = delete;
   ~CpuTi() override;
 
-  void set_speed_profile(profile::Profile* profile) override;
+  Cpu* set_speed_profile(profile::Profile* profile) override;
 
   void apply_event(profile::Event* event, double value) override;
   void update_actions_finish_time(double now);

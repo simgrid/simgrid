@@ -77,10 +77,8 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
   host->pimpl_->set_disks(args->disks, host);
 
   /* Change from the defaults */
-  if (args->state_trace)
-    host->set_state_profile(args->state_trace);
-  if (args->speed_trace)
-    host->set_speed_profile(args->speed_trace);
+  host->set_state_profile(args->state_trace)->set_speed_profile(args->speed_trace);
+
   if (not args->coord.empty())
     new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
 

@@ -328,7 +328,7 @@ CpuTi::~CpuTi()
   delete speed_integrated_trace_;
 }
 
-void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
+Cpu* CpuTi::set_speed_profile(kernel::profile::Profile* profile)
 {
   delete speed_integrated_trace_;
   speed_integrated_trace_ = new CpuTiTmgr(profile, speed_.scale);
@@ -341,6 +341,7 @@ void CpuTi::set_speed_profile(kernel::profile::Profile* profile)
       speed_.event = prof->schedule(&profile::future_evt_set, this);
     }
   }
+  return this;
 }
 
 void CpuTi::apply_event(kernel::profile::Event* event, double value)

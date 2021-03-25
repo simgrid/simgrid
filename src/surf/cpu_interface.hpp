@@ -97,13 +97,13 @@ public:
 
   virtual int get_pstate_count() const { return speed_per_pstate_.size(); }
 
-  virtual void set_pstate(int pstate_index);
   virtual int get_pstate() const { return pstate_; }
+  virtual Cpu* set_pstate(int pstate_index);
 
-  /*< @brief Setup the trace file with availability events (peak speed changes due to external load).
-   * Trace must contain relative values (ratio between 0 and 1)
+  /*< @brief Setup the profile file with availability events (peak speed changes due to external load).
+   * Profile must contain relative values (ratio between 0 and 1)
    */
-  virtual void set_speed_profile(profile::Profile* profile);
+  virtual Cpu* set_speed_profile(profile::Profile* profile);
 
   /**
    * @brief Execute some quantity of computation

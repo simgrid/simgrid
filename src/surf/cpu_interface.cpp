@@ -65,7 +65,7 @@ void Cpu::reset_vcpu(Cpu* that)
   this->speed_per_pstate_.assign(that->speed_per_pstate_.begin(), that->speed_per_pstate_.end());
 }
 
-void Cpu::set_pstate(int pstate_index)
+Cpu* Cpu::set_pstate(int pstate_index)
 {
   xbt_assert(pstate_index <= static_cast<int>(speed_per_pstate_.size()),
              "Invalid parameters for CPU %s (pstate %d > length of pstates %d). Please fix your platform file, or your "
@@ -77,6 +77,7 @@ void Cpu::set_pstate(int pstate_index)
   speed_.peak = new_peak_speed;
 
   on_speed_change();
+  return this;
 }
 
 double Cpu::get_pstate_peak_speed(int pstate_index) const
@@ -108,11 +109,13 @@ int Cpu::get_core_count()
   return core_count_;
 }
 
-void Cpu::set_speed_profile(kernel::profile::Profile* profile)
+Cpu* Cpu::set_speed_profile(kernel::profile::Profile* profile)
 {
-  xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", piface_->get_cname());
-
-  speed_.event = profile->schedule(&profile::future_evt_set, this);
+  if (profile) {
+    xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", piface_->get_cname());
+    speed_.event = profile->schedule(&profile::future_evt_set, this);
+  }
+  return this;
 }
 
 void Cpu::seal()

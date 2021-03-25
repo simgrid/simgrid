@@ -88,10 +88,10 @@ $ ./storage_client_server ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.
 > [  1.207952] (server@alice)   /tmp/tata.c size: 6217 bytes
 > [  1.207952] (server@alice)   /tmp/titi.xml size: 654 bytes
 > [  1.207952] (server@alice)   /tmp/toto.xml size: 972 bytes
+> [  1.207952] (server@alice) Disk1 is attached to alice
 > [  1.207952] (client@bob) *** GET/SET DATA for disk: Disk1 ***
 > [  1.207952] (client@bob) Get data: 'No User Data'
 > [  1.207952] (client@bob)   Set and get data: 'Some data'
-> [  1.207952] (server@alice) Disk1 is attached to alice
 > [  1.207952] (server@alice) Disk1 is attached to bob
 > [  1.207952] (server@alice) Disk2 is attached to bob
 > [  1.207952] (maestro@) Simulated time: 1.20795
