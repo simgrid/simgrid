@@ -25,11 +25,7 @@ class EngineImpl {
   std::unordered_map<std::string, actor::ActorCodeFactory> registered_functions; // Maps function names to actor code
   actor::ActorCodeFactory default_function; // Function to use as a fallback when the provided name matches nothing
   std::vector<resource::Model*> models_;
-  struct ModelStruct {
-    int prio;
-    std::shared_ptr<resource::Model> ptr;
-  };
-  std::unordered_map<std::string, struct ModelStruct> models_prio_;
+  std::unordered_map<std::string, std::shared_ptr<resource::Model>> models_prio_;
   routing::NetZoneImpl* netzone_root_ = nullptr;
 
   friend s4u::Engine;

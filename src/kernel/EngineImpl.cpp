@@ -58,26 +58,13 @@ void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::ve
   auto model_name = model->get_name();
   xbt_assert(models_prio_.find(model_name) == models_prio_.end(),
              "Model %s already exists, use model.set_name() to change its name", model_name.c_str());
-  int order = -1;
+
   for (const auto dep : dependencies) {
     xbt_assert(models_prio_.find(dep->get_name()) != models_prio_.end(),
                "Model %s doesn't exists. Impossible to use it as dependency.", dep->get_name().c_str());
-    if (models_prio_[dep->get_name()].prio > order) {
-      order = models_prio_[dep->get_name()].prio;
-    }
   }
-  models_prio_[model_name] = {++order, std::move(model)};
-
-  auto sorted_models = std::vector<std::pair<std::string, ModelStruct>>(models_prio_.begin(), models_prio_.end());
-  std::sort(
-      sorted_models.begin(), sorted_models.end(),
-      [](const std::pair<std::string, ModelStruct>& first, const std::pair<std::string, ModelStruct>& second) -> bool {
-        return first.second.prio < second.second.prio;
-      });
-  models_.clear();
-  for (const auto& model : sorted_models) {
-    models_.push_back(model.second.ptr.get());
-  }
+  models_.push_back(model.get());
+  models_prio_[model_name] = std::move(model);
 }
 
 } // namespace kernel

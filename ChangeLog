@@ -10,6 +10,15 @@ User-visible changes:
  - Removed all that was related to the "Storage" type in all APIs and bindings.
    "Disks" have been introduced more than a year ago to replace them for the better.
    It's time to finish this replacement.
+ - Model iteration order may change simulations.
+    *****************************************
+    *DO NOT MIX 3.27 RESULTS WITH OLDER ONES*
+    *****************************************
+	The order in which the different models (CPU, network, disk, etc) are
+	solved internally has changed in this version. Although rare (no current
+	test raises the problem), this change can result in slightest different simulations
+	results. Take care when comparing simulations from different SimGrid's
+	versions. Sorry for the inconvenience.
 
 S4U:
  - Define new template functions Mailbox::get_unique(), returning a std::unique_ptr.
