@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
   const char* aliceTimes[] = {"0", "1", "3", "5", "1", "2", "5", "0"};
   const char* bobTimes[]   = {"0.9", "1", "1", "2", "2", "0", "0", "5"};
 
-  sg_actor_create("Alice", h, peer, 8, (char**)aliceTimes);
-  sg_actor_create("Bob", h, peer, 8, (char**)bobTimes);
+  sg_actor_create_("Alice", h, peer, 8, aliceTimes);
+  sg_actor_create_("Bob", h, peer, 8, bobTimes);
 
   simgrid_run();
   sg_sem_destroy(sem);

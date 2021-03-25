@@ -42,7 +42,7 @@ static void monitor(int argc, char* argv[])
 
   int actor_argc           = 3;
   const char* actor_argv[] = {"worker", "Boivin", "Jacquelin", NULL};
-  sg_actor_t actor = sg_actor_create("worker", sg_host_by_name("Fafard"), worker, actor_argc, (char**)actor_argv);
+  sg_actor_t actor         = sg_actor_create_("worker", sg_host_by_name("Fafard"), worker, actor_argc, actor_argv);
 
   sg_actor_sleep_for(5);
 

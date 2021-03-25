@@ -45,7 +45,7 @@ static void vm_migrate_async(const_sg_vm_t vm, const_sg_host_t dst_pm)
   const char* dst_pm_name = sg_host_get_name(dst_pm);
 
   const char* argv[] = {"mig_work", vm_name, dst_pm_name, NULL};
-  sg_actor_create("mig_wrk", sg_host_self(), migration_worker_main, 3, (char**)argv);
+  sg_actor_create_("mig_wrk", sg_host_self(), migration_worker_main, 3, argv);
 }
 
 static void master_main(int argc, char* argv[])

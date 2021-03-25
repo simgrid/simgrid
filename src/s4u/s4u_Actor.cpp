@@ -492,7 +492,7 @@ sg_actor_t sg_actor_init(const char* name, sg_host_t host)
   return simgrid::s4u::Actor::init(name, host).get();
 }
 
-void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char* const* argv)
+void sg_actor_start_(sg_actor_t actor, xbt_main_func_t code, int argc, const char* const* argv)
 {
   simgrid::kernel::actor::ActorCode function;
   if (code)
@@ -500,7 +500,7 @@ void sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char* cons
   actor->start(function);
 }
 
-sg_actor_t sg_actor_create(const char* name, sg_host_t host, xbt_main_func_t code, int argc, char* const* argv)
+sg_actor_t sg_actor_create_(const char* name, sg_host_t host, xbt_main_func_t code, int argc, const char* const* argv)
 {
   simgrid::kernel::actor::ActorCode function = simgrid::xbt::wrap_main(code, argc, argv);
   return simgrid::s4u::Actor::init(name, host)->start(function).get();
