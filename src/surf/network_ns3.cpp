@@ -260,7 +260,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
  *********/
 void surf_network_model_init_NS3()
 {
-  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkNS3Model>();
+  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkNS3Model>("NS3 network model");
   simgrid::kernel::EngineImpl::get_instance()->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 }
@@ -289,7 +289,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkNS3Model::NetworkNS3Model()
+NetworkNS3Model::NetworkNS3Model(std::string name) : NetworkModel(name)
 {
   xbt_assert(not sg_link_energy_is_inited(),
              "LinkEnergy plugin and ns-3 network models are not compatible. Are you looking for Ecofen, maybe?");

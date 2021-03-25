@@ -28,7 +28,7 @@ public:
                    gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
                    a simple full update.  */
   };
-  Model()             = default;
+  explicit Model(std::string name);
   Model(const Model&) = delete;
   Model& operator=(const Model&) = delete;
 
@@ -127,8 +127,6 @@ public:
 
   /** @brief Gets the model name */
   std::string get_name() const { return name_; }
-  /** @brief Sets the model name */
-  Model* set_name(const std::string& name);
 
 private:
   UpdateAlgo update_algorithm_ = UpdateAlgo::FULL;
@@ -138,7 +136,7 @@ private:
   Action::StateSet failed_action_set_;   /**< Done with failure */
   Action::StateSet finished_action_set_; /**< Done successful */
   Action::StateSet ignored_action_set_;  /**< not considered (failure detectors?) */
-  std::string name_ = "Unnamed";         /**< Model name */
+  const std::string name_;               /**< Model name */
 
   ActionHeap action_heap_;
 };

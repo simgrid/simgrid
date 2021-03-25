@@ -16,6 +16,7 @@ namespace resource {
 
 class NetworkConstantModel : public NetworkModel {
 public:
+  NetworkConstantModel(std::string name) : NetworkModel(name) {}
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;

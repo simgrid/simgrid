@@ -28,7 +28,7 @@ class XBT_PRIVATE DiskS19Action;
 
 class DiskS19Model : public DiskModel {
 public:
-  DiskS19Model() = default;
+  using DiskModel::DiskModel;
   DiskImpl* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth) override;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;

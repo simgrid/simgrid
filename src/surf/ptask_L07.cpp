@@ -23,8 +23,7 @@ void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
-  auto host_model = std::make_shared<simgrid::surf::HostL07Model>();
-  host_model->set_name("Host_Ptask");
+  auto host_model = std::make_shared<simgrid::surf::HostL07Model>("Host_Ptask");
   simgrid::kernel::EngineImpl::get_instance()->add_model(host_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_host_model(host_model);
 }
@@ -32,24 +31,23 @@ void surf_host_model_init_ptask_L07()
 namespace simgrid {
 namespace surf {
 
-HostL07Model::HostL07Model() : HostModel()
+HostL07Model::HostL07Model(std::string name) : HostModel(name)
 {
   auto* maxmin_system = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
   set_maxmin_system(maxmin_system);
 
-  auto net_model = std::make_shared<NetworkL07Model>(this, maxmin_system);
+  auto net_model = std::make_shared<NetworkL07Model>("Network_Ptask", this, maxmin_system);
   auto engine    = simgrid::kernel::EngineImpl::get_instance();
-  net_model->set_name("Network_Ptask");
   engine->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
-  auto cpu_model = std::make_shared<CpuL07Model>(this, maxmin_system);
-  cpu_model->set_name("Cpu_Ptask");
+  auto cpu_model = std::make_shared<CpuL07Model>("Cpu_Ptask", this, maxmin_system);
   engine->add_model(cpu_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model);
 }
 
-CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys) : hostModel_(hmodel)
+CpuL07Model::CpuL07Model(std::string name, HostL07Model* hmodel, kernel::lmm::System* sys)
+    : CpuModel(name), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
 }
@@ -59,7 +57,8 @@ CpuL07Model::~CpuL07Model()
   set_maxmin_system(nullptr);
 }
 
-NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys) : hostModel_(hmodel)
+NetworkL07Model::NetworkL07Model(std::string name, HostL07Model* hmodel, kernel::lmm::System* sys)
+    : NetworkModel(name), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
   loopback_ = NetworkL07Model::create_link(

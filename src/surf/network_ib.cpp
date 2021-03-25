@@ -69,8 +69,7 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& ac
 /*  } */
 void surf_network_model_init_IB()
 {
-  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkIBModel>();
-  net_model->set_name("Network_IB");
+  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkIBModel>("Network_IB");
   simgrid::kernel::EngineImpl::get_instance()->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
@@ -84,7 +83,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
+NetworkIBModel::NetworkIBModel(std::string name) : NetworkSmpiModel(name)
 {
   std::string IB_factors_string = config::get_value<std::string>("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;

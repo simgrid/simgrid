@@ -12,6 +12,8 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
+Model::Model(std::string name) : maxmin_system_(nullptr), name_(name) {}
+
 Model::~Model() =
     default; // Don't move this declaration to the header, or it will break external projects such as SimGrid-FMI
 
@@ -174,12 +176,6 @@ void Model::update_actions_state_lazy(double /*now*/, double /*delta*/)
 void Model::update_actions_state_full(double /*now*/, double /*delta*/)
 {
   THROW_UNIMPLEMENTED;
-}
-
-Model* Model::set_name(const std::string& name)
-{
-  name_ = name;
-  return this;
 }
 
 } // namespace resource

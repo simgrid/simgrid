@@ -19,7 +19,7 @@ namespace resource {
  * Model *
  *********/
 
-DiskModel::DiskModel()
+DiskModel::DiskModel(std::string name) : Model(name)
 {
   set_maxmin_system(new lmm::System(true /* selective update */));
 }

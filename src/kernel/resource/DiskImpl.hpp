@@ -34,7 +34,7 @@ class DiskAction;
  *********/
 class DiskModel : public Model {
 public:
-  DiskModel();
+  explicit DiskModel(std::string name);
   DiskModel(const DiskModel&) = delete;
   DiskModel& operator=(const DiskModel&) = delete;
 

@@ -30,7 +30,7 @@ class XBT_PRIVATE NetworkSmpiModel;
 
 class NetworkCm02Model : public NetworkModel {
 public:
-  NetworkCm02Model();
+  explicit NetworkCm02Model(std::string name);
   LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
                         s4u::Link::SharingPolicy policy) override;
   void update_actions_state_lazy(double now, double delta) override;

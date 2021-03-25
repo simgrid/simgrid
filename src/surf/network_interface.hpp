@@ -35,7 +35,7 @@ public:
   static config::Flag<double> cfg_tcp_gamma;
   static config::Flag<bool> cfg_crosstraffic;
 
-  NetworkModel()                    = default;
+  using Model::Model;
   NetworkModel(const NetworkModel&) = delete;
   NetworkModel& operator=(const NetworkModel&) = delete;
   ~NetworkModel() override;

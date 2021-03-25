@@ -19,19 +19,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, contain
 
 void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
 {
-  auto vm_model = std::make_shared<simgrid::vm::VMModel>();
-  vm_model->set_name("VM_HL13");
+  auto vm_model = std::make_shared<simgrid::vm::VMModel>("VM_HL13");
 
   simgrid::kernel::EngineImpl::get_instance()->add_model(vm_model, {cpu_pm_model});
   std::shared_ptr<simgrid::kernel::resource::CpuModel> cpu_model_vm;
 
   auto cpu_optim = simgrid::config::get_value<std::string>("cpu/optim");
   if (cpu_optim == "TI") {
-    cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuTiModel>();
-    cpu_model_vm->set_name("VmCpu_TI");
+    cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuTiModel>("VmCpu_TI");
   } else {
-    cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>();
-    cpu_model_vm->set_name("VmCpu_Cas01");
+    cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>("VmCpu_Cas01");
   }
   simgrid::kernel::EngineImpl::get_instance()->add_model(cpu_model_vm, {cpu_pm_model, vm_model.get()});
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_vm_model(cpu_model_vm);
@@ -119,7 +116,7 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
   }
 }
 
-VMModel::VMModel()
+VMModel::VMModel(std::string name) : HostModel(name)
 {
   s4u::Host::on_state_change.connect(host_state_change);
   s4u::Exec::on_start.connect(add_active_exec);

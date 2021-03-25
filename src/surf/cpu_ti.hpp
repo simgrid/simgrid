@@ -142,7 +142,7 @@ class CpuTiModel : public CpuModel {
 public:
   static void create_pm_models(); // Make CPU PM model
 
-  CpuTiModel()                  = default;
+  using CpuModel::CpuModel;
   CpuTiModel(const CpuTiModel&) = delete;
   CpuTiModel& operator=(const CpuTiModel&) = delete;
   Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
