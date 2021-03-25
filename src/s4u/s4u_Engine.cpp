@@ -74,11 +74,9 @@ double Engine::get_clock()
 }
 
 void Engine::add_model(std::shared_ptr<kernel::resource::Model> model,
-                       std::vector<kernel::resource::Model*>&& dependencies)
+                       const std::vector<kernel::resource::Model*>& dependencies)
 {
-  simgrid::kernel::actor::simcall([this, &model, &dependencies] {
-    pimpl->add_model(std::move(model), std::forward<decltype(dependencies)>(dependencies));
-  });
+  simgrid::kernel::actor::simcall([this, &model, &dependencies] { pimpl->add_model(std::move(model), dependencies); });
 }
 
 const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() const

@@ -53,7 +53,7 @@ void EngineImpl::register_default(const actor::ActorCodeFactory& code)
   default_function = code;
 }
 
-void EngineImpl::add_model(std::shared_ptr<resource::Model> model, std::vector<resource::Model*>&& dependencies)
+void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::vector<resource::Model*>& dependencies)
 {
   auto model_name = model->get_name();
   xbt_assert(models_prio_.find(model_name) == models_prio_.end(),
