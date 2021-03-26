@@ -7,6 +7,7 @@
 #define SURF_NETWORK_INTERFACE_HPP_
 
 #include "simgrid/kernel/resource/Model.hpp"
+#include "simgrid/kernel/resource/NetworkModelIntf.hpp"
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
@@ -30,7 +31,7 @@ namespace resource {
  * @brief SURF network model interface class
  * @details A model is an object which handles the interactions between its Resources and its Actions
  */
-class NetworkModel : public Model {
+class NetworkModel : public Model, public NetworkModelIntf {
 public:
   static config::Flag<double> cfg_tcp_gamma;
   static config::Flag<bool> cfg_crosstraffic;
@@ -97,6 +98,9 @@ public:
 
   double next_occurring_event_full(double now) override;
 
+  virtual void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
+  virtual void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
+
   LinkImpl* loopback_ = nullptr;
 };
 
@@ -156,8 +160,8 @@ public:
    * Profile must contain absolute values */
   virtual LinkImpl* set_latency_profile(kernel::profile::Profile* profile);
 
-  Metric latency_                   = {0.0, 0, nullptr};
-  Metric bandwidth_                 = {1.0, 0, nullptr};
+  Metric latency_   = {0.0, 0, nullptr};
+  Metric bandwidth_ = {1.0, 0, nullptr};
 };
 
 /**********
@@ -209,5 +213,3 @@ public:
 } // namespace simgrid
 
 #endif /* SURF_NETWORK_INTERFACE_HPP_ */
-
-

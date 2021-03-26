@@ -93,6 +93,40 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
   loopback_->seal();
 }
 
+void NetworkCm02Model::check_lat_factor_cb()
+{
+  if (not simgrid::config::is_default("network/latency-factor")) {
+    throw std::invalid_argument(
+        "NetworkModelIntf: Cannot mix network/latency-factor and callback configuration. Choose only one of them.");
+  }
+}
+
+void NetworkCm02Model::check_bw_factor_cb()
+{
+  if (not simgrid::config::is_default("network/bandwidth-factor")) {
+    throw std::invalid_argument(
+        "NetworkModelIntf: Cannot mix network/bandwidth-factor and callback configuration. Choose only one of them.");
+  }
+}
+
+void NetworkCm02Model::set_lat_factor_cb(const std::function<NetworkFactorCb>& cb)
+{
+  if (not cb)
+    throw std::invalid_argument("NetworkModelIntf: Invalid callback");
+  check_lat_factor_cb();
+
+  lat_factor_cb_ = cb;
+}
+
+void NetworkCm02Model::set_bw_factor_cb(const std::function<NetworkFactorCb>& cb)
+{
+  if (not cb)
+    throw std::invalid_argument("NetworkModelIntf: Invalid callback");
+  check_bw_factor_cb();
+
+  bw_factor_cb_ = cb;
+}
+
 LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");

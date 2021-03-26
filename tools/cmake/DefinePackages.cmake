@@ -718,6 +718,7 @@ set(headers_to_install
   include/simgrid/s4u.hpp
 
   include/simgrid/kernel/resource/Action.hpp
+  include/simgrid/kernel/resource/NetworkModelIntf.hpp
   include/simgrid/kernel/resource/Model.hpp
   include/simgrid/kernel/resource/Resource.hpp
 

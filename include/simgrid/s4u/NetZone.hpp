@@ -129,6 +129,8 @@ public:
   s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths);
   s4u::Link* create_link(const std::string& name, const std::string& bandwidth);
 
+  kernel::resource::NetworkModelIntf* get_network_model() const;
+
   /**
    * @brief Make a router within that NetZone
    *

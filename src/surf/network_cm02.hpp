@@ -9,6 +9,7 @@
 #include <xbt/base.h>
 
 #include "network_interface.hpp"
+#include "simgrid/kernel/resource/NetworkModelIntf.hpp"
 #include "xbt/graph.h"
 #include "xbt/string.hpp"
 
@@ -36,6 +37,14 @@ public:
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb) override;
+  void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb) override;
+
+protected:
+  virtual void check_lat_factor_cb();
+  virtual void check_bw_factor_cb();
+  std::function<NetworkFactorCb> lat_factor_cb_;
+  std::function<NetworkFactorCb> bw_factor_cb_;
 };
 
 /************
@@ -60,7 +69,7 @@ public:
   using NetworkAction::NetworkAction;
   void update_remains_lazy(double now) override;
 };
-}
-}
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid
 #endif /* SURF_NETWORK_CM02_HPP_ */

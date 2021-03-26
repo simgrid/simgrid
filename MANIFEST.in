@@ -1976,6 +1976,7 @@ include include/simgrid/kernel/Timer.hpp
 include include/simgrid/kernel/future.hpp
 include include/simgrid/kernel/resource/Action.hpp
 include include/simgrid/kernel/resource/Model.hpp
+include include/simgrid/kernel/resource/NetworkModelIntf.hpp
 include include/simgrid/kernel/resource/Resource.hpp
 include include/simgrid/kernel/routing/ClusterZone.hpp
 include include/simgrid/kernel/routing/DijkstraZone.hpp

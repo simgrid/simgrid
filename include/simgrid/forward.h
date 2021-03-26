@@ -161,6 +161,7 @@ class Model;
 class Resource;
 class CpuModel;
 class NetworkModel;
+class NetworkModelIntf;
 class LinkImpl;
 class NetworkAction;
 class DiskImpl;

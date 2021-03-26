@@ -43,6 +43,22 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
+void NetworkSmpiModel::check_lat_factor_cb()
+{
+  if (not simgrid::config::is_default("smpi/lat-factor")) {
+    throw std::invalid_argument(
+        "NetworkModelIntf: Cannot mix network/latency-factor and callback configuration. Choose only one of them.");
+  }
+}
+
+void NetworkSmpiModel::check_bw_factor_cb()
+{
+  if (not simgrid::config::is_default("smpi/bw-factor")) {
+    throw std::invalid_argument(
+        "NetworkModelIntf: Cannot mix network/bandwidth-factor and callback configuration. Choose only one of them.");
+  }
+}
+
 double NetworkSmpiModel::get_bandwidth_factor(double size)
 {
   static std::vector<s_smpi_factor_t> smpi_bw_factor;
