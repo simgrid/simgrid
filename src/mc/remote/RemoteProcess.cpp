@@ -206,21 +206,6 @@ static ssize_t pwrite_whole(int fd, const void* buf, size_t count, off_t offset)
   return real_count;
 }
 
-static pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
-static const void* zero_buffer;
-static const size_t zero_buffer_size = 10 * 4096;
-
-static void zero_buffer_init()
-{
-  int fd = open("/dev/zero", O_RDONLY);
-  if (fd < 0)
-    xbt_die("Could not open /dev/zero");
-  zero_buffer = mmap(nullptr, zero_buffer_size, PROT_READ, MAP_SHARED, fd, 0);
-  if (zero_buffer == MAP_FAILED)
-    xbt_die("Could not map the zero buffer");
-  close(fd);
-}
-
 int open_vm(pid_t pid, int flags)
 {
   std::string buffer = "/proc/" + std::to_string(pid) + "/mem";
@@ -475,8 +460,22 @@ void RemoteProcess::write_bytes(const void* buffer, size_t len, RemotePtr<void> 
     xbt_die("Write to process %lli failed", (long long)this->pid_);
 }
 
+static const void* zero_buffer;
+static const size_t zero_buffer_size = 10 * 4096;
+
+static void zero_buffer_init()
+{
+  int fd = open("/dev/zero", O_RDONLY);
+  xbt_assert(fd >= 0, "Could not open /dev/zero");
+  zero_buffer = mmap(nullptr, zero_buffer_size, PROT_READ, MAP_SHARED, fd, 0);
+  xbt_assert(zero_buffer != MAP_FAILED, "Could not map the zero buffer");
+  close(fd);
+}
+
 void RemoteProcess::clear_bytes(RemotePtr<void> address, size_t len) const
 {
+  pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
+
   pthread_once(&zero_buffer_flag, zero_buffer_init);
   while (len) {
     size_t s = len > zero_buffer_size ? zero_buffer_size : len;
