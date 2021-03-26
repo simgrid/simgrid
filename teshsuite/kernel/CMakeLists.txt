@@ -47,6 +47,6 @@ endforeach()
 
 
 # Pack the files in the archive
-set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/simcall-generic/blocking_simcall.hpp PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     PARENT_SCOPE)
 set(xml_files     ${xml_files}      PARENT_SCOPE)

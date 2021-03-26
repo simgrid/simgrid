@@ -12,8 +12,9 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/simix.hpp>
-#include <simgrid/simix/blocking_simcall.hpp>
 #include <xbt/log.h>
+
+#include "blocking_simcall.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "my log messages");
 

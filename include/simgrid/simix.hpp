@@ -98,6 +98,8 @@ auto simcall_blocking(F&& code, Observer* observer) -> decltype(observer->get_re
 namespace simgrid {
 namespace simix {
 
+XBT_PUBLIC void unblock(smx_actor_t process);
+
 inline auto& simix_timers() // avoid static initialization order fiasco
 {
   using TimerQelt = std::pair<double, Timer*>;
