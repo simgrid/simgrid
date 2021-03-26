@@ -2,9 +2,9 @@
 
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"
-#include "src/mc/checker/SimcallObserver.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_pattern.hpp"

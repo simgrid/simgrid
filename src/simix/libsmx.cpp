@@ -18,7 +18,7 @@
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
-#include "src/mc/checker/SimcallObserver.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "xbt/random.hpp"
@@ -62,7 +62,7 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
 {
   std::vector<simgrid::kernel::activity::ExecImpl*> execsv(execs, execs + count);
   simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::mc::ExecutionWaitanySimcall observer{issuer, &execsv, timeout};
+  simgrid::kernel::actor::ExecutionWaitanySimcall observer{issuer, &execsv, timeout};
   return simgrid::kernel::actor::simcall_blocking(
       [&observer] {
         simgrid::kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(),
@@ -357,14 +357,14 @@ bool simcall_io_test(const simgrid::kernel::activity::ActivityImplPtr& io) // XB
   return simgrid::kernel::actor::simcall([io] { return io->test(); });
 }
 
-void simcall_run_kernel(std::function<void()> const& code, simgrid::mc::SimcallObserver* observer)
+void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   simcall_BODY_run_kernel(&code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
-void simcall_run_blocking(std::function<void()> const& code, simgrid::mc::SimcallObserver* observer)
+void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   simcall_BODY_run_blocking(&code);

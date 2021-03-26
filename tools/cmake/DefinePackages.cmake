@@ -416,6 +416,8 @@ set(SIMIX_SRC
   src/kernel/activity/SynchroRaw.hpp
   src/kernel/actor/ActorImpl.cpp
   src/kernel/actor/ActorImpl.hpp
+  src/kernel/actor/SimcallObserver.cpp
+  src/kernel/actor/SimcallObserver.hpp
 
   ${SIMIX_GENERATED_SRC}
   )
@@ -579,8 +581,6 @@ set(MC_SRC_BASE
   src/mc/mc_config.cpp
   src/mc/mc_config.hpp
   src/mc/mc_global.cpp
-  src/mc/checker/SimcallObserver.cpp
-  src/mc/checker/SimcallObserver.hpp
   )
 
 set(MC_SRC

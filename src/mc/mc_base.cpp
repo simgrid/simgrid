@@ -7,7 +7,7 @@
 #include "mc/mc.h"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/mc/checker/SimcallObserver.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
@@ -33,7 +33,7 @@ int MC_random(int min, int max)
     static simgrid::xbt::random::XbtRandom prng;
     return prng.uniform_int(min, max);
   }
-  simgrid::mc::RandomSimcall observer{SIMIX_process_self(), min, max};
+  simgrid::kernel::actor::RandomSimcall observer{SIMIX_process_self(), min, max};
   return simgrid::kernel::actor::simcall([&observer] { return observer.get_value(); }, &observer);
 }
 

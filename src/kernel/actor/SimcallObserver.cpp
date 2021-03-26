@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/checker/SimcallObserver.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -11,7 +11,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_observer, mc, "Logging specific to MC simcall observation");
 
 namespace simgrid {
-namespace mc {
+namespace kernel {
+namespace actor {
 
 std::string SimcallObserver::to_string(int /*time_considered*/) const
 {
@@ -131,5 +132,6 @@ std::string ExecutionWaitanySimcall::dot_label() const
 {
   return SimcallObserver::dot_label() + "Execution WAITANY";
 }
-} // namespace mc
+} // namespace actor
+} // namespace kernel
 } // namespace simgrid

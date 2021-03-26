@@ -2162,6 +2162,8 @@ include src/kernel/activity/SynchroRaw.cpp
 include src/kernel/activity/SynchroRaw.hpp
 include src/kernel/actor/ActorImpl.cpp
 include src/kernel/actor/ActorImpl.hpp
+include src/kernel/actor/SimcallObserver.cpp
+include src/kernel/actor/SimcallObserver.hpp
 include src/kernel/context/Context.cpp
 include src/kernel/context/Context.hpp
 include src/kernel/context/ContextBoost.cpp
@@ -2223,8 +2225,6 @@ include src/mc/checker/LivenessChecker.cpp
 include src/mc/checker/LivenessChecker.hpp
 include src/mc/checker/SafetyChecker.cpp
 include src/mc/checker/SafetyChecker.hpp
-include src/mc/checker/SimcallObserver.cpp
-include src/mc/checker/SimcallObserver.hpp
 include src/mc/checker/UdporChecker.cpp
 include src/mc/checker/UdporChecker.hpp
 include src/mc/checker/simgrid_mc.cpp

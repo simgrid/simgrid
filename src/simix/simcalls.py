@@ -314,7 +314,7 @@ if __name__ == '__main__':
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#endif\n')
     fd.write('#include "src/kernel/activity/ConditionVariableImpl.hpp"\n')
-    fd.write('#include "src/mc/checker/SimcallObserver.hpp"\n')
+    fd.write('#include "src/kernel/actor/SimcallObserver.hpp"\n')
 
     fd.write('\n')
     fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')

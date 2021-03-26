@@ -6,7 +6,7 @@
 #include "src/mc/remote/AppSide.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/mc/checker/SimcallObserver.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
 #include "src/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
 #include <simgrid/modelchecker.h>

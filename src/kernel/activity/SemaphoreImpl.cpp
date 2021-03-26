@@ -5,7 +5,7 @@
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/mc/checker/SimcallObserver.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include <cmath> // std::isfinite
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_semaphore, simix_synchro, "Semaphore kernel-space implementation");
@@ -22,7 +22,7 @@ void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
   if (value_ <= 0) {
     RawImplPtr synchro(new RawImpl([this, issuer]() {
       this->remove_sleeping_actor(*issuer);
-      auto* observer = dynamic_cast<mc::SemAcquireSimcall*>(issuer->simcall_.observer_);
+      auto* observer = dynamic_cast<kernel::actor::SemAcquireSimcall*>(issuer->simcall_.observer_);
       xbt_assert(observer != nullptr);
       observer->set_result(true);
     }));

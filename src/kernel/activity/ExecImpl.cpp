@@ -8,7 +8,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
 #include "simgrid/s4u/Exec.hpp"
-#include "src/mc/checker/SimcallObserver.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -165,7 +165,8 @@ void ExecImpl::finish()
 
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                                 // if process handling comm is killed
-    if (auto* observer = dynamic_cast<mc::ExecutionWaitanySimcall*>(simcall->observer_)) { // simcall is a wait_any?
+    if (auto* observer =
+            dynamic_cast<kernel::actor::ExecutionWaitanySimcall*>(simcall->observer_)) { // simcall is a wait_any?
       const auto* execs = observer->get_execs();
 
       for (auto* exec : *execs) {

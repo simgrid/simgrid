@@ -7,7 +7,7 @@
 #include "simgrid/mutex.h"
 #include "simgrid/s4u/Mutex.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/mc/checker/SimcallObserver.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 
 namespace simgrid {
 namespace s4u {
@@ -16,7 +16,7 @@ namespace s4u {
 void Mutex::lock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  mc::MutexLockSimcall observer{issuer, pimpl_};
+  kernel::actor::MutexLockSimcall observer{issuer, pimpl_};
   kernel::actor::simcall_blocking([&observer] { observer.get_mutex()->lock(observer.get_issuer()); }, &observer);
 }
 
@@ -27,7 +27,7 @@ void Mutex::lock()
 void Mutex::unlock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  mc::MutexUnlockSimcall observer{issuer};
+  kernel::actor::MutexUnlockSimcall observer{issuer};
   kernel::actor::simcall([this, issuer] { this->pimpl_->unlock(issuer); }, &observer);
 }
 
@@ -35,7 +35,7 @@ void Mutex::unlock()
 bool Mutex::try_lock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  mc::MutexLockSimcall observer{issuer, pimpl_, false};
+  kernel::actor::MutexLockSimcall observer{issuer, pimpl_, false};
   return kernel::actor::simcall([&observer] { return observer.get_mutex()->try_lock(observer.get_issuer()); },
                                 &observer);
 }

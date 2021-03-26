@@ -106,6 +106,8 @@ using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
 using ActorCode = std::function<void()>;
 // Create an ActorCode from the parameters parsed in the XML file (or elsewhere)
 using ActorCodeFactory = std::function<ActorCode(std::vector<std::string> args)>;
+
+class SimcallObserver;
 } // namespace actor
 
 namespace activity {
@@ -187,7 +189,6 @@ namespace surf {
 }
 namespace mc {
 class CommunicationDeterminismChecker;
-class SimcallObserver;
 }
 namespace vm {
 class VMModel;

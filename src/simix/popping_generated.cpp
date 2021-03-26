@@ -21,7 +21,7 @@
 #include "src/mc/mc_forward.hpp"
 #endif
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
-#include "src/mc/checker/SimcallObserver.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 

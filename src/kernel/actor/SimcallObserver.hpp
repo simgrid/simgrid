@@ -11,7 +11,8 @@
 #include <string>
 
 namespace simgrid {
-namespace mc {
+namespace kernel {
+namespace actor {
 
 class SimcallObserver {
   kernel::actor::ActorImpl* const issuer_;
@@ -43,7 +44,9 @@ public:
    *
    * The first time a simcall is considered, times_considered is 0, not 1.
    */
-  virtual void prepare(int times_considered) { /* Nothing to do by default */}
+  virtual void prepare(int times_considered)
+  { /* Nothing to do by default */
+  }
 
   /** Some simcalls may only be observable under some circumstances.
    * Most simcalls are not visible from the MC because they don't have an observer at all. */
@@ -162,7 +165,8 @@ public:
 
   int get_result() const { return result_; }
 };
-} // namespace mc
+} // namespace actor
+} // namespace kernel
 } // namespace simgrid
 
 #endif
