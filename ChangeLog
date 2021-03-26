@@ -59,6 +59,8 @@ SMPI:
    to use for smpi/auto-shared-malloc-thresh option.
  - New implemented MPI calls: MPI_File_set_size, MPI_Aint_add, MPI_Aint_diff,
    MPI_Type_get_extent_x, MPI_Type_get_true_extent_x, MPI_Status_set_elements_x
+ - Support for MPI C++ datatypes (MPI_CXX_BOOL, MPI_CXX_FLOAT_COMPLEX,
+   MPI_CXX_DOUBLE_COMPLEX, MPI_CXX_LONG_DOUBLE_COMPLEX)
  - Misc fixes:
    - better handling of MPI_PROC_NULL
    - MPI_Group_incl was broken in some cases
