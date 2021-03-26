@@ -21,8 +21,6 @@
 namespace simgrid {
 namespace simix {
 
-XBT_PUBLIC void unblock(smx_actor_t process);
-
 /** Execute some code in kernel mode and wakes up the actor when
  *  the result is available.
  *
@@ -74,8 +72,7 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
 // - SharedFuture
 // - simgrid::simix::when_all - wait for all future to be ready (this one is simple!)
 // - simgrid::simix::when_any - wait for any future to be ready
-template <class T>
-class Future {
+template <class T> class Future {
 public:
   Future() = default;
   explicit Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}

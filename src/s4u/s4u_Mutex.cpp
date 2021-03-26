@@ -17,7 +17,7 @@ void Mutex::lock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   mc::MutexLockSimcall observer{issuer, pimpl_};
-  kernel::actor::simcall_blocking<void>([&observer] { observer.get_mutex()->lock(observer.get_issuer()); }, &observer);
+  kernel::actor::simcall_blocking([&observer] { observer.get_mutex()->lock(observer.get_issuer()); }, &observer);
 }
 
 /** @brief Release the ownership of the mutex, unleashing a blocked actor (if any)

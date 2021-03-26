@@ -651,6 +651,7 @@ include teshsuite/kernel/context-defaults/factory_boost.tesh
 include teshsuite/kernel/context-defaults/factory_raw.tesh
 include teshsuite/kernel/context-defaults/factory_thread.tesh
 include teshsuite/kernel/context-defaults/factory_ucontext.tesh
+include teshsuite/kernel/simcall-generic/blocking_simcall.hpp
 include teshsuite/kernel/simcall-generic/simcall-generic.cpp
 include teshsuite/kernel/simcall-generic/simcall-generic.tesh
 include teshsuite/kernel/stack-overflow/stack-overflow.cpp
@@ -2005,7 +2006,6 @@ include include/simgrid/semaphore.h
 include include/simgrid/simdag.h
 include include/simgrid/simix.h
 include include/simgrid/simix.hpp
-include include/simgrid/simix/blocking_simcall.hpp
 include include/simgrid/smpi/smpi_replay.hpp
 include include/simgrid/version.h.in
 include include/simgrid/vm.h
