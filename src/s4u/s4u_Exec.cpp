@@ -41,7 +41,7 @@ Exec* Exec::wait_for(double timeout)
     vetoable_start();
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::simcall_blocking<void>([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
+  kernel::actor::simcall_blocking([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
   state_ = State::FINISHED;
   on_completion(*this);
   this->release_dependencies();
@@ -56,12 +56,11 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   mc::ExecutionWaitanySimcall observer{issuer, &rexecs, timeout};
-  kernel::actor::simcall_blocking<void>(
+  int changed_pos = kernel::actor::simcall_blocking(
       [&observer] {
         kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(), observer.get_timeout());
       },
       &observer);
-  int changed_pos = observer.get_result();
   if (changed_pos != -1) {
     on_completion(*(execs->at(changed_pos)));
     execs->at(changed_pos)->release_dependencies();
