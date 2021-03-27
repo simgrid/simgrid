@@ -65,6 +65,8 @@ double StdRandom::normal(double mean, double sd)
 
 int XbtRandom::uniform_int(int min, int max)
 {
+  // The casts to unsigned are here to ensure that the value of range is correctly calculated, even when greater than
+  // INT_MAX.  See the corresponding unit tests for examples.
   unsigned long range = static_cast<unsigned>(max) - static_cast<unsigned>(min);
   xbt_assert(min <= max,
              "The minimum value for the uniform integer distribution must not be greater than the maximum value");
