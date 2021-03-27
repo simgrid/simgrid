@@ -19,6 +19,7 @@
 #include <cerrno>
 #include <cstring>
 #include <memory>
+#include <mutex>
 #include <string>
 
 using simgrid::mc::remote;
@@ -460,23 +461,22 @@ void RemoteProcess::write_bytes(const void* buffer, size_t len, RemotePtr<void> 
     xbt_die("Write to process %lli failed", (long long)this->pid_);
 }
 
-static const void* zero_buffer;
-static const size_t zero_buffer_size = 10 * 4096;
-
-static void zero_buffer_init()
+static void zero_buffer_init(const void** zero_buffer, size_t zero_buffer_size)
 {
   int fd = open("/dev/zero", O_RDONLY);
   xbt_assert(fd >= 0, "Could not open /dev/zero");
-  zero_buffer = mmap(nullptr, zero_buffer_size, PROT_READ, MAP_SHARED, fd, 0);
-  xbt_assert(zero_buffer != MAP_FAILED, "Could not map the zero buffer");
+  *zero_buffer = mmap(nullptr, zero_buffer_size, PROT_READ, MAP_SHARED, fd, 0);
+  xbt_assert(*zero_buffer != MAP_FAILED, "Could not map the zero buffer");
   close(fd);
 }
 
 void RemoteProcess::clear_bytes(RemotePtr<void> address, size_t len) const
 {
-  pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
+  static constexpr size_t zero_buffer_size = 10 * 4096;
+  static const void* zero_buffer;
+  static std::once_flag zero_buffer_flag;
 
-  pthread_once(&zero_buffer_flag, zero_buffer_init);
+  std::call_once(zero_buffer_flag, zero_buffer_init, &zero_buffer, zero_buffer_size);
   while (len) {
     size_t s = len > zero_buffer_size ? zero_buffer_size : len;
     this->write_bytes(zero_buffer, s, address);
