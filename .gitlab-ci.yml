@@ -9,12 +9,19 @@ ctest:
   except:
   - stable
   script:
+  - apt-get --allow-releaseinfo-change update && apt install -y xsltproc
   - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
-  - make -j$(nproc) VERBOSE=1 all tests && ctest -j$(nproc) --output-on-failure
+  - make -j$(nproc) VERBOSE=1 all tests && ctest -T Test -j$(nproc) --output-on-failure
+  - xsltproc ./tools/jenkins/ctest2junit.xsl Testing/"$( head -n 1 < Testing/TAG )"/Test.xml > CTestResults.xml
   artifacts:
     paths:
     - lib/
+    reports:
+      junit: 
+      - CTestResults.xml 
     expire_in: 1 week
+    when: always
+
 
 release:
   stage: build
