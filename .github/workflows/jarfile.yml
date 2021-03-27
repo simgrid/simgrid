@@ -1,4 +1,4 @@
-name: SimGrid complete jar file generation
+name: Jar file creation
 
 on:
   workflow_dispatch:
