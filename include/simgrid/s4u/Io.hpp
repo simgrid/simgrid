@@ -20,20 +20,13 @@ namespace s4u {
  */
 
 class XBT_PUBLIC Io : public Activity_T<Io> {
-public:
-  enum class OpType { READ, WRITE };
-
-private:
-  Disk* disk_       = nullptr;
-  sg_size_t size_   = 0;
-  OpType type_      = OpType::READ;
-
-  Io();
-
-public:
 #ifndef DOXYGEN
   friend Disk;    // Factory of IOs
 #endif
+  Io();
+
+public:
+  enum class OpType { READ, WRITE };
 
   static xbt::signal<void(Io const&)> on_start;
   static xbt::signal<void(Io const&)> on_completion;
@@ -50,7 +43,7 @@ public:
   IoPtr set_size(sg_size_t size);
   IoPtr set_op_type(OpType type);
 
-  bool is_assigned() const override { return disk_ != nullptr; }
+  bool is_assigned() const override;
 };
 
 } // namespace s4u

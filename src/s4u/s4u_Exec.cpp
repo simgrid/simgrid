@@ -30,6 +30,24 @@ ExecPtr Exec::init()
   return ExecPtr(pimpl->get_iface());
 }
 
+Exec* Exec::start()
+{
+  kernel::actor::simcall([this] {
+    (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
+        .set_name(get_name())
+        .set_tracing_category(get_tracing_category())
+        .start();
+  });
+
+  if (suspended_)
+    pimpl_->suspend();
+
+  state_      = State::STARTED;
+  start_time_ = pimpl_->surf_action_->get_start_time();
+  on_start(*this);
+  return this;
+}
+
 Exec* Exec::wait()
 {
   return this->wait_for(-1);
@@ -83,15 +101,34 @@ Exec* Exec::cancel()
 ExecPtr Exec::set_bound(double bound)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
-      "Cannot change the bound of an exec after its start");
-  bound_ = bound;
+             "Cannot change the bound of an exec after its start");
+  kernel::actor::simcall(
+      [this, bound] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_bound(bound); });
   return this;
 }
+
+/** @brief  Change the execution priority, don't you think?
+ *
+ * An execution with twice the priority will get twice the amount of flops when the resource is shared.
+ * The default priority is 1.
+ *
+ * Currently, this cannot be changed once the exec started. */
+ExecPtr Exec::set_priority(double priority)
+{
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+             "Cannot change the priority of an exec after its start");
+  kernel::actor::simcall([this, priority] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_sharing_penalty(1. / priority);
+  });
+  return this;
+}
+
 ExecPtr Exec::set_timeout(double timeout) // XBT_ATTRIB_DEPRECATED_v329
 {
-  xbt_assert(state_ == State::INITED|| state_ == State::STARTING,
-      "Cannot change the bound of an exec after its start");
-  timeout_ = timeout;
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+             "Cannot change the bound of an exec after its start");
+  kernel::actor::simcall(
+      [this, timeout] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_timeout(timeout); });
   return this;
 }
 
@@ -99,8 +136,10 @@ ExecPtr Exec::set_flops_amount(double flops_amount)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the flop_amount of an exec after its start");
-  flops_amounts_.assign(1, flops_amount);
-  Activity::set_remaining(flops_amounts_.front());
+  kernel::actor::simcall([this, flops_amount] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_flops_amount(flops_amount);
+  });
+  Activity::set_remaining(flops_amount);
   return this;
 }
 
@@ -108,7 +147,9 @@ ExecPtr Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the flops_amounts of an exec after its start");
-  flops_amounts_ = flops_amounts;
+  kernel::actor::simcall([this, flops_amounts] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_flops_amounts(flops_amounts);
+  });
   parallel_      = true;
   return this;
 }
@@ -117,7 +158,9 @@ ExecPtr Exec::set_bytes_amounts(const std::vector<double>& bytes_amounts)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the bytes_amounts of an exec after its start");
-  bytes_amounts_ = bytes_amounts;
+  kernel::actor::simcall([this, bytes_amounts] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_bytes_amounts(bytes_amounts);
+  });
   parallel_      = true;
   return this;
 }
@@ -133,23 +176,6 @@ unsigned int Exec::get_host_number() const
 {
   return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host_number();
 }
-double Exec::get_cost() const
-{
-  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_cost();
-}
-
-/** @brief  Change the execution priority, don't you think?
- *
- * An execution with twice the priority will get twice the amount of flops when the resource is shared.
- * The default priority is 1.
- *
- * Currently, this cannot be changed once the exec started. */
-ExecPtr Exec::set_priority(double priority)
-{
-  xbt_assert(state_ == State::INITED, "Cannot change the priority of an exec after its start");
-  priority_ = priority;
-  return this;
-}
 
 /** @brief Change the host on which this activity takes place.
  *
@@ -158,12 +184,12 @@ ExecPtr Exec::set_host(Host* host)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING || state_ == State::STARTED,
              "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
-  hosts_.assign(1, host);
 
   if (state_ == State::STARTED)
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->migrate(host);
 
-  boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host);
+  kernel::actor::simcall(
+      [this, host] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host); });
 
   if (state_ == State::STARTING)
   // Setting the host may allow to start the activity, let's try
@@ -177,7 +203,8 @@ ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the hosts of an exec once it's done (state: %d)", (int)state_);
 
-  hosts_    = hosts;
+  kernel::actor::simcall(
+      [this, hosts] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_hosts(hosts); });
   parallel_ = true;
 
   // Setting the host may allow to start the activity, let's try
@@ -187,35 +214,9 @@ ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
   return this;
 }
 
-Exec* Exec::start()
+double Exec::get_cost() const
 {
-  if (is_parallel())
-    kernel::actor::simcall([this] {
-      (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
-          .set_hosts(hosts_)
-          .set_timeout(timeout_)
-          .set_flops_amounts(flops_amounts_)
-          .set_bytes_amounts(bytes_amounts_)
-          .start();
-    });
-  else
-    kernel::actor::simcall([this] {
-      (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
-          .set_name(get_name())
-          .set_tracing_category(get_tracing_category())
-          .set_sharing_penalty(1. / priority_)
-          .set_bound(bound_)
-          .set_flops_amount(flops_amounts_.front())
-          .start();
-    });
-
-  if (suspended_)
-    pimpl_->suspend();
-
-  state_ = State::STARTED;
-  start_time_ = pimpl_->surf_action_->get_start_time();
-  on_start(*this);
-  return this;
+  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_cost();
 }
 
 double Exec::get_remaining() const
@@ -242,6 +243,10 @@ double Exec::get_remaining_ratio() const
         [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio(); });
 }
 
+bool Exec::is_assigned() const
+{
+  return not boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_hosts().empty();
+}
 } // namespace s4u
 } // namespace simgrid
 
