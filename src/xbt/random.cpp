@@ -65,14 +65,20 @@ double StdRandom::normal(double mean, double sd)
 
 int XbtRandom::uniform_int(int min, int max)
 {
-  unsigned long range  = max - min + 1;
+  unsigned long range = static_cast<unsigned>(max) - static_cast<unsigned>(min);
   xbt_assert(min <= max,
              "The minimum value for the uniform integer distribution must not be greater than the maximum value");
-  xbt_assert(range > 0, "Overflow in the uniform integer distribution, please use a smaller range.");
+  xbt_assert(range <= decltype(mt19937_gen)::max(),
+             "Overflow in the uniform integer distribution, please use a smaller range.");
+  if (range == decltype(mt19937_gen)::max())
+    return static_cast<int>(mt19937_gen() + min);
+
+  ++range;
+  unsigned long limit = decltype(mt19937_gen)::max() - decltype(mt19937_gen)::max() % range;
   unsigned long value;
   do {
     value = mt19937_gen();
-  } while (value >= decltype(mt19937_gen)::max() - decltype(mt19937_gen)::max() % range);
+  } while (value >= limit);
   return static_cast<int>(value % range + min);
 }
 

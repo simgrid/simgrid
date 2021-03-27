@@ -21,6 +21,18 @@ TEST_CASE("xbt::random: Random Number Generation")
     REQUIRE(simgrid::xbt::random::uniform_int(1, 6) == 4);
     REQUIRE_THAT(simgrid::xbt::random::uniform_real(0, 1), EpsilonApprox(0.31637556043369124970));
     REQUIRE_THAT(simgrid::xbt::random::normal(0, 2), EpsilonApprox(1.62746784745133976635));
+
+    constexpr int imin = std::numeric_limits<int>::min();
+    constexpr int imax = std::numeric_limits<int>::max();
+    REQUIRE(simgrid::xbt::random::uniform_int(0, 0) == 0);
+    REQUIRE(simgrid::xbt::random::uniform_int(imin, imin) == imin);
+    REQUIRE(simgrid::xbt::random::uniform_int(imax, imax) == imax);
+
+    REQUIRE(simgrid::xbt::random::uniform_int(-6, -1) == -3);
+    REQUIRE(simgrid::xbt::random::uniform_int(-10, 10) == 7);
+    REQUIRE(simgrid::xbt::random::uniform_int(imin, 2) == -163525263);
+    REQUIRE(simgrid::xbt::random::uniform_int(-2, imax) == 1605979225);
+    REQUIRE(simgrid::xbt::random::uniform_int(imin, imax) == 659577591);
   }
 
   SECTION("Using XBT_RNG_std")
