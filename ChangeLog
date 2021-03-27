@@ -43,7 +43,7 @@ XBT:
  - Deprecate xbt_dynar_to_array().
 
 SMPI:
- - Handle leak checking (experimental): SMPI will now display a message if MPI
+ - Handle leak checking: SMPI will now display a message if MPI
    handles are still present at the end of a simulation. This may be nothing,
    but if the number is high it could be a problem. To display more information
    about the type of leaked handle, option --cfg=smpi/list-leaks:n. will display
@@ -51,7 +51,7 @@ SMPI:
    may trigger handle leaks in SMPI.
    Using smpirun with -wrapper "valgrind --leak-check=full --track-origins=yes"
    can provide more information to help locate precisely the leaks.
- - Memory allocations analysis (experimental): MPI codes using malloc/calloc to
+ - Memory allocations analysis: MPI codes using malloc/calloc to
    allocate memory, and not compiled with SMPI_NO_OVERRIDE_MALLOC, can use
    smpi/display-analysis option to show at the end of execution the amount of
    memory allocated through these calls, and locate the most expensive one.
@@ -74,8 +74,9 @@ SMPI:
    - Test on yum-based systems
    - New nightly tested Proxy-apps:
      - OpenMPI mpi-test-suite
-     - Coral MCB, LSMS, Qbox
-     - ECP/Mantevo Cloverleaf3D
+     - Coral MCB, LSMS, Qbox, CLOMP
+     - ECP/Mantevo Cloverleaf3D, Ember
+     - Codevault bhtree_mpi
 
 C binding and interface:
  - Rename (lowercase) functions sg_actor_get_PID, sg_actor_get_PPID, sg_actor_by_PID.
