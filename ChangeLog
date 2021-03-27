@@ -26,6 +26,8 @@ User-visible changes:
  - Network model ns-3 now requires version ns-3.28 or higher.
 
 S4U:
+ - New functions: Comm::sendto_{init,async} to initiate a communication
+   on between two (possibly remote) hosts.
  - Define new template functions Mailbox::get_unique(), returning a std::unique_ptr.
  - Functions Mailbox::get() and Mailbox::get_async() are now templated with the
    type of the pointee. Untyped functions are deprecated. Use Mailbox::get<void>()
@@ -33,14 +35,22 @@ S4U:
  - Unify the interface of Activity::on_{start/activity}
  - New function: Comm::get_dst_data()
  - New function: Comm::set_payload_size() to set the amount of bytes to simulate.
- - New functions: Comm::sendto_{init,async} to initiate a communication
-   on between two (possibly remote) hosts.
 
-XBT:
- - Drop simgrid::xbt::demangle(). Please use boost::core::demangle() instead.
- - Drop xbt_dynar_cursor_rm(), xbt_dynar_search_or_negative(),
-   xbt_str_split_quoted(), xbt_str_split_quoted_in_place().
- - Deprecate xbt_dynar_to_array().
+Models:
+ - ptask should now work better with multicore hosts (FG#37).
+ - Internal cleanups and refactoring around activities, to prepare for SimDAG++.
+ - Internal cleanups and refactoring around models, to prepare for programmatic
+   platform creation.
+ - Modernize our tests of the performance models
+
+Documentation:
+ - User manual:
+   - New section: Configuring the logs from the command line.
+   - New section: Programming API of logs.
+   - New section: Getting realistic results
+   - New section: Examples of SMPI Usage
+ - New part: SimGrid's Intenal, with a section on Design goals
+ - Move back to the classical Breathe tool chain, and fix many small glitches.
 
 SMPI:
  - Handle leak checking: SMPI will now display a message if MPI
@@ -61,10 +71,11 @@ SMPI:
    MPI_Type_get_extent_x, MPI_Type_get_true_extent_x, MPI_Status_set_elements_x
  - Support for MPI C++ datatypes (MPI_CXX_BOOL, MPI_CXX_FLOAT_COMPLEX,
    MPI_CXX_DOUBLE_COMPLEX, MPI_CXX_LONG_DOUBLE_COMPLEX)
+ - Replay now opens and parses the trace file only once for all ranks when possible.
  - Misc fixes:
    - better handling of MPI_PROC_NULL
    - MPI_Group_incl was broken in some cases
-   - PAPI tracing was fixed
+   - PAPI tracing now fixed
    - MPI_Errhandlers are properly handled for MPI_COMM_WORLD
    - SMPI will now fail properly when receive size < sent size, instead of
      just setting MPI_ERR_TRUNCATE and keep going.
@@ -78,15 +89,22 @@ SMPI:
      - ECP/Mantevo Cloverleaf3D, Ember
      - Codevault bhtree_mpi
 
+Model checker:
+ - Only initialze the Dwarf parser when needed, saving 10 seconds in most cases.
+ - Start to overhaul the implementation to modernize it (still ongoing).
+
+XBT:
+ - Drop simgrid::xbt::demangle(). Please use boost::core::demangle() instead.
+ - Drop xbt_dynar_cursor_rm(), xbt_dynar_search_or_negative(),
+   xbt_str_split_quoted(), xbt_str_split_quoted_in_place().
+ - Deprecate xbt_dynar_to_array().
+ - When an exception occurs in kernel mode, display both the actor and kernel stacks.
+
 C binding and interface:
  - Rename (lowercase) functions sg_actor_get_PID, sg_actor_get_PPID, sg_actor_by_PID.
  - Constness requirement has been lowered for parameter argv of sg_actor_start()
    and sg_actor_create() It's now (char* const*). The previous version is still
    available as sg_actor_start_() and sg_actor_create_().
-
-Documentation:
- - New section: Configuring the logs from the command line.
- - New section: Programming API of logs.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
