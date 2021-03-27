@@ -15,8 +15,6 @@ const int FAIL_ON_ERROR = 0;
 const int flop_amount   = 100000000; // 100Mf, so that computing this on a 1Gf core takes exactly 0.1s
 int failed_test         = 0;
 
-double energy = 0;
-
 static int computation_fun(std::vector<std::string> argv)
 {
   int size = std::stoi(argv[0]);
@@ -47,6 +45,7 @@ static void run_test_process(const std::string& name, simgrid::s4u::Host* locati
 
 static void test_energy_consumption(const std::string& name, int nb_cores)
 {
+  static double current_energy = 0;
   double new_energy = 0;
 
   for (simgrid::s4u::Host* pm : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
@@ -55,9 +54,9 @@ static void test_energy_consumption(const std::string& name, int nb_cores)
   }
 
   double expected_consumption = 0.1 * nb_cores;
-  double actual_consumption   = new_energy - energy;
+  double actual_consumption   = new_energy - current_energy;
 
-  energy = new_energy;
+  current_energy = new_energy;
 
   if (std::abs(expected_consumption - actual_consumption) > 0.001) {
     XBT_INFO("FAILED TEST: %s consumed %f instead of %f J (i.e. %i cores should have been used)", name.c_str(),

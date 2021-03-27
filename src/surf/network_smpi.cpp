@@ -14,9 +14,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
-std::vector<s_smpi_factor_t> smpi_bw_factor;
-std::vector<s_smpi_factor_t> smpi_lat_factor;
-
 /*********
  * Model *
  *********/
@@ -48,6 +45,7 @@ namespace resource {
 
 double NetworkSmpiModel::get_bandwidth_factor(double size)
 {
+  static std::vector<s_smpi_factor_t> smpi_bw_factor;
   if (smpi_bw_factor.empty())
     smpi_bw_factor = simgrid::smpi::utils::parse_factor(config::get_value<std::string>("smpi/bw-factor"));
 
@@ -66,6 +64,7 @@ double NetworkSmpiModel::get_bandwidth_factor(double size)
 
 double NetworkSmpiModel::get_latency_factor(double size)
 {
+  static std::vector<s_smpi_factor_t> smpi_lat_factor;
   if (smpi_lat_factor.empty())
     smpi_lat_factor = simgrid::smpi::utils::parse_factor(config::get_value<std::string>("smpi/lat-factor"));
 
