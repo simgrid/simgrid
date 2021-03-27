@@ -479,7 +479,7 @@ void Comm::init_smp(){
     }
     is_uniform_=is_uniform;
   }
-  bcast__scatter_LR_allgather(&(is_uniform_),1, MPI_INT, 0, comm_intra );
+  bcast__scatter_LR_allgather(&is_uniform_, 1, MPI_INT, 0, comm_intra);
 
   if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
@@ -498,7 +498,7 @@ void Comm::init_smp(){
   }
 
   int global_blocked;
-  allreduce__default(&is_blocked, &(global_blocked), 1, MPI_INT, MPI_LAND, this);
+  allreduce__default(&is_blocked, &global_blocked, 1, MPI_INT, MPI_LAND, this);
 
   if(MPI_COMM_WORLD==MPI_COMM_UNINITIALIZED || this==MPI_COMM_WORLD){
     if(this->rank()==0){

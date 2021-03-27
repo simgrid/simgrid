@@ -142,7 +142,7 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
       mdp->breakval = (char*)mdp->breakval + size;
     }
   }
-  return (result);
+  return result;
 }
 
 void* __mmalloc_remap_core(const s_xbt_mheap_t* mdp)

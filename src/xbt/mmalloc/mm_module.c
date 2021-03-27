@@ -265,7 +265,7 @@ void *xbt_mheap_destroy(xbt_mheap_t mdp)
     }
   }
 
-  return (mdp);
+  return mdp;
 }
 
 /* Safety gap from the heap's break address.

@@ -31,7 +31,7 @@ static void scheduleDAX(const_xbt_dynar_t dax)
         SD_task_schedulel(task, 1, hosts[0]);
       } else {
         XBT_INFO("Scheduling %s to node: %s", SD_task_get_name(task), sg_host_get_name(hosts[(cursor) % totalHosts]));
-        SD_task_schedulel(task, 1, hosts[(cursor) % totalHosts]);
+        SD_task_schedulel(task, 1, hosts[cursor % totalHosts]);
       }
     }
   }

@@ -337,7 +337,7 @@ unsigned int get_node_prefix(unsigned int id, unsigned int nb_bits)
   unsigned int size = sizeof(unsigned int) * 8;
   for (unsigned int j = 0; j < size; j++) {
     if (((id >> (size - 1 - j)) & 0x1) != 0) {
-      return nb_bits - (j);
+      return nb_bits - j;
     }
   }
   return 0;

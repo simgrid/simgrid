@@ -83,8 +83,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
       if (strcmp(name,"root") && strcmp(name,"end"))
         xbt_dynar_push(result, &task);
 
-      if ((sequential) &&
-          ((schedule && schedule_success) || XBT_LOG_ISENABLED(sd_dotparse, xbt_log_priority_verbose))) {
+      if (sequential && ((schedule && schedule_success) || XBT_LOG_ISENABLED(sd_dotparse, xbt_log_priority_verbose))) {
         /* try to take the information to schedule the task only if all is right*/
         char *char_performer = agget(node, (char *) "performer");
         char *char_order = agget(node, (char *) "order");

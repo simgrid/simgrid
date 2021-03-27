@@ -47,7 +47,7 @@ int main(int argc, char **argv){
   MC_automaton_new_propositional_symbol_pointer("r", &r);
   MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
-  MC_ignore(&(status.count), sizeof(status.count));
+  MC_ignore(&status.count, sizeof status.count);
 
   /* Get number of processes */
   MPI_Comm_size(MPI_COMM_WORLD, &size);

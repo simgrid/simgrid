@@ -51,7 +51,7 @@ void MSG_init_nocheck(int* argc, char** argv)
 
   if(MC_is_active()){
     /* Ignore total amount of messages sent during the simulation for heap comparison */
-    MC_ignore_heap(&(msg_global->sent_msg), sizeof(msg_global->sent_msg));
+    MC_ignore_heap(&msg_global->sent_msg, sizeof msg_global->sent_msg);
   }
 
   if (simgrid::config::get_value<bool>("debug/clean-atexit"))

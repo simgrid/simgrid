@@ -49,7 +49,7 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   colls::allgather(&connected_wins_[rank_], sizeof(MPI_Win), MPI_BYTE, connected_wins_.data(), sizeof(MPI_Win),
                    MPI_BYTE, comm);
 
-  colls::bcast(&(bar_), sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
+  colls::bcast(&bar_, sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
 
   colls::barrier(comm);
   this->add_f();

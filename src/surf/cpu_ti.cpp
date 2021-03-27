@@ -158,8 +158,8 @@ double CpuTiTmgr::solve(double a, double amount) const
   XBT_DEBUG("amount %f total %f", amount, total_);
   /* Reduce the problem to one where amount <= trace_total */
   double quotient       = floor(amount / total_);
-  double reduced_amount = (total_) * ((amount / total_) - floor(amount / total_));
-  double reduced_a      = a - (last_time_) * static_cast<int>(floor(a / last_time_));
+  double reduced_amount = total_ * ((amount / total_) - floor(amount / total_));
+  double reduced_a      = a - last_time_ * static_cast<int>(floor(a / last_time_));
 
   XBT_DEBUG("Quotient: %g reduced_amount: %f reduced_a: %f", quotient, reduced_amount, reduced_a);
 

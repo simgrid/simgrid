@@ -120,7 +120,7 @@ Datatype::Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags) : size_(size),
   this->add_f();
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
-    MC_ignore(&(refcount_), sizeof(refcount_));
+    MC_ignore(&refcount_, sizeof refcount_);
 #endif
 }
 
@@ -131,7 +131,7 @@ Datatype::Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint 
   id2type_lookup.insert({id, this});
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
-    MC_ignore(&(refcount_), sizeof(refcount_));
+    MC_ignore(&refcount_, sizeof refcount_);
 #endif
 }
 
@@ -207,7 +207,7 @@ void Datatype::ref()
 
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
-    MC_ignore(&(refcount_), sizeof(refcount_));
+    MC_ignore(&refcount_, sizeof refcount_);
 #endif
 }
 
@@ -218,7 +218,7 @@ void Datatype::unref(MPI_Datatype datatype)
 
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
-    MC_ignore(&(datatype->refcount_), sizeof(datatype->refcount_));
+    MC_ignore(&datatype->refcount_, sizeof datatype->refcount_);
 #endif
 
   if (datatype->refcount_ == 0 && not(datatype->flags_ & DT_FLAG_PREDEFINED))
@@ -419,8 +419,8 @@ int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatyp
     ub=((count-1)*stride+block_length-1)*old_type->get_extent()+old_type->ub();
   }
   if(old_type->flags() & DT_FLAG_DERIVED || stride != block_length){
-    *new_type = new Type_Vector(count * (block_length) * old_type->size(), lb, ub,
-                                   DT_FLAG_DERIVED, count, block_length, stride, old_type);
+    *new_type = new Type_Vector(count * block_length * old_type->size(), lb, ub, DT_FLAG_DERIVED, count, block_length,
+                                stride, old_type);
     retval=MPI_SUCCESS;
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
@@ -446,8 +446,8 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
     ub=((count-1)*stride)+(block_length-1)*old_type->get_extent()+old_type->ub();
   }
   if(old_type->flags() & DT_FLAG_DERIVED || stride != block_length*old_type->get_extent()){
-    *new_type = new Type_Hvector(count * (block_length) * old_type->size(), lb, ub,
-                                   DT_FLAG_DERIVED, count, block_length, stride, old_type);
+    *new_type = new Type_Hvector(count * block_length * old_type->size(), lb, ub, DT_FLAG_DERIVED, count, block_length,
+                                 stride, old_type);
     retval=MPI_SUCCESS;
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/

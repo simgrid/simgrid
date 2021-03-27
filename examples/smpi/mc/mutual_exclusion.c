@@ -27,7 +27,7 @@ int main(int argc, char **argv){
     exit(1);
   }
 
-  MC_ignore(&(status.count), sizeof(status.count));
+  MC_ignore(&status.count, sizeof status.count);
 
   /* Get number of processes */
   MPI_Comm_size(MPI_COMM_WORLD, &size);

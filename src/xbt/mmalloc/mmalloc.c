@@ -44,7 +44,7 @@ static void *align(struct mdesc *mdp, size_t size)
     mmorecore(mdp, adj);
     result = (char *) result + adj;
   }
-  return (result);
+  return result;
 }
 
 /** Initialize heapinfo about the heapinfo pages :)
@@ -149,7 +149,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
   }
 
   mdp->heaplimit = BLOCK((char *) result + size);
-  return (result);
+  return result;
 }
 
 /* Allocate memory from the heap.  */
@@ -341,5 +341,5 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
   }
 
-  return (result);
+  return result;
 }

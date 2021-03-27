@@ -73,7 +73,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       result = mmalloc(mdp, size);
       memcpy(result, ptr, requested_size);
       mfree(mdp, ptr);
-      return (result);
+      return result;
     }
 
     /* Full blocks -> Full blocks; see if we can hold it in place. */
@@ -148,5 +148,5 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     }
     break;
   }
-  return (result);
+  return result;
 }

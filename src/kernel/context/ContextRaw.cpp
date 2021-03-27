@@ -202,7 +202,7 @@ RawContext::RawContext(std::function<void()>&& code, actor::ActorImpl* actor, Sw
     this->stack_top_ = raw_makecontext(get_stack(), actor->get_stacksize(), smx_ctx_wrapper, this);
   } else {
     if (MC_is_active())
-      MC_ignore_heap(&stack_top_, sizeof(stack_top_));
+      MC_ignore_heap(&stack_top_, sizeof stack_top_);
   }
 }
 
