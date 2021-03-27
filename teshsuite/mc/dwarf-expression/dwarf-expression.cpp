@@ -17,10 +17,13 @@
 #include <array>
 #include <cassert>
 #include <cstdlib>
-#include <cstring>
-#include <random>
+#include <limits>
+#include <xbt/random.hpp>
 
-static std::default_random_engine rnd_engine;
+static uintptr_t rnd_engine()
+{
+  return simgrid::xbt::random::uniform_int(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+}
 
 static uintptr_t eval_binary_operation(simgrid::dwarf::ExpressionContext const& state, uint8_t op, uintptr_t a,
                                        uintptr_t b)
