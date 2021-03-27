@@ -17,8 +17,8 @@ ctest:
     paths:
     - lib/
     reports:
-      junit: 
-      - CTestResults.xml 
+      junit:
+      - CTestResults.xml
     expire_in: 1 week
     when: always
 

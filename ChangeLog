@@ -40,7 +40,7 @@ Documentation:
    - New section: Programming API of logs.
    - New section: Getting realistic results
    - New section: Examples of SMPI Usage
- - New part: SimGrid's Intenal, with a section on Design goals
+ - New part: SimGrid's Internals, with a section on Design goals
  - Move back to the classical Breathe tool chain, and fix many small glitches.
 
 SMPI:
@@ -81,7 +81,7 @@ SMPI:
      - Codevault bhtree_mpi
 
 Model checker:
- - Only initialze the Dwarf parser when needed, saving 10 seconds in most cases.
+ - Only initialize the Dwarf parser when needed, saving 10 seconds in most cases.
  - Start to overhaul the implementation to modernize it (still ongoing).
 
 XBT:
