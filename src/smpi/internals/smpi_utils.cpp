@@ -149,12 +149,16 @@ void print_memory_analysis(){
     }
   }
   if (simgrid::config::get_value<bool>("smpi/display-allocs")) {
-    XBT_INFO("Memory Usage: Simulated application allocated %lu bytes during its lifetime through malloc/calloc calls.\n"
-           "Largest allocation at once from a single process was %zu bytes, at %s:%d. It was called %u times during the whole simulation.\n" 
-           "If this is too much, consider sharing allocations for computation buffers.\n"
-           "This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)\n", 
-           total_malloc_size, max_malloc.size, simgrid::xbt::Path(max_malloc.file).get_base_name().c_str(), max_malloc.line, max_malloc.numcall
-    );
+    if(total_malloc_size != 0)
+      XBT_INFO("Memory Usage: Simulated application allocated %lu bytes during its lifetime through malloc/calloc calls.\n"
+             "Largest allocation at once from a single process was %zu bytes, at %s:%d. It was called %u times during the whole simulation.\n"
+             "If this is too much, consider sharing allocations for computation buffers.\n"
+             "This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)\n",
+             total_malloc_size, max_malloc.size, simgrid::xbt::Path(max_malloc.file).get_base_name().c_str(), max_malloc.line, max_malloc.numcall
+      );
+    else
+      XBT_INFO("Allocations analysis asked, but 0 bytes were allocated through malloc/calloc calls intercepted by SMPI.\n"
+               "Either code is using other ways of allocatong memory, or it was built with SMPI_NO_OVERRIDE_MALLOC");
     if(total_shared_size != 0)
       XBT_INFO("%lu bytes were automatically shared between processes, in %u calls\n", total_shared_size, total_shared_calls);
   }
