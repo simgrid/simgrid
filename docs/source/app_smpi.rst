@@ -127,9 +127,9 @@ usual.
 
 Some shortcuts are available:
 
-``-gdb`` is equivalent to ``-wrapper "gdb --args" -keep-temps``, to run within gdb debugger
-``-lldb`` is equivalent to ``-wrapper "lldb --" -keep-temps``, to run within lldb debugger
-``-vgdb`` is equivalent to ``-wrapper "valgrind --vgdb=yes --vgdb-error=0"
+- ``-gdb`` is equivalent to ``-wrapper "gdb --args" -keep-temps``, to run within gdb debugger
+- ``-lldb`` is equivalent to ``-wrapper "lldb --" -keep-temps``, to run within lldb debugger
+- ``-vgdb`` is equivalent to ``-wrapper "valgrind --vgdb=yes --vgdb-error=0"
 -keep-temps``, to run within valgrind and allow to attach a debugger
 
 To help locate bottlenecks and largest allocations in the simulated application,
@@ -138,8 +138,8 @@ the -analyze flag can be passed to smpirun. It will activate
 :ref:`smpi/display-allocs<cfg=smpi/display-allocs>` options and provide hints
 at the end of execution.
 
-SMPI will also report MPI handle (MPI_Comm, Request, Datatype) leaks at the end
-of execution. This can help identify memory leaks that can trigger
+SMPI will also report MPI handle (Comm, Request, Op, Datatype...) leaks
+at the end of execution. This can help identify memory leaks that can trigger
 crashes and slowdowns.
 By default it only displays the number of leaked items detected.
 Option :ref:`smpi/list-leaks:n<cfg=smpi/list-leaks>` can be used to display the
