@@ -158,7 +158,7 @@ void print_memory_analysis(){
       );
     else
       XBT_INFO("Allocations analysis asked, but 0 bytes were allocated through malloc/calloc calls intercepted by SMPI.\n"
-               "Either code is using other ways of allocatong memory, or it was built with SMPI_NO_OVERRIDE_MALLOC");
+               "Either code is using other ways of allocating memory, or it was built with SMPI_NO_OVERRIDE_MALLOC");
     if(total_shared_size != 0)
       XBT_INFO("%lu bytes were automatically shared between processes, in %u calls\n", total_shared_size, total_shared_calls);
   }
