@@ -181,7 +181,7 @@ void smpi_init_options(){
   // return if already called
   if(_smpi_options_initialized)
     return;
-  simgrid::config::declare_flag<bool>("smpi/display-analysis", "Whether we should display a memory allocations analysis after simulation.", false);
+  simgrid::config::declare_flag<bool>("smpi/display-allocs", "Whether we should display a memory allocations analysis after simulation.", false);
   simgrid::config::declare_flag<bool>("smpi/display-timing", "Whether we should display the timing after simulation.", false);
   simgrid::config::declare_flag<int>("smpi/list-leaks", "Whether we should display the n first MPI handle leaks (addresses and type only) after simulation", 0);
   simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.", false);

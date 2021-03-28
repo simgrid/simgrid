@@ -148,7 +148,7 @@ void print_memory_analysis(){
       }
     }
   }
-  if (simgrid::config::get_value<bool>("smpi/display-analysis")) {
+  if (simgrid::config::get_value<bool>("smpi/display-allocs")) {
     XBT_INFO("Memory Usage: Simulated application allocated %lu bytes during its lifetime through malloc/calloc calls.\n"
            "Largest allocation at once from a single process was %zu bytes, at %s:%d. It was called %u times during the whole simulation.\n" 
            "If this is too much, consider sharing allocations for computation buffers.\n"
