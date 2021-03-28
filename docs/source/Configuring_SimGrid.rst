@@ -141,12 +141,14 @@ Existing Configuration Items
 - **surf/precision:** :ref:`cfg=surf/precision`
 
 - **For collective operations of SMPI,** please refer to Section :ref:`cfg=smpi/coll-selector`
+- **smpi/auto-shared-malloc-thresh:** :ref:`cfg=smpi/auto-shared-malloc-thresh`
 - **smpi/async-small-thresh:** :ref:`cfg=smpi/async-small-thresh`
 - **smpi/buffering:** :ref:`cfg=smpi/buffering`
 - **smpi/bw-factor:** :ref:`cfg=smpi/bw-factor`
 - **smpi/coll-selector:** :ref:`cfg=smpi/coll-selector`
 - **smpi/comp-adjustment-file:** :ref:`cfg=smpi/comp-adjustment-file`
 - **smpi/cpu-threshold:** :ref:`cfg=smpi/cpu-threshold`
+- **smpi/display-allocs:** :ref:`cfg=smpi/display-allocs`
 - **smpi/display-timing:** :ref:`cfg=smpi/display-timing`
 - **smpi/grow-injected-times:** :ref:`cfg=smpi/grow-injected-times`
 - **smpi/host-speed:** :ref:`cfg=smpi/host-speed`
@@ -1080,7 +1082,6 @@ https://framagit.org/simgrid/platform-calibration/
 https://simgrid.org/contrib/smpi-saturation-doc.html
 
 .. _cfg=smpi/display-timing:
-
 Reporting Simulation Time
 .........................
 
@@ -1093,6 +1094,22 @@ code, making it difficult to report the simulated time when the
 simulation ends. If you enable the ``smpi/display-timing`` item,
 ``smpirun`` will display this information when the simulation
 ends.
+SMPI will also display information about the amout of real time spent
+in application code and in SMPI internals, to provide hints about the
+need to use sampling to reduce simulation time.
+
+.. _cfg=smpi/display-allocs:
+Reporting memory allocations
+.........................
+
+**Option** ``smpi/display-allocs`` **Default:** 0 (false)
+
+SMPI intercepts malloc and calloc calls performed inside the running
+application, if it wasn't compiled with SMPI_NO_OVERRIDE_MALLOC.
+With this option, SMPI will show at the end of execution the amount of
+memory allocated through these calls, and locate the most expensive one.
+This helps finding the targets for manual memory sharing, or the threshold
+to use for smpi/auto-shared-malloc-thresh option (see :ref:`cfg=smpi/auto-shared-malloc-thresh`).
 
 .. _cfg=smpi/keep-temps:
 
@@ -1438,6 +1455,23 @@ at least one huge page:
 Then, you can pass the option
 ``--cfg=smpi/shared-malloc-hugepage:/home/huge`` to smpirun to
 actually activate the huge page support in shared mallocs.
+
+.. _cfg=smpi/auto-shared-malloc-thresh:
+Automatically share allocations
+.........................
+
+**Option** ``smpi/auto-shared-malloc-thresh:`` **Default:** 0 (false)
+   This value in bytes represents the size above which all allocations
+   will be "shared" by default (as if they were performed through
+   SMPI_SHARED_MALLOC macros). Default = 0 = disabled feature.
+   The value must be carefully chosen to only select data buffers which
+   will not modify execution path or cause crash if their content is false.
+   Option :ref:`cfg=smpi/display-allocs` can be used to locate the largest
+   allocation detected in a run, and provide a good starting threshold.
+   Note : malloc, calloc and free are overridden by smpicc/cxx by default.
+   This can cause some troubles if codes are already overriding these. If this
+   is the case, defining SMPI_NO_OVERRIDE_MALLOC in the compilation flags can
+   help, but will make this feature unusable.
 
 .. _cfg=smpi/wtime:
 
