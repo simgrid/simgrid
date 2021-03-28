@@ -71,16 +71,6 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
       &observer);
 }
 
-void simcall_process_join(smx_actor_t process, double timeout) // XBT_ATTRIB_DEPRECATED_v328
-{
-  simgrid::kernel::actor::ActorImpl::self()->join(process, timeout);
-}
-
-void simcall_process_suspend(smx_actor_t process) // XBT_ATTRIB_DEPRECATED_v328
-{
-  process->get_iface()->suspend();
-}
-
 simgrid::kernel::activity::State simcall_process_sleep(double duration) // XBT_ATTRIB_DEPRECATED_v329
 {
   simgrid::kernel::actor::ActorImpl::self()->sleep(duration);

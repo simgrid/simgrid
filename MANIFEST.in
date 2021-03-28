@@ -2051,7 +2051,6 @@ include include/xbt/replay.hpp
 include include/xbt/signal.hpp
 include include/xbt/str.h
 include include/xbt/string.hpp
-include include/xbt/synchro.h
 include include/xbt/sysdep.h
 include include/xbt/system_error.hpp
 include include/xbt/utility.hpp

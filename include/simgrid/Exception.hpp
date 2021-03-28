@@ -123,8 +123,6 @@ private:
 /** Exception raised when a timeout elapsed */
 DECLARE_SIMGRID_EXCEPTION(TimeoutException);
 
-using TimeoutError XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::TimeoutException") = TimeoutException;
-
 /** Exception raised when a host fails */
 DECLARE_SIMGRID_EXCEPTION(HostFailureException);
 
@@ -194,7 +192,4 @@ private:
 };
 
 } // namespace simgrid
-
-using xbt_ex XBT_ATTRIB_DEPRECATED_v328("Please use simgrid::Exception") = simgrid::Exception;
-
 #endif

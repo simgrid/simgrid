@@ -770,7 +770,6 @@ set(headers_to_install
   include/xbt/signal.hpp
   include/xbt/str.h
   include/xbt/string.hpp
-  include/xbt/synchro.h
   include/xbt/sysdep.h
   include/xbt/system_error.hpp
   include/xbt/utility.hpp

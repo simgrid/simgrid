@@ -130,12 +130,6 @@ XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::test()") XBT_PUBLIC
 SG_BEGIN_DECL
 XBT_ATTRIB_DEPRECATED_v329("This function will be removed") void simcall_process_set_data(smx_actor_t process,
                                                                                           void* data);
-XBT_ATTRIB_DEPRECATED_v328("Please use sg_actor_suspend()") XBT_PUBLIC
-    void simcall_process_suspend(smx_actor_t process);
-
-XBT_ATTRIB_DEPRECATED_v328("Please use sg_actor_join()") XBT_PUBLIC
-    void simcall_process_join(smx_actor_t process, double timeout);
-
 XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_sleep_for()") XBT_PUBLIC
 #ifdef __cplusplus
     simgrid::kernel::activity::State

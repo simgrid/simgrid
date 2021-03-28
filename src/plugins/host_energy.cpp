@@ -206,15 +206,6 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr)
   init_watts_range_list();
 
   const char* off_power_str = host_->get_property("wattage_off");
-  if (off_power_str == nullptr) {
-    off_power_str = host_->get_property("watt_off");
-
-    static bool warned = false;
-    if (off_power_str != nullptr && not warned) {
-      warned = true;
-      XBT_WARN("Please use 'wattage_off' instead of 'watt_off' to define the idle wattage of hosts in your XML.");
-    }
-  }
   if (off_power_str != nullptr) {
     try {
       this->watts_off_ = std::stod(std::string(off_power_str));
@@ -340,62 +331,6 @@ double HostEnergy::get_consumed_energy()
 
 void HostEnergy::init_watts_range_list()
 {
-  const char* old_prop = host_->get_property("watt_per_state");
-  if (old_prop != nullptr) {
-    std::vector<std::string> all_power_values;
-    boost::split(all_power_values, old_prop, boost::is_any_of(","));
-
-    xbt_assert(all_power_values.size() == (unsigned)host_->get_pstate_count(),
-               "Invalid XML file. Found %zu energetic profiles for %d pstates", all_power_values.size(),
-               host_->get_pstate_count());
-
-    // XBT_ATTRIB_DEPRECATED_v328: putting this macro name here so that we find it during the deprecation cleanups
-    std::string msg = "DEPRECATION WARNING: Property 'watt_per_state' will only work until v3.28.\n";
-    msg += std::string("The old syntax 'Idle:OneCore:AllCores' must be converted into 'Idle:Epsilon:AllCores' to "
-                       "properly model the consumption of non-whole tasks on mono-core hosts. Here are the values to "
-                       "use for host '") +
-           host_->get_cname() + "' in your XML file:\n";
-    msg += "     <prop id=\"wattage_per_state\" value=\"";
-    for (auto const& current_power_values_str : all_power_values) {
-      std::vector<std::string> current_power_values;
-      boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
-      double p_idle = xbt_str_parse_double((current_power_values.at(0)).c_str(),
-                                           "Invalid obsolete XML file. Fix your watt_per_state property.");
-      double p_full;
-      double p_epsilon;
-
-      if (current_power_values.size() == 3) {
-        double p_one_core = xbt_str_parse_double((current_power_values.at(1)).c_str(),
-                                                 "Invalid obsolete XML file. Fix your watt_per_state property.");
-        p_full     = xbt_str_parse_double((current_power_values.at(2)).c_str(),
-                                      "Invalid obsolete XML file. Fix your watt_per_state property.");
-        if (host_->get_core_count() == 1) {
-          p_epsilon = p_full;
-        } else {
-          p_epsilon = p_one_core - ((p_full - p_one_core) / (host_->get_core_count() - 1));
-        }
-      } else { // consumption given with idle and full only
-        p_full = xbt_str_parse_double((current_power_values.at(1)).c_str(),
-                                      "Invalid obsolete XML file. Fix your watt_per_state property.");
-        if (host_->get_core_count() == 1) {
-          p_epsilon = p_full;
-        } else {
-          p_epsilon = p_idle;
-        }
-      }
-
-      PowerRange range(p_idle, p_epsilon, p_full);
-      power_range_watts_list_.push_back(range);
-
-      msg += std::to_string(p_idle) + ":" + std::to_string(p_epsilon) + ":" + std::to_string(p_full);
-      msg += ",";
-    }
-    msg.pop_back(); // Remove the extraneous ','
-    msg += "\" />";
-    XBT_WARN("%s", msg.c_str());
-    return;
-  }
-
   const char* all_power_values_str = host_->get_property("wattage_per_state");
   if (all_power_values_str == nullptr) {
     /* If no power values are given, we assume it's 0 everywhere */
