@@ -524,7 +524,7 @@ The simulation time increases a lot, while there are no more MPI calls performed
 The ``--cfg=smpi/display-timing`` option gives more details about execution 
 and advises using sampling if the time spent in computing loops seems too high.
 
-The ``--cfg=smpi/running-power:1000000000`` option sets the speed of the processor used for 
+The ``--cfg=smpi/host-speed:1000000000`` option sets the speed of the processor used for 
 running the simulation. Here we say that its speed is the same as one of the 
 processors we are simulating (1Gf), so that 1 second of computation is injected 
 as 1 second in the simulation.
@@ -620,6 +620,38 @@ If control structures are also problematic, you can use ``SMPI_PARTIAL_SHARED_MA
 macro, which shares only specific parts of the structure between processes, 
 and use specific memory for the important parts.
 It can be freed afterward with SMPI_SHARED_FREE.
+
+If allocations are performed with malloc or calloc, SMPI (from version 3.25) provides the option
+``--cfg=smpi/auto-shared-malloc-shared:n`` which will replace all allocations above size n bytes by
+shared allocations. The value has to be carefully selected to avoid smaller control arrays, 
+containing data necessary for the completion of the run.
+Try to run the (non modified) DT example again, with values going from 10 to 100,000 to show that
+too small values can cause crashes.
+
+A useful option to identify the largest allocations in the code is ``--cfg=smpi/display-allocs:yes`` (from 3.27).
+It will display at the end of a (successful) run the largest allocations and their locations, helping pinpoint the
+targets for sharing, or setting the threshold for automatic ones.
+For DT, the process would be to run a smaller class of problems, 
+
+.. code-block:: shell
+
+   $ make dt NPROCS=21 CLASS=A
+   $ smpirun --cfg=smpi/display-allocs:yes -np 21 -platform ../cluster_backbone.xml bin/dt.A.x BH
+
+Which should output:
+
+.. code-block:: shell
+
+    [smpi_utils/INFO] Memory Usage: Simulated application allocated 198533192 bytes during its lifetime through malloc/calloc calls.
+    Largest allocation at once from a single process was 3553184 bytes, at dt.c:388. It was called 3 times during the whole simulation.
+    If this is too much, consider sharing allocations for computation buffers.
+    This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
+
+And from there we can identify dt.c:388 as the main allocation, and the best target to convert to
+shared mallocs for larger simulations. Furthermore, with 21 processes, we see that this particular
+allocation and size was only called 3 times, which means that other processes are likely to allocate
+less memory here (imbalance). Using 3553184 as a threshold value might be unwise, as most processes
+wouldn't share memory, so a lower threshold would be advisable.
 
 Further Readings
 ----------------
