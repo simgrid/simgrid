@@ -44,20 +44,13 @@ Documentation:
  - Move back to the classical Breathe tool chain, and fix many small glitches.
 
 SMPI:
- - Handle leak checking: SMPI will now display a message if MPI
-   handles are still present at the end of a simulation. This may be nothing,
-   but if the number is high it could be a problem. To display more information
-   about the type of leaked handle, option --cfg=smpi/list-leaks:n. will display
-   the n first leaked pointers and their types. Known issue: MPI_Cancel usage
-   may trigger handle leaks in SMPI.
-   Using smpirun with -wrapper "valgrind --leak-check=full --track-origins=yes"
-   can provide more information to help locate precisely the leaks.
- - Memory allocations analysis: MPI codes using malloc/calloc to
-   allocate memory, and not compiled with SMPI_NO_OVERRIDE_MALLOC, can use
-   smpi/display-analysis option to show at the end of execution the amount of
-   memory allocated through these calls, and locate the most expensive one.
-   This helps finding the targets for manual memory sharing, or the threshold
-   to use for smpi/auto-shared-malloc-thresh option.
+ - Handle leak checking: SMPI will now display a message if MPI handles are still
+   present at the end of a simulation. Option smpi/list-leaks:n will display the n
+   first leaked pointers and their types.
+ - smpi/display-allocs option : Display Memory allocations analysis, with hints
+   about the largest allocations. This only works for allocations with malloc/calloc
+   and not compiled with SMPI_NO_OVERRIDE_MALLOC
+ - "-analyze" option in smpirun will activate smpi/display-allocs and smpi/display-timing
  - New implemented MPI calls: MPI_File_set_size, MPI_Aint_add, MPI_Aint_diff,
    MPI_Type_get_extent_x, MPI_Type_get_true_extent_x, MPI_Status_set_elements_x
  - Support for MPI C++ datatypes (MPI_CXX_BOOL, MPI_CXX_FLOAT_COMPLEX,
