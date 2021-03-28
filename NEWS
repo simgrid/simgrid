@@ -1,3 +1,10 @@
+                    _               _____  ____  ___
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ \( _ )
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) / _ \
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ (_) |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____\___/
+               (unreleased)
+
                     _               _____  ____ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \___  |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | / /
@@ -11,6 +18,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \___  |
     * Doc: Several new sections in the user manual, and start documenting the internals.
     * S4U: Direct comms from host to host, without mailboxes.
     * Many internal cleanups and refactoring to prepare the future.
+
                     _               _____  ____   __
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / /_
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | '_ \
