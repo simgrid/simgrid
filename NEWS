@@ -3,8 +3,14 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \___  |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | / /
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ / /
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____/_/
-               (unreleased)
+               March 29. 2021
 
+  The Ragnar Release (anniversary of the siege of Paris by Vikings in 845)
+
+    * SMPI: can now report leaks and hint about the mallocs and kernels hindering simulation scalability
+    * Doc: Several new sections in the user manual, and start documenting the internals.
+    * S4U: Direct comms from host to host, without mailboxes.
+    * Many internal cleanups and refactoring to prepare the future.
                     _               _____  ____   __
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / /_
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | '_ \

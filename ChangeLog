@@ -2,11 +2,8 @@
 
 SimGrid (3.26.1) NOT RELEASED YET (v3.27 expected March 20. 2021, 09:37 UTC)
 
-User-visible changes:
- - Removed some option aliases that were deprecated since v3.23 (June 2019)
-   - 'verbose-exit' is now 'debug/verbose-exit'
-   - 'simix/breakpoint' is now 'debug/breakpoint'
-   - 'clean-atexit' is now 'debug/clean-atexit'
+Main user-visible changes:
+ - All functions marked as deprecated since one year were removed.
  - Removed all that was related to the "Storage" type in all APIs and bindings.
    "Disks" have been introduced more than a year ago to replace them for the better.
    It's time to finish this replacement.
@@ -15,6 +12,10 @@ User-visible changes:
    avoiding "initializer element is not constant" errors with some codes. Please be
    careful to recompile your MPI codes if switching to this new SimGrid version.
  - Network model ns-3 now requires version ns-3.28 or higher.
+ - Removed some option aliases that were deprecated since v3.23 (June 2019)
+   - 'verbose-exit' is now 'debug/verbose-exit'
+   - 'simix/breakpoint' is now 'debug/breakpoint'
+   - 'clean-atexit' is now 'debug/clean-atexit'
 
 S4U:
  - New functions: Comm::sendto_{init,async} to initiate a communication
