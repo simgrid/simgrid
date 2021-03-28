@@ -124,16 +124,18 @@ usual.
 
    smpirun -wrapper valgrind ...other args...
    smpirun -wrapper "gdb --args" --cfg=contexts/factory:thread ...other args...
-   Some shortcuts are available:
-   ``-gdb`` is equivalent to ``-wrapper "gdb --args" -keep-temps``, to run within gdb debugger
-   ``-lldb`` is equivalent to ``-wrapper "lldb --" -keep-temps``, to run within lldb debugger
-   ``-vgdb`` is equivalent to ``-wrapper "valgrind --vgdb=yes --vgdb-error=0"
-   -keep-temps``, to run within valgrind and allow to attach a debugger
+
+Some shortcuts are available:
+
+``-gdb`` is equivalent to ``-wrapper "gdb --args" -keep-temps``, to run within gdb debugger
+``-lldb`` is equivalent to ``-wrapper "lldb --" -keep-temps``, to run within lldb debugger
+``-vgdb`` is equivalent to ``-wrapper "valgrind --vgdb=yes --vgdb-error=0"
+-keep-temps``, to run within valgrind and allow to attach a debugger
 
 To help locate bottlenecks and largest allocations in the simulated application,
 the -analyze flag can be passed to smpirun. It will activate
 :ref:`smpi/display-timing<cfg=smpi/display-timing>` and
-:ref:`smpi/display-allocs<cfg=display-allocs>` options and provide hints
+:ref:`smpi/display-allocs<cfg=smpi/display-allocs>` options and provide hints
 at the end of execution.
 
 SMPI will also report MPI handle (MPI_Comm, Request, Datatype) leaks at the end
@@ -142,7 +144,7 @@ crashes and slowdowns.
 By default it only displays the number of leaked items detected.
 Option :ref:`smpi/list-leaks:n<cfg=smpi/list-leaks>` can be used to display the
 n first leaks encountered and their type. To get more information, running smpirun
-with -wrapper "valgrind --leak-check=full --track-origins=yes" should show
+with ``-wrapper "valgrind --leak-check=full --track-origins=yes"`` should show
 the exact origin of leaked handles.
 Known issue : MPI_Cancel may trigger internal leaks within SMPI.
 
