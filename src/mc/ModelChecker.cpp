@@ -105,11 +105,12 @@ void ModelChecker::shutdown()
 {
   XBT_DEBUG("Shutting down model-checker");
 
-  RemoteProcess* process = &this->get_remote_process();
-  if (process->running()) {
+  RemoteProcess& process = get_remote_process();
+  if (process.running()) {
     XBT_DEBUG("Killing process");
-    kill(process->pid(), SIGKILL);
-    process->terminate();
+    // TODO, terminate the model checker politely instead of exiting rudely
+    kill(process.pid(), SIGKILL);
+    process.terminate();
   }
 }
 
@@ -240,9 +241,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
 /** Terminate the model-checker application */
 void ModelChecker::exit(int status)
 {
-  // TODO, terminate the model checker politely instead of exiting rudely
-  if (get_remote_process().running())
-    kill(get_remote_process().pid(), SIGKILL);
+  shutdown();
   ::exit(status);
 }
 
