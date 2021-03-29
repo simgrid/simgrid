@@ -3,11 +3,11 @@
 SimGrid (3.26.1) NOT RELEASED YET (v3.27 expected March 20. 2021, 09:37 UTC)
 
 Main user-visible changes:
- - All functions marked as deprecated since one year were removed.
+ - All functions marked as deprecated for one year were removed.
  - Removed all that was related to the "Storage" type in all APIs and bindings.
    "Disks" have been introduced more than a year ago to replace them for the better.
    It's time to finish this replacement.
- - SMPI ABI break from previous version: MPI global handles (predefined datatypes,
+ - SMPI ABI breaks from previous version: MPI global handles (predefined datatypes,
    ops, COMM_WORLD) are now defined differently, and can be used in initializers,
    avoiding "initializer element is not constant" errors with some codes. Please be
    careful to recompile your MPI codes if switching to this new SimGrid version.
