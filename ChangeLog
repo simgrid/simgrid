@@ -1,6 +1,8 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.26.1) NOT RELEASED YET (v3.27 expected March 20. 2021, 09:37 UTC)
+SimGrid (3.27) March 29. 2021
+
+The Ragnar Release (anniversary of the siege of Paris by Vikings in 845)
 
 Main user-visible changes:
  - All functions marked as deprecated for one year were removed.
