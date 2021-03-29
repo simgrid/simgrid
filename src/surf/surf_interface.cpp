@@ -11,9 +11,9 @@
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
-#include "src/xbt_modinter.h" /* whether initialization was already done */
 #include "surf/surf.hpp"
 #include "xbt/module.h"
+#include "xbt/xbt_modinter.h" /* whether initialization was already done */
 
 #include <fstream>
 #include <string>

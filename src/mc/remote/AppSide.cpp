@@ -8,7 +8,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
-#include "src/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
+#include "xbt/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>

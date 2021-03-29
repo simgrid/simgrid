@@ -6,9 +6,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/xbt/log_private.hpp"
-#include "src/xbt_modinter.h"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
+#include "xbt/xbt_modinter.h"
 
 #include <algorithm>
 #include <array>

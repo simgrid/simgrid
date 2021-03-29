@@ -10,7 +10,6 @@
 #include "simgrid/config.h"
 #include "simgrid/sg_config.hpp"
 #include "src/internal_config.h"
-#include "src/xbt_modinter.h" /* prototype of other module's init/exit in XBT */
 #include "xbt/config.hpp"
 #include "xbt/coverage.h"
 #include "xbt/dynar.h"
@@ -19,6 +18,7 @@
 #include "xbt/misc.h"
 #include "xbt/module.h" /* this module */
 #include "xbt/sysdep.h"
+#include "xbt/xbt_modinter.h" /* prototype of other module's init/exit in XBT */
 
 #include <cmath>
 #include <cstdio>

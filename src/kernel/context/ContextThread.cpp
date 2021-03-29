@@ -8,8 +8,8 @@
 #include "simgrid/Exception.hpp"
 #include "src/internal_config.h" /* loads context system definitions */
 #include "src/simix/smx_private.hpp"
-#include "src/xbt_modinter.h" /* prototype of os thread module's init/exit in XBT */
 #include "xbt/function_types.h"
+#include "xbt/xbt_modinter.h" /* prototype of os thread module's init/exit in XBT */
 
 #include <boost/core/demangle.hpp>
 #include <functional>

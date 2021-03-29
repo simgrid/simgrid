@@ -14,7 +14,7 @@
 #include "mmprivate.h"
 #include "src/internal_config.h"
 #include "src/mc/remote/mc_protocol.h"
-#include "src/xbt_modinter.h"
+#include "xbt/xbt_modinter.h"
 #include <math.h>
 
 /* ***** Whether to use `mmalloc` of the underlying malloc ***** */

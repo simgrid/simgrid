@@ -2117,6 +2117,7 @@ include src/include/surf/surf.hpp
 include src/include/xbt/coverage.h
 include src/include/xbt/mmalloc.h
 include src/include/xbt/parmap.hpp
+include src/include/xbt/xbt_modinter.h
 include src/include/xxhash.hpp
 include src/instr/instr_config.cpp
 include src/instr/instr_interface.cpp
@@ -2635,7 +2636,6 @@ include src/xbt/xbt_replay.cpp
 include src/xbt/xbt_str.cpp
 include src/xbt/xbt_str_test.cpp
 include src/xbt/xbt_virtu.cpp
-include src/xbt_modinter.h
 include teshsuite/java/CMakeLists.txt
 include teshsuite/kernel/CMakeLists.txt
 include teshsuite/lua/CMakeLists.txt

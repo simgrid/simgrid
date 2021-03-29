@@ -10,6 +10,7 @@ set(EXTRA_DIST
   src/include/xbt/coverage.h
   src/include/xbt/parmap.hpp
   src/include/xbt/mmalloc.h
+  src/include/xbt/xbt_modinter.h
   src/include/catch.hpp
   src/include/xxhash.hpp
   src/mc/mc_mmu.hpp
@@ -290,7 +291,6 @@ set(XBT_SRC
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
   src/xbt/xbt_virtu.cpp
-  src/xbt_modinter.h
   )
 
 if(HAVE_MMALLOC)
