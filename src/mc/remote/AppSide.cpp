@@ -8,6 +8,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
+#include "xbt/coverage.h"
 #include "xbt/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
 #include <simgrid/modelchecker.h>
 
@@ -200,6 +201,7 @@ void AppSide::handle_messages() const
             SMPI_finalize();
         }
 #endif
+        coverage_checkpoint();
         int send_res = channel_.send(MessageType::DEADLOCK_CHECK_REPLY); // really?
         xbt_assert(send_res == 0, "Could not answer to FINALIZE");
         if (terminate_asap)
@@ -216,6 +218,7 @@ void AppSide::handle_messages() const
 
 void AppSide::main_loop() const
 {
+  coverage_checkpoint();
   while (true) {
     simgrid::mc::execute_actors();
     int send_res = channel_.send(MessageType::WAITING);
