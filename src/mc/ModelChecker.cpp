@@ -384,9 +384,10 @@ std::string ModelChecker::simcall_dot_label(int aid, int times_considered)
 void ModelChecker::finalize_app()
 {
   int res = checker_side_.get_channel().send(MessageType::FINALIZE);
-  xbt_assert(res == 0, "Could not ask the app to finalize MPI on need");
-  s_mc_message_int_t message;
-  ssize_t s = checker_side_.get_channel().receive(message);
+  xbt_assert(res == 0, "Could not ask the app to finalize on need");
+
+  s_mc_message_t answer;
+  ssize_t s = checker_side_.get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive answer to FINALIZE");
 }
 

@@ -196,9 +196,8 @@ void AppSide::handle_messages() const
         if (smpi_enabled())
           SMPI_finalize();
 #endif
-        s_mc_message_int_t answer{MessageType::DEADLOCK_CHECK_REPLY, 0};
-        int send_res = channel_.send(answer);
-        xbt_assert(send_res == 0, "Could answer to FINALIZE");
+        int send_res = channel_.send(MessageType::DEADLOCK_CHECK_REPLY); // really?
+        xbt_assert(send_res == 0, "Could not answer to FINALIZE");
         break;
       }
 
