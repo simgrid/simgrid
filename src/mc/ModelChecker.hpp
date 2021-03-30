@@ -59,7 +59,7 @@ public:
   XBT_ATTRIB_NORETURN void exit(int status);
 
   bool checkDeadlock();
-  void finalize_app();
+  void finalize_app(bool terminate_asap = false);
 
   Checker* getChecker() const { return checker_; }
   void setChecker(Checker* checker) { checker_ = checker; }

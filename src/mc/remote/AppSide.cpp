@@ -190,14 +190,20 @@ void AppSide::handle_messages() const
         break;
 
       case MessageType::FINALIZE: {
+        assert_msg_size("FINALIZE", s_mc_message_int_t);
+        bool terminate_asap = ((s_mc_message_int_t*)message_buffer.data())->value;
 #if HAVE_SMPI
-        XBT_INFO("Finalize. Smpi_enabled: %d", (int)smpi_enabled());
-        simix_global->display_all_actor_status();
-        if (smpi_enabled())
-          SMPI_finalize();
+        if (not terminate_asap) {
+          XBT_INFO("Finalize. Smpi_enabled: %d", (int)smpi_enabled());
+          simix_global->display_all_actor_status();
+          if (smpi_enabled())
+            SMPI_finalize();
+        }
 #endif
         int send_res = channel_.send(MessageType::DEADLOCK_CHECK_REPLY); // really?
         xbt_assert(send_res == 0, "Could not answer to FINALIZE");
+        if (terminate_asap)
+          ::_Exit(0);
         break;
       }
 
