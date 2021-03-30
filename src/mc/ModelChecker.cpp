@@ -271,6 +271,7 @@ void ModelChecker::handle_waitpid()
         xbt_assert(ptrace_res != -1, "Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
+          this->get_remote_process().terminate();
           this->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
@@ -290,6 +291,7 @@ void ModelChecker::handle_waitpid()
 
       else if (WIFSIGNALED(status)) {
         MC_report_crash(status);
+        this->get_remote_process().terminate();
         this->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
       } else if (WIFEXITED(status)) {
         XBT_DEBUG("Child process is over");
