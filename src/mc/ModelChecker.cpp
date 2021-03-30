@@ -108,7 +108,7 @@ void ModelChecker::shutdown()
   RemoteProcess& process = get_remote_process();
   if (process.running()) {
     XBT_DEBUG("Killing process");
-    // TODO, terminate the model checker politely instead of exiting rudely
+    finalize_app(true);
     kill(process.pid(), SIGKILL);
     process.terminate();
   }
