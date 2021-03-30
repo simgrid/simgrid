@@ -700,7 +700,7 @@ double MSG_task_get_remaining_work_ratio(const_msg_task_t task)
  */
 double MSG_task_get_flops_amount(const_msg_task_t task)
 {
-  if (task->compute != nullptr) {
+  if (task->compute != nullptr && task->compute->get_state() == simgrid::s4u::Activity::State::STARTED) {
     return task->compute->get_remaining();
   } else {
     // Not started or already done.
