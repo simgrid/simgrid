@@ -10,6 +10,7 @@
 #include "src/mc/mc_pattern.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
+#include "src/surf/HostImpl.hpp"
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
@@ -365,8 +366,10 @@ xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info = actor_info_cast(actor);
-  auto remote_string_address =
-      remote(reinterpret_cast<const simgrid::xbt::string_data*>(&actor->get_host()->get_name()));
+
+  Remote<s4u::Host> temp_host = process->read(remote(actor->get_host()));
+  auto temp_host_name_address = &temp_host.get_buffer()->get_impl()->get_name();
+  auto remote_string_address  = remote(reinterpret_cast<const simgrid::xbt::string_data*>(temp_host_name_address));
   simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   std::vector<char> hostname(remote_string.len + 1);
   // no need to read the terminating null byte, and thus hostname[remote_string.len] is guaranteed to be '\0'
