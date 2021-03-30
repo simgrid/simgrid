@@ -25,16 +25,16 @@ namespace surf {
 /************
  * Resource *
  ************/
-HostImpl::HostImpl(const std::string& name, s4u::Host* piface) : piface_(name, this)
+HostImpl::HostImpl(const std::string& name, s4u::Host* piface) : piface_(this), name_(name)
 {
-  xbt_assert(s4u::Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name.c_str());
-  s4u::Engine::get_instance()->host_register(name, piface);
+  xbt_assert(s4u::Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
+  s4u::Engine::get_instance()->host_register(name_, piface);
 }
 
-HostImpl::HostImpl(const std::string& name) : piface_(name, this)
+HostImpl::HostImpl(const std::string& name) : piface_(this), name_(name)
 {
-  xbt_assert(s4u::Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name.c_str());
-  s4u::Engine::get_instance()->host_register(name, &piface_);
+  xbt_assert(s4u::Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
+  s4u::Engine::get_instance()->host_register(name_, &piface_);
 }
 
 HostImpl::~HostImpl()
@@ -63,7 +63,7 @@ HostImpl::~HostImpl()
 void HostImpl::destroy()
 {
   s4u::Host::on_destruction(*this->get_iface());
-  s4u::Engine::get_instance()->host_unregister(std::string(get_iface()->get_name()));
+  s4u::Engine::get_instance()->host_unregister(std::string(name_));
   delete this;
 }
 

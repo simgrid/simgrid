@@ -30,7 +30,7 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
 }
 
 VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount, size_t ramsize)
-    : Host(name, new vm::VirtualMachineImpl(name, this, physical_host, core_amount, ramsize))
+    : Host(new vm::VirtualMachineImpl(name, this, physical_host, core_amount, ramsize))
     , pimpl_vm_(dynamic_cast<vm::VirtualMachineImpl*>(Host::get_impl()))
 {
   XBT_DEBUG("Create VM %s", get_cname());
