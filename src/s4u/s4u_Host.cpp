@@ -74,16 +74,6 @@ Host* Host::current()
   return self->get_host();
 }
 
-xbt::string const& Host::get_name() const
-{
-  return this->pimpl_->get_name();
-}
-
-const char* Host::get_cname() const
-{
-  return this->pimpl_->get_cname();
-}
-
 void Host::turn_on()
 {
   if (not is_on()) {

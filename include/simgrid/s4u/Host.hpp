@@ -46,7 +46,7 @@ class XBT_PUBLIC Host : public xbt::Extendable<Host> {
   surf::HostImpl* const pimpl_;
 
 public:
-  explicit Host(surf::HostImpl* pimpl) : pimpl_(pimpl) {}
+  explicit Host(const std::string& name, surf::HostImpl* pimpl) : pimpl_(pimpl), name_(name) {}
 
 protected:
   virtual ~Host(); // Call destroy() instead of manually deleting it.
@@ -79,9 +79,9 @@ public:
   static Host* current();
 
   /** Retrieves the name of that host as a C++ string */
-  xbt::string const& get_name() const;
+  xbt::string const& get_name() const { return name_; };
   /** Retrieves the name of that host as a C string */
-  const char* get_cname() const;
+  const char* get_cname() const { return name_.c_str(); };
 
   kernel::routing::NetPoint* get_netpoint() const { return pimpl_netpoint_; }
 
@@ -190,6 +190,8 @@ public:
   surf::HostImpl* get_impl() const { return pimpl_; }
 
 private:
+  /* Host name must be kept in the s4u side to be accessible by MC process */
+  xbt::string name_{"noname"};
   kernel::routing::NetPoint* pimpl_netpoint_ = nullptr;
 
 public:

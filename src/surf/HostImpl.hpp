@@ -50,7 +50,6 @@ class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
   s4u::Host piface_;
   std::vector<kernel::resource::DiskImpl*> disks_;
-  xbt::string name_{"noname"};
 
 protected:
   virtual ~HostImpl(); // Use destroy() instead of this destructor.
@@ -69,11 +68,6 @@ public:
 
   virtual const s4u::Host* get_iface() const { return &piface_; }
   virtual s4u::Host* get_iface() { return &piface_; }
-
-  /** Retrieves the name of that host as a C++ string */
-  xbt::string const& get_name() const { return name_; }
-  /** Retrieves the name of that host as a C string */
-  const char* get_cname() const { return name_.c_str(); }
 
   void turn_on() const;
   void turn_off(const kernel::actor::ActorImpl* issuer);
