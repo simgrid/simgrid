@@ -266,7 +266,7 @@ void ModelChecker::handle_waitpid()
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
-        int ptrace_res = ptrace(PTRACE_GETEVENTMSG, remote_process_->pid(), 0, &status);
+        long ptrace_res = ptrace(PTRACE_GETEVENTMSG, remote_process_->pid(), 0, &status);
         xbt_assert(ptrace_res != -1, "Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
