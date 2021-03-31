@@ -17,7 +17,7 @@ $ $VALGRIND_NO_LEAK_CHECK ./host-on-off-actors ${platfdir}/small_platform.xml 2 
 > [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO] Test 2:
 > [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO]   Turn off Jupiter
 > [0.000000] [simix_process/WARNING] Cannot launch actor 'actor_daemon' on failed host 'Jupiter'
-> [Tremblay:test_launcher:(1) 0.000000] [xbt/CRITICAL] Could not launch a new actor on failed host Jupiter.
+> [Tremblay:test_launcher:(1) 0.000000] [root/CRITICAL] Could not launch a new actor on failed host Jupiter.
 
 $ ./host-on-off-actors ${platfdir}/small_platform.xml 4 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO] Test 4 (turn off src during a communication) : Create an actor/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication

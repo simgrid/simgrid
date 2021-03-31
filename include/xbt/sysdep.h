@@ -40,10 +40,10 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
  *
  * The message is handled by a CRITICAL logging request, and may consist of a format string with arguments.
  */
-#define xbt_die(...)                            \
-  do {                                          \
-    XBT_CCRITICAL(xbt, __VA_ARGS__);            \
-    xbt_abort();                                \
+#define xbt_die(...)                                                                                                   \
+  do {                                                                                                                 \
+    XBT_CCRITICAL(root, __VA_ARGS__);                                                                                  \
+    xbt_abort();                                                                                                       \
   } while (0)
 /** @} */
 
