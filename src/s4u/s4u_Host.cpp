@@ -279,7 +279,7 @@ Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
     try {
       double speed = xbt_parse_get_speed("", 0, speed_str.c_str(), nullptr, "");
       speed_list.push_back(speed);
-    } catch (const simgrid::ParseError& e) {
+    } catch (const simgrid::ParseError&) {
       xbt_die("Host(%s): Impossible to set_pstate_speed, invalid speed %s", get_cname(), speed_str.c_str());
     }
   }
