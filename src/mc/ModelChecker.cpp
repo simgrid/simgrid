@@ -312,7 +312,7 @@ void ModelChecker::handle_simcall(Transition const& transition)
   s_mc_message_simcall_handle_t m;
   memset(&m, 0, sizeof(m));
   m.type  = MessageType::SIMCALL_HANDLE;
-  m.pid_              = transition.pid_;
+  m.aid_              = transition.aid_;
   m.times_considered_ = transition.times_considered_;
   checker_side_.get_channel().send(m);
   this->remote_process_->clear_cache();

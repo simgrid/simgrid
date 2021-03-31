@@ -26,15 +26,15 @@ void replay(RecordTrace const& trace)
   simgrid::mc::execute_actors();
 
   for (simgrid::mc::Transition const& transition : trace) {
-    XBT_DEBUG("Executing %i$%i", transition.pid_, transition.times_considered_);
+    XBT_DEBUG("Executing %ld$%i", transition.aid_, transition.times_considered_);
 
     // Choose a request:
-    kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(transition.pid_);
+    kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(transition.aid_);
     if (actor == nullptr)
-      xbt_die("Unexpected actor (id:%d).", transition.pid_);
+      xbt_die("Unexpected actor (id:%ld).", transition.aid_);
     const s_smx_simcall* simcall = &(actor->simcall_);
     if (simcall->call_ == simix::Simcall::NONE)
-      xbt_die("No simcall for process %d.", transition.pid_);
+      xbt_die("No simcall for process %ld.", transition.aid_);
     if (not simgrid::mc::request_is_visible(simcall) || not simgrid::mc::actor_is_enabled(actor))
       xbt_die("Unexpected simcall.");
 
@@ -62,7 +62,7 @@ RecordTrace parseRecordTrace(const char* data)
   const char* current = data;
   while (*current) {
     simgrid::mc::Transition item;
-    int count = sscanf(current, "%d/%d", &item.pid_, &item.times_considered_);
+    int count = sscanf(current, "%ld/%d", &item.aid_, &item.times_considered_);
 
     if(count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");
@@ -87,7 +87,7 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
   for (auto i = trace.begin(); i != trace.end(); ++i) {
     if (i != trace.begin())
       stream << ';';
-    stream << i->pid_;
+    stream << i->aid_;
     if (i->times_considered_)
       stream << '/' << i->times_considered_;
   }

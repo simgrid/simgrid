@@ -92,7 +92,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
 {
   /* reset the outgoing transition */
   simgrid::mc::ActorState* procstate = &state->actor_states_[actor->get_pid()];
-  state->transition_.pid_            = -1;
+  state->transition_.aid_              = -1;
   state->transition_.times_considered_ = -1;
   state->transition_.textual[0]        = '\0';
   state->executed_req_.call_         = Simcall::NONE;
@@ -170,7 +170,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
   if (not req)
     return nullptr;
 
-  state->transition_.pid_ = actor->get_pid();
+  state->transition_.aid_ = actor->get_pid();
   state->executed_req_    = *req;
 
   // Fetch the data of the request and translate it:

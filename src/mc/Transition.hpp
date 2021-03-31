@@ -22,7 +22,7 @@ namespace mc {
  */
 class Transition {
 public:
-  int pid_ = 0;
+  long aid_ = 0;
 
   /* Which transition was executed for this simcall
    *

@@ -94,7 +94,7 @@ struct s_mc_message_register_symbol_t {
 /* Server -> client */
 struct s_mc_message_simcall_handle_t {
   simgrid::mc::MessageType type;
-  unsigned long pid_;
+  unsigned long aid_;
   int times_considered_;
 };
 

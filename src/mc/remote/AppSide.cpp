@@ -94,8 +94,8 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 }
 void AppSide::handle_simcall_execute(const s_mc_message_simcall_handle_t* message) const
 {
-  kernel::actor::ActorImpl* process = kernel::actor::ActorImpl::by_pid(message->pid_);
-  xbt_assert(process != nullptr, "Invalid pid %lu", message->pid_);
+  kernel::actor::ActorImpl* process = kernel::actor::ActorImpl::by_pid(message->aid_);
+  xbt_assert(process != nullptr, "Invalid pid %lu", message->aid_);
   process->simcall_handle(message->times_considered_);
   if (channel_.send(MessageType::WAITING))
     xbt_die("Could not send MESSAGE_WAITING to model-checker");
