@@ -65,7 +65,7 @@ Io* Io::wait_for(double timeout)
   return this;
 }
 
-IoPtr Io::set_disk(sg_disk_t disk)
+IoPtr Io::set_disk(const_sg_disk_t disk)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set disk once the Io is started");
 

@@ -39,7 +39,7 @@ public:
 
   double get_remaining() const override;
   sg_size_t get_performed_ioops() const;
-  IoPtr set_disk(sg_disk_t disk);
+  IoPtr set_disk(const_sg_disk_t disk);
   IoPtr set_size(sg_size_t size);
   IoPtr set_op_type(OpType type);
 
