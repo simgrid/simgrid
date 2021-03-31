@@ -9,6 +9,7 @@
 #include "simgrid/host.h"
 #include "src/xbt/log_private.hpp"
 #include "xbt/sysdep.h"
+#include "xbt/virtu.h"
 #include <algorithm>
 #include <cstdio>
 

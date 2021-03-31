@@ -5,8 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/sysdep.h"
 #include "src/xbt/log_private.hpp"
+#include "xbt/sysdep.h"
+#include "xbt/virtu.h"
 
 #include "simgrid/engine.h" /* simgrid_get_clock */
 #include "simgrid/host.h"   /* sg_host_self_get_name */

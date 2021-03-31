@@ -55,8 +55,9 @@
 #endif
 #include <stdio.h>
 
-#include "xbt/sysdep.h"           /* xbt_abort() */
 #include "src/internal_config.h"  /* Do we need vasprintf? */
+#include "xbt/asserts.h"          /* xbt_abort() */
+#include "xbt/misc.h"
 
 #if !HAVE_VASPRINTF
 #include <assert.h>

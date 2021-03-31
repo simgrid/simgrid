@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/simdag/simdag_private.hpp"
+#include "xbt/virtu.h"
 
 #if SIMGRID_HAVE_JEDULE
 

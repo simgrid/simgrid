@@ -6,6 +6,7 @@
 #include "bittorrent-peer.h"
 #include "tracker.h"
 #include <simgrid/forward.h>
+#include <xbt/ex.h>
 
 #include <limits.h>
 #include <stdio.h> /* snprintf */

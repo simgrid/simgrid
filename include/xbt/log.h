@@ -15,7 +15,7 @@
 #include <stdarg.h>
 #include <stddef.h> /* NULL */
 #include <stdio.h>  /* FILE */
-#include <xbt/misc.h>
+#include <xbt/base.h>
 SG_BEGIN_DECL
 /**@brief Log priorities
  * @ingroup XBT_log

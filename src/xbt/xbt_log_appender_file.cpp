@@ -12,6 +12,7 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 static void append_file(const s_xbt_log_appender_t* this_, const char* str)
 {

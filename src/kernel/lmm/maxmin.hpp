@@ -10,6 +10,7 @@
 #include "simgrid/s4u/Link.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/asserts.h"
+#include "xbt/ex.h"
 #include "xbt/mallocator.h"
 
 #include <boost/intrusive/list.hpp>

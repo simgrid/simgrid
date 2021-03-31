@@ -4,8 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/asserts.h"
 #include "simgrid/jedule/jedule.hpp"
+#include "simgrid/config.h"
+#include "xbt/asserts.h"
 
 #if SIMGRID_HAVE_JEDULE
 

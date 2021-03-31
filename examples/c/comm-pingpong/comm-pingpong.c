@@ -8,9 +8,9 @@
 #include "simgrid/engine.h"
 #include "simgrid/forward.h"
 #include "simgrid/mailbox.h"
-#include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
+#include "xbt/sysdep.h"
 
 #include <stdio.h> /* snprintf */
 

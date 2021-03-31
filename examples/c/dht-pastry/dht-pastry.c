@@ -9,6 +9,7 @@
 #include "simgrid/mailbox.h"
 
 #include "xbt/dynar.h"
+#include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/sysdep.h"

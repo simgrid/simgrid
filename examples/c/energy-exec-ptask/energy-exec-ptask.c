@@ -8,9 +8,9 @@
 #include "simgrid/exec.h"
 #include "simgrid/host.h"
 #include "simgrid/plugins/energy.h"
-#include "xbt/asserts.h"
 #include "xbt/config.h"
 #include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(energy_exec_ptask, "Messages specific for this example");
 

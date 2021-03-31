@@ -21,8 +21,8 @@
 #include <simgrid/engine.h>
 #include <simgrid/host.h>
 #include <simgrid/mailbox.h>
-#include <xbt/asserts.h>
 #include <xbt/log.h>
+#include <xbt/sysdep.h>
 
 // This declares a logging channel so that XBT_INFO can be used later
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_create, "The logging channel used in this example");

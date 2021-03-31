@@ -12,7 +12,6 @@
 
 #include <xbt/asserts.h>
 #include <xbt/log.h>
-#include <xbt/misc.h>
 
 #include <simgrid/config.h>
 
@@ -21,31 +20,6 @@
 #include <stdarg.h>             /* va_list */
 
 SG_BEGIN_DECL
-
-/* They live in asserts.h, but need to be declared before this module.
-   double declaration to cut dependency cycle */
-/**
- * @addtogroup XBT_error
- *
- * @{
- */
-/** @brief Kill the program in silence */
-XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
-
-/**
- * @brief Kill the program with an error message
- * @param ... a format string and its arguments
- *
- * Things are so messed up that the only thing to do now, is to stop the program.
- *
- * The message is handled by a CRITICAL logging request, and may consist of a format string with arguments.
- */
-#define xbt_die(...)                                                                                                   \
-  do {                                                                                                                 \
-    XBT_CCRITICAL(root, __VA_ARGS__);                                                                                  \
-    xbt_abort();                                                                                                       \
-  } while (0)
-/** @} */
 
 #ifdef XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL
 XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");

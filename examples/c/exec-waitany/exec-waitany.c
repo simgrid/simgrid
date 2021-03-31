@@ -8,8 +8,8 @@
 #include "simgrid/exec.h"
 #include "simgrid/host.h"
 
-#include "xbt/asserts.h"
 #include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(exec_waitany, "Messages specific for this example");
 

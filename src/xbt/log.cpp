@@ -6,13 +6,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/xbt/log_private.hpp"
-#include "xbt/asserts.h"
 #include "xbt/string.hpp"
+#include "xbt/sysdep.h"
 #include "xbt/xbt_modinter.h"
 
 #include <algorithm>
 #include <array>
 #include <boost/tokenizer.hpp>
+#include <cstring>
 #include <mutex>
 #include <string>
 #include <vector>

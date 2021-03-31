@@ -7,9 +7,9 @@
 #include "simgrid/engine.h"
 #include "simgrid/forward.h"
 #include "simgrid/mailbox.h"
-#include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
+#include "xbt/sysdep.h"
 
 #define FINALIZE 221297 /* a magic number to tell people to stop working */
 

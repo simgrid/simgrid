@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/jedule/jedule.hpp"
+#include "simgrid/config.h"
 #include "simgrid/host.h"
 #include "simgrid/s4u/NetZone.hpp"
 #include "xbt/asserts.h"

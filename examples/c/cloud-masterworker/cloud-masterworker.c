@@ -11,9 +11,9 @@
 #include "simgrid/plugins/live_migration.h"
 #include "simgrid/vm.h"
 
-#include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
+#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(cloud_masterworker, "Messages specific for this example");
 
