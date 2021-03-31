@@ -26,12 +26,10 @@ int main(int argc, char* argv[])
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
     } else {
       length = strlen("-timeout=");
-      if (not strncmp(options[0], "-timeout=", length) && strlen(options[0]) > length) {
-        timeout = static_cast<int>(xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s"));
-        XBT_DEBUG("Set timeout to %d", timeout);
-      } else {
-        xbt_die("Invalid chord option '%s'", options[0]);
-      }
+      xbt_assert(strncmp(options[0], "-timeout=", length) == 0 && strlen(options[0]) > length,
+                 "Invalid chord option '%s'", options[0]);
+      timeout = static_cast<int>(xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s"));
+      XBT_DEBUG("Set timeout to %d", timeout);
     }
     options++;
   }

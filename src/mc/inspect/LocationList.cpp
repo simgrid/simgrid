@@ -53,11 +53,10 @@ Location resolve(simgrid::dwarf::LocationList const& locations, simgrid::mc::Obj
                  unw_cursor_t* c, void* frame_pointer_address, const simgrid::mc::AddressSpace* address_space)
 {
   unw_word_t ip = 0;
-  if (c && unw_get_reg(c, UNW_REG_IP, &ip))
-    xbt_die("Could not resolve IP");
+  if (c)
+    xbt_assert(unw_get_reg(c, UNW_REG_IP, &ip) == 0, "Could not resolve IP");
   simgrid::dwarf::DwarfExpression const* expression = find_expression(locations, ip);
-  if (not expression)
-    xbt_die("Could not resolve location");
+  xbt_assert(expression != nullptr, "Could not resolve location");
   return simgrid::dwarf::resolve(*expression, object_info, c, frame_pointer_address, address_space);
 }
 
@@ -76,8 +75,7 @@ LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Att
 
     if (offset == 0)
       break;
-    else if (offset == -1)
-      xbt_die("Error while loading location list");
+    xbt_assert(offset != -1, "Error while loading location list");
 
     auto base_address = reinterpret_cast<std::uint64_t>(info.base_address());
 

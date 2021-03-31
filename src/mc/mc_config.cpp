@@ -25,10 +25,10 @@ simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
 
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
-  if (_sg_cfg_init_status && not _sg_do_model_check && more_check)
-    xbt_die("You are specifying a %s after the initialization (through MSG_config?), but the program was not run under "
-            "the model-checker (with simgrid-mc)). This won't work, sorry.",
-            spec);
+  xbt_assert(_sg_cfg_init_status == 0 || _sg_do_model_check || not more_check,
+             "You are specifying a %s after the initialization (through MSG_config?), but the program was not run "
+             "under the model-checker (with simgrid-mc)). This won't work, sorry.",
+             spec);
 }
 
 /* Replay (this part is enabled even if MC it disabled) */

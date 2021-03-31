@@ -64,9 +64,8 @@ void ModelChecker::start()
   // The model-checked process SIGSTOP itself to signal it's ready:
   const pid_t pid = remote_process_->pid();
 
-  pid_t res = waitpid(pid, &status, WAITPID_CHECKED_FLAGS);
-  if (res < 0 || not WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
-    xbt_die("Could not wait model-checked process");
+  xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
+             "Could not wait model-checked process");
 
   if (not _sg_mc_dot_output_file.get().empty())
     MC_init_dot_output();

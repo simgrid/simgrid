@@ -363,10 +363,10 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
     close(fdin);
     close(fdout);
     return;
-  } else if (sent_size != -1 || errno != ENOSYS) {
-    xbt_die("Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
-            sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
   }
+  xbt_assert(sent_size == -1 && errno == ENOSYS,
+             "Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
+             sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
 #endif
   // If this point is reached, sendfile() actually is not available.  Copy file by hand.
   std::vector<unsigned char> buf(1024 * 1024 * 4);

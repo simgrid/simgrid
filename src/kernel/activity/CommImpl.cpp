@@ -290,8 +290,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activi
                                   double timeout)
 {
   if (MC_is_active() || MC_record_replay_is_active()) {
-    if (timeout > 0.0)
-      xbt_die("Timeout not implemented for waitany in the model-checker");
+    xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
     int idx                 = simcall->mc_value_;
     auto* comm              = comms[idx];
     comm->simcalls_.push_back(simcall);

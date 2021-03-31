@@ -26,14 +26,13 @@ std::string string_vprintf(const char *fmt, va_list ap)
   va_copy(ap2, ap);
   int size = std::vsnprintf(nullptr, 0, fmt, ap2);
   va_end(ap2);
-  if (size < 0)
-    xbt_die("string_vprintf error");
+  xbt_assert(size >= 0, "string_vprintf error");
 
   // Allocate the string and format:
   std::string res;
   res.resize(size);
-  if (size != 0 && std::vsnprintf(&res[0], size + 1, fmt, ap) != size)
-    xbt_die("string_vprintf error");
+  if (size != 0)
+    xbt_assert(std::vsnprintf(&res[0], size + 1, fmt, ap) == size, "string_vprintf error");
   return res;
 }
 

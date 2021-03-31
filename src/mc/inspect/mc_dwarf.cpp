@@ -399,10 +399,10 @@ static void MC_dwarf_fill_member_location(const simgrid::mc::Type* type, simgrid
   xbt_assert(not dwarf_hasattr(child, DW_AT_data_bit_offset), "Can't groke DW_AT_data_bit_offset.");
 
   if (not dwarf_hasattr_integrate(child, DW_AT_data_member_location)) {
-    if (type->type == DW_TAG_union_type)
-      return;
-    xbt_die("Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%" PRIx64 ">%s",
-            member->name.c_str(), (uint64_t)type->id, type->name.c_str());
+    xbt_assert(type->type == DW_TAG_union_type,
+               "Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%" PRIx64 ">%s",
+               member->name.c_str(), (uint64_t)type->id, type->name.c_str());
+    return;
   }
 
   Dwarf_Attribute attr;

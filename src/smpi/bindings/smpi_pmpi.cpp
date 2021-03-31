@@ -152,15 +152,13 @@ int PMPI_Get_address(const void *location, MPI_Aint * address)
 
 MPI_Aint PMPI_Aint_add(MPI_Aint address, MPI_Aint disp)
 {
-  if(address > PTRDIFF_MAX - disp)
-    xbt_die("overflow in MPI_Aint_add");
+  xbt_assert(address <= PTRDIFF_MAX - disp, "overflow in MPI_Aint_add");
   return address + disp;
 }
 
 MPI_Aint PMPI_Aint_diff(MPI_Aint address, MPI_Aint disp)
 {
-  if(address < PTRDIFF_MIN + disp)
-    xbt_die("underflow in MPI_Aint_diff");
+  xbt_assert(address >= PTRDIFF_MIN + disp, "underflow in MPI_Aint_diff");
   return address - disp;
 }
 

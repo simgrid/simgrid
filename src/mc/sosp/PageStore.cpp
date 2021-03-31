@@ -42,8 +42,7 @@ PageStore::PageStore(std::size_t size) : capacity_(size)
   // Using mmap in order to be able to expand the region by relocating it somewhere else in the virtual memory space:
   void* memory =
       ::mmap(nullptr, size << xbt_pagebits, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
-  if (memory == MAP_FAILED)
-    xbt_die("Could not mmap initial snapshot pages.");
+  xbt_assert(memory != MAP_FAILED, "Could not mmap initial snapshot pages.");
 
   this->top_index_ = 0;
   this->memory_    = memory;
@@ -65,15 +64,13 @@ void PageStore::resize(std::size_t size)
   // virtual memory address if necessary:
 #if HAVE_MREMAP
   new_memory = mremap(this->memory_, old_bytesize, new_bytesize, MREMAP_MAYMOVE);
-  if (new_memory == MAP_FAILED)
-    xbt_die("Could not mremap snapshot pages.");
+  xbt_assert(new_memory != MAP_FAILED, "Could not mremap snapshot pages.");
 #else
   if (new_bytesize > old_bytesize) {
     // Grow: first try to add new space after current map
     new_memory = mmap((char*)this->memory_ + old_bytesize, new_bytesize - old_bytesize, PROT_READ | PROT_WRITE,
                       MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
-    if (new_memory == MAP_FAILED)
-      xbt_die("Could not mremap snapshot pages.");
+    xbt_assert(new_memory != MAP_FAILED, "Could not mremap snapshot pages.");
     // Check if expanding worked
     if (new_memory != (char*)this->memory_ + old_bytesize) {
       // New memory segment could not be put at the end of this->memory_,
@@ -81,8 +78,7 @@ void PageStore::resize(std::size_t size)
       munmap(new_memory, new_bytesize - old_bytesize);
       new_memory =
           mmap(nullptr, new_bytesize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
-      if (new_memory == MAP_FAILED)
-        xbt_die("Could not mremap snapshot pages.");
+      xbt_assert(new_memory != MAP_FAILED, "Could not mremap snapshot pages.");
       memcpy(new_memory, this->memory_, old_bytesize);
       munmap(this->memory_, old_bytesize);
     }

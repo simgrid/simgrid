@@ -78,10 +78,8 @@ void parse_platform_file(const std::string& file)
     luaL_loadfile(L, cfile); // This loads the file without executing it.
 
     /* Run the script */
-    if (lua_pcall(L, 0, 0, 0)) {
-      XBT_ERROR("FATAL ERROR:\n  %s: %s\n\n", "Lua call failed. Error message:", lua_tostring(L, -1));
-      xbt_die("Lua call failed. See Log");
-    }
+    xbt_assert(lua_pcall(L, 0, 0, 0) == 0, "FATAL ERROR:\n  %s: %s\n\n", "Lua call failed. Error message:",
+               lua_tostring(L, -1));
     lua_close(L);
     return;
 #else

@@ -31,8 +31,7 @@ char** argvdup(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-  if (argc < 2)
-    xbt_die("Missing arguments.\n");
+  xbt_assert(argc >= 2, "Missing arguments");
 
   // Currently, we need this before sg_config_init:
   _sg_do_model_check = 1;

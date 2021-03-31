@@ -154,9 +154,7 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_push(result, &root_task);
   SD_task_t end_task = SD_task_create_comp_seq("end", nullptr, 0);
 
-  int res = dax_lex();
-  if (res != 0)
-    xbt_die("Parse error in %s: %s", filename, dax__parse_err_msg());
+  xbt_assert(dax_lex() == 0, "Parse error in %s: %s", filename, dax__parse_err_msg());
   dax__delete_buffer(input_buffer);
   fclose(in_file);
   dax_lex_destroy();

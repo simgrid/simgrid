@@ -260,8 +260,7 @@ T simgrid::kernel::Future::get()
 template<class T>
 T simgrid::kernel::FutureState<T>::get()
 {
-  if (status_ != FutureStatus::ready)
-    xbt_die("Deadlock: this future is not ready");
+  xbt_assert(status_ == FutureStatus::ready, "Deadlock: this future is not ready");
   status_ = FutureStatus::done;
   if (exception_) {
     std::exception_ptr exception = std::move(exception_);
@@ -478,8 +477,7 @@ template<class F>
 auto kernel_sync(F code) -> decltype(code().get())
 {
   typedef decltype(code().get()) T;
-  if (SIMIX_is_maestro())
-    xbt_die("Can't execute blocking call in kernel mode");
+  xbt_assert(not SIMIX_is_maestro(), "Can't execute blocking call in kernel mode");
 
   smx_actor_t self = SIMIX_process_self();
   simgrid::xbt::Result<T> result;

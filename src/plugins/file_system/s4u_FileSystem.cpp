@@ -53,15 +53,15 @@ Disk* File::find_local_disk_on(const Host* host)
       longest_prefix_length = current_mount.length();
       d                     = disk;
     }
-    if (longest_prefix_length > 0) { /* Mount point found, split fullpath_ into mount_name and path+filename*/
-      mount_point_ = fullpath_.substr(0, longest_prefix_length);
-      if (mount_point_ == std::string("/"))
-        path_ = fullpath_;
-      else
-        path_ = fullpath_.substr(longest_prefix_length, fullpath_.length());
-      XBT_DEBUG("%s + %s", mount_point_.c_str(), path_.c_str());
-    } else
-      xbt_die("Can't find mount point for '%s' on '%s'", fullpath_.c_str(), host->get_cname());
+    xbt_assert(longest_prefix_length > 0, "Can't find mount point for '%s' on '%s'", fullpath_.c_str(),
+               host->get_cname());
+    /* Mount point found, split fullpath_ into mount_name and path+filename*/
+    mount_point_ = fullpath_.substr(0, longest_prefix_length);
+    if (mount_point_ == std::string("/"))
+      path_ = fullpath_;
+    else
+      path_ = fullpath_.substr(longest_prefix_length, fullpath_.length());
+    XBT_DEBUG("%s + %s", mount_point_.c_str(), path_.c_str());
   }
   return d;
 }

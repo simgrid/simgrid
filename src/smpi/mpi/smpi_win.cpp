@@ -520,8 +520,7 @@ int Win::post(MPI_Group group, int /*assert*/)
 }
 
 int Win::complete(){
-  if(opened_==0)
-    xbt_die("Complete called on already opened MPI_Win");
+  xbt_assert(opened_ != 0, "Complete called on already opened MPI_Win");
 
   XBT_DEBUG("Entering MPI_Win_Complete");
   int i             = 0;

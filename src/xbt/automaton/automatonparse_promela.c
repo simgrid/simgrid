@@ -64,8 +64,7 @@ void xbt_automaton_load(xbt_automaton_t a, const char *file)
 {
   parsed_automaton = a;
   yyin = fopen(file, "r");
-  if (yyin == NULL)
-    xbt_die("Failed to open automaton file `%s': %s", file, strerror(errno));
+  xbt_assert(yyin != NULL, "Failed to open automaton file `%s': %s", file, strerror(errno));
   yyparse();
   fclose(yyin);
 }

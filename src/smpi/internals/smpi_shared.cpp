@@ -208,9 +208,8 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
     smpi_shared_malloc_bogusfile = mkstemp(name);
     XBT_DEBUG("bogusfile         : %s\n", name);
     unlink(name);
-    int err = ftruncate(smpi_shared_malloc_bogusfile, smpi_shared_malloc_blocksize);
-    if (err != 0)
-      xbt_die("Could not write bogus file for shared malloc");
+    xbt_assert(ftruncate(smpi_shared_malloc_bogusfile, smpi_shared_malloc_blocksize) == 0,
+               "Could not write bogus file for shared malloc");
   }
 
   int mmap_base_flag = MAP_FIXED | MAP_SHARED | MAP_POPULATE;

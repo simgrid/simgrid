@@ -159,20 +159,18 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
 void* smpi_temp_shm_mmap(int fd, size_t size)
 {
   struct stat st;
-  if (fstat(fd, &st) != 0)
-    xbt_die("Could not stat fd %d: %s", fd, strerror(errno));
-  if (static_cast<off_t>(size) > st.st_size && ftruncate(fd, static_cast<off_t>(size)) != 0)
-    xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
+  xbt_assert(fstat(fd, &st) == 0, "Could not stat fd %d: %s", fd, strerror(errno));
+  xbt_assert(static_cast<off_t>(size) <= st.st_size || ftruncate(fd, static_cast<off_t>(size)) == 0,
+             "Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
   void* mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-  if (mem == MAP_FAILED) {
-    xbt_die("Failed to map fd %d with size %zu: %s\n"
-            "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
-            "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
-            "Please see "
-            "https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization for more "
-            "information.",
-            fd, size, strerror(errno));
-  }
+  xbt_assert(
+      mem != MAP_FAILED,
+      "Failed to map fd %d with size %zu: %s\n"
+      "If you are running a lot of ranks, you may be exceeding the amount of mappings allowed per process.\n"
+      "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+      "Please see https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization for "
+      "more information.",
+      fd, size, strerror(errno));
   return mem;
 }
 
@@ -194,9 +192,9 @@ void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
   XBT_DEBUG("Switching data frame to the one of process %ld", actor->get_pid());
   const simgrid::smpi::ActorExt* process = smpi_process_remote(actor);
   int current                     = process->privatized_region()->file_descriptor;
-  const void* tmp = mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_RW, MAP_FIXED | MAP_SHARED, current, 0);
-  if (tmp != TOPAGE(smpi_data_exe_start))
-    xbt_die("Couldn't map the new region (errno %d): %s", errno, strerror(errno));
+  xbt_assert(mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_RW, MAP_FIXED | MAP_SHARED, current, 0) ==
+                 TOPAGE(smpi_data_exe_start),
+             "Couldn't map the new region (errno %d): %s", errno, strerror(errno));
   smpi_loaded_page = actor->get_pid();
 #endif
 }

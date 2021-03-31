@@ -20,7 +20,7 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -map -ho
 > [rank 14] -> Ginette
 > [rank 15] -> Ginette
 > If this is too much, consider sharing allocations for computation buffers.
-> Largest allocation at once from a single process was 64 bytes, at sysdep.h:61. It was called 32 times during the whole simulation.
+> Largest allocation at once from a single process was 64 bytes, at sysdep.h:59. It was called 32 times during the whole simulation.
 > Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > [0.023768] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 31 unfreed MPI handles : display types and addresses (n max) with --cfg=smpi/list-leaks:n.

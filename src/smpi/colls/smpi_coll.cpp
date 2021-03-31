@@ -237,16 +237,14 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_c
 std::vector<s_mpi_coll_description_t>* colls::get_smpi_coll_descriptions(const std::string& name)
 {
   auto iter = smpi_coll_descriptions.find(name);
-  if (iter == smpi_coll_descriptions.end())
-    xbt_die("No collective named %s. This is a bug.", name.c_str());
+  xbt_assert(iter != smpi_coll_descriptions.end(), "No collective named %s. This is a bug.", name.c_str());
   return &iter->second;
 }
 
 static s_mpi_coll_description_t* find_coll_description(const std::string& collective, const std::string& algo)
 {
   std::vector<s_mpi_coll_description_t>* table = colls::get_smpi_coll_descriptions(collective);
-  if (table->empty())
-    xbt_die("No registered algorithm for collective '%s'! This is a bug.", collective.c_str());
+  xbt_assert(not table->empty(), "No registered algorithm for collective '%s'! This is a bug.", collective.c_str());
 
   for (auto& desc : *table) {
     if (algo == desc.name) {
@@ -289,8 +287,7 @@ void (*colls::smpi_coll_cleanup_callback)();
   {                                                                                                                    \
     auto desc = find_coll_description(_XBT_STRINGIFY(cat), name);                                                      \
     cat       = reinterpret_cast<ret(*) args>(desc->coll);                                                             \
-    if (cat == nullptr)                                                                                                \
-      xbt_die("Collective " _XBT_STRINGIFY(cat) " set to nullptr!");                                                   \
+    xbt_assert(cat != nullptr, "Collective " _XBT_STRINGIFY(cat) " set to nullptr!");                                  \
   }
 COLL_APPLY(COLL_SETTER, COLL_GATHER_SIG, "")
 COLL_APPLY(COLL_SETTER,COLL_ALLGATHER_SIG,"")

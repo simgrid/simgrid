@@ -202,8 +202,8 @@ int main(int argc, char** argv)
 
   sg4::Engine e(&argc, argv);
 
-  if (not parse_cmdline(&timings, &platformFile, argc, argv) || not platformFile)
-    xbt_die("Invalid command line arguments: expected [--timings] platformFile");
+  xbt_assert(parse_cmdline(&timings, &platformFile, argc, argv) && platformFile,
+             "Invalid command line arguments: expected [--timings] platformFile");
 
   XBT_DEBUG("%d,%s", timings, platformFile);
 

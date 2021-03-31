@@ -73,31 +73,29 @@ void Request::ref(){
 
 void Request::unref(MPI_Request* request)
 {
-  if((*request) != MPI_REQUEST_NULL){
-    (*request)->refcount_--;
-    if((*request)->refcount_ < 0) {
-      (*request)->print_request("wrong refcount");
-      xbt_die("Whoops, wrong refcount");
-    }
-    if((*request)->refcount_==0){
-      if ((*request)->flags_ & MPI_REQ_GENERALIZED){
-        ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
-      }else{
-        Comm::unref((*request)->comm_);
-        Datatype::unref((*request)->old_type_);
-      }
-      if ((*request)->op_!=MPI_REPLACE && (*request)->op_!=MPI_OP_NULL)
-        Op::unref(&(*request)->op_);
+  xbt_assert(*request != MPI_REQUEST_NULL, "freeing an already free request");
 
-      (*request)->print_request("Destroying");
-      F2C::free_f((*request)->c2f());
-      delete *request;
-      *request = MPI_REQUEST_NULL;
-    }else{
-      (*request)->print_request("Decrementing");
+  (*request)->refcount_--;
+  if ((*request)->refcount_ < 0) {
+    (*request)->print_request("wrong refcount");
+    xbt_die("Whoops, wrong refcount");
+  }
+  if ((*request)->refcount_ == 0) {
+    if ((*request)->flags_ & MPI_REQ_GENERALIZED) {
+      ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
+    } else {
+      Comm::unref((*request)->comm_);
+      Datatype::unref((*request)->old_type_);
     }
-  }else{
-    xbt_die("freeing an already free request");
+    if ((*request)->op_ != MPI_REPLACE && (*request)->op_ != MPI_OP_NULL)
+      Op::unref(&(*request)->op_);
+
+    (*request)->print_request("Destroying");
+    F2C::free_f((*request)->c2f());
+    delete *request;
+    *request = MPI_REQUEST_NULL;
+  } else {
+    (*request)->print_request("Decrementing");
   }
 }
 

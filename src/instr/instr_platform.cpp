@@ -75,9 +75,7 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
 
   // find common father
   simgrid::instr::Container* father = lowestCommonAncestor(src, dst);
-  if (not father) {
-    xbt_die("common father unknown, this is a tracing problem");
-  }
+  xbt_assert(father, "common father unknown, this is a tracing problem");
 
   // check if we already register this pair (we only need one direction)
   std::string aux1 = src->get_name() + dst->get_name();

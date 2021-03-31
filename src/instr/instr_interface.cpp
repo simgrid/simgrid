@@ -297,12 +297,10 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
                               const char *father_type, double value, InstrUserVariable what)
 {
   simgrid::kernel::routing::NetPoint* src_elm = sg_netpoint_by_name_or_null(src);
-  if (not src_elm)
-    xbt_die("Element '%s' not found!",src);
+  xbt_assert(src_elm, "Element '%s' not found!", src);
 
   simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
-  if (not dst_elm)
-    xbt_die("Element '%s' not found!",dst);
+  xbt_assert(dst_elm, "Element '%s' not found!", dst);
 
   std::vector<simgrid::kernel::resource::LinkImpl*> route;
   simgrid::kernel::routing::NetZoneImpl::get_global_route(src_elm, dst_elm, route, nullptr);

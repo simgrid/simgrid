@@ -444,8 +444,8 @@ std::string RemoteProcess::read_string(RemotePtr<char> address) const
 
 void* RemoteProcess::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions /*options*/) const
 {
-  if (pread_whole(this->memory_file, buffer, size, (size_t)address.address()) < 0)
-    xbt_die("Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
+  xbt_assert(pread_whole(this->memory_file, buffer, size, (size_t)address.address()) != -1,
+             "Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
   return buffer;
 }
 
@@ -457,8 +457,8 @@ void* RemoteProcess::read_bytes(void* buffer, std::size_t size, RemotePtr<void> 
  */
 void RemoteProcess::write_bytes(const void* buffer, size_t len, RemotePtr<void> address) const
 {
-  if (pwrite_whole(this->memory_file, buffer, len, (size_t)address.address()) < 0)
-    xbt_die("Write to process %lli failed", (long long)this->pid_);
+  xbt_assert(pwrite_whole(this->memory_file, buffer, len, (size_t)address.address()) != -1,
+             "Write to process %lli failed", (long long)this->pid_);
 }
 
 static void zero_buffer_init(const void** zero_buffer, size_t zero_buffer_size)

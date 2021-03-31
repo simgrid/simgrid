@@ -164,8 +164,7 @@ int bcast__scatter_rdb_allgather(
       position = 0;
       if (rank == root) {
         mpi_errno = datatype->pack(buffer, count, tmp_buf, nbytes, &position, comm);
-        if (mpi_errno)
-          xbt_die("crash while packing %d", mpi_errno);
+        xbt_assert(mpi_errno == 0, "crash while packing %d", mpi_errno);
       }
     }
 
@@ -174,9 +173,7 @@ int bcast__scatter_rdb_allgather(
 
     mpi_errno = scatter_for_bcast(root, comm,
                                   nbytes, tmp_buf);
-    if (mpi_errno) {
-      xbt_die("crash while scattering %d", mpi_errno);
-    }
+    xbt_assert(mpi_errno == 0, "crash while scattering %d", mpi_errno);
 
     /* curr_size is the amount of data that this process now has stored in
      * buffer at byte offset (relative_rank*scatter_size) */
@@ -316,16 +313,13 @@ int bcast__scatter_rdb_allgather(
 
     /* check that we received as much as we expected */
     /* recvd_size may not be accurate for packed heterogeneous data */
-    if (is_homogeneous && curr_size != nbytes) {
-      xbt_die("we didn't receive enough !");
-    }
+    xbt_assert(not is_homogeneous || curr_size == nbytes, "we didn't receive enough !");
 
     if (not is_contig || not is_homogeneous) {
       if (rank != root) {
         position  = 0;
         mpi_errno = MPI_Unpack(tmp_buf, nbytes, &position, buffer, count, datatype, comm);
-        if (mpi_errno)
-          xbt_die("error when unpacking %d", mpi_errno);
+        xbt_assert(mpi_errno == 0, "error when unpacking %d", mpi_errno);
       }
     }
 
