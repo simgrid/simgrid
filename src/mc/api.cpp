@@ -369,8 +369,7 @@ xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
 
   if (not info->hostname) {
     Remote<s4u::Host> temp_host = process->read(remote(actor->get_host()));
-    auto temp_host_name_address = &temp_host.get_buffer()->get_impl()->get_name();
-    auto remote_string_address  = remote(reinterpret_cast<const simgrid::xbt::string_data*>(temp_host_name_address));
+    auto remote_string_address  = remote(&xbt::string::to_string_data(temp_host.get_buffer()->get_impl()->get_name()));
     simgrid::xbt::string_data remote_string = process->read(remote_string_address);
     std::vector<char> hostname(remote_string.len + 1);
     // no need to read the terminating null byte, and thus hostname[remote_string.len] is guaranteed to be '\0'
