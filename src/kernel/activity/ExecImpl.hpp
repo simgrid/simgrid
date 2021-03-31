@@ -37,7 +37,7 @@ public:
   ExecImpl& set_flops_amount(double flop_amount);
   ExecImpl& set_host(s4u::Host* host);
   s4u::Host* get_host() const { return hosts_.front(); }
-  std::vector<s4u::Host*> get_hosts() const { return hosts_; }
+  const std::vector<s4u::Host*>& get_hosts() const { return hosts_; }
 
   ExecImpl& set_flops_amounts(const std::vector<double>& flops_amounts);
   ExecImpl& set_bytes_amounts(const std::vector<double>& bytes_amounts);
