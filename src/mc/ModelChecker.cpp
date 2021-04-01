@@ -383,7 +383,10 @@ std::string ModelChecker::simcall_dot_label(int aid, int times_considered)
 
 void ModelChecker::finalize_app(bool terminate_asap)
 {
-  s_mc_message_int_t m{MessageType::FINALIZE, terminate_asap};
+  s_mc_message_int_t m;
+  memset(&m, 0, sizeof m);
+  m.type  = MessageType::FINALIZE;
+  m.value = terminate_asap;
   int res = checker_side_.get_channel().send(m);
   xbt_assert(res == 0, "Could not ask the app to finalize on need");
 
