@@ -274,7 +274,8 @@ Host* Host::set_pstate_speed(const std::vector<double>& speed_per_state)
 
 std::vector<double> Host::convert_pstate_speed_vector(const std::vector<std::string>& speed_per_state)
 {
-  std::vector<double> speed_list(speed_per_state.size());
+  std::vector<double> speed_list;
+  speed_list.reserve(speed_per_state.size());
   for (const auto& speed_str : speed_per_state) {
     try {
       double speed = xbt_parse_get_speed("", 0, speed_str.c_str(), nullptr, "");

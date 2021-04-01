@@ -3,12 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/simix.hpp"
 #include "simgrid/zone.h"
+#include "xbt/parse_units.hpp"
 
 namespace simgrid {
 namespace s4u {
@@ -128,6 +130,30 @@ s4u::Host* NetZone::create_host(const std::string& name, const std::vector<std::
 {
   return create_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
 }
+
+s4u::Link* NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths,
+                                s4u::Link::SharingPolicy policy)
+{
+  return kernel::actor::simcall(
+      [this, &name, &bandwidths, &policy] { return pimpl_->create_link(name, bandwidths, policy); });
+}
+
+s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidths,
+                                s4u::Link::SharingPolicy policy)
+{
+  std::vector<double> bw;
+  bw.reserve(bandwidths.size());
+  for (const auto& speed_str : bandwidths) {
+    try {
+      double speed = xbt_parse_get_bandwidth("", 0, speed_str.c_str(), nullptr, "");
+      bw.push_back(speed);
+    } catch (const simgrid::ParseError&) {
+      xbt_die("Link: Impossible to create_link, invalid bandwidth %s", speed_str.c_str());
+    }
+  }
+  return create_link(name, bw, policy);
+}
+
 } // namespace s4u
 } // namespace simgrid
 

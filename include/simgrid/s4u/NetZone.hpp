@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_NETZONE_HPP
 
 #include <simgrid/forward.h>
+#include <simgrid/s4u/Link.hpp>
 #include <xbt/graph.h>
 #include <xbt/signal.hpp>
 
@@ -78,14 +79,28 @@ public:
   static xbt::signal<void(NetZone const&)> on_seal;
 
   /**
-   * @brief Create a Host
+   * @brief Create a host
    *
-   * @param name  Host name
+   * @param name Host name
    * @param speed_per_state Vector of CPU's speeds
    */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
   /** @brief Create a Host (string version) */
   s4u::Host* create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate);
+
+  /**
+   * @brief Create a link
+   *
+   * @param name Link name
+   * @param bandwidths Link's speed (vector for wifi links)
+   * @param policy Link sharing policy
+   */
+  s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths,
+                         Link::SharingPolicy policy = Link::SharingPolicy::SHARED);
+
+  /** @brief Create a link (string version) */
+  s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths,
+                         Link::SharingPolicy policy = Link::SharingPolicy::SHARED);
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
