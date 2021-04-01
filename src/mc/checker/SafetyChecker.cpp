@@ -185,7 +185,7 @@ void SafetyChecker::backtrack()
     stack_.pop_back();
     if (reductionMode_ == ReductionMode::dpor) {
       auto call = state->executed_req_.call_;
-      const kernel::actor::ActorImpl* issuer = api::get().simcall_get_issuer(&state->executed_req_);
+      kernel::actor::ActorImpl* issuer = api::get().simcall_get_issuer(&state->executed_req_);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
         if (state->executed_req_.issuer_ == prev_state->executed_req_.issuer_) {
@@ -206,7 +206,7 @@ void SafetyChecker::backtrack()
           if (not prev_state->actor_states_[issuer->get_pid()].is_done())
             prev_state->mark_todo(issuer);
           else
-            XBT_DEBUG("Actor %s %ld is in done set", issuer->get_cname(), issuer->get_pid());
+            XBT_DEBUG("Actor %s %ld is in done set", api::get().get_actor_name(issuer).c_str(), issuer->get_pid());
           break;
         } else {
           const kernel::actor::ActorImpl* previous_issuer = api::get().simcall_get_issuer(&prev_state->executed_req_);
