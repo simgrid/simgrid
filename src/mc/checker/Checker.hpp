@@ -59,10 +59,10 @@ public:
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC Checker* createLivenessChecker(Session* session);
-XBT_PUBLIC Checker* createSafetyChecker(Session* session);
-XBT_PUBLIC Checker* createCommunicationDeterminismChecker(Session* session);
-XBT_PUBLIC Checker* createUdporChecker(Session* session);
+XBT_PUBLIC Checker* create_liveness_checker(Session* session);
+XBT_PUBLIC Checker* create_safety_checker(Session* session);
+XBT_PUBLIC Checker* create_communication_determinism_checker(Session* session);
+XBT_PUBLIC Checker* create_udpor_checker(Session* session);
 
 } // namespace mc
 } // namespace simgrid

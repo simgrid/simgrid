@@ -407,7 +407,7 @@ void LivenessChecker::run()
   api::get().log_state();
 }
 
-Checker* createLivenessChecker(Session* session)
+Checker* create_liveness_checker(Session* session)
 {
   return new LivenessChecker(session);
 }

@@ -431,19 +431,19 @@ simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm
   simgrid::mc::Checker* checker;
   switch (algo) {
     case CheckerAlgorithm::CommDeterminism:
-      checker = simgrid::mc::createCommunicationDeterminismChecker(session);
+      checker = simgrid::mc::create_communication_determinism_checker(session);
       break;
 
     case CheckerAlgorithm::UDPOR:
-      checker = simgrid::mc::createUdporChecker(session);
+      checker = simgrid::mc::create_udpor_checker(session);
       break;
 
     case CheckerAlgorithm::Safety:
-      checker = simgrid::mc::createSafetyChecker(session);
+      checker = simgrid::mc::create_safety_checker(session);
       break;
 
     case CheckerAlgorithm::Liveness:
-      checker = simgrid::mc::createLivenessChecker(session);
+      checker = simgrid::mc::create_liveness_checker(session);
       break;
 
     default:

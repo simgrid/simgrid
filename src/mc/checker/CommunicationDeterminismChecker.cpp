@@ -534,7 +534,7 @@ void CommunicationDeterminismChecker::run()
   this->real_run();
 }
 
-Checker* createCommunicationDeterminismChecker(Session* session)
+Checker* create_communication_determinism_checker(Session* session)
 {
   return new CommunicationDeterminismChecker(session);
 }
