@@ -169,4 +169,12 @@ void FloydZone::do_seal()
 }
 } // namespace routing
 } // namespace kernel
+
+namespace s4u {
+NetZone* createFloydZone(const std::string& name)
+{
+  return (new kernel::routing::FloydZone(name))->get_iface();
+}
+} // namespace s4u
+
 } // namespace simgrid

@@ -66,4 +66,12 @@ s4u::Link* WifiZone::create_link(const std::string& name, const std::vector<doub
 }
 } // namespace routing
 } // namespace kernel
+
+namespace s4u {
+NetZone* createWifiZone(const std::string& name)
+{
+  return (new kernel::routing::WifiZone(name))->get_iface();
+}
+} // namespace s4u
+
 } // namespace simgrid

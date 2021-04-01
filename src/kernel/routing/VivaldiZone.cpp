@@ -119,4 +119,12 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
 }
 } // namespace routing
 } // namespace kernel
+
+namespace s4u {
+NetZone* createVivaldiZone(const std::string& name)
+{
+  return (new kernel::routing::VivaldiZone(name))->get_iface();
+}
+} // namespace s4u
+
 } // namespace simgrid

@@ -474,4 +474,12 @@ FatTreeLink::FatTreeLink(const ClusterCreationArgs* cluster, FatTreeNode* downNo
 }
 } // namespace routing
 } // namespace kernel
+
+namespace s4u {
+NetZone* createFatTreeZone(const std::string& name)
+{
+  return (new kernel::routing::FatTreeZone(name))->get_iface();
+}
+} // namespace s4u
+
 } // namespace simgrid

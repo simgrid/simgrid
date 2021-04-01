@@ -183,4 +183,12 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 }
 } // namespace routing
 } // namespace kernel
+
+namespace s4u {
+NetZone* createTorusZone(const std::string& name)
+{
+  return (new kernel::routing::TorusZone(name))->get_iface();
+}
+} // namespace s4u
+
 } // namespace simgrid

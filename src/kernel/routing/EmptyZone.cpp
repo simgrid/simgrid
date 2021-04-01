@@ -22,4 +22,12 @@ void EmptyZone::get_graph(const s_xbt_graph_t* /*graph*/, std::map<std::string, 
 }
 } // namespace routing
 } // namespace kernel
+
+namespace s4u {
+NetZone* createEmptyZone(const std::string& name)
+{
+  return (new kernel::routing::EmptyZone(name))->get_iface();
+}
+} // namespace s4u
+
 } // namespace simgrid

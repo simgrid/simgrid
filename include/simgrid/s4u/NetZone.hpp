@@ -78,6 +78,18 @@ public:
   static xbt::signal<void(NetZone const&)> on_seal;
 };
 
+// External constructors so that the types (and the types of their content) remain hidden
+XBT_PUBLIC NetZone* createFullZone(const std::string& name);
+XBT_PUBLIC NetZone* createClusterZone(const std::string& name);
+XBT_PUBLIC NetZone* createDijkstraZone(const std::string& name, bool cache);
+XBT_PUBLIC NetZone* createDragonflyZone(const std::string& name);
+XBT_PUBLIC NetZone* createEmptyZone(const std::string& name);
+XBT_PUBLIC NetZone* createFatTreeZone(const std::string& name);
+XBT_PUBLIC NetZone* createFloydZone(const std::string& name);
+XBT_PUBLIC NetZone* createTorusZone(const std::string& name);
+XBT_PUBLIC NetZone* createVivaldiZone(const std::string& name);
+XBT_PUBLIC NetZone* createWifiZone(const std::string& name);
+
 } // namespace s4u
 } // namespace simgrid
 
