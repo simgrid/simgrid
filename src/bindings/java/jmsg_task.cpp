@@ -115,8 +115,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel(JNIEnv * env, jobject jt
   }
 
   msg_error_t rv = MSG_task_cancel(ptask);
-
-  jxbt_check_res("MSG_task_cancel()", rv, MSG_OK, "unexpected error , please report this bug");
+  if (rv != MSG_OK)
+    xbt_die("MSG_task_cancel() unexpectedly failed with error code %d. Please report this bug", rv);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject jtask)
