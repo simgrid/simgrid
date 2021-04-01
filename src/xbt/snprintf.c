@@ -58,9 +58,8 @@
 #include "xbt/sysdep.h"           /* xbt_abort() */
 #include "src/internal_config.h"  /* Do we need vasprintf? */
 
-#include <assert.h>
-
 #if !HAVE_VASPRINTF
+#include <assert.h>
 #include <stdarg.h> /* vsnprintf */
 int vasprintf(char **ptr, const char *fmt, va_list ap);
 int vasprintf(char **ptr, const char *fmt, va_list ap)
@@ -75,8 +74,9 @@ int vasprintf(char **ptr, const char *fmt, va_list ap)
     str_l = vsnprintf(NULL, (size_t) 0, fmt, ap2);     /*get required size */
     va_end(ap2);
   }
-  xbt_assert(str_l >= 0);           /* possible integer overflow if str_m > INT_MAX */
-  *ptr = (char *) xbt_malloc(str_m = (size_t) str_l + 1);
+  assert(str_l >= 0); /* possible integer overflow if str_m > INT_MAX */
+  *ptr = (char*)malloc(str_m = (size_t)str_l + 1);
+  assert(*ptr != NULL);
 
   int str_l2 = vsnprintf(*ptr, str_m, fmt, ap);
   assert(str_l2 == str_l);
