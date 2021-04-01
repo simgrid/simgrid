@@ -193,14 +193,16 @@ void AppSide::handle_messages() const
       case MessageType::FINALIZE: {
         assert_msg_size("FINALIZE", s_mc_message_int_t);
         bool terminate_asap = ((s_mc_message_int_t*)message_buffer.data())->value;
-#if HAVE_SMPI
+        XBT_DEBUG("Finalize (terminate = %d)", (int)terminate_asap);
         if (not terminate_asap) {
-          XBT_INFO("Finalize. Smpi_enabled: %d", (int)smpi_enabled());
-          simix_global->display_all_actor_status();
+          if (XBT_LOG_ISENABLED(mc_client, xbt_log_priority_debug))
+            simix_global->display_all_actor_status();
+#if HAVE_SMPI
+          XBT_DEBUG("Smpi_enabled: %d", (int)smpi_enabled());
           if (smpi_enabled())
             SMPI_finalize();
-        }
 #endif
+        }
         coverage_checkpoint();
         int send_res = channel_.send(MessageType::DEADLOCK_CHECK_REPLY); // really?
         xbt_assert(send_res == 0, "Could not answer to FINALIZE");
