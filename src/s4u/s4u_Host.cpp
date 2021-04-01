@@ -272,7 +272,7 @@ Host* Host::set_pstate_speed(const std::vector<double>& speed_per_state)
   return this;
 }
 
-Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
+std::vector<double> Host::convert_pstate_speed_vector(const std::vector<std::string>& speed_per_state)
 {
   std::vector<double> speed_list(speed_per_state.size());
   for (const auto& speed_str : speed_per_state) {
@@ -280,10 +280,15 @@ Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
       double speed = xbt_parse_get_speed("", 0, speed_str.c_str(), nullptr, "");
       speed_list.push_back(speed);
     } catch (const simgrid::ParseError&) {
-      xbt_die("Host(%s): Impossible to set_pstate_speed, invalid speed %s", get_cname(), speed_str.c_str());
+      xbt_die("Host: Impossible to set_pstate_speed, invalid speed %s", speed_str.c_str());
     }
   }
-  set_pstate_speed(speed_list);
+  return speed_list;
+}
+
+Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
+{
+  set_pstate_speed(Host::convert_pstate_speed_vector(speed_per_state));
   return this;
 }
 

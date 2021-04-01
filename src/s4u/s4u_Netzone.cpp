@@ -118,6 +118,16 @@ void NetZone::extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string
 
   pimpl_->get_graph(graph, nodes, edges);
 }
+
+s4u::Host* NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
+{
+  return kernel::actor::simcall(
+      [this, &name, &speed_per_pstate] { return pimpl_->create_host(name, speed_per_pstate); });
+}
+s4u::Host* NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
+{
+  return create_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
+}
 } // namespace s4u
 } // namespace simgrid
 

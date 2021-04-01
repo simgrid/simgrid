@@ -63,7 +63,8 @@ void sg_platf_exit()
 /** @brief Add a host to the current NetZone */
 void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  simgrid::s4u::Host* host = routing_get_current()->create_host(args->id, args->speed_per_pstate, args->core_amount);
+  simgrid::s4u::Host* host =
+      routing_get_current()->create_host(args->id, args->speed_per_pstate)->set_core_count(args->core_amount);
 
   if (args->properties) {
     host->set_properties(*args->properties);
@@ -418,7 +419,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
 
   std::vector<double> speed_per_pstate;
   speed_per_pstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = zone->create_host(peer->id, speed_per_pstate, 1);
+  simgrid::s4u::Host* host = zone->create_host(peer->id, speed_per_pstate);
 
   zone->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
 

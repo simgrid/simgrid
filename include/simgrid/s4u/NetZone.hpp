@@ -76,6 +76,16 @@ public:
       on_route_creation;
   static xbt::signal<void(NetZone const&)> on_creation;
   static xbt::signal<void(NetZone const&)> on_seal;
+
+  /**
+   * @brief Create a Host
+   *
+   * @param name  Host name
+   * @param speed_per_state Vector of CPU's speeds
+   */
+  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
+  /** @brief Create a Host (string version) */
+  s4u::Host* create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate);
 };
 
 // External constructors so that the types (and the types of their content) remain hidden

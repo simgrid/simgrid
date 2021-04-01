@@ -111,6 +111,8 @@ public:
   Host* set_state_profile(kernel::profile::Profile* p);
   Host* set_speed_profile(kernel::profile::Profile* p);
 
+  /** @brief Convert the CPU's speed from string to double */
+  static std::vector<double> convert_pstate_speed_vector(const std::vector<std::string>& speed_per_state);
   /**
    * @brief Set the CPU's speed
    *

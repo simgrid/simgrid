@@ -153,8 +153,7 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
   return l->get_iface();
 }
 
-s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate,
-                                    int core_amount)
+s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   if (hierarchy_ == RoutingMode::unset)
     hierarchy_ = RoutingMode::base;
@@ -162,7 +161,7 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   auto* res = (new surf::HostImpl(name))->get_iface();
   res->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
 
-  cpu_model_pm_->create_cpu(res, speed_per_pstate)->set_core_count(core_amount);
+  cpu_model_pm_->create_cpu(res, speed_per_pstate);
 
   return res;
 }

@@ -139,7 +139,7 @@ public:
   int get_host_count() const;
 
   /** @brief Make a host within that NetZone */
-  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate, int core_amount);
+  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
   /** @brief Create a disk with the disk model from this NetZone */
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /** @brief Make a link within that NetZone */
