@@ -171,7 +171,7 @@ void FloydZone::do_seal()
 } // namespace kernel
 
 namespace s4u {
-NetZone* createFloydZone(const std::string& name)
+NetZone* create_floyd_zone(const std::string& name)
 {
   return (new kernel::routing::FloydZone(name))->get_iface();
 }

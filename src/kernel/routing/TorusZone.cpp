@@ -185,7 +185,7 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 } // namespace kernel
 
 namespace s4u {
-NetZone* createTorusZone(const std::string& name)
+NetZone* create_torus_zone(const std::string& name)
 {
   return (new kernel::routing::TorusZone(name))->get_iface();
 }

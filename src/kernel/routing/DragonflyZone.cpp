@@ -348,7 +348,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
 } // namespace kernel
 
 namespace s4u {
-NetZone* createDragonflyZone(const std::string& name)
+NetZone* create_dragonfly_zone(const std::string& name)
 {
   return (new kernel::routing::DragonflyZone(name))->get_iface();
 }

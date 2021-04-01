@@ -260,7 +260,7 @@ void DijkstraZone::new_edge(int src_id, int dst_id, RouteCreationArgs* route)
 } // namespace kernel
 
 namespace s4u {
-NetZone* createDijkstraZone(const std::string& name, bool cache)
+NetZone* create_dijkstra_zone(const std::string& name, bool cache)
 {
   return (new kernel::routing::DijkstraZone(name, cache))->get_iface();
 }

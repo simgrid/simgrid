@@ -476,7 +476,7 @@ FatTreeLink::FatTreeLink(const ClusterCreationArgs* cluster, FatTreeNode* downNo
 } // namespace kernel
 
 namespace s4u {
-NetZone* createFatTreeZone(const std::string& name)
+NetZone* create_fatTree_zone(const std::string& name)
 {
   return (new kernel::routing::FatTreeZone(name))->get_iface();
 }

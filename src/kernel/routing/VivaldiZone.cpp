@@ -121,7 +121,7 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
 } // namespace kernel
 
 namespace s4u {
-NetZone* createVivaldiZone(const std::string& name)
+NetZone* create_vivaldi_zone(const std::string& name)
 {
   return (new kernel::routing::VivaldiZone(name))->get_iface();
 }

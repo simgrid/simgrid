@@ -109,7 +109,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
 } // namespace kernel
 
 namespace s4u {
-NetZone* createFullZone(const std::string& name)
+NetZone* create_full_zone(const std::string& name)
 {
   return (new kernel::routing::FullZone(name))->get_iface();
 }

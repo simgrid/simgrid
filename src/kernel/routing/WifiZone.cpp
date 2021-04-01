@@ -68,7 +68,7 @@ s4u::Link* WifiZone::create_link(const std::string& name, const std::vector<doub
 } // namespace kernel
 
 namespace s4u {
-NetZone* createWifiZone(const std::string& name)
+NetZone* create_wifi_zone(const std::string& name)
 {
   return (new kernel::routing::WifiZone(name))->get_iface();
 }
