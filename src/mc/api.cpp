@@ -450,6 +450,7 @@ simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm
       THROW_IMPOSSIBLE;
   }
 
+  // FIXME: session and checker are never deleted
   simgrid::mc::session_singleton = session;
   mc_model_checker->setChecker(checker);
   return checker;
