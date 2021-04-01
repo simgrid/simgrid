@@ -58,7 +58,14 @@ public:
 
   /** Get/Set the latency of the current Link (in seconds) */
   double get_latency() const;
+  /**
+   * @brief Set link's latency
+   *
+   * @param value New latency value (in s)
+   */
   Link* set_latency(double value);
+  /** @brief Set latency (string version) */
+  Link* set_latency(const std::string& value);
 
   /** @brief Describes how the link is shared between flows */
   SharingPolicy get_sharing_policy() const;

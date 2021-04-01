@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "simgrid/sg_config.hpp"
@@ -13,6 +14,7 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/network_wifi.hpp"
 #include "xbt/log.h"
+#include "xbt/parse_units.hpp"
 
 namespace simgrid {
 
@@ -65,6 +67,17 @@ Link* Link::set_latency(double value)
 {
   kernel::actor::simcall([this, value] { pimpl_->set_latency(value); });
   return this;
+}
+
+Link* Link::set_latency(const std::string& value)
+{
+  double d_value = 0.0;
+  try {
+    d_value = xbt_parse_get_time("", 0, value.c_str(), nullptr, "");
+  } catch (const simgrid::ParseError&) {
+    xbt_die("Link: Impossible to latency, invalid value %s", value.c_str());
+  }
+  return set_latency(d_value);
 }
 
 double Link::get_bandwidth() const
