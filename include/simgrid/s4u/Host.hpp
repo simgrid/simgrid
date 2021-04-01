@@ -166,6 +166,12 @@ public:
   void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
   void route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency) const;
 
+  /**
+   * @brief Seal this host
+   * No more configuration is allowed after the seal
+   */
+  void seal();
+
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v331("Please use Comm::sendto()") void sendto(Host* dest, double byte_amount);
 

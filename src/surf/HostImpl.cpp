@@ -150,5 +150,10 @@ void HostImpl::remove_disk(const std::string& disk_name)
     position++;
   }
 }
+
+void HostImpl::seal()
+{
+  sealed_ = true;
+}
 } // namespace surf
 } // namespace simgrid

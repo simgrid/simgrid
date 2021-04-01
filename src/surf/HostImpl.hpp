@@ -51,6 +51,7 @@ class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   s4u::Host piface_;
   std::vector<kernel::resource::DiskImpl*> disks_;
   xbt::string name_{"noname"};
+  bool sealed_ = false;
 
 protected:
   virtual ~HostImpl(); // Use destroy() instead of this destructor.
@@ -82,6 +83,8 @@ public:
   void add_actor(kernel::actor::ActorImpl* actor) { actor_list_.push_back(*actor); }
   void remove_actor(kernel::actor::ActorImpl* actor) { xbt::intrusive_erase(actor_list_, *actor); }
   void add_actor_at_boot(kernel::actor::ProcessArg* arg) { actors_at_boot_.emplace_back(arg); }
+
+  void seal();
 
   template <class F> void foreach_actor(F function)
   {

@@ -52,6 +52,8 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
   if (physical_host->get_pstate() != 0)
     set_pstate(physical_host->get_pstate());
 
+  seal(); // seal this host
+
   // Real hosts are (only) created through NetZone::create_host(), and this where the on_creation signal is fired.
   // VMs are created directly, thus firing the signal here. The right solution is probably to separate Host and VM.
   simgrid::s4u::Host::on_creation(*this);
