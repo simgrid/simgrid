@@ -38,8 +38,6 @@ xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
 } // namespace kernel
 } // namespace simgrid
 
-static int surf_parse_models_setup_already_called = 0;
-
 /** The current NetZone in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
 static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
@@ -59,8 +57,6 @@ void sg_platf_exit()
   simgrid::kernel::routing::on_cluster_creation.disconnect_slots();
   simgrid::s4u::Engine::on_platform_created.disconnect_slots();
 
-  /* make sure that we will reinit the models while loading the platf once reinited */
-  surf_parse_models_setup_already_called = 0;
   surf_parse_lex_destroy();
 }
 
@@ -552,6 +548,7 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
    */
   auto* new_zone = sg_platf_create_zone(zone);
 
+  static bool surf_parse_models_setup_already_called = false;
   if (not surf_parse_models_setup_already_called) {
     simgrid::s4u::Engine::on_platform_creation();
 
@@ -562,7 +559,7 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
      * (FIXME: check it out by creating a file beginning with one of these tags)
      * but cluster and peer come down to zone creations, so putting this verification here is correct.
      */
-    surf_parse_models_setup_already_called = 1;
+    surf_parse_models_setup_already_called = true;
     surf_config_models_setup();
   }
 
