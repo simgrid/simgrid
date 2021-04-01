@@ -429,49 +429,6 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
   simgrid::s4u::Host::on_creation(*host); // notify the signal
 }
 
-/* Pick the right models for CPU, net and host, and call their model_init_preparse */
-static void surf_config_models_setup()
-{
-  std::string host_model_name    = simgrid::config::get_value<std::string>("host/model");
-  std::string network_model_name = simgrid::config::get_value<std::string>("network/model");
-  std::string cpu_model_name     = simgrid::config::get_value<std::string>("cpu/model");
-  std::string disk_model_name    = simgrid::config::get_value<std::string>("disk/model");
-
-  /* The compound host model is needed when using non-default net/cpu models */
-  if ((not simgrid::config::is_default("network/model") || not simgrid::config::is_default("cpu/model")) &&
-      simgrid::config::is_default("host/model")) {
-    host_model_name = "compound";
-    simgrid::config::set_value("host/model", host_model_name);
-  }
-
-  XBT_DEBUG("host model: %s", host_model_name.c_str());
-  if (host_model_name == "compound") {
-    xbt_assert(not cpu_model_name.empty(), "Set a cpu model to use with the 'compound' host model");
-    xbt_assert(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
-
-    int cpu_id = find_model_description(surf_cpu_model_description, cpu_model_name);
-    surf_cpu_model_description[cpu_id].model_init_preparse();
-
-    int network_id = find_model_description(surf_network_model_description, network_model_name);
-    surf_network_model_description[network_id].model_init_preparse();
-  }
-
-  XBT_DEBUG("Call host_model_init");
-  int host_id = find_model_description(surf_host_model_description, host_model_name);
-  surf_host_model_description[host_id].model_init_preparse();
-
-  XBT_DEBUG("Call vm_model_init");
-  /* ideally we should get back the pointer to CpuModel from model_init_preparse(), but this
-   * requires changing the declaration of surf_cpu_model_description.
-   * To be reviewed in the future */
-  surf_vm_model_init_HL13(
-      simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get());
-
-  XBT_DEBUG("Call disk_model_init");
-  int disk_id = find_model_description(surf_disk_model_description, disk_model_name);
-  surf_disk_model_description[disk_id].model_init_preparse();
-}
-
 /**
  * @brief Auxiliary function to build the object NetZoneImpl
  *
@@ -512,9 +469,7 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
   }
   new_zone->set_parent(current_routing);
 
-  if (current_routing == nullptr) { /* it is the first one */
-    simgrid::s4u::Engine::get_instance()->set_netzone_root(new_zone->get_iface());
-  } else {
+  if (current_routing) {
     /* set the father behavior */
     if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
@@ -547,21 +502,6 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
    * the default mode for each resource (CPU, network, etc)
    */
   auto* new_zone = sg_platf_create_zone(zone);
-
-  static bool surf_parse_models_setup_already_called = false;
-  if (not surf_parse_models_setup_already_called) {
-    simgrid::s4u::Engine::on_platform_creation();
-
-    /* Initialize the surf models. That must be done after we got all config, and before we need the models.
-     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_connect
-     *
-     * I'm not sure for <trace> and <trace_connect>, there may be a bug here
-     * (FIXME: check it out by creating a file beginning with one of these tags)
-     * but cluster and peer come down to zone creations, so putting this verification here is correct.
-     */
-    surf_parse_models_setup_already_called = true;
-    surf_config_models_setup();
-  }
 
   _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
                             * any further config now that we created some real content */

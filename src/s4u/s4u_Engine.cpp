@@ -308,7 +308,9 @@ void Engine::run() const
 /** @brief Retrieve the root netzone, containing all others */
 s4u::NetZone* Engine::get_netzone_root() const
 {
-  return pimpl->netzone_root_->get_iface();
+  if (pimpl->netzone_root_)
+    return pimpl->netzone_root_->get_iface();
+  return nullptr;
 }
 /** @brief Set the root netzone, containing all others. Once set, it cannot be changed. */
 void Engine::set_netzone_root(const s4u::NetZone* netzone)
