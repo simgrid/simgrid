@@ -382,7 +382,7 @@ xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
 std::string Api::get_actor_name(smx_actor_t actor) const
 {
   if (mc_model_checker == nullptr)
-    return actor->get_cname();
+    return actor->get_name();
 
   simgrid::mc::ActorInformation* info = actor_info_cast(actor);
   if (info->name.empty()) {

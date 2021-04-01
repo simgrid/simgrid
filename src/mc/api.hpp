@@ -50,7 +50,6 @@ private:
   simgrid::kernel::activity::CommImpl* get_comm_or_nullptr(smx_simcall_t const r) const;
   bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
   simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor) const;
-  std::string get_actor_name(smx_actor_t actor) const;
   std::string get_actor_string(smx_actor_t actor) const;
   std::string get_actor_dot_label(smx_actor_t actor) const;
 
@@ -79,6 +78,7 @@ public:
   unsigned long get_pattern_comm_src_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   unsigned long get_pattern_comm_dst_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   std::vector<char> get_pattern_comm_data(RemotePtr<kernel::activity::CommImpl> const& addr) const;
+  std::string get_actor_name(smx_actor_t actor) const;
   xbt::string const& get_actor_host_name(smx_actor_t actor) const;
 #if HAVE_SMPI
   bool check_send_request_detached(smx_simcall_t const& simcall) const;
