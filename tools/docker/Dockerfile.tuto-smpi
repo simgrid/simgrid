@@ -12,7 +12,7 @@ RUN apt install -y sudo && \
     chown -R user:user /home/user
 
 # - Clone simgrid-template-smpi, as it is needed by the tutorial
-RUN apt install -y python3 pajeng libssl-dev r-base r-cran-ggplot2 r-cran-dplyr r-cran-devtools build-essential g++ gfortran git libboost-all-dev cmake flex bison libfmt-dev && \
+RUN apt install -y python3 pajeng libssl-dev r-base r-cran-ggplot2 r-cran-dplyr r-cran-devtools build-essential g++ gfortran git libboost-dev cmake flex bison libfmt-dev && \
     cd /source && \
     git clone --depth=1 https://framagit.org/simgrid/simgrid-template-smpi.git simgrid-template-smpi.git && \
     chown -R user:user /source && \

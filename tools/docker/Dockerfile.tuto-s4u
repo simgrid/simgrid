@@ -13,7 +13,7 @@ RUN apt install -y sudo && \
 
 # - Clone simgrid-template-s4u, as it is needed by the tutorial
 # - Add an empty makefile advising to run cmake before make, just in case
-RUN apt install -y pajeng r-base r-cran-ggplot2 r-cran-dplyr r-cran-devtools cmake g++ git libboost-all-dev flex bison libfmt-dev&& \
+RUN apt install -y pajeng r-base r-cran-ggplot2 r-cran-dplyr r-cran-devtools cmake g++ git libboost-dev flex bison libfmt-dev&& \
     cd /source && \
     git clone --depth=1 https://framagit.org/simgrid/simgrid-template-s4u.git simgrid-template-s4u.git && \
     printf "master-workers ping-pong:\n\t@echo \"Please run the following command before make:\";echo \"    cmake .\"; exit 1" > Makefile &&\
