@@ -15,7 +15,7 @@
 #include "src/surf/cpu_cas01.hpp"
 #include "src/surf/cpu_ti.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile accross hosts");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile across hosts");
 
 void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
 {
