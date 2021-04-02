@@ -96,10 +96,10 @@ class XBT_PUBLIC File : public xbt::Extendable<File> {
   std::string fullpath_;
   sg_size_t current_position_ = SEEK_SET;
   int desc_id                 = 0;
-  Disk* local_disk_           = nullptr;
+  const Disk* local_disk_     = nullptr;
   std::string mount_point_;
 
-  Disk* find_local_disk_on(const Host* host);
+  const Disk* find_local_disk_on(const Host* host);
 
 public:
   File(const std::string& fullpath, void* userdata);

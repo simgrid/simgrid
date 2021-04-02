@@ -1109,11 +1109,11 @@ I/O operations
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Disk::io_init(sg_size_t size, s4u::Io::OpType type)
-      .. doxygenfunction:: simgrid::s4u::Disk::read(sg_size_t size)
-      .. doxygenfunction:: simgrid::s4u::Disk::read_async(sg_size_t size)
-      .. doxygenfunction:: simgrid::s4u::Disk::write(sg_size_t size)
-      .. doxygenfunction:: simgrid::s4u::Disk::write_async(sg_size_t size)
+      .. doxygenfunction:: simgrid::s4u::Disk::io_init(sg_size_t size, s4u::Io::OpType type) const
+      .. doxygenfunction:: simgrid::s4u::Disk::read(sg_size_t size) const
+      .. doxygenfunction:: simgrid::s4u::Disk::read_async(sg_size_t size) const
+      .. doxygenfunction:: simgrid::s4u::Disk::write(sg_size_t size) const
+      .. doxygenfunction:: simgrid::s4u::Disk::write_async(sg_size_t size) const
 
 Signals
 -------

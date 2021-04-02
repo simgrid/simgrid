@@ -37,9 +37,9 @@ namespace s4u {
 simgrid::xbt::Extension<Disk, FileSystemDiskExt> FileSystemDiskExt::EXTENSION_ID;
 simgrid::xbt::Extension<Host, FileDescriptorHostExt> FileDescriptorHostExt::EXTENSION_ID;
 
-Disk* File::find_local_disk_on(const Host* host)
+const Disk* File::find_local_disk_on(const Host* host)
 {
-  Disk* d                      = nullptr;
+  const Disk* d                = nullptr;
   size_t longest_prefix_length = 0;
   for (auto const& disk : host->get_disks()) {
     std::string current_mount;

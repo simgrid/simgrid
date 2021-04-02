@@ -9,8 +9,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u test");
 
 static void host()
 {
-  simgrid::s4u::Disk* disk = simgrid::s4u::this_actor::get_host()->get_disks().front(); // Disk1
-  aid_t id                 = simgrid::s4u::this_actor::get_pid();
+  const simgrid::s4u::Disk* disk = simgrid::s4u::this_actor::get_host()->get_disks().front(); // Disk1
+  aid_t id                       = simgrid::s4u::this_actor::get_pid();
   XBT_INFO("process %ld is writing!", id);
   disk->write(4000000);
   XBT_INFO("process %ld goes to sleep for %ld seconds", id, id);

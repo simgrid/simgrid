@@ -71,13 +71,13 @@ public:
   Disk* set_host(Host* host);
   Host* get_host() const;
 
-  IoPtr io_init(sg_size_t size, s4u::Io::OpType type);
+  IoPtr io_init(sg_size_t size, s4u::Io::OpType type) const;
 
-  IoPtr read_async(sg_size_t size);
-  sg_size_t read(sg_size_t size);
+  IoPtr read_async(sg_size_t size) const;
+  sg_size_t read(sg_size_t size) const;
 
-  IoPtr write_async(sg_size_t size);
-  sg_size_t write(sg_size_t size);
+  IoPtr write_async(sg_size_t size) const;
+  sg_size_t write(sg_size_t size) const;
   void seal();
 
 #ifndef DOXYGEN
