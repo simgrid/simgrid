@@ -113,7 +113,10 @@ int Comm::dup(MPI_Comm* newcomm){
   if(info_!=MPI_INFO_NULL)
     (*newcomm)->info_ = new simgrid::smpi::Info(info_);
   //duplicate errhandler
-  (*newcomm)->set_errhandler(errhandler_);
+  if (errhandlers_ != nullptr)//MPI_COMM_WORLD, only grab our own
+    (*newcomm)->set_errhandler(errhandlers_[this->rank()]);
+  else
+    (*newcomm)->set_errhandler(errhandler_);
   return ret;
 }
 
