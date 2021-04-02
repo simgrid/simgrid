@@ -76,13 +76,11 @@ namespace resource {
 
 NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
 {
-  if (config::get_value<std::string>("network/optim") == "Lazy")
-    set_update_algorithm(Model::UpdateAlgo::LAZY);
-
   std::string optim = config::get_value<std::string>("network/optim");
   bool select       = config::get_value<bool>("network/maxmin-selective-update");
 
   if (optim == "Lazy") {
+    set_update_algorithm(Model::UpdateAlgo::LAZY);
     xbt_assert(select || config::is_default("network/maxmin-selective-update"),
                "You cannot disable network selective update when using the lazy update mechanism");
     select = true;
