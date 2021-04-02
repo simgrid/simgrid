@@ -379,7 +379,7 @@ xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
   return *info->hostname;
 }
 
-std::string Api::get_actor_name(smx_actor_t actor) const
+xbt::string const& Api::get_actor_name(smx_actor_t actor) const
 {
   if (mc_model_checker == nullptr)
     return actor->get_name();
@@ -400,7 +400,7 @@ std::string Api::get_actor_string(smx_actor_t actor) const
   if (actor) {
     res = "(" + std::to_string(actor->get_pid()) + ")";
     if (actor->get_host())
-      res += std::string(get_actor_host_name(actor)) + " (" + get_actor_name(actor) + ")";
+      res += std::string(get_actor_host_name(actor)) + " (" + std::string(get_actor_name(actor)) + ")";
     else
       res += get_actor_name(actor);
   } else
