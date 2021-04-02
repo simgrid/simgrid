@@ -16,6 +16,8 @@
 #include "smpi_f2c.hpp"
 #include "src/simix/smx_private.hpp"
 
+#include <algorithm>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
 
 extern std::string surf_parsed_filename;
@@ -129,13 +131,18 @@ void print_time_analysis(double global_time){
   }
 }
 
-void print_memory_analysis(){
-  if (simgrid::smpi::F2C::lookup() != nullptr &&
-      simgrid::smpi::F2C::lookup()->size() > simgrid::smpi::F2C::get_num_default_handles()) {
+void print_memory_analysis()
+{
+  size_t leak_count = 0;
+  if (simgrid::smpi::F2C::lookup() != nullptr)
+    leak_count =
+        std::count_if(simgrid::smpi::F2C::lookup()->cbegin(), simgrid::smpi::F2C::lookup()->cend(),
+                      [](auto const& entry) { return entry.first >= simgrid::smpi::F2C::get_num_default_handles(); });
+  if (leak_count > 0) {
     XBT_INFO("Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles : "
              "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
              "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
-             simgrid::smpi::F2C::lookup()->size() - simgrid::smpi::F2C::get_num_default_handles());
+             leak_count);
     int n = simgrid::config::get_value<int>("smpi/list-leaks");
     for (auto const& p : *simgrid::smpi::F2C::lookup()) {
       static int printed = 0;
@@ -162,7 +169,6 @@ void print_memory_analysis(){
       XBT_INFO("%lu bytes were automatically shared between processes, in %u calls\n", total_shared_size, total_shared_calls);
   }
 }
-
 }
 }
 } // namespace simgrid
