@@ -61,10 +61,10 @@ NetworkL07Model::NetworkL07Model(const std::string& name, HostL07Model* hmodel, 
     : NetworkModel(name), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
-  loopback_ = NetworkL07Model::create_link(
-                  "__loopback__", std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")},
-                  s4u::Link::SharingPolicy::FATPIPE)
-                  ->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
+  loopback_ =
+      create_link("__loopback__", std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")})
+          ->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE)
+          ->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }
 
@@ -239,13 +239,16 @@ kernel::resource::Cpu* CpuL07Model::create_cpu(s4u::Host* host, const std::vecto
   return (new CpuL07(host, speed_per_pstate))->set_model(this);
 }
 
-kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                                         s4u::Link::SharingPolicy policy)
+kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  auto link = new LinkL07(name, bandwidths[0], policy, get_maxmin_system());
-  link->set_model(this);
-  return link;
+  return (new LinkL07(name, bandwidths[0], get_maxmin_system()))->set_model(this);
+}
+
+kernel::resource::LinkImpl* NetworkL07Model::create_wifi_link(const std::string& name,
+                                                              const std::vector<double>& bandwidths)
+{
+  THROW_UNIMPLEMENTED;
 }
 
 /************
@@ -295,15 +298,10 @@ void CpuL07::on_speed_change()
   Cpu::on_speed_change();
 }
 
-LinkL07::LinkL07(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy,
-                 kernel::lmm::System* system)
-    : LinkImpl(name)
+LinkL07::LinkL07(const std::string& name, double bandwidth, kernel::lmm::System* system) : LinkImpl(name)
 {
   this->set_constraint(system->constraint_new(this, bandwidth));
   bandwidth_.peak = bandwidth;
-
-  if (policy == s4u::Link::SharingPolicy::FATPIPE)
-    get_constraint()->unshare();
 }
 
 bool LinkL07::is_used() const

@@ -145,12 +145,14 @@ s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwid
   return l->get_iface();
 }
 
-s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                    s4u::Link::SharingPolicy policy)
+s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  auto* l = network_model_->create_link(name, bandwidths, policy);
+  return network_model_->create_link(name, bandwidths)->get_iface();
+}
 
-  return l->get_iface();
+s4u::Link* NetZoneImpl::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return network_model_->create_wifi_link(name, bandwidths)->get_iface();
 }
 
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)

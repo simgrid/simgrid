@@ -67,8 +67,8 @@ public:
   NetworkL07Model(const NetworkL07Model&) = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model() override;
-  kernel::resource::LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                          s4u::Link::SharingPolicy policy) override;
+  kernel::resource::LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) override;
+  kernel::resource::LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{
@@ -106,7 +106,7 @@ protected:
 
 class LinkL07 : public kernel::resource::LinkImpl {
 public:
-  LinkL07(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy, kernel::lmm::System* system);
+  LinkL07(const std::string& name, double bandwidth, kernel::lmm::System* system);
   LinkL07(const LinkL07&) = delete;
   LinkL07& operator=(const LinkL07&) = delete;
   ~LinkL07() override;

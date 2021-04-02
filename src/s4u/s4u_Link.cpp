@@ -92,6 +92,11 @@ Link* Link::set_bandwidth(double value)
   return this;
 }
 
+Link* Link::set_sharing_policy(Link::SharingPolicy policy)
+{
+  kernel::actor::simcall([this, policy] { pimpl_->set_sharing_policy(policy); });
+  return this;
+}
 Link::SharingPolicy Link::get_sharing_policy() const
 {
   return this->pimpl_->get_sharing_policy();

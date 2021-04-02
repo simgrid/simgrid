@@ -158,15 +158,12 @@ s4u::Host* NetZone::create_host(const std::string& name, const std::vector<std::
   return create_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                s4u::Link::SharingPolicy policy)
+s4u::Link* NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return kernel::actor::simcall(
-      [this, &name, &bandwidths, &policy] { return pimpl_->create_link(name, bandwidths, policy); });
+  return kernel::actor::simcall([this, &name, &bandwidths] { return pimpl_->create_link(name, bandwidths); });
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidths,
-                                s4u::Link::SharingPolicy policy)
+s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidths)
 {
   std::vector<double> bw;
   bw.reserve(bandwidths.size());
@@ -179,7 +176,7 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::
                                   std::string(". Invalid bandwidth: ") + speed_str);
     }
   }
-  return create_link(name, bw, policy);
+  return create_link(name, bw);
 }
 
 } // namespace s4u

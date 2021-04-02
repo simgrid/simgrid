@@ -108,11 +108,12 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 
 static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args, const std::string& link_name)
 {
-  simgrid::s4u::Link* link = routing_get_current()->create_link(link_name, args->bandwidths, args->policy);
+  simgrid::s4u::Link* link = routing_get_current()->create_link(link_name, args->bandwidths);
   if (args->properties)
     link->set_properties(*args->properties);
 
   link->get_impl() // this call to get_impl saves some simcalls but can be removed
+      ->set_sharing_policy(args->policy)
       ->set_state_profile(args->state_trace)
       ->set_latency_profile(args->latency_trace)
       ->set_bandwidth_profile(args->bandwidth_trace)

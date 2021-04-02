@@ -72,6 +72,7 @@ public:
   Link* set_latency(const std::string& value);
 
   /** @brief Describes how the link is shared between flows */
+  Link* set_sharing_policy(SharingPolicy policy);
   SharingPolicy get_sharing_policy() const;
 
   /** Setup the profile with states events (ON or OFF). The profile must contain boolean values. */

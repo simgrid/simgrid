@@ -31,8 +31,8 @@ class XBT_PRIVATE NetworkSmpiModel;
 class NetworkCm02Model : public NetworkModel {
 public:
   explicit NetworkCm02Model(const std::string& name);
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
-                        s4u::Link::SharingPolicy policy) override;
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) override;
+  LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
@@ -44,7 +44,7 @@ public:
 
 class NetworkCm02Link : public LinkImpl {
 public:
-  NetworkCm02Link(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy, lmm::System* system);
+  NetworkCm02Link(const std::string& name, double bandwidth, lmm::System* system);
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
   LinkImpl* set_latency(double value) override;

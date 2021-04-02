@@ -87,26 +87,21 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
   }
 
   set_maxmin_system(new lmm::System(select));
-  loopback_ = NetworkCm02Model::create_link("__loopback__",
-                                            std::vector<double>{config::get_value<double>("network/loopback-bw")},
-                                            s4u::Link::SharingPolicy::FATPIPE)
+  loopback_ = create_link("__loopback__", std::vector<double>{config::get_value<double>("network/loopback-bw")})
+                  ->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE)
                   ->set_latency(config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }
 
-LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                        s4u::Link::SharingPolicy policy)
+LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  LinkImpl* link;
-  if (policy == s4u::Link::SharingPolicy::WIFI) {
-    link = new NetworkWifiLink(name, bandwidths, get_maxmin_system());
-  } else {
-    xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
-    link = new NetworkCm02Link(name, bandwidths[0], policy, get_maxmin_system());
-  }
+  xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
+  return (new NetworkCm02Link(name, bandwidths[0], get_maxmin_system()))->set_model(this);
+}
 
-  link->set_model(this);
-  return link;
+LinkImpl* NetworkCm02Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return (new NetworkWifiLink(name, bandwidths, get_maxmin_system()))->set_model(this);
 }
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
@@ -314,16 +309,12 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 /************
  * Resource *
  ************/
-NetworkCm02Link::NetworkCm02Link(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy,
-                                 kernel::lmm::System* system)
+NetworkCm02Link::NetworkCm02Link(const std::string& name, double bandwidth, kernel::lmm::System* system)
     : LinkImpl(name)
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;
   this->set_constraint(system->constraint_new(this, sg_bandwidth_factor * bandwidth));
-
-  if (policy == s4u::Link::SharingPolicy::FATPIPE)
-    get_constraint()->unshare();
 }
 
 void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double value)

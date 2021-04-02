@@ -130,16 +130,12 @@ public:
    * @param policy Link sharing policy
    * @throw std::invalid_argument if bandwidth format is incorrect.
    */
-  s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths,
-                         Link::SharingPolicy policy = Link::SharingPolicy::SHARED);
+  s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
 
   /** @brief Create a link (string version) */
-  s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths,
-                         Link::SharingPolicy policy = Link::SharingPolicy::SHARED);
+  s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths);
 
-  /**
-   * @brief Seal this netzone configuration
-   */
+  /** @brief Seal this netzone configuration */
   void seal();
 
 private:

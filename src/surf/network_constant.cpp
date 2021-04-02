@@ -26,13 +26,17 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,
-                                            s4u::Link::SharingPolicy /*policy*/)
+LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/)
 {
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
           "Please remove any link from your platform (and switch to routing='None')",
           name.c_str());
   return nullptr;
+}
+
+LinkImpl* NetworkConstantModel::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return create_link(name, bandwidths);
 }
 
 double NetworkConstantModel::next_occurring_event(double /*now*/)

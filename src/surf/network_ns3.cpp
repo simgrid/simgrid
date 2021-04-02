@@ -327,13 +327,15 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
   s4u::NetZone::on_seal.connect(&zoneCreation_cb);
 }
 
-LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                       s4u::Link::SharingPolicy policy)
+LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
-  auto link = new LinkNS3(name, bandwidths[0], policy);
-  link->set_model(this);
-  return link;
+  return (new LinkNS3(name, bandwidths[0]))->set_model(this);
+}
+
+LinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return create_link(name, bandwidths)->set_sharing_policy(s4u::Link::SharingPolicy::WIFI);
 }
 
 Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -434,8 +436,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
  * Resource *
  ************/
 
-LinkNS3::LinkNS3(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy)
-    : LinkImpl(name), sharing_policy_(policy)
+LinkNS3::LinkNS3(const std::string& name, double bandwidth) : LinkImpl(name)
 {
   bandwidth_.peak = bandwidth;
 }
@@ -462,6 +463,12 @@ LinkImpl* LinkNS3::set_latency_profile(profile::Profile* profile)
 LinkImpl* LinkNS3::set_latency(double latency)
 {
   latency_.peak = latency;
+  return this;
+}
+
+LinkImpl* LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy)
+{
+  sharing_policy_ = policy;
   return this;
 }
 /**********
