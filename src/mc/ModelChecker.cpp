@@ -265,8 +265,7 @@ void ModelChecker::handle_waitpid()
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
-        long ptrace_res = ptrace(PTRACE_GETEVENTMSG, remote_process_->pid(), 0, &status);
-        xbt_assert(ptrace_res != -1, "Could not get exit status");
+        xbt_assert(ptrace(PTRACE_GETEVENTMSG, remote_process_->pid(), 0, &status) != -1, "Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
           this->get_remote_process().terminate();
@@ -386,18 +385,15 @@ void ModelChecker::finalize_app(bool terminate_asap)
   memset(&m, 0, sizeof m);
   m.type  = MessageType::FINALIZE;
   m.value = terminate_asap;
-  int res = checker_side_.get_channel().send(m);
-  xbt_assert(res == 0, "Could not ask the app to finalize on need");
+  xbt_assert(checker_side_.get_channel().send(m) == 0, "Could not ask the app to finalize on need");
 
   s_mc_message_t answer;
-  ssize_t s = checker_side_.get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
+  xbt_assert(checker_side_.get_channel().receive(answer) != -1, "Could not receive answer to FINALIZE");
 }
 
 bool ModelChecker::checkDeadlock()
 {
-  int res = checker_side_.get_channel().send(MessageType::DEADLOCK_CHECK);
-  xbt_assert(res == 0, "Could not check deadlock state");
+  xbt_assert(checker_side_.get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
   ssize_t s = checker_side_.get_channel().receive(message);
   xbt_assert(s != -1, "Could not receive message");

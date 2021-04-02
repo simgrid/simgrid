@@ -39,16 +39,14 @@ template <class Code> void run_child_process(int socket, Code code)
   // Make sure we do not outlive our parent
   sigset_t mask;
   sigemptyset (&mask);
-  int sigprocmask_res = sigprocmask(SIG_SETMASK, &mask, nullptr);
-  xbt_assert(sigprocmask_res >= 0, "Could not unblock signals");
-  int prctl_res = prctl(PR_SET_PDEATHSIG, SIGHUP);
-  xbt_assert(prctl_res == 0, "Could not PR_SET_PDEATHSIG");
+  xbt_assert(sigprocmask(SIG_SETMASK, &mask, nullptr) >= 0, "Could not unblock signals");
+  xbt_assert(prctl(PR_SET_PDEATHSIG, SIGHUP) == 0, "Could not PR_SET_PDEATHSIG");
 #endif
 
   // Remove CLOEXEC to pass the socket to the application
-  int fdflags   = fcntl(socket, F_GETFD, 0);
-  int fcntl_res = fdflags != -1 ? fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) : -1;
-  xbt_assert(fcntl_res != -1, "Could not remove CLOEXEC for socket");
+  int fdflags = fcntl(socket, F_GETFD, 0);
+  xbt_assert(fdflags != -1 && fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) != -1,
+             "Could not remove CLOEXEC for socket");
 
   // Disable lazy relocation in the model-checked process to prevent the application from
   // modifying its .got.plt during snapshot.
@@ -71,8 +69,7 @@ Session::Session(const std::function<void()>& code)
   // between the model-checker process (ourselves) and the model-checked
   // process:
   int sockets[2];
-  int res = socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets);
-  xbt_assert(res != -1, "Could not create socketpair");
+  xbt_assert(socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets) != -1, "Could not create socketpair");
 
   pid_t pid = fork();
   xbt_assert(pid >= 0, "Could not fork model-checked process");

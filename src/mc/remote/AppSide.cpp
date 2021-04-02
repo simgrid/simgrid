@@ -67,8 +67,7 @@ AppSide* AppSide::initialize()
   s_mc_message_initial_addresses_t message{
       MessageType::INITIAL_ADDRESSES, mmalloc_preinit(), simgrid::kernel::actor::get_maxpid_addr(),
       simgrid::simix::simix_global_get_actors_addr(), simgrid::simix::simix_global_get_dead_actors_addr()};
-  int send_res = instance_->channel_.send(message);
-  xbt_assert(send_res == 0, "Could not send the initial message with addresses.");
+  xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
 
   instance_->handle_messages();
   return instance_.get();
@@ -88,8 +87,7 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 
   // Send result:
   s_mc_message_int_t answer{MessageType::DEADLOCK_CHECK_REPLY, deadlock};
-  int send_res = channel_.send(answer);
-  xbt_assert(send_res == 0, "Could not send response");
+  xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
 void AppSide::handle_simcall_execute(const s_mc_message_simcall_handle_t* message) const
 {
@@ -146,8 +144,7 @@ void AppSide::handle_messages() const
 
         // Send result:
         s_mc_message_simcall_is_visible_answer_t answer{MessageType::SIMCALL_IS_VISIBLE_ANSWER, value};
-        int send_res = channel_.send(answer);
-        xbt_assert(send_res == 0, "Could not send response");
+        xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }
 
@@ -162,8 +159,7 @@ void AppSide::handle_messages() const
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
         value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
-        int send_res = channel_.send(answer);
-        xbt_assert(send_res == 0, "Could not send response");
+        xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }
 
@@ -178,8 +174,7 @@ void AppSide::handle_messages() const
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
         value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
-        int send_res = channel_.send(answer);
-        xbt_assert(send_res == 0, "Could not send response");
+        xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }
 
@@ -202,8 +197,8 @@ void AppSide::handle_messages() const
 #endif
         }
         coverage_checkpoint();
-        int send_res = channel_.send(MessageType::DEADLOCK_CHECK_REPLY); // really?
-        xbt_assert(send_res == 0, "Could not answer to FINALIZE");
+        xbt_assert(channel_.send(MessageType::DEADLOCK_CHECK_REPLY) == 0, // DEADLOCK_CHECK_REPLY, really?
+                   "Could not answer to FINALIZE");
         if (terminate_asap)
           ::_Exit(0);
         break;
@@ -221,8 +216,7 @@ void AppSide::main_loop() const
   coverage_checkpoint();
   while (true) {
     simgrid::mc::execute_actors();
-    int send_res = channel_.send(MessageType::WAITING);
-    xbt_assert(send_res == 0, "Could not send WAITING message to model-checker");
+    xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send WAITING message to model-checker");
     this->handle_messages();
   }
 }

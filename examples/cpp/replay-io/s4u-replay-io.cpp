@@ -88,8 +88,7 @@ public:
     double clock          = simgrid::s4u::Engine::get_clock();
 
     ACT_DEBUG("Entering Close: %s (filename: %s)", NAME.c_str(), file_name.c_str());
-    XBT_ATTRIB_UNUSED auto count = opened_files.erase(full_name);
-    xbt_assert(count == 1, "File not found in opened files: %s", full_name.c_str());
+    xbt_assert(opened_files.erase(full_name) == 1, "File not found in opened files: %s", full_name.c_str());
 
     log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
