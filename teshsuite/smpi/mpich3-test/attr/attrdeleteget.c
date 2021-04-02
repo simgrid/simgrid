@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "mpi.h"
 #include "mpitest.h"
-
+#define USE_STRICT_MPI
 int key = MPI_KEYVAL_INVALID;
 char a[100];
 
