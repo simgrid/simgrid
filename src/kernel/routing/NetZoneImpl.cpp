@@ -484,38 +484,38 @@ void NetZoneImpl::seal()
 
 void NetZoneImpl::set_parent(NetZoneImpl* parent)
 {
-  xbt_assert(sealed_ == false, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
   parent_ = parent;
   netpoint_->set_englobing_zone(parent_);
 }
 
 void NetZoneImpl::set_network_model(std::shared_ptr<resource::NetworkModel> netmodel)
 {
-  xbt_assert(sealed_ == false, "Impossible to set network model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set network model to an already sealed NetZone(%s)", this->get_cname());
   network_model_ = std::move(netmodel);
 }
 
 void NetZoneImpl::set_cpu_vm_model(std::shared_ptr<resource::CpuModel> cpu_model)
 {
-  xbt_assert(sealed_ == false, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
   cpu_model_vm_ = std::move(cpu_model);
 }
 
 void NetZoneImpl::set_cpu_pm_model(std::shared_ptr<resource::CpuModel> cpu_model)
 {
-  xbt_assert(sealed_ == false, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
   cpu_model_pm_ = std::move(cpu_model);
 }
 
 void NetZoneImpl::set_disk_model(std::shared_ptr<resource::DiskModel> disk_model)
 {
-  xbt_assert(sealed_ == false, "Impossible to set disk model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set disk model to an already sealed NetZone(%s)", this->get_cname());
   disk_model_ = std::move(disk_model);
 }
 
 void NetZoneImpl::set_host_model(std::shared_ptr<surf::HostModel> host_model)
 {
-  xbt_assert(sealed_ == false, "Impossible to set host model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set host model to an already sealed NetZone(%s)", this->get_cname());
   host_model_ = std::move(host_model);
 }
 

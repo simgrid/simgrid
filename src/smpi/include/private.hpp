@@ -537,8 +537,7 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_COMM2(num, comm)                                                                                         \
   CHECK_MPI_NULL((num), MPI_COMM_NULL, MPI_ERR_COMM, (comm))
 #define CHECK_DELETED(num, err, obj)										       \
-  CHECK_ARGS((obj->deleted() == true), (err),                                                \
-	     "%s: param %d %s has already been freed", __func__, (num), _XBT_STRINGIFY(obj));
+  CHECK_ARGS((obj)->deleted(), (err), "%s: param %d %s has already been freed", __func__, (num), _XBT_STRINGIFY(obj));
 #define CHECK_COMM(num)                                                                                                \
   CHECK_COMM2((num), comm)                                                                                             \
   CHECK_DELETED((num), MPI_ERR_COMM, comm)
