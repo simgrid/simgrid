@@ -117,9 +117,13 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
       receiver->real_src_ = sender->src_;
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
-    if (receiver->real_size_ < sender->real_size_ && ((receiver->flags_ & MPI_REQ_PROBE) == 0 )){
-      XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_, sender->real_size_);
-      receiver->truncated_ = true;
+    if ((receiver->flags_ & MPI_REQ_PROBE) == 0 ){
+      if (receiver->real_size_ < sender->real_size_){
+        XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_, sender->real_size_);
+        receiver->truncated_ = true;
+      } else if (receiver->real_size_ > sender->real_size_){
+        receiver->real_size_=sender->real_size_;
+      }
     }
     if (sender->detached_)
       receiver->detached_sender_ = sender; // tie the sender to the receiver, as it is detached and has to be freed in
