@@ -338,6 +338,6 @@ int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size)
   CHECK_NEGATIVE(1, MPI_ERR_COUNT, incount)
   CHECK_TYPE(2, datatype)
   CHECK_COMM(3)
-  *size=incount*datatype->get_extent();
+  *size = incount * std::max<long>(datatype->size(), datatype->get_extent());
   return MPI_SUCCESS;
 }
