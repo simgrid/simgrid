@@ -252,12 +252,10 @@ int PMPI_Buffer_attach(void *buf, int size){
     return MPI_ERR_BUFFER;
   if(size<0)
     return MPI_ERR_ARG;
-  smpi_process()->set_bsend_buffer(buf, size);
-  return MPI_SUCCESS;
+  return smpi_process()->set_bsend_buffer(buf, size);
 }
 
 int PMPI_Buffer_detach(void* buffer, int* size){
   smpi_process()->bsend_buffer((void**)buffer, size);
-  smpi_process()->set_bsend_buffer(nullptr, 0);
-  return MPI_SUCCESS;
+  return smpi_process()->set_bsend_buffer(nullptr, 0);
 }
