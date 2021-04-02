@@ -22,10 +22,10 @@ static int getPid(MPI_Comm comm, int id)
   CHECK_BUFFER(1, buf, count)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
+  CHECK_COMM(6)\
   if(dst!= MPI_PROC_NULL)\
     CHECK_RANK(4, dst, comm)\
-  CHECK_TAG(5, tag)\
-  CHECK_COMM(6)\
+  CHECK_TAG(5, tag)
 
 #define CHECK_ISEND_INPUTS\
   CHECK_REQUEST(7)\
@@ -38,10 +38,10 @@ static int getPid(MPI_Comm comm, int id)
   CHECK_BUFFER(1, buf, count)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
+  CHECK_COMM(6)\
   if(src!=MPI_ANY_SOURCE && src!=MPI_PROC_NULL)\
     CHECK_RANK(4, src, comm)\
-  CHECK_TAG(5, tag)\
-  CHECK_COMM(6)
+  CHECK_TAG(5, tag)
 /* PMPI User level calls */
 
 int PMPI_Send_init(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request * request)
