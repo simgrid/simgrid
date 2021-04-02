@@ -154,7 +154,7 @@ public:
   virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
   virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+                         const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
   /** @brief Set parent of this Netzone */
   void set_parent(NetZoneImpl* parent);
   /** @brief Set network model for this Netzone */

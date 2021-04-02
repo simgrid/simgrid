@@ -173,7 +173,7 @@ int NetZoneImpl::add_component(NetPoint* elm)
 }
 
 void NetZoneImpl::add_route(NetPoint* /*src*/, NetPoint* /*dst*/, NetPoint* /*gw_src*/, NetPoint* /*gw_dst*/,
-                            std::vector<resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
+                            const std::vector<resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
 {
   xbt_die("NetZone '%s' does not accept new routes (wrong class).", get_cname());
 }

@@ -8,7 +8,6 @@
 
 #include <simgrid/kernel/routing/RoutedZone.hpp>
 
-
 namespace simgrid {
 namespace kernel {
 namespace routing {
@@ -52,7 +51,7 @@ public:
    */
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
+                 const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 };
 } // namespace routing
 } // namespace kernel

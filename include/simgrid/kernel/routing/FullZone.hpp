@@ -27,7 +27,7 @@ public:
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
+                 const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 
 private:
   std::vector<RouteCreationArgs*> routing_table_;

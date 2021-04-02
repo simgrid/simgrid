@@ -94,7 +94,7 @@ public:
                          const std::vector<Link*>& link_list, bool symmetrical = true);
 
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-                 kernel::routing::NetPoint* gw_dst, std::vector<kernel::resource::LinkImpl*>& link_list,
+                 kernel::routing::NetPoint* gw_dst, const std::vector<kernel::resource::LinkImpl*>& link_list,
                  bool symmetrical);
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
