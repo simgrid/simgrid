@@ -26,6 +26,7 @@ private:
   static f2c_lookup_type::size_type num_default_handles_;
   int my_f2c_id_ = -1;
   bool deleted_ = false;
+
 protected:
   static void allocate_lookup()
   {
@@ -34,9 +35,10 @@ protected:
   }
   static int f2c_id() { return f2c_id_; }
   static void f2c_id_increment() { f2c_id_++; }
-  void mark_as_deleted(){deleted_=true;};
+  void mark_as_deleted() { deleted_ = true; };
+
 public:
-  bool deleted(){return deleted_;}
+  bool deleted() const { return deleted_; }
   static f2c_lookup_type* lookup() { return f2c_lookup_.get(); }
   F2C();
   virtual ~F2C() = default;
