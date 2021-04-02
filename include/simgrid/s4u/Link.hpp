@@ -64,7 +64,11 @@ public:
    * @param value New latency value (in s)
    */
   Link* set_latency(double value);
-  /** @brief Set latency (string version) */
+  /**
+   * @brief Set latency (string version)
+   *
+   * @throw std::invalid_argument if latency format is incorrect.
+   */
   Link* set_latency(const std::string& value);
 
   /** @brief Describes how the link is shared between flows */

@@ -85,7 +85,11 @@ public:
    * @param speed_per_state Vector of CPU's speeds
    */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
-  /** @brief Create a Host (string version) */
+  /**
+   * @brief Create a Host (string version)
+   *
+   * @throw std::invalid_argument if speed format is incorrect.
+   */
   s4u::Host* create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate);
 
   /**
@@ -94,6 +98,7 @@ public:
    * @param name Link name
    * @param bandwidths Link's speed (vector for wifi links)
    * @param policy Link sharing policy
+   * @throw std::invalid_argument if bandwidth format is incorrect.
    */
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths,
                          Link::SharingPolicy policy = Link::SharingPolicy::SHARED);

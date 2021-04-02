@@ -280,7 +280,7 @@ std::vector<double> Host::convert_pstate_speed_vector(const std::vector<std::str
       double speed = xbt_parse_get_speed("", 0, speed_str.c_str(), nullptr, "");
       speed_list.push_back(speed);
     } catch (const simgrid::ParseError&) {
-      xbt_die("Host: Impossible to set_pstate_speed, invalid speed %s", speed_str.c_str());
+      throw std::invalid_argument(std::string("Invalid speed value: ") + speed_str);
     }
   }
   return speed_list;
