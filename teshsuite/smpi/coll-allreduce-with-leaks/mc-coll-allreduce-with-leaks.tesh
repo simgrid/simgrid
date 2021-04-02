@@ -7,6 +7,20 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > [rank 1] -> Tremblay
 > [rank 2] -> Tremblay
 > [rank 3] -> Tremblay
+> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 7 unfreed MPI handles : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
+> Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
+> [0.000000] [smpi_utils/INFO] Memory Usage: Simulated application allocated 128 bytes during its lifetime through malloc/calloc calls.
+> Largest allocation at once from a single process was 16 bytes, at sysdep.h:59. It was called 8 times during the whole simulation.
+> If this is too much, consider sharing allocations for computation buffers.
+> This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
+>
+> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 7 unfreed MPI handles : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
+> Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
+> [0.000000] [smpi_utils/INFO] Memory Usage: Simulated application allocated 128 bytes during its lifetime through malloc/calloc calls.
+> Largest allocation at once from a single process was 16 bytes, at sysdep.h:59. It was called 8 times during the whole simulation.
+> If this is too much, consider sharing allocations for computation buffers.
+> This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
+>
 > [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
 > [0.000000] [mc_safety/INFO] Executed transitions = 484
 > [0.000000] [mc_safety/INFO] Expanded states = 63
