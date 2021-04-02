@@ -27,7 +27,7 @@ namespace kernel {
 namespace resource {
 
 LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,
-                                            s4u::Link::SharingPolicy)
+                                            s4u::Link::SharingPolicy /*policy*/)
 {
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
           "Please remove any link from your platform (and switch to routing='None')",
@@ -38,7 +38,7 @@ LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::
 double NetworkConstantModel::next_occurring_event(double /*now*/)
 {
   double min = -1.0;
-  for (kernel::resource::Action const& action : *get_started_action_set()) {
+  for (Action const& action : *get_started_action_set()) {
     const auto& net_action = static_cast<const NetworkConstantAction&>(action);
     if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min))
       min = net_action.latency_;
@@ -68,7 +68,7 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
   }
 }
 
-Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double)
+Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double /*rate*/)
 {
   auto* action = new NetworkConstantAction(this, *src, *dst, size, sg_latency_factor);
 
