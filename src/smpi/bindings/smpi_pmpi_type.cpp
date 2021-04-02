@@ -5,6 +5,7 @@
 
 #include "private.hpp"
 #include "smpi_datatype_derived.hpp"
+#include "smpi_comm.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
@@ -337,6 +338,6 @@ int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size)
   CHECK_NEGATIVE(1, MPI_ERR_COUNT, incount)
   CHECK_TYPE(2, datatype)
   CHECK_COMM(3)
-  *size=incount*datatype->size();
+  *size=incount*datatype->get_extent();
   return MPI_SUCCESS;
 }
