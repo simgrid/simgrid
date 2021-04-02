@@ -87,8 +87,6 @@ NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, s4u::
     NetworkConstantAction::set_state(Action::State::FINISHED);
 }
 
-NetworkConstantAction::~NetworkConstantAction() = default;
-
 void NetworkConstantAction::update_remains_lazy(double /*now*/)
 {
   THROW_IMPOSSIBLE;

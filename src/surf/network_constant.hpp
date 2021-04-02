@@ -6,8 +6,6 @@
 #ifndef NETWORK_CONSTANT_HPP_
 #define NETWORK_CONSTANT_HPP_
 
-#include <xbt/base.h>
-
 #include "network_interface.hpp"
 
 namespace simgrid {
@@ -28,7 +26,6 @@ public:
 class NetworkConstantAction : public NetworkAction {
 public:
   NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size);
-  ~NetworkConstantAction() override;
   void update_remains_lazy(double now) override;
 };
 
