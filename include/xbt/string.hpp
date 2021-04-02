@@ -145,7 +145,7 @@ public:
   // Capacity
   size_t size() const { return str.len; }
   size_t length() const { return str.len; }
-  bool empty() const { return str.len != 0; }
+  bool empty() const { return str.len == 0; }
   void shrink_to_fit() { /* Being there, but doing nothing */}
 
   // Element access
