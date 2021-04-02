@@ -51,8 +51,15 @@
 
       integer MPI_SUCCESS, MPI_ERR_COMM, MPI_ERR_ARG, MPI_ERR_TYPE
       integer MPI_ERR_REQUEST, MPI_ERR_INTERN, MPI_ERR_COUNT
-      integer MPI_ERR_RANK, MPI_ERR_OTHER, MPI_ERR_UNKNOWN
-      integer MPI_ERR_TAG, MPI_ERR_TRUNCATE, MPI_ERR_GROUP, MPI_ERR_OP
+      integer MPI_ERR_RANK, MPI_ERR_TAG, MPI_ERR_TRUNCATE
+      integer MPI_ERR_GROUP, MPI_ERR_OP, MPI_ERR_OTHER
+      integer MPI_ERR_IN_STATUS, MPI_ERR_PENDING, MPI_ERR_BUFFER
+      integer MPI_ERR_NAME, MPI_ERR_DIMS, MPI_ERR_TOPOLOGY
+      integer MPI_ERR_NO_MEM, MPI_ERR_WIN, MPI_ERR_INFO_VALUE
+      integer MPI_ERR_INFO_KEY, MPI_ERR_INFO_NOKEY, MPI_ERR_ROOT
+      integer MPI_ERR_KEYVAL, MPI_ERR_BASE, MPI_ERR_SPAWN
+      integer MPI_ERR_UNKNOWN
+
       integer MPI_ERR_LASTCODE
       integer MPI_IDENT, MPI_SIMILAR, MPI_UNEQUAL, MPI_CONGRUENT
       parameter(MPI_SUCCESS=0)
@@ -68,7 +75,22 @@
       parameter(MPI_ERR_GROUP=10)
       parameter(MPI_ERR_OP=11)
       parameter(MPI_ERR_OTHER=12)
-      parameter(MPI_ERR_UNKNOWN=13)
+      parameter(MPI_ERR_IN_STATUS=13)
+      parameter(MPI_ERR_PENDING=14)
+      parameter(MPI_ERR_BUFFER=15)
+      parameter(MPI_ERR_NAME=16)
+      parameter(MPI_ERR_DIMS=17)
+      parameter(MPI_ERR_TOPOLOGY=18)
+      parameter(MPI_ERR_NO_MEM=19)
+      parameter(MPI_ERR_WIN=20)
+      parameter(MPI_ERR_INFO_VALUE=21)
+      parameter(MPI_ERR_INFO_KEY=22)
+      parameter(MPI_ERR_INFO_NOKEY=23)
+      parameter(MPI_ERR_ROOT=24)
+      parameter(MPI_ERR_KEYVAL=25)
+      parameter(MPI_ERR_BASE=26)
+      parameter(MPI_ERR_SPAWN=27)
+      parameter(MPI_ERR_UNKNOWN=28)
       parameter(MPI_ERR_LASTCODE=74)
       parameter(MPI_IDENT=0)
       parameter(MPI_SIMILAR=1)
@@ -97,7 +119,7 @@
 
 ! Attribute keys
       integer MPI_IO, MPI_HOST, MPI_WTIME_IS_GLOBAL, MPI_APPNUM
-      integer MPI_TAG_UB, MPI_TAG_LB
+      integer MPI_TAG_UB, MPI_TAG_LB, MPI_BSEND_OVERHEAD
       integer MPI_UNIVERSE_SIZE, MPI_LASTUSEDCODE
       parameter(MPI_IO=-1)
       parameter(MPI_HOST=-2)
@@ -108,6 +130,7 @@
       parameter(MPI_UNIVERSE_SIZE=-7)
       parameter(MPI_LASTUSEDCODE=-8)
 
+      parameter(MPI_BSEND_OVERHEAD=0)
 ! This should be equal to the number of int fields in MPI_Status
       integer MPI_STATUS_SIZE
       parameter(MPI_STATUS_SIZE=5)
@@ -155,6 +178,13 @@
       parameter(MPI_WIN_BASE=-1)
       parameter(MPI_WIN_SIZE=-2)
       parameter(MPI_WIN_DISP_UNIT=-3)
+
+      integer MPI_GRAPH, MPI_CART
+      integer MPI_DIST_GRAPH, MPI_INVALID_TOPO
+      parameter(MPI_GRAPH=0)
+      parameter(MPI_CART=1)
+      parameter(MPI_DIST_GRAPH=2)
+      parameter(MPI_INVALID_TOPO=3)
 
 ! These IDs have to be unique, consecutive
 ! and ordered as in smpi_f77.cpp.
