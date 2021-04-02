@@ -346,6 +346,15 @@ kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& n
   return netp == pimpl->netpoints_.end() ? nullptr : netp->second;
 }
 
+kernel::routing::NetPoint* Engine::netpoint_by_name(const std::string& name) const
+{
+  auto netp = netpoint_by_name_or_null(name);
+  if (netp == nullptr) {
+    throw std::invalid_argument(std::string("Netpoint not found: %s") + name);
+  }
+  return netp;
+}
+
 std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints() const
 {
   std::vector<kernel::routing::NetPoint*> res;

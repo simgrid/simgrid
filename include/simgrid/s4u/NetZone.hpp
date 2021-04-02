@@ -63,6 +63,36 @@ public:
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
+
+  /**
+   * @brief Add a route between 2 netpoints
+   *
+   * Create a regular route between 2 netpoints. A netpoint can be a host
+   * or a router.
+   *
+   * @param src Source netpoint
+   * @param dst Destination netpoint
+   * @param link_list List of links used in this communication
+   * @param symmetrical Bi-directional communication
+   */
+  void add_regular_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                         const std::vector<Link*>& link_list, bool symmetrical = true);
+  /**
+   * @brief Add a route between 2 netzones
+   *
+   * Create a route between 2 netzones, connecting 2 gateways.
+   *
+   * @param src Source netzone's netpoint
+   * @param dst Destination netzone' netpoint
+   * @param src_gw Netpoint of the gateway in the source netzone
+   * @param dst_gw Netpoint of the gateway in the destination netzone
+   * @param link_list List of links used in this communication
+   * @param symmetrical Bi-directional communication
+   */
+  void add_netzone_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                         const std::vector<Link*>& link_list, bool symmetrical = true);
+
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                  kernel::routing::NetPoint* gw_dst, std::vector<kernel::resource::LinkImpl*>& link_list,
                  bool symmetrical);
@@ -106,6 +136,10 @@ public:
   /** @brief Create a link (string version) */
   s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths,
                          Link::SharingPolicy policy = Link::SharingPolicy::SHARED);
+
+private:
+  /** @brief Auxiliary function to get list of LinkImpl */
+  static std::vector<kernel::resource::LinkImpl*> get_link_list_impl(const std::vector<Link*> link_list);
 };
 
 // External constructors so that the types (and the types of their content) remain hidden

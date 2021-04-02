@@ -125,6 +125,13 @@ public:
 
   std::vector<kernel::routing::NetPoint*> get_all_netpoints() const;
   kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name) const;
+  /**
+   * @brief Get netpoint by its name
+   *
+   * @param name Netpoint name
+   * @throw std::invalid_argument if netpoint doesn't exist
+   */
+  kernel::routing::NetPoint* netpoint_by_name(const std::string& name) const;
 
   NetZone* get_netzone_root() const;
   void set_netzone_root(const NetZone* netzone);
