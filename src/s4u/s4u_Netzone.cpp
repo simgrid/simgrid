@@ -143,6 +143,11 @@ void NetZone::extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string
   pimpl_->get_graph(graph, nodes, edges);
 }
 
+void NetZone::seal()
+{
+  kernel::actor::simcall([this] { pimpl_->seal(); });
+}
+
 s4u::Host* NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   return kernel::actor::simcall(

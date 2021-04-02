@@ -349,7 +349,6 @@ void Host::execute(double flops, double priority) const
 
 void Host::seal()
 {
-  kernel::actor::simcall([this]() { this->pimpl_cpu->seal(); });
   kernel::actor::simcall([this]() { this->pimpl_->seal(); });
 }
 

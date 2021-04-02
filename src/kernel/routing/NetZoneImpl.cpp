@@ -465,7 +465,18 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
 
 void NetZoneImpl::seal()
 {
+  /* already sealed netzone */
+  if (sealed_)
+    return;
   do_seal(); // derived class' specific sealing procedure
+
+  /* seals sub-netzones and hosts */
+  for (auto* host : get_all_hosts()) {
+    host->seal();
+  }
+  for (auto* sub_net : *get_children()) {
+    sub_net->seal();
+  }
   sealed_ = true;
 }
 

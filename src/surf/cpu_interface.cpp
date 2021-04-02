@@ -129,6 +129,9 @@ Cpu* Cpu::set_speed_profile(kernel::profile::Profile* profile)
 
 void Cpu::seal()
 {
+  if (is_sealed()) {
+    return;
+  }
   lmm::System* lmm = get_model()->get_maxmin_system();
   if (dynamic_cast<CpuTiModel*>(get_model()) == nullptr)
     this->set_constraint(lmm->constraint_new(this, core_count_ * speed_per_pstate_.front()));

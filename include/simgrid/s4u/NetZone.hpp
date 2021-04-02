@@ -137,6 +137,11 @@ public:
   s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths,
                          Link::SharingPolicy policy = Link::SharingPolicy::SHARED);
 
+  /**
+   * @brief Seal this netzone configuration
+   */
+  void seal();
+
 private:
   /** @brief Auxiliary function to get list of LinkImpl */
   static std::vector<kernel::resource::LinkImpl*> get_link_list_impl(const std::vector<Link*> link_list);
