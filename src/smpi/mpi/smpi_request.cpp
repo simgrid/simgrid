@@ -313,12 +313,13 @@ MPI_Request Request::irecv(void *buf, int count, MPI_Datatype datatype, int src,
   return request;
 }
 
-void Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status * status)
+int Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status * status)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request = irecv(buf, count, datatype, src, tag, comm);
-  wait(&request,status);
+  int retval = wait(&request,status);
   request = nullptr;
+  return retval;
 }
 
 void Request::bsend(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
@@ -1022,6 +1023,9 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
     }
     ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
   }
+
+  if ((*request)->truncated_)
+    ret = MPI_ERR_TRUNCATE;
 
   finish_wait(request, status); // may invalidate *request
   if (*request != MPI_REQUEST_NULL && (((*request)->flags_ & MPI_REQ_NON_PERSISTENT) != 0))

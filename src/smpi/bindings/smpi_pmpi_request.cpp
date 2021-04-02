@@ -259,8 +259,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        tag, simgrid::smpi::Datatype::encode(datatype)));
 
-    simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
-    retval = MPI_SUCCESS;
+    retval = simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
 
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     int src_traced=0;
@@ -415,8 +414,7 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
       simgrid::smpi::Request::send(sendbuf, sendcount, sendtype, dst, sendtag, comm);
     retval = MPI_SUCCESS;
   } else if (dst == MPI_PROC_NULL){
-    simgrid::smpi::Request::recv(recvbuf, recvcount, recvtype, src, recvtag, comm, status);
-    retval = MPI_SUCCESS;
+    retval = simgrid::smpi::Request::recv(recvbuf, recvcount, recvtype, src, recvtag, comm, status);
   } else if (dst >= comm->group()->size() || dst <0 ||
       (src!=MPI_ANY_SOURCE && (src >= comm->group()->size() || src <0))){
     retval = MPI_ERR_RANK;

@@ -91,7 +91,7 @@ public:
   static MPI_Request issend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
   static MPI_Request irecv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm);
 
-  static void recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status* status);
+  static int recv(void* buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status* status);
   static void bsend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
   static void send(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
   static void ssend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm);
