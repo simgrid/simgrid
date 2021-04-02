@@ -17,7 +17,6 @@
         <router id="WIFI router"/>
     </zone>
 
-
     <!-- NODE1 AS -->
     <zone id="Wired zone" routing="Full">
       <host id="node1" speed="100.0Mf,50.0Mf,20.0Mf" />
