@@ -47,8 +47,9 @@ public:
    * @param bandwidth The initial bandwidth of the Link in bytes per second
    * @param policy The sharing policy of the Link
    */
-  virtual LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                s4u::Link::SharingPolicy policy) = 0;
+  virtual LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
+
+  virtual LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
 
   /**
    * @brief Create a communication between two hosts.
@@ -137,6 +138,7 @@ public:
   virtual LinkImpl* set_latency(double value) = 0;
 
   /** @brief The sharing policy */
+  virtual LinkImpl* set_sharing_policy(s4u::Link::SharingPolicy policy);
   virtual s4u::Link::SharingPolicy get_sharing_policy() const;
 
   /** @brief Check if the Link is used */

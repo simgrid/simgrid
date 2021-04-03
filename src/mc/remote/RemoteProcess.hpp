@@ -27,7 +27,7 @@ public:
 
   /** Hostname (owned by `mc_model_checker->hostnames_`) */
   const xbt::string* hostname = nullptr;
-  std::string name;
+  xbt::string name;
 
   void clear()
   {

@@ -97,25 +97,22 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
       reinterpret_cast<unsigned char**>(stack_)[-1] = alloc;
 #elif !defined(_WIN32)
       void* alloc;
-      if (posix_memalign(&alloc, xbt_pagesize, size) != 0)
-        xbt_die("Failed to allocate stack.");
+      xbt_assert(posix_memalign(&alloc, xbt_pagesize, size) == 0, "Failed to allocate stack.");
       this->stack_ = static_cast<unsigned char*>(alloc);
 #else
       this->stack_ = static_cast<unsigned char*>(_aligned_malloc(size, xbt_pagesize));
 #endif
 
 #ifndef _WIN32
-      if (mprotect(this->stack_, smx_context_guard_size, PROT_NONE) == -1) {
-        xbt_die(
-            "Failed to protect stack: %s.\n"
-            "If you are running a lot of actors, you may be exceeding the amount of mappings allowed per process.\n"
-            "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
-            "Please see "
-            "https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization for more "
-            "information.",
-            strerror(errno));
-        /* This is fatal. We are going to fail at some point when we try reusing this. */
-      }
+      /* This is fatal. We are going to fail at some point when we try reusing this. */
+      xbt_assert(
+          mprotect(this->stack_, smx_context_guard_size, PROT_NONE) != -1,
+          "Failed to protect stack: %s.\n"
+          "If you are running a lot of actors, you may be exceeding the amount of mappings allowed per process.\n"
+          "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
+          "Please see https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization "
+          "for more information.",
+          strerror(errno));
 #endif
       this->stack_ = this->stack_ + smx_context_guard_size;
     } else {

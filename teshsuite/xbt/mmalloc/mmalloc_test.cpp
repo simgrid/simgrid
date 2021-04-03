@@ -27,8 +27,7 @@ constexpr int TESTSIZE = 100;
 static void check_block(const unsigned char* p, unsigned char b, int n)
 {
   for (int i = 0; i < n; i++)
-    if (p[i] != b)
-      xbt_die("value mismatch: %p[%d] = %#hhx, expected %#hhx", p, i, p[i], b);
+    xbt_assert(p[i] == b, "value mismatch: %p[%d] = %#hhx, expected %#hhx", p, i, p[i], b);
 }
 
 int main(int argc, char**argv)
@@ -80,8 +79,7 @@ int main(int argc, char**argv)
     } catch (const simgrid::Exception&) {
       gotit = true;
     }
-    if (not gotit)
-      xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
+    xbt_assert(gotit, "FAIL: A double-free went undetected (for size:%d)", size_of_block(i));
   }
 
   XBT_INFO("free again all blocks (to really check that double free are correctly caught)");
@@ -92,8 +90,7 @@ int main(int argc, char**argv)
     } catch (const simgrid::Exception&) {
       gotit = true;
     }
-    if (not gotit)
-      xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
+    xbt_assert(gotit, "FAIL: A double-free went undetected (for size:%d)", size_of_block(i));
   }
 
   XBT_INFO("Let's try different codepaths for mrealloc");

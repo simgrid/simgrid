@@ -65,6 +65,8 @@ void Comm::destroy(Comm* comm)
     Comm::destroy(smpi_process()->comm_world());
     return;
   }
+  if(comm != MPI_COMM_WORLD && comm != MPI_COMM_SELF)
+    comm->mark_as_deleted();
   Comm::unref(comm);
 }
 
@@ -111,7 +113,10 @@ int Comm::dup(MPI_Comm* newcomm){
   if(info_!=MPI_INFO_NULL)
     (*newcomm)->info_ = new simgrid::smpi::Info(info_);
   //duplicate errhandler
-  (*newcomm)->set_errhandler(errhandler_);
+  if (errhandlers_ != nullptr)//MPI_COMM_WORLD, only grab our own
+    (*newcomm)->set_errhandler(errhandlers_[this->rank()]);
+  else
+    (*newcomm)->set_errhandler(errhandler_);
   return ret;
 }
 

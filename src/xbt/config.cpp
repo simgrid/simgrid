@@ -56,12 +56,10 @@ double parse_double(const char* value)
   double res = std::strtod(value, &end);
   if (errno == ERANGE)
     throw std::range_error("out of range");
-  else if (errno)
-    xbt_die("Unexpected errno");
+  xbt_assert(errno == 0, "Unexpected errno: %d", errno);
   if (end == value || *end != '\0')
     throw std::range_error("invalid double");
-  else
-    return res;
+  return res;
 }
 
 long int parse_long(const char* value)
@@ -69,17 +67,12 @@ long int parse_long(const char* value)
   char* end;
   errno = 0;
   long int res = std::strtol(value, &end, 0);
-  if (errno) {
-    if (res == LONG_MIN && errno == ERANGE)
-      throw std::range_error("underflow");
-    else if (res == LONG_MAX && errno == ERANGE)
-      throw std::range_error("overflow");
-    xbt_die("Unexpected errno");
-  }
+  if (errno == ERANGE)
+    throw std::range_error(res == LONG_MIN ? "underflow" : "overflow");
+  xbt_assert(errno == 0, "Unexpected errno: %d", errno);
   if (end == value || *end != '\0')
     throw std::range_error("invalid integer");
-  else
-    return res;
+  return res;
 }
 
 // ***** ConfigType *****

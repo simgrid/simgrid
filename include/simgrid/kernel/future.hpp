@@ -116,8 +116,7 @@ protected:
    **/
   void resolve()
   {
-    if (status_ != FutureStatus::ready)
-      xbt_die("Deadlock: this future is not ready");
+    xbt_assert(status_ == FutureStatus::ready, "Deadlock: this future is not ready");
     status_ = FutureStatus::done;
     if (exception_) {
       std::exception_ptr exception = std::move(exception_);

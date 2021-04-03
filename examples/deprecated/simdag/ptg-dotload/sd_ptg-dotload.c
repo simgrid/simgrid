@@ -26,9 +26,7 @@ int main(int argc, char **argv){
 
   /* load the DOT file */
   dot = SD_PTG_dotload(argv[2]);
-  if(dot == NULL){
-    xbt_die("No dot load may be you have a cycle in your graph");
-  }
+  xbt_assert(dot != NULL, "No dot load may be you have a cycle in your graph");
 
   /* Display all the tasks */
   XBT_INFO("------------------- Display all tasks of the loaded DAG ---------------------------");

@@ -119,7 +119,11 @@ public:
    * @param speed_per_state list of powers for this processor (default power is at index 0)
    */
   Host* set_pstate_speed(const std::vector<double>& speed_per_state);
-  /** @brief Set the CPU's speed (string version) */
+  /**
+   * @brief Set the CPU's speed (string version)
+   *
+   * @throw std::invalid_argument if speed format is incorrect.
+   */
   Host* set_pstate_speed(const std::vector<std::string>& speed_per_state);
 
   /** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.

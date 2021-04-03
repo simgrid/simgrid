@@ -22,10 +22,10 @@ static int getPid(MPI_Comm comm, int id)
   CHECK_BUFFER(1, buf, count)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
+  CHECK_COMM(6)\
   if(dst!= MPI_PROC_NULL)\
     CHECK_RANK(4, dst, comm)\
-  CHECK_TAG(5, tag)\
-  CHECK_COMM(6)\
+  CHECK_TAG(5, tag)
 
 #define CHECK_ISEND_INPUTS\
   CHECK_REQUEST(7)\
@@ -38,10 +38,10 @@ static int getPid(MPI_Comm comm, int id)
   CHECK_BUFFER(1, buf, count)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
+  CHECK_COMM(6)\
   if(src!=MPI_ANY_SOURCE && src!=MPI_PROC_NULL)\
     CHECK_RANK(4, src, comm)\
-  CHECK_TAG(5, tag)\
-  CHECK_COMM(6)
+  CHECK_TAG(5, tag)
 /* PMPI User level calls */
 
 int PMPI_Send_init(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request * request)
@@ -259,8 +259,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        tag, simgrid::smpi::Datatype::encode(datatype)));
 
-    simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
-    retval = MPI_SUCCESS;
+    retval = simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
 
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     int src_traced=0;
@@ -415,8 +414,7 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
       simgrid::smpi::Request::send(sendbuf, sendcount, sendtype, dst, sendtag, comm);
     retval = MPI_SUCCESS;
   } else if (dst == MPI_PROC_NULL){
-    simgrid::smpi::Request::recv(recvbuf, recvcount, recvtype, src, recvtag, comm, status);
-    retval = MPI_SUCCESS;
+    retval = simgrid::smpi::Request::recv(recvbuf, recvcount, recvtype, src, recvtag, comm, status);
   } else if (dst >= comm->group()->size() || dst <0 ||
       (src!=MPI_ANY_SOURCE && (src >= comm->group()->size() || src <0))){
     retval = MPI_ERR_RANK;

@@ -439,7 +439,7 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
     CHECK_BUFFER(5, recvbuf, count)
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, count)
-  CHECK_OP(5)
+  CHECK_OP(5, op, datatype)
   CHECK_ROOT(7)
   CHECK_REQUEST(8)
 
@@ -466,7 +466,7 @@ int PMPI_Reduce_local(const void* inbuf, void* inoutbuf, int count, MPI_Datatype
   CHECK_BUFFER(2, inoutbuf, count)
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, count)
-  CHECK_OP(5)
+  CHECK_OP(5, op, datatype)
 
   smpi_bench_end();
   op->apply(inbuf, inoutbuf, &count, datatype);
@@ -487,7 +487,7 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, count)
   CHECK_REQUEST(7)
-  CHECK_OP(5)
+  CHECK_OP(5, op, datatype)
 
   smpi_bench_end();
   std::vector<unsigned char> tmp_sendbuf;
@@ -523,7 +523,7 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, count)
   CHECK_REQUEST(7)
-  CHECK_OP(5)
+  CHECK_OP(5, op, datatype)
 
   smpi_bench_end();
   int rank         = simgrid::s4u::this_actor::get_pid();
@@ -558,7 +558,7 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, count)
   CHECK_REQUEST(7)
-  CHECK_OP(5)
+  CHECK_OP(5, op, datatype)
 
   smpi_bench_end();
   int rank         = simgrid::s4u::this_actor::get_pid();
@@ -592,7 +592,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
   CHECK_TYPE(4, datatype)
   CHECK_NULL(3, MPI_ERR_COUNT, recvcounts)
   CHECK_REQUEST(7)
-  CHECK_OP(5)
+  CHECK_OP(5, op, datatype)
   for (int i = 0; i < comm->size(); i++) {
     CHECK_COUNT(3, recvcounts[i])
     CHECK_BUFFER(1, sendbuf, recvcounts[i])
@@ -642,7 +642,7 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, recvcount)
   CHECK_REQUEST(7)
-  CHECK_OP(5)
+  CHECK_OP(5, op, datatype)
 
   smpi_bench_end();
   int count = comm->size();

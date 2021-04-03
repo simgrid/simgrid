@@ -40,8 +40,7 @@ static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   char *res = NULL;
   if (s) {
     res = strdup(s);
-    if (!res)
-      xbt_die("memory allocation error (strdup returned NULL)");
+    xbt_assert(res, "memory allocation error (strdup returned NULL)");
   }
   return res;
 }
@@ -50,8 +49,7 @@ static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
     @hideinitializer */
 static XBT_ALWAYS_INLINE void *xbt_malloc(size_t n) {
   void* res = malloc(n);
-  if (!res)
-    xbt_die("Memory allocation of %lu bytes failed", (unsigned long)n);
+  xbt_assert(res, "Memory allocation of %lu bytes failed", (unsigned long)n);
   return res;
 }
 
@@ -59,8 +57,7 @@ static XBT_ALWAYS_INLINE void *xbt_malloc(size_t n) {
     @hideinitializer */
 static XBT_ALWAYS_INLINE void *xbt_malloc0(size_t n) {
   void* res = calloc(n, 1);
-  if (!res)
-    xbt_die("Memory callocation of %lu bytes failed", (unsigned long)n);
+  xbt_assert(res, "Memory callocation of %lu bytes failed", (unsigned long)n);
   return res;
 }
 
@@ -71,8 +68,7 @@ static XBT_ALWAYS_INLINE void *xbt_realloc(void *p, size_t s) {
   if (s) {
     if (p) {
       res = realloc(p, s);
-      if (!res)
-        xbt_die("memory (re)allocation of %lu bytes failed", (unsigned long)s);
+      xbt_assert(res, "memory (re)allocation of %lu bytes failed", (unsigned long)s);
     } else {
       res = xbt_malloc(s);
     }

@@ -6,8 +6,6 @@
 #ifndef NETWORK_CONSTANT_HPP_
 #define NETWORK_CONSTANT_HPP_
 
-#include <xbt/base.h>
-
 #include "network_interface.hpp"
 
 namespace simgrid {
@@ -21,15 +19,13 @@ public:
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bws,
-                        s4u::Link::SharingPolicy policy) override;
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bws) override;
+  LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bws) override;
 };
 
 class NetworkConstantAction : public NetworkAction {
 public:
-  NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size, double latency);
-  ~NetworkConstantAction() override;
-  double initial_latency_;
+  NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size);
   void update_remains_lazy(double now) override;
 };
 

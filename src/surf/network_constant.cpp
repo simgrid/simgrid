@@ -26,8 +26,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,
-                                            s4u::Link::SharingPolicy)
+LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/)
 {
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
           "Please remove any link from your platform (and switch to routing='None')",
@@ -35,10 +34,15 @@ LinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::
   return nullptr;
 }
 
+LinkImpl* NetworkConstantModel::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return create_link(name, bandwidths);
+}
+
 double NetworkConstantModel::next_occurring_event(double /*now*/)
 {
   double min = -1.0;
-  for (kernel::resource::Action const& action : *get_started_action_set()) {
+  for (Action const& action : *get_started_action_set()) {
     const auto& net_action = static_cast<const NetworkConstantAction&>(action);
     if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min))
       min = net_action.latency_;
@@ -58,7 +62,7 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
         action.latency_ = 0.0;
       }
     }
-    action.update_remains(action.get_cost() * delta / action.initial_latency_);
+    action.update_remains(action.get_cost() * delta / sg_latency_factor);
     action.update_max_duration(delta);
 
     if ((action.get_remains_no_update() <= 0) ||
@@ -68,9 +72,9 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
   }
 }
 
-Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double)
+Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double /*rate*/)
 {
-  auto* action = new NetworkConstantAction(this, *src, *dst, size, sg_latency_factor);
+  auto* action = new NetworkConstantAction(this, *src, *dst, size);
 
   s4u::Link::on_communicate(*action);
   return action;
@@ -79,16 +83,13 @@ Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double
 /**********
  * Action *
  **********/
-NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size,
-                                             double latency)
-    : NetworkAction(model_, src, dst, size, false), initial_latency_(latency)
+NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size)
+    : NetworkAction(model_, src, dst, size, false)
 {
-  latency_ = latency;
+  latency_ = sg_latency_factor;
   if (latency_ <= 0.0)
     NetworkConstantAction::set_state(Action::State::FINISHED);
 }
-
-NetworkConstantAction::~NetworkConstantAction() = default;
 
 void NetworkConstantAction::update_remains_lazy(double /*now*/)
 {

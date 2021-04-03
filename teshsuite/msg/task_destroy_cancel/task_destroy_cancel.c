@@ -66,8 +66,7 @@ static int worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   while (1) {
     msg_task_t task           = NULL;
-    XBT_ATTRIB_UNUSED int res = MSG_task_receive(&(task), "worker_mailbox");
-    xbt_assert(res == MSG_OK, "MSG_task_get failed");
+    xbt_assert(MSG_task_receive(&(task), "worker_mailbox") == MSG_OK, "MSG_task_receive failed");
     XBT_INFO("Handling task \"%s\"", MSG_task_get_name(task));
 
     if (!strcmp(MSG_task_get_name(task), "finalize")) {

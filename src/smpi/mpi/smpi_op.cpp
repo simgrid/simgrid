@@ -63,7 +63,6 @@ APPLY_OP_LOOP(MPI_UNSIGNED, unsigned int,op)\
 APPLY_OP_LOOP(MPI_UNSIGNED_LONG, unsigned long,op)\
 APPLY_OP_LOOP(MPI_UNSIGNED_LONG_LONG, unsigned long long,op)\
 APPLY_OP_LOOP(MPI_WCHAR, wchar_t,op)\
-APPLY_OP_LOOP(MPI_BYTE, int8_t,op)\
 APPLY_OP_LOOP(MPI_INT8_T, int8_t,op)\
 APPLY_OP_LOOP(MPI_INT16_T, int16_t,op)\
 APPLY_OP_LOOP(MPI_INT32_T, int32_t,op)\
@@ -83,6 +82,9 @@ APPLY_OP_LOOP(MPI_COUNT, long long,op)
 
 #define APPLY_BOOL_OP_LOOP(op)\
 APPLY_OP_LOOP(MPI_C_BOOL, bool,op)
+
+#define APPLY_BYTE_OP_LOOP(op)\
+APPLY_OP_LOOP(MPI_BYTE, int8_t,op)
 
 #define APPLY_FLOAT_OP_LOOP(op)\
 APPLY_OP_LOOP(MPI_FLOAT, float,op)\
@@ -177,6 +179,7 @@ static void band_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(BAND_OP)
   APPLY_BOOL_OP_LOOP(BAND_OP)
+  APPLY_BYTE_OP_LOOP(BAND_OP)
   APPLY_END_OP_LOOP(BAND_OP)
 }
 
@@ -184,6 +187,7 @@ static void bor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(BOR_OP)
   APPLY_BOOL_OP_LOOP(BOR_OP)
+  APPLY_BYTE_OP_LOOP(BOR_OP)
   APPLY_END_OP_LOOP(BOR_OP)
 }
 
@@ -191,6 +195,7 @@ static void bxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   APPLY_BASIC_OP_LOOP(BXOR_OP)
   APPLY_BOOL_OP_LOOP(BXOR_OP)
+  APPLY_BYTE_OP_LOOP(BXOR_OP)
   APPLY_END_OP_LOOP(BXOR_OP)
 }
 
@@ -216,23 +221,28 @@ static void no_func(void*, void*, int*, MPI_Datatype*)
   /* obviously a no-op */
 }
 
-#define CREATE_MPI_OP(name, func)                                                                                      \
-  SMPI_Op _XBT_CONCAT(smpi_MPI_, name)(&(func) /* func */, true, true);                                              \
 
-CREATE_MPI_OP(MAX, max_func)
-CREATE_MPI_OP(MIN, min_func)
-CREATE_MPI_OP(SUM, sum_func)
-CREATE_MPI_OP(PROD, prod_func)
-CREATE_MPI_OP(LAND, land_func)
-CREATE_MPI_OP(LOR, lor_func)
-CREATE_MPI_OP(LXOR, lxor_func)
-CREATE_MPI_OP(BAND, band_func)
-CREATE_MPI_OP(BOR, bor_func)
-CREATE_MPI_OP(BXOR, bxor_func)
-CREATE_MPI_OP(MAXLOC, maxloc_func)
-CREATE_MPI_OP(MINLOC, minloc_func)
-CREATE_MPI_OP(REPLACE, replace_func)
-CREATE_MPI_OP(NO_OP, no_func)
+#define CREATE_MPI_OP(name, func, types)                                                                                      \
+  SMPI_Op _XBT_CONCAT(smpi_MPI_, name)(&(func) /* func */, true, true, types);
+
+#define MAX_TYPES DT_FLAG_C_INTEGER|DT_FLAG_F_INTEGER|DT_FLAG_FP|DT_FLAG_MULTILANG
+#define LAND_TYPES DT_FLAG_C_INTEGER|DT_FLAG_FP|DT_FLAG_LOGICAL|DT_FLAG_MULTILANG
+#define BAND_TYPES DT_FLAG_C_INTEGER|DT_FLAG_FP|DT_FLAG_BYTE|DT_FLAG_MULTILANG
+
+CREATE_MPI_OP(MAX, max_func, MAX_TYPES)
+CREATE_MPI_OP(MIN, min_func, MAX_TYPES)
+CREATE_MPI_OP(SUM, sum_func, MAX_TYPES|DT_FLAG_COMPLEX)
+CREATE_MPI_OP(PROD, prod_func, MAX_TYPES|DT_FLAG_COMPLEX)
+CREATE_MPI_OP(LAND, land_func, LAND_TYPES)
+CREATE_MPI_OP(LOR, lor_func, LAND_TYPES)
+CREATE_MPI_OP(LXOR, lxor_func, LAND_TYPES)
+CREATE_MPI_OP(BAND, band_func, BAND_TYPES)
+CREATE_MPI_OP(BOR, bor_func, BAND_TYPES)
+CREATE_MPI_OP(BXOR, bxor_func, BAND_TYPES)
+CREATE_MPI_OP(MAXLOC, maxloc_func, DT_FLAG_REDUCTION)
+CREATE_MPI_OP(MINLOC, minloc_func, DT_FLAG_REDUCTION)
+CREATE_MPI_OP(REPLACE, replace_func, 0)
+CREATE_MPI_OP(NO_OP, no_func, 0)
 
 namespace simgrid{
 namespace smpi{

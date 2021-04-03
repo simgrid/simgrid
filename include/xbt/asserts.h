@@ -44,12 +44,11 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
  *
  * You can pass them a format message and arguments, just as if it where a printf.
  * It is converted to a XBT_CRITICAL logging request.
- * Be careful: the boolean expression that you want to test should not have side effects, because assertions are
- * disabled at compile time if NDEBUG is set.
+ * An execution backtrace is also displayed, unless the option --log=no_loc is given at run-time.
+ *
+ * Unlike the standard assert, xbt_assert is never disabled, even if the macro NDEBUG is defined at compile time.  So
+ * it's safe to have a condition with side effects.
  */
-#ifdef NDEBUG
-#define xbt_assert(...) ((void)0)
-#else
 /** @brief The condition which failed will be displayed.
     @hideinitializer  */
 #define xbt_assert(...) \
@@ -64,7 +63,6 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
       abort();                                                                                                         \
     }                                                                                                                  \
   } while (0)
-#endif
 
 /** @} */
 SG_END_DECL

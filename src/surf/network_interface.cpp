@@ -108,6 +108,11 @@ double LinkImpl::get_bandwidth() const
   return bandwidth_.peak * bandwidth_.scale;
 }
 
+LinkImpl* LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy)
+{
+  get_constraint()->set_sharing_policy(policy);
+  return this;
+}
 s4u::Link::SharingPolicy LinkImpl::get_sharing_policy() const
 {
   return get_constraint()->get_sharing_policy();

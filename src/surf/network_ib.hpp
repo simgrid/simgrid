@@ -27,28 +27,28 @@ struct XBT_PRIVATE ActiveComm {
 
 class IBNode {
 public:
-  int id;
+  int id_;
   // store related links, to ease computation of the penalties
-  std::vector<ActiveComm*> ActiveCommsUp;
+  std::vector<ActiveComm*> active_comms_up_;
   // store the number of comms received from each node
-  std::map<IBNode*, int> ActiveCommsDown;
+  std::map<IBNode*, int> active_comms_down_;
   // number of comms the node is receiving
-  int nbActiveCommsDown = 0;
-  explicit IBNode(int id) : id(id){};
+  int nb_active_comms_down_ = 0;
+  explicit IBNode(int id) : id_(id){};
 };
 
 class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {
-  double Bs;
-  double Be;
-  double ys;
-  void updateIBfactors_rec(IBNode* root, std::vector<bool>& updatedlist) const;
-  void computeIBfactors(IBNode* root) const;
+  double Bs_;
+  double Be_;
+  double ys_;
+  void update_IB_factors_rec(IBNode* root, std::vector<bool>& updatedlist) const;
+  void compute_IB_factors(IBNode* root) const;
 
 public:
   explicit NetworkIBModel(const std::string& name);
   NetworkIBModel(const NetworkIBModel&) = delete;
   NetworkIBModel& operator=(const NetworkIBModel&) = delete;
-  void updateIBfactors(NetworkAction* action, IBNode* from, IBNode* to, int remove) const;
+  void update_IB_factors(NetworkAction* action, IBNode* from, IBNode* to, int remove) const;
 
   std::unordered_map<std::string, IBNode> active_nodes;
   std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;

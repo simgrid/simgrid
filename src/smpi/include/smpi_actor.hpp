@@ -86,7 +86,7 @@ public:
   void set_optind(int optind);
   MPI_Info info_env();
   void bsend_buffer(void** buf, int* size);
-  void set_bsend_buffer(void* buf, int size);
+  int set_bsend_buffer(void* buf, int size);
 };
 
 } // namespace smpi

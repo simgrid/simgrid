@@ -181,8 +181,8 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
 
       profile->stochastic_event_list.emplace_back(stochevent);
     } else {
-      XBT_ATTRIB_UNUSED int res = sscanf(val.c_str(), "%lg  %lg\n", &event.date_, &event.value_);
-      xbt_assert(res == 2, "%s:%d: Syntax error in trace\n%s", name.c_str(), linecount, input.c_str());
+      xbt_assert(sscanf(val.c_str(), "%lg  %lg\n", &event.date_, &event.value_) == 2,
+                 "%s:%d: Syntax error in trace\n%s", name.c_str(), linecount, input.c_str());
 
       xbt_assert(last_event->date_ <= event.date_,
                  "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s", name.c_str(), linecount,

@@ -30,13 +30,10 @@ void replay(RecordTrace const& trace)
 
     // Choose a request:
     kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(transition.aid_);
-    if (actor == nullptr)
-      xbt_die("Unexpected actor (id:%ld).", transition.aid_);
+    xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition.aid_);
     const s_smx_simcall* simcall = &(actor->simcall_);
-    if (simcall->call_ == simix::Simcall::NONE)
-      xbt_die("No simcall for process %ld.", transition.aid_);
-    if (not simgrid::mc::request_is_visible(simcall) || not simgrid::mc::actor_is_enabled(actor))
-      xbt_die("Unexpected simcall.");
+    xbt_assert(simcall->call_ != simix::Simcall::NONE, "No simcall for process %ld.", transition.aid_);
+    xbt_assert(simgrid::mc::request_is_visible(simcall) && simgrid::mc::actor_is_enabled(actor), "Unexpected simcall.");
 
     // Execute the request:
     simcall->issuer_->simcall_handle(transition.times_considered_);

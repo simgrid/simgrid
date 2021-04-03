@@ -90,9 +90,9 @@ void smpi_bench_begin()
   if (not smpi_cfg_papi_events_file().empty()) {
     int event_set = smpi_process()->papi_event_set();
     // PAPI_start sets everything to 0! See man(3) PAPI_start
-    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && event_set && PAPI_start(event_set) != PAPI_OK) {
-      xbt_die("Could not start PAPI counters (TODO: this needs some proper handling).");
-    }
+    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized() && event_set)
+      xbt_assert(PAPI_start(event_set) == PAPI_OK,
+                 "Could not start PAPI counters (TODO: this needs some proper handling).");
   }
 #endif
   xbt_os_threadtimer_start(smpi_process()->timer());
@@ -129,8 +129,8 @@ void smpi_bench_end()
     int event_set                       = smpi_process()->papi_event_set();
     std::vector<long long> event_values(counter_data.size());
 
-    if (event_set && PAPI_stop(event_set, &event_values[0]) != PAPI_OK) // Error
-      xbt_die("Could not stop PAPI counters.");
+    if (event_set)
+      xbt_assert(PAPI_stop(event_set, &event_values[0]) == PAPI_OK, "Could not stop PAPI counters.");
     for (unsigned int i = 0; i < counter_data.size(); i++)
       counter_data[i].second += event_values[i];
   }
@@ -364,8 +364,8 @@ int smpi_sample_2(int global, const char *file, int line, int iter_count)
 
   XBT_DEBUG("sample2 %s %d", loc.c_str(), iter_count);
   auto sample = samples.find(loc);
-  if (sample == samples.end())
-    xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
+  xbt_assert(sample != samples.end(),
+             "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   const LocalData& data = sample->second;
 
   if (data.benching) {
@@ -400,8 +400,8 @@ void smpi_sample_3(int global, const char *file, int line)
 
   XBT_DEBUG("sample3 %s", loc.c_str());
   auto sample = samples.find(loc);
-  if (sample == samples.end())
-    xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
+  xbt_assert(sample != samples.end(),
+             "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   LocalData& data = sample->second;
 
   if (not data.benching)
@@ -432,9 +432,9 @@ int smpi_sample_exit(int global, const char *file, int line, int iter_count){
 
     XBT_DEBUG("sample exit %s", loc.c_str());
     auto sample = samples.find(loc);
-    if (sample == samples.end())
-      xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  
+    xbt_assert(sample != samples.end(),
+               "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
+
     if (smpi_process()->sampling()){//end of loop, but still sampling needed
       const LocalData& data = sample->second;
       smpi_process()->set_sampling(0);

@@ -73,31 +73,29 @@ void Request::ref(){
 
 void Request::unref(MPI_Request* request)
 {
-  if((*request) != MPI_REQUEST_NULL){
-    (*request)->refcount_--;
-    if((*request)->refcount_ < 0) {
-      (*request)->print_request("wrong refcount");
-      xbt_die("Whoops, wrong refcount");
-    }
-    if((*request)->refcount_==0){
-      if ((*request)->flags_ & MPI_REQ_GENERALIZED){
-        ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
-      }else{
-        Comm::unref((*request)->comm_);
-        Datatype::unref((*request)->old_type_);
-      }
-      if ((*request)->op_!=MPI_REPLACE && (*request)->op_!=MPI_OP_NULL)
-        Op::unref(&(*request)->op_);
+  xbt_assert(*request != MPI_REQUEST_NULL, "freeing an already free request");
 
-      (*request)->print_request("Destroying");
-      F2C::free_f((*request)->c2f());
-      delete *request;
-      *request = MPI_REQUEST_NULL;
-    }else{
-      (*request)->print_request("Decrementing");
+  (*request)->refcount_--;
+  if ((*request)->refcount_ < 0) {
+    (*request)->print_request("wrong refcount");
+    xbt_die("Whoops, wrong refcount");
+  }
+  if ((*request)->refcount_ == 0) {
+    if ((*request)->flags_ & MPI_REQ_GENERALIZED) {
+      ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
+    } else {
+      Comm::unref((*request)->comm_);
+      Datatype::unref((*request)->old_type_);
     }
-  }else{
-    xbt_die("freeing an already free request");
+    if ((*request)->op_ != MPI_REPLACE && (*request)->op_ != MPI_OP_NULL)
+      Op::unref(&(*request)->op_);
+
+    (*request)->print_request("Destroying");
+    F2C::free_f((*request)->c2f());
+    delete *request;
+    *request = MPI_REQUEST_NULL;
+  } else {
+    (*request)->print_request("Decrementing");
   }
 }
 
@@ -119,9 +117,13 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
       receiver->real_src_ = sender->src_;
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
-    if (receiver->real_size_ < sender->real_size_ && ((receiver->flags_ & MPI_REQ_PROBE) == 0 )){
-      XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_, sender->real_size_);
-      receiver->truncated_ = true;
+    if ((receiver->flags_ & MPI_REQ_PROBE) == 0 ){
+      if (receiver->real_size_ < sender->real_size_){
+        XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_, sender->real_size_);
+        receiver->truncated_ = true;
+      } else if (receiver->real_size_ > sender->real_size_){
+        receiver->real_size_=sender->real_size_;
+      }
     }
     if (sender->detached_)
       receiver->detached_sender_ = sender; // tie the sender to the receiver, as it is detached and has to be freed in
@@ -315,12 +317,13 @@ MPI_Request Request::irecv(void *buf, int count, MPI_Datatype datatype, int src,
   return request;
 }
 
-void Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status * status)
+int Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status * status)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request = irecv(buf, count, datatype, src, tag, comm);
-  wait(&request,status);
+  int retval = wait(&request,status);
   request = nullptr;
+  return retval;
 }
 
 void Request::bsend(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
@@ -1024,6 +1027,9 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
     }
     ret = ((*request)->generalized_funcs)->query_fn(((*request)->generalized_funcs)->extra_state, mystatus);
   }
+
+  if ((*request)->truncated_)
+    ret = MPI_ERR_TRUNCATE;
 
   finish_wait(request, status); // may invalidate *request
   if (*request != MPI_REQUEST_NULL && (((*request)->flags_ & MPI_REQ_NON_PERSISTENT) != 0))

@@ -75,7 +75,8 @@ Link* Link::set_latency(const std::string& value)
   try {
     d_value = xbt_parse_get_time("", 0, value.c_str(), nullptr, "");
   } catch (const simgrid::ParseError&) {
-    xbt_die("Link: Impossible to latency, invalid value %s", value.c_str());
+    throw std::invalid_argument(std::string("Impossible to set latency for link: ") + get_name() +
+                                std::string(". Invalid value: ") + value);
   }
   return set_latency(d_value);
 }
@@ -91,6 +92,11 @@ Link* Link::set_bandwidth(double value)
   return this;
 }
 
+Link* Link::set_sharing_policy(Link::SharingPolicy policy)
+{
+  kernel::actor::simcall([this, policy] { pimpl_->set_sharing_policy(policy); });
+  return this;
+}
 Link::SharingPolicy Link::get_sharing_policy() const
 {
   return this->pimpl_->get_sharing_policy();

@@ -536,8 +536,11 @@ XBT_PRIVATE void private_execute_flops(double flops);
              "%s: param %d %s cannot be negative", __func__, (num), _XBT_STRINGIFY(val));
 #define CHECK_COMM2(num, comm)                                                                                         \
   CHECK_MPI_NULL((num), MPI_COMM_NULL, MPI_ERR_COMM, (comm))
+#define CHECK_DELETED(num, err, obj)										       \
+  CHECK_ARGS((obj)->deleted(), (err), "%s: param %d %s has already been freed", __func__, (num), _XBT_STRINGIFY(obj));
 #define CHECK_COMM(num)                                                                                                \
-  CHECK_COMM2((num), comm)
+  CHECK_COMM2((num), comm)                                                                                             \
+  CHECK_DELETED((num), MPI_ERR_COMM, comm)
 #define CHECK_REQUEST(num)                                                                                             \
   CHECK_ARGS(request == nullptr, MPI_ERR_REQUEST,                                                                      \
              "%s: param %d request cannot be NULL",__func__, (num));
@@ -549,29 +552,32 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_TYPE(num, datatype)                                                                                      \
   CHECK_ARGS(((datatype) == MPI_DATATYPE_NULL|| not (datatype)->is_valid()), MPI_ERR_TYPE,                             \
              "%s: param %d %s cannot be MPI_DATATYPE_NULL or invalid", __func__, (num), _XBT_STRINGIFY(datatype));
-#define CHECK_OP(num)                                                                                                  \
-    CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, op)
+#define CHECK_OP(num, op, type)                                                                                        \
+  CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, (op))                                                                 \
+  CHECK_ARGS(((op)->allowed_types() && (((op)->allowed_types() & (type)->flags()) == 0)), MPI_ERR_OP,                \
+             "%s: param %d op %s can't be applied to type %s", __func__, (num), _XBT_STRINGIFY(op), type->name());
+
 #define CHECK_ROOT(num)\
   CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,                                                         \
              "%s: param %d root (=%d) cannot be negative or larger than communicator size (=%d)", __func__, (num),     \
              root, comm->size());
 #define CHECK_PROC(num,proc)                                                                                           \
-    CHECK_MPI_NULL((num), MPI_PROC_NULL, MPI_SUCCESS, (proc))
+  CHECK_MPI_NULL((num), MPI_PROC_NULL, MPI_SUCCESS, (proc))
 #define CHECK_INFO(num,info)                                                                                           \
-    CHECK_MPI_NULL((num), MPI_INFO_NULL, MPI_ERR_INFO, (info))
+  CHECK_MPI_NULL((num), MPI_INFO_NULL, MPI_ERR_INFO, (info))
 #define CHECK_TAG(num,tag)                                                                                             \
   CHECK_ARGS(((tag) < 0 && (tag) !=  MPI_ANY_TAG), MPI_ERR_TAG,                                                        \
              "%s: param %d %s (=%d) cannot be negative", __func__, (num), _XBT_STRINGIFY(tag), (tag));
 #define CHECK_FILE(num, fh)                                                                                            \
-    CHECK_MPI_NULL((num), MPI_FILE_NULL, MPI_ERR_FILE, (fh))
+  CHECK_MPI_NULL((num), MPI_FILE_NULL, MPI_ERR_FILE, (fh))
 #define CHECK_OFFSET(num, offset)                                                                                      \
   CHECK_NEGATIVE((num), MPI_ERR_DISP, (offset))
 #define CHECK_GROUP(num, group)                                                                                        \
-      CHECK_MPI_NULL((num), MPI_GROUP_NULL, MPI_ERR_GROUP, (group))
+  CHECK_MPI_NULL((num), MPI_GROUP_NULL, MPI_ERR_GROUP, (group))
 #define CHECK_WIN(num, win)                                                                                            \
-      CHECK_MPI_NULL((num), MPI_WIN_NULL, MPI_ERR_WIN, (win))
+  CHECK_MPI_NULL((num), MPI_WIN_NULL, MPI_ERR_WIN, (win))
 #define CHECK_RANK(num, rank, comm)                                                                                    \
-        CHECK_ARGS(((rank) >= (comm)->group()->size() || (rank) <0), MPI_ERR_RANK,                                     \
+  CHECK_ARGS(((rank) >= (comm)->group()->size() || (rank) <0), MPI_ERR_RANK,                                           \
              "%s: param %d %s (=%d) cannot be < 0 or > %d", __func__, (num), _XBT_STRINGIFY(rank),                     \
              (rank), (comm)->group()->size() );
 #endif

@@ -56,11 +56,10 @@ CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
  */
 double CpuTiTmgr::integrate(double a, double b) const
 {
-  if ((a < 0.0) || (a > b)) {
-    xbt_die("Error, invalid integration interval [%.2f,%.2f]. "
-            "You probably have a task executing with negative computation amount. Check your code.",
-            a, b);
-  }
+  xbt_assert(a >= 0.0 && a <= b,
+             "Error, invalid integration interval [%.2f,%.2f]. You probably have a task executing with negative "
+             "computation amount. Check your code.",
+             a, b);
   if (fabs(a - b) < EPSILON)
     return 0.0;
 

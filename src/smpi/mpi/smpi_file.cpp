@@ -30,8 +30,8 @@ namespace smpi{
     if (info_ != MPI_INFO_NULL)
       info_->ref();
     std::string fullname=filename;
-    if (simgrid::s4u::Host::current()->get_disks().empty())
-      xbt_die("SMPI/IO : Trying to open file on a diskless host ! Add one to your platform file");
+    xbt_assert(not simgrid::s4u::Host::current()->get_disks().empty(),
+               "SMPI/IO : Trying to open file on a diskless host ! Add one to your platform file");
 
     size_t found=fullname.find('/');
     //in case no fullpath is provided ... just pick the first mountpoint.

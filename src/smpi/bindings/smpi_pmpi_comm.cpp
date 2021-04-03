@@ -208,6 +208,13 @@ int PMPI_Comm_free_keyval(int* keyval) {
   return PMPI_Keyval_free(keyval);
 }
 
+int PMPI_Comm_test_inter(MPI_Comm comm, int* flag){
+  if(flag == nullptr)
+    return MPI_ERR_ARG;
+  *flag=false;
+  return MPI_SUCCESS;
+}
+
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
   CHECK_COMM(1)
   if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM

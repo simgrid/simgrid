@@ -187,6 +187,8 @@ public:
   /** @brief Unshare a constraint. */
   void unshare() { sharing_policy_ = s4u::Link::SharingPolicy::FATPIPE; }
 
+  /** @brief Set how a constraint is shared  */
+  void set_sharing_policy(s4u::Link::SharingPolicy policy) { sharing_policy_ = policy; }
   /** @brief Check how a constraint is shared  */
   s4u::Link::SharingPolicy get_sharing_policy() const { return sharing_policy_; }
 

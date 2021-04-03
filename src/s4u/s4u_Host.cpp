@@ -69,8 +69,7 @@ Host* Host::by_name_or_null(const std::string& name)
 Host* Host::current()
 {
   kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
-  if (self == nullptr)
-    xbt_die("Cannot call Host::current() from the maestro context");
+  xbt_assert(self != nullptr, "Cannot call Host::current() from the maestro context");
   return self->get_host();
 }
 
@@ -281,7 +280,7 @@ std::vector<double> Host::convert_pstate_speed_vector(const std::vector<std::str
       double speed = xbt_parse_get_speed("", 0, speed_str.c_str(), nullptr, "");
       speed_list.push_back(speed);
     } catch (const simgrid::ParseError&) {
-      xbt_die("Host: Impossible to set_pstate_speed, invalid speed %s", speed_str.c_str());
+      throw std::invalid_argument(std::string("Invalid speed value: ") + speed_str);
     }
   }
   return speed_list;
@@ -350,7 +349,6 @@ void Host::execute(double flops, double priority) const
 
 void Host::seal()
 {
-  kernel::actor::simcall([this]() { this->pimpl_cpu->seal(); });
   kernel::actor::simcall([this]() { this->pimpl_->seal(); });
 }
 

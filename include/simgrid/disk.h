@@ -15,8 +15,8 @@ XBT_PUBLIC const char* sg_disk_get_name(const_sg_disk_t disk);
 XBT_PUBLIC sg_host_t sg_disk_get_host(const_sg_disk_t disk);
 XBT_PUBLIC double sg_disk_read_bandwidth(const_sg_disk_t disk);
 XBT_PUBLIC double sg_disk_write_bandwidth(const_sg_disk_t disk);
-XBT_PUBLIC sg_size_t sg_disk_write(sg_disk_t disk, sg_size_t size);
-XBT_PUBLIC sg_size_t sg_disk_read(sg_disk_t disk, sg_size_t size);
+XBT_PUBLIC sg_size_t sg_disk_write(const_sg_disk_t disk, sg_size_t size);
+XBT_PUBLIC sg_size_t sg_disk_read(const_sg_disk_t disk, sg_size_t size);
 XBT_PUBLIC void* sg_disk_get_data(const_sg_disk_t disk);
 XBT_PUBLIC void sg_disk_set_data(sg_disk_t disk, void* data);
 SG_END_DECL

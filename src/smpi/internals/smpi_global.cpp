@@ -351,8 +351,8 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
 {
   int fdin = open(src.c_str(), O_RDONLY);
   xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.", src.c_str());
-  XBT_ATTRIB_UNUSED int unlink_status = unlink(target.c_str());
-  xbt_assert(unlink_status == 0 || errno == ENOENT, "Failed to unlink file %s: %s", target.c_str(), strerror(errno));
+  xbt_assert(unlink(target.c_str()) == 0 || errno == ENOENT, "Failed to unlink file %s: %s", target.c_str(),
+             strerror(errno));
   int fdout = open(target.c_str(), O_CREAT | O_RDWR | O_EXCL, S_IRWXU);
   xbt_assert(fdout >= 0, "Cannot write into %s: %s", target.c_str(), strerror(errno));
 
@@ -363,10 +363,10 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
     close(fdin);
     close(fdout);
     return;
-  } else if (sent_size != -1 || errno != ENOSYS) {
-    xbt_die("Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
-            sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
   }
+  xbt_assert(sent_size == -1 && errno == ENOSYS,
+             "Error while copying %s: only %zd bytes copied instead of %" PRIdMAX " (errno: %d -- %s)", target.c_str(),
+             sent_size, static_cast<intmax_t>(fdin_size), errno, strerror(errno));
 #endif
   // If this point is reached, sendfile() actually is not available.  Copy file by hand.
   std::vector<unsigned char> buf(1024 * 1024 * 4);
@@ -419,14 +419,13 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
     for (auto const& libname : privatize_libs) {
       // load the library once to add it to the local libs, to get the absolute path
       void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
-      xbt_assert(libhandle != nullptr, 
-		      "Cannot dlopen %s - check your settings in smpi/privatize-libs", libname.c_str());
+      xbt_assert(libhandle != nullptr, "Cannot dlopen %s - check your settings in smpi/privatize-libs",
+                 libname.c_str());
       // get library name from path
       std::string fullpath = libname;
 #if not defined(__APPLE__) && not defined(__HAIKU__)
-      XBT_ATTRIB_UNUSED int dl_iterate_res = dl_iterate_phdr(visit_libs, &fullpath);
-      xbt_assert(dl_iterate_res != 0, "Can't find a linked %s - check your settings in smpi/privatize-libs",
-                 fullpath.c_str());
+      xbt_assert(dl_iterate_phdr(visit_libs, &fullpath) != 0,
+                 "Can't find a linked %s - check your settings in smpi/privatize-libs", fullpath.c_str());
       XBT_DEBUG("Extra lib to privatize '%s' found", fullpath.c_str());
 #else
       xbt_die("smpi/privatize-libs is not (yet) compatible with OSX nor with Haiku");

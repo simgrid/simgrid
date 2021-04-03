@@ -152,15 +152,13 @@ int PMPI_Get_address(const void *location, MPI_Aint * address)
 
 MPI_Aint PMPI_Aint_add(MPI_Aint address, MPI_Aint disp)
 {
-  if(address > PTRDIFF_MAX - disp)
-    xbt_die("overflow in MPI_Aint_add");
+  xbt_assert(address <= PTRDIFF_MAX - disp, "overflow in MPI_Aint_add");
   return address + disp;
 }
 
 MPI_Aint PMPI_Aint_diff(MPI_Aint address, MPI_Aint disp)
 {
-  if(address < PTRDIFF_MIN + disp)
-    xbt_die("underflow in MPI_Aint_diff");
+  xbt_assert(address >= PTRDIFF_MIN + disp, "underflow in MPI_Aint_diff");
   return address - disp;
 }
 
@@ -184,13 +182,12 @@ int PMPI_Get_count(const MPI_Status * status, MPI_Datatype datatype, int *count)
     size_t size = datatype->size();
     if (size == 0) {
       *count = 0;
-      return MPI_SUCCESS;
     } else if (status->count % size != 0) {
-      return MPI_UNDEFINED;
+      *count = MPI_UNDEFINED;
     } else {
       *count = simgrid::smpi::Status::get_count(status, datatype);
-      return MPI_SUCCESS;
     }
+    return MPI_SUCCESS;
   }
 }
 
@@ -255,12 +252,10 @@ int PMPI_Buffer_attach(void *buf, int size){
     return MPI_ERR_BUFFER;
   if(size<0)
     return MPI_ERR_ARG;
-  smpi_process()->set_bsend_buffer(buf, size);
-  return MPI_SUCCESS;
+  return smpi_process()->set_bsend_buffer(buf, size);
 }
 
 int PMPI_Buffer_detach(void* buffer, int* size){
   smpi_process()->bsend_buffer((void**)buffer, size);
-  smpi_process()->set_bsend_buffer(nullptr, 0);
-  return MPI_SUCCESS;
+  return smpi_process()->set_bsend_buffer(nullptr, 0);
 }

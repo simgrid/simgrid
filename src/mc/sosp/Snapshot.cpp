@@ -72,8 +72,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
                                                          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base,
                                                          &mc_model_checker->get_remote_process());
 
-      if (not location.in_memory())
-        xbt_die("Cannot handle non-address variable");
+      xbt_assert(location.in_memory(), "Cannot handle non-address variable");
       new_var.address = location.address();
     } else
       xbt_die("No address");
@@ -137,10 +136,8 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_
       break;
 
     int ret = unw_step(&c);
-    if (ret == 0)
-      xbt_die("Unexpected end of stack.");
-    else if (ret < 0)
-      xbt_die("Error while unwinding stack");
+    xbt_assert(ret >= 0, "Error while unwinding stack");
+    xbt_assert(ret != 0, "Unexpected end of stack.");
   }
 
   xbt_assert(not result.empty(), "unw_init_local failed");

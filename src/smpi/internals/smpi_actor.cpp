@@ -257,10 +257,13 @@ void ActorExt::bsend_buffer(void** buf, int* size)
   *size = bsend_buffer_size_;
 }
 
-void ActorExt::set_bsend_buffer(void* buf, int size)
+int ActorExt::set_bsend_buffer(void* buf, int size)
 {
+  if(buf!=nullptr && bsend_buffer_!=nullptr)
+    return MPI_ERR_BUFFER;
   bsend_buffer_     = buf;
   bsend_buffer_size_= size;
+  return MPI_SUCCESS;
 }
 
 } // namespace smpi

@@ -105,8 +105,8 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   int mcs_value    = mcs ? atoi(mcs) : 3;
   int nss_value    = nss ? atoi(nss) : 1;
 #if NS3_MINOR_VERSION < 30
-  if (nss_value != 1 + (mcs_value / 8))
-    xbt_die("On NS3 < 3.30, NSS value has to satisfy NSS == 1+(MCS/8) constraint. Bailing out");
+  xbt_assert(nss_value == 1 + (mcs_value / 8),
+             "On NS3 < 3.30, NSS value has to satisfy NSS == 1+(MCS/8) constraint. Bailing out");
 #endif
   wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "ControlMode", ns3::StringValue("HtMcs0"), "DataMode",
                                ns3::StringValue("HtMcs" + std::to_string(mcs_value)));
@@ -327,13 +327,15 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
   s4u::NetZone::on_seal.connect(&zoneCreation_cb);
 }
 
-LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                       s4u::Link::SharingPolicy policy)
+LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
-  auto link = new LinkNS3(name, bandwidths[0], policy);
-  link->set_model(this);
-  return link;
+  return (new LinkNS3(name, bandwidths[0]))->set_model(this);
+}
+
+LinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return create_link(name, bandwidths)->set_sharing_policy(s4u::Link::SharingPolicy::WIFI);
 }
 
 Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -434,8 +436,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
  * Resource *
  ************/
 
-LinkNS3::LinkNS3(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy)
-    : LinkImpl(name), sharing_policy_(policy)
+LinkNS3::LinkNS3(const std::string& name, double bandwidth) : LinkImpl(name)
 {
   bandwidth_.peak = bandwidth;
 }
@@ -462,6 +463,12 @@ LinkImpl* LinkNS3::set_latency_profile(profile::Profile* profile)
 LinkImpl* LinkNS3::set_latency(double latency)
 {
   latency_.peak = latency;
+  return this;
+}
+
+LinkImpl* LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy)
+{
+  sharing_policy_ = policy;
   return this;
 }
 /**********
@@ -574,33 +581,32 @@ void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kern
   xbt_assert(host_src != nullptr, "Network element %s does not seem to be ns-3-ready", src->get_cname());
   xbt_assert(host_dst != nullptr, "Network element %s does not seem to be ns-3-ready", dst->get_cname());
 
-  if (policy == simgrid::s4u::Link::SharingPolicy::WIFI) {
-    xbt_die("The wifi sharing policy is not supported for links. You want to use a wifi zone (see documentation).");
+  xbt_assert(policy != simgrid::s4u::Link::SharingPolicy::WIFI,
+             "The wifi sharing policy is not supported for links. You want to use a wifi zone (see documentation).");
+
+  ns3::PointToPointHelper pointToPoint;
+
+  XBT_DEBUG("\tAdd PTP from %s to %s bw:'%f Bps' lat:'%fs'", src->get_cname(), dst->get_cname(), bw, lat);
+  pointToPoint.SetDeviceAttribute("DataRate",
+                                  ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
+  pointToPoint.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
+
+  netA.Add(pointToPoint.Install(host_src->ns3_node_, host_dst->ns3_node_));
+
+  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
+  address.SetBase(addr.c_str(), "255.255.0.0");
+  XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
+
+  auto addresses = address.Assign(netA);
+
+  host_src->ipv4_address_ = transformIpv4Address(addresses.GetAddress(0));
+  host_dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(1));
+
+  if (number_of_links == 255) {
+    xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
+    number_of_links = 1;
+    number_of_networks++;
   } else {
-    ns3::PointToPointHelper pointToPoint;
-
-    XBT_DEBUG("\tAdd PTP from %s to %s bw:'%f Bps' lat:'%fs'", src->get_cname(), dst->get_cname(), bw, lat);
-    pointToPoint.SetDeviceAttribute("DataRate",
-                                    ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
-    pointToPoint.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
-
-    netA.Add(pointToPoint.Install(host_src->ns3_node_, host_dst->ns3_node_));
-
-    std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
-    address.SetBase(addr.c_str(), "255.255.0.0");
-    XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
-
-    auto addresses = address.Assign(netA);
-
-    host_src->ipv4_address_ = transformIpv4Address(addresses.GetAddress(0));
-    host_dst->ipv4_address_ = transformIpv4Address(addresses.GetAddress(1));
-
-    if (number_of_links == 255) {
-      xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
-      number_of_links = 1;
-      number_of_networks++;
-    } else {
-      number_of_links++;
-    }
+    number_of_links++;
   }
 }

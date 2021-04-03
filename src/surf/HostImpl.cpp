@@ -153,6 +153,11 @@ void HostImpl::remove_disk(const std::string& disk_name)
 
 void HostImpl::seal()
 {
+  if (sealed_) {
+    return;
+  }
+  // seals host's CPU
+  get_iface()->pimpl_cpu->seal();
   sealed_ = true;
 }
 } // namespace surf

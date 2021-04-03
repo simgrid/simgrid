@@ -17,8 +17,8 @@ namespace resource {
 class NetworkNS3Model : public NetworkModel {
 public:
   explicit NetworkNS3Model(const std::string& name);
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth,
-                        s4u::Link::SharingPolicy policy) override;
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth) override;
+  LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidth) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double next_occurring_event(double now) override;
   bool next_occurring_event_is_idempotent() override { return false; }
@@ -30,15 +30,16 @@ public:
  ************/
 class LinkNS3 : public LinkImpl {
 public:
-  explicit LinkNS3(const std::string& name, double bandwidth, s4u::Link::SharingPolicy policy);
+  explicit LinkNS3(const std::string& name, double bandwidth);
   ~LinkNS3() override;
-  s4u::Link::SharingPolicy sharing_policy_;
+  s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SHARED;
 
   void apply_event(profile::Event* event, double value) override;
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
   LinkImpl* set_latency(double) override;
   LinkImpl* set_bandwidth_profile(profile::Profile* profile) override;
   LinkImpl* set_latency_profile(profile::Profile* profile) override;
+  LinkImpl* set_sharing_policy(s4u::Link::SharingPolicy policy) override;
   s4u::Link::SharingPolicy get_sharing_policy() const override { return sharing_policy_; }
 };
 

@@ -35,8 +35,8 @@ static void host()
   XBT_INFO("Read %llu bytes on '%s'", read, disk->get_cname());
 
   /* - Write 800,000 bytes on Disk3 */
-  simgrid::s4u::Disk* disk3 = disk_list.back();
-  sg_size_t write_on_disk3  = disk3->write(800000);
+  const simgrid::s4u::Disk* disk3 = disk_list.back();
+  sg_size_t write_on_disk3        = disk3->write(800000);
   XBT_INFO("Wrote %llu bytes on '%s'", write_on_disk3, disk3->get_cname());
 
   /* - Attach some user data to disk1 */

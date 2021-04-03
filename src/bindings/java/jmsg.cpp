@@ -257,8 +257,7 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
   if (env->ExceptionOccurred()) {
     XBT_DEBUG("Something went wrong in this Java actor, forget about it.");
     env->ExceptionClear();
-    XBT_ATTRIB_UNUSED jint error = __java_vm->DetachCurrentThread();
-    xbt_assert(error == JNI_OK, "Cannot detach failing thread");
+    xbt_assert(__java_vm->DetachCurrentThread() == JNI_OK, "Cannot detach failing thread");
     simgrid::ForcefulKillException::do_throw();
   }
 }

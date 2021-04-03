@@ -194,8 +194,7 @@ int find_model_description(const std::vector<surf_model_description_t>& table, c
   if (pos != table.end())
     return static_cast<int>(std::distance(table.begin(), pos));
 
-  if (table.empty())
-    xbt_die("No model is valid! This is a bug.");
+  xbt_assert(not table.empty(), "No model is valid! This is a bug.");
 
   std::string sep;
   std::string name_list;

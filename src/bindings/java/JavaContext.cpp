@@ -56,8 +56,8 @@ void JavaContext::start_hook()
 
   //Attach the thread to the JVM
   JNIEnv *env;
-  XBT_ATTRIB_UNUSED jint error = __java_vm->AttachCurrentThread((void**)&env, nullptr);
-  xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
+  xbt_assert(__java_vm->AttachCurrentThread((void**)&env, nullptr) == JNI_OK,
+             "The thread could not be attached to the JVM");
   this->jenv_ = env;
 }
 

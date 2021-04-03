@@ -1,38 +1,37 @@
 <?xml version='1.0'?><!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
-	<config>
-		<prop id = "network/model" value = "ns-3" />
-	</config>
-	<zone id="world" routing="Floyd">
+  <config>
+    <prop id = "network/model" value = "ns-3" />
+  </config>
+  <zone id="world" routing="Floyd">
 
-		<zone id="SSID_1" routing="WIFI">
-			<prop id="access_point" value="alice"/>
-			<prop id="mcs" value="2"/> <!-- Optionnal: default = 3 -->
-			<prop id="nss" value="1"/> <!-- Optionnal: default = 1 -->
+    <zone id="SSID_1" routing="WIFI">
+      <prop id="access_point" value="alice"/>
+      <prop id="mcs" value="2"/> <!-- Optionnal: default = 3 -->
+      <prop id="nss" value="1"/> <!-- Optionnal: default = 1 -->
 
-			<host id="alice" speed="1Gf"/>
+      <host id="alice" speed="1Gf"/>
+      <host id="STA0-0" speed="1Gf">
+         <prop id="wifi_distance" value="37"/> <!-- Optionnal: default = 10 -->
+      </host>
+      <host id="STA0-1" speed="1Gf"/>
+    </zone>
 
-			<host id="STA0-0" speed="1Gf">
-				<prop id="wifi_distance" value="37"/> <!-- Optionnal: default = 10 -->
-			</host>
-			<host id="STA0-1" speed="1Gf"/> 
-		</zone>
+    <zone id="SSID_2" routing="WIFI">
+      <prop id="access_point" value="bob"/>
 
-		<zone id="SSID_2" routing="WIFI">
-			<prop id="access_point" value="bob"/>
+      <router id="bob"/>
 
-			<router id="bob"/>
+      <host id="STA1-0" speed="1Gf"/>
+      <host id="STA1-1" speed="1Gf"/>
+      <host id="STA1-2" speed="1Gf"/>
+    </zone>
 
-			<host id="STA1-0" speed="1Gf"/>
-			<host id="STA1-1" speed="1Gf"/>
-			<host id="STA1-2" speed="1Gf"/>
-		</zone>
+    <link id="wireline" bandwidth="100Mbps" latency="2ms" sharing_policy="SHARED"/>
 
-		<link id="wireline" bandwidth="100Mbps" latency="2ms" sharing_policy="SHARED"/>
-
-		<zoneRoute src="SSID_1" dst="SSID_2" gw_src="alice" gw_dst="bob">
-			<link_ctn id="wireline"/>
-		</zoneRoute>
-	</zone>
+    <zoneRoute src="SSID_1" dst="SSID_2" gw_src="alice" gw_dst="bob">
+      <link_ctn id="wireline"/>
+    </zoneRoute>
+  </zone>
 </platform>
 

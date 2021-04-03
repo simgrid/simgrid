@@ -145,12 +145,14 @@ s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwid
   return l->get_iface();
 }
 
-s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths,
-                                    s4u::Link::SharingPolicy policy)
+s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  auto* l = network_model_->create_link(name, bandwidths, policy);
+  return network_model_->create_link(name, bandwidths)->get_iface();
+}
 
-  return l->get_iface();
+s4u::Link* NetZoneImpl::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return network_model_->create_wifi_link(name, bandwidths)->get_iface();
 }
 
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
@@ -173,7 +175,7 @@ int NetZoneImpl::add_component(NetPoint* elm)
 }
 
 void NetZoneImpl::add_route(NetPoint* /*src*/, NetPoint* /*dst*/, NetPoint* /*gw_src*/, NetPoint* /*gw_dst*/,
-                            std::vector<resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
+                            const std::vector<resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
 {
   xbt_die("NetZone '%s' does not accept new routes (wrong class).", get_cname());
 }
@@ -465,44 +467,55 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
 
 void NetZoneImpl::seal()
 {
+  /* already sealed netzone */
+  if (sealed_)
+    return;
   do_seal(); // derived class' specific sealing procedure
+
+  /* seals sub-netzones and hosts */
+  for (auto* host : get_all_hosts()) {
+    host->seal();
+  }
+  for (auto* sub_net : *get_children()) {
+    sub_net->seal();
+  }
   sealed_ = true;
 }
 
 void NetZoneImpl::set_parent(NetZoneImpl* parent)
 {
-  xbt_assert(sealed_ == false, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
   parent_ = parent;
   netpoint_->set_englobing_zone(parent_);
 }
 
 void NetZoneImpl::set_network_model(std::shared_ptr<resource::NetworkModel> netmodel)
 {
-  xbt_assert(sealed_ == false, "Impossible to set network model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set network model to an already sealed NetZone(%s)", this->get_cname());
   network_model_ = std::move(netmodel);
 }
 
 void NetZoneImpl::set_cpu_vm_model(std::shared_ptr<resource::CpuModel> cpu_model)
 {
-  xbt_assert(sealed_ == false, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
   cpu_model_vm_ = std::move(cpu_model);
 }
 
 void NetZoneImpl::set_cpu_pm_model(std::shared_ptr<resource::CpuModel> cpu_model)
 {
-  xbt_assert(sealed_ == false, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
   cpu_model_pm_ = std::move(cpu_model);
 }
 
 void NetZoneImpl::set_disk_model(std::shared_ptr<resource::DiskModel> disk_model)
 {
-  xbt_assert(sealed_ == false, "Impossible to set disk model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set disk model to an already sealed NetZone(%s)", this->get_cname());
   disk_model_ = std::move(disk_model);
 }
 
 void NetZoneImpl::set_host_model(std::shared_ptr<surf::HostModel> host_model)
 {
-  xbt_assert(sealed_ == false, "Impossible to set host model to an already sealed NetZone(%s)", this->get_cname());
+  xbt_assert(not sealed_, "Impossible to set host model to an already sealed NetZone(%s)", this->get_cname());
   host_model_ = std::move(host_model);
 }
 
