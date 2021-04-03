@@ -133,35 +133,35 @@ void print_time_analysis(double global_time){
 
 void print_memory_analysis()
 {
-  size_t leak_count = 0;
-  if (simgrid::smpi::F2C::lookup() != nullptr)
-    leak_count =
-        std::count_if(simgrid::smpi::F2C::lookup()->cbegin(), simgrid::smpi::F2C::lookup()->cend(),
-                      [](auto const& entry) { return entry.first >= simgrid::smpi::F2C::get_num_default_handles(); });
-  if (leak_count > 0) {
+  // Put the leaked non-default handles in a vector to sort them by id
+  std::vector<std::pair<unsigned int, smpi::F2C*>> handles;
+  std::copy_if(simgrid::smpi::F2C::lookup()->begin(), simgrid::smpi::F2C::lookup()->end(), std::back_inserter(handles),
+               [](auto const& entry) { return entry.first >= simgrid::smpi::F2C::get_num_default_handles(); });
+
+  if (not handles.empty()) {
     XBT_INFO("Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles : "
              "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
              "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
-             leak_count);
-    int n = simgrid::config::get_value<int>("smpi/list-leaks");
-    for (auto const& p : *simgrid::smpi::F2C::lookup()) {
-      static int printed = 0;
-      if (printed >= n) {
-        if (n > 0)
-          XBT_WARN("(more handle leaks hidden as you wanted to see only %d of them)", n);
-        break;
-      }
-      if (p.first >= simgrid::smpi::F2C::get_num_default_handles()) {
+             handles.size());
+    auto max = static_cast<unsigned long>(simgrid::config::get_value<int>("smpi/list-leaks"));
+    if (max > 0) { // we cannot trust F2C::lookup()->size() > F2C::get_num_default_handles() because some default
+                   // handles are already freed at this point
+      std::sort(handles.begin(), handles.end(), [](auto const& a, auto const& b) { return a.first < b.first; });
+      bool truncate = max < handles.size();
+      if (truncate)
+        handles.resize(max);
+      for (const auto& p : handles) {
         if (xbt_log_no_loc) {
-          XBT_WARN("Leaked handle of type %s", boost::core::demangle(typeid(*(p.second)).name()).c_str());
+          XBT_WARN("Leaked handle of type %s", boost::core::demangle(typeid(*p.second).name()).c_str());
         } else {
-          XBT_WARN("Leaked handle of type %s at %p", boost::core::demangle(typeid(*(p.second)).name()).c_str(),
-                   p.second);
+          XBT_WARN("Leaked handle of type %s at %p", boost::core::demangle(typeid(*p.second).name()).c_str(), p.second);
         }
-        printed++;
       }
+      if (truncate)
+        XBT_WARN("(more handle leaks hidden as you wanted to see only %lu of them)", max);
     }
   }
+
   if (simgrid::config::get_value<bool>("smpi/display-allocs")) {
     if(total_malloc_size != 0)
       XBT_INFO("Memory Usage: Simulated application allocated %lu bytes during its lifetime through malloc/calloc calls.\n"
