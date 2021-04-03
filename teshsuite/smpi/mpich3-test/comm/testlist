@@ -3,7 +3,6 @@ dup 2
 #dupic 4
 #works, but needs MPI_Comm_set_name
 commcreate1 8
-commcreate1 1
 commname 4
 #ic1 4
 # ic2 needs an unusually large number of processes (>= 33)
