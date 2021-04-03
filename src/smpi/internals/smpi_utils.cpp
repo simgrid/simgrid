@@ -135,8 +135,10 @@ void print_memory_analysis()
 {
   // Put the leaked non-default handles in a vector to sort them by id
   std::vector<std::pair<unsigned int, smpi::F2C*>> handles;
-  std::copy_if(simgrid::smpi::F2C::lookup()->begin(), simgrid::smpi::F2C::lookup()->end(), std::back_inserter(handles),
-               [](auto const& entry) { return entry.first >= simgrid::smpi::F2C::get_num_default_handles(); });
+  if (simgrid::smpi::F2C::lookup() != nullptr)
+    std::copy_if(simgrid::smpi::F2C::lookup()->begin(), simgrid::smpi::F2C::lookup()->end(),
+                 std::back_inserter(handles),
+                 [](auto const& entry) { return entry.first >= simgrid::smpi::F2C::get_num_default_handles(); });
 
   if (not handles.empty()) {
     XBT_INFO("Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles : "
