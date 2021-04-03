@@ -37,8 +37,18 @@ int PMPI_Init(int*, char***)
   xbt_assert(simgrid::s4u::Engine::is_initialized(),
              "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
 
-  xbt_assert(not smpi_process()->initializing());
-  xbt_assert(not smpi_process()->initialized());
+  if(smpi_process()->initializing()){
+    XBT_WARN("SMPI is already initializing - MPI_Init called twice ?");
+    return MPI_ERR_OTHER;
+  }
+  if(smpi_process()->initialized()){
+    XBT_WARN("SMPI already initialized once - MPI_Init called twice ?");
+    return MPI_ERR_OTHER;
+  }
+  if(smpi_process()->finalized()){
+    XBT_WARN("SMPI already finalized");
+    return MPI_ERR_OTHER;
+  }
 
   simgrid::smpi::ActorExt::init();
   int rank_traced = simgrid::s4u::this_actor::get_pid();
