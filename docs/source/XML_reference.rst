@@ -401,7 +401,7 @@ of :ref:`pf_tag_link` .
 :``dst``: Host to which this route leads. Must be an existing host.
 :``symmetrical``: Whether this route is symmetrical, ie, whether we
 		  are defining the route ``dst -> src`` at the same
-		  time. Valid values: ``yes``, ``no``,``YES``, ``NO``.
+		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``.
 
 -------------------------------------------------------------------------------
 
