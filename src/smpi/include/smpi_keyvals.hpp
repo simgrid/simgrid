@@ -90,6 +90,7 @@ template <typename T> int Keyval::keyval_free(int* keyval){
   }else{
     elem->refcount--;
   }
+  *keyval = MPI_KEYVAL_INVALID;
   return MPI_SUCCESS;
 }
 
