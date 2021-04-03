@@ -2,7 +2,7 @@
 ! output sort
 
 p Test allreduce
-$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform  ${platfdir:=.}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce-with-leaks --log=smpi_config.thres:warning --cfg=smpi/display-allocs:yes --cfg=smpi/simulate-computation:no --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform  ${platfdir:=.}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce-with-leaks --log=smpi_config.thres:warning --cfg=smpi/display-allocs:yes --cfg=smpi/simulate-computation:no --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/list-leaks:10 --log=no_loc
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay
 > [rank 2] -> Tremblay
@@ -24,6 +24,16 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -map -ho
 > Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > [0.023768] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 32 unfreed MPI handles : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
 > [0.023768] [smpi_utils/INFO] Memory Usage: Simulated application allocated 2048 bytes during its lifetime through malloc/calloc calls.
 
 
