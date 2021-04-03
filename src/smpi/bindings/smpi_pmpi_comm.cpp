@@ -220,6 +220,7 @@ int PMPI_Comm_test_inter(MPI_Comm comm, int* flag){
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
   CHECK_COMM(1)
+  CHECK_MPI_NULL(2, MPI_KEYVAL_INVALID, MPI_ERR_KEYVAL, keyval)
   if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
        ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE)
     return MPI_ERR_ARG;
@@ -237,6 +238,7 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
   CHECK_NULL(4, MPI_ERR_ARG, flag)
   *flag = 0;
   CHECK_COMM(1)
+  CHECK_MPI_NULL(2, MPI_KEYVAL_INVALID, MPI_ERR_KEYVAL, keyval)
 
   switch (keyval) {
   case MPI_HOST:
@@ -269,6 +271,7 @@ int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
 
 int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
   CHECK_COMM(1)
+  CHECK_MPI_NULL(2, MPI_KEYVAL_INVALID, MPI_ERR_KEYVAL, keyval)
   if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
        ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE)
     return MPI_ERR_ARG;

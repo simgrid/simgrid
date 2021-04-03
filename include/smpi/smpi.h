@@ -153,6 +153,7 @@ enum ERROR_ENUM {
 #define MPI_TAG_LB           -6
 #define MPI_UNIVERSE_SIZE    -7
 #define MPI_LASTUSEDCODE     -8
+#define MPI_KEYVAL_INVALID   -9
 
 #define MPI_MODE_NOSTORE 0x1
 #define MPI_MODE_NOPUT 0x2
@@ -160,7 +161,6 @@ enum ERROR_ENUM {
 #define MPI_MODE_NOSUCCEED 0x8
 #define MPI_MODE_NOCHECK 0x10
 
-#define MPI_KEYVAL_INVALID 0
 #define MPI_NULL_COPY_FN NULL
 #define MPI_NULL_DELETE_FN NULL
 #define MPI_ERR_LASTCODE 74
