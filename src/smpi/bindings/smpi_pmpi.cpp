@@ -246,18 +246,6 @@ int PMPI_Keyval_free(int* keyval) {
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Comm>(keyval);
 }
 
-MPI_Errhandler PMPI_Errhandler_f2c(MPI_Fint errhan){
-  if(errhan==-1)
-    return MPI_ERRHANDLER_NULL;
-  return simgrid::smpi::Errhandler::f2c(errhan);
-}
-
-MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhan){
-  if(errhan==MPI_ERRHANDLER_NULL)
-    return -1;
-  return errhan->c2f();
-}
-
 int PMPI_Buffer_attach(void *buf, int size){
   if(buf==nullptr)
     return MPI_ERR_BUFFER;

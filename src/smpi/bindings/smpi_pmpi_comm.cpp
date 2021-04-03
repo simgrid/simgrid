@@ -278,7 +278,9 @@ int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
 
 int PMPI_Errhandler_free(MPI_Errhandler* errhandler){
   CHECK_NULL(1, MPI_ERR_ARG, errhandler)
+  CHECK_MPI_NULL(1, MPI_ERRHANDLER_NULL, MPI_ERR_ARG, *errhandler)
   simgrid::smpi::Errhandler::unref(*errhandler);
+  *errhandler = MPI_ERRHANDLER_NULL;
   return MPI_SUCCESS;
 }
 
@@ -309,6 +311,18 @@ int PMPI_Comm_call_errhandler(MPI_Comm comm,int errorcode){
   err->call(comm, errorcode);
   simgrid::smpi::Errhandler::unref(err);
   return MPI_SUCCESS;
+}
+
+MPI_Errhandler PMPI_Errhandler_f2c(MPI_Fint errhan){
+  if(errhan==-1)
+    return MPI_ERRHANDLER_NULL;
+  return simgrid::smpi::Errhandler::f2c(errhan);
+}
+
+MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhan){
+  if(errhan==MPI_ERRHANDLER_NULL)
+    return -1;
+  return errhan->c2f();
 }
 
 int PMPI_Comm_create_errhandler( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler){
