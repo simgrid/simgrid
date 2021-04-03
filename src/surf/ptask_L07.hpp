@@ -67,7 +67,7 @@ public:
   NetworkL07Model(const NetworkL07Model&) = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model() override;
-  kernel::resource::LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) override;
+  kernel::resource::LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
   kernel::resource::LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
