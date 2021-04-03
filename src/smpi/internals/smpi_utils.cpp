@@ -149,7 +149,7 @@ void print_memory_analysis()
       if (printed >= n)
         break;
       if (p.first >= simgrid::smpi::F2C::get_num_default_handles()) {
-        XBT_WARN("Leak %p of type %s", p.second, boost::core::demangle(typeid(*(p.second)).name()).c_str());
+        XBT_WARN("Leaked handle of type %s at %p", boost::core::demangle(typeid(*(p.second)).name()).c_str(), p.second);
         printed++;
       }
     }
