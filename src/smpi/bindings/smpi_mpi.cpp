@@ -60,7 +60,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
     return ret;                                                                                                        \
   }
 
-#define WRAPPED_PMPI_CALL_ERRHANDLER_COMM(type, name, args, args2) WRAPPED_PMPI_CALL_ERRHANDLER(type, name, args, args2, comm)
+#define WRAPPED_PMPI_CALL_ERRHANDLER_COMM(type, name, args, args2) WRAPPED_PMPI_CALL_ERRHANDLER(type, name, args, args2, (comm == MPI_COMM_NULL) ? MPI_COMM_WORLD : comm)
 #define WRAPPED_PMPI_CALL_ERRHANDLER_WIN(type, name, args, args2) WRAPPED_PMPI_CALL_ERRHANDLER(type, name, args, args2, win)
 #define WRAPPED_PMPI_CALL_ERRHANDLER_FILE(type, name, args, args2) WRAPPED_PMPI_CALL_ERRHANDLER(type, name, args, args2, fh)
 #define WRAPPED_PMPI_CALL(type, name, args, args2) WRAPPED_PMPI_CALL_ERRHANDLER(type, name, args, args2, MPI_COMM_WORLD)
