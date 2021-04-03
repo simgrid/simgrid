@@ -108,6 +108,7 @@ int PMPI_Comm_free(MPI_Comm * comm)
 {
   CHECK_NULL(1, MPI_ERR_ARG, comm)
   CHECK_COMM2(1, *comm)
+  CHECK_MPI_NULL(1, MPI_COMM_WORLD, MPI_ERR_COMM, *comm)
   simgrid::smpi::Comm::destroy(*comm);
   *comm = MPI_COMM_NULL;
   return MPI_SUCCESS;
@@ -127,7 +128,7 @@ int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
 {
   CHECK_NULL(4, MPI_ERR_ARG, comm_out)
   CHECK_COMM2(1, comm)
-  if( color != MPI_UNDEFINED)//we use a negative value for MPI_UNDEFINED 
+  if( color != MPI_UNDEFINED)//we use a negative value for MPI_UNDEFINED
     CHECK_NEGATIVE(3, MPI_ERR_ARG, color)
   smpi_bench_end();
   *comm_out = comm->split(color, key);
@@ -209,6 +210,8 @@ int PMPI_Comm_free_keyval(int* keyval) {
 }
 
 int PMPI_Comm_test_inter(MPI_Comm comm, int* flag){
+  CHECK_COMM(1)
+
   if(flag == nullptr)
     return MPI_ERR_ARG;
   *flag=false;
