@@ -279,7 +279,7 @@ int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_dat
 int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   CHECK_RMA
-  CHECK_OP(8)
+  CHECK_MPI_NULL(8, MPI_OP_NULL, MPI_ERR_OP, op)
   CHECK_WIN(9, win)
   CHECK_TARGET_DISP(5)
 
@@ -308,7 +308,7 @@ int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype ori
   if(target_rank==MPI_PROC_NULL)
     *request = MPI_REQUEST_NULL;
   CHECK_RMA
-  CHECK_OP(8)
+  CHECK_MPI_NULL(8, MPI_OP_NULL, MPI_ERR_OP, op)
   CHECK_WIN(9, win)
   CHECK_TARGET_DISP(5)
   CHECK_NULL(10, MPI_ERR_ARG, request)
@@ -350,7 +350,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   CHECK_NEGATIVE(7, MPI_ERR_RANK, target_rank)
   CHECK_COUNT(9, target_count)
   CHECK_TYPE(10, target_datatype)
-  CHECK_OP(11)
+  CHECK_MPI_NULL(11, MPI_OP_NULL, MPI_ERR_OP, op)
   CHECK_WIN(12, win)
   CHECK_TARGET_DISP(8)
 
@@ -392,7 +392,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   CHECK_NEGATIVE(7, MPI_ERR_RANK, target_rank)
   CHECK_COUNT(9, target_count)
   CHECK_TYPE(10, target_datatype)
-  CHECK_OP(11)
+  CHECK_MPI_NULL(11, MPI_OP_NULL, MPI_ERR_OP, op)
   CHECK_WIN(12, win)
   CHECK_TARGET_DISP(8)
   CHECK_NULL(10, MPI_ERR_ARG, request)

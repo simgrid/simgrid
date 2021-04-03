@@ -30,7 +30,7 @@ int PMPI_Op_free(MPI_Op * op)
 }
 
 int PMPI_Op_commutative(MPI_Op op, int* commute){
-  CHECK_OP(1)
+  CHECK_MPI_NULL(1, MPI_OP_NULL, MPI_ERR_OP, op)
   CHECK_NULL(1, MPI_ERR_ARG, commute)
   *commute = op->is_commutative();
   return MPI_SUCCESS;
