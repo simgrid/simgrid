@@ -146,8 +146,11 @@ void print_memory_analysis()
     int n = simgrid::config::get_value<int>("smpi/list-leaks");
     for (auto const& p : *simgrid::smpi::F2C::lookup()) {
       static int printed = 0;
-      if (printed >= n)
+      if (printed >= n) {
+        if (n > 0)
+          XBT_WARN("(more handle leaks hidden as you wanted to see only %d of them)", n);
         break;
+      }
       if (p.first >= simgrid::smpi::F2C::get_num_default_handles()) {
         if (xbt_log_no_loc) {
           XBT_WARN("Leaked handle of type %s", boost::core::demangle(typeid(*(p.second)).name()).c_str());

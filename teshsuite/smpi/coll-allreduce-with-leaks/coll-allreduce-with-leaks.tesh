@@ -34,6 +34,7 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -map -ho
 > [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
 > [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
 > [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
+> [0.023768] [smpi_utils/WARNING] (more handle leaks hidden as you wanted to see only 10 of them)
 > [0.023768] [smpi_utils/INFO] Memory Usage: Simulated application allocated 2048 bytes during its lifetime through malloc/calloc calls.
 
 
