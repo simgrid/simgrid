@@ -209,7 +209,16 @@ int PMPI_Type_create_subarray(int ndims, const int* array_of_sizes,
   if (ndims==0){
     *newtype = MPI_DATATYPE_NULL;
     return MPI_SUCCESS;
-  } else if (ndims==1){
+  }
+  CHECK_NULL(2, MPI_ERR_ARG, array_of_sizes)
+  CHECK_NULL(3, MPI_ERR_ARG, array_of_subsizes)
+  CHECK_NULL(4, MPI_ERR_ARG, array_of_starts)
+  for (int i = 0; i < ndims; i++) {
+    CHECK_NEGATIVE_OR_ZERO(2, MPI_ERR_COUNT, array_of_sizes[i])
+    CHECK_NEGATIVE(3, MPI_ERR_COUNT, array_of_subsizes[i])
+    CHECK_NEGATIVE(4, MPI_ERR_COUNT, array_of_starts[i])
+  }
+  if (ndims==1){
     simgrid::smpi::Datatype::create_contiguous( array_of_subsizes[0], oldtype, array_of_starts[0]*oldtype->get_extent(), newtype);
     return MPI_SUCCESS;
   } else if (oldtype == MPI_DATATYPE_NULL || not oldtype->is_valid() ) {

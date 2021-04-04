@@ -534,6 +534,9 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_NEGATIVE(num, err, val)                                                                                  \
   CHECK_ARGS((val) < 0, (err),                                                                                         \
              "%s: param %d %s cannot be negative", __func__, (num), _XBT_STRINGIFY(val));
+#define CHECK_NEGATIVE_OR_ZERO(num, err, val)                                                                          \
+  CHECK_ARGS((val) <= 0, (err),                                                                                        \
+             "%s: param %d %s cannot be negative or 0", __func__, (num), _XBT_STRINGIFY(val));
 #define CHECK_COMM2(num, comm)                                                                                         \
   CHECK_MPI_NULL((num), MPI_COMM_NULL, MPI_ERR_COMM, (comm))
 #define CHECK_DELETED(num, err, obj)										       \
