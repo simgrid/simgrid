@@ -547,6 +547,8 @@ int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
   smpi_bench_end();
 
   CHECK_COMM(6)
+  if(source!=MPI_ANY_SOURCE && source!=MPI_PROC_NULL)\
+    CHECK_RANK(1, source, comm)
   CHECK_TAG(2, tag)
   if (source == MPI_PROC_NULL) {
     if (status != MPI_STATUS_IGNORE){
@@ -566,6 +568,8 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
   int retval = 0;
   smpi_bench_end();
   CHECK_COMM(6)
+  if(source!=MPI_ANY_SOURCE && source!=MPI_PROC_NULL)\
+    CHECK_RANK(1, source, comm)
   CHECK_TAG(2, tag)
   if (flag == nullptr) {
     retval = MPI_ERR_ARG;
