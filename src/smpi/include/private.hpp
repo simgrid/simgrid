@@ -556,13 +556,10 @@ XBT_PRIVATE void private_execute_flops(double flops);
   CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, (op))                                                                 \
   CHECK_ARGS(((op)->allowed_types() && (((op)->allowed_types() & (type)->flags()) == 0)), MPI_ERR_OP,                \
              "%s: param %d op %s can't be applied to type %s", __func__, (num), _XBT_STRINGIFY(op), type->name());
-
 #define CHECK_ROOT(num)\
   CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,                                                         \
              "%s: param %d root (=%d) cannot be negative or larger than communicator size (=%d)", __func__, (num),     \
              root, comm->size());
-#define CHECK_PROC(num,proc)                                                                                           \
-  CHECK_MPI_NULL((num), MPI_PROC_NULL, MPI_SUCCESS, (proc))
 #define CHECK_INFO(num,info)                                                                                           \
   CHECK_MPI_NULL((num), MPI_INFO_NULL, MPI_ERR_INFO, (info))
 #define CHECK_TAG(num,tag)                                                                                             \
@@ -577,7 +574,10 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_WIN(num, win)                                                                                            \
   CHECK_MPI_NULL((num), MPI_WIN_NULL, MPI_ERR_WIN, (win))
 #define CHECK_RANK(num, rank, comm)                                                                                    \
-  CHECK_ARGS(((rank) >= (comm)->group()->size() || (rank) <0), MPI_ERR_RANK,                                           \
+  CHECK_ARGS(((rank) >= (comm)->size() || (rank) <0), MPI_ERR_RANK,                                                    \
              "%s: param %d %s (=%d) cannot be < 0 or > %d", __func__, (num), _XBT_STRINGIFY(rank),                     \
-             (rank), (comm)->group()->size() );
+             (rank), (comm)->size() );
+#define CHECK_PROC_RMA(num,proc,win)                                                                                   \
+  CHECK_MPI_NULL((num), MPI_PROC_NULL, MPI_SUCCESS, (proc))                                                            \
+  CHECK_RANK(num, proc, win->comm())
 #endif

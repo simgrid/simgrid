@@ -128,6 +128,11 @@ int Win::rank() const
   return rank_;
 }
 
+MPI_Comm Win::comm() const
+{
+  return comm_;
+}
+
 MPI_Aint Win::size() const
 {
   return size_;

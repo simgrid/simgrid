@@ -57,6 +57,7 @@ public:
   void get_group( MPI_Group* group);
   void set_name(const char* name);
   int rank() const;
+  MPI_Comm comm() const;
   int dynamic() const;
   int start(MPI_Group group, int assert);
   int post(MPI_Group group, int assert);
