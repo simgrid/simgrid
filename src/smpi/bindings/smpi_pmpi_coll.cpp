@@ -70,8 +70,8 @@ int PMPI_Ibcast(void *buf, int count, MPI_Datatype datatype,
   CHECK_REQUEST(6)
 
   smpi_bench_end();
-  int rank = simgrid::s4u::this_actor::get_pid();
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Bcast" : "PMPI_Ibcast",
+  int pid = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Bcast" : "PMPI_Ibcast",
                      new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "bcast" : "ibcast", root, -1.0,
                                                     datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                     simgrid::smpi::Datatype::encode(datatype), ""));
@@ -85,7 +85,7 @@ int PMPI_Ibcast(void *buf, int count, MPI_Datatype datatype,
       *request = MPI_REQUEST_NULL;
   }
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -99,15 +99,19 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
                  MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_COMM(8)
+  int rank = comm->rank();
   if(sendbuf != MPI_IN_PLACE){
     CHECK_BUFFER(1,sendbuf, sendcount)
     CHECK_COUNT(2, sendcount)
     CHECK_TYPE(3, sendtype)
   }
-  if(comm->rank() == root){
+  if(rank == root){
+    CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
     CHECK_TYPE(6, recvtype)
     CHECK_COUNT(5, recvcount)
     CHECK_BUFFER(4, recvbuf, recvcount)
+  } else {
+    CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
   }
   CHECK_ROOT(7)
   CHECK_REQUEST(9)
@@ -115,7 +119,7 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
   const void* real_sendbuf   = sendbuf;
   int real_sendcount         = sendcount;
   MPI_Datatype real_sendtype = sendtype;
-  if (comm->rank() == root){
+  if (rank == root){
     if (sendbuf == MPI_IN_PLACE) {
       real_sendcount = 0;
       real_sendtype  = recvtype;
@@ -127,9 +131,9 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
 
   smpi_bench_end();
 
-  int rank = simgrid::s4u::this_actor::get_pid();
+  int pid = simgrid::s4u::this_actor::get_pid();
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Gather" : "PMPI_Igather",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Gather" : "PMPI_Igather",
                      new simgrid::instr::CollTIData(
                          request == MPI_REQUEST_IGNORED ? "gather" : "igather", root, -1.0,
                          real_sendtype->is_replayable() ? real_sendcount : real_sendcount * real_sendtype->size(),
@@ -141,7 +145,7 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
     simgrid::smpi::colls::igather(real_sendbuf, real_sendcount, real_sendtype, recvbuf, recvcount, recvtype, root, comm,
                                   request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -155,20 +159,24 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
                   MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_COMM(9)
+  int rank = comm->rank();
   CHECK_BUFFER(1, sendbuf, sendcount)
   if(sendbuf != MPI_IN_PLACE){
     CHECK_TYPE(3, sendtype)
     CHECK_COUNT(2, sendcount)
   }
-  if(comm->rank() == root){
+  if(rank == root){
+    CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
     CHECK_TYPE(6, recvtype)
     CHECK_NULL(5, MPI_ERR_COUNT, recvcounts)
     CHECK_NULL(6, MPI_ERR_ARG, displs)
+  } else {
+    CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
   }
   CHECK_ROOT(8)
   CHECK_REQUEST(10)
 
-  if (comm->rank() == root){
+  if (rank == root){
     for (int i = 0; i < comm->size(); i++) {
       CHECK_COUNT(5, recvcounts[i])
       CHECK_BUFFER(4,recvbuf,recvcounts[i])
@@ -179,21 +187,21 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   const void* real_sendbuf   = sendbuf;
   int real_sendcount         = sendcount;
   MPI_Datatype real_sendtype = sendtype;
-  if ((comm->rank() == root) && (sendbuf == MPI_IN_PLACE)) {
+  if ((rank == root) && (sendbuf == MPI_IN_PLACE)) {
     real_sendcount = 0;
     real_sendtype  = recvtype;
   }
 
-  int rank         = simgrid::s4u::this_actor::get_pid();
+  int pid         = simgrid::s4u::this_actor::get_pid();
   int dt_size_recv = recvtype->is_replayable() ? 1 : recvtype->size();
 
   auto trace_recvcounts = std::make_shared<std::vector<int>>();
-  if (comm->rank() == root) {
+  if (rank == root) {
     for (int i = 0; i < comm->size(); i++) // copy data to avoid bad free
       trace_recvcounts->push_back(recvcounts[i] * dt_size_recv);
   }
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Gatherv" : "PMPI_Igatherv",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Gatherv" : "PMPI_Igatherv",
                      new simgrid::instr::VarCollTIData(
                          request == MPI_REQUEST_IGNORED ? "gatherv" : "igatherv", root,
                          real_sendtype->is_replayable() ? real_sendcount : real_sendcount * real_sendtype->size(),
@@ -206,7 +214,7 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
     simgrid::smpi::colls::igatherv(real_sendbuf, real_sendcount, real_sendtype, recvbuf, recvcounts, displs, recvtype,
                                    root, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -220,8 +228,10 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
                     MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_COMM(7)
+  int rank = comm->rank();
   CHECK_BUFFER(1, sendbuf, sendcount)
   CHECK_BUFFER(4, recvbuf, recvcount)
+  CHECK_NOT_IN_PLACE(4, recvbuf)
   if(sendbuf != MPI_IN_PLACE){
     CHECK_COUNT(2, sendcount)
     CHECK_TYPE(3, sendtype)
@@ -243,9 +253,9 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
 
   smpi_bench_end();
 
-  int rank = simgrid::s4u::this_actor::get_pid();
+  int pid = simgrid::s4u::this_actor::get_pid();
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallggather",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallggather",
                      new simgrid::instr::CollTIData(
                          request == MPI_REQUEST_IGNORED ? "allgather" : "iallgather", -1, -1.0,
                          sendtype->is_replayable() ? sendcount : sendcount * sendtype->size(),
@@ -256,7 +266,7 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
   else
     simgrid::smpi::colls::iallgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -270,6 +280,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
                      MPI_Datatype recvtype, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_COMM(8)
+  int rank = comm->rank();
   CHECK_BUFFER(1, sendbuf, sendcount)
   if(sendbuf != MPI_IN_PLACE)
     CHECK_TYPE(3, sendtype)
@@ -279,6 +290,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   if(sendbuf != MPI_IN_PLACE)
     CHECK_COUNT(2, sendcount)
   CHECK_REQUEST(9)
+  CHECK_NOT_IN_PLACE(4, recvbuf)
   for (int i = 0; i < comm->size(); i++) {
     CHECK_COUNT(5, recvcounts[i])
     CHECK_BUFFER(4, recvbuf, recvcounts[i])
@@ -290,7 +302,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
     sendcount = recvcounts[comm->rank()];
     sendtype  = recvtype;
   }
-  int rank         = simgrid::s4u::this_actor::get_pid();
+  int pid         = simgrid::s4u::this_actor::get_pid();
   int dt_size_recv = recvtype->is_replayable() ? 1 : recvtype->size();
 
   auto trace_recvcounts = std::make_shared<std::vector<int>>();
@@ -299,7 +311,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   }
 
   TRACE_smpi_comm_in(
-      rank, request == MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv",
+      pid, request == MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv",
       new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "allgatherv" : "iallgatherv", -1,
                                         sendtype->is_replayable() ? sendcount : sendcount * sendtype->size(), nullptr,
                                         dt_size_recv, trace_recvcounts, simgrid::smpi::Datatype::encode(sendtype),
@@ -310,7 +322,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
     simgrid::smpi::colls::iallgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm,
                                       request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -324,10 +336,14 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
                   MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_COMM(8)
-  if(comm->rank() == root){
+  int rank = comm->rank();
+  if(rank == root){
+    CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
     CHECK_BUFFER(1, sendbuf, sendcount)
     CHECK_COUNT(2, sendcount)
     CHECK_TYPE(3, sendtype)
+  } else {
+    CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
   }
   if(recvbuf != MPI_IN_PLACE){
     CHECK_BUFFER(4, recvbuf, recvcount)
@@ -342,19 +358,19 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
     recvcount = sendcount;
   }
 
-  if((comm->rank() == root) && (recvtype->size() * recvcount !=  sendtype->size() * sendcount)){
+  if((rank == root) && (recvtype->size() * recvcount !=  sendtype->size() * sendcount)){
     XBT_WARN("MPI_(I)Scatter : sent size to each process differs from receive size");
     return MPI_ERR_TRUNCATE;
   }
 
   smpi_bench_end();
 
-  int rank = simgrid::s4u::this_actor::get_pid();
+  int pid = simgrid::s4u::this_actor::get_pid();
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Scatter" : "PMPI_Iscatter",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Scatter" : "PMPI_Iscatter",
                      new simgrid::instr::CollTIData(
                          request == MPI_REQUEST_IGNORED ? "scatter" : "iscatter", root, -1.0,
-                         (comm->rank() != root || sendtype->is_replayable()) ? sendcount : sendcount * sendtype->size(),
+                         (rank != root || sendtype->is_replayable()) ? sendcount : sendcount * sendtype->size(),
                          recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(),
                          simgrid::smpi::Datatype::encode(sendtype), simgrid::smpi::Datatype::encode(recvtype)));
   if (request == MPI_REQUEST_IGNORED)
@@ -362,7 +378,7 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   else
     simgrid::smpi::colls::iscatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -376,14 +392,16 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
                    MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_COMM(9)
+  int rank = comm->rank();
   if(recvbuf != MPI_IN_PLACE){
+    CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
     CHECK_BUFFER(4, recvbuf, recvcount)
     CHECK_COUNT(5, recvcount)
     CHECK_TYPE(7, recvtype)
   }
   CHECK_ROOT(9)
   CHECK_REQUEST(10)
-  if (comm->rank() == root) {
+  if (rank == root) {
     CHECK_NULL(2, MPI_ERR_COUNT, sendcounts)
     CHECK_NULL(3, MPI_ERR_ARG, displs)
     CHECK_TYPE(4, sendtype)
@@ -393,23 +411,25 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
     }
     if (recvbuf == MPI_IN_PLACE) {
       recvtype  = sendtype;
-      recvcount = sendcounts[comm->rank()];
+      recvcount = sendcounts[rank];
     }
+  } else {
+    CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
   }
 
   smpi_bench_end();
 
-  int rank         = simgrid::s4u::this_actor::get_pid();
+  int pid         = simgrid::s4u::this_actor::get_pid();
   int dt_size_send = sendtype->is_replayable() ? 1 : sendtype->size();
 
   auto trace_sendcounts = std::make_shared<std::vector<int>>();
-  if (comm->rank() == root) {
+  if (rank == root) {
     for (int i = 0; i < comm->size(); i++) { // copy data to avoid bad free
       trace_sendcounts->push_back(sendcounts[i] * dt_size_send);
     }
   }
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Scatterv" : "PMPI_Iscatterv",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Scatterv" : "PMPI_Iscatterv",
                      new simgrid::instr::VarCollTIData(
                          request == MPI_REQUEST_IGNORED ? "scatterv" : "iscatterv", root, dt_size_send,
                          trace_sendcounts, recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(),
@@ -421,7 +441,7 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
     simgrid::smpi::colls::iscatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm,
                                     request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -434,9 +454,12 @@ int PMPI_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype data
 int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_COMM(7)
+  int rank = comm->rank();
   CHECK_BUFFER(1, sendbuf, count)
-  if(comm->rank() == root)
+  if(rank == root){
+    CHECK_NOT_IN_PLACE(2, recvbuf)
     CHECK_BUFFER(5, recvbuf, count)
+  }
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, count)
   CHECK_OP(5, op, datatype)
@@ -444,10 +467,10 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_REQUEST(8)
 
   smpi_bench_end();
-  int rank = simgrid::s4u::this_actor::get_pid();
+  int pid = simgrid::s4u::this_actor::get_pid();
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce" : "PMPI_Ireduce",
-                     new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "reduce" : "ireduce", root, 0,
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce" : "PMPI_Ireduce",
+                      new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "reduce" : "ireduce", root, 0,
                                                     datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                     simgrid::smpi::Datatype::encode(datatype), ""));
   if (request == MPI_REQUEST_IGNORED)
@@ -455,7 +478,7 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   else
     simgrid::smpi::colls::ireduce(sendbuf, recvbuf, count, datatype, op, root, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -482,8 +505,10 @@ int PMPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype d
 int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
 {
   CHECK_COMM(6)
+  int rank = comm->rank();
   CHECK_BUFFER(1, sendbuf, count)
   CHECK_BUFFER(2, recvbuf, count)
+  CHECK_NOT_IN_PLACE(2, recvbuf)
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, count)
   CHECK_REQUEST(7)
@@ -493,9 +518,9 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
-  int rank = simgrid::s4u::this_actor::get_pid();
+  int pid = simgrid::s4u::this_actor::get_pid();
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Allreduce" : "PMPI_Iallreduce",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Allreduce" : "PMPI_Iallreduce",
                      new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "allreduce" : "iallreduce", -1, 0,
                                                     datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                     simgrid::smpi::Datatype::encode(datatype), ""));
@@ -505,7 +530,7 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
   else
     simgrid::smpi::colls::iallreduce(real_sendbuf, recvbuf, count, datatype, op, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -526,11 +551,11 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   CHECK_OP(5, op, datatype)
 
   smpi_bench_end();
-  int rank         = simgrid::s4u::this_actor::get_pid();
+  int pid         = simgrid::s4u::this_actor::get_pid();
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan",
                      new simgrid::instr::Pt2PtTIData(request == MPI_REQUEST_IGNORED ? "scan" : "iscan", -1,
                                                      datatype->is_replayable() ? count : count * datatype->size(),
                                                      simgrid::smpi::Datatype::encode(datatype)));
@@ -541,7 +566,7 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   else
     retval = simgrid::smpi::colls::iscan(real_sendbuf, recvbuf, count, datatype, op, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return retval;
 }
@@ -561,11 +586,11 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_OP(5, op, datatype)
 
   smpi_bench_end();
-  int rank         = simgrid::s4u::this_actor::get_pid();
+  int pid         = simgrid::s4u::this_actor::get_pid();
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan",
                      new simgrid::instr::Pt2PtTIData(request == MPI_REQUEST_IGNORED ? "exscan" : "iexscan", -1,
                                                      datatype->is_replayable() ? count : count * datatype->size(),
                                                      simgrid::smpi::Datatype::encode(datatype)));
@@ -576,7 +601,7 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   else
     retval = simgrid::smpi::colls::iexscan(real_sendbuf, recvbuf, count, datatype, op, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return retval;
 }
@@ -589,6 +614,8 @@ int PMPI_Reduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcount
 int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request)
 {
   CHECK_COMM(6)
+  int rank = comm->rank();
+  CHECK_NOT_IN_PLACE(2, recvbuf)
   CHECK_TYPE(4, datatype)
   CHECK_NULL(3, MPI_ERR_COUNT, recvcounts)
   CHECK_REQUEST(7)
@@ -600,7 +627,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
   }
 
   smpi_bench_end();
-  int rank                           = simgrid::s4u::this_actor::get_pid();
+  int pid                           = simgrid::s4u::this_actor::get_pid();
   auto trace_recvcounts              = std::make_shared<std::vector<int>>();
   int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
   int totalcount                     = 0;
@@ -612,7 +639,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, totalcount, datatype);
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter",
                      new simgrid::instr::VarCollTIData(
                          request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, dt_send_size, nullptr,
                          -1, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
@@ -622,7 +649,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
   else
     simgrid::smpi::colls::ireduce_scatter(real_sendbuf, recvbuf, recvcounts, datatype, op, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -647,14 +674,14 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   smpi_bench_end();
   int count = comm->size();
 
-  int rank                           = simgrid::s4u::this_actor::get_pid();
+  int pid                           = simgrid::s4u::this_actor::get_pid();
   int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
   auto trace_recvcounts = std::make_shared<std::vector<int>>(recvcount * dt_send_size); // copy data to avoid bad free
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, recvcount * count, datatype);
 
   TRACE_smpi_comm_in(
-      rank, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block" : "PMPI_Ireduce_scatter_block",
+      pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block" : "PMPI_Ireduce_scatter_block",
       new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, 0,
                                         nullptr, -1, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
 
@@ -666,7 +693,7 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   else
     simgrid::smpi::colls::ireduce_scatter(real_sendbuf, recvbuf, recvcounts.data(), datatype, op, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
@@ -691,7 +718,7 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   CHECK_COUNT(5, recvcount)
   CHECK_REQUEST(8)
 
-  int rank                 = simgrid::s4u::this_actor::get_pid();
+  int pid                 = simgrid::s4u::this_actor::get_pid();
   int real_sendcount         = sendcount;
   MPI_Datatype real_sendtype = sendtype;
 
@@ -710,7 +737,7 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
 
   smpi_bench_end();
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall",
                      new simgrid::instr::CollTIData(
                          request == MPI_REQUEST_IGNORED ? "alltoall" : "ialltoall", -1, -1.0,
                          real_sendtype->is_replayable() ? real_sendcount : real_sendcount * real_sendtype->size(),
@@ -724,7 +751,7 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
     retval = simgrid::smpi::colls::ialltoall(real_sendbuf, real_sendcount, real_sendtype, recvbuf, recvcount, recvtype,
                                              comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return retval;
 }
@@ -749,7 +776,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   CHECK_NULL(7, MPI_ERR_ARG, recvdispls)
   CHECK_REQUEST(10)
 
-  int rank = simgrid::s4u::this_actor::get_pid();
+  int pid = simgrid::s4u::this_actor::get_pid();
   int size = comm->size();
   for (int i = 0; i < size; i++) {
     if(sendbuf != MPI_IN_PLACE){
@@ -803,7 +830,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
     trace_sendcounts->push_back(real_sendcounts[i] * dt_size_send);
   }
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallv" : "PMPI_Ialltoallv",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallv" : "PMPI_Ialltoallv",
                      new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "alltoallv" : "ialltoallv", -1,
                                                        send_size, trace_sendcounts, recv_size, trace_recvcounts,
                                                        simgrid::smpi::Datatype::encode(real_sendtype),
@@ -817,7 +844,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
     retval = simgrid::smpi::colls::ialltoallv(real_sendbuf, real_sendcounts, real_senddispls, real_sendtype, recvbuf,
                                               recvcounts, recvdispls, recvtype, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return retval;
 }
@@ -841,7 +868,7 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   CHECK_NULL(7, MPI_ERR_ARG, recvdispls)
   CHECK_NULL(8, MPI_ERR_TYPE, recvtypes)
   CHECK_REQUEST(10)
-  int rank = simgrid::s4u::this_actor::get_pid();
+  int pid = simgrid::s4u::this_actor::get_pid();
   int size = comm->size();
   for (int i = 0; i < size; i++) {
     if(sendbuf != MPI_IN_PLACE){
@@ -900,7 +927,7 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
     trace_sendcounts->push_back(real_sendcounts[i] * real_sendtypes[i]->size());
   }
 
-  TRACE_smpi_comm_in(rank, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallw" : "PMPI_Ialltoallw",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallw" : "PMPI_Ialltoallw",
                      new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "alltoallv" : "ialltoallv", -1,
                                                        send_size, trace_sendcounts, recv_size, trace_recvcounts,
                                                        simgrid::smpi::Datatype::encode(real_sendtypes[0]),
@@ -914,7 +941,7 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
     retval = simgrid::smpi::colls::ialltoallw(real_sendbuf, real_sendcounts, real_senddispls, real_sendtypes, recvbuf,
                                               recvcounts, recvdispls, recvtypes, comm, request);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(pid);
   smpi_bench_begin();
   return retval;
 }

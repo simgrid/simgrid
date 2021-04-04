@@ -580,4 +580,12 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_PROC_RMA(num,proc,win)                                                                                   \
   CHECK_MPI_NULL((num), MPI_PROC_NULL, MPI_SUCCESS, (proc))                                                            \
   CHECK_RANK(num, proc, win->comm())
+#define CHECK_NOT_IN_PLACE_ROOT(num, buf)                                                                                   \
+  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,                                                                    \
+             "%s: param %d %s cannot be MPI_IN_PLACE for rank %d with root %d", __func__, (num), _XBT_STRINGIFY(buf),  \
+             rank, root);
+#define CHECK_NOT_IN_PLACE(num, buf)                                                                                   \
+  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,                                                                    \
+             "%s: param %d %s cannot be MPI_IN_PLACE for rank %d", __func__, (num), _XBT_STRINGIFY(buf),  \
+             rank);
 #endif
