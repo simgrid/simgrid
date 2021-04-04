@@ -43,7 +43,7 @@ install:
 # Work around a bug on appveyor where the default sh is not the one I expect
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 # We need pybind11. SimGrid will pick it automatically if the subdir is here
-- cmd: git clone --depth=1 https://github.com/pybind/pybind11.git
+- cmd: git clone --branch stable --depth=1 https://github.com/pybind/pybind11.git
 
 build_script:
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
