@@ -52,6 +52,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
         if (xbt_log_no_loc)                                                                                            \
           XBT_INFO("The backtrace would be displayed here if --log=no_loc would not have been passed");                \
         else                                                                                                           \
+          XBT_INFO("Backtrace of the run : if incomplete, run smpirun with -keep-temps. To hide, use --log=no_loc");   \
           xbt_backtrace_display_current();                                                                             \
         xbt_die("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                      \
       } else                                                                                                           \
