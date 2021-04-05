@@ -646,11 +646,11 @@ graphviz dot tool to generate a corresponding graphical representation.
 Exploration Depth Limit
 .......................
 
-The ``model-checker/max-depth`` can set the maximum depth of the
+The ``model-check/max-depth`` can set the maximum depth of the
 exploration graph of the model checker. If this limit is reached, a
 logging message is sent and the results might not be exact.
 
-By default, there is no depth limit.
+By default, the exploration is limited to the depth of 1000.
 
 .. _cfg=model-check/timeout:
 
