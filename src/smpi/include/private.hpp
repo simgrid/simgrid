@@ -163,10 +163,11 @@ void mpi_startall_(int* count, int* requests, int* ierr);
 void mpi_wait_(int* request, MPI_Status* status, int* ierr);
 void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int* ierr);
 void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr);
-
+void mpi_free_mem_(void *baseptr, int* ierr);
 void mpi_barrier_(int* comm, int* ierr);
 void mpi_bcast_(void* buf, int* count, int* datatype, int* root, int* comm, int* ierr);
 void mpi_reduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* root, int* comm, int* ierr);
+void mpi_alloc_mem_(int* size, int* info, void *baseptr, int* ierr);
 void mpi_allreduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr);
 void mpi_reduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype, int* op, int* comm, int* ierr);
 void mpi_reduce_scatter_block_(void* sendbuf, void* recvbuf, int* recvcount, int* datatype, int* op, int* comm,

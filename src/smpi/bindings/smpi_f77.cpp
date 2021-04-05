@@ -933,6 +933,15 @@ void mpi_close_port_ ( char *port_name, int* ierr){
  *ierr = MPI_Close_port( port_name);
 }
 
+void mpi_alloc_mem_(int* size, int* info, void *baseptr, int* ierr){
+  *ierr = MPI_Alloc_mem(*size, simgrid::smpi::Info::f2c(*info), baseptr);
+}
+
+void mpi_free_mem_(void *baseptr, int* ierr){
+  *ierr = MPI_Free_mem(baseptr);
+}
+
+
 void smpi_execute_flops_(double* flops){
   smpi_execute_flops(*flops);
 }
