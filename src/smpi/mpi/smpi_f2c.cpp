@@ -25,8 +25,7 @@ F2C::F2C() = default;
 int F2C::add_f()
 {
   allocate_lookup();
-
-  my_f2c_id_                 = f2c_id();
+  my_f2c_id_                 = global_f2c_id();
   (*f2c_lookup_)[my_f2c_id_] = this;
   f2c_id_increment();
   return my_f2c_id_;

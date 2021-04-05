@@ -339,7 +339,7 @@ void Comm::unref(Comm* comm){
 
   if(comm->refcount_==0){
     if(simgrid::smpi::F2C::lookup() != nullptr)
-      F2C::free_f(comm->c2f());
+      F2C::free_f(comm->f2c_id());
     comm->cleanup_smp();
     comm->cleanup_attr<Comm>();
     if (comm->info_ != MPI_INFO_NULL)

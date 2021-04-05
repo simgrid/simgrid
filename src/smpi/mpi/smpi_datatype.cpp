@@ -150,7 +150,7 @@ Datatype::~Datatype()
     return;
   //prevent further usage
   flags_ &= ~ DT_FLAG_COMMITED;
-  F2C::free_f(this->c2f());
+  F2C::free_f(this->f2c_id());
   //if still used, mark for deletion
   if(refcount_!=0){
       flags_ |=DT_FLAG_DESTROYED;

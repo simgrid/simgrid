@@ -47,7 +47,7 @@ void Errhandler::unref(Errhandler* errhandler){
     return;
   errhandler->refcount_--;
   if(errhandler->refcount_==0){
-    F2C::free_f(errhandler->c2f());
+    F2C::free_f(errhandler->f2c_id());
     delete errhandler;
   }
 }

@@ -78,7 +78,7 @@ void Group::unref(Group* group)
   group->refcount_--;
   if (group->refcount_ <= 0) {
     if (simgrid::smpi::F2C::lookup() != nullptr)
-      F2C::free_f(group->c2f());
+      F2C::free_f(group->f2c_id());
     delete group;
   }
 }

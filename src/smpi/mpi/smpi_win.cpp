@@ -78,7 +78,7 @@ Win::~Win(){
   if(allocated_ !=0)
     xbt_free(base_);
 
-  F2C::free_f(this->c2f());
+  F2C::free_f(this->f2c_id());
   cleanup_attr<Win>();
 }
 

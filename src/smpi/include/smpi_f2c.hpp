@@ -33,7 +33,8 @@ protected:
     if (not f2c_lookup_)
       f2c_lookup_ = std::make_unique<f2c_lookup_type>();
   }
-  static int f2c_id() { return f2c_id_; }
+  int f2c_id() { return my_f2c_id_; }
+  static int global_f2c_id() { return f2c_id_; }
   static void f2c_id_increment() { f2c_id_++; }
   void mark_as_deleted() { deleted_ = true; };
 
@@ -44,7 +45,7 @@ public:
   virtual ~F2C() = default;
 
   int add_f();
-  static void free_f(int id) { f2c_lookup_->erase(id); }
+  static void free_f(int id) { if(id!=-1) f2c_lookup_->erase(id); }
   int c2f();
 
   // This method should be overridden in all subclasses to avoid casting the result when calling it.
