@@ -42,7 +42,7 @@ public:
   profile::Profile* state_trace                            = nullptr;
   std::string coord                                        = "";
   std::unordered_map<std::string, std::string>* properties = nullptr;
-  std::vector<simgrid::kernel::resource::DiskImpl*> disks;
+  std::vector<resource::DiskImpl*> disks;
 };
 
 class HostLinkCreationArgs {
@@ -57,10 +57,10 @@ public:
   std::string id;
   std::vector<double> bandwidths;
   profile::Profile* bandwidth_trace                        = nullptr;
-  double latency                      = 0;
+  double latency                                           = 0;
   profile::Profile* latency_trace                          = nullptr;
   profile::Profile* state_trace                            = nullptr;
-  simgrid::s4u::Link::SharingPolicy policy       = simgrid::s4u::Link::SharingPolicy::FATPIPE;
+  s4u::Link::SharingPolicy policy                          = s4u::Link::SharingPolicy::FATPIPE;
   std::unordered_map<std::string, std::string>* properties = nullptr;
 };
 
@@ -82,7 +82,7 @@ public:
   NetPoint* dst    = nullptr;
   NetPoint* gw_src = nullptr;
   NetPoint* gw_dst = nullptr;
-  std::vector<simgrid::kernel::resource::LinkImpl*> link_list;
+  std::vector<resource::LinkImpl*> link_list;
 };
 
 enum class ClusterTopology { DRAGONFLY = 3, FAT_TREE = 2, FLAT = 1, TORUS = 0 };
@@ -106,8 +106,8 @@ public:
   std::string topo_parameters;
   std::unordered_map<std::string, std::string>* properties = nullptr;
   std::string router_id;
-  simgrid::s4u::Link::SharingPolicy sharing_policy    = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-  simgrid::s4u::Link::SharingPolicy bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
+  s4u::Link::SharingPolicy sharing_policy    = s4u::Link::SharingPolicy::SPLITDUPLEX;
+  s4u::Link::SharingPolicy bb_sharing_policy = s4u::Link::SharingPolicy::SHARED;
 };
 
 class CabinetCreationArgs {
