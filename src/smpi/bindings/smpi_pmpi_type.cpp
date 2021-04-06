@@ -17,6 +17,7 @@ int PMPI_Type_free(MPI_Datatype * datatype)
   if (*datatype == MPI_DATATYPE_NULL || (*datatype)->flags() & DT_FLAG_PREDEFINED) {
     return MPI_ERR_TYPE;
   } else {
+    (*datatype)->mark_as_deleted();
     simgrid::smpi::Datatype::unref(*datatype);
     *datatype=MPI_DATATYPE_NULL;
     return MPI_SUCCESS;

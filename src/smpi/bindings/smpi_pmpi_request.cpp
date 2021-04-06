@@ -163,6 +163,7 @@ int PMPI_Request_free(MPI_Request * request)
 
   smpi_bench_end();
   if (*request != MPI_REQUEST_NULL) {
+    (*request)->mark_as_deleted();
     simgrid::smpi::Request::unref(request);
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;

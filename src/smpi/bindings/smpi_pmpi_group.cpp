@@ -18,8 +18,10 @@ int PMPI_Group_free(MPI_Group * group)
 {
   CHECK_NULL(1, MPI_ERR_ARG, group)
   CHECK_MPI_NULL(1, MPI_GROUP_NULL, MPI_ERR_GROUP, *group)
-  if(*group != MPI_COMM_WORLD->group() && *group != MPI_GROUP_EMPTY)
+  if(*group != MPI_COMM_WORLD->group() && *group != MPI_GROUP_EMPTY){
+    (*group)->mark_as_deleted();
     simgrid::smpi::Group::unref(*group);
+  }
   *group = MPI_GROUP_NULL;
   return MPI_SUCCESS;
 }
