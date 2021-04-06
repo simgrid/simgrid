@@ -31,6 +31,10 @@ $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_
 $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/four_hosts_floyd.xml --log=root.fmt=%m%n
 > Workstation number: 4, link number: 5
 
+! output sort
+$ ${bindir:=.}/basic-parsing-test ${platfdir:=.}/cloud.xml --log=root.fmt=%m%n
+> Workstation number: 510, link number: 1056
+
 $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/properties.xml --log=root.fmt=%m%n
 > Configuration change: Set 'cpu/optim' to 'TI'
 > Configuration change: Set 'host/model' to 'compound'
