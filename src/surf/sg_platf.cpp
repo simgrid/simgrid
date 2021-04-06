@@ -80,7 +80,6 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
     new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
 
   host->seal();
-  simgrid::s4u::Host::on_creation(*host); // notify the signal
 
   /* When energy plugin is activated, changing the pstate requires to already have the HostEnergy extension whose
    * allocation is triggered by the on_creation signal. Then set_pstate must be called after the signal emition */
@@ -182,7 +181,6 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     if ((cluster->properties != nullptr) && (not cluster->properties->empty()))
       host->set_properties(*cluster->properties);
     host->seal();
-    simgrid::s4u::Host::on_creation(*host); // notify the signal
 
     XBT_DEBUG("</host>");
 
@@ -422,7 +420,6 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
   if (peer->speed_trace)
     host->set_speed_profile(peer->speed_trace);
   host->seal();
-  simgrid::s4u::Host::on_creation(*host); // notify the signal
 }
 
 /**

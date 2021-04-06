@@ -350,6 +350,7 @@ void Host::execute(double flops, double priority) const
 void Host::seal()
 {
   kernel::actor::simcall([this]() { this->pimpl_->seal(); });
+  simgrid::s4u::Host::on_creation(*this); // notify the signal
 }
 
 } // namespace s4u

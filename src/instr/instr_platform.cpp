@@ -304,6 +304,9 @@ static void on_link_creation(s4u::Link const& link)
 
 static void on_host_creation(s4u::Host const& host)
 {
+  if (Container::by_name_or_null(host.get_name())) // This host already exists, do nothing
+    return;
+
   Container* container  = new HostContainer(host, currentContainer.back());
   const Container* root = Container::get_root();
 
