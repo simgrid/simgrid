@@ -104,10 +104,8 @@ Link::SharingPolicy Link::get_sharing_policy() const
 
 void Link::set_host_wifi_rate(const s4u::Host* host, int level) const
 {
-  xbt_assert(pimpl_->get_sharing_policy() == Link::SharingPolicy::WIFI, "Link %s does not seem to be a wifi link.",
-             get_cname());
   auto* wlink = dynamic_cast<kernel::resource::NetworkWifiLink*>(pimpl_);
-  xbt_assert(wlink != nullptr, "Cannot convert link %s into a wifi link.", get_cname());
+  xbt_assert(wlink != nullptr, "Link %s does not seem to be a wifi link.", get_cname());
   wlink->set_host_rate(host, level);
 }
 
