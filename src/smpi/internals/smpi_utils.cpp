@@ -153,7 +153,7 @@ void print_memory_analysis()
         handles.resize(max);
       for (const auto& p : handles) {
         if (xbt_log_no_loc) {
-          XBT_WARN("Leaked handle of type %s", boost::core::demangle(typeid(*p.second).name()).c_str());
+          XBT_WARN("Leaked handle of type %s", p.second->name().c_str());
         } else {
           XBT_WARN("Leaked handle of type %s at %p", p.second->name().c_str(), p.second);
         }

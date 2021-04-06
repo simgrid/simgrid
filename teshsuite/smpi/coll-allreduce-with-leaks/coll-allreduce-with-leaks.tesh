@@ -24,16 +24,16 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -map -ho
 > Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > [0.023768] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 32 unfreed MPI handles : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Group
-> [0.023768] [smpi_utils/WARNING] Leaked handle of type simgrid::smpi::Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Comm
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Group
+> [0.023768] [smpi_utils/WARNING] Leaked handle of type MPI_Comm
 > [0.023768] [smpi_utils/WARNING] (more handle leaks hidden as you wanted to see only 10 of them)
 > [0.023768] [smpi_utils/INFO] Memory Usage: Simulated application allocated 2048 bytes during its lifetime through malloc/calloc calls.
 
