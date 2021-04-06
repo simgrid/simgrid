@@ -42,7 +42,7 @@ class File : public F2C{
   int get_position_shared(MPI_Offset* offset) const;
   int flags() const;
   MPI_Comm comm() const;
-  std::string name() const {return file_ ? std::string("MPI_File:" + file_->get_path()): std::string("MPI_File");}
+  std::string name() const {return file_ ? std::string("MPI_File: ")+ std::string(file_->get_path()): std::string("MPI_File");}
 
   int sync();
   int seek(MPI_Offset offset, int whence);

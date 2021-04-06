@@ -54,7 +54,7 @@ public:
   int attach (void *base, MPI_Aint size);
   int detach (const void *base);
   void get_name(char* name, int* length) const;
-  std::string name() const {return name_;}
+  std::string name() const {return name_.empty() ? std::string("MPI_Win") : name_;}
   void get_group( MPI_Group* group);
   void set_name(const char* name);
   int rank() const;
