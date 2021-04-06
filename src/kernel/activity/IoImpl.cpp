@@ -7,6 +7,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Io.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
@@ -17,6 +18,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)
 namespace simgrid {
 namespace kernel {
 namespace activity {
+
+IoImpl::IoImpl()
+{
+  piface_ = new s4u::Io(this);
+}
 
 IoImpl& IoImpl::set_timeout(double timeout)
 {
