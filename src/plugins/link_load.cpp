@@ -39,24 +39,6 @@ namespace simgrid {
 namespace plugin {
 
 class LinkLoad {
-public:
-  static simgrid::xbt::Extension<simgrid::s4u::Link, LinkLoad> EXTENSION_ID;
-
-  explicit LinkLoad(simgrid::s4u::Link* ptr);
-
-  void track();
-  void untrack();
-  void reset();
-  void update();
-  double get_average_bytes();
-
-  /// Getter methods.
-  bool is_tracked() const;
-  double get_cumulated_bytes();
-  double get_min_bytes_per_second();
-  double get_max_bytes_per_second();
-
-private:
   s4u::Link* link_{};      /*< The link onto which this data is attached*/
   bool is_tracked_{false}; /*<Whether the link is tracked or not*/
 
@@ -65,11 +47,28 @@ private:
   double max_bytes_per_second_{}; /*< Maximum instantaneous load observed since last reset*/
   double last_reset_{};           /*< Timestamp of the last reset (init timestamp by default)*/
   double last_updated_{};         /*< Timestamp of the last energy update event*/
+
+public:
+  static xbt::Extension<s4u::Link, LinkLoad> EXTENSION_ID;
+
+  explicit LinkLoad(s4u::Link* ptr);
+
+  void track();
+  void untrack();
+  void reset();
+  void update();
+  double get_average_bytes();
+
+  /// Getter methods.
+  bool is_tracked() const { return is_tracked_; }
+  double get_cumulated_bytes();
+  double get_min_bytes_per_second();
+  double get_max_bytes_per_second();
 };
 
 xbt::Extension<s4u::Link, LinkLoad> LinkLoad::EXTENSION_ID;
 
-LinkLoad::LinkLoad(simgrid::s4u::Link* ptr) : link_(ptr), is_tracked_(false)
+LinkLoad::LinkLoad(s4u::Link* ptr) : link_(ptr), is_tracked_(false)
 {
   XBT_DEBUG("Instantiating a LinkLoad for link '%s'", link_->get_cname());
 }
@@ -131,10 +130,6 @@ void LinkLoad::update()
   last_updated_ = now;
 }
 
-bool LinkLoad::is_tracked() const
-{
-  return is_tracked_;
-}
 double LinkLoad::get_cumulated_bytes()
 {
   update();

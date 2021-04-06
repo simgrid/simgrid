@@ -31,20 +31,45 @@ namespace simgrid {
 namespace plugin {
 
 class XBT_PRIVATE LinkEnergyWifi {
-public:
-  static simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergyWifi> EXTENSION_ID;
+  // associative array keeping size of data already sent for a given flow (required for interleaved actions)
+  std::map<kernel::resource::NetworkWifiAction*, std::pair<int, double>> flowTmp{};
 
-  explicit LinkEnergyWifi(simgrid::s4u::Link* ptr) : link_(ptr) {}
+  // WiFi link the plugin instance is attached to
+  s4u::Link* link_{};
+
+  // dynamic energy accumulated since the simulation start (active durations consumption)
+  double eDyn_{0.0};
+  // static energy (no activity consumption)
+  double eStat_{0.0};
+
+  // duration since previous energy update
+  double prev_update_{0.0};
+
+  // Same energy calibration values as ns3 by default
+  // https://www.nsnam.org/docs/release/3.30/doxygen/classns3_1_1_wifi_radio_energy_model.html#details
+  double pIdle_{0.82};
+  double pTx_{1.14};
+  double pRx_{0.94};
+  double pSleep_{0.10};
+
+  // constant taking beacons into account (can be specified by the user)
+  double control_duration_{0.0036};
+
+  // Measurements for report
+  double dur_TxRx_{0}; // Duration of transmission
+  double dur_idle_{0}; // Duration of idle time
+  bool valuesInit_{false};
+
+public:
+  static xbt::Extension<simgrid::s4u::Link, LinkEnergyWifi> EXTENSION_ID;
+
+  explicit LinkEnergyWifi(s4u::Link* ptr) : link_(ptr) {}
   LinkEnergyWifi()  = delete;
 
-  /**
-   * Update the energy consumed by link_ when transmissions start or end
-   */
+  /** Update the energy consumed by link_ when transmissions start or end */
   void update(const simgrid::kernel::resource::NetworkAction &);
 
-  /**
-   * Update the energy consumed when link_ is destroyed
-   */
+  /** Update the energy consumed when link_ is destroyed */
   void update_destroy();
 
   /**
@@ -72,45 +97,15 @@ public:
   void set_power_rx(double value) { pRx_ = value; }
   /** Set the power consumed by this link while sleeping */
   void set_power_sleep(double value) { pSleep_ = value; }
-
-private:
-  // associative array keeping size of data already sent for a given flow (required for interleaved actions)
-  std::map<simgrid::kernel::resource::NetworkWifiAction*, std::pair<int, double>> flowTmp{};
-
-  // WiFi link the plugin instance is attached to
-  s4u::Link* link_{};
-
-  // dynamic energy accumulated since the simulation start (active durations consumption)
-  double eDyn_{0.0};
-  // static energy (no activity consumption)
-  double eStat_{0.0};
-
-  // duration since previous energy update
-  double prev_update_{0.0};
-
-  // Same energy calibration values as ns3 by default
-  // https://www.nsnam.org/docs/release/3.30/doxygen/classns3_1_1_wifi_radio_energy_model.html#details
-  double pIdle_{0.82};
-  double pTx_{1.14};
-  double pRx_{0.94};
-  double pSleep_{0.10};
-
-  // constant taking beacons into account (can be specified by the user)
-  double control_duration_{0.0036};
-
-  // Measurements for report
-  double dur_TxRx_{0}; // Duration of transmission
-  double dur_idle_{0}; // Duration of idle time
-  bool valuesInit_{false};
 };
 
 xbt::Extension<s4u::Link, LinkEnergyWifi> LinkEnergyWifi::EXTENSION_ID;
 
 void LinkEnergyWifi::update_destroy()
 {
-  auto const* wifi_link = static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
-  double duration = surf_get_clock() - prev_update_;
-  prev_update_    = surf_get_clock();
+  auto const* wifi_link = static_cast<kernel::resource::NetworkWifiLink*>(link_->get_impl());
+  double duration       = surf_get_clock() - prev_update_;
+  prev_update_          = surf_get_clock();
 
   dur_idle_ += duration;
 
@@ -121,7 +116,7 @@ void LinkEnergyWifi::update_destroy()
   XBT_DEBUG("finish eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
 }
 
-void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
+void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
 {
   init_watts_range_list();
 
@@ -132,7 +127,7 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
   if(duration < 1e-6)
     return;
 
-  auto const* wifi_link = static_cast<simgrid::kernel::resource::NetworkWifiLink*>(link_->get_impl());
+  auto const* wifi_link = static_cast<kernel::resource::NetworkWifiLink*>(link_->get_impl());
 
   const kernel::lmm::Element* elem = nullptr;
 
@@ -148,7 +143,9 @@ void LinkEnergyWifi::update(const simgrid::kernel::resource::NetworkAction&)
   double durUsage = 0;
   while (const auto* var = wifi_link->get_constraint()->get_variable(&elem)) {
     auto* action = static_cast<kernel::resource::NetworkWifiAction*>(var->get_id());
-    XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(), action->get_variable()->get_value(), wifi_link->get_host_rate(&action->get_src()),wifi_link->get_host_rate(&action->get_dst()));
+    XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(),
+              action->get_variable()->get_value(), wifi_link->get_host_rate(&action->get_src()),
+              wifi_link->get_host_rate(&action->get_dst()));
 
     if(action->get_variable()->get_value()) {
       auto it = flowTmp.find(action);
