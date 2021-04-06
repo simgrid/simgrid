@@ -75,7 +75,7 @@ NetZone* NetZone::get_parent() const
 
 NetZone* NetZone::set_parent(const NetZone* parent)
 {
-  pimpl_->set_parent(parent->get_impl());
+  kernel::actor::simcall([this, parent] { pimpl_->set_parent(parent->get_impl()); });
   return this;
 }
 

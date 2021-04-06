@@ -479,12 +479,6 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
     current_routing->add_child(new_zone);
-    /* set models from parent netzone */
-    new_zone->set_network_model(current_routing->get_network_model());
-    new_zone->set_cpu_pm_model(current_routing->get_cpu_pm_model());
-    new_zone->set_cpu_vm_model(current_routing->get_cpu_vm_model());
-    new_zone->set_disk_model(current_routing->get_disk_model());
-    new_zone->set_host_model(current_routing->get_host_model());
   }
   return new_zone;
 }
