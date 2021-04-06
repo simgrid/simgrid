@@ -170,9 +170,6 @@ void Comm::get_name(char* name, int* len) const
   if(this == MPI_COMM_WORLD && name_.empty()) {
     strncpy(name, "MPI_COMM_WORLD", 15);
     *len = 14;
-  } else if(this == MPI_COMM_SELF && name_.empty()) {
-    strncpy(name, "MPI_COMM_SELF", 14);
-    *len = 13;
   } else {
     *len = snprintf(name, MPI_MAX_NAME_STRING+1, "%s", name_.c_str());
   }

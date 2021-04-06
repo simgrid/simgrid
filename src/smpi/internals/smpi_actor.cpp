@@ -177,6 +177,7 @@ MPI_Comm ActorExt::comm_self()
   if (comm_self_ == MPI_COMM_NULL) {
     auto* group = new Group(1);
     comm_self_  = new Comm(group, nullptr);
+    comm_self_->set_name("MPI_COMM_SELF");
     group->set_mapping(actor_, 0);
   }
   return comm_self_;
