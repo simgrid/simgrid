@@ -217,12 +217,13 @@ int open_vm(pid_t pid, int flags)
 
 RemoteProcess::RemoteProcess(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
 
-void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors)
+void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid, xbt_dynar_t actors,
+                         xbt_dynar_t dead_actors)
 {
   this->heap_address      = remote(mmalloc_default_mdp);
-  this->maxpid_addr_      = maxpid;
-  this->actors_addr_      = actors;
-  this->dead_actors_addr_ = dead_actors;
+  this->maxpid_addr_      = remote(maxpid);
+  this->actors_addr_      = remote(actors);
+  this->dead_actors_addr_ = remote(dead_actors);
 
   this->memory_map_ = simgrid::xbt::get_memory_map(this->pid_);
   this->init_memory_map_info();
@@ -566,19 +567,6 @@ void RemoteProcess::dump_stack() const
 
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
-}
-
-unsigned long RemoteProcess::get_maxpid() const
-{
-  unsigned long maxpid;
-  this->read_bytes(&maxpid, sizeof(unsigned long), remote(maxpid_addr_));
-  return maxpid;
-}
-
-void RemoteProcess::get_actor_vectors(RemotePtr<s_xbt_dynar_t>& actors, RemotePtr<s_xbt_dynar_t>& dead_actors)
-{
-  actors      = remote(static_cast<s_xbt_dynar_t*>(actors_addr_));
-  dead_actors = remote(static_cast<s_xbt_dynar_t*>(dead_actors_addr_));
 }
 } // namespace mc
 } // namespace simgrid

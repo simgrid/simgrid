@@ -44,7 +44,7 @@ unsigned long get_maxpid()
 {
   return maxpid;
 }
-void* get_maxpid_addr()
+unsigned long* get_maxpid_addr()
 {
   return &maxpid;
 }

@@ -39,7 +39,7 @@ namespace simgrid {
 namespace simix {
 config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
 
-void* simix_global_get_actors_addr()
+xbt_dynar_t simix_global_get_actors_addr()
 {
 #if SIMGRID_HAVE_MC
   return simix_global->actors_vector;
@@ -47,7 +47,7 @@ void* simix_global_get_actors_addr()
   xbt_die("This function is intended to be used when compiling with MC");
 #endif
 }
-void* simix_global_get_dead_actors_addr()
+xbt_dynar_t simix_global_get_dead_actors_addr()
 {
 #if SIMGRID_HAVE_MC
   return simix_global->dead_actors_vector;

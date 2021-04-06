@@ -75,7 +75,7 @@ private:
 public:
   explicit RemoteProcess(pid_t pid);
   ~RemoteProcess() override;
-  void init(xbt_mheap_t mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors);
+  void init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid, xbt_dynar_t actors, xbt_dynar_t dead_actors);
 
   RemoteProcess(RemoteProcess const&) = delete;
   RemoteProcess(RemoteProcess&&)      = delete;
@@ -166,9 +166,9 @@ public:
   /* ***************** */
 private:
   // Cache the address of the variables we read directly in the memory of remote
-  void* maxpid_addr_;
-  void* actors_addr_;
-  void* dead_actors_addr_;
+  RemotePtr<unsigned long> maxpid_addr_;
+  RemotePtr<s_xbt_dynar_t> actors_addr_;
+  RemotePtr<s_xbt_dynar_t> dead_actors_addr_;
 
 public:
   std::vector<ActorInformation>& actors();
@@ -200,8 +200,7 @@ public:
       return nullptr;
   }
 
-  unsigned long get_maxpid() const;
-  void get_actor_vectors(RemotePtr<s_xbt_dynar_t>& actors, RemotePtr<s_xbt_dynar_t>& dead_actors);
+  unsigned long get_maxpid() const { return this->read(maxpid_addr_); }
 
   void dump_stack() const;
 
