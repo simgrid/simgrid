@@ -75,7 +75,7 @@ private:
 public:
   explicit RemoteProcess(pid_t pid);
   ~RemoteProcess() override;
-  void init(void* mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors);
+  void init(xbt_mheap_t mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors);
 
   RemoteProcess(RemoteProcess const&) = delete;
   RemoteProcess(RemoteProcess&&)      = delete;
@@ -246,7 +246,7 @@ private:
 
 public:
   /** Address of the heap structure in the MCed process. */
-  void* heap_address;
+  xbt_mheap_t heap_address;
 
   /** Copy of the heap structure of the process
    *

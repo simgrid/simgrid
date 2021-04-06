@@ -217,7 +217,7 @@ int open_vm(pid_t pid, int flags)
 
 RemoteProcess::RemoteProcess(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
 
-void RemoteProcess::init(void* mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors)
+void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors)
 {
   this->heap_address      = mmalloc_default_mdp;
   this->maxpid_addr_      = maxpid;

@@ -20,6 +20,7 @@
 #include "simgrid/forward.h" // aid_t
 #include <array>
 #include <cstdint>
+#include <xbt/mmalloc.h>
 #include <xbt/utility.hpp>
 
 // ***** Messages
@@ -59,7 +60,7 @@ struct s_mc_message_int_t {
 /* Client->Server */
 struct s_mc_message_initial_addresses_t {
   simgrid::mc::MessageType type;
-  void* mmalloc_default_mdp;
+  xbt_mheap_t mmalloc_default_mdp;
   void* maxpid;
   void* actors;
   void* dead_actors;
