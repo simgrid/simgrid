@@ -487,8 +487,10 @@ void NetZoneImpl::set_parent(NetZoneImpl* parent)
   xbt_assert(not sealed_, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
   parent_ = parent;
   netpoint_->set_englobing_zone(parent_);
-  /* copying models from parent host, to be reviewed when we allow multi-models */
   if (parent) {
+    /* adding this class as child */
+    parent->add_child(this);
+    /* copying models from parent host, to be reviewed when we allow multi-models */
     set_network_model(parent->get_network_model());
     set_cpu_pm_model(parent->get_cpu_pm_model());
     set_cpu_vm_model(parent->get_cpu_vm_model());

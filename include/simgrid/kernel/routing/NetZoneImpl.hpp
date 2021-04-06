@@ -77,6 +77,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   std::shared_ptr<simgrid::surf::HostModel> host_model_;
   /** @brief Perform sealing procedure for derived classes, if necessary */
   virtual void do_seal(){};
+  void add_child(NetZoneImpl* new_zone);
 
 protected:
   explicit NetZoneImpl(const std::string& name);
@@ -128,7 +129,6 @@ public:
   /** @brief Returns the list of direct children (no grand-children). This returns the internal data, no copy.
    * Don't mess with it.*/
   std::vector<NetZoneImpl*>* get_children() { return &children_; }
-  void add_child(NetZoneImpl* new_zone);
 
   /** @brief Retrieves the name of that netzone as a C++ string */
   const std::string& get_name() const { return name_; }

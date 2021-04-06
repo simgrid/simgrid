@@ -477,8 +477,6 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
     /* set the father behavior */
     if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
-    /* add to the sons dictionary */
-    current_routing->add_child(new_zone);
   }
   return new_zone;
 }
