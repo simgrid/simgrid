@@ -131,7 +131,7 @@ int PMPI_Win_get_info(MPI_Win  win, MPI_Info* info)
 {
   CHECK_WIN(1, win)
   CHECK_NULL(2, MPI_ERR_ARG, info)
-  *info = win->info();
+  *info = new simgrid::smpi::Info(win->info());
   return MPI_SUCCESS;
 }
 
