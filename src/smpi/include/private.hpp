@@ -6,7 +6,6 @@
 #ifndef SMPI_PRIVATE_HPP
 #define SMPI_PRIVATE_HPP
 
-#include "simgrid/s4u/Barrier.hpp"
 #include "smpi/smpi.h"
 #include "smpi/smpi_helpers_internal.h"
 #include "src/instr/instr_smpi.hpp"

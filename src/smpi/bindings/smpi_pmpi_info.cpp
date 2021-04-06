@@ -5,6 +5,7 @@
 
 #include "private.hpp"
 #include "smpi_info.hpp"
+#include "smpi_comm.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 

@@ -9,6 +9,8 @@
 #include "private.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Exec.hpp"
+#include "simgrid/s4u/Mutex.hpp"
+#include "simgrid/s4u/ConditionVariable.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_host.hpp"

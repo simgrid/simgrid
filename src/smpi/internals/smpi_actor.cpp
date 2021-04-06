@@ -9,6 +9,7 @@
 #include "smpi_info.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
+#include "simgrid/s4u/Mutex.hpp"
 
 #if HAVE_PAPI
 #include "papi.h"
