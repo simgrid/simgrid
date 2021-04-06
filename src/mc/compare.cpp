@@ -220,13 +220,11 @@ static bool mmalloc_heap_differ(const RemoteProcess& process, StateComparator& s
   const Region* heap_region2 = MC_get_heap_region(snapshot2);
 
   // This is the address of std_heap->heapinfo in the application process:
-  void* heapinfo_address = &((xbt_mheap_t)process.heap_address)->heapinfo;
+  uint64_t heapinfo_address = process.heap_address.address() + offsetof(s_xbt_mheap_t, heapinfo);
 
   // This is in snapshot do not use them directly:
-  const malloc_info* heapinfos1 =
-      snapshot1.read<malloc_info*>(RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address));
-  const malloc_info* heapinfos2 =
-      snapshot2.read<malloc_info*>(RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address));
+  const malloc_info* heapinfos1 = snapshot1.read(remote<malloc_info*>(heapinfo_address));
+  const malloc_info* heapinfos2 = snapshot2.read(remote<malloc_info*>(heapinfo_address));
 
   while (i1 < state.heaplimit) {
     const auto* heapinfo1 =
@@ -738,10 +736,10 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
   bool match_pairs = false;
 
   // This is the address of std_heap->heapinfo in the application process:
-  void* heapinfo_address = &((xbt_mheap_t)process.heap_address)->heapinfo;
+  uint64_t heapinfo_address = process.heap_address.address() + offsetof(s_xbt_mheap_t, heapinfo);
 
-  const malloc_info* heapinfos1 = snapshot1.read(remote((const malloc_info**)heapinfo_address));
-  const malloc_info* heapinfos2 = snapshot2.read(remote((const malloc_info**)heapinfo_address));
+  const malloc_info* heapinfos1 = snapshot1.read(remote<malloc_info*>(heapinfo_address));
+  const malloc_info* heapinfos2 = snapshot2.read(remote<malloc_info*>(heapinfo_address));
 
   malloc_info heapinfo_temp1;
   malloc_info heapinfo_temp2;
@@ -1215,10 +1213,10 @@ bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
   }
 
   /* Init heap information used in heap comparison algorithm */
-  const s_xbt_mheap_t* heap1 = static_cast<xbt_mheap_t>(s1->read_bytes(
-      alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), remote(process.heap_address), ReadOptions::lazy()));
-  const s_xbt_mheap_t* heap2 = static_cast<xbt_mheap_t>(s2->read_bytes(
-      alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), remote(process.heap_address), ReadOptions::lazy()));
+  const s_xbt_mheap_t* heap1 = static_cast<xbt_mheap_t>(
+      s1->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), process.heap_address, ReadOptions::lazy()));
+  const s_xbt_mheap_t* heap2 = static_cast<xbt_mheap_t>(
+      s2->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), process.heap_address, ReadOptions::lazy()));
   if (state_comparator.initHeapInformation(heap1, heap2, s1->to_ignore_, s2->to_ignore_) == -1) {
     XBT_VERB("(%d - %d) Different heap information", s1->num_state_, s2->num_state_);
     return false;

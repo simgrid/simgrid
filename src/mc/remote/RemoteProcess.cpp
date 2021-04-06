@@ -219,7 +219,7 @@ RemoteProcess::RemoteProcess(pid_t pid) : AddressSpace(this), pid_(pid), running
 
 void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, void* maxpid, void* actors, void* dead_actors)
 {
-  this->heap_address      = mmalloc_default_mdp;
+  this->heap_address      = remote(mmalloc_default_mdp);
   this->maxpid_addr_      = maxpid;
   this->actors_addr_      = actors;
   this->dead_actors_addr_ = dead_actors;
@@ -263,7 +263,7 @@ void RemoteProcess::refresh_heap()
   // Read/dereference/refresh the std_heap pointer:
   if (not this->heap)
     this->heap = std::make_unique<s_xbt_mheap_t>();
-  this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address));
+  this->read(this->heap.get(), this->heap_address);
   this->cache_flags_ |= RemoteProcess::cache_heap;
 }
 

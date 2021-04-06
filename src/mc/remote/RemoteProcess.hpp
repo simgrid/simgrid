@@ -246,7 +246,7 @@ private:
 
 public:
   /** Address of the heap structure in the MCed process. */
-  xbt_mheap_t heap_address;
+  RemotePtr<s_xbt_mheap_t> heap_address;
 
   /** Copy of the heap structure of the process
    *
