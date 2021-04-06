@@ -36,13 +36,14 @@ protected:
   int f2c_id() { return my_f2c_id_; }
   static int global_f2c_id() { return f2c_id_; }
   static void f2c_id_increment() { f2c_id_++; }
-  void mark_as_deleted() { deleted_ = true; };
 
 public:
+  void mark_as_deleted() { deleted_ = true; };
   bool deleted() const { return deleted_; }
   static f2c_lookup_type* lookup() { return f2c_lookup_.get(); }
   F2C();
   virtual ~F2C() = default;
+  virtual std::string name() const = 0;
 
   int add_f();
   static void free_f(int id) { if(id!=-1) f2c_lookup_->erase(id); }

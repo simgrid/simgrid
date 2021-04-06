@@ -34,6 +34,7 @@ public:
   void set_mapping(s4u::Actor* actor, int rank);
   int rank(int index);
   s4u::Actor* actor(int rank);
+  std::string name() const {return std::string("MPI_Group");}
   int rank(s4u::Actor* process);
   void ref();
   static void unref(MPI_Group group);

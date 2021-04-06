@@ -54,6 +54,7 @@ public:
   int rank() const;
   int id() const;
   void get_name(char* name, int* len) const;
+  std::string name() const;
   void set_name(const char* name);
   MPI_Info info();
   void set_info( MPI_Info info);

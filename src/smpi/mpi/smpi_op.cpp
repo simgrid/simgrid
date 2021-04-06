@@ -116,7 +116,7 @@ APPLY_OP_LOOP(MPI_COMPLEX32, double_double,op)
 
 #define APPLY_END_OP_LOOP(op)                                                                                          \
   {                                                                                                                    \
-    xbt_die("Failed to apply " _XBT_STRINGIFY(op) " to type %s", (*datatype)->name());                                 \
+    xbt_die("Failed to apply " _XBT_STRINGIFY(op) " to type %s", (*datatype)->name().c_str());                         \
   }
 
 static void max_func(void *a, void *b, int *length, MPI_Datatype * datatype)

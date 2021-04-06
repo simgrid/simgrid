@@ -64,6 +64,7 @@ public:
   int tag() const { return tag_; }
   int flags() const { return flags_; }
   bool detached() const { return detached_; }
+  std::string name() const {return std::string("MPI_Request");}
   MPI_Datatype type() const { return old_type_; }
   void print_request(const char* message) const;
   void start();

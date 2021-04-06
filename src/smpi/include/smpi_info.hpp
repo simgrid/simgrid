@@ -26,6 +26,7 @@ public:
   static void unref(MPI_Info info);
   void set(const char* key, const char* value) { map_[key] = value; }
   int get(const char* key, int valuelen, char* value, int* flag) const;
+  std::string name() const {return std::string("MPI_Info");}
   int remove(const char* key);
   int get_nkeys(int* nkeys) const;
   int get_nthkey(int n, char* key) const;

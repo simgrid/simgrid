@@ -178,6 +178,15 @@ void Comm::get_name(char* name, int* len) const
   }
 }
 
+std::string Comm::name() const
+{
+  int size;
+  char name[MPI_MAX_NAME_STRING];
+  this->get_name(name, &size);
+  return std::string(name);
+}
+
+
 void Comm::set_name (const char* name)
 {
   if (this == MPI_COMM_UNINITIALIZED){

@@ -127,8 +127,7 @@ public:
   Datatype(const Datatype&) = delete;
   Datatype& operator=(const Datatype&) = delete;
   ~Datatype() override;
-
-  const char* name() const { return name_.c_str(); }
+  std::string name() const {return name_;}
   size_t size() const { return size_; }
   MPI_Aint lb() const { return lb_; }
   MPI_Aint ub() const { return ub_; }
