@@ -25,7 +25,7 @@ class Errhandler: public F2C {
   explicit Errhandler(MPI_File_errhandler_fn *function):file_func_(function){};
   explicit Errhandler(MPI_Win_errhandler_fn *function):win_func_(function){};
   void ref();
-  std::string name() const {return "MPI_Errhandler";}
+  std::string name() const override {return "MPI_Errhandler";}
   void call(MPI_Comm comm, int errorcode) const;
   void call(MPI_Win win, int errorcode) const;
   void call(MPI_File file, int errorcode) const;
