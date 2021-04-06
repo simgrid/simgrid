@@ -35,11 +35,6 @@ DiskImpl* DiskS19Model::create_disk(const std::string& name, double read_bandwid
   return (new DiskS19(name, read_bandwidth, write_bandwidth))->set_model(this);
 }
 
-double DiskS19Model::next_occurring_event(double now)
-{
-  return DiskModel::next_occurring_event_full(now);
-}
-
 void DiskS19Model::update_actions_state(double /*now*/, double delta)
 {
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
@@ -78,7 +73,7 @@ DiskAction* DiskS19::write(sg_size_t size)
  **********/
 
 DiskS19Action::DiskS19Action(Model* model, double cost, bool failed, DiskImpl* disk, s4u::Io::OpType type)
-    : DiskAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3), disk, type)
+    : DiskAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3))
 {
   XBT_IN("(%s,%g", disk->get_cname(), cost);
 
@@ -97,35 +92,6 @@ DiskS19Action::DiskS19Action(Model* model, double cost, bool failed, DiskImpl* d
   XBT_OUT();
 }
 
-void DiskS19Action::cancel()
-{
-  set_state(Action::State::FAILED);
-}
-
-void DiskS19Action::suspend()
-{
-  XBT_IN("(%p)", this);
-  if (is_running()) {
-    get_model()->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
-    set_suspend_state(Action::SuspendStates::SUSPENDED);
-  }
-  XBT_OUT();
-}
-
-void DiskS19Action::resume()
-{
-  THROW_UNIMPLEMENTED;
-}
-
-void DiskS19Action::set_max_duration(double /*duration*/)
-{
-  THROW_UNIMPLEMENTED;
-}
-
-void DiskS19Action::set_sharing_penalty(double)
-{
-  THROW_UNIMPLEMENTED;
-}
 void DiskS19Action::update_remains_lazy(double /*now*/)
 {
   THROW_IMPOSSIBLE;

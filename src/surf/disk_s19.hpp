@@ -30,7 +30,6 @@ class DiskS19Model : public DiskModel {
 public:
   using DiskModel::DiskModel;
   DiskImpl* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth) override;
-  double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 };
 
@@ -40,7 +39,7 @@ public:
 
 class DiskS19 : public DiskImpl {
 public:
-  explicit DiskS19(const std::string& name, double read_bw, double write_bw): DiskImpl(name, read_bw, write_bw) {}
+  using DiskImpl::DiskImpl;
   DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) override;
   DiskAction* read(sg_size_t size) override;
   DiskAction* write(sg_size_t size) override;
@@ -53,11 +52,6 @@ public:
 class DiskS19Action : public DiskAction {
 public:
   DiskS19Action(Model* model, double cost, bool failed, DiskImpl* disk, s4u::Io::OpType type);
-  void suspend() override;
-  void cancel() override;
-  void resume() override;
-  void set_max_duration(double duration) override;
-  void set_sharing_penalty(double sharing_penalty) override;
   void update_remains_lazy(double now) override;
 };
 
