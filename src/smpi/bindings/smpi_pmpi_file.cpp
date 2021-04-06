@@ -299,7 +299,7 @@ int PMPI_File_get_view(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_D
 int PMPI_File_get_info(MPI_File  fh, MPI_Info* info)
 {
   CHECK_FILE(1, fh)
-  *info = fh->info();
+  *info = new simgrid::smpi::Info(fh->info());
   return MPI_SUCCESS;
 }
 

@@ -183,7 +183,7 @@ int PMPI_Comm_get_info(MPI_Comm comm, MPI_Info* info)
 {
   CHECK_COMM(1)
   CHECK_NULL(2, MPI_ERR_ARG, info)
-  *info = comm->info();
+  *info = new simgrid::smpi::Info(comm->info());
   return MPI_SUCCESS;
 }
 
