@@ -109,6 +109,8 @@ NetZoneImpl::~NetZoneImpl()
 void NetZoneImpl::add_child(NetZoneImpl* new_zone)
 {
   xbt_assert(not sealed_, "Cannot add a new child to the sealed zone %s", get_cname());
+  /* set the father behavior */
+  hierarchy_ = RoutingMode::recursive;
   children_.push_back(new_zone);
 }
 
@@ -157,9 +159,6 @@ s4u::Link* NetZoneImpl::create_wifi_link(const std::string& name, const std::vec
 
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
-  if (hierarchy_ == RoutingMode::unset)
-    hierarchy_ = RoutingMode::base;
-
   auto* res = (new surf::HostImpl(name))->get_iface();
   res->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
 

@@ -117,9 +117,6 @@ RouteCreationArgs* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoin
 {
   auto* result = new RouteCreationArgs();
 
-  xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
-             "The hierarchy of this netzone is neither BASIC nor RECURSIVE, I'm lost here.");
-
   if (hierarchy == RoutingMode::recursive) {
     xbt_assert(gw_src && gw_dst, "nullptr is obviously a deficient gateway");
 

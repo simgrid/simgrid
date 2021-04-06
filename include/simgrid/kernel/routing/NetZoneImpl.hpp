@@ -70,14 +70,6 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
 
   std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
   routing::NetPoint* netpoint_ = nullptr;                                 // Our representative in the father NetZone
-  std::shared_ptr<resource::NetworkModel> network_model_;
-  std::shared_ptr<resource::CpuModel> cpu_model_vm_;
-  std::shared_ptr<resource::CpuModel> cpu_model_pm_;
-  std::shared_ptr<resource::DiskModel> disk_model_;
-  std::shared_ptr<simgrid::surf::HostModel> host_model_;
-  /** @brief Perform sealing procedure for derived classes, if necessary */
-  virtual void do_seal(){};
-  void add_child(NetZoneImpl* new_zone);
 
 protected:
   explicit NetZoneImpl(const std::string& name);
@@ -101,13 +93,9 @@ protected:
 
 public:
   enum class RoutingMode {
-    unset = 0, /**< Undefined type                                   */
-    base,      /**< Base case: use simple link lists for routing     */
-    recursive  /**< Recursive case: also return gateway information  */
+    base,     /**< Base case: use simple link lists for routing     */
+    recursive /**< Recursive case: also return gateway information  */
   };
-
-  /* FIXME: protect the following fields once the construction madness is sorted out */
-  RoutingMode hierarchy_ = RoutingMode::unset;
 
   /** @brief Retrieves the network model associated to this NetZone */
   const std::shared_ptr<resource::NetworkModel>& get_network_model() const { return network_model_; }
@@ -129,6 +117,8 @@ public:
   /** @brief Returns the list of direct children (no grand-children). This returns the internal data, no copy.
    * Don't mess with it.*/
   std::vector<NetZoneImpl*>* get_children() { return &children_; }
+  /** @brief Get current netzone hierarchy */
+  RoutingMode get_hierarchy() const { return hierarchy_; }
 
   /** @brief Retrieves the name of that netzone as a C++ string */
   const std::string& get_name() const { return name_; }
@@ -176,6 +166,17 @@ public:
 
   virtual void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges) = 0;
+
+private:
+  RoutingMode hierarchy_ = RoutingMode::base;
+  std::shared_ptr<resource::NetworkModel> network_model_;
+  std::shared_ptr<resource::CpuModel> cpu_model_vm_;
+  std::shared_ptr<resource::CpuModel> cpu_model_pm_;
+  std::shared_ptr<resource::DiskModel> disk_model_;
+  std::shared_ptr<simgrid::surf::HostModel> host_model_;
+  /** @brief Perform sealing procedure for derived classes, if necessary */
+  virtual void do_seal(){};
+  void add_child(NetZoneImpl* new_zone);
 };
 } // namespace routing
 } // namespace kernel

@@ -57,7 +57,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     cur = pred;
   } while (cur != src->id());
 
-  if (hierarchy_ == RoutingMode::recursive) {
+  if (get_hierarchy() == RoutingMode::recursive) {
     route->gw_src = route_stack.back()->gw_src;
     route->gw_dst = route_stack.front()->gw_dst;
   }
@@ -66,7 +66,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   while (not route_stack.empty()) {
     const RouteCreationArgs* e_route = route_stack.back();
     route_stack.pop_back();
-    if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr &&
+    if (get_hierarchy() == RoutingMode::recursive && prev_dst_gw != nullptr &&
         prev_dst_gw->get_cname() != e_route->gw_src->get_cname()) {
       get_global_route(prev_dst_gw, e_route->gw_src, route->link_list, lat);
     }
@@ -100,7 +100,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
                "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->get_cname(),
                dst->get_cname());
 
-  TO_FLOYD_LINK(src->id(), dst->id()) = new_extended_route(hierarchy_, gw_src, gw_dst, link_list, true);
+  TO_FLOYD_LINK(src->id(), dst->id()) = new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, true);
   TO_FLOYD_PRED(src->id(), dst->id()) = src->id();
   TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list.size();
 
@@ -127,7 +127,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
       XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", dst->get_cname(), gw_src->get_cname(),
                 src->get_cname(), gw_dst->get_cname());
 
-    TO_FLOYD_LINK(dst->id(), src->id()) = new_extended_route(hierarchy_, gw_src, gw_dst, link_list, false);
+    TO_FLOYD_LINK(dst->id(), src->id()) = new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, false);
     TO_FLOYD_PRED(dst->id(), src->id()) = dst->id();
     TO_FLOYD_COST(dst->id(), src->id()) =
         (TO_FLOYD_LINK(dst->id(), src->id()))->link_list.size(); /* count of links, old model assume 1 */
@@ -141,7 +141,7 @@ void FloydZone::do_seal()
   init_tables(table_size);
 
   /* Add the loopback if needed */
-  if (get_network_model()->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (get_network_model()->loopback_ && get_hierarchy() == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       RouteCreationArgs* route = TO_FLOYD_LINK(i, i);
       if (not route) {

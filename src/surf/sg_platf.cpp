@@ -91,8 +91,6 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 /** @brief Add a "router" to the network element list */
 simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name, const char* coords)
 {
-  if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
-    current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
@@ -473,11 +471,6 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
   }
   new_zone->set_parent(current_routing);
 
-  if (current_routing) {
-    /* set the father behavior */
-    if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
-      current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
-  }
   return new_zone;
 }
 
