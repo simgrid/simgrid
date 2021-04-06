@@ -250,7 +250,7 @@ int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_f
 
 int PMPI_Keyval_free(int* keyval) {
   CHECK_NULL(1, MPI_ERR_ARG, keyval)
-  CHECK_MPI_NULL(1, MPI_KEYVAL_INVALID, MPI_ERR_KEYVAL, *keyval)
+  CHECK_VAL(1, MPI_KEYVAL_INVALID, MPI_ERR_KEYVAL, *keyval)
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Comm>(keyval);
 }
 

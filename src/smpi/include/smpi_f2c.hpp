@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <string>
 
 namespace simgrid{
 namespace smpi{
@@ -26,6 +27,7 @@ private:
   static f2c_lookup_type::size_type num_default_handles_;
   int my_f2c_id_ = -1;
   bool deleted_ = false;
+  std::string call_location_;
 
 protected:
   static void allocate_lookup()
@@ -54,6 +56,7 @@ public:
   static F2C* f2c(int id);
   static void finish_initialization() { num_default_handles_ = f2c_lookup_->size(); }
   static f2c_lookup_type::size_type get_num_default_handles() { return num_default_handles_; }
+  std::string call_location(){ return call_location_; }
 };
 
 }

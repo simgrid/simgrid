@@ -55,6 +55,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
           XBT_INFO("Backtrace of the run : if incomplete, run smpirun with -keep-temps. To hide, use --log=no_loc");   \
           xbt_backtrace_display_current();                                                                             \
         }                                                                                                              \
+        simgrid::smpi::utils::print_current_handle();                                                                  \
         xbt_die("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                      \
       } else                                                                                                           \
         err->call((errhan), ret);                                                                                      \

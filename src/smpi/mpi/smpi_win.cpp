@@ -217,7 +217,8 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
   }
 
   if(target_count*target_datatype->get_extent()>recv_win->size_){
-    XBT_WARN("Trying to put more than the window size - Bailing out.");
+    XBT_WARN("MPI_Put: Trying to put %ld, which is more than the window size on target process %d : %ld - Bailing out.",
+    target_count*target_datatype->get_extent(), target_rank, recv_win->size_);
     return MPI_ERR_RMA_RANGE;
   }
 
@@ -279,7 +280,8 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   }
 
   if(target_count*target_datatype->get_extent()>send_win->size_){
-    XBT_WARN("Trying to get more than the window size - Bailing out.");
+    XBT_WARN("MPI_Get: Trying to get %ld, which is more than the window size on target process %d : %ld - Bailing out.",
+    target_count*target_datatype->get_extent(), target_rank, send_win->size_);
     return MPI_ERR_RMA_RANGE;
   }
 
@@ -341,7 +343,8 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   //FIXME: local version
 
   if(target_count*target_datatype->get_extent()>recv_win->size_){
-    XBT_WARN("Trying to accumulate more than the window size - Bailing out.");
+    XBT_WARN("MPI_Accumulate: Trying to accumulate %ld, which is more than the window size on target process %d : %ld - Bailing out.",
+    target_count*target_datatype->get_extent(), target_rank, recv_win->size_);
     return MPI_ERR_RMA_RANGE;
   }
 
@@ -398,7 +401,8 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
   }
 
   if(target_count*target_datatype->get_extent()>send_win->size_){
-    XBT_WARN("Trying to get_accumulate more than the window size - Bailing out.");
+    XBT_WARN("MPI_Get_accumulate: Trying to get_accumulate %ld, which is more than the window size on target process %d : %ld - Bailing out.",
+    target_count*target_datatype->get_extent(), target_rank, send_win->size_);
     return MPI_ERR_RMA_RANGE;
   }
 

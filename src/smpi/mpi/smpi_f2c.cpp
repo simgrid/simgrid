@@ -6,6 +6,7 @@
 #include "smpi_f2c.hpp"
 #include "private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
+#include "src/instr/instr_smpi.hpp"
 
 int mpi_in_place_;
 int mpi_bottom_;
@@ -25,6 +26,9 @@ F2C::F2C() = default;
 int F2C::add_f()
 {
   allocate_lookup();
+  auto loc = smpi_process()->call_location();
+  if(loc && loc->linenumber != 0)
+    call_location_= std::string (loc->filename + ":" + std::to_string(loc->linenumber));
   my_f2c_id_                 = global_f2c_id();
   (*f2c_lookup_)[my_f2c_id_] = this;
   f2c_id_increment();

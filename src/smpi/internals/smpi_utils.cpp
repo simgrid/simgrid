@@ -13,9 +13,7 @@
 #include "xbt/file.hpp"
 #include <boost/tokenizer.hpp>
 #include "smpi_config.hpp"
-#include "smpi_f2c.hpp"
 #include "src/simix/smx_private.hpp"
-
 #include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
@@ -38,6 +36,7 @@ struct MaxMalloc {
   std::string file;
 };
 MaxMalloc max_malloc;
+F2C* current_handle=0;
 
 std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
 {
@@ -179,6 +178,17 @@ void print_memory_analysis()
       XBT_INFO("%lu bytes were automatically shared between processes, in %u calls\n", total_shared_size, total_shared_calls);
   }
 }
+
+void print_current_handle(){
+  if(current_handle){
+    if(current_handle->call_location().empty())
+      XBT_INFO("To get handle location information, pass -trace-call-location flag to smpicc/f90 as well");
+    else
+      XBT_INFO("Handle %s was allocated by a call at %s", current_handle->name().c_str(),
+               (char*)(current_handle->call_location().c_str()));
+  }
+}
+
 }
 }
 } // namespace simgrid
