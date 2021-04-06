@@ -152,11 +152,6 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
   return network_model_->create_link(name, bandwidths)->get_iface();
 }
 
-s4u::Link* NetZoneImpl::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
-{
-  return network_model_->create_wifi_link(name, bandwidths)->get_iface();
-}
-
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   auto* res = (new surf::HostImpl(name))->get_iface();
