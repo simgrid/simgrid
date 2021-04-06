@@ -173,26 +173,20 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
   for (int const& i : *cluster->radicals) {
     std::string host_id = std::string(cluster->prefix) + std::to_string(i) + cluster->suffix;
-    std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(i);
 
-    XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id.c_str(), cluster->speeds.front());
+    XBT_DEBUG("<host\tid=\"%s\"\tspeed=\"%f\">", host_id.c_str(), cluster->speeds.front());
+    simgrid::s4u::Host* host =
+        current_zone->create_host(host_id, cluster->speeds)->set_core_count(cluster->core_amount);
+    ;
 
-    simgrid::kernel::routing::HostCreationArgs host;
-    host.id = host_id;
-    if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
-      host.properties = new std::unordered_map<std::string, std::string>();
+    if ((cluster->properties != nullptr) && (not cluster->properties->empty()))
+      host->set_properties(*cluster->properties);
+    host->seal();
+    simgrid::s4u::Host::on_creation(*host); // notify the signal
 
-      for (auto const& elm : *cluster->properties)
-        host.properties->insert({elm.first, elm.second});
-    }
-
-    host.speed_per_pstate = cluster->speeds;
-    host.pstate           = 0;
-    host.core_amount      = cluster->core_amount;
-    host.coord            = "";
-    sg_platf_new_host(&host);
     XBT_DEBUG("</host>");
 
+    std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(i);
     XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id.c_str(), cluster->bw, cluster->lat);
 
     // All links are saved in a matrix;
