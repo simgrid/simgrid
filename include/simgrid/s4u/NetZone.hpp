@@ -127,7 +127,6 @@ public:
    *
    * @param name Link name
    * @param bandwidths Link's speed (vector for wifi links)
-   * @param policy Link sharing policy
    * @throw std::invalid_argument if bandwidth format is incorrect.
    */
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
