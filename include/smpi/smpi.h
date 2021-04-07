@@ -39,7 +39,7 @@ SG_BEGIN_DECL
 #define MPI_MAX_PROCESSOR_NAME 100
 #define MPI_MAX_NAME_STRING    100
 #define MPI_MAX_ERROR_STRING   100
-#define MPI_MAX_DATAREP_STRIN  100
+#define MPI_MAX_DATAREP_STRING 128
 #define MPI_MAX_INFO_KEY       100
 #define MPI_MAX_INFO_VAL       100
 #define MPI_MAX_OBJECT_NAME    100
@@ -206,7 +206,6 @@ enum ERROR_ENUM {
 #define MPI_SEEK_SET            600
 #define MPI_SEEK_CUR            602
 #define MPI_SEEK_END            604
-#define MPI_MAX_DATAREP_STRING  128
 
 #define MPI_WIN_BASE -1
 #define MPI_WIN_SIZE -2
