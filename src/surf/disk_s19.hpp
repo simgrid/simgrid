@@ -51,7 +51,7 @@ public:
 
 class DiskS19Action : public DiskAction {
 public:
-  DiskS19Action(Model* model, double cost, bool failed, DiskImpl* disk, s4u::Io::OpType type);
+  DiskS19Action(Model* model, double cost, bool failed, const DiskImpl* disk, s4u::Io::OpType type);
   void update_remains_lazy(double now) override;
 };
 

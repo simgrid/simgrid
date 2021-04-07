@@ -72,7 +72,7 @@ DiskAction* DiskS19::write(sg_size_t size)
  * Action *
  **********/
 
-DiskS19Action::DiskS19Action(Model* model, double cost, bool failed, DiskImpl* disk, s4u::Io::OpType type)
+DiskS19Action::DiskS19Action(Model* model, double cost, bool failed, const DiskImpl* disk, s4u::Io::OpType type)
     : DiskAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3))
 {
   XBT_IN("(%s,%g", disk->get_cname(), cost);
