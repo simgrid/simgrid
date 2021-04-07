@@ -29,8 +29,7 @@ namespace utils {
   XBT_PUBLIC void print_time_analysis(double time);
   XBT_PUBLIC void print_memory_analysis();
   XBT_PUBLIC void print_current_handle();
-  static void set_current_handle(F2C* handle){current_handle=handle;}
-
+  XBT_PUBLIC void set_current_handle(F2C* handle);
 }
 }
 }

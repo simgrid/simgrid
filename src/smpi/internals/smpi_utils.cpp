@@ -179,6 +179,10 @@ void print_memory_analysis()
   }
 }
 
+void set_current_handle(F2C* handle){
+  current_handle=handle;
+}
+
 void print_current_handle(){
   if(current_handle){
     if(current_handle->call_location().empty())
