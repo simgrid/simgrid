@@ -64,7 +64,7 @@ public:
   void destroy(); // Must be called instead of the destructor
 
   std::vector<s4u::Disk*> get_disks() const;
-  void set_disks(const std::vector<kernel::resource::DiskImpl*>& disks, s4u::Host* host);
+  HostImpl* set_disks(const std::vector<kernel::resource::DiskImpl*>& disks);
   void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& disk_name);
 

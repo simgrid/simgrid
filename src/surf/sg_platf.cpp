@@ -63,21 +63,20 @@ void sg_platf_exit()
 /** @brief Add a host to the current NetZone */
 void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  simgrid::s4u::Host* host =
-      routing_get_current()->create_host(args->id, args->speed_per_pstate)->set_core_count(args->core_amount);
+  simgrid::s4u::Host* host = routing_get_current()->create_host(args->id, args->speed_per_pstate);
+
+  if (not args->coord.empty())
+    new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
 
   if (args->properties) {
     host->set_properties(*args->properties);
     delete args->properties;
   }
+  host->get_impl()->set_disks(args->disks);
 
-  host->get_impl()->set_disks(args->disks, host);
-
-  /* Change from the defaults */
-  host->set_state_profile(args->state_trace)->set_speed_profile(args->speed_trace);
-
-  if (not args->coord.empty())
-    new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
+  host->pimpl_cpu->set_core_count(args->core_amount)
+      ->set_state_profile(args->state_trace)
+      ->set_speed_profile(args->speed_trace);
 
   host->seal();
 
@@ -193,41 +192,28 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     // other columns are to store one or more link for the node
 
     // add a loopback link
-    const simgrid::s4u::Link* linkUp   = nullptr;
-    const simgrid::s4u::Link* linkDown = nullptr;
     if (cluster->loopback_bw > 0 || cluster->loopback_lat > 0) {
-      std::string tmp_link = link_id + "_loopback";
-      XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link.c_str(), cluster->loopback_bw);
+      std::string loopback_name = link_id + "_loopback";
+      XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", loopback_name.c_str(), cluster->loopback_bw);
 
-      simgrid::kernel::routing::LinkCreationArgs link;
-      link.id = tmp_link;
-      link.bandwidths.push_back(cluster->loopback_bw);
-      link.latency = cluster->loopback_lat;
-      link.policy  = simgrid::s4u::Link::SharingPolicy::FATPIPE;
-      sg_platf_new_link(&link);
-      linkUp   = simgrid::s4u::Link::by_name_or_null(tmp_link);
-      linkDown = simgrid::s4u::Link::by_name_or_null(tmp_link);
+      simgrid::s4u::Link* loopback = current_zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
+                                         ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
+                                         ->set_latency(cluster->loopback_lat);
+      loopback->seal();
 
-      current_zone->add_private_link_at(current_zone->node_pos(rankId), {linkUp->get_impl(), linkDown->get_impl()});
+      current_zone->add_private_link_at(current_zone->node_pos(rankId), {loopback->get_impl(), loopback->get_impl()});
     }
 
     // add a limiter link (shared link to account for maximal bandwidth of the node)
-    linkUp   = nullptr;
-    linkDown = nullptr;
     if (cluster->limiter_link > 0) {
-      std::string tmp_link = std::string(link_id) + "_limiter";
-      XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link.c_str(), cluster->limiter_link);
+      std::string limiter_name = std::string(link_id) + "_limiter";
+      XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", limiter_name.c_str(), cluster->limiter_link);
 
-      simgrid::kernel::routing::LinkCreationArgs link;
-      link.id = tmp_link;
-      link.bandwidths.push_back(cluster->limiter_link);
-      link.latency = 0;
-      link.policy  = simgrid::s4u::Link::SharingPolicy::SHARED;
-      sg_platf_new_link(&link);
-      linkDown = simgrid::s4u::Link::by_name_or_null(tmp_link);
-      linkUp   = linkDown;
+      simgrid::s4u::Link* limiter = current_zone->create_link(limiter_name, std::vector<double>{cluster->limiter_link});
+      limiter->seal();
+
       current_zone->add_private_link_at(current_zone->node_pos_with_loopback(rankId),
-                                        {linkUp->get_impl(), linkDown->get_impl()});
+                                        {limiter->get_impl(), limiter->get_impl()});
     }
 
     // call the cluster function that adds the others links
@@ -249,16 +235,15 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
   // Make the backbone
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
-    simgrid::kernel::routing::LinkCreationArgs link;
-    link.id = std::string(cluster->id) + "_backbone";
-    link.bandwidths.push_back(cluster->bb_bw);
-    link.latency = cluster->bb_lat;
-    link.policy  = cluster->bb_sharing_policy;
+    std::string backbone_name = std::string(cluster->id) + "_backbone";
+    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", backbone_name.c_str(), cluster->bb_bw, cluster->bb_lat);
 
-    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link.id.c_str(), cluster->bb_bw, cluster->bb_lat);
-    sg_platf_new_link(&link);
+    simgrid::s4u::Link* backbone = current_zone->create_link(backbone_name, std::vector<double>{cluster->bb_bw})
+                                       ->set_sharing_policy(cluster->bb_sharing_policy)
+                                       ->set_latency(cluster->bb_lat);
+    backbone->seal();
 
-    routing_cluster_add_backbone(simgrid::s4u::Link::by_name(link.id)->get_impl());
+    routing_cluster_add_backbone(backbone->get_impl());
   }
 
   XBT_DEBUG("</zone>");
@@ -407,17 +392,12 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
   auto* zone = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(zone, "<peer> tag can only be used in Vivaldi netzones.");
 
-  std::vector<double> speed_per_pstate;
-  speed_per_pstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = zone->create_host(peer->id, speed_per_pstate);
+  simgrid::s4u::Host* host = zone->create_host(peer->id, std::vector<double>{peer->speed})
+                                 ->set_state_profile(peer->state_trace)
+                                 ->set_speed_profile(peer->speed_trace);
 
   zone->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
 
-  /* Change from the defaults */
-  if (peer->state_trace)
-    host->set_state_profile(peer->state_trace);
-  if (peer->speed_trace)
-    host->set_speed_profile(peer->speed_trace);
   host->seal();
 }
 

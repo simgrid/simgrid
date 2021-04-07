@@ -127,11 +127,12 @@ std::vector<s4u::Disk*> HostImpl::get_disks() const
   return disks;
 }
 
-void HostImpl::set_disks(const std::vector<kernel::resource::DiskImpl*>& disks, s4u::Host* host)
+HostImpl* HostImpl::set_disks(const std::vector<kernel::resource::DiskImpl*>& disks)
 {
   disks_ = disks;
   for (auto d : disks_)
-    d->set_host(host);
+    d->set_host(&piface_);
+  return this;
 }
 
 void HostImpl::add_disk(const s4u::Disk* disk)
