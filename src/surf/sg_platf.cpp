@@ -176,7 +176,6 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     XBT_DEBUG("<host\tid=\"%s\"\tspeed=\"%f\">", host_id.c_str(), cluster->speeds.front());
     simgrid::s4u::Host* host =
         current_zone->create_host(host_id, cluster->speeds)->set_core_count(cluster->core_amount);
-    ;
 
     if ((cluster->properties != nullptr) && (not cluster->properties->empty()))
       host->set_properties(*cluster->properties);
