@@ -35,7 +35,7 @@ protected:
     if (not f2c_lookup_)
       f2c_lookup_ = std::make_unique<f2c_lookup_type>();
   }
-  int f2c_id() { return my_f2c_id_; }
+  int f2c_id() const { return my_f2c_id_; }
   static int global_f2c_id() { return f2c_id_; }
   static void f2c_id_increment() { f2c_id_++; }
 
@@ -56,7 +56,7 @@ public:
   static F2C* f2c(int id);
   static void finish_initialization() { num_default_handles_ = f2c_lookup_->size(); }
   static f2c_lookup_type::size_type get_num_default_handles() { return num_default_handles_; }
-  std::string call_location(){ return call_location_; }
+  const std::string& call_location() const { return call_location_; }
 };
 
 }
