@@ -147,7 +147,7 @@ if(enable_smpi)
   # Extra allreduce test : with leak : don't run on asan (and ignore leaks on valgrind)
   if (NOT HAVE_SANITIZER_ADDRESS)
     ADD_TESH(tesh-smpi-coll-allreduce-with-leaks --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce-with-leaks --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce-with-leaks ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce-with-leaks/coll-allreduce-with-leaks.tesh)
-    
+    set_target_properties(coll-allreduce-with-leaks PROPERTIES COMPILE_FLAGS "-trace-call-location")
     if(enable_model-checking)
       add_dependencies(tests-mc coll-allreduce-with-leaks)
       ADD_TESH(tesh-mc-smpi-coll-allreduce-with-leaks --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce-with-leaks --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce-with-leaks ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce-with-leaks/mc-coll-allreduce-with-leaks.tesh)

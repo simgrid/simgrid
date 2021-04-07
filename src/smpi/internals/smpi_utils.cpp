@@ -151,15 +151,20 @@ void print_memory_analysis()
       bool truncate = max < handles.size();
       if (truncate)
         handles.resize(max);
+      bool printed_advice=false;
       for (const auto& p : handles) {
-        if (xbt_log_no_loc) {
-          XBT_WARN("Leaked handle of type %s", p.second->name().c_str());
+        if (xbt_log_no_loc || p.second->call_location().empty()) {
+          if (!printed_advice){
+            XBT_INFO("To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90");
+            printed_advice=true;
+          }
+          XBT_INFO("Leaked handle of type %s", p.second->name().c_str());
         } else {
-          XBT_WARN("Leaked handle of type %s at %p", p.second->name().c_str(), p.second);
+          XBT_INFO("Leaked handle of type %s at %s", p.second->name().c_str(), p.second->call_location().c_str());
         }
       }
       if (truncate)
-        XBT_WARN("(more handle leaks hidden as you wanted to see only %lu of them)", max);
+        XBT_INFO("(more handle leaks hidden as you wanted to see only %lu of them)", max);
     }
   }
 
