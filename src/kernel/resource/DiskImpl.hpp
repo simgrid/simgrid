@@ -102,7 +102,7 @@ class DiskAction : public Action {
 public:
   static xbt::signal<void(DiskAction const&, Action::State, Action::State)> on_state_change;
 
-  DiskAction(Model* model, double cost, bool failed) : Action(model, cost, failed){};
+  using Action::Action;
   /**
    * @brief diskAction constructor
    *
