@@ -44,20 +44,20 @@ public:
     std::stringstream ss;
 
     int frame_count = 0;
-    int state       = 0;
+    bool print      = false;
 
-    for (boost::stacktrace::frame frame : st) {
-      if (state == 1) {
-        if (boost::starts_with(frame.name(), "simgrid::xbt::MainFunction") ||
-            boost::starts_with(frame.name(), "simgrid::kernel::context::Context::operator()()"))
+    for (boost::stacktrace::frame const& frame : st) {
+      const std::string frame_name = frame.name();
+      if (print) {
+        if (boost::starts_with(frame_name, "simgrid::xbt::MainFunction") ||
+            boost::starts_with(frame_name, "simgrid::kernel::context::Context::operator()()"))
           break;
-        ss << "  ->  " << frame_count++ << "# " << frame.name() << " at " << frame.source_file() << ":"
-           << frame.source_line() << std::endl;
-        if (frame.name() == "main")
+        ss << "  ->  " << frame_count++ << "# " << frame << "\n";
+        if (frame_name == "main")
           break;
       } else {
-        if (frame.name() == "simgrid::xbt::Backtrace::Backtrace()")
-          state = 1;
+        if (frame_name == "simgrid::xbt::Backtrace::Backtrace()")
+          print = true;
       }
     }
 
