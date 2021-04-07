@@ -36,7 +36,7 @@ struct MaxMalloc {
   std::string file;
 };
 MaxMalloc max_malloc;
-F2C* current_handle=0;
+F2C* current_handle = nullptr;
 
 std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
 {
