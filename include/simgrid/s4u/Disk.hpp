@@ -78,7 +78,7 @@ public:
 
   IoPtr write_async(sg_size_t size) const;
   sg_size_t write(sg_size_t size) const;
-  void seal();
+  Disk* seal();
 
 #ifndef DOXYGEN
   kernel::resource::DiskImpl* get_impl() const { return pimpl_; }

@@ -136,7 +136,7 @@ public:
   s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths);
 
   /** @brief Seal this netzone configuration */
-  void seal();
+  NetZone* seal();
 
 private:
   /** @brief Auxiliary function to get list of LinkImpl */

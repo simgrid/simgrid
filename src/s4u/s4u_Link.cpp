@@ -122,9 +122,10 @@ void Link::turn_off()
 {
   kernel::actor::simcall([this]() { this->pimpl_->turn_off(); });
 }
-void Link::seal()
+Link* Link::seal()
 {
   kernel::actor::simcall([this]() { this->pimpl_->seal(); });
+  return this;
 }
 
 bool Link::is_on() const

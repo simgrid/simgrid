@@ -347,10 +347,11 @@ void Host::execute(double flops, double priority) const
   this_actor::exec_init(flops)->set_priority(1 / priority)->vetoable_start()->wait();
 }
 
-void Host::seal()
+Host* Host::seal()
 {
   kernel::actor::simcall([this]() { this->pimpl_->seal(); });
   simgrid::s4u::Host::on_creation(*this); // notify the signal
+  return this;
 }
 
 } // namespace s4u

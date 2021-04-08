@@ -198,8 +198,8 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
       simgrid::s4u::Link* loopback = current_zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
                                          ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
-                                         ->set_latency(cluster->loopback_lat);
-      loopback->seal();
+                                         ->set_latency(cluster->loopback_lat)
+                                         ->seal();
 
       current_zone->add_private_link_at(current_zone->node_pos(rankId), {loopback->get_impl(), loopback->get_impl()});
     }
@@ -209,8 +209,8 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       std::string limiter_name = std::string(link_id) + "_limiter";
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", limiter_name.c_str(), cluster->limiter_link);
 
-      simgrid::s4u::Link* limiter = current_zone->create_link(limiter_name, std::vector<double>{cluster->limiter_link});
-      limiter->seal();
+      simgrid::s4u::Link* limiter =
+          current_zone->create_link(limiter_name, std::vector<double>{cluster->limiter_link})->seal();
 
       current_zone->add_private_link_at(current_zone->node_pos_with_loopback(rankId),
                                         {limiter->get_impl(), limiter->get_impl()});
@@ -240,8 +240,8 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
     simgrid::s4u::Link* backbone = current_zone->create_link(backbone_name, std::vector<double>{cluster->bb_bw})
                                        ->set_sharing_policy(cluster->bb_sharing_policy)
-                                       ->set_latency(cluster->bb_lat);
-    backbone->seal();
+                                       ->set_latency(cluster->bb_lat)
+                                       ->seal();
 
     routing_cluster_add_backbone(backbone->get_impl());
   }

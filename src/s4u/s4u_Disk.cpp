@@ -99,11 +99,12 @@ sg_size_t Disk::write(sg_size_t size) const
   return IoPtr(io_init(size, Io::OpType::WRITE))->vetoable_start()->wait()->get_performed_ioops();
 }
 
-void Disk::seal()
+Disk* Disk::seal()
 {
   kernel::actor::simcall([this]{ pimpl_->seal(); });
   get_host()->add_disk(this);
   Disk::on_creation(*this);
+  return this;
 }
 } // namespace s4u
 } // namespace simgrid

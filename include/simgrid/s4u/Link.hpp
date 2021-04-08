@@ -115,7 +115,7 @@ public:
   void turn_off();
   bool is_on() const;
 
-  void seal();
+  Link* seal();
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */
