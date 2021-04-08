@@ -21,7 +21,6 @@ struct s_smpi_factor_t {
 namespace simgrid {
 namespace smpi {
 namespace utils {
-  extern F2C* current_handle;
   XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string);
   XBT_PUBLIC void add_benched_time(double time);
   XBT_PUBLIC void account_malloc_size(size_t size, const char* file, int line);
