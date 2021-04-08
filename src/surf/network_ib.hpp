@@ -38,6 +38,9 @@ public:
 };
 
 class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {
+  std::unordered_map<std::string, IBNode> active_nodes;
+  std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;
+
   double Bs_;
   double Be_;
   double ys_;
@@ -50,8 +53,9 @@ public:
   NetworkIBModel& operator=(const NetworkIBModel&) = delete;
   void update_IB_factors(NetworkAction* action, IBNode* from, IBNode* to, int remove) const;
 
-  std::unordered_map<std::string, IBNode> active_nodes;
-  std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;
+  static void IB_create_host_callback(s4u::Host const& host);
+  static void IB_action_state_changed_callback(NetworkAction& action, Action::State /*previous*/);
+  static void IB_action_init_callback(NetworkAction& action);
 };
 } // namespace resource
 } // namespace kernel

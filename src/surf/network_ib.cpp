@@ -16,43 +16,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
-static void IB_create_host_callback(simgrid::s4u::Host const& host)
-{
-  using simgrid::kernel::resource::IBNode;
-  using simgrid::kernel::resource::NetworkIBModel;
-
-  static int id = 0;
-  auto* ibModel = static_cast<NetworkIBModel*>(host.get_netpoint()->get_englobing_zone()->get_network_model().get());
-  ibModel->active_nodes.emplace(host.get_name(), IBNode(id));
-  id++;
-}
-
-static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkAction& action,
-                                             simgrid::kernel::resource::Action::State /*previous*/)
-{
-  using simgrid::kernel::resource::IBNode;
-
-  if (action.get_state() != simgrid::kernel::resource::Action::State::FINISHED)
-    return;
-  auto* ibModel                    = static_cast<simgrid::kernel::resource::NetworkIBModel*>(action.get_model());
-  std::pair<IBNode*, IBNode*> pair = ibModel->active_comms[&action];
-  XBT_DEBUG("IB callback - action %p finished", &action);
-
-  ibModel->update_IB_factors(&action, pair.first, pair.second, 1);
-
-  ibModel->active_comms.erase(&action);
-}
-
-static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& action)
-{
-  auto* ibModel = static_cast<simgrid::kernel::resource::NetworkIBModel*>(action.get_model());
-  auto* act_src = &ibModel->active_nodes.at(action.get_src().get_name());
-  auto* act_dst = &ibModel->active_nodes.at(action.get_dst().get_name());
-
-  ibModel->active_comms[&action] = std::make_pair(act_src, act_dst);
-  ibModel->update_IB_factors(&action, act_src, act_dst, 0);
-}
-
 /*********
  * Model *
  *********/
@@ -69,19 +32,51 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction& ac
 /*  } */
 void surf_network_model_init_IB()
 {
-  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkIBModel>("Network_IB");
+  using simgrid::kernel::resource::NetworkIBModel;
+
+  auto net_model = std::make_shared<NetworkIBModel>("Network_IB");
   simgrid::kernel::EngineImpl::get_instance()->add_model(net_model);
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
 
-  simgrid::s4u::Link::on_communication_state_change.connect(IB_action_state_changed_callback);
-  simgrid::s4u::Link::on_communicate.connect(IB_action_init_callback);
-  simgrid::s4u::Host::on_creation.connect(IB_create_host_callback);
+  simgrid::s4u::Link::on_communication_state_change.connect(NetworkIBModel::IB_action_state_changed_callback);
+  simgrid::s4u::Link::on_communicate.connect(NetworkIBModel::IB_action_init_callback);
+  simgrid::s4u::Host::on_creation.connect(NetworkIBModel::IB_create_host_callback);
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
 
 namespace simgrid {
 namespace kernel {
 namespace resource {
+
+void NetworkIBModel::IB_create_host_callback(s4u::Host const& host)
+{
+  static int id = 0;
+  auto* ibModel = static_cast<NetworkIBModel*>(host.get_netpoint()->get_englobing_zone()->get_network_model().get());
+  ibModel->active_nodes.emplace(host.get_name(), IBNode(id));
+  id++;
+}
+
+void NetworkIBModel::IB_action_state_changed_callback(NetworkAction& action, Action::State /*previous*/)
+{
+  if (action.get_state() != Action::State::FINISHED)
+    return;
+  auto* ibModel                    = static_cast<NetworkIBModel*>(action.get_model());
+  std::pair<IBNode*, IBNode*> pair = ibModel->active_comms[&action];
+
+  XBT_DEBUG("IB callback - action %p finished", &action);
+  ibModel->update_IB_factors(&action, pair.first, pair.second, 1);
+  ibModel->active_comms.erase(&action);
+}
+
+void NetworkIBModel::IB_action_init_callback(NetworkAction& action)
+{
+  auto* ibModel = static_cast<NetworkIBModel*>(action.get_model());
+  auto* act_src = &ibModel->active_nodes.at(action.get_src().get_name());
+  auto* act_dst = &ibModel->active_nodes.at(action.get_dst().get_name());
+
+  ibModel->active_comms[&action] = std::make_pair(act_src, act_dst);
+  ibModel->update_IB_factors(&action, act_src, act_dst, 0);
+}
 
 NetworkIBModel::NetworkIBModel(const std::string& name) : NetworkSmpiModel(name)
 {
