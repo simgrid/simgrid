@@ -312,9 +312,9 @@ std::vector<Disk*> Host::get_disks() const
 
 Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  auto disk =
-      this->get_netpoint()->get_englobing_zone()->get_disk_model()->create_disk(name, read_bandwidth, write_bandwidth);
-  return disk->set_host(this)->get_iface();
+  return kernel::actor::simcall([this, &name, read_bandwidth, write_bandwidth] {
+    return this->pimpl_->create_disk(name, read_bandwidth, write_bandwidth);
+  });
 }
 
 void Host::add_disk(const Disk* disk)

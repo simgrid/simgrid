@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
@@ -133,6 +134,13 @@ HostImpl* HostImpl::set_disks(const std::vector<kernel::resource::DiskImpl*>& di
   for (auto d : disks_)
     d->set_host(&piface_);
   return this;
+}
+
+s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+{
+  auto disk = piface_.get_netpoint()->get_englobing_zone()->get_disk_model()->create_disk(name, read_bandwidth,
+                                                                                          write_bandwidth);
+  return disk->set_host(&piface_)->get_iface();
 }
 
 void HostImpl::add_disk(const s4u::Disk* disk)

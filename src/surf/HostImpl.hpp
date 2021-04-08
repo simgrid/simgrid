@@ -65,6 +65,7 @@ public:
 
   std::vector<s4u::Disk*> get_disks() const;
   HostImpl* set_disks(const std::vector<kernel::resource::DiskImpl*>& disks);
+  s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& disk_name);
 
