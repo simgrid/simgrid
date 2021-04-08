@@ -165,7 +165,20 @@ public:
   Host* set_pstate(int pstate_index);
 
   std::vector<Disk*> get_disks() const;
+  /**
+   * @brief Create and add disk in the host
+   *
+   * @param name Disk name
+   * @param read_bandwidth Reading speed of the disk
+   * @param write_bandwidth Writing speed of the disk
+   */
   Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
+  /**
+   * @brief Human-friendly version of create_disk function.
+   *
+   * @throw std::invalid_argument if read/write speeds are incorrect
+   */
+  Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
   void add_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
 
