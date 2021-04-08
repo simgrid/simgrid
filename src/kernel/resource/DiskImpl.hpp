@@ -103,16 +103,6 @@ public:
   static xbt::signal<void(DiskAction const&, Action::State, Action::State)> on_state_change;
 
   using Action::Action;
-  /**
-   * @brief diskAction constructor
-   *
-   * @param model The DiskModel associated to this DiskAction
-   * @param cost The cost of this DiskAction in bytes
-   * @param failed [description]
-   * @param var The lmm variable associated to this DiskAction if it is part of a LMM component
-   */
-  DiskAction(kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
-      : Action(model, cost, failed, var){};
   void set_state(simgrid::kernel::resource::Action::State state) override;
 };
 
