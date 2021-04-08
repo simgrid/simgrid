@@ -69,9 +69,10 @@ const char* Disk::get_property(const std::string& key) const
   return pimpl_->get_property(key);
 }
 
-void Disk::set_property(const std::string& key, const std::string& value)
+Disk* Disk::set_property(const std::string& key, const std::string& value)
 {
   kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  return this;
 }
 
 IoPtr Disk::io_init(sg_size_t size, Io::OpType type) const

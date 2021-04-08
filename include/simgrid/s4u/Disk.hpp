@@ -67,7 +67,7 @@ public:
 
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
-  void set_property(const std::string&, const std::string& value);
+  Disk* set_property(const std::string&, const std::string& value);
   Disk* set_host(Host* host);
   Host* get_host() const;
 
