@@ -323,13 +323,13 @@ Disk* Host::create_disk(const std::string& name, const std::string& read_bandwid
   try {
     d_read = xbt_parse_get_bandwidth("", 0, read_bandwidth.c_str(), nullptr, "");
   } catch (const simgrid::ParseError&) {
-    throw std::invalid_argument(std::string("Impossible to create disk: ") + name.c_str() +
+    throw std::invalid_argument(std::string("Impossible to create disk: ") + name +
                                 std::string(". Invalid read bandwidth: ") + read_bandwidth);
   }
   try {
     d_write = xbt_parse_get_bandwidth("", 0, write_bandwidth.c_str(), nullptr, "");
   } catch (const simgrid::ParseError&) {
-    throw std::invalid_argument(std::string("Impossible to create disk: ") + name.c_str() +
+    throw std::invalid_argument(std::string("Impossible to create disk: ") + name +
                                 std::string(". Invalid write bandwidth: ") + write_bandwidth);
   }
   return create_disk(name, d_read, d_write);
