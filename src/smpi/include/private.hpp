@@ -599,7 +599,7 @@ XBT_PRIVATE void private_execute_flops(double flops);
   {\
     CHECK_BUFFER2(num,buf,count)\
     CHECK_ARGS( simgrid::smpi::utils::get_buffer_size(buf) < (size_t)(count*datatype->get_extent()), MPI_ERR_BUFFER,\
-             "%s: param %d message size %ld exceeds buffer %s size %zu",__func__, (num), count*datatype->get_extent(), _XBT_STRINGIFY(buf), simgrid::smpi::utils::get_buffer_size(buf))\
+             "%s: param %d message size %zd exceeds buffer %s size %zu",__func__, (num), count*datatype->get_extent(), _XBT_STRINGIFY(buf), simgrid::smpi::utils::get_buffer_size(buf))\
   }
 
 #define CHECK_COUNT(num, count)\
