@@ -19,9 +19,10 @@ static int getPid(MPI_Comm comm, int id)
 }
 
 #define CHECK_SEND_INPUTS\
-  CHECK_BUFFER(1, buf, count)\
+  SET_BUF1(buf)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
+  CHECK_BUFFER(1, buf, count, datatype)\
   CHECK_COMM(6)\
   if(dst!= MPI_PROC_NULL)\
     CHECK_RANK(4, dst, comm)\
@@ -33,11 +34,12 @@ static int getPid(MPI_Comm comm, int id)
   CHECK_SEND_INPUTS
   
 #define CHECK_IRECV_INPUTS\
+  SET_BUF1(buf)\
   CHECK_REQUEST(7)\
   *request = MPI_REQUEST_NULL;\
-  CHECK_BUFFER(1, buf, count)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
+  CHECK_BUFFER(1, buf, count, datatype)\
   CHECK_COMM(6)\
   if(src!=MPI_ANY_SOURCE && src!=MPI_PROC_NULL)\
     CHECK_RANK(4, src, comm)\
@@ -237,10 +239,10 @@ int PMPI_Issend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
 int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status * status)
 {
   int retval = 0;
-
-  CHECK_BUFFER(1, buf, count)
+  SET_BUF1(buf)
   CHECK_COUNT(2, count)
   CHECK_TYPE(3, datatype)
+  CHECK_BUFFER(1, buf, count, datatype)
   CHECK_TAG(5, tag)
   CHECK_COMM(6)
 
@@ -395,13 +397,15 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
                   int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status)
 {
   int retval = 0;
-  CHECK_BUFFER(1, sendbuf, sendcount)
+  SET_BUF1(sendbuf)
+  SET_BUF2(recvbuf)
   CHECK_COUNT(2, sendcount)
   CHECK_TYPE(3, sendtype)
   CHECK_TAG(5, sendtag)
-  CHECK_BUFFER(6, recvbuf, recvcount)
   CHECK_COUNT(7, recvcount)
   CHECK_TYPE(8, recvtype)
+  CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
+  CHECK_BUFFER(6, recvbuf, recvcount, recvtype)
   CHECK_TAG(10, recvtag)
   CHECK_COMM(11)
   smpi_bench_end();
@@ -453,9 +457,10 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
                           MPI_Comm comm, MPI_Status* status)
 {
   int retval = 0;
-  CHECK_BUFFER(1, buf, count)
+  SET_BUF1(buf)
   CHECK_COUNT(2, count)
   CHECK_TYPE(3, datatype)
+  CHECK_BUFFER(1, buf, count, datatype)
 
   int size = datatype->get_extent() * count;
   xbt_assert(size > 0);

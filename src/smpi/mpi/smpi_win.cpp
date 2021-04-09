@@ -18,6 +18,23 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 
+#define CHECK_RMA_REMOTE_WIN(fun, win)\
+  if(target_count*target_datatype->get_extent()>win->size_){\
+    XBT_WARN("%s: Trying to move %zd, which exceeds the window size on target process %d : %zd - Bailing out.",\
+    fun, target_count*target_datatype->get_extent(), target_rank, win->size_);\
+    simgrid::smpi::utils::set_current_buffer(1,"win_base",win->base_);\
+    return MPI_ERR_RMA_RANGE;\
+  }
+
+#define CHECK_WIN_LOCKED(win)\
+  if(opened_==0){ /*check that post/start has been done*/\
+    int locked=0;\
+    for (auto const& it : win->lockers_)\
+      if (it == comm_->rank())\
+        locked = 1;\
+    if(locked != 1)\
+      return MPI_ERR_WIN;\
+  }
 
 namespace simgrid{
 namespace smpi{
@@ -216,11 +233,7 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
       return MPI_ERR_WIN;
   }
 
-  if(target_count*target_datatype->get_extent()>recv_win->size_){
-    XBT_WARN("MPI_Put: Trying to put %zd, which is more than the window size on target process %d : %zd - Bailing out.",
-    target_count*target_datatype->get_extent(), target_rank, recv_win->size_);
-    return MPI_ERR_RMA_RANGE;
-  }
+  CHECK_RMA_REMOTE_WIN("MPI_Put", recv_win)
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
 
@@ -269,21 +282,8 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   //get sender pointer
   Win* send_win = connected_wins_[target_rank];
 
-  if(opened_==0){//check that post/start has been done
-    // no fence or start .. lock ok ?
-    int locked=0;
-    for (auto const& it : send_win->lockers_)
-      if (it == comm_->rank())
-        locked = 1;
-    if(locked != 1)
-      return MPI_ERR_WIN;
-  }
-
-  if(target_count*target_datatype->get_extent()>send_win->size_){
-    XBT_WARN("MPI_Get: Trying to get %zd, which is more than the window size on target process %d : %zd - Bailing out.",
-    target_count*target_datatype->get_extent(), target_rank, send_win->size_);
-    return MPI_ERR_RMA_RANGE;
-  }
+  CHECK_WIN_LOCKED(send_win)
+  CHECK_RMA_REMOTE_WIN("MPI_Get", send_win)
 
   const void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
@@ -331,22 +331,9 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   //get receiver pointer
   Win* recv_win = connected_wins_[target_rank];
 
-  if(opened_==0){//check that post/start has been done
-    // no fence or start .. lock ok ?
-    int locked=0;
-    for (auto const& it : recv_win->lockers_)
-      if (it == comm_->rank())
-        locked = 1;
-    if(locked != 1)
-      return MPI_ERR_WIN;
-  }
   //FIXME: local version
-
-  if(target_count*target_datatype->get_extent()>recv_win->size_){
-    XBT_WARN("MPI_Accumulate: Trying to accumulate %zd, which is more than the window size on target process %d : %zd - Bailing out.",
-    target_count*target_datatype->get_extent(), target_rank, recv_win->size_);
-    return MPI_ERR_RMA_RANGE;
-  }
+  CHECK_WIN_LOCKED(recv_win)
+  CHECK_RMA_REMOTE_WIN("MPI_Accumulate", recv_win)
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
@@ -390,22 +377,8 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
   //get sender pointer
   const Win* send_win = connected_wins_[target_rank];
 
-  if(opened_==0){//check that post/start has been done
-    // no fence or start .. lock ok ?
-    int locked=0;
-    for (auto const& it : send_win->lockers_)
-      if (it == comm_->rank())
-        locked = 1;
-    if(locked != 1)
-      return MPI_ERR_WIN;
-  }
-
-  if(target_count*target_datatype->get_extent()>send_win->size_){
-    XBT_WARN("MPI_Get_accumulate: Trying to get_accumulate %zd, which is more than the window size on target process %d : %zd - Bailing out.",
-    target_count*target_datatype->get_extent(), target_rank, send_win->size_);
-    return MPI_ERR_RMA_RANGE;
-  }
-
+  CHECK_WIN_LOCKED(send_win)
+  CHECK_RMA_REMOTE_WIN("MPI_Get_Accumulate", send_win)
 
   XBT_DEBUG("Entering MPI_Get_accumulate from %d", target_rank);
   //need to be sure ops are correctly ordered, so finish request here ? slow.
@@ -430,15 +403,7 @@ int Win::compare_and_swap(const void* origin_addr, const void* compare_addr, voi
   //get sender pointer
   const Win* send_win = connected_wins_[target_rank];
 
-  if(opened_==0){//check that post/start has been done
-    // no fence or start .. lock ok ?
-    int locked=0;
-    for (auto const& it : send_win->lockers_)
-      if (it == comm_->rank())
-        locked = 1;
-    if(locked != 1)
-      return MPI_ERR_WIN;
-  }
+  CHECK_WIN_LOCKED(send_win)
 
   XBT_DEBUG("Entering MPI_Compare_and_swap with %d", target_rank);
   MPI_Request req = MPI_REQUEST_NULL;

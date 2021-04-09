@@ -14,9 +14,9 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 #define CHECK_RMA\
-  CHECK_BUFFER(1, origin_addr, origin_count)\
   CHECK_COUNT(2, origin_count)\
   CHECK_TYPE(3, origin_datatype)\
+  CHECK_BUFFER(1, origin_addr, origin_count, origin_datatype)\
   CHECK_PROC_RMA(4, target_rank, win)\
   CHECK_COUNT(6, target_count)\
   CHECK_TYPE(7, target_datatype)
@@ -337,14 +337,14 @@ int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype ori
 int PMPI_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
 int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
-  if (op != MPI_NO_OP)
-    CHECK_BUFFER(1, origin_addr, origin_count)
   CHECK_COUNT(2, origin_count)
   if(origin_count>0)
     CHECK_TYPE(3, origin_datatype)
-  CHECK_BUFFER(4, result_addr, result_count)
+  if (op != MPI_NO_OP)
+    CHECK_BUFFER(1, origin_addr, origin_count, origin_datatype)
   CHECK_COUNT(5, result_count)
   CHECK_TYPE(6, result_datatype)
+  CHECK_BUFFER(4, result_addr, result_count, result_datatype)
   CHECK_WIN(12, win)
   CHECK_PROC_RMA(7, target_rank, win)
   CHECK_COUNT(9, target_count)
@@ -380,12 +380,12 @@ int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target
 MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   if(target_rank==MPI_PROC_NULL)
     *request = MPI_REQUEST_NULL;
-  CHECK_BUFFER(1, origin_addr, origin_count)
   CHECK_COUNT(2, origin_count)
   CHECK_TYPE(3, origin_datatype)
-  CHECK_BUFFER(4, result_addr, result_count)
+  CHECK_BUFFER(1, origin_addr, origin_count, origin_datatype)
   CHECK_COUNT(5, result_count)
   CHECK_TYPE(6, result_datatype)
+  CHECK_BUFFER(4, result_addr, result_count, result_datatype)
   CHECK_WIN(12, win)
   CHECK_PROC_RMA(7, target_rank, win)
   CHECK_COUNT(9, target_count)

@@ -110,6 +110,7 @@ XBT_PRIVATE bool smpi_cfg_trace_call_use_absolute_path();
 XBT_PRIVATE std::string smpi_cfg_comp_adjustment_file();
 XBT_PRIVATE std::string smpi_cfg_papi_events_file();
 XBT_PRIVATE double smpi_cfg_auto_shared_malloc_thresh();
+XBT_PRIVATE bool smpi_cfg_display_alloc();
 
 // utilities
 extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
@@ -575,10 +576,21 @@ XBT_PRIVATE void private_execute_flops(double flops);
       simgrid::smpi::utils::set_current_handle(*request);\
     }\
   }
+#define SET_BUF1(buf)\
+    simgrid::smpi::utils::set_current_buffer(1, _XBT_STRINGIFY(buf), buf);
+#define SET_BUF2(buf)\
+    simgrid::smpi::utils::set_current_buffer(2, _XBT_STRINGIFY(buf), buf);
 
-#define CHECK_BUFFER(num,buf,count)\
-  CHECK_ARGS((buf) == nullptr && (count) > 0, MPI_ERR_BUFFER,\
-             "%s: param %d %s cannot be NULL if %s > 0",__func__, (num), _XBT_STRINGIFY(buf), _XBT_STRINGIFY(count))
+#define CHECK_BUFFER2(num,buf,count)\
+    CHECK_ARGS((buf) == nullptr && (count) > 0, MPI_ERR_BUFFER,\
+             "%s: param %d %s cannot be NULL if %s > 0",__func__, (num), _XBT_STRINGIFY(buf), _XBT_STRINGIFY(count))\
+
+#define CHECK_BUFFER(num,buf,count,datatype)\
+  {\
+    CHECK_BUFFER2(num,buf,count)\
+    CHECK_ARGS( simgrid::smpi::utils::get_buffer_size(buf) < (size_t)(count*datatype->get_extent()), MPI_ERR_BUFFER,\
+             "%s: param %d message size %ld exceeds buffer %s size %zu",__func__, (num), count*datatype->get_extent(), _XBT_STRINGIFY(buf), simgrid::smpi::utils::get_buffer_size(buf))\
+  }
 
 #define CHECK_COUNT(num, count)\
   CHECK_NEGATIVE((num), MPI_ERR_COUNT, (count))
