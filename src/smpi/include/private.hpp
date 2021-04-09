@@ -530,6 +530,15 @@ XBT_PRIVATE void private_execute_flops(double flops);
     }\
   }
 
+#define CHECK_INIT\
+  {\
+    int init_flag=0;\
+    PMPI_Initialized(&init_flag);\
+    CHECK_ARGS((!init_flag), MPI_ERR_OTHER, "%s: MPI_Init was not called !", __func__)\
+    PMPI_Finalized(&init_flag);\
+    CHECK_ARGS((init_flag), MPI_ERR_OTHER, "%s: MPI_Finalize was already called !", __func__)\
+  }
+
 #define CHECK_MPI_NULL(num, val, err, ptr)\
   CHECK_ARGS((ptr) == (val), (err),\
              "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(ptr), _XBT_STRINGIFY(val))
@@ -559,6 +568,7 @@ XBT_PRIVATE void private_execute_flops(double flops);
 
 #define CHECK_COMM(num)\
   {\
+    CHECK_INIT\
     CHECK_COMM2((num), comm)\
     CHECK_DELETED((num), MPI_ERR_COMM, comm)\
     simgrid::smpi::utils::set_current_handle(comm);\
