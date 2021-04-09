@@ -56,6 +56,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
           xbt_backtrace_display_current();                                                                             \
         }                                                                                                              \
         simgrid::smpi::utils::print_current_handle();                                                                  \
+        simgrid::smpi::utils::print_buffer_info();                                                                     \
         xbt_die("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                      \
       } else                                                                                                           \
         err->call((errhan), ret);                                                                                      \

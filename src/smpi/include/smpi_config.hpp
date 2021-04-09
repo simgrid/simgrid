@@ -27,4 +27,5 @@ extern XBT_PRIVATE simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _smpi_cfg_papi_events_file;
 #endif
 extern XBT_PRIVATE simgrid::config::Flag<double> _smpi_cfg_auto_shared_malloc_thresh;
+extern XBT_PRIVATE simgrid::config::Flag<bool> _smpi_cfg_display_alloc;
 #endif

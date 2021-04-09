@@ -118,8 +118,12 @@ simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file{"smpi/comp-adj
 #endif
 
 simgrid::config::Flag<double> _smpi_cfg_auto_shared_malloc_thresh("smpi/auto-shared-malloc-thresh",
-                                                                  "Threshold size for the automatic sharing of memory", 
+                                                                  "Threshold size for the automatic sharing of memory",
                                                                   0);
+
+simgrid::config::Flag<bool> _smpi_cfg_display_alloc("smpi/display-allocs",
+                                                    "Whether we should display a memory allocations analysis after simulation.",
+                                                     false);
 
 double smpi_cfg_host_speed(){
   return _smpi_cfg_host_speed;
@@ -165,6 +169,10 @@ bool smpi_cfg_trace_call_use_absolute_path(){
   return _smpi_cfg_trace_call_use_absolute_path;
 }
 
+bool smpi_cfg_display_alloc(){
+  return _smpi_cfg_display_alloc;
+}
+
 std::string smpi_cfg_comp_adjustment_file(){
   return _smpi_cfg_comp_adjustment_file;
 }
@@ -181,7 +189,6 @@ void smpi_init_options(){
   // return if already called
   if(_smpi_options_initialized)
     return;
-  simgrid::config::declare_flag<bool>("smpi/display-allocs", "Whether we should display a memory allocations analysis after simulation.", false);
   simgrid::config::declare_flag<bool>("smpi/display-timing", "Whether we should display the timing after simulation.", false);
   simgrid::config::declare_flag<int>("smpi/list-leaks", "Whether we should display the n first MPI handle leaks (addresses and type only) after simulation", 0);
   simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.", false);
