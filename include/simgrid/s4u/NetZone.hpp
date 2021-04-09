@@ -146,6 +146,7 @@ private:
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC NetZone* create_full_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_cluster_zone(const std::string& name);
+XBT_PUBLIC NetZone* create_star_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_dijkstra_zone(const std::string& name, bool cache);
 XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_empty_zone(const std::string& name);

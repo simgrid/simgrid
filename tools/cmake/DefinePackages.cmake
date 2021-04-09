@@ -331,8 +331,9 @@ set(SURF_SRC
   src/kernel/routing/FullZone.cpp
   src/kernel/routing/NetPoint.cpp
   src/kernel/routing/NetZoneImpl.cpp
-  src/kernel/routing/TorusZone.cpp
   src/kernel/routing/RoutedZone.cpp
+  src/kernel/routing/StarZone.cpp
+  src/kernel/routing/TorusZone.cpp
   src/kernel/routing/VivaldiZone.cpp
   src/kernel/routing/WifiZone.cpp
 
@@ -726,6 +727,7 @@ set(headers_to_install
   include/simgrid/kernel/routing/NetPoint.hpp
   include/simgrid/kernel/routing/NetZoneImpl.hpp
   include/simgrid/kernel/routing/RoutedZone.hpp
+  include/simgrid/kernel/routing/StarZone.hpp
   include/simgrid/kernel/routing/TorusZone.hpp
   include/simgrid/kernel/routing/VivaldiZone.hpp
   include/simgrid/kernel/routing/WifiZone.hpp
