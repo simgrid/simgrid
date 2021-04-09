@@ -201,7 +201,7 @@ void print_memory_analysis()
                "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
                leaks.size());
       if (max > 0) {
-        std::sort(leaks.begin(), leaks.end(), [](auto const& a, auto const& b) { return a.second.size < b.second.size; });
+        std::sort(leaks.begin(), leaks.end(), [](auto const& a, auto const& b) { return a.second.size > b.second.size; });
         bool truncate = max < leaks.size();
         if (truncate)
           leaks.resize(max);
