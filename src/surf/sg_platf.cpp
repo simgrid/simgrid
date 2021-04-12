@@ -196,12 +196,13 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       std::string loopback_name = link_id + "_loopback";
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", loopback_name.c_str(), cluster->loopback_bw);
 
-      simgrid::s4u::Link* loopback = current_zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
-                                         ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
-                                         ->set_latency(cluster->loopback_lat)
-                                         ->seal();
+      auto* loopback = current_zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
+                           ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
+                           ->set_latency(cluster->loopback_lat)
+                           ->seal()
+                           ->get_impl();
 
-      current_zone->add_private_link_at(current_zone->node_pos(rankId), {loopback->get_impl(), loopback->get_impl()});
+      current_zone->add_private_link_at(current_zone->node_pos(rankId), {loopback, loopback});
     }
 
     // add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -209,11 +210,10 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       std::string limiter_name = std::string(link_id) + "_limiter";
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", limiter_name.c_str(), cluster->limiter_link);
 
-      simgrid::s4u::Link* limiter =
-          current_zone->create_link(limiter_name, std::vector<double>{cluster->limiter_link})->seal();
+      auto* limiter =
+          current_zone->create_link(limiter_name, std::vector<double>{cluster->limiter_link})->seal()->get_impl();
 
-      current_zone->add_private_link_at(current_zone->node_pos_with_loopback(rankId),
-                                        {limiter->get_impl(), limiter->get_impl()});
+      current_zone->add_private_link_at(current_zone->node_pos_with_loopback(rankId), {limiter, limiter});
     }
 
     // call the cluster function that adds the others links
@@ -238,12 +238,13 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     std::string backbone_name = std::string(cluster->id) + "_backbone";
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", backbone_name.c_str(), cluster->bb_bw, cluster->bb_lat);
 
-    simgrid::s4u::Link* backbone = current_zone->create_link(backbone_name, std::vector<double>{cluster->bb_bw})
-                                       ->set_sharing_policy(cluster->bb_sharing_policy)
-                                       ->set_latency(cluster->bb_lat)
-                                       ->seal();
+    auto* backbone = current_zone->create_link(backbone_name, std::vector<double>{cluster->bb_bw})
+                         ->set_sharing_policy(cluster->bb_sharing_policy)
+                         ->set_latency(cluster->bb_lat)
+                         ->seal()
+                         ->get_impl();
 
-    routing_cluster_add_backbone(backbone->get_impl());
+    routing_cluster_add_backbone(backbone);
   }
 
   XBT_DEBUG("</zone>");
