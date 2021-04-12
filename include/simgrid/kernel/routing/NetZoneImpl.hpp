@@ -116,7 +116,7 @@ public:
   NetZoneImpl* get_parent() const { return parent_; }
   /** @brief Returns the list of direct children (no grand-children). This returns the internal data, no copy.
    * Don't mess with it.*/
-  std::vector<NetZoneImpl*>* get_children() { return &children_; }
+  const std::vector<NetZoneImpl*>& get_children() { return children_; }
   /** @brief Get current netzone hierarchy */
   RoutingMode get_hierarchy() const { return hierarchy_; }
 

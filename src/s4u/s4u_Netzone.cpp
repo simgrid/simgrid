@@ -42,7 +42,7 @@ void NetZone::set_property(const std::string& key, const std::string& value)
 std::vector<NetZone*> NetZone::get_children() const
 {
   std::vector<NetZone*> res;
-  for (auto child : *(pimpl_->get_children()))
+  for (auto child : pimpl_->get_children())
     res.push_back(child->get_iface());
   return res;
 }

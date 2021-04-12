@@ -470,7 +470,7 @@ void NetZoneImpl::seal()
   for (auto* host : get_all_hosts()) {
     host->seal();
   }
-  for (auto* sub_net : *get_children()) {
+  for (auto* sub_net : get_children()) {
     sub_net->seal();
   }
   sealed_ = true;
