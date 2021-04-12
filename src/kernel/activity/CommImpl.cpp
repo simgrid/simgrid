@@ -223,7 +223,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity:
   }
 }
 
-void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm)
+bool simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm)
 {
   if ((MC_is_active() || MC_record_replay_is_active()) && comm->src_actor_ && comm->dst_actor_)
     comm->state_ = simgrid::kernel::activity::State::DONE;
@@ -231,13 +231,9 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity:
   bool res = comm->state_ != simgrid::kernel::activity::State::WAITING &&
              comm->state_ != simgrid::kernel::activity::State::RUNNING;
 
-  simcall_comm_test__set__result(simcall, res);
-  if (res) {
-    comm->simcalls_.push_back(simcall);
+  if (res)
     comm->finish();
-  } else {
-    simcall->issuer_->simcall_answer();
-  }
+  return res;
 }
 
 void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
