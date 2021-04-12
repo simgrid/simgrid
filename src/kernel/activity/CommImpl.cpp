@@ -234,14 +234,6 @@ int simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activit
   return simgrid::kernel::activity::CommImpl::test_any(simcall->issuer_, comms_vec);
 }
 
-static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
-{
-  simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(simcall);
-  size_t count                                = simcall_comm_waitany__get__count(simcall);
-
-  for (size_t i = 0; i < count; i++)
-    comms[i]->unregister_simcall(simcall);
-}
 void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count,
                                   double timeout)
 {
@@ -580,7 +572,10 @@ void CommImpl::finish()
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                                 // if actor handling comm is killed
     if (simcall->call_ == simix::Simcall::COMM_WAITANY) {
-      SIMIX_waitany_remove_simcall_from_actions(simcall);
+      simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(simcall);
+      size_t count                                = simcall_comm_waitany__get__count(simcall);
+      for (size_t i = 0; i < count; i++)
+        comms[i]->unregister_simcall(simcall);
       if (simcall->timeout_cb_) {
         simcall->timeout_cb_->remove();
         simcall->timeout_cb_ = nullptr;
