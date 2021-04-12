@@ -265,27 +265,17 @@ void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb)
 
 void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabinet)
 {
+  auto* zone = static_cast<simgrid::kernel::routing::ClusterZone*>(routing_get_current());
   for (int const& radical : *cabinet->radicals) {
-    std::string hostname = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
-    simgrid::kernel::routing::HostCreationArgs host;
-    host.pstate      = 0;
-    host.core_amount = 1;
-    host.id          = hostname;
-    host.speed_per_pstate.push_back(cabinet->speed);
-    sg_platf_new_host(&host);
+    std::string id           = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
+    simgrid::s4u::Host* host = zone->create_host(id, std::vector<double>{cabinet->speed})->seal();
 
-    simgrid::kernel::routing::LinkCreationArgs link;
-    link.policy  = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-    link.latency = cabinet->lat;
-    link.bandwidths.push_back(cabinet->bw);
-    link.id = "link_" + hostname;
-    sg_platf_new_link(&link);
+    simgrid::s4u::Link* link_up =
+        zone->create_link("link_" + id + "_UP", std::vector<double>{cabinet->bw})->set_latency(cabinet->lat)->seal();
+    simgrid::s4u::Link* link_down =
+        zone->create_link("link_" + id + "_DOWN", std::vector<double>{cabinet->bw})->set_latency(cabinet->lat)->seal();
 
-    simgrid::kernel::routing::HostLinkCreationArgs host_link;
-    host_link.id        = hostname;
-    host_link.link_up   = std::string("link_") + hostname + "_UP";
-    host_link.link_down = std::string("link_") + hostname + "_DOWN";
-    sg_platf_new_hostlink(&host_link);
+    zone->add_private_link_at(host->get_netpoint()->id(), {link_up->get_impl(), link_down->get_impl()});
   }
   delete cabinet->radicals;
 }
