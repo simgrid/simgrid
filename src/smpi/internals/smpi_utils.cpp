@@ -112,13 +112,14 @@ void add_benched_time(double time){
   total_benched_time += time;
 }
 
-void account_malloc_size(size_t size, std::string file, int line, void* ptr){
+void account_malloc_size(size_t size, const std::string& file, int line, void* ptr)
+{
   if (smpi_cfg_display_alloc()) {
     alloc_metadata_t metadata;
     metadata.size = size;
     metadata.line = line;
     metadata.numcall = 1;
-    metadata.file = std::string(file);
+    metadata.file    = file;
     allocs.insert(std::make_pair(ptr, metadata));
 
     total_malloc_size += size;
@@ -126,8 +127,8 @@ void account_malloc_size(size_t size, std::string file, int line, void* ptr){
       max_malloc.size = size;
       max_malloc.line = line;
       max_malloc.numcall = 1;
-      max_malloc.file = std::string(file);
-    }else if(size == max_malloc.size && max_malloc.line == line && not max_malloc.file.compare(file)){
+      max_malloc.file    = file;
+    } else if (size == max_malloc.size && max_malloc.line == line && max_malloc.file == file) {
       max_malloc.numcall++;
     }
   }
