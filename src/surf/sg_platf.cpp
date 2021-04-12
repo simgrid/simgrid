@@ -63,10 +63,8 @@ void sg_platf_exit()
 /** @brief Add a host to the current NetZone */
 void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  simgrid::s4u::Host* host = routing_get_current()->create_host(args->id, args->speed_per_pstate);
-
-  if (not args->coord.empty())
-    new simgrid::kernel::routing::vivaldi::Coords(host->get_netpoint(), args->coord);
+  simgrid::s4u::Host* host =
+      routing_get_current()->create_host(args->id, args->speed_per_pstate)->set_coordinates(args->coord);
 
   if (args->properties) {
     host->set_properties(*args->properties);
@@ -87,7 +85,7 @@ void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 }
 
 /** @brief Add a "router" to the network element list */
-simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name, const char* coords)
+simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name, const std::string& coords)
 {
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
@@ -96,8 +94,8 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
   netpoint->set_englobing_zone(current_routing);
   XBT_DEBUG("Router '%s' has the id %u", netpoint->get_cname(), netpoint->id());
 
-  if (coords && strcmp(coords, ""))
-    new simgrid::kernel::routing::vivaldi::Coords(netpoint, coords);
+  if (not coords.empty())
+    netpoint->set_coordinates(coords);
 
   return netpoint;
 }
@@ -231,7 +229,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
   if (cluster->router_id.empty())
     cluster->router_id = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
-  current_zone->set_router(sg_platf_new_router(cluster->router_id, nullptr));
+  current_zone->set_router(sg_platf_new_router(cluster->router_id, ""));
 
   // Make the backbone
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
@@ -395,13 +393,12 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
 
   simgrid::s4u::Host* host = zone->create_host(peer->id, std::vector<double>{peer->speed})
                                  ->set_state_profile(peer->state_trace)
-                                 ->set_speed_profile(peer->speed_trace);
+                                 ->set_speed_profile(peer->speed_trace)
+                                 ->set_coordinates(peer->coord)
+                                 ->seal();
 
-  zone->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out, peer->coord);
-
-  host->seal();
+  zone->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out);
 }
-
 /**
  * @brief Auxiliary function to build the object NetZoneImpl
  *

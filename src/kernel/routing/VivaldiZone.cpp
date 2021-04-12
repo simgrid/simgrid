@@ -61,12 +61,10 @@ static std::vector<double>* netpoint_get_coords(NetPoint* np)
   return &coords->coords;
 }
 
-void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, const std::string& coord)
+void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
 {
   xbt_assert(netpoint->get_englobing_zone() == this,
              "Cannot add a peer link to a netpoint that is not in this netzone");
-
-  new vivaldi::Coords(netpoint, coord);
 
   std::string link_up   = "link_" + netpoint->get_name() + "_UP";
   std::string link_down = "link_" + netpoint->get_name() + "_DOWN";

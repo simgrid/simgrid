@@ -163,6 +163,7 @@ public:
   int get_pstate() const;
   double get_pstate_speed(int pstate_index) const;
   Host* set_pstate(int pstate_index);
+  Host* set_coordinates(const std::string& coords);
 
   std::vector<Disk*> get_disks() const;
   /**

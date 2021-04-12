@@ -305,6 +305,12 @@ int Host::get_pstate() const
   return this->pimpl_cpu->get_pstate();
 }
 
+Host* Host::set_coordinates(const std::string& coords)
+{
+  if (not coords.empty())
+    kernel::actor::simcall([this, coords] { this->pimpl_netpoint_->set_coordinates(coords); });
+  return this;
+}
 std::vector<Disk*> Host::get_disks() const
 {
   return this->pimpl_->get_disks();
