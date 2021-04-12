@@ -575,6 +575,14 @@ void CommImpl::post()
 void CommImpl::finish()
 {
   XBT_DEBUG("CommImpl::finish() in state %s", to_c_str(state_));
+
+  /* If the synchro is still in a rendez-vous point then remove from it */
+  if (mbox_)
+    mbox_->remove(this);
+
+  if (state_ == State::DONE)
+    copy_data();
+
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
@@ -600,20 +608,12 @@ void CommImpl::finish()
       }
     }
 
-    /* If the synchro is still in a rendez-vous point then remove from it */
-    if (mbox_)
-      mbox_->remove(this);
-
     /* Check out for errors */
 
     if (not simcall->issuer_->get_host()->is_on()) {
       simcall->issuer_->context_->set_wannadie();
     } else {
       switch (state_) {
-        case State::DONE:
-          copy_data();
-          break;
-
         case State::SRC_TIMEOUT:
           simcall->issuer_->exception_ = std::make_exception_ptr(
               simgrid::TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
@@ -667,7 +667,8 @@ void CommImpl::finish()
           break;
 
         default:
-          xbt_die("Internal error in CommImpl::finish(): unexpected synchro state %s", to_c_str(state_));
+          xbt_assert(state_ == State::DONE, "Internal error in CommImpl::finish(): unexpected synchro state %s",
+                     to_c_str(state_));
       }
       simcall->issuer_->simcall_answer();
     }
