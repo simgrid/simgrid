@@ -129,14 +129,6 @@ std::vector<s4u::Disk*> HostImpl::get_disks() const
   return disks;
 }
 
-HostImpl* HostImpl::set_disks(const std::vector<kernel::resource::DiskImpl*>& disks)
-{
-  disks_ = disks;
-  for (auto d : disks_)
-    d->set_host(&piface_);
-  return this;
-}
-
 s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
   auto disk = piface_.get_netpoint()->get_englobing_zone()->get_disk_model()->create_disk(name, read_bandwidth,

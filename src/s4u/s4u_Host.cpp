@@ -319,7 +319,9 @@ std::vector<Disk*> Host::get_disks() const
 Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
   return kernel::actor::simcall([this, &name, read_bandwidth, write_bandwidth] {
-    return this->pimpl_->create_disk(name, read_bandwidth, write_bandwidth);
+    auto* disk = pimpl_->create_disk(name, read_bandwidth, write_bandwidth);
+    pimpl_->add_disk(disk);
+    return disk;
   });
 }
 

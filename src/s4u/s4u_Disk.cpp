@@ -109,7 +109,6 @@ sg_size_t Disk::write(sg_size_t size) const
 Disk* Disk::seal()
 {
   kernel::actor::simcall([this]{ pimpl_->seal(); });
-  get_host()->add_disk(this);
   Disk::on_creation(*this);
   return this;
 }

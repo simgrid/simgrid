@@ -44,6 +44,7 @@ static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 {
   return current_routing;
 }
+static simgrid::s4u::Host* current_host = nullptr;
 
 /** Module management function: creates all internal data structures */
 void sg_platf_init()
@@ -61,25 +62,35 @@ void sg_platf_exit()
 }
 
 /** @brief Add a host to the current NetZone */
-void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
+void sg_platf_new_host_begin(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  simgrid::s4u::Host* host = routing_get_current()
-                                 ->create_host(args->id, args->speed_per_pstate)
-                                 ->set_coordinates(args->coord)
-                                 ->set_properties(args->properties);
+  current_host = routing_get_current()
+                     ->create_host(args->id, args->speed_per_pstate)
+                     ->set_coordinates(args->coord)
+                     ->set_core_count(args->core_amount)
+                     ->set_state_profile(args->state_trace)
+                     ->set_speed_profile(args->speed_trace);
+  //  host->get_impl()->set_disks(args->disks);
+}
 
-  host->get_impl()->set_disks(args->disks);
+void sg_platf_new_host_set_properties(const std::unordered_map<std::string, std::string>& props)
+{
+  xbt_assert(current_host, "Cannot set properties of the current host: none under construction");
+  current_host->set_properties(props);
+}
 
-  host->pimpl_cpu->set_core_count(args->core_amount)
-      ->set_state_profile(args->state_trace)
-      ->set_speed_profile(args->speed_trace);
-
-  host->seal();
+void sg_platf_new_host_seal(int pstate)
+{
+  xbt_assert(current_host, "Cannot seal the current Host: none under construction");
+  current_host->seal();
 
   /* When energy plugin is activated, changing the pstate requires to already have the HostEnergy extension whose
-   * allocation is triggered by the on_creation signal. Then set_pstate must be called after the signal emition */
-  if (args->pstate != 0)
-    host->set_pstate(args->pstate);
+   * allocation is triggered by the on_creation signal. Then set_pstate must be called after the signal emission */
+
+  if (pstate != 0)
+    current_host->set_pstate(pstate);
+
+  current_host = nullptr;
 }
 
 /** @brief Add a "router" to the network element list */
@@ -120,6 +131,17 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link)
   } else {
     sg_platf_new_link(link, link->id);
   }
+}
+
+void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
+{
+  simgrid::s4u::Disk* new_disk = routing_get_current()
+                                     ->create_disk(disk->id, disk->read_bw, disk->write_bw)
+                                     ->set_host(current_host)
+                                     ->set_properties(disk->properties)
+                                     ->seal();
+
+  current_host->add_disk(new_disk);
 }
 
 void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster)
@@ -267,18 +289,6 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* c
 
     zone->add_private_link_at(host->get_netpoint()->id(), {link_up->get_impl(), link_down->get_impl()});
   }
-}
-
-simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
-{
-  simgrid::kernel::resource::DiskImpl* pimpl = routing_get_current()
-                                                   ->create_disk(disk->id, disk->read_bw, disk->write_bw)
-                                                   ->set_properties(disk->properties)
-                                                   ->get_impl();
-
-  pimpl->seal();
-  simgrid::s4u::Disk::on_creation(*pimpl->get_iface());
-  return pimpl;
 }
 
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
@@ -462,7 +472,7 @@ void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std:
  */
 void sg_platf_new_Zone_seal()
 {
-  xbt_assert(current_routing, "Cannot seal the current Zone: zone under construction");
+  xbt_assert(current_routing, "Cannot seal the current Zone: none under construction");
   current_routing->seal();
   simgrid::s4u::NetZone::on_seal(*current_routing->get_iface());
   current_routing = current_routing->get_parent();

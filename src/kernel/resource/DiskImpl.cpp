@@ -29,6 +29,7 @@ DiskModel::DiskModel(const std::string& name) : Model(name)
  ************/
 DiskImpl* DiskImpl::set_host(s4u::Host* host)
 {
+  xbt_assert(host, "Cannot set host, none given");
   host_ = host;
   return this;
 }

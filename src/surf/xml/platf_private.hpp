@@ -41,8 +41,6 @@ public:
   profile::Profile* speed_trace                            = nullptr;
   profile::Profile* state_trace                            = nullptr;
   std::string coord                                        = "";
-  std::unordered_map<std::string, std::string> properties;
-  std::vector<resource::DiskImpl*> disks;
 };
 
 class HostLinkCreationArgs {
@@ -179,11 +177,16 @@ XBT_PUBLIC void sg_platf_new_Zone_set_properties(const std::unordered_map<std::s
 XBT_PUBLIC void sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
 XBT_PUBLIC void
-sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* host); // Add a host to the current Zone
+sg_platf_new_host_begin(const simgrid::kernel::routing::HostCreationArgs* host); // Add a host to the current Zone
+XBT_PUBLIC void sg_platf_new_host_set_properties(const std::unordered_map<std::string, std::string>& props);
+XBT_PUBLIC void sg_platf_new_host_seal(int pstate); // That Host is fully described
+
 XBT_PUBLIC void
 sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs* h); // Add a host_link to the current Zone
 XBT_PUBLIC void
 sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link); // Add a link to the current Zone
+XBT_PUBLIC void
+sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk); // Add a disk to the current host
 XBT_PUBLIC void
 sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer); // Add a peer to the current Zone
 XBT_PUBLIC void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* clust);   // Add a cluster   to the current Zone
@@ -197,8 +200,6 @@ XBT_PUBLIC void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreation
 
 XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* trace);
 
-XBT_PUBLIC simgrid::kernel::resource::DiskImpl*
-sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk); // Add a disk to the current host
 
 XBT_PUBLIC void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor);
 XBT_PRIVATE void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect);

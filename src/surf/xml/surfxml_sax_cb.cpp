@@ -30,10 +30,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF 
 std::string surf_parsed_filename; // Currently parsed file (for the error messages)
 std::vector<simgrid::kernel::resource::LinkImpl*>
     parsed_link_list; /* temporary store of current link list of a route */
-std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary store of current disk list of a host */
-/*
- * Helping functions
- */
+
+/* Helping functions */
 void surf_parse_assert(bool cond, const std::string& msg)
 {
   if (not cond)
@@ -226,10 +224,6 @@ void ETag_surfxml_platform(){
   simgrid::s4u::Engine::on_platform_created();
 }
 
-void STag_surfxml_host(){
-  property_sets.push_back(std::unordered_map<std::string, std::string>());
-}
-
 void STag_surfxml_prop()
 {
   property_sets.back().insert({A_surfxml_prop_id, A_surfxml_prop_value});
@@ -237,12 +231,10 @@ void STag_surfxml_prop()
             &(property_sets.back()));
 }
 
-void ETag_surfxml_host()    {
+void STag_surfxml_host()
+{
   simgrid::kernel::routing::HostCreationArgs host;
-
-  host.properties = property_sets.back();
-  property_sets.pop_back();
-
+  property_sets.push_back(std::unordered_map<std::string, std::string>());
   host.id = A_surfxml_host_id;
 
   host.speed_per_pstate =
@@ -260,11 +252,17 @@ void ETag_surfxml_host()    {
   host.state_trace = A_surfxml_host_state___file[0]
                          ? simgrid::kernel::profile::Profile::from_file(A_surfxml_host_state___file)
                          : nullptr;
-  host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
   host.coord       = A_surfxml_host_coordinates;
-  host.disks.swap(parsed_disk_list);
 
-  sg_platf_new_host(&host);
+  sg_platf_new_host_begin(&host);
+}
+
+void ETag_surfxml_host()
+{
+  sg_platf_new_host_set_properties(property_sets.back());
+  property_sets.pop_back();
+
+  sg_platf_new_host_seal(surf_parse_get_int(A_surfxml_host_pstate));
 }
 
 void STag_surfxml_disk() {
@@ -282,7 +280,7 @@ void ETag_surfxml_disk() {
   disk.write_bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_disk_write___bw,
                                           "write_bw of disk ", disk.id);
 
-  parsed_disk_list.push_back(sg_platf_new_disk(&disk));
+  sg_platf_new_disk(&disk);
 }
 
 void STag_surfxml_host___link(){

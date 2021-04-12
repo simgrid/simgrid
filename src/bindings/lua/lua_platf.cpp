@@ -210,7 +210,8 @@ int console_add_host(lua_State *L) {
       host.state_trace = simgrid::kernel::profile::Profile::from_file(filename);
   lua_pop(L, 1);
 
-  sg_platf_new_host(&host);
+  sg_platf_new_host_begin(&host);
+  sg_platf_new_host_seal(0);
 
   return 0;
 }
