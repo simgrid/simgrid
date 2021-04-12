@@ -311,7 +311,7 @@ int console_add_router(lua_State* L) {
   const char* coords = lua_tostring(L, -1);
   lua_pop(L,1);
 
-  sg_platf_new_router(name, coords);
+  sg_platf_new_router(name, coords ? coords : "");
 
   return 0;
 }
