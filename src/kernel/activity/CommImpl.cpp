@@ -574,6 +574,7 @@ void CommImpl::post()
 
 void CommImpl::finish()
 {
+  XBT_DEBUG("CommImpl::finish() in state %s", to_c_str(state_));
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
@@ -603,8 +604,6 @@ void CommImpl::finish()
     if (mbox_)
       mbox_->remove(this);
 
-    XBT_DEBUG("CommImpl::finish(): synchro state = %d", static_cast<int>(state_));
-
     /* Check out for errors */
 
     if (not simcall->issuer_->get_host()->is_on()) {
@@ -612,7 +611,6 @@ void CommImpl::finish()
     } else {
       switch (state_) {
         case State::DONE:
-          XBT_DEBUG("Communication %p complete!", this);
           copy_data();
           break;
 
@@ -669,7 +667,7 @@ void CommImpl::finish()
           break;
 
         default:
-          xbt_die("Unexpected synchro state in CommImpl::finish: %d", static_cast<int>(state_));
+          xbt_die("Internal error in CommImpl::finish(): unexpected synchro state %s", to_c_str(state_));
       }
       simcall->issuer_->simcall_answer();
     }

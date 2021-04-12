@@ -69,17 +69,17 @@ void RawImpl::post()
 
 void RawImpl::finish()
 {
+  XBT_DEBUG("RawImpl::finish() in state %s", to_c_str(state_));
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   smx_simcall_t simcall = simcalls_.front();
   simcalls_.pop_front();
 
   if (state_ == State::FAILED) {
-    XBT_DEBUG("RawImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
     simcall->issuer_->context_->set_wannadie();
     simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
   } else {
-    xbt_assert(state_ == State::SRC_TIMEOUT, "Internal error in RawImpl::finish() unexpected synchro state %d",
-               static_cast<int>(state_));
+    xbt_assert(state_ == State::SRC_TIMEOUT, "Internal error in RawImpl::finish() unexpected synchro state %s",
+               to_c_str(state_));
   }
 
   finish_callback_();

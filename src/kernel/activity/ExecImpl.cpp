@@ -155,6 +155,7 @@ void ExecImpl::post()
 
 void ExecImpl::finish()
 {
+  XBT_DEBUG("ExecImpl::finish() in state %s", to_c_str(state_));
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
@@ -185,13 +186,7 @@ void ExecImpl::finish()
       }
     }
     switch (state_) {
-      case State::DONE:
-        /* do nothing, synchro done */
-        XBT_DEBUG("ExecImpl::finish(): execution successful");
-        break;
-
       case State::FAILED:
-        XBT_DEBUG("ExecImpl::finish(): host '%s' failed", simcall->issuer_->get_host()->get_cname());
         simcall->issuer_->context_->set_wannadie();
         if (simcall->issuer_->get_host()->is_on())
           simcall->issuer_->exception_ =
@@ -200,18 +195,17 @@ void ExecImpl::finish()
         break;
 
       case State::CANCELED:
-        XBT_DEBUG("ExecImpl::finish(): execution canceled");
         simcall->issuer_->exception_ =
             std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
       case State::TIMEOUT:
-        XBT_DEBUG("ExecImpl::finish(): execution timeouted");
         simcall->issuer_->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
-        xbt_die("Internal error in ExecImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
+        xbt_assert(state_ == State::DONE, "Internal error in ExecImpl::finish(): unexpected synchro state %s",
+                   to_c_str(state_));
     }
 
     simcall->issuer_->waiting_synchro_ = nullptr;
