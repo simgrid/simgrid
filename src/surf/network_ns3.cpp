@@ -185,7 +185,7 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
 {
   ns3::NodeContainer Nodes;
 
-  for (int const& i : *cluster.radicals) {
+  for (int const& i : cluster.radicals) {
     // Create private link
     std::string host_id = cluster.prefix + std::to_string(i) + cluster.suffix;
     auto* src           = simgrid::s4u::Host::by_name(host_id)->get_netpoint();

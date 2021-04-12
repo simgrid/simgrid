@@ -92,7 +92,7 @@ public:
   std::string id;
   std::string prefix;
   std::string suffix;
-  std::vector<int>* radicals = nullptr;
+  std::vector<int> radicals;
   std::vector<double> speeds;
   int core_amount     = 0;
   double bw           = 0;
@@ -115,7 +115,7 @@ public:
   std::string id;
   std::string prefix;
   std::string suffix;
-  std::vector<int>* radicals;
+  std::vector<int> radicals;
   double speed;
   double bw;
   double lat;

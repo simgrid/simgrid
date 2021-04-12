@@ -167,7 +167,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     current_zone->set_limiter();
   }
 
-  for (int const& i : *cluster->radicals) {
+  for (int const& i : cluster->radicals) {
     std::string host_id = std::string(cluster->prefix) + std::to_string(i) + cluster->suffix;
 
     XBT_DEBUG("<host\tid=\"%s\"\tspeed=\"%f\">", host_id.c_str(), cluster->speeds.front());
@@ -248,7 +248,6 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   sg_platf_new_Zone_seal();
 
   simgrid::kernel::routing::on_cluster_creation(*cluster);
-  delete cluster->radicals;
 }
 
 void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb)
@@ -265,7 +264,7 @@ void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb)
 void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabinet)
 {
   auto* zone = static_cast<simgrid::kernel::routing::ClusterZone*>(routing_get_current());
-  for (int const& radical : *cabinet->radicals) {
+  for (int const& radical : cabinet->radicals) {
     std::string id           = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
     simgrid::s4u::Host* host = zone->create_host(id, std::vector<double>{cabinet->speed})->seal();
 
@@ -276,7 +275,6 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* c
 
     zone->add_private_link_at(host->get_netpoint()->id(), {link_up->get_impl(), link_down->get_impl()});
   }
-  delete cabinet->radicals;
 }
 
 simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)

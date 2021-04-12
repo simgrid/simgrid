@@ -95,10 +95,8 @@ int surf_parse_get_int(const std::string& s)
 }
 
 /* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
-static std::vector<int>* explodesRadical(const std::string& radicals)
+static void explodesRadical(const std::string& radicals, std::vector<int>* exploded)
 {
-  auto* exploded = new std::vector<int>();
-
   // Make all hosts
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, radicals, boost::is_any_of(","));
@@ -121,8 +119,6 @@ static std::vector<int>* explodesRadical(const std::string& radicals)
     for (int i = start; i <= end; i++)
       exploded->push_back(i);
   }
-
-  return exploded;
 }
 
 
@@ -311,7 +307,8 @@ void ETag_surfxml_cluster(){
   cluster.id          = A_surfxml_cluster_id;
   cluster.prefix      = A_surfxml_cluster_prefix;
   cluster.suffix      = A_surfxml_cluster_suffix;
-  cluster.radicals    = explodesRadical(A_surfxml_cluster_radical);
+  explodesRadical(A_surfxml_cluster_radical, &cluster.radicals);
+
   cluster.speeds      = xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_speed,
                                             "speed of cluster", cluster.id);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
@@ -401,7 +398,7 @@ void STag_surfxml_cabinet(){
                                        cabinet.id.c_str());
   cabinet.lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_lat, "lat of cabinet",
                                    cabinet.id.c_str());
-  cabinet.radicals = explodesRadical(A_surfxml_cabinet_radical);
+  explodesRadical(A_surfxml_cabinet_radical, &cabinet.radicals);
 
   sg_platf_new_cabinet(&cabinet);
 }
