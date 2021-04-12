@@ -446,7 +446,7 @@ void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl
     auto* comm = comms[idx];
     comm->simcalls_.push_back(&issuer->simcall_);
     simcall_comm_waitany__set__result(&issuer->simcall_, idx);
-    comm->state_ = simgrid::kernel::activity::State::DONE;
+    comm->state_ = State::DONE;
     comm->finish();
     return;
   }
@@ -454,7 +454,7 @@ void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl
   if (timeout < 0.0) {
     issuer->simcall_.timeout_cb_ = nullptr;
   } else {
-    issuer->simcall_.timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, comms]() {
+    issuer->simcall_.timeout_cb_ = simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, comms]() {
       // FIXME: Vector `comms' is copied here. Use a reference once its lifetime is extended (i.e. when the simcall is
       // modernized).
       issuer->simcall_.timeout_cb_ = nullptr;
@@ -470,8 +470,7 @@ void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl
     comm->simcalls_.push_back(&issuer->simcall_);
 
     /* see if the synchro is already finished */
-    if (comm->state_ != simgrid::kernel::activity::State::WAITING &&
-        comm->state_ != simgrid::kernel::activity::State::RUNNING) {
+    if (comm->state_ != State::WAITING && comm->state_ != State::RUNNING) {
       comm->finish();
       break;
     }
@@ -572,8 +571,8 @@ void CommImpl::finish()
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                                 // if actor handling comm is killed
     if (simcall->call_ == simix::Simcall::COMM_WAITANY) {
-      simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(simcall);
-      size_t count                                = simcall_comm_waitany__get__count(simcall);
+      CommImpl** comms = simcall_comm_waitany__get__comms(simcall);
+      size_t count     = simcall_comm_waitany__get__count(simcall);
       for (size_t i = 0; i < count; i++)
         comms[i]->unregister_simcall(simcall);
       if (simcall->timeout_cb_) {
@@ -597,12 +596,12 @@ void CommImpl::finish()
       switch (state_) {
         case State::SRC_TIMEOUT:
           simcall->issuer_->exception_ = std::make_exception_ptr(
-              simgrid::TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
+              TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
           break;
 
         case State::DST_TIMEOUT:
           simcall->issuer_->exception_ = std::make_exception_ptr(
-              simgrid::TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
+              TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
           break;
 
         case State::SRC_HOST_FAILURE:
@@ -610,7 +609,7 @@ void CommImpl::finish()
             simcall->issuer_->context_->set_wannadie();
           else
             simcall->issuer_->exception_ =
-                std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+                std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case State::DST_HOST_FAILURE:
@@ -618,7 +617,7 @@ void CommImpl::finish()
             simcall->issuer_->context_->set_wannadie();
           else
             simcall->issuer_->exception_ =
-                std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+                std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case State::LINK_FAILURE:
@@ -635,16 +634,16 @@ void CommImpl::finish()
             XBT_DEBUG("I'm neither source nor dest");
           }
           simcall->issuer_->throw_exception(
-              std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Link failure")));
+              std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Link failure")));
           break;
 
         case State::CANCELED:
           if (simcall->issuer_ == dst_actor_)
-            simcall->issuer_->exception_ = std::make_exception_ptr(
-                simgrid::CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
+            simcall->issuer_->exception_ =
+                std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
           else
-            simcall->issuer_->exception_ = std::make_exception_ptr(
-                simgrid::CancelException(XBT_THROW_POINT, "Communication canceled by the receiver"));
+            simcall->issuer_->exception_ =
+                std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the receiver"));
           break;
 
         default:
@@ -672,7 +671,7 @@ void CommImpl::finish()
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer_->exception_);
-      } catch (simgrid::Exception& e) {
+      } catch (Exception& e) {
         e.set_value(rank);
       }
     }

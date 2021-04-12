@@ -106,7 +106,7 @@ void IoImpl::finish()
         simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
         break;
       case State::TIMEOUT:
-        simcall->issuer_->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
+        simcall->issuer_->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;
       default:
         xbt_assert(state_ == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",

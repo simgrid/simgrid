@@ -10,7 +10,7 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_safety.hpp"
 #define MC_CHECK_NO_DPOR()                                                                                             \
-  xbt_assert(not MC_is_active() || simgrid::mc::reduction_mode != simgrid::mc::ReductionMode::dpor,                    \
+  xbt_assert(not MC_is_active() || mc::reduction_mode != mc::ReductionMode::dpor,                                      \
              "Mutex is currently not supported with DPOR,  use --cfg=model-check/reduction:none")
 #else
 #define MC_CHECK_NO_DPOR() (void)0

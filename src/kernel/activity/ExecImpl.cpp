@@ -189,18 +189,16 @@ void ExecImpl::finish()
       case State::FAILED:
         simcall->issuer_->context_->set_wannadie();
         if (simcall->issuer_->get_host()->is_on())
-          simcall->issuer_->exception_ =
-              std::make_exception_ptr(simgrid::HostFailureException(XBT_THROW_POINT, "Host failed"));
+          simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
         /* else, the actor will be killed with no possibility to survive */
         break;
 
       case State::CANCELED:
-        simcall->issuer_->exception_ =
-            std::make_exception_ptr(simgrid::CancelException(XBT_THROW_POINT, "Execution Canceled"));
+        simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Execution Canceled"));
         break;
 
       case State::TIMEOUT:
-        simcall->issuer_->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
+        simcall->issuer_->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;
 
       default:
@@ -242,7 +240,7 @@ void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl
   if (timeout < 0.0) {
     issuer->simcall_.timeout_cb_ = nullptr;
   } else {
-    issuer->simcall_.timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, &execs]() {
+    issuer->simcall_.timeout_cb_ = simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, &execs]() {
       issuer->simcall_.timeout_cb_ = nullptr;
       for (auto* exec : execs)
         exec->unregister_simcall(&issuer->simcall_);
@@ -256,8 +254,7 @@ void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl
     exec->simcalls_.push_back(&issuer->simcall_);
 
     /* see if the synchro is already finished */
-    if (exec->state_ != simgrid::kernel::activity::State::WAITING &&
-        exec->state_ != simgrid::kernel::activity::State::RUNNING) {
+    if (exec->state_ != State::WAITING && exec->state_ != State::RUNNING) {
       exec->finish();
       break;
     }
