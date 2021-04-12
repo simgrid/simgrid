@@ -69,6 +69,7 @@ void RawImpl::post()
 
 void RawImpl::finish()
 {
+  xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   smx_simcall_t simcall = simcalls_.front();
   simcalls_.pop_front();
 
