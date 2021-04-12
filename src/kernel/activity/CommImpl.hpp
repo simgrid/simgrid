@@ -51,6 +51,7 @@ public:
   void copy_data();
 
   bool test() override;
+  void wait_for(actor::ActorImpl* issuer, double timeout) override;
   static int test_any(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms);
   static void wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms, double timeout);
 

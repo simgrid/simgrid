@@ -47,7 +47,7 @@ public:
   const char* get_cname() const { return name_.c_str(); }
 
   virtual bool test();
-  void wait_for(actor::ActorImpl* issuer, double timeout);
+  virtual void wait_for(actor::ActorImpl* issuer, double timeout);
   virtual ActivityImpl& set_timeout(double) { THROW_UNIMPLEMENTED; }
 
   virtual void suspend();

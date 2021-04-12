@@ -27,7 +27,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sr
   simgrid::kernel::activity::ActivityImplPtr comm = simcall_HANDLER_comm_isend(
       simcall, src, mbox, task_size, rate, src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, false);
   simcall->mc_value_ = 0;
-  simcall_HANDLER_comm_wait(simcall, static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
+  comm->wait_for(simcall->issuer_, timeout);
 }
 
 XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isend(
@@ -104,7 +104,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
   simgrid::kernel::activity::ActivityImplPtr comm = simcall_HANDLER_comm_irecv(
       simcall, receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
   simcall->mc_value_ = 0;
-  simcall_HANDLER_comm_wait(simcall, static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
+  comm->wait_for(simcall->issuer_, timeout);
 }
 
 XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr
@@ -182,45 +182,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
 
 void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm, double timeout)
 {
-  /* Associate this simcall to the wait synchro */
-  XBT_DEBUG("simcall_HANDLER_comm_wait, %p", comm);
-
-  comm->register_simcall(simcall);
-
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = simcall->mc_value_;
-    if (idx == 0) {
-      comm->state_ = simgrid::kernel::activity::State::DONE;
-    } else {
-      /* If we reached this point, the wait simcall must have a timeout */
-      /* Otherwise it shouldn't be enabled and executed by the MC */
-      if (timeout < 0.0)
-        THROW_IMPOSSIBLE;
-
-      if (comm->src_actor_ == simcall->issuer_)
-        comm->state_ = simgrid::kernel::activity::State::SRC_TIMEOUT;
-      else
-        comm->state_ = simgrid::kernel::activity::State::DST_TIMEOUT;
-    }
-
-    comm->finish();
-    return;
-  }
-
-  /* If the synchro has already finish perform the error handling, */
-  /* otherwise set up a waiting timeout on the right side          */
-  if (comm->state_ != simgrid::kernel::activity::State::WAITING &&
-      comm->state_ != simgrid::kernel::activity::State::RUNNING) {
-    comm->finish();
-  } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
-    simgrid::kernel::resource::Action* sleep = simcall->issuer_->get_host()->pimpl_cpu->sleep(timeout);
-    sleep->set_activity(comm);
-
-    if (simcall->issuer_ == comm->src_actor_)
-      comm->src_timeout_ = sleep;
-    else
-      comm->dst_timeout_ = sleep;
-  }
+  comm->wait_for(simcall->issuer_, timeout);
 }
 
 bool simcall_HANDLER_comm_test(smx_simcall_t, simgrid::kernel::activity::CommImpl* comm)
@@ -421,6 +383,43 @@ bool CommImpl::test()
   if ((MC_is_active() || MC_record_replay_is_active()) && src_actor_ && dst_actor_)
     state_ = State::DONE;
   return ActivityImpl::test();
+}
+
+void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
+{
+  XBT_DEBUG("CommImpl::wait_for(%g), %p, state %s", timeout, this, to_c_str(state_));
+
+  /* Associate this simcall to the wait synchro */
+  register_simcall(&issuer->simcall_);
+
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = issuer->simcall_.mc_value_;
+    if (idx == 0) {
+      state_ = State::DONE;
+    } else {
+      /* If we reached this point, the wait simcall must have a timeout */
+      /* Otherwise it shouldn't be enabled and executed by the MC */
+      if (timeout < 0.0)
+        THROW_IMPOSSIBLE;
+      state_ = (issuer == src_actor_ ? State::SRC_TIMEOUT : State::DST_TIMEOUT);
+    }
+    finish();
+    return;
+  }
+
+  /* If the synchro has already finish perform the error handling, */
+  /* otherwise set up a waiting timeout on the right side          */
+  if (state_ != State::WAITING && state_ != State::RUNNING) {
+    finish();
+  } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
+    resource::Action* sleep = issuer->get_host()->pimpl_cpu->sleep(timeout);
+    sleep->set_activity(this);
+
+    if (issuer == src_actor_)
+      src_timeout_ = sleep;
+    else
+      dst_timeout_ = sleep;
+  }
 }
 
 int CommImpl::test_any(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
