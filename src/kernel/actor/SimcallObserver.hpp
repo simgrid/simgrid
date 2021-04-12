@@ -146,21 +146,21 @@ public:
 class ExecutionWaitanySimcall : public SimcallObserver {
   friend kernel::activity::ExecImpl;
 
-  const std::vector<kernel::activity::ExecImpl*>* const execs_;
+  const std::vector<kernel::activity::ExecImpl*>& execs_;
   const double timeout_;
   int result_ = -1; // default result for simcall
 
   void set_result(int res) { result_ = res; }
 
 public:
-  ExecutionWaitanySimcall(smx_actor_t actor, const std::vector<kernel::activity::ExecImpl*>* execs, double timeout)
+  ExecutionWaitanySimcall(smx_actor_t actor, const std::vector<kernel::activity::ExecImpl*>& execs, double timeout)
       : SimcallObserver(actor), execs_(execs), timeout_(timeout)
   {
   }
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
-  const std::vector<kernel::activity::ExecImpl*>* get_execs() const { return execs_; }
+  const std::vector<kernel::activity::ExecImpl*>& get_execs() const { return execs_; }
   double get_timeout() const { return timeout_; }
 
   int get_result() const { return result_; }

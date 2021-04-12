@@ -73,7 +73,7 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
                  [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ExecutionWaitanySimcall observer{issuer, &rexecs, timeout};
+  kernel::actor::ExecutionWaitanySimcall observer{issuer, rexecs, timeout};
   int changed_pos = kernel::actor::simcall_blocking(
       [&observer] {
         kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(), observer.get_timeout());
