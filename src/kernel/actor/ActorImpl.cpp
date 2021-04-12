@@ -89,8 +89,7 @@ ActorImpl::~ActorImpl()
  * In the future, it might be extended in order to attach other threads created by a third party library.
  */
 
-ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* host,
-                               const std::unordered_map<std::string, std::string>& properties)
+ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* host)
 {
   // This is mostly a copy/paste from create(), it'd be nice to share some code between those two functions.
 
@@ -109,9 +108,6 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   XBT_VERB("Create context %s", actor->get_cname());
   xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
   actor->context_.reset(simix_global->context_factory->attach(actor));
-
-  /* Add properties */
-  actor->set_properties(properties);
 
   /* Add the actor to it's host actor list */
   host->get_impl()->add_actor(actor);
@@ -365,7 +361,8 @@ s4u::Actor* ActorImpl::restart()
   context::Context::self()->get_actor()->kill(this);
 
   // start the new actor
-  ActorImplPtr actor = ActorImpl::create(arg.name, arg.code, arg.data, arg.host, arg.properties, nullptr);
+  ActorImplPtr actor = ActorImpl::create(arg.name, arg.code, arg.data, arg.host, nullptr);
+  actor->set_properties(arg.properties);
   *actor->on_exit = std::move(*arg.on_exit);
   actor->set_kill_time(arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);
@@ -508,7 +505,6 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
 }
 
 ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
-                               const std::unordered_map<std::string, std::string>& properties,
                                const ActorImpl* parent_actor)
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
@@ -521,9 +517,6 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
 
   /* actor data */
   actor->set_user_data(data);
-
-  /* Add properties */
-  actor->set_properties(properties);
 
   actor->start(code);
 

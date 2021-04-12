@@ -121,10 +121,8 @@ public:
   ActorImpl* start(const ActorCode& code);
 
   static ActorImplPtr create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
-                             const std::unordered_map<std::string, std::string>& properties,
                              const ActorImpl* parent_actor);
-  static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host,
-                             const std::unordered_map<std::string, std::string>& properties);
+  static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host);
   static void detach();
   void cleanup();
   void exit();
@@ -162,7 +160,7 @@ public:
   /* list of functions executed when the process dies */
   const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit;
 
-  ProcessArg()                                                             = default;
+  ProcessArg() = delete;
 
   explicit ProcessArg(const std::string& name, const std::function<void()>& code, void* data, s4u::Host* host,
                       double kill_time, const std::unordered_map<std::string, std::string>& properties,
