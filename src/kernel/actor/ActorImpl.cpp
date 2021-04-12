@@ -90,7 +90,7 @@ ActorImpl::~ActorImpl()
  */
 
 ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* host,
-                               const std::unordered_map<std::string, std::string>* properties)
+                               const std::unordered_map<std::string, std::string>& properties)
 {
   // This is mostly a copy/paste from create(), it'd be nice to share some code between those two functions.
 
@@ -111,8 +111,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   actor->context_.reset(simix_global->context_factory->attach(actor));
 
   /* Add properties */
-  if (properties != nullptr)
-    actor->set_properties(*properties);
+  actor->set_properties(properties);
 
   /* Add the actor to it's host actor list */
   host->get_impl()->add_actor(actor);
@@ -366,7 +365,7 @@ s4u::Actor* ActorImpl::restart()
   context::Context::self()->get_actor()->kill(this);
 
   // start the new actor
-  ActorImplPtr actor = ActorImpl::create(arg.name, arg.code, arg.data, arg.host, arg.properties.get(), nullptr);
+  ActorImplPtr actor = ActorImpl::create(arg.name, arg.code, arg.data, arg.host, arg.properties, nullptr);
   *actor->on_exit = std::move(*arg.on_exit);
   actor->set_kill_time(arg.kill_time);
   actor->set_auto_restart(arg.auto_restart);
@@ -509,7 +508,7 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
 }
 
 ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
-                               const std::unordered_map<std::string, std::string>* properties,
+                               const std::unordered_map<std::string, std::string>& properties,
                                const ActorImpl* parent_actor)
 {
   XBT_DEBUG("Start actor %s@'%s'", name.c_str(), host->get_cname());
@@ -524,8 +523,7 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
   actor->set_user_data(data);
 
   /* Add properties */
-  if (properties != nullptr)
-    actor->set_properties(*properties);
+  actor->set_properties(properties);
 
   actor->start(code);
 

@@ -76,8 +76,8 @@ void HostImpl::turn_on() const
 {
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
-    simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
-        arg->name, arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
+    simgrid::kernel::actor::ActorImplPtr actor =
+        simgrid::kernel::actor::ActorImpl::create(arg->name, arg->code, nullptr, arg->host, arg->properties, nullptr);
     if (arg->on_exit)
       *actor->on_exit = *arg->on_exit;
     if (arg->kill_time >= 0)

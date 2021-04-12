@@ -41,7 +41,7 @@ public:
   profile::Profile* speed_trace                            = nullptr;
   profile::Profile* state_trace                            = nullptr;
   std::string coord                                        = "";
-  std::unordered_map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string> properties;
   std::vector<resource::DiskImpl*> disks;
 };
 
@@ -61,7 +61,7 @@ public:
   profile::Profile* latency_trace                          = nullptr;
   profile::Profile* state_trace                            = nullptr;
   s4u::Link::SharingPolicy policy                          = s4u::Link::SharingPolicy::FATPIPE;
-  std::unordered_map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string> properties;
 };
 
 class PeerCreationArgs {
@@ -104,7 +104,7 @@ public:
   double limiter_link = 0;
   ClusterTopology topology = ClusterTopology::FLAT;
   std::string topo_parameters;
-  std::unordered_map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string> properties;
   std::string router_id;
   s4u::Link::SharingPolicy sharing_policy    = s4u::Link::SharingPolicy::SPLITDUPLEX;
   s4u::Link::SharingPolicy bb_sharing_policy = s4u::Link::SharingPolicy::SHARED;
@@ -124,7 +124,7 @@ public:
 class DiskCreationArgs {
 public:
   std::string id;
-  std::unordered_map<std::string, std::string>* properties;
+  std::unordered_map<std::string, std::string> properties;
   double read_bw;
   double write_bw;
 };
@@ -149,7 +149,7 @@ public:
 class ActorCreationArgs {
 public:
   std::vector<std::string> args;
-  std::unordered_map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string> properties;
   const char* host                       = nullptr;
   const char* function                   = nullptr;
   double start_time                      = 0.0;
@@ -175,7 +175,7 @@ void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb);
 
 XBT_PUBLIC simgrid::kernel::routing::NetZoneImpl*
 sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone); // Begin description of new Zone
-XBT_PUBLIC void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>* props);
+XBT_PUBLIC void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>& props);
 XBT_PUBLIC void sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
 XBT_PUBLIC void

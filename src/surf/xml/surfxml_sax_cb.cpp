@@ -129,10 +129,10 @@ static void explodesRadical(const std::string& radicals, std::vector<int>* explo
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 
-std::vector<std::unordered_map<std::string, std::string>*> property_sets;
+std::vector<std::unordered_map<std::string, std::string>> property_sets;
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
-std::unordered_map<std::string, std::string>* current_model_property_set = nullptr;
+std::unordered_map<std::string, std::string> current_model_property_set;
 
 FILE *surf_file_to_parse = nullptr;
 
@@ -227,14 +227,14 @@ void ETag_surfxml_platform(){
 }
 
 void STag_surfxml_host(){
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.push_back(std::unordered_map<std::string, std::string>());
 }
 
 void STag_surfxml_prop()
 {
-  property_sets.back()->insert({A_surfxml_prop_id, A_surfxml_prop_value});
+  property_sets.back().insert({A_surfxml_prop_id, A_surfxml_prop_value});
   XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
-            property_sets.back());
+            &(property_sets.back()));
 }
 
 void ETag_surfxml_host()    {
@@ -268,7 +268,7 @@ void ETag_surfxml_host()    {
 }
 
 void STag_surfxml_disk() {
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.push_back(std::unordered_map<std::string, std::string>());
 }
 
 void ETag_surfxml_disk() {
@@ -384,7 +384,7 @@ void ETag_surfxml_cluster(){
 }
 
 void STag_surfxml_cluster(){
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.push_back(std::unordered_map<std::string, std::string>());
 }
 
 void STag_surfxml_cabinet(){
@@ -433,7 +433,7 @@ void STag_surfxml_peer(){
 }
 
 void STag_surfxml_link(){
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.push_back(std::unordered_map<std::string, std::string>());
 }
 
 void ETag_surfxml_link(){
@@ -698,7 +698,7 @@ void ETag_surfxml_AS()
 
 void STag_surfxml_zone()
 {
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.push_back(std::unordered_map<std::string, std::string>());
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
   zone.routing = A_surfxml_zone_routing;
@@ -708,7 +708,6 @@ void STag_surfxml_zone()
 void ETag_surfxml_zone()
 {
   sg_platf_new_Zone_set_properties(property_sets.back());
-  delete property_sets.back();
   property_sets.pop_back();
 
   sg_platf_new_Zone_seal();
@@ -716,7 +715,7 @@ void ETag_surfxml_zone()
 
 void STag_surfxml_config()
 {
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.push_back(std::unordered_map<std::string, std::string>());
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   if (_sg_cfg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
@@ -731,20 +730,19 @@ void ETag_surfxml_config()
   auto current_property_set = property_sets.back();
 
   std::vector<std::string> keys;
-  for (auto const& kv : *current_property_set) {
+  for (auto const& kv : current_property_set) {
     keys.push_back(kv.first);
   }
   std::sort(keys.begin(), keys.end());
   for (std::string key : keys) {
     if (simgrid::config::is_default(key.c_str())) {
-      std::string cfg = key + ":" + current_property_set->at(key);
+      std::string cfg = key + ":" + current_property_set.at(key);
       simgrid::config::set_parse(cfg);
     } else
       XBT_INFO("The custom configuration '%s' is already defined by user!", key.c_str());
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
-  delete current_property_set;
   property_sets.pop_back();
 }
 
@@ -758,7 +756,7 @@ void STag_surfxml_process()
 
 void STag_surfxml_actor()
 {
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.push_back(std::unordered_map<std::string, std::string>());
   arguments.assign(1, A_surfxml_actor_function);
 }
 
@@ -805,10 +803,7 @@ void STag_surfxml_argument(){
 }
 
 void STag_surfxml_model___prop(){
-  if (not current_model_property_set)
-    current_model_property_set = new std::unordered_map<std::string, std::string>();
-
-  current_model_property_set->insert({A_surfxml_model___prop_id, A_surfxml_model___prop_value});
+  current_model_property_set.insert({A_surfxml_model___prop_id, A_surfxml_model___prop_value});
 }
 
 void ETag_surfxml_prop(){/* Nothing to do */}

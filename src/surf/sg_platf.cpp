@@ -63,13 +63,11 @@ void sg_platf_exit()
 /** @brief Add a host to the current NetZone */
 void sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  simgrid::s4u::Host* host =
-      routing_get_current()->create_host(args->id, args->speed_per_pstate)->set_coordinates(args->coord);
+  simgrid::s4u::Host* host = routing_get_current()
+                                 ->create_host(args->id, args->speed_per_pstate)
+                                 ->set_coordinates(args->coord)
+                                 ->set_properties(args->properties);
 
-  if (args->properties) {
-    host->set_properties(*args->properties);
-    delete args->properties;
-  }
   host->get_impl()->set_disks(args->disks);
 
   host->pimpl_cpu->set_core_count(args->core_amount)
@@ -102,11 +100,10 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 
 static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args, const std::string& link_name)
 {
-  simgrid::s4u::Link* link = routing_get_current()->create_link(link_name, args->bandwidths);
-  if (args->properties)
-    link->set_properties(*args->properties);
-
-  link->get_impl() // this call to get_impl saves some simcalls but can be removed
+  routing_get_current()
+      ->create_link(link_name, args->bandwidths)
+      ->set_properties(args->properties)
+      ->get_impl() // this call to get_impl saves some simcalls but can be removed
       ->set_sharing_policy(args->policy)
       ->set_state_profile(args->state_trace)
       ->set_latency_profile(args->latency_trace)
@@ -123,7 +120,6 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link)
   } else {
     sg_platf_new_link(link, link->id);
   }
-  delete link->properties;
 }
 
 void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster)
@@ -155,9 +151,8 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   sg_platf_new_Zone_begin(&zone);
   auto* current_zone = static_cast<ClusterZone*>(routing_get_current());
   current_zone->parse_specific_arguments(cluster);
-  if (cluster->properties != nullptr)
-    for (auto const& elm : *cluster->properties)
-      current_zone->get_iface()->set_property(elm.first, elm.second);
+  for (auto const& elm : cluster->properties)
+    current_zone->get_iface()->set_property(elm.first, elm.second);
 
   if (cluster->loopback_bw > 0 || cluster->loopback_lat > 0) {
     current_zone->set_loopback();
@@ -171,12 +166,10 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     std::string host_id = std::string(cluster->prefix) + std::to_string(i) + cluster->suffix;
 
     XBT_DEBUG("<host\tid=\"%s\"\tspeed=\"%f\">", host_id.c_str(), cluster->speeds.front());
-    simgrid::s4u::Host* host =
-        current_zone->create_host(host_id, cluster->speeds)->set_core_count(cluster->core_amount);
-
-    if ((cluster->properties != nullptr) && (not cluster->properties->empty()))
-      host->set_properties(*cluster->properties);
-    host->seal();
+    current_zone->create_host(host_id, cluster->speeds)
+        ->set_core_count(cluster->core_amount)
+        ->set_properties(cluster->properties)
+        ->seal();
 
     XBT_DEBUG("</host>");
 
@@ -222,7 +215,6 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     }
     rankId++;
   }
-  delete cluster->properties;
 
   // Add a router.
   XBT_DEBUG(" ");
@@ -279,13 +271,10 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* c
 
 simgrid::kernel::resource::DiskImpl* sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  simgrid::kernel::resource::DiskImpl* pimpl =
-      routing_get_current()->create_disk(disk->id, disk->read_bw, disk->write_bw)->get_impl();
-
-  if (disk->properties) {
-    pimpl->set_properties(*disk->properties);
-    delete disk->properties;
-  }
+  simgrid::kernel::resource::DiskImpl* pimpl = routing_get_current()
+                                                   ->create_disk(disk->id, disk->read_bw, disk->write_bw)
+                                                   ->set_properties(disk->properties)
+                                                   ->get_impl();
 
   pimpl->seal();
   simgrid::s4u::Disk::on_creation(*pimpl->get_iface());
@@ -335,20 +324,20 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
   std::string actor_name                 = actor->args[0];
   simgrid::kernel::actor::ActorCode code = factory(std::move(actor->args));
-  std::shared_ptr<std::unordered_map<std::string, std::string>> properties(actor->properties);
 
-  auto* arg =
-      new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
+  auto* arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, actor->properties,
+                                                     auto_restart);
 
   host->get_impl()->add_actor_at_boot(arg);
 
   if (start_time > SIMIX_get_clock()) {
-    arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
+    arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, actor->properties,
+                                                 auto_restart);
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->get_cname(), start_time);
     simgrid::simix::Timer::set(start_time, [arg, auto_restart]() {
       simgrid::kernel::actor::ActorImplPtr new_actor = simgrid::kernel::actor::ActorImpl::create(
-          arg->name.c_str(), arg->code, arg->data, arg->host, arg->properties.get(), nullptr);
+          arg->name.c_str(), arg->code, arg->data, arg->host, arg->properties, nullptr);
       if (arg->kill_time >= 0)
         new_actor->set_kill_time(arg->kill_time);
       if (auto_restart)
@@ -360,8 +349,8 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
     try {
       simgrid::kernel::actor::ActorImplPtr new_actor = nullptr;
-      new_actor = simgrid::kernel::actor::ActorImpl::create(arg->name.c_str(), code, nullptr, host,
-                                                            arg->properties.get(), nullptr);
+      new_actor =
+          simgrid::kernel::actor::ActorImpl::create(arg->name.c_str(), code, nullptr, host, arg->properties, nullptr);
       /* The actor creation will fail if the host is currently dead, but that's fine */
       if (arg->kill_time >= 0)
         new_actor->set_kill_time(arg->kill_time);
@@ -457,12 +446,11 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
   return new_zone;
 }
 
-void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>* props)
+void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>& props)
 {
   xbt_assert(current_routing, "Cannot set properties of the current Zone: none under construction");
 
-  if (props)
-    current_routing->set_properties(*props);
+  current_routing->set_properties(props);
 }
 
 /**
