@@ -50,6 +50,8 @@ public:
 
   void copy_data();
 
+  bool test() override;
+
   CommImpl* start();
   void suspend() override;
   void resume() override;

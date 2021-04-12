@@ -223,17 +223,9 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity:
   }
 }
 
-bool simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm)
+bool simcall_HANDLER_comm_test(smx_simcall_t, simgrid::kernel::activity::CommImpl* comm)
 {
-  if ((MC_is_active() || MC_record_replay_is_active()) && comm->src_actor_ && comm->dst_actor_)
-    comm->state_ = simgrid::kernel::activity::State::DONE;
-
-  bool res = comm->state_ != simgrid::kernel::activity::State::WAITING &&
-             comm->state_ != simgrid::kernel::activity::State::RUNNING;
-
-  if (res)
-    comm->finish();
-  return res;
+  return comm->test();
 }
 
 void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
@@ -489,6 +481,13 @@ void CommImpl::copy_data()
   /* Set the copied flag so we copy data only once */
   /* (this function might be called from both communication ends) */
   copied_ = true;
+}
+
+bool CommImpl::test()
+{
+  if ((MC_is_active() || MC_record_replay_is_active()) && src_actor_ && dst_actor_)
+    state_ = State::DONE;
+  return ActivityImpl::test();
 }
 
 void CommImpl::suspend()
