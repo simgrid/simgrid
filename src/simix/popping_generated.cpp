@@ -79,7 +79,8 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
       break;
 
     case Simcall::COMM_TESTANY:
-      simcall_HANDLER_comm_testany(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl**>(simcall_.args_[0]), simgrid::simix::unmarshal<size_t>(simcall_.args_[1]));
+      simgrid::simix::marshal<int>(simcall_.result_, simcall_HANDLER_comm_testany(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl**>(simcall_.args_[0]), simgrid::simix::unmarshal<size_t>(simcall_.args_[1])));
+      simcall_answer();
       break;
 
     case Simcall::COMM_WAITANY:

@@ -228,37 +228,19 @@ bool simcall_HANDLER_comm_test(smx_simcall_t, simgrid::kernel::activity::CommImp
   return comm->test();
 }
 
-void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
+int simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
-  // The default result is -1 -- this means, "nothing is ready".
-  // It can be changed below, but only if something matches.
-  simcall_comm_testany__set__result(simcall, -1);
-
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = simcall->mc_value_;
-    if (idx == -1) {
-      simcall->issuer_->simcall_answer();
-    } else {
-      simgrid::kernel::activity::CommImpl* comm = comms[idx];
-      simcall_comm_testany__set__result(simcall, idx);
-      comm->simcalls_.push_back(simcall);
-      comm->state_ = simgrid::kernel::activity::State::DONE;
-      comm->finish();
-    }
-    return;
+    xbt_assert(idx == -1 || comms[idx]->test());
+    return idx;
   }
 
   for (std::size_t i = 0; i != count; ++i) {
-    simgrid::kernel::activity::CommImpl* comm = comms[i];
-    if (comm->state_ != simgrid::kernel::activity::State::WAITING &&
-        comm->state_ != simgrid::kernel::activity::State::RUNNING) {
-      simcall_comm_testany__set__result(simcall, i);
-      comm->simcalls_.push_back(simcall);
-      comm->finish();
-      return;
-    }
+    if (comms[i]->test())
+      return i;
   }
-  simcall->issuer_->simcall_answer();
+  return -1;
 }
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
