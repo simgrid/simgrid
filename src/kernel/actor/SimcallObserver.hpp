@@ -15,11 +15,11 @@ namespace kernel {
 namespace actor {
 
 class SimcallObserver {
-  kernel::actor::ActorImpl* const issuer_;
+  ActorImpl* const issuer_;
 
 public:
-  explicit SimcallObserver(kernel::actor::ActorImpl* issuer) : issuer_(issuer) {}
-  kernel::actor::ActorImpl* get_issuer() const { return issuer_; }
+  explicit SimcallObserver(ActorImpl* issuer) : issuer_(issuer) {}
+  ActorImpl* get_issuer() const { return issuer_; }
   /** Whether this transition can currently be taken without blocking.
    *
    * For example, a mutex_lock is not enabled when the mutex is not free.
@@ -78,33 +78,33 @@ public:
 };
 
 class MutexLockSimcall : public SimcallObserver {
-  kernel::activity::MutexImpl* const mutex_;
+  activity::MutexImpl* const mutex_;
   const bool blocking_;
 
 public:
-  MutexLockSimcall(smx_actor_t actor, kernel::activity::MutexImpl* mutex, bool blocking = true)
+  MutexLockSimcall(smx_actor_t actor, activity::MutexImpl* mutex, bool blocking = true)
       : SimcallObserver(actor), mutex_(mutex), blocking_(blocking)
   {
   }
   bool is_enabled() const override;
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
-  kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
+  activity::MutexImpl* get_mutex() const { return mutex_; }
 };
 
 class ConditionWaitSimcall : public SimcallObserver {
-  friend kernel::activity::ConditionVariableImpl;
+  friend activity::ConditionVariableImpl;
 
-  kernel::activity::ConditionVariableImpl* const cond_;
-  kernel::activity::MutexImpl* const mutex_;
+  activity::ConditionVariableImpl* const cond_;
+  activity::MutexImpl* const mutex_;
   const double timeout_;
   bool result_ = false; // default result for simcall, will be set to 'true' on timeout
 
   void set_result(bool res) { result_ = res; }
 
 public:
-  ConditionWaitSimcall(smx_actor_t actor, kernel::activity::ConditionVariableImpl* cond,
-                       kernel::activity::MutexImpl* mutex, double timeout = -1.0)
+  ConditionWaitSimcall(smx_actor_t actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
+                       double timeout = -1.0)
       : SimcallObserver(actor), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
   }
@@ -112,24 +112,24 @@ public:
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
-  kernel::activity::ConditionVariableImpl* get_cond() const { return cond_; }
-  kernel::activity::MutexImpl* get_mutex() const { return mutex_; }
+  activity::ConditionVariableImpl* get_cond() const { return cond_; }
+  activity::MutexImpl* get_mutex() const { return mutex_; }
   double get_timeout() const { return timeout_; }
 
   bool get_result() const { return result_; }
 };
 
 class SemAcquireSimcall : public SimcallObserver {
-  friend kernel::activity::SemaphoreImpl;
+  friend activity::SemaphoreImpl;
 
-  kernel::activity::SemaphoreImpl* const sem_;
+  activity::SemaphoreImpl* const sem_;
   const double timeout_;
   bool result_ = false; // default result for simcall, will be set to 'true' on timeout
 
   void set_result(bool res) { result_ = res; }
 
 public:
-  SemAcquireSimcall(smx_actor_t actor, kernel::activity::SemaphoreImpl* sem, double timeout = -1.0)
+  SemAcquireSimcall(smx_actor_t actor, activity::SemaphoreImpl* sem, double timeout = -1.0)
       : SimcallObserver(actor), sem_(sem), timeout_(timeout)
   {
   }
@@ -137,30 +137,30 @@ public:
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
-  kernel::activity::SemaphoreImpl* get_sem() const { return sem_; }
+  activity::SemaphoreImpl* get_sem() const { return sem_; }
   double get_timeout() const { return timeout_; }
 
   bool get_result() const { return result_; }
 };
 
 class ExecutionWaitanySimcall : public SimcallObserver {
-  friend kernel::activity::ExecImpl;
+  friend activity::ExecImpl;
 
-  const std::vector<kernel::activity::ExecImpl*>& execs_;
+  const std::vector<activity::ExecImpl*>& execs_;
   const double timeout_;
   int result_ = -1; // default result for simcall
 
   void set_result(int res) { result_ = res; }
 
 public:
-  ExecutionWaitanySimcall(smx_actor_t actor, const std::vector<kernel::activity::ExecImpl*>& execs, double timeout)
+  ExecutionWaitanySimcall(smx_actor_t actor, const std::vector<activity::ExecImpl*>& execs, double timeout)
       : SimcallObserver(actor), execs_(execs), timeout_(timeout)
   {
   }
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
-  const std::vector<kernel::activity::ExecImpl*>& get_execs() const { return execs_; }
+  const std::vector<activity::ExecImpl*>& get_execs() const { return execs_; }
   double get_timeout() const { return timeout_; }
 
   int get_result() const { return result_; }

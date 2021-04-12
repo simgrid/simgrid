@@ -246,7 +246,7 @@ void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl
       issuer->simcall_.timeout_cb_ = nullptr;
       for (auto* exec : execs)
         exec->unregister_simcall(&issuer->simcall_);
-      // default result (-1) is set in mc::ExecutionWaitanySimcall
+      // default result (-1) is set in actor::ExecutionWaitanySimcall
       issuer->simcall_answer();
     });
   }
