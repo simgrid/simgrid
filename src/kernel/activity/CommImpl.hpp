@@ -52,6 +52,7 @@ public:
 
   bool test() override;
   static int test_any(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms);
+  static void wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms, double timeout);
 
   CommImpl* start();
   void suspend() override;

@@ -245,40 +245,8 @@ static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count,
                                   double timeout)
 {
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
-    int idx                 = simcall->mc_value_;
-    auto* comm              = comms[idx];
-    comm->simcalls_.push_back(simcall);
-    simcall_comm_waitany__set__result(simcall, idx);
-    comm->state_ = simgrid::kernel::activity::State::DONE;
-    comm->finish();
-    return;
-  }
-
-  if (timeout < 0.0) {
-    simcall->timeout_cb_ = nullptr;
-  } else {
-    simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
-      simcall->timeout_cb_ = nullptr;
-      SIMIX_waitany_remove_simcall_from_actions(simcall);
-      simcall_comm_waitany__set__result(simcall, -1);
-      simcall->issuer_->simcall_answer();
-    });
-  }
-
-  for (size_t i = 0; i < count; i++) {
-    /* associate this simcall to the the synchro */
-    auto* comm = comms[i];
-    comm->simcalls_.push_back(simcall);
-
-    /* see if the synchro is already finished */
-    if (comm->state_ != simgrid::kernel::activity::State::WAITING &&
-        comm->state_ != simgrid::kernel::activity::State::RUNNING) {
-      comm->finish();
-      break;
-    }
-  }
+  std::vector<simgrid::kernel::activity::CommImpl*> comms_vec(comms, comms + count);
+  simgrid::kernel::activity::CommImpl::wait_any_for(simcall->issuer_, comms_vec, timeout);
 }
 
 /******************************************************************************/
@@ -476,6 +444,46 @@ int CommImpl::test_any(actor::ActorImpl* issuer, const std::vector<CommImpl*>& c
       return i;
   }
   return -1;
+}
+
+void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms, double timeout)
+{
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
+    int idx    = issuer->simcall_.mc_value_;
+    auto* comm = comms[idx];
+    comm->simcalls_.push_back(&issuer->simcall_);
+    simcall_comm_waitany__set__result(&issuer->simcall_, idx);
+    comm->state_ = simgrid::kernel::activity::State::DONE;
+    comm->finish();
+    return;
+  }
+
+  if (timeout < 0.0) {
+    issuer->simcall_.timeout_cb_ = nullptr;
+  } else {
+    issuer->simcall_.timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, comms]() {
+      // FIXME: Vector `comms' is copied here. Use a reference once its lifetime is extended (i.e. when the simcall is
+      // modernized).
+      issuer->simcall_.timeout_cb_ = nullptr;
+      for (auto* comm : comms)
+        comm->unregister_simcall(&issuer->simcall_);
+      simcall_comm_waitany__set__result(&issuer->simcall_, -1);
+      issuer->simcall_answer();
+    });
+  }
+
+  for (auto* comm : comms) {
+    /* associate this simcall to the the synchro */
+    comm->simcalls_.push_back(&issuer->simcall_);
+
+    /* see if the synchro is already finished */
+    if (comm->state_ != simgrid::kernel::activity::State::WAITING &&
+        comm->state_ != simgrid::kernel::activity::State::RUNNING) {
+      comm->finish();
+      break;
+    }
+  }
 }
 
 void CommImpl::suspend()
