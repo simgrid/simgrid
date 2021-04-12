@@ -66,13 +66,14 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
   xbt_assert(netpoint->get_englobing_zone() == this,
              "Cannot add a peer link to a netpoint that is not in this netzone");
 
-  std::string link_up   = "link_" + netpoint->get_name() + "_UP";
-  std::string link_down = "link_" + netpoint->get_name() + "_DOWN";
+  std::string link_up        = "link_" + netpoint->get_name() + "_UP";
+  std::string link_down      = "link_" + netpoint->get_name() + "_DOWN";
   resource::LinkImpl* linkUp = get_network_model()->create_link(link_up, std::vector<double>(1, bw_out));
   linkUp->seal();
   resource::LinkImpl* linkDown = get_network_model()->create_link(link_down, std::vector<double>(1, bw_in));
   linkDown->seal();
-  add_private_link_at(netpoint->id(), {linkUp, linkDown});
+  add_route(netpoint, nullptr, nullptr, nullptr, {linkUp}, false);
+  add_route(nullptr, netpoint, nullptr, nullptr, {linkDown}, false);
 }
 
 void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
@@ -86,20 +87,7 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     route->gw_dst       = s4u::Engine::get_instance()->netpoint_by_name_or_null(dstName);
   }
 
-  /* Retrieve the private links */
-  if (private_link_exists_at(src->id())) {
-    auto src_link = get_uplink_from(src->id());
-    route->link_list.push_back(src_link);
-    if (lat)
-      *lat += src_link->get_latency();
-  }
-
-  if (private_link_exists_at(dst->id())) {
-    auto dst_link = get_downlink_to(dst->id());
-    route->link_list.push_back(dst_link);
-    if (lat)
-      *lat += dst_link->get_latency();
-  }
+  StarZone::get_local_route(src, dst, route, lat);
   /* Compute the extra latency due to the euclidean distance if needed */
   if (lat) {
     std::vector<double>* srcCoords = netpoint_get_coords(src);
@@ -113,6 +101,7 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     *lat += euclidean_dist / 1000.0; // From .ms to .s
   }
 }
+
 } // namespace routing
 } // namespace kernel
 
