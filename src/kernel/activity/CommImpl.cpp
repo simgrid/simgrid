@@ -230,17 +230,8 @@ bool simcall_HANDLER_comm_test(smx_simcall_t, simgrid::kernel::activity::CommImp
 
 int simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = simcall->mc_value_;
-    xbt_assert(idx == -1 || comms[idx]->test());
-    return idx;
-  }
-
-  for (std::size_t i = 0; i != count; ++i) {
-    if (comms[i]->test())
-      return i;
-  }
-  return -1;
+  std::vector<simgrid::kernel::activity::CommImpl*> comms_vec(comms, comms + count);
+  return simgrid::kernel::activity::CommImpl::test_any(simcall->issuer_, comms_vec);
 }
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
@@ -470,6 +461,21 @@ bool CommImpl::test()
   if ((MC_is_active() || MC_record_replay_is_active()) && src_actor_ && dst_actor_)
     state_ = State::DONE;
   return ActivityImpl::test();
+}
+
+int CommImpl::test_any(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
+{
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = issuer->simcall_.mc_value_;
+    xbt_assert(idx == -1 || comms[idx]->test());
+    return idx;
+  }
+
+  for (std::size_t i = 0; i < comms.size(); ++i) {
+    if (comms[i]->test())
+      return i;
+  }
+  return -1;
 }
 
 void CommImpl::suspend()

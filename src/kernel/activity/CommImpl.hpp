@@ -51,6 +51,7 @@ public:
   void copy_data();
 
   bool test() override;
+  static int test_any(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms);
 
   CommImpl* start();
   void suspend() override;
