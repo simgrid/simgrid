@@ -233,16 +233,15 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
   // Make the backbone
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
-    std::string backbone_name = std::string(cluster->id) + "_backbone";
-    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", backbone_name.c_str(), cluster->bb_bw, cluster->bb_lat);
+    std::string bb_name = std::string(cluster->id) + "_backbone";
+    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/> <!--backbone -->", bb_name.c_str(), cluster->bb_bw,
+              cluster->bb_lat);
 
-    auto* backbone = current_zone->create_link(backbone_name, std::vector<double>{cluster->bb_bw})
+    auto* backbone = current_zone->create_link(bb_name, std::vector<double>{cluster->bb_bw})
                          ->set_sharing_policy(cluster->bb_sharing_policy)
                          ->set_latency(cluster->bb_lat)
-                         ->seal()
-                         ->get_impl();
-
-    routing_cluster_add_backbone(backbone);
+                         ->seal();
+    current_zone->set_backbone(backbone->get_impl());
   }
 
   XBT_DEBUG("</zone>");
