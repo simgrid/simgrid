@@ -65,7 +65,7 @@ bool ActivityImpl::test()
 
 void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
-  XBT_DEBUG("Wait for execution of synchro %p, state %d", this, (int)state_);
+  XBT_DEBUG("Wait for execution of synchro %p, state %s", this, to_c_str(state_));
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
   /* Associate this simcall to the synchro */

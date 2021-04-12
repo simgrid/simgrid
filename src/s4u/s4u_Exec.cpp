@@ -183,7 +183,7 @@ unsigned int Exec::get_host_number() const
 ExecPtr Exec::set_host(Host* host)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING || state_ == State::STARTED,
-             "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
+             "Cannot change the host of an exec once it's done (state: %s)", to_c_str(state_));
 
   if (state_ == State::STARTED)
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->migrate(host);
@@ -201,7 +201,7 @@ ExecPtr Exec::set_host(Host* host)
 ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
-      "Cannot change the hosts of an exec once it's done (state: %d)", (int)state_);
+             "Cannot change the hosts of an exec once it's done (state: %s)", to_c_str(state_));
 
   kernel::actor::simcall(
       [this, hosts] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_hosts(hosts); });
