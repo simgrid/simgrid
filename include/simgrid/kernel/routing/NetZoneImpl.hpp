@@ -134,6 +134,8 @@ public:
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /** @brief Make a link within that NetZone */
   virtual s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
+  /** @brief Make a router within that NetZone */
+  NetPoint* create_router(const std::string& name);
   /** @brief Creates a new route in this NetZone */
   virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical);

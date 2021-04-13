@@ -70,7 +70,6 @@ void sg_platf_new_host_begin(const simgrid::kernel::routing::HostCreationArgs* a
                      ->set_core_count(args->core_amount)
                      ->set_state_profile(args->state_trace)
                      ->set_speed_profile(args->speed_trace);
-  //  host->get_impl()->set_disks(args->disks);
 }
 
 void sg_platf_new_host_set_properties(const std::unordered_map<std::string, std::string>& props)
@@ -96,15 +95,8 @@ void sg_platf_new_host_seal(int pstate)
 /** @brief Add a "router" to the network element list */
 simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name, const std::string& coords)
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
-             "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
-
-  auto* netpoint = new simgrid::kernel::routing::NetPoint(name, simgrid::kernel::routing::NetPoint::Type::Router);
-  netpoint->set_englobing_zone(current_routing);
+  auto* netpoint = current_routing->create_router(name)->set_coordinates(coords);
   XBT_DEBUG("Router '%s' has the id %u", netpoint->get_cname(), netpoint->id());
-
-  if (not coords.empty())
-    netpoint->set_coordinates(coords);
 
   return netpoint;
 }
@@ -243,7 +235,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
   if (cluster->router_id.empty())
     cluster->router_id = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
-  current_zone->set_router(sg_platf_new_router(cluster->router_id, ""));
+  current_zone->set_router(current_zone->create_router(cluster->router_id));
 
   // Make the backbone
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {

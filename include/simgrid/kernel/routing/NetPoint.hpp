@@ -52,7 +52,7 @@ private:
   unsigned int id_ = -1;
   std::string name_;
   NetPoint::Type component_type_;
-  NetZoneImpl* englobing_zone_;
+  NetZoneImpl* englobing_zone_ = nullptr;
 };
 } // namespace routing
 } // namespace kernel

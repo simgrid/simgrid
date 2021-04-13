@@ -36,7 +36,8 @@ NetPoint* NetPoint::set_englobing_zone(NetZoneImpl* netzone_p)
 
 NetPoint* NetPoint::set_coordinates(const std::string& coords)
 {
-  new vivaldi::Coords(this, coords);
+  if (not coords.empty())
+    new vivaldi::Coords(this, coords);
   return this;
 }
 } // namespace routing

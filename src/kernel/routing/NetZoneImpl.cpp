@@ -140,18 +140,6 @@ int NetZoneImpl::get_host_count() const
   return count;
 }
 
-s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
-{
-  auto* l = disk_model_->create_disk(name, read_bandwidth, write_bandwidth);
-
-  return l->get_iface();
-}
-
-s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths)
-{
-  return network_model_->create_link(name, bandwidths)->get_iface();
-}
-
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   auto* res = (new surf::HostImpl(name))->get_iface();
@@ -162,6 +150,25 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   return res;
 }
 
+s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return network_model_->create_link(name, bandwidths)->get_iface();
+}
+
+s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+{
+  auto* l = disk_model_->create_disk(name, read_bandwidth, write_bandwidth);
+
+  return l->get_iface();
+}
+
+NetPoint* NetZoneImpl::create_router(const std::string& name)
+{
+  xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
+             "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
+
+  return (new NetPoint(name, NetPoint::Type::Router))->set_englobing_zone(this);
+}
 int NetZoneImpl::add_component(NetPoint* elm)
 {
   vertices_.push_back(elm);
