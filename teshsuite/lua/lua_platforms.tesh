@@ -1,4 +1,5 @@
-$ ${bindir:=.}/examples/cpp/app-masterworkers/s4u-app-masterworkers-fun ${srcdir:=.}/examples/platforms/small_platform.lua ${srcdir:=.}/examples/cpp/app-masterworkers/s4u-app-masterworkers_d.xml
+$ ${bindir:=.}/examples/cpp/app-masterworkers/s4u-app-masterworkers-fun ${srcdir:=.}/examples/platforms/small_platform.lua ${srcdir:=.}/examples/cpp/app-masterworkers/s4u-app-masterworkers_d.xml --log=no_loc
+> [0.000000] [surf_parse/WARNING] You are using a lua platform file. This feature is deprecated and will disappear after SimGrid v3.31.
 > [Tremblay:master:(1) 0.000000] [s4u_app_masterworker/INFO] Got 5 workers and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [s4u_app_masterworker/INFO] Sending task 0 of 20 to mailbox 'Tremblay'
 > [Tremblay:master:(1) 0.002265] [s4u_app_masterworker/INFO] Sending task 1 of 20 to mailbox 'Jupiter'
@@ -29,6 +30,7 @@ $ ${bindir:=.}/examples/cpp/app-masterworkers/s4u-app-masterworkers-fun ${srcdir
 > [5.133855] [s4u_app_masterworker/INFO] Simulation is over
 
 $ ${bindir:=.}/examples/cpp/app-token-ring/s4u-app-token-ring ${srcdir:=.}/examples/platforms/routing_cluster.lua "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) You are using a lua platform file. This feature is deprecated and will disappear after SimGrid v3.31.
 > [  0.000000] (0:maestro@) Number of hosts '6'
 > [  0.000000] (1:0@host1) Host "0" send 'Token' to Host "1"
 > [  0.017354] (2:1@host2) Host "1" received "Token"
