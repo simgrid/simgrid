@@ -48,96 +48,92 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
 
-  if (parameters.size() != 4) {
+  if (parameters.size() != 4)
     surf_parse_error(
         "Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
-  }
 
   // Blue network : number of groups, number of links between each group
   boost::split(tmp, parameters[0], boost::is_any_of(","));
-  if (tmp.size() != 2) {
+  if (tmp.size() != 2)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
-  }
 
   try {
-    this->num_groups_ = std::stoi(tmp[0]);
+    num_groups_ = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
   }
 
   try {
-    this->num_links_blue_ = std::stoi(tmp[1]);
+    num_links_blue_ = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the blue level:") + tmp[1]);
   }
+
   // Black network : number of chassis/group, number of links between each router on the black network
   boost::split(tmp, parameters[1], boost::is_any_of(","));
-  if (tmp.size() != 2) {
+  if (tmp.size() != 2)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
-  }
 
   try {
-    this->num_chassis_per_group_ = std::stoi(tmp[0]);
+    num_chassis_per_group_ = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
   }
 
   try {
-    this->num_links_black_ = std::stoi(tmp[1]);
+    num_links_black_ = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the black level:") + tmp[1]);
   }
 
   // Green network : number of blades/chassis, number of links between each router on the green network
   boost::split(tmp, parameters[2], boost::is_any_of(","));
-  if (tmp.size() != 2) {
+  if (tmp.size() != 2)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
-  }
 
   try {
-    this->num_blades_per_chassis_ = std::stoi(tmp[0]);
+    num_blades_per_chassis_ = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
   }
 
   try {
-    this->num_links_green_ = std::stoi(tmp[1]);
+    num_links_green_ = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the green level:") + tmp[1]);
   }
 
   // The last part of topo_parameters should be the number of nodes per blade
   try {
-    this->num_nodes_per_blade_ = std::stoi(parameters[3]);
+    num_nodes_per_blade_ = std::stoi(parameters[3]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Last parameter is not the amount of nodes per blade:") + parameters[3]);
   }
 
-  this->sharing_policy_ = cluster->sharing_policy;
+  sharing_policy_ = cluster->sharing_policy;
   if (cluster->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX)
-    this->num_links_per_link_ = 2;
-  this->bw_  = cluster->bw;
-  this->lat_ = cluster->lat;
+    num_links_per_link_ = 2;
+  bw_  = cluster->bw;
+  lat_ = cluster->lat;
 }
 
 /* Generate the cluster once every node is created */
 void DragonflyZone::do_seal()
 {
-  if (this->num_nodes_per_blade_ == 0) {
+  if (num_nodes_per_blade_ == 0)
     return;
-  }
 
-  this->generate_routers();
-  this->generate_links();
+  generate_routers();
+  generate_links();
 }
 
 void DragonflyZone::generate_routers()
 {
-  this->routers_.reserve(this->num_groups_ * this->num_chassis_per_group_ * this->num_blades_per_chassis_);
-  for (unsigned int i = 0; i < this->num_groups_; i++)
-    for (unsigned int j = 0; j < this->num_chassis_per_group_; j++)
-      for (unsigned int k = 0; k < this->num_blades_per_chassis_; k++)
-        this->routers_.emplace_back(i, j, k);
+  routers_.reserve(num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_);
+  for (unsigned int i = 0; i < num_groups_; i++)
+    for (unsigned int j = 0; j < num_chassis_per_group_; j++)
+      for (unsigned int k = 0; k < num_blades_per_chassis_; k++)
+        routers_.emplace_back(i, j, k);
 }
 
 void DragonflyZone::generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
@@ -149,7 +145,6 @@ void DragonflyZone::generate_link(const std::string& id, int numlinks, resource:
   if (sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
     *linkup   = create_link(id + "_UP", std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
     *linkdown = create_link(id + "_DOWN", std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
-
   } else {
     *linkup   = create_link(id, std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
     *linkdown = *linkup;
@@ -162,55 +157,55 @@ void DragonflyZone::generate_links()
   resource::LinkImpl* linkup;
   resource::LinkImpl* linkdown;
 
-  unsigned int numRouters = this->num_groups_ * this->num_chassis_per_group_ * this->num_blades_per_chassis_;
+  unsigned int numRouters = num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_;
 
   // Links from routers to their local nodes.
   for (unsigned int i = 0; i < numRouters; i++) {
     // allocate structures
-    this->routers_[i].my_nodes_.resize(num_links_per_link_ * this->num_nodes_per_blade_);
-    this->routers_[i].green_links_.resize(this->num_blades_per_chassis_);
-    this->routers_[i].black_links_.resize(this->num_chassis_per_group_);
+    routers_[i].my_nodes_.resize(num_links_per_link_ * num_nodes_per_blade_);
+    routers_[i].green_links_.resize(num_blades_per_chassis_);
+    routers_[i].black_links_.resize(num_chassis_per_group_);
 
-    for (unsigned int j = 0; j < num_links_per_link_ * this->num_nodes_per_blade_; j += num_links_per_link_) {
+    for (unsigned int j = 0; j < num_links_per_link_ * num_nodes_per_blade_; j += num_links_per_link_) {
       std::string id = "local_link_from_router_" + std::to_string(i) + "_to_node_" +
                        std::to_string(j / num_links_per_link_) + "_" + std::to_string(uniqueId);
-      this->generate_link(id, 1, &linkup, &linkdown);
+      generate_link(id, 1, &linkup, &linkdown);
 
-      this->routers_[i].my_nodes_[j] = linkup;
-      if (this->sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX)
-        this->routers_[i].my_nodes_[j + 1] = linkdown;
+      routers_[i].my_nodes_[j] = linkup;
+      if (sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX)
+        routers_[i].my_nodes_[j + 1] = linkdown;
 
       uniqueId++;
     }
   }
 
   // Green links from routers to same chassis routers - alltoall
-  for (unsigned int i = 0; i < this->num_groups_ * this->num_chassis_per_group_; i++) {
-    for (unsigned int j = 0; j < this->num_blades_per_chassis_; j++) {
-      for (unsigned int k = j + 1; k < this->num_blades_per_chassis_; k++) {
+  for (unsigned int i = 0; i < num_groups_ * num_chassis_per_group_; i++) {
+    for (unsigned int j = 0; j < num_blades_per_chassis_; j++) {
+      for (unsigned int k = j + 1; k < num_blades_per_chassis_; k++) {
         std::string id = "green_link_in_chassis_" + std::to_string(i % num_chassis_per_group_) + "_between_routers_" +
                          std::to_string(j) + "_and_" + std::to_string(k) + "_" + std::to_string(uniqueId);
-        this->generate_link(id, this->num_links_green_, &linkup, &linkdown);
+        generate_link(id, num_links_green_, &linkup, &linkdown);
 
-        this->routers_[i * num_blades_per_chassis_ + j].green_links_[k] = linkup;
-        this->routers_[i * num_blades_per_chassis_ + k].green_links_[j] = linkdown;
+        routers_[i * num_blades_per_chassis_ + j].green_links_[k] = linkup;
+        routers_[i * num_blades_per_chassis_ + k].green_links_[j] = linkdown;
         uniqueId++;
       }
     }
   }
 
   // Black links from routers to same group routers - alltoall
-  for (unsigned int i = 0; i < this->num_groups_; i++) {
-    for (unsigned int j = 0; j < this->num_chassis_per_group_; j++) {
-      for (unsigned int k = j + 1; k < this->num_chassis_per_group_; k++) {
-        for (unsigned int l = 0; l < this->num_blades_per_chassis_; l++) {
+  for (unsigned int i = 0; i < num_groups_; i++) {
+    for (unsigned int j = 0; j < num_chassis_per_group_; j++) {
+      for (unsigned int k = j + 1; k < num_chassis_per_group_; k++) {
+        for (unsigned int l = 0; l < num_blades_per_chassis_; l++) {
           std::string id = "black_link_in_group_" + std::to_string(i) + "_between_chassis_" + std::to_string(j) +
                            "_and_" + std::to_string(k) + "_blade_" + std::to_string(l) + "_" + std::to_string(uniqueId);
-          this->generate_link(id, this->num_links_black_, &linkup, &linkdown);
+          generate_link(id, num_links_black_, &linkup, &linkdown);
 
-          this->routers_[i * num_blades_per_chassis_ * num_chassis_per_group_ + j * num_blades_per_chassis_ + l]
+          routers_[i * num_blades_per_chassis_ * num_chassis_per_group_ + j * num_blades_per_chassis_ + l]
               .black_links_[k] = linkup;
-          this->routers_[i * num_blades_per_chassis_ * num_chassis_per_group_ + k * num_blades_per_chassis_ + l]
+          routers_[i * num_blades_per_chassis_ * num_chassis_per_group_ + k * num_blades_per_chassis_ + l]
               .black_links_[j] = linkdown;
           uniqueId++;
         }
@@ -221,17 +216,17 @@ void DragonflyZone::generate_links()
   // Blue links between groups - Not all routers involved, only one per group is linked to others. Let's say router n of
   // each group is linked to group n.
   // FIXME: in reality blue links may be attached to several different routers
-  for (unsigned int i = 0; i < this->num_groups_; i++) {
-    for (unsigned int j = i + 1; j < this->num_groups_; j++) {
+  for (unsigned int i = 0; i < num_groups_; i++) {
+    for (unsigned int j = i + 1; j < num_groups_; j++) {
       unsigned int routernumi = i * num_blades_per_chassis_ * num_chassis_per_group_ + j;
       unsigned int routernumj = j * num_blades_per_chassis_ * num_chassis_per_group_ + i;
       std::string id = "blue_link_between_group_" + std::to_string(i) + "_and_" + std::to_string(j) + "_routers_" +
                        std::to_string(routernumi) + "_and_" + std::to_string(routernumj) + "_" +
                        std::to_string(uniqueId);
-      this->generate_link(id, this->num_links_blue_, &linkup, &linkdown);
+      generate_link(id, num_links_blue_, &linkup, &linkdown);
 
-      this->routers_[routernumi].blue_link_ = linkup;
-      this->routers_[routernumj].blue_link_ = linkdown;
+      routers_[routernumi].blue_link_ = linkup;
+      routers_[routernumj].blue_link_ = linkdown;
       uniqueId++;
     }
   }
