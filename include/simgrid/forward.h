@@ -168,7 +168,6 @@ class DiskModel;
 }
 namespace routing {
 class ClusterCreationArgs;
-class LinkCreationArgs;
 class NetPoint;
 class NetZoneImpl;
 class RouteCreationArgs;

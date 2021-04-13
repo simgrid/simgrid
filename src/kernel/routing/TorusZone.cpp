@@ -25,7 +25,6 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
   int dim_product = 1; // Needed to calculate the next neighbor_id
 
   for (unsigned int j = 0; j < dimensions_.size(); j++) {
-    LinkCreationArgs link;
     int current_dimension = dimensions_[j]; // which dimension are we currently in?
                                             // we need to iterate over all dimensions and create all links there
     // The other node the link connects
