@@ -34,8 +34,8 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
     std::string link_id =
         std::string(cluster->id) + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
-    s4u::Link* linkup;
-    s4u::Link* linkdown;
+    const s4u::Link* linkup;
+    const s4u::Link* linkdown;
     if (cluster->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
       linkup   = create_link(link_id + "_UP", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
       linkdown = create_link(link_id + "_DOWN", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();

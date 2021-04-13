@@ -338,8 +338,8 @@ void FatTreeZone::add_processing_node(int id, resource::LinkImpl* limiter, resou
 void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
 {
   static int uniqueId = 0;
-  s4u::Link* linkup;
-  s4u::Link* linkdown;
+  const s4u::Link* linkup;
+  const s4u::Link* linkdown;
   std::string id =
       "link_from_" + std::to_string(child->id) + "_" + std::to_string(parent->id) + "_" + std::to_string(uniqueId);
 
