@@ -75,12 +75,25 @@ public:
   void do_seal() override;
 
 private:
+  class StarRoute {
+  public:
+    std::vector<resource::LinkImpl*> links_up;   //!< list of links UP for route (can be empty)
+    std::vector<resource::LinkImpl*> links_down; //!< list of links DOWN for route (can be empty)
+    std::vector<resource::LinkImpl*> loopback;   //!< loopback links, cannot be empty if configured
+    bool links_up_set   = false;                 //!< bool to indicate that links_up was configured (empty or not)
+    bool links_down_set = false;                 //!< same for links_down
+    NetPoint* gateway   = nullptr;
+    bool has_loopback() const { return loopback.size() > 0; }
+    bool has_links_up() const { return links_up_set; }
+    bool has_links_down() const { return links_down_set; }
+  };
   /** @brief Auxiliary method to add links to a route */
   void add_links_to_route(const std::vector<resource::LinkImpl*>& links, RouteCreationArgs* route, double* latency,
                           std::unordered_set<resource::LinkImpl*>& added_links);
-  std::unordered_map<unsigned int, std::vector<resource::LinkImpl*>> links_up_;
-  std::unordered_map<unsigned int, std::vector<resource::LinkImpl*>> loopback_;
-  std::unordered_map<unsigned int, std::vector<resource::LinkImpl*>> links_down_;
+  /** @brief Auxiliary methods to check params received in add_route method */
+  void check_add_route_param(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                             const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+  std::unordered_map<unsigned int, StarRoute> routes_;
 };
 } // namespace routing
 } // namespace kernel
