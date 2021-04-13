@@ -579,8 +579,6 @@ void CommImpl::finish()
         simcall->timeout_cb_ = nullptr;
       }
       if (not MC_is_active() && not MC_record_replay_is_active()) {
-        CommImpl** comms   = simcall_comm_waitany__get__comms(simcall);
-        size_t count       = simcall_comm_waitany__get__count(simcall);
         CommImpl** element = std::find(comms, comms + count, this);
         int rank           = (element != comms + count) ? element - comms : -1;
         simcall_comm_waitany__set__result(simcall, rank);
