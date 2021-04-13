@@ -141,25 +141,18 @@ void DragonflyZone::generate_routers()
 }
 
 void DragonflyZone::generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
-                                  resource::LinkImpl** linkdown) const
+                                  resource::LinkImpl** linkdown)
 {
+  XBT_DEBUG("Generating link %s", id.c_str());
   *linkup   = nullptr;
   *linkdown = nullptr;
-  LinkCreationArgs linkTemplate;
-  linkTemplate.bandwidths.push_back(this->bw_ * numlinks);
-  linkTemplate.latency = this->lat_;
-  linkTemplate.policy  = this->sharing_policy_;
-  linkTemplate.id      = id;
-  sg_platf_new_link(&linkTemplate);
-  XBT_DEBUG("Generating link %s", linkTemplate.id.c_str());
-  resource::LinkImpl* link;
-  if (this->sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    *linkup   = s4u::Link::by_name(linkTemplate.id + "_UP")->get_impl();   // check link?
-    *linkdown = s4u::Link::by_name(linkTemplate.id + "_DOWN")->get_impl(); // check link ?
+  if (sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+    *linkup   = create_link(id + "_UP", std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
+    *linkdown = create_link(id + "_DOWN", std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
+
   } else {
-    link      = s4u::Link::by_name(linkTemplate.id)->get_impl();
-    *linkup   = link;
-    *linkdown = link;
+    *linkup   = create_link(id, std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
+    *linkdown = *linkup;
   }
 }
 

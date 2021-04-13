@@ -141,20 +141,13 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
 {
   std::string link_id = cluster->id + "_link_" + std::to_string(id);
 
-  LinkCreationArgs link;
-  link.id = link_id;
-  link.bandwidths.push_back(cluster->bw);
-  link.latency = cluster->lat;
-  link.policy  = cluster->sharing_policy;
-  sg_platf_new_link(&link);
-
   const s4u::Link* linkUp;
   const s4u::Link* linkDown;
-  if (link.policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkUp   = s4u::Link::by_name(link_id + "_UP");
-    linkDown = s4u::Link::by_name(link_id + "_DOWN");
+  if (cluster->sharing_policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
+    linkUp   = create_link(link_id + "_UP", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+    linkDown = create_link(link_id + "_DOWN", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
   } else {
-    linkUp   = s4u::Link::by_name(link_id);
+    linkUp   = create_link(link_id, std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
     linkDown = linkUp;
   }
   private_links_.insert({position, {linkUp->get_impl(), linkDown->get_impl()}});

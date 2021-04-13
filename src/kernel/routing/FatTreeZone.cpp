@@ -71,9 +71,9 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
   if (source->id == destination->id && has_loopback()) {
-    into->link_list.push_back(source->loopback);
+    into->link_list.push_back(source->loopback_);
     if (latency)
-      *latency += source->loopback->get_latency();
+      *latency += source->loopback_->get_latency();
     return;
   }
 
@@ -255,7 +255,7 @@ void FatTreeZone::generate_switches()
   int k = 0;
   for (unsigned int i = 0; i < this->levels_; i++) {
     for (unsigned int j = 0; j < this->nodes_by_level_[i + 1]; j++) {
-      auto* newNode = new FatTreeNode(this->cluster_, --k, i + 1, j);
+      auto* newNode = new FatTreeNode(--k, i + 1, j, nullptr, nullptr);
       XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
       newNode->children.resize(this->num_children_per_node_[i] * this->num_port_lower_level_[i]);
       if (i != this->levels_ - 1) {
@@ -323,12 +323,12 @@ int FatTreeZone::get_level_position(const unsigned int level)
   return tempPosition;
 }
 
-void FatTreeZone::add_processing_node(int id)
+void FatTreeZone::add_processing_node(int id, resource::LinkImpl* limiter, resource::LinkImpl* loopback)
 {
   using std::make_pair;
   static int position = 0;
   FatTreeNode* newNode;
-  newNode = new FatTreeNode(this->cluster_, id, 0, position++);
+  newNode = new FatTreeNode(id, 0, position++, limiter, loopback);
   newNode->parents.resize(this->num_parents_per_node_[0] * this->num_port_lower_level_[0]);
   newNode->label.resize(this->levels_);
   this->compute_nodes_.insert(make_pair(id, newNode));
@@ -337,8 +337,22 @@ void FatTreeZone::add_processing_node(int id)
 
 void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
 {
-  FatTreeLink* newLink;
-  newLink = new FatTreeLink(this->cluster_, child, parent);
+  static int uniqueId = 0;
+  s4u::Link* linkup;
+  s4u::Link* linkdown;
+  std::string id =
+      "link_from_" + std::to_string(child->id) + "_" + std::to_string(parent->id) + "_" + std::to_string(uniqueId);
+
+  if (cluster_->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+    linkup   = create_link(id + "_UP", std::vector<double>{cluster_->bw})->set_latency(cluster_->lat)->seal();
+    linkdown = create_link(id + "_DOWN", std::vector<double>{cluster_->bw})->set_latency(cluster_->lat)->seal();
+  } else {
+    linkup   = create_link(id, std::vector<double>{cluster_->bw})->set_latency(cluster_->lat)->seal();
+    linkdown = linkup;
+  }
+  uniqueId++;
+
+  FatTreeLink* newLink = new FatTreeLink(child, parent, linkup->get_impl(), linkdown->get_impl());
   XBT_DEBUG("Creating a link between the parent (%u,%u,%u) and the child (%u,%u,%u)", parent->level, parent->position,
             parentPort, child->level, child->position, childPort);
   parent->children[parentPort] = newLink;
@@ -427,50 +441,6 @@ void FatTreeZone::generate_dot_file(const std::string& filename) const
   }
   file << "}";
   file.close();
-}
-
-FatTreeNode::FatTreeNode(const ClusterCreationArgs* cluster, int id, int level, int position)
-    : id(id), level(level), position(position)
-{
-  LinkCreationArgs linkTemplate;
-  if (cluster->limiter_link != 0.0) {
-    linkTemplate.bandwidths.push_back(cluster->limiter_link);
-    linkTemplate.latency = 0;
-    linkTemplate.policy  = s4u::Link::SharingPolicy::SHARED;
-    linkTemplate.id      = "limiter_" + std::to_string(id);
-    sg_platf_new_link(&linkTemplate);
-    this->limiter_link_ = s4u::Link::by_name(linkTemplate.id)->get_impl();
-  }
-  if (cluster->loopback_bw != 0.0 || cluster->loopback_lat != 0.0) {
-    linkTemplate.bandwidths.push_back(cluster->loopback_bw);
-    linkTemplate.latency = cluster->loopback_lat;
-    linkTemplate.policy  = s4u::Link::SharingPolicy::FATPIPE;
-    linkTemplate.id      = "loopback_" + std::to_string(id);
-    sg_platf_new_link(&linkTemplate);
-    this->loopback = s4u::Link::by_name(linkTemplate.id)->get_impl();
-  }
-}
-
-FatTreeLink::FatTreeLink(const ClusterCreationArgs* cluster, FatTreeNode* downNode, FatTreeNode* upNode)
-    : up_node_(upNode), down_node_(downNode)
-{
-  static int uniqueId = 0;
-  LinkCreationArgs linkTemplate;
-  linkTemplate.bandwidths.push_back(cluster->bw);
-  linkTemplate.latency = cluster->lat;
-  linkTemplate.policy  = cluster->sharing_policy; // sthg to do with that ?
-  linkTemplate.id =
-      "link_from_" + std::to_string(downNode->id) + "_" + std::to_string(upNode->id) + "_" + std::to_string(uniqueId);
-  sg_platf_new_link(&linkTemplate);
-
-  if (cluster->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    this->up_link_   = s4u::Link::by_name(linkTemplate.id + "_UP")->get_impl();   // check link?
-    this->down_link_ = s4u::Link::by_name(linkTemplate.id + "_DOWN")->get_impl(); // check link ?
-  } else {
-    this->up_link_   = s4u::Link::by_name(linkTemplate.id)->get_impl();
-    this->down_link_ = this->up_link_;
-  }
-  uniqueId++;
 }
 } // namespace routing
 } // namespace kernel

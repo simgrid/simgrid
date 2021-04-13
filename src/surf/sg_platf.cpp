@@ -197,33 +197,34 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     // other columns are to store one or more link for the node
 
     // add a loopback link
+    simgrid::kernel::resource::LinkImpl* loopback = nullptr;
     if (cluster->loopback_bw > 0 || cluster->loopback_lat > 0) {
       std::string loopback_name = link_id + "_loopback";
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", loopback_name.c_str(), cluster->loopback_bw);
 
-      auto* loopback = current_zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
-                           ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
-                           ->set_latency(cluster->loopback_lat)
-                           ->seal()
-                           ->get_impl();
+      loopback = current_zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
+                     ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
+                     ->set_latency(cluster->loopback_lat)
+                     ->seal()
+                     ->get_impl();
 
       current_zone->add_private_link_at(current_zone->node_pos(rankId), {loopback, loopback});
     }
 
     // add a limiter link (shared link to account for maximal bandwidth of the node)
+    simgrid::kernel::resource::LinkImpl* limiter = nullptr;
     if (cluster->limiter_link > 0) {
       std::string limiter_name = std::string(link_id) + "_limiter";
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", limiter_name.c_str(), cluster->limiter_link);
 
-      auto* limiter =
-          current_zone->create_link(limiter_name, std::vector<double>{cluster->limiter_link})->seal()->get_impl();
+      limiter = current_zone->create_link(limiter_name, std::vector<double>{cluster->limiter_link})->seal()->get_impl();
 
       current_zone->add_private_link_at(current_zone->node_pos_with_loopback(rankId), {limiter, limiter});
     }
 
     // call the cluster function that adds the others links
     if (cluster->topology == simgrid::kernel::routing::ClusterTopology::FAT_TREE) {
-      static_cast<FatTreeZone*>(current_zone)->add_processing_node(i);
+      static_cast<FatTreeZone*>(current_zone)->add_processing_node(i, limiter, loopback);
     } else {
       current_zone->create_links_for_node(cluster, i, rankId, current_zone->node_pos_with_loopback_limiter(rankId));
     }

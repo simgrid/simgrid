@@ -79,8 +79,7 @@ private:
   void do_seal() override;
   void generate_routers();
   void generate_links();
-  void generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
-                     resource::LinkImpl** linkdown) const;
+  void generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
 
   simgrid::s4u::Link::SharingPolicy sharing_policy_ = simgrid::s4u::Link::SharingPolicy::SHARED;
   double bw_  = 0;
