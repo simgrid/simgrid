@@ -422,7 +422,7 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   }
 }
 
-int CommImpl::test_any(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
+int CommImpl::test_any(const actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
 {
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = issuer->simcall_.mc_value_;
