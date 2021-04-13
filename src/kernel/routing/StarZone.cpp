@@ -61,6 +61,27 @@ void StarZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
 void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges)
 {
+  xbt_node_t star_node = new_xbt_graph_node(graph, get_cname(), nodes);
+
+  for (auto const& src : get_vertices()) {
+    /* going up */
+    xbt_node_t src_node = new_xbt_graph_node(graph, src->get_cname(), nodes);
+    xbt_node_t previous = src_node;
+    for (auto* link : links_up_[src->id()]) {
+      xbt_node_t current = new_xbt_graph_node(graph, link->get_cname(), nodes);
+      new_xbt_graph_edge(graph, previous, current, edges);
+      previous = current;
+    }
+    new_xbt_graph_edge(graph, previous, star_node, edges);
+    /* going down */
+    previous = star_node;
+    for (auto* link : links_down_[src->id()]) {
+      xbt_node_t current = new_xbt_graph_node(graph, link->get_cname(), nodes);
+      new_xbt_graph_edge(graph, previous, current, edges);
+      previous = current;
+    }
+    new_xbt_graph_edge(graph, previous, src_node, edges);
+  }
 }
 
 void StarZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
