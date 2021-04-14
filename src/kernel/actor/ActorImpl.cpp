@@ -355,7 +355,7 @@ s4u::Actor* ActorImpl::restart()
   XBT_DEBUG("Restarting actor %s on %s", get_cname(), host_->get_cname());
 
   // retrieve the arguments of the old actor
-  ProcessArg arg = ProcessArg(host_, this);
+  ProcessArg arg(host_, this);
 
   // kill the old actor
   context::Context::self()->get_actor()->kill(this);

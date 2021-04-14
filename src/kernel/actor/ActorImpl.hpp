@@ -160,7 +160,9 @@ public:
   /* list of functions executed when the process dies */
   const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit;
 
-  ProcessArg() = delete;
+  ProcessArg()                  = delete;
+  ProcessArg(const ProcessArg&) = delete;
+  ProcessArg& operator=(const ProcessArg&) = delete;
 
   explicit ProcessArg(const std::string& name, const std::function<void()>& code, void* data, s4u::Host* host,
                       double kill_time, const std::unordered_map<std::string, std::string>& properties,
