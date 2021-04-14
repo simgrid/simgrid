@@ -327,8 +327,7 @@ void FatTreeZone::add_processing_node(int id, resource::LinkImpl* limiter, resou
 {
   using std::make_pair;
   static int position = 0;
-  FatTreeNode* newNode;
-  newNode = new FatTreeNode(id, 0, position++, limiter, loopback);
+  auto* newNode       = new FatTreeNode(id, 0, position++, limiter, loopback);
   newNode->parents.resize(this->num_parents_per_node_[0] * this->num_port_lower_level_[0]);
   newNode->label.resize(this->levels_);
   this->compute_nodes_.insert(make_pair(id, newNode));
@@ -352,7 +351,7 @@ void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTree
   }
   uniqueId++;
 
-  FatTreeLink* newLink = new FatTreeLink(child, parent, linkup->get_impl(), linkdown->get_impl());
+  auto* newLink = new FatTreeLink(child, parent, linkup->get_impl(), linkdown->get_impl());
   XBT_DEBUG("Creating a link between the parent (%u,%u,%u) and the child (%u,%u,%u)", parent->level, parent->position,
             parentPort, child->level, child->position, childPort);
   parent->children[parentPort] = newLink;

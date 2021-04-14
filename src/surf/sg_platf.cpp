@@ -127,11 +127,11 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link)
 
 void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  simgrid::s4u::Disk* new_disk = routing_get_current()
-                                     ->create_disk(disk->id, disk->read_bw, disk->write_bw)
-                                     ->set_host(current_host)
-                                     ->set_properties(disk->properties)
-                                     ->seal();
+  const simgrid::s4u::Disk* new_disk = routing_get_current()
+                                           ->create_disk(disk->id, disk->read_bw, disk->write_bw)
+                                           ->set_host(current_host)
+                                           ->set_properties(disk->properties)
+                                           ->seal();
 
   current_host->add_disk(new_disk);
 }
@@ -247,8 +247,9 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     auto* backbone = current_zone->create_link(bb_name, std::vector<double>{cluster->bb_bw})
                          ->set_sharing_policy(cluster->bb_sharing_policy)
                          ->set_latency(cluster->bb_lat)
-                         ->seal();
-    current_zone->set_backbone(backbone->get_impl());
+                         ->seal()
+                         ->get_impl();
+    current_zone->set_backbone(backbone);
   }
 
   XBT_DEBUG("</zone>");
@@ -273,14 +274,18 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* c
   auto* zone = static_cast<simgrid::kernel::routing::ClusterZone*>(routing_get_current());
   for (int const& radical : cabinet->radicals) {
     std::string id           = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
-    simgrid::s4u::Host* host = zone->create_host(id, std::vector<double>{cabinet->speed})->seal();
+    auto const* netpoint     = zone->create_host(id, std::vector<double>{cabinet->speed})->seal()->get_netpoint();
 
-    simgrid::s4u::Link* link_up =
-        zone->create_link("link_" + id + "_UP", std::vector<double>{cabinet->bw})->set_latency(cabinet->lat)->seal();
-    simgrid::s4u::Link* link_down =
-        zone->create_link("link_" + id + "_DOWN", std::vector<double>{cabinet->bw})->set_latency(cabinet->lat)->seal();
+    auto* link_up = zone->create_link("link_" + id + "_UP", std::vector<double>{cabinet->bw})
+                        ->set_latency(cabinet->lat)
+                        ->seal()
+                        ->get_impl();
+    auto* link_down = zone->create_link("link_" + id + "_DOWN", std::vector<double>{cabinet->bw})
+                          ->set_latency(cabinet->lat)
+                          ->seal()
+                          ->get_impl();
 
-    zone->add_private_link_at(host->get_netpoint()->id(), {link_up->get_impl(), link_down->get_impl()});
+    zone->add_private_link_at(netpoint->id(), {link_up, link_down});
   }
 }
 
@@ -371,13 +376,14 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
   auto* zone = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(zone, "<peer> tag can only be used in Vivaldi netzones.");
 
-  simgrid::s4u::Host* host = zone->create_host(peer->id, std::vector<double>{peer->speed})
-                                 ->set_state_profile(peer->state_trace)
-                                 ->set_speed_profile(peer->speed_trace)
-                                 ->set_coordinates(peer->coord)
-                                 ->seal();
+  auto* netpoint = zone->create_host(peer->id, std::vector<double>{peer->speed})
+                       ->set_state_profile(peer->state_trace)
+                       ->set_speed_profile(peer->speed_trace)
+                       ->set_coordinates(peer->coord)
+                       ->seal()
+                       ->get_netpoint();
 
-  zone->set_peer_link(host->get_netpoint(), peer->bw_in, peer->bw_out);
+  zone->set_peer_link(netpoint, peer->bw_in, peer->bw_out);
 }
 /**
  * @brief Auxiliary function to build the object NetZoneImpl
