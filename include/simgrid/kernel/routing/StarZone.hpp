@@ -62,7 +62,6 @@ namespace routing {
  */
 
 class StarZone : public NetZoneImpl {
-
 public:
   explicit StarZone(const std::string& name);
 
