@@ -143,6 +143,10 @@ namespace lmm {
  */
 class XBT_PUBLIC Element {
 public:
+  Element()               = default;
+  Element(const Element&) = default;
+  Element(Element&&)      = delete;
+
   int get_concurrency() const;
   void decrease_concurrency();
   void increase_concurrency();
