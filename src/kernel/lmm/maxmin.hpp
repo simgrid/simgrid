@@ -145,7 +145,7 @@ class XBT_PUBLIC Element {
 public:
   Element()               = default;
   Element(const Element&) = default;
-  Element(Element&&)      = delete;
+  Element(Element&& that) noexcept : Element(that) {}
 
   int get_concurrency() const;
   void decrease_concurrency();
