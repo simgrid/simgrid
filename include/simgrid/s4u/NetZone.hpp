@@ -68,20 +68,9 @@ public:
   /**
    * @brief Add a route between 2 netpoints
    *
-   * Create a regular route between 2 netpoints. A netpoint can be a host
-   * or a router.
-   *
-   * @param src Source netpoint
-   * @param dst Destination netpoint
-   * @param link_list List of links used in this communication
-   * @param symmetrical Bi-directional communication
-   */
-  void add_regular_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         const std::vector<Link*>& link_list, bool symmetrical = true);
-  /**
-   * @brief Add a route between 2 netzones
-   *
-   * Create a route between 2 netzones, connecting 2 gateways.
+   * Create a route:
+   * - route between 2 hosts/routers in same netzone, no gateway is needed
+   * - route between 2 netzones, connecting 2 gateways.
    *
    * @param src Source netzone's netpoint
    * @param dst Destination netzone' netpoint
@@ -90,13 +79,12 @@ public:
    * @param link_list List of links used in this communication
    * @param symmetrical Bi-directional communication
    */
-  void add_netzone_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         const std::vector<Link*>& link_list, bool symmetrical = true);
-
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-                 kernel::routing::NetPoint* gw_dst, const std::vector<kernel::resource::LinkImpl*>& link_list,
-                 bool symmetrical);
+                 kernel::routing::NetPoint* gw_dst, const std::vector<Link*>& link_list, bool symmetrical = true);
+
+  XBT_ATTRIB_DEPRECATED_v332("Please use add_route() method which uses s4u::Link instead of LinkImpl") void add_route(
+      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+      kernel::routing::NetPoint* gw_dst, const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);

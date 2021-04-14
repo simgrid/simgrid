@@ -108,17 +108,11 @@ std::vector<kernel::resource::LinkImpl*> NetZone::get_link_list_impl(const std::
   return links;
 }
 
-void NetZone::add_regular_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                                const std::vector<Link*>& link_list, bool symmetrical)
+void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                        kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                        const std::vector<Link*>& link_list, bool symmetrical)
 {
-  add_route(src, dst, nullptr, nullptr, NetZone::get_link_list_impl(link_list), symmetrical);
-}
-
-void NetZone::add_netzone_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                                kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                const std::vector<Link*>& link_list, bool symmetrical)
-{
-  add_route(src, dst, gw_src, gw_dst, NetZone::get_link_list_impl(link_list), symmetrical);
+  pimpl_->add_route(src, dst, gw_src, gw_dst, NetZone::get_link_list_impl(link_list), symmetrical);
 }
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
