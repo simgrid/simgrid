@@ -176,7 +176,7 @@ private:
   std::shared_ptr<resource::DiskModel> disk_model_;
   std::shared_ptr<simgrid::surf::HostModel> host_model_;
   /** @brief Perform sealing procedure for derived classes, if necessary */
-  virtual void do_seal(){};
+  virtual void do_seal() { /* obviously nothing to do by default */ }
   void add_child(NetZoneImpl* new_zone);
 };
 } // namespace routing
