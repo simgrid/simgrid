@@ -19,8 +19,6 @@ public:
   std::deque<unsigned int> nodes_; // Nodes in the bucket.
   unsigned int getId() const { return id_; }
   explicit Bucket(unsigned int id) : id_(id) {}
-  Bucket(const Bucket&) = default;
-  Bucket(Bucket&&)      = delete;
 };
 
 /* Node routing table */
