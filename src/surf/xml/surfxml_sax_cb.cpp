@@ -234,7 +234,7 @@ void STag_surfxml_prop()
 void STag_surfxml_host()
 {
   simgrid::kernel::routing::HostCreationArgs host;
-  property_sets.push_back(std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
   host.id = A_surfxml_host_id;
 
   host.speed_per_pstate =
@@ -266,7 +266,7 @@ void ETag_surfxml_host()
 }
 
 void STag_surfxml_disk() {
-  property_sets.push_back(std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
 }
 
 void ETag_surfxml_disk() {
@@ -382,7 +382,7 @@ void ETag_surfxml_cluster(){
 }
 
 void STag_surfxml_cluster(){
-  property_sets.push_back(std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
 }
 
 void STag_surfxml_cabinet(){
@@ -431,7 +431,7 @@ void STag_surfxml_peer(){
 }
 
 void STag_surfxml_link(){
-  property_sets.push_back(std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
 }
 
 void ETag_surfxml_link(){
@@ -696,7 +696,7 @@ void ETag_surfxml_AS()
 
 void STag_surfxml_zone()
 {
-  property_sets.push_back(std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
   zone.routing = A_surfxml_zone_routing;
@@ -713,7 +713,7 @@ void ETag_surfxml_zone()
 
 void STag_surfxml_config()
 {
-  property_sets.push_back(std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   if (_sg_cfg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
@@ -754,7 +754,7 @@ void STag_surfxml_process()
 
 void STag_surfxml_actor()
 {
-  property_sets.push_back(std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
   arguments.assign(1, A_surfxml_actor_function);
 }
 
