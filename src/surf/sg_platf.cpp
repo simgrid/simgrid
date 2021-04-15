@@ -92,6 +92,20 @@ void sg_platf_new_host_seal(int pstate)
   current_host = nullptr;
 }
 
+void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* args)
+{
+  auto* zone = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
+  xbt_assert(zone, "<peer> tag can only be used in Vivaldi netzones.");
+
+  auto* peer = zone->create_host(args->id, std::vector<double>{args->speed})
+                   ->set_state_profile(args->state_trace)
+                   ->set_speed_profile(args->speed_trace)
+                   ->set_coordinates(args->coord)
+                   ->seal();
+
+  zone->set_peer_link(peer->get_netpoint(), args->bw_in, args->bw_out);
+}
+
 /** @brief Add a "router" to the network element list */
 simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name, const std::string& coords)
 {
@@ -269,23 +283,20 @@ void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb)
   XBT_DEBUG("Add a backbone to zone '%s'", current_routing->get_cname());
 }
 
-void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabinet)
+void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* args)
 {
   auto* zone = static_cast<simgrid::kernel::routing::ClusterZone*>(routing_get_current());
-  for (int const& radical : cabinet->radicals) {
-    std::string id           = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
-    auto const* netpoint     = zone->create_host(id, std::vector<double>{cabinet->speed})->seal()->get_netpoint();
+  for (int const& radical : args->radicals) {
+    std::string id   = args->prefix + std::to_string(radical) + args->suffix;
+    auto const* host = zone->create_host(id, std::vector<double>{args->speed})->seal();
 
-    auto* link_up = zone->create_link("link_" + id + "_UP", std::vector<double>{cabinet->bw})
-                        ->set_latency(cabinet->lat)
-                        ->seal()
-                        ->get_impl();
-    auto* link_down = zone->create_link("link_" + id + "_DOWN", std::vector<double>{cabinet->bw})
-                          ->set_latency(cabinet->lat)
-                          ->seal()
-                          ->get_impl();
+    auto* link_up =
+        zone->create_link("link_" + id + "_UP", std::vector<double>{args->bw})->set_latency(args->lat)->seal();
 
-    zone->add_private_link_at(netpoint->id(), {link_up, link_down});
+    auto* link_down =
+        zone->create_link("link_" + id + "_DOWN", std::vector<double>{args->bw})->set_latency(args->lat)->seal();
+
+    zone->add_private_link_at(host->get_netpoint()->id(), {link_up->get_impl(), link_down->get_impl()});
   }
 }
 
@@ -371,20 +382,6 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   }
 }
 
-void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer)
-{
-  auto* zone = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
-  xbt_assert(zone, "<peer> tag can only be used in Vivaldi netzones.");
-
-  auto* netpoint = zone->create_host(peer->id, std::vector<double>{peer->speed})
-                       ->set_state_profile(peer->state_trace)
-                       ->set_speed_profile(peer->speed_trace)
-                       ->set_coordinates(peer->coord)
-                       ->seal()
-                       ->get_netpoint();
-
-  zone->set_peer_link(netpoint, peer->bw_in, peer->bw_out);
-}
 /**
  * @brief Auxiliary function to build the object NetZoneImpl
  *
@@ -500,15 +497,15 @@ void sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs*
   cluster_zone->add_private_link_at(netpoint->id(), {linkUp->get_impl(), linkDown->get_impl()});
 }
 
-void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* profile)
+void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* args)
 {
-  simgrid::kernel::profile::Profile* mgr_profile;
-  if (not profile->file.empty()) {
-    mgr_profile = simgrid::kernel::profile::Profile::from_file(profile->file);
+  simgrid::kernel::profile::Profile* profile;
+  if (not args->file.empty()) {
+    profile = simgrid::kernel::profile::Profile::from_file(args->file);
   } else {
-    xbt_assert(not profile->pc_data.empty(), "Trace '%s' must have either a content, or point to a file on disk.",
-               profile->id.c_str());
-    mgr_profile = simgrid::kernel::profile::Profile::from_string(profile->id, profile->pc_data, profile->periodicity);
+    xbt_assert(not args->pc_data.empty(), "Trace '%s' must have either a content, or point to a file on disk.",
+               args->id.c_str());
+    profile = simgrid::kernel::profile::Profile::from_string(args->id, args->pc_data, args->periodicity);
   }
-  traces_set_list.insert({profile->id, mgr_profile});
+  traces_set_list.insert({args->id, profile});
 }

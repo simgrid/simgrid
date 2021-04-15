@@ -68,12 +68,10 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
 
   std::string link_up        = "link_" + netpoint->get_name() + "_UP";
   std::string link_down      = "link_" + netpoint->get_name() + "_DOWN";
-  resource::LinkImpl* linkUp = get_network_model()->create_link(link_up, std::vector<double>(1, bw_out));
-  linkUp->seal();
-  resource::LinkImpl* linkDown = get_network_model()->create_link(link_down, std::vector<double>(1, bw_in));
-  linkDown->seal();
-  add_route(netpoint, nullptr, nullptr, nullptr, {linkUp}, false);
-  add_route(nullptr, netpoint, nullptr, nullptr, {linkDown}, false);
+  auto* linkUp               = create_link(link_up, std::vector<double>{bw_out})->seal();
+  auto* linkDown             = create_link(link_down, std::vector<double>{bw_in})->seal();
+  add_route(netpoint, nullptr, nullptr, nullptr, {linkUp->get_impl()}, false);
+  add_route(nullptr, netpoint, nullptr, nullptr, {linkDown->get_impl()}, false);
 }
 
 void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
