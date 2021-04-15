@@ -123,6 +123,13 @@ public:
   /** @brief Create a link (string version) */
   s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths);
 
+  /**
+   * @brief Make a router within that NetZone
+   *
+   * @param name Router name
+   */
+  kernel::routing::NetPoint* create_router(const std::string& name);
+
   /** @brief Seal this netzone configuration */
   NetZone* seal();
 

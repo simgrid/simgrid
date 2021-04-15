@@ -174,6 +174,11 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::
   return create_link(name, bw);
 }
 
+kernel::routing::NetPoint* NetZone::create_router(const std::string& name)
+{
+  return kernel::actor::simcall([this, &name] { return pimpl_->create_router(name); });
+}
+
 } // namespace s4u
 } // namespace simgrid
 
