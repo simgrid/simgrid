@@ -1920,11 +1920,11 @@ include examples/platforms/profiles/trace_A_failure.txt
 include examples/platforms/profiles/trace_B.txt
 include examples/platforms/prop.xml
 include examples/platforms/ptask_L07.xml
+include examples/platforms/routing_cluster.cpp
 include examples/platforms/routing_cluster.lua
 include examples/platforms/routing_cluster.xml
 include examples/platforms/routing_none.xml
 include examples/platforms/simulacrum_7_hosts.xml
-include examples/platforms/small_platform.cpp
 include examples/platforms/small_platform.lua
 include examples/platforms/small_platform.xml
 include examples/platforms/small_platform_constant.xml
