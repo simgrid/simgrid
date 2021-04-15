@@ -17,7 +17,7 @@ namespace routing {
 StarZone::StarZone(const std::string& name) : NetZoneImpl(name) {}
 
 void StarZone::add_links_to_route(const std::vector<resource::LinkImpl*>& links, RouteCreationArgs* route,
-                                  double* latency, std::unordered_set<resource::LinkImpl*>& added_links)
+                                  double* latency, std::unordered_set<resource::LinkImpl*>& added_links) const
 {
   for (auto* link : links) {
     /* do not add duplicated links */
@@ -68,7 +68,7 @@ void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_n
     /* going up */
     xbt_node_t src_node = new_xbt_graph_node(graph, src->get_cname(), nodes);
     xbt_node_t previous = src_node;
-    for (auto* link : routes_[src->id()].links_up) {
+    for (auto const* link : routes_[src->id()].links_up) {
       xbt_node_t current = new_xbt_graph_node(graph, link->get_cname(), nodes);
       new_xbt_graph_edge(graph, previous, current, edges);
       previous = current;
@@ -76,7 +76,7 @@ void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_n
     new_xbt_graph_edge(graph, previous, star_node, edges);
     /* going down */
     previous = star_node;
-    for (auto* link : routes_[src->id()].links_down) {
+    for (auto const* link : routes_[src->id()].links_down) {
       xbt_node_t current = new_xbt_graph_node(graph, link->get_cname(), nodes);
       new_xbt_graph_edge(graph, previous, current, edges);
       previous = current;
@@ -85,8 +85,8 @@ void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_n
   }
 }
 
-void StarZone::check_add_route_param(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                     const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
+void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, const NetPoint* gw_src,
+                                     const NetPoint* gw_dst, bool symmetrical) const
 {
   const char* src_name = src ? src->get_cname() : "nullptr";
   const char* dst_name = dst ? dst->get_cname() : "nullptr";
@@ -116,7 +116,7 @@ void StarZone::check_add_route_param(NetPoint* src, NetPoint* dst, NetPoint* gw_
 void StarZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                          const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
 {
-  check_add_route_param(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  check_add_route_param(src, dst, gw_src, gw_dst, symmetrical);
 
   s4u::NetZone::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, link_list);
 

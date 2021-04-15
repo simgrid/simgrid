@@ -82,16 +82,16 @@ private:
     bool links_up_set   = false;                 //!< bool to indicate that links_up was configured (empty or not)
     bool links_down_set = false;                 //!< same for links_down
     NetPoint* gateway   = nullptr;
-    bool has_loopback() const { return loopback.size() > 0; }
+    bool has_loopback() const { return not loopback.empty(); }
     bool has_links_up() const { return links_up_set; }
     bool has_links_down() const { return links_down_set; }
   };
   /** @brief Auxiliary method to add links to a route */
   void add_links_to_route(const std::vector<resource::LinkImpl*>& links, RouteCreationArgs* route, double* latency,
-                          std::unordered_set<resource::LinkImpl*>& added_links);
+                          std::unordered_set<resource::LinkImpl*>& added_links) const;
   /** @brief Auxiliary methods to check params received in add_route method */
-  void check_add_route_param(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                             const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+  void check_add_route_param(const NetPoint* src, const NetPoint* dst, const NetPoint* gw_src, const NetPoint* gw_dst,
+                             bool symmetrical) const;
   std::unordered_map<unsigned int, StarRoute> routes_;
 };
 } // namespace routing
