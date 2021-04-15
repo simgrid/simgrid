@@ -78,8 +78,8 @@ TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
   surf_network_model_init_LegrandVelho();
   surf_cpu_model_init_Cas01();
 
-  auto* host1 = zone->create_host("netpoint1", {100});
-  auto* host2 = zone->create_host("netpoint2", {100});
+  const auto* host1 = zone->create_host("netpoint1", {100});
+  const auto* host2 = zone->create_host("netpoint2", {100});
   std::vector<simgrid::kernel::resource::LinkImpl*> links;
   links.push_back(zone->create_link("link1", {100})->get_impl());
   std::vector<simgrid::kernel::resource::LinkImpl*> links2;
@@ -154,8 +154,8 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
   surf_network_model_init_LegrandVelho();
   surf_cpu_model_init_Cas01();
 
-  auto* host1 = zone->create_host("netpoint1", {100});
-  auto* host2 = zone->create_host("netpoint2", {100});
+  const auto* host1 = zone->create_host("netpoint1", {100});
+  const auto* host2 = zone->create_host("netpoint2", {100});
 
   SECTION("Get route: no shared link")
   {
