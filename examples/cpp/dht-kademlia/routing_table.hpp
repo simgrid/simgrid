@@ -19,6 +19,10 @@ public:
   std::deque<unsigned int> nodes_; // Nodes in the bucket.
   unsigned int getId() const { return id_; }
   explicit Bucket(unsigned int id) : id_(id) {}
+  // Use rule-of-three, and implicitely disable the move constructor which cannot be 'noexcept' (as required by C++ Core
+  // Guidelines), due to the std::deque member.
+  Bucket(const Bucket&) = default;
+  ~Bucket()             = default;
 };
 
 /* Node routing table */
