@@ -116,19 +116,18 @@ static void* asan_safe_memcpy(void* dest, void* src, size_t n)
  */
 int smpi_temp_shm_get()
 {
-  constexpr unsigned VAL_MASK = 0xffffffffUL;
-  static unsigned prev_val    = VAL_MASK;
+  constexpr unsigned INDEX_MASK = 0xffffffffUL;
+  static unsigned index         = INDEX_MASK;
   char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on macOS (shm_open raises ENAMETOOLONG otherwise)
   int fd;
 
-  for (unsigned i = (prev_val + 1) & VAL_MASK; i != prev_val; i = (i + 1) & VAL_MASK) {
-    snprintf(shmname, sizeof(shmname), "/smpi-buffer-%016x", i);
+  unsigned limit = index;
+  do {
+    index = (index + 1) & INDEX_MASK;
+    snprintf(shmname, sizeof(shmname), "/smpi-buffer-%016x", index);
     fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-    if (fd != -1 || errno != EEXIST) {
-      prev_val = i;
-      break;
-    }
-  }
+  } while (fd == -1 && errno == EEXIST && index != limit);
+
   if (fd < 0) {
     if (errno == EMFILE) {
       xbt_die("Impossible to create temporary file for memory mapping: %s\n\
