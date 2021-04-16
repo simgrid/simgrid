@@ -143,19 +143,40 @@ NetZone* NetZone::seal()
   return this;
 }
 
+s4u::Host* NetZone::create_host(const std::string& name, double speed)
+{
+  return create_host(name, {speed});
+}
+
 s4u::Host* NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   return kernel::actor::simcall(
       [this, &name, &speed_per_pstate] { return pimpl_->create_host(name, speed_per_pstate); });
 }
+
+s4u::Host* NetZone::create_host(const std::string& name, const std::string& speed)
+{
+  return create_host(name, {speed});
+}
+
 s4u::Host* NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
 {
   return create_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
 }
 
+s4u::Link* NetZone::create_link(const std::string& name, double bandwidth)
+{
+  return create_link(name, {bandwidth});
+}
+
 s4u::Link* NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   return kernel::actor::simcall([this, &name, &bandwidths] { return pimpl_->create_link(name, bandwidths); });
+}
+
+s4u::Link* NetZone::create_link(const std::string& name, const std::string& bandwidth)
+{
+  return create_link(name, {bandwidth});
 }
 
 s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidths)

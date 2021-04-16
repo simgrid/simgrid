@@ -104,12 +104,14 @@ public:
    * @param speed_per_state Vector of CPU's speeds
    */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
+  s4u::Host* create_host(const std::string& name, double speed);
   /**
    * @brief Create a Host (string version)
    *
    * @throw std::invalid_argument if speed format is incorrect.
    */
   s4u::Host* create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate);
+  s4u::Host* create_host(const std::string& name, const std::string& speed);
 
   /**
    * @brief Create a link
@@ -119,9 +121,11 @@ public:
    * @throw std::invalid_argument if bandwidth format is incorrect.
    */
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::Link* create_link(const std::string& name, double bandwidth);
 
   /** @brief Create a link (string version) */
   s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths);
+  s4u::Link* create_link(const std::string& name, const std::string& bandwidth);
 
   /**
    * @brief Make a router within that NetZone
