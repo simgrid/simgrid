@@ -149,30 +149,25 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup) const
 
 int Group::intersection(MPI_Group group2, MPI_Group* newgroup) const
 {
-  int size2 = group2->size();
-  for (int i = 0; i < size2; i++) {
+  std::vector<int> to_incl;
+  for (int i = 0; i < group2->size(); i++) {
     s4u::Actor* actor = group2->actor(i);
-    int proc1 = this->rank(actor);
-    if (proc1 == MPI_UNDEFINED) {
-      size2--;
-    }
+    if (rank(actor) != MPI_UNDEFINED)
+      to_incl.push_back(i);
   }
-  if (size2 == 0) {
+
+  if (to_incl.empty()) {
     *newgroup = MPI_GROUP_EMPTY;
-  } else {
-    *newgroup = new  Group(size2);
-    int j=0;
-    for (int i = 0; i < group2->size(); i++) {
-      s4u::Actor* actor = group2->actor(i);
-      int proc1 = this->rank(actor);
-      if (proc1 != MPI_UNDEFINED) {
-        (*newgroup)->set_mapping(actor, j);
-        j++;
-      }
-    }
-    if((*newgroup)!=MPI_GROUP_EMPTY)
-      (*newgroup)->add_f();
+    return MPI_SUCCESS;
   }
+
+  int newsize = static_cast<int>(to_incl.size());
+  *newgroup   = new Group(newsize);
+  for (int i = 0; i < newsize; i++) {
+    s4u::Actor* actor = group2->actor(to_incl[i]);
+    (*newgroup)->set_mapping(actor, i);
+  }
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
