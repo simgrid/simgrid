@@ -119,31 +119,31 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup) const
 
 int Group::group_union(MPI_Group group2, MPI_Group* newgroup) const
 {
-  int size1 = size();
-  int size2 = group2->size();
-  for (int i = 0; i < size2; i++) {
+  std::vector<int> to_incl;
+  for (int i = 0; i < group2->size(); i++) {
     s4u::Actor* actor = group2->actor(i);
-    int proc1 = this->rank(actor);
-    if (proc1 == MPI_UNDEFINED) {
-      size1++;
-    }
+    if (rank(actor) == MPI_UNDEFINED)
+      to_incl.push_back(i);
   }
-  if (size1 == 0) {
+
+  int newsize = size() + static_cast<int>(to_incl.size());
+  if (newsize == 0) {
     *newgroup = MPI_GROUP_EMPTY;
-  } else {
-    *newgroup = new  Group(size1);
-    size2 = this->size();
-    for (int i = 0; i < size2; i++) {
-      s4u::Actor* actor1 = this->actor(i);
-      (*newgroup)->set_mapping(actor1, i);
-    }
-    for (int i = size2; i < size1; i++) {
-      s4u::Actor* actor = group2->actor(i - size2);
-      (*newgroup)->set_mapping(actor, i);
-    }
-    if((*newgroup)!=MPI_GROUP_EMPTY)
-      (*newgroup)->add_f();
+    return MPI_SUCCESS;
   }
+
+  *newgroup = new Group(newsize);
+  int i;
+  for (i = 0; i < size(); i++) {
+    s4u::Actor* actor1 = actor(i);
+    (*newgroup)->set_mapping(actor1, i);
+  }
+  for (int j : to_incl) {
+    s4u::Actor* actor2 = group2->actor(j);
+    (*newgroup)->set_mapping(actor2, i);
+    i++;
+  }
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
