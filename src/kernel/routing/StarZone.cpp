@@ -20,10 +20,9 @@ void StarZone::add_links_to_route(const std::vector<resource::LinkImpl*>& links,
                                   double* latency, std::unordered_set<resource::LinkImpl*>& added_links) const
 {
   for (auto* link : links) {
-    /* do not add duplicated links */
-    if (added_links.find(link) != added_links.end())
+    /* do not add duplicated links in route->link_list */
+    if (not added_links.insert(link).second)
       continue;
-    added_links.insert(link);
     if (latency)
       *latency += link->get_latency();
     route->link_list.push_back(link);
@@ -35,10 +34,11 @@ void StarZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
   XBT_VERB("StarZone getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(),
            dst->id());
 
-  xbt_assert(((src == dst) and (routes_[src->id()].has_loopback())) or (routes_[src->id()].has_links_up()),
+  bool has_loopback = ((src == dst) and (routes_[src->id()].has_loopback()));
+  xbt_assert((has_loopback) or (routes_[src->id()].has_links_up()),
              "StarZone routing (%s - %s): no link UP from source node. Did you use add_route() to set it?",
              src->get_cname(), dst->get_cname());
-  xbt_assert(((src == dst) and (routes_[dst->id()].has_loopback())) or (routes_[dst->id()].has_links_down()),
+  xbt_assert((has_loopback) or (routes_[dst->id()].has_links_down()),
              "StarZone routing (%s - %s): no link DOWN to destination node. Did you use add_route() to set it?",
              src->get_cname(), dst->get_cname());
 
@@ -126,20 +126,22 @@ void StarZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
   } else {
     /* src to everyone */
     if (src) {
-      routes_[src->id()].links_up     = link_list;
-      routes_[src->id()].gateway      = gw_src;
-      routes_[src->id()].links_up_set = true;
+      auto& route        = routes_[src->id()];
+      route.links_up     = link_list;
+      route.gateway      = gw_src;
+      route.links_up_set = true;
       if (symmetrical) {
         /* reverse it for down/symmetrical links */
-        routes_[src->id()].links_down.assign(link_list.rbegin(), link_list.rend());
-        routes_[src->id()].links_down_set = true;
+        route.links_down.assign(link_list.rbegin(), link_list.rend());
+        route.links_down_set = true;
       }
     }
     /* dst to everyone */
     if (dst) {
-      routes_[dst->id()].links_down     = link_list;
-      routes_[dst->id()].gateway        = gw_dst;
-      routes_[dst->id()].links_down_set = true;
+      auto& route          = routes_[dst->id()];
+      route.links_down     = link_list;
+      route.gateway        = gw_dst;
+      route.links_down_set = true;
     }
   }
 }
@@ -148,10 +150,10 @@ void StarZone::do_seal()
 {
   /* add default empty links if nothing was configured by user */
   for (auto const& node : get_vertices()) {
-    if (routes_.find(node->id()) == routes_.end()) {
-      routes_[node->id()]                = {};
-      routes_[node->id()].links_down_set = true;
-      routes_[node->id()].links_up_set   = true;
+    auto route = routes_.emplace(node->id(), StarRoute());
+    if (route.second) {
+      route.first->second.links_down_set = true;
+      route.first->second.links_up_set   = true;
     }
   }
 }
