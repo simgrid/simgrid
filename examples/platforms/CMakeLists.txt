@@ -4,4 +4,7 @@ foreach (platf routing_cluster)
   add_library       (${platf} SHARED ${platf}.cpp)
   target_link_libraries(${platf} simgrid)
   add_dependencies(platf_cpp ${platf})
+  set_target_properties(${platf}
+      PROPERTIES SUFFIX .so
+  )
 endforeach()
