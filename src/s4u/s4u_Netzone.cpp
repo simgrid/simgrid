@@ -145,7 +145,7 @@ NetZone* NetZone::seal()
 
 s4u::Host* NetZone::create_host(const std::string& name, double speed)
 {
-  return create_host(name, {speed});
+  return create_host(name, std::vector<double>{speed});
 }
 
 s4u::Host* NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
@@ -166,7 +166,7 @@ s4u::Host* NetZone::create_host(const std::string& name, const std::vector<std::
 
 s4u::Link* NetZone::create_link(const std::string& name, double bandwidth)
 {
-  return create_link(name, {bandwidth});
+  return create_link(name, std::vector<double>{bandwidth});
 }
 
 s4u::Link* NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
