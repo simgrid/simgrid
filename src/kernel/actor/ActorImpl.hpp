@@ -154,7 +154,7 @@ public:
   void* data                                                               = nullptr;
   s4u::Host* host                                                          = nullptr;
   double kill_time                                                         = 0.0;
-  const std::unordered_map<std::string, std::string> properties;
+  const std::unordered_map<std::string, std::string> properties{};
   bool auto_restart                                                        = false;
   bool daemon_                                                             = false;
   /* list of functions executed when the process dies */
