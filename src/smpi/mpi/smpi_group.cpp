@@ -17,7 +17,6 @@ namespace smpi{
 Group::Group(const Group* origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
-    size_              = origin->size();
     // FIXME: cheinrich: There is no such thing as an index any more; the two maps should be removed
     index_to_rank_map_ = origin->index_to_rank_map_;
     rank_to_actor_map_ = origin->rank_to_actor_map_;
@@ -27,7 +26,7 @@ Group::Group(const Group* origin)
 
 void Group::set_mapping(s4u::Actor* actor, int rank)
 {
-  if (0 <= rank && rank < size_) {
+  if (0 <= rank && rank < size()) {
     int index = actor->get_pid();
     if ((unsigned)index >= index_to_rank_map_.size())
       index_to_rank_map_.resize(index + 1, MPI_UNDEFINED);
@@ -50,7 +49,7 @@ int Group::rank(int index) const
 
 s4u::Actor* Group::actor(int rank) const
 {
-  if (0 <= rank && rank < size_)
+  if (0 <= rank && rank < size())
     return rank_to_actor_map_[rank];
   else
     return nullptr;
@@ -85,10 +84,10 @@ int Group::compare(MPI_Group group2) const
   int result;
 
   result = MPI_IDENT;
-  if (size_ != group2->size()) {
+  if (size() != group2->size()) {
     result = MPI_UNEQUAL;
   } else {
-    for (int i = 0; i < size_; i++) {
+    for (int i = 0; i < size(); i++) {
       int rank = group2->rank(actor(i));
       if (rank == MPI_UNDEFINED) {
         result = MPI_UNEQUAL;
@@ -120,7 +119,7 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup) const
 
 int Group::group_union(MPI_Group group2, MPI_Group* newgroup) const
 {
-  int size1 = size_;
+  int size1 = size();
   int size2 = group2->size();
   for (int i = 0; i < size2; i++) {
     s4u::Actor* actor = group2->actor(i);
@@ -179,8 +178,8 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup) const
 
 int Group::difference(MPI_Group group2, MPI_Group* newgroup) const
 {
-  int newsize = size_;
-  int size2 = size_;
+  int newsize = size();
+  int size2   = size();
   for (int i = 0; i < size2; i++) {
     s4u::Actor* actor = this->actor(i);
     int proc2 = group2->rank(actor);
@@ -207,10 +206,10 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup) const
 
 int Group::excl(int n, const int* ranks, MPI_Group* newgroup) const
 {
-  int oldsize = size_;
+  int oldsize = size();
   int newsize = oldsize - n;
   *newgroup = new  Group(newsize);
-  std::vector<bool> to_exclude(size_, false);
+  std::vector<bool> to_exclude(size(), false);
   for (int i = 0; i < n; i++)
     to_exclude[ranks[i]] = true;
   int j = 0;
@@ -235,7 +234,7 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup) const
 {
   std::vector<int> to_incl;
   for (int i = 0; i < n; i++)
-    for (int j = ranges[i][0]; j >= 0 && j < size_ && is_rank_in_range(j, ranges[i][0], ranges[i][1]);
+    for (int j = ranges[i][0]; j >= 0 && j < size() && is_rank_in_range(j, ranges[i][0], ranges[i][1]);
          j += ranges[i][2])
       to_incl.push_back(j);
 
@@ -254,10 +253,10 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup) const
 
 int Group::range_excl(int n, int ranges[][3], MPI_Group* newgroup) const
 {
-  std::vector<bool> to_excl(size_, false);
-  int newsize = size_;
+  std::vector<bool> to_excl(size(), false);
+  int newsize = size();
   for (int i = 0; i < n; i++) {
-    for (int j = ranges[i][0]; j >= 0 && j < size_ && is_rank_in_range(j, ranges[i][0], ranges[i][1]);
+    for (int j = ranges[i][0]; j >= 0 && j < size() && is_rank_in_range(j, ranges[i][0], ranges[i][1]);
          j += ranges[i][2]) {
       to_excl[j] = true;
       newsize--;
@@ -269,7 +268,7 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group* newgroup) const
     *newgroup = new Group(newsize);
 
     int j = 0;
-    for (int rank = 0; rank < size_; rank++) {
+    for (int rank = 0; rank < size(); rank++) {
       if (not to_excl[rank]) {
         s4u::Actor* actor = this->actor(rank);
         (*newgroup)->set_mapping(actor, j);

@@ -16,7 +16,6 @@ namespace simgrid{
 namespace smpi{
 
 class Group : public F2C{
-  int size_ = 0;
   /* This is actually a map from int to s4u::Actor*. We could use std::map here, but looking up a value there costs
    * O(log(n)). For a vector, this costs O(1). We hence go with the vector.
    */
@@ -28,7 +27,7 @@ class Group : public F2C{
 
 public:
   Group() = default;
-  explicit Group(int size) : size_(size), rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
+  explicit Group(int size) : rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
   explicit Group(const Group* origin);
 
   void set_mapping(s4u::Actor* actor, int rank);
@@ -38,7 +37,7 @@ public:
   int rank(s4u::Actor* process) const;
   void ref();
   static void unref(MPI_Group group);
-  int size() const { return size_; }
+  int size() const { return static_cast<int>(rank_to_actor_map_.size()); }
   int compare(MPI_Group group2) const;
   int incl(int n, const int* ranks, MPI_Group* newgroup) const;
   int excl(int n, const int* ranks, MPI_Group* newgroup) const;
