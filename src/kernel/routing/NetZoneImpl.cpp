@@ -367,39 +367,29 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
     path_dst.pop_back();
   }
 
-  int max_index_src = path_src.size() - 1;
-  int max_index_dst = path_dst.size() - 1;
-
-  int max_index = std::max(max_index_src, max_index_dst);
-
   /* (3) Search for a bypass making the path up to the ancestor useless */
   const BypassRoute* bypassedRoute = nullptr;
   std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*> key;
-  for (int max = 0; max <= max_index && not bypassedRoute; max++) {
-    for (int i = 0; i < max && not bypassedRoute; i++) {
-      if (i <= max_index_src && max <= max_index_dst) {
-        key      = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
-        auto bpr = bypass_routes_.find(key);
-        if (bpr != bypass_routes_.end()) {
-          bypassedRoute = bpr->second;
-        }
-      }
-      if (not bypassedRoute && max <= max_index_src && i <= max_index_dst) {
-        key      = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
-        auto bpr = bypass_routes_.find(key);
-        if (bpr != bypass_routes_.end()) {
-          bypassedRoute = bpr->second;
-        }
-      }
-    }
-
-    if (not bypassedRoute && max <= max_index_src && max <= max_index_dst) {
-      key      = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
+  // Search for a bypass with the given indices. Returns true if found. Initialize variables `bypassedRoute' and `key'.
+  auto lookup = [&bypassedRoute, &key, &path_src, &path_dst, this](unsigned src_index, unsigned dst_index) {
+    if (src_index < path_src.size() && dst_index <= path_dst.size()) {
+      key      = {path_src[src_index]->netpoint_, path_dst[dst_index]->netpoint_};
       auto bpr = bypass_routes_.find(key);
       if (bpr != bypass_routes_.end()) {
         bypassedRoute = bpr->second;
+        return true;
       }
     }
+    return false;
+  };
+
+  for (unsigned max = 0, max_index = std::max(path_src.size(), path_dst.size()); max < max_index; max++) {
+    for (unsigned i = 0; i < max; i++) {
+      if (lookup(i, max) || lookup(max, i))
+        break;
+    }
+    if (bypassedRoute || lookup(max, max))
+      break;
   }
 
   /* (4) If we have the bypass, use it. If not, caller will do the Right Thing. */
