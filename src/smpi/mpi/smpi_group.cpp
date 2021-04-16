@@ -28,19 +28,16 @@ Group::Group(const Group* origin)
 void Group::set_mapping(s4u::Actor* actor, int rank)
 {
   if (0 <= rank && rank < size_) {
-    int index                = actor->get_pid();
-    if (index != MPI_UNDEFINED) {
-      if ((unsigned)index >= index_to_rank_map_.size())
-        index_to_rank_map_.resize(index + 1, MPI_UNDEFINED);
-      index_to_rank_map_[index] = rank;
-    }
-
+    int index = actor->get_pid();
+    if ((unsigned)index >= index_to_rank_map_.size())
+      index_to_rank_map_.resize(index + 1, MPI_UNDEFINED);
+    index_to_rank_map_[index] = rank;
     rank_to_actor_map_[rank] = actor;
     actor_to_rank_map_.insert({actor, rank});
   }
 }
 
-int Group::rank(int index)
+int Group::rank(int index) const
 {
   int rank;
   if (0 <= index && (unsigned)index < index_to_rank_map_.size())
@@ -51,7 +48,7 @@ int Group::rank(int index)
   return rank;
 }
 
-s4u::Actor* Group::actor(int rank)
+s4u::Actor* Group::actor(int rank) const
 {
   if (0 <= rank && rank < size_)
     return rank_to_actor_map_[rank];
@@ -59,7 +56,7 @@ s4u::Actor* Group::actor(int rank)
     return nullptr;
 }
 
-int Group::rank(s4u::Actor* actor)
+int Group::rank(s4u::Actor* actor) const
 {
   auto iterator = actor_to_rank_map_.find(actor);
   //I'm not in the communicator ... but maybe my parent is ?
@@ -83,7 +80,7 @@ void Group::unref(Group* group)
   }
 }
 
-int Group::compare(MPI_Group group2)
+int Group::compare(MPI_Group group2) const
 {
   int result;
 
@@ -92,8 +89,7 @@ int Group::compare(MPI_Group group2)
     result = MPI_UNEQUAL;
   } else {
     for (int i = 0; i < size_; i++) {
-      s4u::Actor* actor = this->actor(i);
-      int rank = group2->rank(actor);
+      int rank = group2->rank(actor(i));
       if (rank == MPI_UNDEFINED) {
         result = MPI_UNEQUAL;
         break;
@@ -106,7 +102,7 @@ int Group::compare(MPI_Group group2)
   return result;
 }
 
-int Group::incl(int n, const int* ranks, MPI_Group* newgroup)
+int Group::incl(int n, const int* ranks, MPI_Group* newgroup) const
 {
   if (n == 0) {
     *newgroup = MPI_GROUP_EMPTY;
@@ -122,7 +118,7 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup)
   return MPI_SUCCESS;
 }
 
-int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
+int Group::group_union(MPI_Group group2, MPI_Group* newgroup) const
 {
   int size1 = size_;
   int size2 = group2->size();
@@ -152,7 +148,7 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
   return MPI_SUCCESS;
 }
 
-int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
+int Group::intersection(MPI_Group group2, MPI_Group* newgroup) const
 {
   int size2 = group2->size();
   for (int i = 0; i < size2; i++) {
@@ -181,7 +177,7 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
   return MPI_SUCCESS;
 }
 
-int Group::difference(MPI_Group group2, MPI_Group* newgroup)
+int Group::difference(MPI_Group group2, MPI_Group* newgroup) const
 {
   int newsize = size_;
   int size2 = size_;
@@ -209,7 +205,8 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
   return MPI_SUCCESS;
 }
 
-int Group::excl(int n, const int *ranks, MPI_Group * newgroup){
+int Group::excl(int n, const int* ranks, MPI_Group* newgroup) const
+{
   int oldsize = size_;
   int newsize = oldsize - n;
   *newgroup = new  Group(newsize);
@@ -234,7 +231,7 @@ static bool is_rank_in_range(int rank, int first, int last)
   return (first <= rank && rank <= last) || (first >= rank && rank >= last);
 }
 
-int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup)
+int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup) const
 {
   std::vector<int> to_incl;
   for (int i = 0; i < n; i++)
@@ -255,7 +252,7 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup)
   return MPI_SUCCESS;
 }
 
-int Group::range_excl(int n, int ranges[][3], MPI_Group* newgroup)
+int Group::range_excl(int n, int ranges[][3], MPI_Group* newgroup) const
 {
   std::vector<bool> to_excl(size_, false);
   int newsize = size_;
