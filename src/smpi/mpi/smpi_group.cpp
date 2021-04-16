@@ -105,15 +105,15 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup) const
 {
   if (n == 0) {
     *newgroup = MPI_GROUP_EMPTY;
-  } else {
-    *newgroup = new Group(n);
-    for (int i = 0; i < n; i++) {
-      s4u::Actor* actor = this->actor(ranks[i]); // ranks[] was passed as a param!
-      (*newgroup)->set_mapping(actor, i);
-    }
-    if((*newgroup)!=MPI_GROUP_EMPTY)
-      (*newgroup)->add_f();
+    return MPI_SUCCESS;
   }
+
+  *newgroup = new Group(n);
+  for (int i = 0; i < n; i++) {
+    s4u::Actor* actor = this->actor(ranks[i]);
+    (*newgroup)->set_mapping(actor, i);
+  }
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
@@ -206,22 +206,26 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup) const
 
 int Group::excl(int n, const int* ranks, MPI_Group* newgroup) const
 {
-  int oldsize = size();
-  int newsize = oldsize - n;
-  *newgroup = new  Group(newsize);
-  std::vector<bool> to_exclude(size(), false);
+  if (n == size()) {
+    *newgroup = MPI_GROUP_EMPTY;
+    return MPI_SUCCESS;
+  }
+
+  std::vector<bool> to_excl(size(), false);
   for (int i = 0; i < n; i++)
-    to_exclude[ranks[i]] = true;
+    to_excl[ranks[i]] = true;
+
+  int newsize = size() - n;
+  *newgroup   = new Group(newsize);
   int j = 0;
-  for (int i = 0; i < oldsize; i++) {
-    if (not to_exclude[i]) {
+  for (int i = 0; i < size(); i++) {
+    if (not to_excl[i]) {
       s4u::Actor* actor = this->actor(i);
       (*newgroup)->set_mapping(actor, j);
       j++;
     }
   }
-  if((*newgroup)!=MPI_GROUP_EMPTY)
-    (*newgroup)->add_f();
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
@@ -238,16 +242,19 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup) const
          j += ranges[i][2])
       to_incl.push_back(j);
 
+  if (to_incl.empty()) {
+    *newgroup = MPI_GROUP_EMPTY;
+    return MPI_SUCCESS;
+  }
+
   int newsize = static_cast<int>(to_incl.size());
   *newgroup   = new Group(newsize);
 
-  for (int j = 0; j < newsize; j++) {
-    int rank          = to_incl[j];
-    s4u::Actor* actor = this->actor(rank);
-    (*newgroup)->set_mapping(actor, j);
+  for (int i = 0; i < newsize; i++) {
+    s4u::Actor* actor = this->actor(to_incl[i]);
+    (*newgroup)->set_mapping(actor, i);
   }
-  if((*newgroup)!=MPI_GROUP_EMPTY)
-    (*newgroup)->add_f();
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
@@ -264,20 +271,19 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group* newgroup) const
   }
   if (newsize == 0) {
     *newgroup = MPI_GROUP_EMPTY;
-  } else {
-    *newgroup = new Group(newsize);
+    return MPI_SUCCESS;
+  }
 
-    int j = 0;
-    for (int rank = 0; rank < size(); rank++) {
-      if (not to_excl[rank]) {
-        s4u::Actor* actor = this->actor(rank);
-        (*newgroup)->set_mapping(actor, j);
-        j++;
-      }
+  *newgroup = new Group(newsize);
+  int j     = 0;
+  for (int i = 0; i < size(); i++) {
+    if (not to_excl[i]) {
+      s4u::Actor* actor = this->actor(i);
+      (*newgroup)->set_mapping(actor, j);
+      j++;
     }
   }
-  if((*newgroup)!=MPI_GROUP_EMPTY)
-    (*newgroup)->add_f();
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
