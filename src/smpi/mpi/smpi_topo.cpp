@@ -383,11 +383,13 @@ static int getfactors(int num, std::vector<int>& factors)
     factors.push_back(2);
   }
   /* determine all occurrences of uneven prime numbers up to sqrt(num) */
-  for (int d = 3; (num > 1) && (d * d < num); d += 2) {
+  int d = 3;
+  while ((num > 1) && (d * d < num)) {
     while((num % d) == 0) {
       num /= d;
       factors.push_back(d);
     }
+    d += 2;
   }
   /* as we looped only up to sqrt(num) one factor > sqrt(num) may be left over */
   if(num != 1) {
