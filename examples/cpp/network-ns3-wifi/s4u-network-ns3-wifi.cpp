@@ -18,7 +18,7 @@ public:
   Message(const std::string& sender_, int size_) : sender(sender_), size(size_) {}
 };
 
-static void sender(std::string mailbox, double msg_size, unsigned sleep_time)
+static void sender(const std::string& mailbox, double msg_size, unsigned sleep_time)
 {
   simgrid::s4u::this_actor::sleep_for(sleep_time);
   auto* mbox = simgrid::s4u::Mailbox::by_name(mailbox);
@@ -26,7 +26,7 @@ static void sender(std::string mailbox, double msg_size, unsigned sleep_time)
   mbox->put(msg, msg_size);
 }
 
-static void receiver(std::string mailbox)
+static void receiver(const std::string& mailbox)
 {
   auto* mbox = simgrid::s4u::Mailbox::by_name(mailbox);
   auto msg   = mbox->get_unique<Message>();

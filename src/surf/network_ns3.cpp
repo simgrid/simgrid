@@ -270,7 +270,7 @@ static simgrid::config::Flag<std::string>
 static simgrid::config::Flag<std::string> ns3_seed(
     "ns3/seed",
     "The random seed provided to ns-3. Either 'time' to seed with time(), blank to not set (default), or a number.", "",
-    [](std::string val) {
+    [](const std::string& val) {
       if (val.length() == 0)
         return;
       if (strcasecmp(val.c_str(), "time") == 0) {

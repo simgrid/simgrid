@@ -732,7 +732,7 @@ void ETag_surfxml_config()
     keys.push_back(kv.first);
   }
   std::sort(keys.begin(), keys.end());
-  for (std::string key : keys) {
+  for (const std::string& key : keys) {
     if (simgrid::config::is_default(key.c_str())) {
       std::string cfg = key + ":" + current_property_set.at(key);
       simgrid::config::set_parse(cfg);

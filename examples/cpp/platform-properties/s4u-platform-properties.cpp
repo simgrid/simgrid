@@ -25,7 +25,7 @@ static void test_host(const std::string& hostname)
   for (auto const& kv : *hostprops)
     keys.push_back(kv.first);
   std::sort(keys.begin(), keys.end());
-  for (std::string key : keys)
+  for (const std::string& key : keys)
     XBT_INFO("  Host property: '%s' -> '%s'", key.c_str(), hostprops->at(key).c_str());
 
   XBT_INFO("== Try to get a host property that does not exist");
@@ -57,7 +57,7 @@ static void test_host(const std::string& hostname)
   for (auto const& kv : *zoneprops)
     keys.push_back(kv.first);
   std::sort(keys.begin(), keys.end());
-  for (std::string key : keys)
+  for (const std::string& key : keys)
     XBT_INFO("  Zone property: '%s' -> '%s'", key.c_str(), zoneprops->at(key).c_str());
 }
 
