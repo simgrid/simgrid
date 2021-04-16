@@ -178,29 +178,25 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup) const
 
 int Group::difference(MPI_Group group2, MPI_Group* newgroup) const
 {
-  int newsize = size();
-  int size2   = size();
-  for (int i = 0; i < size2; i++) {
+  std::vector<int> to_incl;
+  for (int i = 0; i < size(); i++) {
     s4u::Actor* actor = this->actor(i);
-    int proc2 = group2->rank(actor);
-    if (proc2 != MPI_UNDEFINED) {
-      newsize--;
-    }
+    if (group2->rank(actor) == MPI_UNDEFINED)
+      to_incl.push_back(i);
   }
-  if (newsize == 0) {
+
+  if (to_incl.empty()) {
     *newgroup = MPI_GROUP_EMPTY;
-  } else {
-    *newgroup = new  Group(newsize);
-    for (int i = 0; i < size2; i++) {
-      s4u::Actor* actor = this->actor(i);
-      int proc2 = group2->rank(actor);
-      if (proc2 == MPI_UNDEFINED) {
-        (*newgroup)->set_mapping(actor, i);
-      }
-    }
-    if((*newgroup)!=MPI_GROUP_EMPTY)
-      (*newgroup)->add_f();
+    return MPI_SUCCESS;
   }
+
+  int newsize = static_cast<int>(to_incl.size());
+  *newgroup   = new Group(newsize);
+  for (int i = 0; i < newsize; i++) {
+    s4u::Actor* actor = group2->actor(to_incl[i]);
+    (*newgroup)->set_mapping(actor, i);
+  }
+  (*newgroup)->add_f();
   return MPI_SUCCESS;
 }
 
