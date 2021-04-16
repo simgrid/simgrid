@@ -14,12 +14,20 @@
 #include "src/surf/surf_interface.hpp"    // create models
 #include "src/surf/xml/platf_private.hpp" // RouteCreationArgs and friends
 
+namespace {
+class EngineWrapper {
+  int argc = 1;
+  char* argv;
+  simgrid::s4u::Engine e;
+
+public:
+  EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
+};
+} // namespace
+
 TEST_CASE("kernel::routing::StarZone: Creating Zone", "[creation]")
 {
-  int argc           = 1;
-  const char* argv[] = {"test"};
-
-  simgrid::s4u::Engine e(&argc, const_cast<char**>(argv));
+  EngineWrapper e("test");
 
   REQUIRE(simgrid::s4u::create_star_zone("test"));
 }
@@ -28,9 +36,7 @@ TEST_CASE("kernel::routing::StarZone: Creating Zone", "[creation]")
 // https://github.com/catchorg/Catch2/issues/853
 TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): assert", "[.][assert]")
 {
-  int argc           = 1;
-  const char* argv[] = {"test"};
-  simgrid::s4u::Engine e(&argc, const_cast<char**>(argv));
+  EngineWrapper e("test");
   auto* zone      = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint1 = new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::Host);
   auto* netpoint2 = new simgrid::kernel::routing::NetPoint("netpoint2", simgrid::kernel::routing::NetPoint::Type::Host);
@@ -44,9 +50,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): assert", "[.][asser
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): assert", "[.][assert]")
 {
-  int argc           = 1;
-  const char* argv[] = {"test"};
-  simgrid::s4u::Engine e(&argc, const_cast<char**>(argv));
+  EngineWrapper e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint1 =
       new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::NetZone);
@@ -71,9 +75,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): assert", "[.][as
 TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
 {
   /* workaround to initialize things, they must be done in this particular order */
-  int argc           = 1;
-  const char* argv[] = {"test"};
-  simgrid::s4u::Engine e(&argc, const_cast<char**>(argv));
+  EngineWrapper e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
   surf_network_model_init_LegrandVelho();
   surf_cpu_model_init_Cas01();
@@ -106,9 +108,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): valid", "")
 {
-  int argc           = 1;
-  const char* argv[] = {"test"};
-  simgrid::s4u::Engine e(&argc, const_cast<char**>(argv));
+  EngineWrapper e("test");
   auto* zone     = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint = new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::Host);
 
@@ -132,9 +132,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): valid", "")
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): valid", "")
 {
-  int argc           = 1;
-  const char* argv[] = {"test"};
-  simgrid::s4u::Engine e(&argc, const_cast<char**>(argv));
+  EngineWrapper e("test");
   auto* zone     = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint = new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::Host);
   auto* gw       = new simgrid::kernel::routing::NetPoint("gw1", simgrid::kernel::routing::NetPoint::Type::Router);
@@ -147,9 +145,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): valid", "")
 TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 {
   /* workaround to initialize things, they must be done in this particular order */
-  int argc           = 1;
-  const char* argv[] = {"test"};
-  simgrid::s4u::Engine e(&argc, const_cast<char**>(argv));
+  EngineWrapper e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
   surf_network_model_init_LegrandVelho();
   surf_cpu_model_init_Cas01();
@@ -225,9 +221,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
 {
   /* workaround to initialize things, they must be done in this particular order */
-  int argc           = 1;
-  const char* argv[] = {"test"};
-  simgrid::s4u::Engine e(&argc, const_cast<char**>(argv));
+  EngineWrapper e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
   surf_network_model_init_LegrandVelho();
   surf_cpu_model_init_Cas01();
