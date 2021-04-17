@@ -25,6 +25,9 @@ class Group : public F2C{
 
   int refcount_ = 1; /* refcount_: start > 0 so that this group never gets freed */
 
+  int incl(const std::vector<int> ranks, MPI_Group* newgroup) const;
+  int excl(const std::vector<bool> excl_map, MPI_Group* newgroup) const;
+
 public:
   Group() = default;
   explicit Group(int size) : rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
