@@ -41,14 +41,14 @@ public:
   void ref();
   static void unref(MPI_Group group);
   int size() const { return static_cast<int>(rank_to_actor_map_.size()); }
-  int compare(MPI_Group group2) const;
+  int compare(const Group* group2) const;
   int incl(int n, const int* ranks, MPI_Group* newgroup) const;
   int excl(int n, const int* ranks, MPI_Group* newgroup) const;
-  int group_union(MPI_Group group2, MPI_Group* newgroup) const;
-  int intersection(MPI_Group group2, MPI_Group* newgroup) const;
-  int difference(MPI_Group group2, MPI_Group* newgroup) const;
-  int range_incl(int n, int ranges[][3], MPI_Group* newgroup) const;
-  int range_excl(int n, int ranges[][3], MPI_Group* newgroup) const;
+  int group_union(const Group* group2, MPI_Group* newgroup) const;
+  int intersection(const Group* group2, MPI_Group* newgroup) const;
+  int difference(const Group* group2, MPI_Group* newgroup) const;
+  int range_incl(int n, const int ranges[][3], MPI_Group* newgroup) const;
+  int range_excl(int n, const int ranges[][3], MPI_Group* newgroup) const;
 
   static Group* f2c(int id);
 };

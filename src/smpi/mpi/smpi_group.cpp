@@ -79,7 +79,7 @@ void Group::unref(Group* group)
   }
 }
 
-int Group::compare(MPI_Group group2) const
+int Group::compare(const Group* group2) const
 {
   int result;
 
@@ -132,7 +132,7 @@ int Group::excl(const std::vector<bool> excl_map, MPI_Group* newgroup) const
   return incl(static_cast<int>(ranks.size()), ranks.data(), newgroup);
 }
 
-int Group::group_union(MPI_Group group2, MPI_Group* newgroup) const
+int Group::group_union(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks2;
   for (int i = 0; i < group2->size(); i++) {
@@ -162,7 +162,7 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup) const
   return MPI_SUCCESS;
 }
 
-int Group::intersection(MPI_Group group2, MPI_Group* newgroup) const
+int Group::intersection(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks2;
   for (int i = 0; i < group2->size(); i++) {
@@ -173,7 +173,7 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup) const
   return group2->incl(ranks2, newgroup);
 }
 
-int Group::difference(MPI_Group group2, MPI_Group* newgroup) const
+int Group::difference(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks;
   for (int i = 0; i < size(); i++) {
@@ -197,7 +197,7 @@ static bool is_rank_in_range(int rank, int first, int last)
   return (first <= rank && rank <= last) || (first >= rank && rank >= last);
 }
 
-int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup) const
+int Group::range_incl(int n, const int ranges[][3], MPI_Group* newgroup) const
 {
   std::vector<int> ranks;
   for (int i = 0; i < n; i++) {
@@ -208,7 +208,7 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group* newgroup) const
   return this->incl(ranks, newgroup);
 }
 
-int Group::range_excl(int n, int ranges[][3], MPI_Group* newgroup) const
+int Group::range_excl(int n, const int ranges[][3], MPI_Group* newgroup) const
 {
   std::vector<bool> to_excl(size(), false);
   for (int i = 0; i < n; i++) {
