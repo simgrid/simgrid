@@ -21,7 +21,7 @@ class EngineWrapper {
   simgrid::s4u::Engine e;
 
 public:
-  EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
+  explicit EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
 };
 } // namespace
 

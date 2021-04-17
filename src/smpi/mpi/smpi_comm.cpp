@@ -262,7 +262,7 @@ MPI_Comm Comm::split(int color, int key)
 
   MPI_Group group_root = nullptr;
   MPI_Group group_out  = nullptr;
-  MPI_Group group      = this->group();
+  const Group* group   = this->group();
   int myrank           = this->rank();
   int size             = this->size();
   /* Gather all colors and keys on rank 0 */

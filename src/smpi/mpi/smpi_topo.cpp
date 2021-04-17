@@ -38,9 +38,6 @@ Topo_Cart::Topo_Cart(int ndims) : ndims_(ndims), dims_(ndims), periodic_(ndims),
 Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int /*reorder*/, MPI_Comm* comm_cart)
     : Topo_Cart(ndims)
 {
-  MPI_Group newGroup;
-  MPI_Group oldGroup;
-
   int rank = comm_old->rank();
 
   if(ndims != 0) {
@@ -68,8 +65,8 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
     }
     
     if(comm_cart != nullptr){
-      oldGroup = comm_old->group();
-      newGroup = new  Group(newSize);
+      const Group* oldGroup = comm_old->group();
+      auto* newGroup        = new Group(newSize);
       for (int i = 0 ; i < newSize ; i++) {
         newGroup->set_mapping(oldGroup->actor(i), i);
       }
