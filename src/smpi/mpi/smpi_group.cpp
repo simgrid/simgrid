@@ -9,7 +9,6 @@
 #include <string>
 
 simgrid::smpi::Group smpi_MPI_GROUP_EMPTY;
-extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
 namespace simgrid{
 namespace smpi{
