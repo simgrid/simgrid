@@ -116,12 +116,12 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup) const
   return MPI_SUCCESS;
 }
 
-int Group::incl(const std::vector<int> ranks, MPI_Group* newgroup) const
+int Group::incl(const std::vector<int>& ranks, MPI_Group* newgroup) const
 {
   return incl(static_cast<int>(ranks.size()), ranks.data(), newgroup);
 }
 
-int Group::excl(const std::vector<bool> excl_map, MPI_Group* newgroup) const
+int Group::excl(const std::vector<bool>& excl_map, MPI_Group* newgroup) const
 {
   xbt_assert(static_cast<int>(excl_map.size()) == size());
   std::vector<int> ranks;
