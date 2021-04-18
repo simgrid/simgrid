@@ -153,70 +153,85 @@ void print_time_analysis(double global_time){
   }
 }
 
+static void print_leaked_handles(){
+  // Put the leaked non-default handles in a vector to sort them by id
+  std::vector<std::pair<unsigned int, smpi::F2C*>> handles;
+  if (simgrid::smpi::F2C::lookup() != nullptr)
+    std::copy_if(simgrid::smpi::F2C::lookup()->begin(), simgrid::smpi::F2C::lookup()->end(),
+                 std::back_inserter(handles),
+                 [](auto const& entry) { return entry.first >= simgrid::smpi::F2C::get_num_default_handles(); });
+  if (not handles.empty()) {
+    auto max = static_cast<unsigned long>(simgrid::config::get_value<int>("smpi/list-leaks"));
+    std::string message = "Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles :";
+    if(max==0)
+      message +="display types and addresses (n max) with --cfg=smpi/list-leaks:n.\nRunning smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information";
+    XBT_INFO(message.c_str(), handles.size());
+    if (max > 0) { // we cannot trust F2C::lookup()->size() > F2C::get_num_default_handles() because some default
+                   // handles are already freed at this point
+      bool display_advice = false;
+      std::map<std::string, int> count;
+      for (auto & elem : handles){
+        std::string key = elem.second->name();
+        if ((not xbt_log_no_loc) && (not elem.second->call_location().empty()))
+          key+=" at "+ elem.second->call_location();
+        else
+          display_advice=true;
+        auto result = count.insert(std::pair<std::string, int>(key, 1));
+        if (result.second == false)
+          result.first->second++;
+      }
+      if (display_advice)
+        XBT_INFO("To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90");
+      unsigned int i = 0;
+      for (const auto& p : count) {
+        if(p.second == 1)
+          XBT_INFO("leaked handle of type %s", p.first.c_str());
+        else
+          XBT_INFO("%d leaked handles of type %s", p.second, p.first.c_str());
+        i++;
+        if(i == max)
+          break;
+      }
+      if (max < count.size())
+        XBT_INFO("(%lu more handle leaks hidden as you wanted to see only %lu of them)", count.size()-max, max);
+    }
+  }
+}
+
+static void print_leaked_buffers(){
+  if (not allocs.empty()) {
+    auto max = static_cast<unsigned long>(simgrid::config::get_value<int>("smpi/list-leaks"));
+    std::vector<std::pair<const void*, alloc_metadata_t>> leaks;
+    std::copy(allocs.begin(),
+            allocs.end(),
+            std::back_inserter<std::vector<std::pair<const void*, alloc_metadata_t>>>(leaks));
+    XBT_INFO("Probable memory leaks in your code: SMPI detected %zu unfreed buffers : "
+             "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
+             "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
+             leaks.size());
+    if (max > 0) {
+      std::sort(leaks.begin(), leaks.end(), [](auto const& a, auto const& b) { return a.second.size > b.second.size; });
+      bool truncate = max < leaks.size();
+      if (truncate)
+        leaks.resize(max);
+      for (const auto& p : leaks) {
+        if (xbt_log_no_loc) {
+          XBT_INFO("Leaked buffer of size %zu", p.second.size);
+        } else {
+          XBT_INFO("Leaked buffer of size %zu, allocated in file %s at line %d", p.second.size, p.second.file.c_str(), p.second.line);
+        }
+      }
+      if (truncate)
+        XBT_INFO("(more buffer leaks hidden as you wanted to see only %lu of them)", max);
+    }
+  }
+}
+
 void print_memory_analysis()
 {
   if (smpi_cfg_display_alloc()) {
-    // Put the leaked non-default handles in a vector to sort them by id
-    std::vector<std::pair<unsigned int, smpi::F2C*>> handles;
-    if (simgrid::smpi::F2C::lookup() != nullptr)
-      std::copy_if(simgrid::smpi::F2C::lookup()->begin(), simgrid::smpi::F2C::lookup()->end(),
-                   std::back_inserter(handles),
-                   [](auto const& entry) { return entry.first >= simgrid::smpi::F2C::get_num_default_handles(); });
-
-    auto max = static_cast<unsigned long>(simgrid::config::get_value<int>("smpi/list-leaks"));
-    if (not handles.empty()) {
-      XBT_INFO("Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles : "
-               "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
-               "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
-               handles.size());
-      if (max > 0) { // we cannot trust F2C::lookup()->size() > F2C::get_num_default_handles() because some default
-                     // handles are already freed at this point
-        std::sort(handles.begin(), handles.end(), [](auto const& a, auto const& b) { return a.first < b.first; });
-        bool truncate = max < handles.size();
-        if (truncate)
-          handles.resize(max);
-        bool printed_advice=false;
-        for (const auto& p : handles) {
-          if (xbt_log_no_loc || p.second->call_location().empty()) {
-            if (!printed_advice){
-              XBT_INFO("To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90");
-              printed_advice=true;
-            }
-            XBT_INFO("Leaked handle of type %s", p.second->name().c_str());
-          } else {
-            XBT_INFO("Leaked handle of type %s at %s", p.second->name().c_str(), p.second->call_location().c_str());
-          }
-        }
-        if (truncate)
-          XBT_INFO("(more handle leaks hidden as you wanted to see only %lu of them)", max);
-      }
-    }
-
-    if (not allocs.empty()) {
-      std::vector<std::pair<const void*, alloc_metadata_t>> leaks;
-      std::copy(allocs.begin(),
-              allocs.end(),
-              std::back_inserter<std::vector<std::pair<const void*, alloc_metadata_t>>>(leaks));
-      XBT_INFO("Probable memory leaks in your code: SMPI detected %zu unfreed buffers : "
-               "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
-               "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
-               leaks.size());
-      if (max > 0) {
-        std::sort(leaks.begin(), leaks.end(), [](auto const& a, auto const& b) { return a.second.size > b.second.size; });
-        bool truncate = max < leaks.size();
-        if (truncate)
-          leaks.resize(max);
-        for (const auto& p : leaks) {
-          if (xbt_log_no_loc) {
-            XBT_INFO("Leaked buffer of size %zu", p.second.size);
-          } else {
-            XBT_INFO("Leaked buffer of size %zu, allocated in file %s at line %d", p.second.size, p.second.file.c_str(), p.second.line);
-          }
-        }
-        if (truncate)
-          XBT_INFO("(more buffer leaks hidden as you wanted to see only %lu of them)", max);
-      }
-    }
+    print_leaked_handles();
+    print_leaked_buffers();
 
     if(total_malloc_size != 0)
       XBT_INFO("Memory Usage: Simulated application allocated %lu bytes during its lifetime through malloc/calloc calls.\n"
