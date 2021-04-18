@@ -57,10 +57,11 @@ aid_t Group::actor_pid(int rank) const
 
 s4u::Actor* Group::actor(int rank) const
 {
-  if (0 <= rank && rank < size())
-    return rank_to_actor_map_[rank];
-  else
-    return nullptr;
+  s4u::Actor* actor = (0 <= rank && rank < size()) ? rank_to_actor_map_[rank] : nullptr;
+  aid_t pid         = actor_pid(rank);
+  xbt_assert(actor == nullptr || pid == actor->get_pid(), "pid = %ld, actor->get_pid() = %ld", pid, actor->get_pid());
+  xbt_assert(actor != nullptr || pid == -1, "pid = %ld", pid);
+  return actor;
 }
 
 int Group::rank(s4u::Actor* actor) const
@@ -69,7 +70,10 @@ int Group::rank(s4u::Actor* actor) const
   //I'm not in the communicator ... but maybe my parent is ?
   if (iterator == actor_to_rank_map_.end())
     iterator = actor_to_rank_map_.find(s4u::Actor::by_pid(actor->get_ppid()).get());
-  return (iterator == actor_to_rank_map_.end()) ? MPI_UNDEFINED : (*iterator).second;
+  int res = (iterator == actor_to_rank_map_.end()) ? MPI_UNDEFINED : (*iterator).second;
+  int rank2 = rank(actor->get_pid());
+  xbt_assert(res == rank2, "res = %d, rank2 = %d", res, rank2);
+  return res;
 }
 
 void Group::ref()
