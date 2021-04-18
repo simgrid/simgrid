@@ -629,9 +629,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     else
       savedreq = MPI_REQUEST_NULL;
 
-    int my_proc_id = (*request)->comm() != MPI_COMM_NULL
-                         ? simgrid::s4u::this_actor::get_pid()
-                         : -1; // TODO: cheinrich: Check if this correct or if it should be MPI_UNDEFINED
+    int my_proc_id = (*request)->comm() != MPI_COMM_NULL ? simgrid::s4u::this_actor::get_pid() : -1;
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::WaitTIData((*request)->src(), (*request)->dst(), (*request)->tag()));
 
