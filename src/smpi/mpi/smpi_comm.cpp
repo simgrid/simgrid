@@ -294,7 +294,7 @@ MPI_Comm Comm::split(int color, int key)
           group_root = group_out; /* Save root's group */
         }
         for (unsigned j = 0; j < rankmap.size(); j++) {
-          s4u::Actor* actor = group->actor(rankmap[j].second);
+          aid_t actor = group->actor_pid(rankmap[j].second);
           group_out->set_mapping(actor, j);
         }
         std::vector<MPI_Request> requests(rankmap.size());
@@ -371,9 +371,9 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
   sg_host_self()->get_impl()->foreach_actor([this, &intra_comm_size, &min_index](auto& actor) {
-    int index = actor.get_pid();
-    if (this->group()->rank(actor.get_ciface()) != MPI_UNDEFINED) { // Is this process in the current group?
+    if (this->group()->rank(actor.get_pid()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
+      int index = actor.get_pid();
       if (index < min_index)
         min_index = index;
     }
@@ -382,8 +382,8 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   auto* group_intra = new Group(intra_comm_size);
   int i = 0;
   sg_host_self()->get_impl()->foreach_actor([this, group_intra, &i](auto& actor) {
-    if (this->group()->rank(actor.get_ciface()) != MPI_UNDEFINED) {
-      group_intra->set_mapping(actor.get_ciface(), i);
+    if (this->group()->rank(actor.get_pid()) != MPI_UNDEFINED) {
+      group_intra->set_mapping(actor.get_pid(), i);
       i++;
     }
   });
@@ -453,7 +453,7 @@ void Comm::init_smp(){
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
+      leaders_group->set_mapping(leader_list[i], i);
     leader_comm = new Comm(leaders_group, nullptr, true);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
@@ -461,7 +461,7 @@ void Comm::init_smp(){
     // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
+      leaders_group->set_mapping(leader_list[i], i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
       leader_comm = new Comm(leaders_group, nullptr, true);

@@ -24,14 +24,14 @@ Group::Group(const Group* origin)
   }
 }
 
-void Group::set_mapping(s4u::Actor* actor, int rank)
+void Group::set_mapping(aid_t pid, int rank)
 {
   if (0 <= rank && rank < size()) {
-    aid_t pid = actor->get_pid();
     if (static_cast<size_t>(pid) >= pid_to_rank_map_.size())
       pid_to_rank_map_.resize(pid + 1, MPI_UNDEFINED);
     rank_to_pid_map_[rank]   = pid;
     pid_to_rank_map_[pid]    = rank;
+    s4u::Actor* actor        = s4u::Actor::by_pid(pid).get();
     rank_to_actor_map_[rank] = actor;
     actor_to_rank_map_.insert({actor, rank});
   }
@@ -100,7 +100,7 @@ int Group::compare(const Group* group2) const
     result = MPI_UNEQUAL;
   } else {
     for (int i = 0; i < size(); i++) {
-      int rank = group2->rank(actor(i));
+      int rank = group2->rank(actor_pid(i));
       if (rank == MPI_UNDEFINED) {
         result = MPI_UNEQUAL;
         break;
@@ -122,7 +122,7 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup) const
 
   *newgroup = new Group(n);
   for (int i = 0; i < n; i++) {
-    s4u::Actor* actor = this->actor(ranks[i]);
+    aid_t actor = this->actor_pid(ranks[i]);
     (*newgroup)->set_mapping(actor, i);
   }
   (*newgroup)->add_f();
@@ -148,7 +148,7 @@ int Group::group_union(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks2;
   for (int i = 0; i < group2->size(); i++) {
-    s4u::Actor* actor = group2->actor(i);
+    aid_t actor = group2->actor_pid(i);
     if (rank(actor) == MPI_UNDEFINED)
       ranks2.push_back(i);
   }
@@ -162,11 +162,11 @@ int Group::group_union(const Group* group2, MPI_Group* newgroup) const
   *newgroup = new Group(newsize);
   int i;
   for (i = 0; i < size(); i++) {
-    s4u::Actor* actor1 = actor(i);
+    aid_t actor1 = actor_pid(i);
     (*newgroup)->set_mapping(actor1, i);
   }
   for (int j : ranks2) {
-    s4u::Actor* actor2 = group2->actor(j);
+    aid_t actor2 = group2->actor_pid(j);
     (*newgroup)->set_mapping(actor2, i);
     i++;
   }
@@ -178,7 +178,7 @@ int Group::intersection(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks2;
   for (int i = 0; i < group2->size(); i++) {
-    s4u::Actor* actor = group2->actor(i);
+    aid_t actor = group2->actor_pid(i);
     if (rank(actor) != MPI_UNDEFINED)
       ranks2.push_back(i);
   }
@@ -189,7 +189,7 @@ int Group::difference(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks;
   for (int i = 0; i < size(); i++) {
-    s4u::Actor* actor = this->actor(i);
+    aid_t actor = this->actor_pid(i);
     if (group2->rank(actor) == MPI_UNDEFINED)
       ranks.push_back(i);
   }

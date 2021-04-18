@@ -37,7 +37,7 @@ public:
   }
   explicit Group(const Group* origin);
 
-  void set_mapping(s4u::Actor* actor, int rank);
+  void set_mapping(aid_t pid, int rank);
   int rank(aid_t pid) const;
   aid_t actor_pid(int rank) const;
   s4u::Actor* actor(int rank) const;

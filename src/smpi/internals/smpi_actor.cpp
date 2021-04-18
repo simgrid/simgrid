@@ -178,7 +178,7 @@ MPI_Comm ActorExt::comm_self()
     auto* group = new Group(1);
     comm_self_  = new Comm(group, nullptr);
     comm_self_->set_name("MPI_COMM_SELF");
-    group->set_mapping(actor_, 0);
+    group->set_mapping(actor_->get_pid(), 0);
   }
   return comm_self_;
 }
