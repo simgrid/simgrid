@@ -598,15 +598,14 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
 static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status)
 {
   const simgrid::smpi::Request* req = *request;
-  if (req != MPI_REQUEST_NULL) { // Received requests become null
+  // Requests already received are null. Is this request a wait for RECV?
+  if (req != MPI_REQUEST_NULL && (req->flags() & MPI_REQ_RECV)) {
     int src_traced = req->src();
-    // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     int dst_traced = req->dst();
-    if (req->flags() & MPI_REQ_RECV) { // Is this request a wait for RECV?
-      if (src_traced == MPI_ANY_SOURCE)
-        src_traced = (status != MPI_STATUS_IGNORE) ? req->comm()->group()->rank(status->MPI_SOURCE) : req->src();
-      TRACE_smpi_recv(src_traced, dst_traced, req->tag());
-    }
+    // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
+    if (src_traced == MPI_ANY_SOURCE && status != MPI_STATUS_IGNORE)
+      src_traced = req->comm()->group()->actor(status->MPI_SOURCE)->get_pid();
+    TRACE_smpi_recv(src_traced, dst_traced, req->tag());
   }
 }
 
