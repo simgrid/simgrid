@@ -17,6 +17,7 @@ Group::Group(const Group* origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     // FIXME: cheinrich: There is no such thing as an index any more; the two maps should be removed
+    rank_to_pid_map_   = origin->rank_to_pid_map_;
     pid_to_rank_map_   = origin->pid_to_rank_map_;
     rank_to_actor_map_ = origin->rank_to_actor_map_;
     actor_to_rank_map_ = origin->actor_to_rank_map_;
@@ -29,6 +30,7 @@ void Group::set_mapping(s4u::Actor* actor, int rank)
     aid_t pid = actor->get_pid();
     if (static_cast<size_t>(pid) >= pid_to_rank_map_.size())
       pid_to_rank_map_.resize(pid + 1, MPI_UNDEFINED);
+    rank_to_pid_map_[rank]   = pid;
     pid_to_rank_map_[pid]    = rank;
     rank_to_actor_map_[rank] = actor;
     actor_to_rank_map_.insert({actor, rank});
@@ -46,6 +48,11 @@ int Group::rank(aid_t pid) const
     }
   }
   return res;
+}
+
+aid_t Group::actor_pid(int rank) const
+{
+  return (0 <= rank && rank < size()) ? rank_to_pid_map_[rank] : -1;
 }
 
 s4u::Actor* Group::actor(int rank) const
