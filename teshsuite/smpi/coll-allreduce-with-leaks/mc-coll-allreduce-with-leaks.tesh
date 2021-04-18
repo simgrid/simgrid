@@ -7,17 +7,10 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > [rank 2] -> Tremblay
 > [rank 3] -> Tremblay
 > [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
-> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
-> Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
+> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles :
 > [0.000000] [smpi_utils/INFO] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Group
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Group
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Group
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Group
+> [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
+> [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Group
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 4 unfreed buffers : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
 > Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
 > [0.000000] [smpi_utils/INFO] Leaked buffer of size 16
@@ -29,17 +22,10 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
-> Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
+> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles :
 > [0.000000] [smpi_utils/INFO] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Group
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Group
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Group
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] Leaked handle of type MPI_Group
+> [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
+> [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Group
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 4 unfreed buffers : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
 > Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
 > [0.000000] [smpi_utils/INFO] Leaked buffer of size 16
