@@ -37,7 +37,15 @@ void Group::set_mapping(s4u::Actor* actor, int rank)
 
 int Group::rank(aid_t pid) const
 {
-  return static_cast<size_t>(pid) < pid_to_rank_map_.size() ? pid_to_rank_map_[pid] : MPI_UNDEFINED;
+  int res = static_cast<size_t>(pid) < pid_to_rank_map_.size() ? pid_to_rank_map_[pid] : MPI_UNDEFINED;
+  if (res == MPI_UNDEFINED) {
+    // I'm not in the communicator ... but maybe my parent is?
+    if (auto parent = s4u::Actor::by_pid(pid)) {
+      aid_t ppid = parent->get_ppid();
+      res        = static_cast<size_t>(ppid) < pid_to_rank_map_.size() ? pid_to_rank_map_[ppid] : MPI_UNDEFINED;
+    }
+  }
+  return res;
 }
 
 s4u::Actor* Group::actor(int rank) const
