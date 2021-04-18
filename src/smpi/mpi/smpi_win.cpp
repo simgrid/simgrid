@@ -554,7 +554,7 @@ int Win::wait(){
   XBT_DEBUG("Win_wait - Finished %d RMA calls", finished);
 
   Group::unref(group_);
-  opened_--; //we're opened for business !
+  opened_--; //we're closed for business !
   return MPI_SUCCESS;
 }
 
