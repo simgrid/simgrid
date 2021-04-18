@@ -153,7 +153,7 @@ int Comm::rank() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->rank();
-  return group_->rank(s4u::Actor::self());
+  return group_->rank(s4u::this_actor::get_pid());
 }
 
 int Comm::id() const

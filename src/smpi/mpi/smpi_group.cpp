@@ -16,10 +16,8 @@ namespace smpi{
 Group::Group(const Group* origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
-    // FIXME: cheinrich: There is no such thing as an index any more; the two maps should be removed
-    rank_to_pid_map_   = origin->rank_to_pid_map_;
-    pid_to_rank_map_   = origin->pid_to_rank_map_;
-    actor_to_rank_map_ = origin->actor_to_rank_map_;
+    rank_to_pid_map_ = origin->rank_to_pid_map_;
+    pid_to_rank_map_ = origin->pid_to_rank_map_;
   }
 }
 
@@ -28,10 +26,8 @@ void Group::set_mapping(aid_t pid, int rank)
   if (0 <= rank && rank < size()) {
     if (static_cast<size_t>(pid) >= pid_to_rank_map_.size())
       pid_to_rank_map_.resize(pid + 1, MPI_UNDEFINED);
-    rank_to_pid_map_[rank]   = pid;
-    pid_to_rank_map_[pid]    = rank;
-    s4u::Actor* actor        = s4u::Actor::by_pid(pid).get();
-    actor_to_rank_map_.insert({actor, rank});
+    rank_to_pid_map_[rank] = pid;
+    pid_to_rank_map_[pid]  = rank;
   }
 }
 
@@ -51,18 +47,6 @@ int Group::rank(aid_t pid) const
 aid_t Group::actor_pid(int rank) const
 {
   return (0 <= rank && rank < size()) ? rank_to_pid_map_[rank] : -1;
-}
-
-int Group::rank(s4u::Actor* actor) const
-{
-  auto iterator = actor_to_rank_map_.find(actor);
-  //I'm not in the communicator ... but maybe my parent is ?
-  if (iterator == actor_to_rank_map_.end())
-    iterator = actor_to_rank_map_.find(s4u::Actor::by_pid(actor->get_ppid()).get());
-  int res = (iterator == actor_to_rank_map_.end()) ? MPI_UNDEFINED : (*iterator).second;
-  int rank2 = rank(actor->get_pid());
-  xbt_assert(res == rank2, "res = %d, rank2 = %d", res, rank2);
-  return res;
 }
 
 void Group::ref()
