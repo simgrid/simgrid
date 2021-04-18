@@ -68,7 +68,7 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
       const Group* oldGroup = comm_old->group();
       auto* newGroup        = new Group(newSize);
       for (int i = 0 ; i < newSize ; i++) {
-        newGroup->set_mapping(oldGroup->actor_pid(i), i);
+        newGroup->set_mapping(oldGroup->actor(i), i);
       }
       *comm_cart = new  Comm(newGroup, std::shared_ptr<Topo>(this));
     }

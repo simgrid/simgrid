@@ -34,7 +34,7 @@ public:
 
   void set_mapping(aid_t pid, int rank);
   int rank(aid_t pid) const;
-  aid_t actor_pid(int rank) const;
+  aid_t actor(int rank) const;
   std::string name() const override {return std::string("MPI_Group");}
   void ref();
   static void unref(MPI_Group group);

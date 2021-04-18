@@ -44,7 +44,7 @@ int Group::rank(aid_t pid) const
   return res;
 }
 
-aid_t Group::actor_pid(int rank) const
+aid_t Group::actor(int rank) const
 {
   return (0 <= rank && rank < size()) ? rank_to_pid_map_[rank] : -1;
 }
@@ -73,7 +73,7 @@ int Group::compare(const Group* group2) const
     result = MPI_UNEQUAL;
   } else {
     for (int i = 0; i < size(); i++) {
-      int rank = group2->rank(actor_pid(i));
+      int rank = group2->rank(actor(i));
       if (rank == MPI_UNDEFINED) {
         result = MPI_UNEQUAL;
         break;
@@ -95,7 +95,7 @@ int Group::incl(int n, const int* ranks, MPI_Group* newgroup) const
 
   *newgroup = new Group(n);
   for (int i = 0; i < n; i++) {
-    aid_t actor = this->actor_pid(ranks[i]);
+    aid_t actor = this->actor(ranks[i]);
     (*newgroup)->set_mapping(actor, i);
   }
   (*newgroup)->add_f();
@@ -121,7 +121,7 @@ int Group::group_union(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks2;
   for (int i = 0; i < group2->size(); i++) {
-    aid_t actor = group2->actor_pid(i);
+    aid_t actor = group2->actor(i);
     if (rank(actor) == MPI_UNDEFINED)
       ranks2.push_back(i);
   }
@@ -135,11 +135,11 @@ int Group::group_union(const Group* group2, MPI_Group* newgroup) const
   *newgroup = new Group(newsize);
   int i;
   for (i = 0; i < size(); i++) {
-    aid_t actor1 = actor_pid(i);
+    aid_t actor1 = actor(i);
     (*newgroup)->set_mapping(actor1, i);
   }
   for (int j : ranks2) {
-    aid_t actor2 = group2->actor_pid(j);
+    aid_t actor2 = group2->actor(j);
     (*newgroup)->set_mapping(actor2, i);
     i++;
   }
@@ -151,7 +151,7 @@ int Group::intersection(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks2;
   for (int i = 0; i < group2->size(); i++) {
-    aid_t actor = group2->actor_pid(i);
+    aid_t actor = group2->actor(i);
     if (rank(actor) != MPI_UNDEFINED)
       ranks2.push_back(i);
   }
@@ -162,7 +162,7 @@ int Group::difference(const Group* group2, MPI_Group* newgroup) const
 {
   std::vector<int> ranks;
   for (int i = 0; i < size(); i++) {
-    aid_t actor = this->actor_pid(i);
+    aid_t actor = this->actor(i);
     if (group2->rank(actor) == MPI_UNDEFINED)
       ranks.push_back(i);
   }

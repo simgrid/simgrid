@@ -294,7 +294,7 @@ MPI_Comm Comm::split(int color, int key)
           group_root = group_out; /* Save root's group */
         }
         for (unsigned j = 0; j < rankmap.size(); j++) {
-          aid_t actor = group->actor_pid(rankmap[j].second);
+          aid_t actor = group->actor(rankmap[j].second);
           group_out->set_mapping(actor, j);
         }
         std::vector<MPI_Request> requests(rankmap.size());
@@ -501,9 +501,9 @@ void Comm::init_smp(){
   }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
-  int prev      = this->group()->rank(comm_intra->group()->actor_pid(0));
+  int prev      = this->group()->rank(comm_intra->group()->actor(0));
   for (i = 1; i < my_local_size; i++) {
-    int that = this->group()->rank(comm_intra->group()->actor_pid(i));
+    int that = this->group()->rank(comm_intra->group()->actor(i));
     if (that != prev + 1) {
       is_blocked = 0;
       break;
