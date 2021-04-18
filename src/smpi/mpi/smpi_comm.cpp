@@ -501,9 +501,9 @@ void Comm::init_smp(){
   }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
-  int prev=this->group()->rank(comm_intra->group()->actor(0));
+  int prev      = this->group()->rank(comm_intra->group()->actor_pid(0));
   for (i = 1; i < my_local_size; i++) {
-    int that = this->group()->rank(comm_intra->group()->actor(i));
+    int that = this->group()->rank(comm_intra->group()->actor_pid(i));
     if (that != prev + 1) {
       is_blocked = 0;
       break;

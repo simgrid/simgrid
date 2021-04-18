@@ -11,11 +11,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
-static int getPid(MPI_Comm, int);
 static int getPid(MPI_Comm comm, int id)
 {
-  simgrid::s4u::ActorPtr actor = comm->group()->actor(id);
-  return (actor == nullptr) ? MPI_UNDEFINED : actor->get_pid();
+  return comm->group()->actor_pid(id);
 }
 
 #define CHECK_SEND_INPUTS\
@@ -604,7 +602,7 @@ static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status)
     int dst_traced = req->dst();
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     if (src_traced == MPI_ANY_SOURCE && status != MPI_STATUS_IGNORE)
-      src_traced = req->comm()->group()->actor(status->MPI_SOURCE)->get_pid();
+      src_traced = req->comm()->group()->actor_pid(status->MPI_SOURCE);
     TRACE_smpi_recv(src_traced, dst_traced, req->tag());
   }
 }

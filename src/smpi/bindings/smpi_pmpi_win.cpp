@@ -227,7 +227,7 @@ int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
   int my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
   win->get_group(&group);
-  int dst_traced = group->actor(target_rank)->get_pid();
+  int dst_traced = group->actor_pid(target_rank);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("Put", target_rank, origin_datatype->is_replayable()
                                                                              ? origin_count
@@ -258,7 +258,7 @@ int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_dat
   int my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
   win->get_group(&group);
-  int dst_traced = group->actor(target_rank)->get_pid();
+  int dst_traced = group->actor_pid(target_rank);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData(
                          "Rput", target_rank,

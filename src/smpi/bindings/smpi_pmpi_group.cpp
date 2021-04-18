@@ -55,7 +55,7 @@ int PMPI_Group_translate_ranks(MPI_Group group1, int n, const int *ranks1, MPI_G
     if(ranks1[i]==MPI_PROC_NULL){
       ranks2[i]=MPI_PROC_NULL;
     }else{
-      simgrid::s4u::Actor* actor = group1->actor(ranks1[i]);
+      aid_t actor = group1->actor_pid(ranks1[i]);
       ranks2[i] = group2->rank(actor);
     }
   }

@@ -128,10 +128,9 @@ public:
     /* Sometimes we need to re-insert MPI_REQUEST_NULL but we still need src,dst and tag */
     void addNullRequest(int src, int dst, int tag)
     {
-      store.insert({req_key_t(
-            MPI_COMM_WORLD->group()->actor(src)->get_pid()-1,
-            MPI_COMM_WORLD->group()->actor(dst)->get_pid()-1,
-            tag), MPI_REQUEST_NULL});
+      store.insert(
+          {req_key_t(MPI_COMM_WORLD->group()->actor_pid(src) - 1, MPI_COMM_WORLD->group()->actor_pid(dst) - 1, tag),
+           MPI_REQUEST_NULL});
     }
 };
 
@@ -434,7 +433,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
 void SendAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const SendRecvParser& args = get_args();
-  int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
+  int dst_traced             = MPI_COMM_WORLD->group()->actor_pid(args.partner);
 
   TRACE_smpi_comm_in(
       get_pid(), __func__,
@@ -482,7 +481,7 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
 
   TRACE_smpi_comm_out(get_pid());
   if (is_recv && not TRACE_smpi_view_internals()) {
-    int src_traced = MPI_COMM_WORLD->group()->actor(status.MPI_SOURCE)->get_pid();
+    int src_traced = MPI_COMM_WORLD->group()->actor_pid(status.MPI_SOURCE);
     TRACE_smpi_recv(src_traced, get_pid(), args.tag);
   }
 }
@@ -588,7 +587,7 @@ void BcastAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const BcastArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_bcast",
-                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(), -1.0,
+                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor_pid(args.root), -1.0,
                                                     args.size, -1, Datatype::encode(args.datatype1), ""));
 
   colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
@@ -600,7 +599,7 @@ void ReduceAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const ReduceArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_reduce",
-                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
+                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor_pid(args.root),
                                                     args.comp_size, args.comm_size, -1,
                                                     Datatype::encode(args.datatype1), ""));
 

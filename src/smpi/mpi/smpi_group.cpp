@@ -19,7 +19,6 @@ Group::Group(const Group* origin)
     // FIXME: cheinrich: There is no such thing as an index any more; the two maps should be removed
     rank_to_pid_map_   = origin->rank_to_pid_map_;
     pid_to_rank_map_   = origin->pid_to_rank_map_;
-    rank_to_actor_map_ = origin->rank_to_actor_map_;
     actor_to_rank_map_ = origin->actor_to_rank_map_;
   }
 }
@@ -32,7 +31,6 @@ void Group::set_mapping(aid_t pid, int rank)
     rank_to_pid_map_[rank]   = pid;
     pid_to_rank_map_[pid]    = rank;
     s4u::Actor* actor        = s4u::Actor::by_pid(pid).get();
-    rank_to_actor_map_[rank] = actor;
     actor_to_rank_map_.insert({actor, rank});
   }
 }
@@ -53,15 +51,6 @@ int Group::rank(aid_t pid) const
 aid_t Group::actor_pid(int rank) const
 {
   return (0 <= rank && rank < size()) ? rank_to_pid_map_[rank] : -1;
-}
-
-s4u::Actor* Group::actor(int rank) const
-{
-  s4u::Actor* actor = (0 <= rank && rank < size()) ? rank_to_actor_map_[rank] : nullptr;
-  aid_t pid         = actor_pid(rank);
-  xbt_assert(actor == nullptr || pid == actor->get_pid(), "pid = %ld, actor->get_pid() = %ld", pid, actor->get_pid());
-  xbt_assert(actor != nullptr || pid == -1, "pid = %ld", pid);
-  return actor;
 }
 
 int Group::rank(s4u::Actor* actor) const
