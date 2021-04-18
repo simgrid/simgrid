@@ -21,7 +21,7 @@ class Group : public F2C{
    */
   std::vector<s4u::Actor*> rank_to_actor_map_;
   std::map<s4u::Actor*, int> actor_to_rank_map_;
-  std::vector<int> index_to_rank_map_;
+  std::vector<int> pid_to_rank_map_;
 
   int refcount_ = 1; /* refcount_: start > 0 so that this group never gets freed */
 
@@ -30,11 +30,11 @@ class Group : public F2C{
 
 public:
   Group() = default;
-  explicit Group(int size) : rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
+  explicit Group(int size) : rank_to_actor_map_(size, nullptr), pid_to_rank_map_(size, MPI_UNDEFINED) {}
   explicit Group(const Group* origin);
 
   void set_mapping(s4u::Actor* actor, int rank);
-  int rank(int index) const;
+  int rank(aid_t pid) const;
   s4u::Actor* actor(int rank) const;
   std::string name() const override {return std::string("MPI_Group");}
   int rank(s4u::Actor* process) const;
