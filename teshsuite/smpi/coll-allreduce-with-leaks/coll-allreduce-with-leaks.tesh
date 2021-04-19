@@ -1,5 +1,4 @@
 # Smpi Allreduce collectives tests
-! output sort
 
 p Test allreduce
 $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform  ${platfdir:=.}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce-with-leaks --log=smpi_config.thres:warning --cfg=smpi/display-allocs:yes --cfg=smpi/simulate-computation:no --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/list-leaks:10
@@ -22,20 +21,10 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -map -ho
 > [0.023768] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 32 unfreed MPI handles :
 > [0.023768] [smpi_utils/INFO] 16 leaked handles of type MPI_Comm at coll-allreduce-with-leaks.c:23
 > [0.023768] [smpi_utils/INFO] 16 leaked handles of type MPI_Group at coll-allreduce-with-leaks.c:23
-> [0.023768] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 16 unfreed buffers : display types and addresses (n max) with --cfg=smpi/list-leaks:n.
-> Running smpirun with -wrapper "valgrind --leak-check=full" can provide more information
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] Leaked buffer of size 64, allocated in file coll-allreduce-with-leaks.c at line 28
-> [0.023768] [smpi_utils/INFO] (more buffer leaks hidden as you wanted to see only 10 of them)
-> [0.023768] [smpi_utils/INFO] Memory Usage: Simulated application allocated 2048 bytes during its lifetime through malloc/calloc calls.
-> Largest allocation at once from a single process was 64 bytes, at coll-allreduce-with-leaks.c:27. It was called 16 times during the whole simulation.
+> [0.023768] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 32 unfreed buffers :
+> [0.023768] [smpi_utils/INFO] coll-allreduce-with-leaks.c:28 : leaked allocations of total size 1504, called 16 times, with minimum size 64 and maximum size 124
+> [0.023768] [smpi_utils/INFO] coll-allreduce-with-leaks.c:27 : leaked allocations of total size 1024, called 16 times, each with size 64
+> [0.023768] [smpi_utils/INFO] Memory Usage: Simulated application allocated 2528 bytes during its lifetime through malloc/calloc calls.
+> Largest allocation at once from a single process was 124 bytes, at coll-allreduce-with-leaks.c:28. It was called 1 times during the whole simulation.
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
