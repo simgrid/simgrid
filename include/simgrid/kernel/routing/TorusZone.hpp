@@ -27,7 +27,15 @@ public:
   void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position) override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
+  void set_topology(const std::vector<unsigned int>& dimensions);
+
+  /** @brief Convert topology parameters from string to vector of uint */
+  static std::vector<unsigned int> parse_topo_parameters(const std::string& topo_parameters);
 };
+
+/** @brief Create a regular torus zone with hosts as leafs */
+s4u::NetZone* create_torus_zone_with_hosts(const ClusterCreationArgs* cluster, const s4u::NetZone* parent);
+
 } // namespace routing
 } // namespace kernel
 } // namespace simgrid

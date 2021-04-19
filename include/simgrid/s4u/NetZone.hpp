@@ -151,7 +151,58 @@ XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_empty_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_fatTree_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_floyd_zone(const std::string& name);
-XBT_PUBLIC NetZone* create_torus_zone(const std::string& name);
+/**
+ * @brief Callback used to set the netpoint and gateway located at some leaf of the torus
+ *
+ * The netpoint can be either a host, router or another netzone.
+ * Gateway must be non-null if netpoint is a netzone
+ *
+ * @param zone: The newly create Torus zone, needed for creating new resources (hosts, links)
+ * @param coord: the coordinates of the element in the torus, eg. 0,1,1
+ * @param id: Internal identifier of the element
+ * @return pair<NetPoint*, NetPoint*>: returns a pair of netpoint and gateway.
+ */
+typedef std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>
+TorusNetPointCb(NetZone* zone, const std::vector<unsigned int>& coord, int id);
+/**
+ * @brief Callback used to set the links for some leaf of the torus
+ *
+ * @param zone: The newly create Torus zone, needed for creating new resources (hosts, links)
+ * @param coord: the coordinates of the element in the torus, eg. 0,1,1
+ * @param id: Internal identifier of the element
+ * @return Pointer to the Link
+ */
+typedef Link* TorusLinkCb(NetZone* zone, const std::vector<unsigned int>& coord, int id);
+/**
+ * @brief Create a torus zone
+ *
+ * Torus clusters are characterized by:
+ * - dimensions, eg. {3,3,3} creates a torus with X = 3 elements, Y = 3 and Z = 3. In total, this cluster have 27
+ * elements
+ * - inter-node communication: (bandwidth, latency, sharing_policy) the elements are connected through regular links
+ * with these characteristics
+ *
+ * Moreover, this method accepts 3 callbacks to populate the cluster: set_netpoint, set_loopback and set_limiter .
+ *
+ * Note that the all elements in Torus cluster must have (or not) the same elements (loopback and limiter)
+ *
+ * @param name NetZone's name
+ * @param parent Pointer to parent's netzone (nullptr if rootnetzone). Needed to be able to create the resources inside
+ * the netzone
+ * @param dimensions List of positive integers (> 0) which determines the torus' dimensions
+ * @param bandwidth Characteristics of the inter-nodes link
+ * @param latency Characteristics of the inter-nodes link
+ * @param sharing_policy Characteristics of the inter-nodes link
+ * @param set_netpoint Callback to set the netpoint of an element in the torus
+ * @param set_loopback Callback to set the loopback
+ * @param set_limiter Callback to set the limiter
+ * @return Pointer to new netzone
+ */
+NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const std::vector<unsigned int>& dimensions,
+                           double bandwidth, double latency, Link::SharingPolicy sharing_policy,
+                           const std::function<TorusNetPointCb>& set_netpoint,
+                           const std::function<TorusLinkCb>& set_loopback = {},
+                           const std::function<TorusLinkCb>& set_limiter  = {});
 XBT_PUBLIC NetZone* create_vivaldi_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_wifi_zone(const std::string& name);
 

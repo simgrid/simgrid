@@ -21,14 +21,18 @@ ClusterZone::ClusterZone(const std::string& name) : NetZoneImpl(name) {}
 
 void ClusterZone::set_loopback()
 {
-  num_links_per_node_++;
-  has_loopback_ = true;
+  if (not has_loopback_) {
+    num_links_per_node_++;
+    has_loopback_ = true;
+  }
 }
 
 void ClusterZone::set_limiter()
 {
-  num_links_per_node_++;
-  has_limiter_ = true;
+  if (not has_limiter_) {
+    num_links_per_node_++;
+    has_limiter_ = true;
+  }
 }
 
 void ClusterZone::add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link)
