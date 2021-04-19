@@ -81,14 +81,26 @@ public:
 
   /** Creates (but don't start) a data transmission to that mailbox */
   CommPtr put_init();
-  /** Creates (but don't start) a data transmission to that mailbox */
+  /** Creates (but don't start) a data transmission to that mailbox.
+   *
+   * Please note that if you send a pointer to some data, you must ensure that your data remains live during the
+   * communication, or the receiver will get a pointer to a garbled memory area.
+   */
   CommPtr put_init(void* data, uint64_t simulated_size_in_bytes);
-  /** Creates and start a data transmission to that mailbox */
+  /** Creates and start a data transmission to that mailbox.
+   *
+   * Please note that if you send a pointer to some data, you must ensure that your data remains live during the
+   * communication, or the receiver will get a pointer to a garbled memory area.
+   */
   CommPtr put_async(void* data, uint64_t simulated_size_in_bytes);
 
   kernel::activity::ActivityImplPtr iprobe(int type, bool (*match_fun)(void*, void*, kernel::activity::CommImpl*),
                                            void* data);
-  /** Blocking data transmission */
+  /** Blocking data transmission.
+   *
+   * Please note that if you send a pointer to some data, you must ensure that your data remains live during the
+   * communication, or the receiver will get a pointer to a garbled memory area.
+   */
   void put(void* payload, uint64_t simulated_size_in_bytes);
   /** Blocking data transmission with timeout */
   void put(void* payload, uint64_t simulated_size_in_bytes, double timeout);
