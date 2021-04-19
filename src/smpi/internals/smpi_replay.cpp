@@ -98,7 +98,7 @@ public:
   {
     for (auto const& pair : store) {
       auto& req       = pair.second;
-      auto my_proc_id = simgrid::s4u::this_actor::get_pid();
+      aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
       if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
         vec.push_back(pair.second);
         pair.second->print_request("MM");

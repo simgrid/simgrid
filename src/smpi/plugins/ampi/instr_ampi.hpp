@@ -9,8 +9,8 @@
 #include "smpi/smpi.h"
 #include "src/instr/instr_private.hpp"
 
-XBT_PRIVATE void TRACE_Iteration_in(int rank, simgrid::instr::TIData* extra);
-XBT_PRIVATE void TRACE_Iteration_out(int rank, simgrid::instr::TIData* extra);
-XBT_PRIVATE void TRACE_migration_call(int rank, simgrid::instr::TIData* extra);
+XBT_PRIVATE void TRACE_Iteration_in(aid_t pid, simgrid::instr::TIData* extra);
+XBT_PRIVATE void TRACE_Iteration_out(aid_t pid, simgrid::instr::TIData* extra);
+XBT_PRIVATE void TRACE_migration_call(aid_t pid, simgrid::instr::TIData* extra);
 
 #endif
