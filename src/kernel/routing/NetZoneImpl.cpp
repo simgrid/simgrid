@@ -372,7 +372,7 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
   std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*> key;
   // Search for a bypass with the given indices. Returns true if found. Initialize variables `bypassedRoute' and `key'.
   auto lookup = [&bypassedRoute, &key, &path_src, &path_dst, this](unsigned src_index, unsigned dst_index) {
-    if (src_index < path_src.size() && dst_index <= path_dst.size()) {
+    if (src_index < path_src.size() && dst_index < path_dst.size()) {
       key      = {path_src[src_index]->netpoint_, path_dst[dst_index]->netpoint_};
       auto bpr = bypass_routes_.find(key);
       if (bpr != bypass_routes_.end()) {
