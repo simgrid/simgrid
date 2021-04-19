@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(basic_parsing_test, "[usage] basic-parsing-test <pl
 
 namespace sg4 = simgrid::s4u;
 
-static void test_one_link(const std::vector<sg4::Host*> hosts)
+static void test_one_link(const std::vector<sg4::Host*>& hosts)
 {
   const sg4::Host* h1 = hosts[0];
   const sg4::Host* h2 = hosts[1];
@@ -32,7 +32,7 @@ static void test_one_link(const std::vector<sg4::Host*> hosts)
   XBT_INFO("Route latency = %f, route bandwidth = %f", latency, min_bandwidth);
 }
 
-static void test_full_link(const std::vector<sg4::Host*> hosts)
+static void test_full_link(const std::vector<sg4::Host*>& hosts)
 {
   size_t list_size = hosts.size();
   for (size_t i = 0; i < list_size; i++) {
