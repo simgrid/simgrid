@@ -145,7 +145,8 @@ int PMPI_Win_set_info(MPI_Win  win, MPI_Info info)
 int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
   CHECK_WIN(1, win)
   win->get_group(group);
-  (*group)->ref();
+  if (*group != MPI_COMM_WORLD->group() && *group != MPI_GROUP_NULL && *group != MPI_GROUP_EMPTY)
+    (*group)->ref();
   return MPI_SUCCESS;
 }
 
