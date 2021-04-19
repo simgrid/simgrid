@@ -164,7 +164,8 @@ static void print_leaked_handles(){
     auto max = static_cast<unsigned long>(simgrid::config::get_value<int>("smpi/list-leaks"));
     std::string message = "Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles :";
     if(max==0)
-      message +="display types and addresses (n max) with --cfg=smpi/list-leaks:n.\nRunning smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information";
+      message +="\nHINT : Display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"\
+                "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information";
     XBT_INFO(message.c_str(), handles.size());
     if (max > 0) { // we cannot trust F2C::lookup()->size() > F2C::get_num_default_handles() because some default
                    // handles are already freed at this point
@@ -181,7 +182,7 @@ static void print_leaked_handles(){
           result.first->second++;
       }
       if (display_advice)
-        XBT_INFO("To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90");
+        XBT_WARN("To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90");
       unsigned int i = 0;
       for (const auto& p : count) {
         if(p.second == 1)
@@ -201,27 +202,54 @@ static void print_leaked_handles(){
 static void print_leaked_buffers(){
   if (not allocs.empty()) {
     auto max = static_cast<unsigned long>(simgrid::config::get_value<int>("smpi/list-leaks"));
-    std::vector<std::pair<const void*, alloc_metadata_t>> leaks;
-    std::copy(allocs.begin(),
-            allocs.end(),
-            std::back_inserter<std::vector<std::pair<const void*, alloc_metadata_t>>>(leaks));
-    XBT_INFO("Probable memory leaks in your code: SMPI detected %zu unfreed buffers : "
-             "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
-             "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information",
-             leaks.size());
+    std::string message = "Probable memory leaks in your code: SMPI detected %zu unfreed buffers :";
+    if(max==0)
+      message +="display types and addresses (n max) with --cfg=smpi/list-leaks:n.\nRunning smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information";
+    XBT_INFO(message.c_str(), allocs.size());
+
     if (max > 0) {
-      std::sort(leaks.begin(), leaks.end(), [](auto const& a, auto const& b) { return a.second.size > b.second.size; });
-      bool truncate = max < leaks.size();
-      if (truncate)
-        leaks.resize(max);
-      for (const auto& p : leaks) {
-        if (xbt_log_no_loc) {
-          XBT_INFO("Leaked buffer of size %zu", p.second.size);
-        } else {
-          XBT_INFO("Leaked buffer of size %zu, allocated in file %s at line %d", p.second.size, p.second.file.c_str(), p.second.line);
+      //gather by allocation origin (only one group reported in case of no-loc or if trace-call-location is not used)
+      struct buff_leak{
+        int count;
+        size_t total_size;
+        size_t min_size;
+        size_t max_size;
+      };
+      std::map<std::string, struct buff_leak> leaks_aggreg;
+      for (auto & elem : allocs){
+        std::string key = "leaked allocations";
+        if (not xbt_log_no_loc)
+          key=elem.second.file+":"+std::to_string(elem.second.line)+" : "+key;
+        auto result = leaks_aggreg.insert(std::pair<std::string, struct buff_leak>(key, {1, elem.second.size, elem.second.size, elem.second.size}));
+        if (result.second == false){
+          result.first->second.count ++;
+          result.first->second.total_size += elem.second.size;
+          if(elem.second.size > result.first->second.max_size)
+            result.first->second.max_size = elem.second.size;
+          else if (elem.second.size < result.first->second.min_size)
+            result.first->second.min_size = elem.second.size;
         }
       }
-      if (truncate)
+      //now we can order by total size.
+      std::vector<std::pair<std::string, buff_leak>> leaks;
+      std::copy(leaks_aggreg.begin(),
+            leaks_aggreg.end(),
+            std::back_inserter<std::vector<std::pair<std::string, buff_leak>>>(leaks));
+      std::sort(leaks.begin(), leaks.end(), [](auto const& a, auto const& b) { return a.second.total_size > b.second.total_size; });
+
+      unsigned int i =0;
+      for (const auto& p : leaks) {
+        if(p.second.min_size == p.second.max_size)
+          XBT_INFO("%s of total size %zu, called %d times, each with size %zu",
+                  p.first.c_str(),p.second.total_size,p.second.count,p.second.min_size);
+        else
+          XBT_INFO("%s of total size %zu, called %d times, with minimum size %zu and maximum size %zu",
+                  p.first.c_str(),p.second.total_size,p.second.count,p.second.min_size,p.second.max_size);
+        i++;
+        if(i == max)
+          break;
+      }
+      if (max < leaks_aggreg.size())
         XBT_INFO("(more buffer leaks hidden as you wanted to see only %lu of them)", max);
     }
   }
