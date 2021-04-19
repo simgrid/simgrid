@@ -234,11 +234,8 @@ unsigned int Peer::countPieces(unsigned int bitfield) const
 
 int Peer::nbInterestedPeers() const
 {
-  int nb = 0;
-  for (auto const& kv : connected_peers)
-    if (kv.second.interested)
-      nb++;
-  return nb;
+  return static_cast<int>(std::count_if(connected_peers.begin(), connected_peers.end(),
+                                        [](const auto& kv) { return kv.second.interested; }));
 }
 
 void Peer::leech()

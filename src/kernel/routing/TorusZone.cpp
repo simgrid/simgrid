@@ -64,9 +64,7 @@ void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
      * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
      * Additionally, we need to know how many ranks we have in total
      */
-    for (auto const& group : dimensions)
-      dimensions_.push_back(surf_parse_get_int(group));
-
+    std::transform(begin(dimensions), end(dimensions), std::back_inserter(dimensions_), surf_parse_get_int);
     set_num_links_per_node(dimensions_.size());
   }
 }

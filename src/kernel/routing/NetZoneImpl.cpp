@@ -448,8 +448,7 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != route.gw_src)
     get_global_route(src, route.gw_src, links, latency);
-  for (auto const& link : route.link_list)
-    links.push_back(link);
+  links.insert(links.end(), begin(route.link_list), end(route.link_list));
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   if (route.gw_dst != dst)
