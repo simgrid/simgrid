@@ -46,7 +46,7 @@ void LinkEvent::print()
 {
   stream_ << " " << value_ << " " << endpoint_->get_id() << " " << key_;
 
-  if (TRACE_display_sizes() && size_ != -1)
+  if (TRACE_display_sizes() && size_ != static_cast<size_t>(-1))
     stream_ << " " << size_;
 }
 

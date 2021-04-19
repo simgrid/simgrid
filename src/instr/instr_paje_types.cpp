@@ -96,19 +96,14 @@ void VariableType::sub_event(double timestamp, double value)
   events_.push_back(new VariableEvent(timestamp, get_issuer(), this, PajeEventType::SubVariable, value));
 }
 
-void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key)
-{
-  start_event(startContainer, value, key, -1);
-}
-
-void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key, int size)
+void LinkType::start_event(Container* startContainer, const std::string& value, const std::string& key, size_t size)
 {
   new LinkEvent(get_issuer(), this, PajeEventType::StartLink, startContainer, value, key, size);
 }
 
 void LinkType::end_event(Container* endContainer, const std::string& value, const std::string& key)
 {
-  new LinkEvent(get_issuer(), this, PajeEventType::EndLink, endContainer, value, key, -1);
+  new LinkEvent(get_issuer(), this, PajeEventType::EndLink, endContainer, value, key);
 }
 
 Type* Type::by_name(const std::string& name)

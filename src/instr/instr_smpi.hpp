@@ -18,7 +18,7 @@ XBT_PRIVATE void TRACE_smpi_sleeping_out(aid_t pid);
 XBT_PRIVATE void TRACE_smpi_sleeping_in(aid_t pid, double duration);
 XBT_PRIVATE void TRACE_smpi_comm_in(aid_t pid, const char* operation, simgrid::instr::TIData* extra);
 XBT_PRIVATE void TRACE_smpi_comm_out(aid_t pid);
-XBT_PRIVATE void TRACE_smpi_send(aid_t rank, aid_t src, aid_t dst, int tag, int size);
+XBT_PRIVATE void TRACE_smpi_send(aid_t rank, aid_t src, aid_t dst, int tag, size_t size);
 XBT_PRIVATE void TRACE_smpi_recv(aid_t src, aid_t dst, int tag);
 XBT_PRIVATE void TRACE_smpi_init(aid_t pid, const std::string& calling_func);
 

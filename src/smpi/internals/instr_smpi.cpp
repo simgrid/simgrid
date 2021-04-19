@@ -211,7 +211,7 @@ void TRACE_smpi_comm_out(aid_t pid)
     smpi_container(pid)->get_state("MPI_STATE")->pop_event();
 }
 
-void TRACE_smpi_send(aid_t rank, aid_t src, aid_t dst, int tag, int size)
+void TRACE_smpi_send(aid_t rank, aid_t src, aid_t dst, int tag, size_t size)
 {
   if (not TRACE_smpi_is_enabled())
     return;

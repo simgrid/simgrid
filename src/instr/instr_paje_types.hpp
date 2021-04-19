@@ -101,8 +101,8 @@ public:
   {
     on_creation(*this, *source, *dest);
   }
-  void start_event(Container* startContainer, const std::string& value, const std::string& key);
-  void start_event(Container* startContainer, const std::string& value, const std::string& key, int size);
+  void start_event(Container* startContainer, const std::string& value, const std::string& key,
+                   size_t size = static_cast<size_t>(-1));
   void end_event(Container* endContainer, const std::string& value, const std::string& key);
 };
 
