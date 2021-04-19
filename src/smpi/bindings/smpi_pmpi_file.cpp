@@ -23,16 +23,16 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 #define CHECK_FILE_INPUTS                                                                                              \
   CHECK_FILE(1, fh)                                                                                                    \
-  CHECK_BUFFER(2, buf, count)                                                                                          \
   CHECK_COUNT(3, count)                                                                                                \
   CHECK_TYPE(4, datatype)                                                                                              \
+  CHECK_BUFFER(2, buf, count, datatype)                                                                                          \
 
 #define CHECK_FILE_INPUT_OFFSET                                                                                        \
   CHECK_FILE(1, fh)                                                                                                    \
-  CHECK_BUFFER(2, buf, count)                                                                                          \
   CHECK_OFFSET(3, offset)                                                                                                 \
   CHECK_COUNT(4, count)                                                                                                \
   CHECK_TYPE(5, datatype)                                                                                              \
+  CHECK_BUFFER(2, buf, count, datatype)                                                                                          \
 
 extern MPI_Errhandler SMPI_default_File_Errhandler;
 
@@ -299,7 +299,7 @@ int PMPI_File_get_view(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_D
 int PMPI_File_get_info(MPI_File  fh, MPI_Info* info)
 {
   CHECK_FILE(1, fh)
-  *info = fh->info();
+  *info = new simgrid::smpi::Info(fh->info());
   return MPI_SUCCESS;
 }
 

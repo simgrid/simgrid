@@ -15,14 +15,15 @@ namespace s4u {
 xbt::signal<void(Io const&)> Io::on_start;
 xbt::signal<void(Io const&)> Io::on_completion;
 
-Io::Io()
+Io::Io(kernel::activity::IoImplPtr pimpl)
 {
-  pimpl_ = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
+  pimpl_ = pimpl;
 }
 
 IoPtr Io::init()
 {
- return IoPtr(new Io());
+  auto pimpl = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
+  return IoPtr(pimpl->get_iface());
 }
 
 Io* Io::start()

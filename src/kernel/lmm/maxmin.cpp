@@ -236,7 +236,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 
   xbt_assert(var->cnsts_.size() < var->cnsts_.capacity(), "Too much constraints");
 
-  var->cnsts_.resize(var->cnsts_.size() + 1);
+  var->cnsts_.emplace_back();
   Element& elem = var->cnsts_.back();
 
   elem.consumption_weight = consumption_weight;

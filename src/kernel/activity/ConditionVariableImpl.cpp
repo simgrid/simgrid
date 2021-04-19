@@ -87,12 +87,12 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
 }
 
 // boost::intrusive_ptr<ConditionVariableImpl> support:
-void intrusive_ptr_add_ref(simgrid::kernel::activity::ConditionVariableImpl* cond)
+void intrusive_ptr_add_ref(ConditionVariableImpl* cond)
 {
   cond->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
 
-void intrusive_ptr_release(simgrid::kernel::activity::ConditionVariableImpl* cond)
+void intrusive_ptr_release(ConditionVariableImpl* cond)
 {
   if (cond->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);

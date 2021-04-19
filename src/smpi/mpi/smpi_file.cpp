@@ -81,7 +81,7 @@ namespace smpi{
     }
     delete win_;
     delete file_;
-    F2C::free_f(this->c2f());
+    F2C::free_f(this->f2c_id());
     if (info_ != MPI_INFO_NULL)
       simgrid::smpi::Info::unref(info_);
     if (errhandler_ != MPI_ERRHANDLER_NULL)

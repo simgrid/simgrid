@@ -532,10 +532,10 @@ std::vector<char> Api::get_pattern_comm_data(RemotePtr<kernel::activity::CommImp
 #if HAVE_SMPI
 bool Api::check_send_request_detached(smx_simcall_t const& simcall) const
 {
-  simgrid::smpi::Request mpi_request;
+  Remote<simgrid::smpi::Request> mpi_request;
   mc_model_checker->get_remote_process().read(
-      &mpi_request, remote(static_cast<smpi::Request*>(simcall_comm_isend__get__data(simcall))));
-  return mpi_request.detached();
+      mpi_request, remote(static_cast<smpi::Request*>(simcall_comm_isend__get__data(simcall))));
+  return mpi_request.get_buffer()->detached();
 }
 #endif
 
@@ -913,14 +913,14 @@ std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
 #if HAVE_SMPI
 int Api::get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const
 {
-  simgrid::smpi::Request mpi_request;
   void* simcall_data = nullptr;
   if (type == Simcall::COMM_ISEND)
     simcall_data = simcall_comm_isend__get__data(simcall);
   else if (type == Simcall::COMM_IRECV)
     simcall_data = simcall_comm_irecv__get__data(simcall);
-  mc_model_checker->get_remote_process().read(&mpi_request, remote(static_cast<smpi::Request*>(simcall_data)));
-  return mpi_request.tag();
+  Remote<simgrid::smpi::Request> mpi_request;
+  mc_model_checker->get_remote_process().read(mpi_request, remote(static_cast<smpi::Request*>(simcall_data)));
+  return mpi_request.get_buffer()->tag();
 }
 #endif
 

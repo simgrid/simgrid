@@ -153,7 +153,7 @@ int Comm::rank() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->rank();
-  return group_->rank(s4u::Actor::self());
+  return group_->rank(s4u::this_actor::get_pid());
 }
 
 int Comm::id() const
@@ -170,13 +170,22 @@ void Comm::get_name(char* name, int* len) const
   if(this == MPI_COMM_WORLD && name_.empty()) {
     strncpy(name, "MPI_COMM_WORLD", 15);
     *len = 14;
-  } else if(this == MPI_COMM_SELF && name_.empty()) {
-    strncpy(name, "MPI_COMM_SELF", 14);
-    *len = 13;
   } else {
     *len = snprintf(name, MPI_MAX_NAME_STRING+1, "%s", name_.c_str());
   }
 }
+
+std::string Comm::name() const
+{
+  int size;
+  char name[MPI_MAX_NAME_STRING+1];
+  this->get_name(name, &size);
+  if (name[0]=='\0')
+    return std::string("MPI_Comm");
+  else
+    return std::string(name);
+}
+
 
 void Comm::set_name (const char* name)
 {
@@ -253,7 +262,7 @@ MPI_Comm Comm::split(int color, int key)
 
   MPI_Group group_root = nullptr;
   MPI_Group group_out  = nullptr;
-  MPI_Group group      = this->group();
+  const Group* group   = this->group();
   int myrank           = this->rank();
   int size             = this->size();
   /* Gather all colors and keys on rank 0 */
@@ -285,7 +294,7 @@ MPI_Comm Comm::split(int color, int key)
           group_root = group_out; /* Save root's group */
         }
         for (unsigned j = 0; j < rankmap.size(); j++) {
-          s4u::Actor* actor = group->actor(rankmap[j].second);
+          aid_t actor = group->actor(rankmap[j].second);
           group_out->set_mapping(actor, j);
         }
         std::vector<MPI_Request> requests(rankmap.size());
@@ -339,7 +348,7 @@ void Comm::unref(Comm* comm){
 
   if(comm->refcount_==0){
     if(simgrid::smpi::F2C::lookup() != nullptr)
-      F2C::free_f(comm->c2f());
+      F2C::free_f(comm->f2c_id());
     comm->cleanup_smp();
     comm->cleanup_attr<Comm>();
     if (comm->info_ != MPI_INFO_NULL)
@@ -362,9 +371,9 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
   sg_host_self()->get_impl()->foreach_actor([this, &intra_comm_size, &min_index](auto& actor) {
-    int index = actor.get_pid();
-    if (this->group()->rank(actor.get_ciface()) != MPI_UNDEFINED) { // Is this process in the current group?
+    if (this->group()->rank(actor.get_pid()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
+      int index = actor.get_pid();
       if (index < min_index)
         min_index = index;
     }
@@ -373,8 +382,8 @@ MPI_Comm Comm::find_intra_comm(int * leader){
   auto* group_intra = new Group(intra_comm_size);
   int i = 0;
   sg_host_self()->get_impl()->foreach_actor([this, group_intra, &i](auto& actor) {
-    if (this->group()->rank(actor.get_ciface()) != MPI_UNDEFINED) {
-      group_intra->set_mapping(actor.get_ciface(), i);
+    if (this->group()->rank(actor.get_pid()) != MPI_UNDEFINED) {
+      group_intra->set_mapping(actor.get_pid(), i);
       i++;
     }
   });
@@ -444,7 +453,7 @@ void Comm::init_smp(){
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
+      leaders_group->set_mapping(leader_list[i], i);
     leader_comm = new Comm(leaders_group, nullptr, true);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
@@ -452,7 +461,7 @@ void Comm::init_smp(){
     // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(s4u::Actor::by_pid(leader_list[i]).get(), i);
+      leaders_group->set_mapping(leader_list[i], i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
       leader_comm = new Comm(leaders_group, nullptr, true);
@@ -492,7 +501,7 @@ void Comm::init_smp(){
   }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
-  int prev=this->group()->rank(comm_intra->group()->actor(0));
+  int prev      = this->group()->rank(comm_intra->group()->actor(0));
   for (i = 1; i < my_local_size; i++) {
     int that = this->group()->rank(comm_intra->group()->actor(i));
     if (that != prev + 1) {

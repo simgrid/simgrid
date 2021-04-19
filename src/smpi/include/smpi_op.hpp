@@ -26,6 +26,7 @@ public:
   bool is_predefined() const { return is_predefined_; }
   bool is_fortran_op() const { return is_fortran_op_; }
   int allowed_types() const { return types_; }
+  std::string name() const override {return std::string("MPI_Op");}
   // tell that we were created from fortran, so we need to translate the type to fortran when called
   void set_fortran_op() { is_fortran_op_ = true; }
   void apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype) const;

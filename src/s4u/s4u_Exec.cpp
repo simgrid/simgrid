@@ -73,7 +73,7 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
                  [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ExecutionWaitanySimcall observer{issuer, &rexecs, timeout};
+  kernel::actor::ExecutionWaitanySimcall observer{issuer, rexecs, timeout};
   int changed_pos = kernel::actor::simcall_blocking(
       [&observer] {
         kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(), observer.get_timeout());
@@ -183,7 +183,7 @@ unsigned int Exec::get_host_number() const
 ExecPtr Exec::set_host(Host* host)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING || state_ == State::STARTED,
-             "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
+             "Cannot change the host of an exec once it's done (state: %s)", to_c_str(state_));
 
   if (state_ == State::STARTED)
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->migrate(host);
@@ -201,7 +201,7 @@ ExecPtr Exec::set_host(Host* host)
 ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
-      "Cannot change the hosts of an exec once it's done (state: %d)", (int)state_);
+             "Cannot change the hosts of an exec once it's done (state: %s)", to_c_str(state_));
 
   kernel::actor::simcall(
       [this, hosts] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_hosts(hosts); });

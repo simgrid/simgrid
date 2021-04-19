@@ -56,6 +56,7 @@ void SleepImpl::post()
 
 void SleepImpl::finish()
 {
+  XBT_DEBUG("SleepImpl::finish() in state %s", to_c_str(state_));
   while (not simcalls_.empty()) {
     const s_smx_simcall* simcall = simcalls_.front();
     simcalls_.pop_front();

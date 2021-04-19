@@ -305,6 +305,12 @@ int Host::get_pstate() const
   return this->pimpl_cpu->get_pstate();
 }
 
+Host* Host::set_coordinates(const std::string& coords)
+{
+  if (not coords.empty())
+    kernel::actor::simcall([this, coords] { this->pimpl_netpoint_->set_coordinates(coords); });
+  return this;
+}
 std::vector<Disk*> Host::get_disks() const
 {
   return this->pimpl_->get_disks();
@@ -312,9 +318,30 @@ std::vector<Disk*> Host::get_disks() const
 
 Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  auto disk =
-      this->get_netpoint()->get_englobing_zone()->get_disk_model()->create_disk(name, read_bandwidth, write_bandwidth);
-  return disk->set_host(this)->get_iface();
+  return kernel::actor::simcall([this, &name, read_bandwidth, write_bandwidth] {
+    auto* disk = pimpl_->create_disk(name, read_bandwidth, write_bandwidth);
+    pimpl_->add_disk(disk);
+    return disk;
+  });
+}
+
+Disk* Host::create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
+{
+  double d_read;
+  try {
+    d_read = xbt_parse_get_bandwidth("", 0, read_bandwidth.c_str(), nullptr, "");
+  } catch (const simgrid::ParseError&) {
+    throw std::invalid_argument(std::string("Impossible to create disk: ") + name +
+                                std::string(". Invalid read bandwidth: ") + read_bandwidth);
+  }
+  double d_write;
+  try {
+    d_write = xbt_parse_get_bandwidth("", 0, write_bandwidth.c_str(), nullptr, "");
+  } catch (const simgrid::ParseError&) {
+    throw std::invalid_argument(std::string("Impossible to create disk: ") + name +
+                                std::string(". Invalid write bandwidth: ") + write_bandwidth);
+  }
+  return create_disk(name, d_read, d_write);
 }
 
 void Host::add_disk(const Disk* disk)
@@ -347,9 +374,11 @@ void Host::execute(double flops, double priority) const
   this_actor::exec_init(flops)->set_priority(1 / priority)->vetoable_start()->wait();
 }
 
-void Host::seal()
+Host* Host::seal()
 {
   kernel::actor::simcall([this]() { this->pimpl_->seal(); });
+  simgrid::s4u::Host::on_creation(*this); // notify the signal
+  return this;
 }
 
 } // namespace s4u

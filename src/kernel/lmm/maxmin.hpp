@@ -143,6 +143,12 @@ namespace lmm {
  */
 class XBT_PUBLIC Element {
 public:
+  // Use rule-of-three, and implicitely disable the move constructor which should be 'noexcept' according to C++ Core
+  // Guidelines.
+  Element()               = default;
+  Element(const Element&) = default;
+  ~Element()              = default;
+
   int get_concurrency() const;
   void decrease_concurrency();
   void increase_concurrency();

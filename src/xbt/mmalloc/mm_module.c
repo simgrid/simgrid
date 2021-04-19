@@ -310,7 +310,7 @@ static void mmalloc_fork_child(void)
 }
 
 /* Initialize the default malloc descriptor. */
-void *mmalloc_preinit(void)
+xbt_mheap_t mmalloc_preinit(void)
 {
   if (__mmalloc_default_mdp == NULL) {
     if(!xbt_pagesize)

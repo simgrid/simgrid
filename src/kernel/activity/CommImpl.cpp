@@ -27,7 +27,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sr
   simgrid::kernel::activity::ActivityImplPtr comm = simcall_HANDLER_comm_isend(
       simcall, src, mbox, task_size, rate, src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, false);
   simcall->mc_value_ = 0;
-  simcall_HANDLER_comm_wait(simcall, static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
+  comm->wait_for(simcall->issuer_, timeout);
 }
 
 XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isend(
@@ -104,7 +104,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
   simgrid::kernel::activity::ActivityImplPtr comm = simcall_HANDLER_comm_irecv(
       simcall, receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
   simcall->mc_value_ = 0;
-  simcall_HANDLER_comm_wait(simcall, static_cast<simgrid::kernel::activity::CommImpl*>(comm.get()), timeout);
+  comm->wait_for(simcall->issuer_, timeout);
 }
 
 XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr
@@ -182,147 +182,25 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
 
 void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm, double timeout)
 {
-  /* Associate this simcall to the wait synchro */
-  XBT_DEBUG("simcall_HANDLER_comm_wait, %p", comm);
-
-  comm->register_simcall(simcall);
-
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = simcall->mc_value_;
-    if (idx == 0) {
-      comm->state_ = simgrid::kernel::activity::State::DONE;
-    } else {
-      /* If we reached this point, the wait simcall must have a timeout */
-      /* Otherwise it shouldn't be enabled and executed by the MC */
-      if (timeout < 0.0)
-        THROW_IMPOSSIBLE;
-
-      if (comm->src_actor_ == simcall->issuer_)
-        comm->state_ = simgrid::kernel::activity::State::SRC_TIMEOUT;
-      else
-        comm->state_ = simgrid::kernel::activity::State::DST_TIMEOUT;
-    }
-
-    comm->finish();
-    return;
-  }
-
-  /* If the synchro has already finish perform the error handling, */
-  /* otherwise set up a waiting timeout on the right side          */
-  if (comm->state_ != simgrid::kernel::activity::State::WAITING &&
-      comm->state_ != simgrid::kernel::activity::State::RUNNING) {
-    comm->finish();
-  } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
-    simgrid::kernel::resource::Action* sleep = simcall->issuer_->get_host()->pimpl_cpu->sleep(timeout);
-    sleep->set_activity(comm);
-
-    if (simcall->issuer_ == comm->src_actor_)
-      comm->src_timeout_ = sleep;
-    else
-      comm->dst_timeout_ = sleep;
-  }
+  comm->wait_for(simcall->issuer_, timeout);
 }
 
-void simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm)
+bool simcall_HANDLER_comm_test(smx_simcall_t, simgrid::kernel::activity::CommImpl* comm)
 {
-  bool res;
-
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    res = comm->src_actor_ && comm->dst_actor_;
-    if (res)
-      comm->state_ = simgrid::kernel::activity::State::DONE;
-  } else {
-    res = comm->state_ != simgrid::kernel::activity::State::WAITING &&
-          comm->state_ != simgrid::kernel::activity::State::RUNNING;
-  }
-
-  simcall_comm_test__set__result(simcall, res);
-  if (res) {
-    comm->simcalls_.push_back(simcall);
-    comm->finish();
-  } else {
-    simcall->issuer_->simcall_answer();
-  }
+  return comm->test();
 }
 
-void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
+int simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
-  // The default result is -1 -- this means, "nothing is ready".
-  // It can be changed below, but only if something matches.
-  simcall_comm_testany__set__result(simcall, -1);
-
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = simcall->mc_value_;
-    if (idx == -1) {
-      simcall->issuer_->simcall_answer();
-    } else {
-      simgrid::kernel::activity::CommImpl* comm = comms[idx];
-      simcall_comm_testany__set__result(simcall, idx);
-      comm->simcalls_.push_back(simcall);
-      comm->state_ = simgrid::kernel::activity::State::DONE;
-      comm->finish();
-    }
-    return;
-  }
-
-  for (std::size_t i = 0; i != count; ++i) {
-    simgrid::kernel::activity::CommImpl* comm = comms[i];
-    if (comm->state_ != simgrid::kernel::activity::State::WAITING &&
-        comm->state_ != simgrid::kernel::activity::State::RUNNING) {
-      simcall_comm_testany__set__result(simcall, i);
-      comm->simcalls_.push_back(simcall);
-      comm->finish();
-      return;
-    }
-  }
-  simcall->issuer_->simcall_answer();
+  std::vector<simgrid::kernel::activity::CommImpl*> comms_vec(comms, comms + count);
+  return simgrid::kernel::activity::CommImpl::test_any(simcall->issuer_, comms_vec);
 }
 
-static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
-{
-  simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(simcall);
-  size_t count                                = simcall_comm_waitany__get__count(simcall);
-
-  for (size_t i = 0; i < count; i++)
-    comms[i]->unregister_simcall(simcall);
-}
 void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count,
                                   double timeout)
 {
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
-    int idx                 = simcall->mc_value_;
-    auto* comm              = comms[idx];
-    comm->simcalls_.push_back(simcall);
-    simcall_comm_waitany__set__result(simcall, idx);
-    comm->state_ = simgrid::kernel::activity::State::DONE;
-    comm->finish();
-    return;
-  }
-
-  if (timeout < 0.0) {
-    simcall->timeout_cb_ = nullptr;
-  } else {
-    simcall->timeout_cb_ = simgrid::simix::Timer::set(SIMIX_get_clock() + timeout, [simcall]() {
-      simcall->timeout_cb_ = nullptr;
-      SIMIX_waitany_remove_simcall_from_actions(simcall);
-      simcall_comm_waitany__set__result(simcall, -1);
-      simcall->issuer_->simcall_answer();
-    });
-  }
-
-  for (size_t i = 0; i < count; i++) {
-    /* associate this simcall to the the synchro */
-    auto* comm = comms[i];
-    comm->simcalls_.push_back(simcall);
-
-    /* see if the synchro is already finished */
-    if (comm->state_ != simgrid::kernel::activity::State::WAITING &&
-        comm->state_ != simgrid::kernel::activity::State::RUNNING) {
-      comm->finish();
-      break;
-    }
-  }
+  std::vector<simgrid::kernel::activity::CommImpl*> comms_vec(comms, comms + count);
+  simgrid::kernel::activity::CommImpl::wait_any_for(simcall->issuer_, comms_vec, timeout);
 }
 
 /******************************************************************************/
@@ -500,6 +378,104 @@ void CommImpl::copy_data()
   copied_ = true;
 }
 
+bool CommImpl::test()
+{
+  if ((MC_is_active() || MC_record_replay_is_active()) && src_actor_ && dst_actor_)
+    state_ = State::DONE;
+  return ActivityImpl::test();
+}
+
+void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
+{
+  XBT_DEBUG("CommImpl::wait_for(%g), %p, state %s", timeout, this, to_c_str(state_));
+
+  /* Associate this simcall to the wait synchro */
+  register_simcall(&issuer->simcall_);
+
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = issuer->simcall_.mc_value_;
+    if (idx == 0) {
+      state_ = State::DONE;
+    } else {
+      /* If we reached this point, the wait simcall must have a timeout */
+      /* Otherwise it shouldn't be enabled and executed by the MC */
+      if (timeout < 0.0)
+        THROW_IMPOSSIBLE;
+      state_ = (issuer == src_actor_ ? State::SRC_TIMEOUT : State::DST_TIMEOUT);
+    }
+    finish();
+    return;
+  }
+
+  /* If the synchro has already finish perform the error handling, */
+  /* otherwise set up a waiting timeout on the right side          */
+  if (state_ != State::WAITING && state_ != State::RUNNING) {
+    finish();
+  } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
+    resource::Action* sleep = issuer->get_host()->pimpl_cpu->sleep(timeout);
+    sleep->set_activity(this);
+
+    if (issuer == src_actor_)
+      src_timeout_ = sleep;
+    else
+      dst_timeout_ = sleep;
+  }
+}
+
+int CommImpl::test_any(const actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
+{
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = issuer->simcall_.mc_value_;
+    xbt_assert(idx == -1 || comms[idx]->test());
+    return idx;
+  }
+
+  for (std::size_t i = 0; i < comms.size(); ++i) {
+    if (comms[i]->test())
+      return i;
+  }
+  return -1;
+}
+
+void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms, double timeout)
+{
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
+    int idx    = issuer->simcall_.mc_value_;
+    auto* comm = comms[idx];
+    comm->simcalls_.push_back(&issuer->simcall_);
+    simcall_comm_waitany__set__result(&issuer->simcall_, idx);
+    comm->state_ = State::DONE;
+    comm->finish();
+    return;
+  }
+
+  if (timeout < 0.0) {
+    issuer->simcall_.timeout_cb_ = nullptr;
+  } else {
+    issuer->simcall_.timeout_cb_ = simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, comms]() {
+      // FIXME: Vector `comms' is copied here. Use a reference once its lifetime is extended (i.e. when the simcall is
+      // modernized).
+      issuer->simcall_.timeout_cb_ = nullptr;
+      for (auto* comm : comms)
+        comm->unregister_simcall(&issuer->simcall_);
+      simcall_comm_waitany__set__result(&issuer->simcall_, -1);
+      issuer->simcall_answer();
+    });
+  }
+
+  for (auto* comm : comms) {
+    /* associate this simcall to the the synchro */
+    comm->simcalls_.push_back(&issuer->simcall_);
+
+    /* see if the synchro is already finished */
+    if (comm->state_ != State::WAITING && comm->state_ != State::RUNNING) {
+      comm->finish();
+      break;
+    }
+  }
+}
+
 void CommImpl::suspend()
 {
   /* FIXME: shall we suspend also the timeout synchro? */
@@ -574,6 +550,15 @@ void CommImpl::post()
 
 void CommImpl::finish()
 {
+  XBT_DEBUG("CommImpl::finish() in state %s", to_c_str(state_));
+
+  /* If the synchro is still in a rendez-vous point then remove from it */
+  if (mbox_)
+    mbox_->remove(this);
+
+  if (state_ == State::DONE)
+    copy_data();
+
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
@@ -585,25 +570,20 @@ void CommImpl::finish()
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                                 // if actor handling comm is killed
     if (simcall->call_ == simix::Simcall::COMM_WAITANY) {
-      SIMIX_waitany_remove_simcall_from_actions(simcall);
+      CommImpl** comms = simcall_comm_waitany__get__comms(simcall);
+      size_t count     = simcall_comm_waitany__get__count(simcall);
+      for (size_t i = 0; i < count; i++)
+        comms[i]->unregister_simcall(simcall);
       if (simcall->timeout_cb_) {
         simcall->timeout_cb_->remove();
         simcall->timeout_cb_ = nullptr;
       }
       if (not MC_is_active() && not MC_record_replay_is_active()) {
-        CommImpl** comms   = simcall_comm_waitany__get__comms(simcall);
-        size_t count       = simcall_comm_waitany__get__count(simcall);
         CommImpl** element = std::find(comms, comms + count, this);
         int rank           = (element != comms + count) ? element - comms : -1;
         simcall_comm_waitany__set__result(simcall, rank);
       }
     }
-
-    /* If the synchro is still in a rendez-vous point then remove from it */
-    if (mbox_)
-      mbox_->remove(this);
-
-    XBT_DEBUG("CommImpl::finish(): synchro state = %d", static_cast<int>(state_));
 
     /* Check out for errors */
 
@@ -611,19 +591,14 @@ void CommImpl::finish()
       simcall->issuer_->context_->set_wannadie();
     } else {
       switch (state_) {
-        case State::DONE:
-          XBT_DEBUG("Communication %p complete!", this);
-          copy_data();
-          break;
-
         case State::SRC_TIMEOUT:
           simcall->issuer_->exception_ = std::make_exception_ptr(
-              simgrid::TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
+              TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
           break;
 
         case State::DST_TIMEOUT:
           simcall->issuer_->exception_ = std::make_exception_ptr(
-              simgrid::TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
+              TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the receiver"));
           break;
 
         case State::SRC_HOST_FAILURE:
@@ -631,7 +606,7 @@ void CommImpl::finish()
             simcall->issuer_->context_->set_wannadie();
           else
             simcall->issuer_->exception_ =
-                std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+                std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case State::DST_HOST_FAILURE:
@@ -639,7 +614,7 @@ void CommImpl::finish()
             simcall->issuer_->context_->set_wannadie();
           else
             simcall->issuer_->exception_ =
-                std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+                std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
           break;
 
         case State::LINK_FAILURE:
@@ -656,20 +631,21 @@ void CommImpl::finish()
             XBT_DEBUG("I'm neither source nor dest");
           }
           simcall->issuer_->throw_exception(
-              std::make_exception_ptr(simgrid::NetworkFailureException(XBT_THROW_POINT, "Link failure")));
+              std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Link failure")));
           break;
 
         case State::CANCELED:
           if (simcall->issuer_ == dst_actor_)
-            simcall->issuer_->exception_ = std::make_exception_ptr(
-                simgrid::CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
+            simcall->issuer_->exception_ =
+                std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the sender"));
           else
-            simcall->issuer_->exception_ = std::make_exception_ptr(
-                simgrid::CancelException(XBT_THROW_POINT, "Communication canceled by the receiver"));
+            simcall->issuer_->exception_ =
+                std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Communication canceled by the receiver"));
           break;
 
         default:
-          xbt_die("Unexpected synchro state in CommImpl::finish: %d", static_cast<int>(state_));
+          xbt_assert(state_ == State::DONE, "Internal error in CommImpl::finish(): unexpected synchro state %s",
+                     to_c_str(state_));
       }
       simcall->issuer_->simcall_answer();
     }
@@ -692,7 +668,7 @@ void CommImpl::finish()
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer_->exception_);
-      } catch (simgrid::Exception& e) {
+      } catch (Exception& e) {
         e.set_value(rank);
       }
     }

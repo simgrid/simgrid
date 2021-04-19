@@ -25,7 +25,6 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
   int dim_product = 1; // Needed to calculate the next neighbor_id
 
   for (unsigned int j = 0; j < dimensions_.size(); j++) {
-    LinkCreationArgs link;
     int current_dimension = dimensions_[j]; // which dimension are we currently in?
                                             // we need to iterate over all dimensions and create all links there
     // The other node the link connects
@@ -35,26 +34,22 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
     std::string link_id =
         std::string(cluster->id) + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
-    link.id = link_id;
-    link.bandwidths.push_back(cluster->bw);
-    link.latency = cluster->lat;
-    link.policy  = cluster->sharing_policy;
-    sg_platf_new_link(&link);
-    resource::LinkImpl* linkUp;
-    resource::LinkImpl* linkDown;
-    if (link.policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      linkUp   = s4u::Link::by_name(link_id + "_UP")->get_impl();
-      linkDown = s4u::Link::by_name(link_id + "_DOWN")->get_impl();
+    const s4u::Link* linkup;
+    const s4u::Link* linkdown;
+    if (cluster->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+      linkup   = create_link(link_id + "_UP", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+      linkdown = create_link(link_id + "_DOWN", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+
     } else {
-      linkUp   = s4u::Link::by_name(link_id)->get_impl();
-      linkDown = linkUp;
+      linkup   = create_link(link_id, std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+      linkdown = linkup;
     }
     /*
      * Add the link to its appropriate position.
      * Note that position rankId*(xbt_dynar_length(dimensions)+has_loopback?+has_limiter?)
      * holds the link "rankId->rankId"
      */
-    add_private_link_at(position + j, {linkUp, linkDown});
+    add_private_link_at(position + j, {linkup->get_impl(), linkdown->get_impl()});
     dim_product *= current_dimension;
   }
 }

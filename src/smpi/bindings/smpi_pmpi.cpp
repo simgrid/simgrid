@@ -129,14 +129,14 @@ int PMPI_Abort(MPI_Comm comm, int /*errorcode*/)
   smpi_bench_end();
   CHECK_COMM(1)
   XBT_WARN("MPI_Abort was called, something went probably wrong in this simulation ! Killing all processes sharing the same MPI_COMM_WORLD");
+  smx_actor_t myself = SIMIX_process_self();
   for (int i = 0; i < comm->size(); i++){
-    smx_actor_t actor = comm->group()->actor(i)->get_impl();
-    if(actor != SIMIX_process_self())
+    smx_actor_t actor = simgrid::kernel::actor::ActorImpl::by_pid(comm->group()->actor(i));
+    if (actor != nullptr && actor != myself)
       simgrid::kernel::actor::simcall([actor] { actor->exit(); });
   }
   // now ourself
-  smx_actor_t actor = SIMIX_process_self();
-  simgrid::kernel::actor::simcall([actor] { actor->exit(); });
+  simgrid::kernel::actor::simcall([myself] { myself->exit(); });
   return MPI_SUCCESS;
 }
 
@@ -250,7 +250,7 @@ int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_f
 
 int PMPI_Keyval_free(int* keyval) {
   CHECK_NULL(1, MPI_ERR_ARG, keyval)
-  CHECK_MPI_NULL(1, MPI_KEYVAL_INVALID, MPI_ERR_KEYVAL, *keyval)
+  CHECK_VAL(1, MPI_KEYVAL_INVALID, MPI_ERR_KEYVAL, *keyval)
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Comm>(keyval);
 }
 

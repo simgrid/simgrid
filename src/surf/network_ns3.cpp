@@ -185,7 +185,7 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
 {
   ns3::NodeContainer Nodes;
 
-  for (int const& i : *cluster.radicals) {
+  for (int const& i : cluster.radicals) {
     // Create private link
     std::string host_id = cluster.prefix + std::to_string(i) + cluster.suffix;
     auto* src           = simgrid::s4u::Host::by_name(host_id)->get_netpoint();
@@ -270,7 +270,7 @@ static simgrid::config::Flag<std::string>
 static simgrid::config::Flag<std::string> ns3_seed(
     "ns3/seed",
     "The random seed provided to ns-3. Either 'time' to seed with time(), blank to not set (default), or a number.", "",
-    [](std::string val) {
+    [](const std::string& val) {
       if (val.length() == 0)
         return;
       if (strcasecmp(val.c_str(), "time") == 0) {

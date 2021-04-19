@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
@@ -75,8 +76,9 @@ void HostImpl::turn_on() const
 {
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
-    simgrid::kernel::actor::ActorImplPtr actor = simgrid::kernel::actor::ActorImpl::create(
-        arg->name, arg->code, nullptr, arg->host, arg->properties.get(), nullptr);
+    simgrid::kernel::actor::ActorImplPtr actor =
+        simgrid::kernel::actor::ActorImpl::create(arg->name, arg->code, nullptr, arg->host, nullptr);
+    actor->set_properties(arg->properties);
     if (arg->on_exit)
       *actor->on_exit = *arg->on_exit;
     if (arg->kill_time >= 0)
@@ -127,11 +129,11 @@ std::vector<s4u::Disk*> HostImpl::get_disks() const
   return disks;
 }
 
-void HostImpl::set_disks(const std::vector<kernel::resource::DiskImpl*>& disks, s4u::Host* host)
+s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  disks_ = disks;
-  for (auto d : disks_)
-    d->set_host(host);
+  auto disk = piface_.get_netpoint()->get_englobing_zone()->get_disk_model()->create_disk(name, read_bandwidth,
+                                                                                          write_bandwidth);
+  return disk->set_host(&piface_)->get_iface();
 }
 
 void HostImpl::add_disk(const s4u::Disk* disk)

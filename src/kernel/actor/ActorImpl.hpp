@@ -121,10 +121,8 @@ public:
   ActorImpl* start(const ActorCode& code);
 
   static ActorImplPtr create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
-                             const std::unordered_map<std::string, std::string>* properties,
                              const ActorImpl* parent_actor);
-  static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host,
-                             const std::unordered_map<std::string, std::string>* properties);
+  static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host);
   static void detach();
   void cleanup();
   void exit();
@@ -156,16 +154,18 @@ public:
   void* data                                                               = nullptr;
   s4u::Host* host                                                          = nullptr;
   double kill_time                                                         = 0.0;
-  std::shared_ptr<const std::unordered_map<std::string, std::string>> properties = nullptr;
+  const std::unordered_map<std::string, std::string> properties{};
   bool auto_restart                                                        = false;
   bool daemon_                                                             = false;
   /* list of functions executed when the process dies */
   const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit;
 
-  ProcessArg()                                                             = default;
+  ProcessArg()                  = delete;
+  ProcessArg(const ProcessArg&) = delete;
+  ProcessArg& operator=(const ProcessArg&) = delete;
 
   explicit ProcessArg(const std::string& name, const std::function<void()>& code, void* data, s4u::Host* host,
-                      double kill_time, std::shared_ptr<std::unordered_map<std::string, std::string>> properties,
+                      double kill_time, const std::unordered_map<std::string, std::string>& properties,
                       bool auto_restart)
       : name(name)
       , code(code)
@@ -187,7 +187,6 @@ public:
       , daemon_(actor->is_daemon())
       , on_exit(actor->on_exit)
   {
-    properties.reset(actor->get_properties(), [](decltype(actor->get_properties())) {});
   }
 };
 
@@ -198,7 +197,7 @@ using SynchroList =
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
 XBT_PUBLIC unsigned long get_maxpid();
-XBT_PUBLIC void* get_maxpid_addr(); // In MC mode, the application sends this pointers to the MC
+XBT_PUBLIC unsigned long* get_maxpid_addr(); // In MC mode, the application sends this pointers to the MC
 
 } // namespace actor
 } // namespace kernel

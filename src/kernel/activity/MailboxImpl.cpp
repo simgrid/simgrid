@@ -124,35 +124,29 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, bool (*match_fu
                                             void* this_user_data, const CommImplPtr& my_synchro, bool done,
                                             bool remove_matching)
 {
-  void* other_user_data = nullptr;
   auto& comm_queue      = done ? done_comm_queue_ : comm_queue_;
 
-  for (auto it = comm_queue.begin(); it != comm_queue.end(); it++) {
-    const CommImplPtr& comm = *it;
-
-    if (comm->type_ == CommImpl::Type::SEND) {
-      other_user_data = comm->src_data_;
-    } else if (comm->type_ == CommImpl::Type::RECEIVE) {
-      other_user_data = comm->dst_data_;
-    }
-    if (comm->type_ == type && (match_fun == nullptr || match_fun(this_user_data, other_user_data, comm.get())) &&
-        (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get()))) {
-      XBT_DEBUG("Found a matching communication synchro %p", comm.get());
-#if SIMGRID_HAVE_MC
-      comm->mbox_cpy = comm->get_mailbox();
-#endif
-      comm->set_mailbox(nullptr);
-      CommImplPtr comm_cpy = comm;
-      if (remove_matching)
-        comm_queue.erase(it);
-      return comm_cpy;
-    }
-    XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
-              " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
-              comm.get(), (int)comm->type_, (int)type);
+  auto iter = std::find_if(
+      comm_queue.begin(), comm_queue.end(), [&type, &match_fun, &this_user_data, &my_synchro](const CommImplPtr& comm) {
+        void* other_user_data = (comm->type_ == CommImpl::Type::SEND ? comm->src_data_ : comm->dst_data_);
+        return (comm->type_ == type && (not match_fun || match_fun(this_user_data, other_user_data, comm.get())) &&
+                (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get())));
+      });
+  if (iter == comm_queue.end()) {
+    XBT_DEBUG("No matching communication synchro found");
+    return nullptr;
   }
-  XBT_DEBUG("No matching communication synchro found");
-  return nullptr;
+
+  const CommImplPtr& comm = *iter;
+  XBT_DEBUG("Found a matching communication synchro %p", comm.get());
+#if SIMGRID_HAVE_MC
+  comm->mbox_cpy = comm->get_mailbox();
+#endif
+  comm->set_mailbox(nullptr);
+  CommImplPtr comm_cpy = comm;
+  if (remove_matching)
+    comm_queue.erase(iter);
+  return comm_cpy;
 }
 } // namespace activity
 } // namespace kernel

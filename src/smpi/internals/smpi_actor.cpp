@@ -9,6 +9,7 @@
 #include "smpi_info.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
+#include "simgrid/s4u/Mutex.hpp"
 
 #if HAVE_PAPI
 #include "papi.h"
@@ -176,7 +177,8 @@ MPI_Comm ActorExt::comm_self()
   if (comm_self_ == MPI_COMM_NULL) {
     auto* group = new Group(1);
     comm_self_  = new Comm(group, nullptr);
-    group->set_mapping(actor_, 0);
+    comm_self_->set_name("MPI_COMM_SELF");
+    group->set_mapping(actor_->get_pid(), 0);
   }
   return comm_self_;
 }

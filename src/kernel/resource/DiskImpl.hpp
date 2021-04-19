@@ -102,27 +102,8 @@ class DiskAction : public Action {
 public:
   static xbt::signal<void(DiskAction const&, Action::State, Action::State)> on_state_change;
 
-  DiskAction(Model* model, double cost, bool failed, DiskImpl* disk, s4u::Io::OpType type)
-      : Action(model, cost, failed), type_(type), disk_(disk){};
-
-  /**
-   * @brief diskAction constructor
-   *
-   * @param model The DiskModel associated to this DiskAction
-   * @param cost The cost of this DiskAction in bytes
-   * @param failed [description]
-   * @param var The lmm variable associated to this DiskAction if it is part of a LMM component
-   * @param disk The Disk associated to this DiskAction
-   * @param type [description]
-   */
-  DiskAction(kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var, DiskImpl* disk,
-             s4u::Io::OpType type)
-      : Action(model, cost, failed, var), type_(type), disk_(disk){};
-
+  using Action::Action;
   void set_state(simgrid::kernel::resource::Action::State state) override;
-
-  s4u::Io::OpType type_;
-  DiskImpl* disk_;
 };
 
 } // namespace resource

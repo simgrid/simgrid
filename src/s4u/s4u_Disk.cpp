@@ -69,9 +69,16 @@ const char* Disk::get_property(const std::string& key) const
   return pimpl_->get_property(key);
 }
 
-void Disk::set_property(const std::string& key, const std::string& value)
+Disk* Disk::set_property(const std::string& key, const std::string& value)
 {
   kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  return this;
+}
+
+Disk* Disk::set_properties(const std::unordered_map<std::string, std::string>& properties)
+{
+  kernel::actor::simcall([this, properties] { this->pimpl_->set_properties(properties); });
+  return this;
 }
 
 IoPtr Disk::io_init(sg_size_t size, Io::OpType type) const
@@ -99,11 +106,11 @@ sg_size_t Disk::write(sg_size_t size) const
   return IoPtr(io_init(size, Io::OpType::WRITE))->vetoable_start()->wait()->get_performed_ioops();
 }
 
-void Disk::seal()
+Disk* Disk::seal()
 {
   kernel::actor::simcall([this]{ pimpl_->seal(); });
-  get_host()->add_disk(this);
   Disk::on_creation(*this);
+  return this;
 }
 } // namespace s4u
 } // namespace simgrid

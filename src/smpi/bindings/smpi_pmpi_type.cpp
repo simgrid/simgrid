@@ -17,6 +17,7 @@ int PMPI_Type_free(MPI_Datatype * datatype)
   if (*datatype == MPI_DATATYPE_NULL || (*datatype)->flags() & DT_FLAG_PREDEFINED) {
     return MPI_ERR_TYPE;
   } else {
+    (*datatype)->mark_as_deleted();
     simgrid::smpi::Datatype::unref(*datatype);
     *datatype=MPI_DATATYPE_NULL;
     return MPI_SUCCESS;
@@ -323,24 +324,28 @@ int PMPI_Type_free_keyval(int* keyval) {
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Datatype>(keyval);
 }
 
-int PMPI_Unpack(const void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-  CHECK_NEGATIVE(2, MPI_ERR_COUNT, incount)
-  CHECK_NEGATIVE(5, MPI_ERR_COUNT, outcount)
-  CHECK_BUFFER(1, inbuf, incount)
-  CHECK_BUFFER(4, outbuf, outcount)
-  CHECK_TYPE(6, type)
+int PMPI_Unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
+  SET_BUF1(inbuf)
+  SET_BUF2(outbuf)
   CHECK_COMM(7)
-  return type->unpack(inbuf, incount, position, outbuf,outcount, comm);
+  CHECK_NEGATIVE(2, MPI_ERR_COUNT, insize)
+  CHECK_NEGATIVE(5, MPI_ERR_COUNT, outcount)
+  CHECK_TYPE(6, type)
+  CHECK_BUFFER2(1, inbuf, outcount)
+  CHECK_BUFFER2(4, outbuf, outcount)
+  return type->unpack(inbuf, insize, position, outbuf,outcount, comm);
 }
 
-int PMPI_Pack(const void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
-  CHECK_NEGATIVE(2, MPI_ERR_COUNT, incount)
-  CHECK_NEGATIVE(5, MPI_ERR_COUNT, outcount)
-  CHECK_BUFFER(1, inbuf, incount)
-  CHECK_BUFFER(4, outbuf, outcount)
-  CHECK_TYPE(6, type)
+int PMPI_Pack(const void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outsize, int* position, MPI_Comm comm) {
+  SET_BUF1(inbuf)
+  SET_BUF2(outbuf)
   CHECK_COMM(7)
-  return type->pack(inbuf == MPI_BOTTOM ? nullptr : inbuf, incount, outbuf, outcount, position, comm);
+  CHECK_NEGATIVE(2, MPI_ERR_COUNT, incount)
+  CHECK_NEGATIVE(5, MPI_ERR_COUNT, outsize)
+  CHECK_TYPE(6, type)
+  CHECK_BUFFER2(1, inbuf, incount)
+  CHECK_BUFFER2(4, outbuf, incount)
+  return type->pack(inbuf == MPI_BOTTOM ? nullptr : inbuf, incount, outbuf, outsize, position, comm);
 }
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {

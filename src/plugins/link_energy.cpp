@@ -46,18 +46,6 @@ namespace simgrid {
 namespace plugin {
 
 class LinkEnergy {
-public:
-  static simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergy> EXTENSION_ID;
-
-  explicit LinkEnergy(simgrid::s4u::Link* ptr) : link_(ptr), last_updated_(surf_get_clock()) {}
-
-  void init_watts_range_list();
-  double get_consumed_energy();
-  void update();
-
-private:
-  double get_power() const;
-
   s4u::Link* link_{};
 
   bool inited_{false};
@@ -66,6 +54,17 @@ private:
 
   double total_energy_{0.0};
   double last_updated_{0.0}; /*< Timestamp of the last energy update event*/
+
+  double get_power() const;
+
+public:
+  static xbt::Extension<simgrid::s4u::Link, LinkEnergy> EXTENSION_ID;
+
+  explicit LinkEnergy(s4u::Link* ptr) : link_(ptr), last_updated_(surf_get_clock()) {}
+
+  void init_watts_range_list();
+  double get_consumed_energy();
+  void update();
 };
 
 xbt::Extension<s4u::Link, LinkEnergy> LinkEnergy::EXTENSION_ID;

@@ -50,8 +50,11 @@ public:
   /** If present, communications from this node to this node will pass through it
    * instead of passing by an upper level switch.
    */
-  resource::LinkImpl* loopback;
-  FatTreeNode(const ClusterCreationArgs* cluster, int id, int level, int position);
+  resource::LinkImpl* loopback_;
+  FatTreeNode(int id, int level, int position, resource::LinkImpl* limiter, resource::LinkImpl* loopback)
+      : id(id), level(level), position(position), limiter_link_(limiter), loopback_(loopback)
+  {
+  }
 };
 
 /** @brief Link in a fat tree (@ref FatTreeZone).
@@ -61,15 +64,18 @@ public:
  */
 class FatTreeLink {
 public:
-  FatTreeLink(const ClusterCreationArgs* cluster, FatTreeNode* source, FatTreeNode* destination);
-  /** Link going up in the tree */
-  resource::LinkImpl* up_link_;
-  /** Link going down in the tree */
-  resource::LinkImpl* down_link_;
+  FatTreeLink(FatTreeNode* src, FatTreeNode* dst, resource::LinkImpl* linkup, resource::LinkImpl* linkdown)
+      : up_node_(dst), down_node_(src), up_link_(linkup), down_link_(linkdown)
+  {
+  }
   /** Upper end of the link */
   FatTreeNode* up_node_;
   /** Lower end of the link */
   FatTreeNode* down_node_;
+  /** Link going up in the tree */
+  resource::LinkImpl* up_link_;
+  /** Link going down in the tree */
+  resource::LinkImpl* down_link_;
 };
 
 /** @ingroup ROUTING_API
@@ -138,7 +144,7 @@ public:
    * It will also store the cluster for future use.
    */
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
-  void add_processing_node(int id);
+  void add_processing_node(int id, resource::LinkImpl* limiter, resource::LinkImpl* loopback);
   void generate_dot_file(const std::string& filename = "fat_tree.dot") const;
 };
 } // namespace routing

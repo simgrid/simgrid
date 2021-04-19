@@ -16,36 +16,37 @@ namespace simgrid{
 namespace smpi{
 
 class Group : public F2C{
-  int size_ = 0;
-  /* This is actually a map from int to int. We could use std::map here, but looking up a value there costs O(log(n)).
-   * For a vector, this costs O(1). We hence go with the vector.
+  /* This is actually a map from int to aid_t. We could use std::map here, but looking up a value there costs
+   * O(log(n)). For a vector, this costs O(1). We hence go with the vector.
    */
-  std::vector<s4u::Actor*> rank_to_actor_map_;
-  std::map<s4u::Actor*, int> actor_to_rank_map_;
-  std::vector<int> index_to_rank_map_;
+  std::vector<aid_t> rank_to_pid_map_;
+  std::vector<int> pid_to_rank_map_;
 
   int refcount_ = 1; /* refcount_: start > 0 so that this group never gets freed */
 
+  int incl(const std::vector<int>& ranks, MPI_Group* newgroup) const;
+  int excl(const std::vector<bool>& excl_map, MPI_Group* newgroup) const;
+
 public:
   Group() = default;
-  explicit Group(int size) : size_(size), rank_to_actor_map_(size, nullptr), index_to_rank_map_(size, MPI_UNDEFINED) {}
+  explicit Group(int size) : rank_to_pid_map_(size, -1), pid_to_rank_map_(size, MPI_UNDEFINED) {}
   explicit Group(const Group* origin);
 
-  void set_mapping(s4u::Actor* actor, int rank);
-  int rank(int index);
-  s4u::Actor* actor(int rank);
-  int rank(s4u::Actor* process);
+  void set_mapping(aid_t pid, int rank);
+  int rank(aid_t pid) const;
+  aid_t actor(int rank) const;
+  std::string name() const override {return std::string("MPI_Group");}
   void ref();
   static void unref(MPI_Group group);
-  int size() const { return size_; }
-  int compare(MPI_Group group2);
-  int incl(int n, const int* ranks, MPI_Group* newgroup);
-  int excl(int n, const int* ranks, MPI_Group* newgroup);
-  int group_union(MPI_Group group2, MPI_Group* newgroup);
-  int intersection(MPI_Group group2, MPI_Group* newgroup);
-  int difference(MPI_Group group2, MPI_Group* newgroup);
-  int range_incl(int n, int ranges[][3], MPI_Group* newgroup);
-  int range_excl(int n, int ranges[][3], MPI_Group* newgroup);
+  int size() const { return static_cast<int>(rank_to_pid_map_.size()); }
+  int compare(const Group* group2) const;
+  int incl(int n, const int* ranks, MPI_Group* newgroup) const;
+  int excl(int n, const int* ranks, MPI_Group* newgroup) const;
+  int group_union(const Group* group2, MPI_Group* newgroup) const;
+  int intersection(const Group* group2, MPI_Group* newgroup) const;
+  int difference(const Group* group2, MPI_Group* newgroup) const;
+  int range_incl(int n, const int ranges[][3], MPI_Group* newgroup) const;
+  int range_excl(int n, const int ranges[][3], MPI_Group* newgroup) const;
 
   static Group* f2c(int id);
 };

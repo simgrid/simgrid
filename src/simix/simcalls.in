@@ -39,8 +39,8 @@ void           comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, unsigned char
 boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
 void           comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) [[block]];
 boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, bool detached);
-bool           comm_test(simgrid::kernel::activity::CommImpl* comm) [[block]];
-int            comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count) [[block]];
+bool           comm_test(simgrid::kernel::activity::CommImpl* comm);
+int            comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count);
 int            comm_waitany(simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout) [[block]];
 void           comm_wait(simgrid::kernel::activity::CommImpl* comm, double timeout) [[block]];
 

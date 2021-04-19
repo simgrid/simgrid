@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "xbt/log.h"
@@ -33,6 +34,12 @@ NetPoint* NetPoint::set_englobing_zone(NetZoneImpl* netzone_p)
   return this;
 }
 
+NetPoint* NetPoint::set_coordinates(const std::string& coords)
+{
+  if (not coords.empty())
+    new vivaldi::Coords(this, coords);
+  return this;
+}
 } // namespace routing
 } // namespace kernel
 } // namespace simgrid

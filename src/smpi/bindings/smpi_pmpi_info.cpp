@@ -5,6 +5,7 @@
 
 #include "private.hpp"
 #include "smpi_info.hpp"
+#include "smpi_comm.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
@@ -27,6 +28,7 @@ int PMPI_Info_set( MPI_Info info, const char *key, const char *value){
 int PMPI_Info_free( MPI_Info *info){
   CHECK_NULL(1, MPI_ERR_ARG, info)
   CHECK_INFO(1, *info)
+  (*info)->mark_as_deleted();
   simgrid::smpi::Info::unref(*info);
   *info=MPI_INFO_NULL;
   return MPI_SUCCESS;

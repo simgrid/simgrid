@@ -23,7 +23,7 @@ public:
   LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bws) override;
 };
 
-class NetworkConstantAction : public NetworkAction {
+class NetworkConstantAction final : public NetworkAction {
 public:
   NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size);
   void update_remains_lazy(double now) override;

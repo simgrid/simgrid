@@ -16,7 +16,7 @@
 #define NUM_Y 1
 
 //#define BIGDT 2147483643
-#define BIGDT 214748364
+#define BIGDT 214748363
 
 int main(int argc, char **argv)
 {

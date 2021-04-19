@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_info.hpp"
+#include "smpi_comm.hpp"
 #include "simgrid/Exception.hpp"
 
 namespace simgrid {
@@ -17,7 +18,7 @@ void Info::ref()
 void Info::unref(Info* info){
   info->refcount_--;
   if(info->refcount_==0){
-    F2C::free_f(info->c2f());
+    F2C::free_f(info->f2c_id());
     delete info;
   }
 }

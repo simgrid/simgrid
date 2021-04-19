@@ -20,10 +20,10 @@ namespace s4u {
  */
 
 class XBT_PUBLIC Io : public Activity_T<Io> {
-#ifndef DOXYGEN
-  friend Disk;    // Factory of IOs
-#endif
-  Io();
+  friend kernel::activity::IoImpl;
+
+protected:
+  explicit Io(kernel::activity::IoImplPtr pimpl);
 
 public:
   enum class OpType { READ, WRITE };

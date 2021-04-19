@@ -60,9 +60,9 @@ bool simcall_execution_test(const simgrid::kernel::activity::ActivityImplPtr& ex
 unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
                                            double timeout) // XBT_ATTRIB_DEPRECATED_v331
 {
-  std::vector<simgrid::kernel::activity::ExecImpl*> execsv(execs, execs + count);
+  std::vector<simgrid::kernel::activity::ExecImpl*> execs_vec(execs, execs + count);
   simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::kernel::actor::ExecutionWaitanySimcall observer{issuer, &execsv, timeout};
+  simgrid::kernel::actor::ExecutionWaitanySimcall observer{issuer, execs_vec, timeout};
   return simgrid::kernel::actor::simcall_blocking(
       [&observer] {
         simgrid::kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(),

@@ -38,9 +38,6 @@ Topo_Cart::Topo_Cart(int ndims) : ndims_(ndims), dims_(ndims), periodic_(ndims),
 Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int periods[], int /*reorder*/, MPI_Comm* comm_cart)
     : Topo_Cart(ndims)
 {
-  MPI_Group newGroup;
-  MPI_Group oldGroup;
-
   int rank = comm_old->rank();
 
   if(ndims != 0) {
@@ -68,8 +65,8 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
     }
     
     if(comm_cart != nullptr){
-      oldGroup = comm_old->group();
-      newGroup = new  Group(newSize);
+      const Group* oldGroup = comm_old->group();
+      auto* newGroup        = new Group(newSize);
       for (int i = 0 ; i < newSize ; i++) {
         newGroup->set_mapping(oldGroup->actor(i), i);
       }
@@ -383,11 +380,13 @@ static int getfactors(int num, std::vector<int>& factors)
     factors.push_back(2);
   }
   /* determine all occurrences of uneven prime numbers up to sqrt(num) */
-  for (int d = 3; (num > 1) && (d * d < num); d += 2) {
+  int d = 3;
+  while ((num > 1) && (d * d < num)) {
     while((num % d) == 0) {
       num /= d;
       factors.push_back(d);
     }
+    d += 2;
   }
   /* as we looped only up to sqrt(num) one factor > sqrt(num) may be left over */
   if(num != 1) {

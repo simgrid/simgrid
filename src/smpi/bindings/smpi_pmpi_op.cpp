@@ -5,6 +5,7 @@
 
 #include "private.hpp"
 #include "smpi_op.hpp"
+#include "smpi_comm.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
@@ -24,6 +25,7 @@ int PMPI_Op_free(MPI_Op * op)
   CHECK_MPI_NULL(1, MPI_OP_NULL, MPI_ERR_OP, *op)
   if((*op)->is_predefined())
     return MPI_ERR_OP;
+  (*op)->mark_as_deleted();
   simgrid::smpi::Op::unref(op);
   *op = MPI_OP_NULL;
   return MPI_SUCCESS;

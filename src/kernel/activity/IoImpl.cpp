@@ -7,6 +7,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Io.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
@@ -17,6 +18,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)
 namespace simgrid {
 namespace kernel {
 namespace activity {
+
+IoImpl::IoImpl()
+{
+  piface_ = new s4u::Io(this);
+}
 
 IoImpl& IoImpl::set_timeout(double timeout)
 {
@@ -86,13 +92,11 @@ void IoImpl::post()
 
 void IoImpl::finish()
 {
+  XBT_DEBUG("IoImpl::finish() in state %s", to_c_str(state_));
   while (not simcalls_.empty()) {
     const s_smx_simcall* simcall = simcalls_.front();
     simcalls_.pop_front();
     switch (state_) {
-      case State::DONE:
-        /* do nothing, synchro done */
-        break;
       case State::FAILED:
         simcall->issuer_->context_->set_wannadie();
         simcall->issuer_->exception_ =
@@ -102,11 +106,11 @@ void IoImpl::finish()
         simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
         break;
       case State::TIMEOUT:
-        XBT_DEBUG("IoImpl::finish(): execution timeouted");
-        simcall->issuer_->exception_ = std::make_exception_ptr(simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted"));
+        simcall->issuer_->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
         break;
       default:
-        xbt_die("Internal error in IoImpl::finish(): unexpected synchro state %d", static_cast<int>(state_));
+        xbt_assert(state_ == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
+                   to_c_str(state_));
     }
 
     simcall->issuer_->waiting_synchro_ = nullptr;

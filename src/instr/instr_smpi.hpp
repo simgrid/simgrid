@@ -25,10 +25,10 @@ XBT_PRIVATE void TRACE_smpi_init(int rank, const std::string& calling_func);
 class smpi_trace_call_location_t {
 public:
   std::string filename;
-  int linenumber;
+  int linenumber = 0;
 
   std::string previous_filename;
-  int previous_linenumber;
+  int previous_linenumber = 0;
 
   std::string get_composed_key() const
   {

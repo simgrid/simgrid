@@ -31,7 +31,7 @@ class XBT_PRIVATE NetworkSmpiModel;
 class NetworkCm02Model : public NetworkModel {
 public:
   explicit NetworkCm02Model(const std::string& name);
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) override;
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
   LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;

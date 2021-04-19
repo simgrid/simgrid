@@ -14,8 +14,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
  * check if the topology is nullptr, but we should check if it is the good topology type (so we have to add a
  *  MPIR_Topo_Type field, and replace the MPI_Topology field by an union)*/
 
-int PMPI_Cart_create(MPI_Comm comm_old, int ndims, const int* dims, const int* periodic, int reorder, MPI_Comm* comm_cart) {
-  CHECK_COMM2(1, comm_old)
+int PMPI_Cart_create(MPI_Comm comm, int ndims, const int* dims, const int* periodic, int reorder, MPI_Comm* comm_cart) {
+  CHECK_COMM(1)
   if (ndims > 0){
     CHECK_NULL(3, MPI_ERR_ARG, dims)
     CHECK_NULL(4, MPI_ERR_ARG, periodic)
@@ -25,7 +25,7 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, const int* dims, const int* p
   for (int i = 0; i < ndims; i++)
     CHECK_NEGATIVE(2, MPI_ERR_ARG, dims[i])
   const simgrid::smpi::Topo_Cart* topo =
-      new simgrid::smpi::Topo_Cart(comm_old, ndims, dims, periodic, reorder, comm_cart);
+      new simgrid::smpi::Topo_Cart(comm, ndims, dims, periodic, reorder, comm_cart);
   if (*comm_cart == MPI_COMM_NULL) {
     delete topo;
   } else {

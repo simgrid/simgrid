@@ -41,11 +41,10 @@ public:
   ~NetworkModel() override;
 
   /**
-   * @brief Create a Link
+   * @brief Create a [WiFi]Link
    *
    * @param name The name of the Link
-   * @param bandwidth The initial bandwidth of the Link in bytes per second
-   * @param policy The sharing policy of the Link
+   * @param bandwidths The vector of bandwidths of the Link in bytes per second
    */
   virtual LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
 

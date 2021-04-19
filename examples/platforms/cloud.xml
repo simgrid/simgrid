@@ -69,18 +69,6 @@
                gw_dst="gw_dc1_horizdist">
         <link_ctn id="link_dc1_cb2"/>
       </zoneRoute> 
-      <zoneRoute dst="AS1_cb1" src="gw_AS1_dc1" gw_dst="cb1-AS1_cb1_router.dc1.acloud.com"
-               gw_src="gw_dc1_horizdist">
-        <link_ctn id="link_dc1_cb1"/>
-      </zoneRoute>
-      <zoneRoute dst="AS1_cb3" src="gw_AS1_dc1" gw_dst="cb3-AS1_cb3_router.dc1.acloud.com"
-               gw_src="gw_dc1_horizdist">
-        <link_ctn id="link_dc1_cb3"/>
-      </zoneRoute>
-      <zoneRoute dst="AS1_cb2" src="gw_AS1_dc1" gw_dst="cb2-AS1_cb2_router.dc1.acloud.com"
-               gw_src="gw_dc1_horizdist">
-        <link_ctn id="link_dc1_cb2"/>
-      </zoneRoute>
     </zone>
 
     <zone id="AS2_dc2" routing="Full">
@@ -234,30 +222,6 @@
                gw_dst="gw_dc2_horizdist">
         <link_ctn id="link_dc2_cb1"/>
       </zoneRoute> 
-      <zoneRoute dst="AS2_cb6" src="gw_AS2_dc2" gw_dst="cb6-AS2_cb6_router.dc2.acloud.com"
-               gw_src="gw_dc2_horizdist">
-        <link_ctn id="link_dc2_cb6"/>
-      </zoneRoute>
-      <zoneRoute dst="AS2_cb4" src="gw_AS2_dc2" gw_dst="cb4-AS2_cb4_router.dc2.acloud.com"
-               gw_src="gw_dc2_horizdist">
-        <link_ctn id="link_dc2_cb4"/>
-      </zoneRoute>
-      <zoneRoute dst="AS2_cb5" src="gw_AS2_dc2" gw_dst="cb5-AS2_cb5_router.dc2.acloud.com"
-               gw_src="gw_dc2_horizdist">
-        <link_ctn id="link_dc2_cb5"/>
-      </zoneRoute>
-      <zoneRoute dst="AS2_cb2" src="gw_AS2_dc2" gw_dst="cb2-AS2_cb2_router.dc2.acloud.com"
-               gw_src="gw_dc2_horizdist">
-        <link_ctn id="link_dc2_cb2"/>
-      </zoneRoute>
-      <zoneRoute dst="AS2_cb3" src="gw_AS2_dc2" gw_dst="cb3-AS2_cb3_router.dc2.acloud.com"
-               gw_src="gw_dc2_horizdist">
-        <link_ctn id="link_dc2_cb3"/>
-      </zoneRoute>
-      <zoneRoute dst="AS2_cb1" src="gw_AS2_dc2" gw_dst="cb1-AS2_cb1_router.dc2.acloud.com"
-               gw_src="gw_dc2_horizdist">
-        <link_ctn id="link_dc2_cb1"/>
-      </zoneRoute> 
     </zone>
 
     <zone id="AS3_dc3" routing="Full">  
@@ -348,22 +312,6 @@
       </zoneRoute>
       <zoneRoute src="AS3_cb4" dst="gw_AS3_dc3" gw_src="cb4-AS3_cb4_router.dc3.acloud.com"
                gw_dst="gw_dc3_horizdist">
-        <link_ctn id="link_dc3_cb4"/>
-      </zoneRoute>
-      <zoneRoute dst="AS3_cb3" src="gw_AS3_dc3" gw_dst="cb3-AS3_cb3_router.dc3.acloud.com"
-               gw_src="gw_dc3_horizdist">
-        <link_ctn id="link_dc3_cb3"/>
-      </zoneRoute>
-      <zoneRoute dst="AS3_cb2" src="gw_AS3_dc3" gw_dst="cb2-AS3_cb2_router.dc3.acloud.com"
-               gw_src="gw_dc3_horizdist">
-        <link_ctn id="link_dc3_cb2"/>
-      </zoneRoute>
-      <zoneRoute dst="AS3_cb1" src="gw_AS3_dc3" gw_dst="cb1-AS3_cb1_router.dc3.acloud.com"
-               gw_src="gw_dc3_horizdist">
-        <link_ctn id="link_dc3_cb1"/>
-      </zoneRoute>
-      <zoneRoute dst="AS3_cb4" src="gw_AS3_dc3" gw_dst="cb4-AS3_cb4_router.dc3.acloud.com"
-               gw_src="gw_dc3_horizdist">
         <link_ctn id="link_dc3_cb4"/>
       </zoneRoute>
     </zone>

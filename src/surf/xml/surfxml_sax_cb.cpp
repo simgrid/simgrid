@@ -30,10 +30,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF 
 std::string surf_parsed_filename; // Currently parsed file (for the error messages)
 std::vector<simgrid::kernel::resource::LinkImpl*>
     parsed_link_list; /* temporary store of current link list of a route */
-std::vector<simgrid::kernel::resource::DiskImpl*> parsed_disk_list; /* temporary store of current disk list of a host */
-/*
- * Helping functions
- */
+
+/* Helping functions */
 void surf_parse_assert(bool cond, const std::string& msg)
 {
   if (not cond)
@@ -95,10 +93,8 @@ int surf_parse_get_int(const std::string& s)
 }
 
 /* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
-static std::vector<int>* explodesRadical(const std::string& radicals)
+static void explodesRadical(const std::string& radicals, std::vector<int>* exploded)
 {
-  auto* exploded = new std::vector<int>();
-
   // Make all hosts
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, radicals, boost::is_any_of(","));
@@ -121,8 +117,6 @@ static std::vector<int>* explodesRadical(const std::string& radicals)
     for (int i = start; i <= end; i++)
       exploded->push_back(i);
   }
-
-  return exploded;
 }
 
 
@@ -133,10 +127,10 @@ static std::vector<int>* explodesRadical(const std::string& radicals)
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 
-std::vector<std::unordered_map<std::string, std::string>*> property_sets;
+std::vector<std::unordered_map<std::string, std::string>> property_sets;
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
-std::unordered_map<std::string, std::string>* current_model_property_set = nullptr;
+std::unordered_map<std::string, std::string> current_model_property_set;
 
 FILE *surf_file_to_parse = nullptr;
 
@@ -230,23 +224,17 @@ void ETag_surfxml_platform(){
   simgrid::s4u::Engine::on_platform_created();
 }
 
-void STag_surfxml_host(){
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
-}
-
 void STag_surfxml_prop()
 {
-  property_sets.back()->insert({A_surfxml_prop_id, A_surfxml_prop_value});
+  property_sets.back().insert({A_surfxml_prop_id, A_surfxml_prop_value});
   XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
-            property_sets.back());
+            &(property_sets.back()));
 }
 
-void ETag_surfxml_host()    {
+void STag_surfxml_host()
+{
   simgrid::kernel::routing::HostCreationArgs host;
-
-  host.properties = property_sets.back();
-  property_sets.pop_back();
-
+  property_sets.emplace_back();
   host.id = A_surfxml_host_id;
 
   host.speed_per_pstate =
@@ -264,15 +252,21 @@ void ETag_surfxml_host()    {
   host.state_trace = A_surfxml_host_state___file[0]
                          ? simgrid::kernel::profile::Profile::from_file(A_surfxml_host_state___file)
                          : nullptr;
-  host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
   host.coord       = A_surfxml_host_coordinates;
-  host.disks.swap(parsed_disk_list);
 
-  sg_platf_new_host(&host);
+  sg_platf_new_host_begin(&host);
+}
+
+void ETag_surfxml_host()
+{
+  sg_platf_new_host_set_properties(property_sets.back());
+  property_sets.pop_back();
+
+  sg_platf_new_host_seal(surf_parse_get_int(A_surfxml_host_pstate));
 }
 
 void STag_surfxml_disk() {
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
 }
 
 void ETag_surfxml_disk() {
@@ -286,7 +280,7 @@ void ETag_surfxml_disk() {
   disk.write_bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_disk_write___bw,
                                           "write_bw of disk ", disk.id);
 
-  parsed_disk_list.push_back(sg_platf_new_disk(&disk));
+  sg_platf_new_disk(&disk);
 }
 
 void STag_surfxml_host___link(){
@@ -311,7 +305,8 @@ void ETag_surfxml_cluster(){
   cluster.id          = A_surfxml_cluster_id;
   cluster.prefix      = A_surfxml_cluster_prefix;
   cluster.suffix      = A_surfxml_cluster_suffix;
-  cluster.radicals    = explodesRadical(A_surfxml_cluster_radical);
+  explodesRadical(A_surfxml_cluster_radical, &cluster.radicals);
+
   cluster.speeds      = xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_speed,
                                             "speed of cluster", cluster.id);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
@@ -387,7 +382,7 @@ void ETag_surfxml_cluster(){
 }
 
 void STag_surfxml_cluster(){
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
 }
 
 void STag_surfxml_cabinet(){
@@ -401,7 +396,7 @@ void STag_surfxml_cabinet(){
                                        cabinet.id.c_str());
   cabinet.lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_lat, "lat of cabinet",
                                    cabinet.id.c_str());
-  cabinet.radicals = explodesRadical(A_surfxml_cabinet_radical);
+  explodesRadical(A_surfxml_cabinet_radical, &cabinet.radicals);
 
   sg_platf_new_cabinet(&cabinet);
 }
@@ -436,7 +431,7 @@ void STag_surfxml_peer(){
 }
 
 void STag_surfxml_link(){
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
 }
 
 void ETag_surfxml_link(){
@@ -701,7 +696,7 @@ void ETag_surfxml_AS()
 
 void STag_surfxml_zone()
 {
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
   zone.routing = A_surfxml_zone_routing;
@@ -711,7 +706,6 @@ void STag_surfxml_zone()
 void ETag_surfxml_zone()
 {
   sg_platf_new_Zone_set_properties(property_sets.back());
-  delete property_sets.back();
   property_sets.pop_back();
 
   sg_platf_new_Zone_seal();
@@ -719,7 +713,7 @@ void ETag_surfxml_zone()
 
 void STag_surfxml_config()
 {
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   if (_sg_cfg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
@@ -734,20 +728,19 @@ void ETag_surfxml_config()
   auto current_property_set = property_sets.back();
 
   std::vector<std::string> keys;
-  for (auto const& kv : *current_property_set) {
+  for (auto const& kv : current_property_set) {
     keys.push_back(kv.first);
   }
   std::sort(keys.begin(), keys.end());
-  for (std::string key : keys) {
+  for (const std::string& key : keys) {
     if (simgrid::config::is_default(key.c_str())) {
-      std::string cfg = key + ":" + current_property_set->at(key);
+      std::string cfg = key + ":" + current_property_set.at(key);
       simgrid::config::set_parse(cfg);
     } else
       XBT_INFO("The custom configuration '%s' is already defined by user!", key.c_str());
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
-  delete current_property_set;
   property_sets.pop_back();
 }
 
@@ -761,7 +754,7 @@ void STag_surfxml_process()
 
 void STag_surfxml_actor()
 {
-  property_sets.push_back(new std::unordered_map<std::string, std::string>());
+  property_sets.emplace_back();
   arguments.assign(1, A_surfxml_actor_function);
 }
 
@@ -808,10 +801,7 @@ void STag_surfxml_argument(){
 }
 
 void STag_surfxml_model___prop(){
-  if (not current_model_property_set)
-    current_model_property_set = new std::unordered_map<std::string, std::string>();
-
-  current_model_property_set->insert({A_surfxml_model___prop_id, A_surfxml_model___prop_value});
+  current_model_property_set.insert({A_surfxml_model___prop_id, A_surfxml_model___prop_value});
 }
 
 void ETag_surfxml_prop(){/* Nothing to do */}

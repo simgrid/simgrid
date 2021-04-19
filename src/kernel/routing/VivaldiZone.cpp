@@ -45,36 +45,30 @@ Coords::Coords(NetPoint* netpoint, const std::string& coordStr)
 }
 } // namespace vivaldi
 
-static inline double euclidean_dist_comp(int index, std::vector<double>* src, std::vector<double>* dst)
+static inline double euclidean_dist_comp(double src_coord, double dst_coord)
 {
-  double src_coord = src->at(index);
-  double dst_coord = dst->at(index);
-
   return (src_coord - dst_coord) * (src_coord - dst_coord);
 }
 
-static std::vector<double>* netpoint_get_coords(NetPoint* np)
+static const std::vector<double>& netpoint_get_coords(NetPoint* np)
 {
   auto* coords = np->extension<vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
              (np->is_netzone() ? "Netzone" : (np->is_host() ? "Host" : "Router")), np->get_cname(), np);
-  return &coords->coords;
+  return coords->coords;
 }
 
-void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, const std::string& coord)
+void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
 {
   xbt_assert(netpoint->get_englobing_zone() == this,
              "Cannot add a peer link to a netpoint that is not in this netzone");
 
-  new vivaldi::Coords(netpoint, coord);
-
-  std::string link_up   = "link_" + netpoint->get_name() + "_UP";
-  std::string link_down = "link_" + netpoint->get_name() + "_DOWN";
-  resource::LinkImpl* linkUp = get_network_model()->create_link(link_up, std::vector<double>(1, bw_out));
-  linkUp->seal();
-  resource::LinkImpl* linkDown = get_network_model()->create_link(link_down, std::vector<double>(1, bw_in));
-  linkDown->seal();
-  add_private_link_at(netpoint->id(), {linkUp, linkDown});
+  std::string link_up        = "link_" + netpoint->get_name() + "_UP";
+  std::string link_down      = "link_" + netpoint->get_name() + "_DOWN";
+  auto* linkUp               = create_link(link_up, std::vector<double>{bw_out})->seal();
+  auto* linkDown             = create_link(link_down, std::vector<double>{bw_in})->seal();
+  add_route(netpoint, nullptr, nullptr, nullptr, {linkUp->get_impl()}, false);
+  add_route(nullptr, netpoint, nullptr, nullptr, {linkDown->get_impl()}, false);
 }
 
 void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
@@ -88,33 +82,21 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     route->gw_dst       = s4u::Engine::get_instance()->netpoint_by_name_or_null(dstName);
   }
 
-  /* Retrieve the private links */
-  if (private_link_exists_at(src->id())) {
-    auto src_link = get_uplink_from(src->id());
-    route->link_list.push_back(src_link);
-    if (lat)
-      *lat += src_link->get_latency();
-  }
-
-  if (private_link_exists_at(dst->id())) {
-    auto dst_link = get_downlink_to(dst->id());
-    route->link_list.push_back(dst_link);
-    if (lat)
-      *lat += dst_link->get_latency();
-  }
+  StarZone::get_local_route(src, dst, route, lat);
   /* Compute the extra latency due to the euclidean distance if needed */
   if (lat) {
-    std::vector<double>* srcCoords = netpoint_get_coords(src);
-    std::vector<double>* dstCoords = netpoint_get_coords(dst);
+    std::vector<double> srcCoords = netpoint_get_coords(src);
+    std::vector<double> dstCoords = netpoint_get_coords(dst);
 
     double euclidean_dist =
-        sqrt(euclidean_dist_comp(0, srcCoords, dstCoords) + euclidean_dist_comp(1, srcCoords, dstCoords)) +
-        fabs(srcCoords->at(2)) + fabs(dstCoords->at(2));
+        sqrt(euclidean_dist_comp(srcCoords[0], dstCoords[0]) + euclidean_dist_comp(srcCoords[1], dstCoords[1])) +
+        fabs(srcCoords[2]) + fabs(dstCoords[2]);
 
     XBT_DEBUG("Updating latency %f += %f", *lat, euclidean_dist);
     *lat += euclidean_dist / 1000.0; // From .ms to .s
   }
 }
+
 } // namespace routing
 } // namespace kernel
 

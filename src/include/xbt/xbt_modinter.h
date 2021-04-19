@@ -8,6 +8,7 @@
 #ifndef XBT_MODINTER_H
 #define XBT_MODINTER_H
 #include "xbt/misc.h"
+#include "xbt/mmalloc.h"
 
 SG_BEGIN_DECL
 
@@ -19,7 +20,7 @@ void xbt_log_postexit(void);
 void xbt_dict_preinit(void);
 void xbt_dict_postexit(void);
 
-void* mmalloc_preinit(void);
+xbt_mheap_t mmalloc_preinit(void);
 void mmalloc_postexit(void);
 
 extern int xbt_initialized;

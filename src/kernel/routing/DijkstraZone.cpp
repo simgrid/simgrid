@@ -40,7 +40,7 @@ void DijkstraZone::do_seal()
   xbt_node_t node = nullptr;
 
   /* Add the loopback if needed */
-  if (get_network_model()->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (get_network_model()->loopback_ && get_hierarchy() == RoutingMode::base) {
     xbt_dynar_foreach (xbt_graph_get_nodes(route_graph_.get()), cursor, node) {
       bool found      = false;
       xbt_edge_t edge = nullptr;
@@ -187,7 +187,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     if (v == dst_node_id)
       first_gw = gw_dst;
 
-    if (hierarchy_ == RoutingMode::recursive && v != dst_node_id && gw_dst->get_name() != prev_gw_src->get_name()) {
+    if (get_hierarchy() == RoutingMode::recursive && v != dst_node_id &&
+        gw_dst->get_name() != prev_gw_src->get_name()) {
       std::vector<resource::LinkImpl*> e_route_as_to_as;
 
       NetPoint* gw_dst_net_elm      = nullptr;
@@ -209,7 +210,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     }
   }
 
-  if (hierarchy_ == RoutingMode::recursive) {
+  if (get_hierarchy() == RoutingMode::recursive) {
     route->gw_src = gw_src;
     route->gw_dst = first_gw;
   }
@@ -223,10 +224,10 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
 {
   add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
-  new_edge(src->id(), dst->id(), new_extended_route(hierarchy_, gw_src, gw_dst, link_list, true));
+  new_edge(src->id(), dst->id(), new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, true));
 
   if (symmetrical)
-    new_edge(dst->id(), src->id(), new_extended_route(hierarchy_, gw_dst, gw_src, link_list, false));
+    new_edge(dst->id(), src->id(), new_extended_route(get_hierarchy(), gw_dst, gw_src, link_list, false));
 }
 
 void DijkstraZone::new_edge(int src_id, int dst_id, RouteCreationArgs* route)

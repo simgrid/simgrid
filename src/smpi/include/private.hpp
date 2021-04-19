@@ -6,9 +6,9 @@
 #ifndef SMPI_PRIVATE_HPP
 #define SMPI_PRIVATE_HPP
 
-#include "simgrid/s4u/Barrier.hpp"
 #include "smpi/smpi.h"
 #include "smpi/smpi_helpers_internal.h"
+#include "smpi_utils.hpp"
 #include "src/instr/instr_smpi.hpp"
 #include <unordered_map>
 #include <vector>
@@ -110,6 +110,7 @@ XBT_PRIVATE bool smpi_cfg_trace_call_use_absolute_path();
 XBT_PRIVATE std::string smpi_cfg_comp_adjustment_file();
 XBT_PRIVATE std::string smpi_cfg_papi_events_file();
 XBT_PRIVATE double smpi_cfg_auto_shared_malloc_thresh();
+XBT_PRIVATE bool smpi_cfg_display_alloc();
 
 // utilities
 extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
@@ -163,10 +164,11 @@ void mpi_startall_(int* count, int* requests, int* ierr);
 void mpi_wait_(int* request, MPI_Status* status, int* ierr);
 void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int* ierr);
 void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr);
-
+void mpi_free_mem_(void *baseptr, int* ierr);
 void mpi_barrier_(int* comm, int* ierr);
 void mpi_bcast_(void* buf, int* count, int* datatype, int* root, int* comm, int* ierr);
 void mpi_reduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* root, int* comm, int* ierr);
+void mpi_alloc_mem_(int* size, int* info, void *baseptr, int* ierr);
 void mpi_allreduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr);
 void mpi_reduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype, int* op, int* comm, int* ierr);
 void mpi_reduce_scatter_block_(void* sendbuf, void* recvbuf, int* recvcount, int* datatype, int* op, int* comm,
@@ -517,78 +519,159 @@ XBT_PUBLIC smpi_trace_call_location_t* smpi_trace_get_call_location();
 
 XBT_PRIVATE void private_execute_flops(double flops);
 
-#define CHECK_ARGS(test, errcode, ...)                                                                                 \
-  if (test) {                                                                                                          \
-    int error_code_ = (errcode);                                                                                       \
-    if (error_code_ != MPI_SUCCESS)                                                                                    \
-      XBT_WARN(__VA_ARGS__);                                                                                           \
-    return error_code_;                                                                                                \
+#define CHECK_ARGS(test, errcode,...)\
+  {\
+    if (test) {\
+      int error_code_ = (errcode);\
+      if (error_code_ != MPI_SUCCESS){\
+        XBT_WARN(__VA_ARGS__);\
+      }\
+      return error_code_;\
+    }\
   }
 
-#define CHECK_MPI_NULL(num, val, err, ptr)                                                                             \
-  CHECK_ARGS((ptr) == (val), (err),                                                                                    \
-             "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(ptr), _XBT_STRINGIFY(val));
-#define CHECK_NULL(num,err,buf)                                                                                        \
-  CHECK_ARGS((buf) == nullptr, (err),                                                                                  \
-             "%s: param %d %s cannot be NULL", __func__, (num), _XBT_STRINGIFY(buf));
-#define CHECK_NEGATIVE(num, err, val)                                                                                  \
-  CHECK_ARGS((val) < 0, (err),                                                                                         \
-             "%s: param %d %s cannot be negative", __func__, (num), _XBT_STRINGIFY(val));
-#define CHECK_NEGATIVE_OR_ZERO(num, err, val)                                                                          \
-  CHECK_ARGS((val) <= 0, (err),                                                                                        \
-             "%s: param %d %s cannot be negative or 0", __func__, (num), _XBT_STRINGIFY(val));
-#define CHECK_COMM2(num, comm)                                                                                         \
+#define CHECK_INIT\
+  {\
+    int init_flag=0;\
+    PMPI_Initialized(&init_flag);\
+    CHECK_ARGS((!init_flag), MPI_ERR_OTHER, "%s: MPI_Init was not called !", __func__)\
+    PMPI_Finalized(&init_flag);\
+    CHECK_ARGS((init_flag), MPI_ERR_OTHER, "%s: MPI_Finalize was already called !", __func__)\
+  }
+
+#define CHECK_MPI_NULL(num, val, err, ptr)\
+  CHECK_ARGS((ptr) == (val), (err),\
+             "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(ptr), _XBT_STRINGIFY(val))
+
+#define CHECK_VAL(num, val, err, value)\
+  CHECK_ARGS((value) == (val), (err),\
+             "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(value), _XBT_STRINGIFY(val))
+
+#define CHECK_NULL(num,err,buf)\
+  CHECK_ARGS((buf) == nullptr, (err),\
+             "%s: param %d %s cannot be NULL", __func__, (num), _XBT_STRINGIFY(buf))
+
+#define CHECK_NEGATIVE(num, err, val)\
+  CHECK_ARGS((val) < 0, (err),\
+             "%s: param %d %s cannot be negative", __func__, (num), _XBT_STRINGIFY(val))
+
+#define CHECK_NEGATIVE_OR_ZERO(num, err, val)\
+  CHECK_ARGS((val) <= 0, (err),\
+             "%s: param %d %s cannot be negative or 0", __func__, (num), _XBT_STRINGIFY(val))
+
+#define CHECK_COMM2(num, comm)\
   CHECK_MPI_NULL((num), MPI_COMM_NULL, MPI_ERR_COMM, (comm))
-#define CHECK_DELETED(num, err, obj)										       \
-  CHECK_ARGS((obj)->deleted(), (err), "%s: param %d %s has already been freed", __func__, (num), _XBT_STRINGIFY(obj));
-#define CHECK_COMM(num)                                                                                                \
-  CHECK_COMM2((num), comm)                                                                                             \
-  CHECK_DELETED((num), MPI_ERR_COMM, comm)
-#define CHECK_REQUEST(num)                                                                                             \
-  CHECK_ARGS(request == nullptr, MPI_ERR_REQUEST,                                                                      \
+
+#define CHECK_DELETED(num, err, obj)\
+  CHECK_ARGS((obj)->deleted(), (err), "%s: param %d %s has already been freed", __func__, (num),\
+  _XBT_STRINGIFY(obj))
+
+#define CHECK_COMM(num)\
+  {\
+    CHECK_INIT\
+    CHECK_COMM2((num), comm)\
+    CHECK_DELETED((num), MPI_ERR_COMM, comm)\
+    simgrid::smpi::utils::set_current_handle(comm);\
+  }
+
+#define CHECK_REQUEST(num)\
+  CHECK_ARGS(request == nullptr, MPI_ERR_REQUEST,\
              "%s: param %d request cannot be NULL",__func__, (num));
-#define CHECK_BUFFER(num,buf,count)                                                                                    \
-  CHECK_ARGS((buf) == nullptr && (count) > 0, MPI_ERR_BUFFER,                                                          \
-             "%s: param %d %s cannot be NULL if %s > 0",__func__, (num), _XBT_STRINGIFY(buf), _XBT_STRINGIFY(count));
-#define CHECK_COUNT(num, count)                                                                                        \
+
+#define CHECK_REQUEST_VALID(num)\
+  {\
+    CHECK_REQUEST(num)\
+    if(request!=MPI_REQUEST_IGNORED){\
+      CHECK_DELETED((num), MPI_ERR_REQUEST, *request)\
+      simgrid::smpi::utils::set_current_handle(*request);\
+    }\
+  }
+#define SET_BUF1(buf)\
+    simgrid::smpi::utils::set_current_buffer(1, _XBT_STRINGIFY(buf), buf);
+#define SET_BUF2(buf)\
+    simgrid::smpi::utils::set_current_buffer(2, _XBT_STRINGIFY(buf), buf);
+
+#define CHECK_BUFFER2(num,buf,count)\
+    CHECK_ARGS((buf) == nullptr && (count) > 0, MPI_ERR_BUFFER,\
+             "%s: param %d %s cannot be NULL if %s > 0",__func__, (num), _XBT_STRINGIFY(buf), _XBT_STRINGIFY(count))\
+
+#define CHECK_BUFFER(num,buf,count,datatype)\
+  {\
+    CHECK_BUFFER2(num,buf,count)\
+    CHECK_ARGS( simgrid::smpi::utils::get_buffer_size(buf) < (size_t)(count*datatype->get_extent()), MPI_ERR_BUFFER,\
+             "%s: param %d message size %zd exceeds buffer %s size %zu",__func__, (num), count*datatype->get_extent(), _XBT_STRINGIFY(buf), simgrid::smpi::utils::get_buffer_size(buf))\
+  }
+
+#define CHECK_COUNT(num, count)\
   CHECK_NEGATIVE((num), MPI_ERR_COUNT, (count))
-#define CHECK_TYPE(num, datatype)                                                                                      \
-  CHECK_ARGS(((datatype) == MPI_DATATYPE_NULL|| not (datatype)->is_valid()), MPI_ERR_TYPE,                             \
-             "%s: param %d %s cannot be MPI_DATATYPE_NULL or invalid", __func__, (num), _XBT_STRINGIFY(datatype));
-#define CHECK_OP(num, op, type)                                                                                        \
-  CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, (op))                                                                 \
-  CHECK_ARGS(((op)->allowed_types() && (((op)->allowed_types() & (type)->flags()) == 0)), MPI_ERR_OP,                \
-             "%s: param %d op %s can't be applied to type %s", __func__, (num), _XBT_STRINGIFY(op), type->name());
+
+#define CHECK_TYPE(num, datatype)\
+  {\
+    CHECK_ARGS(((datatype) == MPI_DATATYPE_NULL|| not (datatype)->is_valid()), MPI_ERR_TYPE,\
+             "%s: param %d %s cannot be MPI_DATATYPE_NULL or invalid", __func__, (num), _XBT_STRINGIFY(datatype));\
+    CHECK_DELETED((num), MPI_ERR_TYPE, datatype)\
+    if (not datatype->is_basic())\
+      simgrid::smpi::utils::set_current_handle(datatype);\
+  }
+
+#define CHECK_OP(num, op, type)\
+  {\
+  CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, (op))\
+  CHECK_DELETED((num), MPI_ERR_OP, op)\
+  if (not op->is_predefined())\
+    simgrid::smpi::utils::set_current_handle(op);\
+  CHECK_ARGS(((op)->allowed_types() && (((op)->allowed_types() & (type)->flags()) == 0)), MPI_ERR_OP,\
+             "%s: param %d op %s can't be applied to type %s", __func__, (num), _XBT_STRINGIFY(op), type->name().c_str());\
+  }
+
 #define CHECK_ROOT(num)\
-  CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,                                                         \
-             "%s: param %d root (=%d) cannot be negative or larger than communicator size (=%d)", __func__, (num),     \
-             root, comm->size());
-#define CHECK_INFO(num,info)                                                                                           \
-  CHECK_MPI_NULL((num), MPI_INFO_NULL, MPI_ERR_INFO, (info))
-#define CHECK_TAG(num,tag)                                                                                             \
-  CHECK_ARGS(((tag) < 0 && (tag) !=  MPI_ANY_TAG), MPI_ERR_TAG,                                                        \
-             "%s: param %d %s (=%d) cannot be negative", __func__, (num), _XBT_STRINGIFY(tag), (tag));
-#define CHECK_FILE(num, fh)                                                                                            \
+  CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,\
+             "%s: param %d root (=%d) cannot be negative or larger than communicator size (=%d)", __func__, (num),\
+             root, comm->size())
+
+#define CHECK_INFO(num,info)\
+  {\
+    CHECK_MPI_NULL((num), MPI_INFO_NULL, MPI_ERR_INFO, (info))\
+    CHECK_DELETED((num), MPI_ERR_INFO, info)\
+    simgrid::smpi::utils::set_current_handle(info);\
+  }
+
+#define CHECK_TAG(num,tag)\
+  CHECK_ARGS(((tag) < 0 && (tag) !=  MPI_ANY_TAG), MPI_ERR_TAG,\
+             "%s: param %d %s (=%d) cannot be negative", __func__, (num), _XBT_STRINGIFY(tag), (tag))
+
+#define CHECK_FILE(num, fh)\
   CHECK_MPI_NULL((num), MPI_FILE_NULL, MPI_ERR_FILE, (fh))
-#define CHECK_OFFSET(num, offset)                                                                                      \
+
+#define CHECK_OFFSET(num, offset)\
   CHECK_NEGATIVE((num), MPI_ERR_DISP, (offset))
-#define CHECK_GROUP(num, group)                                                                                        \
+
+#define CHECK_GROUP(num, group)\
   CHECK_MPI_NULL((num), MPI_GROUP_NULL, MPI_ERR_GROUP, (group))
-#define CHECK_WIN(num, win)                                                                                            \
-  CHECK_MPI_NULL((num), MPI_WIN_NULL, MPI_ERR_WIN, (win))
-#define CHECK_RANK(num, rank, comm)                                                                                    \
-  CHECK_ARGS(((rank) >= (comm)->size() || (rank) <0), MPI_ERR_RANK,                                                    \
-             "%s: param %d %s (=%d) cannot be < 0 or > %d", __func__, (num), _XBT_STRINGIFY(rank),                     \
-             (rank), (comm)->size() );
-#define CHECK_PROC_RMA(num,proc,win)                                                                                   \
-  CHECK_MPI_NULL((num), MPI_PROC_NULL, MPI_SUCCESS, (proc))                                                            \
-  CHECK_RANK(num, proc, win->comm())
-#define CHECK_NOT_IN_PLACE_ROOT(num, buf)                                                                                   \
-  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,                                                                    \
+
+#define CHECK_WIN(num, win)\
+  {\
+  CHECK_MPI_NULL((num), MPI_WIN_NULL, MPI_ERR_WIN, (win))\
+  simgrid::smpi::utils::set_current_handle(win);\
+  }
+#define CHECK_RANK(num, rank, comm)\
+  CHECK_ARGS(((rank) >= (comm)->size() || (rank) <0), MPI_ERR_RANK,\
+             "%s: param %d %s (=%d) cannot be < 0 or > %d", __func__, (num), _XBT_STRINGIFY(rank),\
+             (rank), (comm)->size() )
+
+#define CHECK_PROC_RMA(num,proc,win)\
+  {\
+    CHECK_VAL((num), MPI_PROC_NULL, MPI_SUCCESS, (proc))\
+    CHECK_RANK(num, proc, (win)->comm())\
+  }
+
+#define CHECK_NOT_IN_PLACE_ROOT(num, buf)\
+  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,\
              "%s: param %d %s cannot be MPI_IN_PLACE for rank %d with root %d", __func__, (num), _XBT_STRINGIFY(buf),  \
-             rank, root);
-#define CHECK_NOT_IN_PLACE(num, buf)                                                                                   \
-  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,                                                                    \
-             "%s: param %d %s cannot be MPI_IN_PLACE for rank %d", __func__, (num), _XBT_STRINGIFY(buf),  \
-             rank);
+             rank, root)
+
+#define CHECK_NOT_IN_PLACE(num, buf)\
+  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,\
+             "%s: param %d %s cannot be MPI_IN_PLACE for rank %d", __func__, (num), _XBT_STRINGIFY(buf), rank)
+
 #endif

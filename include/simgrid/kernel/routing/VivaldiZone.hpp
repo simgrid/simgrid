@@ -6,7 +6,7 @@
 #ifndef SURF_ROUTING_VIVALDI_HPP_
 #define SURF_ROUTING_VIVALDI_HPP_
 
-#include <simgrid/kernel/routing/ClusterZone.hpp>
+#include <simgrid/kernel/routing/StarZone.hpp>
 #include <xbt/Extendable.hpp>
 
 namespace simgrid {
@@ -44,10 +44,10 @@ namespace routing {
  *  were shown superior to the Vivaldi system and could be also implemented in SimGrid.
  */
 
-class XBT_PRIVATE VivaldiZone : public ClusterZone {
+class XBT_PRIVATE VivaldiZone : public StarZone {
 public:
-  using ClusterZone::ClusterZone;
-  void set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, const std::string& coord);
+  using StarZone::StarZone;
+  void set_peer_link(NetPoint* netpoint, double bw_in, double bw_out);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
 };
 

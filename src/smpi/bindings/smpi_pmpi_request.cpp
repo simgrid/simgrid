@@ -11,17 +11,16 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
-static int getPid(MPI_Comm, int);
 static int getPid(MPI_Comm comm, int id)
 {
-  simgrid::s4u::ActorPtr actor = comm->group()->actor(id);
-  return (actor == nullptr) ? MPI_UNDEFINED : actor->get_pid();
+  return comm->group()->actor(id);
 }
 
 #define CHECK_SEND_INPUTS\
-  CHECK_BUFFER(1, buf, count)\
+  SET_BUF1(buf)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
+  CHECK_BUFFER(1, buf, count, datatype)\
   CHECK_COMM(6)\
   if(dst!= MPI_PROC_NULL)\
     CHECK_RANK(4, dst, comm)\
@@ -33,11 +32,12 @@ static int getPid(MPI_Comm comm, int id)
   CHECK_SEND_INPUTS
   
 #define CHECK_IRECV_INPUTS\
+  SET_BUF1(buf)\
   CHECK_REQUEST(7)\
   *request = MPI_REQUEST_NULL;\
-  CHECK_BUFFER(1, buf, count)\
   CHECK_COUNT(2, count)\
   CHECK_TYPE(3, datatype)\
+  CHECK_BUFFER(1, buf, count, datatype)\
   CHECK_COMM(6)\
   if(src!=MPI_ANY_SOURCE && src!=MPI_PROC_NULL)\
     CHECK_RANK(4, src, comm)\
@@ -94,7 +94,7 @@ int PMPI_Start(MPI_Request * request)
   int retval = 0;
 
   smpi_bench_end();
-  CHECK_REQUEST(1)
+  CHECK_REQUEST_VALID(1)
   if ( *request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_REQUEST;
   } else {
@@ -163,6 +163,7 @@ int PMPI_Request_free(MPI_Request * request)
 
   smpi_bench_end();
   if (*request != MPI_REQUEST_NULL) {
+    (*request)->mark_as_deleted();
     simgrid::smpi::Request::unref(request);
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
@@ -236,10 +237,10 @@ int PMPI_Issend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
 int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status * status)
 {
   int retval = 0;
-
-  CHECK_BUFFER(1, buf, count)
+  SET_BUF1(buf)
   CHECK_COUNT(2, count)
   CHECK_TYPE(3, datatype)
+  CHECK_BUFFER(1, buf, count, datatype)
   CHECK_TAG(5, tag)
   CHECK_COMM(6)
 
@@ -394,13 +395,15 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
                   int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status* status)
 {
   int retval = 0;
-  CHECK_BUFFER(1, sendbuf, sendcount)
+  SET_BUF1(sendbuf)
+  SET_BUF2(recvbuf)
   CHECK_COUNT(2, sendcount)
   CHECK_TYPE(3, sendtype)
   CHECK_TAG(5, sendtag)
-  CHECK_BUFFER(6, recvbuf, recvcount)
   CHECK_COUNT(7, recvcount)
   CHECK_TYPE(8, recvtype)
+  CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
+  CHECK_BUFFER(6, recvbuf, recvcount, recvtype)
   CHECK_TAG(10, recvtag)
   CHECK_COMM(11)
   smpi_bench_end();
@@ -452,9 +455,10 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
                           MPI_Comm comm, MPI_Status* status)
 {
   int retval = 0;
-  CHECK_BUFFER(1, buf, count)
+  SET_BUF1(buf)
   CHECK_COUNT(2, count)
   CHECK_TYPE(3, datatype)
+  CHECK_BUFFER(1, buf, count, datatype)
 
   int size = datatype->get_extent() * count;
   xbt_assert(size > 0);
@@ -592,15 +596,14 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
 static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status)
 {
   const simgrid::smpi::Request* req = *request;
-  if (req != MPI_REQUEST_NULL) { // Received requests become null
+  // Requests already received are null. Is this request a wait for RECV?
+  if (req != MPI_REQUEST_NULL && (req->flags() & MPI_REQ_RECV)) {
     int src_traced = req->src();
-    // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     int dst_traced = req->dst();
-    if (req->flags() & MPI_REQ_RECV) { // Is this request a wait for RECV?
-      if (src_traced == MPI_ANY_SOURCE)
-        src_traced = (status != MPI_STATUS_IGNORE) ? req->comm()->group()->rank(status->MPI_SOURCE) : req->src();
-      TRACE_smpi_recv(src_traced, dst_traced, req->tag());
-    }
+    // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
+    if (src_traced == MPI_ANY_SOURCE && status != MPI_STATUS_IGNORE)
+      src_traced = req->comm()->group()->actor(status->MPI_SOURCE);
+    TRACE_smpi_recv(src_traced, dst_traced, req->tag());
   }
 }
 
@@ -624,9 +627,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     else
       savedreq = MPI_REQUEST_NULL;
 
-    int my_proc_id = (*request)->comm() != MPI_COMM_NULL
-                         ? simgrid::s4u::this_actor::get_pid()
-                         : -1; // TODO: cheinrich: Check if this correct or if it should be MPI_UNDEFINED
+    int my_proc_id = (*request)->comm() != MPI_COMM_NULL ? simgrid::s4u::this_actor::get_pid() : -1;
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::WaitTIData((*request)->src(), (*request)->dst(), (*request)->tag()));
 
@@ -730,7 +731,7 @@ int PMPI_Cancel(MPI_Request* request)
   int retval = 0;
 
   smpi_bench_end();
-  CHECK_REQUEST(1)
+  CHECK_REQUEST_VALID(1)
   if (*request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_REQUEST;
   } else {

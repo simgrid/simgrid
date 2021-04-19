@@ -116,7 +116,7 @@ APPLY_OP_LOOP(MPI_COMPLEX32, double_double,op)
 
 #define APPLY_END_OP_LOOP(op)                                                                                          \
   {                                                                                                                    \
-    xbt_die("Failed to apply " _XBT_STRINGIFY(op) " to type %s", (*datatype)->name());                                 \
+    xbt_die("Failed to apply " _XBT_STRINGIFY(op) " to type %s", (*datatype)->name().c_str());                         \
   }
 
 static void max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
@@ -280,7 +280,7 @@ void Op::unref(MPI_Op* op){
   if((*op)!=MPI_OP_NULL){
     (*op)->refcount_--;
     if ((*op)->refcount_ == 0 && not (*op)->is_predefined_){
-      F2C::free_f((*op)->c2f());
+      F2C::free_f((*op)->f2c_id());
       delete(*op);
     }
   }

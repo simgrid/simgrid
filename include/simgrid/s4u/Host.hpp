@@ -163,9 +163,23 @@ public:
   int get_pstate() const;
   double get_pstate_speed(int pstate_index) const;
   Host* set_pstate(int pstate_index);
+  Host* set_coordinates(const std::string& coords);
 
   std::vector<Disk*> get_disks() const;
+  /**
+   * @brief Create and add disk in the host
+   *
+   * @param name Disk name
+   * @param read_bandwidth Reading speed of the disk
+   * @param write_bandwidth Writing speed of the disk
+   */
   Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
+  /**
+   * @brief Human-friendly version of create_disk function.
+   *
+   * @throw std::invalid_argument if read/write speeds are incorrect
+   */
+  Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
   void add_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
 
@@ -176,7 +190,7 @@ public:
    * @brief Seal this host
    * No more configuration is allowed after the seal
    */
-  void seal();
+  Host* seal();
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v331("Please use Comm::sendto()") void sendto(Host* dest, double byte_amount);

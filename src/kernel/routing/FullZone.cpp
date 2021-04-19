@@ -26,7 +26,7 @@ void FullZone::do_seal()
     routing_table_.resize(table_size * table_size, nullptr);
 
   /* Add the loopback if needed */
-  if (get_network_model()->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (get_network_model()->loopback_ && get_hierarchy() == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       RouteCreationArgs* route = TO_ROUTE_FULL(i, i);
       if (not route) {
@@ -84,7 +84,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
                dst->get_cname());
 
   /* Add the route to the base */
-  TO_ROUTE_FULL(src->id(), dst->id()) = new_extended_route(hierarchy_, gw_src, gw_dst, link_list, true);
+  TO_ROUTE_FULL(src->id(), dst->id()) = new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, true);
 
   if (symmetrical && src != dst) {
     if (gw_dst && gw_src) {
@@ -102,7 +102,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
                  dst->get_cname(), src->get_cname());
 
-    TO_ROUTE_FULL(dst->id(), src->id()) = new_extended_route(hierarchy_, gw_src, gw_dst, link_list, false);
+    TO_ROUTE_FULL(dst->id(), src->id()) = new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, false);
   }
 }
 } // namespace routing

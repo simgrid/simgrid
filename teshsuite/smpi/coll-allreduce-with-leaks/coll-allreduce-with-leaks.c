@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_set_errhandler(dup, MPI_ERRORS_RETURN);
 
-  int* sb = xbt_new0(int, size * maxlen);
-  int* rb = xbt_new0(int, size * maxlen);
+  int* sb = (int*)calloc(size * maxlen, sizeof(int));
+  int* rb = (int*)calloc(size * maxlen, sizeof(int));
 
   for (int i = 0; i < size * maxlen; ++i) {
     sb[i] = rank*size + i;
@@ -38,9 +38,8 @@ int main(int argc, char *argv[])
     printf("all_to_all returned %d\n", status);
     fflush(stdout);
   }
-  //Do not free dup
-  xbt_free(sb);
-  xbt_free(rb);
+  //Do not free dup and rb
+  free(sb);
   MPI_Finalize();
   return (EXIT_SUCCESS);
 }

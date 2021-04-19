@@ -48,9 +48,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
       MPI_Errhandler err = (errhan) ? (errhan)->errhandler() : MPI_ERRHANDLER_NULL;                                    \
       if (err == MPI_ERRHANDLER_NULL || err == MPI_ERRORS_RETURN)                                                      \
         XBT_WARN("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                     \
-      else if (err == MPI_ERRORS_ARE_FATAL)                                                                            \
+      else if (err == MPI_ERRORS_ARE_FATAL){                                                                           \
+        if (xbt_log_no_loc)                                                                                            \
+          XBT_INFO("The backtrace would be displayed here if --log=no_loc would not have been passed");                \
+        else{                                                                                                          \
+          XBT_INFO("Backtrace of the run : if incomplete, run smpirun with -keep-temps. To hide, use --log=no_loc");   \
+          xbt_backtrace_display_current();                                                                             \
+        }                                                                                                              \
+        simgrid::smpi::utils::print_current_handle();                                                                  \
+        simgrid::smpi::utils::print_buffer_info();                                                                     \
         xbt_die("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size, error_string);                      \
-      else                                                                                                             \
+      } else                                                                                                           \
         err->call((errhan), ret);                                                                                      \
       if (err != MPI_ERRHANDLER_NULL)                                                                                  \
         simgrid::smpi::Errhandler::unref(err);                                                                         \

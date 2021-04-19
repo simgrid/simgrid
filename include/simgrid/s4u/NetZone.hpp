@@ -56,7 +56,8 @@ public:
   void set_property(const std::string& key, const std::string& value);
 
   std::vector<NetZone*> get_children() const;
-  NetZone* add_child(const NetZone* new_zone);
+  XBT_ATTRIB_DEPRECATED_v332("Please use set_parent() to manage NetZone's relationship") NetZone* add_child(
+      NetZone* new_zone);
 
   void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges);
@@ -67,20 +68,9 @@ public:
   /**
    * @brief Add a route between 2 netpoints
    *
-   * Create a regular route between 2 netpoints. A netpoint can be a host
-   * or a router.
-   *
-   * @param src Source netpoint
-   * @param dst Destination netpoint
-   * @param link_list List of links used in this communication
-   * @param symmetrical Bi-directional communication
-   */
-  void add_regular_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         const std::vector<Link*>& link_list, bool symmetrical = true);
-  /**
-   * @brief Add a route between 2 netzones
-   *
-   * Create a route between 2 netzones, connecting 2 gateways.
+   * Create a route:
+   * - route between 2 hosts/routers in same netzone, no gateway is needed
+   * - route between 2 netzones, connecting 2 gateways.
    *
    * @param src Source netzone's netpoint
    * @param dst Destination netzone' netpoint
@@ -89,13 +79,12 @@ public:
    * @param link_list List of links used in this communication
    * @param symmetrical Bi-directional communication
    */
-  void add_netzone_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         const std::vector<Link*>& link_list, bool symmetrical = true);
-
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-                 kernel::routing::NetPoint* gw_dst, const std::vector<kernel::resource::LinkImpl*>& link_list,
-                 bool symmetrical);
+                 kernel::routing::NetPoint* gw_dst, const std::vector<Link*>& link_list, bool symmetrical = true);
+
+  XBT_ATTRIB_DEPRECATED_v332("Please use add_route() method which uses s4u::Link instead of LinkImpl") void add_route(
+      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+      kernel::routing::NetPoint* gw_dst, const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
@@ -115,28 +104,38 @@ public:
    * @param speed_per_state Vector of CPU's speeds
    */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
+  s4u::Host* create_host(const std::string& name, double speed);
   /**
    * @brief Create a Host (string version)
    *
    * @throw std::invalid_argument if speed format is incorrect.
    */
   s4u::Host* create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate);
+  s4u::Host* create_host(const std::string& name, const std::string& speed);
 
   /**
    * @brief Create a link
    *
    * @param name Link name
    * @param bandwidths Link's speed (vector for wifi links)
-   * @param policy Link sharing policy
    * @throw std::invalid_argument if bandwidth format is incorrect.
    */
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::Link* create_link(const std::string& name, double bandwidth);
 
   /** @brief Create a link (string version) */
   s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths);
+  s4u::Link* create_link(const std::string& name, const std::string& bandwidth);
+
+  /**
+   * @brief Make a router within that NetZone
+   *
+   * @param name Router name
+   */
+  kernel::routing::NetPoint* create_router(const std::string& name);
 
   /** @brief Seal this netzone configuration */
-  void seal();
+  NetZone* seal();
 
 private:
   /** @brief Auxiliary function to get list of LinkImpl */
@@ -146,6 +145,7 @@ private:
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC NetZone* create_full_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_cluster_zone(const std::string& name);
+XBT_PUBLIC NetZone* create_star_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_dijkstra_zone(const std::string& name, bool cache);
 XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_empty_zone(const std::string& name);

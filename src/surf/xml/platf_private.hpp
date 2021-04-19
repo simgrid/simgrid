@@ -41,8 +41,6 @@ public:
   profile::Profile* speed_trace                            = nullptr;
   profile::Profile* state_trace                            = nullptr;
   std::string coord                                        = "";
-  std::unordered_map<std::string, std::string>* properties = nullptr;
-  std::vector<simgrid::kernel::resource::DiskImpl*> disks;
 };
 
 class HostLinkCreationArgs {
@@ -57,11 +55,11 @@ public:
   std::string id;
   std::vector<double> bandwidths;
   profile::Profile* bandwidth_trace                        = nullptr;
-  double latency                      = 0;
+  double latency                                           = 0;
   profile::Profile* latency_trace                          = nullptr;
   profile::Profile* state_trace                            = nullptr;
-  simgrid::s4u::Link::SharingPolicy policy       = simgrid::s4u::Link::SharingPolicy::FATPIPE;
-  std::unordered_map<std::string, std::string>* properties = nullptr;
+  s4u::Link::SharingPolicy policy                          = s4u::Link::SharingPolicy::FATPIPE;
+  std::unordered_map<std::string, std::string> properties;
 };
 
 class PeerCreationArgs {
@@ -82,7 +80,7 @@ public:
   NetPoint* dst    = nullptr;
   NetPoint* gw_src = nullptr;
   NetPoint* gw_dst = nullptr;
-  std::vector<simgrid::kernel::resource::LinkImpl*> link_list;
+  std::vector<resource::LinkImpl*> link_list;
 };
 
 enum class ClusterTopology { DRAGONFLY = 3, FAT_TREE = 2, FLAT = 1, TORUS = 0 };
@@ -92,7 +90,7 @@ public:
   std::string id;
   std::string prefix;
   std::string suffix;
-  std::vector<int>* radicals = nullptr;
+  std::vector<int> radicals;
   std::vector<double> speeds;
   int core_amount     = 0;
   double bw           = 0;
@@ -104,10 +102,10 @@ public:
   double limiter_link = 0;
   ClusterTopology topology = ClusterTopology::FLAT;
   std::string topo_parameters;
-  std::unordered_map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string> properties;
   std::string router_id;
-  simgrid::s4u::Link::SharingPolicy sharing_policy    = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-  simgrid::s4u::Link::SharingPolicy bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
+  s4u::Link::SharingPolicy sharing_policy    = s4u::Link::SharingPolicy::SPLITDUPLEX;
+  s4u::Link::SharingPolicy bb_sharing_policy = s4u::Link::SharingPolicy::SHARED;
 };
 
 class CabinetCreationArgs {
@@ -115,7 +113,7 @@ public:
   std::string id;
   std::string prefix;
   std::string suffix;
-  std::vector<int>* radicals;
+  std::vector<int> radicals;
   double speed;
   double bw;
   double lat;
@@ -124,7 +122,7 @@ public:
 class DiskCreationArgs {
 public:
   std::string id;
-  std::unordered_map<std::string, std::string>* properties;
+  std::unordered_map<std::string, std::string> properties;
   double read_bw;
   double write_bw;
 };
@@ -149,7 +147,7 @@ public:
 class ActorCreationArgs {
 public:
   std::vector<std::string> args;
-  std::unordered_map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string> properties;
   const char* host                       = nullptr;
   const char* function                   = nullptr;
   double start_time                      = 0.0;
@@ -175,30 +173,33 @@ void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb);
 
 XBT_PUBLIC simgrid::kernel::routing::NetZoneImpl*
 sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone); // Begin description of new Zone
-XBT_PUBLIC void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>* props);
+XBT_PUBLIC void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>& props);
 XBT_PUBLIC void sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
 XBT_PUBLIC void
-sg_platf_new_host(const simgrid::kernel::routing::HostCreationArgs* host); // Add a host to the current Zone
+sg_platf_new_host_begin(const simgrid::kernel::routing::HostCreationArgs* host); // Add a host to the current Zone
+XBT_PUBLIC void sg_platf_new_host_set_properties(const std::unordered_map<std::string, std::string>& props);
+XBT_PUBLIC void sg_platf_new_host_seal(int pstate); // That Host is fully described
+
 XBT_PUBLIC void
 sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs* h); // Add a host_link to the current Zone
 XBT_PUBLIC void
 sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link); // Add a link to the current Zone
 XBT_PUBLIC void
+sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk); // Add a disk to the current host
+XBT_PUBLIC void
 sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer); // Add a peer to the current Zone
 XBT_PUBLIC void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* clust);   // Add a cluster   to the current Zone
 XBT_PUBLIC void
 sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabinet); // Add a cabinet to the current Zone
-XBT_PUBLIC simgrid::kernel::routing::NetPoint* // Add a router    to the current Zone
-    sg_platf_new_router(const std::string&, const char* coords);
+XBT_PUBLIC simgrid::kernel::routing::NetPoint*                                      // Add a router to the current Zone
+sg_platf_new_router(const std::string&, const std::string& coords);
 
 XBT_PUBLIC void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route);             // Add a route
 XBT_PUBLIC void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassroute); // Add a bypassRoute
 
 XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* trace);
 
-XBT_PUBLIC simgrid::kernel::resource::DiskImpl*
-sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk); // Add a disk to the current host
 
 XBT_PUBLIC void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor);
 XBT_PRIVATE void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect);

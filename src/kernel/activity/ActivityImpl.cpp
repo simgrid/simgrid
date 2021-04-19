@@ -65,7 +65,7 @@ bool ActivityImpl::test()
 
 void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
-  XBT_DEBUG("Wait for execution of synchro %p, state %d", this, (int)state_);
+  XBT_DEBUG("Wait for execution of synchro %p, state %s", this, to_c_str(state_));
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
   /* Associate this simcall to the synchro */
@@ -74,24 +74,24 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = issuer->simcall_.mc_value_;
     if (idx == 0) {
-      state_ = simgrid::kernel::activity::State::DONE;
+      state_ = State::DONE;
     } else {
       /* If we reached this point, the wait simcall must have a timeout */
       /* Otherwise it shouldn't be enabled and executed by the MC */
       if (timeout < 0.0)
         THROW_IMPOSSIBLE;
-      state_ = simgrid::kernel::activity::State::TIMEOUT;
+      state_ = State::TIMEOUT;
     }
     finish();
     return;
   }
 
   /* If the synchro is already finished then perform the error handling */
-  if (state_ != simgrid::kernel::activity::State::RUNNING)
+  if (state_ != State::RUNNING)
     finish();
   else if (timeout == 0.) {
     // still running and timeout == 0 ? We need to report a timeout
-    state_ = simgrid::kernel::activity::State::TIMEOUT;
+    state_ = State::TIMEOUT;
     finish();
   } else {
     /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
@@ -126,12 +126,12 @@ void ActivityImpl::cancel()
 }
 
 // boost::intrusive_ptr<Activity> support:
-void intrusive_ptr_add_ref(simgrid::kernel::activity::ActivityImpl* activity)
+void intrusive_ptr_add_ref(ActivityImpl* activity)
 {
   activity->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
 
-void intrusive_ptr_release(simgrid::kernel::activity::ActivityImpl* activity)
+void intrusive_ptr_release(ActivityImpl* activity)
 {
   if (activity->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
     std::atomic_thread_fence(std::memory_order_acquire);

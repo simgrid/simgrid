@@ -88,7 +88,7 @@ NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, s4u::
 {
   latency_ = sg_latency_factor;
   if (latency_ <= 0.0)
-    NetworkConstantAction::set_state(Action::State::FINISHED);
+    set_state(Action::State::FINISHED);
 }
 
 void NetworkConstantAction::update_remains_lazy(double /*now*/)

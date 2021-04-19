@@ -745,7 +745,8 @@ sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dic
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
   smx_actor_t actor = nullptr;
   try {
-    actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host, &props).get();
+    actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host).get();
+    actor->set_properties(props);
   } catch (simgrid::HostFailureException const&) {
     xbt_die("Could not attach");
   }
