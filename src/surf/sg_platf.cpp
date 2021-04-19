@@ -97,11 +97,11 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* args)
   auto* zone = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(zone, "<peer> tag can only be used in Vivaldi netzones.");
 
-  auto* peer = zone->create_host(args->id, std::vector<double>{args->speed})
-                   ->set_state_profile(args->state_trace)
-                   ->set_speed_profile(args->speed_trace)
-                   ->set_coordinates(args->coord)
-                   ->seal();
+  const auto* peer = zone->create_host(args->id, std::vector<double>{args->speed})
+                         ->set_state_profile(args->state_trace)
+                         ->set_speed_profile(args->speed_trace)
+                         ->set_coordinates(args->coord)
+                         ->seal();
 
   zone->set_peer_link(peer->get_netpoint(), args->bw_in, args->bw_out);
 }
@@ -290,10 +290,10 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* a
     std::string id   = args->prefix + std::to_string(radical) + args->suffix;
     auto const* host = zone->create_host(id, std::vector<double>{args->speed})->seal();
 
-    auto* link_up =
+    const auto* link_up =
         zone->create_link("link_" + id + "_UP", std::vector<double>{args->bw})->set_latency(args->lat)->seal();
 
-    auto* link_down =
+    const auto* link_down =
         zone->create_link("link_" + id + "_DOWN", std::vector<double>{args->bw})->set_latency(args->lat)->seal();
 
     zone->add_private_link_at(host->get_netpoint()->id(), {link_up->get_impl(), link_down->get_impl()});

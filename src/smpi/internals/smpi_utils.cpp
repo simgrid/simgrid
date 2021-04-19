@@ -170,8 +170,8 @@ static void print_leaked_handles(){
     if (max > 0) { // we cannot trust F2C::lookup()->size() > F2C::get_num_default_handles() because some default
                    // handles are already freed at this point
       bool display_advice = false;
-      std::map<std::string, int> count;
-      for (auto & elem : handles){
+      std::map<std::string, int, std::less<>> count;
+      for (const auto& elem : handles) {
         std::string key = elem.second->name();
         if ((not xbt_log_no_loc) && (not elem.second->call_location().empty()))
           key+=" at "+ elem.second->call_location();

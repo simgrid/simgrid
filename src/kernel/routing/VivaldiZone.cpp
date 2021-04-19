@@ -52,7 +52,7 @@ static inline double euclidean_dist_comp(double src_coord, double dst_coord)
 
 static const std::vector<double>& netpoint_get_coords(NetPoint* np)
 {
-  auto* coords = np->extension<vivaldi::Coords>();
+  const auto* coords = np->extension<vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
              (np->is_netzone() ? "Netzone" : (np->is_host() ? "Host" : "Router")), np->get_cname(), np);
   return coords->coords;
@@ -65,8 +65,8 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
 
   std::string link_up        = "link_" + netpoint->get_name() + "_UP";
   std::string link_down      = "link_" + netpoint->get_name() + "_DOWN";
-  auto* linkUp               = create_link(link_up, std::vector<double>{bw_out})->seal();
-  auto* linkDown             = create_link(link_down, std::vector<double>{bw_in})->seal();
+  const auto* linkUp         = create_link(link_up, std::vector<double>{bw_out})->seal();
+  const auto* linkDown       = create_link(link_down, std::vector<double>{bw_in})->seal();
   add_route(netpoint, nullptr, nullptr, nullptr, {linkUp->get_impl()}, false);
   add_route(nullptr, netpoint, nullptr, nullptr, {linkDown->get_impl()}, false);
 }
