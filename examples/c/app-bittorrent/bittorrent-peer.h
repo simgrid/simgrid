@@ -67,7 +67,7 @@ void send_piece(const_peer_t peer, sg_mailbox_t mailbox, int piece, int block_in
 void send_have_to_all_peers(const_peer_t peer, int piece);
 void send_request_to_peer(const_peer_t peer, connection_t remote_peer, int piece);
 
-void get_status(char** status, unsigned int bitfield);
+void get_status(char* status, unsigned int bitfield);
 int has_finished(unsigned int bitfield);
 int is_interested(const_peer_t peer, const_connection_t remote_peer);
 int is_interested_and_free(const_peer_t peer, const_connection_t remote_peer);

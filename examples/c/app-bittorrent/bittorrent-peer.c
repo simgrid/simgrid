@@ -90,7 +90,7 @@ void peer(int argc, char* argv[])
   xbt_assert(peer->deadline > 0, "Wrong deadline supplied");
 
   char* status = xbt_malloc0(FILE_PIECES + 1);
-  get_status(&status, peer->bitfield);
+  get_status(status, peer->bitfield);
 
   XBT_INFO("Hi, I'm joining the network with id %d", peer->id);
 
@@ -110,7 +110,7 @@ void peer(int argc, char* argv[])
     XBT_INFO("Couldn't contact the tracker.");
   }
 
-  get_status(&status, peer->bitfield);
+  get_status(status, peer->bitfield);
   XBT_INFO("Here is my current status: %s", status);
   if (peer->comm_received) {
     sg_comm_unref(peer->comm_received);
@@ -233,11 +233,11 @@ void send_request_to_peer(const_peer_t peer, connection_t remote_peer, int piece
   }
 }
 
-void get_status(char** status, unsigned int bitfield)
+void get_status(char* status, unsigned int bitfield)
 {
   for (int i = FILE_PIECES - 1; i >= 0; i--)
-    (*status)[i] = (bitfield & (1U << i)) ? '1' : '0';
-  (*status)[FILE_PIECES] = '\0';
+    status[i] = (bitfield & (1U << i)) ? '1' : '0';
+  status[FILE_PIECES] = '\0';
 }
 
 int has_finished(unsigned int bitfield)
@@ -463,7 +463,7 @@ void handle_message(peer_t peer, message_t message)
           // Setting the fact that we have the piece
           peer->bitfield = peer->bitfield | (1U << message->piece);
           char* status   = xbt_malloc0(FILE_PIECES + 1);
-          get_status(&status, peer->bitfield);
+          get_status(status, peer->bitfield);
           XBT_DEBUG("My status is now %s", status);
           xbt_free(status);
           // Sending the information to all the peers we are connected to
