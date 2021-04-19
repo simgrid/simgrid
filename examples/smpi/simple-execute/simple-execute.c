@@ -33,12 +33,10 @@ int main(int argc, char *argv[])
     MPI_Finalize();
     exit(0);
   }
-  if (0 == rank) {
+  if (rank == 0) {
     printf("\n    *** Ping-pong test (MPI_Send/MPI_Recv) ***\n\n");
-  }
 
-  /* start ping-pong tests between several pairs */
-  if ( rank == 0) {
+    /* start ping-pong tests between several pairs */
     int dst = 1;
     printf("[%d] About to send 1st message '%d' to process [%d]\n", rank, msg, dst);
     MPI_Send(&msg, 1, MPI_INT, dst, tag1, MPI_COMM_WORLD);
