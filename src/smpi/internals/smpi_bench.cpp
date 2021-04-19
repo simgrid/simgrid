@@ -170,12 +170,12 @@ static unsigned int private_sleep(double secs)
   smpi_bench_end();
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
-  int rank = simgrid::s4u::this_actor::get_pid();
-  TRACE_smpi_sleeping_in(rank, secs);
+  aid_t pid = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_sleeping_in(pid, secs);
 
   simgrid::s4u::this_actor::sleep_for(secs);
 
-  TRACE_smpi_sleeping_out(rank);
+  TRACE_smpi_sleeping_out(pid);
 
   smpi_bench_begin();
   return 0;

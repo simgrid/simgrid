@@ -413,7 +413,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
     return;
   }
 
-  int rank = request->comm() != MPI_COMM_NULL ? request->comm()->rank() : -1;
+  aid_t rank = request->comm() != MPI_COMM_NULL ? request->comm()->rank() : -1;
 
   // Must be taken before Request::wait() since the request may be set to
   // MPI_REQUEST_NULL by Request::wait!
@@ -432,7 +432,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
 void SendAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const SendRecvParser& args = get_args();
-  int dst_traced             = MPI_COMM_WORLD->group()->actor(args.partner);
+  aid_t dst_traced           = MPI_COMM_WORLD->group()->actor(args.partner);
 
   TRACE_smpi_comm_in(
       get_pid(), __func__,
@@ -497,10 +497,10 @@ void SleepAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const SleepParser& args = get_args();
   XBT_DEBUG("Sleep for: %lf secs", args.time);
-  int rank = simgrid::s4u::this_actor::get_pid();
-  TRACE_smpi_sleeping_in(rank, args.time);
+  aid_t pid = simgrid::s4u::this_actor::get_pid();
+  TRACE_smpi_sleeping_in(pid, args.time);
   simgrid::s4u::this_actor::sleep_for(args.time/smpi_adjust_comp_speed());
-  TRACE_smpi_sleeping_out(rank);
+  TRACE_smpi_sleeping_out(pid);
 }
 
 void LocationAction::kernel(simgrid::xbt::ReplayAction&)
@@ -557,7 +557,7 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
 
   if (count_requests > 0) {
     TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::Pt2PtTIData("waitall", -1, count_requests, ""));
-    std::vector<std::pair</*sender*/int,/*recv*/int>> sender_receiver;
+    std::vector<std::pair</*sender*/ aid_t, /*recv*/ aid_t>> sender_receiver;
     std::vector<MPI_Request> reqs;
     req_storage.get_requests(reqs);
     for (auto const& req : reqs) {
@@ -762,9 +762,7 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
   smpi_process()->mark_as_initialized();
   smpi_process()->set_replaying(true);
 
-  int my_proc_id = simgrid::s4u::this_actor::get_pid();
-
-  TRACE_smpi_init(my_proc_id, "smpi_replay_run_init");
+  TRACE_smpi_init(simgrid::s4u::this_actor::get_pid(), "smpi_replay_run_init");
   xbt_replay_action_register("init", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::InitAction().execute(action); });
   xbt_replay_action_register("finalize", [](simgrid::xbt::ReplayAction const&) { /* nothing to do */ });
   xbt_replay_action_register("comm_size", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });

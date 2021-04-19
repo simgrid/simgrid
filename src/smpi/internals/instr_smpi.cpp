@@ -96,12 +96,12 @@ static const char* instr_find_color(const char* c_state)
   return "0.5 0.5 0.5"; // Just in case we find nothing in the map ...
 }
 
-XBT_PRIVATE simgrid::instr::Container* smpi_container(int rank)
+XBT_PRIVATE simgrid::instr::Container* smpi_container(aid_t pid)
 {
-  return simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(rank));
+  return simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(pid));
 }
 
-static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
+static std::string TRACE_smpi_put_key(aid_t src, aid_t dst, int tag, int send)
 {
   //generate the key
   static unsigned long long counter = 0;
@@ -117,7 +117,7 @@ static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
   return key;
 }
 
-static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
+static std::string TRACE_smpi_get_key(aid_t src, aid_t dst, int tag, int send)
 {
   std::string key;
   std::string aux = std::to_string(src) + "#" + std::to_string(dst) + "#" + std::to_string(tag) + "#" +
@@ -135,27 +135,27 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
   return key;
 }
 
-void TRACE_smpi_setup_container(int rank, const_sg_host_t host)
+void TRACE_smpi_setup_container(aid_t pid, const_sg_host_t host)
 {
   auto* father = simgrid::instr::Container::get_root();
   if (TRACE_smpi_is_grouped()) {
     father = simgrid::instr::Container::by_name_or_null(host->get_name());
-    xbt_assert(father != nullptr, "Could not find a parent for mpi rank 'rank-%d' at function %s", rank, __func__);
+    xbt_assert(father != nullptr, "Could not find a parent for mpi rank 'rank-%ld' at function %s", pid, __func__);
   }
-  father->create_child(std::string("rank-") + std::to_string(rank), "MPI"); // This container is of type MPI
+  father->create_child(std::string("rank-") + std::to_string(pid), "MPI"); // This container is of type MPI
 }
 
-void TRACE_smpi_init(int rank, const std::string& calling_func)
+void TRACE_smpi_init(aid_t pid, const std::string& calling_func)
 {
   if (not TRACE_smpi_is_enabled())
     return;
 
   auto self = simgrid::s4u::Actor::self();
 
-  TRACE_smpi_setup_container(rank, sg_host_self());
+  TRACE_smpi_setup_container(pid, sg_host_self());
   simgrid::s4u::this_actor::on_exit([self](bool) { smpi_container(self->get_pid())->remove_from_parent(); });
 
-  simgrid::instr::StateType* state = smpi_container(rank)->get_state("MPI_STATE");
+  simgrid::instr::StateType* state = smpi_container(pid)->get_state("MPI_STATE");
 
   state->add_entity_value(calling_func, instr_find_color(calling_func.c_str()));
   state->push_event(calling_func, new simgrid::instr::NoOpTIData("init"));
@@ -166,7 +166,7 @@ void TRACE_smpi_init(int rank, const std::string& calling_func)
     state->add_entity_value("sleeping", instr_find_color("sleeping"));
 
 #if HAVE_PAPI
-  const simgrid::instr::Container* container = smpi_container(rank);
+  const simgrid::instr::Container* container = smpi_container(pid);
   papi_counter_t counters = smpi_process()->papi_counters();
 
   for (auto const& it : counters) {
@@ -179,56 +179,56 @@ void TRACE_smpi_init(int rank, const std::string& calling_func)
 #endif
 }
 
-void TRACE_smpi_sleeping_in(int rank, double duration)
+void TRACE_smpi_sleeping_in(aid_t pid, double duration)
 {
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
-    smpi_container(rank)
+    smpi_container(pid)
         ->get_state("MPI_STATE")
         ->push_event("sleeping", new simgrid::instr::CpuTIData("sleep", duration));
 }
 
-void TRACE_smpi_sleeping_out(int rank)
+void TRACE_smpi_sleeping_out(aid_t pid)
 {
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
-    smpi_container(rank)->get_state("MPI_STATE")->pop_event();
+    smpi_container(pid)->get_state("MPI_STATE")->pop_event();
 }
 
-void TRACE_smpi_comm_in(int rank, const char* operation, simgrid::instr::TIData* extra)
+void TRACE_smpi_comm_in(aid_t pid, const char* operation, simgrid::instr::TIData* extra)
 {
   if (not TRACE_smpi_is_enabled()) {
     delete extra;
     return;
   }
 
-  simgrid::instr::StateType* state = smpi_container(rank)->get_state("MPI_STATE");
+  simgrid::instr::StateType* state = smpi_container(pid)->get_state("MPI_STATE");
   state->add_entity_value(operation, instr_find_color(operation));
   state->push_event(operation, extra);
 }
 
-void TRACE_smpi_comm_out(int rank)
+void TRACE_smpi_comm_out(aid_t pid)
 {
   if (TRACE_smpi_is_enabled())
-    smpi_container(rank)->get_state("MPI_STATE")->pop_event();
+    smpi_container(pid)->get_state("MPI_STATE")->pop_event();
 }
 
-void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
+void TRACE_smpi_send(aid_t rank, aid_t src, aid_t dst, int tag, int size)
 {
   if (not TRACE_smpi_is_enabled())
     return;
 
   std::string key = TRACE_smpi_get_key(src, dst, tag, 1);
 
-  XBT_DEBUG("Send tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
+  XBT_DEBUG("Send tracing from %ld to %ld, tag %d, with key %s", src, dst, tag, key.c_str());
   simgrid::instr::Container::get_root()->get_link("MPI_LINK")->start_event(smpi_container(rank), "PTP", key, size);
 }
 
-void TRACE_smpi_recv(int src, int dst, int tag)
+void TRACE_smpi_recv(aid_t src, aid_t dst, int tag)
 {
   if (not TRACE_smpi_is_enabled())
     return;
 
   std::string key = TRACE_smpi_get_key(src, dst, tag, 0);
 
-  XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
+  XBT_DEBUG("Recv tracing from %ld to %ld, tag %d, with key %s", src, dst, tag, key.c_str());
   simgrid::instr::Container::get_root()->get_link("MPI_LINK")->end_event(smpi_container(dst), "PTP", key);
 }

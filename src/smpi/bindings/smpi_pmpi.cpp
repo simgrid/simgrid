@@ -51,8 +51,7 @@ int PMPI_Init(int*, char***)
   }
 
   simgrid::smpi::ActorExt::init();
-  int rank_traced = simgrid::s4u::this_actor::get_pid();
-  TRACE_smpi_init(rank_traced, __func__);
+  TRACE_smpi_init(simgrid::s4u::this_actor::get_pid(), __func__);
   smpi_bench_begin();
   smpi_process()->mark_as_initialized();
 

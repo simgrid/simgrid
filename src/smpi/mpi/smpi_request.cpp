@@ -919,8 +919,8 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   }
 
   if (TRACE_smpi_view_internals() && ((req->flags_ & MPI_REQ_RECV) != 0)) {
-    int rank       = simgrid::s4u::this_actor::get_pid();
-    int src_traced = (req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_);
+    aid_t rank       = simgrid::s4u::this_actor::get_pid();
+    aid_t src_traced = (req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_);
     TRACE_smpi_recv(src_traced, rank,req->tag_);
   }
   if(req->detached_sender_ != nullptr){

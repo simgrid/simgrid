@@ -11,16 +11,16 @@
 #include <string>
 
 /* Helper functions */
-XBT_PRIVATE simgrid::instr::Container* smpi_container(int rank);
-XBT_PRIVATE void TRACE_smpi_setup_container(int rank, const_sg_host_t host);
+XBT_PRIVATE simgrid::instr::Container* smpi_container(aid_t pid);
+XBT_PRIVATE void TRACE_smpi_setup_container(aid_t pid, const_sg_host_t host);
 
-XBT_PRIVATE void TRACE_smpi_sleeping_out(int rank);
-XBT_PRIVATE void TRACE_smpi_sleeping_in(int rank, double duration);
-XBT_PRIVATE void TRACE_smpi_comm_in(int rank, const char* operation, simgrid::instr::TIData* extra);
-XBT_PRIVATE void TRACE_smpi_comm_out(int rank);
-XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
-XBT_PRIVATE void TRACE_smpi_recv(int src, int dst, int tag);
-XBT_PRIVATE void TRACE_smpi_init(int rank, const std::string& calling_func);
+XBT_PRIVATE void TRACE_smpi_sleeping_out(aid_t pid);
+XBT_PRIVATE void TRACE_smpi_sleeping_in(aid_t pid, double duration);
+XBT_PRIVATE void TRACE_smpi_comm_in(aid_t pid, const char* operation, simgrid::instr::TIData* extra);
+XBT_PRIVATE void TRACE_smpi_comm_out(aid_t pid);
+XBT_PRIVATE void TRACE_smpi_send(aid_t rank, aid_t src, aid_t dst, int tag, int size);
+XBT_PRIVATE void TRACE_smpi_recv(aid_t src, aid_t dst, int tag);
+XBT_PRIVATE void TRACE_smpi_init(aid_t pid, const std::string& calling_func);
 
 class smpi_trace_call_location_t {
 public:
