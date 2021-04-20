@@ -205,8 +205,8 @@ public:
   }
 
   virtual void kernel(simgrid::xbt::ReplayAction& action) = 0;
-  unsigned char* send_buffer(int size) { return smpi_get_tmp_sendbuffer(size); }
-  unsigned char* recv_buffer(int size) { return smpi_get_tmp_recvbuffer(size); }
+  unsigned char* send_buffer(size_t size) { return smpi_get_tmp_sendbuffer(size); }
+  unsigned char* recv_buffer(size_t size) { return smpi_get_tmp_recvbuffer(size); }
 };
 
 class WaitAction : public ReplayAction<WaitTestParser> {

@@ -97,14 +97,14 @@ public:
 // Pt2PtTI: send, isend, ssend, issend, recv, irecv
 class Pt2PtTIData : public TIData {
   int endpoint_;
-  int size_;
+  size_t size_;
   std::string type_;
   int tag_ = 0;
 
 public:
-  Pt2PtTIData(const std::string& name, int endpoint, int size, const std::string& datatype)
+  Pt2PtTIData(const std::string& name, int endpoint, size_t size, const std::string& datatype)
       : TIData(name), endpoint_(endpoint), size_(size), type_(datatype){};
-  Pt2PtTIData(const std::string& name, int endpoint, int size, int tag, const std::string& datatype)
+  Pt2PtTIData(const std::string& name, int endpoint, size_t size, int tag, const std::string& datatype)
       : TIData(name), endpoint_(endpoint), size_(size), type_(datatype), tag_(tag){};
 
   std::string print() override
@@ -154,16 +154,16 @@ public:
 // VarCollTI: gatherv, scatterv, allgatherv, alltoallv (+ reducescatter out of laziness)
 class VarCollTIData : public TIData {
   int root_;
-  int send_size_;
+  size_t send_size_;
   std::shared_ptr<std::vector<int>> sendcounts_;
-  int recv_size_;
+  size_t recv_size_;
   std::shared_ptr<std::vector<int>> recvcounts_;
   std::string send_type_;
   std::string recv_type_;
 
 public:
-  VarCollTIData(const std::string& name, int root, int send_size, std::shared_ptr<std::vector<int>> sendcounts,
-                int recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
+  VarCollTIData(const std::string& name, int root, size_t send_size, std::shared_ptr<std::vector<int>> sendcounts,
+                size_t recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
                 const std::string& recv_type)
       : TIData(name)
       , root_(root)
@@ -178,12 +178,12 @@ public:
   {
     std::stringstream stream;
     stream << get_name() << " ";
-    if (send_size_ >= 0)
+    if (send_size_ > 0)
       stream << send_size_ << " ";
     if (sendcounts_ != nullptr)
       for (auto count : *sendcounts_)
         stream << count << " ";
-    if (recv_size_ >= 0)
+    if (recv_size_ > 0)
       stream << recv_size_ << " ";
     if (recvcounts_ != nullptr)
       for (auto count : *recvcounts_)

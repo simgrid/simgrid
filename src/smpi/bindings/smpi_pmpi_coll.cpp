@@ -668,7 +668,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter",
                      new simgrid::instr::VarCollTIData(
                          request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, dt_send_size, nullptr,
-                         -1, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
+                         0, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
 
   if (request == MPI_REQUEST_IGNORED)
     simgrid::smpi::colls::reduce_scatter(real_sendbuf, recvbuf, recvcounts, datatype, op, comm);
@@ -711,7 +711,7 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   TRACE_smpi_comm_in(
       pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block" : "PMPI_Ireduce_scatter_block",
       new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, 0,
-                                        nullptr, -1, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
+                                        nullptr, 0, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
 
   std::vector<int> recvcounts(count);
   for (int i      = 0; i < count; i++)

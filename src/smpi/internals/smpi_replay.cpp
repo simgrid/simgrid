@@ -553,7 +553,7 @@ void CommunicatorAction::kernel(simgrid::xbt::ReplayAction&)
 
 void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  const unsigned int count_requests = req_storage.size();
+  const size_t count_requests = req_storage.size();
 
   if (count_requests > 0) {
     TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::Pt2PtTIData("waitall", -1, count_requests, ""));
@@ -666,7 +666,7 @@ void GatherVAction::kernel(simgrid::xbt::ReplayAction&)
   const GatherVArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), get_name().c_str(),
                      new simgrid::instr::VarCollTIData(
-                         get_name(), (get_name() == "gatherv") ? args.root : -1, args.send_size, nullptr, -1,
+                         get_name(), (get_name() == "gatherv") ? args.root : -1, args.send_size, nullptr, 0,
                          args.recvcounts, Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
   if (get_name() == "gatherv") {
@@ -703,7 +703,7 @@ void ScatterVAction::kernel(simgrid::xbt::ReplayAction&)
   int rank = MPI_COMM_WORLD->rank();
   const ScatterVArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_scatterv",
-                     new simgrid::instr::VarCollTIData(get_name(), args.root, -1, args.sendcounts, args.recv_size,
+                     new simgrid::instr::VarCollTIData(get_name(), args.root, 0, args.sendcounts, args.recv_size,
                                                        nullptr, Datatype::encode(args.datatype1),
                                                        Datatype::encode(args.datatype2)));
 
@@ -720,7 +720,7 @@ void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction&)
   const ReduceScatterArgParser& args = get_args();
   TRACE_smpi_comm_in(
       get_pid(), "action_reducescatter",
-      new simgrid::instr::VarCollTIData("reducescatter", -1, 0, nullptr, -1, args.recvcounts,
+      new simgrid::instr::VarCollTIData("reducescatter", -1, 0, nullptr, 0, args.recvcounts,
                                         std::to_string(args.comp_size), /* ugly hack to print comp_size */
                                         Datatype::encode(args.datatype1)));
 
@@ -737,7 +737,7 @@ void AllToAllVAction::kernel(simgrid::xbt::ReplayAction&)
   const AllToAllVArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), __func__,
                      new simgrid::instr::VarCollTIData(
-                         "alltoallv", -1, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
+                         "alltoallv", 0, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
                          Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
   colls::alltoallv(send_buffer(args.send_buf_size * args.datatype1->size()), args.sendcounts->data(),
