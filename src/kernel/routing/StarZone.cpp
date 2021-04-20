@@ -34,29 +34,30 @@ void StarZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
   XBT_VERB("StarZone getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(),
            dst->id());
 
-  bool has_loopback = ((src == dst) and (routes_[src->id()].has_loopback()));
-  xbt_assert((has_loopback) or (routes_[src->id()].has_links_up()),
-             "StarZone routing (%s - %s): no link UP from source node. Did you use add_route() to set it?",
-             src->get_cname(), dst->get_cname());
-  xbt_assert((has_loopback) or (routes_[dst->id()].has_links_down()),
-             "StarZone routing (%s - %s): no link DOWN to destination node. Did you use add_route() to set it?",
-             src->get_cname(), dst->get_cname());
-
+  const auto& src_route = routes_.at(src->id());
+  const auto& dst_route = routes_.at(dst->id());
   std::unordered_set<resource::LinkImpl*> added_links;
   /* loopback */
-  if ((src == dst) and (routes_[src->id()].has_loopback())) {
-    add_links_to_route(routes_[src->id()].loopback, route, latency, added_links);
+  if (src == dst && src_route.has_loopback()) {
+    add_links_to_route(src_route.loopback, route, latency, added_links);
     return;
   }
 
+  xbt_assert(src_route.has_links_up(),
+             "StarZone routing (%s - %s): no link UP from source node. Did you use add_route() to set it?",
+             src->get_cname(), dst->get_cname());
+  xbt_assert(dst_route.has_links_down(),
+             "StarZone routing (%s - %s): no link DOWN to destination node. Did you use add_route() to set it?",
+             src->get_cname(), dst->get_cname());
+
   /* going UP */
-  add_links_to_route(routes_[src->id()].links_up, route, latency, added_links);
+  add_links_to_route(src_route.links_up, route, latency, added_links);
 
   /* going DOWN */
-  add_links_to_route(routes_[dst->id()].links_down, route, latency, added_links);
+  add_links_to_route(dst_route.links_down, route, latency, added_links);
   /* gateways */
-  route->gw_src = routes_[src->id()].gateway;
-  route->gw_dst = routes_[dst->id()].gateway;
+  route->gw_src = src_route.gateway;
+  route->gw_dst = dst_route.gateway;
 }
 
 void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
@@ -91,22 +92,22 @@ void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, c
   const char* src_name = src ? src->get_cname() : "nullptr";
   const char* dst_name = dst ? dst->get_cname() : "nullptr";
 
-  xbt_assert((src == dst) or (not src and dst) or (src and not dst),
+  xbt_assert((src || dst) && (not dst || not src || src == dst),
              "Cannot add route from %s to %s. In a StarZone, route must be:  i) from source host to everyone, ii) from "
              "everyone to a single host or iii) loopback, same source and destination",
              src_name, dst_name);
-  xbt_assert((not symmetrical) or (symmetrical and src),
+  xbt_assert(not symmetrical || src,
              "Cannot add route from %s to %s. In a StarZone, symmetrical routes must be set from source to everyone "
              "(not the contrary).",
              src_name, dst_name);
 
-  if (src and src->is_netzone()) {
+  if (src && src->is_netzone()) {
     xbt_assert(gw_src, "add_route(): source %s is a netzone but gw_src isn't configured", src->get_cname());
     xbt_assert(not gw_src->is_netzone(), "add_route(): src(%s) is a netzone, gw_src(%s) cannot be a netzone",
                src->get_cname(), gw_src->get_cname());
   }
 
-  if (dst and dst->is_netzone()) {
+  if (dst && dst->is_netzone()) {
     xbt_assert(gw_dst, "add_route(): destination %s is a netzone but gw_dst isn't configured", dst->get_cname());
     xbt_assert(not gw_dst->is_netzone(), "add_route(): dst(%s) is a netzone, gw_dst(%s) cannot be a netzone",
                dst->get_cname(), gw_dst->get_cname());
