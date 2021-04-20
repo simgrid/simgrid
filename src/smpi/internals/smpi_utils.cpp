@@ -120,7 +120,7 @@ void account_malloc_size(size_t size, const std::string& file, int line, void* p
     metadata.line = line;
     metadata.numcall = 1;
     metadata.file    = file;
-    allocs.insert(std::make_pair(ptr, metadata));
+    allocs.emplace(ptr, metadata);
 
     total_malloc_size += size;
     if(size > max_malloc.size){
@@ -177,7 +177,7 @@ static void print_leaked_handles(){
           key+=" at "+ elem.second->call_location();
         else
           display_advice=true;
-        auto result = count.insert(std::pair<std::string, int>(key, 1));
+        auto result = count.emplace(key, 1);
         if (result.second == false)
           result.first->second++;
       }
@@ -220,7 +220,7 @@ static void print_leaked_buffers(){
         std::string key = "leaked allocations";
         if (not xbt_log_no_loc)
           key=elem.second.file+":"+std::to_string(elem.second.line)+" : "+key;
-        auto result = leaks_aggreg.insert(std::pair<std::string, struct buff_leak>(key, {1, elem.second.size, elem.second.size, elem.second.size}));
+        auto result = leaks_aggreg.emplace(key, buff_leak{1, elem.second.size, elem.second.size, elem.second.size});
         if (result.second == false){
           result.first->second.count ++;
           result.first->second.total_size += elem.second.size;
@@ -231,10 +231,7 @@ static void print_leaked_buffers(){
         }
       }
       //now we can order by total size.
-      std::vector<std::pair<std::string, buff_leak>> leaks;
-      std::copy(leaks_aggreg.begin(),
-            leaks_aggreg.end(),
-            std::back_inserter<std::vector<std::pair<std::string, buff_leak>>>(leaks));
+      std::vector<std::pair<std::string, buff_leak>> leaks(leaks_aggreg.begin(), leaks_aggreg.end());
       std::sort(leaks.begin(), leaks.end(), [](auto const& a, auto const& b) { return a.second.total_size > b.second.total_size; });
 
       unsigned int i =0;
