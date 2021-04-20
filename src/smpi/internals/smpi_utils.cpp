@@ -215,8 +215,8 @@ static void print_leaked_buffers(){
         size_t min_size;
         size_t max_size;
       };
-      std::map<std::string, struct buff_leak> leaks_aggreg;
-      for (auto & elem : allocs){
+      std::map<std::string, struct buff_leak, std::less<>> leaks_aggreg;
+      for (const auto& elem : allocs) {
         std::string key = "leaked allocations";
         if (not xbt_log_no_loc)
           key=elem.second.file+":"+std::to_string(elem.second.line)+" : "+key;
