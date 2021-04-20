@@ -30,7 +30,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SM
 
 int smpi_loaded_page      = -1;
 char* smpi_data_exe_start = nullptr;
-int smpi_data_exe_size    = 0;
+size_t smpi_data_exe_size = 0;
 SmpiPrivStrategies smpi_privatize_global_variables;
 static void* smpi_data_exe_copy;
 
@@ -210,7 +210,7 @@ void smpi_backup_global_memory_segment()
   initial_vm_map.clear();
   initial_vm_map.shrink_to_fit();
 
-  XBT_DEBUG("bss+data segment found : size %d starting at %p", smpi_data_exe_size, smpi_data_exe_start);
+  XBT_DEBUG("bss+data segment found : size %zu starting at %p", smpi_data_exe_size, smpi_data_exe_start);
 
   if (smpi_data_exe_size == 0) { // no need to do anything as global variables don't exist
     smpi_privatize_global_variables = SmpiPrivStrategies::NONE;

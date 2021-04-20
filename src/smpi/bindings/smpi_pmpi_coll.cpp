@@ -74,7 +74,7 @@ int PMPI_Ibcast(void *buf, int count, MPI_Datatype datatype,
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Bcast" : "PMPI_Ibcast",
                      new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "bcast" : "ibcast", root, -1.0,
-                                                    datatype->is_replayable() ? count : count * datatype->size(), -1,
+                                                    datatype->is_replayable() ? count : count * datatype->size(), 0,
                                                     simgrid::smpi::Datatype::encode(datatype), ""));
   if (comm->size() > 1) {
     if (request == MPI_REQUEST_IGNORED)
@@ -486,8 +486,8 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   aid_t pid = simgrid::s4u::this_actor::get_pid();
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce" : "PMPI_Ireduce",
-                      new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "reduce" : "ireduce", root, 0,
-                                                    datatype->is_replayable() ? count : count * datatype->size(), -1,
+                     new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "reduce" : "ireduce", root, 0,
+                                                    datatype->is_replayable() ? count : count * datatype->size(), 0,
                                                     simgrid::smpi::Datatype::encode(datatype), ""));
   if (request == MPI_REQUEST_IGNORED)
     simgrid::smpi::colls::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
@@ -542,7 +542,7 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Allreduce" : "PMPI_Iallreduce",
                      new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "allreduce" : "iallreduce", -1, 0,
-                                                    datatype->is_replayable() ? count : count * datatype->size(), -1,
+                                                    datatype->is_replayable() ? count : count * datatype->size(), 0,
                                                     simgrid::smpi::Datatype::encode(datatype), ""));
 
   if (request == MPI_REQUEST_IGNORED)

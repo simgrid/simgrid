@@ -61,9 +61,6 @@ public:
 };
 }
 
-using req_key_t     = std::tuple</*sender*/ int, /* receiver */ int, /* tag */ int>;
-using req_storage_t = std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int, int, int>>>;
-
 void log_timed_action(const simgrid::xbt::ReplayAction& action, double clock)
 {
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
@@ -86,11 +83,14 @@ MPI_Datatype MPI_DEFAULT_TYPE;
 
 class RequestStorage {
 private:
-    req_storage_t store;
+  using req_key_t     = std::tuple</*sender*/ int, /* receiver */ int, /* tag */ int>;
+  using req_storage_t = std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int, int, int>>>;
+
+  req_storage_t store;
 
 public:
   RequestStorage() = default;
-  int size() const { return store.size(); }
+  size_t size() const { return store.size(); }
 
   req_storage_t& get_store() { return store; }
 
@@ -587,7 +587,7 @@ void BcastAction::kernel(simgrid::xbt::ReplayAction&)
   const BcastArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_bcast",
                      new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root), -1.0, args.size,
-                                                    -1, Datatype::encode(args.datatype1), ""));
+                                                    0, Datatype::encode(args.datatype1), ""));
 
   colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
 
@@ -599,7 +599,7 @@ void ReduceAction::kernel(simgrid::xbt::ReplayAction&)
   const ReduceArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_reduce",
                      new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root), args.comp_size,
-                                                    args.comm_size, -1, Datatype::encode(args.datatype1), ""));
+                                                    args.comm_size, 0, Datatype::encode(args.datatype1), ""));
 
   colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
                 recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
@@ -613,7 +613,7 @@ void AllReduceAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const AllReduceArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_allreduce",
-                     new simgrid::instr::CollTIData("allreduce", -1, args.comp_size, args.comm_size, -1,
+                     new simgrid::instr::CollTIData("allreduce", -1, args.comp_size, args.comm_size, 0,
                                                     Datatype::encode(args.datatype1), ""));
 
   colls::allreduce(send_buffer(args.comm_size * args.datatype1->size()),

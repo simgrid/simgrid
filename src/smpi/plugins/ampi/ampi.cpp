@@ -47,7 +47,7 @@ extern "C" void* _sampi_calloc(size_t num_elm, size_t elem_size)
 extern "C" void* _sampi_realloc(void* ptr, size_t size)
 {
   void* result = xbt_realloc(ptr, size);
-  int old_size = alloc_table.at(ptr);
+  size_t old_size = alloc_table.at(ptr);
   alloc_table.erase(ptr);
   alloc_table.insert({result, size});
   if (not simgrid::s4u::this_actor::is_maestro()) {

@@ -119,13 +119,13 @@ public:
 // CollTI: bcast, reduce, allreduce, gather, scatter, allgather, alltoall
 class CollTIData : public TIData {
   int root_;
-  int send_size_;
-  int recv_size_;
+  size_t send_size_;
+  size_t recv_size_;
   std::string send_type_;
   std::string recv_type_;
 
 public:
-  CollTIData(const std::string& name, int root, double amount, int send_size, int recv_size,
+  CollTIData(const std::string& name, int root, double amount, size_t send_size, size_t recv_size,
              const std::string& send_type, const std::string& recv_type)
       : TIData(name, amount)
       , root_(root)
@@ -138,7 +138,7 @@ public:
   {
     std::stringstream stream;
     stream << get_name() << " " << send_size_ << " ";
-    if (recv_size_ >= 0)
+    if (recv_size_ > 0)
       stream << recv_size_ << " ";
     if (get_amount() >= 0.0)
       stream << get_amount() << " ";

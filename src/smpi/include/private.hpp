@@ -115,7 +115,7 @@ XBT_PRIVATE bool smpi_cfg_display_alloc();
 
 // utilities
 extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
-extern XBT_PRIVATE int smpi_data_exe_size;    // size of the data+bss segment of the executable
+extern XBT_PRIVATE size_t smpi_data_exe_size; // size of the data+bss segment of the executable
 
 XBT_PRIVATE void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor);
 
