@@ -26,13 +26,11 @@ void MutexImpl::lock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p; %p)", this, issuer);
   MC_CHECK_NO_DPOR();
-  /* FIXME: check where to validate the arguments */
-  RawImplPtr synchro = nullptr;
 
   if (locked_) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
-    synchro = RawImplPtr(new RawImpl([this, issuer]() { this->remove_sleeping_actor(*issuer); }));
+    RawImplPtr synchro(new RawImpl([this, issuer]() { this->remove_sleeping_actor(*issuer); }));
     (*synchro).set_host(issuer->get_host()).start();
     synchro->register_simcall(&issuer->simcall_);
     sleeping_.push_back(*issuer);
