@@ -28,7 +28,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 
-int smpi_loaded_page      = -1;
 char* smpi_data_exe_start = nullptr;
 size_t smpi_data_exe_size = 0;
 SmpiPrivStrategies smpi_privatize_global_variables;
@@ -180,6 +179,7 @@ void* smpi_temp_shm_mmap(int fd, size_t size)
  */
 void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
 {
+  static aid_t smpi_loaded_page = -1;
   if (smpi_loaded_page == actor->get_pid()) // no need to switch, we've already loaded the one we want
     return;
 

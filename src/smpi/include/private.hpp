@@ -494,7 +494,6 @@ struct s_smpi_privatization_region_t {
 };
 using smpi_privatization_region_t = s_smpi_privatization_region_t*;
 
-extern XBT_PRIVATE int smpi_loaded_page;
 XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process();
 
 /**
