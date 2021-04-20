@@ -32,12 +32,12 @@ class Request : public F2C {
    * It let us know how to unserialize at the end of the communication */
   MPI_Datatype old_type_;
   size_t size_;
-  int src_;
-  int dst_;
+  aid_t src_;
+  aid_t dst_;
   int tag_;
   // to handle cases where we have an unknown sender
   // We can't override src, tag, and size, because the request may be reused later
-  int real_src_;
+  aid_t real_src_;
   int real_tag_;
   bool truncated_;
   size_t real_size_;
@@ -55,12 +55,13 @@ class Request : public F2C {
 
 public:
   Request() = default;
-  Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags, MPI_Op op = MPI_REPLACE);
+  Request(const void* buf, int count, MPI_Datatype datatype, aid_t src, aid_t dst, int tag, MPI_Comm comm,
+          unsigned flags, MPI_Op op = MPI_REPLACE);
   MPI_Comm comm() const { return comm_; }
   size_t size() const { return size_; }
   size_t real_size() const { return real_size_; }
-  int src() const { return src_; }
-  int dst() const { return dst_; }
+  aid_t src() const { return src_; }
+  aid_t dst() const { return dst_; }
   int tag() const { return tag_; }
   int flags() const { return flags_; }
   bool detached() const { return detached_; }

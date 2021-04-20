@@ -36,7 +36,7 @@ extern void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*
 namespace simgrid{
 namespace smpi{
 
-Request::Request(const void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm,
+Request::Request(const void* buf, int count, MPI_Datatype datatype, aid_t src, aid_t dst, int tag, MPI_Comm comm,
                  unsigned flags, MPI_Op op)
     : buf_(const_cast<void*>(buf))
     , old_type_(datatype)
@@ -105,7 +105,7 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
 {
   xbt_assert(sender, "Cannot match against null sender");
   xbt_assert(receiver, "Cannot match against null receiver");
-  XBT_DEBUG("Trying to match %s of sender src %d against %d, tag %d against %d, id %d against %d",
+  XBT_DEBUG("Trying to match %s of sender src %ld against %ld, tag %d against %d, id %d against %d",
             (req == receiver ? "send" : "recv"), sender->src_, receiver->src_, sender->tag_, receiver->tag_,
             sender->comm_->id(), receiver->comm_->id());
 
@@ -172,8 +172,8 @@ bool Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl*)
 
 void Request::print_request(const char* message) const
 {
-  XBT_VERB("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
-       message, this, buf_, size_, src_, dst_, tag_, flags_);
+  XBT_VERB("%s  request %p  [buf = %p, size = %zu, src = %ld, dst = %ld, tag = %d, flags = %x]", message, this, buf_,
+           size_, src_, dst_, tag_, flags_);
 }
 
 /* factories, to hide the internal flags from the caller */
@@ -205,7 +205,6 @@ MPI_Request Request::isend_init(const void *buf, int count, MPI_Datatype datatyp
                      MPI_REQ_PERSISTENT | MPI_REQ_ISEND | MPI_REQ_SEND | MPI_REQ_PREPARED);
 }
 
-
 MPI_Request Request::rma_send_init(const void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm,
                                MPI_Op op)
 {
@@ -226,7 +225,7 @@ MPI_Request Request::rma_send_init(const void *buf, int count, MPI_Datatype data
 
 MPI_Request Request::recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
-  int source = MPI_PROC_NULL;
+  aid_t source = MPI_PROC_NULL;
   if (src == MPI_ANY_SOURCE)
     source = MPI_ANY_SOURCE;
   else if (src != MPI_PROC_NULL)
@@ -241,7 +240,7 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
                                MPI_Op op)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  int source = MPI_PROC_NULL;
+  aid_t source        = MPI_PROC_NULL;
   if (src == MPI_ANY_SOURCE)
     source = MPI_ANY_SOURCE;
   else if (src != MPI_PROC_NULL)
@@ -261,7 +260,7 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
 
 MPI_Request Request::irecv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
-  int source = MPI_PROC_NULL;
+  aid_t source = MPI_PROC_NULL;
   if (src == MPI_ANY_SOURCE)
     source = MPI_ANY_SOURCE;
   else if (src != MPI_PROC_NULL)
@@ -304,11 +303,10 @@ MPI_Request Request::issend(const void *buf, int count, MPI_Datatype datatype, i
   return request;
 }
 
-
 MPI_Request Request::irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  int source = MPI_PROC_NULL;
+  aid_t source        = MPI_PROC_NULL;
   if (src == MPI_ANY_SOURCE)
     source = MPI_ANY_SOURCE;
   else if (src != MPI_PROC_NULL)
@@ -372,16 +370,16 @@ void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
                        void *recvbuf, int recvcount, MPI_Datatype recvtype, int src, int recvtag,
                        MPI_Comm comm, MPI_Status * status)
 {
-  int source = MPI_PROC_NULL;
+  aid_t source = MPI_PROC_NULL;
   if (src == MPI_ANY_SOURCE)
     source = MPI_ANY_SOURCE;
   else if (src != MPI_PROC_NULL)
     source = comm->group()->actor(src);
-  int destination = dst != MPI_PROC_NULL ? comm->group()->actor(dst) : MPI_PROC_NULL;
+  aid_t destination = dst != MPI_PROC_NULL ? comm->group()->actor(dst) : MPI_PROC_NULL;
 
   std::array<MPI_Request, 2> requests;
   std::array<MPI_Status, 2> stats;
-  int myid = simgrid::s4u::this_actor::get_pid();
+  aid_t myid = simgrid::s4u::this_actor::get_pid();
   if ((destination == myid) && (source == myid)) {
     Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
     if (status != MPI_STATUS_IGNORE) {
@@ -472,7 +470,7 @@ void Request::start()
       mut->unlock();
   } else { /* the RECV flag was not set, so this is a send */
     const simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
-    xbt_assert(process, "Actor pid=%d is gone??", dst_);
+    xbt_assert(process, "Actor pid=%ld is gone??", dst_);
     if (TRACE_smpi_view_internals())
       TRACE_smpi_send(src_, src_, dst_, tag_, size_);
     this->print_request("New send");
@@ -877,7 +875,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
         Status::empty(status);
         status->MPI_SOURCE = MPI_PROC_NULL;
       } else {
-        int src = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
+        aid_t src          = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
         status->MPI_SOURCE = req->comm_->group()->rank(src);
         status->MPI_TAG = req->tag_ == MPI_ANY_TAG ? req->real_tag_ : req->tag_;
         status->MPI_ERROR  = req->truncated_ ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
@@ -1218,7 +1216,7 @@ int Request::get_status(const Request* req, int* flag, MPI_Status* status)
   *flag=1;
   if(req != MPI_REQUEST_NULL &&
      status != MPI_STATUS_IGNORE) {
-    int src = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
+    aid_t src          = req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_;
     status->MPI_SOURCE = req->comm_->group()->rank(src);
     status->MPI_TAG = req->tag_ == MPI_ANY_TAG ? req->real_tag_ : req->tag_;
     status->MPI_ERROR = req->truncated_ ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
