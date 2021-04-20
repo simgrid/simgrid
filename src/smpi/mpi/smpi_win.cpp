@@ -672,7 +672,7 @@ int Win::finish_comms(int rank){
   // because we only wait for requests that we are responsible for.
   // Also use the process id here since the request itself returns from src()
   // and dst() the process id, NOT the rank (which only exists in the context of a communicator).
-  int proc_id = comm_->group()->actor(rank);
+  aid_t proc_id = comm_->group()->actor(rank);
   auto it     = std::stable_partition(begin(requests_), end(requests_), [proc_id](const MPI_Request& req) {
     return (req == MPI_REQUEST_NULL || (req->src() != proc_id && req->dst() != proc_id));
   });

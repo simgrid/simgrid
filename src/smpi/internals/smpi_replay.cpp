@@ -480,7 +480,7 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
 
   TRACE_smpi_comm_out(get_pid());
   if (is_recv && not TRACE_smpi_view_internals()) {
-    int src_traced = MPI_COMM_WORLD->group()->actor(status.MPI_SOURCE);
+    aid_t src_traced = MPI_COMM_WORLD->group()->actor(status.MPI_SOURCE);
     TRACE_smpi_recv(src_traced, get_pid(), args.tag);
   }
 }
