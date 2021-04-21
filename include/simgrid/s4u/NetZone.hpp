@@ -54,6 +54,8 @@ public:
   /** Retrieve the property value (or nullptr if not set) */
   const char* get_property(const std::string& key) const;
   void set_property(const std::string& key, const std::string& value);
+  /** @brief Get the netpoint associated to this netzone */
+  kernel::routing::NetPoint* get_netpoint();
 
   std::vector<NetZone*> get_children() const;
   XBT_ATTRIB_DEPRECATED_v332("Please use set_parent() to manage NetZone's relationship") NetZone* add_child(

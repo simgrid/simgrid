@@ -200,6 +200,10 @@ kernel::routing::NetPoint* NetZone::create_router(const std::string& name)
   return kernel::actor::simcall([this, &name] { return pimpl_->create_router(name); });
 }
 
+kernel::routing::NetPoint* NetZone::get_netpoint()
+{
+  return pimpl_->get_netpoint();
+}
 } // namespace s4u
 } // namespace simgrid
 

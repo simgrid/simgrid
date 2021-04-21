@@ -125,6 +125,9 @@ public:
   /** @brief Retrieves the name of that netzone as a C string */
   const char* get_cname() const { return name_.c_str(); };
 
+  /** @brief Gets the netpoint associated to this netzone */
+  kernel::routing::NetPoint* get_netpoint() const { return netpoint_; }
+
   std::vector<s4u::Host*> get_all_hosts() const;
   int get_host_count() const;
 
