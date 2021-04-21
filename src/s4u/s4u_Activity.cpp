@@ -5,10 +5,12 @@
 
 #include "xbt/log.h"
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity, s4u, "S4U activities");
@@ -29,7 +31,10 @@ Activity* Activity::wait_for(double timeout)
     vetoable_start();
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::simcall_blocking([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
+  kernel::actor::ActivityWaitSimcall observer{issuer, pimpl_.get(), timeout};
+  if (kernel::actor::simcall_blocking(
+          [&observer] { observer.get_activity()->wait_for(observer.get_issuer(), observer.get_timeout()); }, &observer))
+    throw TimeoutException(XBT_THROW_POINT, "Timeouted");
   complete(State::FINISHED);
   return this;
 }
