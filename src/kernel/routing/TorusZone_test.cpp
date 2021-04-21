@@ -11,7 +11,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/surf_interface.hpp"    // create models
 #include "src/surf/xml/platf_private.hpp" // RouteCreationArgs and friends
 
 namespace {
@@ -21,12 +20,7 @@ class EngineWrapper {
 
 public:
   simgrid::s4u::Engine e;
-  explicit EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv)
-  {
-    simgrid::s4u::create_full_zone("root");
-    surf_network_model_init_LegrandVelho();
-    surf_cpu_model_init_Cas01();
-  }
+  explicit EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
 };
 
 std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
@@ -52,34 +46,29 @@ TEST_CASE("kernel::routing::TorusZone: Creating Zone", "")
 
 TEST_CASE("kernel::routing::TorusZone: Invalid params", "")
 {
+  using namespace simgrid::s4u;
+  EngineWrapper e("test");
+
   SECTION("Empty dimensions")
   {
-    using namespace simgrid::s4u;
-    EngineWrapper e("test");
     REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {}, 1e9, 10,
                                         simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
                       std::invalid_argument);
   }
   SECTION("One 0 dimension")
   {
-    using namespace simgrid::s4u;
-    EngineWrapper e("test");
     REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 0, 2}, 1e9, 10,
                                         simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
                       std::invalid_argument);
   }
   SECTION("Invalid bandwidth")
   {
-    using namespace simgrid::s4u;
-    EngineWrapper e("test");
     REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 2, 2}, 0, 10,
                                         simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
                       std::invalid_argument);
   }
   SECTION("Invalid latency")
   {
-    using namespace simgrid::s4u;
-    EngineWrapper e("test");
     REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 2, 2}, 1e9, -10,
                                         simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
                       std::invalid_argument);

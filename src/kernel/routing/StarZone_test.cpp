@@ -11,7 +11,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/surf_interface.hpp"    // create models
 #include "src/surf/xml/platf_private.hpp" // RouteCreationArgs and friends
 
 namespace {
@@ -89,11 +88,8 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
 // https://github.com/catchorg/Catch2/issues/853
 TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
 {
-  /* workaround to initialize things, they must be done in this particular order */
   EngineWrapper e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
-  surf_network_model_init_LegrandVelho();
-  surf_cpu_model_init_Cas01();
 
   const auto* host1 = zone->create_host("netpoint1", {100});
   const auto* host2 = zone->create_host("netpoint2", {100});
@@ -159,11 +155,8 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): valid", "")
 
 TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 {
-  /* workaround to initialize things, they must be done in this particular order */
   EngineWrapper e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
-  surf_network_model_init_LegrandVelho();
-  surf_cpu_model_init_Cas01();
 
   const auto* host1 = zone->create_host("netpoint1", {100});
   const auto* host2 = zone->create_host("netpoint2", {100});
@@ -235,11 +228,8 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 
 TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
 {
-  /* workaround to initialize things, they must be done in this particular order */
   EngineWrapper e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
-  surf_network_model_init_LegrandVelho();
-  surf_cpu_model_init_Cas01();
 
   auto* subzone1 =
       (new simgrid::kernel::routing::NetPoint("subzone1", simgrid::kernel::routing::NetPoint::Type::NetZone))

@@ -71,11 +71,9 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
    * Without globals and with current surf_*_model_description init functions, we need
    * the root netzone to exist when creating the models.
    * This was usually done at sg_platf.cpp, during XML parsing */
-  if (not s4u::Engine::get_instance()->get_netzone_root())
+  if (not s4u::Engine::get_instance()->get_netzone_root()) {
     s4u::Engine::get_instance()->set_netzone_root(&piface_);
-
-  static bool surf_parse_models_setup_already_called = false;
-  if (not surf_parse_models_setup_already_called) {
+    /* root netzone set, initialize models */
     simgrid::s4u::Engine::on_platform_creation();
 
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
@@ -85,7 +83,6 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
      * (FIXME: check it out by creating a file beginning with one of these tags)
      * but cluster and peer come down to zone creations, so putting this verification here is correct.
      */
-    surf_parse_models_setup_already_called = true;
     surf_config_models_setup();
   }
 
