@@ -19,6 +19,12 @@ namespace s4u {
 xbt::signal<void(Comm const&, bool is_sender)> Comm::on_start;
 xbt::signal<void(Comm const&)> Comm::on_completion;
 
+void Comm::complete(Activity::State state)
+{
+  Activity::complete(state);
+  on_completion(*this);
+}
+
 Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ &&
@@ -38,10 +44,8 @@ int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
   std::transform(begin(*comms), end(*comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   int changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
-  if (changed_pos != -1) {
-    on_completion(*(comms->at(changed_pos)));
-    comms->at(changed_pos)->release_dependencies();
-  }
+  if (changed_pos != -1)
+    comms->at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
 }
 
@@ -210,14 +214,10 @@ Comm* Comm::wait_for(double timeout)
         simcall_comm_recv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_,
                           get_user_data(), timeout, rate_);
       }
-      state_ = State::FINISHED;
-      this->release_dependencies();
       break;
 
     case State::STARTED:
       simcall_comm_wait(get_impl(), timeout);
-      state_ = State::FINISHED;
-      this->release_dependencies();
       break;
 
     case State::CANCELED:
@@ -226,7 +226,7 @@ Comm* Comm::wait_for(double timeout)
     default:
       THROW_IMPOSSIBLE;
   }
-  on_completion(*this);
+  complete(State::FINISHED);
   return this;
 }
 
@@ -237,7 +237,7 @@ int Comm::test_any(const std::vector<CommPtr>* comms)
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   int changed_pos = simcall_comm_testany(rcomms.data(), rcomms.size());
   if (changed_pos != -1)
-    comms->at(changed_pos)->release_dependencies();
+    comms->at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
 }
 
@@ -257,7 +257,7 @@ Comm* Comm::cancel()
     if (pimpl_)
       boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->cancel();
   });
-  state_ = State::CANCELED;
+  complete(State::CANCELED);
   return this;
 }
 
@@ -273,8 +273,7 @@ bool Comm::test()
     this->vetoable_start();
 
   if (simcall_comm_test(get_impl())) {
-    state_ = State::FINISHED;
-    this->release_dependencies();
+    complete(State::FINISHED);
     return true;
   }
   return false;

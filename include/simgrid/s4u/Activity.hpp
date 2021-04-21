@@ -32,11 +32,22 @@ class XBT_PUBLIC Activity {
   friend Exec;
   friend Io;
 
+public:
+  // enum class State { ... }
+  XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, CANCELED, FINISHED);
+
 protected:
   Activity()  = default;
   virtual ~Activity() = default;
 
   virtual bool is_assigned() const = 0;
+
+  virtual void complete(Activity::State state)
+  {
+    state_ = state;
+    if (state == State::FINISHED)
+      release_dependencies();
+  }
 
   void release_dependencies()
   {
@@ -90,9 +101,6 @@ public:
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
 #endif
-
-  // enum class State { ... }
-  XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, CANCELED, FINISHED);
 
   /** Starts a previously created activity.
    *

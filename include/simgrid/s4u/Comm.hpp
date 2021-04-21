@@ -37,6 +37,9 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
 
   Comm() = default;
 
+protected:
+  void complete(Activity::State state) override;
+
 public:
 #ifndef DOXYGEN
   friend Mailbox; // Factory of comms

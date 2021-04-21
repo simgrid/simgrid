@@ -25,6 +25,8 @@ class XBT_PUBLIC Io : public Activity_T<Io> {
 protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
 
+  void complete(Activity::State state) override;
+
 public:
   enum class OpType { READ, WRITE };
 

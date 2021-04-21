@@ -34,8 +34,7 @@ bool Activity::test()
     this->vetoable_start();
 
   if (kernel::actor::simcall([this] { return this->get_impl()->test(); })) {
-    state_ = State::FINISHED;
-    this->release_dependencies();
+    complete(State::FINISHED);
     return true;
   }
 

@@ -24,6 +24,12 @@ Exec::Exec(kernel::activity::ExecImplPtr pimpl)
   pimpl_ = pimpl;
 }
 
+void Exec::complete(Activity::State state)
+{
+  Activity::complete(state);
+  on_completion(*this);
+}
+
 ExecPtr Exec::init()
 {
   auto pimpl = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
@@ -60,9 +66,7 @@ Exec* Exec::wait_for(double timeout)
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::simcall_blocking([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
-  state_ = State::FINISHED;
-  on_completion(*this);
-  this->release_dependencies();
+  complete(State::FINISHED);
   return this;
 }
 
@@ -79,18 +83,15 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
         kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(), observer.get_timeout());
       },
       &observer);
-  if (changed_pos != -1) {
-    on_completion(*(execs->at(changed_pos)));
-    execs->at(changed_pos)->release_dependencies();
-  }
+  if (changed_pos != -1)
+    execs->at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
 }
 
 Exec* Exec::cancel()
 {
   kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
-  state_ = State::CANCELED;
-  on_completion(*this);
+  complete(State::CANCELED);
   return this;
 }
 

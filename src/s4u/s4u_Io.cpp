@@ -20,6 +20,12 @@ Io::Io(kernel::activity::IoImplPtr pimpl)
   pimpl_ = pimpl;
 }
 
+void Io::complete(Activity::State state)
+{
+  Activity::complete(state);
+  on_completion(*this);
+}
+
 IoPtr Io::init()
 {
   auto pimpl = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
@@ -42,8 +48,7 @@ Io* Io::start()
 Io* Io::cancel()
 {
   kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->cancel(); });
-  state_ = State::CANCELED;
-  on_completion(*this);
+  complete(State::CANCELED);
   return this;
 }
 
@@ -59,10 +64,7 @@ Io* Io::wait_for(double timeout)
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::simcall_blocking([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
-  state_ = State::FINISHED;
-  this->release_dependencies();
-
-  on_completion(*this);
+  complete(state_ = State::FINISHED);
   return this;
 }
 

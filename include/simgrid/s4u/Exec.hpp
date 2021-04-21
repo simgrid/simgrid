@@ -38,6 +38,8 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
 protected:
   explicit Exec(kernel::activity::ExecImplPtr pimpl);
 
+  void complete(Activity::State state) override;
+
 public:
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
