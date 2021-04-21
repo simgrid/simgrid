@@ -125,6 +125,7 @@ ENDIF()
 set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/kernel/resource/profile/Profile_test.cpp
                 src/kernel/routing/StarZone_test.cpp
+                src/kernel/routing/TorusZone_test.cpp
                 src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp

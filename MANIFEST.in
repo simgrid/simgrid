@@ -2209,6 +2209,7 @@ include src/kernel/routing/RoutedZone.cpp
 include src/kernel/routing/StarZone.cpp
 include src/kernel/routing/StarZone_test.cpp
 include src/kernel/routing/TorusZone.cpp
+include src/kernel/routing/TorusZone_test.cpp
 include src/kernel/routing/VivaldiZone.cpp
 include src/kernel/routing/WifiZone.cpp
 include src/mc/AddressSpace.hpp

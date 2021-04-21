@@ -258,13 +258,17 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
                            const std::function<TorusLinkCb>& set_loopback,
                            const std::function<TorusLinkCb>& set_limiter)
 {
-  auto* zone = new kernel::routing::TorusZone(name);
-  zone->set_topology(dimensions);
-  if (parent)
-    zone->set_parent(parent->get_impl());
-
   int tot_elements = std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>());
-  xbt_assert(tot_elements > 0, "TorusZone: incorrect dimensions, unable to create %d elements", tot_elements);
+  if (dimensions.empty() || tot_elements <= 0)
+    throw std::invalid_argument("TorusZone: incorrect dimensions parameter, each value must be > 0");
+  if (bandwidth <= 0)
+    throw std::invalid_argument("TorusZone: incorrect bandwidth for internode communication, bw=" +
+                                std::to_string(bandwidth));
+  if (latency < 0)
+    throw std::invalid_argument("TorusZone: incorrect latency for internode communication, lat=" +
+                                std::to_string(latency));
+
+  // auxiliary function to get dims from index
   auto index_to_dims = [&dimensions](int index) {
     std::vector<unsigned int> dims_array(dimensions.size());
     for (int i = dimensions.size() - 1; i >= 0 && index > 0; --i) {
@@ -275,24 +279,40 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
     return dims_array;
   };
 
+  auto* zone = new kernel::routing::TorusZone(name);
+  zone->set_topology(dimensions);
+  if (parent)
+    zone->set_parent(parent->get_impl());
+
   for (int i = 0; i < tot_elements; i++) {
     kernel::routing::NetPoint *netpoint = nullptr, *gw = nullptr;
     auto dims              = index_to_dims(i);
     std::tie(netpoint, gw) = set_netpoint(zone->get_iface(), dims, i);
+    xbt_assert(netpoint, "TorusZone::set_netpoint(elem=%d): Invalid netpoint (nullptr)", i);
+    if (netpoint->is_netzone()) {
+      xbt_assert(gw && not gw->is_netzone(),
+                 "TorusZone::set_netpoint(elem=%d): Netpoint (%s) is a netzone, but gateway (%s) is invalid", i,
+                 netpoint->get_cname(), gw ? gw->get_cname() : "nullptr");
+    } else {
+      xbt_assert(not gw, "TorusZone: Netpoint (%s) isn't netzone, gateway must be nullptr", netpoint->get_cname());
+    }
     // FIXME: add gateway if set
+
     if (set_loopback) {
       Link* loopback = set_loopback(zone->get_iface(), dims, i);
-      xbt_assert(loopback, "Invalid loopback link (nullptr) for element %d", i);
+      xbt_assert(loopback, "TorusZone::set_loopback: Invalid loopback link (nullptr) for element %d", i);
       zone->set_loopback();
       zone->add_private_link_at(zone->node_pos(netpoint->id()), {loopback->get_impl(), loopback->get_impl()});
     }
+
     if (set_limiter) {
       Link* limiter = set_limiter(zone->get_iface(), dims, i);
-      xbt_assert(limiter, "Invalid limiter link (nullptr) for element %d", i);
+      xbt_assert(limiter, "TorusZone::set_limiter: Invalid limiter link (nullptr) for element %d", i);
       zone->set_limiter();
       zone->add_private_link_at(zone->node_pos_with_loopback(netpoint->id()),
                                 {limiter->get_impl(), limiter->get_impl()});
     }
+
     kernel::routing::ClusterCreationArgs params;
     params.id             = name;
     params.bw             = bandwidth;
