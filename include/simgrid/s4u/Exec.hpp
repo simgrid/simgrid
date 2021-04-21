@@ -50,8 +50,7 @@ public:
 
   static ExecPtr init();
   Exec* start() override;
-  Exec* wait() override;
-  Exec* wait_for(double timeout) override;
+
   /*! take a vector of s4u::ExecPtr and return when one of them is finished.
    * The return value is the rank of the first finished ExecPtr. */
   static int wait_any(std::vector<ExecPtr>* execs) { return wait_any_for(execs, -1); }

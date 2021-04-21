@@ -54,22 +54,6 @@ Exec* Exec::start()
   return this;
 }
 
-Exec* Exec::wait()
-{
-  return this->wait_for(-1);
-}
-
-Exec* Exec::wait_for(double timeout)
-{
-  if (state_ == State::INITED)
-    vetoable_start();
-
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::simcall_blocking([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
-  complete(State::FINISHED);
-  return this;
-}
-
 int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
 {
   std::vector<kernel::activity::ExecImpl*> rexecs(execs->size());

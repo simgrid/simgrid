@@ -182,12 +182,6 @@ Comm* Comm::start()
   return this;
 }
 
-/** @brief Block the calling actor until the communication is finished */
-Comm* Comm::wait()
-{
-  return this->wait_for(-1);
-}
-
 /** @brief Block the calling actor until the communication is finished, or until timeout
  *
  * On timeout, an exception is thrown and the communication is invalidated.

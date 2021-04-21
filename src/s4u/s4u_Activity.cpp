@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity, s4u, "S4U activities");
@@ -20,6 +21,17 @@ void Activity::wait_until(double time_limit)
   double now = Engine::get_clock();
   if (time_limit > now)
     wait_for(time_limit - now);
+}
+
+Activity* Activity::wait_for(double timeout)
+{
+  if (state_ == State::INITED)
+    vetoable_start();
+
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::simcall_blocking([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
+  complete(State::FINISHED);
+  return this;
 }
 
 bool Activity::test()

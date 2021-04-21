@@ -45,22 +45,6 @@ Io* Io::start()
   return this;
 }
 
-Io* Io::wait()
-{
-  return this->wait_for(-1);
-}
-
-Io* Io::wait_for(double timeout)
-{
-  if (state_ == State::INITED)
-    vetoable_start();
-
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::simcall_blocking([this, issuer, timeout] { this->get_impl()->wait_for(issuer, timeout); });
-  complete(state_ = State::FINISHED);
-  return this;
-}
-
 IoPtr Io::set_disk(const_sg_disk_t disk)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set disk once the Io is started");

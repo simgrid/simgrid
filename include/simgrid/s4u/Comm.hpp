@@ -79,7 +79,6 @@ public:
   static int test_any(const std::vector<CommPtr>* comms);
 
   Comm* start() override;
-  Comm* wait() override;
   Comm* wait_for(double timeout) override;
   bool test() override;
 
