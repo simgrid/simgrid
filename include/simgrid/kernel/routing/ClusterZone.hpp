@@ -69,6 +69,7 @@ class ClusterZone : public NetZoneImpl {
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {link_up, link_down} */
   std::unordered_map<unsigned int, std::pair<resource::LinkImpl*, resource::LinkImpl*>> private_links_;
+  std::unordered_map<unsigned int, NetPoint*> gateways_; //!< list of gateways for leafs (if they're netzones)
   resource::LinkImpl* backbone_    = nullptr;
   NetPoint* router_                = nullptr;
   bool has_limiter_                = false;
@@ -90,6 +91,10 @@ public:
   void set_backbone(resource::LinkImpl* bb) { backbone_ = bb; }
   bool has_backbone() const { return backbone_ != nullptr; }
   void set_router(NetPoint* router) { router_ = router; }
+  /** @brief Sets gateway for the leaf */
+  void set_gateway(unsigned int position, NetPoint* gateway);
+  /** @brief Gets gateway for the leaf or nullptr */
+  NetPoint* get_gateway(unsigned int position);
   void add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link);
   bool private_link_exists_at(unsigned int position) const
   {

@@ -185,6 +185,9 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 
     current_node = next_node;
   }
+  // set gateways (if any)
+  route->gw_src = get_gateway(src->id());
+  route->gw_dst = get_gateway(dst->id());
 }
 
 /** @brief Auxiliary function to create hosts */
@@ -296,7 +299,8 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
     } else {
       xbt_assert(not gw, "TorusZone: Netpoint (%s) isn't netzone, gateway must be nullptr", netpoint->get_cname());
     }
-    // FIXME: add gateway if set
+    // setting gateway
+    zone->set_gateway(i, gw);
 
     if (set_loopback) {
       Link* loopback = set_loopback(zone->get_iface(), dims, i);

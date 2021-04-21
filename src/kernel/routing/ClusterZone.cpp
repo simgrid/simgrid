@@ -156,6 +156,24 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
   }
   private_links_.insert({position, {linkUp->get_impl(), linkDown->get_impl()}});
 }
+
+void ClusterZone::set_gateway(unsigned int position, NetPoint* gateway)
+{
+  xbt_assert(not gateway || not gateway->is_netzone(), "ClusterZone: gateway cannot be another netzone %s",
+             gateway->get_cname());
+  gateways_[position] = gateway;
+}
+
+NetPoint* ClusterZone::get_gateway(unsigned int position)
+{
+  NetPoint* res = nullptr;
+  auto it       = gateways_.find(position);
+  if (it != gateways_.end()) {
+    res = it->second;
+  }
+  return res;
+}
+
 } // namespace routing
 } // namespace kernel
 

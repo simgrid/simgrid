@@ -320,6 +320,8 @@ include examples/cpp/synchro-mutex/s4u-synchro-mutex.cpp
 include examples/cpp/synchro-mutex/s4u-synchro-mutex.tesh
 include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp
 include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.tesh
+include examples/cpp/torus-multicpu/s4u-torus-multicpu.cpp
+include examples/cpp/torus-multicpu/s4u-torus-multicpu.tesh
 include examples/cpp/trace-categories/s4u-trace-categories.cpp
 include examples/cpp/trace-categories/s4u-trace-categories.tesh
 include examples/cpp/trace-host-user-variables/s4u-trace-host-user-variables.cpp
