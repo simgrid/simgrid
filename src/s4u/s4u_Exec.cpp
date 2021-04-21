@@ -88,13 +88,6 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
   return changed_pos;
 }
 
-Exec* Exec::cancel()
-{
-  kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->cancel(); });
-  complete(State::CANCELED);
-  return this;
-}
-
 /** @brief change the execution bound
  * This means changing the maximal amount of flops per second that it may consume, regardless of what the host may
  * deliver. Currently, this cannot be changed once the exec started.

@@ -57,7 +57,6 @@ public:
   static int wait_any(std::vector<ExecPtr>* execs) { return wait_any_for(execs, -1); }
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static int wait_any_for(std::vector<ExecPtr>* execs, double timeout);
-  Exec* cancel() override;
 
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */

@@ -117,7 +117,7 @@ public:
   void wait_until(double time_limit);
 
   /** Cancel that activity */
-  virtual Activity* cancel() = 0;
+  Activity* cancel();
   /** Retrieve the current state of the activity */
   Activity::State get_state() const { return state_; }
   /** Return a string representation of the activity's state (one of INITED, STARTING, STARTED, CANCELED, FINISHED) */
@@ -219,6 +219,8 @@ public:
     Activity::vetoable_start();
     return static_cast<AnyActivity*>(this);
   }
+
+  AnyActivity* cancel() { return static_cast<AnyActivity*>(Activity::cancel()); }
 #ifndef DOXYGEN
   /* The refcounting is done in the ancestor class, Activity, but we want each of the classes benefiting of the CRTP
    * (Exec, Comm, etc) to have smart pointers too, so we define these methods here, that forward the ptr_release and

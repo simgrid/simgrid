@@ -81,7 +81,6 @@ public:
   Comm* start() override;
   Comm* wait() override;
   Comm* wait_for(double timeout) override;
-  Comm* cancel() override;
   bool test() override;
 
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */

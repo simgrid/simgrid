@@ -37,7 +37,6 @@ public:
   Io* start() override;
   Io* wait() override;
   Io* wait_for(double timeout) override;
-  Io* cancel() override;
 
   double get_remaining() const override;
   sg_size_t get_performed_ioops() const;

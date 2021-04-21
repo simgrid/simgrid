@@ -251,16 +251,6 @@ Comm* Comm::detach()
   return this;
 }
 
-Comm* Comm::cancel()
-{
-  kernel::actor::simcall([this] {
-    if (pimpl_)
-      boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->cancel();
-  });
-  complete(State::CANCELED);
-  return this;
-}
-
 bool Comm::test() // TODO: merge with Activity::test, once modernized
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||

@@ -45,13 +45,6 @@ Io* Io::start()
   return this;
 }
 
-Io* Io::cancel()
-{
-  kernel::actor::simcall([this] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->cancel(); });
-  complete(State::CANCELED);
-  return this;
-}
-
 Io* Io::wait()
 {
   return this->wait_for(-1);

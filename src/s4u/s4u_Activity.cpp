@@ -41,6 +41,13 @@ bool Activity::test()
   return false;
 }
 
+Activity* Activity::cancel()
+{
+  kernel::actor::simcall([this] { pimpl_->cancel(); });
+  complete(State::CANCELED);
+  return this;
+}
+
 Activity* Activity::suspend()
 {
   if (suspended_)
