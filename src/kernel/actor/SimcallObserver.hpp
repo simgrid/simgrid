@@ -138,6 +138,22 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
+class ActivityWaitSimcall : public ResultingSimcall<bool> {
+  activity::ActivityImpl* const activity_;
+  const double timeout_;
+
+public:
+  ActivityWaitSimcall(smx_actor_t actor, activity::ActivityImpl* activity, double timeout)
+      : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout)
+  {
+  }
+  bool is_visible() const override { return false; }
+  std::string to_string(int times_considered) const override { return SimcallObserver::to_string(times_considered); }
+  std::string dot_label() const override { return SimcallObserver::dot_label(); }
+  activity::ActivityImpl* get_activity() const { return activity_; }
+  double get_timeout() const { return timeout_; }
+};
+
 class ExecutionWaitanySimcall : public ResultingSimcall<int> {
   const std::vector<activity::ExecImpl*>& execs_;
   const double timeout_;
