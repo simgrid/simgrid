@@ -261,12 +261,12 @@ Comm* Comm::cancel()
   return this;
 }
 
-bool Comm::test()
+bool Comm::test() // TODO: merge with Activity::test, once modernized
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::STARTING ||
-             state_ == State::FINISHED);
+             state_ == State::CANCELED || state_ == State::FINISHED);
 
-  if (state_ == State::FINISHED)
+  if (state_ == State::CANCELED || state_ == State::FINISHED)
     return true;
 
   if (state_ == State::INITED || state_ == State::STARTING)
