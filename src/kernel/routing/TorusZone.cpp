@@ -109,9 +109,8 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
    * linkOffset describes the offset where the link we want to use is stored(+1 is added because each node has a link
    * from itself to itself, which can only be the case if src->m_id == dst->m_id -- see above for this special case)
    */
-  int nodeOffset = (dsize + 1) * src->id();
+  int linkOffset = (dsize + 1) * src->id();
 
-  int linkOffset  = nodeOffset;
   bool use_lnk_up = false; // Is this link of the form "cur -> next" or "next -> cur"? false means: next -> cur
   unsigned int current_node = src->id();
   while (current_node != dst->id()) {
@@ -132,7 +131,6 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
             next_node = (current_node + dim_product);
 
           // HERE: We use *CURRENT* node for calculation (as opposed to next_node)
-          nodeOffset = node_pos(current_node);
           linkOffset = node_pos_with_loopback_limiter(current_node) + j;
           use_lnk_up = true;
           assert(linkOffset >= 0);
@@ -143,7 +141,6 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
             next_node = (current_node - dim_product);
 
           // HERE: We use *next* node for calculation (as opposed to current_node!)
-          nodeOffset = node_pos(next_node);
           linkOffset = node_pos_with_loopback_limiter(next_node) + j;
           use_lnk_up = false;
 
@@ -158,7 +155,7 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     }
 
     if (has_limiter()) { // limiter for sender
-      route->link_list.push_back(get_uplink_from(node_pos_with_loopback(nodeOffset)));
+      route->link_list.push_back(get_uplink_from(node_pos_with_loopback(current_node)));
     }
 
     resource::LinkImpl* lnk;
