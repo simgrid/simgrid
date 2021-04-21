@@ -55,6 +55,15 @@ public:
   virtual std::string dot_label() const                     = 0;
 };
 
+template <class T> class ResultingSimcall : public SimcallObserver {
+  T result_;
+
+public:
+  ResultingSimcall(smx_actor_t actor, T default_result) : SimcallObserver(actor), result_(default_result) {}
+  void set_result(T res) { result_ = res; }
+  T get_result() const { return result_; }
+};
+
 class RandomSimcall : public SimcallObserver {
   const int min_;
   const int max_;
@@ -92,20 +101,15 @@ public:
   activity::MutexImpl* get_mutex() const { return mutex_; }
 };
 
-class ConditionWaitSimcall : public SimcallObserver {
-  friend activity::ConditionVariableImpl;
-
+class ConditionWaitSimcall : public ResultingSimcall<bool> {
   activity::ConditionVariableImpl* const cond_;
   activity::MutexImpl* const mutex_;
   const double timeout_;
-  bool result_ = false; // default result for simcall, will be set to 'true' on timeout
-
-  void set_result(bool res) { result_ = res; }
 
 public:
   ConditionWaitSimcall(smx_actor_t actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
                        double timeout = -1.0)
-      : SimcallObserver(actor), cond_(cond), mutex_(mutex), timeout_(timeout)
+      : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
   }
   bool is_enabled() const override;
@@ -115,22 +119,15 @@ public:
   activity::ConditionVariableImpl* get_cond() const { return cond_; }
   activity::MutexImpl* get_mutex() const { return mutex_; }
   double get_timeout() const { return timeout_; }
-
-  bool get_result() const { return result_; }
 };
 
-class SemAcquireSimcall : public SimcallObserver {
-  friend activity::SemaphoreImpl;
-
+class SemAcquireSimcall : public ResultingSimcall<bool> {
   activity::SemaphoreImpl* const sem_;
   const double timeout_;
-  bool result_ = false; // default result for simcall, will be set to 'true' on timeout
-
-  void set_result(bool res) { result_ = res; }
 
 public:
   SemAcquireSimcall(smx_actor_t actor, activity::SemaphoreImpl* sem, double timeout = -1.0)
-      : SimcallObserver(actor), sem_(sem), timeout_(timeout)
+      : ResultingSimcall(actor, false), sem_(sem), timeout_(timeout)
   {
   }
   bool is_enabled() const override;
@@ -139,22 +136,15 @@ public:
   std::string dot_label() const override;
   activity::SemaphoreImpl* get_sem() const { return sem_; }
   double get_timeout() const { return timeout_; }
-
-  bool get_result() const { return result_; }
 };
 
-class ExecutionWaitanySimcall : public SimcallObserver {
-  friend activity::ExecImpl;
-
+class ExecutionWaitanySimcall : public ResultingSimcall<int> {
   const std::vector<activity::ExecImpl*>& execs_;
   const double timeout_;
-  int result_ = -1; // default result for simcall
-
-  void set_result(int res) { result_ = res; }
 
 public:
   ExecutionWaitanySimcall(smx_actor_t actor, const std::vector<activity::ExecImpl*>& execs, double timeout)
-      : SimcallObserver(actor), execs_(execs), timeout_(timeout)
+      : ResultingSimcall(actor, -1), execs_(execs), timeout_(timeout)
   {
   }
   bool is_visible() const override { return false; }
@@ -162,8 +152,6 @@ public:
   std::string dot_label() const override;
   const std::vector<activity::ExecImpl*>& get_execs() const { return execs_; }
   double get_timeout() const { return timeout_; }
-
-  int get_result() const { return result_; }
 };
 } // namespace actor
 } // namespace kernel
