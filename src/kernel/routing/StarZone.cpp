@@ -8,6 +8,7 @@
 #include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp" // RouteCreationArgs and friends
+#include "xbt/string.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_star, surf, "Routing part of surf");
 
@@ -92,25 +93,35 @@ void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, c
   const char* src_name = src ? src->get_cname() : "nullptr";
   const char* dst_name = dst ? dst->get_cname() : "nullptr";
 
-  xbt_assert((src || dst) && (not dst || not src || src == dst),
-             "Cannot add route from %s to %s. In a StarZone, route must be:  i) from source host to everyone, ii) from "
-             "everyone to a single host or iii) loopback, same source and destination",
-             src_name, dst_name);
-  xbt_assert(not symmetrical || src,
-             "Cannot add route from %s to %s. In a StarZone, symmetrical routes must be set from source to everyone "
-             "(not the contrary).",
-             src_name, dst_name);
+  if ((not src && not dst) || (dst && src && src != dst))
+    throw std::invalid_argument(xbt::string_printf(
+        "Cannot add route from %s to %s. In a StarZone, route must be:  i) from source netpoint to everyone, ii) from "
+        "everyone to a single netpoint or iii) loopback, same source and destination",
+        src_name, dst_name));
+
+  if (symmetrical && not src)
+    throw std::invalid_argument(xbt::string_printf("Cannot add route from %s to %s. In a StarZone, symmetrical routes "
+                                                   "must be set from source to everyone (not the contrary)",
+                                                   src_name, dst_name));
 
   if (src && src->is_netzone()) {
-    xbt_assert(gw_src, "add_route(): source %s is a netzone but gw_src isn't configured", src->get_cname());
-    xbt_assert(not gw_src->is_netzone(), "add_route(): src(%s) is a netzone, gw_src(%s) cannot be a netzone",
-               src->get_cname(), gw_src->get_cname());
+    if (not gw_src)
+      throw std::invalid_argument(xbt::string_printf(
+          "StarZone::add_route(): source %s is a netzone but gw_src isn't configured", src->get_cname()));
+    if (gw_src->is_netzone())
+      throw std::invalid_argument(
+          xbt::string_printf("StarZone::add_route(): src(%s) is a netzone, gw_src(%s) cannot be a netzone",
+                             src->get_cname(), gw_src->get_cname()));
   }
 
   if (dst && dst->is_netzone()) {
-    xbt_assert(gw_dst, "add_route(): destination %s is a netzone but gw_dst isn't configured", dst->get_cname());
-    xbt_assert(not gw_dst->is_netzone(), "add_route(): dst(%s) is a netzone, gw_dst(%s) cannot be a netzone",
-               dst->get_cname(), gw_dst->get_cname());
+    if (not gw_dst)
+      throw std::invalid_argument(xbt::string_printf(
+          "StarZone::add_route(): destination %s is a netzone but gw_dst isn't configured", dst->get_cname()));
+    if (gw_dst->is_netzone())
+      throw std::invalid_argument(
+          xbt::string_printf("StarZone::add_route(): dst(%s) is a netzone, gw_dst(%s) cannot be a netzone",
+                             dst->get_cname(), gw_dst->get_cname()));
   }
 }
 

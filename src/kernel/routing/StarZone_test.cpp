@@ -32,23 +32,30 @@ TEST_CASE("kernel::routing::StarZone: Creating Zone", "[creation]")
   REQUIRE(simgrid::s4u::create_star_zone("test"));
 }
 
-// One day we may be able to test contracts and asserts with catch2
-// https://github.com/catchorg/Catch2/issues/853
-TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): assert", "[.][assert]")
+TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): exception", "")
 {
   EngineWrapper e("test");
   auto* zone      = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint1 = new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::Host);
   auto* netpoint2 = new simgrid::kernel::routing::NetPoint("netpoint2", simgrid::kernel::routing::NetPoint::Type::Host);
 
-  SECTION("src and dst: nullptr") { zone->add_route(nullptr, nullptr, nullptr, nullptr, {}, false); }
+  SECTION("src and dst: nullptr")
+  {
+    REQUIRE_THROWS_AS(zone->add_route(nullptr, nullptr, nullptr, nullptr, {}, false), std::invalid_argument);
+  }
 
-  SECTION("src: nullptr and symmetrical: true") { zone->add_route(nullptr, netpoint2, nullptr, nullptr, {}, true); }
+  SECTION("src: nullptr and symmetrical: true")
+  {
+    REQUIRE_THROWS_AS(zone->add_route(nullptr, netpoint2, nullptr, nullptr, {}, true), std::invalid_argument);
+  }
 
-  SECTION("src and dst: not nullptr") { zone->add_route(netpoint1, netpoint2, nullptr, nullptr, {}, false); }
+  SECTION("src and dst: not nullptr")
+  {
+    REQUIRE_THROWS_AS(zone->add_route(netpoint1, netpoint2, nullptr, nullptr, {}, false), std::invalid_argument);
+  }
 }
 
-TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): assert", "[.][assert]")
+TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
 {
   EngineWrapper e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
@@ -57,21 +64,29 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): assert", "[.][as
   auto* netpoint2 =
       new simgrid::kernel::routing::NetPoint("netpoint2", simgrid::kernel::routing::NetPoint::Type::NetZone);
 
-  SECTION("src: is a netzone and gw_src: nullptr") { zone->add_route(netpoint1, nullptr, nullptr, nullptr, {}, false); }
+  SECTION("src: is a netzone and gw_src: nullptr")
+  {
+    REQUIRE_THROWS_AS(zone->add_route(netpoint1, nullptr, nullptr, nullptr, {}, false), std::invalid_argument);
+  }
 
   SECTION("src: is a netzone and gw_src: is a netzone")
   {
-    zone->add_route(netpoint1, nullptr, netpoint2, nullptr, {}, false);
+    REQUIRE_THROWS_AS(zone->add_route(netpoint1, nullptr, netpoint2, nullptr, {}, false), std::invalid_argument);
   }
 
-  SECTION("dst: is a netzone and gw_dst: nullptr") { zone->add_route(nullptr, netpoint2, nullptr, nullptr, {}, false); }
+  SECTION("dst: is a netzone and gw_dst: nullptr")
+  {
+    REQUIRE_THROWS_AS(zone->add_route(nullptr, netpoint2, nullptr, nullptr, {}, false), std::invalid_argument);
+  }
 
   SECTION("dst: is a netzone and gw_dst: is a netzone")
   {
-    zone->add_route(nullptr, netpoint2, nullptr, netpoint1, {}, false);
+    REQUIRE_THROWS_AS(zone->add_route(nullptr, netpoint2, nullptr, netpoint1, {}, false), std::invalid_argument);
   }
 }
 
+// One day we may be able to test contracts and asserts with catch2
+// https://github.com/catchorg/Catch2/issues/853
 TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
 {
   /* workaround to initialize things, they must be done in this particular order */
