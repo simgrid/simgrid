@@ -97,10 +97,10 @@ public:
 class CollCommParser : public ActionArgParser {
 public:
   double size;
-  double comm_size;
   double comp_size;
   int send_size;
   int recv_size;
+  unsigned comm_size; // size of communicator
   int root               = 0;
   MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
   MPI_Datatype datatype2 = MPI_DEFAULT_TYPE;

@@ -108,7 +108,7 @@ NetworkIBModel::NetworkIBModel(const std::string& name) : NetworkSmpiModel(name)
 
 void NetworkIBModel::compute_IB_factors(IBNode* root) const
 {
-  double num_comm_out    = root->active_comms_up_.size();
+  size_t num_comm_out    = root->active_comms_up_.size();
   double max_penalty_out = 0.0;
   // first, compute all outbound penalties to get their max
   for (ActiveComm const* comm : root->active_comms_up_) {

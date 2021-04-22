@@ -12,12 +12,13 @@
 #include <simgrid/smpi/smpi_replay.hpp>
 #include <src/smpi/include/private.hpp>
 
+#include <cmath>
+#include <limits>
 #include <memory>
 #include <numeric>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
-
-#include <tuple>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay, smpi, "Trace Replay with SMPI");
 
@@ -182,7 +183,9 @@ void BcastArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string
 void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 2, 2)
-  comm_size = parse_double(action[2]);
+  double arg2 = trunc(parse_double(action[2]));
+  xbt_assert(0.0 <= arg2 && arg2 <= static_cast<double>(std::numeric_limits<unsigned>::max()));
+  comm_size = static_cast<unsigned>(arg2);
   comp_size = parse_double(action[3]);
   root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
   if (action.size() > 5)
@@ -192,7 +195,9 @@ void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::strin
 void AllReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
-  comm_size = parse_double(action[2]);
+  double arg2 = trunc(parse_double(action[2]));
+  xbt_assert(0.0 <= arg2 && arg2 <= static_cast<double>(std::numeric_limits<unsigned>::max()));
+  comm_size = static_cast<unsigned>(arg2);
   comp_size = parse_double(action[3]);
   if (action.size() > 4)
     datatype1 = simgrid::smpi::Datatype::decode(action[4]);

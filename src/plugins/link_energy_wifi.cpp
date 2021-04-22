@@ -147,7 +147,7 @@ void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
               action->get_variable()->get_value(), wifi_link->get_host_rate(&action->get_src()),
               wifi_link->get_host_rate(&action->get_dst()));
 
-    if(action->get_variable()->get_value()) {
+    if (action->get_variable()->get_value() != 0.0) {
       auto it = flowTmp.find(action);
 
       // if the flow has not been registered, initialize it: 0 bytes sent, and not updated since its creation timestamp
@@ -191,13 +191,13 @@ void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
    *  - if idle i.e. get_usage = 0, update P_{stat}
    * P_{tot} = P_{dyn}+P_{stat}
    */
-  if(link_->get_usage()){
+  if (link_->get_usage() != 0.0) {
     eDyn_ += /*duration * */ durUsage * ((wifi_link->get_host_count() * pRx_) + pTx_);
     eStat_ += (duration - durUsage) * pIdle_ * (wifi_link->get_host_count() + 1);
     XBT_DEBUG("eDyn +=  %f * ((%d * %f) + %f) | eDyn = %f (durusage =%f)", durUsage, wifi_link->get_host_count(), pRx_,
               pTx_, eDyn_, durUsage);
     dur_TxRx_ += duration;
-  }else{
+  } else {
     dur_idle_ += duration;
     eStat_ += (duration - (duration * control_duration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
   }
