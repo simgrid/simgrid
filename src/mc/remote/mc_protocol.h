@@ -96,7 +96,7 @@ struct s_mc_message_register_symbol_t {
 /* Server -> client */
 struct s_mc_message_simcall_handle_t {
   simgrid::mc::MessageType type;
-  unsigned long aid_;
+  aid_t aid_;
   int times_considered_;
 };
 
@@ -113,7 +113,7 @@ struct s_mc_message_actor_enabled_t {
 /* RPC */
 struct s_mc_message_simcall_is_visible_t { // MessageType::SIMCALL_IS_VISIBLE
   simgrid::mc::MessageType type;
-  int aid;
+  aid_t aid;
 };
 struct s_mc_message_simcall_is_visible_answer_t { // MessageType::SIMCALL_IS_VISIBLE_ANSWER
   simgrid::mc::MessageType type;
@@ -122,7 +122,7 @@ struct s_mc_message_simcall_is_visible_answer_t { // MessageType::SIMCALL_IS_VIS
 
 struct s_mc_message_simcall_to_string_t { // MessageType::SIMCALL_TO_STRING or MessageType::SIMCALL_DOT_LABEL
   simgrid::mc::MessageType type;
-  int aid;
+  aid_t aid;
   int time_considered;
 };
 struct s_mc_message_simcall_to_string_answer_t { // MessageType::SIMCALL_TO_STRING_ANSWER

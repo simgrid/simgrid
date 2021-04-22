@@ -317,7 +317,7 @@ void ModelChecker::handle_simcall(Transition const& transition)
   if (this->remote_process_->running())
     checker_side_.dispatch();
 }
-bool ModelChecker::simcall_is_visible(int aid)
+bool ModelChecker::simcall_is_visible(aid_t aid)
 {
   xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
 
@@ -336,13 +336,13 @@ bool ModelChecker::simcall_is_visible(int aid)
              to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_IS_VISIBLE_ANSWER,
              (int)sizeof(answer));
 
-  XBT_DEBUG("is_visible(%d) is returning %s", aid, answer.value ? "true" : "false");
+  XBT_DEBUG("is_visible(%ld) is returning %s", aid, answer.value ? "true" : "false");
 
   this->remote_process_->clear_cache();
   return answer.value;
 }
 
-std::string ModelChecker::simcall_to_string(MessageType type, int aid, int times_considered)
+std::string ModelChecker::simcall_to_string(MessageType type, aid_t aid, int times_considered)
 {
   xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
 
@@ -365,17 +365,17 @@ std::string ModelChecker::simcall_to_string(MessageType type, int aid, int times
   return std::string(answer.value);
 }
 
-std::string ModelChecker::simcall_to_string(int aid, int times_considered)
+std::string ModelChecker::simcall_to_string(aid_t aid, int times_considered)
 {
   std::string answer = simcall_to_string(MessageType::SIMCALL_TO_STRING, aid, times_considered);
-  XBT_DEBUG("to_string(%d) is returning %s", aid, answer.c_str());
+  XBT_DEBUG("to_string(%ld) is returning %s", aid, answer.c_str());
   return answer;
 }
 
-std::string ModelChecker::simcall_dot_label(int aid, int times_considered)
+std::string ModelChecker::simcall_dot_label(aid_t aid, int times_considered)
 {
   std::string answer = simcall_to_string(MessageType::SIMCALL_DOT_LABEL, aid, times_considered);
-  XBT_DEBUG("dot_label(%d) is returning %s", aid, answer.c_str());
+  XBT_DEBUG("dot_label(%ld) is returning %s", aid, answer.c_str());
   return answer;
 }
 

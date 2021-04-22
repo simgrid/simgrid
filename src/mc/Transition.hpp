@@ -7,6 +7,7 @@
 #ifndef SIMGRID_MC_TRANSITION_HPP
 #define SIMGRID_MC_TRANSITION_HPP
 
+#include "simgrid/forward.h" // aid_t
 #include <string>
 
 namespace simgrid {
@@ -22,7 +23,7 @@ namespace mc {
  */
 class Transition {
 public:
-  long aid_ = 0;
+  aid_t aid_ = 0;
 
   /* Which transition was executed for this simcall
    *

@@ -29,7 +29,7 @@ class ModelChecker {
   Checker* checker_ = nullptr;
 
   // Expect MessageType::SIMCALL_TO_STRING or MessageType::SIMCALL_DOT_LABEL
-  std::string simcall_to_string(MessageType type, int aid, int times_considered);
+  std::string simcall_to_string(MessageType type, aid_t aid, int times_considered);
 
 public:
   ModelChecker(ModelChecker const&) = delete;
@@ -52,9 +52,9 @@ public:
   void handle_simcall(Transition const& transition);
 
   /* Interactions with the simcall observer */
-  bool simcall_is_visible(int aid);
-  std::string simcall_to_string(int aid, int times_considered);
-  std::string simcall_dot_label(int aid, int times_considered);
+  bool simcall_is_visible(aid_t aid);
+  std::string simcall_to_string(aid_t aid, int times_considered);
+  std::string simcall_dot_label(aid_t aid, int times_considered);
 
   XBT_ATTRIB_NORETURN void exit(int status);
 
