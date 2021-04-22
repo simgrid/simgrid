@@ -10,7 +10,6 @@
 #include <xbt/sysdep.h>
 #include <xbt/virtu.h>
 
-#include <boost/algorithm/string/predicate.hpp>
 #include <cstdio>
 #include <cstdlib>
 #include <sstream>
@@ -49,8 +48,8 @@ public:
     for (boost::stacktrace::frame const& frame : st) {
       const std::string frame_name = frame.name();
       if (print) {
-        if (boost::starts_with(frame_name, "simgrid::xbt::MainFunction") ||
-            boost::starts_with(frame_name, "simgrid::kernel::context::Context::operator()()"))
+        if (frame_name.rfind("simgrid::xbt::MainFunction", 0) == 0 ||
+            frame_name.rfind("simgrid::kernel::context::Context::operator()()", 0) == 0)
           break;
         ss << "  ->  " << frame_count++ << "# " << frame << "\n";
         if (frame_name == "main")

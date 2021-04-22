@@ -30,8 +30,6 @@
 #include <elfutils/libdw.h>
 #include <elfutils/version.h>
 
-#include <boost/algorithm/string/predicate.hpp>
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
 /** @brief The default DW_TAG_lower_bound for a given DW_AT_language.
@@ -473,8 +471,7 @@ static void MC_dwarf_add_members(const simgrid::mc::ObjectInformation* /*info*/,
         member.name = name;
       // Those base names are used by GCC and clang for virtual table pointers
       // respectively ("__vptr$ClassName", "__vptr.ClassName"):
-      if (boost::algorithm::starts_with(member.name, "__vptr$") ||
-          boost::algorithm::starts_with(member.name, "__vptr."))
+      if (member.name.rfind("__vptr$", 0) == 0 || member.name.rfind("__vptr.", 0) == 0)
         member.flags |= simgrid::mc::Member::VIRTUAL_POINTER_FLAG;
       // A cleaner solution would be to check against the type:
       // ---
