@@ -20,7 +20,6 @@
 #include <array>
 #include <boost/algorithm/string.hpp> /* split */
 #include <boost/tokenizer.hpp>
-#include <boost/core/demangle.hpp>
 #include <cerrno>
 #include <cinttypes>
 #include <cstdint> /* intmax_t */
