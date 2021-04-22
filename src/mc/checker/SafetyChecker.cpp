@@ -186,13 +186,12 @@ void SafetyChecker::backtrack()
     std::unique_ptr<State> state = std::move(stack_.back());
     stack_.pop_back();
     if (reductionMode_ == ReductionMode::dpor) {
-      auto call = state->executed_req_.call_;
       kernel::actor::ActorImpl* issuer = api::get().simcall_get_issuer(&state->executed_req_);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
         if (state->executed_req_.issuer_ == prev_state->executed_req_.issuer_) {
-          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(call),
-                    SIMIX_simcall_name(prev_state->executed_req_.call_));
+          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(state->executed_req_),
+                    SIMIX_simcall_name(prev_state->executed_req_));
           break;
         } else if (api::get().simcall_check_dependency(&state->internal_req_, &prev_state->internal_req_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
@@ -213,8 +212,8 @@ void SafetyChecker::backtrack()
         } else {
           const kernel::actor::ActorImpl* previous_issuer = api::get().simcall_get_issuer(&prev_state->executed_req_);
           XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
-                    SIMIX_simcall_name(call), issuer->get_pid(), state->num_,
-                    SIMIX_simcall_name(prev_state->executed_req_.call_), previous_issuer->get_pid(), prev_state->num_);
+                    SIMIX_simcall_name(state->executed_req_), issuer->get_pid(), state->num_,
+                    SIMIX_simcall_name(prev_state->executed_req_), previous_issuer->get_pid(), prev_state->num_);
         }
       }
     }

@@ -828,7 +828,7 @@ std::string Api::request_to_string(smx_simcall_t req, int value) const
       break;
 
     default:
-      type = SIMIX_simcall_name(req->call_);
+      type = SIMIX_simcall_name(*req);
       args = "??";
       break;
   }

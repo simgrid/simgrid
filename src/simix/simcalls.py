@@ -336,7 +336,7 @@ if __name__ == '__main__':
     fd.write(' */\n')
     fd.write('void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)\n')
     fd.write('{\n')
-    fd.write('  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_.call_));\n')
+    fd.write('  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_));\n')
     fd.write('  simcall_.mc_value_ = times_considered;\n')
     fd.write('  if (simcall_.observer_ != nullptr)\n')
     fd.write('    simcall_.observer_->prepare(times_considered);\n')
@@ -381,8 +381,7 @@ inline static R simcall(Simcall call, T const&... t)
   smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall_, call, t...);
   if (self != simix_global->maestro_) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->get_cname(), SIMIX_simcall_name(self->simcall_.call_),
-              (int)self->simcall_.call_);
+    XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));
     self->yield();
   } else {
     self->simcall_handle(0);

@@ -25,6 +25,9 @@
 
 #include "popping_bodies.cpp"
 
+#include <boost/core/demangle.hpp>
+#include <string>
+
 /**
  * @ingroup simix_host_management
  * @brief Waits for the completion of an execution synchro and destroy it.
@@ -369,9 +372,18 @@ int simcall_mc_random(int min, int max) // XBT_ATTRIB_DEPRECATD_v331
 /* ************************************************************************** */
 
 /** @brief returns a printable string representing a simcall */
-const char* SIMIX_simcall_name(Simcall kind)
+const char* SIMIX_simcall_name(const s_smx_simcall& simcall)
 {
-  return simcall_names[static_cast<int>(kind)];
+  if (simcall.observer_ != nullptr) {
+    static std::string name;
+    name              = boost::core::demangle(typeid(*simcall.observer_).name());
+    const char* cname = name.c_str();
+    if (name.rfind("simgrid::kernel::", 0) == 0)
+      cname += 17; // strip prefix "simgrid::kernel::"
+    return cname;
+  } else {
+    return simcall_names[static_cast<int>(simcall.call_)];
+  }
 }
 
 namespace simgrid {
