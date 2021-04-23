@@ -55,6 +55,7 @@ set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/c
                                     ${CMAKE_CURRENT_SOURCE_DIR}/fort_args/fort_args.tesh  PARENT_SCOPE)
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_cluster
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_griffon
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_mpich
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_io
@@ -137,7 +138,7 @@ if(enable_smpi)
   ADD_TESH(tesh-smpi-coll-allreduce-automatic --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce/coll-allreduce-automatic.tesh)
 
   # Extra alltoall test: cluster-types
-  ADD_TESH(tesh-smpi-cluster-types --cfg smpi/alltoall:mvapich2 --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoall --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoall ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-alltoall/clusters.tesh)
+  ADD_TESH(tesh-smpi-cluster-types --cfg smpi/alltoall:mvapich2 --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoall --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoall ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-alltoall/clusters.tesh)
 
   # Extra allreduce test : PAPI tracing
   if (HAVE_PAPI)
