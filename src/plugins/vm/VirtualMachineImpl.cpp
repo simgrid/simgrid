@@ -74,7 +74,7 @@ static void add_active_exec(s4u::Exec const& task)
 {
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
-    VirtualMachineImpl* vm_impl = vm->get_impl();
+    VirtualMachineImpl* vm_impl = vm->get_vm_impl();
     vm_impl->add_active_exec();
     vm_impl->update_action_weight();
   }
@@ -84,7 +84,7 @@ static void remove_active_exec(s4u::Exec const& task)
 {
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
-    VirtualMachineImpl* vm_impl = vm->get_impl();
+    VirtualMachineImpl* vm_impl = vm->get_vm_impl();
     vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
@@ -100,7 +100,7 @@ static void add_active_activity(kernel::activity::ActivityImpl const& act)
 {
   const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
-    VirtualMachineImpl* vm_impl = vm->get_impl();
+    VirtualMachineImpl* vm_impl = vm->get_vm_impl();
     vm_impl->add_active_exec();
     vm_impl->update_action_weight();
   }
@@ -110,7 +110,7 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
 {
   const s4u::VirtualMachine* vm = get_vm_from_activity(act);
   if (vm != nullptr) {
-    VirtualMachineImpl* vm_impl = vm->get_impl();
+    VirtualMachineImpl* vm_impl = vm->get_vm_impl();
     vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
@@ -159,7 +159,7 @@ double VMModel::next_occurring_event(double now)
     const kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
 
     // solved_value below is X1 in comment above: what this VM got in the sharing on the PM
-    double solved_value = ws_vm->get_impl()->get_action()->get_variable()->get_value();
+    double solved_value = ws_vm->get_vm_impl()->get_action()->get_variable()->get_value();
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->get_pm()->get_cname());
 
     kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
