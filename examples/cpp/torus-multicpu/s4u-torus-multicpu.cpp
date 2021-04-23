@@ -72,15 +72,15 @@ public:
  * Obs.: CPU0 is the gateway for this zone
  *
  *    (outer world)
- *        CPU0 (gateway)
- *         |
- *         |
- *         +
- *        /|\
- *       / | \  <-- 100Gbs, 10us link (single link for UP/DOWN communications)
- *      /  |  \
- *     /   |   \
- *  CPU1  ...  CPU8
+ *         CPU0 (gateway)
+ *    up ->|   |
+ *         |   |<-down
+ *         +star+
+ *      /   / \   \
+ *     /   /   \   \<-- 100Gbs, 10us link (1 link UP and 1 link DOWN for full-duplex)
+ *    /   /     \   \
+ *   /   /       \   \
+ *   CPU1   ...   CPU8
  *
  * @param zone Torus netzone being created (usefull to create the hosts/links inside it)
  * @param coord Coordinates in the torus (e.g. "0,0,0", "0,1,0")
@@ -109,9 +109,13 @@ create_hostzone(sg4::NetZone* zone, const std::vector<unsigned int>& coord, int 
     /* the first CPU is the gateway */
     if (i == 0)
       gateway = host;
-    /* create link and add route to external world */
-    sg4::Link* link = host_zone->create_link("link-" + cpu_name, link_bw)->set_latency(link_lat)->seal();
-    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {link});
+    /* create 2 links for a full-duplex communication */
+    sg4::Link* link_up   = host_zone->create_link("link-up-" + cpu_name, link_bw)->set_latency(link_lat)->seal();
+    sg4::Link* link_down = host_zone->create_link("link-down-" + cpu_name, link_bw)->set_latency(link_lat)->seal();
+    /* link UP, connection from CPU to outer world */
+    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {link_up}, false);
+    /* link DOWN, connection from outer to CPU */
+    host_zone->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, {link_down}, false);
   }
   return std::make_pair(host_zone->get_netpoint(), gateway->get_netpoint());
 }
@@ -140,9 +144,12 @@ create_hostzone(sg4::NetZone* zone, const std::vector<unsigned int>& coord, int 
  *
  * More precisely, considering that A and C are StarZones, a
  * communication from A-CPU-3 to C-CPU-7 goes through:
- * 1) StarZone A: A-CPU-3 -> link -> A-CPU-0
+ * 1) StarZone A: A-CPU-3 -> link-up-A-CPU-3 -> A-CPU-0
  * 2) A-CPU-0->limiter(A)->link(A-B)->limiter(B)->link(B-C)->C-CPU-0
- * 3) C-CPU-0-> link -> C-CPU-7
+ * 3) C-CPU-0-> link-down-C-CPU-7 -> C-CPU-7
+ *
+ * Note that we don't have limiter links inside the StarZones(A, B, C),
+ * but we have limiters in the Torus that are added to the links in the path (as we can see in "2)"")
  *
  * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html?highlight=torus#torus-cluster">Torus
  * Cluster</a>
