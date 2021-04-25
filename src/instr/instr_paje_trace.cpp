@@ -9,7 +9,6 @@
 #include "src/instr/instr_private.hpp"
 #include "src/instr/instr_smpi.hpp"
 #include "src/smpi/include/private.hpp"
-#include "typeinfo"
 #include <fstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");

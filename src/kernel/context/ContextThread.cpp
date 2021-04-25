@@ -13,6 +13,7 @@
 
 #include <boost/core/demangle.hpp>
 #include <functional>
+#include <typeinfo>
 #include <utility>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);

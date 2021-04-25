@@ -14,6 +14,7 @@
 
 #include <boost/core/demangle.hpp>
 #include <memory>
+#include <typeinfo>
 
 #ifdef _WIN32
 #include <malloc.h>

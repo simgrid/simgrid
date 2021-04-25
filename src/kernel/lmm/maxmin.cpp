@@ -5,6 +5,7 @@
 
 #include "src/kernel/lmm/maxmin.hpp"
 #include <boost/core/demangle.hpp>
+#include <typeinfo>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 

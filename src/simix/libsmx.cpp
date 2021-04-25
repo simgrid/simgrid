@@ -27,6 +27,7 @@
 
 #include <boost/core/demangle.hpp>
 #include <string>
+#include <typeinfo>
 
 /**
  * @ingroup simix_host_management

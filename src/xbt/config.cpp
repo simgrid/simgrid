@@ -16,8 +16,6 @@
 #include <stdexcept>
 #include <string>
 #include <string>
-#include <type_traits>
-#include <typeinfo>
 #include <vector>
 
 #include "simgrid/Exception.hpp"

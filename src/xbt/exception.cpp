@@ -11,6 +11,7 @@
 #include <boost/core/demangle.hpp>
 #include <mutex>
 #include <sstream>
+#include <typeinfo>
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_exception, xbt, "Exceptions");

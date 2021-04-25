@@ -19,6 +19,7 @@
 #include "src/surf/cpu_interface.hpp"
 
 #include <boost/core/demangle.hpp>
+#include <typeinfo>
 #include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");
