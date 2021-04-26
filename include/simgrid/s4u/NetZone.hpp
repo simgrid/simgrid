@@ -164,8 +164,8 @@ XBT_PUBLIC NetZone* create_floyd_zone(const std::string& name);
  * @param id: Internal identifier of the element
  * @return pair<NetPoint*, NetPoint*>: returns a pair of netpoint and gateway.
  */
-typedef std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>
-TorusNetPointCb(NetZone* zone, const std::vector<unsigned int>& coord, int id);
+using TorusNetPointCb = std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>(
+    NetZone* zone, const std::vector<unsigned int>& coord, int id);
 /**
  * @brief Callback used to set the links for some leaf of the torus
  *
@@ -174,7 +174,7 @@ TorusNetPointCb(NetZone* zone, const std::vector<unsigned int>& coord, int id);
  * @param id: Internal identifier of the element
  * @return Pointer to the Link
  */
-typedef Link* TorusLinkCb(NetZone* zone, const std::vector<unsigned int>& coord, int id);
+using TorusLinkCb = Link*(NetZone* zone, const std::vector<unsigned int>& coord, int id);
 /**
  * @brief Create a torus zone
  *

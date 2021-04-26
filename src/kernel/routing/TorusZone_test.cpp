@@ -10,23 +10,20 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp" // RouteCreationArgs and friends
 
 namespace {
 class EngineWrapper {
+public:
+  explicit EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
   int argc = 1;
   char* argv;
-
-public:
   simgrid::s4u::Engine e;
-  explicit EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
 };
 
 std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-create_host(simgrid::s4u::NetZone* zone, const std::vector<unsigned int>& coord, int id)
+create_host(simgrid::s4u::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
 {
-  simgrid::s4u::Host* host = zone->create_host(std::to_string(id), 1e9)->seal();
+  const simgrid::s4u::Host* host = zone->create_host(std::to_string(id), 1e9)->seal();
   return std::make_pair(host->get_netpoint(), nullptr);
 }
 } // namespace
@@ -35,11 +32,6 @@ TEST_CASE("kernel::routing::TorusZone: Creating Zone", "")
 {
   using namespace simgrid::s4u;
   EngineWrapper e("test");
-  auto create_host = [](NetZone* zone, const std::vector<unsigned int>& coord,
-                        int id) -> std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*> {
-    Host* host = zone->create_host(std::to_string(id), 1e9)->seal();
-    return std::make_pair(host->get_netpoint(), nullptr);
-  };
   REQUIRE(create_torus_zone("test", e.e.get_netzone_root(), {3, 3, 3}, 1e9, 10,
                             simgrid::s4u::Link::SharingPolicy::SHARED, create_host));
 }

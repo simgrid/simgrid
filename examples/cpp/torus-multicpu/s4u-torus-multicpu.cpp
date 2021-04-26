@@ -56,7 +56,7 @@ public:
 /* Receiver actor: wait for 1 message on the mailbox identified by the hostname */
 class Receiver {
 public:
-  void operator()()
+  void operator()() const
   {
     auto mbox     = sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_name());
     auto received = mbox->get_unique<std::string>();
@@ -88,7 +88,7 @@ public:
  * @return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
  */
 static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-create_hostzone(sg4::NetZone* zone, const std::vector<unsigned int>& coord, int id)
+create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
 {
   constexpr int num_cpus    = 8;     //!< Number of CPUs in the zone
   constexpr double speed    = 1e9;   //!< Speed of each CPU
@@ -101,7 +101,7 @@ create_hostzone(sg4::NetZone* zone, const std::vector<unsigned int>& coord, int 
   /* setting my Torus parent zone */
   host_zone->set_parent(zone);
 
-  sg4::Host* gateway = nullptr;
+  const sg4::Host* gateway = nullptr;
   /* create CPUs */
   for (int i = 0; i < num_cpus; i++) {
     std::string cpu_name = hostname + "-cpu" + std::to_string(i);
@@ -157,7 +157,7 @@ create_hostzone(sg4::NetZone* zone, const std::vector<unsigned int>& coord, int 
 static void create_torus_cluster()
 {
   // Callback to create limiter link (1Gbs) for each host
-  auto create_limiter = [](sg4::NetZone* zone, const std::vector<unsigned int>& coord, int id) -> sg4::Link* {
+  auto create_limiter = [](sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id) -> sg4::Link* {
     return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
   };
 

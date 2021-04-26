@@ -193,20 +193,20 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 /** @brief Auxiliary function to create hosts */
 static std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>
 create_torus_host(const kernel::routing::ClusterCreationArgs* cluster, s4u::NetZone* zone,
-                  const std::vector<unsigned int>& coord, int id)
+                  const std::vector<unsigned int>& /*coord*/, int id)
 {
   std::string host_id = std::string(cluster->prefix) + std::to_string(id) + cluster->suffix;
   XBT_DEBUG("TorusCluster: creating host=%s speed=%f", host_id.c_str(), cluster->speeds.front());
-  s4u::Host* host = zone->create_host(host_id, cluster->speeds)
-                        ->set_core_count(cluster->core_amount)
-                        ->set_properties(cluster->properties)
-                        ->seal();
+  const s4u::Host* host = zone->create_host(host_id, cluster->speeds)
+                              ->set_core_count(cluster->core_amount)
+                              ->set_properties(cluster->properties)
+                              ->seal();
   return std::make_pair(host->get_netpoint(), nullptr);
 }
 
 /** @brief Auxiliary function to create loopback links */
 static s4u::Link* create_torus_loopback(const kernel::routing::ClusterCreationArgs* cluster, s4u::NetZone* zone,
-                                        const std::vector<unsigned int>& coord, int id)
+                                        const std::vector<unsigned int>& /*coord*/, int id)
 {
   std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_loopback";
   XBT_DEBUG("TorusCluster: creating loopback link=%s bw=%f", link_id.c_str(), cluster->loopback_bw);
@@ -220,7 +220,7 @@ static s4u::Link* create_torus_loopback(const kernel::routing::ClusterCreationAr
 
 /** @brief Auxiliary function to create limiter links */
 static s4u::Link* create_torus_limiter(const kernel::routing::ClusterCreationArgs* cluster, s4u::NetZone* zone,
-                                       const std::vector<unsigned int>& coord, int id)
+                                       const std::vector<unsigned int>& /*coord*/, int id)
 {
   std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_limiter";
   XBT_DEBUG("TorusCluster: creating limiter link=%s bw=%f", link_id.c_str(), cluster->limiter_link);
@@ -274,10 +274,13 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
   // auxiliary function to get dims from index
   auto index_to_dims = [&dimensions](int index) {
     std::vector<unsigned int> dims_array(dimensions.size());
-    for (int i = dimensions.size() - 1; i >= 0 && index > 0; --i) {
+    for (unsigned long i = dimensions.size() - 1; i != 0; --i) {
+      if (index <= 0) {
+        break;
+      }
       unsigned int value = index % dimensions[i];
       dims_array[i]      = value;
-      index              = ((index / dimensions[i]));
+      index              = (index / dimensions[i]);
     }
     return dims_array;
   };
@@ -288,9 +291,10 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
     zone->set_parent(parent->get_impl());
 
   for (int i = 0; i < tot_elements; i++) {
-    kernel::routing::NetPoint *netpoint = nullptr, *gw = nullptr;
-    auto dims              = index_to_dims(i);
-    std::tie(netpoint, gw) = set_netpoint(zone->get_iface(), dims, i);
+    kernel::routing::NetPoint* netpoint = nullptr;
+    kernel::routing::NetPoint* gw       = nullptr;
+    auto dims                           = index_to_dims(i);
+    std::tie(netpoint, gw)              = set_netpoint(zone->get_iface(), dims, i);
     xbt_assert(netpoint, "TorusZone::set_netpoint(elem=%d): Invalid netpoint (nullptr)", i);
     if (netpoint->is_netzone()) {
       xbt_assert(gw && not gw->is_netzone(),
@@ -303,14 +307,14 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
     zone->set_gateway(i, gw);
 
     if (set_loopback) {
-      Link* loopback = set_loopback(zone->get_iface(), dims, i);
+      const Link* loopback = set_loopback(zone->get_iface(), dims, i);
       xbt_assert(loopback, "TorusZone::set_loopback: Invalid loopback link (nullptr) for element %d", i);
       zone->set_loopback();
       zone->add_private_link_at(zone->node_pos(netpoint->id()), {loopback->get_impl(), loopback->get_impl()});
     }
 
     if (set_limiter) {
-      Link* limiter = set_limiter(zone->get_iface(), dims, i);
+      const Link* limiter = set_limiter(zone->get_iface(), dims, i);
       xbt_assert(limiter, "TorusZone::set_limiter: Invalid limiter link (nullptr) for element %d", i);
       zone->set_limiter();
       zone->add_private_link_at(zone->node_pos_with_loopback(netpoint->id()),
