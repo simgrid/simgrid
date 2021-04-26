@@ -234,8 +234,8 @@ s4u::NetZone* create_torus_zone_with_hosts(const kernel::routing::ClusterCreatio
 {
   using namespace std::placeholders;
   auto set_host = std::bind(create_torus_host, cluster, _1, _2, _3);
-  std::function<s4u::TorusLinkCb> set_loopback{};
-  std::function<s4u::TorusLinkCb> set_limiter{};
+  std::function<s4u::ClusterLinkCb> set_loopback{};
+  std::function<s4u::ClusterLinkCb> set_limiter{};
 
   if (cluster->loopback_bw > 0 || cluster->loopback_lat > 0) {
     set_loopback = std::bind(create_torus_loopback, cluster, _1, _2, _3);
@@ -257,9 +257,9 @@ namespace s4u {
 
 NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const std::vector<unsigned int>& dimensions,
                            double bandwidth, double latency, Link::SharingPolicy sharing_policy,
-                           const std::function<TorusNetPointCb>& set_netpoint,
-                           const std::function<TorusLinkCb>& set_loopback,
-                           const std::function<TorusLinkCb>& set_limiter)
+                           const std::function<ClusterNetPointCb>& set_netpoint,
+                           const std::function<ClusterLinkCb>& set_loopback,
+                           const std::function<ClusterLinkCb>& set_limiter)
 {
   int tot_elements = std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>());
   if (dimensions.empty() || tot_elements <= 0)
@@ -271,55 +271,16 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
     throw std::invalid_argument("TorusZone: incorrect latency for internode communication, lat=" +
                                 std::to_string(latency));
 
-  // auxiliary function to get dims from index
-  auto index_to_dims = [&dimensions](int index) {
-    std::vector<unsigned int> dims_array(dimensions.size());
-    for (unsigned long i = dimensions.size() - 1; i != 0; --i) {
-      if (index <= 0) {
-        break;
-      }
-      unsigned int value = index % dimensions[i];
-      dims_array[i]      = value;
-      index              = (index / dimensions[i]);
-    }
-    return dims_array;
-  };
-
   auto* zone = new kernel::routing::TorusZone(name);
   zone->set_topology(dimensions);
   if (parent)
     zone->set_parent(parent->get_impl());
 
   for (int i = 0; i < tot_elements; i++) {
-    kernel::routing::NetPoint* netpoint = nullptr;
-    kernel::routing::NetPoint* gw       = nullptr;
-    auto dims                           = index_to_dims(i);
-    std::tie(netpoint, gw)              = set_netpoint(zone->get_iface(), dims, i);
-    xbt_assert(netpoint, "TorusZone::set_netpoint(elem=%d): Invalid netpoint (nullptr)", i);
-    if (netpoint->is_netzone()) {
-      xbt_assert(gw && not gw->is_netzone(),
-                 "TorusZone::set_netpoint(elem=%d): Netpoint (%s) is a netzone, but gateway (%s) is invalid", i,
-                 netpoint->get_cname(), gw ? gw->get_cname() : "nullptr");
-    } else {
-      xbt_assert(not gw, "TorusZone: Netpoint (%s) isn't netzone, gateway must be nullptr", netpoint->get_cname());
-    }
-    // setting gateway
-    zone->set_gateway(i, gw);
-
-    if (set_loopback) {
-      const Link* loopback = set_loopback(zone->get_iface(), dims, i);
-      xbt_assert(loopback, "TorusZone::set_loopback: Invalid loopback link (nullptr) for element %d", i);
-      zone->set_loopback();
-      zone->add_private_link_at(zone->node_pos(netpoint->id()), {loopback->get_impl(), loopback->get_impl()});
-    }
-
-    if (set_limiter) {
-      const Link* limiter = set_limiter(zone->get_iface(), dims, i);
-      xbt_assert(limiter, "TorusZone::set_limiter: Invalid limiter link (nullptr) for element %d", i);
-      zone->set_limiter();
-      zone->add_private_link_at(zone->node_pos_with_loopback(netpoint->id()),
-                                {limiter->get_impl(), limiter->get_impl()});
-    }
+    kernel::routing::NetPoint* netpoint;
+    Link* limiter;
+    Link* loopback;
+    zone->fill_leaf_from_cb(i, dimensions, set_netpoint, set_loopback, set_limiter, &netpoint, &loopback, &limiter);
 
     kernel::routing::ClusterCreationArgs params;
     params.id             = name;

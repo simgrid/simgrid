@@ -2203,6 +2203,7 @@ include src/kernel/routing/DijkstraZone.cpp
 include src/kernel/routing/DragonflyZone.cpp
 include src/kernel/routing/EmptyZone.cpp
 include src/kernel/routing/FatTreeZone.cpp
+include src/kernel/routing/FatTreeZone_test.cpp
 include src/kernel/routing/FloydZone.cpp
 include src/kernel/routing/FullZone.cpp
 include src/kernel/routing/NetPoint.cpp

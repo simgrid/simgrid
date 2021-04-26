@@ -120,7 +120,9 @@ class XBT_PRIVATE FatTreeZone : public ClusterZone {
   std::vector<FatTreeLink*> links_;
   std::vector<unsigned int> nodes_by_level_;
 
-  ClusterCreationArgs* cluster_ = nullptr;
+  s4u::Link::SharingPolicy link_sharing_policy_; //!< fat tree links: sharing policy
+  double link_bw_;                               //!< fat tree links: bandwidth
+  double link_lat_;                              //!< fat tree links: latency
 
   void add_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
   int get_level_position(const unsigned int level);
@@ -139,11 +141,16 @@ public:
   ~FatTreeZone() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
 
-  /** @brief Read the parameters in topo_parameters field.
-   *
-   * It will also store the cluster for future use.
-   */
+  /** @brief Read the parameters in topo_parameters field. */
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
+  /** @brief Checks topology parameters */
+  static void check_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
+                             const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count);
+  /** @brief Set FatTree topology */
+  void set_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
+                    const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count);
+  /** @brief Set the characteristics of links inside the Fat Tree zone */
+  void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy);
   void add_processing_node(int id, resource::LinkImpl* limiter, resource::LinkImpl* loopback);
   void generate_dot_file(const std::string& filename = "fat_tree.dot") const;
 };

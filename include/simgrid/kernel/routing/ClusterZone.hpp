@@ -117,6 +117,12 @@ public:
   {
     return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0);
   }
+  /** Fill the leaf retriving netpoint from a user's callback */
+  void fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
+                         const std::function<s4u::ClusterNetPointCb>& set_netpoint_cb,
+                         const std::function<s4u::ClusterLinkCb>& set_loopback_cb,
+                         const std::function<s4u::ClusterLinkCb>& set_limiter_cb, NetPoint** node_netpoint,
+                         s4u::Link** lb_link, s4u::Link** limiter_link);
 };
 } // namespace routing
 } // namespace kernel

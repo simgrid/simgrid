@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <fstream>
+#include <numeric>
 #include <sstream>
 #include <string>
 
@@ -116,6 +117,9 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
       }
     }
   }
+  // set gateways (if any)
+  into->gw_src = get_gateway(src->id());
+  into->gw_dst = get_gateway(dst->id());
 }
 
 /* This function makes the assumption that parse_specific_arguments() and
@@ -342,11 +346,11 @@ void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTree
   std::string id =
       "link_from_" + std::to_string(child->id) + "_" + std::to_string(parent->id) + "_" + std::to_string(uniqueId);
 
-  if (cluster_->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkup   = create_link(id + "_UP", std::vector<double>{cluster_->bw})->set_latency(cluster_->lat)->seal();
-    linkdown = create_link(id + "_DOWN", std::vector<double>{cluster_->bw})->set_latency(cluster_->lat)->seal();
+  if (link_sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+    linkup   = create_link(id + "_UP", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
+    linkdown = create_link(id + "_DOWN", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
   } else {
-    linkup   = create_link(id, std::vector<double>{cluster_->bw})->set_latency(cluster_->lat)->seal();
+    linkup   = create_link(id, std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
     linkdown = linkup;
   }
   uniqueId++;
@@ -360,33 +364,76 @@ void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTree
   this->links_.push_back(newLink);
 }
 
+void FatTreeZone::check_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
+                                 const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count)
+
+{
+  /* check number of levels */
+  if (n_levels <= 0)
+    throw std::invalid_argument("FatTreeZone: invalid number of levels, must be > 0");
+
+  auto check_vector = [&n_levels](const std::vector<unsigned int>& vector, const std::string& var_name) {
+    if (vector.size() != n_levels)
+      throw std::invalid_argument("FatTreeZone: invalid " + var_name + " parameter, vector has " +
+                                  std::to_string(vector.size()) + " elements, must have " + std::to_string(n_levels));
+
+    auto check_zero = [](unsigned int i) { return i == 0; };
+    if (std::any_of(vector.begin(), vector.end(), check_zero))
+      throw std::invalid_argument("FatTreeZone: invalid " + var_name + " parameter, all values must be greater than 0");
+  };
+
+  /* check remaining vectors */
+  check_vector(down_links, "down links");
+  check_vector(up_links, "up links");
+  check_vector(link_count, "link count");
+}
+
+void FatTreeZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
+{
+  link_sharing_policy_ = sharing_policy;
+  link_bw_             = bw;
+  link_lat_            = lat;
+}
+
+void FatTreeZone::set_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
+                               const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count)
+{
+  levels_                = n_levels;
+  num_children_per_node_ = down_links;
+  num_parents_per_node_  = up_links;
+  num_port_lower_level_  = link_count;
+}
+
 void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
+  unsigned int n_lev = 0;
+  std::vector<unsigned int> down;
+  std::vector<unsigned int> up;
+  std::vector<unsigned int> count;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
 
-  // TODO : we have to check for zeros and negative numbers, or it might crash
   surf_parse_assert(
       parameters.size() == 4,
       "Fat trees are defined by the levels number and 3 vectors, see the documentation for more information.");
 
   // The first parts of topo_parameters should be the levels number
   try {
-    this->levels_ = std::stoi(parameters[0]);
+    n_lev = std::stoi(parameters[0]);
   } catch (const std::invalid_argument&) {
     surf_parse_error(std::string("First parameter is not the amount of levels: ") + parameters[0]);
   }
 
   // Then, a l-sized vector standing for the children number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
-  surf_parse_assert(tmp.size() == this->levels_, std::string("You specified ") + std::to_string(this->levels_) +
-                                                     " levels but the child count vector (the first one) contains " +
-                                                     std::to_string(tmp.size()) + " levels.");
+  surf_parse_assert(tmp.size() == n_lev, std::string("You specified ") + std::to_string(n_lev) +
+                                             " levels but the child count vector (the first one) contains " +
+                                             std::to_string(tmp.size()) + " levels.");
 
   for (std::string const& level : tmp) {
     try {
-      this->num_children_per_node_.push_back(std::stoi(level));
+      down.push_back(std::stoi(level));
     } catch (const std::invalid_argument&) {
       surf_parse_error(std::string("Invalid child count: ") + level);
     }
@@ -394,12 +441,12 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 
   // Then, a l-sized vector standing for the parents number by level
   boost::split(tmp, parameters[2], boost::is_any_of(","));
-  surf_parse_assert(tmp.size() == this->levels_, std::string("You specified ") + std::to_string(this->levels_) +
-                                                     " levels but the parent count vector (the second one) contains " +
-                                                     std::to_string(tmp.size()) + " levels.");
+  surf_parse_assert(tmp.size() == n_lev, std::string("You specified ") + std::to_string(n_lev) +
+                                             " levels but the parent count vector (the second one) contains " +
+                                             std::to_string(tmp.size()) + " levels.");
   for (std::string const& parent : tmp) {
     try {
-      this->num_parents_per_node_.push_back(std::stoi(parent));
+      up.push_back(std::stoi(parent));
     } catch (const std::invalid_argument&) {
       surf_parse_error(std::string("Invalid parent count: ") + parent);
     }
@@ -407,17 +454,22 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 
   // Finally, a l-sized vector standing for the ports number with the lower level
   boost::split(tmp, parameters[3], boost::is_any_of(","));
-  surf_parse_assert(tmp.size() == this->levels_, std::string("You specified ") + std::to_string(this->levels_) +
-                                                     " levels but the port count vector (the third one) contains " +
-                                                     std::to_string(tmp.size()) + " levels.");
+  surf_parse_assert(tmp.size() == n_lev, std::string("You specified ") + std::to_string(n_lev) +
+                                             " levels but the port count vector (the third one) contains " +
+                                             std::to_string(tmp.size()) + " levels.");
   for (std::string const& port : tmp) {
     try {
-      this->num_port_lower_level_.push_back(std::stoi(port));
+      count.push_back(std::stoi(port));
     } catch (const std::invalid_argument&) {
       throw std::invalid_argument(std::string("Invalid lower level port number:") + port);
     }
   }
-  this->cluster_ = cluster;
+
+  /* set topology */
+  FatTreeZone::check_topology(n_lev, down, up, count);
+  set_topology(n_lev, down, up, count);
+  /* saving internal links properties */
+  set_link_characteristics(cluster->bw, cluster->lat, cluster->sharing_policy);
 }
 
 void FatTreeZone::generate_dot_file(const std::string& filename) const
@@ -445,9 +497,39 @@ void FatTreeZone::generate_dot_file(const std::string& filename) const
 } // namespace kernel
 
 namespace s4u {
-NetZone* create_fatTree_zone(const std::string& name)
+NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& params,
+                             double bandwidth, double latency, Link::SharingPolicy sharing_policy,
+                             const std::function<ClusterNetPointCb>& set_netpoint,
+                             const std::function<ClusterLinkCb>& set_loopback,
+                             const std::function<ClusterLinkCb>& set_limiter)
 {
-  return (new kernel::routing::FatTreeZone(name))->get_iface();
+  /* initial checks */
+  if (bandwidth <= 0)
+    throw std::invalid_argument("FatTreeZone: incorrect bandwidth for internode communication, bw=" +
+                                std::to_string(bandwidth));
+  if (latency < 0)
+    throw std::invalid_argument("FatTreeZone: incorrect latency for internode communication, lat=" +
+                                std::to_string(latency));
+  kernel::routing::FatTreeZone::check_topology(params.levels, params.down, params.up, params.number);
+
+  /* creating zone */
+  auto* zone = new kernel::routing::FatTreeZone(name);
+  zone->set_topology(params.levels, params.down, params.up, params.number);
+  if (parent)
+    zone->set_parent(parent->get_impl());
+  zone->set_link_characteristics(bandwidth, latency, sharing_policy);
+
+  /* populating it */
+  int tot_elements = std::accumulate(params.down.begin(), params.down.end(), 1, std::multiplies<>());
+  for (int i = 0; i < tot_elements; i++) {
+    kernel::routing::NetPoint* netpoint;
+    Link* limiter;
+    Link* loopback;
+    zone->fill_leaf_from_cb(i, params.down, set_netpoint, set_loopback, set_limiter, &netpoint, &loopback, &limiter);
+    zone->add_processing_node(i, limiter ? limiter->get_impl() : nullptr, loopback ? loopback->get_impl() : nullptr);
+  }
+
+  return zone->get_iface();
 }
 } // namespace s4u
 

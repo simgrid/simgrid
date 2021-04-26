@@ -174,6 +174,65 @@ NetPoint* ClusterZone::get_gateway(unsigned int position)
   return res;
 }
 
+void ClusterZone::fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
+                                    const std::function<s4u::ClusterNetPointCb>& set_netpoint_cb,
+                                    const std::function<s4u::ClusterLinkCb>& set_loopback_cb,
+                                    const std::function<s4u::ClusterLinkCb>& set_limiter_cb, NetPoint** node_netpoint,
+                                    s4u::Link** lb_link, s4u::Link** limiter_link)
+{
+  xbt_assert(node_netpoint, "Invalid node_netpoint parameter");
+  xbt_assert(lb_link, "Invalid lb_link parameter");
+  xbt_assert(limiter_link, "Invalid limiter_link paramater");
+  *lb_link      = nullptr;
+  *limiter_link = nullptr;
+
+  // auxiliary function to get dims from index
+  auto index_to_dims = [&dimensions](int index) {
+    std::vector<unsigned int> dims_array(dimensions.size());
+    for (unsigned long i = dimensions.size() - 1; i != 0; --i) {
+      if (index <= 0) {
+        break;
+      }
+      unsigned int value = index % dimensions[i];
+      dims_array[i]      = value;
+      index              = (index / dimensions[i]);
+    }
+    return dims_array;
+  };
+
+  kernel::routing::NetPoint* netpoint = nullptr;
+  kernel::routing::NetPoint* gw       = nullptr;
+  auto dims                           = index_to_dims(position);
+  std::tie(netpoint, gw)              = set_netpoint_cb(get_iface(), dims, position);
+  xbt_assert(netpoint, "set_netpoint(elem=%u): Invalid netpoint (nullptr)", position);
+  if (netpoint->is_netzone()) {
+    xbt_assert(gw && not gw->is_netzone(),
+               "set_netpoint(elem=%u): Netpoint (%s) is a netzone, but gateway (%s) is invalid", position,
+               netpoint->get_cname(), gw ? gw->get_cname() : "nullptr");
+  } else {
+    xbt_assert(not gw, "set_netpoint: Netpoint (%s) isn't netzone, gateway must be nullptr", netpoint->get_cname());
+  }
+  // setting gateway
+  set_gateway(position, gw);
+
+  if (set_loopback_cb) {
+    s4u::Link* loopback = set_loopback_cb(get_iface(), dims, position);
+    xbt_assert(loopback, "set_loopback: Invalid loopback link (nullptr) for element %u", position);
+    set_loopback();
+    add_private_link_at(node_pos(netpoint->id()), {loopback->get_impl(), loopback->get_impl()});
+    *lb_link = loopback;
+  }
+
+  if (set_limiter_cb) {
+    s4u::Link* limiter = set_limiter_cb(get_iface(), dims, position);
+    xbt_assert(limiter, "set_limiter: Invalid limiter link (nullptr) for element %u", position);
+    set_limiter();
+    add_private_link_at(node_pos_with_loopback(netpoint->id()), {limiter->get_impl(), limiter->get_impl()});
+    *limiter_link = limiter;
+  }
+  *node_netpoint = netpoint;
+}
+
 } // namespace routing
 } // namespace kernel
 
