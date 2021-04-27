@@ -71,20 +71,7 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   /* Associate this simcall to the synchro */
   register_simcall(&issuer->simcall_);
 
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = issuer->simcall_.mc_value_;
-    if (idx == 0) {
-      state_ = State::DONE;
-    } else {
-      /* If we reached this point, the wait simcall must have a timeout */
-      /* Otherwise it shouldn't be enabled and executed by the MC */
-      if (timeout < 0.0)
-        THROW_IMPOSSIBLE;
-      state_ = State::TIMEOUT;
-    }
-    finish();
-    return;
-  }
+  xbt_assert(not MC_is_active() && not MC_record_replay_is_active(), "MC is currently not supported here.");
 
   /* If the synchro is already finished then perform the error handling */
   if (state_ != State::RUNNING)
