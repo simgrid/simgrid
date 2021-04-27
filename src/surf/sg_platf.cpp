@@ -470,7 +470,6 @@ void sg_platf_new_Zone_seal()
 {
   xbt_assert(current_routing, "Cannot seal the current Zone: none under construction");
   current_routing->seal();
-  simgrid::s4u::NetZone::on_seal(*current_routing->get_iface());
   current_routing = current_routing->get_parent();
 }
 

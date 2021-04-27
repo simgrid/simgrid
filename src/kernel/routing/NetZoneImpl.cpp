@@ -467,6 +467,7 @@ void NetZoneImpl::seal()
     sub_net->seal();
   }
   sealed_ = true;
+  s4u::NetZone::on_seal(piface_);
 }
 
 void NetZoneImpl::set_parent(NetZoneImpl* parent)
