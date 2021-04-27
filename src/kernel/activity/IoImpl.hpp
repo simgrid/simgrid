@@ -37,6 +37,7 @@ public:
   IoImpl* start();
   void post() override;
   void finish() override;
+  static void wait_any_for(actor::ActorImpl* issuer, const std::vector<IoImpl*>& ios, double timeout);
 };
 } // namespace activity
 } // namespace kernel

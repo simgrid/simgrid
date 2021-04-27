@@ -8,6 +8,7 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Io.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
@@ -94,8 +95,34 @@ void IoImpl::finish()
 {
   XBT_DEBUG("IoImpl::finish() in state %s", to_c_str(state_));
   while (not simcalls_.empty()) {
-    const s_smx_simcall* simcall = simcalls_.front();
+    smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
+
+    /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
+     * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
+     * simcall */
+
+    if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
+      continue;                                 // if process handling comm is killed
+    if (auto* observer = dynamic_cast<kernel::actor::IoWaitanySimcall*>(simcall->observer_)) { // simcall is a wait_any?
+      const auto& ios = observer->get_ios();
+
+      for (auto* io : ios) {
+        io->unregister_simcall(simcall);
+
+        if (simcall->timeout_cb_) {
+          simcall->timeout_cb_->remove();
+          simcall->timeout_cb_ = nullptr;
+        }
+      }
+
+      if (not MC_is_active() && not MC_record_replay_is_active()) {
+        auto element = std::find(ios.begin(), ios.end(), this);
+        int rank     = element != ios.end() ? static_cast<int>(std::distance(ios.begin(), element)) : -1;
+        observer->set_result(rank);
+      }
+    }
+
     switch (state_) {
       case State::FAILED:
         simcall->issuer_->context_->set_wannadie();
@@ -115,6 +142,32 @@ void IoImpl::finish()
 
     simcall->issuer_->waiting_synchro_ = nullptr;
     simcall->issuer_->simcall_answer();
+  }
+}
+
+void IoImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<IoImpl*>& ios, double timeout)
+{
+  if (timeout < 0.0) {
+    issuer->simcall_.timeout_cb_ = nullptr;
+  } else {
+    issuer->simcall_.timeout_cb_ = simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, &ios]() {
+      issuer->simcall_.timeout_cb_ = nullptr;
+      for (auto* io : ios)
+        io->unregister_simcall(&issuer->simcall_);
+      // default result (-1) is set in actor::IoWaitanySimcall
+      issuer->simcall_answer();
+    });
+  }
+
+  for (auto* io : ios) {
+    /* associate this simcall to the the synchro */
+    io->simcalls_.push_back(&issuer->simcall_);
+
+    /* see if the synchro is already finished */
+    if (io->state_ != State::WAITING && io->state_ != State::RUNNING) {
+      io->finish();
+      break;
+    }
   }
 }
 

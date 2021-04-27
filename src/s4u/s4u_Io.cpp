@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Io.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "xbt/log.h"
 
 namespace simgrid {
@@ -43,6 +44,24 @@ Io* Io::start()
   state_ = State::STARTED;
   on_start(*this);
   return this;
+}
+
+int Io::wait_any_for(std::vector<IoPtr>* ios, double timeout)
+{
+  std::vector<kernel::activity::IoImpl*> rios(ios->size());
+  std::transform(begin(*ios), end(*ios), begin(rios),
+                 [](const IoPtr& io) { return static_cast<kernel::activity::IoImpl*>(io->pimpl_.get()); });
+
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::IoWaitanySimcall observer{issuer, rios, timeout};
+  int changed_pos = kernel::actor::simcall_blocking(
+      [&observer] {
+        kernel::activity::IoImpl::wait_any_for(observer.get_issuer(), observer.get_ios(), observer.get_timeout());
+      },
+      &observer);
+  if (changed_pos != -1)
+    ios->at(changed_pos)->complete(State::FINISHED);
+  return changed_pos;
 }
 
 IoPtr Io::set_disk(const_sg_disk_t disk)

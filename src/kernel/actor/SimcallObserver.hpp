@@ -153,6 +153,22 @@ public:
   const std::vector<activity::ExecImpl*>& get_execs() const { return execs_; }
   double get_timeout() const { return timeout_; }
 };
+
+class IoWaitanySimcall : public ResultingSimcall<int> {
+  const std::vector<activity::IoImpl*>& ios_;
+  const double timeout_;
+
+public:
+  IoWaitanySimcall(smx_actor_t actor, const std::vector<activity::IoImpl*>& ios, double timeout)
+      : ResultingSimcall(actor, -1), ios_(ios), timeout_(timeout)
+  {
+  }
+  bool is_visible() const override { return false; }
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+  const std::vector<activity::IoImpl*>& get_ios() const { return ios_; }
+  double get_timeout() const { return timeout_; }
+};
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

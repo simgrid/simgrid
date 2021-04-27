@@ -132,6 +132,19 @@ std::string ExecutionWaitanySimcall::dot_label() const
 {
   return SimcallObserver::dot_label() + "Execution WAITANY";
 }
+
+std::string IoWaitanySimcall::to_string(int times_considered) const
+{
+  std::string res = SimcallObserver::to_string(times_considered) + "I/O WAITANY";
+  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
+  return res;
+}
+
+std::string IoWaitanySimcall::dot_label() const
+{
+  return SimcallObserver::dot_label() + "I/O WAITANY";
+}
+
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

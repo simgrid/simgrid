@@ -11,11 +11,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void test()
 {
+  std::vector<simgrid::s4u::IoPtr> pending_ios;
+
   simgrid::s4u::ExecPtr bob_compute = simgrid::s4u::this_actor::exec_init(1e9);
   simgrid::s4u::IoPtr bob_write =
       simgrid::s4u::Host::current()->get_disks().front()->io_init(4000000, simgrid::s4u::Io::OpType::WRITE);
+  pending_ios.push_back(bob_write);
   simgrid::s4u::IoPtr carl_read =
       simgrid::s4u::Host::by_name("carl")->get_disks().front()->io_init(4000000, simgrid::s4u::Io::OpType::READ);
+  pending_ios.push_back(carl_read);
   simgrid::s4u::ExecPtr carl_compute = simgrid::s4u::Host::by_name("carl")->exec_init(1e9);
 
   // Name the activities (for logging purposes only)
@@ -38,10 +42,13 @@ static void test()
   carl_read->vetoable_start();
   carl_compute->vetoable_start();
 
-  // Wait for their completion (should be replaced by a wait_any_for at some point)
+  // wait for the completion of all activities
   bob_compute->wait();
-  bob_write->wait();
-  carl_read->wait();
+  while (not pending_ios.empty()) {
+    int changed_pos = simgrid::s4u::Io::wait_any(&pending_ios);
+    XBT_INFO("Io '%s' is complete", pending_ios[changed_pos]->get_cname());
+    pending_ios.erase(pending_ios.begin() + changed_pos);
+  }
   carl_compute->wait();
 }
 
