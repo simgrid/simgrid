@@ -56,6 +56,7 @@ of every page. Bugs in the code should be reported
 
 	Simulating Algorithms <Tutorial_Algorithms.rst>
 	Simulating MPI Applications <Tutorial_MPI_Applications.rst>
+	Model-checking algorithms and applications <Tutorial_Model-checking.rst>
 
 .. toctree::
    :hidden:
