@@ -21,7 +21,7 @@ static void worker()
     exec->wait_for(3);
     XBT_INFO("Execution complete");
   } catch (const simgrid::TimeoutException&) {
-    XBT_INFO("Execution Timeout!");
+    XBT_INFO("Execution Wait Timeout!");
   }
 
   /* do it again, but this time with a timeout greater than the duration of the execution */
@@ -31,7 +31,7 @@ static void worker()
     exec->wait_for(6);
     XBT_INFO("Execution complete");
   } catch (const simgrid::TimeoutException&) {
-    XBT_INFO("Execution Timeout!");
+    XBT_INFO("Execution Wait Timeout!");
   }
 
   XBT_INFO("Finally test with a parallel execution");
@@ -51,7 +51,7 @@ static void worker()
     exec->wait_for(2);
     XBT_INFO("Parallel Execution complete");
   } catch (const simgrid::TimeoutException&) {
-    XBT_INFO("Parallel Execution Timeout!");
+    XBT_INFO("Parallel Execution Wait Timeout!");
   }
 }
 
