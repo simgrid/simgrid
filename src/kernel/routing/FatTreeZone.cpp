@@ -93,7 +93,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     if (latency)
       *latency += currentNode->parents[d]->up_link_->get_latency();
 
-    if (has_limiter())
+    if (currentNode->limiter_link_)
       into->link_list.push_back(currentNode->limiter_link_);
     currentNode = currentNode->parents[d]->up_node_;
   }
@@ -109,7 +109,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
         if (latency)
           *latency += currentNode->children[i]->down_link_->get_latency();
         currentNode = currentNode->children[i]->down_node_;
-        if (has_limiter())
+        if (currentNode->limiter_link_)
           into->link_list.push_back(currentNode->limiter_link_);
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);
