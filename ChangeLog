@@ -2,6 +2,10 @@
 
 SimGrid (3.27.1) NOT RELEASED YET (v3.28 expected June 21. 2021, 03:32 UTC)
 
+S4U:
+ - Fixed a bug where Activity::wait_for() killed the activity on timeout.
+   Explicitly cancel the activity to get back to previous behavior.
+
 LUA:
  - Lua platform files are deprecated. Their support will be dropped after v3.31.
 
