@@ -15,11 +15,11 @@
 .toggle-header strong {color: #2980b9 }
 
 .toggle-header:after {
-    content: " ▼";
+    content: " ⯇";
 }
 
 .toggle-header.open:after {
-    content: " ⯇";
+    content: " ▼";
 }
 
 .toggle-content {
