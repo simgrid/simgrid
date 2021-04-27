@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-torus-multicpu
+$ ${bindir:=.}/s4u-clusters-multicpu torus
 > [host0-cpu0:sender:(1) 0.000000] [s4u_torus_multicpu/INFO] Done dispatching all messages
 > [host0-cpu7:receiver-host0-cpu7:(9) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
 > [host0-cpu6:receiver-host0-cpu6:(8) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
@@ -67,3 +67,55 @@ $ ${bindir:=.}/s4u-torus-multicpu
 > [host7-cpu2:receiver-host7-cpu2:(60) 0.057862] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
 > [host7-cpu1:receiver-host7-cpu1:(59) 0.057862] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
 > [host0-cpu0:sender:(1) 0.057862] [s4u_torus_multicpu/INFO] Goodbye now!
+
+$ ${bindir:=.}/s4u-clusters-multicpu fatTree
+> [host0-cpu0:sender:(1) 0.000000] [s4u_torus_multicpu/INFO] Done dispatching all messages
+> [host0-cpu7:receiver-host0-cpu7:(9) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host0-cpu6:receiver-host0-cpu6:(8) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host0-cpu5:receiver-host0-cpu5:(7) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host0-cpu4:receiver-host0-cpu4:(6) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host0-cpu3:receiver-host0-cpu3:(5) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host0-cpu2:receiver-host0-cpu2:(4) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host0-cpu1:receiver-host0-cpu1:(3) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host0-cpu0:receiver-host0-cpu0:(2) 0.000083] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host1-cpu0:receiver-host1-cpu0:(10) 0.033296] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host1-cpu7:receiver-host1-cpu7:(17) 0.033504] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host1-cpu6:receiver-host1-cpu6:(16) 0.033504] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host1-cpu5:receiver-host1-cpu5:(15) 0.033504] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host1-cpu4:receiver-host1-cpu4:(14) 0.033504] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host1-cpu3:receiver-host1-cpu3:(13) 0.033504] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host1-cpu2:receiver-host1-cpu2:(12) 0.033504] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host1-cpu1:receiver-host1-cpu1:(11) 0.033504] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host5-cpu0:receiver-host5-cpu0:(42) 0.043420] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host4-cpu0:receiver-host4-cpu0:(34) 0.043420] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host3-cpu0:receiver-host3-cpu0:(26) 0.043420] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host2-cpu0:receiver-host2-cpu0:(18) 0.043420] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host5-cpu7:receiver-host5-cpu7:(49) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host5-cpu6:receiver-host5-cpu6:(48) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host5-cpu5:receiver-host5-cpu5:(47) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host5-cpu4:receiver-host5-cpu4:(46) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host5-cpu3:receiver-host5-cpu3:(45) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host5-cpu2:receiver-host5-cpu2:(44) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host5-cpu1:receiver-host5-cpu1:(43) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host4-cpu7:receiver-host4-cpu7:(41) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host4-cpu6:receiver-host4-cpu6:(40) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host4-cpu5:receiver-host4-cpu5:(39) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host4-cpu4:receiver-host4-cpu4:(38) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host4-cpu3:receiver-host4-cpu3:(37) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host4-cpu2:receiver-host4-cpu2:(36) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host4-cpu1:receiver-host4-cpu1:(35) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host3-cpu7:receiver-host3-cpu7:(33) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host3-cpu6:receiver-host3-cpu6:(32) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host3-cpu5:receiver-host3-cpu5:(31) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host3-cpu4:receiver-host3-cpu4:(30) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host3-cpu3:receiver-host3-cpu3:(29) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host3-cpu2:receiver-host3-cpu2:(28) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host3-cpu1:receiver-host3-cpu1:(27) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host2-cpu7:receiver-host2-cpu7:(25) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host2-cpu6:receiver-host2-cpu6:(24) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host2-cpu5:receiver-host2-cpu5:(23) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host2-cpu4:receiver-host2-cpu4:(22) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host2-cpu3:receiver-host2-cpu3:(21) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host2-cpu2:receiver-host2-cpu2:(20) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host2-cpu1:receiver-host2-cpu1:(19) 0.043559] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on host0-cpu0'.
+> [host0-cpu0:sender:(1) 0.043559] [s4u_torus_multicpu/INFO] Goodbye now!

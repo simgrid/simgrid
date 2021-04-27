@@ -64,8 +64,9 @@ public:
   }
 };
 
+/*************************************************************************************************/
 /**
- * @brief Callback to set a Torus leaf/element
+ * @brief Callback to set a cluster leaf/element
  *
  * In our example, each leaf if a StarZone, composed of 8 CPUs.
  * Each CPU is modeled as a host, connected to the outer world through a high-speed PCI link.
@@ -82,7 +83,7 @@ public:
  *   /   /       \   \
  *   CPU1   ...   CPU8
  *
- * @param zone Torus netzone being created (usefull to create the hosts/links inside it)
+ * @param zone Cluster netzone being created (usefull to create the hosts/links inside it)
  * @param coord Coordinates in the torus (e.g. "0,0,0", "0,1,0")
  * @param id Internal identifier in the torus (for information)
  * @return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
@@ -104,8 +105,8 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
   const sg4::Host* gateway = nullptr;
   /* create CPUs */
   for (int i = 0; i < num_cpus; i++) {
-    std::string cpu_name = hostname + "-cpu" + std::to_string(i);
-    sg4::Host* host      = host_zone->create_host(cpu_name, speed)->seal();
+    std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
+    const sg4::Host* host = host_zone->create_host(cpu_name, speed)->seal();
     /* the first CPU is the gateway */
     if (i == 0)
       gateway = host;
@@ -120,10 +121,23 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
   return std::make_pair(host_zone->get_netpoint(), gateway->get_netpoint());
 }
 
+/*************************************************************************************************/
+/**
+ * @brief Callback to create limiter link (1Gbs) for each netpoint
+ * @param zone Torus netzone being created (usefull to create the hosts/links inside it)
+ * @param coord Coordinates in the torus (e.g. "0,0,0", "0,1,0")
+ * @param id Internal identifier in the torus (for information)
+ * @return Limiter link
+ */
+static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+{
+  return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
+}
+
 /**
  * @brief Creates a TORUS cluster
  *
- * Creates a TORUS clustes with dimensions 2x2x2
+ * Creates a TORUS cluster with dimensions 2x2x2
  *
  * The cluster has 8 elements/leaves in total. Each element is a StarZone containing 8 Hosts.
  * Each pair in the torus is connected through 2 links:
@@ -133,11 +147,11 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
  * (Y-axis=2)
  * A
  * |
- * |   X (Z-axis=2)
- * |  / 10 Gbs
+ * |   D (Z-axis=2)
+ * +  / 10 Gbs
  * | +
  * |/ limiter=1Gps
- * B----------C (X-axis=2)
+ * B-----+----C (X-axis=2)
  *
  * For example, a communication from A to C goes through:
  * <tt> A->limiter(A)->link(A-B)->limiter(B)->link(B-C)->C </tt>
@@ -146,7 +160,7 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
  * communication from A-CPU-3 to C-CPU-7 goes through:
  * 1) StarZone A: A-CPU-3 -> link-up-A-CPU-3 -> A-CPU-0
  * 2) A-CPU-0->limiter(A)->link(A-B)->limiter(B)->link(B-C)->C-CPU-0
- * 3) C-CPU-0-> link-down-C-CPU-7 -> C-CPU-7
+ * 3) StarZone C: C-CPU-0-> link-down-C-CPU-7 -> C-CPU-7
  *
  * Note that we don't have limiter links inside the StarZones(A, B, C),
  * but we have limiters in the Torus that are added to the links in the path (as we can see in "2)"")
@@ -156,23 +170,76 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
  */
 static void create_torus_cluster()
 {
-  // Callback to create limiter link (1Gbs) for each host
-  auto create_limiter = [](sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id) -> sg4::Link* {
-    return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
-  };
-
   /* create the torus cluster, 10Gbs link between elements in the cluster */
   sg4::create_torus_zone("cluster", nullptr, {2, 2, 2}, 10e9, 10e-6, sg4::Link::SharingPolicy::SPLITDUPLEX,
                          create_hostzone, {}, create_limiter)
       ->seal();
 }
 
+/**
+ * @brief Creates a Fat Tree cluster
+ *
+ * Creates a Fat Tree cluster with 2 levels and 6 nodes
+ * The following parameters are used to create this cluster:
+ * - Levels: 2 - two-level cluster
+ * - Down links: 2, 3 - L1 routers is connected to 2 elements, L2 routers to 3 elements
+ * - Up links: 1, 2 - Each node (A-F) is connected to 1 L2 router, L2 routers are connected to 2 L1
+ * - Link count: 1, 1 - Use 1 link in each level
+ *
+ * The first parameter describes how many levels we have.
+ * The following ones describe the connection between the elements and must have exactly n_levels components.
+ *
+ *
+ *                         S3     S4                <-- Level 1 routers
+ *                        /   \  /  \
+ *                       /     /\    \
+ *   link: 10GBps -->   |    /    \   |
+ *   (full-duplex)      |  /        \ |
+ *                      S1           S2             <-- Level 2 routers
+ *  link:10GBps  -->  / | \         / | \
+ *                   +  +  +       +  +  +
+ *  link:limiter -> /   |   \     /   |   \
+ *                 A    B    C   D    E    F        <-- Nodes
+ *
+ * Each element (A to F) is a StarZone containing 8 Hosts.
+ * The connection uses 2 links:
+ * 1) limiter: a 1Gbs limiter link (set by user through the set_limiter callback)
+ * 2) link: 10Gbs link connecting the components (created automatically)
+ *
+ * For example, a communication from A to C goes through:
+ * <tt> A->limiter(A)->link(A-S1)->link(S1-C)->->limiter(C)->C</tt>
+ *
+ * More precisely, considering that A and C are StarZones, a
+ * communication from A-CPU-3 to C-CPU-7 goes through:
+ * 1) StarZone A: A-CPU-3 -> link-up-A-CPU-3 -> A-CPU-0
+ * 2) A-CPU-0->limiter(A)->link(A-S1)->link(S1-C)->limiter(C)->C-CPU-0
+ * 3) StarZone C: C-CPU-0-> link-down-C-CPU-7 -> C-CPU-7
+ *
+ * Note that limiters are only valid for leaves, not routers.
+ *
+ * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat Tree
+ * Cluster</a>
+ */
+static void create_fatTree_cluster()
+{
+  /* create the fat tree cluster, 10Gbs link between elements in the cluster */
+  sg4::create_fatTree_zone("cluster", nullptr, {2, {2, 3}, {1, 2}, {1, 1}}, 10e9, 10e-6,
+                           sg4::Link::SharingPolicy::SPLITDUPLEX, create_hostzone, {}, create_limiter)
+      ->seal();
+}
+
+/*************************************************************************************************/
+
 int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
+  std::string platform = argv[1];
 
   /* create platform */
-  create_torus_cluster();
+  if (platform == "torus")
+    create_torus_cluster();
+  else if (platform == "fatTree")
+    create_fatTree_cluster();
 
   std::vector<sg4::Host*> host_list = e.get_all_hosts();
   /* create the sender actor running on first host */
