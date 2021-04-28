@@ -21,7 +21,7 @@ public:
 };
 
 std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-create_host(simgrid::s4u::NetZone* zone, const std::vector<unsigned int>& coord, int id)
+create_host(simgrid::s4u::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
 {
   const simgrid::s4u::Host* host = zone->create_host(std::to_string(id), 1e9)->seal();
   return std::make_pair(host->get_netpoint(), nullptr);

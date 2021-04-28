@@ -183,13 +183,15 @@ using ClusterLinkCb = Link*(NetZone* zone, const std::vector<unsigned int>& coor
  * elements
  * - inter-node communication: (bandwidth, latency, sharing_policy) the elements are connected through regular links
  * with these characteristics
+ * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html?highlight=torus#torus-cluster">Torus
+ * Cluster</a>
  *
  * Moreover, this method accepts 3 callbacks to populate the cluster: set_netpoint, set_loopback and set_limiter .
  *
- * Note that the all elements in Torus cluster must have (or not) the same elements (loopback and limiter)
+ * Note that the all elements in a Torus cluster must have (or not) the same elements (loopback and limiter)
  *
  * @param name NetZone's name
- * @param parent Pointer to parent's netzone (nullptr if rootnetzone). Needed to be able to create the resources inside
+ * @param parent Pointer to parent's netzone (nullptr if root netzone). Needed to be able to create the resources inside
  * the netzone
  * @param dimensions List of positive integers (> 0) which determines the torus' dimensions
  * @param bandwidth Characteristics of the inter-nodes link
@@ -206,6 +208,8 @@ XBT_PUBLIC NetZone* create_torus_zone(const std::string& name, const NetZone* pa
                                       const std::function<ClusterNetPointCb>& set_netpoint,
                                       const std::function<ClusterLinkCb>& set_loopback = {},
                                       const std::function<ClusterLinkCb>& set_limiter  = {});
+
+/** @brief Aggregates the parameters necessary to build a Fat-tree zone */
 struct FatTreeParams {
   unsigned int levels;
   std::vector<unsigned int> down;
@@ -217,7 +221,35 @@ struct FatTreeParams {
   { /* nothing to do */
   }
 };
-
+/**
+ * @brief Create a Fat-Tree zone
+ *
+ * Fat-Tree clusters are characterized by:
+ * - levels: number of levels in the cluster, e.g. 2 (the final tree will have n+1 levels)
+ * - downlinks: for each level, how many connections between elements below them, e.g. 2, 3: level 1 nodes are connected
+ * to 2 nodes in level 2, which are connected to 3 nodes below. Determines the number total of leaves in the tree.
+ * - uplinks: for each level, how nodes are connected, e.g. 1, 2
+ * - link count: for each level, number of links connecting the nodes, e.g. 1, 1
+ *
+ * The best way to understand it is looking to the doc available in: <a
+ * href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat Tree Cluster</a>
+ *
+ * Moreover, this method accepts 3 callbacks to populate the cluster: set_netpoint, set_loopback and set_limiter .
+ *
+ * Note that the all elements in a Fat-Tree cluster must have (or not) the same elements (loopback and limiter)
+ *
+ * @param name NetZone's name
+ * @param parent Pointer to parent's netzone (nullptr if root netzone). Needed to be able to create the resources inside
+ * the netzone
+ * @param parameters Characteristics of this Fat-Tree
+ * @param bandwidth Characteristics of the inter-nodes link
+ * @param latency Characteristics of the inter-nodes link
+ * @param sharing_policy Characteristics of the inter-nodes link
+ * @param set_netpoint Callback to set the netpoint of an element in the torus
+ * @param set_loopback Callback to set the loopback
+ * @param set_limiter Callback to set the limiter
+ * @return Pointer to new netzone
+ */
 XBT_PUBLIC NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& parameters,
                                         double bandwidth, double latency, Link::SharingPolicy sharing_policy,
                                         const std::function<ClusterNetPointCb>& set_netpoint,
