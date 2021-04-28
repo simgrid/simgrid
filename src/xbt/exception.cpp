@@ -79,7 +79,7 @@ static void show_backtrace(const simgrid::xbt::Backtrace& bt)
 
 static std::terminate_handler previous_terminate_handler = nullptr;
 
-static void handler()
+XBT_ATTRIB_NORETURN static void handler()
 {
   // Avoid doing crazy things if we get an uncaught exception inside an uncaught exception
   static std::atomic_flag lock = ATOMIC_FLAG_INIT;
