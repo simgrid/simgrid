@@ -256,7 +256,52 @@ XBT_PUBLIC NetZone* create_fatTree_zone(const std::string& name, const NetZone* 
                                         const std::function<ClusterLinkCb>& set_loopback = {},
                                         const std::function<ClusterLinkCb>& set_limiter  = {});
 
-XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name);
+/** @brief Aggregates the parameters necessary to build a Dragonfly zone */
+struct DragonflyParams {
+  std::pair<unsigned int, unsigned int> groups;
+  std::pair<unsigned int, unsigned int> chassis;
+  std::pair<unsigned int, unsigned int> routers;
+  unsigned int nodes;
+  DragonflyParams(const std::pair<unsigned int, unsigned int>& groups,
+                  const std::pair<unsigned int, unsigned int>& chassis,
+                  const std::pair<unsigned int, unsigned int>& routers, unsigned int nodes);
+};
+/**
+ * @brief Create a Dragonfly zone
+ *
+ * Dragonfly clusters are characterized by:
+ * - groups: number of groups and links between each group, e.g. 2,2.
+ * - chassis: number of chassis in each group and the number of links used to connect the chassis, e.g. 2,3
+ * - routers: number of routers in each chassis and their links, e.g. 3,1
+ * - nodes: number of nodes connected to each router using a single link, e.g. 2
+ *
+ * In total, the cluster will have groups * chassis * routers * nodes elements/leaves.
+ *
+ * The best way to understand it is looking to the doc available in: <a
+ * href="https://simgrid.org/doc/latest/Platform_examples.html#dragonfly-cluster">Dragonfly Cluster</a>
+ *
+ * Moreover, this method accepts 3 callbacks to populate the cluster: set_netpoint, set_loopback and set_limiter .
+ *
+ * Note that the all elements in a Dragonfly cluster must have (or not) the same elements (loopback and limiter)
+ *
+ * @param name NetZone's name
+ * @param parent Pointer to parent's netzone (nullptr if root netzone). Needed to be able to create the resources inside
+ * the netzone
+ * @param parameters Characteristics of this Dragonfly
+ * @param bandwidth Characteristics of the inter-nodes link
+ * @param latency Characteristics of the inter-nodes link
+ * @param sharing_policy Characteristics of the inter-nodes link
+ * @param set_netpoint Callback to set the netpoint of an element in the torus
+ * @param set_loopback Callback to set the loopback
+ * @param set_limiter Callback to set the limiter
+ * @return Pointer to new netzone
+ */
+XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent,
+                                          const DragonflyParams& parameters, double bandwidth, double latency,
+                                          Link::SharingPolicy sharing_policy,
+                                          const std::function<ClusterNetPointCb>& set_netpoint,
+                                          const std::function<ClusterLinkCb>& set_loopback = {},
+                                          const std::function<ClusterLinkCb>& set_limiter  = {});
 
 } // namespace s4u
 } // namespace simgrid

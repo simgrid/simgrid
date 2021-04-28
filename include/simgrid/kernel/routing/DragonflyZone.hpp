@@ -70,7 +70,15 @@ public:
   explicit DragonflyZone(const std::string& name);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
-
+  /** @brief Checks topology parameters */
+  static void check_topology(unsigned int n_groups, unsigned int groups_links, unsigned int n_chassis,
+                             unsigned int chassis_links, unsigned int n_routers, unsigned int routers_links,
+                             unsigned int nodes);
+  /** @brief Set Dragonfly topology */
+  void set_topology(unsigned int n_groups, unsigned int groups_links, unsigned int n_chassis,
+                    unsigned int chassis_links, unsigned int n_routers, unsigned int routers_links, unsigned int nodes);
+  /** @brief Set the characteristics of links inside the Dragonfly zone */
+  void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy);
   Coords rankId_to_coords(int rank_id) const;
   XBT_ATTRIB_DEPRECATED_v330("Please use rankId_to_coords(int)") void rankId_to_coords(int rank_id,
                                                                                        unsigned int coords[4]) const;
@@ -82,8 +90,8 @@ private:
   void generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
 
   simgrid::s4u::Link::SharingPolicy sharing_policy_ = simgrid::s4u::Link::SharingPolicy::SHARED;
-  double bw_  = 0;
-  double lat_ = 0;
+  double bw_                                        = 0;
+  double lat_                                       = 0;
 
   unsigned int num_nodes_per_blade_    = 0;
   unsigned int num_blades_per_chassis_ = 0;

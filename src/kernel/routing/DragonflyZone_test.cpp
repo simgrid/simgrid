@@ -1,0 +1,105 @@
+/* Copyright (c) 2017-2021. The SimGrid Team. All rights reserved.               */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include "catch.hpp"
+
+#include "simgrid/kernel/routing/DragonflyZone.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/NetZone.hpp"
+
+namespace {
+class EngineWrapper {
+public:
+  explicit EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
+  int argc = 1;
+  char* argv;
+  simgrid::s4u::Engine e;
+};
+
+std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
+create_host(simgrid::s4u::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+{
+  const simgrid::s4u::Host* host = zone->create_host(std::to_string(id), 1e9)->seal();
+  return std::make_pair(host->get_netpoint(), nullptr);
+}
+} // namespace
+
+TEST_CASE("kernel::routing::DragonflyZone: Creating Zone", "")
+{
+  using namespace simgrid::s4u;
+  EngineWrapper e("test");
+  REQUIRE(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 1}, 2}, 1e9, 10,
+                                simgrid::s4u::Link::SharingPolicy::SHARED, create_host));
+}
+
+TEST_CASE("kernel::routing::DragonflyZone: Invalid params", "")
+{
+  using namespace simgrid::s4u;
+  EngineWrapper e("test");
+
+  SECTION("0 nodes")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 1}, 0}, 1e9, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+
+  SECTION("0 groups")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{0, 4}, {4, 3}, {5, 1}, 2}, 1e9, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+  SECTION("0 groups links")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 0}, {4, 3}, {5, 1}, 2}, 1e9, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+
+  SECTION("0 chassis")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 4}, {0, 3}, {5, 1}, 2}, 1e9, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+
+  SECTION("0 chassis links")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 4}, {4, 0}, {5, 1}, 2}, 1e9, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+
+  SECTION("0 routers")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 4}, {4, 3}, {0, 1}, 2}, 1e9, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+
+  SECTION("0 routers links")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 0}, 2}, 1e9, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+
+  SECTION("0 bandwidth")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 1}, 2}, 0, 10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+
+  SECTION("Negative latency")
+  {
+    REQUIRE_THROWS_AS(create_dragonfly_zone("test", e.e.get_netzone_root(), {{3, 4}, {4, 3}, {5, 1}, 2}, 1e9, -10,
+                                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+                      std::invalid_argument);
+  }
+}

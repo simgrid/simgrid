@@ -176,10 +176,11 @@ static void create_torus_cluster()
       ->seal();
 }
 
+/*************************************************************************************************/
 /**
- * @brief Creates a Fat Tree cluster
+ * @brief Creates a Fat-Tree cluster
  *
- * Creates a Fat Tree cluster with 2 levels and 6 nodes
+ * Creates a Fat-Tree cluster with 2 levels and 6 nodes
  * The following parameters are used to create this cluster:
  * - Levels: 2 - two-level cluster
  * - Down links: 2, 3 - L1 routers is connected to 2 elements, L2 routers to 3 elements
@@ -217,7 +218,7 @@ static void create_torus_cluster()
  *
  * Note that limiters are only valid for leaves, not routers.
  *
- * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat Tree
+ * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat-Tree
  * Cluster</a>
  */
 static void create_fatTree_cluster()
@@ -225,6 +226,54 @@ static void create_fatTree_cluster()
   /* create the fat tree cluster, 10Gbs link between elements in the cluster */
   sg4::create_fatTree_zone("cluster", nullptr, {2, {2, 3}, {1, 2}, {1, 1}}, 10e9, 10e-6,
                            sg4::Link::SharingPolicy::SPLITDUPLEX, create_hostzone, {}, create_limiter)
+      ->seal();
+}
+
+/*************************************************************************************************/
+/**
+ * @brief Creates a Dragonfly cluster
+ *
+ * Creates a Dragonfly cluster with 2 groups and 16 nodes
+ * The following parameters are used to create this cluster:
+ * - Groups: 2 groups, connected with 2 links (blue links)
+ * - Chassis: 2 chassis, connected with a single link (black links)
+ * - Routers: 2 routers, connected with 2 links (green links)
+ * - Nodes: 2 leaves per router, single link
+ *
+ * The diagram below illustrates a group in the dragonfly cluster
+ *
+ * +------------------------------------------------+
+ * |        black link(1)                           |
+ * |     +------------------------+                 |
+ * | +---|--------------+     +---|--------------+  |
+ * | |   |  green       |     |   |  green       |  |
+ * | |   |  links (2)   |     |   |  links (2)   |  |   blue links(2)
+ * | |   R1 ====== R2   |     |   R3 -----  R4 ======================> "Group 2"
+ * | |  /  \      /  \  |     |  /  \      /  \  |  |
+ * | | A    B    C    D |     | E    F    G    H |  |
+ * | +------------------+     +------------------+  |
+ * |      Chassis 1                Chassis 2        |
+ * +------------------------------------------------+
+ *  Group 1
+ *
+ * Each element (A, B, C, etc) is a StarZone containing 8 Hosts.
+ * The connection between nodes and routers (e.g. A->R1) uses 2 links:
+ * 1) limiter: a 1Gbs limiter link (set by user through the set_limiter callback)
+ * 2) link: 10Gbs link connecting the components (created automatically)
+ *
+ * For example, a communication from A to C goes through:
+ * <tt> A->limiter(A)->link(A-R1)->link(R1-R2)->limiter(C)->C</tt>
+ *
+ * Note that limiters are only valid for leaves, not routers.
+ *
+ * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#dragonfly-cluster">Dragonfly
+ * Cluster</a>
+ */
+static void create_dragonfly_cluster()
+{
+  /* create the dragonfly cluster, 10Gbs link between elements in the cluster */
+  sg4::create_dragonfly_zone("cluster", nullptr, {{2, 2}, {2, 1}, {2, 2}, 2}, 10e9, 10e-6,
+                             sg4::Link::SharingPolicy::SPLITDUPLEX, create_hostzone, {}, create_limiter)
       ->seal();
 }
 
@@ -240,6 +289,8 @@ int main(int argc, char* argv[])
     create_torus_cluster();
   else if (platform == "fatTree")
     create_fatTree_cluster();
+  else if (platform == "dragonfly")
+    create_dragonfly_cluster();
 
   std::vector<sg4::Host*> host_list = e.get_all_hosts();
   /* create the sender actor running on first host */
