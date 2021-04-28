@@ -36,7 +36,7 @@ also `communication determinism <https://hal.inria.fr/hal-01953167/document>`_, 
 fault-tolerance. It can alleviate the state space explosion problem through `Dynamic Partial Ordering Reduction (DPOR)
 <https://en.wikipedia.org/wiki/Partial_order_reduction>`_ and `state equality <https://hal.inria.fr/hal-01900120/document>`_. Note that
 Mc SimGrid is currently less mature than other parts of the framework, but it improves every month. Please report any question and
-issues so that we can further improve it.
+issue so that we can further improve it.
 
 Getting Mc SimGrid
 ------------------
@@ -63,12 +63,6 @@ In the container, you have access to the following directories of interest:
 - ``/source/simgrid.git``: Source code of SimGrid, pre-configured in MC mode. The framework is also installed in ``/usr``
   so the source code is only provided for your information.
 
-If it fails, you may need to enable the PTRACE capability in docker, as follows:
-
-.. code-block:: shell
-
-   docker run -it --cap-add SYS_PTRACE --rm --name mcsimgrid --volume ~/tuto-mcsimgrid:/source/tutorial simgrid/tuto-mc bash
-
 Lab1: non-deterministic receive
 -------------------------------
 
@@ -84,16 +78,19 @@ between your host computer and the container.
   $ cp -r /source/tuto-mc.git/* /source/tutorial/
   $ cd /source/tutorial/
 
-Several files should have appeared in the ``~/tuto-mcsimgrid`` directory of your computer. This tutorial uses ``ndet-receive-s4u.cpp``,
-that uses the :ref:`S4U interface <S4U_doc>` of SimGrid, but we provide a MPI version if you prefer (see below for details on using the
-MPI version).
+Several files should have appeared in the ``~/tuto-mcsimgrid`` directory of your computer.
+This tutorial uses `ndet-receive-s4u.cpp <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-s4u.cpp>`_,
+that uses the :ref:`S4U interface <S4U_doc>` of SimGrid, but we provide a
+`MPI version <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-mpi.cpp>`_
+if you prefer (see below for details on using the MPI version).
 
 .. toggle-header::
-   :header: View ``ndet-receive-s4u.cpp`` (click on that little triangle)
+   :header: Code of ``ndet-receive-s4u.cpp``: click here to open it, or `view it online <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-s4u.cpp>`_
 
    .. literalinclude:: tuto_mc/ndet-receive-s4u.cpp
       :language: cpp
 
+|br|
 The provided code is rather simple: Three ``client`` are launched with an integer from ``1, 2, 3`` as a parameter. These actors simply
 send their parameter to a given mailbox. A ``server`` receives 3 messages and assumes that the last received message is the number ``3``.
 If you compile and run it, it simply works:
@@ -126,7 +123,11 @@ all message orders. For that, you simply launch your simulation as a parameter t
    [Tremblay:server:(1) 0.000000] (...) Assertion value_got == 3 failed
    (more output ignored)
 
-So this is it, it works: Mc SimGrid successfully triggers the bug. Looking closer at the output, it can be split in several parts:
+If it fails with the error ``[root/CRITICAL] Could not wait for the model-checker.``, you need to explicitly add the PTRACE capability to
+your docker. Restart your docker with the additional parameter ``--cap-add SYS_PTRACE``.
+
+At the end, it works: Mc SimGrid successfully triggers the bug. But the produced output is somewhat long and hairy. Don't worry, we will
+now read it together. It can be split in several parts:
 
 - First, you have some information coming from the application.
 
@@ -248,11 +249,12 @@ If you prefer, you can use MPI instead of the SimGrid-specific interface. Inspec
 translation of ``ndet-receive-s4u.cpp`` to MPI.
 
 .. toggle-header::
-   :header: View ``ndet-receive-mpi.c`` (click on that little triangle)
+   :header: Code of ``ndet-receive-mpi.c``: click here to open it, or `view it online <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-mpi.cpp>`_
 
    .. literalinclude:: tuto_mc/ndet-receive-mpi.c
       :language: cpp
 
+|br|
 You can compile and run it on top of SimGrid as follows.
 
 .. code-block:: shell
@@ -260,9 +262,9 @@ You can compile and run it on top of SimGrid as follows.
    $ smpicc ndet-receive-mpi.c -o ndet-receive-mpi
    $ smpirun -np 4 -platform small_platform.xml ndet-receive-mpi
 
-Interestingly enough, the bug is triggered on my machine, because the simulator happens to use the execution path leading to it. It may
-not be the case on your machine, as this order depends on the iteration order of a ``std::unordered_map``. Instead, we should use Mc
-SimGrid to exhaustively explore the state space and trigger the bug in all cases.
+Interestingly enough, the bug is triggered on my machine even without Mc SimGrid, because the simulator happens to use the execution path
+leading to it. It may not be the case on your machine, as this depends on the iteration order of an unsorted collection. Instead, we
+should use Mc SimGrid to exhaustively explore the state space and trigger the bug in all cases.
 
 .. code-block:: shell
 
@@ -283,8 +285,16 @@ If you want to run such analysis on your own code, out of the provided docker, t
 - SimGrid should naturally :ref:`be compiled <install_src>` with model-checking support. This requires a full set of dependencies
   (documented on the :ref:`relevant page <install_src>`) and should not be activated by default as there is a small performance penalty for
   codes using a SimGrid with MC enabled (even if you don't activate the model-checking at run time).
-- Also install ``libboost-stacktrace-dev`` to display nice backtraces from the application side (the one from the model-checking side is
-  available in any case, but it contains less details). 
 - You should pass some specific flags to the linker when compiling your application: ``-Wl,-znorelro -Wl,-znoseparate-code`` In the
   docker, the provided CMakeLists.txt provides them for you when compiling the provided code. ``smpicc`` and friends also add this
   parameter automatically.
+- Also install ``libboost-stacktrace-dev`` to display nice backtraces from the application side (the one from the model-checking side is
+  available in any case, but it contains less details).
+- Mc SimGrid uses the ``ptrace`` system call to spy on the verified application. Some versions of Docker forbid the use of this call by
+  default for security reason (it could be used to escape the docker containment with older versions of Linux). If you encounter this
+  issue, you should either update your settings (the security issue was solved in later versions of Linux), or add ``--cap-add
+  SYS_PTRACE`` to the docker parameters, as hinted by the text.
+
+.. |br| raw:: html
+
+   <br />
