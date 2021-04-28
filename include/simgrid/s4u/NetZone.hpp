@@ -216,10 +216,7 @@ struct FatTreeParams {
   std::vector<unsigned int> up;
   std::vector<unsigned int> number;
   FatTreeParams(unsigned int n_levels, const std::vector<unsigned int>& down_links,
-                const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& links_number)
-      : levels(n_levels), down(down_links), up(up_links), number(links_number)
-  { /* nothing to do */
-  }
+                const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& links_number);
 };
 /**
  * @brief Create a Fat-Tree zone

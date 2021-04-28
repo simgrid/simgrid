@@ -369,7 +369,7 @@ void FatTreeZone::check_topology(unsigned int n_levels, const std::vector<unsign
 
 {
   /* check number of levels */
-  if (n_levels <= 0)
+  if (n_levels == 0)
     throw std::invalid_argument("FatTreeZone: invalid number of levels, must be > 0");
 
   auto check_vector = [&n_levels](const std::vector<unsigned int>& vector, const std::string& var_name) {
@@ -497,6 +497,13 @@ void FatTreeZone::generate_dot_file(const std::string& filename) const
 } // namespace kernel
 
 namespace s4u {
+FatTreeParams::FatTreeParams(unsigned int n_levels, const std::vector<unsigned int>& down_links,
+                             const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& links_number)
+    : levels(n_levels), down(down_links), up(up_links), number(links_number)
+{
+  kernel::routing::FatTreeZone::check_topology(levels, down, up, number);
+}
+
 NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& params,
                              double bandwidth, double latency, Link::SharingPolicy sharing_policy,
                              const std::function<ClusterNetPointCb>& set_netpoint,
@@ -510,7 +517,6 @@ NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, con
   if (latency < 0)
     throw std::invalid_argument("FatTreeZone: incorrect latency for internode communication, lat=" +
                                 std::to_string(latency));
-  kernel::routing::FatTreeZone::check_topology(params.levels, params.down, params.up, params.number);
 
   /* creating zone */
   auto* zone = new kernel::routing::FatTreeZone(name);
