@@ -157,7 +157,7 @@ sg_platf_cluster_create_host(const simgrid::kernel::routing::ClusterCreationArgs
 {
   xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
              "Zone(%s): error when creating host number %d in the zone. Insufficient number of radicals available "
-             "(total = %lu). Check the 'radical' parameter in XML",
+             "(total = %zu). Check the 'radical' parameter in XML",
              cluster->id.c_str(), id, cluster->radicals.size());
 
   std::string host_id = std::string(cluster->prefix) + std::to_string(cluster->radicals[id]) + cluster->suffix;
@@ -177,7 +177,7 @@ sg_platf_cluster_create_loopback(const simgrid::kernel::routing::ClusterCreation
   xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
              "Zone(%s): error when creating loopback for host number %d in the zone. Insufficient number of radicals "
              "available "
-             "(total = %lu). Check the 'radical' parameter in XML",
+             "(total = %zu). Check the 'radical' parameter in XML",
              cluster->id.c_str(), id, cluster->radicals.size());
 
   std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(cluster->radicals[id]) + "_loopback";
@@ -198,7 +198,7 @@ static simgrid::s4u::Link* sg_platf_cluster_create_limiter(const simgrid::kernel
   xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
              "Zone(%s): error when creating limiter for host number %d in the zone. Insufficient number of radicals "
              "available "
-             "(total = %lu). Check the 'radical' parameter in XML",
+             "(total = %zu). Check the 'radical' parameter in XML",
              cluster->id.c_str(), id, cluster->radicals.size());
 
   std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(cluster->radicals[id]) + "_limiter";
