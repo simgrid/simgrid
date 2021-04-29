@@ -21,20 +21,21 @@ namespace routing {
 
 class XBT_PRIVATE TorusZone : public ClusterZone {
   std::vector<unsigned int> dimensions_;
+  s4u::Link::SharingPolicy link_sharing_policy_; //!< torus links: sharing policy
+  double link_bw_;                               //!< torus links: bandwidth
+  double link_lat_;                              //!< torus links: latency
 
 public:
   using ClusterZone::ClusterZone;
-  void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position) override;
+  void create_links_for_node(int id, int rank, unsigned int position);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
-  void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void set_topology(const std::vector<unsigned int>& dimensions);
 
   /** @brief Convert topology parameters from string to vector of uint */
   static std::vector<unsigned int> parse_topo_parameters(const std::string& topo_parameters);
+  /** @brief Set the characteristics of links inside the Torus zone */
+  void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy);
 };
-
-/** @brief Create a regular torus zone with hosts as leafs */
-s4u::NetZone* create_torus_zone_with_hosts(const ClusterCreationArgs* cluster, const s4u::NetZone* parent);
 
 } // namespace routing
 } // namespace kernel

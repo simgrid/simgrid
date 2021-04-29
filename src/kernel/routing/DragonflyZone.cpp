@@ -68,11 +68,11 @@ void DragonflyZone::set_topology(unsigned int n_groups, unsigned int groups_link
   num_nodes_per_blade_ = nodes;
 }
 
-void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
+s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& topo_parameters)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
-  boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
+  boost::split(parameters, topo_parameters, boost::is_any_of(";"));
 
   if (parameters.size() != 4)
     surf_parse_error(
@@ -83,14 +83,16 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   if (tmp.size() != 2)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
 
+  unsigned int n_groups;
   try {
-    num_groups_ = std::stoi(tmp[0]);
+    n_groups = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
   }
 
+  unsigned int n_blue;
   try {
-    num_links_blue_ = std::stoi(tmp[1]);
+    n_blue = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the blue level:") + tmp[1]);
   }
@@ -100,14 +102,16 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   if (tmp.size() != 2)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
 
+  unsigned int n_chassis;
   try {
-    num_chassis_per_group_ = std::stoi(tmp[0]);
+    n_chassis = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+    throw std::invalid_argument(std::string("Invalid number of chassis:") + tmp[0]);
   }
 
+  unsigned int n_black;
   try {
-    num_links_black_ = std::stoi(tmp[1]);
+    n_black = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the black level:") + tmp[1]);
   }
@@ -117,26 +121,28 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   if (tmp.size() != 2)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
 
+  unsigned int n_routers;
   try {
-    num_blades_per_chassis_ = std::stoi(tmp[0]);
+    n_routers = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+    throw std::invalid_argument(std::string("Invalid number of routers:") + tmp[0]);
   }
 
+  unsigned int n_green;
   try {
-    num_links_green_ = std::stoi(tmp[1]);
+    n_green = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Invalid number of links for the green level:") + tmp[1]);
   }
 
   // The last part of topo_parameters should be the number of nodes per blade
+  unsigned int n_nodes;
   try {
-    num_nodes_per_blade_ = std::stoi(parameters[3]);
+    n_nodes = std::stoi(parameters[3]);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Last parameter is not the amount of nodes per blade:") + parameters[3]);
   }
-
-  set_link_characteristics(cluster->bw, cluster->lat, cluster->sharing_policy);
+  return s4u::DragonflyParams({n_groups, n_blue}, {n_chassis, n_black}, {n_routers, n_green}, n_nodes);
 }
 
 /* Generate the cluster once every node is created */

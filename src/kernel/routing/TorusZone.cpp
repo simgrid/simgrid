@@ -21,7 +21,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position)
+void TorusZone::create_links_for_node(int id, int rank, unsigned int position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
@@ -34,16 +34,15 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
                                ? rank - (current_dimension - 1) * dim_product
                                : rank + dim_product;
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
-    std::string link_id =
-        std::string(cluster->id) + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
+    std::string link_id = get_name() + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
     const s4u::Link* linkup;
     const s4u::Link* linkdown;
-    if (cluster->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      linkup   = create_link(link_id + "_UP", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
-      linkdown = create_link(link_id + "_DOWN", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+    if (link_sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+      linkup   = create_link(link_id + "_UP", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
+      linkdown = create_link(link_id + "_DOWN", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
 
     } else {
-      linkup   = create_link(link_id, std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+      linkup   = create_link(link_id, std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
       linkdown = linkup;
     }
     /*
@@ -72,9 +71,11 @@ std::vector<unsigned int> TorusZone::parse_topo_parameters(const std::string& to
   return dimensions;
 }
 
-void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
+void TorusZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
 {
-  set_topology(TorusZone::parse_topo_parameters(cluster->topo_parameters));
+  link_sharing_policy_ = sharing_policy;
+  link_bw_             = bw;
+  link_lat_            = lat;
 }
 
 void TorusZone::set_topology(const std::vector<unsigned int>& dimensions)
@@ -190,66 +191,6 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   route->gw_dst = get_gateway(dst->id());
 }
 
-/** @brief Auxiliary function to create hosts */
-static std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>
-create_torus_host(const kernel::routing::ClusterCreationArgs* cluster, s4u::NetZone* zone,
-                  const std::vector<unsigned int>& /*coord*/, int id)
-{
-  std::string host_id = std::string(cluster->prefix) + std::to_string(id) + cluster->suffix;
-  XBT_DEBUG("TorusCluster: creating host=%s speed=%f", host_id.c_str(), cluster->speeds.front());
-  const s4u::Host* host = zone->create_host(host_id, cluster->speeds)
-                              ->set_core_count(cluster->core_amount)
-                              ->set_properties(cluster->properties)
-                              ->seal();
-  return std::make_pair(host->get_netpoint(), nullptr);
-}
-
-/** @brief Auxiliary function to create loopback links */
-static s4u::Link* create_torus_loopback(const kernel::routing::ClusterCreationArgs* cluster, s4u::NetZone* zone,
-                                        const std::vector<unsigned int>& /*coord*/, int id)
-{
-  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_loopback";
-  XBT_DEBUG("TorusCluster: creating loopback link=%s bw=%f", link_id.c_str(), cluster->loopback_bw);
-
-  s4u::Link* loopback = zone->create_link(link_id, cluster->loopback_bw)
-                            ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
-                            ->set_latency(cluster->loopback_lat)
-                            ->seal();
-  return loopback;
-}
-
-/** @brief Auxiliary function to create limiter links */
-static s4u::Link* create_torus_limiter(const kernel::routing::ClusterCreationArgs* cluster, s4u::NetZone* zone,
-                                       const std::vector<unsigned int>& /*coord*/, int id)
-{
-  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_limiter";
-  XBT_DEBUG("TorusCluster: creating limiter link=%s bw=%f", link_id.c_str(), cluster->limiter_link);
-
-  s4u::Link* limiter = zone->create_link(link_id, cluster->limiter_link)->seal();
-  return limiter;
-}
-
-s4u::NetZone* create_torus_zone_with_hosts(const kernel::routing::ClusterCreationArgs* cluster,
-                                           const s4u::NetZone* parent)
-{
-  using namespace std::placeholders;
-  auto set_host = std::bind(create_torus_host, cluster, _1, _2, _3);
-  std::function<s4u::ClusterLinkCb> set_loopback{};
-  std::function<s4u::ClusterLinkCb> set_limiter{};
-
-  if (cluster->loopback_bw > 0 || cluster->loopback_lat > 0) {
-    set_loopback = std::bind(create_torus_loopback, cluster, _1, _2, _3);
-  }
-
-  if (cluster->limiter_link > 0) {
-    set_loopback = std::bind(create_torus_limiter, cluster, _1, _2, _3);
-  }
-
-  return s4u::create_torus_zone(cluster->id, parent, TorusZone::parse_topo_parameters(cluster->topo_parameters),
-                                cluster->bw, cluster->lat, cluster->sharing_policy, set_host, set_loopback,
-                                set_limiter);
-}
-
 } // namespace routing
 } // namespace kernel
 
@@ -276,18 +217,15 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
   if (parent)
     zone->set_parent(parent->get_impl());
 
+  zone->set_link_characteristics(bandwidth, latency, sharing_policy);
+
   for (int i = 0; i < tot_elements; i++) {
     kernel::routing::NetPoint* netpoint;
     Link* limiter;
     Link* loopback;
     zone->fill_leaf_from_cb(i, dimensions, set_netpoint, set_loopback, set_limiter, &netpoint, &loopback, &limiter);
 
-    kernel::routing::ClusterCreationArgs params;
-    params.id             = name;
-    params.bw             = bandwidth;
-    params.lat            = latency;
-    params.sharing_policy = sharing_policy;
-    zone->create_links_for_node(&params, netpoint->id(), i, zone->node_pos_with_loopback_limiter(netpoint->id()));
+    zone->create_links_for_node(netpoint->id(), i, zone->node_pos_with_loopback_limiter(netpoint->id()));
   }
 
   return zone->get_iface();

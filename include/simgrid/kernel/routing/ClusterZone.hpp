@@ -105,11 +105,7 @@ public:
   void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                  std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
 
-  virtual void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position);
-  virtual void parse_specific_arguments(ClusterCreationArgs*)
-  {
-    /* this routing method does not require any specific argument */
-  }
+  void create_links_for_node(const ClusterCreationArgs* cluster, int id, int rank, unsigned int position);
 
   unsigned int node_pos(int id) const { return id * num_links_per_node_; }
   unsigned int node_pos_with_loopback(int id) const { return node_pos(id) + (has_loopback_ ? 1 : 0); }

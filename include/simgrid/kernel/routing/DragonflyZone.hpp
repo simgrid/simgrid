@@ -69,7 +69,13 @@ public:
 
   explicit DragonflyZone(const std::string& name);
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
-  void parse_specific_arguments(ClusterCreationArgs* cluster) override;
+  /**
+   * @brief Parse topology parameters from string format
+   *
+   * @param topo_parameters Topology parameters, e.g. "3,4 ; 3,2 ; 3,1 ; 2"
+   */
+  static s4u::DragonflyParams parse_topo_parameters(const std::string& topo_parameters);
+
   /** @brief Checks topology parameters */
   static void check_topology(unsigned int n_groups, unsigned int groups_links, unsigned int n_chassis,
                              unsigned int chassis_links, unsigned int n_routers, unsigned int routers_links,

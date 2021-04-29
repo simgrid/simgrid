@@ -404,7 +404,7 @@ void FatTreeZone::set_topology(unsigned int n_levels, const std::vector<unsigned
   num_port_lower_level_  = link_count;
 }
 
-void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
+s4u::FatTreeParams FatTreeZone::parse_topo_parameters(const std::string& topo_parameters)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
@@ -412,7 +412,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   std::vector<unsigned int> down;
   std::vector<unsigned int> up;
   std::vector<unsigned int> count;
-  boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
+  boost::split(parameters, topo_parameters, boost::is_any_of(";"));
 
   surf_parse_assert(
       parameters.size() == 4,
@@ -464,12 +464,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
       throw std::invalid_argument(std::string("Invalid lower level port number:") + port);
     }
   }
-
-  /* set topology */
-  FatTreeZone::check_topology(n_lev, down, up, count);
-  set_topology(n_lev, down, up, count);
-  /* saving internal links properties */
-  set_link_characteristics(cluster->bw, cluster->lat, cluster->sharing_policy);
+  return s4u::FatTreeParams(n_lev, down, up, count);
 }
 
 void FatTreeZone::generate_dot_file(const std::string& filename) const

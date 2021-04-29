@@ -141,8 +141,12 @@ public:
   ~FatTreeZone() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
 
-  /** @brief Read the parameters in topo_parameters field. */
-  void parse_specific_arguments(ClusterCreationArgs* cluster) override;
+  /**
+   * @brief Parse the topology parameters from string format
+   *
+   * @param topo_parameters String with topology, e.g. "2;4,4;1,2;1,2"
+   */
+  static s4u::FatTreeParams parse_topo_parameters(const std::string& topo_parameters);
   /** @brief Checks topology parameters */
   static void check_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
                              const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count);
