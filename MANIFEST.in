@@ -768,6 +768,9 @@ include teshsuite/simdag/platforms/bogus_missing_dst_gateway.xml
 include teshsuite/simdag/platforms/bogus_missing_src_gateway.xml
 include teshsuite/simdag/platforms/bogus_two_hosts_asymetric.xml
 include teshsuite/simdag/platforms/carol.fail
+include teshsuite/simdag/platforms/cluster_dragonfly_noncontiguous_rad.xml
+include teshsuite/simdag/platforms/cluster_fat_tree_noncontiguous_rad.xml
+include teshsuite/simdag/platforms/cluster_torus_noncontiguous_rad.xml
 include teshsuite/simdag/platforms/erin.avail
 include teshsuite/simdag/platforms/four_hosts_floyd.xml
 include teshsuite/simdag/platforms/host_attributes.xml

@@ -42,9 +42,9 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_two_hosts_asymetric.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link_splitduplex.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/cluster_torus_uncontiguos_rad.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/cluster_dragonfly_uncontiguos_rad.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/cluster_fat_tree_uncontiguos_rad.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/cluster_dragonfly_noncontiguous_rad.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/cluster_fat_tree_noncontiguous_rad.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/cluster_torus_noncontiguous_rad.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/Dijkstra.xml                     PARENT_SCOPE)
 set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/carol.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bob.trace
