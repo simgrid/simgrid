@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <zone id="world" routing="Full">
+    <cluster id="bob_cluster" topology="DRAGONFLY" topo_parameters="1,4;2,3;2,1;1"
+             prefix="node-" radical="0,1002-1004" suffix=".simgrid.org"
+	     speed="1Gf" bw="125MBps" lat="50us"
+             loopback_bw="100MBps" loopback_lat="0" limiter_link="150MBps"/>
+  </zone>
+</platform>

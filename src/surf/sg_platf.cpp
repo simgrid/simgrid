@@ -155,7 +155,12 @@ static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::
 sg_platf_cluster_create_host(const simgrid::kernel::routing::ClusterCreationArgs* cluster, simgrid::s4u::NetZone* zone,
                              const std::vector<unsigned int>& /*coord*/, int id)
 {
-  std::string host_id = std::string(cluster->prefix) + std::to_string(id) + cluster->suffix;
+  xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
+             "Zone(%s): error when creating host number %d in the zone. Insufficient number of radicals available "
+             "(total = %lu). Check the 'radical' parameter in XML",
+             cluster->id.c_str(), id, cluster->radicals.size());
+
+  std::string host_id = std::string(cluster->prefix) + std::to_string(cluster->radicals[id]) + cluster->suffix;
   XBT_DEBUG("Cluster: creating host=%s speed=%f", host_id.c_str(), cluster->speeds.front());
   const simgrid::s4u::Host* host = zone->create_host(host_id, cluster->speeds)
                                        ->set_core_count(cluster->core_amount)
@@ -169,7 +174,13 @@ static simgrid::s4u::Link*
 sg_platf_cluster_create_loopback(const simgrid::kernel::routing::ClusterCreationArgs* cluster,
                                  simgrid::s4u::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
 {
-  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_loopback";
+  xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
+             "Zone(%s): error when creating loopback for host number %d in the zone. Insufficient number of radicals "
+             "available "
+             "(total = %lu). Check the 'radical' parameter in XML",
+             cluster->id.c_str(), id, cluster->radicals.size());
+
+  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(cluster->radicals[id]) + "_loopback";
   XBT_DEBUG("Cluster: creating loopback link=%s bw=%f", link_id.c_str(), cluster->loopback_bw);
 
   simgrid::s4u::Link* loopback = zone->create_link(link_id, cluster->loopback_bw)
@@ -184,7 +195,13 @@ static simgrid::s4u::Link* sg_platf_cluster_create_limiter(const simgrid::kernel
                                                            simgrid::s4u::NetZone* zone,
                                                            const std::vector<unsigned int>& /*coord*/, int id)
 {
-  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_limiter";
+  xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
+             "Zone(%s): error when creating limiter for host number %d in the zone. Insufficient number of radicals "
+             "available "
+             "(total = %lu). Check the 'radical' parameter in XML",
+             cluster->id.c_str(), id, cluster->radicals.size());
+
+  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(cluster->radicals[id]) + "_limiter";
   XBT_DEBUG("Cluster: creating limiter link=%s bw=%f", link_id.c_str(), cluster->limiter_link);
 
   simgrid::s4u::Link* limiter = zone->create_link(link_id, cluster->limiter_link)->seal();
@@ -208,7 +225,7 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
   }
 
   if (cluster->limiter_link > 0) {
-    set_loopback = std::bind(sg_platf_cluster_create_limiter, cluster, _1, _2, _3);
+    set_limiter = std::bind(sg_platf_cluster_create_limiter, cluster, _1, _2, _3);
   }
 
   simgrid::s4u::NetZone* parent = routing_get_current() ? routing_get_current()->get_iface() : nullptr;
