@@ -90,6 +90,9 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
              "Refusing to create a second NetZone called '%s'.", get_cname());
   netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone);
   XBT_DEBUG("NetZone '%s' created with the id '%u'", get_cname(), netpoint_->id());
+  _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
+                            * any further config now that we created some real content */
+  simgrid::s4u::NetZone::on_creation(piface_); // notify the signal
 }
 
 NetZoneImpl::~NetZoneImpl()

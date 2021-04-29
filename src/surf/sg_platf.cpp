@@ -517,20 +517,9 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
  */
 simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
-  /* First create the zone.
-   * This order is important to assure that root netzone is set when models are setting
-   * the default mode for each resource (CPU, network, etc)
-   */
-  auto* new_zone = sg_platf_create_zone(zone);
+  current_routing = sg_platf_create_zone(zone);
 
-  _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
-                            * any further config now that we created some real content */
-
-  /* set the new current component of the tree */
-  current_routing = new_zone;
-  simgrid::s4u::NetZone::on_creation(*new_zone->get_iface()); // notify the signal
-
-  return new_zone;
+  return current_routing;
 }
 
 void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>& props)
