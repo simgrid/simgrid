@@ -7,8 +7,13 @@
 #include "src/internal_config.h"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/mc/mc_base.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
+#if HAVE_SMPI
+#include "src/smpi/include/private.hpp"
+#endif
 #include "xbt/coverage.h"
+#include "xbt/str.h"
 #include "xbt/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
 #include <simgrid/modelchecker.h>
 

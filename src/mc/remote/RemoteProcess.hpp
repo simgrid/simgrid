@@ -12,8 +12,10 @@
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
+#include "src/xbt/memory_map.hpp"
 #include "src/xbt/mmalloc/mmprivate.h"
 
+#include <libunwind.h>
 #include <vector>
 
 namespace simgrid {

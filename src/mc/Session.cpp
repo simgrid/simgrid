@@ -9,6 +9,7 @@
 #include "src/internal_config.h" // HAVE_SMPI
 #if HAVE_SMPI
 #include "smpi/smpi.h"
+#include "src/smpi/include/private.hpp"
 #endif
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_state.hpp"
