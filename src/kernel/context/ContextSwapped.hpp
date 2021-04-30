@@ -73,7 +73,7 @@ private:
   SwappedContextFactory& factory_; // for sequential and parallel run_all()
 
 #if HAVE_VALGRIND_H
-  unsigned int valgrind_stack_id_;
+  unsigned int valgrind_stack_id_ = 0;
 #endif
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_   = nullptr;

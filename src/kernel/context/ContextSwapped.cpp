@@ -147,7 +147,7 @@ SwappedContext::~SwappedContext()
   __tsan_destroy_fiber(tsan_fiber_);
 #endif
 #if HAVE_VALGRIND_H
-  if (RUNNING_ON_VALGRIND)
+  if (valgrind_stack_id_ != 0)
     VALGRIND_STACK_DEREGISTER(valgrind_stack_id_);
 #endif
 
