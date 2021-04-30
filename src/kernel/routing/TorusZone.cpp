@@ -21,7 +21,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-void TorusZone::create_links_for_node(int id, int rank, unsigned int position)
+void TorusZone::create_links(int id, int rank, unsigned int position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
@@ -197,10 +197,8 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 namespace s4u {
 
 NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const std::vector<unsigned int>& dimensions,
-                           double bandwidth, double latency, Link::SharingPolicy sharing_policy,
-                           const std::function<ClusterNetPointCb>& set_netpoint,
-                           const std::function<ClusterLinkCb>& set_loopback,
-                           const std::function<ClusterLinkCb>& set_limiter)
+                           const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
+                           Link::SharingPolicy sharing_policy)
 {
   int tot_elements = std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>());
   if (dimensions.empty() || tot_elements <= 0)
@@ -223,9 +221,9 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
     kernel::routing::NetPoint* netpoint;
     Link* limiter;
     Link* loopback;
-    zone->fill_leaf_from_cb(i, dimensions, set_netpoint, set_loopback, set_limiter, &netpoint, &loopback, &limiter);
+    zone->fill_leaf_from_cb(i, dimensions, set_callbacks, &netpoint, &loopback, &limiter);
 
-    zone->create_links_for_node(netpoint->id(), i, zone->node_pos_with_loopback_limiter(netpoint->id()));
+    zone->create_links(netpoint->id(), i, zone->node_pos_with_loopback_limiter(netpoint->id()));
   }
 
   return zone->get_iface();

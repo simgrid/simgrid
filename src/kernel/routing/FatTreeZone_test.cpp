@@ -32,75 +32,77 @@ TEST_CASE("kernel::routing::FatTreeZone: Creating Zone", "")
 {
   using namespace simgrid::s4u;
   EngineWrapper e("test");
-  REQUIRE(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, 1e9, 10,
-                              simgrid::s4u::Link::SharingPolicy::SHARED, create_host));
+  ClusterCallbacks callbacks(create_host);
+  REQUIRE(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, callbacks, 1e9, 10,
+                              simgrid::s4u::Link::SharingPolicy::SHARED));
 }
 
 TEST_CASE("kernel::routing::FatTreeZone: Invalid params", "")
 {
   using namespace simgrid::s4u;
   EngineWrapper e("test");
+  ClusterCallbacks callbacks(create_host);
 
   SECTION("0 levels")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {0, {4, 4}, {1, 2}, {1, 2}}, 1e9, 10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {0, {4, 4}, {1, 2}, {1, 2}}, callbacks, 1e9,
+                                          10, simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 
   SECTION("Invalid down links")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4}, {1, 2}, {1, 2}}, 1e9, 10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4}, {1, 2}, {1, 2}}, callbacks, 1e9, 10,
+                                          simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 
   SECTION("Invalid up links")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1}, {1, 2}}, 1e9, 10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1}, {1, 2}}, callbacks, 1e9, 10,
+                                          simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 
   SECTION("Invalid link count")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1}}, 1e9, 10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1}}, callbacks, 1e9, 10,
+                                          simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 
   SECTION("Down links with zeroes")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 0}, {1, 2}, {1, 2}}, 1e9, 10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 0}, {1, 2}, {1, 2}}, callbacks, 1e9,
+                                          10, simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 
   SECTION("Up links with zeroes")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {0, 2}, {1, 2}}, 1e9, 10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {0, 2}, {1, 2}}, callbacks, 1e9,
+                                          10, simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 
   SECTION("Link count with zeroes")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 0}}, 1e9, 10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 0}}, callbacks, 1e9,
+                                          10, simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 
   SECTION("0 bandwidth")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, 0, 10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, callbacks, 0, 10,
+                                          simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 
   SECTION("Negative latency")
   {
-    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, 1e9, -10,
-                                          simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_fatTree_zone("test", e.e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, callbacks, 1e9,
+                                          -10, simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 }

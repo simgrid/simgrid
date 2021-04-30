@@ -217,8 +217,8 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
   using simgrid::kernel::routing::TorusZone;
 
   auto set_host = std::bind(sg_platf_cluster_create_host, cluster, _1, _2, _3);
-  std::function<simgrid::s4u::ClusterLinkCb> set_loopback{};
-  std::function<simgrid::s4u::ClusterLinkCb> set_limiter{};
+  std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb> set_loopback{};
+  std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb> set_limiter{};
 
   if (cluster->loopback_bw > 0 || cluster->loopback_lat > 0) {
     set_loopback = std::bind(sg_platf_cluster_create_loopback, cluster, _1, _2, _3);
@@ -233,18 +233,18 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
   switch (cluster->topology) {
     case simgrid::kernel::routing::ClusterTopology::TORUS:
       zone = simgrid::s4u::create_torus_zone(
-          cluster->id, parent, TorusZone::parse_topo_parameters(cluster->topo_parameters), cluster->bw, cluster->lat,
-          cluster->sharing_policy, set_host, set_loopback, set_limiter);
+          cluster->id, parent, TorusZone::parse_topo_parameters(cluster->topo_parameters),
+          {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat, cluster->sharing_policy);
       break;
     case simgrid::kernel::routing::ClusterTopology::DRAGONFLY:
       zone = simgrid::s4u::create_dragonfly_zone(
-          cluster->id, parent, DragonflyZone::parse_topo_parameters(cluster->topo_parameters), cluster->bw,
-          cluster->lat, cluster->sharing_policy, set_host, set_loopback, set_limiter);
+          cluster->id, parent, DragonflyZone::parse_topo_parameters(cluster->topo_parameters),
+          {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat, cluster->sharing_policy);
       break;
     case simgrid::kernel::routing::ClusterTopology::FAT_TREE:
       zone = simgrid::s4u::create_fatTree_zone(
-          cluster->id, parent, FatTreeZone::parse_topo_parameters(cluster->topo_parameters), cluster->bw, cluster->lat,
-          cluster->sharing_policy, set_host, set_loopback, set_limiter);
+          cluster->id, parent, FatTreeZone::parse_topo_parameters(cluster->topo_parameters),
+          {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat, cluster->sharing_policy);
       break;
     default:
       THROW_IMPOSSIBLE;

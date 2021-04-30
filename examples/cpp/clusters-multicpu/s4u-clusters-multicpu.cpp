@@ -171,8 +171,8 @@ static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned 
 static void create_torus_cluster()
 {
   /* create the torus cluster, 10Gbs link between elements in the cluster */
-  sg4::create_torus_zone("cluster", nullptr, {2, 2, 2}, 10e9, 10e-6, sg4::Link::SharingPolicy::SPLITDUPLEX,
-                         create_hostzone, {}, create_limiter)
+  sg4::create_torus_zone("cluster", nullptr, {2, 2, 2}, {create_hostzone, {}, create_limiter}, 10e9, 10e-6,
+                         sg4::Link::SharingPolicy::SPLITDUPLEX)
       ->seal();
 }
 
@@ -224,8 +224,8 @@ static void create_torus_cluster()
 static void create_fatTree_cluster()
 {
   /* create the fat tree cluster, 10Gbs link between elements in the cluster */
-  sg4::create_fatTree_zone("cluster", nullptr, {2, {2, 3}, {1, 2}, {1, 1}}, 10e9, 10e-6,
-                           sg4::Link::SharingPolicy::SPLITDUPLEX, create_hostzone, {}, create_limiter)
+  sg4::create_fatTree_zone("cluster", nullptr, {2, {2, 3}, {1, 2}, {1, 1}}, {create_hostzone, {}, create_limiter}, 10e9,
+                           10e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)
       ->seal();
 }
 
@@ -272,8 +272,8 @@ static void create_fatTree_cluster()
 static void create_dragonfly_cluster()
 {
   /* create the dragonfly cluster, 10Gbs link between elements in the cluster */
-  sg4::create_dragonfly_zone("cluster", nullptr, {{2, 2}, {2, 1}, {2, 2}, 2}, 10e9, 10e-6,
-                             sg4::Link::SharingPolicy::SPLITDUPLEX, create_hostzone, {}, create_limiter)
+  sg4::create_dragonfly_zone("cluster", nullptr, {{2, 2}, {2, 1}, {2, 2}, 2}, {create_hostzone, {}, create_limiter},
+                             10e9, 10e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)
       ->seal();
 }
 

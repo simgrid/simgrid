@@ -32,37 +32,39 @@ TEST_CASE("kernel::routing::TorusZone: Creating Zone", "")
 {
   using namespace simgrid::s4u;
   EngineWrapper e("test");
-  REQUIRE(create_torus_zone("test", e.e.get_netzone_root(), {3, 3, 3}, 1e9, 10,
-                            simgrid::s4u::Link::SharingPolicy::SHARED, create_host));
+  ClusterCallbacks callbacks(create_host);
+  REQUIRE(create_torus_zone("test", e.e.get_netzone_root(), {3, 3, 3}, callbacks, 1e9, 10,
+                            simgrid::s4u::Link::SharingPolicy::SHARED));
 }
 
 TEST_CASE("kernel::routing::TorusZone: Invalid params", "")
 {
   using namespace simgrid::s4u;
   EngineWrapper e("test");
+  ClusterCallbacks callbacks(create_host);
 
   SECTION("Empty dimensions")
   {
-    REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {}, 1e9, 10,
-                                        simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {}, callbacks, 1e9, 10,
+                                        simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
   SECTION("One 0 dimension")
   {
-    REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 0, 2}, 1e9, 10,
-                                        simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 0, 2}, callbacks, 1e9, 10,
+                                        simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
   SECTION("Invalid bandwidth")
   {
-    REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 2, 2}, 0, 10,
-                                        simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 2, 2}, callbacks, 0, 10,
+                                        simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
   SECTION("Invalid latency")
   {
-    REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 2, 2}, 1e9, -10,
-                                        simgrid::s4u::Link::SharingPolicy::SHARED, create_host),
+    REQUIRE_THROWS_AS(create_torus_zone("test", e.e.get_netzone_root(), {3, 2, 2}, callbacks, 1e9, -10,
+                                        simgrid::s4u::Link::SharingPolicy::SHARED),
                       std::invalid_argument);
   }
 }

@@ -500,10 +500,8 @@ FatTreeParams::FatTreeParams(unsigned int n_levels, const std::vector<unsigned i
 }
 
 NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& params,
-                             double bandwidth, double latency, Link::SharingPolicy sharing_policy,
-                             const std::function<ClusterNetPointCb>& set_netpoint,
-                             const std::function<ClusterLinkCb>& set_loopback,
-                             const std::function<ClusterLinkCb>& set_limiter)
+                             const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
+                             Link::SharingPolicy sharing_policy)
 {
   /* initial checks */
   if (bandwidth <= 0)
@@ -526,7 +524,7 @@ NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, con
     kernel::routing::NetPoint* netpoint;
     Link* limiter;
     Link* loopback;
-    zone->fill_leaf_from_cb(i, params.down, set_netpoint, set_loopback, set_limiter, &netpoint, &loopback, &limiter);
+    zone->fill_leaf_from_cb(i, params.down, set_callbacks, &netpoint, &loopback, &limiter);
     zone->add_processing_node(i, limiter ? limiter->get_impl() : nullptr, loopback ? loopback->get_impl() : nullptr);
   }
 

@@ -115,10 +115,8 @@ public:
   }
   /** Fill the leaf retriving netpoint from a user's callback */
   void fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
-                         const std::function<s4u::ClusterNetPointCb>& set_netpoint_cb,
-                         const std::function<s4u::ClusterLinkCb>& set_loopback_cb,
-                         const std::function<s4u::ClusterLinkCb>& set_limiter_cb, NetPoint** node_netpoint,
-                         s4u::Link** lb_link, s4u::Link** limiter_link);
+                         const s4u::ClusterCallbacks& set_callbacks, NetPoint** node_netpoint, s4u::Link** lb_link,
+                         s4u::Link** limiter_link);
 };
 } // namespace routing
 } // namespace kernel

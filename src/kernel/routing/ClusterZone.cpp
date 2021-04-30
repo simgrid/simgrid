@@ -175,9 +175,7 @@ NetPoint* ClusterZone::get_gateway(unsigned int position)
 }
 
 void ClusterZone::fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
-                                    const std::function<s4u::ClusterNetPointCb>& set_netpoint_cb,
-                                    const std::function<s4u::ClusterLinkCb>& set_loopback_cb,
-                                    const std::function<s4u::ClusterLinkCb>& set_limiter_cb, NetPoint** node_netpoint,
+                                    const s4u::ClusterCallbacks& set_callbacks, NetPoint** node_netpoint,
                                     s4u::Link** lb_link, s4u::Link** limiter_link)
 {
   xbt_assert(node_netpoint, "Invalid node_netpoint parameter");
@@ -203,7 +201,7 @@ void ClusterZone::fill_leaf_from_cb(unsigned int position, const std::vector<uns
   kernel::routing::NetPoint* netpoint = nullptr;
   kernel::routing::NetPoint* gw       = nullptr;
   auto dims                           = index_to_dims(position);
-  std::tie(netpoint, gw)              = set_netpoint_cb(get_iface(), dims, position);
+  std::tie(netpoint, gw)              = set_callbacks.netpoint(get_iface(), dims, position);
   xbt_assert(netpoint, "set_netpoint(elem=%u): Invalid netpoint (nullptr)", position);
   if (netpoint->is_netzone()) {
     xbt_assert(gw && not gw->is_netzone(),
@@ -215,16 +213,16 @@ void ClusterZone::fill_leaf_from_cb(unsigned int position, const std::vector<uns
   // setting gateway
   set_gateway(position, gw);
 
-  if (set_loopback_cb) {
-    s4u::Link* loopback = set_loopback_cb(get_iface(), dims, position);
+  if (set_callbacks.loopback) {
+    s4u::Link* loopback = set_callbacks.loopback(get_iface(), dims, position);
     xbt_assert(loopback, "set_loopback: Invalid loopback link (nullptr) for element %u", position);
     set_loopback();
     add_private_link_at(node_pos(netpoint->id()), {loopback->get_impl(), loopback->get_impl()});
     *lb_link = loopback;
   }
 
-  if (set_limiter_cb) {
-    s4u::Link* limiter = set_limiter_cb(get_iface(), dims, position);
+  if (set_callbacks.limiter) {
+    s4u::Link* limiter = set_callbacks.limiter(get_iface(), dims, position);
     xbt_assert(limiter, "set_limiter: Invalid limiter link (nullptr) for element %u", position);
     set_limiter();
     add_private_link_at(node_pos_with_loopback(netpoint->id()), {limiter->get_impl(), limiter->get_impl()});
@@ -235,12 +233,4 @@ void ClusterZone::fill_leaf_from_cb(unsigned int position, const std::vector<uns
 
 } // namespace routing
 } // namespace kernel
-
-namespace s4u {
-NetZone* create_cluster_zone(const std::string& name)
-{
-  return (new kernel::routing::ClusterZone(name))->get_iface();
-}
-} // namespace s4u
-
 } // namespace simgrid

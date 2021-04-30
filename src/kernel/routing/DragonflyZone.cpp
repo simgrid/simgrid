@@ -390,10 +390,8 @@ DragonflyParams::DragonflyParams(const std::pair<unsigned int, unsigned int>& gr
 }
 
 NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent, const DragonflyParams& params,
-                               double bandwidth, double latency, Link::SharingPolicy sharing_policy,
-                               const std::function<ClusterNetPointCb>& set_netpoint,
-                               const std::function<ClusterLinkCb>& set_loopback,
-                               const std::function<ClusterLinkCb>& set_limiter)
+                               const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
+                               Link::SharingPolicy sharing_policy)
 {
   /* initial checks */
   if (bandwidth <= 0)
@@ -419,7 +417,7 @@ NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent, c
     kernel::routing::NetPoint* netpoint;
     Link* limiter;
     Link* loopback;
-    zone->fill_leaf_from_cb(i, dimensions, set_netpoint, set_loopback, set_limiter, &netpoint, &loopback, &limiter);
+    zone->fill_leaf_from_cb(i, dimensions, set_callbacks, &netpoint, &loopback, &limiter);
   }
 
   return zone->get_iface();

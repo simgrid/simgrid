@@ -146,35 +146,48 @@ private:
 
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC NetZone* create_full_zone(const std::string& name);
-XBT_PUBLIC NetZone* create_cluster_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_star_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_dijkstra_zone(const std::string& name, bool cache);
 XBT_PUBLIC NetZone* create_empty_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_floyd_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_vivaldi_zone(const std::string& name);
 XBT_PUBLIC NetZone* create_wifi_zone(const std::string& name);
-/**
- * @brief Callback used to set the netpoint and gateway located at some leaf of clusters (Torus, FatTree, etc)
- *
- * The netpoint can be either a host, router or another netzone.
- * Gateway must be non-null if netpoint is a netzone
- *
- * @param zone: The newly create zone, needed for creating new resources (hosts, links)
- * @param coord: the coordinates of the element
- * @param id: Internal identifier of the element
- * @return pair<NetPoint*, NetPoint*>: returns a pair of netpoint and gateway.
- */
-using ClusterNetPointCb = std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>(
-    NetZone* zone, const std::vector<unsigned int>& coord, int id);
-/**
- * @brief Callback used to set the links for some leaf of the cluster (Torus, FatTree, etc)
- *
- * @param zone: The newly create zone, needed for creating new resources (hosts, links)
- * @param coord: the coordinates of the element
- * @param id: Internal identifier of the element
- * @return Pointer to the Link
- */
-using ClusterLinkCb = Link*(NetZone* zone, const std::vector<unsigned int>& coord, int id);
+
+// Extra data structure for complex constructors
+
+/** @brief Aggregates the callbacks used to build clusters netzones (Torus/Dragronfly/Fat-Tree) */
+struct ClusterCallbacks {
+  /**
+   * @brief Callback used to set the netpoint and gateway located at some leaf of clusters (Torus, FatTree, etc)
+   *
+   * The netpoint can be either a host, router or another netzone.
+   * Gateway must be non-null if netpoint is a netzone
+   *
+   * @param zone: The newly create zone, needed for creating new resources (hosts, links)
+   * @param coord: the coordinates of the element
+   * @param id: Internal identifier of the element
+   * @return pair<NetPoint*, NetPoint*>: returns a pair of netpoint and gateway.
+   */
+  using ClusterNetPointCb = std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>(
+      NetZone* zone, const std::vector<unsigned int>& coord, int id);
+  /**
+   * @brief Callback used to set the links for some leaf of the cluster (Torus, FatTree, etc)
+   *
+   * @param zone: The newly create zone, needed for creating new resources (hosts, links)
+   * @param coord: the coordinates of the element
+   * @param id: Internal identifier of the element
+   * @return Pointer to the Link
+   */
+  using ClusterLinkCb = Link*(NetZone* zone, const std::vector<unsigned int>& coord, int id);
+
+  std::function<ClusterNetPointCb> netpoint;
+  std::function<ClusterLinkCb> loopback = {};
+  std::function<ClusterLinkCb> limiter  = {};
+  explicit ClusterCallbacks(std::function<ClusterNetPointCb> set_netpoint) : netpoint(set_netpoint){/*nothing to do */};
+  ClusterCallbacks(std::function<ClusterNetPointCb> set_netpoint, std::function<ClusterLinkCb> set_loopback,
+                   std::function<ClusterLinkCb> set_limiter)
+      : netpoint(set_netpoint), loopback(set_loopback), limiter(set_limiter){/*nothing to do */};
+};
 /**
  * @brief Create a torus zone
  *
@@ -194,20 +207,16 @@ using ClusterLinkCb = Link*(NetZone* zone, const std::vector<unsigned int>& coor
  * @param parent Pointer to parent's netzone (nullptr if root netzone). Needed to be able to create the resources inside
  * the netzone
  * @param dimensions List of positive integers (> 0) which determines the torus' dimensions
+ * @param set_callbacks Callbacks to set properties from cluster elements (netpoint, loopback and limiter)
  * @param bandwidth Characteristics of the inter-nodes link
  * @param latency Characteristics of the inter-nodes link
  * @param sharing_policy Characteristics of the inter-nodes link
- * @param set_netpoint Callback to set the netpoint of an element in the torus
- * @param set_loopback Callback to set the loopback
- * @param set_limiter Callback to set the limiter
  * @return Pointer to new netzone
  */
 XBT_PUBLIC NetZone* create_torus_zone(const std::string& name, const NetZone* parent,
-                                      const std::vector<unsigned int>& dimensions, double bandwidth, double latency,
-                                      Link::SharingPolicy sharing_policy,
-                                      const std::function<ClusterNetPointCb>& set_netpoint,
-                                      const std::function<ClusterLinkCb>& set_loopback = {},
-                                      const std::function<ClusterLinkCb>& set_limiter  = {});
+                                      const std::vector<unsigned int>& dimensions,
+                                      const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
+                                      Link::SharingPolicy sharing_policy);
 
 /** @brief Aggregates the parameters necessary to build a Fat-tree zone */
 struct FatTreeParams {
@@ -239,19 +248,15 @@ struct FatTreeParams {
  * @param parent Pointer to parent's netzone (nullptr if root netzone). Needed to be able to create the resources inside
  * the netzone
  * @param parameters Characteristics of this Fat-Tree
+ * @param set_callbacks Callbacks to set properties from cluster elements (netpoint, loopback and limiter)
  * @param bandwidth Characteristics of the inter-nodes link
  * @param latency Characteristics of the inter-nodes link
  * @param sharing_policy Characteristics of the inter-nodes link
- * @param set_netpoint Callback to set the netpoint of an element in the torus
- * @param set_loopback Callback to set the loopback
- * @param set_limiter Callback to set the limiter
  * @return Pointer to new netzone
  */
 XBT_PUBLIC NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& parameters,
-                                        double bandwidth, double latency, Link::SharingPolicy sharing_policy,
-                                        const std::function<ClusterNetPointCb>& set_netpoint,
-                                        const std::function<ClusterLinkCb>& set_loopback = {},
-                                        const std::function<ClusterLinkCb>& set_limiter  = {});
+                                        const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
+                                        Link::SharingPolicy sharing_policy);
 
 /** @brief Aggregates the parameters necessary to build a Dragonfly zone */
 struct DragonflyParams {
@@ -285,20 +290,15 @@ struct DragonflyParams {
  * @param parent Pointer to parent's netzone (nullptr if root netzone). Needed to be able to create the resources inside
  * the netzone
  * @param parameters Characteristics of this Dragonfly
+ * @param set_callbacks Callbacks to set properties from cluster elements (netpoint, loopback and limiter)
  * @param bandwidth Characteristics of the inter-nodes link
  * @param latency Characteristics of the inter-nodes link
  * @param sharing_policy Characteristics of the inter-nodes link
- * @param set_netpoint Callback to set the netpoint of an element in the torus
- * @param set_loopback Callback to set the loopback
- * @param set_limiter Callback to set the limiter
  * @return Pointer to new netzone
  */
 XBT_PUBLIC NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent,
-                                          const DragonflyParams& parameters, double bandwidth, double latency,
-                                          Link::SharingPolicy sharing_policy,
-                                          const std::function<ClusterNetPointCb>& set_netpoint,
-                                          const std::function<ClusterLinkCb>& set_loopback = {},
-                                          const std::function<ClusterLinkCb>& set_limiter  = {});
+                                          const DragonflyParams& parameters, const ClusterCallbacks& set_callbacks,
+                                          double bandwidth, double latency, Link::SharingPolicy sharing_policy);
 
 } // namespace s4u
 } // namespace simgrid
