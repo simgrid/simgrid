@@ -12,6 +12,9 @@ LUA:
 XBT:
  - xbt_assert is not disabled anymore, even when built with enable_debug=off.
 
+Documentation:
+ - New tutorial: Model-checking and formal assessment
+
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
  - FG#47: Complete and fix tests from teshuite/s4u/activity-lifecycle
