@@ -295,6 +295,16 @@ If you want to run such analysis on your own code, out of the provided docker, t
   issue, you should either update your settings (the security issue was solved in later versions of Linux), or add ``--cap-add
   SYS_PTRACE`` to the docker parameters, as hinted by the text.
 
+Going further
+-------------
+
+This tutorial is not complete yet, as there is nothing on reduction
+techniques nor on liveness properties. For now, the best source of
+information on these topics is `this old tutorial
+<https://simgrid.org/tutorials/simgrid-mc-101.pdf>`_ and `that old
+presentation
+<http://people.irisa.fr/Martin.Quinson/blog/2018/0123/McSimGrid-Boston.pdf>`_.
+
 .. |br| raw:: html
 
    <br />
