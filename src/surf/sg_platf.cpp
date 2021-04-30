@@ -323,8 +323,9 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
       current_zone->add_private_link_at(current_zone->node_pos_with_loopback(rankId), {limiter, limiter});
     }
 
+    current_zone->set_link_characteristics(cluster->bw, cluster->lat, cluster->sharing_policy);
     // call the cluster function that adds the others links
-    current_zone->create_links_for_node(cluster, i, rankId, current_zone->node_pos_with_loopback_limiter(rankId));
+    current_zone->create_links(i, rankId);
     rankId++;
   }
 

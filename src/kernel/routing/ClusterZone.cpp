@@ -148,20 +148,20 @@ void ClusterZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xb
   }
 }
 
-void ClusterZone::create_links_for_node(const ClusterCreationArgs* cluster, int id, int /*rank*/, unsigned int position)
+void ClusterZone::create_links(int id, int rank)
 {
-  std::string link_id = cluster->id + "_link_" + std::to_string(id);
+  std::string link_id = get_name() + "_link_" + std::to_string(id);
 
   const s4u::Link* linkUp;
   const s4u::Link* linkDown;
-  if (cluster->sharing_policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkUp   = create_link(link_id + "_UP", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
-    linkDown = create_link(link_id + "_DOWN", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+  if (link_sharing_policy_ == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
+    linkUp   = create_link(link_id + "_UP", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
+    linkDown = create_link(link_id + "_DOWN", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
   } else {
-    linkUp   = create_link(link_id, std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+    linkUp   = create_link(link_id, std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
     linkDown = linkUp;
   }
-  private_links_.insert({position, {linkUp->get_impl(), linkDown->get_impl()}});
+  private_links_.insert({node_pos_with_loopback_limiter(rank), {linkUp->get_impl(), linkDown->get_impl()}});
 }
 
 void ClusterZone::set_gateway(unsigned int position, NetPoint* gateway)
