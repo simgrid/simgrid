@@ -291,14 +291,12 @@ void RemoteProcess::init_memory_map_info()
   XBT_DEBUG("Get debug information ...");
   this->maestro_stack_start_ = nullptr;
   this->maestro_stack_end_   = nullptr;
-  this->object_infos.resize(0);
+  this->object_infos.clear();
   this->binary_info = nullptr;
 
   std::vector<simgrid::xbt::VmMap> const& maps = this->memory_map_;
 
   const char* current_name = nullptr;
-
-  this->object_infos.clear();
 
   for (size_t i = 0; i < maps.size(); i++) {
     simgrid::xbt::VmMap const& reg = maps[i];
