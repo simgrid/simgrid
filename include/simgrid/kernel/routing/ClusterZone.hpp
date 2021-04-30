@@ -76,14 +76,24 @@ class ClusterZone : public NetZoneImpl {
   bool has_loopback_               = false;
   unsigned int num_links_per_node_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
 
+  s4u::Link::SharingPolicy link_sharing_policy_; //!< cluster links: sharing policy
+  double link_bw_;                               //!< cluster links: bandwidth
+  double link_lat_;                              //!< cluster links: latency
+
 protected:
   void set_num_links_per_node(unsigned int num) { num_links_per_node_ = num; }
   resource::LinkImpl* get_uplink_from(unsigned int position) const { return private_links_.at(position).first; }
   resource::LinkImpl* get_downlink_to(unsigned int position) const { return private_links_.at(position).second; }
 
+  double get_link_latency() const { return link_lat_; }
+  double get_link_bandwidth() const { return link_bw_; }
+  s4u::Link::SharingPolicy get_link_sharing_policy() const { return link_sharing_policy_; }
+
 public:
   explicit ClusterZone(const std::string& name);
 
+  /** @brief Set the characteristics of links inside a Cluster zone */
+  virtual void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy);
   void set_loopback();
   bool has_loopback() const { return has_loopback_; }
   void set_limiter();

@@ -37,12 +37,16 @@ void TorusZone::create_links(int id, int rank, unsigned int position)
     std::string link_id = get_name() + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
     const s4u::Link* linkup;
     const s4u::Link* linkdown;
-    if (link_sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      linkup   = create_link(link_id + "_UP", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
-      linkdown = create_link(link_id + "_DOWN", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
+    if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+      linkup = create_link(link_id + "_UP", std::vector<double>{get_link_bandwidth()})
+                   ->set_latency(get_link_latency())
+                   ->seal();
+      linkdown = create_link(link_id + "_DOWN", std::vector<double>{get_link_bandwidth()})
+                     ->set_latency(get_link_latency())
+                     ->seal();
 
     } else {
-      linkup   = create_link(link_id, std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
+      linkup = create_link(link_id, std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
       linkdown = linkup;
     }
     /*
@@ -69,13 +73,6 @@ std::vector<unsigned int> TorusZone::parse_topo_parameters(const std::string& to
     std::transform(begin(dimensions_str), end(dimensions_str), std::back_inserter(dimensions), surf_parse_get_int);
   }
   return dimensions;
-}
-
-void TorusZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
-{
-  link_sharing_policy_ = sharing_policy;
-  link_bw_             = bw;
-  link_lat_            = lat;
 }
 
 void TorusZone::set_topology(const std::vector<unsigned int>& dimensions)

@@ -21,9 +21,6 @@ namespace routing {
 
 class XBT_PRIVATE TorusZone : public ClusterZone {
   std::vector<unsigned int> dimensions_;
-  s4u::Link::SharingPolicy link_sharing_policy_; //!< torus links: sharing policy
-  double link_bw_;                               //!< torus links: bandwidth
-  double link_lat_;                              //!< torus links: latency
 
 public:
   using ClusterZone::ClusterZone;
@@ -33,8 +30,6 @@ public:
 
   /** @brief Convert topology parameters from string to vector of uint */
   static std::vector<unsigned int> parse_topo_parameters(const std::string& topo_parameters);
-  /** @brief Set the characteristics of links inside the Torus zone */
-  void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy);
 };
 
 } // namespace routing

@@ -45,11 +45,9 @@ void DragonflyZone::rankId_to_coords(int rankId, unsigned int coords[4]) const /
 
 void DragonflyZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
 {
-  sharing_policy_ = sharing_policy;
+  ClusterZone::set_link_characteristics(bw, lat, sharing_policy);
   if (sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX)
     num_links_per_link_ = 2;
-  bw_  = bw;
-  lat_ = lat;
 }
 
 void DragonflyZone::set_topology(unsigned int n_groups, unsigned int groups_links, unsigned int n_chassis,
@@ -170,11 +168,20 @@ void DragonflyZone::generate_link(const std::string& id, int numlinks, resource:
   XBT_DEBUG("Generating link %s", id.c_str());
   *linkup   = nullptr;
   *linkdown = nullptr;
-  if (sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    *linkup   = create_link(id + "_UP", std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
-    *linkdown = create_link(id + "_DOWN", std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
+  if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+    *linkup = create_link(id + "_UP", std::vector<double>{get_link_bandwidth() * numlinks})
+                  ->set_latency(get_link_latency())
+                  ->seal()
+                  ->get_impl();
+    *linkdown = create_link(id + "_DOWN", std::vector<double>{get_link_bandwidth() * numlinks})
+                    ->set_latency(get_link_latency())
+                    ->seal()
+                    ->get_impl();
   } else {
-    *linkup   = create_link(id, std::vector<double>{bw_ * numlinks})->set_latency(lat_)->seal()->get_impl();
+    *linkup = create_link(id, std::vector<double>{get_link_bandwidth() * numlinks})
+                  ->set_latency(get_link_latency())
+                  ->seal()
+                  ->get_impl();
     *linkdown = *linkup;
   }
 }
@@ -200,7 +207,7 @@ void DragonflyZone::generate_links()
       generate_link(id, 1, &linkup, &linkdown);
 
       routers_[i].my_nodes_[j] = linkup;
-      if (sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX)
+      if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX)
         routers_[i].my_nodes_[j + 1] = linkdown;
 
       uniqueId++;

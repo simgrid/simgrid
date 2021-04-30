@@ -35,6 +35,13 @@ void ClusterZone::set_limiter()
   }
 }
 
+void ClusterZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
+{
+  link_sharing_policy_ = sharing_policy;
+  link_bw_             = bw;
+  link_lat_            = lat;
+}
+
 void ClusterZone::add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link)
 {
   private_links_.insert({position, link});

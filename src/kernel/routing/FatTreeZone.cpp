@@ -346,11 +346,13 @@ void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTree
   std::string id =
       "link_from_" + std::to_string(child->id) + "_" + std::to_string(parent->id) + "_" + std::to_string(uniqueId);
 
-  if (link_sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkup   = create_link(id + "_UP", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
-    linkdown = create_link(id + "_DOWN", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
+  if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+    linkup =
+        create_link(id + "_UP", std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkdown =
+        create_link(id + "_DOWN", std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
   } else {
-    linkup   = create_link(id, std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
+    linkup   = create_link(id, std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
     linkdown = linkup;
   }
   uniqueId++;
@@ -386,13 +388,6 @@ void FatTreeZone::check_topology(unsigned int n_levels, const std::vector<unsign
   check_vector(down_links, "down links");
   check_vector(up_links, "up links");
   check_vector(link_count, "link count");
-}
-
-void FatTreeZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
-{
-  link_sharing_policy_ = sharing_policy;
-  link_bw_             = bw;
-  link_lat_            = lat;
 }
 
 void FatTreeZone::set_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
