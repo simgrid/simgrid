@@ -25,13 +25,7 @@
 #include <pthread.h>
 #include <stdint.h>
 
-#ifdef HAVE_LIMITS_H
-#  include <limits.h>
-#else
-#  ifndef CHAR_BIT
-#    define CHAR_BIT 8
-#  endif
-#endif
+#include <limits.h>
 
 #define MMALLOC_MAGIC    "mmalloc"       /* Mapped file magic number */
 #define MMALLOC_MAGIC_SIZE  8       /* Size of magic number buf */

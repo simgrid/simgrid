@@ -13,8 +13,6 @@
 /* Non-standard header files */
 /* <linux/futex.h> */
 #cmakedefine01 HAVE_FUTEX_H
-/* <signal.h> */
-#cmakedefine01 HAVE_SIGNAL_H
 /* <unistd.h> */
 #cmakedefine01 HAVE_UNISTD_H
 /* <ucontext.h> */
@@ -60,8 +58,6 @@
 #define PTH_STACKGROWTH @PTH_STACKGROWTH@
 
 /* MC variables */
-/* getdtablesize: get descriptor table size */
-#cmakedefine01 HAVE_GETDTABLESIZE
 /* Did we compile mmalloc in? */
 #cmakedefine01 HAVE_MMALLOC
 /* process_vm_readv: transfer data between process address spaces */
@@ -97,8 +93,6 @@
 /* Other checks */
 /* The graphviz library */
 #cmakedefine01 HAVE_GRAPHVIZ
-/* The lib unwind library (for MC and backtrace display) */
-#cmakedefine01 HAVE_LIBUNWIND
 /* The boost_stacktrace_backtrace library */
 #cmakedefine01 HAVE_BOOST_STACKTRACE_BACKTRACE /* preferred */
 #cmakedefine01 HAVE_BOOST_STACKTRACE_ADDR2LINE /* fallback */
