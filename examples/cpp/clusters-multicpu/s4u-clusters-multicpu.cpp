@@ -154,16 +154,16 @@ static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned 
  * B-----+----C (X-axis=2)
  *
  * For example, a communication from A to C goes through:
- * <tt> A->limiter(A)->link(A-B)->limiter(B)->link(B-C)->C </tt>
+ * <tt> A->limiter(A)->link(A-B)->limiter(B)->link(B-C)->limiter(C)->C </tt>
  *
  * More precisely, considering that A and C are StarZones, a
  * communication from A-CPU-3 to C-CPU-7 goes through:
  * 1) StarZone A: A-CPU-3 -> link-up-A-CPU-3 -> A-CPU-0
- * 2) A-CPU-0->limiter(A)->link(A-B)->limiter(B)->link(B-C)->C-CPU-0
+ * 2) A-CPU-0->limiter(A)->link(A-B)->limiter(B)->link(B-C)->limiter(C)->C-CPU-0
  * 3) StarZone C: C-CPU-0-> link-down-C-CPU-7 -> C-CPU-7
  *
  * Note that we don't have limiter links inside the StarZones(A, B, C),
- * but we have limiters in the Torus that are added to the links in the path (as we can see in "2)"")
+ * but we have limiters in the Torus that are added to the links in the path (as we can see in "2)")
  *
  * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html?highlight=torus#torus-cluster">Torus
  * Cluster</a>

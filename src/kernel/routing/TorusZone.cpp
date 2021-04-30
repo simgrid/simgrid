@@ -183,6 +183,9 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, doub
 
     current_node = next_node;
   }
+  if (has_limiter()) { // limiter for receiver/destination
+    route->link_list_.push_back(get_downlink_to(node_pos_with_loopback(dst->id())));
+  }
   // set gateways (if any)
   route->gw_src_ = get_gateway(src->id());
   route->gw_dst_ = get_gateway(dst->id());
