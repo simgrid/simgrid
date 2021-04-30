@@ -62,6 +62,11 @@
 #define XBT_ATTRIB_DEPRECATED_v332(mesg)                                                                               \
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.31)")
 
+/* Work around https://github.com/microsoft/vscode-cpptools/issues/4503 */
+#ifdef __INTELLISENSE__
+#pragma diag_suppress 1094
+#endif
+
 #if !defined(__APPLE__)
 #  define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
 #  define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__(prio)))
