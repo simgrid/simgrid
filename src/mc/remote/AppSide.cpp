@@ -204,6 +204,7 @@ void AppSide::handle_messages() const
         coverage_checkpoint();
         xbt_assert(channel_.send(MessageType::DEADLOCK_CHECK_REPLY) == 0, // DEADLOCK_CHECK_REPLY, really?
                    "Could not answer to FINALIZE");
+        std::fflush(stdout);
         if (terminate_asap)
           ::_Exit(0);
         break;
