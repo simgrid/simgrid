@@ -51,12 +51,14 @@ static void runner()
     for (size_t j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
 
+  simgrid::s4u::ExecPtr activity =
+      simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
   try {
-    simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts)
-        ->wait_for(10.0 /* timeout (in seconds)*/);
+    activity->wait_for(10.0 /* timeout (in seconds)*/);
     xbt_die("Woops, this did not timeout as expected... Please report that bug.");
   } catch (const simgrid::TimeoutException&) {
     XBT_INFO("Caught the expected timeout exception.");
+    activity->cancel();
   }
 
   /* ------[ test 3 ]----------------- */
@@ -75,8 +77,7 @@ static void runner()
   XBT_INFO("Then, Monitor the execution of a parallel activity");
   computation_amounts.assign(hosts_count, 1e6 /*1Mflop*/);
   communication_amounts = {0, 1e6, 0, 0, 0, 1e6, 1e6, 0, 0};
-  simgrid::s4u::ExecPtr activity =
-      simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
+  activity              = simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
   activity->start();
 
   while (not activity->test()) {

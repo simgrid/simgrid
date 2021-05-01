@@ -11,11 +11,11 @@ $ ${bindir:=.}/s4u-exec-ptask ${platfdir}/energy_platform.xml --cfg=host/model:p
 > [300.000000] (0:maestro@) UNCAT HOST [0.000000 - 300.000000] MyHost3 speed_used 3333333.333333
 > [300.000000] (0:maestro@) UNCAT LINK [0.000000 - 300.000000] bus bandwidth_used 100000.000000
 > [300.000000] (1:test@MyHost1) We can do the same with a timeout of 10 seconds enabled.
+> [310.000000] (1:test@MyHost1) Caught the expected timeout exception.
 > [310.000000] (0:maestro@) UNCAT HOST [300.000000 - 310.000000] MyHost1 speed_used 3333333.333333
 > [310.000000] (0:maestro@) UNCAT HOST [300.000000 - 310.000000] MyHost2 speed_used 3333333.333333
 > [310.000000] (0:maestro@) UNCAT HOST [300.000000 - 310.000000] MyHost3 speed_used 3333333.333333
 > [310.000000] (0:maestro@) UNCAT LINK [300.000000 - 310.000000] bus bandwidth_used 100000.000000
-> [310.000000] (1:test@MyHost1) Caught the expected timeout exception.
 > [310.000000] (1:test@MyHost1) Then, build a parallel activity involving only computations (of different amounts) and no communication
 > [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost1 speed_used 30000000.000000
 > [320.000000] (0:maestro@) UNCAT HOST [310.000000 - 320.000000] MyHost2 speed_used 60000000.000000
