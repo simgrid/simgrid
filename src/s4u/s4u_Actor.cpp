@@ -157,13 +157,10 @@ void Actor::set_host(Host* new_host)
   const s4u::Host* previous_location = get_host();
 
   kernel::actor::simcall([this, new_host]() {
-    if (pimpl_->waiting_synchro_ != nullptr) {
-      // The actor is blocked on an activity. If it's an exec, migrate it too.
+    for (auto& activity : pimpl_->activities_) {
       // FIXME: implement the migration of other kinds of activities
-      kernel::activity::ExecImplPtr exec =
-          boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(pimpl_->waiting_synchro_);
-      xbt_assert(exec.get() != nullptr, "We can only migrate blocked actors when they are blocked on executions.");
-      exec->migrate(new_host);
+      if (auto exec = boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(activity))
+        exec->migrate(new_host);
     }
     this->pimpl_->set_host(new_host);
   });
