@@ -7,7 +7,6 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp" // FIXME: RouteCreationArgs and friends
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
 
@@ -47,7 +46,7 @@ void ClusterZone::add_private_link_at(unsigned int position, std::pair<resource:
   private_links_.insert({position, link});
 }
 
-void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
+void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
 {
   XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
   xbt_assert(not private_links_.empty(),
@@ -58,7 +57,7 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
       XBT_WARN("Routing from a cluster private router to itself is meaningless");
     } else {
       std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos(src->id()));
-      route->link_list.push_back(info.first);
+      route->link_list_.push_back(info.first);
       if (lat)
         *lat += info.first->get_latency();
     }
@@ -68,20 +67,20 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   if (not src->is_router()) { // No private link for the private router
     if (has_limiter_) {       // limiter for sender
       std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
-      route->link_list.push_back(info.first);
+      route->link_list_.push_back(info.first);
     }
 
     std::pair<resource::LinkImpl*, resource::LinkImpl*> info =
         private_links_.at(node_pos_with_loopback_limiter(src->id()));
     if (info.first) { // link up
-      route->link_list.push_back(info.first);
+      route->link_list_.push_back(info.first);
       if (lat)
         *lat += info.first->get_latency();
     }
   }
 
   if (backbone_) {
-    route->link_list.push_back(backbone_);
+    route->link_list_.push_back(backbone_);
     if (lat)
       *lat += backbone_->get_latency();
   }
@@ -91,13 +90,13 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
         private_links_.at(node_pos_with_loopback_limiter(dst->id()));
 
     if (info.second) { // link down
-      route->link_list.push_back(info.second);
+      route->link_list_.push_back(info.second);
       if (lat)
         *lat += info.second->get_latency();
     }
     if (has_limiter_) { // limiter for receiver
       info = private_links_.at(node_pos_with_loopback(dst->id()));
-      route->link_list.push_back(info.first);
+      route->link_list_.push_back(info.first);
     }
   }
 }

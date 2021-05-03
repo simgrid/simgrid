@@ -29,7 +29,7 @@ public:
   WifiZone(const WifiZone&) = delete;
   WifiZone& operator=(const WifiZone) = delete;
 
-  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
+  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
   s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths) override;
   NetPoint* get_access_point() const { return access_point_; }
 };

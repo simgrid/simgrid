@@ -32,7 +32,7 @@ class XBT_PRIVATE DijkstraZone : public RoutedZone {
 
   xbt_node_t route_graph_new_node(int id);
   xbt_node_t node_map_search(int id);
-  void new_edge(int src_id, int dst_id, RouteCreationArgs* e_route);
+  void new_edge(int src_id, int dst_id, Route* e_route);
   void do_seal() override;
 
 public:
@@ -49,7 +49,7 @@ public:
    * After this function returns, any node in the graph
    * will have a loopback attached to it.
    */
-  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat) override;
+  void get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                  const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 };

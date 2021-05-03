@@ -8,7 +8,6 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 
 #include <boost/algorithm/string.hpp>
@@ -71,15 +70,15 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
   add_route(nullptr, netpoint, nullptr, nullptr, {linkDown->get_impl()}, false);
 }
 
-void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
+void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
 {
   XBT_DEBUG("vivaldi getLocalRoute from '%s'[%u] '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   if (src->is_netzone()) {
     std::string srcName = "router_" + src->get_name();
     std::string dstName = "router_" + dst->get_name();
-    route->gw_src       = s4u::Engine::get_instance()->netpoint_by_name_or_null(srcName);
-    route->gw_dst       = s4u::Engine::get_instance()->netpoint_by_name_or_null(dstName);
+    route->gw_src_      = s4u::Engine::get_instance()->netpoint_by_name_or_null(srcName);
+    route->gw_dst_      = s4u::Engine::get_instance()->netpoint_by_name_or_null(dstName);
   }
 
   StarZone::get_local_route(src, dst, route, lat);

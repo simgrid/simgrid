@@ -6,7 +6,6 @@
 #include "simgrid/kernel/routing/FullZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
@@ -28,10 +27,10 @@ void FullZone::do_seal()
   /* Add the loopback if needed */
   if (get_network_model()->loopback_ && get_hierarchy() == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
-      RouteCreationArgs* route = TO_ROUTE_FULL(i, i);
+      Route* route = TO_ROUTE_FULL(i, i);
       if (not route) {
-        route = new RouteCreationArgs();
-        route->link_list.push_back(get_network_model()->loopback_);
+        route = new Route();
+        route->link_list_.push_back(get_network_model()->loopback_);
         TO_ROUTE_FULL(i, i) = route;
       }
     }
@@ -45,18 +44,18 @@ FullZone::~FullZone()
     delete route;
 }
 
-void FullZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* res, double* lat)
+void FullZone::get_local_route(NetPoint* src, NetPoint* dst, Route* res, double* lat)
 {
   XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   unsigned int table_size          = get_table_size();
-  const RouteCreationArgs* e_route = TO_ROUTE_FULL(src->id(), dst->id());
+  const Route* e_route             = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route != nullptr) {
-    res->gw_src = e_route->gw_src;
-    res->gw_dst = e_route->gw_dst;
-    for (auto const& link : e_route->link_list) {
-      res->link_list.push_back(link);
+    res->gw_src_ = e_route->gw_src_;
+    res->gw_dst_ = e_route->gw_dst_;
+    for (auto const& link : e_route->link_list_) {
+      res->link_list_.push_back(link);
       if (lat)
         *lat += link->get_latency();
     }

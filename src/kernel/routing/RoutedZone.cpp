@@ -6,7 +6,6 @@
 #include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 #include "xbt/dict.h"
 #include "xbt/graph.h"
 #include "xbt/log.h"
@@ -66,7 +65,7 @@ void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt
       if (my_src == my_dst)
         continue;
 
-      RouteCreationArgs route;
+      Route route;
 
       get_local_route(my_src, my_dst, &route, nullptr);
 
@@ -77,15 +76,15 @@ void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt
       const char* previous_name;
       const char* current_name;
 
-      if (route.gw_src) {
-        previous      = new_xbt_graph_node(graph, route.gw_src->get_cname(), nodes);
-        previous_name = route.gw_src->get_cname();
+      if (route.gw_src_) {
+        previous      = new_xbt_graph_node(graph, route.gw_src_->get_cname(), nodes);
+        previous_name = route.gw_src_->get_cname();
       } else {
         previous      = new_xbt_graph_node(graph, my_src->get_cname(), nodes);
         previous_name = my_src->get_cname();
       }
 
-      for (auto const& link : route.link_list) {
+      for (auto const& link : route.link_list_) {
         const char* link_name = link->get_cname();
         current               = new_xbt_graph_node(graph, link_name, nodes);
         current_name          = link_name;
@@ -95,9 +94,9 @@ void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt
         previous_name = current_name;
       }
 
-      if (route.gw_dst) {
-        current      = new_xbt_graph_node(graph, route.gw_dst->get_cname(), nodes);
-        current_name = route.gw_dst->get_cname();
+      if (route.gw_dst_) {
+        current      = new_xbt_graph_node(graph, route.gw_dst_->get_cname(), nodes);
+        current_name = route.gw_dst_->get_cname();
       } else {
         current      = new_xbt_graph_node(graph, my_dst->get_cname(), nodes);
         current_name = my_dst->get_cname();
@@ -111,24 +110,23 @@ void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-RouteCreationArgs* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
-                                                  const std::vector<resource::LinkImpl*>& link_list,
-                                                  bool preserve_order)
+Route* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
+                                      const std::vector<resource::LinkImpl*>& link_list, bool preserve_order)
 {
-  auto* result = new RouteCreationArgs();
+  auto* result = new Route();
 
   if (hierarchy == RoutingMode::recursive) {
     xbt_assert(gw_src && gw_dst, "nullptr is obviously a deficient gateway");
 
-    result->gw_src = gw_src;
-    result->gw_dst = gw_dst;
+    result->gw_src_ = gw_src;
+    result->gw_dst_ = gw_dst;
   }
 
   if (preserve_order)
-    result->link_list = link_list;
+    result->link_list_ = link_list;
   else
-    result->link_list.assign(link_list.rbegin(), link_list.rend()); // reversed
-  result->link_list.shrink_to_fit();
+    result->link_list_.assign(link_list.rbegin(), link_list.rend()); // reversed
+  result->link_list_.shrink_to_fit();
 
   return result;
 }

@@ -135,7 +135,7 @@ public:
   FatTreeZone(const FatTreeZone&) = delete;
   FatTreeZone& operator=(const FatTreeZone&) = delete;
   ~FatTreeZone() override;
-  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
+  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
 
   /**
    * @brief Parse the topology parameters from string format

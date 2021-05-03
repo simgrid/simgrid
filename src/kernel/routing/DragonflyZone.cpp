@@ -6,7 +6,6 @@
 #include "simgrid/kernel/routing/DragonflyZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -73,13 +72,12 @@ s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& top
   boost::split(parameters, topo_parameters, boost::is_any_of(";"));
 
   if (parameters.size() != 4)
-    surf_parse_error(
-        "Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
+    xbt_die("Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
 
   // Blue network : number of groups, number of links between each group
   boost::split(tmp, parameters[0], boost::is_any_of(","));
   if (tmp.size() != 2)
-    surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
+    xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
 
   unsigned int n_groups;
   try {
@@ -98,7 +96,7 @@ s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& top
   // Black network : number of chassis/group, number of links between each router on the black network
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if (tmp.size() != 2)
-    surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
+    xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
 
   unsigned int n_chassis;
   try {
@@ -117,7 +115,7 @@ s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& top
   // Green network : number of blades/chassis, number of links between each router on the green network
   boost::split(tmp, parameters[2], boost::is_any_of(","));
   if (tmp.size() != 2)
-    surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
+    xbt_die("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
 
   unsigned int n_routers;
   try {
@@ -267,7 +265,7 @@ void DragonflyZone::generate_links()
   }
 }
 
-void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* latency)
+void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* latency)
 {
   // Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?
@@ -281,7 +279,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   if ((src->id() == dst->id()) && has_loopback()) {
     resource::LinkImpl* uplink = get_uplink_from(node_pos(src->id()));
 
-    route->link_list.push_back(uplink);
+    route->link_list_.push_back(uplink);
     if (latency)
       *latency += uplink->get_latency();
     return;
@@ -301,12 +299,12 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   DragonflyRouter* currentRouter = myRouter;
 
   // node->router local link
-  route->link_list.push_back(myRouter->my_nodes_[myCoords.node * num_links_per_link_]);
+  route->link_list_.push_back(myRouter->my_nodes_[myCoords.node * num_links_per_link_]);
   if (latency)
     *latency += myRouter->my_nodes_[myCoords.node * num_links_per_link_]->get_latency();
 
   if (has_limiter()) { // limiter for sender
-    route->link_list.push_back(get_uplink_from(node_pos_with_loopback(src->id())));
+    route->link_list_.push_back(get_uplink_from(node_pos_with_loopback(src->id())));
   }
 
   if (targetRouter != myRouter) {
@@ -315,7 +313,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
       // go to the router of our group connected to this one.
       if (currentRouter->blade_ != targetCoords.group) {
         // go to the nth router in our chassis
-        route->link_list.push_back(currentRouter->green_links_[targetCoords.group]);
+        route->link_list_.push_back(currentRouter->green_links_[targetCoords.group]);
         if (latency)
           *latency += currentRouter->green_links_[targetCoords.group]->get_latency();
         currentRouter = &routers_[myCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +
@@ -324,7 +322,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
 
       if (currentRouter->chassis_ != 0) {
         // go to the first chassis of our group
-        route->link_list.push_back(currentRouter->black_links_[0]);
+        route->link_list_.push_back(currentRouter->black_links_[0]);
         if (latency)
           *latency += currentRouter->black_links_[0]->get_latency();
         currentRouter =
@@ -332,7 +330,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
       }
 
       // go to destination group - the only optical hop
-      route->link_list.push_back(currentRouter->blue_link_);
+      route->link_list_.push_back(currentRouter->blue_link_);
       if (latency)
         *latency += currentRouter->blue_link_->get_latency();
       currentRouter =
@@ -341,7 +339,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
 
     // same group, but same blade ?
     if (targetRouter->blade_ != currentRouter->blade_) {
-      route->link_list.push_back(currentRouter->green_links_[targetCoords.blade]);
+      route->link_list_.push_back(currentRouter->green_links_[targetCoords.blade]);
       if (latency)
         *latency += currentRouter->green_links_[targetCoords.blade]->get_latency();
       currentRouter =
@@ -350,26 +348,26 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
 
     // same blade, but same chassis ?
     if (targetRouter->chassis_ != currentRouter->chassis_) {
-      route->link_list.push_back(currentRouter->black_links_[targetCoords.chassis]);
+      route->link_list_.push_back(currentRouter->black_links_[targetCoords.chassis]);
       if (latency)
         *latency += currentRouter->black_links_[targetCoords.chassis]->get_latency();
     }
   }
 
   if (has_limiter()) { // limiter for receiver
-    route->link_list.push_back(get_downlink_to(node_pos_with_loopback(dst->id())));
+    route->link_list_.push_back(get_downlink_to(node_pos_with_loopback(dst->id())));
   }
 
   // router->node local link
-  route->link_list.push_back(
+  route->link_list_.push_back(
       targetRouter->my_nodes_[targetCoords.node * num_links_per_link_ + num_links_per_link_ - 1]);
   if (latency)
     *latency +=
         targetRouter->my_nodes_[targetCoords.node * num_links_per_link_ + num_links_per_link_ - 1]->get_latency();
 
   // set gateways (if any)
-  route->gw_src = get_gateway(src->id());
-  route->gw_dst = get_gateway(dst->id());
+  route->gw_src_ = get_gateway(src->id());
+  route->gw_dst_ = get_gateway(dst->id());
 }
 } // namespace routing
 } // namespace kernel

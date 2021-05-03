@@ -11,7 +11,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp" // RouteCreationArgs and friends
 
 namespace {
 class EngineWrapper {
@@ -103,7 +102,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
     zone->add_route(host1->get_netpoint(), nullptr, nullptr, nullptr, links, true);
     zone->add_route(nullptr, host2->get_netpoint(), nullptr, nullptr, links2, false);
     double lat;
-    simgrid::kernel::routing::RouteCreationArgs route;
+    simgrid::kernel::routing::Route route;
     zone->get_local_route(host2->get_netpoint(), host1->get_netpoint(), &route, &lat);
   }
 
@@ -112,7 +111,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
     zone->add_route(host1->get_netpoint(), nullptr, nullptr, nullptr, links, false);
     zone->add_route(host2->get_netpoint(), nullptr, nullptr, nullptr, links2, true);
     double lat;
-    simgrid::kernel::routing::RouteCreationArgs route;
+    simgrid::kernel::routing::Route route;
     zone->get_local_route(host2->get_netpoint(), host1->get_netpoint(), &route, &lat);
   }
 }
@@ -172,14 +171,14 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
     zone->seal();
 
     double lat = 0.0;
-    simgrid::kernel::routing::RouteCreationArgs route;
+    simgrid::kernel::routing::Route route;
     zone->get_local_route(host1->get_netpoint(), host2->get_netpoint(), &route, &lat);
     REQUIRE(lat == 30);
-    REQUIRE(route.gw_src == nullptr);
-    REQUIRE(route.gw_dst == nullptr);
-    REQUIRE(route.link_list.size() == 2);
-    REQUIRE(route.link_list[0]->get_name() == "link1");
-    REQUIRE(route.link_list[1]->get_name() == "link2");
+    REQUIRE(route.gw_src_ == nullptr);
+    REQUIRE(route.gw_dst_ == nullptr);
+    REQUIRE(route.link_list_.size() == 2);
+    REQUIRE(route.link_list_[0]->get_name() == "link1");
+    REQUIRE(route.link_list_[1]->get_name() == "link2");
   }
 
   SECTION("Get route: shared link(backbone)")
@@ -197,13 +196,13 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
     zone->seal();
 
     double lat = 0.0;
-    simgrid::kernel::routing::RouteCreationArgs route;
+    simgrid::kernel::routing::Route route;
     zone->get_local_route(host1->get_netpoint(), host2->get_netpoint(), &route, &lat);
     REQUIRE(lat == 130);
-    REQUIRE(route.link_list.size() == 3);
-    REQUIRE(route.link_list[0]->get_name() == "link1");
-    REQUIRE(route.link_list[1]->get_name() == "backbone");
-    REQUIRE(route.link_list[2]->get_name() == "link2");
+    REQUIRE(route.link_list_.size() == 3);
+    REQUIRE(route.link_list_[0]->get_name() == "link1");
+    REQUIRE(route.link_list_[1]->get_name() == "backbone");
+    REQUIRE(route.link_list_[2]->get_name() == "link2");
   }
 
   SECTION("Get route: loopback")
@@ -217,12 +216,12 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
     zone->seal();
 
     double lat = 0.0;
-    simgrid::kernel::routing::RouteCreationArgs route;
+    simgrid::kernel::routing::Route route;
     zone->get_local_route(host1->get_netpoint(), host1->get_netpoint(), &route, &lat);
     REQUIRE(lat == 110);
-    REQUIRE(route.link_list.size() == 2);
-    REQUIRE(route.link_list[0]->get_name() == "link1");
-    REQUIRE(route.link_list[1]->get_name() == "backbone");
+    REQUIRE(route.link_list_.size() == 2);
+    REQUIRE(route.link_list_[0]->get_name() == "link1");
+    REQUIRE(route.link_list_[1]->get_name() == "backbone");
   }
 }
 
@@ -251,13 +250,13 @@ TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
     zone->seal();
 
     double lat = 0.0;
-    simgrid::kernel::routing::RouteCreationArgs route;
+    simgrid::kernel::routing::Route route;
     zone->get_local_route(subzone1, subzone2, &route, &lat);
     REQUIRE(lat == 30);
-    REQUIRE(route.gw_src == router1);
-    REQUIRE(route.gw_dst == router2);
-    REQUIRE(route.link_list.size() == 2);
-    REQUIRE(route.link_list[0]->get_name() == "link1");
-    REQUIRE(route.link_list[1]->get_name() == "link2");
+    REQUIRE(route.gw_src_ == router1);
+    REQUIRE(route.gw_dst_ == router2);
+    REQUIRE(route.link_list_.size() == 2);
+    REQUIRE(route.link_list_[0]->get_name() == "link1");
+    REQUIRE(route.link_list_[1]->get_name() == "link2");
   }
 }

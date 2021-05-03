@@ -51,7 +51,7 @@ bool FatTreeZone::is_in_sub_tree(FatTreeNode* root, FatTreeNode* node) const
   return true;
 }
 
-void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency)
+void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency)
 {
   if (dst->is_router() || src->is_router())
     return;
@@ -72,7 +72,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
   if (source->id == destination->id && has_loopback()) {
-    into->link_list.push_back(source->loopback_);
+    into->link_list_.push_back(source->loopback_);
     if (latency)
       *latency += source->loopback_->get_latency();
     return;
@@ -89,13 +89,13 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
 
     int k = this->num_parents_per_node_[currentNode->level];
     d     = d % k;
-    into->link_list.push_back(currentNode->parents[d]->up_link_);
+    into->link_list_.push_back(currentNode->parents[d]->up_link_);
 
     if (latency)
       *latency += currentNode->parents[d]->up_link_->get_latency();
 
     if (currentNode->limiter_link_)
-      into->link_list.push_back(currentNode->limiter_link_);
+      into->link_list_.push_back(currentNode->limiter_link_);
     currentNode = currentNode->parents[d]->up_node_;
   }
 
@@ -106,20 +106,20 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->num_children_per_node_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
-        into->link_list.push_back(currentNode->children[i]->down_link_);
+        into->link_list_.push_back(currentNode->children[i]->down_link_);
         if (latency)
           *latency += currentNode->children[i]->down_link_->get_latency();
         currentNode = currentNode->children[i]->down_node_;
         if (currentNode->limiter_link_)
-          into->link_list.push_back(currentNode->limiter_link_);
+          into->link_list_.push_back(currentNode->limiter_link_);
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);
       }
     }
   }
   // set gateways (if any)
-  into->gw_src = get_gateway(src->id());
-  into->gw_dst = get_gateway(dst->id());
+  into->gw_src_ = get_gateway(src->id());
+  into->gw_dst_ = get_gateway(dst->id());
 }
 
 /* This function makes the assumption that parse_specific_arguments() and

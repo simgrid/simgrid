@@ -15,7 +15,7 @@ namespace routing {
 /** @ingroup ROUTING_API
  *  @brief NetZone with an explicit routing (abstract class)
  *
- * This abstract class factorizes code between its subclasses: Full, Dijkstra and Floyd.
+ * This abstract class factors code between its subclasses: Full, Dijkstra and Floyd.
  *
  * <table>
  * <caption>Comparison of the RoutedZone subclasses</caption>
@@ -56,9 +56,9 @@ public:
                  std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
 
 protected:
-  RouteCreationArgs* new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
-                                        const std::vector<resource::LinkImpl*>& link_list, bool preserve_order);
-  XBT_ATTRIB_DEPRECATED_v330("Please drop 2nd, 3rd and 7th parameters") virtual RouteCreationArgs* new_extended_route(
+  Route* new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
+                            const std::vector<resource::LinkImpl*>& link_list, bool preserve_order);
+  XBT_ATTRIB_DEPRECATED_v330("Please drop 2nd, 3rd and 7th parameters") virtual Route* new_extended_route(
       RoutingMode hierarchy, NetPoint* /* src */, NetPoint* /* dst */, NetPoint* gw_src, NetPoint* gw_dst,
       std::vector<resource::LinkImpl*>& link_list, bool /* symmetrical */, bool preserve_order)
   {

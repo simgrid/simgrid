@@ -6,7 +6,6 @@
 #include "simgrid/kernel/routing/DijkstraZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 #include "xbt/string.hpp"
 
@@ -30,8 +29,8 @@ public:
 void DijkstraZone::route_graph_delete(xbt_graph_t g)
 {
   xbt_graph_free_graph(
-      g, [](void* n) { delete static_cast<simgrid::kernel::routing::GraphNodeData*>(n); },
-      [](void* e) { delete static_cast<simgrid::kernel::routing::RouteCreationArgs*>(e); }, nullptr);
+      g, [](void* n) { delete static_cast<GraphNodeData*>(n); }, [](void* e) { delete static_cast<Route*>(e); },
+      nullptr);
 }
 
 void DijkstraZone::do_seal()
@@ -53,8 +52,8 @@ void DijkstraZone::do_seal()
       }
 
       if (not found) {
-        auto* route = new simgrid::kernel::routing::RouteCreationArgs();
-        route->link_list.push_back(get_network_model()->loopback_);
+        auto* route = new Route();
+        route->link_list_.push_back(get_network_model()->loopback_);
         xbt_graph_new_edge(route_graph_.get(), node, node, route);
       }
     }
@@ -85,7 +84,7 @@ xbt_node_t DijkstraZone::node_map_search(int id)
 
 /* Parsing */
 
-void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
+void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
 {
   get_route_check_params(src, dst);
   int src_id = src->id();
@@ -109,10 +108,10 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     if (edge == nullptr)
       throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
 
-    const RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
+    const Route* e_route = static_cast<Route*>(xbt_graph_edge_get_data(edge));
 
-    for (auto const& link : e_route->link_list) {
-      route->link_list.insert(route->link_list.begin(), link);
+    for (auto const& link : e_route->link_list_) {
+      route->link_list_.insert(route->link_list_.begin(), link);
       if (lat)
         *lat += link->get_latency();
     }
@@ -154,8 +153,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
         const s_xbt_node_t* u_node           = xbt_graph_edge_get_target(edge);
         const GraphNodeData* data            = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
         int u_id                             = data->graph_id_;
-        const RouteCreationArgs* tmp_e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
-        int cost_v_u                         = tmp_e_route->link_list.size(); /* count of links, old model assume 1 */
+        const Route* tmp_e_route             = static_cast<Route*>(xbt_graph_edge_get_data(edge));
+        int cost_v_u                         = tmp_e_route->link_list_.size(); /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = v_id;
@@ -178,11 +177,11 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     if (edge == nullptr)
       throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
 
-    const RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
+    const Route* e_route = static_cast<Route*>(xbt_graph_edge_get_data(edge));
 
     const NetPoint* prev_gw_src = gw_src;
-    gw_src                      = e_route->gw_src;
-    NetPoint* gw_dst            = e_route->gw_dst;
+    gw_src                      = e_route->gw_src_;
+    NetPoint* gw_dst            = e_route->gw_dst_;
 
     if (v == dst_node_id)
       first_gw = gw_dst;
@@ -194,25 +193,25 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
       NetPoint* gw_dst_net_elm      = nullptr;
       NetPoint* prev_gw_src_net_elm = nullptr;
       get_global_route(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
-      auto pos = route->link_list.begin();
+      auto pos = route->link_list_.begin();
       for (auto const& link : e_route_as_to_as) {
-        route->link_list.insert(pos, link);
+        route->link_list_.insert(pos, link);
         if (lat)
           *lat += link->get_latency();
         pos++;
       }
     }
 
-    for (auto const& link : e_route->link_list) {
-      route->link_list.insert(route->link_list.begin(), link);
+    for (auto const& link : e_route->link_list_) {
+      route->link_list_.insert(route->link_list_.begin(), link);
       if (lat)
         *lat += link->get_latency();
     }
   }
 
   if (get_hierarchy() == RoutingMode::recursive) {
-    route->gw_src = gw_src;
-    route->gw_dst = first_gw;
+    route->gw_src_ = gw_src;
+    route->gw_dst_ = first_gw;
   }
 
   if (not cached_)
@@ -220,17 +219,17 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
 }
 
 void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                             const std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
+                             const std::vector<resource::LinkImpl*>& link_list_, bool symmetrical)
 {
-  add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  add_route_check_params(src, dst, gw_src, gw_dst, link_list_, symmetrical);
 
-  new_edge(src->id(), dst->id(), new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, true));
+  new_edge(src->id(), dst->id(), new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list_, true));
 
   if (symmetrical)
-    new_edge(dst->id(), src->id(), new_extended_route(get_hierarchy(), gw_dst, gw_src, link_list, false));
+    new_edge(dst->id(), src->id(), new_extended_route(get_hierarchy(), gw_dst, gw_src, link_list_, false));
 }
 
-void DijkstraZone::new_edge(int src_id, int dst_id, RouteCreationArgs* route)
+void DijkstraZone::new_edge(int src_id, int dst_id, Route* route)
 {
   XBT_DEBUG("Create Route from '%d' to '%d'", src_id, dst_id);
 
@@ -245,13 +244,13 @@ void DijkstraZone::new_edge(int src_id, int dst_id, RouteCreationArgs* route)
 
   // Make sure that this graph edge was not already added to the graph
   if (xbt_graph_get_edge(route_graph_.get(), src, dst) != nullptr) {
-    if (route->gw_dst == nullptr || route->gw_src == nullptr)
+    if (route->gw_dst_ == nullptr || route->gw_src_ == nullptr)
       throw std::invalid_argument(
-          xbt::string_printf("Route from %s to %s already exists", route->src->get_cname(), route->dst->get_cname()));
+          xbt::string_printf("Route from %s to %s already exists", route->src_->get_cname(), route->dst_->get_cname()));
     else
       throw std::invalid_argument(xbt::string_printf("Route from %s@%s to %s@%s already exists",
-                                                     route->src->get_cname(), route->gw_src->get_cname(),
-                                                     route->dst->get_cname(), route->gw_dst->get_cname()));
+                                                     route->src_->get_cname(), route->gw_src_->get_cname(),
+                                                     route->dst_->get_cname(), route->gw_dst_->get_cname()));
   }
 
   // Finally add it

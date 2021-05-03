@@ -111,7 +111,7 @@ public:
     return private_links_.find(position) != private_links_.end();
   }
 
-  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
+  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
   void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                  std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
 

@@ -6,7 +6,6 @@
 #include "simgrid/kernel/routing/WifiZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 
 #include <unordered_set>
@@ -29,7 +28,7 @@ void WifiZone::do_seal()
   }
 }
 
-void WifiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* res, double* lat)
+void WifiZone::get_local_route(NetPoint* src, NetPoint* dst, Route* res, double* lat)
 {
   XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
@@ -39,13 +38,13 @@ void WifiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
 
     if (src != access_point_) {
       XBT_DEBUG("src %s is not our gateway", src->get_cname());
-      res->link_list.push_back(wifi_link_);
+      res->link_list_.push_back(wifi_link_);
       if (lat)
         *lat += wifi_link_->get_latency();
     }
     if (dst != access_point_) {
       XBT_DEBUG("dst %s is not our gateway", dst->get_cname());
-      res->link_list.push_back(wifi_link_);
+      res->link_list_.push_back(wifi_link_);
       if (lat)
         *lat += wifi_link_->get_latency();
     }

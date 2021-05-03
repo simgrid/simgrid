@@ -7,7 +7,6 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -70,7 +69,8 @@ std::vector<unsigned int> TorusZone::parse_topo_parameters(const std::string& to
      * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
      * Additionally, we need to know how many ranks we have in total
      */
-    std::transform(begin(dimensions_str), end(dimensions_str), std::back_inserter(dimensions), surf_parse_get_int);
+    std::transform(begin(dimensions_str), end(dimensions_str), std::back_inserter(dimensions),
+                   [](const std::string& s) { return std::stoi(s); });
   }
   return dimensions;
 }
@@ -82,7 +82,7 @@ void TorusZone::set_topology(const std::vector<unsigned int>& dimensions)
   set_num_links_per_node(dimensions_.size());
 }
 
-void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
+void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
 {
   XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
@@ -92,7 +92,7 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   if (src->id() == dst->id() && has_loopback()) {
     resource::LinkImpl* uplink = get_uplink_from(node_pos(src->id()));
 
-    route->link_list.push_back(uplink);
+    route->link_list_.push_back(uplink);
     if (lat)
       *lat += uplink->get_latency();
     return;
@@ -168,7 +168,7 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     }
 
     if (has_limiter()) { // limiter for sender
-      route->link_list.push_back(get_uplink_from(node_pos_with_loopback(current_node)));
+      route->link_list_.push_back(get_uplink_from(node_pos_with_loopback(current_node)));
     }
 
     resource::LinkImpl* lnk;
@@ -177,15 +177,15 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     else
       lnk = get_downlink_to(linkOffset);
 
-    route->link_list.push_back(lnk);
+    route->link_list_.push_back(lnk);
     if (lat)
       *lat += lnk->get_latency();
 
     current_node = next_node;
   }
   // set gateways (if any)
-  route->gw_src = get_gateway(src->id());
-  route->gw_dst = get_gateway(dst->id());
+  route->gw_src_ = get_gateway(src->id());
+  route->gw_dst_ = get_gateway(dst->id());
 }
 
 } // namespace routing
