@@ -59,7 +59,7 @@ protected:
 
 public:
   DiskImpl(const std::string& name, double read_bandwidth, double write_bandwidth)
-      : Resource_T(name), piface_(name, this), read_bw_(read_bandwidth), write_bw_(write_bandwidth)
+      : Resource_T(name), piface_(this), read_bw_(read_bandwidth), write_bw_(write_bandwidth)
   {
   }
   DiskImpl(const DiskImpl&) = delete;

@@ -20,10 +20,14 @@ xbt::signal<void(Disk&)> Disk::on_creation;
 xbt::signal<void(Disk const&)> Disk::on_destruction;
 xbt::signal<void(Disk const&)> Disk::on_state_change;
 
-Disk* Disk::set_name(const std::string& name)
+const std::string& Disk::get_name() const
 {
-  name_ = name;
-  return this;
+  return pimpl_->get_name();
+}
+
+const char* Disk::get_cname() const
+{
+  return pimpl_->get_cname();
 }
 
 Disk* Disk::set_read_bandwidth(double read_bw)
