@@ -32,8 +32,6 @@ namespace s4u {
 class XBT_PUBLIC Exec : public Activity_T<Exec> {
   friend kernel::activity::ExecImpl;
   bool parallel_ = false;
-  double start_time_ = -1.0;
-  double finish_time_ = -1.0;
 
 protected:
   explicit Exec(kernel::activity::ExecImplPtr pimpl);
@@ -74,9 +72,8 @@ public:
 
   Host* get_host() const;
   unsigned int get_host_number() const;
-  double get_start_time() const { return start_time_; }
-  double get_finish_time() const { return finish_time_; }
-  void set_finish_time(double finish_time) { finish_time_ = finish_time; }
+  double get_start_time() const;
+  double get_finish_time() const;
   double get_cost() const;
   bool is_parallel() const { return parallel_; }
   bool is_assigned() const override;

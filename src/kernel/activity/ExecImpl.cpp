@@ -91,6 +91,7 @@ ExecImpl* ExecImpl::start()
       surf_action_    = host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
     }
     surf_action_->set_activity(this);
+    start_time_ = surf_action_->get_start_time();
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
@@ -141,7 +142,7 @@ void ExecImpl::post()
     state_ = State::DONE;
   }
 
-  get_iface()->set_finish_time(surf_action_->get_finish_time());
+  finish_time_ = surf_action_->get_finish_time();
 
   clean_action();
   timeout_detector_.reset();
