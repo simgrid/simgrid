@@ -590,26 +590,6 @@ void CpuTiAction::resume()
   XBT_OUT();
 }
 
-void CpuTiAction::set_max_duration(double duration)
-{
-  double min_finish;
-
-  XBT_IN("(%p,%g)", this, duration);
-
-  Action::set_max_duration(duration);
-
-  if (duration >= 0)
-    min_finish = (get_start_time() + get_max_duration()) < get_finish_time() ? (get_start_time() + get_max_duration())
-                                                                             : get_finish_time();
-  else
-    min_finish = get_finish_time();
-
-  /* add in action heap */
-  get_model()->get_action_heap().update(this, min_finish, ActionHeap::Type::unset);
-
-  XBT_OUT();
-}
-
 void CpuTiAction::set_sharing_penalty(double sharing_penalty)
 {
   XBT_IN("(%p,%g)", this, sharing_penalty);

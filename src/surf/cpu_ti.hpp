@@ -82,7 +82,6 @@ public:
   void cancel() override;
   void suspend() override;
   void resume() override;
-  void set_max_duration(double duration) override;
   void set_sharing_penalty(double sharing_penalty) override;
   double get_remains() override;
 
