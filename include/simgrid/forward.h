@@ -167,10 +167,8 @@ class DiskImpl;
 class DiskModel;
 }
 namespace routing {
-class ClusterCreationArgs;
 class NetPoint;
 class NetZoneImpl;
-class RouteCreationArgs;
 }
 namespace profile {
 class Event;
