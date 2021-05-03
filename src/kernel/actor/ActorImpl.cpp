@@ -230,6 +230,9 @@ void ActorImpl::exit()
     activities_.remove(waiting_synchro_);
     waiting_synchro_ = nullptr;
   }
+  for (auto& activity : activities_)
+    activity->cancel();
+  activities_.clear();
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
   this->throw_exception(std::make_exception_ptr(ForcefulKillException(host_->is_on() ? "exited" : "host failed")));
