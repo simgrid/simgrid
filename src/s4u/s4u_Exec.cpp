@@ -300,6 +300,7 @@ sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
   try {
     s4u_exec->wait_for(timeout);
   } catch (const simgrid::TimeoutException&) {
+    s4u_exec->add_ref(); // the wait_for timeouted, keep the exec alive
     status = SG_ERROR_TIMEOUT;
   } catch (const simgrid::CancelException&) {
     status = SG_ERROR_CANCELED;

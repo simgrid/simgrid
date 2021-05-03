@@ -47,7 +47,8 @@ static void runner(int argc, char* argv[])
       communication_amounts[i * host_count + j] = 1e7; // 10 MB
 
   sg_exec_t exec = sg_actor_parallel_exec_init(host_count, hosts, computation_amounts, communication_amounts);
-  sg_exec_wait_for(exec, 1 /* timeout (in seconds)*/);
+  if (sg_exec_wait_for(exec, 1 /* timeout (in seconds)*/) == SG_ERROR_TIMEOUT)
+    sg_exec_cancel(exec);
   xbt_free(communication_amounts);
   xbt_free(computation_amounts);
 
