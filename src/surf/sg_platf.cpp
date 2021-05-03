@@ -248,7 +248,6 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
       break;
     default:
       THROW_IMPOSSIBLE;
-      break;
   }
   zone->seal();
 }
