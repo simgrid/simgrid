@@ -6,6 +6,7 @@
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
@@ -54,7 +55,8 @@ IoImpl& IoImpl::set_disk(resource::DiskImpl* disk)
 IoImpl* IoImpl::start()
 {
   state_ = State::RUNNING;
-  surf_action_ = disk_->io_start(size_, type_);
+  surf_action_ =
+      disk_->get_host()->get_netpoint()->get_englobing_zone()->get_disk_model()->io_start(disk_, size_, type_);
   surf_action_->set_activity(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());

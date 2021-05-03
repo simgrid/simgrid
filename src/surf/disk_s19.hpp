@@ -30,6 +30,9 @@ class DiskS19Model : public DiskModel {
 public:
   using DiskModel::DiskModel;
   DiskImpl* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth) override;
+
+  DiskAction* io_start(const DiskImpl* disk, sg_size_t size, s4u::Io::OpType type) override;
+
   void update_actions_state(double now, double delta) override;
 };
 
@@ -40,9 +43,6 @@ public:
 class DiskS19 : public DiskImpl {
 public:
   using DiskImpl::DiskImpl;
-  DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) override;
-  DiskAction* read(sg_size_t size) override;
-  DiskAction* write(sg_size_t size) override;
 };
 
 /**********

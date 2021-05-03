@@ -39,6 +39,8 @@ public:
   DiskModel& operator=(const DiskModel&) = delete;
 
   virtual DiskImpl* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth) = 0;
+
+  virtual DiskAction* io_start(const DiskImpl* disk, sg_size_t size, s4u::Io::OpType type) = 0;
 };
 
 /************
@@ -89,9 +91,6 @@ public:
 
   void seal() override;
   void destroy(); // Must be called instead of the destructor
-  virtual DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) = 0;
-  virtual DiskAction* read(sg_size_t size)                           = 0;
-  virtual DiskAction* write(sg_size_t size)                          = 0;
 };
 
 /**********

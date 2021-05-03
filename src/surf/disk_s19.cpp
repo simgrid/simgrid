@@ -50,24 +50,26 @@ void DiskS19Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
+DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io::OpType type)
+{
+  auto* action = new DiskS19Action(this, static_cast<double>(size), not disk->is_on(), disk, type);
+  get_maxmin_system()->expand(disk->get_constraint(), action->get_variable(), 1.0);
+  switch (type) {
+    case s4u::Io::OpType::READ:
+      get_maxmin_system()->expand(disk->get_read_constraint(), action->get_variable(), 1.0);
+      break;
+    case s4u::Io::OpType::WRITE:
+      get_maxmin_system()->expand(disk->get_write_constraint(), action->get_variable(), 1.0);
+      break;
+    default:
+      THROW_UNIMPLEMENTED;
+  }
+  return action;
+}
+
 /************
  * Resource *
  ************/
-DiskAction* DiskS19::io_start(sg_size_t size, s4u::Io::OpType type)
-{
-  return new DiskS19Action(get_model(), static_cast<double>(size), not is_on(), this, type);
-}
-
-DiskAction* DiskS19::read(sg_size_t size)
-{
-  return new DiskS19Action(get_model(), static_cast<double>(size), not is_on(), this, s4u::Io::OpType::READ);
-}
-
-DiskAction* DiskS19::write(sg_size_t size)
-{
-  return new DiskS19Action(get_model(), static_cast<double>(size), not is_on(), this, s4u::Io::OpType::WRITE);
-}
-
 /**********
  * Action *
  **********/
@@ -75,21 +77,6 @@ DiskAction* DiskS19::write(sg_size_t size)
 DiskS19Action::DiskS19Action(Model* model, double cost, bool failed, const DiskImpl* disk, s4u::Io::OpType type)
     : DiskAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3))
 {
-  XBT_IN("(%s,%g", disk->get_cname(), cost);
-
-  // Must be less than the max bandwidth for all actions
-  model->get_maxmin_system()->expand(disk->get_constraint(), get_variable(), 1.0);
-  switch (type) {
-    case s4u::Io::OpType::READ:
-      model->get_maxmin_system()->expand(disk->get_read_constraint(), get_variable(), 1.0);
-      break;
-    case s4u::Io::OpType::WRITE:
-      model->get_maxmin_system()->expand(disk->get_write_constraint(), get_variable(), 1.0);
-      break;
-    default:
-      THROW_UNIMPLEMENTED;
-  }
-  XBT_OUT();
 }
 
 void DiskS19Action::update_remains_lazy(double /*now*/)
