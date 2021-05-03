@@ -71,7 +71,7 @@ public:
    * @param size The size of the message.
    * @return The latency factor.
    */
-  virtual double get_latency_factor(double size);
+  virtual double get_latency_factor(double /* size */) { return sg_latency_factor; }
 
   /**
    * @brief Get the right multiplicative factor for the bandwidth.
@@ -82,7 +82,7 @@ public:
    * @param size The size of the message.
    * @return The bandwidth factor.
    */
-  virtual double get_bandwidth_factor(double size);
+  virtual double get_bandwidth_factor(double /* size*/) { return sg_bandwidth_factor; }
 
   /**
    * @brief Get definitive bandwidth.
@@ -93,7 +93,8 @@ public:
    * @param size The size of the message.
    * @return The new bandwidth.
    */
-  virtual double get_bandwidth_constraint(double rate, double bound, double size);
+  virtual double get_bandwidth_constraint(double rate, double /*bound*/, double /*size*/) { return rate; }
+
   double next_occurring_event_full(double now) override;
 
   LinkImpl* loopback_ = nullptr;
@@ -125,14 +126,12 @@ public:
   s4u::Link* get_iface() { return &piface_; }
 
   /** @brief Get the bandwidth in bytes per second of current Link */
-  double get_bandwidth() const;
-
+  double get_bandwidth() const { return bandwidth_.peak * bandwidth_.scale; }
   /** @brief Update the bandwidth in bytes per second of current Link */
   virtual void set_bandwidth(double value) = 0;
 
   /** @brief Get the latency in seconds of current Link */
-  double get_latency() const;
-
+  double get_latency() const { return latency_.peak * latency_.scale; }
   /** @brief Update the latency in seconds of current Link */
   virtual LinkImpl* set_latency(double value) = 0;
 

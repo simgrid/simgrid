@@ -24,33 +24,18 @@ namespace kernel {
 namespace resource {
 
 /** @brief Command-line option 'network/TCP-gamma' -- see @ref options_model_network_gamma */
-simgrid::config::Flag<double> NetworkModel::cfg_tcp_gamma(
+config::Flag<double> NetworkModel::cfg_tcp_gamma(
     "network/TCP-gamma",
     "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; "
     "Use the last given value, which is the max window size)",
     4194304.0);
 
 /** @brief Command-line option 'network/crosstraffic' -- see @ref options_model_network_crosstraffic */
-simgrid::config::Flag<bool> NetworkModel::cfg_crosstraffic(
+config::Flag<bool> NetworkModel::cfg_crosstraffic(
     "network/crosstraffic",
     "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)", "yes");
 
 NetworkModel::~NetworkModel() = default;
-
-double NetworkModel::get_latency_factor(double /*size*/)
-{
-  return sg_latency_factor;
-}
-
-double NetworkModel::get_bandwidth_factor(double /*size*/)
-{
-  return sg_bandwidth_factor;
-}
-
-double NetworkModel::get_bandwidth_constraint(double rate, double /*bound*/, double /*size*/)
-{
-  return rate;
-}
 
 double NetworkModel::next_occurring_event_full(double now)
 {
@@ -98,16 +83,6 @@ bool LinkImpl::is_used() const
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
-double LinkImpl::get_latency() const
-{
-  return latency_.peak * latency_.scale;
-}
-
-double LinkImpl::get_bandwidth() const
-{
-  return bandwidth_.peak * bandwidth_.scale;
-}
-
 LinkImpl* LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy)
 {
   get_constraint()->set_sharing_policy(policy);
@@ -133,7 +108,7 @@ void LinkImpl::turn_on()
 {
   if (not is_on()) {
     Resource::turn_on();
-    s4u::Link::on_state_change(this->piface_);
+    s4u::Link::on_state_change(piface_);
   }
 }
 
@@ -141,7 +116,7 @@ void LinkImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
-    s4u::Link::on_state_change(this->piface_);
+    s4u::Link::on_state_change(piface_);
 
     const kernel::lmm::Element* elem = nullptr;
     double now                       = surf_get_clock();
@@ -159,12 +134,12 @@ void LinkImpl::seal()
 {
   xbt_assert(this->get_model(), "Cannot seal Link(%s) without setting the Network model first", this->get_cname());
   Resource::seal();
-  s4u::Link::on_creation(*get_iface());
+  s4u::Link::on_creation(piface_);
 }
 
 void LinkImpl::on_bandwidth_change() const
 {
-  s4u::Link::on_bandwidth_change(this->piface_);
+  s4u::Link::on_bandwidth_change(piface_);
 }
 
 LinkImpl* LinkImpl::set_bandwidth_profile(profile::Profile* profile)
@@ -192,9 +167,10 @@ LinkImpl* LinkImpl::set_latency_profile(profile::Profile* profile)
 void NetworkAction::set_state(Action::State state)
 {
   Action::State previous = get_state();
-  Action::set_state(state);
-  if (previous != state) // Trigger only if the state changed
+  if (previous != state) { // Trigger only if the state changed
+    Action::set_state(state);
     s4u::Link::on_communication_state_change(*this, previous);
+  }
 }
 
 /** @brief returns a list of all Links that this action is using */
@@ -205,17 +181,14 @@ std::list<LinkImpl*> NetworkAction::get_links() const
 
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
-    // extra pb: we cannot dynamic_cast from void*...
-    Resource* resource = get_variable()->get_constraint(i)->get_id();
-    auto* link         = dynamic_cast<LinkImpl*>(resource);
-    if (link != nullptr)
+    if (auto* link = dynamic_cast<LinkImpl*>(get_variable()->get_constraint(i)->get_id()))
       retlist.push_back(link);
   }
 
   return retlist;
 }
-}
+} // namespace resource
 } // namespace kernel
-}
+} // namespace simgrid
 
 #endif /* NETWORK_INTERFACE_CPP_ */
