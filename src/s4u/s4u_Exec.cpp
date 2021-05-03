@@ -289,19 +289,7 @@ int sg_exec_test(sg_exec_t exec)
 
 sg_error_t sg_exec_wait(sg_exec_t exec)
 {
-  sg_error_t status = SG_OK;
-
-  simgrid::s4u::ExecPtr s4u_exec(exec, false);
-  try {
-    s4u_exec->wait_for(-1);
-  } catch (const simgrid::TimeoutException&) {
-    status = SG_ERROR_TIMEOUT;
-  } catch (const simgrid::CancelException&) {
-    status = SG_ERROR_CANCELED;
-  } catch (const simgrid::HostFailureException&) {
-    status = SG_ERROR_HOST;
-  }
-  return status;
+  return sg_exec_wait_for(exec, -1.0);
 }
 
 sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
@@ -323,7 +311,7 @@ sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
 
 int sg_exec_wait_any(sg_exec_t* execs, size_t count)
 {
-  return sg_exec_wait_any_for(execs, count, -1);
+  return sg_exec_wait_any_for(execs, count, -1.0);
 }
 
 int sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout)
