@@ -301,12 +301,7 @@ void ActorImpl::yield()
 
   if (suspended_) {
     XBT_DEBUG("Hey! I'm suspended.");
-
     xbt_assert(exception_ == nullptr, "Gasp! This exception may be lost by subsequent calls.");
-
-    if (waiting_synchro_ != nullptr) // Not sure of when this will happen. Maybe when suspending early in the SR when a
-      waiting_synchro_->suspend();   // waiting_synchro was terminated
-
     yield(); // Yield back to maestro without proceeding with my execution. I'll get rescheduled by resume()
   }
 
@@ -380,10 +375,9 @@ void ActorImpl::suspend()
 
   suspended_ = true;
 
-  /* If the suspended actor is waiting on a sync, suspend its synchronization.
-   * Otherwise, it will suspend itself when scheduled, ie, very soon. */
-  if (waiting_synchro_ != nullptr)
-    waiting_synchro_->suspend();
+  /* Suspend the activities associated with this actor. */
+  for (auto& activity : activities_)
+    activity->suspend();
 }
 
 void ActorImpl::resume()
@@ -399,10 +393,10 @@ void ActorImpl::resume()
     return;
   suspended_ = false;
 
-  /* resume the activity that was blocking the resumed actor. */
-  if (waiting_synchro_)
-    waiting_synchro_->resume();
-  else // Reschedule the actor if it was forcefully unscheduled in yield()
+  /* resume the activities that were blocked when suspending the actor. */
+  for (auto& activity : activities_)
+    activity->resume();
+  if (not waiting_synchro_) // Reschedule the actor if it was forcefully unscheduled in yield()
     simix_global->actors_to_run.push_back(this);
 
   XBT_OUT();
