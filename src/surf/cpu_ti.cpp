@@ -411,7 +411,7 @@ void CpuTi::update_actions_finish_time(double now)
   }
 
   for (CpuTiAction& action : action_set_) {
-    double min_finish = -1;
+    double min_finish = NO_MAX_DURATION;
     /* action not running, skip it */
     if (action.get_state_set() != get_model()->get_started_action_set())
       continue;

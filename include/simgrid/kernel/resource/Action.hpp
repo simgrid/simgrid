@@ -14,7 +14,7 @@
 #include <boost/optional.hpp>
 #include <string>
 
-static constexpr int NO_MAX_DURATION = -1.0;
+static constexpr double NO_MAX_DURATION = -1.0;
 
 namespace simgrid {
 namespace kernel {
