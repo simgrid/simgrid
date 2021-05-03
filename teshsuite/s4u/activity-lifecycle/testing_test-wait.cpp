@@ -230,8 +230,10 @@ TEST_CASE("Activity test/wait: using <tester_wait<0>>")
               test_failure_actor<ExecPtr, create_exec, tester_wait<0>, waiter_sleep6>);
   RUN_SECTION("exec: host failure and wait<0> / sleep",
               test_failure_host<ExecPtr, create_exec, tester_wait<0>, waiter_sleep6>);
-  // exec: actor failure and wait<0> / wait
-  // exec: host failure and wait<0> / wait
+  RUN_SECTION("exec: actor failure and wait<0> / wait",
+              test_failure_actor<ExecPtr, create_exec, tester_wait<0>, waiter_wait>);
+  RUN_SECTION("exec: host failure and wait<0> / wait",
+              test_failure_host<ExecPtr, create_exec, tester_wait<0>, waiter_wait>);
 
   simgrid::s4u::this_actor::sleep_for(10);
   assert_cleanup();
@@ -242,12 +244,16 @@ TEST_CASE("Activity test/wait: using <tester_wait<1>>")
   XBT_INFO("#####[ launch next test ]#####");
 
   RUN_SECTION("exec: run and wait<1> once", test_trivial<ExecPtr, create_exec, tester_wait<1>>);
-  // exec: run and wait<1> many
+  RUN_SECTION("exec: run and wait<1> many", test_basic<ExecPtr, create_exec, tester_wait<1>>);
   RUN_SECTION("exec: cancel and wait<1>", test_cancel<ExecPtr, create_exec, tester_wait<1>>);
-  // exec: actor failure and wait<1> / sleep
-  // exec: host failure and wait<1> / sleep
-  // exec: actor failure and wait<1> / wait
-  // exec: host failure and wait<1> / wait
+  RUN_SECTION("exec: actor failure and wait<1> / sleep",
+              test_failure_actor<ExecPtr, create_exec, tester_wait<1>, waiter_sleep6>);
+  RUN_SECTION("exec: host failure and wait<1> / sleep",
+              test_failure_host<ExecPtr, create_exec, tester_wait<1>, waiter_sleep6>);
+  RUN_SECTION("exec: actor failure and wait<1> / wait",
+              test_failure_actor<ExecPtr, create_exec, tester_wait<1>, waiter_wait>);
+  RUN_SECTION("exec: host failure and wait<1> / wait",
+              test_failure_host<ExecPtr, create_exec, tester_wait<1>, waiter_wait>);
 
   simgrid::s4u::this_actor::sleep_for(10);
   assert_cleanup();
@@ -288,40 +294,6 @@ TEST_CASE("Activity test/wait: using <tester_wait_any<1>>")
               test_failure_actor<ExecPtr, create_exec, tester_wait_any<1>, waiter_wait>);
   RUN_SECTION("exec: host failure and wait_any<1> / wait",
               test_failure_host<ExecPtr, create_exec, tester_wait_any<1>, waiter_wait>);
-
-  simgrid::s4u::this_actor::sleep_for(10);
-  assert_cleanup();
-}
-
-// FIXME: The tests grouped here are currently failing. Once fixed, they should be put in the right section above.
-//        The tests can be activated with run-time parameter '*' or, more specifically '[failing]'
-TEST_CASE("Activity test/wait: tests currently failing", "[.][failing]")
-{
-  XBT_INFO("#####[ launch next failing test ]#####");
-
-  // with tester_wait<0>
-  // -> actor should not be killed by TimeoutException
-  RUN_SECTION("exec: actor failure and wait<0> / wait",
-              test_failure_actor<ExecPtr, create_exec, tester_wait<0>, waiter_wait>);
-  // -> actor should not be killed by TimeoutException
-  RUN_SECTION("exec: host failure and wait<0> / wait",
-              test_failure_host<ExecPtr, create_exec, tester_wait<0>, waiter_wait>);
-
-  // with tester_wait<1>
-  // -> second call to wait_for() should wait for timeout and not return immediately
-  RUN_SECTION("exec: run and wait<1> many", test_basic<ExecPtr, create_exec, tester_wait<1>>);
-  // -> second call to wait_for() should report a failure, and not a timeout
-  RUN_SECTION("exec: actor failure and wait<1> / sleep",
-              test_failure_actor<ExecPtr, create_exec, tester_wait<1>, waiter_sleep6>);
-  // -> second call to wait_for() should report a failure, and not a timeout
-  RUN_SECTION("exec: host failure and wait<1> / sleep",
-              test_failure_host<ExecPtr, create_exec, tester_wait<1>, waiter_sleep6>);
-  // -> actor should not be killed by TimeoutException
-  RUN_SECTION("exec: actor failure and wait<1> / wait",
-              test_failure_actor<ExecPtr, create_exec, tester_wait<1>, waiter_wait>);
-  // -> actor should not be killed by TimeoutException
-  RUN_SECTION("exec: host failure and wait<1> / wait",
-              test_failure_host<ExecPtr, create_exec, tester_wait<1>, waiter_wait>);
 
   simgrid::s4u::this_actor::sleep_for(10);
   assert_cleanup();
