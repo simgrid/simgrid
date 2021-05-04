@@ -41,7 +41,7 @@ template <int Duration, typename Activity> bool tester_wait(const Activity& acti
     ret = true;
   } catch (const simgrid::TimeoutException& e) {
     XBT_DEBUG("wait_for() timed out (%s)", e.what());
-    INFO("wait_for() timeout should expire at expected date: " << timeout);
+    INFO("wait_for() timeout should expire at expected date: " + std::to_string(timeout));
     REQUIRE(simgrid::s4u::Engine::get_clock() == Approx(timeout));
     ret = false;
   } catch (const simgrid::Exception& e) {
