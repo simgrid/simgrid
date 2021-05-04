@@ -48,9 +48,14 @@ public:
   { /* Nothing to do by default */
   }
 
+  /** We need to save the observer of simcalls as they get executed to later compute their dependencies in classical
+   * DPOR */
   virtual SimcallObserver* clone() = 0;
 
-  /** Some simcalls may only be observable under some circumstances.
+  /** Computes the dependency relation */
+  virtual bool depends(SimcallObserver* other);
+
+  /** Some simcalls may only be observable under some conditions.
    * Most simcalls are not visible from the MC because they don't have an observer at all. */
   virtual bool is_visible() const { return true; }
   virtual std::string to_string(int times_considered) const = 0;
@@ -73,42 +78,50 @@ class RandomSimcall : public SimcallObserver {
 
 public:
   RandomSimcall(smx_actor_t actor, int min, int max) : SimcallObserver(actor), min_(min), max_(max) {}
-  int get_max_consider() const override;
-  void prepare(int times_considered) override;
-  std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
-  int get_value() const { return next_value_; }
   SimcallObserver* clone() override
   {
     auto res         = new RandomSimcall(get_issuer(), min_, max_);
     res->next_value_ = next_value_;
     return res;
   }
+  int get_max_consider() const override;
+  void prepare(int times_considered) override;
+  std::string to_string(int times_considered) const override;
+  std::string dot_label() const override;
+  int get_value() const { return next_value_; }
+  bool depends(SimcallObserver* other) override;
 };
 
-class MutexUnlockSimcall : public SimcallObserver {
-  using SimcallObserver::SimcallObserver;
+class MutexSimcall : public SimcallObserver {
+  activity::MutexImpl* const mutex_;
 
 public:
-  SimcallObserver* clone() override { return new MutexUnlockSimcall(get_issuer()); }
+  MutexSimcall(smx_actor_t actor, activity::MutexImpl* mutex) : SimcallObserver(actor), mutex_(mutex) {}
+  activity::MutexImpl* get_mutex() const { return mutex_; }
+  bool depends(SimcallObserver* other) override;
+};
+
+class MutexUnlockSimcall : public MutexSimcall {
+  using MutexSimcall::MutexSimcall;
+
+public:
+  SimcallObserver* clone() override { return new MutexUnlockSimcall(get_issuer(), get_mutex()); }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
 };
 
-class MutexLockSimcall : public SimcallObserver {
-  activity::MutexImpl* const mutex_;
+class MutexLockSimcall : public MutexSimcall {
   const bool blocking_;
 
 public:
   MutexLockSimcall(smx_actor_t actor, activity::MutexImpl* mutex, bool blocking = true)
-      : SimcallObserver(actor), mutex_(mutex), blocking_(blocking)
+      : MutexSimcall(actor, mutex), blocking_(blocking)
   {
   }
-  SimcallObserver* clone() override { return new MutexLockSimcall(get_issuer(), mutex_, blocking_); }
+  SimcallObserver* clone() override { return new MutexLockSimcall(get_issuer(), get_mutex(), blocking_); }
   bool is_enabled() const override;
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
-  activity::MutexImpl* get_mutex() const { return mutex_; }
 };
 
 class ConditionWaitSimcall : public ResultingSimcall<bool> {

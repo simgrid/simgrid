@@ -48,7 +48,8 @@ struct s_smx_simcall {
   smx_actor_t issuer_                     = nullptr;
   smx_timer_t timeout_cb_                 = nullptr; // Callback to timeouts
   simgrid::kernel::actor::SimcallObserver* observer_ = nullptr; // makes that simcall observable by the MC
-  unsigned int mc_max_consider_ = 0; // How many times this simcall should be used. If >1, this will be a fork.
+  unsigned int mc_max_consider_ =
+      0; // How many times this simcall should be used. If >1, this will be a fork in the state space.
   int mc_value_                           = 0;
   std::array<u_smx_scalar, 11> args_      = {};
   u_smx_scalar result_                    = {};

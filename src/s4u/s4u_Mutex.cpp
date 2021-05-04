@@ -27,7 +27,7 @@ void Mutex::lock()
 void Mutex::unlock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::MutexUnlockSimcall observer{issuer};
+  kernel::actor::MutexUnlockSimcall observer{issuer, pimpl_};
   kernel::actor::simcall([this, issuer] { this->pimpl_->unlock(issuer); }, &observer);
 }
 
