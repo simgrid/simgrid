@@ -22,7 +22,7 @@ foreach(x ampi_test trace trace_simple trace_call_location energy gemm simple-ex
     set(_${x}_outdir  ${CMAKE_CURRENT_BINARY_DIR}/${x})
   endif()
 
-  set(examples_src  ${examples_src}  _${x}_sources)
+  set(examples_src  ${examples_src}  ${_${x}_sources})
 endforeach()
 set(examples_src  ${examples_src}  PARENT_SCOPE)
 
