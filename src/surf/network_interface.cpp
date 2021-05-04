@@ -13,7 +13,7 @@
 #ifndef NETWORK_INTERFACE_CPP_
 #define NETWORK_INTERFACE_CPP_
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, that fuels communications");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, that fuel communications");
 
 /*********
  * Model *

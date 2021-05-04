@@ -9,11 +9,13 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_disk, ker_resource, "Disk resources, fuelling I/O activities");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_disk, ker_resource, "Disk resources, that fuel I/O activities");
 
 namespace simgrid {
 namespace kernel {
 namespace resource {
+
+xbt::signal<void(DiskAction const&, Action::State, Action::State)> DiskAction::on_state_change;
 
 /*********
  * Model *
@@ -64,7 +66,7 @@ DiskImpl* DiskImpl::set_write_constraint(lmm::Constraint* constraint_write)
  */
 void DiskImpl::destroy()
 {
-  s4u::Disk::on_destruction(this->piface_);
+  s4u::Disk::on_destruction(piface_);
   delete this;
 }
 
@@ -82,20 +84,20 @@ void DiskImpl::turn_on()
 {
   if (not is_on()) {
     Resource::turn_on();
-    s4u::Disk::on_state_change(this->piface_);
+    s4u::Disk::on_state_change(piface_);
   }
 }
 void DiskImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
-    s4u::Disk::on_state_change(this->piface_);
+    s4u::Disk::on_state_change(piface_);
   }
 }
 
 void DiskImpl::seal()
 {
-  xbt_assert(this->get_model(), "Cannot seal Disk (%s) without setting the model first", this->get_cname());
+  xbt_assert(this->get_model(), "Cannot seal Disk (%s) without setting the model first", get_cname());
   lmm::System* maxmin_system = get_model()->get_maxmin_system();
   this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_))
       ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_))
@@ -104,16 +106,17 @@ void DiskImpl::seal()
   Resource::seal();
   turn_on();
 }
-xbt::signal<void(DiskAction const&, Action::State, Action::State)> DiskAction::on_state_change;
 
 /**********
  * Action *
  **********/
-void DiskAction::set_state(Action::State state)
+void DiskAction::set_state(Action::State new_state)
 {
-  Action::State old = get_state();
-  Action::set_state(state);
-  on_state_change(*this, old, state);
+  Action::State previous_state = get_state();
+  if (new_state != previous_state) { // Trigger only if the state changed
+    Action::set_state(new_state);
+    on_state_change(*this, previous_state, new_state);
+  }
 }
 } // namespace resource
 } // namespace kernel
