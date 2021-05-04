@@ -16,8 +16,8 @@ TEST_CASE("kernel::routing::DijkstraZone: Creating Zone", "")
 {
   simgrid::s4u::Engine e("test");
 
-  REQUIRE(simgrid::s4u::create_dijkstra_zone("test", false));
-  REQUIRE(simgrid::s4u::create_dijkstra_zone("test2", true));
+  SECTION("Regular Dijkstra") { REQUIRE(simgrid::s4u::create_dijkstra_zone("test", false)); }
+  SECTION("DijkstraCache") { REQUIRE(simgrid::s4u::create_dijkstra_zone("test", true)); }
 }
 
 TEST_CASE("kernel::routing::DijkstraZone: mix new routes and hosts", "")
