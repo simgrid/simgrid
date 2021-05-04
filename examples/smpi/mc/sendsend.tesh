@@ -4,10 +4,15 @@ p Testing the permissive model
 ! timeout 60
 $ ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/simgrid-mc" -np 2 -platform ${platfdir:=.}/cluster_backbone.xml --cfg=smpi/buffering:infty --log=xbt_cfg.thresh:warning ./smpi_sendsend
 > [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
+> Sent 0 to rank 1
+> Sent 1 to rank 0
+> rank 0 recv the data
+> rank 1 recv the data
 > [0.000000] [mc_safety/INFO] No property violation found.
 > [0.000000] [mc_safety/INFO] Expanded states = 7
 > [0.000000] [mc_safety/INFO] Visited states = 10
 > [0.000000] [mc_safety/INFO] Executed transitions = 8
+> Sent 0 to rank 1
 
 p Testing the paranoid model
 ! timeout 60
