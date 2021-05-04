@@ -11,6 +11,7 @@ export LC_ALL=C
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -f /tmp/cc*
 rm -f /tmp/*.so
+rm -f /tmp/*.so.*
 rm -rf /tmp/simgrid-java*
 rm -rf /var/tmp/simgrid-java*
 rm -rf /tmp/jvm-*
