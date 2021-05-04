@@ -18,6 +18,7 @@
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>
+#include <cstdio> // setvbuf
 #include <cstdlib>
 #include <cstring>
 #include <memory>
@@ -43,7 +44,7 @@ AppSide* AppSide::initialize()
 
   _sg_do_model_check = 1;
 
-  setvbuf(stdout, NULL, _IOLBF, 0);
+  setvbuf(stdout, nullptr, _IOLBF, 0);
 
   // Fetch socket from MC_ENV_SOCKET_FD:
   const char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
