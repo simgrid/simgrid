@@ -60,7 +60,10 @@ bool Activity::test()
 
 Activity* Activity::cancel()
 {
-  kernel::actor::simcall([this] { pimpl_->cancel(); });
+  kernel::actor::simcall([this] {
+    XBT_HERE();
+    pimpl_->cancel();
+  });
   complete(State::CANCELED);
   return this;
 }
