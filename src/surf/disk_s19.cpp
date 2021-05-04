@@ -52,7 +52,7 @@ void DiskS19Model::update_actions_state(double /*now*/, double delta)
 
 DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io::OpType type)
 {
-  auto* action = new DiskS19Action(this, static_cast<double>(size), not disk->is_on(), disk, type);
+  auto* action = new DiskS19Action(this, static_cast<double>(size), not disk->is_on());
   get_maxmin_system()->expand(disk->get_constraint(), action->get_variable(), 1.0);
   switch (type) {
     case s4u::Io::OpType::READ:
@@ -74,7 +74,7 @@ DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io
  * Action *
  **********/
 
-DiskS19Action::DiskS19Action(Model* model, double cost, bool failed, const DiskImpl* disk, s4u::Io::OpType type)
+DiskS19Action::DiskS19Action(Model* model, double cost, bool failed)
     : DiskAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3))
 {
 }
