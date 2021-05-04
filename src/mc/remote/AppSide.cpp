@@ -43,6 +43,8 @@ AppSide* AppSide::initialize()
 
   _sg_do_model_check = 1;
 
+  setvbuf(stdout, NULL, _IOLBF, 0);
+
   // Fetch socket from MC_ENV_SOCKET_FD:
   const char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
   int fd = xbt_str_parse_int(fd_env, "Variable '" MC_ENV_SOCKET_FD "' should contain a number but contains '%s'");

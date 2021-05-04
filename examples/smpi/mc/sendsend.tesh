@@ -8,11 +8,11 @@ $ ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/si
 > Sent 1 to rank 0
 > rank 0 recv the data
 > rank 1 recv the data
+> Sent 0 to rank 1
 > [0.000000] [mc_safety/INFO] No property violation found.
 > [0.000000] [mc_safety/INFO] Expanded states = 7
 > [0.000000] [mc_safety/INFO] Visited states = 10
 > [0.000000] [mc_safety/INFO] Executed transitions = 8
-> Sent 0 to rank 1
 
 p Testing the paranoid model
 ! timeout 60
