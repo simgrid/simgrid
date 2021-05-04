@@ -122,8 +122,8 @@ class XBT_PRIVATE FatTreeZone : public ClusterZone {
 
   void add_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
   int get_level_position(const unsigned int level);
+  void generate_switches(const s4u::ClusterCallbacks& set_callbacks);
   void generate_labels();
-  void generate_switches();
   int connect_node_to_parents(FatTreeNode* node);
   bool are_related(FatTreeNode* parent, FatTreeNode* child) const;
   bool is_in_sub_tree(FatTreeNode* root, FatTreeNode* node) const;
@@ -150,6 +150,12 @@ public:
   void set_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
                     const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count);
   void add_processing_node(int id, resource::LinkImpl* limiter, resource::LinkImpl* loopback);
+  /**
+   * @brief Build upper levels (switchs) in Fat-Tree
+   *
+   * Suppose that set_topology and add_processing_node have already been called
+   */
+  void build_upper_levels(const s4u::ClusterCallbacks& set_callbacks);
   void generate_dot_file(const std::string& filename = "fat_tree.dot") const;
 };
 } // namespace routing

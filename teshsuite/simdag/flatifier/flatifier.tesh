@@ -1228,12 +1228,12 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_dragonfly_noncontiguous_rad.xml "-
 >   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP" bandwidth="375000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_0_limiter" bandwidth="150000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1002_limiter" bandwidth="150000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_1002_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1003_limiter" bandwidth="150000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_1003_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1004_limiter" bandwidth="150000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_1004_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1_limiter" bandwidth="150000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_2_limiter" bandwidth="150000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_3_limiter" bandwidth="150000000" latency="0.000000000"/>
 >   <link id="green_link_in_chassis_0_between_routers_0_and_1_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="green_link_in_chassis_0_between_routers_0_and_1_4_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="green_link_in_chassis_1_between_routers_0_and_1_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
@@ -1250,46 +1250,46 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_dragonfly_noncontiguous_rad.xml "-
 >   <link_ctn id="bob_cluster_link_0_loopback"/>
 >   </route>
 >   <route src="node-0.simgrid.org" dst="node-1002.simgrid.org">
->   <link_ctn id="local_link_from_router_0_to_node_0_0_UP"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="green_link_in_chassis_0_between_routers_0_and_1_4_UP"/><link_ctn id="bob_cluster_link_1002_limiter"/><link_ctn id="local_link_from_router_1_to_node_0_1_DOWN"/>
+>   <link_ctn id="local_link_from_router_0_to_node_0_0_UP"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="green_link_in_chassis_0_between_routers_0_and_1_4_UP"/><link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="local_link_from_router_1_to_node_0_1_DOWN"/>
 >   </route>
 >   <route src="node-0.simgrid.org" dst="node-1003.simgrid.org">
->   <link_ctn id="local_link_from_router_0_to_node_0_0_UP"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_UP"/><link_ctn id="bob_cluster_link_1003_limiter"/><link_ctn id="local_link_from_router_2_to_node_0_2_DOWN"/>
+>   <link_ctn id="local_link_from_router_0_to_node_0_0_UP"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_UP"/><link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="local_link_from_router_2_to_node_0_2_DOWN"/>
 >   </route>
 >   <route src="node-0.simgrid.org" dst="node-1004.simgrid.org">
->   <link_ctn id="local_link_from_router_0_to_node_0_0_UP"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="green_link_in_chassis_0_between_routers_0_and_1_4_UP"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP"/><link_ctn id="bob_cluster_link_1004_limiter"/><link_ctn id="local_link_from_router_3_to_node_0_3_DOWN"/>
+>   <link_ctn id="local_link_from_router_0_to_node_0_0_UP"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="green_link_in_chassis_0_between_routers_0_and_1_4_UP"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP"/><link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="local_link_from_router_3_to_node_0_3_DOWN"/>
 >   </route>
 >   <route src="node-1002.simgrid.org" dst="node-0.simgrid.org">
->   <link_ctn id="local_link_from_router_1_to_node_0_1_UP"/><link_ctn id="bob_cluster_link_1002_limiter"/><link_ctn id="green_link_in_chassis_0_between_routers_0_and_1_4_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="local_link_from_router_0_to_node_0_0_DOWN"/>
+>   <link_ctn id="local_link_from_router_1_to_node_0_1_UP"/><link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="green_link_in_chassis_0_between_routers_0_and_1_4_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="local_link_from_router_0_to_node_0_0_DOWN"/>
 >   </route>
 >   <route src="node-1002.simgrid.org" dst="node-1002.simgrid.org">
 >   <link_ctn id="bob_cluster_link_1002_loopback"/>
 >   </route>
 >   <route src="node-1002.simgrid.org" dst="node-1003.simgrid.org">
->   <link_ctn id="local_link_from_router_1_to_node_0_1_UP"/><link_ctn id="bob_cluster_link_1002_limiter"/><link_ctn id="green_link_in_chassis_0_between_routers_0_and_1_4_DOWN"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_UP"/><link_ctn id="bob_cluster_link_1003_limiter"/><link_ctn id="local_link_from_router_2_to_node_0_2_DOWN"/>
+>   <link_ctn id="local_link_from_router_1_to_node_0_1_UP"/><link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="green_link_in_chassis_0_between_routers_0_and_1_4_DOWN"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_UP"/><link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="local_link_from_router_2_to_node_0_2_DOWN"/>
 >   </route>
 >   <route src="node-1002.simgrid.org" dst="node-1004.simgrid.org">
->   <link_ctn id="local_link_from_router_1_to_node_0_1_UP"/><link_ctn id="bob_cluster_link_1002_limiter"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP"/><link_ctn id="bob_cluster_link_1004_limiter"/><link_ctn id="local_link_from_router_3_to_node_0_3_DOWN"/>
+>   <link_ctn id="local_link_from_router_1_to_node_0_1_UP"/><link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP"/><link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="local_link_from_router_3_to_node_0_3_DOWN"/>
 >   </route>
 >   <route src="node-1003.simgrid.org" dst="node-0.simgrid.org">
->   <link_ctn id="local_link_from_router_2_to_node_0_2_UP"/><link_ctn id="bob_cluster_link_1003_limiter"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="local_link_from_router_0_to_node_0_0_DOWN"/>
+>   <link_ctn id="local_link_from_router_2_to_node_0_2_UP"/><link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="local_link_from_router_0_to_node_0_0_DOWN"/>
 >   </route>
 >   <route src="node-1003.simgrid.org" dst="node-1002.simgrid.org">
->   <link_ctn id="local_link_from_router_2_to_node_0_2_UP"/><link_ctn id="bob_cluster_link_1003_limiter"/><link_ctn id="green_link_in_chassis_1_between_routers_0_and_1_5_UP"/><link_ctn id="bob_cluster_link_1002_limiter"/><link_ctn id="local_link_from_router_1_to_node_0_1_DOWN"/>
+>   <link_ctn id="local_link_from_router_2_to_node_0_2_UP"/><link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="green_link_in_chassis_1_between_routers_0_and_1_5_UP"/><link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="local_link_from_router_1_to_node_0_1_DOWN"/>
 >   </route>
 >   <route src="node-1003.simgrid.org" dst="node-1003.simgrid.org">
 >   <link_ctn id="bob_cluster_link_1003_loopback"/>
 >   </route>
 >   <route src="node-1003.simgrid.org" dst="node-1004.simgrid.org">
->   <link_ctn id="local_link_from_router_2_to_node_0_2_UP"/><link_ctn id="bob_cluster_link_1003_limiter"/><link_ctn id="green_link_in_chassis_1_between_routers_0_and_1_5_UP"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP"/><link_ctn id="bob_cluster_link_1004_limiter"/><link_ctn id="local_link_from_router_3_to_node_0_3_DOWN"/>
+>   <link_ctn id="local_link_from_router_2_to_node_0_2_UP"/><link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="green_link_in_chassis_1_between_routers_0_and_1_5_UP"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP"/><link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="local_link_from_router_3_to_node_0_3_DOWN"/>
 >   </route>
 >   <route src="node-1004.simgrid.org" dst="node-0.simgrid.org">
->   <link_ctn id="local_link_from_router_3_to_node_0_3_UP"/><link_ctn id="bob_cluster_link_1004_limiter"/><link_ctn id="green_link_in_chassis_1_between_routers_0_and_1_5_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="local_link_from_router_0_to_node_0_0_DOWN"/>
+>   <link_ctn id="local_link_from_router_3_to_node_0_3_UP"/><link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="green_link_in_chassis_1_between_routers_0_and_1_5_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="local_link_from_router_0_to_node_0_0_DOWN"/>
 >   </route>
 >   <route src="node-1004.simgrid.org" dst="node-1002.simgrid.org">
->   <link_ctn id="local_link_from_router_3_to_node_0_3_UP"/><link_ctn id="bob_cluster_link_1004_limiter"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_DOWN"/><link_ctn id="bob_cluster_link_1002_limiter"/><link_ctn id="local_link_from_router_1_to_node_0_1_DOWN"/>
+>   <link_ctn id="local_link_from_router_3_to_node_0_3_UP"/><link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_DOWN"/><link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="local_link_from_router_1_to_node_0_1_DOWN"/>
 >   </route>
 >   <route src="node-1004.simgrid.org" dst="node-1003.simgrid.org">
->   <link_ctn id="local_link_from_router_3_to_node_0_3_UP"/><link_ctn id="bob_cluster_link_1004_limiter"/><link_ctn id="green_link_in_chassis_1_between_routers_0_and_1_5_DOWN"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_UP"/><link_ctn id="bob_cluster_link_1003_limiter"/><link_ctn id="local_link_from_router_2_to_node_0_2_DOWN"/>
+>   <link_ctn id="local_link_from_router_3_to_node_0_3_UP"/><link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="green_link_in_chassis_1_between_routers_0_and_1_5_DOWN"/><link_ctn id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_UP"/><link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="local_link_from_router_2_to_node_0_2_DOWN"/>
 >   </route>
 >   <route src="node-1004.simgrid.org" dst="node-1004.simgrid.org">
 >   <link_ctn id="bob_cluster_link_1004_loopback"/>
@@ -1307,14 +1307,18 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_fat_tree_noncontiguous_rad.xml "--
 >   <host id="node-119.simgrid.org" speed="1000000000"/>
 >   <host id="node-120.simgrid.org" speed="1000000000"/>
 >   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_100_limiter" bandwidth="50000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_-1_limiter" bandwidth="50000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_-2_limiter" bandwidth="50000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_-3_limiter" bandwidth="50000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_-4_limiter" bandwidth="50000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_0_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_100_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_101_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_101_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_119_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_119_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_120_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_120_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1_limiter" bandwidth="50000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_2_limiter" bandwidth="50000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_3_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="link_from_-1_-3_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link_from_-1_-3_4_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link_from_-1_-3_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
@@ -1343,46 +1347,46 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_fat_tree_noncontiguous_rad.xml "--
 >   <link_ctn id="bob_cluster_link_100_loopback"/>
 >   </route>
 >   <route src="node-100.simgrid.org" dst="node-101.simgrid.org">
->   <link_ctn id="link_from_0_-1_0_UP"/><link_ctn id="bob_cluster_link_100_limiter"/><link_ctn id="link_from_1_-1_1_DOWN"/><link_ctn id="bob_cluster_link_101_limiter"/>
+>   <link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="link_from_0_-1_0_UP"/><link_ctn id="link_from_1_-1_1_DOWN"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="bob_cluster_link_1_limiter"/>
 >   </route>
 >   <route src="node-100.simgrid.org" dst="node-119.simgrid.org">
->   <link_ctn id="link_from_0_-1_0_UP"/><link_ctn id="bob_cluster_link_100_limiter"/><link_ctn id="link_from_-1_-3_4_UP"/><link_ctn id="link_from_-2_-3_8_DOWN"/><link_ctn id="link_from_2_-2_2_DOWN"/><link_ctn id="bob_cluster_link_119_limiter"/>
+>   <link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="link_from_0_-1_0_UP"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="link_from_-1_-3_4_UP"/><link_ctn id="link_from_-2_-3_8_DOWN"/><link_ctn id="bob_cluster_link_-3_limiter"/><link_ctn id="link_from_2_-2_2_DOWN"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="bob_cluster_link_2_limiter"/>
 >   </route>
 >   <route src="node-100.simgrid.org" dst="node-120.simgrid.org">
->   <link_ctn id="link_from_0_-1_0_UP"/><link_ctn id="bob_cluster_link_100_limiter"/><link_ctn id="link_from_-1_-4_6_UP"/><link_ctn id="link_from_-2_-4_10_DOWN"/><link_ctn id="link_from_3_-2_3_DOWN"/><link_ctn id="bob_cluster_link_120_limiter"/>
+>   <link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="link_from_0_-1_0_UP"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="link_from_-1_-4_6_UP"/><link_ctn id="link_from_-2_-4_10_DOWN"/><link_ctn id="bob_cluster_link_-4_limiter"/><link_ctn id="link_from_3_-2_3_DOWN"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="bob_cluster_link_3_limiter"/>
 >   </route>
 >   <route src="node-101.simgrid.org" dst="node-100.simgrid.org">
->   <link_ctn id="link_from_1_-1_1_UP"/><link_ctn id="bob_cluster_link_101_limiter"/><link_ctn id="link_from_0_-1_0_DOWN"/><link_ctn id="bob_cluster_link_100_limiter"/>
+>   <link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="link_from_1_-1_1_UP"/><link_ctn id="link_from_0_-1_0_DOWN"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="bob_cluster_link_0_limiter"/>
 >   </route>
 >   <route src="node-101.simgrid.org" dst="node-101.simgrid.org">
 >   <link_ctn id="bob_cluster_link_101_loopback"/>
 >   </route>
 >   <route src="node-101.simgrid.org" dst="node-119.simgrid.org">
->   <link_ctn id="link_from_1_-1_1_UP"/><link_ctn id="bob_cluster_link_101_limiter"/><link_ctn id="link_from_-1_-3_4_UP"/><link_ctn id="link_from_-2_-3_8_DOWN"/><link_ctn id="link_from_2_-2_2_DOWN"/><link_ctn id="bob_cluster_link_119_limiter"/>
+>   <link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="link_from_1_-1_1_UP"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="link_from_-1_-3_4_UP"/><link_ctn id="link_from_-2_-3_8_DOWN"/><link_ctn id="bob_cluster_link_-3_limiter"/><link_ctn id="link_from_2_-2_2_DOWN"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="bob_cluster_link_2_limiter"/>
 >   </route>
 >   <route src="node-101.simgrid.org" dst="node-120.simgrid.org">
->   <link_ctn id="link_from_1_-1_1_UP"/><link_ctn id="bob_cluster_link_101_limiter"/><link_ctn id="link_from_-1_-4_6_UP"/><link_ctn id="link_from_-2_-4_10_DOWN"/><link_ctn id="link_from_3_-2_3_DOWN"/><link_ctn id="bob_cluster_link_120_limiter"/>
+>   <link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="link_from_1_-1_1_UP"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="link_from_-1_-4_6_UP"/><link_ctn id="link_from_-2_-4_10_DOWN"/><link_ctn id="bob_cluster_link_-4_limiter"/><link_ctn id="link_from_3_-2_3_DOWN"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="bob_cluster_link_3_limiter"/>
 >   </route>
 >   <route src="node-119.simgrid.org" dst="node-100.simgrid.org">
->   <link_ctn id="link_from_2_-2_2_UP"/><link_ctn id="bob_cluster_link_119_limiter"/><link_ctn id="link_from_-2_-3_8_UP"/><link_ctn id="link_from_-1_-3_4_DOWN"/><link_ctn id="link_from_0_-1_0_DOWN"/><link_ctn id="bob_cluster_link_100_limiter"/>
+>   <link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="link_from_2_-2_2_UP"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="link_from_-2_-3_8_UP"/><link_ctn id="link_from_-1_-3_4_DOWN"/><link_ctn id="bob_cluster_link_-3_limiter"/><link_ctn id="link_from_0_-1_0_DOWN"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="bob_cluster_link_0_limiter"/>
 >   </route>
 >   <route src="node-119.simgrid.org" dst="node-101.simgrid.org">
->   <link_ctn id="link_from_2_-2_2_UP"/><link_ctn id="bob_cluster_link_119_limiter"/><link_ctn id="link_from_-2_-4_10_UP"/><link_ctn id="link_from_-1_-4_6_DOWN"/><link_ctn id="link_from_1_-1_1_DOWN"/><link_ctn id="bob_cluster_link_101_limiter"/>
+>   <link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="link_from_2_-2_2_UP"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="link_from_-2_-4_10_UP"/><link_ctn id="link_from_-1_-4_6_DOWN"/><link_ctn id="bob_cluster_link_-4_limiter"/><link_ctn id="link_from_1_-1_1_DOWN"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="bob_cluster_link_1_limiter"/>
 >   </route>
 >   <route src="node-119.simgrid.org" dst="node-119.simgrid.org">
 >   <link_ctn id="bob_cluster_link_119_loopback"/>
 >   </route>
 >   <route src="node-119.simgrid.org" dst="node-120.simgrid.org">
->   <link_ctn id="link_from_2_-2_2_UP"/><link_ctn id="bob_cluster_link_119_limiter"/><link_ctn id="link_from_3_-2_3_DOWN"/><link_ctn id="bob_cluster_link_120_limiter"/>
+>   <link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="link_from_2_-2_2_UP"/><link_ctn id="link_from_3_-2_3_DOWN"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="bob_cluster_link_3_limiter"/>
 >   </route>
 >   <route src="node-120.simgrid.org" dst="node-100.simgrid.org">
->   <link_ctn id="link_from_3_-2_3_UP"/><link_ctn id="bob_cluster_link_120_limiter"/><link_ctn id="link_from_-2_-3_8_UP"/><link_ctn id="link_from_-1_-3_4_DOWN"/><link_ctn id="link_from_0_-1_0_DOWN"/><link_ctn id="bob_cluster_link_100_limiter"/>
+>   <link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="link_from_3_-2_3_UP"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="link_from_-2_-3_8_UP"/><link_ctn id="link_from_-1_-3_4_DOWN"/><link_ctn id="bob_cluster_link_-3_limiter"/><link_ctn id="link_from_0_-1_0_DOWN"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="bob_cluster_link_0_limiter"/>
 >   </route>
 >   <route src="node-120.simgrid.org" dst="node-101.simgrid.org">
->   <link_ctn id="link_from_3_-2_3_UP"/><link_ctn id="bob_cluster_link_120_limiter"/><link_ctn id="link_from_-2_-4_10_UP"/><link_ctn id="link_from_-1_-4_6_DOWN"/><link_ctn id="link_from_1_-1_1_DOWN"/><link_ctn id="bob_cluster_link_101_limiter"/>
+>   <link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="link_from_3_-2_3_UP"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="link_from_-2_-4_10_UP"/><link_ctn id="link_from_-1_-4_6_DOWN"/><link_ctn id="bob_cluster_link_-4_limiter"/><link_ctn id="link_from_1_-1_1_DOWN"/><link_ctn id="bob_cluster_link_-1_limiter"/><link_ctn id="bob_cluster_link_1_limiter"/>
 >   </route>
 >   <route src="node-120.simgrid.org" dst="node-119.simgrid.org">
->   <link_ctn id="link_from_3_-2_3_UP"/><link_ctn id="bob_cluster_link_120_limiter"/><link_ctn id="link_from_2_-2_2_DOWN"/><link_ctn id="bob_cluster_link_119_limiter"/>
+>   <link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="link_from_3_-2_3_UP"/><link_ctn id="link_from_2_-2_2_DOWN"/><link_ctn id="bob_cluster_link_-2_limiter"/><link_ctn id="bob_cluster_link_2_limiter"/>
 >   </route>
 >   <route src="node-120.simgrid.org" dst="node-120.simgrid.org">
 >   <link_ctn id="bob_cluster_link_120_loopback"/>
@@ -1402,12 +1406,12 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_torus_noncontiguous_rad.xml "--log
 >   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_0_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_102_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_102_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_103_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_103_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_1_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_1_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_2_limiter" bandwidth="50000000" latency="0.000000000"/>
+>   <link id="bob_cluster_link_3_limiter" bandwidth="50000000" latency="0.000000000"/>
 >   <link id="bob_cluster_link_from_0_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_from_0_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_from_0_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
@@ -1439,10 +1443,10 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_torus_noncontiguous_rad.xml "--log
 >   <link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_1_limiter"/>
 >   </route>
 >   <route src="node-0.simgrid.org" dst="node-102.simgrid.org">
->   <link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="bob_cluster_link_from_0_to_2_UP"/><link_ctn id="bob_cluster_link_102_limiter"/>
+>   <link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="bob_cluster_link_from_0_to_2_UP"/><link_ctn id="bob_cluster_link_2_limiter"/>
 >   </route>
 >   <route src="node-0.simgrid.org" dst="node-103.simgrid.org">
->   <link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="bob_cluster_link_from_1_to_3_UP"/><link_ctn id="bob_cluster_link_103_limiter"/>
+>   <link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="bob_cluster_link_from_1_to_3_UP"/><link_ctn id="bob_cluster_link_3_limiter"/>
 >   </route>
 >   <route src="node-1.simgrid.org" dst="node-0.simgrid.org">
 >   <link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/>
@@ -1451,31 +1455,31 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_torus_noncontiguous_rad.xml "--log
 >   <link_ctn id="bob_cluster_link_1_loopback"/>
 >   </route>
 >   <route src="node-1.simgrid.org" dst="node-102.simgrid.org">
->   <link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="bob_cluster_link_from_0_to_2_UP"/><link_ctn id="bob_cluster_link_102_limiter"/>
+>   <link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/><link_ctn id="bob_cluster_link_from_0_to_2_UP"/><link_ctn id="bob_cluster_link_2_limiter"/>
 >   </route>
 >   <route src="node-1.simgrid.org" dst="node-103.simgrid.org">
->   <link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="bob_cluster_link_from_1_to_3_UP"/><link_ctn id="bob_cluster_link_103_limiter"/>
+>   <link_ctn id="bob_cluster_link_1_limiter"/><link_ctn id="bob_cluster_link_from_1_to_3_UP"/><link_ctn id="bob_cluster_link_3_limiter"/>
 >   </route>
 >   <route src="node-102.simgrid.org" dst="node-0.simgrid.org">
->   <link_ctn id="bob_cluster_link_102_limiter"/><link_ctn id="bob_cluster_link_from_0_to_2_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/>
+>   <link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="bob_cluster_link_from_0_to_2_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/>
 >   </route>
 >   <route src="node-102.simgrid.org" dst="node-1.simgrid.org">
->   <link_ctn id="bob_cluster_link_102_limiter"/><link_ctn id="bob_cluster_link_from_2_to_3_UP"/><link_ctn id="bob_cluster_link_103_limiter"/><link_ctn id="bob_cluster_link_from_1_to_3_DOWN"/><link_ctn id="bob_cluster_link_1_limiter"/>
+>   <link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="bob_cluster_link_from_2_to_3_UP"/><link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="bob_cluster_link_from_1_to_3_DOWN"/><link_ctn id="bob_cluster_link_1_limiter"/>
 >   </route>
 >   <route src="node-102.simgrid.org" dst="node-102.simgrid.org">
 >   <link_ctn id="bob_cluster_link_102_loopback"/>
 >   </route>
 >   <route src="node-102.simgrid.org" dst="node-103.simgrid.org">
->   <link_ctn id="bob_cluster_link_102_limiter"/><link_ctn id="bob_cluster_link_from_2_to_3_UP"/><link_ctn id="bob_cluster_link_103_limiter"/>
+>   <link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="bob_cluster_link_from_2_to_3_UP"/><link_ctn id="bob_cluster_link_3_limiter"/>
 >   </route>
 >   <route src="node-103.simgrid.org" dst="node-0.simgrid.org">
->   <link_ctn id="bob_cluster_link_103_limiter"/><link_ctn id="bob_cluster_link_from_2_to_3_DOWN"/><link_ctn id="bob_cluster_link_102_limiter"/><link_ctn id="bob_cluster_link_from_0_to_2_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/>
+>   <link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="bob_cluster_link_from_2_to_3_DOWN"/><link_ctn id="bob_cluster_link_2_limiter"/><link_ctn id="bob_cluster_link_from_0_to_2_DOWN"/><link_ctn id="bob_cluster_link_0_limiter"/>
 >   </route>
 >   <route src="node-103.simgrid.org" dst="node-1.simgrid.org">
->   <link_ctn id="bob_cluster_link_103_limiter"/><link_ctn id="bob_cluster_link_from_1_to_3_DOWN"/><link_ctn id="bob_cluster_link_1_limiter"/>
+>   <link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="bob_cluster_link_from_1_to_3_DOWN"/><link_ctn id="bob_cluster_link_1_limiter"/>
 >   </route>
 >   <route src="node-103.simgrid.org" dst="node-102.simgrid.org">
->   <link_ctn id="bob_cluster_link_103_limiter"/><link_ctn id="bob_cluster_link_from_2_to_3_DOWN"/><link_ctn id="bob_cluster_link_102_limiter"/>
+>   <link_ctn id="bob_cluster_link_3_limiter"/><link_ctn id="bob_cluster_link_from_2_to_3_DOWN"/><link_ctn id="bob_cluster_link_2_limiter"/>
 >   </route>
 >   <route src="node-103.simgrid.org" dst="node-103.simgrid.org">
 >   <link_ctn id="bob_cluster_link_103_loopback"/>

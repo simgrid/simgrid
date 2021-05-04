@@ -195,13 +195,7 @@ static simgrid::s4u::Link* sg_platf_cluster_create_limiter(const simgrid::kernel
                                                            simgrid::s4u::NetZone* zone,
                                                            const std::vector<unsigned int>& /*coord*/, int id)
 {
-  xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
-             "Zone(%s): error when creating limiter for host number %d in the zone. Insufficient number of radicals "
-             "available "
-             "(total = %zu). Check the 'radical' parameter in XML",
-             cluster->id.c_str(), id, cluster->radicals.size());
-
-  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(cluster->radicals[id]) + "_limiter";
+  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_limiter";
   XBT_DEBUG("Cluster: creating limiter link=%s bw=%f", link_id.c_str(), cluster->limiter_link);
 
   simgrid::s4u::Link* limiter = zone->create_link(link_id, cluster->limiter_link)->seal();

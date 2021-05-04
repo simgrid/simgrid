@@ -89,13 +89,15 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, dou
 
     int k = this->num_parents_per_node_[currentNode->level];
     d     = d % k;
+
+    if (currentNode->limiter_link_)
+      into->link_list_.push_back(currentNode->limiter_link_);
+
     into->link_list_.push_back(currentNode->parents[d]->up_link_);
 
     if (latency)
       *latency += currentNode->parents[d]->up_link_->get_latency();
 
-    if (currentNode->limiter_link_)
-      into->link_list_.push_back(currentNode->limiter_link_);
     currentNode = currentNode->parents[d]->up_node_;
   }
 
@@ -106,69 +108,75 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, dou
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->num_children_per_node_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
+
         into->link_list_.push_back(currentNode->children[i]->down_link_);
+
+        if (currentNode->limiter_link_)
+          into->link_list_.push_back(currentNode->limiter_link_);
+
         if (latency)
           *latency += currentNode->children[i]->down_link_->get_latency();
         currentNode = currentNode->children[i]->down_node_;
-        if (currentNode->limiter_link_)
-          into->link_list_.push_back(currentNode->limiter_link_);
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);
       }
     }
+  }
+  if (currentNode->limiter_link_) { // limiter for receiver/destination
+    into->link_list_.push_back(currentNode->limiter_link_);
   }
   // set gateways (if any)
   into->gw_src_ = get_gateway(src->id());
   into->gw_dst_ = get_gateway(dst->id());
 }
 
-/* This function makes the assumption that parse_specific_arguments() and
- * addNodes() have already been called
- */
+void FatTreeZone::build_upper_levels(const s4u::ClusterCallbacks& set_callbacks)
+{
+  generate_switches(set_callbacks);
+  generate_labels();
+
+  unsigned int k = 0;
+  // Nodes are totally ordered, by level and then by position, in this->nodes
+  for (unsigned int i = 0; i < levels_; i++) {
+    for (unsigned int j = 0; j < nodes_by_level_[i]; j++) {
+      connect_node_to_parents(nodes_[k]);
+      k++;
+    }
+  }
+}
+
 void FatTreeZone::do_seal()
 {
   if (this->levels_ == 0) {
     return;
   }
-  this->generate_switches();
-
-  if (XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
-    std::stringstream msgBuffer;
-
-    msgBuffer << "We are creating a fat tree of " << this->levels_ << " levels "
-              << "with " << this->nodes_by_level_[0] << " processing nodes";
-    for (unsigned int i = 1; i <= this->levels_; i++) {
-      msgBuffer << ", " << this->nodes_by_level_[i] << " switches at level " << i;
-    }
-    XBT_DEBUG("%s", msgBuffer.str().c_str());
-    msgBuffer.str("");
-    msgBuffer << "Nodes are : ";
-
-    for (FatTreeNode const* node : this->nodes_) {
-      msgBuffer << node->id << "(" << node->level << "," << node->position << ") ";
-    }
-    XBT_DEBUG("%s", msgBuffer.str().c_str());
+  if (not XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
+    return;
   }
 
-  this->generate_labels();
+  /* for debugging purpose only, Fat-Tree is already build when seal is called */
+  std::stringstream msgBuffer;
 
-  unsigned int k = 0;
-  // Nodes are totally ordered, by level and then by position, in this->nodes
-  for (unsigned int i = 0; i < this->levels_; i++) {
-    for (unsigned int j = 0; j < this->nodes_by_level_[i]; j++) {
-      this->connect_node_to_parents(this->nodes_[k]);
-      k++;
-    }
+  msgBuffer << "We are creating a fat tree of " << this->levels_ << " levels "
+            << "with " << this->nodes_by_level_[0] << " processing nodes";
+  for (unsigned int i = 1; i <= this->levels_; i++) {
+    msgBuffer << ", " << this->nodes_by_level_[i] << " switches at level " << i;
   }
+  XBT_DEBUG("%s", msgBuffer.str().c_str());
+  msgBuffer.str("");
+  msgBuffer << "Nodes are : ";
 
-  if (XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
-    std::stringstream msgBuffer;
-    msgBuffer << "Links are : ";
-    for (FatTreeLink const* link : this->links_) {
-      msgBuffer << "(" << link->up_node_->id << "," << link->down_node_->id << ") ";
-    }
-    XBT_DEBUG("%s", msgBuffer.str().c_str());
+  for (FatTreeNode const* node : this->nodes_) {
+    msgBuffer << node->id << "(" << node->level << "," << node->position << ") ";
   }
+  XBT_DEBUG("%s", msgBuffer.str().c_str());
+
+  msgBuffer.clear();
+  msgBuffer << "Links are : ";
+  for (FatTreeLink const* link : this->links_) {
+    msgBuffer << "(" << link->up_node_->id << "," << link->down_node_->id << ") ";
+  }
+  XBT_DEBUG("%s", msgBuffer.str().c_str());
 }
 
 int FatTreeZone::connect_node_to_parents(FatTreeNode* node)
@@ -227,7 +235,7 @@ bool FatTreeZone::are_related(FatTreeNode* parent, FatTreeNode* child) const
   return true;
 }
 
-void FatTreeZone::generate_switches()
+void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
 {
   XBT_DEBUG("Generating switches.");
   this->nodes_by_level_.resize(this->levels_ + 1, 0);
@@ -259,7 +267,14 @@ void FatTreeZone::generate_switches()
   int k = 0;
   for (unsigned int i = 0; i < this->levels_; i++) {
     for (unsigned int j = 0; j < this->nodes_by_level_[i + 1]; j++) {
-      auto* newNode = new FatTreeNode(--k, i + 1, j, nullptr, nullptr);
+      kernel::resource::LinkImpl* limiter = nullptr;
+      int id                              = --k;
+      if (set_callbacks.limiter) {
+        auto* s4u_link = set_callbacks.limiter(get_iface(), {i + 1, j}, id);
+        if (s4u_link)
+          limiter = s4u_link->get_impl();
+      }
+      auto* newNode = new FatTreeNode(id, i + 1, j, limiter, nullptr);
       XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
       newNode->children.resize(this->num_children_per_node_[i] * this->num_port_lower_level_[i]);
       if (i != this->levels_ - 1) {
@@ -514,14 +529,16 @@ NetZone* create_fatTree_zone(const std::string& name, const NetZone* parent, con
   zone->set_link_characteristics(bandwidth, latency, sharing_policy);
 
   /* populating it */
-  int tot_elements = std::accumulate(params.down.begin(), params.down.end(), 1, std::multiplies<>());
-  for (int i = 0; i < tot_elements; i++) {
+  unsigned int tot_elements = std::accumulate(params.down.begin(), params.down.end(), 1, std::multiplies<>());
+  for (unsigned int i = 0; i < tot_elements; i++) {
     kernel::routing::NetPoint* netpoint;
     Link* limiter;
     Link* loopback;
-    zone->fill_leaf_from_cb(i, params.down, set_callbacks, &netpoint, &loopback, &limiter);
+    /* coordinates are based on 2 indexes: number of levels and id */
+    zone->fill_leaf_from_cb(i, {params.levels + 1, tot_elements}, set_callbacks, &netpoint, &loopback, &limiter);
     zone->add_processing_node(i, limiter ? limiter->get_impl() : nullptr, loopback ? loopback->get_impl() : nullptr);
   }
+  zone->build_upper_levels(set_callbacks);
 
   return zone->get_iface();
 }

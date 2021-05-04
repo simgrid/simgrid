@@ -129,7 +129,7 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
  * @param id Internal identifier in the torus (for information)
  * @return Limiter link
  */
-static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned int>& coord, int id)
 {
   return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
 }
@@ -192,12 +192,17 @@ static void create_torus_cluster()
  *
  *
  *                         S3     S4                <-- Level 1 routers
- *                        /   \  /  \
- *                       /     /\    \
- *   link: 10GBps -->   |    /    \   |
- *   (full-duplex)      |  /        \ |
+ *    link:limiter -      /   \  /  \
+ *                       +     ++    +
+ *    link: 10GBps -->  |     /  \    |
+ *     (full-duplex)    |    /    \   |
+ *                      +   +      +  +
+ *                      |  /        \ |
  *                      S1           S2             <-- Level 2 routers
- *  link:10GBps  -->  / | \         / | \
+ *   link:limiter ->    |             |
+ *                      +             +
+ *  link:10GBps  -->   /|\           /|\
+ *                    / | \         / | \
  *                   +  +  +       +  +  +
  *  link:limiter -> /   |   \     /   |   \
  *                 A    B    C   D    E    F        <-- Nodes
@@ -208,15 +213,13 @@ static void create_torus_cluster()
  * 2) link: 10Gbs link connecting the components (created automatically)
  *
  * For example, a communication from A to C goes through:
- * <tt> A->limiter(A)->link(A-S1)->link(S1-C)->->limiter(C)->C</tt>
+ * <tt> A->limiter(A)->link(A-S1)->limiter(S1)->link(S1-C)->->limiter(C)->C</tt>
  *
  * More precisely, considering that A and C are StarZones, a
  * communication from A-CPU-3 to C-CPU-7 goes through:
  * 1) StarZone A: A-CPU-3 -> link-up-A-CPU-3 -> A-CPU-0
- * 2) A-CPU-0->limiter(A)->link(A-S1)->link(S1-C)->limiter(C)->C-CPU-0
+ * 2) A-CPU-0->limiter(A)->link(A-S1)->limiter(S1)->link(S1-C)->limiter(C)->C-CPU-0
  * 3) StarZone C: C-CPU-0-> link-down-C-CPU-7 -> C-CPU-7
- *
- * Note that limiters are only valid for leaves, not routers.
  *
  * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat-Tree
  * Cluster</a>
