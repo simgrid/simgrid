@@ -21,7 +21,7 @@ void assert_exit(bool exp_success, double duration)
     XBT_VERB("Running checks on exit");
     INFO("Check exit status. Expected: " << exp_success);
     REQUIRE(exp_success == not got_failed);
-    INFO("Check date at exit. Expected: " << expected_time);
+    INFO("Check date at exit. Expected: " + std::to_string(expected_time));
     REQUIRE(simgrid::s4u::Engine::get_clock() == Approx(expected_time));
     XBT_VERB("Checks on exit successful");
   });
