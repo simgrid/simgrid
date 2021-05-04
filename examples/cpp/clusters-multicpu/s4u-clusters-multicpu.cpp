@@ -84,7 +84,7 @@ public:
  *   CPU1   ...   CPU8
  *
  * @param zone Cluster netzone being created (usefull to create the hosts/links inside it)
- * @param coord Coordinates in the torus (e.g. "0,0,0", "0,1,0")
+ * @param coord Coordinates in the cluster
  * @param id Internal identifier in the torus (for information)
  * @return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
  */
@@ -124,12 +124,21 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
 /*************************************************************************************************/
 /**
  * @brief Callback to create limiter link (1Gbs) for each netpoint
+ *
+ * The coord parameter depends on the cluster being created:
+ * - Torus: Direct translation of the Torus' dimensions, e.g. (0, 0, 0) for a 3-D Torus
+ * - Fat-Tree: A pair (level in the tree, id), e.g. (0, 0) for first leaf in the tree and (1,0) for the first switch at
+ * level 1.
+ * - Dragonfly: a tuple (group, chassis, blades/routers, nodes), e.g. (0, 0, 0, 0) for first node in the cluster. To
+ * identify the router inside a (group, chassis, blade), we use MAX_UINT in the last parameter (e.g. 0, 0, 0,
+ * 4294967295).
+ *
  * @param zone Torus netzone being created (usefull to create the hosts/links inside it)
- * @param coord Coordinates in the torus (e.g. "0,0,0", "0,1,0")
+ * @param coord Coordinates in the cluster
  * @param id Internal identifier in the torus (for information)
  * @return Limiter link
  */
-static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned int>& coord, int id)
+static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
 {
   return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
 }
@@ -182,30 +191,30 @@ static void create_torus_cluster()
  *
  * Creates a Fat-Tree cluster with 2 levels and 6 nodes
  * The following parameters are used to create this cluster:
- * - Levels: 2 - two-level cluster
- * - Down links: 2, 3 - L1 routers is connected to 2 elements, L2 routers to 3 elements
- * - Up links: 1, 2 - Each node (A-F) is connected to 1 L2 router, L2 routers are connected to 2 L1
+ * - Levels: 2 - two-level of switches in the cluster
+ * - Down links: 2, 3 - L2 routers is connected to 2 elements, L1 routers to 3 elements
+ * - Up links: 1, 2 - Each node (A-F) is connected to 1 L1 router, L1 routers are connected to 2 L2
  * - Link count: 1, 1 - Use 1 link in each level
  *
  * The first parameter describes how many levels we have.
  * The following ones describe the connection between the elements and must have exactly n_levels components.
  *
  *
- *                         S3     S4                <-- Level 1 routers
+ *                         S3     S4                <-- Level 2 routers
  *    link:limiter -      /   \  /  \
  *                       +     ++    +
  *    link: 10GBps -->  |     /  \    |
  *     (full-duplex)    |    /    \   |
  *                      +   +      +  +
  *                      |  /        \ |
- *                      S1           S2             <-- Level 2 routers
+ *                      S1           S2             <-- Level 1 routers
  *   link:limiter ->    |             |
  *                      +             +
  *  link:10GBps  -->   /|\           /|\
  *                    / | \         / | \
  *                   +  +  +       +  +  +
  *  link:limiter -> /   |   \     /   |   \
- *                 A    B    C   D    E    F        <-- Nodes
+ *                 A    B    C   D    E    F        <-- level 0 Nodes
  *
  * Each element (A to F) is a StarZone containing 8 Hosts.
  * The connection uses 2 links:
@@ -260,14 +269,12 @@ static void create_fatTree_cluster()
  *  Group 1
  *
  * Each element (A, B, C, etc) is a StarZone containing 8 Hosts.
- * The connection between nodes and routers (e.g. A->R1) uses 2 links:
+ * The connection between elements (e.g. A->R1) uses 2 links:
  * 1) limiter: a 1Gbs limiter link (set by user through the set_limiter callback)
  * 2) link: 10Gbs link connecting the components (created automatically)
  *
  * For example, a communication from A to C goes through:
- * <tt> A->limiter(A)->link(A-R1)->link(R1-R2)->limiter(C)->C</tt>
- *
- * Note that limiters are only valid for leaves, not routers.
+ * <tt> A->limiter(A)->link(A-R1)->limiter(R1)->link(R1-R2)->limiter(R2)->link(R2-C)limiter(C)->C</tt>
  *
  * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#dragonfly-cluster">Dragonfly
  * Cluster</a>

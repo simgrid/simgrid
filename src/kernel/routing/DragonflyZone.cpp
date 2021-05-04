@@ -142,22 +142,30 @@ s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& top
 }
 
 /* Generate the cluster once every node is created */
-void DragonflyZone::do_seal()
+void DragonflyZone::build_upper_levels(const s4u::ClusterCallbacks& set_callbacks)
 {
-  if (num_nodes_per_blade_ == 0)
-    return;
-
-  generate_routers();
+  generate_routers(set_callbacks);
   generate_links();
 }
 
-void DragonflyZone::generate_routers()
+void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
 {
+  int id = 0;
   routers_.reserve(num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_);
-  for (unsigned int i = 0; i < num_groups_; i++)
-    for (unsigned int j = 0; j < num_chassis_per_group_; j++)
-      for (unsigned int k = 0; k < num_blades_per_chassis_; k++)
-        routers_.emplace_back(i, j, k);
+  for (unsigned int i = 0; i < num_groups_; i++) {
+    for (unsigned int j = 0; j < num_chassis_per_group_; j++) {
+      for (unsigned int k = 0; k < num_blades_per_chassis_; k++) {
+        resource::LinkImpl* limiter = nullptr;
+        if (set_callbacks.limiter) {
+          auto* s4u_link =
+              set_callbacks.limiter(get_iface(), {i, j, k, std::numeric_limits<unsigned int>::max()}, --id);
+          if (s4u_link)
+            limiter = s4u_link->get_impl();
+        }
+        routers_.emplace_back(i, j, k, limiter);
+      }
+    }
+  }
 }
 
 void DragonflyZone::generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
@@ -298,20 +306,22 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, 
                                             targetCoords.chassis * num_blades_per_chassis_ + targetCoords.blade];
   DragonflyRouter* currentRouter = myRouter;
 
+  if (has_limiter()) { // limiter for sender
+    route->link_list_.push_back(get_uplink_from(node_pos_with_loopback(src->id())));
+  }
+
   // node->router local link
   route->link_list_.push_back(myRouter->my_nodes_[myCoords.node * num_links_per_link_]);
   if (latency)
     *latency += myRouter->my_nodes_[myCoords.node * num_links_per_link_]->get_latency();
-
-  if (has_limiter()) { // limiter for sender
-    route->link_list_.push_back(get_uplink_from(node_pos_with_loopback(src->id())));
-  }
 
   if (targetRouter != myRouter) {
     // are we on a different group ?
     if (targetRouter->group_ != currentRouter->group_) {
       // go to the router of our group connected to this one.
       if (currentRouter->blade_ != targetCoords.group) {
+        if (currentRouter->limiter_)
+          route->link_list_.push_back(currentRouter->limiter_);
         // go to the nth router in our chassis
         route->link_list_.push_back(currentRouter->green_links_[targetCoords.group]);
         if (latency)
@@ -322,6 +332,8 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, 
 
       if (currentRouter->chassis_ != 0) {
         // go to the first chassis of our group
+        if (currentRouter->limiter_)
+          route->link_list_.push_back(currentRouter->limiter_);
         route->link_list_.push_back(currentRouter->black_links_[0]);
         if (latency)
           *latency += currentRouter->black_links_[0]->get_latency();
@@ -331,6 +343,8 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, 
 
       // go to destination group - the only optical hop
       route->link_list_.push_back(currentRouter->blue_link_);
+      if (currentRouter->limiter_)
+        route->link_list_.push_back(currentRouter->limiter_);
       if (latency)
         *latency += currentRouter->blue_link_->get_latency();
       currentRouter =
@@ -339,6 +353,8 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, 
 
     // same group, but same blade ?
     if (targetRouter->blade_ != currentRouter->blade_) {
+      if (currentRouter->limiter_)
+        route->link_list_.push_back(currentRouter->limiter_);
       route->link_list_.push_back(currentRouter->green_links_[targetCoords.blade]);
       if (latency)
         *latency += currentRouter->green_links_[targetCoords.blade]->get_latency();
@@ -348,22 +364,27 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, 
 
     // same blade, but same chassis ?
     if (targetRouter->chassis_ != currentRouter->chassis_) {
+      if (currentRouter->limiter_)
+        route->link_list_.push_back(currentRouter->limiter_);
       route->link_list_.push_back(currentRouter->black_links_[targetCoords.chassis]);
       if (latency)
         *latency += currentRouter->black_links_[targetCoords.chassis]->get_latency();
     }
   }
 
-  if (has_limiter()) { // limiter for receiver
-    route->link_list_.push_back(get_downlink_to(node_pos_with_loopback(dst->id())));
-  }
-
   // router->node local link
+  if (targetRouter->limiter_)
+    route->link_list_.push_back(targetRouter->limiter_);
   route->link_list_.push_back(
       targetRouter->my_nodes_[targetCoords.node * num_links_per_link_ + num_links_per_link_ - 1]);
+
   if (latency)
     *latency +=
         targetRouter->my_nodes_[targetCoords.node * num_links_per_link_ + num_links_per_link_ - 1]->get_latency();
+
+  if (has_limiter()) { // limiter for receiver
+    route->link_list_.push_back(get_downlink_to(node_pos_with_loopback(dst->id())));
+  }
 
   // set gateways (if any)
   route->gw_src_ = get_gateway(src->id());
@@ -424,6 +445,7 @@ NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent, c
     Link* loopback;
     zone->fill_leaf_from_cb(i, dimensions, set_callbacks, &netpoint, &loopback, &limiter);
   }
+  zone->build_upper_levels(set_callbacks);
 
   return zone->get_iface();
 }

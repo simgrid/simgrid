@@ -151,7 +151,7 @@ public:
                     const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count);
   void add_processing_node(int id, resource::LinkImpl* limiter, resource::LinkImpl* loopback);
   /**
-   * @brief Build upper levels (switchs) in Fat-Tree
+   * @brief Build upper levels (switches) in Fat-Tree
    *
    * Suppose that set_topology and add_processing_node have already been called
    */

@@ -19,10 +19,14 @@ public:
   unsigned int chassis_;
   unsigned int blade_;
   resource::LinkImpl* blue_link_ = nullptr;
+  resource::LinkImpl* limiter_   = nullptr;
   std::vector<resource::LinkImpl*> black_links_;
   std::vector<resource::LinkImpl*> green_links_;
   std::vector<resource::LinkImpl*> my_nodes_;
-  DragonflyRouter(unsigned group, unsigned chassis, unsigned blade) : group_(group), chassis_(chassis), blade_(blade) {}
+  DragonflyRouter(unsigned group, unsigned chassis, unsigned blade, resource::LinkImpl* limiter)
+      : group_(group), chassis_(chassis), blade_(blade), limiter_(limiter)
+  {
+  }
 };
 
 /** @ingroup ROUTING_API
@@ -83,6 +87,8 @@ public:
   /** @brief Set Dragonfly topology */
   void set_topology(unsigned int n_groups, unsigned int groups_links, unsigned int n_chassis,
                     unsigned int chassis_links, unsigned int n_routers, unsigned int routers_links, unsigned int nodes);
+  /** @brief Build upper levels (routers) in Dragonfly */
+  void build_upper_levels(const s4u::ClusterCallbacks& set_callbacks);
   /** @brief Set the characteristics of links inside the Dragonfly zone */
   void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy) override;
   Coords rankId_to_coords(int rank_id) const;
@@ -90,8 +96,7 @@ public:
                                                                                        unsigned int coords[4]) const;
 
 private:
-  void do_seal() override;
-  void generate_routers();
+  void generate_routers(const s4u::ClusterCallbacks& set_callbacks);
   void generate_links();
   void generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
 

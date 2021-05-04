@@ -193,7 +193,7 @@ void ClusterZone::fill_leaf_from_cb(unsigned int position, const std::vector<uns
   // auxiliary function to get dims from index
   auto index_to_dims = [&dimensions](int index) {
     std::vector<unsigned int> dims_array(dimensions.size());
-    for (unsigned long i = dimensions.size() - 1; i != 0; --i) {
+    for (auto i = static_cast<int>(dimensions.size() - 1); i >= 0; --i) {
       if (index <= 0) {
         break;
       }

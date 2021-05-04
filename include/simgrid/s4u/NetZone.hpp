@@ -173,6 +173,13 @@ struct ClusterCallbacks {
   /**
    * @brief Callback used to set the links for some leaf of the cluster (Torus, FatTree, etc)
    *
+   * The coord parameter depends on the cluster being created:
+   * - Torus: Direct translation of the Torus' dimensions, e.g. (0, 0, 0) for a 3-D Torus
+   * - Fat-Tree: A pair (level in the tree, id), e.g. (0, 0): first leaf and (1,0): first switch at level 1.
+   * - Dragonfly: a tuple (group, chassis, blades/routers, nodes), e.g. (0, 0, 0, 0) for first node in the cluster.
+   * Important: To identify the router inside a "group, chassis, blade", we use MAX_UINT in the last parameter (e.g. 0,
+   * 0, 0, 4294967295).
+   *
    * @param zone: The newly create zone, needed for creating new resources (hosts, links)
    * @param coord: the coordinates of the element
    * @param id: Internal identifier of the element
