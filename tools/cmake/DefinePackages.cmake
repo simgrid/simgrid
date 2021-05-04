@@ -868,6 +868,7 @@ set(DOC_SOURCES
   docs/manpages/tesh.pod
 
   docs/Build.sh
+  docs/README.md
   docs/bin/extract_logs_hierarchy.pl
   docs/requirements.txt
   docs/source/conf.py
@@ -949,6 +950,8 @@ set(DOC_SOURCES
   docs/source/tuto_smpi/img/lu.S.4.png
   docs/source/tuto_smpi/gemm_mpi.cpp
   docs/source/tuto_smpi/roundtrip.c
+
+  docs/source/Tutorial_Model-checking.rst
 
   CITATION.bib
   )
