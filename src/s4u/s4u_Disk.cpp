@@ -85,6 +85,27 @@ Disk* Disk::set_properties(const std::unordered_map<std::string, std::string>& p
   return this;
 }
 
+Disk* Disk::set_state_profile(kernel::profile::Profile* profile)
+{
+  xbt_assert(not pimpl_->is_sealed(), "Cannot set a state profile once the Disk is sealed");
+  kernel::actor::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
+  return this;
+}
+
+Disk* Disk::set_read_bandwidth_profile(kernel::profile::Profile* profile)
+{
+  xbt_assert(not pimpl_->is_sealed(), "Cannot set a bandwidth profile once the Disk is sealed");
+  kernel::actor::simcall([this, profile]() { this->pimpl_->set_read_bandwidth_profile(profile); });
+  return this;
+}
+
+Disk* Disk::set_write_bandwidth_profile(kernel::profile::Profile* profile)
+{
+  xbt_assert(not pimpl_->is_sealed(), "Cannot set a bandwidth profile once the Disk is sealed");
+  kernel::actor::simcall([this, profile]() { this->pimpl_->set_write_bandwidth_profile(profile); });
+  return this;
+}
+
 IoPtr Disk::io_init(sg_size_t size, Io::OpType type) const
 {
   return Io::init()->set_disk(this)->set_size(size)->set_op_type(type);

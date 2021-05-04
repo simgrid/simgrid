@@ -10,6 +10,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "surf/surf.hpp"
 
@@ -70,6 +71,71 @@ DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io
 /************
  * Resource *
  ************/
+void DiskS19::set_read_bandwidth(double value)
+{
+  read_bw_.peak = value;
+
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
+                                                            sg_bandwidth_factor * (read_bw_.peak * read_bw_.scale));
+
+  double delta = 1.0 / value - 1.0 / (read_bw_.peak * read_bw_.scale);
+
+  const kernel::lmm::Element* elem     = nullptr;
+  const kernel::lmm::Element* nextelem = nullptr;
+  int numelem                          = 0;
+  while (const auto* var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem)) {
+    auto* action = static_cast<DiskS19Action*>(var->get_id());
+    action->sharing_penalty_ += delta;
+    if (not action->is_suspended())
+      get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
+  }
+}
+
+void DiskS19::set_write_bandwidth(double value)
+{
+  write_bw_.peak = value;
+
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
+                                                            sg_bandwidth_factor * (write_bw_.peak * write_bw_.scale));
+
+  double delta = 1.0 / value - 1.0 / (write_bw_.peak * write_bw_.scale);
+
+  const kernel::lmm::Element* elem     = nullptr;
+  const kernel::lmm::Element* nextelem = nullptr;
+  int numelem                          = 0;
+  while (const auto* var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem)) {
+    auto* action = static_cast<DiskS19Action*>(var->get_id());
+    action->sharing_penalty_ += delta;
+    if (not action->is_suspended())
+      get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
+  }
+}
+
+void DiskS19::apply_event(kernel::profile::Event* triggered, double value)
+{
+  /* Find out which of my iterators was triggered, and react accordingly */
+  if (triggered == read_bw_.event) {
+    set_read_bandwidth(value);
+    tmgr_trace_event_unref(&read_bw_.event);
+
+  } else if (triggered == write_bw_.event) {
+    set_write_bandwidth(value);
+    tmgr_trace_event_unref(&write_bw_.event);
+
+  } else if (triggered == state_event_) {
+    if (value > 0)
+      turn_on();
+    else
+      turn_off();
+    tmgr_trace_event_unref(&state_event_);
+  } else {
+    xbt_die("Unknown event!\n");
+  }
+
+  XBT_DEBUG("There was a resource state event, need to update actions related to the constraint (%p)",
+            get_constraint());
+}
+
 /**********
  * Action *
  **********/

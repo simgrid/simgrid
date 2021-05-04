@@ -63,6 +63,10 @@ public:
   Disk* set_host(Host* host);
   Host* get_host() const;
 
+  Disk* set_state_profile(kernel::profile::Profile* profile);
+  Disk* set_read_bandwidth_profile(kernel::profile::Profile* profile);
+  Disk* set_write_bandwidth_profile(kernel::profile::Profile* profile);
+
   IoPtr io_init(sg_size_t size, s4u::Io::OpType type) const;
 
   IoPtr read_async(sg_size_t size) const;

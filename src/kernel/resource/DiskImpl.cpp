@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_disk, ker_resource, "Disk resources, that fuel I/O activities");
 
@@ -29,22 +30,19 @@ DiskModel::DiskModel(const std::string& name) : Model(name)
 /************
  * Resource *
  ************/
+DiskImpl::DiskImpl(const std::string& name, double read_bandwidth, double write_bandwidth)
+    : Resource_T(name), piface_(this)
+{
+  read_bw_.peak   = read_bandwidth;
+  read_bw_.scale  = 1.0;
+  write_bw_.peak  = write_bandwidth;
+  write_bw_.scale = 1.0;
+}
+
 DiskImpl* DiskImpl::set_host(s4u::Host* host)
 {
   xbt_assert(host, "Cannot set host, none given");
   host_ = host;
-  return this;
-}
-
-DiskImpl* DiskImpl::set_read_bandwidth(double read_bw)
-{
-  read_bw_ = read_bw;
-  return this;
-}
-
-DiskImpl* DiskImpl::set_write_bandwidth(double write_bw)
-{
-  write_bw_ = write_bw;
   return this;
 }
 
@@ -75,11 +73,6 @@ bool DiskImpl::is_used() const
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
-void DiskImpl::apply_event(kernel::profile::Event* /*event*/, double /*value*/)
-{
-  THROW_UNIMPLEMENTED;
-}
-
 void DiskImpl::turn_on()
 {
   if (not is_on()) {
@@ -95,14 +88,32 @@ void DiskImpl::turn_off()
   }
 }
 
+DiskImpl* DiskImpl::set_read_bandwidth_profile(profile::Profile* profile)
+{
+  if (profile) {
+    xbt_assert(read_bw_.event == nullptr, "Cannot set a second read bandwidth profile to Disk %s", get_cname());
+    read_bw_.event = profile->schedule(&profile::future_evt_set, this);
+  }
+  return this;
+}
+
+DiskImpl* DiskImpl::set_write_bandwidth_profile(profile::Profile* profile)
+{
+  if (profile) {
+    xbt_assert(write_bw_.event == nullptr, "Cannot set a second read bandwidth profile to Disk %s", get_cname());
+    write_bw_.event = profile->schedule(&profile::future_evt_set, this);
+  }
+  return this;
+}
+
 void DiskImpl::seal()
 {
   xbt_assert(this->get_model(), "Cannot seal Disk (%s) without setting the model first", get_cname());
   lmm::System* maxmin_system = get_model()->get_maxmin_system();
-  this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_))
-      ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_))
-      ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw_, write_bw_)));
-  XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_, write_bw_);
+  this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_.peak * read_bw_.scale))
+      ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_.peak * write_bw_.scale))
+      ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw_.peak, write_bw_.peak)));
+  XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_.peak, write_bw_.peak);
   Resource::seal();
   turn_on();
 }
