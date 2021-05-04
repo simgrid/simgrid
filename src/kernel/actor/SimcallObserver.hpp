@@ -48,6 +48,8 @@ public:
   { /* Nothing to do by default */
   }
 
+  virtual SimcallObserver* clone() = 0;
+
   /** Some simcalls may only be observable under some circumstances.
    * Most simcalls are not visible from the MC because they don't have an observer at all. */
   virtual bool is_visible() const { return true; }
@@ -76,12 +78,19 @@ public:
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
   int get_value() const { return next_value_; }
+  SimcallObserver* clone() override
+  {
+    auto res         = new RandomSimcall(get_issuer(), min_, max_);
+    res->next_value_ = next_value_;
+    return res;
+  }
 };
 
 class MutexUnlockSimcall : public SimcallObserver {
   using SimcallObserver::SimcallObserver;
 
 public:
+  SimcallObserver* clone() override { return new MutexUnlockSimcall(get_issuer()); }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
 };
@@ -95,6 +104,7 @@ public:
       : SimcallObserver(actor), mutex_(mutex), blocking_(blocking)
   {
   }
+  SimcallObserver* clone() override { return new MutexLockSimcall(get_issuer(), mutex_, blocking_); }
   bool is_enabled() const override;
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
@@ -112,6 +122,7 @@ public:
       : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
   }
+  SimcallObserver* clone() override { return new ConditionWaitSimcall(get_issuer(), cond_, mutex_, timeout_); }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
@@ -130,6 +141,7 @@ public:
       : ResultingSimcall(actor, false), sem_(sem), timeout_(timeout)
   {
   }
+  SimcallObserver* clone() override { return new SemAcquireSimcall(get_issuer(), sem_, timeout_); }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
@@ -147,6 +159,7 @@ public:
       : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout)
   {
   }
+  SimcallObserver* clone() override { return new ActivityWaitSimcall(get_issuer(), activity_, timeout_); }
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override { return SimcallObserver::to_string(times_considered); }
   std::string dot_label() const override { return SimcallObserver::dot_label(); }
@@ -163,6 +176,7 @@ public:
       : ResultingSimcall(actor, -1), execs_(execs), timeout_(timeout)
   {
   }
+  SimcallObserver* clone() override { return new ExecutionWaitanySimcall(get_issuer(), execs_, timeout_); }
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
@@ -179,6 +193,7 @@ public:
       : ResultingSimcall(actor, -1), ios_(ios), timeout_(timeout)
   {
   }
+  SimcallObserver* clone() override { return new IoWaitanySimcall(get_issuer(), ios_, timeout_); }
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
   std::string dot_label() const override;
