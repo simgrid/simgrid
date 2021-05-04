@@ -157,7 +157,7 @@ void Actor::set_host(Host* new_host)
   const s4u::Host* previous_location = get_host();
 
   kernel::actor::simcall([this, new_host]() {
-    for (auto& activity : pimpl_->activities_) {
+    for (auto const& activity : pimpl_->activities_) {
       // FIXME: implement the migration of other kinds of activities
       if (auto exec = boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(activity))
         exec->migrate(new_host);

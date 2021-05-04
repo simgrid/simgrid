@@ -228,7 +228,7 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
     set_limiter = std::bind(sg_platf_cluster_create_limiter, cluster, _1, _2, _3);
   }
 
-  simgrid::s4u::NetZone* parent = routing_get_current() ? routing_get_current()->get_iface() : nullptr;
+  simgrid::s4u::NetZone const* parent = routing_get_current() ? routing_get_current()->get_iface() : nullptr;
   simgrid::s4u::NetZone* zone;
   switch (cluster->topology) {
     case simgrid::kernel::routing::ClusterTopology::TORUS:

@@ -230,7 +230,7 @@ void ActorImpl::exit()
     activities_.remove(waiting_synchro_);
     waiting_synchro_ = nullptr;
   }
-  for (auto& activity : activities_)
+  for (auto const& activity : activities_)
     activity->cancel();
   activities_.clear();
 
@@ -379,7 +379,7 @@ void ActorImpl::suspend()
   suspended_ = true;
 
   /* Suspend the activities associated with this actor. */
-  for (auto& activity : activities_)
+  for (auto const& activity : activities_)
     activity->suspend();
 }
 
@@ -397,7 +397,7 @@ void ActorImpl::resume()
   suspended_ = false;
 
   /* resume the activities that were blocked when suspending the actor. */
-  for (auto& activity : activities_)
+  for (auto const& activity : activities_)
     activity->resume();
   if (not waiting_synchro_) // Reschedule the actor if it was forcefully unscheduled in yield()
     simix_global->actors_to_run.push_back(this);
