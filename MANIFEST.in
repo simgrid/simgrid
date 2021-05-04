@@ -2203,13 +2203,16 @@ include src/kernel/resource/profile/StochasticDatedValue.cpp
 include src/kernel/resource/profile/StochasticDatedValue.hpp
 include src/kernel/routing/ClusterZone.cpp
 include src/kernel/routing/DijkstraZone.cpp
+include src/kernel/routing/DijkstraZone_test.cpp
 include src/kernel/routing/DragonflyZone.cpp
 include src/kernel/routing/DragonflyZone_test.cpp
 include src/kernel/routing/EmptyZone.cpp
 include src/kernel/routing/FatTreeZone.cpp
 include src/kernel/routing/FatTreeZone_test.cpp
 include src/kernel/routing/FloydZone.cpp
+include src/kernel/routing/FloydZone_test.cpp
 include src/kernel/routing/FullZone.cpp
+include src/kernel/routing/FullZone_test.cpp
 include src/kernel/routing/NetPoint.cpp
 include src/kernel/routing/NetZoneImpl.cpp
 include src/kernel/routing/RoutedZone.cpp

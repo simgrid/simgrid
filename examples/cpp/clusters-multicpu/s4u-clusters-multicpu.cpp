@@ -114,9 +114,9 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
     sg4::Link* link_up   = host_zone->create_link("link-up-" + cpu_name, link_bw)->set_latency(link_lat)->seal();
     sg4::Link* link_down = host_zone->create_link("link-down-" + cpu_name, link_bw)->set_latency(link_lat)->seal();
     /* link UP, connection from CPU to outer world */
-    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {link_up}, false);
+    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, std::vector<sg4::Link*>{link_up}, false);
     /* link DOWN, connection from outer to CPU */
-    host_zone->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, {link_down}, false);
+    host_zone->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{link_down}, false);
   }
   return std::make_pair(host_zone->get_netpoint(), gateway->get_netpoint());
 }

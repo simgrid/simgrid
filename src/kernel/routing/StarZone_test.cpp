@@ -260,3 +260,17 @@ TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
     REQUIRE(route.link_list_[1]->get_name() == "link2");
   }
 }
+
+TEST_CASE("kernel::routing::StarZone: mix new routes and hosts", "")
+{
+  EngineWrapper e("test");
+  auto* zone = simgrid::s4u::create_star_zone("test");
+
+  simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();
+  for (int i = 0; i < 10; i++) {
+    std::string cpu_name          = "CPU" + std::to_string(i);
+    const simgrid::s4u::Host* cpu = zone->create_host(cpu_name, 1e9)->seal();
+    REQUIRE_NOTHROW(
+        zone->add_route(cpu->get_netpoint(), nullptr, nullptr, nullptr, std::vector<simgrid::s4u::Link*>{link}, true));
+  }
+}
