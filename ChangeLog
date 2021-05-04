@@ -6,6 +6,11 @@ S4U:
  - Fixed a bug where Activity::wait_for() killed the activity on timeout.
    Explicitly cancel the activity to get back to previous behavior.
 
+SMPI:
+ - The default SMPI compiler flags are no more taken from the environment.
+   They can be explicitly set through cmake parameters SMPI_C_FLAGS,
+   SMPI_CXX_FLAGS, or SMPI_Fortran_FLAGS.
+
 LUA:
  - Lua platform files are deprecated. Their support will be dropped after v3.31.
 

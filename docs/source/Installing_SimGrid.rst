@@ -293,6 +293,12 @@ minimal-bindings (on/OFF)
   Take as few optional dependencies as possible, to get minimal
   library bindings in Java and Python.
 
+SMPI_C_FLAGS (string)
+SMPI_CXX_FLAGS (string)
+SMPI_Fortran_FLAGS (string)
+  Default compiler options to use in smpicc, smpicxx, or smpiff.
+  This can be useful to set options like "-m32" or "-m64".
+
 Reset the build configuration
 """""""""""""""""""""""""""""
 
@@ -498,12 +504,15 @@ version of SimGrid with something like:
 
   CFLAGS=-m32 \
   CXXFLAGS=-m32 \
+  FFLAGS=-m32 \
   PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig/ \
   cmake . \
   -DCMAKE_SYSTEM_PROCESSOR=i386 \
   -DCMAKE_Fortran_COMPILER=/some/path/to/i686-linux-gnu-gfortran \
   -DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran \
-  -DCMAKE_Fortran_FLAGS=-m32
+  -DSMPI_C_FLAGS=-m32 \
+  -DSMPI_CXX_FLAGS=-m32 \
+  -DSMPI_Fortran_FLAGS=-m32
 
 If needed, implement ``i686-linux-gnu-gfortran`` as a script:
 

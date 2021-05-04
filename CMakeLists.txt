@@ -31,12 +31,6 @@ project(simgrid C CXX)
 # customizable installation directories
 include(GNUInstallDirs)
 
-## Save compiler flags preset with environment variables CFLAGS or CXXFLAGS;
-## they will used within smpicc, smpicxx.
-## Do it early so that we get their genuine values. The same will be done later for Fortran.
-string(REGEX REPLACE " *-f[a-z]+-prefix-map=[^ ]*" "" SMPI_C_FLAGS "${CMAKE_C_FLAGS}")
-string(REGEX REPLACE " *-f[a-z]+-prefix-map=[^ ]*" "" SMPI_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #     Check for the compiler        #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
@@ -94,19 +88,19 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
 
 	# Set flags/libs to be used in smpiff
     if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-      set(SMPI_Fortran_FLAGS "\"-fpic\" \"-ff2c\" \"-fno-second-underscore\"")
+      set(SMPI_Fortran_FLAGS_ "\"-fpic\" \"-ff2c\" \"-fno-second-underscore\"")
       set(SMPI_Fortran_LIBS "\"-lgfortran\"")
       set(SMPI_GFORTRAN 1)
     elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-      set(SMPI_Fortran_FLAGS "\"-fPIC\" \"-nofor-main\"")
+      set(SMPI_Fortran_FLAGS_ "\"-fPIC\" \"-nofor-main\"")
       set(SMPI_Fortran_LIBS "\"-lifcore\"")
       set(SMPI_IFORT 1)
     elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI|Flang") # flang
-      set(SMPI_Fortran_FLAGS "\"-fPIC\"")
+      set(SMPI_Fortran_FLAGS_ "\"-fPIC\"")
       set(SMPI_Fortran_LIBS "")
       set(SMPI_FLANG 1)
     endif()
-    string(REGEX REPLACE " *-f[a-z]+-prefix-map=[^ ]*" "" SMPI_Fortran_FLAGS "${SMPI_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS}")
+    set(SMPI_Fortran_FLAGS "${SMPI_Fortran_FLAGS_} ${SMPI_Fortran_FLAGS}")
 
     ## Request debugging flags for Fortran too
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
