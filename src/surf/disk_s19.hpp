@@ -45,7 +45,7 @@ public:
   using DiskImpl::DiskImpl;
   void set_read_bandwidth(double value) override;
   void set_write_bandwidth(double value) override;
-  void apply_event(kernel::profile::Event* triggered, double value);
+  void apply_event(kernel::profile::Event* triggered, double value) override;
 };
 
 /**********
