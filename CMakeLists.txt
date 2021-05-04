@@ -370,6 +370,10 @@ if(enable_model-checking AND NOT "${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
   set(enable_model-checking FALSE)
 endif()
 
+if(enable_model-checking AND minimal-bindings)
+  message(FATAL_ERROR "Compile-time option 'minimal-bindings' cannot be enabled with 'model-checking'")
+endif()
+
 if(HAVE_MMAP)
   SET(HAVE_MMALLOC 1)
 else()
