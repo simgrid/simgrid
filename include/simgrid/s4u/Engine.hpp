@@ -27,6 +27,8 @@ class XBT_PUBLIC Engine {
   friend simgrid::kernel::EngineImpl;
 
 public:
+  /** Constructor, taking only the name of your main function */
+  explicit Engine(std::string name);
   /** Constructor, taking the command line parameters of your main function */
   explicit Engine(int* argc, char** argv);
   /* Currently, only one instance is allowed to exist. This is why you can't copy or move it */
@@ -199,6 +201,7 @@ public:
 private:
   kernel::EngineImpl* const pimpl;
   static Engine* instance_;
+  void initialize(int* argc, char** argv);
 };
 
 #ifndef DOXYGEN /* Internal use only, no need to expose it */
