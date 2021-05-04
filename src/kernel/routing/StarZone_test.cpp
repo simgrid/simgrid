@@ -12,27 +12,16 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/surf/network_interface.hpp"
 
-namespace {
-class EngineWrapper {
-  int argc = 1;
-  char* argv;
-  simgrid::s4u::Engine e;
-
-public:
-  explicit EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
-};
-} // namespace
-
 TEST_CASE("kernel::routing::StarZone: Creating Zone", "[creation]")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
 
   REQUIRE(simgrid::s4u::create_star_zone("test"));
 }
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): exception", "")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone      = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint1 = new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::Host);
   auto* netpoint2 = new simgrid::kernel::routing::NetPoint("netpoint2", simgrid::kernel::routing::NetPoint::Type::Host);
@@ -55,7 +44,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): exception", "")
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint1 =
       new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::NetZone);
@@ -87,7 +76,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
 // https://github.com/catchorg/Catch2/issues/853
 TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
 
   const auto* host1 = zone->create_host("netpoint1", {100});
@@ -118,7 +107,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): valid", "")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone     = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint = new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::Host);
 
@@ -142,7 +131,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): valid", "")
 
 TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): valid", "")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone     = new simgrid::kernel::routing::StarZone("test");
   auto* netpoint = new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::Host);
   auto* gw       = new simgrid::kernel::routing::NetPoint("gw1", simgrid::kernel::routing::NetPoint::Type::Router);
@@ -154,7 +143,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): valid", "")
 
 TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
 
   const auto* host1 = zone->create_host("netpoint1", {100});
@@ -227,7 +216,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 
 TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
 
   auto* subzone1 =
@@ -263,7 +252,7 @@ TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
 
 TEST_CASE("kernel::routing::StarZone: mix new routes and hosts", "")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone = simgrid::s4u::create_star_zone("test");
 
   simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();

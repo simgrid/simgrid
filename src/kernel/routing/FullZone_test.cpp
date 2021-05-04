@@ -12,27 +12,16 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/surf/network_interface.hpp" //LinkImpl
 
-namespace {
-class EngineWrapper {
-  int argc = 1;
-  char* argv;
-  simgrid::s4u::Engine e;
-
-public:
-  explicit EngineWrapper(std::string name) : argv(&name[0]), e(&argc, &argv) {}
-};
-} // namespace
-
 TEST_CASE("kernel::routing::FullZone: Creating Zone", "")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
 
   REQUIRE(simgrid::s4u::create_full_zone("test"));
 }
 
 TEST_CASE("kernel::routing::FullZone: mix new routes and hosts", "[bug]")
 {
-  EngineWrapper e("test");
+  simgrid::s4u::Engine e("test");
   auto* zone = simgrid::s4u::create_full_zone("test");
 
   const simgrid::s4u::Host* nic = zone->create_host("nic", 1e9)->seal();
