@@ -1,3 +1,32 @@
+# These tests are cpp (by default, we assume C code)
+set(_replay_sources    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.cpp)
+set(_ampi_test_sources ${CMAKE_CURRENT_SOURCE_DIR}/ampi_test/ampi_test.cpp)
+
+# These tests are only used when MC is actived
+set(MC_tests bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1
+             non_termination2 non_termination3 non_termination4 sendsend)
+foreach(x ${MC_tests})
+  if(NOT SIMGRID_HAVE_MC)
+    set(_${x}_disable 1)
+  endif()
+  set(_${x}_sources ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
+  set(_${x}_outdir  ${CMAKE_CURRENT_BINARY_DIR}/mc)
+endforeach()
+
+# Compute the default for all configurations, and add all source files to the archive
+foreach(x ampi_test trace trace_simple trace_call_location energy gemm simple-execute replay ${MC_tests})
+  if(NOT DEFINED _${x}_sources)
+    set(_${x}_sources ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+  endif()
+  if(NOT DEFINED _${x}_outdir)
+    set(_${x}_outdir  ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  endif()
+
+  set(examples_src  ${examples_src}  _${x}_sources)
+endforeach()
+set(examples_src  ${examples_src}  PARENT_SCOPE)
+
+# Compile the binaries, but only when everything is activated
 if(enable_smpi)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(CMAKE_CXX_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicxx")
@@ -5,44 +34,23 @@ if(enable_smpi)
 
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mc/")
 
-  foreach(x replay ampi_test)
-    add_executable       (smpi_${x} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
-    target_link_libraries(smpi_${x} simgrid)
-    set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-    add_dependencies(tests smpi_${x})
-  endforeach()
-  foreach(x trace trace_simple trace_call_location energy gemm simple-execute)
-    add_executable       (smpi_${x} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
-    target_link_libraries(smpi_${x} simgrid)
-    set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-    add_dependencies(tests smpi_${x})
-  endforeach()
+  foreach(x ampi_test trace trace_simple trace_call_location energy gemm simple-execute replay ${MC_tests})
 
-  set_target_properties(smpi_trace_call_location PROPERTIES COMPILE_FLAGS "-trace-call-location")
-
-  foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1
-            non_termination2 non_termination3 non_termination4 sendsend)
-    if(SIMGRID_HAVE_MC)
-      add_executable       (smpi_${x} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
+    if(NOT DEFINED _${x}_disable)
+      add_executable       (smpi_${x} EXCLUDE_FROM_ALL ${_${x}_sources})
       target_link_libraries(smpi_${x} simgrid)
-      set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mc)
+      set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY _${x}_outdir)
       add_dependencies(tests smpi_${x})
     endif()
   endforeach()
+
+  set_target_properties(smpi_trace_call_location PROPERTIES COMPILE_FLAGS "-trace-call-location")
 endif()
 
-foreach(x ampi_test replay)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
-endforeach()
-foreach(x trace trace_simple trace_call_location energy gemm simple-execute)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
-endforeach()
-foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1
-    non_termination2 non_termination3 non_termination4 sendsend)
-  set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
-endforeach()
+unset(_${x}_sources)
+unset(_${x}_disable)
+unset(_${x}_outdir)
 
-set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace/trace.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/simple-execute/simple-execute.tesh
