@@ -23,6 +23,8 @@ Documentation:
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
  - FG#47: Complete and fix tests from teshuite/s4u/activity-lifecycle
+ - FG#64: Configuring smpi/IB-penalty-factors
+ - FG#67: Running computation concurrently with MPI_Iallreduce
  - GH#322: Issue when an actor kills his host vm
 
 ----------------------------------------------------------------------------
