@@ -119,6 +119,13 @@ public:
   double lat;
 };
 
+class ClusterZoneCreationArgs {
+public:
+  std::vector<HostLinkCreationArgs> host_links;
+  std::vector<CabinetCreationArgs> cabinets;
+  std::unique_ptr<LinkCreationArgs> backbone;
+};
+
 class DiskCreationArgs {
 public:
   std::string id;
@@ -167,8 +174,6 @@ extern XBT_PRIVATE xbt::signal<void(ClusterCreationArgs const&)> on_cluster_crea
 } // namespace kernel
 } // namespace simgrid
 
-/********** Routing **********/
-void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb);
 /*** END of the parsing cruft ***/
 
 XBT_PUBLIC simgrid::kernel::routing::NetZoneImpl*
@@ -182,16 +187,15 @@ XBT_PUBLIC void sg_platf_new_host_set_properties(const std::unordered_map<std::s
 XBT_PUBLIC void sg_platf_new_host_seal(int pstate); // That Host is fully described
 
 XBT_PUBLIC void
-sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs* h); // Add a host_link to the current Zone
-XBT_PUBLIC void
 sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link); // Add a link to the current Zone
 XBT_PUBLIC void
 sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk); // Add a disk to the current host
 XBT_PUBLIC void
 sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer); // Add a peer to the current Zone
-XBT_PUBLIC void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* clust);   // Add a cluster   to the current Zone
-XBT_PUBLIC void
-sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabinet); // Add a cabinet to the current Zone
+XBT_PUBLIC void sg_platf_new_tag_cluster(
+    simgrid::kernel::routing::ClusterCreationArgs* clust); // Add a regular cluster  to the current Zone
+XBT_PUBLIC void sg_platf_zone_cluster_populate(
+    simgrid::kernel::routing::ClusterZoneCreationArgs* clust); // Add a routing cluster to the current Zone
 XBT_PUBLIC simgrid::kernel::routing::NetPoint*                                      // Add a router to the current Zone
 sg_platf_new_router(const std::string&, const std::string& coords);
 
