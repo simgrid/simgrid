@@ -22,15 +22,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FatTreeZone::~FatTreeZone()
-{
-  for (FatTreeNode const* node : this->nodes_)
-    delete node;
-  for (FatTreeLink const* link : this->links_)
-    delete link;
-}
-
-bool FatTreeZone::is_in_sub_tree(FatTreeNode* root, FatTreeNode* node) const
+bool FatTreeZone::is_in_sub_tree(const FatTreeNode* root, const FatTreeNode* node) const
 {
   XBT_DEBUG("Is %d(%u,%u) in the sub tree of %d(%u,%u) ?", node->id, node->level, node->position, root->id, root->level,
             root->position);
@@ -60,12 +52,12 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, dou
   auto searchedNode = this->compute_nodes_.find(src->id());
   xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the source %s [%u] in the fat tree",
              src->get_cname(), src->id());
-  FatTreeNode* source = searchedNode->second;
+  const FatTreeNode* source = searchedNode->second.get();
 
   searchedNode = this->compute_nodes_.find(dst->id());
   xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the destination %s [%u] in the fat tree",
              dst->get_cname(), dst->id());
-  FatTreeNode* destination = searchedNode->second;
+  const FatTreeNode* destination = searchedNode->second.get();
 
   XBT_VERB("Get route and latency from '%s' [%u] to '%s' [%u] in a fat tree", src->get_cname(), src->id(),
            dst->get_cname(), dst->id());
@@ -78,7 +70,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, dou
     return;
   }
 
-  FatTreeNode* currentNode = source;
+  const FatTreeNode* currentNode = source;
 
   // up part
   while (not is_in_sub_tree(currentNode, destination)) {
@@ -139,7 +131,7 @@ void FatTreeZone::build_upper_levels(const s4u::ClusterCallbacks& set_callbacks)
   // Nodes are totally ordered, by level and then by position, in this->nodes
   for (unsigned int i = 0; i < levels_; i++) {
     for (unsigned int j = 0; j < nodes_by_level_[i]; j++) {
-      connect_node_to_parents(nodes_[k]);
+      connect_node_to_parents(nodes_[k].get());
       k++;
     }
   }
@@ -166,14 +158,14 @@ void FatTreeZone::do_seal()
   msgBuffer.str("");
   msgBuffer << "Nodes are : ";
 
-  for (FatTreeNode const* node : this->nodes_) {
+  for (auto const& node : this->nodes_) {
     msgBuffer << node->id << "(" << node->level << "," << node->position << ") ";
   }
   XBT_DEBUG("%s", msgBuffer.str().c_str());
 
   msgBuffer.clear();
   msgBuffer << "Links are : ";
-  for (FatTreeLink const* link : this->links_) {
+  for (auto const& link : this->links_) {
     msgBuffer << "(" << link->up_node_->id << "," << link->down_node_->id << ") ";
   }
   XBT_DEBUG("%s", msgBuffer.str().c_str());
@@ -187,13 +179,13 @@ int FatTreeZone::connect_node_to_parents(FatTreeNode* node)
   XBT_DEBUG("We are connecting node %d(%u,%u) to his parents.", node->id, node->level, node->position);
   currentParentNode += this->get_level_position(level + 1);
   for (unsigned int i = 0; i < this->nodes_by_level_[level + 1]; i++) {
-    if (this->are_related(*currentParentNode, node)) {
+    if (this->are_related(currentParentNode->get(), node)) {
       XBT_DEBUG("%d(%u,%u) and %d(%u,%u) are related,"
                 " with %u links between them.",
                 node->id, node->level, node->position, (*currentParentNode)->id, (*currentParentNode)->level,
                 (*currentParentNode)->position, this->num_port_lower_level_[level]);
       for (unsigned int j = 0; j < this->num_port_lower_level_[level]; j++) {
-        this->add_link(*currentParentNode, node->label[level] + j * this->num_children_per_node_[level], node,
+        this->add_link(currentParentNode->get(), node->label[level] + j * this->num_children_per_node_[level], node,
                        (*currentParentNode)->label[level] + j * this->num_parents_per_node_[level]);
       }
       connectionsNumber++;
@@ -263,25 +255,30 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
     this->nodes_by_level_[i + 1] = nodesInThisLevel;
   }
 
+  /* get limiter for this router */
+  auto get_limiter = [this, &set_callbacks](unsigned int i, unsigned int j, int id) -> resource::LinkImpl* {
+    kernel::resource::LinkImpl* limiter = nullptr;
+    if (set_callbacks.limiter) {
+      const auto* s4u_link = set_callbacks.limiter(get_iface(), {i + 1, j}, id);
+      if (s4u_link) {
+        limiter = s4u_link->get_impl();
+      }
+    }
+    return limiter;
+  };
   // Create the switches
   int k = 0;
   for (unsigned int i = 0; i < this->levels_; i++) {
     for (unsigned int j = 0; j < this->nodes_by_level_[i + 1]; j++) {
-      kernel::resource::LinkImpl* limiter = nullptr;
-      int id                              = --k;
-      if (set_callbacks.limiter) {
-        auto* s4u_link = set_callbacks.limiter(get_iface(), {i + 1, j}, id);
-        if (s4u_link)
-          limiter = s4u_link->get_impl();
-      }
-      auto* newNode = new FatTreeNode(id, i + 1, j, limiter, nullptr);
+      int id       = --k;
+      auto newNode = std::make_shared<FatTreeNode>(id, i + 1, j, get_limiter(i, j, id), nullptr);
       XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
       newNode->children.resize(this->num_children_per_node_[i] * this->num_port_lower_level_[i]);
       if (i != this->levels_ - 1) {
         newNode->parents.resize(this->num_parents_per_node_[i + 1] * this->num_port_lower_level_[i + 1]);
       }
       newNode->label.resize(this->levels_);
-      this->nodes_.push_back(newNode);
+      this->nodes_.emplace_back(newNode);
     }
   }
 }
@@ -346,11 +343,11 @@ void FatTreeZone::add_processing_node(int id, resource::LinkImpl* limiter, resou
 {
   using std::make_pair;
   static int position = 0;
-  auto* newNode       = new FatTreeNode(id, 0, position++, limiter, loopback);
+  auto newNode        = std::make_shared<FatTreeNode>(id, 0, position++, limiter, loopback);
   newNode->parents.resize(this->num_parents_per_node_[0] * this->num_port_lower_level_[0]);
   newNode->label.resize(this->levels_);
   this->compute_nodes_.insert(make_pair(id, newNode));
-  this->nodes_.push_back(newNode);
+  this->nodes_.emplace_back(newNode);
 }
 
 void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
@@ -372,13 +369,13 @@ void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTree
   }
   uniqueId++;
 
-  auto* newLink = new FatTreeLink(child, parent, linkup->get_impl(), linkdown->get_impl());
+  auto newLink = std::make_shared<FatTreeLink>(child, parent, linkup->get_impl(), linkdown->get_impl());
   XBT_DEBUG("Creating a link between the parent (%u,%u,%u) and the child (%u,%u,%u)", parent->level, parent->position,
             parentPort, child->level, child->position, childPort);
   parent->children[parentPort] = newLink;
   child->parents[childPort]    = newLink;
 
-  this->links_.push_back(newLink);
+  this->links_.emplace_back(newLink);
 }
 
 void FatTreeZone::check_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
@@ -484,7 +481,7 @@ void FatTreeZone::generate_dot_file(const std::string& filename) const
   xbt_assert(file.is_open(), "Unable to open file %s", filename.c_str());
 
   file << "graph AsClusterFatTree {\n";
-  for (FatTreeNode const* node : this->nodes_) {
+  for (auto const& node : this->nodes_) {
     file << node->id;
     if (node->id < 0)
       file << " [shape=circle];\n";
@@ -492,7 +489,7 @@ void FatTreeZone::generate_dot_file(const std::string& filename) const
       file << " [shape=hexagon];\n";
   }
 
-  for (FatTreeLink const* link : this->links_) {
+  for (auto const& link : this->links_) {
     file << link->down_node_->id << " -- " << link->up_node_->id << ";\n";
   }
   file << "}";

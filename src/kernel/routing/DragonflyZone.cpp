@@ -151,18 +151,25 @@ void DragonflyZone::build_upper_levels(const s4u::ClusterCallbacks& set_callback
 void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
 {
   int id = 0;
+  /* get limiter for this router */
+  auto get_limiter = [this, &id, &set_callbacks](unsigned int i, unsigned int j,
+                                                 unsigned int k) -> resource::LinkImpl* {
+    kernel::resource::LinkImpl* limiter = nullptr;
+    if (set_callbacks.limiter) {
+      const auto* s4u_link =
+          set_callbacks.limiter(get_iface(), {i, j, k, std::numeric_limits<unsigned int>::max()}, --id);
+      if (s4u_link) {
+        limiter = s4u_link->get_impl();
+      }
+    }
+    return limiter;
+  };
+
   routers_.reserve(num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_);
   for (unsigned int i = 0; i < num_groups_; i++) {
     for (unsigned int j = 0; j < num_chassis_per_group_; j++) {
       for (unsigned int k = 0; k < num_blades_per_chassis_; k++) {
-        resource::LinkImpl* limiter = nullptr;
-        if (set_callbacks.limiter) {
-          auto* s4u_link =
-              set_callbacks.limiter(get_iface(), {i, j, k, std::numeric_limits<unsigned int>::max()}, --id);
-          if (s4u_link)
-            limiter = s4u_link->get_impl();
-        }
-        routers_.emplace_back(i, j, k, limiter);
+        routers_.emplace_back(i, j, k, get_limiter(i, j, k));
       }
     }
   }

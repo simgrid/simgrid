@@ -20,7 +20,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-void TorusZone::create_links(int id, int rank, unsigned int position)
+void TorusZone::create_torus_links(int id, int rank, unsigned int position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
@@ -223,7 +223,7 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
     Link* loopback;
     zone->fill_leaf_from_cb(i, dimensions, set_callbacks, &netpoint, &loopback, &limiter);
 
-    zone->create_links(netpoint->id(), i, zone->node_pos_with_loopback_limiter(netpoint->id()));
+    zone->create_torus_links(netpoint->id(), i, zone->node_pos_with_loopback_limiter(netpoint->id()));
   }
 
   return zone->get_iface();

@@ -38,11 +38,11 @@ public:
   /** Links to the lower level, where the position in the vector corresponds to
    * a port number.
    */
-  std::vector<FatTreeLink*> children;
+  std::vector<std::shared_ptr<FatTreeLink>> children;
   /** Links to the upper level, where the position in the vector corresponds to
    * a port number.
    */
-  std::vector<FatTreeLink*> parents;
+  std::vector<std::shared_ptr<FatTreeLink>> parents;
 
   /** Virtual link standing for the node global capacity.
    */
@@ -115,9 +115,9 @@ class XBT_PRIVATE FatTreeZone : public ClusterZone {
   std::vector<unsigned int> num_parents_per_node_;  // number of parents by node
   std::vector<unsigned int> num_port_lower_level_;  // ports between each level l and l-1
 
-  std::map<int, FatTreeNode*> compute_nodes_;
-  std::vector<FatTreeNode*> nodes_;
-  std::vector<FatTreeLink*> links_;
+  std::map<int, std::shared_ptr<FatTreeNode>> compute_nodes_;
+  std::vector<std::shared_ptr<FatTreeNode>> nodes_;
+  std::vector<std::shared_ptr<FatTreeLink>> links_;
   std::vector<unsigned int> nodes_by_level_;
 
   void add_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
@@ -126,7 +126,7 @@ class XBT_PRIVATE FatTreeZone : public ClusterZone {
   void generate_labels();
   int connect_node_to_parents(FatTreeNode* node);
   bool are_related(FatTreeNode* parent, FatTreeNode* child) const;
-  bool is_in_sub_tree(FatTreeNode* root, FatTreeNode* node) const;
+  bool is_in_sub_tree(const FatTreeNode* root, const FatTreeNode* node) const;
 
   void do_seal() override;
 
@@ -134,7 +134,6 @@ public:
   using ClusterZone::ClusterZone;
   FatTreeZone(const FatTreeZone&) = delete;
   FatTreeZone& operator=(const FatTreeZone&) = delete;
-  ~FatTreeZone() override;
   void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
 
   /**

@@ -190,9 +190,10 @@ struct ClusterCallbacks {
   std::function<ClusterNetPointCb> netpoint;
   std::function<ClusterLinkCb> loopback = {};
   std::function<ClusterLinkCb> limiter  = {};
-  explicit ClusterCallbacks(std::function<ClusterNetPointCb> set_netpoint) : netpoint(set_netpoint){/*nothing to do */};
-  ClusterCallbacks(std::function<ClusterNetPointCb> set_netpoint, std::function<ClusterLinkCb> set_loopback,
-                   std::function<ClusterLinkCb> set_limiter)
+  explicit ClusterCallbacks(const std::function<ClusterNetPointCb>& set_netpoint)
+      : netpoint(set_netpoint){/*nothing to do */};
+  ClusterCallbacks(const std::function<ClusterNetPointCb>& set_netpoint,
+                   const std::function<ClusterLinkCb>& set_loopback, const std::function<ClusterLinkCb>& set_limiter)
       : netpoint(set_netpoint), loopback(set_loopback), limiter(set_limiter){/*nothing to do */};
 };
 /**
