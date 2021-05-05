@@ -293,9 +293,7 @@ minimal-bindings (on/OFF)
   Take as few optional dependencies as possible, to get minimal
   library bindings in Java and Python.
 
-SMPI_C_FLAGS (string)
-SMPI_CXX_FLAGS (string)
-SMPI_Fortran_FLAGS (string)
+SMPI_C_FLAGS, SMPI_CXX_FLAGS, SMPI_Fortran_FLAGS (string)
   Default compiler options to use in smpicc, smpicxx, or smpiff.
   This can be useful to set options like "-m32" or "-m64".
 
