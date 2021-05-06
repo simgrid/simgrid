@@ -314,12 +314,12 @@ bool is_maestro()
 void sleep_for(double duration)
 {
   xbt_assert(std::isfinite(duration), "duration is not finite!");
-  static unsigned int warned = 0; // At most 20 such warnings
 
   if (duration <= 0) /* that's a no-op */
     return;
 
   if (duration < sg_surf_precision) {
+    static unsigned int warned = 0; // At most 20 such warnings
     warned++;
     if (warned <= 20)
       XBT_INFO("The parameter to sleep_for() is smaller than the SimGrid numerical accuracy (%g < %g). "
