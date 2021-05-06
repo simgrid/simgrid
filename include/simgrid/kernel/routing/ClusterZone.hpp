@@ -74,14 +74,14 @@ class ClusterZone : public NetZoneImpl {
   NetPoint* router_                = nullptr;
   bool has_limiter_                = false;
   bool has_loopback_               = false;
-  unsigned int num_links_per_node_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
+  unsigned long num_links_per_node_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
 
   s4u::Link::SharingPolicy link_sharing_policy_; //!< cluster links: sharing policy
   double link_bw_;                               //!< cluster links: bandwidth
   double link_lat_;                              //!< cluster links: latency
 
 protected:
-  void set_num_links_per_node(unsigned int num) { num_links_per_node_ = num; }
+  void set_num_links_per_node(unsigned long num) { num_links_per_node_ = num; }
   resource::LinkImpl* get_uplink_from(unsigned int position) const { return private_links_.at(position).first; }
   resource::LinkImpl* get_downlink_to(unsigned int position) const { return private_links_.at(position).second; }
 

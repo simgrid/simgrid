@@ -24,7 +24,7 @@ namespace routing {
 class XBT_PRIVATE FloydZone : public RoutedZone {
   /* vars to compute the Floyd algorithm. */
   std::vector<std::vector<int>> predecessor_table_;
-  std::vector<std::vector<double>> cost_table_;
+  std::vector<std::vector<unsigned long>> cost_table_;
   std::vector<std::vector<std::unique_ptr<Route>>> link_table_;
 
   void init_tables(unsigned int table_size);

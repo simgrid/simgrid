@@ -9,8 +9,7 @@
 #include "surf/surf.hpp"
 #include "xbt/string.hpp"
 
-#include <cfloat>
-#include <limits>
+#include <climits>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 
@@ -26,7 +25,7 @@ void FloydZone::init_tables(unsigned int table_size)
     link_table_.resize(table_size);
     predecessor_table_.resize(table_size);
     for (auto& cost : cost_table_)
-      cost.resize(table_size, DBL_MAX); /* link cost from host to host */
+      cost.resize(table_size, ULONG_MAX); /* link cost from host to host */
     for (auto& link : link_table_)
       link.resize(table_size); /* actual link between src and dst */
     for (auto& predecessor : predecessor_table_)
@@ -150,9 +149,8 @@ void FloydZone::do_seal()
   for (unsigned int c = 0; c < table_size; c++) {
     for (unsigned int a = 0; a < table_size; a++) {
       for (unsigned int b = 0; b < table_size; b++) {
-        if (cost_table_[a][c] < DBL_MAX && cost_table_[c][b] < DBL_MAX &&
-            (fabs(cost_table_[a][b] - DBL_MAX) < std::numeric_limits<double>::epsilon() ||
-             (cost_table_[a][c] + cost_table_[c][b] < cost_table_[a][b]))) {
+        if (cost_table_[a][c] < ULONG_MAX && cost_table_[c][b] < ULONG_MAX &&
+            (cost_table_[a][b] == ULONG_MAX || (cost_table_[a][c] + cost_table_[c][b] < cost_table_[a][b]))) {
           cost_table_[a][b]        = cost_table_[a][c] + cost_table_[c][b];
           predecessor_table_[a][b] = predecessor_table_[c][b];
         }

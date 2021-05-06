@@ -121,7 +121,7 @@ public:
 
     const char* local_max_pstate_config = host_->get_property(cfg_max_pstate.get_name());
     if (local_max_pstate_config != nullptr) {
-      max_pstate = std::stod(local_max_pstate_config);
+      max_pstate = std::stoi(local_max_pstate_config);
     }
     xbt_assert(max_pstate <= host_->get_pstate_count() - 1, "Value for max_pstate too large!");
     xbt_assert(min_pstate <= max_pstate, "min_pstate is larger than max_pstate!");
@@ -206,7 +206,7 @@ public:
        */
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
       // because pstate 0 can only be selected if load > freq_up_threshold_
-      int new_pstate = get_max_pstate() - load * (get_max_pstate() + 1);
+      int new_pstate = static_cast<int>(get_max_pstate() - load * (get_max_pstate() + 1));
       if (new_pstate < get_min_pstate())
         new_pstate = get_min_pstate();
       get_host()->set_pstate(new_pstate);

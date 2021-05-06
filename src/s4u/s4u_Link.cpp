@@ -260,7 +260,7 @@ void sg_link_data_set(sg_link_t link, void* data) // XBT_ATTRIB_DEPRECATED_v330
   sg_link_set_data(link, data);
 }
 
-int sg_link_count()
+size_t sg_link_count()
 {
   return simgrid::s4u::Engine::get_instance()->get_link_count();
 }

@@ -134,7 +134,7 @@ std::vector<ActorPtr> Host::get_all_actors() const
 }
 
 /** @brief Returns how many actors (daemonized or not) have been launched on this host */
-int Host::get_actor_count() const
+size_t Host::get_actor_count() const
 {
   return pimpl_->get_actor_count();
 }

@@ -9,7 +9,7 @@
 #include "surf/surf.hpp"
 #include "xbt/string.hpp"
 
-#include <cfloat>
+#include <climits>
 #include <queue>
 #include <vector>
 
@@ -23,7 +23,7 @@ class GraphNodeData {
 public:
   explicit GraphNodeData(int id) : id_(id) {}
   int id_;
-  int graph_id_ = -1; /* used for caching internal graph id's */
+  unsigned long graph_id_ = UINT_MAX; /* used for caching internal graph id's */
 };
 
 void DijkstraZone::route_graph_delete(xbt_graph_t g)
@@ -96,8 +96,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
   const s_xbt_node_t* src_elm = node_map_search(src_id);
   const s_xbt_node_t* dst_elm = node_map_search(dst_id);
 
-  int src_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(src_elm))->graph_id_;
-  int dst_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(dst_elm))->graph_id_;
+  unsigned int src_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(src_elm))->graph_id_;
+  unsigned int dst_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(dst_elm))->graph_id_;
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
@@ -121,18 +121,18 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
   std::vector<int>& pred_arr = elm.first->second;
 
   if (elm.second) { /* new element was inserted (not cached mode, or cache miss) */
-    int nr_nodes = xbt_dynar_length(nodes);
-    std::vector<double> cost_arr(nr_nodes); /* link cost from src to other hosts */
+    unsigned long nr_nodes = xbt_dynar_length(nodes);
+    std::vector<unsigned long> cost_arr(nr_nodes); /* link cost from src to other hosts */
     pred_arr.resize(nr_nodes);              /* predecessors in path from src */
     using Qelt = std::pair<double, int>;
     std::priority_queue<Qelt, std::vector<Qelt>, std::greater<>> pqueue;
 
     /* initialize */
-    cost_arr[src_node_id] = 0.0;
+    cost_arr[src_node_id] = 0;
 
-    for (int i = 0; i < nr_nodes; i++) {
+    for (unsigned long i = 0; i < nr_nodes; i++) {
       if (i != src_node_id) {
-        cost_arr[i] = DBL_MAX;
+        cost_arr[i] = ULONG_MAX;
       }
 
       pred_arr[i] = 0;
@@ -154,7 +154,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
         const GraphNodeData* data            = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
         int u_id                             = data->graph_id_;
         const Route* tmp_e_route             = static_cast<Route*>(xbt_graph_edge_get_data(edge));
-        int cost_v_u                         = tmp_e_route->link_list_.size(); /* count of links, old model assume 1 */
+        unsigned long cost_v_u               = tmp_e_route->link_list_.size(); /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = v_id;
@@ -169,7 +169,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
   NetPoint* gw_src   = nullptr;
   NetPoint* first_gw = nullptr;
 
-  for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
+  for (unsigned int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     const s_xbt_node_t* node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
     const s_xbt_node_t* node_v      = xbt_dynar_get_as(nodes, v, xbt_node_t);
     const s_xbt_edge_t* edge        = xbt_graph_get_edge(route_graph_.get(), node_pred_v, node_v);

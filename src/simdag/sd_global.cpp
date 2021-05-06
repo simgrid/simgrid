@@ -189,7 +189,7 @@ void SD_create_environment(const char* platform_file)
 {
   simgrid::s4u::Engine::get_instance()->load_platform(platform_file);
 
-  XBT_DEBUG("Host number: %zu, link number: %d", sg_host_count(), sg_link_count());
+  XBT_DEBUG("Host number: %zu, link number: %zu", sg_host_count(), sg_link_count());
 #if SIMGRID_HAVE_JEDULE
   jedule_sd_init();
 #endif

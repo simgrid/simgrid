@@ -107,11 +107,11 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, doub
    * Arrays that hold the coordinates of the current node and the target; comparing the values at the i-th position of
    * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
-  const unsigned int dsize = dimensions_.size();
+  const unsigned long dsize = dimensions_.size();
   std::vector<unsigned int> myCoords(dsize);
   std::vector<unsigned int> targetCoords(dsize);
   unsigned int dim_size_product = 1;
-  for (unsigned i = 0; i < dsize; i++) {
+  for (unsigned long i = 0; i < dsize; i++) {
     unsigned cur_dim_size = dimensions_[i];
     myCoords[i]           = (src->id() / dim_size_product) % cur_dim_size;
     targetCoords[i]       = (dst->id() / dim_size_product) % cur_dim_size;
