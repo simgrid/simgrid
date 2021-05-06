@@ -8,6 +8,7 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Host.hpp>
+#include <xbt/utility.hpp>
 
 namespace simgrid {
 namespace s4u {
@@ -34,12 +35,14 @@ public:
   VirtualMachine& operator=(VirtualMachine const&) = delete;
 #endif
 
-  enum class state {
+  // enum class State { ... }
+  XBT_DECLARE_ENUM_CLASS(State,
     CREATED, /**< created, but not yet started */
     RUNNING,
     SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
     DESTROYED
-  };
+  );
+  using state XBT_ATTRIB_DEPRECATED_v332("Please use VirtualMachine::State") = State;
 
   vm::VirtualMachineImpl* get_vm_impl() const { return pimpl_vm_; }
   void start();
@@ -54,7 +57,7 @@ public:
   VirtualMachine* set_ramsize(size_t ramsize);
   VirtualMachine* set_bound(double bound);
 
-  VirtualMachine::state get_state() const;
+  State get_state() const;
   static xbt::signal<void(VirtualMachine const&)> on_start;
   static xbt::signal<void(VirtualMachine const&)> on_started;
   static xbt::signal<void(VirtualMachine const&)> on_shutdown;

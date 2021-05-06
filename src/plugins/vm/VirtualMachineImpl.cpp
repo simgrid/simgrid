@@ -153,7 +153,7 @@ double VMModel::next_occurring_event(double now)
 
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
-    if (ws_vm->get_state() == s4u::VirtualMachine::state::SUSPENDED) // Ignore suspended VMs
+    if (ws_vm->get_state() == s4u::VirtualMachine::State::SUSPENDED) // Ignore suspended VMs
       continue;
 
     const kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
@@ -209,7 +209,7 @@ VirtualMachineImpl::~VirtualMachineImpl()
 
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
-  if (get_state() != s4u::VirtualMachine::state::RUNNING)
+  if (get_state() != s4u::VirtualMachine::State::RUNNING)
     throw VmFailureException(XBT_THROW_POINT,
                              xbt::string_printf("Cannot suspend VM %s: it is not running.", piface_->get_cname()));
   if (issuer->get_host() == piface_)
@@ -227,12 +227,12 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 
   XBT_DEBUG("suspend all actors on the VM done done");
 
-  vm_state_ = s4u::VirtualMachine::state::SUSPENDED;
+  vm_state_ = s4u::VirtualMachine::State::SUSPENDED;
 }
 
 void VirtualMachineImpl::resume()
 {
-  if (get_state() != s4u::VirtualMachine::state::SUSPENDED)
+  if (get_state() != s4u::VirtualMachine::State::SUSPENDED)
     throw VmFailureException(XBT_THROW_POINT,
                              xbt::string_printf("Cannot resume VM %s: it was not suspended", piface_->get_cname()));
 
@@ -245,7 +245,7 @@ void VirtualMachineImpl::resume()
     actor.resume();
   });
 
-  vm_state_ = s4u::VirtualMachine::state::RUNNING;
+  vm_state_ = s4u::VirtualMachine::State::RUNNING;
 }
 
 /** @brief Power off a VM.
@@ -257,23 +257,9 @@ void VirtualMachineImpl::resume()
  */
 void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 {
-  if (get_state() != s4u::VirtualMachine::state::RUNNING) {
-    const char* stateName;
-    switch (get_state()) {
-      case s4u::VirtualMachine::state::CREATED:
-        stateName = "created, but not yet started";
-        break;
-      case s4u::VirtualMachine::state::SUSPENDED:
-        stateName = "suspended";
-        break;
-      case s4u::VirtualMachine::state::DESTROYED:
-        stateName = "destroyed";
-        break;
-      default: /* SURF_VM_STATE_RUNNING or unexpected values */
-        THROW_IMPOSSIBLE;
-    }
-    XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->get_cname(), stateName);
-  }
+  if (get_state() != s4u::VirtualMachine::State::RUNNING)
+    XBT_VERB("Shutting down the VM %s even if it's not running but in state %s", piface_->get_cname(),
+             s4u::VirtualMachine::to_c_str(get_state()));
 
   XBT_DEBUG("shutdown VM %s, that contains %zu actors", piface_->get_cname(), get_actor_count());
 
@@ -283,7 +269,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     issuer->kill(&actor);
   });
 
-  set_state(s4u::VirtualMachine::state::DESTROYED);
+  set_state(s4u::VirtualMachine::State::DESTROYED);
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
 }

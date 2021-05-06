@@ -90,7 +90,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_VM_all(JNIEnv* env, jclass c
 
   for (size_t i = 0; i < host_count; i++) {
     const auto* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(hosts[i]);
-    if (vm != nullptr && vm->get_state() != simgrid::s4u::VirtualMachine::state::DESTROYED) {
+    if (vm != nullptr && vm->get_state() != simgrid::s4u::VirtualMachine::State::DESTROYED) {
       auto jvm = static_cast<jobject>(vm->extension(JAVA_HOST_LEVEL));
       vms.push_back(jvm);
     }
