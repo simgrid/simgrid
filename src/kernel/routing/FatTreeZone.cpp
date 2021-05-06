@@ -100,7 +100,6 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, dou
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->num_children_per_node_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
-
         into->link_list_.push_back(currentNode->children[i]->down_link_);
 
         if (currentNode->limiter_link_)
