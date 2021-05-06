@@ -129,8 +129,11 @@ void VirtualMachine::destroy()
   shutdown();
 
   /* Then, destroy the VM object */
-  get_impl()->destroy();
-  delete this;
+  kernel::actor::simcall([this]() {
+    auto impl = get_impl();
+    delete this; // delete iface first
+    impl->destroy();
+  });
 }
 
 simgrid::s4u::Host* VirtualMachine::get_pm() const
