@@ -20,7 +20,7 @@ class Sender {
   std::vector<sg4::Host*> hosts_;
 
 public:
-  explicit Sender(const std::vector<sg4::Host*> hosts) : hosts_{hosts} {}
+  explicit Sender(const std::vector<sg4::Host*>& hosts) : hosts_{hosts} {}
   void operator()() const
   {
     /* Vector in which we store all ongoing communications */

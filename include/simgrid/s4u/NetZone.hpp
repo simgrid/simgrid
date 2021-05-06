@@ -141,7 +141,7 @@ public:
 
 private:
   /** @brief Auxiliary function to get list of LinkImpl */
-  static std::vector<kernel::resource::LinkImpl*> get_link_list_impl(const std::vector<Link*> link_list);
+  static std::vector<kernel::resource::LinkImpl*> get_link_list_impl(const std::vector<Link*>& link_list);
 };
 
 // External constructors so that the types (and the types of their content) remain hidden

@@ -18,9 +18,9 @@ using EventSet = std::deque<UnfoldingEvent*>;
 class EvtSetTools {
 public:
   static bool contains(const EventSet& events, const UnfoldingEvent* e);
-  static UnfoldingEvent* find(const EventSet events, const UnfoldingEvent* e);
+  static UnfoldingEvent* find(const EventSet& events, const UnfoldingEvent* e);
   static void subtract(EventSet& events, EventSet const& otherSet);
-  static bool depends(EventSet const& events, EventSet const& otherSet);
+  static bool depends(const EventSet& events, const EventSet& otherSet);
   static bool isEmptyIntersection(EventSet evtS1, EventSet evtS2);
   static EventSet makeUnion(const EventSet& s1, const EventSet& s2);
   static void pushBack(EventSet& events, UnfoldingEvent* e);

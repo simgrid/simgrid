@@ -99,7 +99,7 @@ int NetZone::add_component(kernel::routing::NetPoint* elm)
   return pimpl_->add_component(elm);
 }
 
-std::vector<kernel::resource::LinkImpl*> NetZone::get_link_list_impl(const std::vector<Link*> link_list)
+std::vector<kernel::resource::LinkImpl*> NetZone::get_link_list_impl(const std::vector<Link*>& link_list)
 {
   std::vector<kernel::resource::LinkImpl*> links;
   for (const auto& link : link_list) {
