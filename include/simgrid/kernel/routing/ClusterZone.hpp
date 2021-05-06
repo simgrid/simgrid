@@ -96,9 +96,10 @@ class XBT_PRIVATE ClusterBase : public ClusterZone {
   bool has_loopback_                = false;
   unsigned long num_links_per_node_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
 
-  s4u::Link::SharingPolicy link_sharing_policy_; //!< cluster links: sharing policy
-  double link_bw_;                               //!< cluster links: bandwidth
-  double link_lat_;                              //!< cluster links: latency
+  s4u::Link::SharingPolicy link_sharing_policy_ =
+      s4u::Link::SharingPolicy::SPLITDUPLEX; //!< cluster links: sharing policy
+  double link_bw_  = 0.0;                    //!< cluster links: bandwidth
+  double link_lat_ = 0.0;                    //!< cluster links: latency
 
 protected:
   using ClusterZone::ClusterZone;
