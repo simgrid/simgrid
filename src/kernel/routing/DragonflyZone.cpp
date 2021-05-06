@@ -156,8 +156,9 @@ void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
                                                  unsigned int k) -> resource::LinkImpl* {
     kernel::resource::LinkImpl* limiter = nullptr;
     if (set_callbacks.limiter) {
+      id--;
       const auto* s4u_link =
-          set_callbacks.limiter(get_iface(), {i, j, k, std::numeric_limits<unsigned int>::max()}, --id);
+          set_callbacks.limiter(get_iface(), {i, j, k, std::numeric_limits<unsigned int>::max()}, id);
       if (s4u_link) {
         limiter = s4u_link->get_impl();
       }
