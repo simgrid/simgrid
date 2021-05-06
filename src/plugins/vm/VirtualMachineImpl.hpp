@@ -42,12 +42,12 @@ public:
                               size_t ramsize);
   ~VirtualMachineImpl() override;
 
-  virtual void suspend(kernel::actor::ActorImpl* issuer);
-  virtual void resume();
-  virtual void shutdown(kernel::actor::ActorImpl* issuer);
+  void suspend(kernel::actor::ActorImpl* issuer);
+  void resume();
+  void shutdown(kernel::actor::ActorImpl* issuer);
 
   /** @brief Change the physical host on which the given VM is running */
-  virtual void set_physical_host(s4u::Host* dest);
+  void set_physical_host(s4u::Host* dest);
   /** @brief Get the physical host on which the given VM is running */
   s4u::Host* get_physical_host() const { return physical_host_; }
 
@@ -63,7 +63,7 @@ public:
   const s4u::VirtualMachine* get_iface() const override { return piface_; }
   s4u::VirtualMachine* get_iface() override { return piface_; }
 
-  virtual void set_bound(double bound);
+  void set_bound(double bound);
 
   void update_action_weight();
 
