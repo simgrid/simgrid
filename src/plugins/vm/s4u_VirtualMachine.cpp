@@ -60,8 +60,6 @@ VirtualMachine::~VirtualMachine()
 {
   on_destruction(*this);
 
-  XBT_DEBUG("destroy %s", get_cname());
-
   /* Don't free these things twice: they are the ones of my physical host */
   set_netpoint(nullptr);
 }
@@ -128,11 +126,12 @@ void VirtualMachine::destroy()
   /* First, terminate all processes on the VM if necessary */
   shutdown();
 
+  XBT_DEBUG("destroy %s", get_cname());
+
   /* Then, destroy the VM object */
   kernel::actor::simcall([this]() {
-    auto impl = get_impl();
-    delete this; // delete iface first
-    impl->destroy();
+    get_impl()->destroy();
+    delete this;
   });
 }
 
