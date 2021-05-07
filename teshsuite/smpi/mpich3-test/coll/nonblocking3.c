@@ -19,10 +19,6 @@
 #include <string.h>
 #include <assert.h>
 
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
 static int errs = 0;
 
 /* Constants that control the high level test harness behavior. */
