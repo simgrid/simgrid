@@ -854,9 +854,9 @@ int Request::finish_nbc_requests(MPI_Request* request, int test){
   int flag = 1;
   int ret = 0;
   if(test == 0)
-    ret = waitall((*request)->nbc_requests_.size(), &(*request)->nbc_requests_[0], MPI_STATUSES_IGNORE);
+    ret = waitall((*request)->nbc_requests_.size(), (*request)->nbc_requests_.data(), MPI_STATUSES_IGNORE);
   else{
-    ret = testall((*request)->nbc_requests_.size(), &(*request)->nbc_requests_[0], &flag, MPI_STATUSES_IGNORE);
+    ret = testall((*request)->nbc_requests_.size(), (*request)->nbc_requests_.data(), &flag, MPI_STATUSES_IGNORE);
   }
   if(ret!=MPI_SUCCESS)
     xbt_die("Failure when waiting on non blocking collective sub-requests");
@@ -1263,7 +1263,7 @@ int Request::grequest_complete(MPI_Request request)
 void Request::start_nbc_requests(std::vector<MPI_Request> reqs){
   if (reqs.size() > 0) {
     nbc_requests_ = reqs;
-    Request::startall(reqs.size(), &reqs[0]);
+    Request::startall(reqs.size(), reqs.data());
   }
 }
 

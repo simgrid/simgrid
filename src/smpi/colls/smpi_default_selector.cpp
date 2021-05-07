@@ -78,7 +78,7 @@ int allgatherv__default(const void *sendbuf, int sendcount, MPI_Datatype sendtyp
   MPI_Request request;
   colls::iallgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, &request, 0);
   auto requests = request->get_nbc_requests();
-  Request::waitall(requests.size(), &requests[0], MPI_STATUS_IGNORE);
+  Request::waitall(requests.size(), requests.data(), MPI_STATUS_IGNORE);
   for(auto& req: requests)
     Request::unref(&req);
   Request::unref(&request);
