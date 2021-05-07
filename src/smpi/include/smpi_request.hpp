@@ -73,7 +73,7 @@ public:
   void init_buffer(int count);
   void ref();
   void set_nbc_requests(MPI_Request* reqs, int size);
-  static int finish_nbc_requests(MPI_Request* req);
+  static int finish_nbc_requests(MPI_Request* req, int test);
   int get_nbc_requests_size() const;
   MPI_Request* get_nbc_requests() const;
   static void finish_wait(MPI_Request* request, MPI_Status* status);
