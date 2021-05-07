@@ -137,10 +137,10 @@ nonblocking2 1
 nonblocking2 4
 nonblocking2 5
 nonblocking2 10
-#nonblocking3 1 mpiversion=3.0
-#nonblocking3 4 mpiversion=3.0
-#nonblocking3 5 mpiversion=3.0
-#nonblocking3 10 timeLimit=600 mpiversion=3.0
+nonblocking3 1 mpiversion=3.0
+nonblocking3 4 mpiversion=3.0
+nonblocking3 5 mpiversion=3.0
+nonblocking3 10 timeLimit=600 mpiversion=3.0
 iallred 2
 # ibarrier will hang forever if it fails, but will complete quickly if it
 # succeeds

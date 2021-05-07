@@ -14,15 +14,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
           alltoallv0 alltoallv alltoallw1 alltoallw2 alltoallw_zeros
           bcasttest bcastzerotype coll2 coll3 coll4 coll5 coll6 coll7 coll8
           coll9 coll10 coll11 coll12 coll13 exscan exscan2 gather gather2 
-          gather_big ibarrier longuser nonblocking nonblocking2 iallred
+          gather_big ibarrier longuser nonblocking nonblocking2 nonblocking3 iallred
         # icallgather icallgatherv icallreduce
         # icalltoall icalltoallv icalltoallw icbarrier icbcast
         # icgather icgatherv icreduce icscatter icscatterv
          opband opbor opbxor opland oplor oplxor opmax opmaxloc
-         opmin opminloc opprod opsum 
-         #nonblocking3
-          op_commutative red3 red4 redscat2 redscat3 redscatbkinter redscatblk3
-          redscat red_scat_block red_scat_block2 allgatherv4 allred
+         opmin opminloc opprod opsum
+         op_commutative red3 red4 redscat2 redscat3 redscatbkinter redscatblk3
+         redscat red_scat_block red_scat_block2 allgatherv4 allred
         # redscatinter
           reduce_local scantst scatter2 scatter3 scattern scatterv
          uoplong
