@@ -617,8 +617,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   } else {
     // for tracing, save the handle which might get overridden before we can use the helper on it
     MPI_Request savedreq = *request;
-    if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & MPI_REQ_FINISHED)
-    && not(savedreq->flags() & MPI_REQ_GENERALIZED))
+    if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & (MPI_REQ_FINISHED | MPI_REQ_GENERALIZED | MPI_REQ_NBC)))
       savedreq->ref();//don't erase the handle in Request::wait, we'll need it later
     else
       savedreq = MPI_REQUEST_NULL;
@@ -652,7 +651,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
   for (MPI_Request& req : savedreqs) {
-    if (req != MPI_REQUEST_NULL && not(req->flags() & MPI_REQ_FINISHED))
+    if (req != MPI_REQUEST_NULL && not(req->flags() & (MPI_REQ_FINISHED | MPI_REQ_NBC)))
       req->ref();
     else
       req = MPI_REQUEST_NULL;
@@ -683,7 +682,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
   for (MPI_Request& req : savedreqs) {
-    if (req != MPI_REQUEST_NULL && not(req->flags() & MPI_REQ_FINISHED))
+    if (req != MPI_REQUEST_NULL && not(req->flags() & (MPI_REQ_FINISHED | MPI_REQ_NBC)))
       req->ref();
     else
       req = MPI_REQUEST_NULL;

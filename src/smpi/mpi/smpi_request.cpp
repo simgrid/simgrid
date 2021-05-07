@@ -598,19 +598,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
 
   static int nsleeps = 1;
   int ret = MPI_SUCCESS;
-  
-  // Are we testing a request meant for non blocking collectives ?
-  // If so, test all the subrequests.
-  if ((*request)->nbc_requests_size_>0){
-    ret = testall((*request)->nbc_requests_size_, (*request)->nbc_requests_, flag, MPI_STATUSES_IGNORE);
-    if(*flag){
-      delete[] (*request)->nbc_requests_;
-      (*request)->nbc_requests_size_=0;
-      unref(request);
-    }
-    return ret;
-  }
-  
+
   if(smpi_test_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(nsleeps * smpi_test_sleep);
 
@@ -856,6 +844,30 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   xbt_assert(request == MPI_REQUEST_NULL);
 }
 
+int Request::finish_nbc_requests(MPI_Request* request){
+  int ret = waitall((*request)->nbc_requests_size_, (*request)->nbc_requests_, MPI_STATUSES_IGNORE);
+  XBT_DEBUG("finish non blocking collective request with %d sub-requests", (*request)->nbc_requests_size_);
+  for (int i = 0; i < (*request)->nbc_requests_size_; i++) {
+    if((*request)->buf_!=nullptr && (*request)->nbc_requests_[i]!=MPI_REQUEST_NULL){//reduce case
+      void * buf=(*request)->nbc_requests_[i]->buf_;
+      if((*request)->old_type_->flags() & DT_FLAG_DERIVED)
+        buf=(*request)->nbc_requests_[i]->old_buf_;
+      if((*request)->nbc_requests_[i]->flags_ & MPI_REQ_RECV ){
+        if((*request)->op_!=MPI_OP_NULL){
+          int count=(*request)->size_/ (*request)->old_type_->size();
+          (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->old_type_);
+        }
+        smpi_free_tmp_buffer(static_cast<unsigned char*>(buf));
+      }
+    }
+    if((*request)->nbc_requests_[i]!=MPI_REQUEST_NULL)
+      Request::unref(&((*request)->nbc_requests_[i]));
+  }
+  delete[] (*request)->nbc_requests_;
+  (*request)->nbc_requests_size_=0;
+  return ret;
+}
+
 void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 {
   MPI_Request req = *request;
@@ -867,6 +879,12 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       unref(&(req->detached_sender_));
     unref(request);
     return;
+  }
+
+  if ((*request)->flags() & MPI_REQ_NBC){
+    int ret = finish_nbc_requests(request);
+    if (ret != MPI_SUCCESS)
+      xbt_die("error when finishing non blocking collective requests");
   }
 
   if ((req->flags_ & (MPI_REQ_PREPARED | MPI_REQ_GENERALIZED | MPI_REQ_FINISHED)) == 0) {
@@ -966,32 +984,6 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
       Status::empty(status);
       status->MPI_SOURCE = MPI_PROC_NULL;
     }
-    (*request)=MPI_REQUEST_NULL;
-    return ret;
-  }
-  // Are we waiting on a request meant for non blocking collectives ?
-  // If so, wait for all the subrequests.
-  if ((*request)->nbc_requests_size_>0){
-    ret = waitall((*request)->nbc_requests_size_, (*request)->nbc_requests_, MPI_STATUSES_IGNORE);
-    for (int i = 0; i < (*request)->nbc_requests_size_; i++) {
-      if((*request)->buf_!=nullptr && (*request)->nbc_requests_[i]!=MPI_REQUEST_NULL){//reduce case
-        void * buf=(*request)->nbc_requests_[i]->buf_;
-        if((*request)->old_type_->flags() & DT_FLAG_DERIVED)
-          buf=(*request)->nbc_requests_[i]->old_buf_;
-        if((*request)->nbc_requests_[i]->flags_ & MPI_REQ_RECV ){
-          if((*request)->op_!=MPI_OP_NULL){
-            int count=(*request)->size_/ (*request)->old_type_->size();
-            (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->old_type_);
-          }
-          smpi_free_tmp_buffer(static_cast<unsigned char*>(buf));
-        }
-      }
-      if((*request)->nbc_requests_[i]!=MPI_REQUEST_NULL)
-        Request::unref(&((*request)->nbc_requests_[i]));
-    }
-    delete[] (*request)->nbc_requests_;
-    (*request)->nbc_requests_size_=0;
-    unref(request);
     (*request)=MPI_REQUEST_NULL;
     return ret;
   }
