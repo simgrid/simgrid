@@ -7,6 +7,9 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
+#if SIMGRID_HAVE_NS3
+#include "src/surf/network_ns3.hpp"
+#endif
 #include "xbt/string.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_star, surf, "Routing part of surf");
@@ -129,7 +132,7 @@ void StarZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
 {
   check_add_route_param(src, dst, gw_src, gw_dst, symmetrical);
 
-  s4u::NetZone::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, link_list_);
+  s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list_);
 
   /* loopback */
   if (src == dst) {
@@ -159,6 +162,10 @@ void StarZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
 
 void StarZone::do_seal()
 {
+#if SIMGRID_HAVE_NS3
+  xbt_assert(not dynamic_cast<resource::NetworkNS3Model*>(get_network_model().get()),
+             "StarZone are not supported by NS-3 right now");
+#endif
   /* add default empty links if nothing was configured by user */
   for (auto const& node : get_vertices()) {
     auto route = routes_.emplace(node->id(), StarRoute());

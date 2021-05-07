@@ -345,6 +345,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
 
   XBT_DEBUG("</zone>");
   sg_platf_new_Zone_seal();
+  simgrid::kernel::routing::on_cluster_creation(*cluster);
 }
 
 void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster)
@@ -359,8 +360,6 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       sg_platf_new_cluster_flat(cluster);
       break;
   }
-
-  simgrid::kernel::routing::on_cluster_creation(*cluster);
 }
 
 void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb)
