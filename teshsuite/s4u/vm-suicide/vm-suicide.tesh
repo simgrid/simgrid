@@ -1,0 +1,43 @@
+#!/usr/bin/env tesh
+
+p Testing the VM suicide
+
+$ ${bindir:=.}/vm-suicide ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [ 10.000000] (1:test_master@Boivin) ---- HOSTS and VMS STATUS ----
+> [ 10.000000] (1:test_master@Boivin) --- HOSTS ---
+> [ 10.000000] (1:test_master@Boivin) + Name:Boivin Load:0.000000
+> [ 10.000000] (1:test_master@Boivin) ++ actor: test_master
+> [ 10.000000] (1:test_master@Boivin) + Name:Bourassa Load:48492000.000000
+> [ 10.000000] (1:test_master@Boivin) + Name:Fafard Load:0.000000
+> [ 10.000000] (1:test_master@Boivin) --- VMS ---
+> [ 10.000000] (1:test_master@Boivin) + Name:test_vm Host:Bourassa Load:48492000.000000 State: RUNNING
+> [ 10.000000] (1:test_master@Boivin) ++ actor: life_cycle_manager-1
+> [ 10.000000] (1:test_master@Boivin) ------------------------------
+> [ 40.000000] (1:test_master@Boivin) Time to kill VM from master
+> [ 60.000000] (1:test_master@Boivin) ---- HOSTS and VMS STATUS ----
+> [ 60.000000] (1:test_master@Boivin) --- HOSTS ---
+> [ 60.000000] (1:test_master@Boivin) + Name:Boivin Load:0.000000
+> [ 60.000000] (1:test_master@Boivin) ++ actor: test_master
+> [ 60.000000] (1:test_master@Boivin) + Name:Bourassa Load:0.000000
+> [ 60.000000] (1:test_master@Boivin) + Name:Fafard Load:0.000000
+> [ 60.000000] (1:test_master@Boivin) --- VMS ---
+> [ 60.000000] (1:test_master@Boivin) ------------------------------
+> [ 70.000000] (1:test_master@Boivin) ---- HOSTS and VMS STATUS ----
+> [ 70.000000] (1:test_master@Boivin) --- HOSTS ---
+> [ 70.000000] (1:test_master@Boivin) + Name:Boivin Load:0.000000
+> [ 70.000000] (1:test_master@Boivin) ++ actor: test_master
+> [ 70.000000] (1:test_master@Boivin) + Name:Bourassa Load:0.000000
+> [ 70.000000] (1:test_master@Boivin) + Name:Fafard Load:76296000.000000
+> [ 70.000000] (1:test_master@Boivin) --- VMS ---
+> [ 70.000000] (1:test_master@Boivin) + Name:test_vm Host:Fafard Load:76296000.000000 State: RUNNING
+> [ 70.000000] (1:test_master@Boivin) ++ actor: life_cycle_manager-2
+> [ 70.000000] (1:test_master@Boivin) ------------------------------
+> [110.000000] (3:life_cycle_manager-2@test_vm) I'm done sleeping, time to kill myself
+> [120.000000] (1:test_master@Boivin) ---- HOSTS and VMS STATUS ----
+> [120.000000] (1:test_master@Boivin) --- HOSTS ---
+> [120.000000] (1:test_master@Boivin) + Name:Boivin Load:0.000000
+> [120.000000] (1:test_master@Boivin) ++ actor: test_master
+> [120.000000] (1:test_master@Boivin) + Name:Bourassa Load:0.000000
+> [120.000000] (1:test_master@Boivin) + Name:Fafard Load:0.000000
+> [120.000000] (1:test_master@Boivin) --- VMS ---
+> [120.000000] (1:test_master@Boivin) ------------------------------

@@ -752,6 +752,8 @@ include teshsuite/s4u/trace-integration/trace-integration.tesh
 include teshsuite/s4u/vm-live-migration/platform.xml
 include teshsuite/s4u/vm-live-migration/vm-live-migration.cpp
 include teshsuite/s4u/vm-live-migration/vm-live-migration.tesh
+include teshsuite/s4u/vm-suicide/vm-suicide.cpp
+include teshsuite/s4u/vm-suicide/vm-suicide.tesh
 include teshsuite/s4u/wait-any-for/wait-any-for.cpp
 include teshsuite/s4u/wait-any-for/wait-any-for.tesh
 include teshsuite/simdag/availability/availability.c

@@ -7,7 +7,7 @@ foreach(x actor actor-autorestart actor-suspend
         basic-link-test basic-parsing-test evaluate-get-route-time evaluate-parse-time is-router
         storage_client_server listen_async pid
         trace-integration
-	vm-live-migration)
+	vm-live-migration vm-suicide)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -28,7 +28,7 @@ set_property(TARGET activity-lifecycle APPEND PROPERTY INCLUDE_DIRECTORIES "${IN
 foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle comm-get-sender wait-any-for
         cloud-interrupt-migration cloud-two-execs concurrent_rw
-	vm-live-migration)
+	vm-live-migration vm-suicide)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH_FACTORIES(tesh-s4u-${x} "*" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
