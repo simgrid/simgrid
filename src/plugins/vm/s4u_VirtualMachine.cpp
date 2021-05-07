@@ -123,16 +123,28 @@ void VirtualMachine::shutdown()
 
 void VirtualMachine::destroy()
 {
-  /* First, terminate all processes on the VM if necessary */
-  shutdown();
+  auto destroy_code = [this]() {
+    /* First, terminate all processes on the VM if necessary */
+    shutdown();
 
-  XBT_DEBUG("destroy %s", get_cname());
+    XBT_DEBUG("destroy %s", get_cname());
 
-  /* Then, destroy the VM object */
-  kernel::actor::simcall([this]() {
-    get_impl()->destroy();
-    delete this;
-  });
+    /* Then, destroy the VM object */
+    kernel::actor::simcall([this]() {
+      get_impl()->destroy();
+      delete this;
+    });
+  };
+
+  if (this_actor::get_host() == this) {
+    XBT_VERB("Launch another actor on physical host %s to destroy my own VM: %s", get_pm()->get_cname(), get_cname());
+    simgrid::s4u::Actor::create(get_cname() + std::string("-destroy"), get_pm(), destroy_code);
+    simgrid::s4u::this_actor::yield();
+    XBT_CRITICAL("I should be dead now!");
+    DIE_IMPOSSIBLE;
+  }
+
+  destroy_code();
 }
 
 simgrid::s4u::Host* VirtualMachine::get_pm() const
