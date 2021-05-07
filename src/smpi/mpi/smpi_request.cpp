@@ -63,8 +63,6 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, aid_t src, a
     refcount_ = 1;
   else
     refcount_ = 0;
-  nbc_requests_=nullptr;
-  nbc_requests_size_=0;
   init_buffer(count);
   this->add_f();
 }
@@ -856,20 +854,20 @@ int Request::finish_nbc_requests(MPI_Request* request, int test){
   int flag = 1;
   int ret = 0;
   if(test == 0)
-    ret = waitall((*request)->nbc_requests_size_, (*request)->nbc_requests_, MPI_STATUSES_IGNORE);
+    ret = waitall((*request)->nbc_requests_.size(), &(*request)->nbc_requests_[0], MPI_STATUSES_IGNORE);
   else{
-    ret = testall((*request)->nbc_requests_size_, (*request)->nbc_requests_, &flag, MPI_STATUSES_IGNORE);
+    ret = testall((*request)->nbc_requests_.size(), &(*request)->nbc_requests_[0], &flag, MPI_STATUSES_IGNORE);
   }
   if(ret!=MPI_SUCCESS)
     xbt_die("Failure when waiting on non blocking collective sub-requests");
   if(flag == 1){
-    XBT_DEBUG("Finishing non blocking collective request with %d sub-requests", (*request)->nbc_requests_size_);
-    for (int i = 0; i < (*request)->nbc_requests_size_; i++) {
-      if((*request)->buf_!=nullptr && (*request)->nbc_requests_[i]!=MPI_REQUEST_NULL){//reduce case
-        void * buf=(*request)->nbc_requests_[i]->buf_;
+    XBT_DEBUG("Finishing non blocking collective request with %zu sub-requests", (*request)->nbc_requests_.size());
+    for(auto& req: (*request)->nbc_requests_){
+      if((*request)->buf_!=nullptr && req!=MPI_REQUEST_NULL){//reduce case
+        void * buf=req->buf_;
         if((*request)->old_type_->flags() & DT_FLAG_DERIVED)
-          buf=(*request)->nbc_requests_[i]->old_buf_;
-        if((*request)->nbc_requests_[i]->flags_ & MPI_REQ_RECV ){
+          buf=req->old_buf_;
+        if(req->flags_ & MPI_REQ_RECV ){
           if((*request)->op_!=MPI_OP_NULL){
             int count=(*request)->size_/ (*request)->old_type_->size();
             (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->old_type_);
@@ -877,11 +875,10 @@ int Request::finish_nbc_requests(MPI_Request* request, int test){
           smpi_free_tmp_buffer(static_cast<unsigned char*>(buf));
         }
       }
-      if((*request)->nbc_requests_[i]!=MPI_REQUEST_NULL)
-        Request::unref(&((*request)->nbc_requests_[i]));
+      if(req!=MPI_REQUEST_NULL)
+        Request::unref(&req);
     }
-    delete[] (*request)->nbc_requests_;
-    (*request)->nbc_requests_size_=0;
+    (*request)->nbc_requests_.clear();
   }
   return flag;
 }
@@ -1263,22 +1260,14 @@ int Request::grequest_complete(MPI_Request request)
   return MPI_SUCCESS;
 }
 
-void Request::set_nbc_requests(MPI_Request* reqs, int size){
-  nbc_requests_size_ = size;
-  if (size > 0) {
+void Request::start_nbc_requests(std::vector<MPI_Request> reqs){
+  if (reqs.size() > 0) {
     nbc_requests_ = reqs;
-  } else {
-    delete[] reqs;
-    nbc_requests_ = nullptr;
+    Request::startall(reqs.size(), &reqs[0]);
   }
 }
 
-int Request::get_nbc_requests_size() const
-{
-  return nbc_requests_size_;
-}
-
-MPI_Request* Request::get_nbc_requests() const
+std::vector<MPI_Request> Request::get_nbc_requests() const
 {
   return nbc_requests_;
 }

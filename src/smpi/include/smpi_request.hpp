@@ -49,8 +49,7 @@ class Request : public F2C {
   int refcount_;
   MPI_Op op_;
   std::unique_ptr<smpi_mpi_generalized_request_funcs_t> generalized_funcs;
-  MPI_Request* nbc_requests_;
-  int nbc_requests_size_;
+  std::vector<MPI_Request> nbc_requests_;
   static bool match_common(MPI_Request req, MPI_Request sender, MPI_Request receiver);
 
 public:
@@ -72,10 +71,9 @@ public:
   void cancel();
   void init_buffer(int count);
   void ref();
-  void set_nbc_requests(MPI_Request* reqs, int size);
+  void start_nbc_requests(std::vector<MPI_Request> reqs);
   static int finish_nbc_requests(MPI_Request* req, int test);
-  int get_nbc_requests_size() const;
-  MPI_Request* get_nbc_requests() const;
+  std::vector<MPI_Request> get_nbc_requests() const;
   static void finish_wait(MPI_Request* request, MPI_Status* status);
   static void unref(MPI_Request* request);
   static int wait(MPI_Request* req, MPI_Status* status);

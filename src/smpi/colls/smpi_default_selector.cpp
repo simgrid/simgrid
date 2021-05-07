@@ -77,13 +77,10 @@ int allgatherv__default(const void *sendbuf, int sendcount, MPI_Datatype sendtyp
 {
   MPI_Request request;
   colls::iallgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm, &request, 0);
-  MPI_Request* requests = request->get_nbc_requests();
-  int count = request->get_nbc_requests_size();
-  Request::waitall(count, requests, MPI_STATUS_IGNORE);
-  for (int other = 0; other < count; other++) {
-    Request::unref(&requests[other]);
-  }
-  delete[] requests;
+  auto requests = request->get_nbc_requests();
+  Request::waitall(requests.size(), &requests[0], MPI_STATUS_IGNORE);
+  for(auto& req: requests)
+    Request::unref(&req);
   Request::unref(&request);
   return MPI_SUCCESS;
 }
