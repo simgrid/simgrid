@@ -914,6 +914,7 @@ set(DOC_SOURCES
   docs/source/Deploying_your_application.rst
   docs/source/Experimental_setup.rst
   docs/source/index.rst
+  docs/source/intl.rst
   docs/source/Introduction.rst
   docs/source/Installing_SimGrid.rst
   docs/source/Start_your_own_project.rst

@@ -1833,6 +1833,7 @@ include docs/source/img/smpi_simgrid_alltoall_pair_16.png
 include docs/source/img/smpi_simgrid_alltoall_ring_16.png
 include docs/source/img/zone_hierarchy.png
 include docs/source/index.rst
+include docs/source/intl.rst
 include docs/source/tuto_s4u/deployment1.xml
 include docs/source/tuto_s4u/deployment2.xml
 include docs/source/tuto_s4u/deployment3.xml
