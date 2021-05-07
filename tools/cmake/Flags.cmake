@@ -19,7 +19,7 @@ if(enable_compile_warnings)
     set(warnCFLAGS "${warnCFLAGS} -Wformat-signedness")
   endif()
   if(CMAKE_COMPILER_IS_GNUCC)
-    set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
+    set(warnCFLAGS "${warnCFLAGS} -Wsuggest-override -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
   endif()
   if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     # ignore remarks:
