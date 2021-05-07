@@ -16,9 +16,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 namespace simgrid {
 namespace kernel {
 namespace routing {
-ClusterZone::ClusterZone(const std::string& name) : NetZoneImpl(name) {}
 
-void ClusterZone::set_loopback()
+void ClusterBase::set_loopback()
 {
   if (not has_loopback_) {
     num_links_per_node_++;
@@ -26,7 +25,7 @@ void ClusterZone::set_loopback()
   }
 }
 
-void ClusterZone::set_limiter()
+void ClusterBase::set_limiter()
 {
   if (not has_limiter_) {
     num_links_per_node_++;
@@ -34,143 +33,26 @@ void ClusterZone::set_limiter()
   }
 }
 
-void ClusterZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
+void ClusterBase::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
 {
   link_sharing_policy_ = sharing_policy;
   link_bw_             = bw;
   link_lat_            = lat;
 }
 
-void ClusterZone::add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link)
+void ClusterBase::add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link)
 {
   private_links_.insert({position, link});
 }
 
-void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
+void ClusterBase::set_gateway(unsigned int position, NetPoint* gateway)
 {
-  XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
-  xbt_assert(not private_links_.empty(),
-             "Cluster routing: no links attached to the source node - did you use host_link tag?");
-
-  if ((src->id() == dst->id()) && has_loopback_) {
-    if (src->is_router()) {
-      XBT_WARN("Routing from a cluster private router to itself is meaningless");
-    } else {
-      std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos(src->id()));
-      route->link_list_.push_back(info.first);
-      if (lat)
-        *lat += info.first->get_latency();
-    }
-    return;
-  }
-
-  if (not src->is_router()) { // No private link for the private router
-    if (has_limiter_) {       // limiter for sender
-      std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
-      route->link_list_.push_back(info.first);
-    }
-
-    std::pair<resource::LinkImpl*, resource::LinkImpl*> info =
-        private_links_.at(node_pos_with_loopback_limiter(src->id()));
-    if (info.first) { // link up
-      route->link_list_.push_back(info.first);
-      if (lat)
-        *lat += info.first->get_latency();
-    }
-  }
-
-  if (backbone_) {
-    route->link_list_.push_back(backbone_);
-    if (lat)
-      *lat += backbone_->get_latency();
-  }
-
-  if (not dst->is_router()) { // No specific link for router
-    std::pair<resource::LinkImpl*, resource::LinkImpl*> info =
-        private_links_.at(node_pos_with_loopback_limiter(dst->id()));
-
-    if (info.second) { // link down
-      route->link_list_.push_back(info.second);
-      if (lat)
-        *lat += info.second->get_latency();
-    }
-    if (has_limiter_) { // limiter for receiver
-      info = private_links_.at(node_pos_with_loopback(dst->id()));
-      route->link_list_.push_back(info.first);
-    }
-  }
-}
-
-void ClusterZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
-                            std::map<std::string, xbt_edge_t, std::less<>>* edges)
-{
-  xbt_assert(router_,
-             "Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
-
-  /* create the router */
-  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->get_cname(), nodes);
-
-  xbt_node_t backboneNode = nullptr;
-  if (backbone_) {
-    backboneNode = new_xbt_graph_node(graph, backbone_->get_cname(), nodes);
-    new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
-  }
-
-  for (auto const& src : get_vertices()) {
-    if (not src->is_router()) {
-      xbt_node_t previous = new_xbt_graph_node(graph, src->get_cname(), nodes);
-
-      std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(src->id());
-
-      if (info.first) { // link up
-        xbt_node_t current = new_xbt_graph_node(graph, info.first->get_cname(), nodes);
-        new_xbt_graph_edge(graph, previous, current, edges);
-
-        if (backbone_) {
-          new_xbt_graph_edge(graph, current, backboneNode, edges);
-        } else {
-          new_xbt_graph_edge(graph, current, routerNode, edges);
-        }
-      }
-
-      if (info.second) { // link down
-        xbt_node_t current = new_xbt_graph_node(graph, info.second->get_cname(), nodes);
-        new_xbt_graph_edge(graph, previous, current, edges);
-
-        if (backbone_) {
-          new_xbt_graph_edge(graph, current, backboneNode, edges);
-        } else {
-          new_xbt_graph_edge(graph, current, routerNode, edges);
-        }
-      }
-    }
-  }
-}
-
-void ClusterZone::create_links(int id, int rank)
-{
-  std::string link_id = get_name() + "_link_" + std::to_string(id);
-
-  const s4u::Link* linkUp;
-  const s4u::Link* linkDown;
-  if (link_sharing_policy_ == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkUp   = create_link(link_id + "_UP", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
-    linkDown = create_link(link_id + "_DOWN", std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
-  } else {
-    linkUp   = create_link(link_id, std::vector<double>{link_bw_})->set_latency(link_lat_)->seal();
-    linkDown = linkUp;
-  }
-  private_links_.insert({node_pos_with_loopback_limiter(rank), {linkUp->get_impl(), linkDown->get_impl()}});
-}
-
-void ClusterZone::set_gateway(unsigned int position, NetPoint* gateway)
-{
-  xbt_assert(not gateway || not gateway->is_netzone(), "ClusterZone: gateway cannot be another netzone %s",
+  xbt_assert(not gateway || not gateway->is_netzone(), "ClusterBase: gateway cannot be another netzone %s",
              gateway->get_cname());
   gateways_[position] = gateway;
 }
 
-NetPoint* ClusterZone::get_gateway(unsigned int position)
+NetPoint* ClusterBase::get_gateway(unsigned int position)
 {
   NetPoint* res = nullptr;
   auto it       = gateways_.find(position);
@@ -180,7 +62,7 @@ NetPoint* ClusterZone::get_gateway(unsigned int position)
   return res;
 }
 
-void ClusterZone::fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
+void ClusterBase::fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
                                     const s4u::ClusterCallbacks& set_callbacks, NetPoint** node_netpoint,
                                     s4u::Link** lb_link, s4u::Link** limiter_link)
 {

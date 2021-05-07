@@ -18,7 +18,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-DragonflyZone::DragonflyZone(const std::string& name) : ClusterZone(name) {}
+DragonflyZone::DragonflyZone(const std::string& name) : ClusterBase(name) {}
 
 DragonflyZone::Coords DragonflyZone::rankId_to_coords(int rankId) const
 {
@@ -44,7 +44,7 @@ void DragonflyZone::rankId_to_coords(int rankId, unsigned int coords[4]) const /
 
 void DragonflyZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
 {
-  ClusterZone::set_link_characteristics(bw, lat, sharing_policy);
+  ClusterBase::set_link_characteristics(bw, lat, sharing_policy);
   if (sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX)
     num_links_per_link_ = 2;
 }

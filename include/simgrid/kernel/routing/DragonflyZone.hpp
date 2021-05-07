@@ -62,7 +62,7 @@ public:
  *    is also not realistic, as blue level can use more links than a single
  *    Aries can handle, thus it should use several routers.
  */
-class XBT_PUBLIC DragonflyZone : public ClusterZone {
+class XBT_PUBLIC DragonflyZone : public ClusterBase {
 public:
   struct Coords {
     unsigned group;

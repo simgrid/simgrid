@@ -6,7 +6,7 @@
 #ifndef SIMGRID_KERNEL_ROUTING_STARZONE_HPP_
 #define SIMGRID_KERNEL_ROUTING_STARZONE_HPP_
 
-#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/kernel/routing/ClusterZone.hpp>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -60,8 +60,7 @@ namespace routing {
  *  In this case, a communication from A to B goes through the links: <tt> l0, backbone, l1. </tt>
  *  Note that the backbone only appears once in the link list.
  */
-
-class StarZone : public NetZoneImpl {
+class StarZone : public ClusterZone { // implements the old ClusterZone
 public:
   explicit StarZone(const std::string& name);
 

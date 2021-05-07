@@ -102,7 +102,7 @@ public:
  *
  * Routing is made using a destination-mod-k scheme.
  */
-class XBT_PRIVATE FatTreeZone : public ClusterZone {
+class XBT_PRIVATE FatTreeZone : public ClusterBase {
   /** @brief Generate the fat tree
    *
    * Once all processing nodes have been added, this will make sure the fat
@@ -131,7 +131,7 @@ class XBT_PRIVATE FatTreeZone : public ClusterZone {
   void do_seal() override;
 
 public:
-  using ClusterZone::ClusterZone;
+  explicit FatTreeZone(const std::string& name) : ClusterBase(name){};
   FatTreeZone(const FatTreeZone&) = delete;
   FatTreeZone& operator=(const FatTreeZone&) = delete;
   void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;

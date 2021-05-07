@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_star, surf, "Routing part of surf");
 namespace simgrid {
 namespace kernel {
 namespace routing {
-StarZone::StarZone(const std::string& name) : NetZoneImpl(name) {}
+StarZone::StarZone(const std::string& name) : ClusterZone(name) {}
 
 void StarZone::add_links_to_route(const std::vector<resource::LinkImpl*>& links, Route* route, double* latency,
                                   std::unordered_set<resource::LinkImpl*>& added_links) const

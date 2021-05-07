@@ -19,11 +19,11 @@ namespace routing {
  *
  */
 
-class XBT_PRIVATE TorusZone : public ClusterZone {
+class XBT_PRIVATE TorusZone : public ClusterBase {
   std::vector<unsigned int> dimensions_;
 
 public:
-  using ClusterZone::ClusterZone;
+  explicit TorusZone(const std::string& name) : ClusterBase(name){};
   void create_torus_links(int id, int rank, unsigned int position);
   void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
   void set_topology(const std::vector<unsigned int>& dimensions);
