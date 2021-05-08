@@ -48,11 +48,9 @@ static void print_status(const std::vector<simgrid::s4u::Host*>& hosts)
  */
 static void life_cycle_manager()
 {
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(simgrid::s4u::this_actor::get_host());
-
+  simgrid::s4u::Host* vm = simgrid::s4u::this_actor::get_host();
   for (int i = 0; i < vm->get_core_count(); i++)
     simgrid::s4u::this_actor::exec_async(std::numeric_limits<double>::max());
-
   simgrid::s4u::this_actor::sleep_for(50);
   XBT_INFO("I'm done sleeping, time to kill myself");
   vm->destroy();
@@ -68,7 +66,7 @@ static void life_cycle_manager()
 static void master(const std::vector<simgrid::s4u::Host*>& hosts)
 {
   for (int i = 1; i <= 2; i++) {
-    simgrid::s4u::VirtualMachine* vm = new simgrid::s4u::VirtualMachine("test_vm", hosts.at(i), 4);
+    auto* vm = new simgrid::s4u::VirtualMachine("test_vm", hosts.at(i), 4);
     vm->start();
     simgrid::s4u::Actor::create("life_cycle_manager-" + std::to_string(i), vm, life_cycle_manager);
 
