@@ -1261,7 +1261,7 @@ int Request::grequest_complete(MPI_Request request)
 }
 
 void Request::start_nbc_requests(std::vector<MPI_Request> reqs){
-  if (reqs.size() > 0) {
+  if (not reqs.empty()) {
     nbc_requests_ = reqs;
     Request::startall(reqs.size(), reqs.data());
   }
