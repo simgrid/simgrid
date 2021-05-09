@@ -31,16 +31,16 @@ public:
   CpuCas01Model(const CpuCas01Model&) = delete;
   CpuCas01Model& operator=(const CpuCas01Model&) = delete;
 
-  Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
+  CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
 };
 
 /************
  * Resource *
  ************/
 
-class CpuCas01 : public Cpu {
+class CpuCas01 : public CpuImpl {
 public:
-  using Cpu::Cpu;
+  using CpuImpl::CpuImpl;
   CpuCas01(const CpuCas01&) = delete;
   CpuCas01& operator=(const CpuCas01&) = delete;
   void apply_event(profile::Event* event, double value) override;

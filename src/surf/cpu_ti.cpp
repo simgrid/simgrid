@@ -274,7 +274,7 @@ void CpuTiModel::create_pm_models()
   simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model_pm);
 }
 
-Cpu* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
+CpuImpl* CpuTiModel::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   return (new CpuTi(host, speed_per_pstate))->set_model(this);
 }
@@ -313,7 +313,7 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(s4u::Host* host, const std::vector<double>& speed_per_pstate) : Cpu(host, speed_per_pstate)
+CpuTi::CpuTi(s4u::Host* host, const std::vector<double>& speed_per_pstate) : CpuImpl(host, speed_per_pstate)
 {
   speed_.peak = speed_per_pstate.front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
@@ -327,7 +327,7 @@ CpuTi::~CpuTi()
   delete speed_integrated_trace_;
 }
 
-Cpu* CpuTi::set_speed_profile(kernel::profile::Profile* profile)
+CpuImpl* CpuTi::set_speed_profile(kernel::profile::Profile* profile)
 {
   delete speed_integrated_trace_;
   speed_integrated_trace_ = new CpuTiTmgr(profile, speed_.scale);
@@ -454,7 +454,7 @@ bool CpuTi::is_used() const
 double CpuTi::get_speed_ratio()
 {
   speed_.scale = speed_integrated_trace_->get_power_scale(surf_get_clock());
-  return Cpu::get_speed_ratio();
+  return CpuImpl::get_speed_ratio();
 }
 
 /** @brief Update the remaining amount of actions */

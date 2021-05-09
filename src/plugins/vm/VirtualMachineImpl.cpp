@@ -156,7 +156,7 @@ double VMModel::next_occurring_event(double now)
     if (ws_vm->get_state() == s4u::VirtualMachine::State::SUSPENDED) // Ignore suspended VMs
       continue;
 
-    const kernel::resource::Cpu* cpu = ws_vm->pimpl_cpu;
+    const kernel::resource::CpuImpl* cpu = ws_vm->pimpl_cpu;
 
     // solved_value below is X1 in comment above: what this VM got in the sharing on the PM
     double solved_value = ws_vm->get_vm_impl()->get_action()->get_variable()->get_value();

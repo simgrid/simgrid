@@ -49,7 +49,7 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
 /************
  * Resource *
  ************/
-Cpu::Cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
+CpuImpl::CpuImpl(s4u::Host* host, const std::vector<double>& speed_per_pstate)
     : Resource_T(host->get_cname()), piface_(host), speed_per_pstate_(speed_per_pstate)
 {
   speed_.scale    = 1;
@@ -57,7 +57,7 @@ Cpu::Cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
   host->pimpl_cpu = this;
 }
 
-void Cpu::reset_vcpu(Cpu* that)
+void CpuImpl::reset_vcpu(CpuImpl* that)
 {
   this->pstate_ = that->pstate_;
   this->speed_  = that->speed_;
@@ -65,7 +65,7 @@ void Cpu::reset_vcpu(Cpu* that)
   this->speed_per_pstate_.assign(that->speed_per_pstate_.begin(), that->speed_per_pstate_.end());
 }
 
-Cpu* Cpu::set_pstate(int pstate_index)
+CpuImpl* CpuImpl::set_pstate(int pstate_index)
 {
   xbt_assert(pstate_index <= static_cast<int>(speed_per_pstate_.size()),
              "Invalid parameters for CPU %s (pstate %d > length of pstates %d). Please fix your platform file, or your "
@@ -80,7 +80,7 @@ Cpu* Cpu::set_pstate(int pstate_index)
   return this;
 }
 
-Cpu* Cpu::set_pstate_speed(const std::vector<double>& speed_per_state)
+CpuImpl* CpuImpl::set_pstate_speed(const std::vector<double>& speed_per_state)
 {
   xbt_assert(speed_per_state.size() > 0, "CPU %s: processor speed vector cannot be empty", get_cname());
   xbt_assert(not is_sealed(), "CPU %s: processor speed cannot be changed once CPU has been sealed", get_cname());
@@ -89,7 +89,7 @@ Cpu* Cpu::set_pstate_speed(const std::vector<double>& speed_per_state)
   return this;
 }
 
-double Cpu::get_pstate_peak_speed(int pstate_index) const
+double CpuImpl::get_pstate_peak_speed(int pstate_index) const
 {
   xbt_assert((pstate_index <= static_cast<int>(speed_per_pstate_.size())),
              "Invalid parameters (pstate index out of bounds)");
@@ -97,12 +97,12 @@ double Cpu::get_pstate_peak_speed(int pstate_index) const
   return speed_per_pstate_[pstate_index];
 }
 
-void Cpu::on_speed_change()
+void CpuImpl::on_speed_change()
 {
   s4u::Host::on_speed_change(*piface_);
 }
 
-Cpu* Cpu::set_core_count(int core_count)
+CpuImpl* CpuImpl::set_core_count(int core_count)
 {
   xbt_assert(not is_sealed(), "Core count cannot be changed once CPU has been sealed");
   xbt_assert(core_count > 0, "Host %s must have at least one core, not 0.", piface_->get_cname());
@@ -113,12 +113,12 @@ Cpu* Cpu::set_core_count(int core_count)
   return this;
 }
 
-int Cpu::get_core_count()
+int CpuImpl::get_core_count()
 {
   return core_count_;
 }
 
-Cpu* Cpu::set_speed_profile(kernel::profile::Profile* profile)
+CpuImpl* CpuImpl::set_speed_profile(kernel::profile::Profile* profile)
 {
   if (profile) {
     xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", piface_->get_cname());
@@ -127,7 +127,7 @@ Cpu* Cpu::set_speed_profile(kernel::profile::Profile* profile)
   return this;
 }
 
-void Cpu::seal()
+void CpuImpl::seal()
 {
   if (is_sealed()) {
     return;
@@ -186,16 +186,16 @@ void CpuAction::set_state(Action::State state)
 }
 
 /** @brief returns a list of all CPUs that this action is using */
-std::list<Cpu*> CpuAction::cpus() const
+std::list<CpuImpl*> CpuAction::cpus() const
 {
-  std::list<Cpu*> retlist;
+  std::list<CpuImpl*> retlist;
   int llen = get_variable()->get_number_of_constraint();
 
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
     Resource* resource = get_variable()->get_constraint(i)->get_id();
-    auto* cpu          = dynamic_cast<Cpu*>(resource);
+    auto* cpu          = dynamic_cast<CpuImpl*>(resource);
     if (cpu != nullptr)
       retlist.push_back(cpu);
   }

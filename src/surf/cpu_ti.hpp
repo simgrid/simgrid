@@ -6,9 +6,8 @@
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
 
+#include "cpu_interface.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/surf/cpu_interface.hpp"
-
 #include <boost/intrusive/list.hpp>
 #include <memory>
 
@@ -97,14 +96,14 @@ using ActionTiList = boost::intrusive::list<CpuTiAction, ActionTiListOptions>;
 /************
  * Resource *
  ************/
-class CpuTi : public Cpu {
+class CpuTi : public CpuImpl {
 public:
   CpuTi(s4u::Host* host, const std::vector<double>& speed_per_pstate);
   CpuTi(const CpuTi&)            = delete;
   CpuTi& operator&(const CpuTi&) = delete;
   ~CpuTi() override;
 
-  Cpu* set_speed_profile(profile::Profile* profile) override;
+  CpuImpl* set_speed_profile(profile::Profile* profile) override;
 
   void apply_event(profile::Event* event, double value) override;
   void update_actions_finish_time(double now);
@@ -144,7 +143,7 @@ public:
   using CpuModel::CpuModel;
   CpuTiModel(const CpuTiModel&) = delete;
   CpuTiModel& operator=(const CpuTiModel&) = delete;
-  Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
+  CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 

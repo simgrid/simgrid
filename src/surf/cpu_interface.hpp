@@ -38,7 +38,7 @@ public:
    *                         This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) = 0;
+  virtual CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) = 0;
 
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
@@ -48,7 +48,7 @@ public:
  * Resource *
  ************/
 
-class XBT_PUBLIC Cpu : public Resource_T<Cpu> {
+class XBT_PUBLIC CpuImpl : public Resource_T<CpuImpl> {
   friend vm::VirtualMachineImpl; // Resets the VCPU
 
   s4u::Host* piface_;
@@ -64,15 +64,15 @@ public:
    * @param host The host in which this Cpu should be plugged
    * @param speed_per_pstate Processor speed (in flop per second) for each pstate
    */
-  Cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate);
+  CpuImpl(s4u::Host* host, const std::vector<double>& speed_per_pstate);
 
-  Cpu(const Cpu&) = delete;
-  Cpu& operator=(const Cpu&) = delete;
+  CpuImpl(const CpuImpl&) = delete;
+  CpuImpl& operator=(const CpuImpl&) = delete;
 
   /** @brief Public interface */
   s4u::Host* get_iface() { return piface_; }
 
-  Cpu* set_core_count(int core_count);
+  CpuImpl* set_core_count(int core_count);
   virtual int get_core_count();
 
   void seal() override;
@@ -98,19 +98,19 @@ public:
   virtual int get_pstate_count() const { return speed_per_pstate_.size(); }
 
   virtual int get_pstate() const { return pstate_; }
-  virtual Cpu* set_pstate(int pstate_index);
+  virtual CpuImpl* set_pstate(int pstate_index);
 
   /*< @brief Setup the profile file with availability events (peak speed changes due to external load).
    * Profile must contain relative values (ratio between 0 and 1)
    */
-  virtual Cpu* set_speed_profile(profile::Profile* profile);
+  virtual CpuImpl* set_speed_profile(profile::Profile* profile);
 
   /**
    * @brief Set the CPU's speed
    *
    * @param speed_per_state list of powers for this processor (default power is at index 0)
    */
-  Cpu* set_pstate_speed(const std::vector<double>& speed_per_state);
+  CpuImpl* set_pstate_speed(const std::vector<double>& speed_per_state);
 
   /**
    * @brief Execute some quantity of computation
@@ -146,7 +146,7 @@ protected:
    * Used to reset a VCPU when its VM migrates to another host, so it only resets the fields that should be in this
    *case.
    **/
-  virtual void reset_vcpu(Cpu* that);
+  virtual void reset_vcpu(CpuImpl* that);
 
   Metric speed_                  = {1.0, 0, nullptr};
 };
@@ -170,7 +170,7 @@ public:
   void set_state(Action::State state) override;
 
   void update_remains_lazy(double now) override;
-  std::list<Cpu*> cpus() const;
+  std::list<CpuImpl*> cpus() const;
 
   void suspend() override;
   void resume() override;

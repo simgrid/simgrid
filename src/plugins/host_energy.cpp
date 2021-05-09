@@ -407,7 +407,7 @@ static void on_creation(simgrid::s4u::Host& host)
 static void on_action_state_change(simgrid::kernel::resource::CpuAction const& action,
                                    simgrid::kernel::resource::Action::State /*previous*/)
 {
-  for (simgrid::kernel::resource::Cpu* const& cpu : action.cpus()) {
+  for (simgrid::kernel::resource::CpuImpl* const& cpu : action.cpus()) {
     simgrid::s4u::Host* host = cpu->get_iface();
     if (host != nullptr) {
       // If it's a VM, take the corresponding PM

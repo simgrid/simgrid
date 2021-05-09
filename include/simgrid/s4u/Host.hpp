@@ -221,7 +221,7 @@ private:
 public:
 #ifndef DOXYGEN
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
-  kernel::resource::Cpu* pimpl_cpu = nullptr;
+  kernel::resource::CpuImpl* pimpl_cpu = nullptr;
 #endif
 };
 } // namespace s4u

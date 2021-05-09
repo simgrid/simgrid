@@ -3,12 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "cpu_cas01.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Engine.hpp"
+
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
+#include "src/surf/cpu_cas01.hpp"
 #include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
@@ -69,7 +70,7 @@ CpuCas01Model::CpuCas01Model(const std::string& name) : CpuModel(name)
   set_maxmin_system(new lmm::System(select));
 }
 
-Cpu* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
+CpuImpl* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   return (new CpuCas01(host, speed_per_pstate))->set_model(this);
 }
@@ -96,7 +97,7 @@ void CpuCas01::on_speed_change()
                                                             action->requested_core() * speed_.scale * speed_.peak);
   }
 
-  Cpu::on_speed_change();
+  CpuImpl::on_speed_change();
 }
 
 void CpuCas01::apply_event(profile::Event* event, double value)

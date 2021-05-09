@@ -156,7 +156,7 @@ class System;
 }
 namespace resource {
 class Action;
-class Cpu;
+class CpuImpl;
 class Model;
 class Resource;
 class CpuModel;

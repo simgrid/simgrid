@@ -57,7 +57,7 @@ public:
        * method in surf_presolve */
   };
 
-  kernel::resource::Cpu* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
+  kernel::resource::CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
   HostL07Model* hostModel_;
 };
 
@@ -84,9 +84,9 @@ public:
  * Resource *
  ************/
 
-class CpuL07 : public kernel::resource::Cpu {
+class CpuL07 : public kernel::resource::CpuImpl {
 public:
-  using kernel::resource::Cpu::Cpu;
+  using kernel::resource::CpuImpl::CpuImpl;
   CpuL07(const CpuL07&) = delete;
   CpuL07& operator=(const CpuL07&) = delete;
 

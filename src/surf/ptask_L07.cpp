@@ -234,7 +234,7 @@ kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host
   return res;
 }
 
-kernel::resource::Cpu* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
+kernel::resource::CpuImpl* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   return (new CpuL07(host, speed_per_pstate))->set_model(this);
 }
@@ -295,7 +295,7 @@ void CpuL07::on_speed_change()
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
   }
 
-  Cpu::on_speed_change();
+  CpuImpl::on_speed_change();
 }
 
 LinkL07::LinkL07(const std::string& name, double bandwidth, kernel::lmm::System* system) : LinkImpl(name)
