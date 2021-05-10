@@ -99,26 +99,28 @@ int PMPI_Group_difference(MPI_Group group1, MPI_Group group2, MPI_Group * newgro
   return group1->difference(group2,newgroup);
 }
 
+#define CHECK_GROUP_RANKS(group, n, ranks)                                                                             \
+  for (int i = 0; i < (n); i++) {                                                                                      \
+    if ((ranks)[i] < 0 || (ranks)[i] >= (group)->size())                                                               \
+      return MPI_ERR_RANK;                                                                                             \
+    for (int j = i + 1; j < (n); j++) {                                                                                \
+      if ((ranks)[i] == (ranks)[j])                                                                                    \
+        return MPI_ERR_RANK;                                                                                           \
+    }                                                                                                                  \
+  }                                                                                                                    \
+  if ((n) > (group)->size()) {                                                                                         \
+    XBT_WARN("%s, param 2 > group size", __func__);                                                                    \
+    return MPI_ERR_ARG;                                                                                                \
+  }
+
 int PMPI_Group_incl(MPI_Group group, int n, const int *ranks, MPI_Group * newgroup)
 {
   CHECK_GROUP(1, group)
   CHECK_NEGATIVE(2, MPI_ERR_ARG, n)
   CHECK_NULL(3, MPI_ERR_ARG, ranks)
   CHECK_NULL(4, MPI_ERR_ARG, newgroup)
-  for(int i = 0; i < n; i++){
-    if (ranks[i] < 0 || ranks[i] >= group->size())
-      return MPI_ERR_RANK;
-    for(int j = i+1; j < n; j++){
-      if(ranks[i] == ranks[j])
-        return MPI_ERR_RANK;
-    }
-  }
-  if (n > group->size()){
-    XBT_WARN("MPI_Group_excl, param 2 > group size");
-    return MPI_ERR_ARG;
-  } else {
-    return group->incl(n, ranks, newgroup);
-  }
+  CHECK_GROUP_RANKS(group, n, ranks)
+  return group->incl(n, ranks, newgroup);
 }
 
 int PMPI_Group_excl(MPI_Group group, int n, const int *ranks, MPI_Group * newgroup)
@@ -127,18 +129,8 @@ int PMPI_Group_excl(MPI_Group group, int n, const int *ranks, MPI_Group * newgro
   CHECK_NEGATIVE(2, MPI_ERR_ARG, n)
   CHECK_NULL(3, MPI_ERR_ARG, ranks)
   CHECK_NULL(4, MPI_ERR_ARG, newgroup)
-  for(int i = 0; i < n; i++){
-    if (ranks[i] < 0 || ranks[i] >= group->size())
-      return MPI_ERR_RANK;
-    for(int j = i+1; j < n; j++){
-      if(ranks[i] == ranks[j])
-        return MPI_ERR_RANK;
-    }
-  }
-  if (n > group->size()){
-    XBT_WARN("MPI_Group_excl, param 2 > group size");
-    return MPI_ERR_ARG;
-  } else if (n == 0) {
+  CHECK_GROUP_RANKS(group, n, ranks)
+  if (n == 0) {
     *newgroup = group;
     if (group != MPI_GROUP_EMPTY &&
         group != MPI_COMM_WORLD->group() &&
@@ -153,28 +145,34 @@ int PMPI_Group_excl(MPI_Group group, int n, const int *ranks, MPI_Group * newgro
   }
 }
 
+#undef CHECK_GROUP_RANKS
+
+#define CHECK_GROUP_RANGES(group, n, ranges)                                                                           \
+  for (int i = 0; i < (n); i++) {                                                                                      \
+    if ((ranges)[i][0] < 0 || (ranges)[i][0] >= (group)->size() || (ranges)[i][1] < 0 ||                               \
+        (ranges)[i][1] >= (group)->size()) {                                                                           \
+      return MPI_ERR_RANK;                                                                                             \
+    }                                                                                                                  \
+    if (((ranges)[i][0] < (ranges)[i][1] && (ranges)[i][2] < 0) ||                                                     \
+        ((ranges)[i][0] > (ranges)[i][1] && (ranges)[i][2] > 0)) {                                                     \
+      return MPI_ERR_ARG;                                                                                              \
+    }                                                                                                                  \
+    if ((ranges)[i][2] == 0)                                                                                           \
+      return MPI_ERR_ARG;                                                                                              \
+  }                                                                                                                    \
+  if ((n) > (group)->size()) {                                                                                         \
+    XBT_WARN("%s, param 2 > group size", __func__);                                                                    \
+    return MPI_ERR_ARG;                                                                                                \
+  }
+
 int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3], MPI_Group * newgroup)
 {
   CHECK_GROUP(1, group)
   CHECK_NEGATIVE(2, MPI_ERR_ARG, n)
   CHECK_NULL(3, MPI_ERR_ARG, ranges)
   CHECK_NULL(4, MPI_ERR_ARG, newgroup)
-  for(int i = 0; i < n; i++){
-    if (ranges[i][0] < 0 || ranges[i][0] >= group->size() ||
-        ranges[i][1] < 0 || ranges[i][1] >= group->size()){
-      return MPI_ERR_RANK;
-    }
-    if ((ranges[i][0] < ranges[i][1] && ranges[i][2] < 0) ||
-        (ranges[i][0] > ranges[i][1] && ranges[i][2] > 0)){
-      return MPI_ERR_ARG;
-    }
-    if (ranges[i][2] == 0)
-      return MPI_ERR_ARG;
-  }
-  if (n > group->size()){
-    XBT_WARN("MPI_Group_range_incl, param 2 > group size");
-    return MPI_ERR_ARG;
-  } else if (n == 0) {
+  CHECK_GROUP_RANGES(group, n, ranges)
+  if (n == 0) {
     *newgroup = MPI_GROUP_EMPTY;
     return MPI_SUCCESS;
   } else {
@@ -188,18 +186,7 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group * n
   CHECK_NEGATIVE(2, MPI_ERR_ARG, n)
   CHECK_NULL(3, MPI_ERR_ARG, ranges)
   CHECK_NULL(4, MPI_ERR_ARG, newgroup)
-  for(int i = 0; i < n; i++){
-    if (ranges[i][0] < 0 || ranges[i][0] >= group->size() ||
-        ranges[i][1] < 0 || ranges[i][1] >= group->size()){
-      return MPI_ERR_RANK;
-    }
-    if ((ranges[i][0] < ranges[i][1] && ranges[i][2] < 0) ||
-        (ranges[i][0] > ranges[i][1] && ranges[i][2] > 0)){
-      return MPI_ERR_ARG;
-    }
-    if (ranges[i][2] == 0)
-      return MPI_ERR_ARG;
-  }
+  CHECK_GROUP_RANGES(group, n, ranges)
   if (n == 0) {
     *newgroup = group;
     if (group != MPI_GROUP_EMPTY &&
@@ -211,6 +198,8 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group * n
     return group->range_excl(n,ranges,newgroup);
   }
 }
+
+#undef CHECK_GROUP_RANGES
 
 MPI_Group PMPI_Group_f2c(MPI_Fint group){
   if(group==-1)
