@@ -25,6 +25,7 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
 
+#include <algorithm>
 #include <string>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
@@ -323,8 +324,8 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
 
     /* adding routes */
     std::vector<simgrid::s4u::Link*> links_up{limiter, link_up, backbone};
-    links_up.erase(std::remove(links_up.begin(), links_up.end(), nullptr), links_up.end());
     std::vector<simgrid::s4u::Link*> links_down{backbone, link_down, limiter};
+    links_up.erase(std::remove(links_up.begin(), links_up.end(), nullptr), links_up.end());
     links_down.erase(std::remove(links_down.begin(), links_down.end(), nullptr), links_down.end());
 
     zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, links_up, false);
