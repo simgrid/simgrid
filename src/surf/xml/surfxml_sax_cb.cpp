@@ -708,7 +708,7 @@ void STag_surfxml_zone()
   if (strcasecmp(A_surfxml_zone_routing, "Cluster") == 0) {
     zone_cluster.host_links.clear();
     zone_cluster.cabinets.clear();
-    zone_cluster.backbone.release();
+    zone_cluster.backbone.reset();
   }
 }
 
