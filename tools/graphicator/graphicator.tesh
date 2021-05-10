@@ -7,12 +7,13 @@ $ cat test.dot
 >   graph [overlap=scale]
 >   node [shape=box, style=filled]
 >   node [width=.3, height=.3, style=filled, color=skyblue]
->
+> 
 >   "bob0.hamburger.edu";
 >   "bob2.hamburger.edu";
 >   "bob3.hamburger.edu";
 >   "bob4.hamburger.edu";
 >   "bob6.hamburger.edu";
+>   "bob_cluster";
 >   "bob_cluster_backbone";
 >   "bob_cluster_link_0_DOWN";
 >   "bob_cluster_link_0_UP";
@@ -35,7 +36,6 @@ $ cat test.dot
 >   "bob_cluster_link_4_UP" -- "bob_cluster_backbone";
 >   "bob_cluster_link_6_DOWN" -- "bob_cluster_backbone";
 >   "bob_cluster_link_6_UP" -- "bob_cluster_backbone";
->   "bobbob_cluster_router.hamburger.edu" -- "bob_cluster_backbone";
 >   "bob0.hamburger.edu" -- "bob_cluster_link_0_DOWN";
 >   "bob0.hamburger.edu" -- "bob_cluster_link_0_UP";
 >   "bob2.hamburger.edu" -- "bob_cluster_link_2_DOWN";
@@ -46,6 +46,8 @@ $ cat test.dot
 >   "bob4.hamburger.edu" -- "bob_cluster_link_4_UP";
 >   "bob6.hamburger.edu" -- "bob_cluster_link_6_DOWN";
 >   "bob6.hamburger.edu" -- "bob_cluster_link_6_UP";
+>   "bob_cluster_backbone" -- "bob_cluster";
+>   "bobbob_cluster_router.hamburger.edu" -- "bob_cluster";
 > }
 
 $ rm -f test.dot

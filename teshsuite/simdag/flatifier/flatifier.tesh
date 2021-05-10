@@ -113,7 +113,7 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e
 >   <link_ctn id="bob_cluster_link_6_UP"/><link_ctn id="bob_cluster_backbone"/>
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="bob_cluster_backbone"/>
+>   
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bob0.hamburger.edu">
 >   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
@@ -454,7 +454,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/>
 >   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
->   <link_ctn id="alice_cluster_backbone"/>
+>   
 >   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
 >   <link_ctn id="backbone"/>
@@ -475,7 +475,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%
 >   <link_ctn id="backbone"/>
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="bob_cluster_backbone"/>
+>   
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="alice0.crepe.fr">
 >   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>

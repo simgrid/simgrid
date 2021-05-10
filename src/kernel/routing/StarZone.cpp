@@ -82,10 +82,10 @@ void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_n
     previous = star_node;
     for (auto const* link : routes_[src->id()].links_down) {
       xbt_node_t current = new_xbt_graph_node(graph, link->get_cname(), nodes);
-      new_xbt_graph_edge(graph, previous, current, edges);
+      new_xbt_graph_edge(graph, current, previous, edges);
       previous = current;
     }
-    new_xbt_graph_edge(graph, previous, src_node, edges);
+    new_xbt_graph_edge(graph, src_node, previous, edges);
   }
 }
 
