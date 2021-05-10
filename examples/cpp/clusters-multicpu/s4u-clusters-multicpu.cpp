@@ -118,6 +118,8 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
     /* link DOWN, connection from outer to CPU */
     host_zone->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{link_down}, false);
   }
+  /* seal newly created netzone */
+  host_zone->seal();
   return std::make_pair(host_zone->get_netpoint(), gateway->get_netpoint());
 }
 
