@@ -339,6 +339,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   auto* router = zone->create_router(cluster->router_id);
   zone->add_route(router, nullptr, nullptr, nullptr, {});
 
+  zone->seal();
   simgrid::kernel::routing::on_cluster_creation(*cluster);
 }
 

@@ -232,7 +232,10 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                              simgrid::kernel::routing::NetPoint* /*gw_dst*/,
                              std::vector<simgrid::kernel::resource::LinkImpl*> const& link_list)
 {
-  xbt_assert(src && dst, "NS-3: add_route, invalid src or destination");
+  /* ignoring routes from StarZone, not supported */
+  if (not src || not dst)
+    return;
+
   if (link_list.size() == 1) {
     auto const* link = static_cast<simgrid::kernel::resource::LinkNS3*>(link_list[0]);
 
