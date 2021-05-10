@@ -38,6 +38,9 @@ xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
 } // namespace kernel
 } // namespace simgrid
 
+simgrid::kernel::routing::ClusterZoneCreationArgs
+    zone_cluster; /* temporary store data for irregular clusters, created with <zone routing="Cluster"> */
+
 /** The current NetZone in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
 static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
@@ -374,9 +377,9 @@ static void sg_platf_cluster_set_hostlink(simgrid::kernel::routing::StarZone* zo
 }
 
 /** @brief Add a link connecting a host to the rest of its StarZone */
-static void sg_platf_new_hostlink(simgrid::kernel::routing::StarZone* zone,
-                                  const simgrid::kernel::routing::HostLinkCreationArgs* hostlink,
-                                  simgrid::kernel::resource::LinkImpl* backbone)
+static void sg_platf_build_hostlink(simgrid::kernel::routing::StarZone* zone,
+                                    const simgrid::kernel::routing::HostLinkCreationArgs* hostlink,
+                                    simgrid::kernel::resource::LinkImpl* backbone)
 {
   simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
@@ -390,9 +393,9 @@ static void sg_platf_new_hostlink(simgrid::kernel::routing::StarZone* zone,
 }
 
 /** @brief Create a cabinet (set of hosts) inside a Cluster(StarZone) */
-static void sg_platf_new_cabinet(simgrid::kernel::routing::StarZone* zone,
-                                 const simgrid::kernel::routing::CabinetCreationArgs* args,
-                                 simgrid::kernel::resource::LinkImpl* backbone)
+static void sg_platf_build_cabinet(simgrid::kernel::routing::StarZone* zone,
+                                   const simgrid::kernel::routing::CabinetCreationArgs* args,
+                                   simgrid::kernel::resource::LinkImpl* backbone)
 {
   for (int const& radical : args->radicals) {
     std::string id   = args->prefix + std::to_string(radical) + args->suffix;
@@ -421,13 +424,24 @@ void sg_platf_zone_cluster_populate(simgrid::kernel::routing::ClusterZoneCreatio
 
   /* create host_links for hosts */
   for (auto const& hostlink : cluster->host_links) {
-    sg_platf_new_hostlink(zone, &hostlink, backbone);
+    sg_platf_build_hostlink(zone, &hostlink, backbone);
   }
 
   /* create cabinets */
   for (auto const& cabinet : cluster->cabinets) {
-    sg_platf_new_cabinet(zone, &cabinet, backbone);
+    sg_platf_build_cabinet(zone, &cabinet, backbone);
   }
+}
+
+void routing_cluster_add_backbone(std::unique_ptr<simgrid::kernel::routing::LinkCreationArgs> link)
+{
+  zone_cluster.backbone = std::move(link);
+}
+
+void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* args)
+{
+  xbt_assert(args, "Invalid nullptr argument");
+  zone_cluster.cabinets.emplace_back(*args);
 }
 
 /*************************************************************************************************/
@@ -562,6 +576,7 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
  */
 simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
+  zone_cluster.routing = zone->routing;
   current_routing = sg_platf_create_zone(zone);
 
   return current_routing;
@@ -583,8 +598,22 @@ void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std:
 void sg_platf_new_Zone_seal()
 {
   xbt_assert(current_routing, "Cannot seal the current Zone: none under construction");
+  if (strcasecmp(zone_cluster.routing.c_str(), "Cluster") == 0) {
+    sg_platf_zone_cluster_populate(&zone_cluster);
+    zone_cluster.routing = "";
+    zone_cluster.host_links.clear();
+    zone_cluster.cabinets.clear();
+    zone_cluster.backbone.reset();
+  }
   current_routing->seal();
   current_routing = current_routing->get_parent();
+}
+
+/** @brief Add a link connecting a host to the rest of its Zone (which must be cluster or vivaldi) */
+void sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs* hostlink)
+{
+  xbt_assert(hostlink, "Invalid nullptr parameter");
+  zone_cluster.host_links.emplace_back(*hostlink);
 }
 
 void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* args)

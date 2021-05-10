@@ -79,7 +79,7 @@ int console_close(lua_State*)
 }
 
 int console_add_backbone(lua_State *L) {
-  simgrid::kernel::routing::LinkCreationArgs link;
+  auto link = std::make_unique<simgrid::kernel::routing::LinkCreationArgs>();
   lua_Debug ar;
   lua_getstack(L, 1, &ar);
   lua_getinfo(L, "Sl", &ar);
@@ -89,33 +89,32 @@ int console_add_backbone(lua_State *L) {
   lua_pushstring(L, "id");
   int type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for backbone and must be a string.");
-  link.id = lua_tostring(L, -1);
+  link->id = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   lua_pushstring(L, "bandwidth");
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'bandwidth' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  link.bandwidths.push_back(xbt_parse_get_bandwidth(ar.short_src, ar.currentline, lua_tostring(L, -1),
-                                                    "bandwidth of backbone", link.id.c_str()));
+  link->bandwidths.push_back(xbt_parse_get_bandwidth(ar.short_src, ar.currentline, lua_tostring(L, -1),
+                                                     "bandwidth of backbone", link->id.c_str()));
   lua_pop(L, 1);
 
   lua_pushstring(L, "lat");
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'lat' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  link.latency =
-      xbt_parse_get_time(ar.short_src, ar.currentline, lua_tostring(L, -1), "latency of backbone", link.id.c_str());
+  link->latency =
+      xbt_parse_get_time(ar.short_src, ar.currentline, lua_tostring(L, -1), "latency of backbone", link->id.c_str());
   lua_pop(L, 1);
 
   lua_pushstring(L, "sharing_policy");
   lua_gettable(L, -2);
   const char* policy = lua_tostring(L, -1);
   lua_pop(L, 1);
-  link.policy = link_policy_get_by_name(policy);
+  link->policy = link_policy_get_by_name(policy);
 
-  sg_platf_new_link(&link);
-  routing_cluster_add_backbone(simgrid::s4u::Link::by_name(link.id)->get_impl());
+  routing_cluster_add_backbone(std::move(link));
 
   return 0;
 }
