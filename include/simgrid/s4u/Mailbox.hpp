@@ -44,6 +44,9 @@ public:
   /** Returns whether the mailbox contains queued communications */
   bool empty() const;
 
+  /* Returns the number of queued communications */
+  unsigned int size() const;
+
   /** Check if there is a communication going on in a mailbox. */
   bool listen() const;
 

@@ -39,6 +39,11 @@ bool Mailbox::empty() const
   return pimpl_->comm_queue_.empty();
 }
 
+unsigned int Mailbox::size() const
+{
+  return pimpl_->comm_queue_.size();
+}
+
 bool Mailbox::listen() const
 {
   return not this->empty() || (pimpl_->permanent_receiver_ && not pimpl_->done_comm_queue_.empty());
