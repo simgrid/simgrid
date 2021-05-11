@@ -41,7 +41,7 @@ public:
  ************/
 
 class DiskS19 : public DiskImpl {
-  void update_penalties(double delta);
+  void update_penalties(double delta) const;
 
 public:
   using DiskImpl::DiskImpl;

@@ -71,7 +71,7 @@ DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io
 /************
  * Resource *
  ************/
-void DiskS19::update_penalties(double delta)
+void DiskS19::update_penalties(double delta) const
 {
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
