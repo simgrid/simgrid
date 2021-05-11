@@ -108,6 +108,9 @@ DiskImpl* DiskImpl::set_write_bandwidth_profile(profile::Profile* profile)
 
 void DiskImpl::seal()
 {
+  if (is_sealed())
+    return;
+
   xbt_assert(this->get_model(), "Cannot seal Disk (%s) without setting the model first", get_cname());
   lmm::System* maxmin_system = get_model()->get_maxmin_system();
   this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_.peak * read_bw_.scale))

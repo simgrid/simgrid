@@ -1,0 +1,11 @@
+$ ./seal-platform
+> [A-cpu-0:sender:(1) 0.000000] [s4u_torus_multicpu/INFO] Done dispatching all messages
+> [A-cpu-0:receiver-A-cpu-0:(2) 0.000103] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on A-cpu-0'.
+> [B-cpu-1:receiver-B-cpu-1:(5) 0.003247] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on A-cpu-0'.
+> [B-cpu-0:receiver-B-cpu-0:(4) 0.003247] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on A-cpu-0'.
+> [A-cpu-1:receiver-A-cpu-1:(3) 0.003247] [s4u_torus_multicpu/INFO] I got a 'Hello, I'm alive and running on A-cpu-0'.
+> [A-cpu-0:sender:(1) 0.003247] [s4u_torus_multicpu/INFO] Goodbye now!
+> [A-cpu-0:receiver-A-cpu-0:(2) 4.000103] [s4u_torus_multicpu/INFO] Wrote 4000000 bytes on 'disk-A-cpu-0'
+> [B-cpu-1:receiver-B-cpu-1:(5) 4.003247] [s4u_torus_multicpu/INFO] Wrote 4000000 bytes on 'disk-B-cpu-1'
+> [B-cpu-0:receiver-B-cpu-0:(4) 4.003247] [s4u_torus_multicpu/INFO] Wrote 4000000 bytes on 'disk-B-cpu-0'
+> [A-cpu-1:receiver-A-cpu-1:(3) 4.003247] [s4u_torus_multicpu/INFO] Wrote 4000000 bytes on 'disk-A-cpu-1'

@@ -141,6 +141,9 @@ int NetZoneImpl::get_host_count() const
 
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
+  xbt_assert(cpu_model_pm_,
+             "Impossible to create host: %s. Invalid CPU model: nullptr. Have you set the parent of this NetZone: %s?",
+             name.c_str(), get_cname());
   auto* res = (new surf::HostImpl(name))->get_iface();
   res->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
 
@@ -151,11 +154,18 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
 
 s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
+  xbt_assert(
+      network_model_,
+      "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
+      name.c_str(), get_cname());
   return network_model_->create_link(name, bandwidths)->get_iface();
 }
 
 s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
+  xbt_assert(disk_model_,
+             "Impossible to create disk: %s. Invalid disk model: nullptr. Have you set the parent of this NetZone: %s?",
+             name.c_str(), get_cname());
   auto* l = disk_model_->create_disk(name, read_bandwidth, write_bandwidth);
 
   return l->get_iface();

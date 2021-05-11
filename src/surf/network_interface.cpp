@@ -132,6 +132,9 @@ void LinkImpl::turn_off()
 
 void LinkImpl::seal()
 {
+  if (is_sealed())
+    return;
+
   xbt_assert(this->get_model(), "Cannot seal Link(%s) without setting the Network model first", this->get_cname());
   Resource::seal();
   s4u::Link::on_creation(piface_);

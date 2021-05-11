@@ -161,6 +161,10 @@ void HostImpl::seal()
   // seals host's CPU
   get_iface()->pimpl_cpu->seal();
   sealed_ = true;
+
+  /* seal its disks */
+  for (auto* disk : disks_)
+    disk->seal();
 }
 } // namespace surf
 } // namespace simgrid

@@ -305,6 +305,12 @@ std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(Actor
 
 void Engine::run() const
 {
+  /* sealing resources before run: links */
+  for (auto* link : get_all_links())
+    link->seal();
+  /* seal netzone root, recursively seal children netzones, hosts and disks */
+  get_netzone_root()->seal();
+
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);

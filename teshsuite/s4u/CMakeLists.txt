@@ -7,6 +7,7 @@ foreach(x actor actor-autorestart actor-suspend
         basic-link-test basic-parsing-test evaluate-get-route-time evaluate-parse-time is-router
         storage_client_server listen_async pid
         trace-integration
+        seal-platform
 	vm-live-migration vm-suicide)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
@@ -34,7 +35,7 @@ foreach(x actor actor-autorestart actor-suspend
 endforeach()
 
 foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-recv is-router listen_async 
-		pid storage_client_server trace-integration)
+		pid storage_client_server trace-integration seal-platform)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH(tesh-s4u-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
