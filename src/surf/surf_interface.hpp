@@ -11,6 +11,7 @@
 #include "xbt/function_types.h"
 
 #include <cmath>
+#include <functional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -184,22 +185,25 @@ XBT_PUBLIC void surf_disk_model_init_default();
 struct surf_model_description_t {
   const char* name;
   const char* description;
-  void_f_void_t model_init_preparse;
+  std::function<void()> model_init_preparse;
 };
 
-XBT_PUBLIC int find_model_description(const std::vector<surf_model_description_t>& table, const std::string& name);
+XBT_PUBLIC const surf_model_description_t* find_model_description(const std::vector<surf_model_description_t>& table,
+                                                                  const std::string& name);
 XBT_PUBLIC void model_help(const char* category, const std::vector<surf_model_description_t>& table);
 
 #define SIMGRID_REGISTER_PLUGIN(id, desc, init)                                                                        \
   static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _plugin_register)()                               \
   {                                                                                                                    \
-    simgrid_add_plugin_description(_XBT_STRINGIFY(id), (desc), (init));                                                \
+    surf_plugin_description().emplace_back(surf_model_description_t{_XBT_STRINGIFY(id), (desc), (init)});              \
   }
 
-XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun);
-
 /** @brief The list of all available plugins */
-XBT_PUBLIC_DATA std::vector<surf_model_description_t>* surf_plugin_description;
+inline auto& surf_plugin_description() // Function to avoid static initialization order fiasco
+{
+  static std::vector<surf_model_description_t> plugin_description_table;
+  return plugin_description_table;
+}
 /** @brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:... */
 XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_optimization_mode_description;

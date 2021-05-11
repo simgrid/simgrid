@@ -32,21 +32,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
 simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
 
-std::vector<surf_model_description_t>* surf_plugin_description = nullptr;
-
-static void XBT_ATTRIB_DESTRUCTOR(800) simgrid_free_plugin_description()
-{
-  delete surf_plugin_description;
-  surf_plugin_description = nullptr;
-}
-
-XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun)
-{
-  if (not surf_plugin_description)
-    surf_plugin_description = new std::vector<surf_model_description_t>();
-  surf_plugin_description->emplace_back(surf_model_description_t{name, description, init_fun});
-}
-
 /* Don't forget to update the option description in smx_config when you change this */
 const std::vector<surf_model_description_t> surf_network_model_description = {
     {"LV08",
@@ -187,14 +172,13 @@ void model_help(const char* category, const std::vector<surf_model_description_t
     XBT_HELP("  %s: %s", item.name, item.description);
 }
 
-int find_model_description(const std::vector<surf_model_description_t>& table, const std::string& name)
+const surf_model_description_t* find_model_description(const std::vector<surf_model_description_t>& table,
+                                                       const std::string& name)
 {
   auto pos = std::find_if(table.begin(), table.end(),
                           [&name](const surf_model_description_t& item) { return item.name == name; });
   if (pos != table.end())
-    return static_cast<int>(std::distance(table.begin(), pos));
-
-  xbt_assert(not table.empty(), "No model is valid! This is a bug.");
+    return &*pos;
 
   std::string sep;
   std::string name_list;
@@ -202,9 +186,7 @@ int find_model_description(const std::vector<surf_model_description_t>& table, c
     name_list += sep + item.name;
     sep = ", ";
   }
-
   xbt_die("Model '%s' is invalid! Valid models are: %s.", name.c_str(), name_list.c_str());
-  return -1;
 }
 
 void surf_init(int* argc, char** argv)

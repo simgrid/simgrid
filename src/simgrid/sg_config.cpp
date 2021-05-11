@@ -122,12 +122,12 @@ static void _sg_cfg_cb__plugin(const std::string& value)
     return;
 
   if (value == "help") {
-    model_help("plugin", *surf_plugin_description);
+    model_help("plugin", surf_plugin_description());
     exit(0);
   }
 
-  int plugin_id = find_model_description(*surf_plugin_description, value);
-  (*surf_plugin_description)[plugin_id].model_init_preparse();
+  const auto* plugin = find_model_description(surf_plugin_description(), value);
+  plugin->model_init_preparse();
 }
 
 /* callback of the host/model variable */
@@ -238,7 +238,7 @@ void sg_config_init(int *argc, char **argv)
   }
 
   /* Plugins configuration */
-  declare_model_flag("plugin", "", &_sg_cfg_cb__plugin, *surf_plugin_description, "plugin", "The plugins");
+  declare_model_flag("plugin", "", &_sg_cfg_cb__plugin, surf_plugin_description(), "plugin", "The plugins");
 
   declare_model_flag("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, surf_cpu_model_description, "model",
                      "The model to use for the CPU");

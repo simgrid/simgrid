@@ -41,16 +41,16 @@ static void surf_config_models_setup()
     xbt_assert(not cpu_model_name.empty(), "Set a cpu model to use with the 'compound' host model");
     xbt_assert(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
 
-    int cpu_id = find_model_description(surf_cpu_model_description, cpu_model_name);
-    surf_cpu_model_description[cpu_id].model_init_preparse();
+    const auto* cpu_model = find_model_description(surf_cpu_model_description, cpu_model_name);
+    cpu_model->model_init_preparse();
 
-    int network_id = find_model_description(surf_network_model_description, network_model_name);
-    surf_network_model_description[network_id].model_init_preparse();
+    const auto* network_model = find_model_description(surf_network_model_description, network_model_name);
+    network_model->model_init_preparse();
   }
 
   XBT_DEBUG("Call host_model_init");
-  int host_id = find_model_description(surf_host_model_description, host_model_name);
-  surf_host_model_description[host_id].model_init_preparse();
+  const auto* host_model = find_model_description(surf_host_model_description, host_model_name);
+  host_model->model_init_preparse();
 
   XBT_DEBUG("Call vm_model_init");
   /* ideally we should get back the pointer to CpuModel from model_init_preparse(), but this
@@ -60,8 +60,8 @@ static void surf_config_models_setup()
       simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get());
 
   XBT_DEBUG("Call disk_model_init");
-  int disk_id = find_model_description(surf_disk_model_description, disk_model_name);
-  surf_disk_model_description[disk_id].model_init_preparse();
+  const auto* disk_model = find_model_description(surf_disk_model_description, disk_model_name);
+  disk_model->model_init_preparse();
 }
 
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
