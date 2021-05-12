@@ -17,9 +17,11 @@
 
 #include <algorithm>
 #include <array>
+#include <cerrno>
 #include <cinttypes>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
 #include <memory>
 #include <unordered_map>
@@ -960,7 +962,7 @@ static constexpr auto debug_paths = {
  */
 // Example:
 // /usr/lib/debug/.build-id/0b/dc77f1c29aea2b14ff5acd9a19ab3175ffdeae.debug
-static std::string find_by_build_id(std::vector<char> id)
+static int find_by_build_id(std::vector<char> id)
 {
   std::string filename;
   std::string hex = to_hex(id);
@@ -969,13 +971,15 @@ static std::string find_by_build_id(std::vector<char> id)
     filename = std::string(debug_path) + ".build-id/" + to_hex(id.data(), 1) + '/' +
                to_hex(id.data() + 1, id.size() - 1) + ".debug";
     XBT_DEBUG("Checking debug file: %s", filename.c_str());
-    if (access(filename.c_str(), F_OK) == 0) {
+    int fd = open(filename.c_str(), O_RDONLY);
+    if (fd != -1) {
       XBT_DEBUG("Found debug file: %s\n", hex.c_str());
-      return filename;
+      return fd;
     }
+    xbt_assert(errno != ENOENT, "Could not open file: %s", strerror(errno));
   }
   XBT_DEBUG("No debug info found for build ID %s\n", hex.data());
-  return std::string();
+  return -1;
 }
 
 /** @brief Populate the debugging information of the given ELF object
@@ -1024,18 +1028,16 @@ static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
     close(fd);
 
     // Find the debug file using the build id:
-    std::string debug_file = find_by_build_id(build_id);
-    xbt_assert(not debug_file.empty(),
+    fd = find_by_build_id(build_id);
+    xbt_assert(fd != -1,
                "Missing debug info for %s with build-id %s\n"
                "You might want to install the suitable debugging package.\n",
                info->file_name.c_str(), to_hex(build_id).c_str());
 
     // Load the DWARF info from this file:
-    XBT_DEBUG("Load DWARF for %s from %s", info->file_name.c_str(), debug_file.c_str());
-    fd = open(debug_file.c_str(), O_RDONLY);
-    xbt_assert(fd >= 0, "Could not open file %s", debug_file.c_str());
+    XBT_DEBUG("Load DWARF for %s", info->file_name.c_str());
     dwarf = dwarf_begin(fd, DWARF_C_READ);
-    xbt_assert(dwarf != nullptr, "No DWARF info in %s for %s", debug_file.c_str(), info->file_name.c_str());
+    xbt_assert(dwarf != nullptr, "No DWARF info for %s", info->file_name.c_str());
     read_dwarf_info(info, dwarf);
     dwarf_end(dwarf);
     close(fd);
