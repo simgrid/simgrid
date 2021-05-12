@@ -110,6 +110,21 @@ public:
   /** Start a previously initialized actor */
   ActorPtr start(const std::function<void()>& code);
 
+  template <class F> ActorPtr start(F code) { return start(std::function<void()>(std::move(code))); }
+
+  template <class F, class... Args,
+  // This constructor is enabled only if the call code(args...) is valid:
+#ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
+            typename = typename std::result_of_t<F(Args...)>
+#endif
+            >
+  ActorPtr start(F code, Args... args)
+  {
+    return start(std::bind(std::move(code), std::move(args)...));
+  }
+
+  ActorPtr start(const std::function<void()>& code, std::vector<std::string> args);
+
   /** Create an actor from a callable thing. */
   template <class F> static ActorPtr create(const std::string& name, s4u::Host* host, F code)
   {
