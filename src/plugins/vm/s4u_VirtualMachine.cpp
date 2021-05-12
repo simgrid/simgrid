@@ -68,33 +68,29 @@ void VirtualMachine::start()
 {
   on_start(*this);
 
-  kernel::actor::simcall([this]() {
-    vm::VmHostExt::ensureVmExtInstalled();
+  vm::VmHostExt::ensureVmExtInstalled();
 
+  kernel::actor::simcall([this]() {
     Host* pm = this->pimpl_vm_->get_physical_host();
     if (pm->extension<vm::VmHostExt>() == nullptr)
       pm->extension_set(new vm::VmHostExt());
 
-    long pm_ramsize   = pm->extension<vm::VmHostExt>()->ramsize;
-    int pm_overcommit = pm->extension<vm::VmHostExt>()->overcommit;
-    long vm_ramsize   = this->get_ramsize();
-
-    if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
+    size_t pm_ramsize = pm->extension<vm::VmHostExt>()->ramsize;
+    if (pm_ramsize && not pm->extension<vm::VmHostExt>()->overcommit) { /* Need to verify that we don't overcommit */
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
-      long total_ramsize_of_vms = 0;
+      size_t total_ramsize_of_vms = 0;
       for (VirtualMachine* const& ws_vm : vm::VirtualMachineImpl::allVms_)
         if (pm == ws_vm->get_pm())
           total_ramsize_of_vms += ws_vm->get_ramsize();
 
-      if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
-        XBT_WARN("cannot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
-                 this->get_cname(), pm->get_cname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
+      if (total_ramsize_of_vms + get_ramsize() > pm_ramsize) {
+        XBT_WARN("cannot start %s@%s due to memory shortage: get_ramsize() %zu, free %zu, pm_ramsize %zu (bytes).",
+                 get_cname(), pm->get_cname(), get_ramsize(), pm_ramsize - total_ramsize_of_vms, pm_ramsize);
         throw VmFailureException(XBT_THROW_POINT,
                                  xbt::string_printf("Memory shortage on host '%s', VM '%s' cannot be started",
-                                                    pm->get_cname(), this->get_cname()));
+                                                    pm->get_cname(), get_cname()));
       }
     }
-
     this->pimpl_vm_->set_state(State::RUNNING);
   });
 
