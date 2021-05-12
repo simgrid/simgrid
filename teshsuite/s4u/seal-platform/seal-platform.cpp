@@ -51,14 +51,14 @@ public:
     auto received = mbox->get_unique<std::string>();
     XBT_INFO("I got a '%s'.", received->c_str());
 
-    sg4::Disk* disk      = sg4::Host::current()->get_disks().front();
-    sg_size_t write_size = disk->write(4e6);
+    const sg4::Disk* disk = sg4::Host::current()->get_disks().front();
+    sg_size_t write_size  = disk->write(4e6);
     XBT_INFO("Wrote %llu bytes on '%s'", write_size, disk->get_cname());
   }
 };
 
 /*************************************************************************************************/
-static sg4::NetZone* create_zone(sg4::NetZone* root, const std::string& id)
+static sg4::NetZone* create_zone(const sg4::NetZone* root, const std::string& id)
 {
   auto* zone = sg4::create_floyd_zone(id);
   zone->set_parent(root);

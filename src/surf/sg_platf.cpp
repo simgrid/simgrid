@@ -38,7 +38,7 @@ xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
 } // namespace kernel
 } // namespace simgrid
 
-simgrid::kernel::routing::ClusterZoneCreationArgs
+static simgrid::kernel::routing::ClusterZoneCreationArgs
     zone_cluster; /* temporary store data for irregular clusters, created with <zone routing="Cluster"> */
 
 /** The current NetZone in the parsing */
@@ -363,8 +363,9 @@ void sg_platf_new_tag_cluster(simgrid::kernel::routing::ClusterCreationArgs* clu
 /*************************************************************************************************/
 /** @brief Set the links for internal node inside a Cluster(Star) */
 static void sg_platf_cluster_set_hostlink(simgrid::kernel::routing::StarZone* zone,
-                                          simgrid::kernel::routing::NetPoint* netpoint, simgrid::s4u::Link* link_up,
-                                          simgrid::s4u::Link* link_down, simgrid::kernel::resource::LinkImpl* backbone)
+                                          simgrid::kernel::routing::NetPoint* netpoint,
+                                          const simgrid::s4u::Link* link_up, const simgrid::s4u::Link* link_down,
+                                          simgrid::kernel::resource::LinkImpl* backbone)
 {
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->get_cname(), netpoint->id());
   if (backbone) {
@@ -410,7 +411,7 @@ static void sg_platf_build_cabinet(simgrid::kernel::routing::StarZone* zone,
   }
 }
 
-void sg_platf_zone_cluster_populate(simgrid::kernel::routing::ClusterZoneCreationArgs* cluster)
+static void sg_platf_zone_cluster_populate(const simgrid::kernel::routing::ClusterZoneCreationArgs* cluster)
 {
   auto* zone = dynamic_cast<simgrid::kernel::routing::StarZone*>(current_routing);
   xbt_assert(zone, "Host_links are only valid for Cluster(Star)");
@@ -577,7 +578,7 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
   zone_cluster.routing = zone->routing;
-  current_routing = sg_platf_create_zone(zone);
+  current_routing      = sg_platf_create_zone(zone);
 
   return current_routing;
 }

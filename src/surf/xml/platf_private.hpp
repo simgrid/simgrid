@@ -199,8 +199,6 @@ XBT_PUBLIC void
 sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* peer); // Add a peer to the current Zone
 XBT_PUBLIC void sg_platf_new_tag_cluster(
     simgrid::kernel::routing::ClusterCreationArgs* clust); // Add a regular cluster  to the current Zone
-XBT_PUBLIC void sg_platf_zone_cluster_populate(
-    simgrid::kernel::routing::ClusterZoneCreationArgs* clust); // Add a routing cluster to the current Zone
 XBT_PUBLIC simgrid::kernel::routing::NetPoint*                                      // Add a router to the current Zone
 sg_platf_new_router(const std::string&, const std::string& coords);
 XBT_PUBLIC void
