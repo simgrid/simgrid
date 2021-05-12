@@ -176,7 +176,6 @@ PYBIND11_MODULE(simgrid, m)
                   params[i - 1] = py::cast(args[i]);
 
                 py::object res = fun_or_class(*params);
-
                 /* If I was passed a class, I just built an instance, so I need to call it now */
                 if (py::isinstance<py::function>(res))
                   res();
@@ -185,8 +184,7 @@ PYBIND11_MODULE(simgrid, m)
                 py_context.reset();
                 if (ffk) {
                   XBT_VERB("Actor killed");
-                  /* Forward that ForcefulKill exception */
-                  simgrid::ForcefulKillException::do_throw();
+                  simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
                 }
                 throw;
               }
@@ -318,8 +316,7 @@ PYBIND11_MODULE(simgrid, m)
                 py_context.reset();
                 if (ffk) {
                   XBT_VERB("Actor killed");
-                  /* Forward that ForcefulKill exception */
-                  simgrid::ForcefulKillException::do_throw();
+                  simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
                 }
                 throw;
               }
