@@ -330,7 +330,8 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
 
 /* PRECONDITION: this is the common ancestor of src and dst */
 bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
-                                   /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency)
+                                   /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
+                                   std::unordered_set<NetZoneImpl*>& netzones)
 {
   // If never set a bypass route return nullptr without any further computations
   if (bypass_routes_.empty())
@@ -407,14 +408,14 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
               "calls to getRoute",
               src->get_cname(), dst->get_cname(), bypassedRoute->links.size());
     if (src != key.first)
-      get_global_route(src, bypassedRoute->gw_src, links, latency);
+      get_global_route_with_netzones(src, bypassedRoute->gw_src, links, latency, netzones);
     for (resource::LinkImpl* const& link : bypassedRoute->links) {
       links.push_back(link);
       if (latency)
         *latency += link->get_latency();
     }
     if (dst != key.second)
-      get_global_route(bypassedRoute->gw_dst, dst, links, latency);
+      get_global_route_with_netzones(bypassedRoute->gw_dst, dst, links, latency, netzones);
     return true;
   }
   XBT_DEBUG("No bypass route from '%s' to '%s'.", src->get_cname(), dst->get_cname());
@@ -423,6 +424,14 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
 
 void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
                                    /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency)
+{
+  std::unordered_set<NetZoneImpl*> netzones;
+  get_global_route_with_netzones(src, dst, links, latency, netzones);
+}
+
+void NetZoneImpl::get_global_route_with_netzones(NetPoint* src, NetPoint* dst,
+                                                 /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
+                                                 std::unordered_set<NetZoneImpl*>& netzones)
 {
   Route route;
 
@@ -436,8 +445,11 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
   XBT_DEBUG("elements_father: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", common_ancestor->get_cname(),
             src_ancestor->get_cname(), dst_ancestor->get_cname());
 
+  netzones.insert(src->get_englobing_zone());
+  netzones.insert(dst->get_englobing_zone());
+  netzones.insert(common_ancestor);
   /* Check whether a direct bypass is defined. If so, use it and bail out */
-  if (common_ancestor->get_bypass_route(src, dst, links, latency))
+  if (common_ancestor->get_bypass_route(src, dst, links, latency, netzones))
     return;
 
   /* If src and dst are in the same netzone, life is good */
@@ -449,19 +461,18 @@ void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
   }
 
   /* Not in the same netzone, no bypass. We'll have to find our path between the netzones recursively */
-
   common_ancestor->get_local_route(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
   xbt_assert((route.gw_src_ != nullptr) && (route.gw_dst_ != nullptr), "Bad gateways for route from '%s' to '%s'.",
              src->get_cname(), dst->get_cname());
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != route.gw_src_)
-    get_global_route(src, route.gw_src_, links, latency);
+    get_global_route_with_netzones(src, route.gw_src_, links, latency, netzones);
   links.insert(links.end(), begin(route.link_list_), end(route.link_list_));
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   if (route.gw_dst_ != dst)
-    get_global_route(route.gw_dst_, dst, links, latency);
+    get_global_route_with_netzones(route.gw_dst_, dst, links, latency, netzones);
 }
 
 void NetZoneImpl::seal()

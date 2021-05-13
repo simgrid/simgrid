@@ -13,6 +13,7 @@
 #include <xbt/graph.h>
 
 #include <map>
+#include <unordered_set>
 #include <vector>
 
 namespace simgrid {
@@ -103,7 +104,8 @@ protected:
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
   bool get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
-                        /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
+                        /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
+                        std::unordered_set<NetZoneImpl*>& netzones);
 
 public:
   enum class RoutingMode {
@@ -172,7 +174,7 @@ public:
   void set_disk_model(std::shared_ptr<resource::DiskModel> disk_model);
   void set_host_model(std::shared_ptr<surf::HostModel> host_model);
 
-  /* @brief get the route between two nodes in the full platform
+  /** @brief get the route between two nodes in the full platform
    *
    * @param src where from
    * @param dst where to
@@ -181,6 +183,11 @@ public:
    */
   static void get_global_route(routing::NetPoint* src, routing::NetPoint* dst,
                                /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
+
+  /** @brief Similar to get_global_route but get the NetZones traversed by route */
+  static void get_global_route_with_netzones(routing::NetPoint* src, routing::NetPoint* dst,
+                                             /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
+                                             std::unordered_set<NetZoneImpl*>& netzones);
 
   virtual void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges) = 0;
@@ -193,7 +200,9 @@ private:
   std::shared_ptr<resource::DiskModel> disk_model_;
   std::shared_ptr<simgrid::surf::HostModel> host_model_;
   /** @brief Perform sealing procedure for derived classes, if necessary */
-  virtual void do_seal() { /* obviously nothing to do by default */ }
+  virtual void do_seal()
+  { /* obviously nothing to do by default */
+  }
   void add_child(NetZoneImpl* new_zone);
 };
 } // namespace routing

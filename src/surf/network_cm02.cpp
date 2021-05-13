@@ -170,10 +170,13 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   double latency = 0.0;
   std::vector<LinkImpl*> back_route;
   std::vector<LinkImpl*> route;
+  std::unordered_set<kernel::routing::NetZoneImpl*> netzones;
 
   XBT_IN("(%s,%s,%g,%g)", src->get_cname(), dst->get_cname(), size, rate);
 
-  src->route_to(dst, route, &latency);
+  kernel::routing::NetZoneImpl::get_global_route_with_netzones(src->get_netpoint(), dst->get_netpoint(), route,
+                                                               &latency, netzones);
+
   xbt_assert(not route.empty() || latency > 0,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->get_cname(), dst->get_cname());
@@ -370,7 +373,7 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
 {
   latency_check(value);
 
-  double delta = value - latency_.peak;
+  double delta                         = value - latency_.peak;
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
   int numelem                          = 0;
