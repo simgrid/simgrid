@@ -6,6 +6,7 @@
 #ifndef SIMGRID_KERNEL_ACTOR_ACTORIMPL_HPP
 #define SIMGRID_KERNEL_ACTOR_ACTORIMPL_HPP
 
+#include "simgrid/kernel/Timer.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "src/simix/popping_private.hpp"
 #include "xbt/PropertyHolder.hpp"
@@ -77,7 +78,7 @@ public:
       std::make_shared<std::vector<std::function<void(bool)>>>();
 
   std::function<void()> code_;
-  simix::Timer* kill_timer_ = nullptr;
+  timer::Timer* kill_timer_ = nullptr;
 
 private:
   /* Refcounting */

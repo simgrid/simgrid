@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/kernel/Timer.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
@@ -147,20 +148,6 @@ static void install_segvhandler()
 /********************************* SIMIX **************************************/
 namespace simgrid {
 namespace simix {
-
-Timer* Timer::set(double date, xbt::Task<void()>&& callback)
-{
-  auto* timer    = new Timer(date, std::move(callback));
-  timer->handle_ = simix_timers().emplace(std::make_pair(date, timer));
-  return timer;
-}
-
-/** @brief cancels a timer that was added earlier */
-void Timer::remove()
-{
-  simix_timers().erase(handle_);
-  delete this;
-}
 
 /** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
 bool Global::execute_tasks()
@@ -359,9 +346,9 @@ void SIMIX_clean()
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
 
-  while (not simgrid::simix::simix_timers().empty()) {
-    delete simgrid::simix::simix_timers().top().second;
-    simgrid::simix::simix_timers().pop();
+  while (not simgrid::kernel::timer::kernel_timers().empty()) {
+    delete simgrid::kernel::timer::kernel_timers().top().second;
+    simgrid::kernel::timer::kernel_timers().pop();
   }
   /* Free the remaining data structures */
   simix_global->actors_to_run.clear();
@@ -405,12 +392,12 @@ double SIMIX_get_clock()
 static bool SIMIX_execute_timers()
 {
   bool result = false;
-  while (not simgrid::simix::simix_timers().empty() &&
-         SIMIX_get_clock() >= simgrid::simix::simix_timers().top().first) {
+  while (not simgrid::kernel::timer::kernel_timers().empty() &&
+         SIMIX_get_clock() >= simgrid::kernel::timer::kernel_timers().top().first) {
     result = true;
     // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
-    smx_timer_t timer = simgrid::simix::simix_timers().top().second;
-    simgrid::simix::simix_timers().pop();
+    simgrid::kernel::timer::Timer* timer = simgrid::kernel::timer::kernel_timers().top().second;
+    simgrid::kernel::timer::kernel_timers().pop();
     timer->callback();
     delete timer;
   }
@@ -532,7 +519,7 @@ void SIMIX_run()
         }
     }
 
-    time = simgrid::simix::Timer::next();
+    time = simgrid::kernel::timer::Timer::next();
     if (time > -1.0 || not simix_global->process_list.empty()) {
       XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
@@ -582,12 +569,12 @@ void SIMIX_run()
 
 double SIMIX_timer_next() // XBT_ATTRIB_DEPRECATED_v329
 {
-  return simgrid::simix::Timer::next();
+  return simgrid::kernel::timer::Timer::next();
 }
 
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void* arg) // XBT_ATTRIB_DEPRECATED_v329
 {
-  return simgrid::simix::Timer::set(date, std::bind(callback, arg));
+  return simgrid::kernel::timer::Timer::set(date, std::bind(callback, arg));
 }
 
 /** @brief cancels a timer that was added earlier */

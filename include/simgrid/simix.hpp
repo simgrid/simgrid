@@ -8,12 +8,9 @@
 #define SIMGRID_SIMIX_HPP
 
 #include <simgrid/simix.h>
-#include <xbt/functional.hpp>
 #include <xbt/promise.hpp>
 #include <xbt/signal.hpp>
-#include <xbt/utility.hpp>
 
-#include <boost/heap/fibonacci_heap.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -101,33 +98,6 @@ namespace simgrid {
 namespace simix {
 
 XBT_PUBLIC void unblock(smx_actor_t process);
-
-inline auto& simix_timers() // avoid static initialization order fiasco
-{
-  using TimerQelt = std::pair<double, Timer*>;
-  static boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<xbt::HeapComparator<TimerQelt>>> value;
-  return value;
-}
-
-/** @brief Timer datatype */
-class Timer {
-public:
-  const double date;
-  std::remove_reference_t<decltype(simix_timers())>::handle_type handle_;
-
-  Timer(double date, simgrid::xbt::Task<void()>&& callback) : date(date), callback(std::move(callback)) {}
-
-  simgrid::xbt::Task<void()> callback;
-  void remove();
-
-  template <class F> static inline Timer* set(double date, F callback)
-  {
-    return set(date, simgrid::xbt::Task<void()>(std::move(callback)));
-  }
-
-  static Timer* set(double date, simgrid::xbt::Task<void()>&& callback);
-  static double next() { return simix_timers().empty() ? -1.0 : simix_timers().top().first; }
-};
 
 // In MC mode, the application sends these pointers to the MC
 xbt_dynar_t simix_global_get_actors_addr();

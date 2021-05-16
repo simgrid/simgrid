@@ -8,6 +8,7 @@
 
 #include <xbt/promise.hpp>
 
+#include <simgrid/kernel/Timer.hpp>
 #include <simgrid/kernel/future.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
@@ -29,7 +30,7 @@ static simgrid::kernel::Future<void> kernel_wait_until(double date)
 {
   auto promise = std::make_shared<simgrid::kernel::Promise<void>>();
   auto future  = promise->get_future();
-  simgrid::simix::Timer::set(date, [promise] { promise->set_value(); });
+  simgrid::kernel::timer::Timer::set(date, [promise] { promise->set_value(); });
   return future;
 }
 

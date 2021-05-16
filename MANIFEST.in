@@ -1970,6 +1970,7 @@ include include/simgrid/jedule/jedule.hpp
 include include/simgrid/jedule/jedule_events.hpp
 include include/simgrid/jedule/jedule_platform.hpp
 include include/simgrid/jedule/jedule_sd_binding.h
+include include/simgrid/kernel/Timer.hpp
 include include/simgrid/kernel/future.hpp
 include include/simgrid/kernel/resource/Action.hpp
 include include/simgrid/kernel/resource/Model.hpp
@@ -2229,6 +2230,7 @@ include src/kernel/routing/TorusZone.cpp
 include src/kernel/routing/TorusZone_test.cpp
 include src/kernel/routing/VivaldiZone.cpp
 include src/kernel/routing/WifiZone.cpp
+include src/kernel/timer/Timer.cpp
 include src/mc/AddressSpace.hpp
 include src/mc/ModelChecker.cpp
 include src/mc/ModelChecker.hpp

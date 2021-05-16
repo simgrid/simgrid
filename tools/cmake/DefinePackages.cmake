@@ -337,6 +337,8 @@ set(SURF_SRC
   src/kernel/routing/VivaldiZone.cpp
   src/kernel/routing/WifiZone.cpp
 
+  src/kernel/timer/Timer.cpp
+
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
 
@@ -686,6 +688,7 @@ set(headers_to_install
   include/simgrid/forward.h
   include/simgrid/simix.h
   include/simgrid/simix.hpp
+  include/simgrid/kernel/Timer.hpp
   include/simgrid/kernel/future.hpp
   include/simgrid/disk.h
   include/simgrid/host.h

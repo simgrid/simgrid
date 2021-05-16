@@ -241,7 +241,7 @@ void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl
   if (timeout < 0.0) {
     issuer->simcall_.timeout_cb_ = nullptr;
   } else {
-    issuer->simcall_.timeout_cb_ = simix::Timer::set(SIMIX_get_clock() + timeout, [issuer, &execs]() {
+    issuer->simcall_.timeout_cb_ = timer::Timer::set(SIMIX_get_clock() + timeout, [issuer, &execs]() {
       issuer->simcall_.timeout_cb_ = nullptr;
       for (auto* exec : execs)
         exec->unregister_simcall(&issuer->simcall_);

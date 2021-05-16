@@ -275,7 +275,7 @@ void ActorImpl::set_kill_time(double kill_time)
   if (kill_time <= SIMIX_get_clock())
     return;
   XBT_DEBUG("Set kill time %f for actor %s@%s", kill_time, get_cname(), host_->get_cname());
-  kill_timer_ = simix::Timer::set(kill_time, [this] {
+  kill_timer_ = timer::Timer::set(kill_time, [this] {
     this->exit();
     kill_timer_ = nullptr;
   });

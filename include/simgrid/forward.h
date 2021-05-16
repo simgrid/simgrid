@@ -166,6 +166,9 @@ class NetworkAction;
 class DiskImpl;
 class DiskModel;
 }
+namespace timer {
+class Timer;
+}
 namespace routing {
 class NetPoint;
 class NetZoneImpl;
@@ -178,7 +181,6 @@ class Profile;
 } // namespace kernel
 namespace simix {
   class Host;
-  class Timer;
 }
 namespace surf {
   class HostImpl;
@@ -208,7 +210,7 @@ using s4u_Disk              = simgrid::s4u::Disk;
 using s4u_NetZone           = simgrid::s4u::NetZone;
 using s4u_VM                = simgrid::s4u::VirtualMachine;
 
-using smx_timer_t    = simgrid::simix::Timer*;
+using smx_timer_t    = simgrid::kernel::timer::Timer*;
 using smx_actor_t    = simgrid::kernel::actor::ActorImpl*;
 using smx_activity_t = simgrid::kernel::activity::ActivityImpl*;
 using smx_cond_t     = simgrid::kernel::activity::ConditionVariableImpl*;

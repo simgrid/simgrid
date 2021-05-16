@@ -48,12 +48,12 @@ XBT_PUBLIC void SIMIX_set_maestro(void (*code)(void*), void* data);
 XBT_PUBLIC void SIMIX_run();
 XBT_PUBLIC double SIMIX_get_clock();
 
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::simix::Timer::set()") XBT_PUBLIC smx_timer_t
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::set()") XBT_PUBLIC smx_timer_t
     SIMIX_timer_set(double date, void (*function)(void*), void* arg);
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::simix::Timer::remove()") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::remove()") XBT_PUBLIC
     void SIMIX_timer_remove(smx_timer_t timer);
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::simix::Timer::next()") XBT_PUBLIC double SIMIX_timer_next();
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::simix::Timer::get_date()") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::next()") XBT_PUBLIC double SIMIX_timer_next();
+XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::get_date()") XBT_PUBLIC
     double SIMIX_timer_get_date(smx_timer_t timer);
 
 XBT_ATTRIB_DEPRECATED_v329("Please use simix_global->display_all_actor_status()") XBT_PUBLIC
