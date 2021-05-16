@@ -388,22 +388,6 @@ double SIMIX_get_clock()
   }
 }
 
-/** Handle any pending timer. Returns if something was actually run. */
-static bool SIMIX_execute_timers()
-{
-  bool result = false;
-  while (not simgrid::kernel::timer::kernel_timers().empty() &&
-         SIMIX_get_clock() >= simgrid::kernel::timer::kernel_timers().top().first) {
-    result = true;
-    // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
-    simgrid::kernel::timer::Timer* timer = simgrid::kernel::timer::kernel_timers().top().second;
-    simgrid::kernel::timer::kernel_timers().pop();
-    timer->callback();
-    delete timer;
-  }
-  return result;
-}
-
 /**
  * @ingroup SIMIX_API
  * @brief Run the main simulation loop.
@@ -533,7 +517,7 @@ void SIMIX_run()
     // Execute timers and tasks until there isn't anything to be done:
     bool again = false;
     do {
-      again = SIMIX_execute_timers();
+      again = simgrid::kernel::timer::Timer::execute_all();
       if (simix_global->execute_tasks())
         again = true;
       simix_global->wake_all_waiting_actors();
@@ -586,7 +570,7 @@ void SIMIX_timer_remove(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
 double SIMIX_timer_get_date(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
 {
-  return timer ? timer->date : 0.0;
+  return timer ? timer->get_date() : 0.0;
 }
 
 void SIMIX_display_process_status() // XBT_ATTRIB_DEPRECATED_v329

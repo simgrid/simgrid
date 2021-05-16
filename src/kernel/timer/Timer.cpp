@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/kernel/Timer.hpp"
+#include <simgrid/kernel/Timer.hpp>
+#include <simgrid/simix.h>
 
 namespace simgrid {
 namespace kernel {
@@ -22,6 +23,21 @@ void Timer::remove()
 {
   kernel_timers().erase(handle_);
   delete this;
+}
+
+/** Handle any pending timer. Returns if something was actually run. */
+bool Timer::execute_all()
+{
+  bool result = false;
+  while (not kernel_timers().empty() && SIMIX_get_clock() >= kernel_timers().top().first) {
+    result = true;
+    // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
+    Timer* timer = kernel_timers().top().second;
+    kernel_timers().pop();
+    timer->callback();
+    delete timer;
+  }
+  return result;
 }
 
 } // namespace timer

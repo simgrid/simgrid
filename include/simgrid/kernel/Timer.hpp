@@ -26,11 +26,14 @@ inline auto& kernel_timers() // avoid static initialization order fiasco
 
 /** @brief Timer datatype */
 class Timer {
+  const double date_;
+
 public:
-  const double date;
+  double get_date() const { return date_; }
+
   std::remove_reference_t<decltype(kernel_timers())>::handle_type handle_;
 
-  Timer(double date, xbt::Task<void()>&& callback) : date(date), callback(std::move(callback)) {}
+  Timer(double date, xbt::Task<void()>&& callback) : date_(date), callback(std::move(callback)) {}
 
   xbt::Task<void()> callback;
   void remove();
@@ -42,6 +45,9 @@ public:
 
   static Timer* set(double date, xbt::Task<void()>&& callback);
   static double next() { return kernel_timers().empty() ? -1.0 : kernel_timers().top().first; }
+
+  /** Handle any pending timer. Returns if something was actually run. */
+  static bool execute_all();
 };
 
 } // namespace timer
