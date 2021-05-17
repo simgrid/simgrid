@@ -76,6 +76,27 @@ void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::ve
   models_prio_[model_name] = std::move(model);
 }
 
+/** Wake up all actors waiting for a Surf action to finish */
+void EngineImpl::wake_all_waiting_actors() const
+{
+  for (auto const& model : models_) {
+    XBT_DEBUG("Handling the failed actions (if any)");
+    while (auto* action = model->extract_failed_action()) {
+      XBT_DEBUG("   Handling Action %p", action);
+      if (action->get_activity() != nullptr)
+        activity::ActivityImplPtr(action->get_activity())->post();
+    }
+    XBT_DEBUG("Handling the terminated actions (if any)");
+    while (auto* action = model->extract_done_action()) {
+      XBT_DEBUG("   Handling Action %p", action);
+      if (action->get_activity() == nullptr)
+        XBT_DEBUG("probably vcpu's action %p, skip", action);
+      else
+        activity::ActivityImplPtr(action->get_activity())->post();
+    }
+  }
+}
+
 void EngineImpl::run()
 {
   if (MC_record_replay_is_active()) {
@@ -176,7 +197,7 @@ void EngineImpl::run()
 
       simix_global->execute_tasks();
       do {
-        simix_global->wake_all_waiting_actors();
+        wake_all_waiting_actors();
       } while (simix_global->execute_tasks());
 
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
@@ -204,7 +225,7 @@ void EngineImpl::run()
       again = timer::Timer::execute_all();
       if (simix_global->execute_tasks())
         again = true;
-      simix_global->wake_all_waiting_actors();
+      wake_all_waiting_actors();
     } while (again);
 
     /* Clean actors to destroy */

@@ -63,6 +63,9 @@ public:
       return res->second;
   }
 
+  void wake_all_waiting_actors() const;
+  void display_all_actor_status() const;
+
   /** @brief Run the main simulation loop. */
   void run();
 };

@@ -30,7 +30,6 @@ public:
    */
   void empty_trash();
   void run_all_actors();
-  void wake_all_waiting_actors() const;
   void display_all_actor_status() const;
 
   kernel::context::ContextFactory* context_factory = nullptr;

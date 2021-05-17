@@ -198,27 +198,6 @@ void Global::run_all_actors()
   actors_to_run.clear();
 }
 
-/** Wake up all actors waiting for a Surf action to finish */
-void Global::wake_all_waiting_actors() const
-{
-  for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
-    XBT_DEBUG("Handling the failed actions (if any)");
-    while (auto* action = model->extract_failed_action()) {
-      XBT_DEBUG("   Handling Action %p", action);
-      if (action->get_activity() != nullptr)
-        kernel::activity::ActivityImplPtr(action->get_activity())->post();
-    }
-    XBT_DEBUG("Handling the terminated actions (if any)");
-    while (auto* action = model->extract_done_action()) {
-      XBT_DEBUG("   Handling Action %p", action);
-      if (action->get_activity() == nullptr)
-        XBT_DEBUG("probably vcpu's action %p, skip", action);
-      else
-        kernel::activity::ActivityImplPtr(action->get_activity())->post();
-    }
-  }
-}
-
 void Global::display_all_actor_status() const
 {
   XBT_INFO("%zu actors are still running, waiting for something.", process_list.size());
