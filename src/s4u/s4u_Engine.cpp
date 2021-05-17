@@ -318,7 +318,7 @@ void Engine::run() const
   if (MC_is_active()) {
     MC_run();
   } else {
-    SIMIX_run();
+    pimpl->run();
   }
 }
 

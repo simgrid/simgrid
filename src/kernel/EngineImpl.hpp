@@ -62,6 +62,9 @@ public:
     else
       return res->second;
   }
+
+  /** @brief Run the main simulation loop. */
+  void run();
 };
 
 } // namespace kernel

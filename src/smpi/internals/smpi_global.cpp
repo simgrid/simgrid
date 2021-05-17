@@ -4,12 +4,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
-#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/plugins/file_system.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "smpi_coll.hpp"
+#include "smpi_config.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_host.hpp"
-#include "smpi_config.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
@@ -564,7 +565,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   if (MC_is_active()) {
     MC_run();
   } else {
-    SIMIX_run();
+    simgrid::kernel::EngineImpl::get_instance()->run();
 
     xbt_os_walltimer_stop(global_timer);
     simgrid::smpi::utils::print_time_analysis(xbt_os_timer_elapsed(global_timer));
