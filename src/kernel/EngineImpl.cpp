@@ -97,6 +97,28 @@ void EngineImpl::wake_all_waiting_actors() const
   }
 }
 
+/** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
+bool EngineImpl::execute_tasks()
+{
+  xbt_assert(tasksTemp.empty());
+
+  if (tasks.empty())
+    return false;
+
+  do {
+    // We don't want the callbacks to modify the vector we are iterating over:
+    tasks.swap(tasksTemp);
+
+    // Execute all the queued tasks:
+    for (auto& task : tasksTemp)
+      task();
+
+    tasksTemp.clear();
+  } while (not tasks.empty());
+
+  return true;
+}
+
 void EngineImpl::run()
 {
   if (MC_record_replay_is_active()) {
@@ -119,7 +141,7 @@ void EngineImpl::run()
 #endif
     }
 
-    simix_global->execute_tasks();
+    execute_tasks();
 
     while (not simix_global->actors_to_run.empty()) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
@@ -195,10 +217,10 @@ void EngineImpl::run()
         }
       }
 
-      simix_global->execute_tasks();
+      execute_tasks();
       do {
         wake_all_waiting_actors();
-      } while (simix_global->execute_tasks());
+      } while (execute_tasks());
 
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
       if (simix_global->process_list.size() == simix_global->daemons.size())
@@ -223,7 +245,7 @@ void EngineImpl::run()
     bool again = false;
     do {
       again = timer::Timer::execute_all();
-      if (simix_global->execute_tasks())
+      if (execute_tasks())
         again = true;
       wake_all_waiting_actors();
     } while (again);

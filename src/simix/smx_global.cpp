@@ -149,28 +149,6 @@ static void install_segvhandler()
 namespace simgrid {
 namespace simix {
 
-/** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
-bool Global::execute_tasks()
-{
-  xbt_assert(tasksTemp.empty());
-
-  if (tasks.empty())
-    return false;
-
-  do {
-    // We don't want the callbacks to modify the vector we are iterating over:
-    tasks.swap(tasksTemp);
-
-    // Execute all the queued tasks:
-    for (auto& task : tasksTemp)
-      task();
-
-    tasksTemp.clear();
-  } while (not tasks.empty());
-
-  return true;
-}
-
 void Global::empty_trash()
 {
   while (not actors_to_destroy.empty()) {

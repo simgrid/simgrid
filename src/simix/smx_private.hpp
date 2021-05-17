@@ -22,7 +22,6 @@ namespace simix {
 
 class Global {
 public:
-  bool execute_tasks();
   /**
    * Garbage collection
    *
@@ -55,9 +54,6 @@ public:
   kernel::actor::ActorImpl* maestro_ = nullptr;
 
   std::mutex mutex;
-
-  std::vector<xbt::Task<void()>> tasks;
-  std::vector<xbt::Task<void()>> tasksTemp;
 
   std::vector<kernel::actor::ActorImpl*> daemons;
 };

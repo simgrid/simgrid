@@ -8,15 +8,15 @@
 
 #include <simgrid/kernel/future.hpp>
 
-#include "src/simix/smx_private.hpp"
+#include "src/kernel/EngineImpl.hpp"
 
 namespace simgrid {
 namespace kernel {
 
 void FutureStateBase::schedule(simgrid::xbt::Task<void()>&& job) const
 {
-  simix_global->tasks.push_back(std::move(job));
+  EngineImpl::get_instance()->add_task(std::move(job));
 }
 
-}
-}
+} // namespace kernel
+} // namespace simgrid

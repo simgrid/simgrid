@@ -10,6 +10,7 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/simix.hpp>
+#include <xbt/functional.hpp>
 
 #include <map>
 #include <string>
@@ -27,6 +28,9 @@ class EngineImpl {
   std::vector<resource::Model*> models_;
   std::unordered_map<std::string, std::shared_ptr<resource::Model>> models_prio_;
   routing::NetZoneImpl* netzone_root_ = nullptr;
+
+  std::vector<xbt::Task<void()>> tasks;
+  std::vector<xbt::Task<void()>> tasksTemp;
 
   friend s4u::Engine;
 
@@ -63,6 +67,8 @@ public:
       return res->second;
   }
 
+  bool execute_tasks();
+  void add_task(xbt::Task<void()>&& t) { tasks.push_back(std::move(t)); }
   void wake_all_waiting_actors() const;
   void display_all_actor_status() const;
 
