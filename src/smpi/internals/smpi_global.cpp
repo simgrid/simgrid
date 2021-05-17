@@ -488,7 +488,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
                  dlerror(), saved_errno, strerror(saved_errno));
 
       smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-      xbt_assert(entry_point, "Could not resolve entry point");
+      xbt_assert(entry_point, "Could not resolve entry point. Does your program contain a main() function?");
       smpi_run_entry_point(entry_point, executable, args);
     });
   });
