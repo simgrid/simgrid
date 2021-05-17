@@ -7,6 +7,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
@@ -329,21 +330,15 @@ void ActorImpl::daemonize()
 {
   if (not daemon_) {
     daemon_ = true;
-    simix_global->daemons.push_back(this);
+    EngineImpl::get_instance()->add_daemon(this);
   }
 }
 
 void ActorImpl::undaemonize()
 {
   if (daemon_) {
-    auto& vect = simix_global->daemons;
-    auto it    = std::find(vect.begin(), vect.end(), this);
-    xbt_assert(it != vect.end(), "The dying daemon is not a daemon after all. Please report that bug.");
-    /* Don't move the whole content since we don't really care about the order */
-
-    std::swap(*it, vect.back());
-    vect.pop_back();
     daemon_ = false;
+    EngineImpl::get_instance()->rm_daemon(this);
   }
 }
 

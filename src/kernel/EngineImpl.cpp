@@ -119,6 +119,13 @@ bool EngineImpl::execute_tasks()
   return true;
 }
 
+void EngineImpl::rm_daemon(actor::ActorImpl* actor)
+{
+  auto it = daemons_.find(actor);
+  xbt_assert(it != daemons_.end(), "The dying daemon is not a daemon after all. Please report that bug.");
+  daemons_.erase(it);
+}
+
 void EngineImpl::run()
 {
   if (MC_record_replay_is_active()) {
@@ -223,8 +230,8 @@ void EngineImpl::run()
       } while (execute_tasks());
 
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
-      if (simix_global->process_list.size() == simix_global->daemons.size())
-        for (auto const& dmon : simix_global->daemons) {
+      if (simix_global->process_list.size() == daemons_.size())
+        for (auto const& dmon : daemons_) {
           XBT_DEBUG("Kill %s", dmon->get_cname());
           simix_global->maestro_->kill(dmon);
         }
@@ -257,7 +264,7 @@ void EngineImpl::run()
               simix_global->actors_to_run.size());
 
     if (time < 0. && simix_global->actors_to_run.empty() && not simix_global->process_list.empty()) {
-      if (simix_global->process_list.size() <= simix_global->daemons.size()) {
+      if (simix_global->process_list.size() <= daemons_.size()) {
         XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
                      "once the simulation is over. Please fix your on_exit() functions.");
       } else {

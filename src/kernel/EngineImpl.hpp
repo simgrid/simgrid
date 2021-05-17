@@ -13,6 +13,7 @@
 #include <xbt/functional.hpp>
 
 #include <map>
+#include <set>
 #include <string>
 #include <unordered_map>
 
@@ -28,6 +29,7 @@ class EngineImpl {
   std::vector<resource::Model*> models_;
   std::unordered_map<std::string, std::shared_ptr<resource::Model>> models_prio_;
   routing::NetZoneImpl* netzone_root_ = nullptr;
+  std::set<kernel::actor::ActorImpl*> daemons_;
 
   std::vector<xbt::Task<void()>> tasks;
   std::vector<xbt::Task<void()>> tasksTemp;
@@ -66,6 +68,8 @@ public:
     else
       return res->second;
   }
+  void add_daemon(actor::ActorImpl* d) { daemons_.insert(d); }
+  void rm_daemon(actor::ActorImpl* d);
 
   bool execute_tasks();
   void add_task(xbt::Task<void()>&& t) { tasks.push_back(std::move(t)); }

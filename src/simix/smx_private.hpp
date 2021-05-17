@@ -54,8 +54,6 @@ public:
   kernel::actor::ActorImpl* maestro_ = nullptr;
 
   std::mutex mutex;
-
-  std::vector<kernel::actor::ActorImpl*> daemons;
 };
 }
 }
