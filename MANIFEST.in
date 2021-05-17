@@ -274,6 +274,8 @@ include examples/cpp/mc-electric-fence/s4u-mc-electric-fence.cpp
 include examples/cpp/mc-electric-fence/s4u-mc-electric-fence.tesh
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.tesh
+include examples/cpp/network-factors/s4u-network-factors.cpp
+include examples/cpp/network-factors/s4u-network-factors.tesh
 include examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi.cpp
 include examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi.tesh
 include examples/cpp/network-ns3/3hosts_2links_d.xml
@@ -2203,6 +2205,7 @@ include src/kernel/resource/Action.cpp
 include src/kernel/resource/DiskImpl.cpp
 include src/kernel/resource/DiskImpl.hpp
 include src/kernel/resource/Model.cpp
+include src/kernel/resource/NetworkModelIntf_test.cpp
 include src/kernel/resource/profile/DatedValue.cpp
 include src/kernel/resource/profile/DatedValue.hpp
 include src/kernel/resource/profile/Event.hpp

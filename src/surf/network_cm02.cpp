@@ -204,7 +204,9 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   double latency = 0.0;
   std::vector<LinkImpl*> back_route;
   std::vector<LinkImpl*> route;
+  std::vector<s4u::Link*> s4u_route;
   std::unordered_set<kernel::routing::NetZoneImpl*> netzones;
+  std::unordered_set<s4u::NetZone*> s4u_netzones;
 
   XBT_IN("(%s,%s,%g,%g)", src->get_cname(), dst->get_cname(), size, rate);
 
@@ -268,14 +270,37 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
         });
   }
 
-  double bandwidth_bound = route.empty() ? -1.0 : get_bandwidth_factor(size) * route.front()->get_bandwidth();
+  /* transform data to user structures if necessary */
+  if (lat_factor_cb_ || bw_factor_cb_) {
+    std::for_each(route.begin(), route.end(), [&s4u_route](LinkImpl* l) { s4u_route.push_back(l->get_iface()); });
+    std::for_each(netzones.begin(), netzones.end(),
+                  [&s4u_netzones](kernel::routing::NetZoneImpl* n) { s4u_netzones.insert(n->get_iface()); });
+  }
+  double bw_factor;
+  if (bw_factor_cb_) {
+    bw_factor = bw_factor_cb_(size, src, dst, s4u_route, s4u_netzones);
+  } else {
+    bw_factor = get_bandwidth_factor(size);
+  }
+
+  double bandwidth_bound = route.empty() ? -1.0 : bw_factor * route.front()->get_bandwidth();
 
   for (auto const& link : route)
-    bandwidth_bound = std::min(bandwidth_bound, get_bandwidth_factor(size) * link->get_bandwidth());
+    bandwidth_bound = std::min(bandwidth_bound, bw_factor * link->get_bandwidth());
 
   action->lat_current_ = action->latency_;
-  action->latency_ *= get_latency_factor(size);
-  action->set_user_bound(get_bandwidth_constraint(action->get_user_bound(), bandwidth_bound, size));
+  if (lat_factor_cb_) {
+    action->latency_ *= lat_factor_cb_(size, src, dst, s4u_route, s4u_netzones);
+  } else {
+    action->latency_ *= get_latency_factor(size);
+  }
+
+  if (bw_constraint_cb_) {
+    action->set_user_bound(
+        bw_constraint_cb_(action->get_user_bound(), bandwidth_bound, size, src, dst, s4u_route, s4u_netzones));
+  } else {
+    action->set_user_bound(get_bandwidth_constraint(action->get_user_bound(), bandwidth_bound, size));
+  }
 
   size_t constraints_per_variable = route.size();
   constraints_per_variable += back_route.size();
