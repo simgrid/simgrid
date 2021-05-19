@@ -199,35 +199,58 @@ void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
   }
 }
 
-Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+void NetworkCm02Model::comm_action_expand_constraints(const s4u::Host* src, const s4u::Host* dst,
+                                                      NetworkCm02Action* action, const std::vector<LinkImpl*>& route,
+                                                      const std::vector<LinkImpl*>& back_route)
 {
-  double latency = 0.0;
-  std::vector<LinkImpl*> back_route;
-  std::vector<LinkImpl*> route;
-  std::vector<s4u::Link*> s4u_route;
-  std::unordered_set<kernel::routing::NetZoneImpl*> netzones;
-  std::unordered_set<s4u::NetZone*> s4u_netzones;
-
-  XBT_IN("(%s,%s,%g,%g)", src->get_cname(), dst->get_cname(), size, rate);
-
-  kernel::routing::NetZoneImpl::get_global_route_with_netzones(src->get_netpoint(), dst->get_netpoint(), route,
-                                                               &latency, netzones);
-
-  xbt_assert(not route.empty() || latency > 0,
-             "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
-             src->get_cname(), dst->get_cname());
-
-  bool failed = std::any_of(route.begin(), route.end(), [](const LinkImpl* link) { return not link->is_on(); });
-
-  if (cfg_crosstraffic) {
-    dst->route_to(src, back_route, nullptr);
-    if (not failed)
-      failed =
-          std::any_of(back_route.begin(), back_route.end(), [](const LinkImpl* link) { return not link->is_on(); });
-  }
-
+  /* expand route links constraints for route and back_route */
   NetworkWifiLink* src_wifi_link = nullptr;
   NetworkWifiLink* dst_wifi_link = nullptr;
+  if (not route.empty() && route.front()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+    src_wifi_link = static_cast<NetworkWifiLink*>(route.front());
+  }
+  if (route.size() > 1 && route.back()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+    dst_wifi_link = static_cast<NetworkWifiLink*>(route.back());
+  }
+
+  /* WI-FI links needs special treatment, do it here */
+  if (src_wifi_link != nullptr)
+    get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(),
+                                1.0 / src_wifi_link->get_host_rate(src));
+  if (dst_wifi_link != nullptr)
+    get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(),
+                                1.0 / dst_wifi_link->get_host_rate(dst));
+
+  for (auto const* link : route) {
+    if (link->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI)
+      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
+  }
+
+  if (cfg_crosstraffic) {
+    XBT_DEBUG("Crosstraffic active: adding backward flow using 5%% of the available bandwidth");
+    if (dst_wifi_link != nullptr)
+      get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(),
+                                  .05 / dst_wifi_link->get_host_rate(dst));
+    if (src_wifi_link != nullptr)
+      get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(),
+                                  .05 / src_wifi_link->get_host_rate(src));
+
+    for (auto const* link : back_route) {
+      if (link->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI)
+        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
+    }
+    // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
+    // (You would also have to change simgrid::kernel::lmm::Element::get_concurrency())
+    // action->getVariable()->set_concurrency_share(2)
+  }
+}
+
+NetworkCm02Action* NetworkCm02Model::comm_action_create(s4u::Host* src, s4u::Host* dst, double size,
+                                                        const std::vector<LinkImpl*>& route, bool failed)
+{
+  NetworkWifiLink* src_wifi_link = nullptr;
+  NetworkWifiLink* dst_wifi_link = nullptr;
+  /* many checks related to Wi-Fi links */
   if (not route.empty() && route.front()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
     src_wifi_link = static_cast<NetworkWifiLink*>(route.front());
     xbt_assert(src_wifi_link->get_host_rate(src) != -1,
@@ -250,25 +273,56 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
                  "Did you declare an access_point in your WIFI zones?",
                  route[i]->get_cname(), src->get_cname(), dst->get_cname(), i + 1, route.size());
 
+  for (auto const* link : route) {
+    if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
+      xbt_assert(link == src_wifi_link || link == dst_wifi_link,
+                 "Wifi links can only occur at the beginning of the route (meaning that it's attached to the src) or "
+                 "at its end (meaning that it's attached to the dst");
+    }
+  }
+
+  /* create action and do some initializations */
   NetworkCm02Action* action;
   if (src_wifi_link == nullptr && dst_wifi_link == nullptr)
     action = new NetworkCm02Action(this, *src, *dst, size, failed);
   else
     action = new NetworkWifiAction(this, *src, *dst, size, failed, src_wifi_link, dst_wifi_link);
-  action->sharing_penalty_ = latency;
-  action->latency_         = latency;
-  action->set_user_bound(rate);
 
   if (is_update_lazy()) {
     action->set_last_update();
   }
 
-  if (sg_weight_S_parameter > 0) {
-    action->sharing_penalty_ =
-        std::accumulate(route.begin(), route.end(), action->sharing_penalty_, [](double total, LinkImpl* const& link) {
-          return total + sg_weight_S_parameter / link->get_bandwidth();
-        });
+  return action;
+}
+
+bool NetworkCm02Model::comm_get_route_info(const s4u::Host* src, const s4u::Host* dst, double& latency,
+                                           std::vector<LinkImpl*>& route, std::vector<LinkImpl*>& back_route,
+                                           std::unordered_set<kernel::routing::NetZoneImpl*>& netzones) const
+{
+  kernel::routing::NetZoneImpl::get_global_route_with_netzones(src->get_netpoint(), dst->get_netpoint(), route,
+                                                               &latency, netzones);
+
+  xbt_assert(not route.empty() || latency > 0,
+             "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
+             src->get_cname(), dst->get_cname());
+
+  bool failed = std::any_of(route.begin(), route.end(), [](const LinkImpl* link) { return not link->is_on(); });
+
+  if (cfg_crosstraffic) {
+    dst->route_to(src, back_route, nullptr);
+    if (not failed)
+      failed =
+          std::any_of(back_route.begin(), back_route.end(), [](const LinkImpl* link) { return not link->is_on(); });
   }
+  return failed;
+}
+
+void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::Host* dst, double size,
+                                              NetworkCm02Action* action, const std::vector<LinkImpl*>& route,
+                                              const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones)
+{
+  std::vector<s4u::Link*> s4u_route;
+  std::unordered_set<s4u::NetZone*> s4u_netzones;
 
   /* transform data to user structures if necessary */
   if (lat_factor_cb_ || bw_factor_cb_) {
@@ -282,18 +336,11 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   } else {
     bw_factor = get_bandwidth_factor(size);
   }
+  /* get mininum bandwidth among links in the route and multiply by correct factor */
+  const auto& min_bw = std::min_element(
+      route.begin(), route.end(), [](const auto& a, const auto& b) { return a->get_bandwidth() < b->get_bandwidth(); });
 
-  double bandwidth_bound = route.empty() ? -1.0 : bw_factor * route.front()->get_bandwidth();
-
-  for (auto const& link : route)
-    bandwidth_bound = std::min(bandwidth_bound, bw_factor * link->get_bandwidth());
-
-  action->lat_current_ = action->latency_;
-  if (lat_factor_cb_) {
-    action->latency_ *= lat_factor_cb_(size, src, dst, s4u_route, s4u_netzones);
-  } else {
-    action->latency_ *= get_latency_factor(size);
-  }
+  double bandwidth_bound = min_bw == route.end() ? -1.0 : bw_factor * (*min_bw)->get_bandwidth();
 
   if (bw_constraint_cb_) {
     action->set_user_bound(
@@ -302,6 +349,17 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     action->set_user_bound(get_bandwidth_constraint(action->get_user_bound(), bandwidth_bound, size));
   }
 
+  action->lat_current_ = action->latency_;
+  if (lat_factor_cb_) {
+    action->latency_ *= lat_factor_cb_(size, src, dst, s4u_route, s4u_netzones);
+  } else {
+    action->latency_ *= get_latency_factor(size);
+  }
+}
+
+void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const std::vector<LinkImpl*>& route,
+                                                const std::vector<LinkImpl*>& back_route)
+{
   size_t constraints_per_variable = route.size();
   constraints_per_variable += back_route.size();
 
@@ -319,6 +377,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   } else
     action->set_variable(get_maxmin_system()->variable_new(action, 1.0, -1.0, constraints_per_variable));
 
+  /* after setting the variable, update the bounds depending on user configuration */
   if (action->get_user_bound() < 0) {
     get_maxmin_system()->update_variable_bound(
         action->get_variable(), (action->lat_current_ > 0) ? cfg_tcp_gamma / (2.0 * action->lat_current_) : -1.0);
@@ -328,40 +387,39 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
                                     ? std::min(action->get_user_bound(), cfg_tcp_gamma / (2.0 * action->lat_current_))
                                     : action->get_user_bound());
   }
+}
 
-  if (src_wifi_link != nullptr)
-    get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(),
-                                1.0 / src_wifi_link->get_host_rate(src));
-  if (dst_wifi_link != nullptr)
-    get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(),
-                                1.0 / dst_wifi_link->get_host_rate(dst));
+Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+{
+  double latency = 0.0;
+  std::vector<LinkImpl*> back_route;
+  std::vector<LinkImpl*> route;
+  std::unordered_set<kernel::routing::NetZoneImpl*> netzones;
 
-  for (auto const* link : route) {
-    // WIFI links are handled manually just above, so skip them now
-    if (link->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-      xbt_assert(link == src_wifi_link || link == dst_wifi_link,
-                 "Wifi links can only occur at the beginning of the route (meaning that it's attached to the src) or "
-                 "at its end (meaning that it's attached to the dst");
-    } else {
-      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
-    }
+  XBT_IN("(%s,%s,%g,%g)", src->get_cname(), dst->get_cname(), size, rate);
+
+  bool failed = comm_get_route_info(src, dst, latency, route, back_route, netzones);
+
+  NetworkCm02Action* action = comm_action_create(src, dst, size, route, failed);
+  action->sharing_penalty_  = latency;
+  action->latency_          = latency;
+  action->set_user_bound(rate);
+
+  if (sg_weight_S_parameter > 0) {
+    action->sharing_penalty_ =
+        std::accumulate(route.begin(), route.end(), action->sharing_penalty_, [](double total, LinkImpl* const& link) {
+          return total + sg_weight_S_parameter / link->get_bandwidth();
+        });
   }
 
-  if (cfg_crosstraffic) {
-    XBT_DEBUG("Crosstraffic active: adding backward flow using 5%% of the available bandwidth");
-    if (dst_wifi_link != nullptr)
-      get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(),
-                                  .05 / dst_wifi_link->get_host_rate(dst));
-    if (src_wifi_link != nullptr)
-      get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(),
-                                  .05 / src_wifi_link->get_host_rate(src));
-    for (auto const* link : back_route)
-      if (link->get_sharing_policy() != s4u::Link::SharingPolicy::WIFI)
-        get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
-    // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
-    // (You would also have to change simgrid::kernel::lmm::Element::get_concurrency())
-    // action->getVariable()->set_concurrency_share(2)
-  }
+  /* setting bandwidth and latency bounds considering route and configured bw/lat factors */
+  comm_action_set_bounds(src, dst, size, action, route, netzones);
+
+  /* creating the maxmin variable associated to this action */
+  comm_action_set_variable(action, route, back_route);
+
+  /* expand maxmin system to consider this communication in bw constraint for each link in route and back_route */
+  comm_action_expand_constraints(src, dst, action, route, back_route);
   XBT_OUT();
 
   simgrid::s4u::Link::on_communicate(*action);

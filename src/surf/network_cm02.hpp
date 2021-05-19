@@ -30,6 +30,24 @@ class XBT_PRIVATE NetworkSmpiModel;
  *********/
 
 class NetworkCm02Model : public NetworkModel {
+  /** @brief Get route information (2-way) */
+  bool comm_get_route_info(const s4u::Host* src, const s4u::Host* dst, /* OUT */ double& latency,
+                           std::vector<LinkImpl*>& route, std::vector<LinkImpl*>& back_route,
+                           std::unordered_set<kernel::routing::NetZoneImpl*>& netzones) const;
+  /** @brief Create network action for this communication */
+  NetworkCm02Action* comm_action_create(s4u::Host* src, s4u::Host* dst, double size,
+                                        const std::vector<LinkImpl*>& route, bool failed);
+  /** @brief Expand link contraint considering this new communication action */
+  void comm_action_expand_constraints(const s4u::Host* src, const s4u::Host* dst, NetworkCm02Action* action,
+                                      const std::vector<LinkImpl*>& route, const std::vector<LinkImpl*>& back_route);
+  /** @brief Set communication bounds for latency and bandwidth */
+  void comm_action_set_bounds(const s4u::Host* src, const s4u::Host* dst, double size, NetworkCm02Action* action,
+                              const std::vector<LinkImpl*>& route,
+                              const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones);
+  /** @brief Create maxmin variable in communication action */
+  void comm_action_set_variable(NetworkCm02Action* action, const std::vector<LinkImpl*>& route,
+                                const std::vector<LinkImpl*>& back_route);
+
 public:
   explicit NetworkCm02Model(const std::string& name);
   LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;

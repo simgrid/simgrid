@@ -160,8 +160,8 @@ public:
    * Profile must contain absolute values */
   virtual LinkImpl* set_latency_profile(kernel::profile::Profile* profile);
 
-  Metric latency_   = {0.0, 0, nullptr};
-  Metric bandwidth_ = {1.0, 0, nullptr};
+  Metric latency_   = {0.0, 1, nullptr};
+  Metric bandwidth_ = {1.0, 1, nullptr};
 };
 
 /**********

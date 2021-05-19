@@ -61,9 +61,6 @@ LinkImpl::LinkImpl(const std::string& name) : Resource_T(name), piface_(this)
   if (name != "__loopback__")
     xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
 
-  latency_.scale   = 1;
-  bandwidth_.scale = 1;
-
   s4u::Engine::get_instance()->link_register(name, &piface_);
   XBT_DEBUG("Create link '%s'", name.c_str());
 }
