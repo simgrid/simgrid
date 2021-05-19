@@ -543,7 +543,7 @@ file `include/smpi/smpi.h
 <https://framagit.org/simgrid/simgrid/tree/master/include/smpi/smpi.h>`_
 in your version of SimGrid, between two lines containing the ``FIXME``
 marker. If you really miss a feature, please get in touch with us: we
-can guide you though the SimGrid code to help you implementing it, and
+can guide you through the SimGrid code to help you implementing it, and
 we'd be glad to integrate your contribution to the main project.
 
 .. _SMPI_what_globals:
@@ -814,7 +814,7 @@ lower case) or similar. Just check the logs.
 error: unknown type name 'useconds_t'
 .....................................
 
-Try to add ``-D_GNU_SOURCE`` to your compilation line to get ride
+Try to add ``-D_GNU_SOURCE`` to your compilation line to get rid
 of that error.
 
 The reason is that SMPI provides its own version of ``usleep(3)``
