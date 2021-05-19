@@ -2,6 +2,11 @@
 
 SimGrid (3.27.1) NOT RELEASED YET (v3.28 expected June 21. 2021, 03:32 UTC)
 
+New features:
+ - New plugin: Producer-Consumer with monitor. Just requires to include the 
+   include/simgrid/plugins/ProducerConsumer.hpp header to be used. See the 
+   associated example (examples/cpp/plugin-prodcons).
+
 S4U:
  - Fixed a bug where Activity::wait_for() killed the activity on timeout.
    Explicitly cancel the activity to get back to previous behavior.

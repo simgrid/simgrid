@@ -219,6 +219,7 @@ examples/cpp/platform-profile/s4u-platform-profile
 examples/cpp/platform-properties/s4u-platform-properties
 examples/cpp/plugin-host-load/s4u-plugin-host-load
 examples/cpp/plugin-link-load/s4u-plugin-link-load
+examples/cpp/plugin-prodcons/s4u-plugin-prodcons
 examples/cpp/replay-comm/s4u-replay-comm
 examples/cpp/replay-io/s4u-replay-io
 examples/cpp/routing-get-clusters/s4u-routing-get-clusters

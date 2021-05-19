@@ -299,6 +299,8 @@ include examples/cpp/plugin-host-load/s4u-plugin-host-load.cpp
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.tesh
 include examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
 include examples/cpp/plugin-link-load/s4u-plugin-link-load.tesh
+include examples/cpp/plugin-prodcons/s4u-plugin-prodcons.cpp
+include examples/cpp/plugin-prodcons/s4u-plugin-prodcons.tesh
 include examples/cpp/replay-comm/s4u-replay-comm-split-p0.txt
 include examples/cpp/replay-comm/s4u-replay-comm-split-p1.txt
 include examples/cpp/replay-comm/s4u-replay-comm-split_d.xml
@@ -1994,6 +1996,7 @@ include include/simgrid/mailbox.h
 include include/simgrid/modelchecker.h
 include include/simgrid/msg.h
 include include/simgrid/mutex.h
+include include/simgrid/plugins/ProducerConsumer.hpp
 include include/simgrid/plugins/dvfs.h
 include include/simgrid/plugins/energy.h
 include include/simgrid/plugins/file_system.h

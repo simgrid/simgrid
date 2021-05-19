@@ -1,0 +1,43 @@
+#!/usr/bin/env tesh
+
+p This tests the ProducerConsumer plugin
+
+$ ${bindir:=.}/s4u-plugin-prodcons "--log=root.fmt:[%5.3r]%e[%11a]%e%m%n"
+> [0.000] [    maestro] Maximum number of queued data is 2
+> [0.000] [    maestro] Transfers are done in mailbox mode
+> [0.145] [ ingester-2] data sucessfully put: 20
+> [0.145] [retriever-0] data sucessfully get: 20
+> [0.825] [ ingester-0] data sucessfully put: 0
+> [0.825] [retriever-0] data sucessfully get: 0
+> [0.916] [ ingester-1] data sucessfully put: 10
+> [0.916] [retriever-1] data sucessfully get: 10
+> [1.218] [ ingester-1] data sucessfully put: 11
+> [1.218] [retriever-2] data sucessfully get: 11
+> [1.794] [ ingester-1] data sucessfully put: 12
+> [1.794] [retriever-2] data sucessfully get: 12
+> [2.340] [ ingester-1] data sucessfully put: 10
+> [2.350] [retriever-0] data sucessfully get: 10
+> [2.732] [ ingester-0] data sucessfully put: 1
+> [2.732] [retriever-1] data sucessfully get: 1
+> [5.765] [ ingester-1] data sucessfully put: 11
+> [5.775] [ ingester-2] data sucessfully put: 21
+> [5.775] [retriever-2] data sucessfully get: 21
+> [6.603] [ ingester-1] data sucessfully put: 12
+> [6.613] [ ingester-0] data sucessfully put: 2
+> [6.613] [retriever-1] data sucessfully get: 2
+> [7.172] [retriever-1] data sucessfully get: 11
+> [7.343] [retriever-0] data sucessfully get: 12
+> [7.570] [ ingester-0] data sucessfully put: 0
+> [8.638] [ ingester-2] data sucessfully put: 22
+> [8.638] [retriever-1] data sucessfully get: 22
+> [8.932] [retriever-1] data sucessfully get: 0
+> [8.935] [ ingester-2] data sucessfully put: 20
+> [9.747] [retriever-0] data sucessfully get: 20
+> [9.971] [ ingester-0] data sucessfully put: 1
+> [9.982] [retriever-0] data sucessfully get: 1
+> [10.200] [ ingester-2] data sucessfully put: 21
+> [10.638] [retriever-2] data sucessfully get: 21
+> [13.369] [ ingester-2] data sucessfully put: 22
+> [13.379] [retriever-2] data sucessfully get: 22
+> [13.634] [ ingester-0] data sucessfully put: 2
+> [14.396] [retriever-2] data sucessfully get: 2
