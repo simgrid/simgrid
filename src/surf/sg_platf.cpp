@@ -385,8 +385,8 @@ static void sg_platf_build_hostlink(simgrid::kernel::routing::StarZone* zone,
   simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
 
-  simgrid::s4u::Link* linkUp   = simgrid::s4u::Link::by_name_or_null(hostlink->link_up);
-  simgrid::s4u::Link* linkDown = simgrid::s4u::Link::by_name_or_null(hostlink->link_down);
+  const simgrid::s4u::Link* linkUp   = simgrid::s4u::Link::by_name_or_null(hostlink->link_up);
+  const simgrid::s4u::Link* linkDown = simgrid::s4u::Link::by_name_or_null(hostlink->link_down);
 
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up.c_str());
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down.c_str());
@@ -402,9 +402,9 @@ static void sg_platf_build_cabinet(simgrid::kernel::routing::StarZone* zone,
     std::string id   = args->prefix + std::to_string(radical) + args->suffix;
     auto const* host = zone->create_host(id, std::vector<double>{args->speed})->seal();
 
-    auto* link_up =
+    const auto* link_up =
         zone->create_link("link_" + id + "_UP", std::vector<double>{args->bw})->set_latency(args->lat)->seal();
-    auto* link_down =
+    const auto* link_down =
         zone->create_link("link_" + id + "_DOWN", std::vector<double>{args->bw})->set_latency(args->lat)->seal();
 
     sg_platf_cluster_set_hostlink(zone, host->get_netpoint(), link_up, link_down, backbone);
