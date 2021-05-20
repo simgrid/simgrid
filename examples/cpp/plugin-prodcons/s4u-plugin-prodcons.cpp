@@ -31,7 +31,7 @@ static void ingester(int id, simgrid::plugin::ProducerConsumerPtr<int> pc)
   }
 }
 
-static void retriever(int id, simgrid::plugin::ProducerConsumerPtr<int> pc)
+static void retriever(simgrid::plugin::ProducerConsumerPtr<int> pc)
 {
   sg4::this_actor::sleep_for(simgrid::xbt::random::uniform_real(0, 1));
   for (int i = 0; i < 3; i++) {
@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
     sg4::Actor::create("ingester-" + std::to_string(i), sg4::Host::by_name(hostname), &ingester, i, pc);
 
     hostname = std::string("node-") + std::to_string(i + 3) + ".simgrid.org";
-    sg4::Actor::create("retriever-" + std::to_string(i), sg4::Host::by_name(hostname), &retriever, i, pc);
+    sg4::Actor::create("retriever-" + std::to_string(i), sg4::Host::by_name(hostname), &retriever, pc);
   }
 
   e.run();
