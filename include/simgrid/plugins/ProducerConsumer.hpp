@@ -17,7 +17,7 @@
 #include <queue>
 #include <string>
 
-XBT_LOG_NEW_CATEGORY(producer_consumer, "Producer-Consumer plugin logging category");
+XBT_LOG_EXTERNAL_CATEGORY(producer_consumer);
 
 /** Stock implementation of a generic monitored queue to solve the producer-consumer problem */
 
@@ -27,7 +27,7 @@ namespace plugin {
 template <typename T> class ProducerConsumer;
 template <typename T> using ProducerConsumerPtr = boost::intrusive_ptr<ProducerConsumer<T>>;
 
-static unsigned long pc_id = 0;
+XBT_PUBLIC_DATA unsigned long pc_id;
 
 template <typename T> class ProducerConsumer {
 public:

@@ -363,6 +363,7 @@ set(SURF_SRC
   )
 
 set(PLUGINS_SRC
+  src/plugins/ProducerConsumer.cpp
   src/plugins/dirty_page_tracking.cpp
   src/plugins/host_dvfs.cpp
   src/plugins/host_energy.cpp

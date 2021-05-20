@@ -2327,6 +2327,7 @@ include src/msg/msg_legacy.cpp
 include src/msg/msg_private.hpp
 include src/msg/msg_process.cpp
 include src/msg/msg_task.cpp
+include src/plugins/ProducerConsumer.cpp
 include src/plugins/dirty_page_tracking.cpp
 include src/plugins/file_system/s4u_FileSystem.cpp
 include src/plugins/host_dvfs.cpp
