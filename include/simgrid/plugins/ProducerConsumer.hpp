@@ -70,7 +70,7 @@ private:
     }
   }
 
-  ProducerConsumer(unsigned int max_queue_size) : max_queue_size_(max_queue_size)
+  explicit ProducerConsumer(unsigned int max_queue_size) : max_queue_size_(max_queue_size)
   {
     xbt_assert(max_queue_size > 0, "Max queue size of 0 is not allowed");
 
@@ -106,7 +106,7 @@ public:
     return this;
   }
 
-  unsigned int get_max_queue_size() { return max_queue_size_; }
+  unsigned int get_max_queue_size() const { return max_queue_size_; }
 
   /** The underlying data container (and transfer mode) can only be modified when the queue is empty.*/
   ProducerConsumer* set_transfer_mode(TransferMode new_mode)
@@ -123,7 +123,7 @@ public:
     tmode_ = new_mode;
     return this;
   }
-  std::string get_transfer_mode() { return tmode_ == TransferMode::MAILBOX ? "mailbox" : "queue"; }
+  std::string get_transfer_mode() const { return tmode_ == TransferMode::MAILBOX ? "mailbox" : "queue"; }
 
   /** Container-agnostic size() method */
   unsigned int size() { return tmode_ == TransferMode::MAILBOX ? mbox_->size() : queue_.size(); }
