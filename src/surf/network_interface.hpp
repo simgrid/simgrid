@@ -94,7 +94,7 @@ public:
    * @param size The size of the message.
    * @return The new bandwidth.
    */
-  virtual double get_bandwidth_constraint(double rate, double /*bound*/, double /*size*/) { return rate; }
+  double get_bandwidth_constraint(double rate, double bound, double size);
 
   double next_occurring_event_full(double now) override;
 

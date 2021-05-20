@@ -21,7 +21,6 @@ public:
 
   double get_latency_factor(double size) override;
   double get_bandwidth_factor(double size) override;
-  double get_bandwidth_constraint(double rate, double bound, double size) override;
 
 protected:
   virtual void check_lat_factor_cb() override;

@@ -96,11 +96,6 @@ double NetworkSmpiModel::get_latency_factor(double size)
 
   return current;
 }
-
-double NetworkSmpiModel::get_bandwidth_constraint(double rate, double bound, double size)
-{
-  return rate < 0 ? bound : std::min(bound, rate * get_bandwidth_factor(size));
-}
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid

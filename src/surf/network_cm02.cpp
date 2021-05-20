@@ -336,18 +336,18 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
   } else {
     bw_factor = get_bandwidth_factor(size);
   }
-  /* get mininum bandwidth among links in the route and multiply by correct factor */
-  const auto& min_bw = std::min_element(
-      route.begin(), route.end(), [](const auto& a, const auto& b) { return a->get_bandwidth() < b->get_bandwidth(); });
-
-  double bandwidth_bound = min_bw == route.end() ? -1.0 : bw_factor * (*min_bw)->get_bandwidth();
-
-  if (bw_constraint_cb_) {
-    action->set_user_bound(
-        bw_constraint_cb_(action->get_user_bound(), bandwidth_bound, size, src, dst, s4u_route, s4u_netzones));
-  } else {
-    action->set_user_bound(get_bandwidth_constraint(action->get_user_bound(), bandwidth_bound, size));
+  /* get mininum bandwidth among links in the route and multiply by correct factor
+   * ignore wi-fi links, they're not considered for bw_factors */
+  double bandwidth_bound = -1.0;
+  for (const auto* l : route) {
+    if (l->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI)
+      continue;
+    if (bandwidth_bound == -1.0 || l->get_bandwidth() < bandwidth_bound)
+      bandwidth_bound = l->get_bandwidth();
   }
+  bandwidth_bound *= bw_factor;
+
+  action->set_user_bound(get_bandwidth_constraint(action->get_user_bound(), bandwidth_bound, size));
 
   action->lat_current_ = action->latency_;
   if (lat_factor_cb_) {
