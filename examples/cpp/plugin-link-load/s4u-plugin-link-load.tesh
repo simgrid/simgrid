@@ -7,10 +7,10 @@ $ ${bindir:=.}/s4u-plugin-link-load ${platfdir}/cluster_backbone.xml "--log=root
 > [  0.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (0, 0, 0, 0)
 > [  1.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (0, 0, 0, 0)
 > [  1.000000] (1:load_test@node-42.simgrid.org) Launching the transfer of 1000000000 bytes
-> [  2.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (1.27313e+08, 6.36563e+07, 0, 1.27313e+08)
-> [  3.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (2.54625e+08, 8.4875e+07, 0, 1.27313e+08)
-> [  4.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (3.81938e+08, 9.54844e+07, 0, 1.27313e+08)
-> [  5.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (5.0925e+08, 1.0185e+08, 0, 1.27313e+08)
+> [  2.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (1.27312e+08, 6.36562e+07, 0, 1.27312e+08)
+> [  3.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (2.54625e+08, 8.4875e+07, 0, 1.27312e+08)
+> [  4.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (3.81938e+08, 9.54844e+07, 0, 1.27312e+08)
+> [  5.000000] (2:monitor@node-51.simgrid.org) Backbone link load (cum, avg, min, max): (5.0925e+08, 1.0185e+08, 0, 1.27312e+08)
 > [  5.000000] (2:monitor@node-51.simgrid.org) Untracking the backbone link
 > [  5.000000] (2:monitor@node-51.simgrid.org) Host0_UP link load (cum, avg, min, max): (4.85e+08, 9.7e+07, 0, 1.2125e+08)
 > [  5.000000] (2:monitor@node-51.simgrid.org) Host1_UP link load (cum, avg, min, max): (4.85e+08, 9.7e+07, 0, 1.2125e+08)
