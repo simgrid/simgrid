@@ -27,15 +27,15 @@ inline auto& kernel_timers() // avoid static initialization order fiasco
 /** @brief Timer datatype */
 class Timer {
   const double date_;
+  xbt::Task<void()> callback;
+  std::remove_reference_t<decltype(kernel_timers())>::handle_type handle_;
 
 public:
   double get_date() const { return date_; }
 
-  std::remove_reference_t<decltype(kernel_timers())>::handle_type handle_;
 
   Timer(double date, xbt::Task<void()>&& callback) : date_(date), callback(std::move(callback)) {}
 
-  xbt::Task<void()> callback;
   void remove();
 
   template <class F> static inline Timer* set(double date, F callback)
