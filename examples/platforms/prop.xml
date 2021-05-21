@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <!-- This file describe a super simple platform which main interest is to define some properties on hosts, 
-       processes and links. It is used in several regression cases on properties -->
+       actors and links. It is used in several regression cases on properties -->
   <zone  id="AS0"  routing="Full">
     <prop id="filename" value="prop.xml"/>
     <prop id="date" value="31-08-12"/>

@@ -116,7 +116,7 @@ void Actor::join(double timeout) const
   const kernel::actor::ActorImpl* target = pimpl_;
   kernel::actor::simcall_blocking([issuer, target, timeout] {
     if (target->finished_) {
-      // The joined process is already finished, just wake up the issuer right away
+      // The joined actor is already finished, just wake up the issuer right away
       issuer->simcall_answer();
     } else {
       kernel::activity::ActivityImplPtr sync = issuer->join(target, timeout);
@@ -687,9 +687,9 @@ void sg_actor_set_host(sg_actor_t actor, sg_host_t host)
 {
   actor->set_host(host);
 }
-void sg_actor_migrate(sg_actor_t process, sg_host_t host) // XBT_ATTRIB_DEPRECATED_v329
+void sg_actor_migrate(sg_actor_t actor, sg_host_t host) // XBT_ATTRIB_DEPRECATED_v329
 {
-  process->set_host(host);
+  actor->set_host(host);
 }
 
 /**
@@ -751,7 +751,7 @@ sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dic
     props[key] = value;
   xbt_dict_free(&properties);
 
-  /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
+  /* Let's create the actor: SIMIX may decide to start it right now, even before returning the flow control to us */
   smx_actor_t actor = nullptr;
   try {
     actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host).get();
@@ -869,9 +869,9 @@ void sg_actor_data_set(sg_actor_t actor, void* userdata) // XBT_ATTRIB_DEPRECATE
   sg_actor_set_data(actor, userdata);
 }
 
-/** @brief Add a function to the list of "on_exit" functions for the current process.
- *  The on_exit functions are the functions executed when your process is killed.
- *  You should use them to free the data used by your process.
+/** @brief Add a function to the list of "on_exit" functions for the current actor.
+ *  The on_exit functions are the functions executed when your actor is killed.
+ *  You should use them to free the data used by your actor.
  */
 void sg_actor_on_exit(void_f_int_pvoid_t fun, void* data)
 {

@@ -47,12 +47,12 @@ def monitor():
     this_actor.sleep_for(5)
 
     this_actor.info(
-        "After 5 seconds, move the process to {:s}".format(jacquelin.name))
+        "After 5 seconds, move the actor to {:s}".format(jacquelin.name))
     actor.host = jacquelin
 
     this_actor.sleep_until(15)
     this_actor.info(
-        "At t=15, move the process to {:s} and resume it.".format(fafard.name))
+        "At t=15, move the actor to {:s} and resume it.".format(fafard.name))
     actor.host = fafard
     actor.resume()
 

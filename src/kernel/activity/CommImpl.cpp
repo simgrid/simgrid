@@ -328,8 +328,8 @@ CommImpl* CommImpl::start()
 
     } else if ((src_actor_ != nullptr && src_actor_->is_suspended()) ||
                (dst_actor_ != nullptr && dst_actor_->is_suspended())) {
-      /* If any of the process is suspended, create the synchro but stop its execution,
-         it will be restarted when the sender process resume */
+      /* If any of the actor is suspended, create the synchro but stop its execution,
+         it will be restarted when the sender actor resume */
       if (src_actor_->is_suspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",
@@ -355,8 +355,8 @@ void CommImpl::copy_data()
     return;
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", this,
-            src_actor_ ? src_actor_->get_host()->get_cname() : "a finished process", src_buff_,
-            dst_actor_ ? dst_actor_->get_host()->get_cname() : "a finished process", dst_buff_, buff_size);
+            src_actor_ ? src_actor_->get_host()->get_cname() : "a finished actor", src_buff_,
+            dst_actor_ ? dst_actor_->get_host()->get_cname() : "a finished actor", dst_buff_, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (dst_buff_size_) {

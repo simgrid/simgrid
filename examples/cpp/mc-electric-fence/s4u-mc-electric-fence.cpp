@@ -4,8 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /******************** Non-deterministic message ordering  *********************/
-/* This example implements one process which receives messages from two other */
-/* processes. There is no bug on it, it is just provided to test the soundness*/
+/* This example implements one actor which receives messages from two other   */
+/* actors. There is no bug on it, it is just provided to test the soundness   */
 /* of the state space reduction with DPOR, if the maximum depth (defined with */
 /* --cfg=model-check/max-depth:) is reached.                                  */
 /******************************************************************************/
@@ -15,12 +15,14 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(electric_fence, "Example to check the soundness of DPOR");
 
+namespace sg4 = simgrid::s4u;
+
 static void server()
 {
-  int* data1                           = nullptr;
-  int* data2                           = nullptr;
-  simgrid::s4u::CommPtr comm_received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get_async<int>(&data1);
-  simgrid::s4u::CommPtr comm_received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get_async<int>(&data2);
+  int* data1                  = nullptr;
+  int* data2                  = nullptr;
+  sg4::CommPtr comm_received1 = sg4::Mailbox::by_name("mymailbox")->get_async<int>(&data1);
+  sg4::CommPtr comm_received2 = sg4::Mailbox::by_name("mymailbox")->get_async<int>(&data2);
 
   comm_received1->wait();
   comm_received2->wait();
@@ -33,19 +35,19 @@ static void server()
 static void client(int id)
 {
   auto* payload = new int(id);
-  simgrid::s4u::Mailbox::by_name("mymailbox")->put(payload, 10000);
+  sg4::Mailbox::by_name("mymailbox")->put(payload, 10000);
   XBT_INFO("Sent!");
 }
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("server", simgrid::s4u::Host::by_name("HostA"), server);
-  simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("HostB"), client, 1);
-  simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("HostC"), client, 2);
+  sg4::Actor::create("server", sg4::Host::by_name("HostA"), server);
+  sg4::Actor::create("client", sg4::Host::by_name("HostB"), client, 1);
+  sg4::Actor::create("client", sg4::Host::by_name("HostC"), client, 2);
 
   e.run();
   return 0;

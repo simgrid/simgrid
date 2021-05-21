@@ -8,7 +8,7 @@ import sys
 
 
 def lazy_guy():
-    """The Lazy guy only wants to sleep, but can be awaken by the dream_master process"""
+    """The Lazy guy only wants to sleep, but can be awaken by the dream_master actor"""
     this_actor.info("Nobody's watching me ? Let's go to sleep.")
     this_actor.suspend()  # - Start by suspending itself
     this_actor.info("Uuuh ? Did somebody call me ?")
@@ -30,7 +30,7 @@ def lazy_guy():
 
 def dream_master():
     """The Dream master"""
-    this_actor.info("Let's create a lazy guy.")  # Create a lazy_guy process
+    this_actor.info("Let's create a lazy guy.")  # Create a lazy_guy actor
     lazy = Actor.create("Lazy", this_actor.get_host(), lazy_guy)
     this_actor.info("Let's wait a little bit...")
     this_actor.sleep_for(10)  # Wait for 10 seconds

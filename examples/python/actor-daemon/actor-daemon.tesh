@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-p Testing the process daemonization feature
+p Testing the actor daemonization feature
 
 $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/actor-daemon.py ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (worker@Boivin) Let's do some work (for 10 sec on Boivin).

@@ -39,7 +39,7 @@ MailboxImpl* MailboxImpl::by_name_or_null(const std::string& name)
 /** @brief Returns the mailbox of that name, newly created on need */
 MailboxImpl* MailboxImpl::by_name_or_create(const std::string& name)
 {
-  /* two processes may have pushed the same mbox_create simcall at the same time */
+  /* two actors may have pushed the same mbox_create simcall at the same time */
   auto m = mailboxes.find(name);
   if (m == mailboxes.end()) {
     auto* mbox = new MailboxImpl(name);

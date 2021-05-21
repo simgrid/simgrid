@@ -16,7 +16,7 @@ import sys
 
 
 class Yielder:
-    """Main function of the Yielder process"""
+    """Main function of the Yielder actor"""
     number_of_yields = 0
 
     def __init__(self, *args):

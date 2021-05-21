@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-p Start remote processes 
+p Start remote actors
 $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir}/exec-basic.py ${platfdir}/small_platform.xml 
 > [Tremblay:privileged:(2) 0.001500] [python/INFO] Done.
 > [Tremblay:executor:(1) 0.002000] [python/INFO] Done.

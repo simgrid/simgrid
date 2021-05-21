@@ -43,9 +43,9 @@ void MutexImpl::lock(actor::ActorImpl* issuer)
   XBT_OUT();
 }
 
-/** Tries to lock the mutex for a process
+/** Tries to lock the mutex for a actor
  *
- * @param  issuer  the process that tries to acquire the mutex
+ * @param  issuer  the actor that tries to acquire the mutex
  * @return whether we managed to lock the mutex
  */
 bool MutexImpl::try_lock(actor::ActorImpl* issuer)
@@ -63,11 +63,11 @@ bool MutexImpl::try_lock(actor::ActorImpl* issuer)
   return true;
 }
 
-/** Unlock a mutex for a process
+/** Unlock a mutex for a actor
  *
- * Unlocks the mutex and gives it to a process waiting for it.
+ * Unlocks the mutex and gives it to a actor waiting for it.
  * If the unlocker is not the owner of the mutex nothing happens.
- * If there are no process waiting, it sets the mutex as free.
+ * If there are no actor waiting, it sets the mutex as free.
  */
 void MutexImpl::unlock(actor::ActorImpl* issuer)
 {

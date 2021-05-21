@@ -40,12 +40,12 @@ RawImpl* RawImpl::start()
 
 void RawImpl::suspend()
 {
-  /* The suspension of raw synchros is delayed to when the process is rescheduled. */
+  /* The suspension of raw synchros is delayed to when the actor is rescheduled. */
 }
 
 void RawImpl::resume()
 {
-  /* I cannot resume raw synchros directly. This is delayed to when the process is rescheduled at
+  /* I cannot resume raw synchros directly. This is delayed to when the actor is rescheduled at
    * the end of the synchro. */
 }
 

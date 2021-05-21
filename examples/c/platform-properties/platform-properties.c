@@ -73,26 +73,26 @@ static void david(int argc, char* argv[])
 
 static void bob(int argc, char* argv[])
 {
-  /* this host also tests the properties of the AS*/
+  /* this host also tests the properties of the NetZone*/
   const_sg_netzone_t root = sg_zone_get_root();
-  XBT_INFO("== Print the properties of the AS");
-  XBT_INFO("   Process property: filename -> %s", sg_zone_get_property_value(root, "filename"));
-  XBT_INFO("   Process property: date -> %s", sg_zone_get_property_value(root, "date"));
-  XBT_INFO("   Process property: author -> %s", sg_zone_get_property_value(root, "author"));
+  XBT_INFO("== Print the properties of the NetZone");
+  XBT_INFO("   Actor property: filename -> %s", sg_zone_get_property_value(root, "filename"));
+  XBT_INFO("   Actor property: date -> %s", sg_zone_get_property_value(root, "date"));
+  XBT_INFO("   Actor property: author -> %s", sg_zone_get_property_value(root, "author"));
 
-  /* Get the property list of current bob process */
+  /* Get the property list of current bob actor */
   xbt_dict_t props         = sg_actor_get_properties(sg_actor_self());
   xbt_dict_cursor_t cursor = NULL;
   char* key;
   char* data;
-  const char* noexist = "UnknownProcessProp";
+  const char* noexist = "UnknownActorProp";
   const char* value;
 
-  XBT_INFO("== Print the properties of the process");
+  XBT_INFO("== Print the properties of the actor");
   xbt_dict_foreach (props, cursor, key, data)
-    XBT_INFO("   Process property: %s -> %s", key, data);
+    XBT_INFO("   Actor property: %s -> %s", key, data);
 
-  XBT_INFO("== Try to get a process property that does not exist");
+  XBT_INFO("== Try to get an actor property that does not exist");
 
   value = sg_actor_get_property_value(sg_actor_self(), noexist);
   xbt_assert(!value, "The property is defined (it shouldn't)");

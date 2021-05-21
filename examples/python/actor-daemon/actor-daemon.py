@@ -8,7 +8,7 @@ import sys
 
 
 def worker():
-    """The worker process, working for a while before leaving"""
+    """The worker actor, working for a while before leaving"""
     this_actor.info("Let's do some work (for 10 sec on Boivin).")
     this_actor.execute(980.95e6)
 
@@ -16,7 +16,7 @@ def worker():
 
 
 def my_daemon():
-    """The daemon, displaying a message every 3 seconds until all other processes stop"""
+    """The daemon, displaying a message every 3 seconds until all other actors stop"""
     Actor.self().daemonize()
 
     while True:
@@ -24,7 +24,7 @@ def my_daemon():
         this_actor.sleep_for(3.0)
 
     this_actor.info(
-        "I will never reach that point: daemons are killed when regular processes are done")
+        "I will never reach that point: daemons are killed when regular actors are done")
 
 
 if __name__ == '__main__':

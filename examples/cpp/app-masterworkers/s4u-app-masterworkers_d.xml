@@ -13,7 +13,7 @@
     <argument value="Ginette" />
     <argument value="Bourassa" />
   </actor>
-  <!-- The worker processes (with no argument) -->
+  <!-- The worker actors (with no argument) -->
   <actor host="Tremblay" function="worker" />
   <actor host="Jupiter" function="worker" />
   <actor host="Fafard" function="worker" />

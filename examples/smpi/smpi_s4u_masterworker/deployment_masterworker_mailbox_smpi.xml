@@ -9,7 +9,7 @@
     <argument value="Ginette"/>  <!-- Hostname of the first worker -->
     <argument value="Jupiter"/>  <!-- Hostname of the second worker -->
   </actor>
-  <!-- The worker processes (with mailbox to listen on as argument) -->
+  <!-- The worker actors (with mailbox to listen on as argument) -->
   <actor host="Ginette" function="worker"/>
   <actor host="Jupiter" function="worker"/>
 

@@ -21,15 +21,14 @@ namespace activity {
 /**
  * @brief Signalizes a condition.
  *
- * Signalizes a condition and wakes up a sleeping process.
- * If there are no process sleeping, no action is done.
+ * Signalizes a condition and wakes up a sleeping actor.
+ * If there are no actor sleeping, no action is done.
  */
 void ConditionVariableImpl::signal()
 {
   XBT_DEBUG("Signal condition %p", this);
 
-  /* If there are processes waiting for the condition choose one and try
-     to make it acquire the mutex */
+  /* If there are actors waiting for the condition choose one and try to make it acquire the mutex */
   if (not sleeping_.empty()) {
     auto& proc = sleeping_.front();
     sleeping_.pop_front();
@@ -49,8 +48,8 @@ void ConditionVariableImpl::signal()
 /**
  * @brief Broadcasts a condition.
  *
- * Signal ALL processes waiting on a condition.
- * If there are no process waiting, no action is done.
+ * Signal ALL actors waiting on a condition.
+ * If there are no actor waiting, no action is done.
  */
 void ConditionVariableImpl::broadcast()
 {

@@ -9,7 +9,7 @@
      <argument value="1000000"/>   <!-- Communication size of tasks -->
   </actor>
 
-  <!-- The worker processes (with one argument each: the ID of this worker) -->
+  <!-- The worker actors (with one argument each: the ID of this worker) -->
   <actor host="Tremblay" function="worker">
      <argument value="0" />
   </actor>

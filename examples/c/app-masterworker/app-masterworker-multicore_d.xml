@@ -8,7 +8,7 @@
     <argument value="1000000"/>   <!-- Communication size of tasks -->
     <argument value="6"/>         <!-- Number of workers -->
   </actor>
-  <!-- The worker processes (with mailbox to listen on as argument) -->
+  <!-- The worker actors (with mailbox to listen on as argument) -->
   <actor host="Tremblay" function="worker">
     <argument value="0"/> 
   </actor>

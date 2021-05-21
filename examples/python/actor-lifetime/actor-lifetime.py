@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])     # Load the platform description
     e.register_actor("sleeper", Sleeper)
-    # Deploy the sleeper processes with explicit start/kill times
+    # Deploy the sleeper actors with explicit start/kill times
     e.load_deployment(sys.argv[2])
 
     e.run()

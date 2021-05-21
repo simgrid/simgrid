@@ -42,7 +42,7 @@ public:
   static ActorImpl* self();
   double get_kill_time() const;
   void set_kill_time(double kill_time);
-  boost::intrusive::list_member_hook<> host_actor_list_hook;   /* simgrid::simix::Host::process_list */
+  boost::intrusive::list_member_hook<> host_actor_list_hook;   /* simgrid::surf::HostImpl::actor_list_ */
   boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->actors_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
@@ -73,7 +73,7 @@ public:
   std::list<activity::ActivityImplPtr> activities_;     /* the current non-blocking synchros */
   s_smx_simcall simcall_;
   std::vector<SimcallObserver*> observer_stack_;
-  /* list of functions executed when the process dies */
+  /* list of functions executed when the actor dies */
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
       std::make_shared<std::vector<std::function<void(bool)>>>();
 
@@ -159,7 +159,7 @@ public:
   const std::unordered_map<std::string, std::string> properties{};
   bool auto_restart                                                        = false;
   bool daemon_                                                             = false;
-  /* list of functions executed when the process dies */
+  /* list of functions executed when the actor dies */
   const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit;
 
   ProcessArg()                  = delete;

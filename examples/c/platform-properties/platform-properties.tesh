@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-p Testing an application with properties in the XML for Hosts, Links and Processes
+p Testing an application with properties in the XML for Hosts, Links, and Actors
 
 ! output sort 19
 $ ${bindir:=.}/c-platform-properties ${platfdir}/prop.xml platform-properties_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
@@ -12,13 +12,13 @@ $ ${bindir:=.}/c-platform-properties ${platfdir}/prop.xml platform-properties_d.
 > [  0.000000] (0:maestro@) Host 'node-2.simgrid.org' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'node-3.simgrid.org' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'node-4.simgrid.org' runs at 1000000000 flops/s
-> [  0.000000] (2:bob@host1) == Print the properties of the AS
-> [  0.000000] (2:bob@host1)    Process property: filename -> prop.xml
-> [  0.000000] (2:bob@host1)    Process property: date -> 31-08-12
-> [  0.000000] (2:bob@host1)    Process property: author -> pnavarro
-> [  0.000000] (2:bob@host1) == Print the properties of the process
-> [  0.000000] (2:bob@host1)    Process property: SomeProp -> SomeValue
-> [  0.000000] (2:bob@host1) == Try to get a process property that does not exist
+> [  0.000000] (2:bob@host1) == Print the properties of the NetZone
+> [  0.000000] (2:bob@host1)    Actor property: filename -> prop.xml
+> [  0.000000] (2:bob@host1)    Actor property: date -> 31-08-12
+> [  0.000000] (2:bob@host1)    Actor property: author -> pnavarro
+> [  0.000000] (2:bob@host1) == Print the properties of the actor
+> [  0.000000] (2:bob@host1)    Actor property: SomeProp -> SomeValue
+> [  0.000000] (2:bob@host1) == Try to get an actor property that does not exist
 > [  0.000000] (1:alice@host1) == Print the properties of the host 'host1'
 > [  0.000000] (1:alice@host1)   Host property: 'mem' -> '4'
 > [  0.000000] (1:alice@host1)   Host property: 'Hdd' -> '180'

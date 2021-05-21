@@ -17,7 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(app_masterworker, "Messages specific for this example");
 
-/* Main function of the master process */
+/* Main function of the master actor */
 static void master(int argc, char* argv[])
 {
   xbt_assert(argc == 5, "The master function expects 4 arguments from the XML deployment file");
@@ -55,7 +55,7 @@ static void master(int argc, char* argv[])
   }
 }
 
-/* Main functions of the Worker processes */
+/* Main functions of the Worker actors */
 static void worker(int argc, char* argv[])
 {
   xbt_assert(argc == 2,
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]); /* - Load the platform description */
 
-  simgrid_register_function("master", master); /* - Register the function to be executed by the processes */
+  simgrid_register_function("master", master); /* - Register the function to be executed by the actors */
   simgrid_register_function("worker", worker);
   simgrid_load_deployment(argv[2]); /* - Deploy the application */
 

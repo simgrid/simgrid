@@ -7,7 +7,7 @@
     <argument value="1000000"/>      <!-- Communication size of tasks -->
     <argument value="2"/>         <!-- Number of receivers -->
   </actor>
-  <!-- The receiver processes -->
+  <!-- The receiver actors -->
   <actor host="Fafard" function="receiver">
     <argument value="0"/>
   </actor>

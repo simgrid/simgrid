@@ -153,7 +153,7 @@ void EngineImpl::run()
     while (not simix_global->actors_to_run.empty()) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
 
-      /* Run all processes that are ready to run, possibly in parallel */
+      /* Run all actors that are ready to run, possibly in parallel */
       simix_global->run_all_actors();
 
       /* answer sequentially and in a fixed arbitrary order all the simcalls that were issued during that sub-round */
@@ -229,7 +229,7 @@ void EngineImpl::run()
         wake_all_waiting_actors();
       } while (execute_tasks());
 
-      /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
+      /* If only daemon actors remain, cancel their actions, mark them to die and reschedule them */
       if (simix_global->process_list.size() == daemons_.size())
         for (auto const& dmon : daemons_) {
           XBT_DEBUG("Kill %s", dmon->get_cname());
@@ -246,7 +246,7 @@ void EngineImpl::run()
 
     /* Notify all the hosts that have failed */
     /* FIXME: iterate through the list of failed host and mark each of them */
-    /* as failed. On each host, signal all the running processes with host_fail */
+    /* as failed. On each host, signal all the running actors with host_fail */
 
     // Execute timers and tasks until there isn't anything to be done:
     bool again = false;
@@ -260,7 +260,7 @@ void EngineImpl::run()
     /* Clean actors to destroy */
     simix_global->empty_trash();
 
-    XBT_DEBUG("### time %f, #processes %zu, #to_run %zu", time, simix_global->process_list.size(),
+    XBT_DEBUG("### time %f, #actors %zu, #to_run %zu", time, simix_global->process_list.size(),
               simix_global->actors_to_run.size());
 
     if (time < 0. && simix_global->actors_to_run.empty() && not simix_global->process_list.empty()) {

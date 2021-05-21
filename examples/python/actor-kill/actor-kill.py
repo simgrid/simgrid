@@ -24,7 +24,7 @@ def victim_b_fun():
 
 
 def killer():
-    this_actor.info("Hello!")  # - First start a victim process
+    this_actor.info("Hello!")  # - First start a victim actor
     victim_a = Actor.create("victim A", Host.by_name("Fafard"), victim_a_fun)
     victim_b = Actor.create("victim B", Host.by_name("Jupiter"), victim_b_fun)
     this_actor.sleep_for(10)  # - Wait for 10 seconds
@@ -68,7 +68,7 @@ if __name__ == '__main__':
             "Usage: actor-kill.py platform_file [other parameters]")
 
     e.load_platform(sys.argv[1])     # Load the platform description
-    # Create and deploy killer process, that will create the victim actors
+    # Create and deploy killer actor, that will create the victim actors
     Actor.create("killer", Host.by_name("Tremblay"), killer)
 
     e.run()

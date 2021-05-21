@@ -63,7 +63,7 @@ void SleepImpl::finish()
 
     simcall->issuer_->waiting_synchro_ = nullptr;
     if (simcall->issuer_->is_suspended()) {
-      XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
+      XBT_DEBUG("Wait! This actor is suspended and can't wake up now.");
       simcall->issuer_->suspended_ = false;
       simcall->issuer_->suspend();
     } else {
