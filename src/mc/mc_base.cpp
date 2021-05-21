@@ -5,6 +5,7 @@
 
 #include "src/mc/mc_base.hpp"
 #include "mc/mc.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
@@ -42,15 +43,16 @@ namespace mc {
 
 void execute_actors()
 {
+  auto* engine = kernel::EngineImpl::get_instance();
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr, "This must be called from the client");
 #endif
-  while (not simix_global->actors_to_run.empty()) {
-    simix_global->run_all_actors();
-    for (smx_actor_t const& process : simix_global->actors_that_ran) {
-      const s_smx_simcall* req = &process->simcall_;
+  while (engine->has_actors_to_run()) {
+    engine->run_all_actors();
+    for (auto const& actor : engine->get_actors_that_ran()) {
+      const s_smx_simcall* req = &actor->simcall_;
       if (req->call_ != simix::Simcall::NONE && not simgrid::mc::request_is_visible(req))
-        process->simcall_handle(0);
+        actor->simcall_handle(0);
     }
   }
 #if SIMGRID_HAVE_MC

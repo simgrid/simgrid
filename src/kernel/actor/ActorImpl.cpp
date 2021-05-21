@@ -116,8 +116,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   /* Now insert it in the global actor list and in the actors to run list */
   simix_global->process_list[actor->get_pid()] = actor;
-  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), host->get_cname());
-  simix_global->actors_to_run.push_back(actor);
+  EngineImpl::get_instance()->add_actor_to_run_list_no_check(actor);
   intrusive_ptr_add_ref(actor);
 
   auto* context = dynamic_cast<context::AttachContext*>(actor->context_.get());
@@ -255,13 +254,8 @@ void ActorImpl::kill(ActorImpl* actor) const
 
   if (actor == this) {
     XBT_DEBUG("Go on, this is a suicide,");
-  } else if (std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), actor) !=
-             end(simix_global->actors_to_run)) {
-    XBT_DEBUG("Actor %s is already in the to_run list", actor->get_cname());
-  } else {
-    XBT_DEBUG("Inserting %s in the to_run list", actor->get_cname());
-    simix_global->actors_to_run.push_back(actor);
-  }
+  } else
+    EngineImpl::get_instance()->add_actor_to_run_list(actor);
 }
 
 void ActorImpl::kill_all() const
@@ -395,7 +389,7 @@ void ActorImpl::resume()
   for (auto const& activity : activities_)
     activity->resume();
   if (not waiting_synchro_) // Reschedule the actor if it was forcefully unscheduled in yield()
-    simix_global->actors_to_run.push_back(this);
+    EngineImpl::get_instance()->add_actor_to_run_list_no_check(this);
 
   XBT_OUT();
 }
@@ -442,11 +436,12 @@ void ActorImpl::simcall_answer()
     XBT_DEBUG("Answer simcall %s issued by %s (%p)", SIMIX_simcall_name(simcall_), get_cname(), this);
     xbt_assert(simcall_.call_ != simix::Simcall::NONE);
     simcall_.call_ = simix::Simcall::NONE;
+    auto* engine              = EngineImpl::get_instance();
+    const auto& actors_to_run = engine->get_actors_to_run();
     xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
-                   std::find(begin(simix_global->actors_to_run), end(simix_global->actors_to_run), this) ==
-                       end(simix_global->actors_to_run),
+                   std::find(begin(actors_to_run), end(actors_to_run), this) == end(actors_to_run),
                "Actor %p should not exist in actors_to_run!", this);
-    simix_global->actors_to_run.push_back(this);
+    engine->add_actor_to_run_list_no_check(this);
   }
 }
 
@@ -490,8 +485,7 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
   simix_global->process_list[pid_] = this;
 
   /* Now insert it in the global actor list and in the actor to run list */
-  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", this, get_cname(), host_->get_cname());
-  simix_global->actors_to_run.push_back(this);
+  EngineImpl::get_instance()->add_actor_to_run_list_no_check(this);
 
   return this;
 }

@@ -6,6 +6,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/modelchecker.h"
 #include "src/internal_config.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/simix/smx_private.hpp"
 #include "xbt/parmap.hpp"
@@ -206,6 +207,7 @@ void SwappedContext::swap_into(SwappedContext* to)
 /** Maestro wants to run all ready actors */
 void SwappedContextFactory::run_all()
 {
+  auto* engine = EngineImpl::get_instance();
   /* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some
    * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul
    * for the ones of the simulated processes that must run.
@@ -223,17 +225,17 @@ void SwappedContextFactory::run_all()
     //     It only yields back to worker_context when the work array is exhausted.
     //   - So, resume() is only launched from the parmap for the first job of each minion.
     parmap_->apply(
-        [](const actor::ActorImpl* process) {
-          auto* context = static_cast<SwappedContext*>(process->context_.get());
+        [](const actor::ActorImpl* actor) {
+          auto* context = static_cast<SwappedContext*>(actor->context_.get());
           context->resume();
         },
-        simix_global->actors_to_run);
+        engine->get_actors_to_run());
   } else { // sequential execution
-    if (simix_global->actors_to_run.empty())
+    if (not engine->has_actors_to_run())
       return;
 
     /* maestro is already saved in the first slot of workers_context_ */
-    const actor::ActorImpl* first_actor = simix_global->actors_to_run.front();
+    const actor::ActorImpl* first_actor = engine->get_first_actor_to_run();
     process_index_          = 1;
     /* execute the first actor; it will chain to the others when using suspend() */
     static_cast<SwappedContext*>(first_actor->context_.get())->resume();
@@ -286,14 +288,15 @@ void SwappedContext::suspend()
       // When given that soul, the body will wait for the next scheduling round
     }
   } else { // sequential execution
+    auto* engine = EngineImpl::get_instance();
     /* determine the next context */
     unsigned long int i = factory_.process_index_;
     factory_.process_index_++;
 
-    if (i < simix_global->actors_to_run.size()) {
+    if (i < engine->get_actor_to_run_count()) {
       /* Actually swap into the next actor directly without transiting to maestro */
       XBT_DEBUG("Run next actor");
-      next_context = static_cast<SwappedContext*>(simix_global->actors_to_run[i]->context_.get());
+      next_context = static_cast<SwappedContext*>(engine->get_actor_to_run_at(i)->context_.get());
     } else {
       /* all processes were run, actually return to maestro */
       XBT_DEBUG("No more actors to run");

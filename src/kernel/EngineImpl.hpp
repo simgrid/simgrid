@@ -29,7 +29,9 @@ class EngineImpl {
   std::vector<resource::Model*> models_;
   std::unordered_map<std::string, std::shared_ptr<resource::Model>> models_prio_;
   routing::NetZoneImpl* netzone_root_ = nullptr;
-  std::set<kernel::actor::ActorImpl*> daemons_;
+  std::set<actor::ActorImpl*> daemons_;
+  std::vector<actor::ActorImpl*> actors_to_run_;
+  std::vector<actor::ActorImpl*> actors_that_ran_;
 
   std::vector<xbt::Task<void()>> tasks;
   std::vector<xbt::Task<void()>> tasksTemp;
@@ -70,11 +72,21 @@ public:
   }
   void add_daemon(actor::ActorImpl* d) { daemons_.insert(d); }
   void rm_daemon(actor::ActorImpl* d);
+  void add_actor_to_run_list(actor::ActorImpl* a);
+  void add_actor_to_run_list_no_check(actor::ActorImpl* a);
+  bool has_actors_to_run() { return not actors_to_run_.empty(); }
+  const actor::ActorImpl* get_first_actor_to_run() const { return actors_to_run_.front(); }
+  const actor::ActorImpl* get_actor_to_run_at(unsigned long int i) const { return actors_to_run_[i]; }
+  unsigned long int get_actor_to_run_count() { return actors_to_run_.size(); }
+
+  const std::vector<actor::ActorImpl*>& get_actors_to_run() const { return actors_to_run_; }
+  const std::vector<actor::ActorImpl*>& get_actors_that_ran() const { return actors_that_ran_; }
 
   bool execute_tasks();
   void add_task(xbt::Task<void()>&& t) { tasks.push_back(std::move(t)); }
   void wake_all_waiting_actors() const;
   void display_all_actor_status() const;
+  void run_all_actors();
 
   /** @brief Run the main simulation loop. */
   void run();

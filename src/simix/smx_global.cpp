@@ -161,20 +161,6 @@ void Global::empty_trash()
   xbt_dynar_reset(dead_actors_vector);
 #endif
 }
-/**
- * @brief Executes the actors in actors_to_run.
- *
- * The actors in actors_to_run are run (in parallel if possible). On exit, actors_to_run is empty, and actors_that_ran
- * contains the list of actors that just ran.  The two lists are swapped so, be careful when using them before and after
- * a call to this function.
- */
-void Global::run_all_actors()
-{
-  simix_global->context_factory->run_all();
-
-  actors_to_run.swap(actors_that_ran);
-  actors_to_run.clear();
-}
 
 void Global::display_all_actor_status() const
 {
@@ -228,34 +214,36 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
 
 void SIMIX_global_init(int* argc, char** argv)
 {
-  if (simix_global == nullptr) {
-    simix_global = std::make_unique<simgrid::simix::Global>();
+  if (simix_global != nullptr)
+    return;
+
+  simix_global = std::make_unique<simgrid::simix::Global>();
 
 #if SIMGRID_HAVE_MC
-    // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different layers.
-    // But simix_global needs to be created, as we send the address of some of its fields to the MC that wants to read them directly.
-    simgrid::mc::AppSide::initialize();
+  // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different
+  // layers. But simix_global needs to be created, as we send the address of some of its fields to the MC that wants to
+  // read them directly.
+  simgrid::mc::AppSide::initialize();
 #endif
 
-    surf_init(argc, argv); /* Initialize SURF structures */
+  surf_init(argc, argv); /* Initialize SURF structures */
 
-    simix_global->maestro_ = nullptr;
-    SIMIX_context_mod_init();
+  simix_global->maestro_ = nullptr;
+  SIMIX_context_mod_init();
 
-    // Either create a new context with maestro or create
-    // a context object with the current context maestro):
-    simgrid::kernel::actor::create_maestro(maestro_code);
+  // Either create a new context with maestro or create
+  // a context object with the current context maestro):
+  simgrid::kernel::actor::create_maestro(maestro_code);
 
-    /* Prepare to display some more info when dying on Ctrl-C pressing */
-    std::signal(SIGINT, inthandler);
+  /* Prepare to display some more info when dying on Ctrl-C pressing */
+  std::signal(SIGINT, inthandler);
 
 #ifndef _WIN32
-    install_segvhandler();
+  install_segvhandler();
 #endif
-    /* register a function to be called by SURF after the environment creation */
-    sg_platf_init();
-    simgrid::s4u::Engine::on_platform_created.connect(surf_presolve);
-  }
+  /* register a function to be called by SURF after the environment creation */
+  sg_platf_init();
+  simgrid::s4u::Engine::on_platform_created.connect(surf_presolve);
 
   if (simgrid::config::get_value<bool>("debug/clean-atexit"))
     atexit(SIMIX_clean);
@@ -275,7 +263,8 @@ void SIMIX_clean()
 
   smx_cleaned = true;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (not simix_global->actors_to_run.empty() && SIMIX_get_clock() <= 0.0) {
+  auto* engine = simgrid::kernel::EngineImpl::get_instance();
+  if (engine->has_actors_to_run() && SIMIX_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
     XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
@@ -295,7 +284,7 @@ void SIMIX_clean()
 
   /* Kill all processes (but maestro) */
   simix_global->maestro_->kill_all();
-  simix_global->run_all_actors();
+  engine->run_all_actors();
   simix_global->empty_trash();
 
   /* Exit the SIMIX network module */
@@ -306,8 +295,6 @@ void SIMIX_clean()
     simgrid::kernel::timer::kernel_timers().pop();
   }
   /* Free the remaining data structures */
-  simix_global->actors_to_run.clear();
-  simix_global->actors_that_ran.clear();
   simix_global->actors_to_destroy.clear();
   simix_global->process_list.clear();
 

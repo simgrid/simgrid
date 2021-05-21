@@ -7,6 +7,7 @@
 
 #include "simgrid/Exception.hpp"
 #include "src/internal_config.h" /* loads context system definitions */
+#include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_private.hpp"
 #include "xbt/function_types.h"
 #include "xbt/xbt_modinter.h" /* prototype of os thread module's init/exit in XBT */
@@ -177,7 +178,8 @@ void ThreadContext::attach_stop()
 
 void SerialThreadContext::run_all()
 {
-  for (smx_actor_t const& actor : simix_global->actors_to_run) {
+  const auto& to_run = EngineImpl::get_instance()->get_actors_to_run();
+  for (smx_actor_t const& actor : to_run) {
     XBT_DEBUG("Handling %p", actor);
     auto* context = static_cast<ThreadContext*>(actor->context_.get());
     context->release();
@@ -202,9 +204,11 @@ void ParallelThreadContext::finalize()
 
 void ParallelThreadContext::run_all()
 {
-  for (smx_actor_t const& actor : simix_global->actors_to_run)
+  const auto& to_release = EngineImpl::get_instance()->get_actors_to_run();
+  for (smx_actor_t const& actor : to_release)
     static_cast<ThreadContext*>(actor->context_.get())->release();
-  for (smx_actor_t const& actor : simix_global->actors_to_run)
+  const auto& to_wait = EngineImpl::get_instance()->get_actors_to_run();
+  for (smx_actor_t const& actor : to_wait)
     static_cast<ThreadContext*>(actor->context_.get())->wait();
 }
 

@@ -28,12 +28,9 @@ public:
    * Should be called some time to time to free the memory allocated for actors that have finished (or killed).
    */
   void empty_trash();
-  void run_all_actors();
   void display_all_actor_status() const;
 
   kernel::context::ContextFactory* context_factory = nullptr;
-  std::vector<kernel::actor::ActorImpl*> actors_to_run;
-  std::vector<kernel::actor::ActorImpl*> actors_that_ran;
   std::map<aid_t, kernel::actor::ActorImpl*> process_list;
   boost::intrusive::list<kernel::actor::ActorImpl,
                          boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,

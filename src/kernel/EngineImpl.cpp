@@ -41,6 +41,8 @@ EngineImpl::~EngineImpl()
   for (auto const& kv : links_)
     if (kv.second)
       kv.second->destroy();
+  actors_to_run_.clear();
+  actors_that_ran_.clear();
 }
 
 void EngineImpl::load_deployment(const std::string& file) const
@@ -96,6 +98,20 @@ void EngineImpl::wake_all_waiting_actors() const
     }
   }
 }
+/**
+ * @brief Executes the actors in actors_to_run.
+ *
+ * The actors in actors_to_run are run (in parallel if possible). On exit, actors_to_run is empty, and actors_that_ran
+ * contains the list of actors that just ran.  The two lists are swapped so, be careful when using them before and after
+ * a call to this function.
+ */
+void EngineImpl::run_all_actors()
+{
+  simix_global->context_factory->run_all();
+
+  actors_to_run_.swap(actors_that_ran_);
+  actors_to_run_.clear();
+}
 
 /** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
 bool EngineImpl::execute_tasks()
@@ -126,6 +142,22 @@ void EngineImpl::rm_daemon(actor::ActorImpl* actor)
   daemons_.erase(it);
 }
 
+void EngineImpl::add_actor_to_run_list_no_check(actor::ActorImpl* actor)
+{
+  XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), actor->get_host()->get_cname());
+  actors_to_run_.push_back(actor);
+}
+
+void EngineImpl::add_actor_to_run_list(actor::ActorImpl* actor)
+{
+  if (std::find(begin(actors_to_run_), end(actors_to_run_), actor) != end(actors_to_run_)) {
+    XBT_DEBUG("Actor %s is already in the to_run list", actor->get_cname());
+  } else {
+    XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), actor->get_host()->get_cname());
+    actors_to_run_.push_back(actor);
+  }
+}
+
 void EngineImpl::run()
 {
   if (MC_record_replay_is_active()) {
@@ -136,7 +168,7 @@ void EngineImpl::run()
   double time = 0;
 
   do {
-    XBT_DEBUG("New Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
+    XBT_DEBUG("New Schedule Round; size(queue)=%zu", actors_to_run_.size());
 
     if (cfg_breakpoint >= 0.0 && surf_get_clock() >= cfg_breakpoint) {
       XBT_DEBUG("Breakpoint reached (%g)", cfg_breakpoint.get());
@@ -150,11 +182,11 @@ void EngineImpl::run()
 
     execute_tasks();
 
-    while (not simix_global->actors_to_run.empty()) {
-      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", simix_global->actors_to_run.size());
+    while (not actors_to_run_.empty()) {
+      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", actors_to_run_.size());
 
       /* Run all actors that are ready to run, possibly in parallel */
-      simix_global->run_all_actors();
+      run_all_actors();
 
       /* answer sequentially and in a fixed arbitrary order all the simcalls that were issued during that sub-round */
 
@@ -218,7 +250,7 @@ void EngineImpl::run()
        *   That would thus be a pure waste of time.
        */
 
-      for (auto const& actor : simix_global->actors_that_ran) {
+      for (auto const& actor : actors_that_ran_) {
         if (actor->simcall_.call_ != simix::Simcall::NONE) {
           actor->simcall_handle(0);
         }
@@ -260,10 +292,9 @@ void EngineImpl::run()
     /* Clean actors to destroy */
     simix_global->empty_trash();
 
-    XBT_DEBUG("### time %f, #actors %zu, #to_run %zu", time, simix_global->process_list.size(),
-              simix_global->actors_to_run.size());
+    XBT_DEBUG("### time %f, #actors %zu, #to_run %zu", time, simix_global->process_list.size(), actors_to_run_.size());
 
-    if (time < 0. && simix_global->actors_to_run.empty() && not simix_global->process_list.empty()) {
+    if (time < 0. && actors_to_run_.empty() && not simix_global->process_list.empty()) {
       if (simix_global->process_list.size() <= daemons_.size()) {
         XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
                      "once the simulation is over. Please fix your on_exit() functions.");
@@ -277,7 +308,7 @@ void EngineImpl::run()
         simix_global->maestro_->kill(kv.second);
       }
     }
-  } while (time > -1.0 || not simix_global->actors_to_run.empty());
+  } while (time > -1.0 || has_actors_to_run());
 
   if (not simix_global->process_list.empty())
     THROW_IMPOSSIBLE;
