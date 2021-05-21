@@ -819,7 +819,7 @@ void smpi_replay_main(int rank, const char* private_trace_filename)
   /* and now, finalize everything */
   /* One active process will stop. Decrease the counter*/
   unsigned int count_requests = storage[simgrid::s4u::this_actor::get_pid()].size();
-  XBT_DEBUG("There are %ud elements in reqq[*]", count_requests);
+  XBT_DEBUG("There are %u elements in reqq[*]", count_requests);
   if (count_requests > 0) {
     std::vector<MPI_Request> requests(count_requests);
     unsigned int i=0;
