@@ -418,6 +418,11 @@ is a better way to visualize SimGrid traces (see below).
 .. image:: /tuto_s4u/img/vite-screenshot.png
    :align: center
 
+.. note::
+
+   If you use an older version of SimGrid (before v3.26), you should use
+   ``--cfg=tracing/msg/process:yes`` instead of ``--cfg=tracing/actor:yes``.
+
 If you want the full power to visualize SimGrid traces, you need
 to use R. As a start, you can download this `starter script
 <https://framagit.org/simgrid/simgrid/raw/master/docs/source/tuto_s4u/draw_gantt.R>`_
