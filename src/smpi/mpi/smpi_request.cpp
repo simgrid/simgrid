@@ -1007,7 +1007,7 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
       try{
         // this is not a detached send
         simcall_comm_wait((*request)->action_.get(), -1.0);
-      } catch (const Exception&) {
+      } catch (const CancelException&) {
         XBT_VERB("Request cancelled");
       }
   }
@@ -1075,7 +1075,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
       int i;
       try{
         i = simcall_comm_waitany(comms.data(), comms.size(), -1);
-      } catch (const Exception&) {
+      } catch (const CancelException&) {
         XBT_INFO("request cancelled");
         i = -1;
       }
