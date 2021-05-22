@@ -164,7 +164,7 @@ static std::vector<std::unique_ptr<Job>> all_jobs(const std::string& workload_fi
 
         // Let's read the filename
         std::ifstream traces_file(job->filename);
-        if (!traces_file.is_open())
+        if (not traces_file.is_open())
           throw std::invalid_argument("Cannot open file " + job->filename);
 
         std::string traces_line;

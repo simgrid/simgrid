@@ -121,7 +121,7 @@ int replay_runner(const char* actor_name, const char* trace_filename)
                "any. Please use xbt_replay_set_tracefile().");
     while (true) {
       simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(actor_name);
-      if (!evt)
+      if (not evt)
         break;
       simgrid::xbt::handle_action(*evt);
       delete evt;

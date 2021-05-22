@@ -185,7 +185,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
       }
     }
 
-    if (!cat->additivity)
+    if (not cat->additivity)
       break;
     cat = cat->parent;
   }
@@ -231,7 +231,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, const xbt_log_se
   }
   if (setting.appender) {
     xbt_log_appender_set(category, setting.appender);
-    if (!category->layout)
+    if (not category->layout)
       xbt_log_layout_set(category, xbt_log_layout_simple_new(nullptr));
     category->additivity = 0;
     XBT_DEBUG("Set %p as appender of category '%s'", setting.appender, category->name);
@@ -260,7 +260,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
     category->appender = xbt_log_default_appender;
     category->layout = xbt_log_default_layout;
   } else {
-    if (!category->parent)
+    if (not category->parent)
       category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
 
     XBT_DEBUG("Set %s (%s) as father of %s ", category->parent->name,
@@ -320,7 +320,7 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
 
   parent->firstChild = cat;
 
-  if (!parent->initialized)
+  if (not parent->initialized)
     _xbt_log_cat_init(parent, xbt_log_priority_uninitialized /* ignored */ );
 
   cat->threshold = parent->threshold;
@@ -356,7 +356,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   const char *orig_control_string = control_string;
   xbt_log_setting_t set;
 
-  if (!*control_string)
+  if (not*control_string)
     return set;
   XBT_DEBUG("Parse log setting '%s'", control_string);
 
@@ -444,7 +444,7 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, const c
 
 void xbt_log_control_set(const char *control_string)
 {
-  if (!control_string)
+  if (not control_string)
     return;
   XBT_DEBUG("Parse log settings '%s'", control_string);
 
@@ -489,7 +489,7 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app)
 void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
 {
   DISABLE_XBT_LOG_CAT_INIT();
-  if (!cat->appender) {
+  if (not cat->appender) {
     XBT_VERB ("No appender to category %s. Setting the file appender as default", cat->name);
     xbt_log_appender_set(cat, xbt_log_appender_file_new(nullptr));
   }
@@ -575,7 +575,7 @@ static void xbt_log_help()
 
 static void xbt_log_help_categories_rec(xbt_log_category_t category, const std::string& prefix)
 {
-  if (!category)
+  if (not category)
     return;
 
   std::string this_prefix(prefix);

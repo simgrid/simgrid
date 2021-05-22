@@ -21,7 +21,7 @@ void sglua_register_platf_functions(lua_State* L);
 #define _lua_ensure_ARG1(cond) _lua_ensure_ARGN((cond), "Assertion " _XBT_STRINGIFY(cond) " failed")
 #define _lua_ensure_ARGN(cond, ...)                                                                                    \
   do {                                                                                                                 \
-    if (!(cond)) {                                                                                                     \
+    if (not(cond)) {                                                                                                   \
       luaL_error(L, __VA_ARGS__);                                                                                      \
       return -1;                                                                                                       \
     }                                                                                                                  \

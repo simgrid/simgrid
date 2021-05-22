@@ -75,7 +75,7 @@ LinkLoad::LinkLoad(s4u::Link* ptr) : link_(ptr), is_tracked_(false)
 
 void LinkLoad::track()
 {
-  xbt_assert(!is_tracked_, "Trying to track load of link '%s' while it is already tracked, aborting.",
+  xbt_assert(not is_tracked_, "Trying to track load of link '%s' while it is already tracked, aborting.",
              link_->get_cname());
   XBT_DEBUG("Tracking load of link '%s'", link_->get_cname());
 
@@ -187,7 +187,7 @@ static void on_communicate(const simgrid::kernel::resource::NetworkAction& actio
 void sg_link_load_plugin_init()
 {
   xbt_assert(sg_host_count() == 0, "Please call sg_link_load_plugin_init() BEFORE initializing the platform.");
-  xbt_assert(!LinkLoad::EXTENSION_ID.valid(), "Double call to sg_link_load_plugin_init. Aborting.");
+  xbt_assert(not LinkLoad::EXTENSION_ID.valid(), "Double call to sg_link_load_plugin_init. Aborting.");
   LinkLoad::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkLoad>();
 
   // Attach new LinkLoad links created in the future.

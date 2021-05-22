@@ -67,11 +67,11 @@ int main(int argc, char** argv)
 
   std::vector<sg4::Host*> hosts = e.get_all_hosts();
   if (argc >= 3) {
-    if (!strcmp(argv[2], "ONE_LINK"))
+    if (strcmp(argv[2], "ONE_LINK") == 0)
       test_one_link(hosts);
-    if (!strcmp(argv[2], "FULL_LINK"))
+    if (strcmp(argv[2], "FULL_LINK") == 0)
       test_full_link(hosts);
-    if (!strcmp(argv[2], "PROP"))
+    if (strcmp(argv[2], "PROP") == 0)
       XBT_INFO("SG_TEST_mem: %s", sg4::Host::by_name("host1")->get_property("SG_TEST_mem"));
   }
 

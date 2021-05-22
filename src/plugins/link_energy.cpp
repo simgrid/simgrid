@@ -71,7 +71,7 @@ xbt::Extension<s4u::Link, LinkEnergy> LinkEnergy::EXTENSION_ID;
 
 void LinkEnergy::update()
 {
-  if (!inited_)
+  if (not inited_)
     init_watts_range_list();
 
   double power = get_power();
@@ -125,7 +125,7 @@ void LinkEnergy::init_watts_range_list()
 
 double LinkEnergy::get_power() const
 {
-  if (!inited_)
+  if (not inited_)
     return 0.0;
 
   double power_slope = busy_ - idle_;

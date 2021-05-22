@@ -25,7 +25,7 @@ static void worker()
   XBT_INFO("All comms have started");
   std::vector<simgrid::s4u::CommPtr> comms = {put1, put2, get1, get2};
 
-  while (!comms.empty()) {
+  while (not comms.empty()) {
     int index = simgrid::s4u::Comm::wait_any_for(&comms, 0.5);
     if (index < 0)
       XBT_INFO("wait_any_for: Timeout reached");

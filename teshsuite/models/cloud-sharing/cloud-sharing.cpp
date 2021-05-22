@@ -24,7 +24,7 @@ static int computation_fun(std::vector<std::string> argv)
   double end = simgrid::s4u::Engine::get_clock();
 
   if (0.1 - (end - begin) > 0.001) {
-    xbt_assert(!FAIL_ON_ERROR, "%s with %.4g load (%dflops) took %.4fs instead of 0.1s",
+    xbt_assert(not FAIL_ON_ERROR, "%s with %.4g load (%dflops) took %.4fs instead of 0.1s",
                simgrid::s4u::this_actor::get_name().c_str(), ((double)size / flop_amount), size, (end - begin));
     XBT_INFO("FAILED TEST: %s with %.4g load (%dflops) took %.4fs instead of 0.1s",
              simgrid::s4u::this_actor::get_name().c_str(), ((double)size / flop_amount), size, (end - begin));
@@ -49,7 +49,7 @@ static void test_energy_consumption(const std::string& name, int nb_cores)
   double new_energy = 0;
 
   for (simgrid::s4u::Host* pm : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
-    if (!dynamic_cast<simgrid::s4u::VirtualMachine*>(pm))
+    if (not dynamic_cast<simgrid::s4u::VirtualMachine*>(pm))
       new_energy += sg_host_get_consumed_energy(pm);
   }
 

@@ -616,7 +616,7 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
         return ret;
       }
     }
-    if (((*request)->flags_ & MPI_REQ_GENERALIZED) && !((*request)->flags_ & MPI_REQ_COMPLETE))
+    if (((*request)->flags_ & MPI_REQ_GENERALIZED) && not((*request)->flags_ & MPI_REQ_COMPLETE))
       *flag=0;
     if (*flag) {
       finish_wait(request, status); // may invalidate *request
@@ -705,9 +705,8 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
     
     if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
       *index = map[i];
-      if (requests[*index] != MPI_REQUEST_NULL && 
-          (requests[*index]->flags_ & MPI_REQ_GENERALIZED)
-          && !(requests[*index]->flags_ & MPI_REQ_COMPLETE)) {
+      if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_GENERALIZED) &&
+          not(requests[*index]->flags_ & MPI_REQ_COMPLETE)) {
         *flag=0;
       } else {
         finish_wait(&requests[*index],status);
@@ -1013,7 +1012,7 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
   }
 
   if ((*request)->flags_ & MPI_REQ_GENERALIZED) {
-    if(!((*request)->flags_ & MPI_REQ_COMPLETE)){
+    if (not((*request)->flags_ & MPI_REQ_COMPLETE)) {
       ((*request)->generalized_funcs)->mutex->lock();
       ((*request)->generalized_funcs)->cond->wait(((*request)->generalized_funcs)->mutex);
       ((*request)->generalized_funcs)->mutex->unlock();
@@ -1213,10 +1212,8 @@ int Request::get_status(const Request* req, int* flag, MPI_Status* status)
     if(*flag)
       return MPI_SUCCESS;
   }
-  if (req != MPI_REQUEST_NULL && 
-     (req->flags_ & MPI_REQ_GENERALIZED)
-     && !(req->flags_ & MPI_REQ_COMPLETE)) {
-     *flag=0;
+  if (req != MPI_REQUEST_NULL && (req->flags_ & MPI_REQ_GENERALIZED) && not(req->flags_ & MPI_REQ_COMPLETE)) {
+    *flag = 0;
     return MPI_SUCCESS;
   }
 
@@ -1251,7 +1248,7 @@ int Request::grequest_start(MPI_Grequest_query_function* query_fn, MPI_Grequest_
 
 int Request::grequest_complete(MPI_Request request)
 {
-  if ((!(request->flags_ & MPI_REQ_GENERALIZED)) || request->generalized_funcs->mutex == nullptr)
+  if ((not(request->flags_ & MPI_REQ_GENERALIZED)) || request->generalized_funcs->mutex == nullptr)
     return MPI_ERR_REQUEST;
   request->generalized_funcs->mutex->lock();
   request->flags_ |= MPI_REQ_COMPLETE; // in case wait would be called after complete

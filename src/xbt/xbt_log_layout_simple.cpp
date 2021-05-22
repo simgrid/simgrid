@@ -38,8 +38,7 @@ static bool xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_
   if (procname && strcmp(procname,"maestro")) {
     len = snprintf(p, rem_size, "%s:%s:(%d) ", sg_host_self_get_name(), procname, xbt_getpid());
     check_overflow(len);
-  }
-  else if (!procname)  {
+  } else if (not procname) {
     len = snprintf(p, rem_size, "%s::(%d) ", sg_host_self_get_name(), xbt_getpid());
     check_overflow(len);
   }
@@ -49,7 +48,7 @@ static bool xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_
   check_overflow(len);
 
   /* Display file position if not INFO */
-  if (ev->priority != xbt_log_priority_info && !xbt_log_no_loc) {
+  if (ev->priority != xbt_log_priority_info && not xbt_log_no_loc) {
     len = snprintf(p, rem_size, "%s:%d: ", ev->fileName, ev->lineNum);
     check_overflow(len);
   }

@@ -531,13 +531,13 @@ XBT_PRIVATE void private_execute_flops(double flops);
     }\
   }
 
-#define CHECK_INIT\
-  {\
-    int init_flag=0;\
-    PMPI_Initialized(&init_flag);\
-    CHECK_ARGS((!init_flag), MPI_ERR_OTHER, "%s: MPI_Init was not called !", __func__)\
-    PMPI_Finalized(&init_flag);\
-    CHECK_ARGS((init_flag), MPI_ERR_OTHER, "%s: MPI_Finalize was already called !", __func__)\
+#define CHECK_INIT                                                                                                     \
+  {                                                                                                                    \
+    int init_flag = 0;                                                                                                 \
+    PMPI_Initialized(&init_flag);                                                                                      \
+    CHECK_ARGS(not init_flag, MPI_ERR_OTHER, "%s: MPI_Init was not called !", __func__)                                \
+    PMPI_Finalized(&init_flag);                                                                                        \
+    CHECK_ARGS(init_flag, MPI_ERR_OTHER, "%s: MPI_Finalize was already called !", __func__)                            \
   }
 
 #define CHECK_MPI_NULL(num, val, err, ptr)\

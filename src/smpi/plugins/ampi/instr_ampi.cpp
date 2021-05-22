@@ -45,7 +45,7 @@ void TRACE_migration_call(aid_t pid, simgrid::instr::TIData* extra)
     // TI tracing uses states as events, and does not support printing events.
     // So, we need a different code than for replay in order to be able to
     // generate ti_traces for the migration calls.
-    if (!TRACE_smpi_is_enabled()) {
+    if (not TRACE_smpi_is_enabled()) {
       delete extra;
       return;
     }

@@ -139,7 +139,7 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
   elem->refcount++;
   int flag=0;
   auto p = attributes()->insert({keyval, attr_value});
-  if (!p.second) {
+  if (not p.second) {
     int ret = call_deleter<T>((T*)this, elem, keyval,p.first->second,&flag);
     // overwrite previous value
     p.first->second = attr_value;

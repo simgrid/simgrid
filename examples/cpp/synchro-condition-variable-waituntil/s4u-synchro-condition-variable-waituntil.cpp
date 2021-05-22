@@ -16,7 +16,7 @@ static void competitor(int id)
 {
   XBT_INFO("Entering the race...");
   std::unique_lock<simgrid::s4u::Mutex> lck(*mtx);
-  while (!ready) {
+  while (not ready) {
     auto now = simgrid::s4u::Engine::get_clock();
     if (cv->wait_until(lck, now + (id+1)*0.25) == std::cv_status::timeout) {
       XBT_INFO("Out of wait_until (timeout)");

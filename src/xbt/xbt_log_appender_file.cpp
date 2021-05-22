@@ -59,7 +59,7 @@ static constexpr const char* APPEND2_END_TOKEN_CLEAR = "\n                   ";
 static void open_append2_file(xbt_log_append2_file_t data){
   if(data->count<0) {
     //Roll
-    if (!data->file) {
+    if (not data->file) {
       data->file= fopen(data->filename, "w");
       xbt_assert(data->file != nullptr, "Cannot open file: %s: %s", data->filename, strerror(errno));
     } else {
@@ -72,7 +72,7 @@ static void open_append2_file(xbt_log_append2_file_t data){
       fclose(data->file);
     char* pre=xbt_strdup(data->filename);
     char* sep=strchr(pre,'%');
-    if(!sep)
+    if (not sep)
       sep=pre+strlen(pre);
     const char* post    = sep + 1;
     *sep                = '\0';

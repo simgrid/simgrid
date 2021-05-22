@@ -22,7 +22,7 @@ EventSet EvtSetTools::makeUnion(const EventSet& s1, const EventSet& s2)
 
 void EvtSetTools::pushBack(EventSet& events, UnfoldingEvent* e)
 {
-  if (!EvtSetTools::contains(events, e))
+  if (not EvtSetTools::contains(events, e))
     events.push_back(e);
 }
 

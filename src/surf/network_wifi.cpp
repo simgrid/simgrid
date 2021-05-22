@@ -87,7 +87,7 @@ void NetworkWifiLink::refresh_decay_bandwidths(){
 }
 
 bool NetworkWifiLink::toggle_decay_model(){
-  use_decay_model_=!use_decay_model_;
+  use_decay_model_ = not use_decay_model_;
   return use_decay_model_;
 }
 
