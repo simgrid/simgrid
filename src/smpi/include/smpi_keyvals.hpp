@@ -28,14 +28,12 @@ struct smpi_copy_fn {
   MPI_Win_copy_attr_function_fort      *win_copy_fn_fort;
 };
 
-struct s_smpi_key_elem_t {
+struct smpi_key_elem {
   smpi_copy_fn copy_fn;
   smpi_delete_fn delete_fn;
   void* extra_state;
   int refcount;
 };
-
-using smpi_key_elem = s_smpi_key_elem_t*;
 
 namespace simgrid{
 namespace smpi{
@@ -58,48 +56,46 @@ class Keyval{
     template <typename T> int attr_get(int keyval, void* attr_value, int* flag);
     template <typename T> int attr_put(int keyval, void* attr_value);
     template <typename T>
-    static int call_deleter(T* obj, const s_smpi_key_elem_t* elem, int keyval, void* value, int* flag);
+    static int call_deleter(T* obj, const smpi_key_elem& elem, int keyval, void* value, int* flag);
     template <typename T> void cleanup_attr();
 };
 
 template <typename T>
 int Keyval::keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& delete_fn, int* keyval, void* extra_state)
 {
-  auto* value = new s_smpi_key_elem_t;
-
-  value->copy_fn=copy_fn;
-  value->delete_fn=delete_fn;
-  value->extra_state=extra_state;
-  value->refcount=1;
+  smpi_key_elem value;
+  value.copy_fn     = copy_fn;
+  value.delete_fn   = delete_fn;
+  value.extra_state = extra_state;
+  value.refcount    = 1;
 
   *keyval = T::keyval_id_;
-  T::keyvals_.emplace(*keyval, value);
+  T::keyvals_.emplace(*keyval, std::move(value));
   T::keyval_id_++;
   return MPI_SUCCESS;
 }
 
 template <typename T> int Keyval::keyval_free(int* keyval){
-/* See MPI-1, 5.7.1.  Freeing the keyval does not remove it if it
-         * is in use in an attribute */
-  smpi_key_elem elem = T::keyvals_.at(*keyval);
-  if (elem == nullptr) {
+  /* See MPI-1, 5.7.1.  Freeing the keyval does not remove it if it is in use in an attribute */
+  auto elem_it = T::keyvals_.find(*keyval);
+  if (elem_it == T::keyvals_.end())
     return MPI_ERR_ARG;
-  }
-  if(elem->refcount==1){
-    T::keyvals_.erase(*keyval);
-    delete elem;
-  }else{
-    elem->refcount--;
-  }
+
+  smpi_key_elem& elem = elem_it->second;
+  elem.refcount--;
+  if (elem.refcount == 0)
+    T::keyvals_.erase(elem_it);
   *keyval = MPI_KEYVAL_INVALID;
   return MPI_SUCCESS;
 }
 
 template <typename T> int Keyval::attr_delete(int keyval){
-  smpi_key_elem elem = T::keyvals_.at(keyval);
-  if(elem==nullptr)
+  auto elem_it = T::keyvals_.find(keyval);
+  if (elem_it == T::keyvals_.end())
     return MPI_ERR_ARG;
-  elem->refcount--;
+
+  smpi_key_elem& elem = elem_it->second;
+  elem.refcount--;
   void * value = nullptr;
   int flag=0;
   if(this->attr_get<T>(keyval, &value, &flag)==MPI_SUCCESS){
@@ -115,8 +111,8 @@ template <typename T> int Keyval::attr_delete(int keyval){
 
 
 template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* flag){
-  const s_smpi_key_elem_t* elem = T::keyvals_.at(keyval);
-  if(elem==nullptr)
+  auto elem_it = T::keyvals_.find(keyval);
+  if (elem_it == T::keyvals_.end())
     return MPI_ERR_ARG;
 
   auto attr = attributes().find(keyval);
@@ -130,10 +126,12 @@ template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* fl
 }
 
 template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
-  smpi_key_elem elem = T::keyvals_.at(keyval);
-  if(elem==nullptr)
+  auto elem_it = T::keyvals_.find(keyval);
+  if (elem_it == T::keyvals_.end())
     return MPI_ERR_ARG;
-  elem->refcount++;
+
+  smpi_key_elem& elem = elem_it->second;
+  elem.refcount++;
   int flag=0;
   auto p  = attributes().emplace(keyval, attr_value);
   if (not p.second) {
@@ -149,12 +147,10 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
 template <typename T> void Keyval::cleanup_attr(){
   int flag = 0;
   for (auto const& it : attributes()) {
-    auto elm = T::keyvals_.find(it.first);
-    if (elm != T::keyvals_.end()) {
-      smpi_key_elem elem = elm->second;
-      if (elem != nullptr) {
-        call_deleter<T>((T*)this, elem, it.first, it.second, &flag);
-      }
+    auto elem_it = T::keyvals_.find(it.first);
+    if (elem_it != T::keyvals_.end()) {
+      smpi_key_elem& elem = elem_it->second;
+      call_deleter<T>((T*)this, elem, it.first, it.second, &flag);
     } else {
       // already deleted, not a problem
       flag = 0;

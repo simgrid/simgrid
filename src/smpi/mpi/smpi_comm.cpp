@@ -80,27 +80,28 @@ int Comm::dup(MPI_Comm* newcomm){
   int ret      = MPI_SUCCESS;
 
   for (auto const& it : attributes()) {
-    smpi_key_elem elem = keyvals_.at(it.first);
-    if (elem != nullptr) {
+    auto elem_it = keyvals_.find(it.first);
+    if (elem_it != keyvals_.end()) {
+      smpi_key_elem& elem = elem_it->second;
       int flag        = 0;
       void* value_out = nullptr;
-      if (elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN && elem->copy_fn.comm_copy_fn != MPI_COMM_DUP_FN)
-        ret = elem->copy_fn.comm_copy_fn(this, it.first, elem->extra_state, it.second, &value_out, &flag);
-      else if (elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN && *(int*)*elem->copy_fn.comm_copy_fn_fort != 1) {
+      if (elem.copy_fn.comm_copy_fn != MPI_NULL_COPY_FN && elem.copy_fn.comm_copy_fn != MPI_COMM_DUP_FN)
+        ret = elem.copy_fn.comm_copy_fn(this, it.first, elem.extra_state, it.second, &value_out, &flag);
+      else if (elem.copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN && *(int*)*elem.copy_fn.comm_copy_fn_fort != 1) {
         value_out = (int*)xbt_malloc(sizeof(int));
-        elem->copy_fn.comm_copy_fn_fort(this, it.first, elem->extra_state, it.second, value_out, &flag, &ret);
+        elem.copy_fn.comm_copy_fn_fort(this, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
       }
       if (ret != MPI_SUCCESS) {
         Comm::destroy(*newcomm);
         *newcomm = MPI_COMM_NULL;
         return ret;
       }
-      if (elem->copy_fn.comm_copy_fn == MPI_COMM_DUP_FN ||
-          ((elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) && *(int*)*elem->copy_fn.comm_copy_fn_fort == 1)) {
-        elem->refcount++;
+      if (elem.copy_fn.comm_copy_fn == MPI_COMM_DUP_FN ||
+          ((elem.copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) && *(int*)*elem.copy_fn.comm_copy_fn_fort == 1)) {
+        elem.refcount++;
         (*newcomm)->attributes().emplace(it.first, it.second);
       } else if (flag) {
-        elem->refcount++;
+        elem.refcount++;
         (*newcomm)->attributes().emplace(it.first, value_out);
       }
     }
