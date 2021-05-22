@@ -180,10 +180,10 @@ int Datatype::copy_attrs(Datatype* datatype){
       if (elem->copy_fn.type_copy_fn == MPI_TYPE_DUP_FN ||
           ((elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) && (*(int*)*elem->copy_fn.type_copy_fn_fort == 1))) {
         elem->refcount++;
-        attributes().insert({it.first, it.second});
+        attributes().emplace(it.first, it.second);
       } else if (flag) {
         elem->refcount++;
-        attributes().insert({it.first, value_out});
+        attributes().emplace(it.first, value_out);
       }
     }
   }

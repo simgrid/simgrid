@@ -73,7 +73,7 @@ int Keyval::keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& del
   value->refcount=1;
 
   *keyval = T::keyval_id_;
-  T::keyvals_.insert({*keyval, value});
+  T::keyvals_.emplace(*keyval, value);
   T::keyval_id_++;
   return MPI_SUCCESS;
 }
@@ -135,7 +135,7 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
     return MPI_ERR_ARG;
   elem->refcount++;
   int flag=0;
-  auto p  = attributes().insert({keyval, attr_value});
+  auto p  = attributes().emplace(keyval, attr_value);
   if (not p.second) {
     int ret = call_deleter<T>((T*)this, elem, keyval,p.first->second,&flag);
     // overwrite previous value
