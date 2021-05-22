@@ -163,7 +163,7 @@ int Datatype::copy_attrs(Datatype* datatype){
   flags_ &= ~DT_FLAG_PREDEFINED;
   int ret = MPI_SUCCESS;
 
-  for (auto const& it : *(datatype->attributes())) {
+  for (auto const& it : datatype->attributes()) {
     smpi_key_elem elem = keyvals_.at(it.first);
     if (elem != nullptr) {
       int flag = 0;
@@ -180,10 +180,10 @@ int Datatype::copy_attrs(Datatype* datatype){
       if (elem->copy_fn.type_copy_fn == MPI_TYPE_DUP_FN ||
           ((elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) && (*(int*)*elem->copy_fn.type_copy_fn_fort == 1))) {
         elem->refcount++;
-        attributes()->insert({it.first, it.second});
+        attributes().insert({it.first, it.second});
       } else if (flag) {
         elem->refcount++;
-        attributes()->insert({it.first, value_out});
+        attributes().insert({it.first, value_out});
       }
     }
   }

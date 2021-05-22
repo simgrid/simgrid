@@ -79,7 +79,7 @@ int Comm::dup(MPI_Comm* newcomm){
   (*newcomm)   = new  Comm(cp, this->topo());
   int ret      = MPI_SUCCESS;
 
-  for (auto const& it : *attributes()) {
+  for (auto const& it : attributes()) {
     smpi_key_elem elem = keyvals_.at(it.first);
     if (elem != nullptr) {
       int flag        = 0;
@@ -98,10 +98,10 @@ int Comm::dup(MPI_Comm* newcomm){
       if (elem->copy_fn.comm_copy_fn == MPI_COMM_DUP_FN ||
           ((elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) && *(int*)*elem->copy_fn.comm_copy_fn_fort == 1)) {
         elem->refcount++;
-        (*newcomm)->attributes()->insert({it.first, it.second});
+        (*newcomm)->attributes().insert({it.first, it.second});
       } else if (flag) {
         elem->refcount++;
-        (*newcomm)->attributes()->insert({it.first, value_out});
+        (*newcomm)->attributes().insert({it.first, value_out});
       }
     }
   }

@@ -44,7 +44,8 @@ class Keyval{
   private:
     std::unordered_map<int, void*> attributes_;
   protected:
-    std::unordered_map<int, void*>* attributes();
+    std::unordered_map<int, void*>& attributes() { return attributes_; }
+
   public:
 // Each subclass should have two members, as we want to separate the ones for Win, Comm, and Datatypes :
 //    static std::unordered_map<int, smpi_key_elem> keyvals_;
@@ -106,9 +107,9 @@ template <typename T> int Keyval::attr_delete(int keyval){
     if(ret!=MPI_SUCCESS)
         return ret;
   }
-  if(attributes()->empty())
+  if (attributes().empty())
     return MPI_ERR_ARG;
-  attributes()->erase(keyval);
+  attributes().erase(keyval);
   return MPI_SUCCESS;
 }
 
@@ -118,9 +119,8 @@ template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* fl
   if(elem==nullptr)
     return MPI_ERR_ARG;
 
-  const auto& attribs = attributes();
-  auto attr           = attribs->find(keyval);
-  if (attr != attribs->end()) {
+  auto attr = attributes().find(keyval);
+  if (attr != attributes().end()) {
     *static_cast<void**>(attr_value) = attr->second;
     *flag=1;
   } else {
@@ -135,7 +135,7 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
     return MPI_ERR_ARG;
   elem->refcount++;
   int flag=0;
-  auto p = attributes()->insert({keyval, attr_value});
+  auto p  = attributes().insert({keyval, attr_value});
   if (not p.second) {
     int ret = call_deleter<T>((T*)this, elem, keyval,p.first->second,&flag);
     // overwrite previous value
@@ -148,7 +148,7 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
 
 template <typename T> void Keyval::cleanup_attr(){
   int flag = 0;
-  for (auto const& it : attributes_) {
+  for (auto const& it : attributes()) {
     auto elm = T::keyvals_.find(it.first);
     if (elm != T::keyvals_.end()) {
       smpi_key_elem elem = elm->second;

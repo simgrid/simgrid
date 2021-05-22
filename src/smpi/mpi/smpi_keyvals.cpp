@@ -10,10 +10,6 @@
 namespace simgrid{
 namespace smpi{
 
-std::unordered_map<int, void*>* Keyval::attributes(){
-  return &attributes_;
-}
-
 template <>
 int Keyval::call_deleter<Comm>(Comm* obj, const s_smpi_key_elem_t* elem, int keyval, void* value, int* /*flag*/)
 {
