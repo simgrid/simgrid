@@ -131,10 +131,11 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
     return MPI_ERR_ARG;
 
   smpi_key_elem& elem = elem_it->second;
-  elem.refcount++;
   int flag=0;
   auto p  = attributes().emplace(keyval, attr_value);
-  if (not p.second) {
+  if (p.second) {
+    elem.refcount++;
+  } else {
     int ret = call_deleter<T>((T*)this, elem, keyval,p.first->second,&flag);
     // overwrite previous value
     p.first->second = attr_value;
