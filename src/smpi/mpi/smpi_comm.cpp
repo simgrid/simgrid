@@ -79,33 +79,29 @@ int Comm::dup(MPI_Comm* newcomm){
   (*newcomm)   = new  Comm(cp, this->topo());
   int ret      = MPI_SUCCESS;
 
-  if (not attributes()->empty()) {
-    int flag=0;
-    void* value_out=nullptr;
-    for (auto const& it : *attributes()) {
-      smpi_key_elem elem = keyvals_.at(it.first);
-      if (elem != nullptr){
-        if( elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN && 
-            elem->copy_fn.comm_copy_fn != MPI_COMM_DUP_FN)
-          ret = elem->copy_fn.comm_copy_fn(this, it.first, elem->extra_state, it.second, &value_out, &flag);
-        else if ( elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN &&
-                  *(int*)*elem->copy_fn.comm_copy_fn_fort != 1){
-          value_out=(int*)xbt_malloc(sizeof(int));
-          elem->copy_fn.comm_copy_fn_fort(this, it.first, elem->extra_state, it.second, value_out, &flag,&ret);
-        }
-        if (ret != MPI_SUCCESS) {
-          Comm::destroy(*newcomm);
-          *newcomm = MPI_COMM_NULL;
-          return ret;
-        }
-        if (elem->copy_fn.comm_copy_fn == MPI_COMM_DUP_FN || 
-           ((elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) && *(int*)*elem->copy_fn.comm_copy_fn_fort == 1)){
-          elem->refcount++;
-          (*newcomm)->attributes()->insert({it.first, it.second});
-        }else if (flag){
-          elem->refcount++;
-          (*newcomm)->attributes()->insert({it.first, value_out});
-        }
+  for (auto const& it : *attributes()) {
+    smpi_key_elem elem = keyvals_.at(it.first);
+    if (elem != nullptr) {
+      int flag        = 0;
+      void* value_out = nullptr;
+      if (elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN && elem->copy_fn.comm_copy_fn != MPI_COMM_DUP_FN)
+        ret = elem->copy_fn.comm_copy_fn(this, it.first, elem->extra_state, it.second, &value_out, &flag);
+      else if (elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN && *(int*)*elem->copy_fn.comm_copy_fn_fort != 1) {
+        value_out = (int*)xbt_malloc(sizeof(int));
+        elem->copy_fn.comm_copy_fn_fort(this, it.first, elem->extra_state, it.second, value_out, &flag, &ret);
+      }
+      if (ret != MPI_SUCCESS) {
+        Comm::destroy(*newcomm);
+        *newcomm = MPI_COMM_NULL;
+        return ret;
+      }
+      if (elem->copy_fn.comm_copy_fn == MPI_COMM_DUP_FN ||
+          ((elem->copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) && *(int*)*elem->copy_fn.comm_copy_fn_fort == 1)) {
+        elem->refcount++;
+        (*newcomm)->attributes()->insert({it.first, it.second});
+      } else if (flag) {
+        elem->refcount++;
+        (*newcomm)->attributes()->insert({it.first, value_out});
       }
     }
   }

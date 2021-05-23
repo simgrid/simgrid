@@ -162,32 +162,28 @@ Datatype::~Datatype()
 int Datatype::copy_attrs(Datatype* datatype){
   flags_ &= ~DT_FLAG_PREDEFINED;
   int ret = MPI_SUCCESS;
-    
-  if (not datatype->attributes()->empty()) {
-    int flag=0;
-    void* value_out;
-    for (auto const& it : *(datatype->attributes())) {
-      smpi_key_elem elem = keyvals_.at(it.first);
-      if (elem != nullptr){
-        if( elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN && 
-            elem->copy_fn.type_copy_fn != MPI_TYPE_DUP_FN)
-          ret = elem->copy_fn.type_copy_fn(datatype, it.first, elem->extra_state, it.second, &value_out, &flag);
-        else if ( elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN &&
-                  (*(int*)*elem->copy_fn.type_copy_fn_fort) != 1){
-          value_out=(int*)xbt_malloc(sizeof(int));
-          elem->copy_fn.type_copy_fn_fort(datatype, it.first, elem->extra_state, it.second, value_out, &flag, &ret);
-        }
-        if (ret != MPI_SUCCESS) {
-          break;
-        }
-        if(elem->copy_fn.type_copy_fn == MPI_TYPE_DUP_FN || 
-          ((elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) && (*(int*)*elem->copy_fn.type_copy_fn_fort == 1))){
-          elem->refcount++;
-          attributes()->insert({it.first, it.second});
-        } else if (flag){
-          elem->refcount++;
-          attributes()->insert({it.first, value_out});
-        }
+
+  for (auto const& it : *(datatype->attributes())) {
+    smpi_key_elem elem = keyvals_.at(it.first);
+    if (elem != nullptr) {
+      int flag = 0;
+      void* value_out;
+      if (elem->copy_fn.type_copy_fn != MPI_NULL_COPY_FN && elem->copy_fn.type_copy_fn != MPI_TYPE_DUP_FN)
+        ret = elem->copy_fn.type_copy_fn(datatype, it.first, elem->extra_state, it.second, &value_out, &flag);
+      else if (elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN && (*(int*)*elem->copy_fn.type_copy_fn_fort) != 1) {
+        value_out = (int*)xbt_malloc(sizeof(int));
+        elem->copy_fn.type_copy_fn_fort(datatype, it.first, elem->extra_state, it.second, value_out, &flag, &ret);
+      }
+      if (ret != MPI_SUCCESS) {
+        break;
+      }
+      if (elem->copy_fn.type_copy_fn == MPI_TYPE_DUP_FN ||
+          ((elem->copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) && (*(int*)*elem->copy_fn.type_copy_fn_fort == 1))) {
+        elem->refcount++;
+        attributes()->insert({it.first, it.second});
+      } else if (flag) {
+        elem->refcount++;
+        attributes()->insert({it.first, value_out});
       }
     }
   }
