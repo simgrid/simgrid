@@ -35,6 +35,7 @@ struct smpi_key_elem {
   void* extra_state;
   int refcount;
   bool deleted;
+  bool delete_attr; // if true, xbt_free(attr) on delete: used by Fortran bindings
 };
 
 namespace simgrid{
@@ -52,7 +53,7 @@ class Keyval{
 //    static int keyval_id_;
     template <typename T>
     static int keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& delete_fn, int* keyval,
-                             void* extra_state);
+                             void* extra_state, bool delete_attr = false);
     template <typename T> static int keyval_free(int* keyval);
     template <typename T> int attr_delete(int keyval);
     template <typename T> int attr_get(int keyval, void* attr_value, int* flag);
@@ -63,7 +64,8 @@ class Keyval{
 };
 
 template <typename T>
-int Keyval::keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& delete_fn, int* keyval, void* extra_state)
+int Keyval::keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& delete_fn, int* keyval, void* extra_state,
+                          bool delete_attr)
 {
   smpi_key_elem value;
   value.copy_fn     = copy_fn;
@@ -71,6 +73,7 @@ int Keyval::keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& del
   value.extra_state = extra_state;
   value.refcount    = 0;
   value.deleted     = false;
+  value.delete_attr = delete_attr;
 
   *keyval = T::keyval_id_;
   T::keyvals_.emplace(*keyval, std::move(value));

@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-//#include "private.hpp"
 #include "smpi_keyvals.hpp"
+#include "xbt/sysdep.h"
 
 namespace simgrid{
 namespace smpi{
@@ -17,6 +17,8 @@ template <> int Keyval::call_deleter<Comm>(Comm* obj, const smpi_key_elem& elem,
     ret = elem.delete_fn.comm_delete_fn(obj, keyval, value, elem.extra_state);
   else if (elem.delete_fn.comm_delete_fn_fort != MPI_NULL_DELETE_FN)
     elem.delete_fn.comm_delete_fn_fort(obj, keyval, value, elem.extra_state, &ret);
+  if (elem.delete_attr)
+    xbt_free(value);
   return ret;
 }
 
@@ -27,6 +29,8 @@ template <> int Keyval::call_deleter<Win>(Win* obj, const smpi_key_elem& elem, i
     ret = elem.delete_fn.win_delete_fn(obj, keyval, value, elem.extra_state);
   else if (elem.delete_fn.win_delete_fn_fort != MPI_NULL_DELETE_FN)
     elem.delete_fn.win_delete_fn_fort(obj, keyval, value, elem.extra_state, &ret);
+  if (elem.delete_attr)
+    xbt_free(value);
   return ret;
 }
 
@@ -38,6 +42,8 @@ int Keyval::call_deleter<Datatype>(Datatype* obj, const smpi_key_elem& elem, int
     ret = elem.delete_fn.type_delete_fn(obj, keyval, value, elem.extra_state);
   else if (elem.delete_fn.type_delete_fn_fort != MPI_NULL_DELETE_FN)
     elem.delete_fn.type_delete_fn_fort(obj, keyval, value, elem.extra_state, &ret);
+  if (elem.delete_attr)
+    xbt_free(value);
   return ret;
 }
 

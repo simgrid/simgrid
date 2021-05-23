@@ -76,7 +76,8 @@ void mpi_type_delete_attr_ (int* type, int* type_keyval, int* ierr){
 void mpi_type_create_keyval_ (void* copy_fn, void*  delete_fn, int* keyval, void* extra_state, int* ierr){
   smpi_copy_fn _copy_fn={nullptr,nullptr,nullptr,nullptr,(*(int*)copy_fn) == 0 ? nullptr : reinterpret_cast<MPI_Type_copy_attr_function_fort*>(copy_fn),nullptr};
   smpi_delete_fn _delete_fn={nullptr,nullptr,nullptr,nullptr,(*(int*)delete_fn) == 0 ? nullptr : reinterpret_cast<MPI_Type_delete_attr_function_fort*>(delete_fn),nullptr};
-  *ierr = simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Datatype>(_copy_fn, _delete_fn, keyval, extra_state);
+  *ierr =
+      simgrid::smpi::Keyval::keyval_create<simgrid::smpi::Datatype>(_copy_fn, _delete_fn, keyval, extra_state, true);
 }
 
 void mpi_type_free_keyval_ (int* keyval, int* ierr) {
