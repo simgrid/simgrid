@@ -656,7 +656,7 @@ sub RunMPIProgram {
 	    if (/FORTRAN STOP/) { next; }
 	    $inline .= $_;
 	    if (m{^==[0-9]+== ?WARNING: ASan doesn't fully support} ||
-		m{^==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:} ||
+		m{^==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack } ||
 		m{^False positive error reports may follow$} ||
 		m{^For details see http://code.google.com/p/address-sanitizer/issues/detail\?id=189$} ||
 		m{^For details see https://github.com/google/sanitizers/issues/189$}) {
