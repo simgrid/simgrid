@@ -104,7 +104,15 @@ C Test the attr delete function
          print *, ' Delete_attr did not delete attribute'
       endif
       call mpi_type_free( type2, ierr )
-
+C
+C Avoid memory leak
+      ierr = -1
+      call mpi_type_delete_attr( type1, keyval, ierr )
+      if (ierr .ne. MPI_SUCCESS) then
+         errs = errs + 1
+         call mtestprinterror( ierr )
+      endif
+C
       ierr = -1
       call mpi_type_free_keyval( keyval, ierr )
       if (ierr .ne. MPI_SUCCESS) then
