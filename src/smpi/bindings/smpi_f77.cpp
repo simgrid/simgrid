@@ -273,7 +273,7 @@ void mpi_win_get_attr_(int* win, int* win_keyval, MPI_Aint* attribute_val, int* 
 
 void mpi_win_set_attr_(int* win, int* win_keyval, MPI_Aint* att, int* ierr)
 {
-  auto* val = static_cast<MPI_Aint*>(xbt_malloc(sizeof(MPI_Aint)));
+  auto* val = xbt_new(MPI_Aint, 1);
   *val      = *att;
   *ierr     = MPI_Win_set_attr(simgrid::smpi::Win::f2c(*win), *win_keyval, val);
 }
@@ -801,7 +801,7 @@ void mpi_attr_delete_ (int* comm, int* keyval, int* ierr) {
 }
 
 void mpi_attr_put_ (int* comm, int* keyval, int* attr_value, int* ierr) {
-  auto* val = static_cast<int*>(xbt_malloc(sizeof(int)));
+  auto* val = xbt_new(int, 1);
   *val      = *attr_value;
   *ierr     = MPI_Attr_put(simgrid::smpi::Comm::f2c(*comm), *keyval, val);
 }

@@ -168,21 +168,28 @@ int Datatype::copy_attrs(Datatype* datatype){
     if (elem_it != keyvals_.end()) {
       smpi_key_elem& elem = elem_it->second;
       int flag            = 0;
-      void* value_out;
-      if (elem.copy_fn.type_copy_fn != MPI_NULL_COPY_FN && elem.copy_fn.type_copy_fn != MPI_TYPE_DUP_FN)
+      void* value_out     = nullptr;
+      if (elem.copy_fn.type_copy_fn == MPI_TYPE_DUP_FN) {
+        value_out = it.second;
+        flag      = 1;
+      } else if (elem.copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
         ret = elem.copy_fn.type_copy_fn(datatype, it.first, elem.extra_state, it.second, &value_out, &flag);
-      else if (elem.copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN && (*(int*)*elem.copy_fn.type_copy_fn_fort) != 1) {
-        value_out = (int*)xbt_malloc(sizeof(int));
-        elem.copy_fn.type_copy_fn_fort(datatype, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
+      }
+      if (elem.copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) {
+        value_out = xbt_new(int, 1);
+        if (*(int*)*elem.copy_fn.type_copy_fn_fort == 1) { // MPI_TYPE_DUP_FN
+          memcpy(value_out, it.second, sizeof(int));
+          flag = 1;
+        } else { // not null, nor dup
+          elem.copy_fn.type_copy_fn_fort(datatype, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
+          if (ret != MPI_SUCCESS)
+            xbt_free(value_out);
+        }
       }
       if (ret != MPI_SUCCESS) {
         break;
       }
-      if (elem.copy_fn.type_copy_fn == MPI_TYPE_DUP_FN ||
-          ((elem.copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) && (*(int*)*elem.copy_fn.type_copy_fn_fort == 1))) {
-        elem.refcount++;
-        attributes().emplace(it.first, it.second);
-      } else if (flag) {
+      if (flag) {
         elem.refcount++;
         attributes().emplace(it.first, value_out);
       }

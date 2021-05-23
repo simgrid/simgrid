@@ -64,7 +64,7 @@ void mpi_type_get_attr_ (int* type, int* type_keyval, int *attribute_val, int* f
 }
 
 void mpi_type_set_attr_ (int* type, int* type_keyval, int *attribute_val, int* ierr){
-  auto* val = static_cast<int*>(xbt_malloc(sizeof(int)));
+  auto* val = xbt_new(int, 1);
   *val      = *attribute_val;
   *ierr     = MPI_Type_set_attr(simgrid::smpi::Datatype::f2c(*type), *type_keyval, val);
 }

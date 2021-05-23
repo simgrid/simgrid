@@ -79,7 +79,7 @@ void mpi_comm_get_attr_ (int* comm, int* comm_keyval, int *attribute_val, int *f
 }
 
 void mpi_comm_set_attr_ (int* comm, int* comm_keyval, int *attribute_val, int* ierr){
-  auto* val = static_cast<int*>(xbt_malloc(sizeof(int)));
+  auto* val = xbt_new(int, 1);
   *val      = *attribute_val;
   *ierr     = MPI_Comm_set_attr(simgrid::smpi::Comm::f2c(*comm), *comm_keyval, val);
 }
