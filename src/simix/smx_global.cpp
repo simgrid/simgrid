@@ -233,10 +233,6 @@ void SIMIX_clean()
   engine->run_all_actors();
   engine->empty_trash();
 
-  /* Exit the SIMIX network module */
-  SIMIX_mailbox_exit();
-
-
   /* Let's free maestro now */
   delete simix_global->maestro_;
   simix_global->maestro_ = nullptr;

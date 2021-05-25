@@ -9,6 +9,7 @@
 #include <boost/circular_buffer.hpp>
 #include <xbt/string.hpp>
 
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -25,6 +26,8 @@ class MailboxImpl {
   s4u::Mailbox piface_;
   xbt::string name_;
 
+  friend s4u::Engine;
+  friend s4u::Mailbox* s4u::Engine::mailbox_by_name_or_create(const std::string& name) const;
   friend s4u::Mailbox;
   friend s4u::Mailbox* s4u::Mailbox::by_name(const std::string& name);
   friend mc::CommunicationDeterminismChecker;
@@ -32,10 +35,12 @@ class MailboxImpl {
   explicit MailboxImpl(const std::string& name) : piface_(this), name_(name) {}
 
 public:
+  /** @brief Public interface */
+  const s4u::Mailbox* get_iface() const { return &piface_; }
+  s4u::Mailbox* get_iface() { return &piface_; }
+
   const xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
-  static MailboxImpl* by_name_or_null(const std::string& name);
-  static MailboxImpl* by_name_or_create(const std::string& name);
   void set_receiver(s4u::ActorPtr actor);
   void push(CommImplPtr comm);
   void remove(const CommImplPtr& comm);
@@ -51,7 +56,5 @@ public:
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid
-
-XBT_PRIVATE void SIMIX_mailbox_exit();
 
 #endif

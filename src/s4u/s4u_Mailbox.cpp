@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 
@@ -27,11 +28,7 @@ const char* Mailbox::get_cname() const
 
 Mailbox* Mailbox::by_name(const std::string& name)
 {
-  kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::by_name_or_null(name);
-  if (mbox == nullptr) {
-    mbox = kernel::actor::simcall([&name] { return kernel::activity::MailboxImpl::by_name_or_create(name); });
-  }
-  return &mbox->piface_;
+  return Engine::get_instance()->mailbox_by_name_or_create(name);
 }
 
 bool Mailbox::empty() const

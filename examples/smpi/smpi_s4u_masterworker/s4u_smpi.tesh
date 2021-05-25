@@ -2,14 +2,14 @@ p Test the use of SMPI+MSG in the same file, as well as several different SMPI i
 $ ./masterworker_mailbox_smpi ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/deployment_masterworker_mailbox_smpi.xml --log=smpi.:info --cfg=smpi/simulate-computation:no
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
 > [0.000000] [smpi_config/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.  Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 2 workers and 20 tasks to process
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending task 0 of 20 to mailbox 'Ginette'
 > [Ginette:master_mpi:(4) 0.000000] [msg_test/INFO] here for rank 0
 > [Bourassa:master_mpi:(5) 0.000000] [msg_test/INFO] here for rank 1
 > [Ginette:alltoall_mpi:(6) 0.000000] [msg_test/INFO] alltoall for rank 0
 > [Bourassa:alltoall_mpi:(7) 0.000000] [msg_test/INFO] alltoall for rank 1
 > [Jupiter:alltoall_mpi:(8) 0.000000] [msg_test/INFO] alltoall for rank 2
 > [Fafard:alltoall_mpi:(9) 0.000000] [msg_test/INFO] alltoall for rank 3
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 2 workers and 20 tasks to process
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending task 0 of 20 to mailbox 'Ginette'
 > [Ginette:master_mpi:(4) 0.000000] [msg_test/INFO] After comm 0
 > [Ginette:master_mpi:(4) 0.000000] [msg_test/INFO] After finalize 0 0
 > [Bourassa:master_mpi:(5) 0.016871] [msg_test/INFO] After comm 1

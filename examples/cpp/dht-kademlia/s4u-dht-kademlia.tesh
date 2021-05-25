@@ -18,15 +18,15 @@ $ ${bindir:=.}/s4u-dht-kademlia ${platfdir}/cluster_backbone.xml ${srcdir:=.}/s4
 > [  0.000000] (12:node@node-11.simgrid.org) Hi, I'm going to join the network with id 2047
 > [  0.000000] (13:node@node-12.simgrid.org) Hi, I'm going to join the network with id 4095
 > [780.000000] ( 7:node@node-6.simgrid.org) 5/5 FIND_NODE have succeeded
-> [780.000000] ( 9:node@node-8.simgrid.org) 6/6 FIND_NODE have succeeded
-> [780.000000] ( 3:node@node-2.simgrid.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 9:node@node-8.simgrid.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 3:node@node-2.simgrid.org) 6/6 FIND_NODE have succeeded
 > [780.000000] ( 2:node@node-1.simgrid.org) 6/6 FIND_NODE have succeeded
 > [780.000000] (11:node@node-10.simgrid.org) 6/6 FIND_NODE have succeeded
 > [780.000000] ( 1:node@node-0.simgrid.org) 7/7 FIND_NODE have succeeded
-> [780.000000] ( 5:node@node-4.simgrid.org) 6/6 FIND_NODE have succeeded
+> [780.000000] ( 5:node@node-4.simgrid.org) 5/5 FIND_NODE have succeeded
 > [780.000000] (13:node@node-12.simgrid.org) 6/6 FIND_NODE have succeeded
 > [780.000000] ( 8:node@node-7.simgrid.org) 5/5 FIND_NODE have succeeded
-> [780.000000] ( 6:node@node-5.simgrid.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 6:node@node-5.simgrid.org) 6/6 FIND_NODE have succeeded
 > [780.000000] (10:node@node-9.simgrid.org) 5/5 FIND_NODE have succeeded
 > [780.000000] (12:node@node-11.simgrid.org) 6/6 FIND_NODE have succeeded
 > [780.000000] ( 4:node@node-3.simgrid.org) 5/5 FIND_NODE have succeeded

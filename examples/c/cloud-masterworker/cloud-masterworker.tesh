@@ -10,8 +10,8 @@ $ ${bindir:=.}/c-cloud-masterworker --log=no_loc ${platfdir}/cluster_backbone.xm
 > [VM00:WRK00:(2) 0.000000] [cloud_masterworker/INFO] WRK00 is listening on mailbox(MBOX:WRK00)
 > [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] put an actor (WRK01) on VM01
 > [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] # Send to 2 worker actors
-> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK00)
 > [VM01:WRK01:(3) 0.000000] [cloud_masterworker/INFO] WRK01 is listening on mailbox(MBOX:WRK01)
+> [node-0.simgrid.org:master:(1) 0.000000] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK00)
 > [VM00:WRK00:(2) 0.090280] [cloud_masterworker/INFO] WRK00 received from mailbox(MBOX:WRK00)
 > [node-0.simgrid.org:master:(1) 0.090280] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK01)
 > [VM00:WRK00:(2) 0.100280] [cloud_masterworker/INFO] WRK00 executed
@@ -28,8 +28,8 @@ $ ${bindir:=.}/c-cloud-masterworker --log=no_loc ${platfdir}/cluster_backbone.xm
 > [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] put an actor (WRK03) on VM01
 > [VM00:WRK02:(4) 10.000000] [cloud_masterworker/INFO] WRK02 is listening on mailbox(MBOX:WRK02)
 > [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] # Send to 4 worker actors
-> [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK00)
 > [VM01:WRK03:(5) 10.000000] [cloud_masterworker/INFO] WRK03 is listening on mailbox(MBOX:WRK03)
+> [node-0.simgrid.org:master:(1) 10.000000] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK00)
 > [VM00:WRK00:(2) 10.090280] [cloud_masterworker/INFO] WRK00 received from mailbox(MBOX:WRK00)
 > [node-0.simgrid.org:master:(1) 10.090280] [cloud_masterworker/INFO] Send to mailbox(MBOX:WRK01)
 > [VM00:WRK00:(2) 10.100280] [cloud_masterworker/INFO] WRK00 executed

@@ -242,6 +242,23 @@ Link* Engine::link_by_name_or_null(const std::string& name) const
   return link == pimpl->links_.end() ? nullptr : link->second->get_iface();
 }
 
+/** @brief Find a mailox from its name or create one if it does not exist) */
+Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
+{
+  /* two actors may have pushed the same mbox_create simcall at the same time */
+  kernel::activity::MailboxImpl* mbox = kernel::actor::simcall([&name, this] {
+    auto m = pimpl->mailboxes_.find(name);
+    if (m == pimpl->mailboxes_.end()) {
+      auto* mbox = new kernel::activity::MailboxImpl(name);
+      XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name.c_str());
+      pimpl->mailboxes_[name] = mbox;
+      return mbox;
+    } else
+      return m->second;
+  });
+  return mbox->get_iface();
+}
+
 void Engine::link_register(const std::string& name, const Link* link)
 {
   pimpl->links_[name] = link->get_impl();

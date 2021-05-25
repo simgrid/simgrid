@@ -50,7 +50,10 @@ EngineImpl::~EngineImpl()
     if (kv.second)
       kv.second->destroy();
 
-      /* Free the remaining data structures */
+  for (auto const& kv : mailboxes_)
+    delete kv.second;
+
+    /* Free the remaining data structures */
 #if SIMGRID_HAVE_MC
   xbt_dynar_free(&actors_vector_);
   xbt_dynar_free(&dead_actors_vector_);

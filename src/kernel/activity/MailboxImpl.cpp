@@ -10,15 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mailbox, simix, "Mailbox implementation");
 
-static std::unordered_map<std::string, smx_mailbox_t> mailboxes;
-
-void SIMIX_mailbox_exit()
-{
-  for (auto const& elm : mailboxes)
-    delete elm.second;
-  mailboxes.clear();
-}
-
 /******************************************************************************/
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/
@@ -26,29 +17,7 @@ void SIMIX_mailbox_exit()
 namespace simgrid {
 namespace kernel {
 namespace activity {
-/** @brief Returns the mailbox of that name, or nullptr */
-MailboxImpl* MailboxImpl::by_name_or_null(const std::string& name)
-{
-  auto mbox = mailboxes.find(name);
-  if (mbox != mailboxes.end())
-    return mbox->second;
-  else
-    return nullptr;
-}
 
-/** @brief Returns the mailbox of that name, newly created on need */
-MailboxImpl* MailboxImpl::by_name_or_create(const std::string& name)
-{
-  /* two actors may have pushed the same mbox_create simcall at the same time */
-  auto m = mailboxes.find(name);
-  if (m == mailboxes.end()) {
-    auto* mbox = new MailboxImpl(name);
-    XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name.c_str());
-    mailboxes[name] = mbox;
-    return mbox;
-  } else
-    return m->second;
-}
 /** @brief set the receiver of the mailbox to allow eager sends
  *  @param actor The receiving dude
  */
