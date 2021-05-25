@@ -140,14 +140,6 @@ static void install_segvhandler()
 
 #endif /* _WIN32 */
 
-/********************************* SIMIX **************************************/
-namespace simgrid {
-namespace simix {
-
-
-} // namespace simix
-} // namespace simgrid
-
 static simgrid::kernel::actor::ActorCode maestro_code;
 void SIMIX_set_maestro(void (*code)(void*), void* data)
 {
