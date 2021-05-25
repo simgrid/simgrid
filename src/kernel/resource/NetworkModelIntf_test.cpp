@@ -20,16 +20,16 @@ TEST_CASE("kernel::resource::NetworkModelIntf: Factors invalid callbacks: except
   for (const auto& model : std::vector<std::string>{"LV08", "SMPI", "IB", "CM02"}) {
     _sg_cfg_init_status = 0; /* HACK: clear config global to be able to do set_config in UTs */
     simgrid::s4u::Engine e("test");
-    e.set_config("network/model:" + model);
+    simgrid::s4u::Engine::set_config("network/model:" + model);
     simgrid::s4u::create_full_zone("root");
 
     SECTION("Model: " + model)
     {
-      simgrid::kernel::resource::NetworkModelIntf* model = e.get_netzone_root()->get_network_model();
-      REQUIRE_THROWS_AS(model->set_lat_factor_cb({}), std::invalid_argument);
-      REQUIRE_THROWS_AS(model->set_lat_factor_cb(nullptr), std::invalid_argument);
-      REQUIRE_THROWS_AS(model->set_bw_factor_cb({}), std::invalid_argument);
-      REQUIRE_THROWS_AS(model->set_bw_factor_cb(nullptr), std::invalid_argument);
+      simgrid::kernel::resource::NetworkModelIntf* m = e.get_netzone_root()->get_network_model();
+      REQUIRE_THROWS_AS(m->set_lat_factor_cb({}), std::invalid_argument);
+      REQUIRE_THROWS_AS(m->set_lat_factor_cb(nullptr), std::invalid_argument);
+      REQUIRE_THROWS_AS(m->set_bw_factor_cb({}), std::invalid_argument);
+      REQUIRE_THROWS_AS(m->set_bw_factor_cb(nullptr), std::invalid_argument);
     }
   }
 }
@@ -39,16 +39,16 @@ TEST_CASE("kernel::resource::NetworkModelIntf: Invalid network/latency-factor an
   for (const auto& model : std::vector<std::string>{"LV08", "CM02"}) {
     _sg_cfg_init_status = 0; /* HACK: clear config global to be able to do set_config in UTs */
     simgrid::s4u::Engine e("test");
-    e.set_config("network/model:" + model);
-    e.set_config("network/latency-factor:10");
-    e.set_config("network/bandwidth-factor:0.3");
+    simgrid::s4u::Engine::set_config("network/model:" + model);
+    simgrid::s4u::Engine::set_config("network/latency-factor:10");
+    simgrid::s4u::Engine::set_config("network/bandwidth-factor:0.3");
     simgrid::s4u::create_full_zone("root");
 
     SECTION("Model: " + model)
     {
-      simgrid::kernel::resource::NetworkModelIntf* model = e.get_netzone_root()->get_network_model();
-      REQUIRE_THROWS_AS(model->set_lat_factor_cb(factor_cb), std::invalid_argument);
-      REQUIRE_THROWS_AS(model->set_bw_factor_cb(factor_cb), std::invalid_argument);
+      simgrid::kernel::resource::NetworkModelIntf* m = e.get_netzone_root()->get_network_model();
+      REQUIRE_THROWS_AS(m->set_lat_factor_cb(factor_cb), std::invalid_argument);
+      REQUIRE_THROWS_AS(m->set_bw_factor_cb(factor_cb), std::invalid_argument);
     }
   }
 }
@@ -58,16 +58,17 @@ TEST_CASE("kernel::resource::NetworkModelIntf: Invalid smpi/lat-factor and smpi/
   for (const auto& model : std::vector<std::string>{"SMPI", "IB"}) {
     _sg_cfg_init_status = 0; /* HACK: clear config global to be able to do set_config in UTs */
     simgrid::s4u::Engine e("test");
-    e.set_config("network/model:" + model);
-    e.set_config("smpi/lat-factor:65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493");
-    e.set_config("smpi/bw-factor:65472:11.6436;15424:3.48845");
+    simgrid::s4u::Engine::set_config("network/model:" + model);
+    simgrid::s4u::Engine::set_config(
+        "smpi/lat-factor:65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493");
+    simgrid::s4u::Engine::set_config("smpi/bw-factor:65472:11.6436;15424:3.48845");
     simgrid::s4u::create_full_zone("root");
 
     SECTION("Model: " + model)
     {
-      simgrid::kernel::resource::NetworkModelIntf* model = e.get_netzone_root()->get_network_model();
-      REQUIRE_THROWS_AS(model->set_lat_factor_cb(factor_cb), std::invalid_argument);
-      REQUIRE_THROWS_AS(model->set_bw_factor_cb(factor_cb), std::invalid_argument);
+      simgrid::kernel::resource::NetworkModelIntf* m = e.get_netzone_root()->get_network_model();
+      REQUIRE_THROWS_AS(m->set_lat_factor_cb(factor_cb), std::invalid_argument);
+      REQUIRE_THROWS_AS(m->set_bw_factor_cb(factor_cb), std::invalid_argument);
     }
   }
 }

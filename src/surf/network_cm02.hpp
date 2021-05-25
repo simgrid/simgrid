@@ -38,8 +38,9 @@ class NetworkCm02Model : public NetworkModel {
   NetworkCm02Action* comm_action_create(s4u::Host* src, s4u::Host* dst, double size,
                                         const std::vector<LinkImpl*>& route, bool failed);
   /** @brief Expand link contraint considering this new communication action */
-  void comm_action_expand_constraints(const s4u::Host* src, const s4u::Host* dst, NetworkCm02Action* action,
-                                      const std::vector<LinkImpl*>& route, const std::vector<LinkImpl*>& back_route);
+  void comm_action_expand_constraints(const s4u::Host* src, const s4u::Host* dst, const NetworkCm02Action* action,
+                                      const std::vector<LinkImpl*>& route,
+                                      const std::vector<LinkImpl*>& back_route) const;
   /** @brief Set communication bounds for latency and bandwidth */
   void comm_action_set_bounds(const s4u::Host* src, const s4u::Host* dst, double size, NetworkCm02Action* action,
                               const std::vector<LinkImpl*>& route,
@@ -61,6 +62,8 @@ public:
 protected:
   virtual void check_lat_factor_cb();
   virtual void check_bw_factor_cb();
+
+private:
   std::function<NetworkFactorCb> lat_factor_cb_;
   std::function<NetworkFactorCb> bw_factor_cb_;
 };

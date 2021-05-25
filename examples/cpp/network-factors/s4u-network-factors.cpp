@@ -52,7 +52,7 @@ constexpr static double LATENCY   = .1e-6;
 
 /*************************************************************************************************/
 /** @brief Create a simple platform based on Dahu cluster */
-static void load_platform(const sg4::Engine& e)
+static void load_platform()
 {
   /**
    * Inspired on dahu cluster on Grenoble
@@ -67,12 +67,13 @@ static void load_platform(const sg4::Engine& e)
    */
 
   auto* root         = sg4::create_star_zone("dahu");
-  std::string prefix = "dahu-", suffix = ".grid5000.fr";
+  std::string prefix = "dahu-";
+  std::string suffix = ".grid5000.fr";
 
   for (int id = 0; id < 32; id++) {
     std::string hostname = prefix + std::to_string(id) + suffix;
     /* create host */
-    sg4::Host* host = root->create_host(hostname, 1)->set_core_count(32)->seal();
+    const sg4::Host* host = root->create_host(hostname, 1)->set_core_count(32)->seal();
     /* create UP/DOWN link */
     sg4::Link* l_up   = root->create_link(hostname + "_up", BW_REMOTE)->set_latency(LATENCY)->seal();
     sg4::Link* l_down = root->create_link(hostname + "_down", BW_REMOTE)->set_latency(LATENCY)->seal();
@@ -179,7 +180,7 @@ public:
         /* Create a communication representing the ongoing communication */
         auto mbox     = sg4::Mailbox::by_name(host->get_name());
         auto* payload = new std::string(msg);
-        mbox->put(payload, size);
+        mbox->put(payload, static_cast<uint64_t>(size));
       }
     }
 
@@ -212,10 +213,10 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
   /* setting network model to default one */
-  e.set_config("network/model:CM02");
+  sg4::Engine::set_config("network/model:CM02");
 
   /* create platform */
-  load_platform(e);
+  load_platform();
   /* setting network factors callbacks */
   simgrid::kernel::resource::NetworkModelIntf* model = e.get_netzone_root()->get_network_model();
   model->set_lat_factor_cb(latency_factor_cb);

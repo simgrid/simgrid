@@ -200,12 +200,13 @@ void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
 }
 
 void NetworkCm02Model::comm_action_expand_constraints(const s4u::Host* src, const s4u::Host* dst,
-                                                      NetworkCm02Action* action, const std::vector<LinkImpl*>& route,
-                                                      const std::vector<LinkImpl*>& back_route)
+                                                      const NetworkCm02Action* action,
+                                                      const std::vector<LinkImpl*>& route,
+                                                      const std::vector<LinkImpl*>& back_route) const
 {
   /* expand route links constraints for route and back_route */
-  NetworkWifiLink* src_wifi_link = nullptr;
-  NetworkWifiLink* dst_wifi_link = nullptr;
+  const NetworkWifiLink* src_wifi_link = nullptr;
+  const NetworkWifiLink* dst_wifi_link = nullptr;
   if (not route.empty() && route.front()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
     src_wifi_link = static_cast<NetworkWifiLink*>(route.front());
   }

@@ -94,12 +94,12 @@ public:
    * @param size The size of the message.
    * @return The new bandwidth.
    */
-  double get_bandwidth_constraint(double rate, double bound, double size);
+  double get_bandwidth_constraint(double rate, double bound, double size) const;
 
   double next_occurring_event_full(double now) override;
 
-  virtual void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
-  virtual void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
+  void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
+  void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
 
   LinkImpl* loopback_ = nullptr;
 };
