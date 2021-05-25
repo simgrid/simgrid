@@ -7,6 +7,7 @@
 #define SMPI_KEYVALS_HPP_INCLUDED
 
 #include "smpi/smpi.h"
+#include "xbt/asserts.h"
 
 #include <unordered_map>
 
@@ -33,6 +34,7 @@ struct smpi_key_elem {
   smpi_delete_fn delete_fn;
   void* extra_state;
   int refcount;
+  bool deleted;
 };
 
 namespace simgrid{
@@ -67,7 +69,8 @@ int Keyval::keyval_create(const smpi_copy_fn& copy_fn, const smpi_delete_fn& del
   value.copy_fn     = copy_fn;
   value.delete_fn   = delete_fn;
   value.extra_state = extra_state;
-  value.refcount    = 1;
+  value.refcount    = 0;
+  value.deleted     = false;
 
   *keyval = T::keyval_id_;
   T::keyvals_.emplace(*keyval, std::move(value));
@@ -82,7 +85,7 @@ template <typename T> int Keyval::keyval_free(int* keyval){
     return MPI_ERR_ARG;
 
   smpi_key_elem& elem = elem_it->second;
-  elem.refcount--;
+  elem.deleted        = true;
   if (elem.refcount == 0)
     T::keyvals_.erase(elem_it);
   *keyval = MPI_KEYVAL_INVALID;
@@ -105,6 +108,8 @@ template <typename T> int Keyval::attr_delete(int keyval){
     return ret;
 
   elem.refcount--;
+  if (elem.deleted && elem.refcount == 0)
+    T::keyvals_.erase(elem_it);
   attributes().erase(attr);
   return MPI_SUCCESS;
 }
@@ -112,7 +117,7 @@ template <typename T> int Keyval::attr_delete(int keyval){
 
 template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* flag){
   auto elem_it = T::keyvals_.find(keyval);
-  if (elem_it == T::keyvals_.end())
+  if (elem_it == T::keyvals_.end() || elem_it->second.deleted)
     return MPI_ERR_ARG;
 
   auto attr = attributes().find(keyval);
@@ -127,7 +132,7 @@ template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* fl
 
 template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
   auto elem_it = T::keyvals_.find(keyval);
-  if (elem_it == T::keyvals_.end())
+  if (elem_it == T::keyvals_.end() || elem_it->second.deleted)
     return MPI_ERR_ARG;
 
   smpi_key_elem& elem = elem_it->second;
@@ -146,17 +151,17 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
 }
 
 template <typename T> void Keyval::cleanup_attr(){
-  int flag = 0;
   for (auto const& it : attributes()) {
     auto elem_it = T::keyvals_.find(it.first);
-    if (elem_it != T::keyvals_.end()) {
-      smpi_key_elem& elem = elem_it->second;
-      call_deleter<T>((T*)this, elem, it.first, it.second, &flag);
-    } else {
-      // already deleted, not a problem
-      flag = 0;
-    }
+    xbt_assert(elem_it != T::keyvals_.end());
+    smpi_key_elem& elem = elem_it->second;
+    int flag            = 0;
+    call_deleter<T>((T*)this, elem, it.first, it.second, &flag);
+    elem.refcount--;
+    if (elem.deleted && elem.refcount == 0)
+      T::keyvals_.erase(elem_it);
   }
+  attributes().clear();
 }
 
 }
