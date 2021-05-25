@@ -16,11 +16,9 @@ const int nb_message_to_send = 5;
 const double sleep_time      = 5;
 const int nb_sender          = 100;
 
-int nb_messages_sent = 0;
-
-simgrid::s4u::Mailbox* box = simgrid::s4u::Mailbox::by_name("test");
-
 static void test_send(){
+  simgrid::s4u::Mailbox* box  = simgrid::s4u::Mailbox::by_name("test");
+  static int nb_messages_sent = 0;
   for (int nb_message = 0; nb_message < nb_message_to_send; nb_message++) {
     nb_messages_sent++;
     XBT_VERB("start sending test #%i", nb_messages_sent);
@@ -31,6 +29,7 @@ static void test_send(){
 }
 
 static void test_receive(){
+  simgrid::s4u::Mailbox* box = simgrid::s4u::Mailbox::by_name("test");
   for (int nb_message = 0; nb_message < nb_message_to_send * nb_sender; nb_message++) {
     XBT_VERB("waiting for messages");
     auto ptr = box->get_unique<int>();
