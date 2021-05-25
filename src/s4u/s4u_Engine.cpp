@@ -247,14 +247,13 @@ Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
 {
   /* two actors may have pushed the same mbox_create simcall at the same time */
   kernel::activity::MailboxImpl* mbox = kernel::actor::simcall([&name, this] {
-    auto m = pimpl->mailboxes_.find(name);
-    if (m == pimpl->mailboxes_.end()) {
+    auto m = pimpl->mailboxes_.emplace(name, nullptr);
+    if (m.second) {
       auto* mbox = new kernel::activity::MailboxImpl(name);
       XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name.c_str());
-      pimpl->mailboxes_[name] = mbox;
-      return mbox;
-    } else
-      return m->second;
+      m.first->second = mbox;
+    }
+    return m.first->second;
   });
   return mbox->get_iface();
 }
