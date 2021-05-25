@@ -16,7 +16,6 @@
 #include "simgrid/simix.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/simix/smx_private.hpp" // For access to simix_global->process_list
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 #include <simgrid/Exception.hpp>
@@ -40,9 +39,9 @@ Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see
 void Engine::initialize(int* argc, char** argv)
 {
   xbt_assert(Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
+  Engine::instance_ = this;
   instr::init();
   SIMIX_global_init(argc, argv);
-  Engine::instance_ = this;
 }
 
 Engine::Engine(std::string name) : pimpl(new kernel::EngineImpl())
@@ -281,13 +280,13 @@ std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& 
 
 size_t Engine::get_actor_count() const
 {
-  return simix_global->process_list.size();
+  return pimpl->get_actor_count();
 }
 
 std::vector<ActorPtr> Engine::get_all_actors() const
 {
   std::vector<ActorPtr> actor_list;
-  for (auto const& kv : simix_global->process_list) {
+  for (auto const& kv : pimpl->get_actor_list()) {
     actor_list.push_back(kv.second->get_iface());
   }
   return actor_list;
@@ -296,7 +295,7 @@ std::vector<ActorPtr> Engine::get_all_actors() const
 std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const
 {
   std::vector<ActorPtr> actor_list;
-  for (auto const& kv : simix_global->process_list) {
+  for (auto const& kv : pimpl->get_actor_list()) {
     if (filter(kv.second->get_iface()))
       actor_list.push_back(kv.second->get_iface());
   }

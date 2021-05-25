@@ -5,6 +5,7 @@
 
 #include "src/mc/remote/AppSide.hpp"
 #include "src/internal_config.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_base.hpp"
@@ -72,9 +73,9 @@ AppSide* AppSide::initialize()
   xbt_assert(errno == 0 && raise(SIGSTOP) == 0, "Could not wait for the model-checker (errno = %d: %s)", errno,
              strerror(errno));
 
-  s_mc_message_initial_addresses_t message{
-      MessageType::INITIAL_ADDRESSES, mmalloc_preinit(), simgrid::kernel::actor::get_maxpid_addr(),
-      simgrid::simix::simix_global_get_actors_addr(), simgrid::simix::simix_global_get_dead_actors_addr()};
+  s_mc_message_initial_addresses_t message{MessageType::INITIAL_ADDRESSES, mmalloc_preinit(),
+                                           kernel::actor::get_maxpid_addr(), simix::simix_global_get_actors_addr(),
+                                           simix::simix_global_get_dead_actors_addr()};
   xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
 
   instance_->handle_messages();
@@ -83,11 +84,12 @@ AppSide* AppSide::initialize()
 
 void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 {
+  const auto& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
   bool deadlock = false;
-  if (not simix_global->process_list.empty()) {
+  if (not actor_list.empty()) {
     deadlock = true;
-    for (auto const& kv : simix_global->process_list)
-      if (simgrid::mc::actor_is_enabled(kv.second)) {
+    for (auto const& kv : actor_list)
+      if (mc::actor_is_enabled(kv.second)) {
         deadlock = false;
         break;
       }
@@ -109,7 +111,7 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_handle_t* messag
 
 void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const
 {
-  bool res = simgrid::mc::actor_is_enabled(kernel::actor::ActorImpl::by_pid(msg->aid));
+  bool res = mc::actor_is_enabled(kernel::actor::ActorImpl::by_pid(msg->aid));
   s_mc_message_int_t answer{MessageType::ACTOR_ENABLED_REPLY, res};
   channel_.send(answer);
 }
@@ -199,7 +201,7 @@ void AppSide::handle_messages() const
         XBT_DEBUG("Finalize (terminate = %d)", (int)terminate_asap);
         if (not terminate_asap) {
           if (XBT_LOG_ISENABLED(mc_client, xbt_log_priority_debug))
-            simix_global->display_all_actor_status();
+            kernel::EngineImpl::get_instance()->display_all_actor_status();
 #if HAVE_SMPI
           XBT_DEBUG("Smpi_enabled: %d", (int)smpi_enabled());
           if (smpi_enabled())

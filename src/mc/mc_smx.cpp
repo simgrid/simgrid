@@ -16,10 +16,10 @@ using simgrid::mc::remote;
  *  This is implemented by:
  *
  *   - `model_checker->process.smx_process_infos`
- *      (copy of `simix_global->process_list`);
+ *      (copy of `EngineImpl::actor_list_`);
  *
  *   - `model_checker->process.smx_old_process_infos`
- *      (copy of `simix_global->actors_to_destroy`);
+ *      (copy of `EngineImpl::actors_to_destroy_`);
  *
  *   - `model_checker->hostnames`.
  *

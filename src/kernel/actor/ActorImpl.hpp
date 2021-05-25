@@ -43,7 +43,7 @@ public:
   double get_kill_time() const;
   void set_kill_time(double kill_time);
   boost::intrusive::list_member_hook<> host_actor_list_hook;   /* simgrid::surf::HostImpl::actor_list_ */
-  boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->actors_to_destroy */
+  boost::intrusive::list_member_hook<> kernel_destroy_list_hook; /* EngineImpl actors_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
   const xbt::string& get_name() const { return name_; }

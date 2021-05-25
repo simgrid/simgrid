@@ -222,30 +222,28 @@ private:
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
 
+  // Copies of MCed SMX data structures
+  /** Copy of `EngineImpl::actor_list_`
+   *
+   *  See mc_smx.cpp.
+   */
+  std::vector<ActorInformation> smx_actors_infos;
+
+  /** Copy of `EngineImpl::actors_to_destroy_`
+   *
+   *  See mc_smx.cpp.
+   */
+  std::vector<ActorInformation> smx_dead_actors_infos;
+
+  /** State of the cache (which variables are up to date) */
+  int cache_flags_ = RemoteProcess::cache_none;
+
 public:
   // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
   std::vector<std::shared_ptr<ObjectInformation>> object_infos;
   std::shared_ptr<ObjectInformation> binary_info;
 
-  // Copies of MCed SMX data structures
-  /** Copy of `simix_global->process_list`
-   *
-   *  See mc_smx.c.
-   */
-  std::vector<ActorInformation> smx_actors_infos;
-
-  /** Copy of `simix_global->actors_to_destroy`
-   *
-   *  See mc_smx.c.
-   */
-  std::vector<ActorInformation> smx_dead_actors_infos;
-
-private:
-  /** State of the cache (which variables are up to date) */
-  int cache_flags_ = RemoteProcess::cache_none;
-
-public:
   /** Address of the heap structure in the MCed process. */
   RemotePtr<s_xbt_mheap_t> heap_address;
 

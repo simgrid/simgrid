@@ -11,11 +11,6 @@
 
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
-#include "src/kernel/activity/IoImpl.hpp"
-#include "src/kernel/activity/MailboxImpl.hpp"
-#include "src/kernel/activity/SleepImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
@@ -43,7 +38,7 @@ config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor sta
 xbt_dynar_t simix_global_get_actors_addr()
 {
 #if SIMGRID_HAVE_MC
-  return simix_global->actors_vector;
+  return kernel::EngineImpl::get_instance()->get_actors_vector();
 #else
   xbt_die("This function is intended to be used when compiling with MC");
 #endif
@@ -51,7 +46,7 @@ xbt_dynar_t simix_global_get_actors_addr()
 xbt_dynar_t simix_global_get_dead_actors_addr()
 {
 #if SIMGRID_HAVE_MC
-  return simix_global->dead_actors_vector;
+  return kernel::EngineImpl::get_instance()->get_dead_actors_vector();
 #else
   xbt_die("This function is intended to be used when compiling with MC");
 #endif
@@ -65,7 +60,7 @@ XBT_ATTRIB_NORETURN static void inthandler(int)
   if (simgrid::simix::cfg_verbose_exit) {
     XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option "
              "'debug/verbose-exit').");
-    simix_global->display_all_actor_status();
+    simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
   } else {
     XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'debug/verbose-exit' is set to false.");
   }
@@ -149,55 +144,6 @@ static void install_segvhandler()
 namespace simgrid {
 namespace simix {
 
-void Global::empty_trash()
-{
-  while (not actors_to_destroy.empty()) {
-    kernel::actor::ActorImpl* actor = &actors_to_destroy.front();
-    actors_to_destroy.pop_front();
-    XBT_DEBUG("Getting rid of %s (refcount: %d)", actor->get_cname(), actor->get_refcount());
-    intrusive_ptr_release(actor);
-  }
-#if SIMGRID_HAVE_MC
-  xbt_dynar_reset(dead_actors_vector);
-#endif
-}
-
-void Global::display_all_actor_status() const
-{
-  XBT_INFO("%zu actors are still running, waiting for something.", process_list.size());
-  /*  List the actors and their state */
-  XBT_INFO("Legend of the following listing: \"Actor <pid> (<name>@<host>): <status>\"");
-  for (auto const& kv : process_list) {
-    kernel::actor::ActorImpl* actor = kv.second;
-
-    if (actor->waiting_synchro_) {
-      const char* synchro_description = "unknown";
-
-      if (boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(actor->waiting_synchro_) != nullptr)
-        synchro_description = "execution";
-
-      if (boost::dynamic_pointer_cast<kernel::activity::CommImpl>(actor->waiting_synchro_) != nullptr)
-        synchro_description = "communication";
-
-      if (boost::dynamic_pointer_cast<kernel::activity::SleepImpl>(actor->waiting_synchro_) != nullptr)
-        synchro_description = "sleeping";
-
-      if (boost::dynamic_pointer_cast<kernel::activity::RawImpl>(actor->waiting_synchro_) != nullptr)
-        synchro_description = "synchronization";
-
-      if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(actor->waiting_synchro_) != nullptr)
-        synchro_description = "I/O";
-
-      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %#zx (%s) in state %d to finish", actor->get_pid(),
-               actor->get_cname(), actor->get_host()->get_cname(), synchro_description,
-               (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)actor->waiting_synchro_.get()),
-               actor->waiting_synchro_->get_cname(), (int)actor->waiting_synchro_->state_);
-    } else {
-      XBT_INFO("Actor %ld (%s@%s) simcall %s", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname(),
-               SIMIX_simcall_name(actor->simcall_));
-    }
-  }
-}
 
 } // namespace simix
 } // namespace simgrid
@@ -272,7 +218,7 @@ void SIMIX_clean()
   }
 
 #if HAVE_SMPI
-  if (not simix_global->process_list.empty()) {
+  if (not engine->get_actor_list().empty()) {
     if (smpi_process()->initialized()) {
       xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
     } else {
@@ -285,7 +231,7 @@ void SIMIX_clean()
   /* Kill all processes (but maestro) */
   simix_global->maestro_->kill_all();
   engine->run_all_actors();
-  simix_global->empty_trash();
+  engine->empty_trash();
 
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
@@ -294,14 +240,6 @@ void SIMIX_clean()
     delete simgrid::kernel::timer::kernel_timers().top().second;
     simgrid::kernel::timer::kernel_timers().pop();
   }
-  /* Free the remaining data structures */
-  simix_global->actors_to_destroy.clear();
-  simix_global->process_list.clear();
-
-#if SIMGRID_HAVE_MC
-  xbt_dynar_free(&simix_global->actors_vector);
-  xbt_dynar_free(&simix_global->dead_actors_vector);
-#endif
 
   /* Let's free maestro now */
   delete simix_global->maestro_;
@@ -359,7 +297,7 @@ double SIMIX_timer_get_date(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
 
 void SIMIX_display_process_status() // XBT_ATTRIB_DEPRECATED_v329
 {
-  simix_global->display_all_actor_status();
+  simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
 }
 
 int SIMIX_is_maestro()

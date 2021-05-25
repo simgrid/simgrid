@@ -41,8 +41,12 @@ EngineImpl::~EngineImpl()
   for (auto const& kv : links_)
     if (kv.second)
       kv.second->destroy();
-  actors_to_run_.clear();
-  actors_that_ran_.clear();
+
+      /* Free the remaining data structures */
+#if SIMGRID_HAVE_MC
+  xbt_dynar_free(&actors_vector_);
+  xbt_dynar_free(&dead_actors_vector_);
+#endif
 }
 
 void EngineImpl::load_deployment(const std::string& file) const
@@ -113,6 +117,18 @@ void EngineImpl::run_all_actors()
   actors_to_run_.clear();
 }
 
+actor::ActorImpl* EngineImpl::get_actor_by_pid(aid_t pid)
+{
+  auto item = actor_list_.find(pid);
+  if (item != actor_list_.end())
+    return item->second;
+
+  // Search the trash
+  for (auto& a : actors_to_destroy_)
+    if (a.get_pid() == pid)
+      return &a;
+  return nullptr; // Not found, even in the trash
+}
 /** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
 bool EngineImpl::execute_tasks()
 {
@@ -135,7 +151,7 @@ bool EngineImpl::execute_tasks()
   return true;
 }
 
-void EngineImpl::rm_daemon(actor::ActorImpl* actor)
+void EngineImpl::remove_daemon(actor::ActorImpl* actor)
 {
   auto it = daemons_.find(actor);
   xbt_assert(it != daemons_.end(), "The dying daemon is not a daemon after all. Please report that bug.");
@@ -155,6 +171,55 @@ void EngineImpl::add_actor_to_run_list(actor::ActorImpl* actor)
   } else {
     XBT_DEBUG("Inserting [%p] %s(%s) in the to_run list", actor, actor->get_cname(), actor->get_host()->get_cname());
     actors_to_run_.push_back(actor);
+  }
+}
+void EngineImpl::empty_trash()
+{
+  while (not actors_to_destroy_.empty()) {
+    actor::ActorImpl* actor = &actors_to_destroy_.front();
+    actors_to_destroy_.pop_front();
+    XBT_DEBUG("Getting rid of %s (refcount: %d)", actor->get_cname(), actor->get_refcount());
+    intrusive_ptr_release(actor);
+  }
+#if SIMGRID_HAVE_MC
+  xbt_dynar_reset(dead_actors_vector_);
+#endif
+}
+
+void EngineImpl::display_all_actor_status() const
+{
+  XBT_INFO("%zu actors are still running, waiting for something.", actor_list_.size());
+  /*  List the actors and their state */
+  XBT_INFO("Legend of the following listing: \"Actor <pid> (<name>@<host>): <status>\"");
+  for (auto const& kv : actor_list_) {
+    actor::ActorImpl* actor = kv.second;
+
+    if (actor->waiting_synchro_) {
+      const char* synchro_description = "unknown";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(actor->waiting_synchro_) != nullptr)
+        synchro_description = "execution";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::CommImpl>(actor->waiting_synchro_) != nullptr)
+        synchro_description = "communication";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::SleepImpl>(actor->waiting_synchro_) != nullptr)
+        synchro_description = "sleeping";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::RawImpl>(actor->waiting_synchro_) != nullptr)
+        synchro_description = "synchronization";
+
+      if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(actor->waiting_synchro_) != nullptr)
+        synchro_description = "I/O";
+
+      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %#zx (%s) in state %d to finish", actor->get_pid(),
+               actor->get_cname(), actor->get_host()->get_cname(), synchro_description,
+               (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)actor->waiting_synchro_.get()),
+               actor->waiting_synchro_->get_cname(), (int)actor->waiting_synchro_->state_);
+    } else {
+      XBT_INFO("Actor %ld (%s@%s) simcall %s", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname(),
+               SIMIX_simcall_name(actor->simcall_));
+    }
   }
 }
 
@@ -262,7 +327,7 @@ void EngineImpl::run()
       } while (execute_tasks());
 
       /* If only daemon actors remain, cancel their actions, mark them to die and reschedule them */
-      if (simix_global->process_list.size() == daemons_.size())
+      if (actor_list_.size() == daemons_.size())
         for (auto const& dmon : daemons_) {
           XBT_DEBUG("Kill %s", dmon->get_cname());
           simix_global->maestro_->kill(dmon);
@@ -270,7 +335,7 @@ void EngineImpl::run()
     }
 
     time = timer::Timer::next();
-    if (time > -1.0 || not simix_global->process_list.empty()) {
+    if (time > -1.0 || not actor_list_.empty()) {
       XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
       XBT_DEBUG("Moving time ahead : %g", time);
@@ -290,27 +355,27 @@ void EngineImpl::run()
     } while (again);
 
     /* Clean actors to destroy */
-    simix_global->empty_trash();
+    empty_trash();
 
-    XBT_DEBUG("### time %f, #actors %zu, #to_run %zu", time, simix_global->process_list.size(), actors_to_run_.size());
+    XBT_DEBUG("### time %f, #actors %zu, #to_run %zu", time, actor_list_.size(), actors_to_run_.size());
 
-    if (time < 0. && actors_to_run_.empty() && not simix_global->process_list.empty()) {
-      if (simix_global->process_list.size() <= daemons_.size()) {
+    if (time < 0. && actors_to_run_.empty() && not actor_list_.empty()) {
+      if (actor_list_.size() <= daemons_.size()) {
         XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
                      "once the simulation is over. Please fix your on_exit() functions.");
       } else {
         XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
       }
-      simix_global->display_all_actor_status();
+      display_all_actor_status();
       simgrid::s4u::Engine::on_deadlock();
-      for (auto const& kv : simix_global->process_list) {
+      for (auto const& kv : actor_list_) {
         XBT_DEBUG("Kill %s", kv.second->get_cname());
         simix_global->maestro_->kill(kv.second);
       }
     }
   } while (time > -1.0 || has_actors_to_run());
 
-  if (not simix_global->process_list.empty())
+  if (not actor_list_.empty())
     THROW_IMPOSSIBLE;
 
   simgrid::s4u::Engine::on_simulation_end();

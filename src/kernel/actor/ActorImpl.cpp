@@ -52,15 +52,7 @@ unsigned long* get_maxpid_addr()
 }
 ActorImpl* ActorImpl::by_pid(aid_t pid)
 {
-  auto item = simix_global->process_list.find(pid);
-  if (item != simix_global->process_list.end())
-    return item->second;
-
-  // Search the trash
-  for (auto& a : simix_global->actors_to_destroy)
-    if (a.get_pid() == pid)
-      return &a;
-  return nullptr; // Not found, even in the trash
+  return EngineImpl::get_instance()->get_actor_by_pid(pid);
 }
 
 ActorImpl* ActorImpl::self()
@@ -94,7 +86,7 @@ ActorImpl::~ActorImpl()
 ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* host)
 {
   // This is mostly a copy/paste from create(), it'd be nice to share some code between those two functions.
-
+  auto* engine = EngineImpl::get_instance();
   XBT_DEBUG("Attach actor %s on host '%s'", name.c_str(), host->get_cname());
 
   if (not host->is_on()) {
@@ -115,8 +107,8 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   host->get_impl()->add_actor(actor);
 
   /* Now insert it in the global actor list and in the actors to run list */
-  simix_global->process_list[actor->get_pid()] = actor;
-  EngineImpl::get_instance()->add_actor_to_run_list_no_check(actor);
+  engine->add_actor(actor->get_pid(), actor);
+  engine->add_actor_to_run_list_no_check(actor);
   intrusive_ptr_add_ref(actor);
 
   auto* context = dynamic_cast<context::AttachContext*>(actor->context_.get());
@@ -145,15 +137,16 @@ void ActorImpl::detach()
 
 void ActorImpl::cleanup_from_simix()
 {
-  const std::lock_guard<std::mutex> lock(simix_global->mutex);
-  simix_global->process_list.erase(pid_);
+  auto* engine = EngineImpl::get_instance();
+  const std::lock_guard<std::mutex> lock(engine->get_mutex());
+  engine->remove_actor(pid_);
   if (host_ && host_actor_list_hook.is_linked())
     host_->get_impl()->remove_actor(this);
-  if (not smx_destroy_list_hook.is_linked()) {
+  if (not kernel_destroy_list_hook.is_linked()) {
 #if SIMGRID_HAVE_MC
-    xbt_dynar_push_as(simix_global->dead_actors_vector, ActorImpl*, this);
+    engine->add_dead_actor_to_dynar(this);
 #endif
-    simix_global->actors_to_destroy.push_back(*this);
+    engine->add_actor_to_destroy_list(*this);
   }
 }
 
@@ -260,7 +253,7 @@ void ActorImpl::kill(ActorImpl* actor) const
 
 void ActorImpl::kill_all() const
 {
-  for (auto const& kv : simix_global->process_list)
+  for (auto const& kv : EngineImpl::get_instance()->get_actor_list())
     if (kv.second != this)
       this->kill(kv.second);
 }
@@ -332,7 +325,7 @@ void ActorImpl::undaemonize()
 {
   if (daemon_) {
     daemon_ = false;
-    EngineImpl::get_instance()->rm_daemon(this);
+    EngineImpl::get_instance()->remove_daemon(this);
   }
 }
 
@@ -467,6 +460,7 @@ ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
 ActorImpl* ActorImpl::start(const ActorCode& code)
 {
   xbt_assert(code && host_ != nullptr, "Invalid parameters");
+  auto* engine = EngineImpl::get_instance();
 
   if (not host_->is_on()) {
     XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name_.c_str(), host_->get_cname());
@@ -482,10 +476,10 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
 
   /* Add the actor to its host's actor list */
   host_->get_impl()->add_actor(this);
-  simix_global->process_list[pid_] = this;
+  engine->add_actor(pid_, this);
 
   /* Now insert it in the global actor list and in the actor to run list */
-  EngineImpl::get_instance()->add_actor_to_run_list_no_check(this);
+  engine->add_actor_to_run_list_no_check(this);
 
   return this;
 }
@@ -530,7 +524,7 @@ void create_maestro(const std::function<void()>& code)
 
 int SIMIX_process_count() // XBT_ATTRIB_DEPRECATED_v329
 {
-  return simix_global->process_list.size();
+  return simgrid::kernel::EngineImpl::get_instance()->get_actor_list().size();
 }
 
 void* SIMIX_process_self_get_data() // XBT_ATTRIB_DEPRECATED_v329

@@ -10,12 +10,23 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/simix.hpp>
+#include <xbt/dynar.h>
 #include <xbt/functional.hpp>
 
+#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
+#include "src/kernel/activity/MailboxImpl.hpp"
+#include "src/kernel/activity/SleepImpl.hpp"
+#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
+
+#include <boost/intrusive/list.hpp>
 #include <map>
+#include <mutex>
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace simgrid {
 namespace kernel {
@@ -32,10 +43,28 @@ class EngineImpl {
   std::set<actor::ActorImpl*> daemons_;
   std::vector<actor::ActorImpl*> actors_to_run_;
   std::vector<actor::ActorImpl*> actors_that_ran_;
+  std::map<aid_t, actor::ActorImpl*> actor_list_;
+  boost::intrusive::list<actor::ActorImpl,
+                         boost::intrusive::member_hook<actor::ActorImpl, boost::intrusive::list_member_hook<>,
+                                                       &actor::ActorImpl::kernel_destroy_list_hook>>
+      actors_to_destroy_;
+#if SIMGRID_HAVE_MC
+  /* MCer cannot read members actor_list_ and actors_to_destroy_ above in the remote process, so we copy the info it
+   * needs in a dynar.
+   * FIXME: This is supposed to be a temporary hack.
+   * A better solution would be to change the split between MCer and MCed, where the responsibility
+   *   to compute the list of the enabled transitions goes to the MCed.
+   * That way, the MCer would not need to have the list of actors on its side.
+   * These info could be published by the MCed to the MCer in a way inspired of vd.so
+   */
+  xbt_dynar_t actors_vector_      = xbt_dynar_new(sizeof(actor::ActorImpl*), nullptr);
+  xbt_dynar_t dead_actors_vector_ = xbt_dynar_new(sizeof(actor::ActorImpl*), nullptr);
+#endif
 
   std::vector<xbt::Task<void()>> tasks;
   std::vector<xbt::Task<void()>> tasksTemp;
 
+  std::mutex mutex_;
   friend s4u::Engine;
 
 public:
@@ -71,20 +100,45 @@ public:
       return res->second;
   }
   void add_daemon(actor::ActorImpl* d) { daemons_.insert(d); }
-  void rm_daemon(actor::ActorImpl* d);
-  void add_actor_to_run_list(actor::ActorImpl* a);
-  void add_actor_to_run_list_no_check(actor::ActorImpl* a);
+  void remove_daemon(actor::ActorImpl* d);
+  void add_actor_to_run_list(actor::ActorImpl* actor);
+  void add_actor_to_run_list_no_check(actor::ActorImpl* actor);
+  void add_actor_to_destroy_list(actor::ActorImpl& actor) { actors_to_destroy_.push_back(actor); }
+
   bool has_actors_to_run() { return not actors_to_run_.empty(); }
   const actor::ActorImpl* get_first_actor_to_run() const { return actors_to_run_.front(); }
   const actor::ActorImpl* get_actor_to_run_at(unsigned long int i) const { return actors_to_run_[i]; }
-  unsigned long int get_actor_to_run_count() { return actors_to_run_.size(); }
+  unsigned long int get_actor_to_run_count() const { return actors_to_run_.size(); }
+  size_t get_actor_count() const { return actor_list_.size(); }
+  actor::ActorImpl* get_actor_by_pid(aid_t pid);
+  void add_actor(aid_t pid, actor::ActorImpl* actor) { actor_list_[pid] = actor; }
+  void remove_actor(aid_t pid) { actor_list_.erase(pid); }
 
+#if SIMGRID_HAVE_MC
+  xbt_dynar_t get_actors_vector() const { return actors_vector_; }
+  xbt_dynar_t get_dead_actors_vector() const { return dead_actors_vector_; }
+  void reset_actor_dynar() { xbt_dynar_reset(actors_vector_); }
+  void add_actor_to_dynar(actor::ActorImpl* actor) { xbt_dynar_push_as(actors_vector_, actor::ActorImpl*, actor); }
+  void add_dead_actor_to_dynar(actor::ActorImpl* actor)
+  {
+    xbt_dynar_push_as(dead_actors_vector_, actor::ActorImpl*, actor);
+  }
+#endif
+
+  const std::map<aid_t, actor::ActorImpl*>& get_actor_list() const { return actor_list_; }
   const std::vector<actor::ActorImpl*>& get_actors_to_run() const { return actors_to_run_; }
   const std::vector<actor::ActorImpl*>& get_actors_that_ran() const { return actors_that_ran_; }
 
+  std::mutex& get_mutex() { return mutex_; }
   bool execute_tasks();
   void add_task(xbt::Task<void()>&& t) { tasks.push_back(std::move(t)); }
   void wake_all_waiting_actors() const;
+  /**
+   * Garbage collection
+   *
+   * Should be called some time to time to free the memory allocated for actors that have finished (or killed).
+   */
+  void empty_trash();
   void display_all_actor_status() const;
   void run_all_actors();
 

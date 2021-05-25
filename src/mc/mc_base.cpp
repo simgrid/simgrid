@@ -56,12 +56,12 @@ void execute_actors()
     }
   }
 #if SIMGRID_HAVE_MC
-  xbt_dynar_reset(simix_global->actors_vector);
-  for (std::pair<const aid_t, smx_actor_t> const& kv : simix_global->process_list) {
+  engine->reset_actor_dynar();
+  for (auto const& kv : engine->get_actor_list()) {
     auto actor = kv.second;
     if (actor->simcall_.observer_ != nullptr)
       actor->simcall_.mc_max_consider_ = actor->simcall_.observer_->get_max_consider();
-    xbt_dynar_push_as(simix_global->actors_vector, smx_actor_t, actor);
+    engine->add_actor_to_dynar(actor);
   }
 #endif
 }

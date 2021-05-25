@@ -6,8 +6,8 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/simix/smx_private.hpp"
 
 #include <string>
 
@@ -46,7 +46,7 @@ HostImpl::~HostImpl()
     for (auto const& actor : actor_list_)
       msg += "\n\t" + std::string(actor.get_name());
 
-    simix_global->display_all_actor_status();
+    kernel::EngineImpl::get_instance()->display_all_actor_status();
     xbt_die("%s", msg.c_str());
   }
   for (auto const& arg : actors_at_boot_)

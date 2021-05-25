@@ -6,7 +6,7 @@
 #include "msg_private.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/simix/smx_private.hpp"
+#include "src/kernel/EngineImpl.hpp"
 
 /******************************** Process ************************************/
 /** @brief Creates and runs a new #msg_process_t.
@@ -96,7 +96,7 @@ XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup)
 xbt_dynar_t MSG_processes_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
-  for (auto const& kv : simix_global->process_list) {
+  for (auto const& kv : simgrid::kernel::EngineImpl::get_instance()->get_actor_list()) {
     smx_actor_t actor = kv.second;
     xbt_dynar_push(res, &actor);
   }
