@@ -236,10 +236,6 @@ void SIMIX_clean()
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
 
-  while (not simgrid::kernel::timer::kernel_timers().empty()) {
-    delete simgrid::kernel::timer::kernel_timers().top().second;
-    simgrid::kernel::timer::kernel_timers().pop();
-  }
 
   /* Let's free maestro now */
   delete simix_global->maestro_;

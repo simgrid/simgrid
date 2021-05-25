@@ -6,6 +6,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
+#include "simgrid/kernel/Timer.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Host.hpp"
@@ -15,6 +16,7 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 
@@ -27,6 +29,12 @@ config::Flag<double> cfg_breakpoint{"debug/breakpoint",
                                     "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 EngineImpl::~EngineImpl()
 {
+
+  while (not timer::kernel_timers().empty()) {
+    delete timer::kernel_timers().top().second;
+    timer::kernel_timers().pop();
+  }
+
   /* Since hosts_ is a std::map, the hosts are destroyed in the lexicographic order, which ensures that the output is
    * reproducible.
    */
