@@ -94,18 +94,18 @@ template <typename T> int Keyval::attr_delete(int keyval){
   if (elem_it == T::keyvals_.end())
     return MPI_ERR_ARG;
 
-  smpi_key_elem& elem = elem_it->second;
-  elem.refcount--;
-  void * value = nullptr;
-  int flag=0;
-  if(this->attr_get<T>(keyval, &value, &flag)==MPI_SUCCESS){
-    int ret = call_deleter<T>((T*)this, elem, keyval,value,&flag);
-    if(ret!=MPI_SUCCESS)
-        return ret;
-  }
-  if (attributes().empty())
+  auto attr = attributes().find(keyval);
+  if (attr == attributes().end())
     return MPI_ERR_ARG;
-  attributes().erase(keyval);
+
+  smpi_key_elem& elem = elem_it->second;
+  int flag            = 0;
+  int ret             = call_deleter<T>((T*)this, elem, keyval, attr->second, &flag);
+  if (ret != MPI_SUCCESS)
+    return ret;
+
+  elem.refcount--;
+  attributes().erase(attr);
   return MPI_SUCCESS;
 }
 
