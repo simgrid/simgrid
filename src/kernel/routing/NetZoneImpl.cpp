@@ -311,19 +311,19 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
    * This works because all SimGrid platform have a unique root element (that is the last element of both paths).
    */
   NetZoneImpl* father = nullptr; // the netzone we dropped on the previous loop iteration
-  while (path_src.size() > 1 && path_dst.size() > 1 &&
-         path_src.at(path_src.size() - 1) == path_dst.at(path_dst.size() - 1)) {
-    father = path_src.at(path_src.size() - 1);
+  while (path_src.size() > 1 && path_dst.size() > 1 && path_src.back() == path_dst.back()) {
+    father = path_src.back();
     path_src.pop_back();
     path_dst.pop_back();
   }
 
   /* (4) we found the difference at least. Finalize the returned values */
-  *src_ancestor = path_src.at(path_src.size() - 1); /* the first different father of src */
-  *dst_ancestor = path_dst.at(path_dst.size() - 1); /* the first different father of dst */
+  *src_ancestor = path_src.back();                  /* the first different father of src */
+  *dst_ancestor = path_dst.back();                  /* the first different father of dst */
   if (*src_ancestor == *dst_ancestor) {             // src is the ancestor of dst, or the contrary
     *common_ancestor = *src_ancestor;
   } else {
+    xbt_assert(father != nullptr);
     *common_ancestor = father;
   }
 }
@@ -371,8 +371,7 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
   }
 
   /* (2) find the common father */
-  while (path_src.size() > 1 && path_dst.size() > 1 &&
-         path_src.at(path_src.size() - 1) == path_dst.at(path_dst.size() - 1)) {
+  while (path_src.size() > 1 && path_dst.size() > 1 && path_src.back() == path_dst.back()) {
     path_src.pop_back();
     path_dst.pop_back();
   }
