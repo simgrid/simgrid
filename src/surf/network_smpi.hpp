@@ -23,8 +23,8 @@ public:
   double get_bandwidth_factor(double size) override;
 
 protected:
-  virtual void check_lat_factor_cb() override;
-  virtual void check_bw_factor_cb() override;
+  void check_lat_factor_cb() override;
+  void check_bw_factor_cb() override;
 };
 } // namespace resource
 } // namespace kernel

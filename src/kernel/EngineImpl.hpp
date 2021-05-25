@@ -107,7 +107,7 @@ public:
   void add_actor_to_run_list_no_check(actor::ActorImpl* actor);
   void add_actor_to_destroy_list(actor::ActorImpl& actor) { actors_to_destroy_.push_back(actor); }
 
-  bool has_actors_to_run() { return not actors_to_run_.empty(); }
+  bool has_actors_to_run() const { return not actors_to_run_.empty(); }
   const actor::ActorImpl* get_first_actor_to_run() const { return actors_to_run_.front(); }
   const actor::ActorImpl* get_actor_to_run_at(unsigned long int i) const { return actors_to_run_[i]; }
   unsigned long int get_actor_to_run_count() const { return actors_to_run_.size(); }
