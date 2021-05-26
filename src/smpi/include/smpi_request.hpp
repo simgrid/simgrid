@@ -30,7 +30,7 @@ class Request : public F2C {
   void* old_buf_;
   /* this is especially for derived datatypes that we need to serialize/unserialize.
    * It let us know how to unserialize at the end of the communication */
-  MPI_Datatype old_type_;
+  MPI_Datatype type_;
   size_t size_;
   aid_t src_;
   aid_t dst_;
@@ -65,7 +65,7 @@ public:
   int flags() const { return flags_; }
   bool detached() const { return detached_; }
   std::string name() const override { return std::string("MPI_Request"); }
-  MPI_Datatype type() const { return old_type_; }
+  MPI_Datatype type() const { return type_; }
   void print_request(const char* message) const;
   void start();
   void cancel();

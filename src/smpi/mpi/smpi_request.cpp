@@ -39,7 +39,7 @@ namespace smpi{
 Request::Request(const void* buf, int count, MPI_Datatype datatype, aid_t src, aid_t dst, int tag, MPI_Comm comm,
                  unsigned flags, MPI_Op op)
     : buf_(const_cast<void*>(buf))
-    , old_type_(datatype)
+    , type_(datatype)
     , size_(datatype->size() * count)
     , src_(src)
     , dst_(dst)
@@ -85,7 +85,7 @@ void Request::unref(MPI_Request* request)
       ((*request)->generalized_funcs)->free_fn(((*request)->generalized_funcs)->extra_state);
     } else {
       Comm::unref((*request)->comm_);
-      Datatype::unref((*request)->old_type_);
+      Datatype::unref((*request)->type_);
     }
     if ((*request)->op_ != MPI_REPLACE && (*request)->op_ != MPI_OP_NULL)
       Op::unref(&(*request)->op_);
@@ -139,15 +139,15 @@ void Request::init_buffer(int count){
   void *old_buf = nullptr;
 // FIXME Handle the case of a partial shared malloc.
   // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
-  if ((((flags_ & MPI_REQ_RECV) != 0) && ((flags_ & MPI_REQ_ACCUMULATE) != 0)) || (old_type_->flags() & DT_FLAG_DERIVED)) {
+  if ((((flags_ & MPI_REQ_RECV) != 0) && ((flags_ & MPI_REQ_ACCUMULATE) != 0)) || (type_->flags() & DT_FLAG_DERIVED)) {
     // This part handles the problem of non-contiguous memory
     old_buf = buf_;
     if (count==0){
       buf_ = nullptr;
     }else {
-      buf_ = xbt_malloc(count*old_type_->size());
-      if ((old_type_->flags() & DT_FLAG_DERIVED) && ((flags_ & MPI_REQ_SEND) != 0)) {
-        old_type_->serialize(old_buf, buf_, count);
+      buf_ = xbt_malloc(count*type_->size());
+      if ((type_->flags() & DT_FLAG_DERIVED) && ((flags_ & MPI_REQ_SEND) != 0)) {
+        type_->serialize(old_buf, buf_, count);
       }
     }
   }
@@ -408,7 +408,7 @@ void Request::start()
   //reinitialize temporary buffer for persistent requests
   if(real_size_ > 0 && flags_ & MPI_REQ_FINISHED){
     buf_ = old_buf_;
-    init_buffer(real_size_/old_type_->size());
+    init_buffer(real_size_/type_->size());
   }
   flags_ &= ~MPI_REQ_PREPARED;
   flags_ &= ~MPI_REQ_FINISHED;
@@ -481,7 +481,7 @@ void Request::start()
       detached_    = true;
       XBT_DEBUG("Send request %p is detached", this);
       this->ref();
-      if (not(old_type_->flags() & DT_FLAG_DERIVED)) {
+      if (not(type_->flags() & DT_FLAG_DERIVED)) {
         oldbuf = buf_;
         if (not process->replaying() && oldbuf != nullptr && size_ != 0) {
           if ((smpi_cfg_privatization() != SmpiPrivStrategies::NONE) &&
@@ -864,12 +864,12 @@ int Request::finish_nbc_requests(MPI_Request* request, int test){
     for(auto& req: (*request)->nbc_requests_){
       if((*request)->buf_!=nullptr && req!=MPI_REQUEST_NULL){//reduce case
         void * buf=req->buf_;
-        if((*request)->old_type_->flags() & DT_FLAG_DERIVED)
+        if((*request)->type_->flags() & DT_FLAG_DERIVED)
           buf=req->old_buf_;
         if(req->flags_ & MPI_REQ_RECV ){
           if((*request)->op_!=MPI_OP_NULL){
-            int count=(*request)->size_/ (*request)->old_type_->size();
-            (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->old_type_);
+            int count=(*request)->size_/ (*request)->type_->size();
+            (*request)->op_->apply(buf, (*request)->buf_, &count, (*request)->type_);
           }
           smpi_free_tmp_buffer(static_cast<unsigned char*>(buf));
         }
@@ -912,7 +912,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     //detached send will be finished at the other end
     if (not(req->detached_ && ((req->flags_ & MPI_REQ_SEND) != 0))) {
       req->print_request("Finishing");
-      MPI_Datatype datatype = req->old_type_;
+      MPI_Datatype datatype = req->type_;
 
       // FIXME Handle the case of a partial shared malloc.
       if (((req->flags_ & MPI_REQ_ACCUMULATE) != 0) ||
