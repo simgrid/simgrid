@@ -40,6 +40,7 @@ class Request : public F2C {
   aid_t real_src_;
   int real_tag_;
   bool truncated_;
+  bool unmatched_types_;
   size_t real_size_;
   MPI_Comm comm_;
   simgrid::kernel::activity::ActivityImplPtr action_;
@@ -51,6 +52,7 @@ class Request : public F2C {
   std::unique_ptr<smpi_mpi_generalized_request_funcs_t> generalized_funcs;
   std::vector<MPI_Request> nbc_requests_;
   static bool match_common(MPI_Request req, MPI_Request sender, MPI_Request receiver);
+  static bool match_types(MPI_Datatype stype, MPI_Datatype rtype);
 
 public:
   Request() = default;
