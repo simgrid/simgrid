@@ -372,12 +372,10 @@ int Datatype::copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
       recvtype->unserialize(sendbuf, recvbuf, count / recvtype->size(), MPI_REPLACE);
     } else if (not(recvtype->flags() & DT_FLAG_DERIVED)) {
       sendtype->serialize(sendbuf, recvbuf, count / sendtype->size());
-    } else {
+    } else if(sendtype->size() != 0 && recvtype->size() != 0){
       void * buf_tmp = xbt_malloc(count);
-
       sendtype->serialize( sendbuf, buf_tmp,count/sendtype->size());
       recvtype->unserialize( buf_tmp, recvbuf,count/recvtype->size(), MPI_REPLACE);
-
       xbt_free(buf_tmp);
     }
   }
@@ -432,7 +430,7 @@ int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatyp
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
     *new_type = new Datatype(count * block_length * old_type->size(), 0, ((count -1) * stride + block_length)*
-                         old_type->size(), DT_FLAG_CONTIGUOUS);
+                         old_type->size(), DT_FLAG_CONTIGUOUS|DT_FLAG_DERIVED);
     const std::array<int, 3> ints = {{count, block_length, stride}};
     (*new_type)->set_contents(MPI_COMBINER_VECTOR, 3, ints.data(), 0, nullptr, 1, &old_type);
     retval=MPI_SUCCESS;
@@ -458,7 +456,7 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
     retval=MPI_SUCCESS;
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
-    *new_type = new Datatype(count * block_length * old_type->size(), 0, count * block_length * old_type->size(), DT_FLAG_CONTIGUOUS);
+    *new_type = new Datatype(count * block_length * old_type->size(), 0, count * block_length * old_type->size(), DT_FLAG_CONTIGUOUS|DT_FLAG_DERIVED);
     const std::array<int, 2> ints = {{count, block_length}};
     (*new_type)->set_contents(MPI_COMBINER_HVECTOR, 2, ints.data(), 1, &stride, 1, &old_type);
     retval=MPI_SUCCESS;
