@@ -230,7 +230,7 @@ void SIMIX_clean()
   simix_global->maestro_ = nullptr;
 
   /* Finish context module and SURF */
-  SIMIX_context_mod_exit();
+  simix_global->destroy_context_factory();
 
   surf_exit();
 

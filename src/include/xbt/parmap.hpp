@@ -288,7 +288,8 @@ template <typename T> void Parmap<T>::worker_main(ThreadData* data)
 {
   Parmap<T>& parmap     = data->parmap;
   unsigned round        = 0;
-  kernel::context::Context* context = simix_global->context_factory->create_context(std::function<void()>(), nullptr);
+  kernel::context::Context* context =
+      simix_global->get_context_factory()->create_context(std::function<void()>(), nullptr);
   kernel::context::Context::set_current(context);
 
   XBT_CDEBUG(xbt_parmap, "New worker thread created");

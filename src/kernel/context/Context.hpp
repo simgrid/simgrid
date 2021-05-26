@@ -108,5 +108,4 @@ XBT_PRIVATE ContextFactory* boost_factory();
 } // namespace simgrid
 
 XBT_PRIVATE void SIMIX_context_mod_init();
-XBT_PRIVATE void SIMIX_context_mod_exit();
 #endif

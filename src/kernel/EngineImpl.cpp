@@ -122,7 +122,7 @@ void EngineImpl::wake_all_waiting_actors() const
  */
 void EngineImpl::run_all_actors()
 {
-  simix_global->context_factory->run_all();
+  simix_global->get_context_factory()->run_all();
 
   actors_to_run_.swap(actors_that_ran_);
   actors_to_run_.clear();

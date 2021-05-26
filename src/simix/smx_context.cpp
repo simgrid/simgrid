@@ -58,7 +58,7 @@ static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAUL
  */
 void SIMIX_context_mod_init()
 {
-  xbt_assert(simix_global->context_factory == nullptr);
+  xbt_assert(not simix_global->has_context_factory());
 
 #if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
   smpi_init_options();
@@ -79,17 +79,17 @@ void SIMIX_context_mod_init()
 
   /* select the context factory to use to create the contexts */
   if (simgrid::kernel::context::factory_initializer != nullptr) { // Give Java a chance to hijack the factory mechanism
-    simix_global->context_factory = simgrid::kernel::context::factory_initializer();
+    simix_global->set_context_factory(simgrid::kernel::context::factory_initializer());
     return;
   }
   /* use the factory specified by --cfg=contexts/factory:value */
   for (auto const& factory : context_factories)
     if (context_factory_name == factory.first) {
-      simix_global->context_factory = factory.second();
+      simix_global->set_context_factory(factory.second());
       break;
     }
 
-  if (simix_global->context_factory == nullptr) {
+  if (not simix_global->has_context_factory()) {
     XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
 #if HAVE_RAW_CONTEXTS
     XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
@@ -109,15 +109,6 @@ void SIMIX_context_mod_init()
     XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
     xbt_die("Please use a valid factory.");
   }
-}
-
-/**
- * This function is called by SIMIX_clean() to finalize the context module.
- */
-void SIMIX_context_mod_exit()
-{
-  delete simix_global->context_factory;
-  simix_global->context_factory = nullptr;
 }
 
 /** @brief Returns whether some parallel threads are used for the user contexts. */

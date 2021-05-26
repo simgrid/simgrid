@@ -16,11 +16,18 @@ namespace simgrid {
 namespace simix {
 
 class Global {
+  kernel::context::ContextFactory* context_factory_ = nullptr;
+
 public:
-
-  kernel::context::ContextFactory* context_factory = nullptr;
   kernel::actor::ActorImpl* maestro_ = nullptr;
-
+  kernel::context::ContextFactory* get_context_factory() const { return context_factory_; }
+  void set_context_factory(kernel::context::ContextFactory* factory) { context_factory_ = factory; }
+  bool has_context_factory() const { return context_factory_ != nullptr; }
+  void destroy_context_factory()
+  {
+    delete context_factory_;
+    context_factory_ = nullptr;
+  }
 };
 }
 }

@@ -101,7 +101,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   XBT_VERB("Create context %s", actor->get_cname());
   xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
-  actor->context_.reset(simix_global->context_factory->attach(actor));
+  actor->context_.reset(simix_global->get_context_factory()->attach(actor));
 
   /* Add the actor to it's host actor list */
   host->get_impl()->add_actor(actor);
@@ -470,7 +470,7 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
 
   this->code_ = code;
   XBT_VERB("Create context %s", get_cname());
-  context_.reset(simix_global->context_factory->create_context(ActorCode(code), this));
+  context_.reset(simix_global->get_context_factory()->create_context(ActorCode(code), this));
 
   XBT_DEBUG("Start context '%s'", get_cname());
 
@@ -509,9 +509,9 @@ void create_maestro(const std::function<void()>& code)
   auto* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
 
   if (not code) {
-    maestro->context_.reset(simix_global->context_factory->create_context(ActorCode(), maestro));
+    maestro->context_.reset(simix_global->get_context_factory()->create_context(ActorCode(), maestro));
   } else {
-    maestro->context_.reset(simix_global->context_factory->create_maestro(ActorCode(code), maestro));
+    maestro->context_.reset(simix_global->get_context_factory()->create_maestro(ActorCode(code), maestro));
   }
 
   maestro->simcall_.issuer_     = maestro;
