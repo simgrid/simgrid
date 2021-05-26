@@ -98,9 +98,9 @@ int Comm::dup(MPI_Comm* newcomm){
           flag = 1;
         } else { // not null, nor dup
           elem.copy_fn.comm_copy_fn_fort(this, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
-          if (ret != MPI_SUCCESS)
-            xbt_free(value_out);
         }
+        if (ret != MPI_SUCCESS)
+          xbt_free(value_out);
       }
       if (ret != MPI_SUCCESS) {
         Comm::destroy(*newcomm);
