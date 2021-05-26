@@ -320,7 +320,8 @@ bool NetworkCm02Model::comm_get_route_info(const s4u::Host* src, const s4u::Host
 
 void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::Host* dst, double size,
                                               NetworkCm02Action* action, const std::vector<LinkImpl*>& route,
-                                              const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones)
+                                              const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones,
+                                              double rate)
 {
   std::vector<s4u::Link*> s4u_route;
   std::unordered_set<s4u::NetZone*> s4u_netzones;
@@ -348,7 +349,11 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
   }
   bandwidth_bound *= bw_factor;
 
-  action->set_user_bound(get_bandwidth_constraint(action->get_user_bound(), bandwidth_bound, size));
+  /* the bandwidth is determined by the minimum between flow and user's defined rate */
+  if (rate >= 0 && rate < bandwidth_bound)
+    bandwidth_bound = rate;
+
+  action->set_user_bound(bandwidth_bound);
 
   action->lat_current_ = action->latency_;
   if (lat_factor_cb_) {
@@ -404,7 +409,6 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   NetworkCm02Action* action = comm_action_create(src, dst, size, route, failed);
   action->sharing_penalty_  = latency;
   action->latency_          = latency;
-  action->set_user_bound(rate);
 
   if (sg_weight_S_parameter > 0) {
     action->sharing_penalty_ =
@@ -414,7 +418,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   }
 
   /* setting bandwidth and latency bounds considering route and configured bw/lat factors */
-  comm_action_set_bounds(src, dst, size, action, route, netzones);
+  comm_action_set_bounds(src, dst, size, action, route, netzones, rate);
 
   /* creating the maxmin variable associated to this action */
   comm_action_set_variable(action, route, back_route);

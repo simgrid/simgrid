@@ -85,17 +85,6 @@ public:
    */
   virtual double get_bandwidth_factor(double /* size*/) { return sg_bandwidth_factor; }
 
-  /**
-   * @brief Get definitive bandwidth.
-   * @details It gives the minimum bandwidth between the one that would occur if no limitation was enforced, and the
-   * one arbitrary limited.
-   * @param rate The desired maximum bandwidth.
-   * @param bound The bandwidth with only the network taken into account.
-   * @param size The size of the message.
-   * @return The new bandwidth.
-   */
-  double get_bandwidth_constraint(double rate, double bound, double size) const;
-
   double next_occurring_event_full(double now) override;
 
   void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }

@@ -52,11 +52,6 @@ double NetworkModel::next_occurring_event_full(double now)
   return minRes;
 }
 
-double NetworkModel::get_bandwidth_constraint(double rate, double bound, double /* size */) const
-{
-  return rate < 0 ? bound : std::min(bound, rate);
-}
-
 /************
  * Resource *
  ************/
