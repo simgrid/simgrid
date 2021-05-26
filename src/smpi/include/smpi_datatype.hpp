@@ -109,6 +109,7 @@ class Datatype : public F2C, public Keyval{
   int flags_;
   int refcount_ = 1;
   std::unique_ptr<Datatype_contents> contents_ = nullptr;
+  MPI_Datatype duplicated_datatype_ = MPI_DATATYPE_NULL;
 
 protected:
   template <typename... Args> void set_contents(Args&&... args)
@@ -133,6 +134,7 @@ public:
   MPI_Aint ub() const { return ub_; }
   int flags() const { return flags_; }
   int refcount() const { return refcount_; }
+  MPI_Datatype duplicated_datatype() const { return duplicated_datatype_; }
 
   void ref();
   static void unref(MPI_Datatype datatype);

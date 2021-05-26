@@ -136,9 +136,10 @@ Datatype::Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint 
 }
 
 Datatype::Datatype(Datatype* datatype, int* ret)
-    : size_(datatype->size_), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_)
+    : size_(datatype->size_), lb_(datatype->lb_), ub_(datatype->ub_), flags_(datatype->flags_), duplicated_datatype_(datatype)
 {
   this->add_f();
+  datatype->ref();
   *ret = this->copy_attrs(datatype);
 }
 
@@ -150,6 +151,8 @@ Datatype::~Datatype()
     return;
   //prevent further usage
   flags_ &= ~ DT_FLAG_COMMITED;
+  if(duplicated_datatype_ != MPI_DATATYPE_NULL)
+    unref(duplicated_datatype_);
   F2C::free_f(this->f2c_id());
   //if still used, mark for deletion
   if(refcount_!=0){
