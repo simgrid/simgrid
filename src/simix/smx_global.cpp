@@ -166,7 +166,6 @@ void SIMIX_global_init(int* argc, char** argv)
 
   surf_init(argc, argv); /* Initialize SURF structures */
 
-  simix_global->maestro_ = nullptr;
   SIMIX_context_mod_init();
 
   // Either create a new context with maestro or create
@@ -221,13 +220,12 @@ void SIMIX_clean()
 #endif
 
   /* Kill all processes (but maestro) */
-  simix_global->maestro_->kill_all();
+  simix_global->get_maestro()->kill_all();
   engine->run_all_actors();
   engine->empty_trash();
 
   /* Let's free maestro now */
-  delete simix_global->maestro_;
-  simix_global->maestro_ = nullptr;
+  simix_global->destroy_maestro();
 
   /* Finish context module and SURF */
   simix_global->destroy_context_factory();
@@ -288,6 +286,6 @@ int SIMIX_is_maestro()
 {
   if (simix_global == nullptr) // SimDag
     return true;
-  const simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
-  return self == nullptr || self == simix_global->maestro_;
+  simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
+  return self == nullptr || simix_global->is_maestro(self);
 }

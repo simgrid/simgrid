@@ -17,9 +17,18 @@ namespace simix {
 
 class Global {
   kernel::context::ContextFactory* context_factory_ = nullptr;
+  kernel::actor::ActorImpl* maestro_                = nullptr;
 
 public:
-  kernel::actor::ActorImpl* maestro_ = nullptr;
+  bool is_maestro(kernel::actor::ActorImpl* actor) const { return actor == maestro_; }
+  void set_maestro(kernel::actor::ActorImpl* actor) { maestro_ = actor; }
+  kernel::actor::ActorImpl* get_maestro() const { return maestro_; }
+  void destroy_maestro()
+  {
+    delete maestro_;
+    maestro_ = nullptr;
+  }
+
   kernel::context::ContextFactory* get_context_factory() const { return context_factory_; }
   void set_context_factory(kernel::context::ContextFactory* factory) { context_factory_ = factory; }
   bool has_context_factory() const { return context_factory_ != nullptr; }

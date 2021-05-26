@@ -341,7 +341,7 @@ void EngineImpl::run()
       if (actor_list_.size() == daemons_.size())
         for (auto const& dmon : daemons_) {
           XBT_DEBUG("Kill %s", dmon->get_cname());
-          simix_global->maestro_->kill(dmon);
+          simix_global->get_maestro()->kill(dmon);
         }
     }
 
@@ -381,7 +381,7 @@ void EngineImpl::run()
       simgrid::s4u::Engine::on_deadlock();
       for (auto const& kv : actor_list_) {
         XBT_DEBUG("Kill %s", kv.second->get_cname());
-        simix_global->maestro_->kill(kv.second);
+        simix_global->get_maestro()->kill(kv.second);
       }
     }
   } while (time > -1.0 || has_actors_to_run());

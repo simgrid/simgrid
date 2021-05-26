@@ -380,7 +380,7 @@ inline static R simcall(Simcall call, T const&... t)
 {
   smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall_, call, t...);
-  if (self != simix_global->maestro_) {
+  if (not simix_global->is_maestro(self)) {
     XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));
     self->yield();
   } else {
