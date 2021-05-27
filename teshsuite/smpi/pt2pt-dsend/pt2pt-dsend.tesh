@@ -1,6 +1,6 @@
 p Test dsend
 ! output sort
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir:=.}/../hostfile -platform ${platfdir}/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -s --long --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir:=.}/../hostfile -platform ${platfdir}/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -s --long --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --cfg=smpi/finalization-barrier:on
 > [Jupiter:1:(2) 0.000000] [dsend/INFO] rank 1: data exchanged
 > [Tremblay:0:(1) 0.005896] [dsend/INFO] rank 0: data exchanged
 > [rank 0] -> Tremblay
