@@ -150,6 +150,7 @@ Existing Configuration Items
 - **smpi/cpu-threshold:** :ref:`cfg=smpi/cpu-threshold`
 - **smpi/display-allocs:** :ref:`cfg=smpi/display-allocs`
 - **smpi/display-timing:** :ref:`cfg=smpi/display-timing`
+- **smpi/finalization-barrier:** :ref:`cfg=smpi/finalization-barrier`
 - **smpi/grow-injected-times:** :ref:`cfg=smpi/grow-injected-times`
 - **smpi/host-speed:** :ref:`cfg=smpi/host-speed`
 - **smpi/IB-penalty-factors:** :ref:`cfg=smpi/IB-penalty-factors`
@@ -1307,6 +1308,22 @@ Each collective operation can be manually selected with a
 
 .. TODO:: All available collective algorithms will be made available
           via the ``smpirun --help-coll`` command.
+
+Add a barrier in MPI_Finalize
+.............................
+
+.. _cfg=smpi/finalization-barrier:
+
+**Option** ``smpi/finalization-barrier`` **default:** off
+
+By default, SMPI processes are destroyed as soon as soon as their code ends,
+so after a successful MPI_Finalize call returns. In some rare cases, some data
+might have been attached to MPI objects still active in the remaining processes,
+and can be destroyed eagerly by the finished process.
+If your code shows issues at finalization, such as segmentation fault, triggering
+this option will add an explicit MPI_Barrier(MPI_COMM_WORLD) call inside the
+MPI_Finalize, so that all processes will terminate at almost the same point.
+It might affect the total timing by the cost of a barrier.
 
 .. _cfg=smpi/iprobe:
 
