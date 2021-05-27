@@ -11,6 +11,7 @@
 #include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_status.hpp"
+#include "smpi_coll.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
@@ -65,6 +66,9 @@ int PMPI_Finalize()
   smpi_bench_end();
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("finalize"));
+
+  if(simgrid::config::get_value<bool>("smpi/finalization-barrier"))
+    simgrid::smpi::colls::barrier(MPI_COMM_WORLD);
 
   smpi_process()->finalize();
 

@@ -254,6 +254,9 @@ void smpi_init_options(){
       "smpi/ois", "Small messages timings (MPI_Isend minimum time for small messages)", "0:0:0:0:0");
   simgrid::config::declare_flag<std::string>(
       "smpi/or", "Small messages timings (MPI_Recv minimum time for small messages)", "0:0:0:0:0");
+
+  simgrid::config::declare_flag<bool>("smpi/finalization-barrier", "Do we add a barrier in MPI_Finalize or not", false);
+
   _smpi_options_initialized=true;
 }
 
