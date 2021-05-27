@@ -164,42 +164,41 @@ Datatype::~Datatype()
 
 int Datatype::copy_attrs(Datatype* datatype){
   flags_ &= ~DT_FLAG_PREDEFINED;
-  int ret = MPI_SUCCESS;
 
+  set_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
   for (auto const& it : datatype->attributes()) {
     auto elem_it = keyvals_.find(it.first);
-    if (elem_it != keyvals_.end()) {
-      smpi_key_elem& elem = elem_it->second;
-      int flag            = 0;
-      void* value_out     = nullptr;
-      if (elem.copy_fn.type_copy_fn == MPI_TYPE_DUP_FN) {
-        value_out = it.second;
-        flag      = 1;
-      } else if (elem.copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
-        ret = elem.copy_fn.type_copy_fn(datatype, it.first, elem.extra_state, it.second, &value_out, &flag);
+    xbt_assert(elem_it != keyvals_.end(), "Keyval not found for Datatype: %d", it.first);
+
+    smpi_key_elem& elem = elem_it->second;
+    int ret             = MPI_SUCCESS;
+    int flag            = 0;
+    void* value_out     = nullptr;
+    if (elem.copy_fn.type_copy_fn == MPI_TYPE_DUP_FN) {
+      value_out = it.second;
+      flag      = 1;
+    } else if (elem.copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
+      ret = elem.copy_fn.type_copy_fn(datatype, it.first, elem.extra_state, it.second, &value_out, &flag);
+    }
+    if (elem.copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) {
+      value_out = xbt_new(int, 1);
+      if (*(int*)*elem.copy_fn.type_copy_fn_fort == 1) { // MPI_TYPE_DUP_FN
+        memcpy(value_out, it.second, sizeof(int));
+        flag = 1;
+      } else { // not null, nor dup
+        elem.copy_fn.type_copy_fn_fort(datatype, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
       }
-      if (elem.copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) {
-        value_out = xbt_new(int, 1);
-        if (*(int*)*elem.copy_fn.type_copy_fn_fort == 1) { // MPI_TYPE_DUP_FN
-          memcpy(value_out, it.second, sizeof(int));
-          flag = 1;
-        } else { // not null, nor dup
-          elem.copy_fn.type_copy_fn_fort(datatype, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
-          if (ret != MPI_SUCCESS)
-            xbt_free(value_out);
-        }
-      }
-      if (ret != MPI_SUCCESS) {
-        break;
-      }
-      if (flag) {
-        elem.refcount++;
-        attributes().emplace(it.first, value_out);
-      }
+      if (ret != MPI_SUCCESS)
+        xbt_free(value_out);
+    }
+    if (ret != MPI_SUCCESS)
+      return ret;
+    if (flag) {
+      elem.refcount++;
+      attributes().emplace(it.first, value_out);
     }
   }
-  set_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
-  return ret;
+  return MPI_SUCCESS;
 }
 
 int Datatype::clone(MPI_Datatype* type){

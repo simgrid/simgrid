@@ -80,37 +80,37 @@ int Comm::dup(MPI_Comm* newcomm){
 
   for (auto const& it : attributes()) {
     auto elem_it = keyvals_.find(it.first);
-    if (elem_it != keyvals_.end()) {
-      smpi_key_elem& elem = elem_it->second;
-      int ret             = MPI_SUCCESS;
-      int flag            = 0;
-      void* value_out     = nullptr;
-      if (elem.copy_fn.comm_copy_fn == MPI_COMM_DUP_FN) {
-        value_out = it.second;
-        flag      = 1;
-      } else if (elem.copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
-        ret = elem.copy_fn.comm_copy_fn(this, it.first, elem.extra_state, it.second, &value_out, &flag);
+    xbt_assert(elem_it != keyvals_.end(), "Keyval not found for Comm: %d", it.first);
+
+    smpi_key_elem& elem = elem_it->second;
+    int ret             = MPI_SUCCESS;
+    int flag            = 0;
+    void* value_out     = nullptr;
+    if (elem.copy_fn.comm_copy_fn == MPI_COMM_DUP_FN) {
+      value_out = it.second;
+      flag      = 1;
+    } else if (elem.copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
+      ret = elem.copy_fn.comm_copy_fn(this, it.first, elem.extra_state, it.second, &value_out, &flag);
+    }
+    if (elem.copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) {
+      value_out = xbt_new(int, 1);
+      if (*(int*)*elem.copy_fn.comm_copy_fn_fort == 1) { // MPI_COMM_DUP_FN
+        memcpy(value_out, it.second, sizeof(int));
+        flag = 1;
+      } else { // not null, nor dup
+        elem.copy_fn.comm_copy_fn_fort(this, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
       }
-      if (elem.copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) {
-        value_out = xbt_new(int, 1);
-        if (*(int*)*elem.copy_fn.comm_copy_fn_fort == 1) { // MPI_COMM_DUP_FN
-          memcpy(value_out, it.second, sizeof(int));
-          flag = 1;
-        } else { // not null, nor dup
-          elem.copy_fn.comm_copy_fn_fort(this, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
-        }
-        if (ret != MPI_SUCCESS)
-          xbt_free(value_out);
-      }
-      if (ret != MPI_SUCCESS) {
-        Comm::destroy(*newcomm);
-        *newcomm = MPI_COMM_NULL;
-        return ret;
-      }
-      if (flag) {
-        elem.refcount++;
-        (*newcomm)->attributes().emplace(it.first, value_out);
-      }
+      if (ret != MPI_SUCCESS)
+        xbt_free(value_out);
+    }
+    if (ret != MPI_SUCCESS) {
+      Comm::destroy(*newcomm);
+      *newcomm = MPI_COMM_NULL;
+      return ret;
+    }
+    if (flag) {
+      elem.refcount++;
+      (*newcomm)->attributes().emplace(it.first, value_out);
     }
   }
   //duplicate info if present
