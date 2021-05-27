@@ -125,6 +125,10 @@ simgrid::config::Flag<bool> _smpi_cfg_display_alloc("smpi/display-allocs",
                                                     "Whether we should display a memory allocations analysis after simulation.",
                                                      false);
 
+simgrid::config::Flag<int> _smpi_cfg_list_leaks("smpi/list-leaks",
+                                                "Whether we should display the n first MPI handle leaks (addresses and type only) after simulation",
+                                                -1);
+
 double smpi_cfg_host_speed(){
   return _smpi_cfg_host_speed;
 }
@@ -170,7 +174,7 @@ bool smpi_cfg_trace_call_use_absolute_path(){
 }
 
 bool smpi_cfg_display_alloc(){
-  return _smpi_cfg_display_alloc;
+  return _smpi_cfg_list_leaks != -1 ? true : _smpi_cfg_display_alloc;
 }
 
 std::string smpi_cfg_comp_adjustment_file(){
@@ -190,7 +194,6 @@ void smpi_init_options(){
   if(_smpi_options_initialized)
     return;
   simgrid::config::declare_flag<bool>("smpi/display-timing", "Whether we should display the timing after simulation.", false);
-  simgrid::config::declare_flag<int>("smpi/list-leaks", "Whether we should display the n first MPI handle leaks (addresses and type only) after simulation", 0);
   simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.", false);
   simgrid::config::declare_flag<std::string>("smpi/tmpdir", "tmp dir for dlopen files", "/tmp");
 
