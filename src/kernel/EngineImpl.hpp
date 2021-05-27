@@ -67,14 +67,20 @@ class EngineImpl {
   std::vector<xbt::Task<void()>> tasksTemp;
 
   std::mutex mutex_;
+  static EngineImpl* instance_;
+
   friend s4u::Engine;
 
 public:
   EngineImpl() = default;
 
+  /* Currently, only one instance is allowed to exist. This is why you can't copy or move it */
+#ifndef DOXYGEN
   EngineImpl(const EngineImpl&) = delete;
   EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();
+  static void shutdown();
+#endif
 
   void load_deployment(const std::string& file) const;
   void register_function(const std::string& name, const actor::ActorCodeFactory& code);
@@ -93,6 +99,7 @@ public:
   const std::vector<resource::Model*>& get_all_models() const { return models_; }
 
   static EngineImpl* get_instance() { return simgrid::s4u::Engine::get_instance()->pimpl; }
+
   actor::ActorCodeFactory get_function(const std::string& name)
   {
     auto res = registered_functions.find(name);

@@ -13,6 +13,7 @@
 #include "simgrid/sg_config.hpp"
 #include "src/include/surf/surf.hpp" //get_clock() and surf_solve()
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
@@ -24,17 +25,67 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 
 namespace simgrid {
 namespace kernel {
+EngineImpl* EngineImpl::instance_ = nullptr; /* That singleton is awful too. */
 
 config::Flag<double> cfg_breakpoint{"debug/breakpoint",
                                     "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
-EngineImpl::~EngineImpl()
+void EngineImpl::shutdown()
 {
+  static bool already_cleaned_up = false;
+  if (already_cleaned_up)
+    return; // to avoid double cleaning by java and C
+  already_cleaned_up = true;
+  if (not EngineImpl::instance_) {
+    simix_global->destroy_maestro();
+    simix_global->destroy_context_factory();
+    return; // Nothing more to shutdown
+  }
+  XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
+
+  if (instance_->has_actors_to_run() && simgrid_get_clock() <= 0.0) {
+    XBT_CRITICAL("   ");
+    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
+    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
+    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
+  }
+
+#if HAVE_SMPI
+  if (not instance_->actor_list_.empty()) {
+    if (smpi_process()->initialized()) {
+      xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
+    } else {
+      XBT_WARN("Process called exit when leaving - Skipping cleanups");
+      return;
+    }
+  }
+#endif
+
+  /* Kill all actors (but maestro) */
+  simix_global->get_maestro()->kill_all();
+  instance_->run_all_actors();
+  instance_->empty_trash();
+
+  /* Let's free maestro now */
+  simix_global->destroy_maestro();
+
+  /* Finish context module and SURF */
+  simix_global->destroy_context_factory();
 
   while (not timer::kernel_timers().empty()) {
     delete timer::kernel_timers().top().second;
     timer::kernel_timers().pop();
   }
 
+  tmgr_finalize();
+  sg_platf_exit();
+
+  simgrid::s4u::Engine::shutdown();
+
+  simix_global = nullptr;
+}
+
+EngineImpl::~EngineImpl()
+{
   /* Since hosts_ is a std::map, the hosts are destroyed in the lexicographic order, which ensures that the output is
    * reproducible.
    */

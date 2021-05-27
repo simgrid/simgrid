@@ -183,56 +183,7 @@ void SIMIX_global_init(int* argc, char** argv)
   simgrid::s4u::Engine::on_platform_created.connect(surf_presolve);
 
   if (simgrid::config::get_value<bool>("debug/clean-atexit"))
-    atexit(SIMIX_clean);
-}
-
-/**
- * @ingroup SIMIX_API
- * @brief Clean the SIMIX simulation
- *
- * This functions remove the memory used by SIMIX
- */
-void SIMIX_clean()
-{
-  static bool smx_cleaned = false;
-  if (smx_cleaned)
-    return; // to avoid double cleaning by java and C
-
-  smx_cleaned = true;
-  XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  auto* engine = simgrid::kernel::EngineImpl::get_instance();
-  if (engine->has_actors_to_run() && simgrid::s4u::Engine::get_clock() <= 0.0) {
-    XBT_CRITICAL("   ");
-    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
-    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
-    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
-  }
-
-#if HAVE_SMPI
-  if (not engine->get_actor_list().empty()) {
-    if (smpi_process()->initialized()) {
-      xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
-    } else {
-      XBT_WARN("Process called exit when leaving - Skipping cleanups");
-      return;
-    }
-  }
-#endif
-
-  /* Kill all processes (but maestro) */
-  simix_global->get_maestro()->kill_all();
-  engine->run_all_actors();
-  engine->empty_trash();
-
-  /* Let's free maestro now */
-  simix_global->destroy_maestro();
-
-  /* Finish context module and SURF */
-  simix_global->destroy_context_factory();
-
-  surf_exit();
-
-  simix_global = nullptr;
+    atexit(simgrid::kernel::EngineImpl::shutdown);
 }
 
 /**
