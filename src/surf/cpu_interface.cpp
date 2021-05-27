@@ -36,7 +36,7 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
     auto& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
 
-    action.update_remains(action.get_variable()->get_value() * delta);
+    action.update_remains(action.get_rate() * delta);
     action.update_max_duration(delta);
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
@@ -159,7 +159,7 @@ void CpuAction::update_remains_lazy(double now)
   }
 
   set_last_update();
-  set_last_value(get_variable()->get_value());
+  set_last_value(get_rate());
 }
 
 xbt::signal<void(CpuAction const&, Action::State)> CpuAction::on_state_change;

@@ -41,7 +41,7 @@ void DiskS19Model::update_actions_state(double /*now*/, double delta)
   for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     auto& action = *it;
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
-    action.update_remains(rint(action.get_variable()->get_value() * delta));
+    action.update_remains(rint(action.get_rate() * delta));
     action.update_max_duration(delta);
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
