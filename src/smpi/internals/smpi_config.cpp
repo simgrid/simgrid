@@ -38,11 +38,9 @@ double _smpi_cfg_host_speed;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_config, smpi, "Logging specific to SMPI (config)");
 
 simgrid::config::Flag<std::string> _smpi_cfg_host_speed_string{
-    "smpi/host-speed",
-    "Speed of the host running the simulation (in flop/s). "
-    "Used to bench the operations.",
-    "20000f", [](const std::string& str) {
-      _smpi_cfg_host_speed = xbt_parse_get_speed("smpi/host-speed", 1, str.c_str(), "option", "smpi/host-speed");
+    "smpi/host-speed", "Speed of the host running the simulation (in flop/s). Used to bench the operations.", "20000f",
+    [](const std::string& str) {
+      _smpi_cfg_host_speed = xbt_parse_get_speed("smpi/host-speed", 1, str, "option smpi/host-speed");
       xbt_assert(_smpi_cfg_host_speed > 0.0, "Invalid value (%s) for 'smpi/host-speed': it must be positive.",
                  _smpi_cfg_host_speed_string.get().c_str());
     }};

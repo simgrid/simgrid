@@ -329,7 +329,7 @@ FileSystemDiskExt::FileSystemDiskExt(const Disk* ptr)
   const char* size_str    = ptr->get_property("size");
   std::string dummyfile;
   if (size_str)
-    size_ = surf_parse_get_size(dummyfile, -1, size_str, "disk size", ptr->get_name());
+    size_ = xbt_parse_get_size(dummyfile, -1, size_str, "disk size " + ptr->get_name());
 
   const char* current_mount_str = ptr->get_property("mount");
   if (current_mount_str)

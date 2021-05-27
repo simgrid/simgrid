@@ -51,14 +51,14 @@ unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, doubl
   }
 }
 
-/* Note: no warning is issued for unit-less values when `name' is empty. */
-static double surf_parse_get_value_with_unit(const std::string& filename, int lineno, const char* string,
-                                             const unit_scale& units, const char* entity_kind, const std::string& name,
-                                             const char* error_msg, const char* default_unit)
+/* Note: no warning is issued for unit-less values when `entity_kind' is empty. */
+static double xbt_parse_get_value_with_unit(const std::string& filename, int lineno, const std::string& string,
+                                            const unit_scale& units, const std::string& entity_kind,
+                                            const char* error_msg, const char* default_unit)
 {
   char* endptr;
   errno           = 0;
-  double res      = strtod(string, &endptr);
+  double res      = strtod(string.c_str(), &endptr);
   const char* ptr = endptr; // for const-correctness
   if (errno == ERANGE)
     throw simgrid::ParseError(filename, lineno, std::string("value out of range: ") + string);
@@ -66,8 +66,8 @@ static double surf_parse_get_value_with_unit(const std::string& filename, int li
     throw simgrid::ParseError(filename, lineno, std::string("cannot parse number:") + string);
   if (ptr[0] == '\0') {
     // Ok, 0 can be unit-less
-    if (res != 0 && not name.empty())
-      XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
+    if (res != 0 && not entity_kind.empty())
+      XBT_WARN("Deprecated unit-less value '%s' for %s. %s", string.c_str(), entity_kind.c_str(), error_msg);
     ptr = default_unit;
   }
   auto u = units.find(ptr);
@@ -76,8 +76,8 @@ static double surf_parse_get_value_with_unit(const std::string& filename, int li
   return res * u->second;
 }
 
-double xbt_parse_get_time(const std::string& filename, int lineno, const char* string, const char* entity_kind,
-                          const std::string& name)
+double xbt_parse_get_time(const std::string& filename, int lineno, const std::string& string,
+                          const std::string& entity_kind)
 {
   static const unit_scale units{std::make_pair("w", 7 * 24 * 60 * 60),
                                 std::make_pair("d", 24 * 60 * 60),
@@ -88,31 +88,31 @@ double xbt_parse_get_time(const std::string& filename, int lineno, const char* s
                                 std::make_pair("us", 1e-6),
                                 std::make_pair("ns", 1e-9),
                                 std::make_pair("ps", 1e-12)};
-  return surf_parse_get_value_with_unit(filename, lineno, string, units, entity_kind, name,
-                                        "Append 's' to your time to get seconds", "s");
+  return xbt_parse_get_value_with_unit(filename, lineno, string, units, entity_kind,
+                                       "Append 's' to your time to get seconds", "s");
 }
 
-double surf_parse_get_size(const std::string& filename, int lineno, const char* string, const char* entity_kind,
-                           const std::string& name)
+double xbt_parse_get_size(const std::string& filename, int lineno, const std::string& string,
+                          const std::string& entity_kind)
 {
   static const unit_scale units{std::make_tuple("b", 0.125, 2, true), std::make_tuple("b", 0.125, 10, true),
                                 std::make_tuple("B", 1.0, 2, true), std::make_tuple("B", 1.0, 10, true)};
-  return surf_parse_get_value_with_unit(filename, lineno, string, units, entity_kind, name,
-                                        "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
+  return xbt_parse_get_value_with_unit(filename, lineno, string, units, entity_kind,
+                                       "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
 }
 
-double xbt_parse_get_bandwidth(const std::string& filename, int lineno, const char* string, const char* entity_kind,
-                               const std::string& name)
+double xbt_parse_get_bandwidth(const std::string& filename, int lineno, const std::string& string,
+                               const std::string& entity_kind)
 {
   static const unit_scale units{std::make_tuple("bps", 0.125, 2, true), std::make_tuple("bps", 0.125, 10, true),
                                 std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
-  return surf_parse_get_value_with_unit(filename, lineno, string, units, entity_kind, name,
-                                        "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)",
-                                        "Bps");
+  return xbt_parse_get_value_with_unit(filename, lineno, string, units, entity_kind,
+                                       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)",
+                                       "Bps");
 }
 
-std::vector<double> xbt_parse_get_bandwidths(const std::string& filename, int lineno, const char* string,
-                                             const char* entity_kind, const std::string& name)
+std::vector<double> xbt_parse_get_bandwidths(const std::string& filename, int lineno, const std::string& string,
+                                             const std::string& entity_kind)
 {
   static const unit_scale units{std::make_tuple("bps", 0.125, 2, true), std::make_tuple("bps", 0.125, 10, true),
                                 std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
@@ -121,36 +121,36 @@ std::vector<double> xbt_parse_get_bandwidths(const std::string& filename, int li
   std::vector<std::string> tokens;
   boost::split(tokens, string, boost::is_any_of(";,"));
   for (auto const& token : tokens) {
-    bandwidths.push_back(surf_parse_get_value_with_unit(
-        filename, lineno, token.c_str(), units, entity_kind, name,
+    bandwidths.push_back(xbt_parse_get_value_with_unit(
+        filename, lineno, token.c_str(), units, entity_kind,
         "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps"));
   }
 
   return bandwidths;
 }
 
-double xbt_parse_get_speed(const std::string& filename, int lineno, const char* string, const char* entity_kind,
-                           const std::string& name)
+double xbt_parse_get_speed(const std::string& filename, int lineno, const std::string& string,
+                           const std::string& entity_kind)
 {
   static const unit_scale units{std::make_tuple("f", 1.0, 10, true), std::make_tuple("flops", 1.0, 10, false)};
-  return surf_parse_get_value_with_unit(filename, lineno, string, units, entity_kind, name,
-                                        "Append 'f' or 'flops' to your speed to get flop per second", "f");
+  return xbt_parse_get_value_with_unit(filename, lineno, string, units, entity_kind,
+                                       "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
 
-std::vector<double> xbt_parse_get_all_speeds(const std::string& filename, int lineno, char* speeds,
-                                             const char* entity_kind, const std::string& id)
+std::vector<double> xbt_parse_get_all_speeds(const std::string& filename, int lineno, const std::string& speeds,
+                                             const std::string& entity_kind)
 {
   std::vector<double> speed_per_pstate;
 
-  if (strchr(speeds, ',') == nullptr) {
-    double speed = xbt_parse_get_speed(filename, lineno, speeds, entity_kind, id);
+  if (speeds.find('.') == std::string::npos) {
+    double speed = xbt_parse_get_speed(filename, lineno, speeds, entity_kind);
     speed_per_pstate.push_back(speed);
   } else {
     std::vector<std::string> pstate_list;
     boost::split(pstate_list, speeds, boost::is_any_of(","));
     for (auto speed_str : pstate_list) {
       boost::trim(speed_str);
-      double speed = xbt_parse_get_speed(filename, lineno, speed_str.c_str(), entity_kind, id);
+      double speed = xbt_parse_get_speed(filename, lineno, speed_str, entity_kind);
       speed_per_pstate.push_back(speed);
       XBT_DEBUG("Speed value: %f", speed);
     }

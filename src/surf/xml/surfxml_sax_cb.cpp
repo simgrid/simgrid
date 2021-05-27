@@ -237,8 +237,8 @@ void STag_surfxml_host()
   property_sets.emplace_back();
   host.id = A_surfxml_host_id;
 
-  host.speed_per_pstate =
-      xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_surfxml_host_speed, "speed of host", host.id);
+  host.speed_per_pstate = xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_surfxml_host_speed,
+                                                   "speed of host " + host.id);
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
@@ -276,9 +276,9 @@ void ETag_surfxml_disk() {
 
   disk.id       = A_surfxml_disk_id;
   disk.read_bw  = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_disk_read___bw,
-                                         "read_bw of disk ", disk.id);
+                                         "read_bw of disk " + disk.id);
   disk.write_bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_disk_write___bw,
-                                          "write_bw of disk ", disk.id);
+                                          "write_bw of disk " + disk.id);
 
   sg_platf_new_disk(&disk);
 }
@@ -307,29 +307,30 @@ void ETag_surfxml_cluster(){
   cluster.suffix      = A_surfxml_cluster_suffix;
   explodesRadical(A_surfxml_cluster_radical, &cluster.radicals);
 
-  cluster.speeds      = xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_speed,
-                                            "speed of cluster", cluster.id);
+  cluster.speeds = xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_speed,
+                                            "speed of cluster " + cluster.id);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
-  cluster.bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_bw, "bw of cluster",
-                                       cluster.id);
-  cluster.lat =
-      xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_lat, "lat of cluster", cluster.id);
+  cluster.bw          = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_bw,
+                                       "bw of cluster " + cluster.id);
+  cluster.lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_lat,
+                                   "lat of cluster " + cluster.id);
   if(strcmp(A_surfxml_cluster_bb___bw,""))
     cluster.bb_bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_bb___bw,
-                                            "bb_bw of cluster", cluster.id);
+                                            "bb_bw of cluster " + cluster.id);
   if(strcmp(A_surfxml_cluster_bb___lat,""))
     cluster.bb_lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_bb___lat,
-                                        "bb_lat of cluster", cluster.id);
+                                        "bb_lat of cluster " + cluster.id);
   if(strcmp(A_surfxml_cluster_limiter___link,""))
     cluster.limiter_link =
         xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_limiter___link,
-                                "limiter_link of cluster", cluster.id);
+                                "limiter_link of cluster " + cluster.id);
   if(strcmp(A_surfxml_cluster_loopback___bw,""))
-    cluster.loopback_bw = xbt_parse_get_bandwidth(
-        surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_loopback___bw, "loopback_bw of cluster", cluster.id);
+    cluster.loopback_bw =
+        xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_loopback___bw,
+                                "loopback_bw of cluster " + cluster.id);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
     cluster.loopback_lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cluster_loopback___lat,
-                                              "loopback_lat of cluster", cluster.id);
+                                              "loopback_lat of cluster " + cluster.id);
 
   switch(AX_surfxml_cluster_topology){
   case A_surfxml_cluster_topology_FLAT:
@@ -391,11 +392,11 @@ void STag_surfxml_cabinet(){
   cabinet.prefix  = A_surfxml_cabinet_prefix;
   cabinet.suffix  = A_surfxml_cabinet_suffix;
   cabinet.speed   = xbt_parse_get_speed(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_speed,
-                                      "speed of cabinet", cabinet.id.c_str());
-  cabinet.bw  = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_bw, "bw of cabinet",
-                                       cabinet.id.c_str());
-  cabinet.lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_lat, "lat of cabinet",
-                                   cabinet.id.c_str());
+                                      "speed of cabinet " + cabinet.id);
+  cabinet.bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_bw,
+                                       "bw of cabinet " + cabinet.id);
+  cabinet.lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_cabinet_lat,
+                                   "lat of cabinet " + cabinet.id);
   explodesRadical(A_surfxml_cabinet_radical, &cabinet.radicals);
 
   sg_platf_new_cabinet(&cabinet);
@@ -405,12 +406,12 @@ void STag_surfxml_peer(){
   simgrid::kernel::routing::PeerCreationArgs peer;
 
   peer.id          = std::string(A_surfxml_peer_id);
-  peer.speed       = xbt_parse_get_speed(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_speed, "speed of peer",
-                                   peer.id.c_str());
-  peer.bw_in = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_bw___in, "bw_in of peer",
-                                       peer.id.c_str());
-  peer.bw_out      = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_bw___out,
-                                        "bw_out of peer", peer.id.c_str());
+  peer.speed =
+      xbt_parse_get_speed(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_speed, "speed of peer " + peer.id);
+  peer.bw_in = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_bw___in,
+                                       "bw_in of peer " + peer.id);
+  peer.bw_out = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_bw___out,
+                                        "bw_out of peer " + peer.id);
   peer.coord       = A_surfxml_peer_coordinates;
   peer.speed_trace = nullptr;
   if (A_surfxml_peer_availability___file[0] != '\0') {
@@ -442,12 +443,12 @@ void ETag_surfxml_link(){
 
   link.id                  = std::string(A_surfxml_link_id);
   link.bandwidths          = xbt_parse_get_bandwidths(surf_parsed_filename, surf_parse_lineno, A_surfxml_link_bandwidth,
-                                             "bandwidth of link", link.id.c_str());
+                                             "bandwidth of link " + link.id);
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0]
                              ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_bandwidth___file)
                              : nullptr;
-  link.latency = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_link_latency, "latency of link",
-                                    link.id.c_str());
+  link.latency =
+      xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_link_latency, "latency of link " + link.id);
   link.latency_trace       = A_surfxml_link_latency___file[0]
                            ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_latency___file)
                            : nullptr;
@@ -517,11 +518,10 @@ void ETag_surfxml_backbone()
   auto link = std::make_unique<simgrid::kernel::routing::LinkCreationArgs>();
 
   link->id = std::string(A_surfxml_backbone_id);
-  link->bandwidths.push_back(xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno,
-                                                     A_surfxml_backbone_bandwidth, "bandwidth of backbone",
-                                                     link->id.c_str()));
+  link->bandwidths.push_back(xbt_parse_get_bandwidth(
+      surf_parsed_filename, surf_parse_lineno, A_surfxml_backbone_bandwidth, "bandwidth of backbone " + link->id));
   link->latency = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_backbone_latency,
-                                     "latency of backbone", link->id.c_str());
+                                     "latency of backbone " + link->id);
   link->policy  = simgrid::s4u::Link::SharingPolicy::SHARED;
 
   routing_cluster_add_backbone(std::move(link));

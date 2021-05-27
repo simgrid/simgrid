@@ -73,7 +73,7 @@ Link* Link::set_latency(const std::string& value)
 {
   double d_value = 0.0;
   try {
-    d_value = xbt_parse_get_time("", 0, value.c_str(), nullptr, "");
+    d_value = xbt_parse_get_time("", 0, value, "");
   } catch (const simgrid::ParseError&) {
     throw std::invalid_argument(std::string("Impossible to set latency for link: ") + get_name() +
                                 std::string(". Invalid value: ") + value);

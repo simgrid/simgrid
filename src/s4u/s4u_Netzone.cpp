@@ -186,7 +186,7 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::
   bw.reserve(bandwidths.size());
   for (const auto& speed_str : bandwidths) {
     try {
-      double speed = xbt_parse_get_bandwidth("", 0, speed_str.c_str(), nullptr, "");
+      double speed = xbt_parse_get_bandwidth("", 0, speed_str, "");
       bw.push_back(speed);
     } catch (const simgrid::ParseError&) {
       throw std::invalid_argument(std::string("Impossible to create link: ") + name +

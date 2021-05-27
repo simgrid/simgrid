@@ -7,17 +7,19 @@
 #ifndef SIMGRID_XBT_PARSE_UNITS_HPP
 #define SIMGRID_XBT_PARSE_UNITS_HPP
 
-double xbt_parse_get_time(const std::string& filename, int lineno, const char* string, const char* entity_kind,
-                          const std::string& name);
-double surf_parse_get_size(const std::string& filename, int lineno, const char* string, const char* entity_kind,
-                           const std::string& name);
-double xbt_parse_get_bandwidth(const std::string& filename, int lineno, const char* string, const char* entity_kind,
-                               const std::string& name);
-std::vector<double> xbt_parse_get_bandwidths(const std::string& filename, int lineno, const char* string,
-                                             const char* entity_kind, const std::string& name);
-double xbt_parse_get_speed(const std::string& filename, int lineno, const char* string, const char* entity_kind,
-                           const std::string& name);
-std::vector<double> xbt_parse_get_all_speeds(const std::string& filename, int lineno, char* speeds,
-                                             const char* entity_kind, const std::string& id);
+#include <string>
+
+double xbt_parse_get_time(const std::string& filename, int lineno, const std::string& string,
+                          const std::string& entity_kind);
+double xbt_parse_get_size(const std::string& filename, int lineno, const std::string& string,
+                          const std::string& entity_kind);
+double xbt_parse_get_bandwidth(const std::string& filename, int lineno, const std::string& string,
+                               const std::string& entity_kind);
+std::vector<double> xbt_parse_get_bandwidths(const std::string& filename, int lineno, const std::string& string,
+                                             const std::string& entity_kind);
+double xbt_parse_get_speed(const std::string& filename, int lineno, const std::string& string,
+                           const std::string& entity_kind);
+std::vector<double> xbt_parse_get_all_speeds(const std::string& filename, int lineno, const std::string& speeds,
+                                             const std::string& entity_kind);
 
 #endif

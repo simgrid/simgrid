@@ -85,8 +85,7 @@ std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
         }
       } else {
         try {
-          fact.values.push_back(
-              xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, (*factor_iter).c_str(), "smpi factor", ""));
+          fact.values.push_back(xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, *factor_iter, ""));
         } catch (const std::invalid_argument&) {
           throw std::invalid_argument(std::string("Invalid factor value ") + std::to_string(iteration) + " in chunk " +
                                       std::to_string(smpi_factor.size() + 1) + ": " + *factor_iter);
