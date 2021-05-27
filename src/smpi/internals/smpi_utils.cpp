@@ -144,9 +144,9 @@ void account_shared_size(size_t size){
 void print_time_analysis(double global_time){
   if (simgrid::config::get_value<bool>("smpi/display-timing")) {
     XBT_INFO("Simulated time: %g seconds. \n\n"
-        "The simulation took %g seconds (after parsing and platform setup)\n"
-        "%g seconds were actual computation of the application",
-        SIMIX_get_clock(), global_time , total_benched_time);
+             "The simulation took %g seconds (after parsing and platform setup)\n"
+             "%g seconds were actual computation of the application",
+             simgrid_get_clock(), global_time, total_benched_time);
     if (total_benched_time/global_time>=0.75)
       XBT_INFO("More than 75%% of the time was spent inside the application code.\n"
     "You may want to use sampling functions or trace replay to reduce this.");

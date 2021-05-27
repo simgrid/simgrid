@@ -7,6 +7,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -241,7 +242,7 @@ void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl
   if (timeout < 0.0) {
     issuer->simcall_.timeout_cb_ = nullptr;
   } else {
-    issuer->simcall_.timeout_cb_ = timer::Timer::set(SIMIX_get_clock() + timeout, [issuer, &execs]() {
+    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [issuer, &execs]() {
       issuer->simcall_.timeout_cb_ = nullptr;
       for (auto* exec : execs)
         exec->unregister_simcall(&issuer->simcall_);

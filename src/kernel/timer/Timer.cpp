@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/kernel/Timer.hpp>
+#include <simgrid/s4u/Engine.hpp>
 #include <simgrid/simix.h>
 
 namespace simgrid {
@@ -29,7 +30,7 @@ void Timer::remove()
 bool Timer::execute_all()
 {
   bool result = false;
-  while (not kernel_timers().empty() && SIMIX_get_clock() >= kernel_timers().top().first) {
+  while (not kernel_timers().empty() && s4u::Engine::get_clock() >= kernel_timers().top().first) {
     result = true;
     // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
     Timer* timer = kernel_timers().top().second;

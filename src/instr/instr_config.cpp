@@ -227,7 +227,7 @@ xbt::signal<void(EntityValue const&)> EntityValue::on_creation;
 
 static void on_container_creation_paje(const Container& c)
 {
-  double timestamp = SIMIX_get_clock();
+  double timestamp = simgrid_get_clock();
   std::stringstream stream;
 
   XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, static_cast<unsigned>(PajeEventType::CreateContainer),
@@ -250,7 +250,7 @@ static void on_container_destruction_paje(const Container& c)
   // trace my destruction, but not if user requests so or if the container is root
   if (not trace_disable_destroy && &c != Container::get_root()) {
     std::stringstream stream;
-    double timestamp = SIMIX_get_clock();
+    double timestamp = simgrid_get_clock();
 
     XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, static_cast<unsigned>(PajeEventType::DestroyContainer),
               timestamp);
@@ -265,7 +265,7 @@ static void on_container_destruction_paje(const Container& c)
 static void on_container_creation_ti(const Container& c)
 {
   XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, static_cast<unsigned>(PajeEventType::CreateContainer),
-            SIMIX_get_clock());
+            simgrid_get_clock());
   // if we are in the mode with only one file
   static std::ofstream* ti_unique_file = nullptr;
   static double prefix                 = 0.0;

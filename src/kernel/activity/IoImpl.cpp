@@ -7,6 +7,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Io.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
@@ -152,7 +153,7 @@ void IoImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<IoImpl*>& 
   if (timeout < 0.0) {
     issuer->simcall_.timeout_cb_ = nullptr;
   } else {
-    issuer->simcall_.timeout_cb_ = timer::Timer::set(SIMIX_get_clock() + timeout, [issuer, &ios]() {
+    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [issuer, &ios]() {
       issuer->simcall_.timeout_cb_ = nullptr;
       for (auto* io : ios)
         io->unregister_simcall(&issuer->simcall_);

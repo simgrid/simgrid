@@ -201,7 +201,7 @@ void SIMIX_clean()
   smx_cleaned = true;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
   auto* engine = simgrid::kernel::EngineImpl::get_instance();
-  if (engine->has_actors_to_run() && SIMIX_get_clock() <= 0.0) {
+  if (engine->has_actors_to_run() && simgrid::s4u::Engine::get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
     XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
@@ -241,13 +241,9 @@ void SIMIX_clean()
  *
  * @return Return the clock.
  */
-double SIMIX_get_clock()
+double SIMIX_get_clock() // XBT_ATTRIB_DEPRECATED_v332
 {
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    return MC_process_clock_get(SIMIX_process_self());
-  } else {
-    return surf_get_clock();
-  }
+  return simgrid::s4u::Engine::get_clock();
 }
 
 void SIMIX_run() // XBT_ATTRIB_DEPRECATED_v332

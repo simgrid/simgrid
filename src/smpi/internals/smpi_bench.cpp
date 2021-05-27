@@ -7,6 +7,7 @@
 #include "private.hpp"
 #include "simgrid/host.h"
 #include "simgrid/modelchecker.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_utils.hpp"
@@ -156,7 +157,7 @@ void smpi_bench_end()
     const papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
-      container->get_variable(pair.first)->set_event(SIMIX_get_clock(), pair.second);
+      container->get_variable(pair.first)->set_event(simgrid::s4u::Engine::get_clock(), pair.second);
     }
   }
 #endif
@@ -210,7 +211,7 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
     return gettimeofday(tv, tz);
 
   smpi_bench_end();
-  double now = SIMIX_get_clock();
+  double now = simgrid::s4u::Engine::get_clock();
   if (tv) {
     tv->tv_sec = static_cast<time_t>(now);
 #ifdef WIN32
@@ -236,7 +237,7 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     return clock_gettime(clk_id, tp);
   //there is only one time in SMPI, so clk_id is ignored.
   smpi_bench_end();
-  double now = SIMIX_get_clock();
+  double now  = simgrid::s4u::Engine::get_clock();
   tp->tv_sec  = static_cast<time_t>(now);
   tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   if (smpi_wtime_sleep > 0)
@@ -251,12 +252,12 @@ double smpi_mpi_wtime()
   double time;
   if (smpi_process()->initialized() && not smpi_process()->finalized() && not smpi_process()->sampling()) {
     smpi_bench_end();
-    time = SIMIX_get_clock();
+    time = simgrid::s4u::Engine::get_clock();
     if (smpi_wtime_sleep > 0)
       simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
     smpi_bench_begin();
   } else {
-    time = SIMIX_get_clock();
+    time = simgrid::s4u::Engine::get_clock();
   }
   return time;
 }
@@ -273,7 +274,7 @@ unsigned long long smpi_rastro_resolution ()
 unsigned long long smpi_rastro_timestamp ()
 {
   smpi_bench_end();
-  double now = SIMIX_get_clock();
+  double now = simgrid::s4u::Engine::get_clock();
 
   auto sec               = static_cast<unsigned long long>(now);
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();

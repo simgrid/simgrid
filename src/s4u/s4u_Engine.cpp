@@ -16,6 +16,7 @@
 #include "simgrid/simix.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/mc/mc_replay.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 #include <simgrid/Exception.hpp>
@@ -80,7 +81,11 @@ void Engine::shutdown()
 
 double Engine::get_clock()
 {
-  return SIMIX_get_clock();
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    return MC_process_clock_get(SIMIX_process_self());
+  } else {
+    return surf_get_clock();
+  }
 }
 
 void Engine::add_model(std::shared_ptr<kernel::resource::Model> model,

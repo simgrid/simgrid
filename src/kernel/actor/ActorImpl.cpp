@@ -260,7 +260,7 @@ void ActorImpl::kill_all() const
 
 void ActorImpl::set_kill_time(double kill_time)
 {
-  if (kill_time <= SIMIX_get_clock())
+  if (kill_time <= s4u::Engine::get_clock())
     return;
   XBT_DEBUG("Set kill time %f for actor %s@%s", kill_time, get_cname(), host_->get_cname());
   kill_timer_ = timer::Timer::set(kill_time, [this] {

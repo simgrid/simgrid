@@ -9,6 +9,7 @@
 #include <simgrid/forward.h>
 
 #include <simgrid/chrono.hpp>
+#include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 
 #include <future>
@@ -74,7 +75,7 @@ public:
   /// As long as the predicate is false, wait for the given amount of seconds (specified as a plain double)
   template <class P> bool wait_for(const std::unique_lock<s4u::Mutex>& lock, double duration, P pred)
   {
-    return this->wait_until(lock, SIMIX_get_clock() + duration, std::move(pred));
+    return this->wait_until(lock, Engine::get_clock() + duration, std::move(pred));
   }
 
   // Wait function taking a C++ style time:

@@ -344,13 +344,13 @@ static void on_action_state_change(kernel::resource::Action const& action,
 
     if (cpu != nullptr)
       resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action.get_category(), value,
-                               action.get_last_update(), SIMIX_get_clock() - action.get_last_update());
+                               action.get_last_update(), simgrid_get_clock() - action.get_last_update());
 
     const kernel::resource::LinkImpl* link = dynamic_cast<kernel::resource::LinkImpl*>(resource);
 
     if (link != nullptr)
       resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action.get_category(), value,
-                               action.get_last_update(), SIMIX_get_clock() - action.get_last_update());
+                               action.get_last_update(), simgrid_get_clock() - action.get_last_update());
   }
 }
 

@@ -5,11 +5,12 @@
 
 #include "src/smpi/include/smpi_actor.hpp"
 #include "mc/mc.h"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Mutex.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_info.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
-#include "simgrid/s4u/Mutex.hpp"
 
 #if HAVE_PAPI
 #include "papi.h"
@@ -164,12 +165,12 @@ xbt_os_timer_t ActorExt::timer()
 
 void ActorExt::simulated_start()
 {
-  simulated_ = SIMIX_get_clock();
+  simulated_ = s4u::Engine::get_clock();
 }
 
 double ActorExt::simulated_elapsed() const
 {
-  return SIMIX_get_clock() - simulated_;
+  return s4u::Engine::get_clock() - simulated_;
 }
 
 MPI_Comm ActorExt::comm_self()

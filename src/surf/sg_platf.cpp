@@ -495,7 +495,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
   host->get_impl()->add_actor_at_boot(arg);
 
-  if (start_time > SIMIX_get_clock()) {
+  if (start_time > simgrid::s4u::Engine::get_clock()) {
     arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, actor->properties,
                                                  auto_restart);
 
@@ -510,7 +510,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
         new_actor->set_auto_restart(auto_restart);
       delete arg;
     });
-  } else { // start_time <= SIMIX_get_clock()
+  } else { // start_time <= simgrid::s4u::Engine::get_clock()
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->get_cname());
 
     try {

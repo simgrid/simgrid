@@ -7,6 +7,7 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
 
 #include <string>

@@ -15,7 +15,7 @@
 #include <chrono>
 #include <ratio>
 
-#include <simgrid/simix.h>
+#include <simgrid/engine.h>
 
 namespace simgrid {
 
@@ -44,10 +44,7 @@ public:
   using duration   = std::chrono::duration<rep, period>;
   using time_point = std::chrono::time_point<SimulationClock, duration>;
   static constexpr bool is_steady = true;
-  static time_point now()
-  {
-    return time_point(duration(SIMIX_get_clock()));
-  }
+  static time_point now() { return time_point(duration(simgrid_get_clock())); }
 };
 
 /** Default duration for simulated time */

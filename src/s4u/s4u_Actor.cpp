@@ -352,7 +352,7 @@ void yield()
 
 XBT_PUBLIC void sleep_until(double wakeup_time)
 {
-  double now = SIMIX_get_clock();
+  double now = s4u::Engine::get_clock();
   if (wakeup_time > now)
     sleep_for(wakeup_time - now);
 }

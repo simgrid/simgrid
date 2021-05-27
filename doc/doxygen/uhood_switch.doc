@@ -747,7 +747,7 @@ bool ConditionVariable::wait_for(std::unique_lock<Mutex>& lock,
   double duration, P pred)
 {
   return this->wait_until(lock,
-    SIMIX_get_clock() + duration, std::move(pred));
+    simgrid::s4u::Engine::get_clock() + duration, std::move(pred));
 }
 @endcode
 

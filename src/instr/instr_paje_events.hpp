@@ -100,7 +100,7 @@ class LinkEvent : public PajeEvent {
 public:
   LinkEvent(Container* container, Type* type, PajeEventType event_type, Container* sourceContainer,
             const std::string& value, const std::string& key, size_t size = static_cast<size_t>(-1))
-      : PajeEvent(container, type, SIMIX_get_clock(), event_type)
+      : PajeEvent(container, type, simgrid_get_clock(), event_type)
       , endpoint_(sourceContainer)
       , value_(value)
       , key_(key)

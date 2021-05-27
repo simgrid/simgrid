@@ -46,7 +46,7 @@ XBT_PUBLIC void SIMIX_set_maestro(void (*code)(void*), void* data);
 
 /* Simulation execution */
 XBT_ATTRIB_DEPRECATED_v332("Please use EngineImpl:run()") XBT_PUBLIC void SIMIX_run();
-XBT_PUBLIC double SIMIX_get_clock();
+XBT_ATTRIB_DEPRECATED_v332("Please use simgrid_get_clock() or Engine::get_clock()") XBT_PUBLIC double SIMIX_get_clock();
 
 XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::set()") XBT_PUBLIC smx_timer_t
     SIMIX_timer_set(double date, void (*function)(void*), void* arg);

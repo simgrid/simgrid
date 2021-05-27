@@ -26,7 +26,7 @@ PajeEvent::~PajeEvent()
 }
 
 StateEvent::StateEvent(Container* container, Type* type, PajeEventType event_type, EntityValue* value, TIData* extra)
-    : PajeEvent::PajeEvent(container, type, SIMIX_get_clock(), event_type), value(value), extra_(extra)
+    : PajeEvent::PajeEvent(container, type, simgrid_get_clock(), event_type), value(value), extra_(extra)
 {
 #if HAVE_SMPI
   if (smpi_cfg_trace_call_location()) {

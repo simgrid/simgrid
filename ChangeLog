@@ -3,8 +3,8 @@
 SimGrid (3.27.1) NOT RELEASED YET (v3.28 expected June 21. 2021, 03:32 UTC)
 
 New features:
- - New plugin: Producer-Consumer with monitor. Just requires to include the 
-   include/simgrid/plugins/ProducerConsumer.hpp header to be used. See the 
+ - New plugin: Producer-Consumer with monitor. Just requires to include the
+   include/simgrid/plugins/ProducerConsumer.hpp header to be used. See the
    associated example (examples/cpp/plugin-prodcons).
 
 S4U:
@@ -18,6 +18,9 @@ SMPI:
 
 LUA:
  - Lua platform files are deprecated. Their support will be dropped after v3.31.
+
+Simix:
+ - Legacy functions deprecated in this release: SIMIX_get_clock(), SIMIX_run().
 
 XBT:
  - xbt_assert is not disabled anymore, even when built with enable_debug=off.

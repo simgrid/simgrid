@@ -453,7 +453,7 @@ void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl
   if (timeout < 0.0) {
     issuer->simcall_.timeout_cb_ = nullptr;
   } else {
-    issuer->simcall_.timeout_cb_ = timer::Timer::set(SIMIX_get_clock() + timeout, [issuer, comms]() {
+    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [issuer, comms]() {
       // FIXME: Vector `comms' is copied here. Use a reference once its lifetime is extended (i.e. when the simcall is
       // modernized).
       issuer->simcall_.timeout_cb_ = nullptr;

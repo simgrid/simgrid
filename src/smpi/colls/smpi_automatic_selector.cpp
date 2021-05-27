@@ -7,6 +7,7 @@
 #include <exception>
 
 #include "colls_private.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
 //attempt to do a quick autotuning version of the collective,
@@ -29,16 +30,16 @@
                                                                                                                        \
         std::string cont_name = std::string("rank-" + std::to_string(simgrid::s4u::this_actor::get_pid()));            \
         type->add_entity_value(desc->name, "1.0 1.0 1.0");                                                             \
-        new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::by_name(cont_name), type,           \
-                                     type->get_entity_value(desc->name));                                              \
+        new simgrid::instr::NewEvent(simgrid::s4u::Engine::get_clock(), simgrid::instr::Container::by_name(cont_name), \
+                                     type, type->get_entity_value(desc->name));                                        \
       }                                                                                                                \
-      time1 = SIMIX_get_clock();                                                                                       \
+      time1 = simgrid::s4u::Engine::get_clock();                                                                       \
       try {                                                                                                            \
         ((int(*) args)desc->coll) args2;                                                                               \
       } catch (std::exception & ex) {                                                                                  \
         continue;                                                                                                      \
       }                                                                                                                \
-      time2   = SIMIX_get_clock();                                                                                     \
+      time2   = simgrid::s4u::Engine::get_clock();                                                                     \
       buf_out = time2 - time1;                                                                                         \
       reduce__default((void*)&buf_out, (void*)&buf_in, 1, MPI_DOUBLE, MPI_MAX, 0, comm);                               \
       if (time2 - time1 < time_min) {                                                                                  \

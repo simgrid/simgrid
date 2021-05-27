@@ -66,7 +66,7 @@ std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& l
 
 std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock, double timeout_time)
 {
-  double now = SIMIX_get_clock();
+  double now = Engine::get_clock();
   double timeout;
   if (timeout_time < now)
     timeout = 0.0;
