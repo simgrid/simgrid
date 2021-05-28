@@ -88,8 +88,7 @@ void DiskS19::set_read_bandwidth(double value)
 {
   read_bw_.peak = value;
 
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
-                                                            sg_bandwidth_factor * (read_bw_.peak * read_bw_.scale));
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), read_bw_.peak * read_bw_.scale);
 
   double delta = 1.0 / value - 1.0 / (read_bw_.peak * read_bw_.scale);
   update_penalties(delta);
@@ -99,8 +98,7 @@ void DiskS19::set_write_bandwidth(double value)
 {
   write_bw_.peak = value;
 
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
-                                                            sg_bandwidth_factor * (write_bw_.peak * write_bw_.scale));
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), write_bw_.peak * write_bw_.scale);
 
   double delta = 1.0 / value - 1.0 / (write_bw_.peak * write_bw_.scale);
   update_penalties(delta);
