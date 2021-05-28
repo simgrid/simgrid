@@ -422,23 +422,50 @@ run it again and again.
 
 .. code-block:: R
 
-   library(pajengr)
-   library(ggplot2)
-
    # Read the data
-   df_state = pajeng_read("lu.S.4.trace")
-   names(df_state) = c("Type", "Rank", "Container", "Start", "End", "Duration", "Level", "State");
-   df_state = df_state[!(names(df_state) %in% c("Type","Container","Level"))]
-   df_state$Rank = as.numeric(gsub("rank-","",df_state$Rank))
+   library(tidyverse)
+   library(pajengr)
+   dta <- pajeng_read("lu.S.4.trace")
+
+   # Manipulate the data
+   dta$state %>%
+      # Remove some unnecessary columns for this example
+      select(-Type, -Imbrication) %>%
+      # Create the nice MPI rank and operations identifiers
+      mutate(Container = as.integer(gsub("rank-", "", Container)),
+             Value = gsub("^PMPI_", "MPI_", Value)) %>%
+      # Rename some columns so it can better fit MPI terminology
+      rename(Rank = Container,
+             Operation = Value) -> df.states
 
    # Draw the Gantt Chart
-   gc = ggplot(data=df_state) + geom_rect(aes(xmin=Start, xmax=End, ymin=Rank, ymax=Rank+1,fill=State))
+   df.states %>%
+      ggplot() +
+      # Each MPI operation is becoming a rectangle
+      geom_rect(aes(xmin=Start, xmax=End,
+                    ymin=Rank,  ymax=Rank + 1,
+                    fill=Operation)) +
+      # Cosmetics
+      xlab("Time [seconds]") +
+      ylab("Rank [count]") +
+      theme_bw(base_size=14) +
+      theme(
+        plot.margin = unit(c(0,0,0,0), "cm"),
+        legend.margin = margin(t = 0, unit='cm'),
+        panel.grid = element_blank(),
+        legend.position = "top",
+        legend.justification = "left",
+        legend.box.spacing = unit(0, "pt"),
+        legend.box.margin = margin(0,0,0,0),
+        legend.title = element_text(size=10)) -> plot
 
-   # Produce the output
-   plot(gc)
-   dev.off()
+    # Save the plot in a PNG file (dimensions in inches)
+    ggsave("smpi.png",
+           plot,
+           width = 10,
+           height = 3)
 
-This produces a file called ``Rplots.pdf`` with the following
+This produces a file called ``smpi.png`` with the following
 content. You can find more visualization examples `online
 <https://simgrid.org/contrib/R_visualization.html>`_.
 
