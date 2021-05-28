@@ -539,6 +539,36 @@ void NetZoneImpl::set_host_model(std::shared_ptr<surf::HostModel> host_model)
   host_model_ = std::move(host_model);
 }
 
+const NetZoneImpl* NetZoneImpl::get_netzone_recursive(const NetPoint* netpoint) const
+{
+  xbt_assert(netpoint && netpoint->is_netzone(), "Netpoint %s must be of the type NetZone",
+             netpoint ? netpoint->get_cname() : "nullptr");
+
+  if (netpoint == netpoint_)
+    return this;
+
+  for (auto* children : children_) {
+    const NetZoneImpl* netzone = children->get_netzone_recursive(netpoint);
+    if (netzone)
+      return netzone;
+  }
+  return nullptr;
+}
+
+bool NetZoneImpl::is_component_recursive(const NetPoint* netpoint) const
+{
+  /* check direct components */
+  for (const auto* elem : vertices_) {
+    if (elem == netpoint)
+      return true;
+  }
+  /* check childrens */
+  for (const auto* children : children_) {
+    if (children->is_component_recursive(netpoint))
+      return true;
+  }
+  return false;
+}
 } // namespace routing
 } // namespace kernel
 } // namespace simgrid

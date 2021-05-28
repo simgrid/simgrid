@@ -89,7 +89,7 @@ private:
   void add_links_to_route(const std::vector<resource::LinkImpl*>& links, Route* route, double* latency,
                           std::unordered_set<resource::LinkImpl*>& added_links) const;
   /** @brief Auxiliary methods to check params received in add_route method */
-  void check_add_route_param(const NetPoint* src, const NetPoint* dst, const NetPoint* gw_src, const NetPoint* gw_dst,
+  void check_add_route_param(const NetPoint* src, const NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                              bool symmetrical) const;
   std::unordered_map<unsigned int, StarRoute> routes_;
 };

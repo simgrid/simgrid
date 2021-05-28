@@ -107,6 +107,9 @@ protected:
                         /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
                         std::unordered_set<NetZoneImpl*>& netzones);
 
+  /** @brief Get the NetZone that is represented by the netpoint */
+  const NetZoneImpl* get_netzone_recursive(const NetPoint* netpoint) const;
+
 public:
   enum class RoutingMode {
     base,     /**< Base case: use simple link lists for routing     */
@@ -161,6 +164,8 @@ public:
 
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   void seal();
+  /** @brief Check if netpoint is a member of this NetZone or some of the childrens */
+  bool is_component_recursive(const NetPoint* netpoint) const;
   virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
   virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,

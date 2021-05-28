@@ -50,6 +50,8 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
       new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::NetZone);
   auto* netpoint2 =
       new simgrid::kernel::routing::NetPoint("netpoint2", simgrid::kernel::routing::NetPoint::Type::NetZone);
+  auto* zone3     = new simgrid::kernel::routing::StarZone("test3");
+  auto* netpoint3 = zone3->create_router("netpoint3");
 
   SECTION("src: is a netzone and gw_src: nullptr")
   {
@@ -69,6 +71,18 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
   SECTION("dst: is a netzone and gw_dst: is a netzone")
   {
     REQUIRE_THROWS_AS(zone->add_route(nullptr, netpoint2, nullptr, netpoint1, {}, false), std::invalid_argument);
+  }
+
+  SECTION("issue71: gw_src isn't member of the src netzone")
+  {
+    REQUIRE_THROWS_AS(zone->add_route(zone->get_netpoint(), nullptr, netpoint3, nullptr, {}, false),
+                      std::invalid_argument);
+  }
+
+  SECTION("issue71: gw_dst isn't member of the dst netzone")
+  {
+    REQUIRE_THROWS_AS(zone->add_route(nullptr, zone->get_netpoint(), nullptr, netpoint3, {}, false),
+                      std::invalid_argument);
   }
 }
 
@@ -219,14 +233,13 @@ TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
   simgrid::s4u::Engine e("test");
   auto* zone = new simgrid::kernel::routing::StarZone("test");
 
-  auto* subzone1 =
-      (new simgrid::kernel::routing::NetPoint("subzone1", simgrid::kernel::routing::NetPoint::Type::NetZone))
-          ->set_englobing_zone(zone);
-  auto* subzone2 =
-      (new simgrid::kernel::routing::NetPoint("subzone2", simgrid::kernel::routing::NetPoint::Type::NetZone))
-          ->set_englobing_zone(zone);
-  auto* router1 = new simgrid::kernel::routing::NetPoint("router1", simgrid::kernel::routing::NetPoint::Type::Router);
-  auto* router2 = new simgrid::kernel::routing::NetPoint("router2", simgrid::kernel::routing::NetPoint::Type::Router);
+  auto* subzone1 = new simgrid::kernel::routing::StarZone("subzone1");
+  subzone1->set_parent(zone);
+  auto* subzone2 = new simgrid::kernel::routing::StarZone("subzone2");
+  subzone2->set_parent(zone);
+
+  auto* router1 = subzone1->create_router("router1");
+  auto* router2 = subzone2->create_router("router2");
 
   SECTION("Get route: netzone")
   {
@@ -234,13 +247,13 @@ TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
     links.push_back(zone->create_link("link1", {100})->set_latency(10)->get_impl());
     std::vector<simgrid::kernel::resource::LinkImpl*> links2;
     links2.push_back(zone->create_link("link2", {200})->set_latency(20)->get_impl());
-    zone->add_route(subzone1, nullptr, router1, nullptr, links, true);
-    zone->add_route(subzone2, nullptr, router2, nullptr, links2, true);
+    zone->add_route(subzone1->get_netpoint(), nullptr, router1, nullptr, links, true);
+    zone->add_route(subzone2->get_netpoint(), nullptr, router2, nullptr, links2, true);
     zone->seal();
 
     double lat = 0.0;
     simgrid::kernel::routing::Route route;
-    zone->get_local_route(subzone1, subzone2, &route, &lat);
+    zone->get_local_route(subzone1->get_netpoint(), subzone2->get_netpoint(), &route, &lat);
     REQUIRE(lat == 30);
     REQUIRE(route.gw_src_ == router1);
     REQUIRE(route.gw_dst_ == router2);

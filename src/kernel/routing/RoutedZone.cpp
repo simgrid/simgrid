@@ -184,6 +184,17 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                gw_dst->get_cname(), dstName);
     xbt_assert(not link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName, gw_src->get_cname(),
                dstName, gw_dst->get_cname());
+    const auto* netzone_src = get_netzone_recursive(src);
+    xbt_assert(netzone_src->is_component_recursive(gw_src),
+               "Invalid NetzoneRoute from %s@%s to %s@%s: gw_src %s belongs to %s, not to %s.", srcName,
+               gw_src->get_cname(), dstName, gw_dst->get_cname(), gw_src->get_cname(),
+               gw_src->get_englobing_zone()->get_cname(), srcName);
+
+    const auto* netzone_dst = get_netzone_recursive(dst);
+    xbt_assert(netzone_dst->is_component_recursive(gw_dst),
+               "Invalid NetzoneRoute from %s@%s to %s@%s: gw_dst %s belongs to %s, not to %s.", srcName,
+               gw_src->get_cname(), dstName, gw_dst->get_cname(), gw_dst->get_cname(),
+               gw_dst->get_englobing_zone()->get_cname(), dst->get_cname());
     s4u::NetZone::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, link_list);
   }
 }

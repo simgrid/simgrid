@@ -729,6 +729,9 @@ include teshsuite/s4u/host-on-off/host-on-off.cpp
 include teshsuite/s4u/host-on-off/host-on-off.tesh
 include teshsuite/s4u/is-router/is-router.cpp
 include teshsuite/s4u/is-router/is-router.tesh
+include teshsuite/s4u/issue71/issue71.cpp
+include teshsuite/s4u/issue71/issue71.tesh
+include teshsuite/s4u/issue71/platform_bad.xml
 include teshsuite/s4u/listen_async/listen_async.cpp
 include teshsuite/s4u/listen_async/listen_async.tesh
 include teshsuite/s4u/ns3-from-src-to-itself/ns3-from-src-to-itself.cpp

@@ -86,8 +86,8 @@ void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_n
   }
 }
 
-void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, const NetPoint* gw_src,
-                                     const NetPoint* gw_dst, bool symmetrical) const
+void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                                     bool symmetrical) const
 {
   const char* src_name = src ? src->get_cname() : "nullptr";
   const char* dst_name = dst ? dst->get_cname() : "nullptr";
@@ -111,6 +111,12 @@ void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, c
       throw std::invalid_argument(
           xbt::string_printf("StarZone::add_route(): src(%s) is a netzone, gw_src(%s) cannot be a netzone",
                              src->get_cname(), gw_src->get_cname()));
+
+    const auto* netzone_src = get_netzone_recursive(src);
+    if (not netzone_src->is_component_recursive(gw_src))
+      throw std::invalid_argument(xbt::string_printf(
+          "Invalid NetzoneRoute from %s@%s to %s: gw_src %s belongs to %s, not to %s.", src_name, gw_src->get_cname(),
+          dst_name, gw_src->get_cname(), gw_src->get_englobing_zone()->get_cname(), src_name));
   }
 
   if (dst && dst->is_netzone()) {
@@ -121,6 +127,12 @@ void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, c
       throw std::invalid_argument(
           xbt::string_printf("StarZone::add_route(): dst(%s) is a netzone, gw_dst(%s) cannot be a netzone",
                              dst->get_cname(), gw_dst->get_cname()));
+
+    const auto* netzone_dst = get_netzone_recursive(dst);
+    if (not netzone_dst->is_component_recursive(gw_dst))
+      throw std::invalid_argument(xbt::string_printf(
+          "Invalid NetzoneRoute from %s@%s to %s: gw_dst %s belongs to %s, not to %s.", dst_name, gw_dst->get_cname(),
+          src_name, gw_dst->get_cname(), gw_dst->get_englobing_zone()->get_cname(), dst_name));
   }
 }
 
