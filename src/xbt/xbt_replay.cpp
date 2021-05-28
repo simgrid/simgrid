@@ -104,7 +104,7 @@ static void handle_action(ReplayAction& action)
     function(action);
   } catch (const Exception& e) {
     action.clear();
-    xbt_die("Replay error:\n %s", e.what());
+    throw;
   }
 }
 
