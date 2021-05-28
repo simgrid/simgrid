@@ -1,7 +1,7 @@
 # Base image 
 FROM simgrid/stable
 
-RUN apt update && apt -y upgrade 
+RUN apt update && apt -y upgrade
 
 RUN apt install -y sudo && \
     groupadd -g 999 user && \
