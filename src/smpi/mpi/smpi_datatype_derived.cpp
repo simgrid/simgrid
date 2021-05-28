@@ -21,6 +21,14 @@ Datatype_contents::Datatype_contents(int combiner, int number_of_integers, const
     , addresses_(addresses, addresses + number_of_addresses)
     , datatypes_(datatypes, datatypes + number_of_datatypes)
 {
+  for (auto& datatype : datatypes_)
+    datatype->ref();
+}
+
+Datatype_contents::~Datatype_contents()
+{
+  for (auto& datatype : datatypes_)
+    Datatype::unref(datatype);
 }
 
 Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type)

@@ -94,6 +94,7 @@ class Datatype_contents {
                     int number_of_integers, const int* integers, 
                     int number_of_addresses, const MPI_Aint* addresses, 
                     int number_of_datatypes, const MPI_Datatype* datatypes);
+  ~Datatype_contents();
 };
 
 class Datatype : public F2C, public Keyval{

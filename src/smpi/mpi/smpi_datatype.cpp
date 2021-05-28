@@ -315,7 +315,8 @@ int Datatype::get_contents(int max_integers, int max_addresses, int max_datatype
   if (static_cast<unsigned>(max_datatypes) < contents_->datatypes_.size())
     return MPI_ERR_COUNT;
   std::copy(begin(contents_->datatypes_), end(contents_->datatypes_), array_of_datatypes);
-  std::for_each(begin(contents_->datatypes_), end(contents_->datatypes_), std::mem_fn(&Datatype::ref));
+  for (auto& datatype : contents_->datatypes_)
+    datatype->ref();
   return MPI_SUCCESS;
 }
 
