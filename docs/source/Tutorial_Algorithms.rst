@@ -360,7 +360,11 @@ and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
 .. code-block:: shell
 
-   sudo apt install r-base r-cran-devtools cmake flex bison
+   # install R and necessary packages
+   sudo apt install r-base r-cran-devtools r-cran-tidyverse
+   # install pajengr dependencies
+   sudo apt install git cmake flex bison
+   # install the pajengr R package
    Rscript -e "library(devtools); install_github('schnorr/pajengr');"
 
 An initial version of the source code is provided on framagit. This
