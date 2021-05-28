@@ -1,5 +1,6 @@
-$ ${bindir:=.}/s4u-network-factors "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${bindir:=.}/s4u-network-factors disable_crosstraffic "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000086] (1:receiver-local@dahu-1.grid5000.fr) I got a 'Local communication: size=64000.000000. Use bw_factor=0.121192 lat_factor=650.221238. Estimated finished time=0.000086'.
 > [  0.000455] (2:receiver-remote@dahu-10.grid5000.fr) I got a 'Remote communication: size=64000.000000. Use bw_factor=0.316335 lat_factor=1761.478483. Estimated finished time=0.000455'.
 > [  0.060247] (1:receiver-local@dahu-1.grid5000.fr) I got a 'Local communication: size=64000000.000000. Use bw_factor=0.042815 lat_factor=0.000000. Estimated finished time=0.060247'.
@@ -9,3 +10,15 @@ $ ${bindir:=.}/s4u-network-factors "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [ 27.801800] (3:senderdahu-1.grid5000.fr@dahu-1.grid5000.fr) Done dispatching all messages
 > [ 27.801800] (1:receiver-local@dahu-1.grid5000.fr) I got a 'finalize'.
 > [ 27.801800] (2:receiver-remote@dahu-10.grid5000.fr) I got a 'finalize'.
+
+$ ${bindir:=.}/s4u-network-factors "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000087] (1:receiver-local@dahu-1.grid5000.fr) I got a 'Local communication: size=64000.000000. Use bw_factor=0.121192 lat_factor=650.221238. Estimated finished time=0.000087'.
+> [  0.000456] (2:receiver-remote@dahu-10.grid5000.fr) I got a 'Remote communication: size=64000.000000. Use bw_factor=0.316335 lat_factor=1761.478483. Estimated finished time=0.000456'.
+> [  0.063237] (1:receiver-local@dahu-1.grid5000.fr) I got a 'Local communication: size=64000000.000000. Use bw_factor=0.042815 lat_factor=0.000000. Estimated finished time=0.063237'.
+> [  0.112683] (2:receiver-remote@dahu-10.grid5000.fr) I got a 'Remote communication: size=64000000.000000. Use bw_factor=0.103547 lat_factor=0.000000. Estimated finished time=0.112683'.
+> [ 15.626857] (1:receiver-local@dahu-1.grid5000.fr) I got a 'Local communication: size=64000000000.000000. Use bw_factor=0.174405 lat_factor=1017885.351877. Estimated finished time=15.626857'.
+> [ 28.538713] (2:receiver-remote@dahu-10.grid5000.fr) I got a 'Remote communication: size=64000000000.000000. Use bw_factor=0.402589 lat_factor=970913.455816. Estimated finished time=28.538713'.
+> [ 28.538713] (3:senderdahu-1.grid5000.fr@dahu-1.grid5000.fr) Done dispatching all messages
+> [ 28.538713] (1:receiver-local@dahu-1.grid5000.fr) I got a 'finalize'.
+> [ 28.538713] (2:receiver-remote@dahu-10.grid5000.fr) I got a 'finalize'.
