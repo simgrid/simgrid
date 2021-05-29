@@ -1,5 +1,5 @@
 ! expect signal SIGIOT
-$ ${bindir:=.}/issue71 ${srcdir:=.}/platform_bad.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=no_loc
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/issue71 ${srcdir:=.}/platform_bad.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=no_loc
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (0:maestro@) Invalid NetzoneRoute from cluster1@router_c2 to cluster2@router_c1: gw_src router_c2 belongs to cluster2, not to cluster1.
