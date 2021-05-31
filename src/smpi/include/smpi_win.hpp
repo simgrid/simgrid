@@ -31,7 +31,8 @@ class Win : public F2C, public Keyval {
   std::vector<MPI_Win> connected_wins_;
   std::string name_;
   int opened_               = 0;
-  MPI_Group group_          = MPI_GROUP_NULL;
+  MPI_Group src_group_      = MPI_GROUP_NULL; // for post/wait
+  MPI_Group dst_group_      = MPI_GROUP_NULL; // for start/complete
   int count_                = 0; // for ordering the accs
   s4u::MutexPtr lock_mut_   = s4u::Mutex::create();
   s4u::MutexPtr atomic_mut_ = s4u::Mutex::create();

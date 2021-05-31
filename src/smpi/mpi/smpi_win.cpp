@@ -456,9 +456,9 @@ int Win::start(MPI_Group group, int /*assert*/)
   for (i = 0; i < size; i++) {
     Request::unref(&reqs[i]);
   }
-  opened_++; //we're open for business !
-  group_=group;
   group->ref();
+  dst_group_ = group;
+  opened_++; // we're open for business !
   XBT_DEBUG("Leaving MPI_Win_Start");
   return MPI_SUCCESS;
 }
@@ -487,9 +487,9 @@ int Win::post(MPI_Group group, int /*assert*/)
   for(i=0;i<size;i++){
     Request::unref(&reqs[i]);
   }
-  opened_++; //we're open for business !
-  group_=group;
   group->ref();
+  src_group_ = group;
+  opened_++; // we're open for business !
   XBT_DEBUG("Leaving MPI_Win_Post");
   return MPI_SUCCESS;
 }
@@ -500,11 +500,11 @@ int Win::complete(){
   XBT_DEBUG("Entering MPI_Win_Complete");
   int i             = 0;
   int j             = 0;
-  int size          = group_->size();
+  int size          = dst_group_->size();
   std::vector<MPI_Request> reqs(size);
 
   while(j!=size){
-    int dst = comm_->group()->rank(group_->actor(j));
+    int dst = comm_->group()->rank(dst_group_->actor(j));
     if (dst != rank_ && dst != MPI_UNDEFINED) {
       reqs[i] = Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG + 5, comm_);
       i++;
@@ -523,8 +523,9 @@ int Win::complete(){
   int finished = finish_comms();
   XBT_DEBUG("Win_complete - Finished %d RMA calls", finished);
 
-  Group::unref(group_);
   opened_--; //we're closed for business !
+  Group::unref(dst_group_);
+  dst_group_ = MPI_GROUP_NULL;
   return MPI_SUCCESS;
 }
 
@@ -533,11 +534,11 @@ int Win::wait(){
   XBT_DEBUG("Entering MPI_Win_Wait");
   int i             = 0;
   int j             = 0;
-  int size          = group_->size();
+  int size          = src_group_->size();
   std::vector<MPI_Request> reqs(size);
 
   while(j!=size){
-    int src = comm_->group()->rank(group_->actor(j));
+    int src = comm_->group()->rank(src_group_->actor(j));
     if (src != rank_ && src != MPI_UNDEFINED) {
       reqs[i] = Request::irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 5, comm_);
       i++;
@@ -554,8 +555,9 @@ int Win::wait(){
   int finished = finish_comms();
   XBT_DEBUG("Win_wait - Finished %d RMA calls", finished);
 
-  Group::unref(group_);
   opened_--; //we're closed for business !
+  Group::unref(src_group_);
+  src_group_ = MPI_GROUP_NULL;
   return MPI_SUCCESS;
 }
 
