@@ -547,7 +547,7 @@ const NetZoneImpl* NetZoneImpl::get_netzone_recursive(const NetPoint* netpoint) 
   if (netpoint == netpoint_)
     return this;
 
-  for (auto* children : children_) {
+  for (const auto* children : children_) {
     const NetZoneImpl* netzone = children->get_netzone_recursive(netpoint);
     if (netzone)
       return netzone;

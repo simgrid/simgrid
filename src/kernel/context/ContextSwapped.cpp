@@ -207,7 +207,7 @@ void SwappedContext::swap_into(SwappedContext* to)
 /** Maestro wants to run all ready actors */
 void SwappedContextFactory::run_all()
 {
-  auto* engine = EngineImpl::get_instance();
+  const auto* engine = EngineImpl::get_instance();
   /* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some
    * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul
    * for the ones of the simulated processes that must run.
@@ -288,7 +288,7 @@ void SwappedContext::suspend()
       // When given that soul, the body will wait for the next scheduling round
     }
   } else { // sequential execution
-    auto* engine = EngineImpl::get_instance();
+    const auto* engine = EngineImpl::get_instance();
     /* determine the next context */
     unsigned long int i = factory_.process_index_;
     factory_.process_index_++;
