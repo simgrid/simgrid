@@ -188,7 +188,7 @@ int Win::fence(int assert)
   XBT_DEBUG("Entering fence");
   if (opened_ == 0)
     opened_=1;
-  if (assert != MPI_MODE_NOPRECEDE) {
+  if (not (assert & MPI_MODE_NOPRECEDE)) {
     // This is not the first fence => finalize what came before
     bar_->wait();
     mut_->lock();
@@ -207,7 +207,7 @@ int Win::fence(int assert)
     mut_->unlock();
   }
 
-  if(assert==MPI_MODE_NOSUCCEED)//there should be no ops after this one, tell we are closed.
+  if (assert & MPI_MODE_NOSUCCEED) // there should be no ops after this one, tell we are closed.
     opened_=0;
   assert_ = assert;
 
