@@ -94,6 +94,8 @@ class Datatype_contents {
                     int number_of_integers, const int* integers, 
                     int number_of_addresses, const MPI_Aint* addresses, 
                     int number_of_datatypes, const MPI_Datatype* datatypes);
+  Datatype_contents(const Datatype_contents&) = delete;
+  Datatype_contents& operator=(const Datatype_contents&) = delete;
   ~Datatype_contents();
 };
 
