@@ -50,7 +50,7 @@ TEST_CASE("kernel::routing::StarZone: Adding routes (netzones): exception", "")
       new simgrid::kernel::routing::NetPoint("netpoint1", simgrid::kernel::routing::NetPoint::Type::NetZone);
   auto* netpoint2 =
       new simgrid::kernel::routing::NetPoint("netpoint2", simgrid::kernel::routing::NetPoint::Type::NetZone);
-  auto* zone3     = new simgrid::kernel::routing::StarZone("test3");
+  auto zone3      = std::make_unique<simgrid::kernel::routing::StarZone>("test3");
   auto* netpoint3 = zone3->create_router("netpoint3");
 
   SECTION("src: is a netzone and gw_src: nullptr")
