@@ -19,10 +19,10 @@ $ ${bindir:=.}/s4u-app-token-ring ${platfdir}/routing_cluster.xml "--log=root.fm
 $ ${bindir:=.}/s4u-app-token-ring ${platfdir}/two_peers.xml "--log=root.fmt:[%12.6r]%e(%a@%h)%e%m%n"
 > [    0.000000] (maestro@) Number of hosts '2'
 > [    0.000000] (0@100030591) Host "0" send 'Token' to Host "1"
-> [    0.624423] (1@100036570) Host "1" received "Token"
-> [    0.624423] (1@100036570) Host "1" send 'Token' to Host "0"
-> [    1.248846] (0@100030591) Host "0" received "Token"
-> [    1.248846] (maestro@) Simulation time 1.24885
+> [    0.625106] (1@100036570) Host "1" received "Token"
+> [    0.625106] (1@100036570) Host "1" send 'Token' to Host "0"
+> [    1.250212] (0@100030591) Host "0" received "Token"
+> [    1.250212] (maestro@) Simulation time 1.25021
 
 $ ${bindir:=.}/s4u-app-token-ring ${platfdir}/meta_cluster.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
 > [  0.000000] (maestro@) Number of hosts '60'
