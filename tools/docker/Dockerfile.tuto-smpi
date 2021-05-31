@@ -1,6 +1,8 @@
 # Base image 
 FROM simgrid/stable
 
+# https://stackoverflow.com/questions/35134713/disable-cache-for-specific-run-commands
+ADD "http://deb.debian.org/debian/dists/testing/Release" skipcache
 RUN apt update && apt -y upgrade
 
 RUN apt install -y sudo && \
