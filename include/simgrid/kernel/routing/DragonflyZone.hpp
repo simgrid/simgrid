@@ -72,7 +72,7 @@ public:
   };
 
   explicit DragonflyZone(const std::string& name);
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
   /**
    * @brief Parse topology parameters from string format
    *

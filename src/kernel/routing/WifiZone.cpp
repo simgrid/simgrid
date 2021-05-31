@@ -28,7 +28,7 @@ void WifiZone::do_seal()
   }
 }
 
-void WifiZone::get_local_route(NetPoint* src, NetPoint* dst, Route* res, double* lat)
+void WifiZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* res, double* lat)
 {
   XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 

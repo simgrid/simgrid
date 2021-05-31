@@ -35,7 +35,7 @@ public:
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   /** @brief the NetZone in which this NetPoint is included */
-  NetZoneImpl* get_englobing_zone() { return englobing_zone_; }
+  NetZoneImpl* get_englobing_zone() const { return englobing_zone_; }
   /** @brief Set the NetZone in which this NetPoint is included */
   NetPoint* set_englobing_zone(NetZoneImpl* netzone_p);
   NetPoint* set_coordinates(const std::string& coords);

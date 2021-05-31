@@ -84,7 +84,7 @@ xbt_node_t DijkstraZone::node_map_search(int id)
 
 /* Parsing */
 
-void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
+void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat)
 {
   get_route_check_params(src, dst);
   int src_id = src->id();

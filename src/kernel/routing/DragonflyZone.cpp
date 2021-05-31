@@ -281,7 +281,7 @@ void DragonflyZone::generate_links()
   }
 }
 
-void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* latency)
+void DragonflyZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* latency)
 {
   // Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?

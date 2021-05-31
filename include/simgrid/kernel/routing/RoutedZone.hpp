@@ -64,7 +64,7 @@ protected:
   {
     return new_extended_route(hierarchy, gw_src, gw_dst, link_list, preserve_order);
   }
-  void get_route_check_params(NetPoint* src, NetPoint* dst) const;
+  void get_route_check_params(const NetPoint* src, const NetPoint* dst) const;
   void add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                               const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) const;
 };

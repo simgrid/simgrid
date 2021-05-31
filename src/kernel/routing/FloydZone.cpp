@@ -33,7 +33,7 @@ void FloydZone::init_tables(unsigned int table_size)
   }
 }
 
-void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
+void FloydZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat)
 {
   get_route_check_params(src, dst);
 

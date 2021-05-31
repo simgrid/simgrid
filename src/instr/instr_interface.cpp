@@ -296,10 +296,10 @@ static void instr_user_variable(double time, const char* resource, const char* v
 static void instr_user_srcdst_variable(double time, const char *src, const char *dst, const char *variable,
                               const char *father_type, double value, InstrUserVariable what)
 {
-  simgrid::kernel::routing::NetPoint* src_elm = sg_netpoint_by_name_or_null(src);
+  const simgrid::kernel::routing::NetPoint* src_elm = sg_netpoint_by_name_or_null(src);
   xbt_assert(src_elm, "Element '%s' not found!", src);
 
-  simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
+  const simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
   xbt_assert(dst_elm, "Element '%s' not found!", dst);
 
   std::vector<simgrid::kernel::resource::LinkImpl*> route;

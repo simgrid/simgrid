@@ -23,7 +23,7 @@ class XBT_PRIVATE EmptyZone : public NetZoneImpl {
 public:
   explicit EmptyZone(const std::string& name) : NetZoneImpl(name) {}
 
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override
   {
     /* There can't be route in an Empty zone */
   }

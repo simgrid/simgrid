@@ -118,10 +118,10 @@ static void dump_routes()
             });
 
   for (auto src_host : hosts) { // Routes from host
-    simgrid::kernel::routing::NetPoint* src = src_host->get_netpoint();
+    const simgrid::kernel::routing::NetPoint* src = src_host->get_netpoint();
     for (auto dst_host : hosts) { // Routes to host
       std::vector<simgrid::kernel::resource::LinkImpl*> route;
-      simgrid::kernel::routing::NetPoint* dst = dst_host->get_netpoint();
+      const simgrid::kernel::routing::NetPoint* dst = dst_host->get_netpoint();
       simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
       if (route.empty())
         continue;

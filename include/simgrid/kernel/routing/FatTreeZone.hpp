@@ -134,7 +134,7 @@ public:
   explicit FatTreeZone(const std::string& name) : ClusterBase(name){};
   FatTreeZone(const FatTreeZone&) = delete;
   FatTreeZone& operator=(const FatTreeZone&) = delete;
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
 
   /**
    * @brief Parse the topology parameters from string format

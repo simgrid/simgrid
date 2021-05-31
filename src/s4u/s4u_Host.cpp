@@ -172,7 +172,7 @@ void Host::route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& 
 }
 
 /** @brief Returns the networking zone englobing that host */
-NetZone* Host::get_englobing_zone()
+NetZone* Host::get_englobing_zone() const
 {
   return pimpl_netpoint_->get_englobing_zone()->get_iface();
 }

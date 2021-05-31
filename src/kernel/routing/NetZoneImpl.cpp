@@ -269,7 +269,7 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
  *                 dst
  *  @endverbatim
  */
-static void find_common_ancestors(NetPoint* src, NetPoint* dst,
+static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
                                   /* OUT */ NetZoneImpl** common_ancestor, NetZoneImpl** src_ancestor,
                                   NetZoneImpl** dst_ancestor)
 {
@@ -329,7 +329,7 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
 }
 
 /* PRECONDITION: this is the common ancestor of src and dst */
-bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
+bool NetZoneImpl::get_bypass_route(const NetPoint* src, const NetPoint* dst,
                                    /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
                                    std::unordered_set<NetZoneImpl*>& netzones)
 {
@@ -421,14 +421,14 @@ bool NetZoneImpl::get_bypass_route(NetPoint* src, NetPoint* dst,
   return false;
 }
 
-void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
+void NetZoneImpl::get_global_route(const NetPoint* src, const NetPoint* dst,
                                    /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency)
 {
   std::unordered_set<NetZoneImpl*> netzones;
   get_global_route_with_netzones(src, dst, links, latency, netzones);
 }
 
-void NetZoneImpl::get_global_route_with_netzones(NetPoint* src, NetPoint* dst,
+void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,
                                                  /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
                                                  std::unordered_set<NetZoneImpl*>& netzones)
 {

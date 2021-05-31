@@ -131,7 +131,7 @@ Route* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, N
   return result;
 }
 
-void RoutedZone::get_route_check_params(NetPoint* src, NetPoint* dst) const
+void RoutedZone::get_route_check_params(const NetPoint* src, const NetPoint* dst) const
 {
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->get_cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->get_cname());

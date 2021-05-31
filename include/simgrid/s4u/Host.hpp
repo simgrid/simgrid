@@ -200,7 +200,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v330("Please use Host::sendto()") void send_to(Host* dest, double byte_amount);
 #endif
 
-  NetZone* get_englobing_zone();
+  NetZone* get_englobing_zone() const;
   /** Block the calling actor on an execution located on the called host
    *
    * It is not a problem if the actor is not located on the called host.

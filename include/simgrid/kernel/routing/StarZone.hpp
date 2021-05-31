@@ -64,7 +64,7 @@ class StarZone : public ClusterZone { // implements the old ClusterZone
 public:
   explicit StarZone(const std::string& name);
 
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* latency) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* latency) override;
   void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                  std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
 

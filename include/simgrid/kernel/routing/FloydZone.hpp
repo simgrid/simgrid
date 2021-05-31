@@ -35,7 +35,7 @@ public:
   FloydZone(const FloydZone&) = delete;
   FloydZone& operator=(const FloydZone&) = delete;
 
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                  const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 };

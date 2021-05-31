@@ -83,7 +83,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   std::string name_;
   bool sealed_ = false; // We cannot add more content when sealed
 
-  std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
+  std::map<std::pair<const NetPoint*, const NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
   routing::NetPoint* netpoint_ = nullptr;                                 // Our representative in the father NetZone
 
 protected:
@@ -100,10 +100,10 @@ protected:
    * @param into Container into which the traversed links and gateway information should be pushed
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  virtual void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) = 0;
+  virtual void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) = 0;
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
-  bool get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
+  bool get_bypass_route(const routing::NetPoint* src, const routing::NetPoint* dst,
                         /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
                         std::unordered_set<NetZoneImpl*>& netzones);
 
@@ -186,11 +186,11 @@ public:
    * @param links Accumulator in which all traversed links should be pushed (caller must empty it)
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  static void get_global_route(routing::NetPoint* src, routing::NetPoint* dst,
+  static void get_global_route(const routing::NetPoint* src, const routing::NetPoint* dst,
                                /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
 
   /** @brief Similar to get_global_route but get the NetZones traversed by route */
-  static void get_global_route_with_netzones(routing::NetPoint* src, routing::NetPoint* dst,
+  static void get_global_route_with_netzones(const routing::NetPoint* src, const routing::NetPoint* dst,
                                              /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
                                              std::unordered_set<NetZoneImpl*>& netzones);
 

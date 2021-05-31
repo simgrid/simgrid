@@ -43,7 +43,7 @@ bool FatTreeZone::is_in_sub_tree(const FatTreeNode* root, const FatTreeNode* nod
   return true;
 }
 
-void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency)
+void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency)
 {
   if (dst->is_router() || src->is_router())
     return;
