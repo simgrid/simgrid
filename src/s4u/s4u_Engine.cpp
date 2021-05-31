@@ -254,9 +254,8 @@ Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
   kernel::activity::MailboxImpl* mbox = kernel::actor::simcall([&name, this] {
     auto m = pimpl->mailboxes_.emplace(name, nullptr);
     if (m.second) {
-      auto* mbox = new kernel::activity::MailboxImpl(name);
-      XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name.c_str());
-      m.first->second = mbox;
+      m.first->second = new kernel::activity::MailboxImpl(name);
+      XBT_DEBUG("Creating a mailbox at %p with name %s", m.first->second, name.c_str());
     }
     return m.first->second;
   });
