@@ -17,14 +17,14 @@ static void ingester(int id, simgrid::plugin::ProducerConsumerPtr<int> pc)
 {
   sg4::this_actor::sleep_for(simgrid::xbt::random::uniform_real(0, 1));
   for (int i = 0; i < 3; i++) {
-    int* data = new int(10 * id + i);
+    auto* data = new int(10 * id + i);
     pc->put(data, 1.2125e6); // last for 0.01s
     XBT_INFO("data sucessfully put: %d", *data);
     sg4::this_actor::sleep_for((3 - i) * simgrid::xbt::random::uniform_real(0, 1));
   }
 
   for (int i = 0; i < 3; i++) {
-    int* data = new int(10 * id + i);
+    auto* data = new int(10 * id + i);
     pc->put_async(data, 1.2125e6); // last for 0.01s
     XBT_INFO("data sucessfully put: %d", *data);
     sg4::this_actor::sleep_for((i + 3) * simgrid::xbt::random::uniform_real(0, 1));
