@@ -39,8 +39,8 @@ int Barrier::wait()
   XBT_DEBUG("waiting %p %u/%u", this, arrived_actors_, expected_actors_);
   if (arrived_actors_ == expected_actors_) {
     cond_->notify_all();
-    mutex_->unlock();
     arrived_actors_ = 0;
+    mutex_->unlock();
     return SG_BARRIER_SERIAL_THREAD;
   }
 
