@@ -102,7 +102,7 @@ static void handle_action(ReplayAction& action)
   action_fun function = action_funs.at(action.at(1));
   try {
     function(action);
-  } catch (const Exception& e) {
+  } catch (const Exception&) {
     action.clear();
     throw;
   }
