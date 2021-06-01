@@ -36,6 +36,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - FG#64: Configuring smpi/IB-penalty-factors
  - FG#67: Running computation concurrently with MPI_Iallreduce
  - FG#69: Tutorial misleading users of pre-v3.26 versions of SimGrid
+ - FG#71: Segmentation fault on invalid gw_src/gw_dst
  - GH#322: Issue when an actor kills his host vm
 
 ----------------------------------------------------------------------------
