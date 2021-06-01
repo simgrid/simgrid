@@ -94,6 +94,10 @@ Link* Link::set_bandwidth(double value)
 
 Link* Link::set_sharing_policy(Link::SharingPolicy policy)
 {
+  if (policy == SharingPolicy::SPLITDUPLEX)
+    throw std::invalid_argument(std::string("Impossible to set split-duplex for the link: ") + get_name() +
+                                std::string(". You should create a link-up and link-down to emulate this behavior"));
+
   kernel::actor::simcall([this, policy] { pimpl_->set_sharing_policy(policy); });
   return this;
 }
