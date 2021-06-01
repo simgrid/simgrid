@@ -558,16 +558,12 @@ const NetZoneImpl* NetZoneImpl::get_netzone_recursive(const NetPoint* netpoint) 
 bool NetZoneImpl::is_component_recursive(const NetPoint* netpoint) const
 {
   /* check direct components */
-  for (const auto* elem : vertices_) {
-    if (elem == netpoint)
-      return true;
-  }
+  if (std::any_of(begin(vertices_), end(vertices_), [netpoint](const auto* elem) { return elem == netpoint; }))
+    return true;
+
   /* check childrens */
-  for (const auto* children : children_) {
-    if (children->is_component_recursive(netpoint))
-      return true;
-  }
-  return false;
+  return std::any_of(begin(children_), end(children_),
+                     [netpoint](const auto* child) { return child->is_component_recursive(netpoint); });
 }
 } // namespace routing
 } // namespace kernel
