@@ -31,7 +31,7 @@ namespace xbt {
  *
  * @ingroup XBT_str
  */
-XBT_PUBLIC std::string string_printf(const char* fmt, ...);
+XBT_PUBLIC std::string string_printf(const char* fmt, ...) XBT_ATTRIB_PRINTF(1, 2);
 
 /** Create a C++ string from a C-style format
  *
