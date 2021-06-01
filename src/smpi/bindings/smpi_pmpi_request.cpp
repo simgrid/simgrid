@@ -311,8 +311,10 @@ int PMPI_Bsend(const void* buf, int count, MPI_Datatype datatype, int dst, int t
   void* bsend_buf = nullptr;
   smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
   int size = datatype->get_extent() * count;
-  if(bsend_buf==nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD )
+  if (bsend_buf == nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD) {
+    smpi_bench_begin();
     return MPI_ERR_BUFFER;
+  }
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("bsend", dst,
                                                      datatype->is_replayable() ? count : count * datatype->size(),
@@ -337,8 +339,10 @@ int PMPI_Ibsend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
   void* bsend_buf = nullptr;
   smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
   int size = datatype->get_extent() * count;
-  if(bsend_buf==nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD )
+  if (bsend_buf == nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD) {
+    smpi_bench_begin();
     return MPI_ERR_BUFFER;
+  }
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("ibsend", dst,
                                                      datatype->is_replayable() ? count : count * datatype->size(),
