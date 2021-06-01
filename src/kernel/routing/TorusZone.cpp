@@ -64,14 +64,13 @@ std::vector<unsigned int> TorusZone::parse_topo_parameters(const std::string& to
   boost::split(dimensions_str, topo_parameters, boost::is_any_of(","));
   std::vector<unsigned int> dimensions;
 
-  if (not dimensions_str.empty()) {
-    /* We are in a torus cluster
-     * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
-     * Additionally, we need to know how many ranks we have in total
-     */
-    std::transform(begin(dimensions_str), end(dimensions_str), std::back_inserter(dimensions),
-                   [](const std::string& s) { return std::stoi(s); });
-  }
+  /* We are in a torus cluster
+   * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
+   * Additionally, we need to know how many ranks we have in total
+   */
+  std::transform(begin(dimensions_str), end(dimensions_str), std::back_inserter(dimensions),
+                 [](const std::string& s) { return std::stoi(s); });
+
   return dimensions;
 }
 

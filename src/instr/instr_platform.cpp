@@ -120,12 +120,11 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgr
     return;
   }
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->get_cname());
-  if (not netzone->get_children().empty()) {
-    // bottom-up recursion
-    for (auto const& nz_son : netzone->get_children()) {
-      simgrid::instr::Container* child_container = container->children_.at(nz_son->get_name());
-      recursiveGraphExtraction(nz_son, child_container, filter);
-    }
+
+  // bottom-up recursion
+  for (auto const& nz_son : netzone->get_children()) {
+    simgrid::instr::Container* child_container = container->children_.at(nz_son->get_name());
+    recursiveGraphExtraction(nz_son, child_container, filter);
   }
 
   auto* graph = xbt_graph_new_graph(0, nullptr);

@@ -1174,12 +1174,9 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
     }
   }
 
-  if (not accumulates.empty()) {
-    std::sort(accumulates.begin(), accumulates.end(), sort_accumulates);
-    for (auto& req : accumulates) {
-      finish_wait(&req, status);
-    }
-  }
+  std::sort(accumulates.begin(), accumulates.end(), sort_accumulates);
+  for (auto& req : accumulates)
+    finish_wait(&req, status);
 
   return retvalue;
 }
