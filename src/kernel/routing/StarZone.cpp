@@ -86,8 +86,8 @@ void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_n
   }
 }
 
-void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                     bool symmetrical) const
+void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, const NetPoint* gw_src,
+                                     const NetPoint* gw_dst, bool symmetrical) const
 {
   const char* src_name = src ? src->get_cname() : "nullptr";
   const char* dst_name = dst ? dst->get_cname() : "nullptr";

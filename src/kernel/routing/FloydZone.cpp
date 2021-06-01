@@ -53,7 +53,7 @@ void FloydZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
     route->gw_dst_ = route_stack.front()->gw_dst_;
   }
 
-  NetPoint* prev_dst_gw = nullptr;
+  const NetPoint* prev_dst_gw = nullptr;
   while (not route_stack.empty()) {
     const Route* e_route = route_stack.back();
     route_stack.pop_back();

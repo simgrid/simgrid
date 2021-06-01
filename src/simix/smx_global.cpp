@@ -282,6 +282,6 @@ int SIMIX_is_maestro()
 {
   if (simix_global == nullptr) // SimDag
     return true;
-  simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
+  const simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
   return self == nullptr || simix_global->is_maestro(self);
 }

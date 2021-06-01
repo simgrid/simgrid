@@ -190,8 +190,8 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
         gw_dst->get_name() != prev_gw_src->get_name()) {
       std::vector<resource::LinkImpl*> e_route_as_to_as;
 
-      NetPoint* gw_dst_net_elm      = nullptr;
-      NetPoint* prev_gw_src_net_elm = nullptr;
+      const NetPoint* gw_dst_net_elm      = nullptr;
+      const NetPoint* prev_gw_src_net_elm = nullptr;
       get_global_route(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
       auto pos = route->link_list_.begin();
       for (auto const& link : e_route_as_to_as) {
