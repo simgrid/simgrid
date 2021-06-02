@@ -74,26 +74,23 @@ xbt::signal<void(s4u::Actor const&)> on_iteration_out;
  */
 int APMPI_Iteration_in(MPI_Comm comm)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   TRACE_Iteration_in(comm->rank() + 1, new simgrid::instr::NoOpTIData("iteration_in")); // implemented on instr_smpi.c
-  smpi_bench_begin();
   return 1;
 }
 
 int APMPI_Iteration_out(MPI_Comm comm)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   TRACE_Iteration_out(comm->rank() + 1, new simgrid::instr::NoOpTIData("iteration_out"));
-  smpi_bench_begin();
   return 1;
 }
 
 void APMPI_Migrate(MPI_Comm comm)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_migration_call(comm->rank() + 1, new simgrid::instr::AmpiMigrateTIData(memory_size[my_proc_id]));
-  smpi_bench_begin();
 }
 
 int AMPI_Iteration_in(MPI_Comm comm)

@@ -38,7 +38,7 @@ int PMPI_Ibarrier(MPI_Comm comm, MPI_Request *request)
   CHECK_COMM(1)
   CHECK_REQUEST(2)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Barrier" : "PMPI_Ibarrier",
                      new simgrid::instr::NoOpTIData(request == MPI_REQUEST_IGNORED ? "barrier" : "ibarrier"));
@@ -50,7 +50,6 @@ int PMPI_Ibarrier(MPI_Comm comm, MPI_Request *request)
     simgrid::smpi::colls::ibarrier(comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -70,7 +69,7 @@ int PMPI_Ibcast(void *buf, int count, MPI_Datatype datatype,
   CHECK_ROOT(4)
   CHECK_REQUEST(6)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Bcast" : "PMPI_Ibcast",
                      new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "bcast" : "ibcast", root, -1.0,
@@ -87,7 +86,6 @@ int PMPI_Ibcast(void *buf, int count, MPI_Datatype datatype,
   }
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -132,7 +130,7 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
     }
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
 
@@ -149,7 +147,6 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
                                   request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -188,7 +185,7 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
     }
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   const void* real_sendbuf   = sendbuf;
   int real_sendcount         = sendcount;
   MPI_Datatype real_sendtype = sendtype;
@@ -220,7 +217,6 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
                                    root, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -258,7 +254,7 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
     return MPI_ERR_TRUNCATE;
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
 
@@ -274,7 +270,6 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
     simgrid::smpi::colls::iallgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -306,7 +301,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
     CHECK_BUFFER(4, recvbuf, recvcounts[i], recvtype)
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (sendbuf == MPI_IN_PLACE) {
     sendbuf   = static_cast<char*>(recvbuf) + recvtype->get_extent() * displs[comm->rank()];
     sendcount = recvcounts[comm->rank()];
@@ -333,7 +328,6 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
                                       request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -375,7 +369,7 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
     return MPI_ERR_TRUNCATE;
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
 
@@ -391,7 +385,6 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
     simgrid::smpi::colls::iscatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -431,7 +424,7 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
     CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t pid        = simgrid::s4u::this_actor::get_pid();
   int dt_size_send = sendtype->is_replayable() ? 1 : sendtype->size();
@@ -456,7 +449,6 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
                                     request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -482,7 +474,7 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_ROOT(7)
   CHECK_REQUEST(8)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce" : "PMPI_Ireduce",
@@ -495,7 +487,6 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
     simgrid::smpi::colls::ireduce(sendbuf, recvbuf, count, datatype, op, root, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -509,9 +500,8 @@ int PMPI_Reduce_local(const void* inbuf, void* inoutbuf, int count, MPI_Datatype
   CHECK_BUFFER(2, inoutbuf, count, datatype)
   CHECK_OP(5, op, datatype)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   op->apply(inbuf, inoutbuf, &count, datatype);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -534,7 +524,7 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
   CHECK_BUFFER(2, recvbuf, count, datatype)
   CHECK_REQUEST(7)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
@@ -551,7 +541,6 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
     simgrid::smpi::colls::iallreduce(real_sendbuf, recvbuf, count, datatype, op, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -572,7 +561,7 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
@@ -589,7 +578,6 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
     retval = simgrid::smpi::colls::iscan(real_sendbuf, recvbuf, count, datatype, op, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return retval;
 }
 
@@ -609,7 +597,7 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
@@ -626,7 +614,6 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
     retval = simgrid::smpi::colls::iexscan(real_sendbuf, recvbuf, count, datatype, op, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return retval;
 }
 
@@ -652,7 +639,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
     CHECK_BUFFER(2, recvbuf, recvcounts[i], datatype)
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t pid                          = simgrid::s4u::this_actor::get_pid();
   auto trace_recvcounts              = std::make_shared<std::vector<int>>();
   int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
@@ -676,7 +663,6 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
     simgrid::smpi::colls::ireduce_scatter(real_sendbuf, recvbuf, recvcounts, datatype, op, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -699,7 +685,7 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   int count = comm->size();
 
   aid_t pid                          = simgrid::s4u::this_actor::get_pid();
@@ -722,7 +708,6 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
     simgrid::smpi::colls::ireduce_scatter(real_sendbuf, recvbuf, recvcounts.data(), datatype, op, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -765,7 +750,7 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
     return MPI_ERR_TRUNCATE;
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall",
                      new simgrid::instr::CollTIData(
@@ -782,7 +767,6 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
                                              comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return retval;
 }
 
@@ -819,7 +803,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
     CHECK_COUNT(6, recvcounts[i])
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   int send_size                      = 0;
   int recv_size                      = 0;
   auto trace_sendcounts              = std::make_shared<std::vector<int>>();
@@ -851,7 +835,6 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
 
   if(recvtype->size() * recvcounts[comm->rank()] !=  real_sendtype->size() * real_sendcounts[comm->rank()]){
     XBT_WARN("MPI_(I)Alltoallv : receive size from me differs from sent size to me : %zu vs %zu", recvtype->size() * recvcounts[comm->rank()], real_sendtype->size() * real_sendcounts[comm->rank()]);
-    smpi_bench_begin();
     return MPI_ERR_TRUNCATE;
   }
 
@@ -877,7 +860,6 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
                                               recvcounts, recvdispls, recvtype, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return retval;
 }
 
@@ -915,7 +897,7 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
     CHECK_BUFFER(5, recvbuf, recvcounts[i], recvtypes[i])
   }
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   int send_size                      = 0;
   int recv_size                      = 0;
@@ -927,10 +909,8 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   const MPI_Datatype* real_sendtypes = sendtypes;
   unsigned long maxsize      = 0;
   for (int i = 0; i < size; i++) { // copy data to avoid bad free
-    if (recvtypes[i] == MPI_DATATYPE_NULL) {
-      smpi_bench_begin();
+    if (recvtypes[i] == MPI_DATATYPE_NULL)
       return MPI_ERR_TYPE;
-    }
     recv_size += recvcounts[i] * recvtypes[i]->size();
     trace_recvcounts->push_back(recvcounts[i] * recvtypes[i]->size());
     if ((recvdispls[i] + (recvcounts[i] * recvtypes[i]->size())) > maxsize)
@@ -954,7 +934,6 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
 
   if(recvtypes[comm->rank()]->size() * recvcounts[comm->rank()] !=  real_sendtypes[comm->rank()]->size() * real_sendcounts[comm->rank()]){
     XBT_WARN("MPI_(I)Alltoallw : receive size from me differs from sent size to me : %zu vs %zu", recvtypes[comm->rank()]->size() * recvcounts[comm->rank()],  real_sendtypes[comm->rank()]->size() * real_sendcounts[comm->rank()]);
-    smpi_bench_begin();
     return MPI_ERR_TRUNCATE;
   }
 
@@ -978,6 +957,5 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
                                               recvcounts, recvdispls, recvtypes, comm, request);
 
   TRACE_smpi_comm_out(pid);
-  smpi_bench_begin();
   return retval;
 }

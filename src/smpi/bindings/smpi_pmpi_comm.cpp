@@ -130,9 +130,8 @@ int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
   CHECK_COMM2(1, comm)
   if( color != MPI_UNDEFINED)//we use a negative value for MPI_UNDEFINED
     CHECK_NEGATIVE(3, MPI_ERR_ARG, color)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   *comm_out = comm->split(color, key);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -140,9 +139,8 @@ int PMPI_Comm_split_type(MPI_Comm comm, int split_type, int key, MPI_Info info, 
 {
   CHECK_COMM(1)
   CHECK_NULL(5, MPI_ERR_ARG, newcomm)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   *newcomm = comm->split_type(split_type, key, info);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -151,9 +149,8 @@ int PMPI_Comm_create_group(MPI_Comm comm, MPI_Group group, int, MPI_Comm* comm_o
   CHECK_COMM(1)
   CHECK_GROUP(2, group)
   CHECK_NULL(5, MPI_ERR_ARG, comm_out)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   int retval = MPI_Comm_create(comm, group, comm_out);
-  smpi_bench_begin();
   return retval;
 }
 

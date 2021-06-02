@@ -129,6 +129,16 @@ XBT_PRIVATE void smpi_bench_end();
 XBT_PRIVATE void smpi_shared_destroy();
 XBT_PRIVATE double smpi_adjust_comp_speed();
 
+// This helper class uses RAII to call smpi_bench_end() when an object is built, and have smpi_bench_begin() be called
+// automatically when going out of scope.
+class XBT_PRIVATE SmpiBenchGuard {
+public:
+  SmpiBenchGuard() { smpi_bench_end(); }
+  SmpiBenchGuard(const SmpiBenchGuard&) = delete;
+  SmpiBenchGuard& operator=(const SmpiBenchGuard&) = delete;
+  ~SmpiBenchGuard() { smpi_bench_begin(); }
+};
+
 XBT_PRIVATE unsigned char* smpi_get_tmp_sendbuffer(size_t size);
 XBT_PRIVATE unsigned char* smpi_get_tmp_recvbuffer(size_t size);
 XBT_PRIVATE void smpi_free_tmp_buffer(const unsigned char* buf);

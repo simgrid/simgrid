@@ -66,16 +66,14 @@ void smpi_execute(double duration)
 
 void smpi_execute_benched(double duration)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   double speed = sg_host_get_speed(sg_host_self());
   smpi_execute_flops(duration*speed);
-  smpi_bench_begin();
 }
 
 void smpi_execute_flops_benched(double flops) {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   smpi_execute_flops(flops);
-  smpi_bench_begin();
 }
 
 void smpi_bench_begin()
@@ -168,7 +166,7 @@ void smpi_bench_end()
 /* Private sleep function used by smpi_sleep(), smpi_usleep() and friends */
 static unsigned int private_sleep(double secs)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -178,7 +176,6 @@ static unsigned int private_sleep(double secs)
 
   TRACE_smpi_sleeping_out(pid);
 
-  smpi_bench_begin();
   return 0;
 }
 
@@ -210,7 +207,7 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
   if (not smpi_process()->initialized() || smpi_process()->finalized() || smpi_process()->sampling())
     return gettimeofday(tv, tz);
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   double now = simgrid::s4u::Engine::get_clock();
   if (tv) {
     tv->tv_sec = static_cast<time_t>(now);
@@ -222,7 +219,6 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
   }
   if (smpi_wtime_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
-  smpi_bench_begin();
   return 0;
 }
 
@@ -236,13 +232,12 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
   if (not smpi_process()->initialized() || smpi_process()->finalized() || smpi_process()->sampling())
     return clock_gettime(clk_id, tp);
   //there is only one time in SMPI, so clk_id is ignored.
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   double now  = simgrid::s4u::Engine::get_clock();
   tp->tv_sec  = static_cast<time_t>(now);
   tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
   if (smpi_wtime_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
-  smpi_bench_begin();
   return 0;
 }
 #endif
@@ -251,11 +246,10 @@ double smpi_mpi_wtime()
 {
   double time;
   if (smpi_process()->initialized() && not smpi_process()->finalized() && not smpi_process()->sampling()) {
-    smpi_bench_end();
+    const SmpiBenchGuard suspend_bench;
     time = simgrid::s4u::Engine::get_clock();
     if (smpi_wtime_sleep > 0)
       simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
-    smpi_bench_begin();
   } else {
     time = simgrid::s4u::Engine::get_clock();
   }
@@ -265,20 +259,18 @@ double smpi_mpi_wtime()
 extern double sg_surf_precision;
 unsigned long long smpi_rastro_resolution ()
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   double resolution = (1/sg_surf_precision);
-  smpi_bench_begin();
   return static_cast<unsigned long long>(resolution);
 }
 
 unsigned long long smpi_rastro_timestamp ()
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   double now = simgrid::s4u::Engine::get_clock();
 
   auto sec               = static_cast<unsigned long long>(now);
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();
-  smpi_bench_begin();
   return sec * smpi_rastro_resolution() + pre;
 }
 

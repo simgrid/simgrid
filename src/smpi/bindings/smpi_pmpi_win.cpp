@@ -32,14 +32,13 @@ int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MP
   CHECK_COMM(5)
   CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (base == nullptr && size != 0){
     retval= MPI_ERR_OTHER;
   }else{
     *win = new simgrid::smpi::Win( base, size, disp_unit, info, comm);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -48,10 +47,9 @@ int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm com
   CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
   void* ptr = xbt_malloc(size);
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   *static_cast<void**>(base) = ptr;
   *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,1);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -64,20 +62,18 @@ int PMPI_Win_allocate_shared( MPI_Aint size, int disp_unit, MPI_Info info, MPI_C
   if(rank==0){
      ptr = xbt_malloc(size*comm->size());
   }
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   simgrid::smpi::colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);
   simgrid::smpi::colls::barrier(comm);
   *static_cast<void**>(base) = (char*)ptr+rank*size;
   *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,rank==0);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
 int PMPI_Win_create_dynamic( MPI_Info info, MPI_Comm comm, MPI_Win *win){
   CHECK_COMM(2)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   *win = new simgrid::smpi::Win(info, comm);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -86,9 +82,8 @@ int PMPI_Win_attach(MPI_Win win, void *base, MPI_Aint size){
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, size)
   if (base == nullptr && size != 0)
     return MPI_ERR_OTHER;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   int retval = win->attach(base, size);
-  smpi_bench_begin();
   return retval;
 }
 
@@ -96,18 +91,16 @@ int PMPI_Win_detach(MPI_Win win, const void* base)
 {
   CHECK_WIN(1, win)
   CHECK_NULL(2, MPI_ERR_OTHER, base)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   int retval = win->detach(base);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_free( MPI_Win* win){
   CHECK_NULL(1, MPI_ERR_WIN, win)
   CHECK_WIN(1, (*win))
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   delete *win;
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -152,12 +145,11 @@ int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
 
 int PMPI_Win_fence( int assert,  MPI_Win win){
   CHECK_WIN(2, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_fence"));
   int retval = win->fence(assert);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
@@ -168,7 +160,7 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   CHECK_TARGET_DISP(5)
 
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
@@ -182,7 +174,6 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
                          target_datatype);
   TRACE_smpi_comm_out(my_proc_id);
  
-  smpi_bench_begin();
   return retval;
 }
 
@@ -196,7 +187,7 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
   CHECK_NULL(9, MPI_ERR_ARG, request)
 
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
@@ -212,7 +203,6 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
 
   TRACE_smpi_comm_out(my_proc_id);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -223,7 +213,7 @@ int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
   CHECK_TARGET_DISP(5)
 
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
@@ -241,7 +231,6 @@ int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
 
   TRACE_smpi_comm_out(my_proc_id);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -254,7 +243,7 @@ int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_dat
   CHECK_TARGET_DISP(5)
   CHECK_NULL(9, MPI_ERR_ARG, request)
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
@@ -272,7 +261,6 @@ int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_dat
 
   TRACE_smpi_comm_out(my_proc_id);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -285,7 +273,7 @@ int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
 
   int retval = 0;
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
   win->get_group(&group);
@@ -299,7 +287,6 @@ int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
 
   TRACE_smpi_comm_out(my_proc_id);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -315,7 +302,7 @@ int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype ori
 
   int retval = 0;
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
@@ -331,7 +318,6 @@ int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype ori
 
   TRACE_smpi_comm_out(my_proc_id);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -354,7 +340,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   CHECK_TARGET_DISP(8)
 
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
@@ -371,7 +357,6 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
 
   TRACE_smpi_comm_out(my_proc_id);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -395,7 +380,7 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
   CHECK_TARGET_DISP(8)
   CHECK_NULL(10, MPI_ERR_ARG, request)
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
@@ -412,7 +397,6 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
 
   TRACE_smpi_comm_out(my_proc_id);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -433,7 +417,7 @@ int PMPI_Compare_and_swap(const void* origin_addr, void* compare_addr, void* res
 
   int retval = 0;
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   MPI_Group group;
@@ -447,53 +431,48 @@ int PMPI_Compare_and_swap(const void* origin_addr, void* compare_addr, void* res
 
   TRACE_smpi_comm_out(my_proc_id);
 
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
   CHECK_GROUP(1, group)
   CHECK_WIN(2, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_post"));
   int retval = win->post(group,assert);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
   CHECK_GROUP(1, group)
   CHECK_WIN(2, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_start"));
   int retval = win->start(group,assert);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_complete(MPI_Win win){
   CHECK_WIN(1, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_complete"));
   int retval = win->complete();
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_wait(MPI_Win win){
   CHECK_WIN(1, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_wait"));
   int retval = win->wait();
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
@@ -501,7 +480,7 @@ int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win){
   CHECK_WIN(4, win)
   CHECK_PROC_RMA(2, rank, win)
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (lock_type != MPI_LOCK_EXCLUSIVE &&
       lock_type != MPI_LOCK_SHARED) {
     retval = MPI_ERR_LOCKTYPE;
@@ -511,87 +490,79 @@ int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win){
     retval = win->lock(lock_type,rank,assert);
     TRACE_smpi_comm_out(my_proc_id);
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_unlock(int rank, MPI_Win win){
   CHECK_WIN(2, win)
   CHECK_PROC_RMA(1, rank, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_unlock"));
   int retval = win->unlock(rank);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_lock_all(int assert, MPI_Win win){
   CHECK_WIN(2, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_lock_all"));
   int retval = win->lock_all(assert);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_unlock_all(MPI_Win win){
   CHECK_WIN(1, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_unlock_all"));
   int retval = win->unlock_all();
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_flush(int rank, MPI_Win win){
   CHECK_WIN(2, win)
   CHECK_PROC_RMA(1, rank, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush"));
   int retval = win->flush(rank);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_flush_local(int rank, MPI_Win win){
   CHECK_WIN(2, win)
   CHECK_PROC_RMA(1, rank, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_local"));
   int retval = win->flush_local(rank);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_flush_all(MPI_Win win){
   CHECK_WIN(1, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_all"));
   int retval = win->flush_all();
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Win_flush_local_all(MPI_Win win){
   CHECK_WIN(1, win)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("Win_flush_local_all"));
   int retval = win->flush_local_all();
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return retval;
 }
 

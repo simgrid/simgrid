@@ -21,14 +21,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_pmpi, smpi, "Logging specific to SMPI (pmpi
 void TRACE_smpi_set_category(const char *category)
 {
   //need to end bench otherwise categories for execution tasks are wrong
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
+
   if (category != nullptr) {
     // declare category
     TRACE_category(category);
     smpi_process()->set_tracing_category(category);
   }
-  //begin bench after changing process's category
-  smpi_bench_begin();
 }
 
 /* PMPI User level calls */
