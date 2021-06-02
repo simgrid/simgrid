@@ -26,14 +26,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA o
     return MPI_ERR_RMA_RANGE;\
   }
 
-#define CHECK_WIN_LOCKED(win)\
-  if(opened_==0){ /*check that post/start has been done*/\
-    int locked=0;\
-    for (auto const& it : win->lockers_)\
-      if (it == comm_->rank())\
-        locked = 1;\
-    if(locked != 1)\
-      return MPI_ERR_WIN;\
+#define CHECK_WIN_LOCKED(win)                                                                                          \
+  if (opened_ == 0) { /*check that post/start has been done*/                                                          \
+    bool locked = std::any_of(begin(win->lockers_), end(win->lockers_), [this](int it) { return it == this->rank_; }); \
+    if (not locked)                                                                                                    \
+      return MPI_ERR_WIN;                                                                                              \
   }
 
 namespace simgrid{
@@ -41,7 +38,7 @@ namespace smpi{
 std::unordered_map<int, smpi_key_elem> Win::keyvals_;
 int Win::keyval_id_=0;
 
-Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated, int dynamic)
+Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, bool allocated, bool dynamic)
     : base_(base)
     , size_(size)
     , disp_unit_(disp_unit)
@@ -92,7 +89,7 @@ Win::~Win(){
   if (rank_ == 0)
     delete bar_;
 
-  if(allocated_ !=0)
+  if (allocated_)
     xbt_free(base_);
 
   F2C::free_f(this->f2c_id());
@@ -165,7 +162,7 @@ int Win::disp_unit() const
   return disp_unit_;
 }
 
-int Win::dynamic() const
+bool Win::dynamic() const
 {
   return dynamic_;
 }
@@ -223,16 +220,7 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
   //get receiver pointer
   Win* recv_win = connected_wins_[target_rank];
 
-  if(opened_==0){//check that post/start has been done
-    // no fence or start .. lock ok ?
-    int locked=0;
-    for (auto const& it : recv_win->lockers_)
-      if (it == comm_->rank())
-        locked = 1;
-    if(locked != 1)
-      return MPI_ERR_WIN;
-  }
-
+  CHECK_WIN_LOCKED(recv_win)
   CHECK_RMA_REMOTE_WIN("MPI_Put", recv_win)
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;

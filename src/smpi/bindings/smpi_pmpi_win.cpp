@@ -21,8 +21,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
   CHECK_COUNT(6, target_count)\
   CHECK_TYPE(7, target_datatype)
 
-#define CHECK_TARGET_DISP(num)\
-  if(win->dynamic()==0)\
+#define CHECK_TARGET_DISP(num)                                                                                         \
+  if (not win->dynamic())                                                                                              \
     CHECK_NEGATIVE((num), MPI_ERR_RMA_RANGE, target_disp)
 
 /* PMPI User level calls */
@@ -49,7 +49,7 @@ int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm com
   void* ptr = xbt_malloc(size);
   const SmpiBenchGuard suspend_bench;
   *static_cast<void**>(base) = ptr;
-  *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,1);
+  *win                       = new simgrid::smpi::Win(ptr, size, disp_unit, info, comm, true);
   return MPI_SUCCESS;
 }
 
@@ -66,7 +66,7 @@ int PMPI_Win_allocate_shared( MPI_Aint size, int disp_unit, MPI_Info info, MPI_C
   simgrid::smpi::colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);
   simgrid::smpi::colls::barrier(comm);
   *static_cast<void**>(base) = (char*)ptr+rank*size;
-  *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,rank==0);
+  *win                       = new simgrid::smpi::Win(ptr, size, disp_unit, info, comm, rank == 0);
   return MPI_SUCCESS;
 }
 
