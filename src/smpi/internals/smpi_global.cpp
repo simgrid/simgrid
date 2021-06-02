@@ -80,6 +80,19 @@ static const std::string smpi_default_instance_name("smpirun");
 static simgrid::config::Flag<double> smpi_init_sleep(
   "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
 
+static simgrid::config::Flag<std::string>
+    smpi_hostfile("smpi/hostfile",
+                  "Classical MPI hostfile containing list of machines to dispatch "
+                  "the processes, one per line",
+                  "");
+
+static simgrid::config::Flag<std::string> smpi_replay("smpi/replay",
+                                                      "Replay a trace instead of executing the application", "");
+
+static simgrid::config::Flag<int> smpi_np("smpi/np", "Number of processes to be created", 0);
+
+static simgrid::config::Flag<int> smpi_map("smpi/map", "Display the mapping between nodes and processes", 0);
+
 void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*, void*,
                                      size_t) = &smpi_comm_copy_buffer_callback;
 
@@ -548,13 +561,8 @@ int smpi_main(const char* executable, int argc, char* argv[])
   
   SMPI_init();
 
-  /* This is a ... heavy way to count the MPI ranks */
-  int rank_counts = 0;
-  simgrid::s4u::Actor::on_creation.connect([&rank_counts](const simgrid::s4u::Actor& actor) {
-    if (not actor.is_daemon())
-      rank_counts++;
-  });
-  engine->load_deployment(argv[2]);
+  int rank_counts = smpi_deployment_smpirun(engine, smpi_hostfile.get(), smpi_np.get(), smpi_replay.get(),
+                                            smpi_map.get(), argc - 2, argv + 2);
 
   SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr, rank_counts);
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);

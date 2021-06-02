@@ -24,6 +24,9 @@ SPEED="${DEFAULT_SPEED}"
 
 PRIVATIZE="--cfg=smpi/privatization:${SMPI_PRIVATIZATION:-@HAVE_PRIVATIZATION@}"
 
+NUMPROCS=0
+DEPLOYOPTS=""
+
 SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI"
 
 SMPITMPDIR="$(dirname $(mktemp -u))"
@@ -72,9 +75,6 @@ fi
 
 WRAPPER=""
 HOSTFILE=""
-HOSTFILETMP=0
-MAPOPT=0
-REPLAY=0
 QUIET=""
 
 unset pid
@@ -93,17 +93,9 @@ smpirun_cleanup()
         rm -f "${PLATFORMTMP}"
         PLATFORMTMP=""
       fi
-      if [ ${HOSTFILETMP} = 1 ] && [ -n "$HOSTFILE" ] ; then
-          rm -f "${HOSTFILE}"
-          HOSTFILE=""
-      fi
       if [ "${UNROLLEDHOSTFILETMP}" = 1 ] && [ -n "$UNROLLEDHOSTFILE" ] ; then
           rm -f "${UNROLLEDHOSTFILE}"
           UNROLLEDHOSTFILE=""
-      fi
-      if [ -n "${APPLICATIONTMP}" ]; then
-        rm -f "${APPLICATIONTMP}"
-        APPLICATIONTMP=""
       fi
   fi
 }
@@ -162,6 +154,10 @@ while true; do
             ;;
         "-replay")
             APP_TRACES="$2"
+            if [ ! -f "${APP_TRACES}" ]; then
+                die "the file '${APP_TRACES}' does not exist"
+            fi
+            DEPLOYOPTS="${DEPLOYOPTS} --cfg=smpi/replay:${APP_TRACES}"
             shift 2
             ;;
         "-no-privatize")
@@ -169,7 +165,7 @@ while true; do
             shift 1
             ;;
         "-map")
-            MAPOPT=1
+            DEPLOYOPTS="${DEPLOYOPTS} --cfg=smpi/map:1"
             shift 1
             ;;
         "-tmpdir")
@@ -316,36 +312,10 @@ if [ -z "${HOSTFILE}" ] && [ -z "${PLATFORM}" ] ; then
     exit 1
 fi
 
-if [ -z "${HOSTFILE}" ] ; then
-    HOSTFILETMP=1
-    HOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
-    @PYTHON_EXECUTABLE@ -c '
-import xml.etree.ElementTree as ET
-import sys
-import re
-
-tree = ET.parse(sys.stdin)
-
-for elem in tree.findall(".//host"):
-    print(elem.attrib["id"])
-
-for elem in tree.findall(".//cluster"):
-    prefix = elem.attrib["prefix"]
-    radical = elem.attrib["radical"]
-    suffix = elem.attrib["suffix"]
-    for r in radical.split(","):
-        m = re.match("^([^-]*?)-([^-]*)$", r)
-        if m:
-            for i in range(int(m.group(1)), int(m.group(2))):
-                print(prefix + str(i) + suffix)
-        else:
-            print(prefix + r + suffix)
-            ' < "${PLATFORM}" > "${HOSTFILE}"
-fi
 UNROLLEDHOSTFILETMP=0
 
 # parse if our lines are terminated by :num_process
-if grep -q ':' "$HOSTFILE" ; then
+if [ -n "${HOSTFILE}" ] && grep -q ':' "${HOSTFILE}" ; then
     UNROLLEDHOSTFILETMP=1
     UNROLLEDHOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
     @PYTHON_EXECUTABLE@ -c '
@@ -360,27 +330,15 @@ for line in sys.stdin:
     else:
         print(line.strip())
 ' < "${HOSTFILE}"  > "${UNROLLEDHOSTFILE}"
-    if [ ${HOSTFILETMP} = 1 ] ; then
-        rm "${HOSTFILE}"
-        HOSTFILETMP=0
-    fi
     HOSTFILE=$UNROLLEDHOSTFILE
 fi
 
-# Don't use wc -l to compute it to avoid issues with trailing \n at EOF
-hostfile_procs=$(grep -c "[a-zA-Z0-9]" "$HOSTFILE")
-if [ "${hostfile_procs}" = 0 ] ; then
-    die "the hostfile '${HOSTFILE}' is empty"
-fi
+DEPLOYOPTS="${DEPLOYOPTS} --cfg=smpi/np:${NUMPROCS}"
+DEPLOYOPTS="${DEPLOYOPTS} --cfg=smpi/hostfile:${HOSTFILE}"
 
-if [ -z "${NUMPROCS}" ] ; then
-    # Use the amount of processes in the hostfile as default value for the -np parameter
-    NUMPROCS=$hostfile_procs
-fi
-
-if [ "${NUMPROCS}" -gt "${hostfile_procs}" ] ; then
-    echo "You requested to use ${NUMPROCS} ranks, but there is only ${hostfile_procs} processes in your hostfile..." >&2
-fi
+#if [ "${NUMPROCS}" -gt "${hostfile_procs}" ] ; then
+#    echo "You requested to use ${NUMPROCS} ranks, but there is only ${hostfile_procs} processes in your hostfile..." >&2
+#fi
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
 if [ -z "${PLATFORM}" ]; then
@@ -426,92 +384,6 @@ else
     PLATFORMTMP=${PLATFORM}
 fi
 ##-------------------------------- end DEFAULT or SPECIFIED PLATFORM --------------------------------------
-##-------------------------------- DEFAULT APPLICATION --------------------------------------
-APPLICATIONTMP="$(mktemp smpitmp-appXXXXXX)"
-#APPLICATIONTMP="app.xml"
-
-cat > "${APPLICATIONTMP}" <<APPLICATIONHEAD
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-<platform version="4.1">
-APPLICATIONHEAD
-
-##---- cache hostnames of hostfile---------------
-if [ -n "${HOSTFILE}" ] && [ -f "${HOSTFILE}" ]; then
-    hostnames=$(< "${HOSTFILE}" tr '\n\r' '  ')
-fi
-
-if [ -n "${APP_TRACES}" ]; then
-    if [ -f "${APP_TRACES}" ]; then
-        hosttraces=$(< "${APP_TRACES}" tr '\n\r' '  ' )
-        NUMTRACES=$(< "${APP_TRACES}" wc -l)
-        REPLAY=1
-    else
-        printf "File not found: %s\n" "${APP_TRACES:-\${APP_TRACES\}}" >&2
-        exit 1
-    fi
-fi
-
-##----------------------------------------------------------
-##  generate application.xml with hostnames from hostfile:
-##  the name of host_i (1<=i<=p, where -np p) is the line i in hostfile (where -hostfile hostfile), or "host$i" if
-##  hostfile has less than i lines.
-##----------------------------------------------------------
-
-HAVE_SEQ="$(which seq 2>/dev/null)"
-
-if [ -n "${HAVE_SEQ}" ]; then
-    SEQ=$(${HAVE_SEQ} 0 $(( NUMPROCS - 1)))
-else
-    cnt=0
-    while [ $cnt -lt "${NUMPROCS}" ] ; do
-        SEQ="$SEQ $cnt"
-        cnt=$((cnt + 1));
-    done
-fi
-
-set -- $hostnames
-
-##---- generate <actor> tags------------------------------
-#prepare arguments at once
-for ARG in $PROC_ARGS; do
-  XML_ARGS="${XML_ARGS}""<argument value=\"${ARG}\"/>
-"
-done
-
-for i in ${SEQ}
-do
-    j=$(( i % hostfile_procs + 1 ))
-    host=$(eval "echo \${$j}")
-
-    ##---- optional display of ranks to actor mapping
-    if [ ${MAPOPT} = 1 ]; then
-      echo "[rank $i] -> $host"
-    fi
-    {
-    echo "  <actor host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->
-    <prop id=\"instance_id\" value=\"smpirun\"/>
-    <prop id=\"rank\" value=\"$i\"/>"
-    if [ ${REPLAY} = 1 ]; then
-        echo "    <prop id=\"smpi_replay\" value=\"true\"/>"
-        if  [ "${NUMTRACES}" -gt 1 ]; then
-	    # Give each process its trace file (as an argument)
-            echo "    <argument value=\"$(echo "$hosttraces"|cut -d' ' -f$j)\"/>"
-        elif [ ${i} = 0 ]; then
-	    # Give the shared trace file to rank 0 (as a property)
-            echo "    <prop id=\"tracefile\" value=\"$(echo "$hosttraces"|cut -d' ' -f1)\"/>"
-        fi
-    else
-    echo "${XML_ARGS}"
-    fi
-    echo "  </actor>"
-    }    >> "${APPLICATIONTMP}"
-done
-
-cat >> "${APPLICATIONTMP}" <<APPLICATIONFOOT
-</platform>
-APPLICATIONFOOT
-##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 ##---------------------- SMPI TRACING OPTIONS ---------------------------------
 if [ -n "${TRACE_ACTIVE}" ]; then
     #define trace filename
@@ -548,10 +420,7 @@ fi
 # Do not remove, this variable may be used by user code (e.g. StarPU)
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] && [ -z "${QUIET}" ] ; then
-    echo "${EXEC}" ${PRIVATIZE} "${TRACEOPTIONS}" "${SIMOPTS}" "${PLATFORMTMP}" "${APPLICATIONTMP}"
-    if [ ${HOSTFILETMP} = 1 ] ; then
-        echo "Generated hostfile ${HOSTFILE} kept."
-    fi
+    echo "${EXEC}" ${PRIVATIZE} "${TRACEOPTIONS}" "${SIMOPTS}" "${PLATFORMTMP}"
     if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
         echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept."
     fi
@@ -568,7 +437,7 @@ fi
 # * The FD 3 is used to temporarily store FD 1. This is because the shell connects FD 1 to /dev/null when the command
 #   is launched in the background: this can be overridden in bash but not in standard bourne shell.
 exec 3<&0
-${WRAPPER} "@SMPIMAIN@" "${EXEC}" ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} "${PLATFORMTMP}" "${APPLICATIONTMP}" <&3 3>&- &
+${WRAPPER} "@SMPIMAIN@" "${EXEC}" ${PRIVATIZE} ${DEPLOYOPTS} ${TRACEOPTIONS} ${SIMOPTS} "${PLATFORMTMP}" ${PROC_ARGS} <&3 3>&- &
 pid=$!
 exec 3>&-
 wait $pid
@@ -585,10 +454,7 @@ pid=""
 #
 if [ ${status} -ne 0 ] ; then
     if [ -z "${KEEP}" ] && [ -z "${QUIET}" ]; then
-        echo "${EXEC}" ${PRIVATIZE} "${TRACEOPTIONS}" "${SIMOPTS}" "${PLATFORMTMP}" "${APPLICATIONTMP}"
-        if [ ${HOSTFILETMP} = 1 ] ; then
-            echo "Generated hostfile ${HOSTFILE} kept."
-        fi
+        echo "${EXEC}" ${PRIVATIZE} "${TRACEOPTIONS}" "${SIMOPTS}" "${PLATFORMTMP}"
         if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
             echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept."
         fi

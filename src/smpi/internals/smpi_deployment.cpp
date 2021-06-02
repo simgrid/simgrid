@@ -103,3 +103,98 @@ int smpi_get_universe_size()
 {
   return simgrid::smpi::app::universe_size;
 }
+
+/** @brief Auxiliary method to get list of hosts to deploy app */
+static std::vector<simgrid::s4u::Host*> smpi_get_hosts(simgrid::s4u::Engine* e, const std::string& hostfile)
+{
+  if (hostfile == "") {
+    return e->get_all_hosts();
+  }
+  std::vector<simgrid::s4u::Host*> hosts;
+  std::ifstream in(hostfile.c_str());
+  xbt_assert(in, "smpirun: Cannot open the host file: %s", hostfile.c_str());
+  std::string str;
+  while (std::getline(in, str)) {
+    if (str.size() > 0)
+      hosts.emplace_back(e->host_by_name(str));
+  }
+  xbt_assert(hosts.size(), "smpirun: the hostfile '%s' is empty", hostfile.c_str());
+  return hosts;
+}
+
+/** @brief Read replay configuration from file */
+static std::vector<std::string> smpi_read_replay(const std::string& replayfile)
+{
+  std::vector<std::string> replay;
+  if (replayfile == "")
+    return replay;
+
+  std::ifstream in(replayfile.c_str());
+  xbt_assert(in, "smpirun: Cannot open the replay file: %s", replayfile.c_str());
+  std::string str;
+  while (std::getline(in, str)) {
+    if (str.size() > 0)
+      replay.emplace_back(str);
+  }
+
+  return replay;
+}
+
+/** @brief Build argument vector to pass to process */
+static std::vector<std::string> smpi_deployment_get_args(int rank_id, const std::vector<std::string>& replay, int argc,
+                                                         char* argv[])
+{
+  std::vector<std::string> args{std::to_string(rank_id)};
+  // pass arguments to process only if not a replay execution
+  if (replay.size() == 0) {
+    for (int i = 0; i < argc; i++) {
+      args.push_back(argv[i]);
+    }
+  }
+  /* one trace per process */
+  if (replay.size() > 1) {
+    args.push_back(replay[rank_id]);
+  }
+  return args;
+}
+
+/**
+ * @brief Deploy an SMPI application from a smpirun call
+ *
+ * This used to be done at smpirun script, parsing either the hostfile or the platform XML.
+ * If hostfile isn't provided, get the list of hosts from engine.
+ */
+int smpi_deployment_smpirun(simgrid::s4u::Engine* e, const std::string& hostfile, int np, const std::string& replayfile,
+                            int map, int argc, char* argv[])
+{
+  auto hosts     = smpi_get_hosts(e, hostfile);
+  auto replay    = smpi_read_replay(replayfile);
+  int hosts_size = static_cast<int>(hosts.size());
+  if (np == 0)
+    np = hosts_size;
+
+  xbt_assert(np > 0, "Invalid number of process (np must be > 0). Check your np parameter, platform or hostfile");
+
+  if (np > hosts_size) {
+    printf("You requested to use %d ranks, but there is only %d processes in your hostfile...\n", np, hosts_size);
+  }
+
+  for (int i = 0; i < np; i++) {
+    simgrid::s4u::Host* host = hosts[i % hosts_size];
+    std::string rank_id      = std::to_string(i);
+    auto args                = smpi_deployment_get_args(i, replay, argc, argv);
+    auto actor               = simgrid::s4u::Actor::create(rank_id, host, rank_id, args);
+    /* keeping the same behavior as done in smpirun script, print mapping rank/process */
+    if (map != 0) {
+      printf("[rank %d] -> %s\n", i, host->get_cname());
+    }
+    actor->set_property("instance_id", "smpirun");
+    actor->set_property("rank", rank_id);
+    if (replay.size() > 0)
+      actor->set_property("smpi_replay", "true");
+    /* shared trace file, set it to rank 0 */
+    if (i == 0 && replay.size() == 1)
+      actor->set_property("tracefile", replay[0]);
+  }
+  return np;
+}
