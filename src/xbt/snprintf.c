@@ -62,7 +62,7 @@
 #if !HAVE_VASPRINTF
 #include <assert.h>
 #include <stdarg.h> /* vsnprintf */
-int vasprintf(char **ptr, const char *fmt, va_list ap);
+int vasprintf(char** ptr, const char* fmt, va_list ap) XBT_ATTRIB_PRINTF(1, 0);
 int vasprintf(char **ptr, const char *fmt, va_list ap)
 {
   size_t str_m;
