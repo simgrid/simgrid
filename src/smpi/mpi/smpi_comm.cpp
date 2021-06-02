@@ -559,10 +559,11 @@ void Comm::remove_rma_win(MPI_Win win){
 
 void Comm::finish_rma_calls() const
 {
+  const int myrank = rank();
   for (auto const& it : rma_wins_) {
-    if(it->rank()==this->rank()){//is it ours (for MPI_COMM_WORLD)?
+    if (it->rank() == myrank) { // is it ours (for MPI_COMM_WORLD)?
       int finished = it->finish_comms();
-      XBT_DEBUG("Barrier for rank %d - Finished %d RMA calls",this->rank(), finished);
+      XBT_DEBUG("Barrier for rank %d - Finished %d RMA calls", myrank, finished);
     }
   }
 }
