@@ -73,8 +73,7 @@ Win::~Win(){
   //As per the standard, perform a barrier to ensure every async comm is finished
   bar_->wait();
 
-  int finished = finish_comms();
-  XBT_DEBUG("Win destructor - Finished %d RMA calls", finished);
+  flush_local_all();
 
   if (info_ != MPI_INFO_NULL)
     simgrid::smpi::Info::unref(info_);
@@ -485,8 +484,7 @@ int Win::complete(){
   for (auto& req : reqs)
     Request::unref(&req);
 
-  int finished = finish_comms();
-  XBT_DEBUG("Win_complete - Finished %d RMA calls", finished);
+  flush_local_all();
 
   opened_--; //we're closed for business !
   Group::unref(dst_group_);
@@ -512,8 +510,7 @@ int Win::wait(){
   for (auto& req : reqs)
     Request::unref(&req);
 
-  int finished = finish_comms();
-  XBT_DEBUG("Win_wait - Finished %d RMA calls", finished);
+  flush_local_all();
 
   opened_--; //we're closed for business !
   Group::unref(src_group_);
@@ -536,10 +533,7 @@ int Win::lock(int lock_type, int rank, int /*assert*/)
 
   target_win->lockers_.push_back(rank_);
 
-  int finished = finish_comms(rank);
-  XBT_DEBUG("Win_lock %d - Finished %d RMA calls", rank, finished);
-  finished = target_win->finish_comms(rank_);
-  XBT_DEBUG("Win_lock target %d - Finished %d RMA calls", rank, finished);
+  flush(rank);
   return MPI_SUCCESS;
 }
 
@@ -562,10 +556,7 @@ int Win::unlock(int rank){
     target_win->lock_mut_->unlock();
   }
 
-  int finished = finish_comms(rank);
-  XBT_DEBUG("Win_unlock %d - Finished %d RMA calls", rank, finished);
-  finished = target_win->finish_comms(rank_);
-  XBT_DEBUG("Win_unlock target %d - Finished %d RMA calls", rank, finished);
+  flush(rank);
   return MPI_SUCCESS;
 }
 
@@ -581,9 +572,9 @@ int Win::unlock_all(){
 
 int Win::flush(int rank){
   MPI_Win target_win = connected_wins_[rank];
-  int finished       = finish_comms(rank_);
-  XBT_DEBUG("Win_flush on local %d - Finished %d RMA calls", rank_, finished);
-  finished = target_win->finish_comms(rank);
+  int finished       = finish_comms(rank);
+  XBT_DEBUG("Win_flush on local %d - Finished %d RMA calls", rank, finished);
+  finished = target_win->finish_comms(rank_);
   XBT_DEBUG("Win_flush on remote %d - Finished %d RMA calls", rank, finished);
   return MPI_SUCCESS;
 }
