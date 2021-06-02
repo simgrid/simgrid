@@ -225,18 +225,16 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
 
-  if (target_rank != comm_->rank()) { // This is not for myself, so we need to send messages
+  if (target_rank != rank_) { // This is not for myself, so we need to send messages
     XBT_DEBUG("Entering MPI_Put to remote rank %d", target_rank);
     // prepare send_request
     MPI_Request sreq =
-        // TODO cheinrich Check for rank / pid conversion
-        Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(), target_rank, SMPI_RMA_TAG + 1,
-                               comm_, MPI_OP_NULL);
+        Request::rma_send_init(origin_addr, origin_count, origin_datatype, rank_, target_rank, SMPI_RMA_TAG + 1, comm_,
+                               MPI_OP_NULL);
 
     //prepare receiver request
-    // TODO cheinrich Check for rank / pid conversion
-    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, recv_win->comm_->rank(),
-                                              target_rank, SMPI_RMA_TAG + 1, recv_win->comm_, MPI_OP_NULL);
+    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, rank_, target_rank,
+                                              SMPI_RMA_TAG + 1, recv_win->comm_, MPI_OP_NULL);
 
     //start send
     sreq->start();
@@ -276,16 +274,14 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   const void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
 
-  if(target_rank != comm_->rank()){
+  if (target_rank != rank_) {
     //prepare send_request
-    MPI_Request sreq = Request::rma_send_init(send_addr, target_count, target_datatype, target_rank,
-                                              send_win->comm_->rank(), SMPI_RMA_TAG + 2, send_win->comm_, MPI_OP_NULL);
+    MPI_Request sreq = Request::rma_send_init(send_addr, target_count, target_datatype, target_rank, rank_,
+                                              SMPI_RMA_TAG + 2, send_win->comm_, MPI_OP_NULL);
 
     //prepare receiver request
-    MPI_Request rreq = Request::rma_recv_init(
-        origin_addr, origin_count, origin_datatype, target_rank,
-        comm_->rank(), // TODO cheinrich Check here if comm_->rank() and above send_win->comm_->rank() are correct
-        SMPI_RMA_TAG + 2, comm_, MPI_OP_NULL);
+    MPI_Request rreq = Request::rma_recv_init(origin_addr, origin_count, origin_datatype, target_rank, rank_,
+                                              SMPI_RMA_TAG + 2, comm_, MPI_OP_NULL);
 
     //start the send, with another process than us as sender.
     sreq->start();
@@ -329,12 +325,11 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   // SMPI tags, SMPI_RMA_TAG is set below all the other ones we use)
   // prepare send_request
 
-  MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(), target_rank,
+  MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype, rank_, target_rank,
                                             SMPI_RMA_TAG - 3 - count_, comm_, op);
 
   // prepare receiver request
-  MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, recv_win->comm_->rank(),
-                                            recv_win->comm_->group()->rank(comm_->group()->actor(target_rank)),
+  MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, rank_, target_rank,
                                             SMPI_RMA_TAG - 3 - count_, recv_win->comm_, op);
 
   count_++;
@@ -539,7 +534,7 @@ int Win::lock(int lock_type, int rank, int /*assert*/)
   } else if (not(target_win->mode_ == MPI_LOCK_SHARED && lock_type == MPI_LOCK_EXCLUSIVE))
     target_win->mode_ += lock_type; // don't set to exclusive if it's already shared
 
-  target_win->lockers_.push_back(comm_->rank());
+  target_win->lockers_.push_back(rank_);
 
   int finished = finish_comms(rank);
   XBT_DEBUG("Win_lock %d - Finished %d RMA calls", rank, finished);
@@ -562,7 +557,7 @@ int Win::unlock(int rank){
   MPI_Win target_win = connected_wins_[rank];
   int target_mode = target_win->mode_;
   target_win->mode_= 0;
-  target_win->lockers_.remove(comm_->rank());
+  target_win->lockers_.remove(rank_);
   if (target_mode==MPI_LOCK_EXCLUSIVE){
     target_win->lock_mut_->unlock();
   }
