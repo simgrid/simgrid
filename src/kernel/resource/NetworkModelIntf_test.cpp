@@ -20,8 +20,8 @@ TEST_CASE("kernel::resource::NetworkModelIntf: Factors invalid callbacks: except
 {
   std::vector<std::string> models{"LV08", "CM02"};
 #if HAVE_SMPI
-  models.push_back("SMPI");
-  models.push_back("IB");
+  models.emplace_back("SMPI");
+  models.emplace_back("IB");
 #endif
 
   for (const auto& model : models) {
