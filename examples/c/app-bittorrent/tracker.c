@@ -30,7 +30,7 @@ void tracker(int argc, char* argv[])
   // Checking arguments
   xbt_assert(argc == 2, "Wrong number of arguments for the tracker.");
   // Retrieving end time
-  double deadline = xbt_str_parse_double(argv[1], "Invalid deadline: %s");
+  double deadline = xbt_str_parse_double(argv[1], "Invalid deadline");
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 
   // Building peers array

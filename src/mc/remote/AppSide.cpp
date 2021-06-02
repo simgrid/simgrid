@@ -49,7 +49,7 @@ AppSide* AppSide::initialize()
 
   // Fetch socket from MC_ENV_SOCKET_FD:
   const char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
-  int fd = xbt_str_parse_int(fd_env, "Variable '" MC_ENV_SOCKET_FD "' should contain a number but contains '%s'");
+  int fd             = xbt_str_parse_int(fd_env, "Not a number in variable '" MC_ENV_SOCKET_FD "'");
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
   // Check the socket type/validity:

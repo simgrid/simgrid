@@ -20,9 +20,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(comm_waitall, "Messages specific for this msg examp
 static void sender(int argc, char* argv[])
 {
   xbt_assert(argc == 4, "This function expects 3 parameters from the XML deployment file");
-  long messages_count  = xbt_str_parse_int(argv[1], "Invalid message count: %s");
-  long message_size    = xbt_str_parse_int(argv[2], "Invalid message size: %s");
-  long receivers_count = xbt_str_parse_int(argv[3], "Invalid amount of receivers: %s");
+  long messages_count  = xbt_str_parse_int(argv[1], "Invalid message count");
+  long message_size    = xbt_str_parse_int(argv[2], "Invalid message size");
+  long receivers_count = xbt_str_parse_int(argv[3], "Invalid amount of receivers");
   xbt_assert(receivers_count > 0);
 
   /* Array in which we store all ongoing communications */
@@ -70,7 +70,7 @@ static void sender(int argc, char* argv[])
 static void receiver(int argc, char* argv[])
 {
   xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
-  int id = (int)xbt_str_parse_int(argv[1], "ID should be numerical, not %s");
+  int id = (int)xbt_str_parse_int(argv[1], "ID should be numerical");
   char mailbox_name[80];
   snprintf(mailbox_name, 79, "receiver-%d", id);
   sg_mailbox_t mbox = sg_mailbox_by_name(mailbox_name);

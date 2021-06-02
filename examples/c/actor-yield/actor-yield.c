@@ -25,7 +25,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(actor_yield, "Messages specific for this example");
 static void yielder(int argc, char* argv[])
 {
   xbt_assert(argc == 2, "The sender function expects 1 arguments from the XML deployment file");
-  long number_of_yields = xbt_str_parse_int(argv[1], "Invalid amount of yields: %s"); /* - number of yields */
+  long number_of_yields = xbt_str_parse_int(argv[1], "Invalid amount of yields");
 
   for (int i = 0; i < number_of_yields; i++)
     sg_actor_yield();

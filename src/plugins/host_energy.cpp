@@ -365,26 +365,23 @@ void HostEnergy::init_watts_range_list()
     double epsilon_power;
     double max_power;
 
-    char* msg_idle    = bprintf("Invalid Idle value for pstate %d on host %s: %%s", i, host_->get_cname());
-    char* msg_epsilon = bprintf("Invalid Epsilon value for pstate %d on host %s: %%s", i, host_->get_cname());
-    char* msg_max     = bprintf("Invalid AllCores value for pstate %d on host %s: %%s", i, host_->get_cname());
+    auto msg_idle    = xbt::string_printf("Invalid Idle value for pstate %d on host %s", i, host_->get_cname());
+    auto msg_epsilon = xbt::string_printf("Invalid Epsilon value for pstate %d on host %s", i, host_->get_cname());
+    auto msg_max     = xbt::string_printf("Invalid AllCores value for pstate %d on host %s", i, host_->get_cname());
 
-    idle_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle);
+    idle_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle.c_str());
     if (current_power_values.size() == 2) { // Case: Idle:AllCores
-      epsilon_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle);
-      max_power     = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_max);
+      epsilon_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle.c_str());
+      max_power     = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_max.c_str());
     } else { // Case: Idle:Epsilon:AllCores
-      epsilon_power = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_epsilon);
-      max_power     = xbt_str_parse_double((current_power_values.at(2)).c_str(), msg_max);
+      epsilon_power = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_epsilon.c_str());
+      max_power     = xbt_str_parse_double((current_power_values.at(2)).c_str(), msg_max.c_str());
     }
 
     XBT_DEBUG("Creating PowerRange for host %s. Idle:%f, Epsilon:%f, AllCores:%f.", host_->get_cname(), idle_power, epsilon_power, max_power);
 
     PowerRange range(idle_power, epsilon_power, max_power);
     power_range_watts_list_.push_back(range);
-    xbt_free(msg_idle);
-    xbt_free(msg_epsilon);
-    xbt_free(msg_max);
     ++i;
   }
 }

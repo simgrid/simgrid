@@ -20,7 +20,7 @@ static void peer(int argc, char* argv[])
 {
   int i = 0;
   while (i < argc) {
-    double wait_time = xbt_str_parse_double(argv[i], "Invalid wait time: %s");
+    double wait_time = xbt_str_parse_double(argv[i], "Invalid wait time");
     i++;
     sg_actor_sleep_for(wait_time);
     XBT_INFO("Trying to acquire %d (%sblocking)", i, sg_sem_would_block(sem) ? "" : "not ");
@@ -33,7 +33,7 @@ static void peer(int argc, char* argv[])
     }
     XBT_INFO("Acquired %d", i);
 
-    wait_time = xbt_str_parse_double(argv[i], "Invalid wait time: %s");
+    wait_time = xbt_str_parse_double(argv[i], "Invalid wait time");
     i++;
     sg_actor_sleep_for(wait_time);
     XBT_INFO("Releasing %d", i);

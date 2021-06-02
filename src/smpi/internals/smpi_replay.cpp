@@ -73,7 +73,7 @@ void log_timed_action(const simgrid::xbt::ReplayAction& action, double clock)
 /* Helper function */
 static double parse_double(const std::string& string)
 {
-  return xbt_str_parse_double(string.c_str(), "%s is not a double");
+  return xbt_str_parse_double(string.c_str(), "not a double");
 }
 
 namespace simgrid {

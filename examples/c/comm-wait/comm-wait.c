@@ -20,10 +20,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(comm_wait, "Messages specific for this example");
 static void sender(int argc, char* argv[])
 {
   xbt_assert(argc == 5, "The sender function expects 4 arguments from the XML deployment file");
-  long messages_count     = xbt_str_parse_int(argv[1], "Invalid amount of messages: %s");  /* - number of messages */
-  long message_size       = xbt_str_parse_int(argv[2], "Invalid message size: %s");        /* - communication cost */
-  double sleep_start_time = xbt_str_parse_double(argv[3], "Invalid sleep start time: %s"); /* - start time */
-  double sleep_test_time  = xbt_str_parse_double(argv[4], "Invalid test time: %s");        /* - test time */
+  long messages_count     = xbt_str_parse_int(argv[1], "Invalid amount of messages");  /* - number of messages */
+  long message_size       = xbt_str_parse_int(argv[2], "Invalid message size");        /* - communication cost */
+  double sleep_start_time = xbt_str_parse_double(argv[3], "Invalid sleep start time"); /* - start time */
+  double sleep_test_time  = xbt_str_parse_double(argv[4], "Invalid test time");        /* - test time */
 
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
   sg_mailbox_t mailbox = sg_mailbox_by_name("receiver");
@@ -53,8 +53,8 @@ static void sender(int argc, char* argv[])
 static void receiver(int argc, char* argv[])
 {
   xbt_assert(argc == 3, "The relay_runner function does not accept any parameter from the XML deployment file");
-  double sleep_start_time = xbt_str_parse_double(argv[1], "Invalid sleep start parameter: %s"); /* - start time */
-  double sleep_test_time  = xbt_str_parse_double(argv[2], "Invalid sleep test parameter: %s");  /* - test time */
+  double sleep_start_time = xbt_str_parse_double(argv[1], "Invalid sleep start parameter"); /* - start time */
+  double sleep_test_time  = xbt_str_parse_double(argv[2], "Invalid sleep test parameter");  /* - test time */
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
 
   sg_actor_sleep_for(sleep_start_time); /* This actor first sleeps for "start time" seconds.  */

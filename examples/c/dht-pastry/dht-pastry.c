@@ -447,7 +447,7 @@ static void node(int argc, char* argv[])
   double deadline;
   xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
   s_node_t node         = {0};
-  node.id               = (int)xbt_str_parse_int(argv[1], "Invalid ID: %s");
+  node.id               = (int)xbt_str_parse_int(argv[1], "Invalid ID");
   node.known_id         = -1;
   node.ready            = -1;
   node.pending_messages = xbt_dynar_new(sizeof(pastry_message_t), NULL);
@@ -469,14 +469,14 @@ static void node(int argc, char* argv[])
 
   if (argc == 3) { // first ring
     XBT_DEBUG("Hey! Let's create the system.");
-    deadline   = xbt_str_parse_double(argv[2], "Invalid deadline: %s");
+    deadline   = xbt_str_parse_double(argv[2], "Invalid deadline");
     node.ready = 0;
     XBT_DEBUG("Create a new Pastry ring...");
     join_success = 1;
   } else {
-    node.known_id     = (int)xbt_str_parse_int(argv[2], "Invalid known ID: %s");
-    double sleep_time = xbt_str_parse_double(argv[3], "Invalid sleep time: %s");
-    deadline          = xbt_str_parse_double(argv[4], "Invalid deadline: %s");
+    node.known_id     = (int)xbt_str_parse_int(argv[2], "Invalid known ID");
+    double sleep_time = xbt_str_parse_double(argv[3], "Invalid sleep time");
+    deadline          = xbt_str_parse_double(argv[4], "Invalid deadline");
 
     // sleep before starting
     XBT_DEBUG("Let's sleep during %f", sleep_time);
@@ -522,13 +522,13 @@ int main(int argc, char* argv[])
   while (!strncmp(options[0], "-", 1)) {
     int length = strlen("-nb_bits=");
     if (!strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
-      nb_bits = (int)xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter: %s");
+      nb_bits = (int)xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter");
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
     } else {
       length = strlen("-timeout=");
       xbt_assert(strncmp(options[0], "-timeout=", length) == 0 && strlen(options[0]) > length,
                  "Invalid pastry option '%s'", options[0]);
-      timeout = (int)xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s");
+      timeout = (int)xbt_str_parse_int(options[0] + length, "Invalid timeout parameter");
       XBT_DEBUG("Set timeout to %d", timeout);
     }
     options++;

@@ -22,13 +22,13 @@ int main(int argc, char* argv[])
   while (not strncmp(options[0], "-", 1)) {
     unsigned int length = strlen("-nb_bits=");
     if (not strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
-      nb_bits = static_cast<int>(xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter: %s"));
+      nb_bits = static_cast<int>(xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter"));
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
     } else {
       length = strlen("-timeout=");
       xbt_assert(strncmp(options[0], "-timeout=", length) == 0 && strlen(options[0]) > length,
                  "Invalid chord option '%s'", options[0]);
-      timeout = static_cast<int>(xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s"));
+      timeout = static_cast<int>(xbt_str_parse_int(options[0] + length, "Invalid timeout parameter"));
       XBT_DEBUG("Set timeout to %d", timeout);
     }
     options++;

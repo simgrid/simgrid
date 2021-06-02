@@ -75,7 +75,7 @@ void broadcaster(int argc, char* argv[])
 {
   XBT_DEBUG("broadcaster");
   xbt_assert(argc > 2);
-  unsigned int host_count = (unsigned int)xbt_str_parse_int(argv[1], "Invalid number of peers: %s");
+  unsigned int host_count = (unsigned int)xbt_str_parse_int(argv[1], "Invalid number of peers");
 
   sg_mailbox_t* mailboxes = xbt_malloc(sizeof(sg_mailbox_t) * host_count);
 
@@ -86,7 +86,7 @@ void broadcaster(int argc, char* argv[])
     free(name);
   }
 
-  unsigned int piece_count = (unsigned int)xbt_str_parse_int(argv[2], "Invalid number of pieces: %s");
+  unsigned int piece_count = (unsigned int)xbt_str_parse_int(argv[2], "Invalid number of pieces");
 
   broadcaster_t bc = broadcaster_init(mailboxes, host_count, piece_count);
 

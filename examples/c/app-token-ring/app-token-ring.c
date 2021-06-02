@@ -23,7 +23,7 @@ static void relay_runner(int argc, char* argv[])
   xbt_assert(argc == 0, "The relay_runner function does not accept any parameter from the XML deployment file");
 
   const char* name = sg_actor_self_get_name();
-  int rank         = (int)xbt_str_parse_int(name, "Any actor of this example must have a numerical name, not %s");
+  int rank         = (int)xbt_str_parse_int(name, "Any actor of this example must have a numerical name");
 
   sg_mailbox_t my_mailbox = sg_mailbox_by_name(name);
 

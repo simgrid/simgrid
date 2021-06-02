@@ -12,36 +12,36 @@
 
 /** @brief Parse an integer out of a string, or raise an error
  *
- * The @a str is passed as argument to your @a error_msg, as follows:
- * @verbatim throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str)); @endverbatim
+ * The @a str is concatenated to your @a error_msg, as follows:
+ * @verbatim throw std::invalid_argument(simgrid::xbt::string_printf("%s: %s", error_msg, str)); @endverbatim
  */
 long int xbt_str_parse_int(const char* str, const char* error_msg)
 {
   char* endptr;
   if (str == nullptr || str[0] == '\0')
-    throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str));
+    throw std::invalid_argument(simgrid::xbt::string_printf("%s: %s", error_msg, str));
 
   long int res = strtol(str, &endptr, 10);
   if (endptr[0] != '\0')
-    throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str));
+    throw std::invalid_argument(simgrid::xbt::string_printf("%s: %s", error_msg, str));
 
   return res;
 }
 
 /** @brief Parse a double out of a string, or raise an error
  *
- * The @a str is passed as argument to your @a error_msg, as follows:
- * @verbatim throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str)); @endverbatim
+ * The @a str is concatenated to your @a error_msg, as follows:
+ * @verbatim throw std::invalid_argument(simgrid::xbt::string_printf("%s: %s", error_msg, str)); @endverbatim
  */
 double xbt_str_parse_double(const char* str, const char* error_msg)
 {
   char *endptr;
   if (str == nullptr || str[0] == '\0')
-    throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str));
+    throw std::invalid_argument(simgrid::xbt::string_printf("%s: %s", error_msg, str));
 
   double res = strtod(str, &endptr);
   if (endptr[0] != '\0')
-    throw std::invalid_argument(simgrid::xbt::string_printf(error_msg, str));
+    throw std::invalid_argument(simgrid::xbt::string_printf("%s: %s", error_msg, str));
 
   return res;
 }
