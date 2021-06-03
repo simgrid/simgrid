@@ -34,8 +34,8 @@ SMPITMPDIR="$(dirname $(mktemp -u))"
 #usage to print the way this script should be called
 usage () {
     cat <<EOF
-Usage: $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> program [program-options]
-       $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> -replay <tracefile> [program] [program-options]
+Usage: $0 [OPTIONS] -platform <xmldesc|so> -hostfile <hostfile> program [program-options]
+       $0 [OPTIONS] -platform <xmldesc|so> -hostfile <hostfile> -replay <tracefile> [program] [program-options]
 Options:
   -analyze                   # show information about allocations and timings at the end of execution
   -keep-temps                # don't remove the generated files after execution
