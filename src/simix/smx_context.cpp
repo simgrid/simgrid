@@ -7,7 +7,7 @@
 
 #include "src/internal_config.h"
 #include "src/simix/smx_private.hpp"
-#include "smpi/smpi.h"
+#include "src/smpi/include/private.hpp"
 #include "xbt/config.hpp"
 
 #include <initializer_list>
