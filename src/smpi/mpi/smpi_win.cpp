@@ -187,20 +187,8 @@ int Win::fence(int assert)
   if (not (assert & MPI_MODE_NOPRECEDE)) {
     // This is not the first fence => finalize what came before
     bar_->wait();
-    mut_->lock();
-    // This (simulated) mutex ensures that no process pushes to the vector of requests during the waitall.
-    // Without this, the vector could get redimensioned when another process pushes.
-    // This would result in the array used by Request::waitall() to be invalidated.
-    // Another solution would be to copy the data and cleanup the vector *before* Request::waitall
-
-    // start all requests that have been prepared by another process
-    if (not requests_.empty()) {
-      int size           = static_cast<int>(requests_.size());
-      MPI_Request* treqs = requests_.data();
-      Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
-    }
+    flush_local_all();
     count_=0;
-    mut_->unlock();
   }
 
   if (assert & MPI_MODE_NOSUCCEED) // there should be no ops after this one, tell we are closed.
@@ -609,6 +597,10 @@ Win* Win::f2c(int id){
 }
 
 int Win::finish_comms(){
+  // This (simulated) mutex ensures that no process pushes to the vector of requests during the waitall.
+  // Without this, the vector could get redimensioned when another process pushes.
+  // This would result in the array used by Request::waitall() to be invalidated.
+  // Another solution would be to copy the data and cleanup the vector *before* Request::waitall
   mut_->lock();
   //Finish own requests
   int size = static_cast<int>(requests_.size());
@@ -622,6 +614,7 @@ int Win::finish_comms(){
 }
 
 int Win::finish_comms(int rank){
+  // See comment about the mutex in finish_comms() above
   mut_->lock();
   // Finish own requests
   // Let's see if we're either the destination or the sender of this request
