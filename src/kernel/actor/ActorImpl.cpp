@@ -16,7 +16,9 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/AppSide.hpp"
 #include "src/simix/smx_private.hpp"
+#if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
+#endif
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
@@ -308,8 +310,10 @@ void ActorImpl::yield()
     }
   }
 
+#if HAVE_SMPI
   if (not finished_)
     smpi_switch_data_segment(get_iface());
+#endif
 }
 
 /** This actor will be terminated automatically when the last non-daemon actor finishes */
