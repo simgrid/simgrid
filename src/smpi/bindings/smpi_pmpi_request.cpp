@@ -566,8 +566,7 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
   return retval;
 }
 
-// TODO: cheinrich: Move declaration to other file? Rename this function - it's used for PMPI_Wait*?
-static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status)
+static void trace_smpi_wait_recv_helper(MPI_Request* request, MPI_Status* status)
 {
   const simgrid::smpi::Request* req = *request;
   // Requests already received are null. Is this request a wait for RECV?
@@ -595,7 +594,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   } else {
     // for tracing, save the handle which might get overridden before we can use the helper on it
     MPI_Request savedreq = *request;
-    if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & (MPI_REQ_FINISHED | MPI_REQ_GENERALIZED | MPI_REQ_NBC)))
+    if (not(savedreq->flags() & (MPI_REQ_FINISHED | MPI_REQ_GENERALIZED | MPI_REQ_NBC)))
       savedreq->ref();//don't erase the handle in Request::wait, we'll need it later
     else
       savedreq = MPI_REQUEST_NULL;
@@ -608,7 +607,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     TRACE_smpi_comm_out(my_proc_id);
-    trace_smpi_recv_helper(&savedreq, status);
+    trace_smpi_wait_recv_helper(&savedreq, status);
     if (savedreq != MPI_REQUEST_NULL)
       simgrid::smpi::Request::unref(&savedreq);
   }
@@ -640,7 +639,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   *index = simgrid::smpi::Request::waitany(count, requests, status);
 
   if(*index!=MPI_UNDEFINED){
-    trace_smpi_recv_helper(&savedreqs[*index], status);
+    trace_smpi_wait_recv_helper(&savedreqs[*index], status);
     TRACE_smpi_comm_out(rank_traced);
   }
 
@@ -670,7 +669,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   int retval = simgrid::smpi::Request::waitall(count, requests, status);
 
   for (int i = 0; i < count; i++) {
-    trace_smpi_recv_helper(&savedreqs[i], status!=MPI_STATUSES_IGNORE ? &status[i]: MPI_STATUS_IGNORE);
+    trace_smpi_wait_recv_helper(&savedreqs[i], status != MPI_STATUSES_IGNORE ? &status[i] : MPI_STATUS_IGNORE);
   }
   TRACE_smpi_comm_out(rank_traced);
 
