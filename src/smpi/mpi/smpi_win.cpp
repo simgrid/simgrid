@@ -337,6 +337,9 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
     mut_->unlock();
   }
 
+  // FIXME: The current implementation fails to ensure the correct ordering of the accumulate requests.  The following
+  // 'flush' is a workaround to fix that.
+  flush(target_rank);
   XBT_DEBUG("Leaving MPI_Win_Accumulate");
   return MPI_SUCCESS;
 }
