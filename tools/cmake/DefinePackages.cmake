@@ -1152,6 +1152,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/energy_cluster.xml
   examples/platforms/faulty_host.xml
   examples/platforms/g5k.xml
+  examples/platforms/griffon.cpp
   examples/platforms/griffon.xml
   examples/platforms/hosts_with_disks.xml
   examples/platforms/meta_cluster.xml

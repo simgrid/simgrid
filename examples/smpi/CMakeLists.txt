@@ -54,6 +54,7 @@ unset(_${x}_outdir)
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace/trace.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/simple-execute/simple-execute.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/simple-execute/simple-execute-cpp-platf.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/gemm/gemm.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_simple/trace_simple.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/trace_call_location.tesh
@@ -69,7 +70,8 @@ set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged2
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_only_send_deterministic
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_termination                 PARENT_SCOPE)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_termination
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/simple-execute/hostfile_griffon             PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions1.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allreduce.txt
@@ -98,6 +100,7 @@ if(enable_smpi)
 
   ADD_TESH(smpi-tracing        --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/trace --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/trace --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/trace ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace/trace.tesh)
   ADD_TESH(smpi-simple-execute       --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/simple-execute --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/simple-execute --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/simple-execute ${CMAKE_HOME_DIRECTORY}/examples/smpi/simple-execute/simple-execute.tesh)
+  ADD_TESH(smpi-simple-execute-cpp-platf       --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/simple-execute --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/simple-execute --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/smpi/simple-execute ${CMAKE_HOME_DIRECTORY}/examples/smpi/simple-execute/simple-execute-cpp-platf.tesh)
   ADD_TESH(smpi-tracing-simple --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/trace_simple --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_simple --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/trace_simple ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_simple/trace_simple.tesh)
   ADD_TESH(smpi-tracing-call-location --setenv bindir=${CMAKE_BINARY_DIR}/examples/smpi/trace_call_location --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi/trace_call_location ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_call_location/trace_call_location.tesh)
   ADD_TESH(smpi-replay         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/replay.tesh)

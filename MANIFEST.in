@@ -636,6 +636,8 @@ include examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive
 include examples/smpi/replay_multiple_manual_deploy/workload_compute_simple
 include examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time
 include examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources
+include examples/smpi/simple-execute/hostfile_griffon
+include examples/smpi/simple-execute/simple-execute-cpp-platf.tesh
 include examples/smpi/simple-execute/simple-execute.c
 include examples/smpi/simple-execute/simple-execute.tesh
 include examples/smpi/smpi_s4u_masterworker/deployment_masterworker_mailbox_smpi.xml
@@ -821,6 +823,7 @@ include teshsuite/smpi/coll-allreduce/coll-allreduce.tesh
 include teshsuite/smpi/coll-alltoall/clusters.tesh
 include teshsuite/smpi/coll-alltoall/coll-alltoall.c
 include teshsuite/smpi/coll-alltoall/coll-alltoall.tesh
+include teshsuite/smpi/coll-alltoall/griffon.tesh
 include teshsuite/smpi/coll-alltoallv/coll-alltoallv.c
 include teshsuite/smpi/coll-alltoallv/coll-alltoallv.tesh
 include teshsuite/smpi/coll-barrier/coll-barrier.c
@@ -843,6 +846,7 @@ include teshsuite/smpi/hostfile
 include teshsuite/smpi/hostfile_cluster
 include teshsuite/smpi/hostfile_coll
 include teshsuite/smpi/hostfile_empty
+include teshsuite/smpi/hostfile_griffon
 include teshsuite/smpi/hostfile_io
 include teshsuite/smpi/hostfile_mpich
 include teshsuite/smpi/io-all-at/io-all-at.c
@@ -1895,6 +1899,7 @@ include examples/platforms/energy_cluster.xml
 include examples/platforms/energy_platform.xml
 include examples/platforms/faulty_host.xml
 include examples/platforms/g5k.xml
+include examples/platforms/griffon.cpp
 include examples/platforms/griffon.xml
 include examples/platforms/hosts_with_disks.xml
 include examples/platforms/meta_cluster.xml
