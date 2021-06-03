@@ -284,7 +284,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
     //start the send, with another process than us as sender.
     sreq->start();
-    //push request to receiver's win
+    // push request to sender's win
     send_win->mut_->lock();
     send_win->requests_.push_back(sreq);
     send_win->mut_->unlock();
@@ -365,7 +365,7 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
 
   XBT_DEBUG("Entering MPI_Get_accumulate from %d", target_rank);
   //need to be sure ops are correctly ordered, so finish request here ? slow.
-  MPI_Request req;
+  MPI_Request req = MPI_REQUEST_NULL;
   send_win->atomic_mut_->lock();
   get(result_addr, result_count, result_datatype, target_rank,
               target_disp, target_count, target_datatype, &req);
