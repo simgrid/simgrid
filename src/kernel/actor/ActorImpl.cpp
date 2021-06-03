@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Actor.hpp"
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
-#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
@@ -16,6 +16,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/AppSide.hpp"
 #include "src/simix/smx_private.hpp"
+#include "src/smpi/include/private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
@@ -307,9 +308,8 @@ void ActorImpl::yield()
     }
   }
 
-  if (SMPI_switch_data_segment && not finished_) {
-    SMPI_switch_data_segment(get_iface());
-  }
+  if (not finished_)
+    smpi_switch_data_segment(get_iface());
 }
 
 /** This actor will be terminated automatically when the last non-daemon actor finishes */

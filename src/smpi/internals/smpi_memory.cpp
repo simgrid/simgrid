@@ -175,16 +175,25 @@ void* smpi_temp_shm_mmap(int fd, size_t size)
 /** Map a given SMPI privatization segment (make an SMPI process active)
  *
  *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
- *  virtual memory. In this case, we to change the data segment.
+ *  virtual memory. In this case, we have to change the data segment.
+ *
+ *  If 'addr' is not null, only switch if it's an address from the data segment.
+ *
+ *  Returns 'true' if the segment has to be switched (mmap privatization and 'addr' in data segment).
  */
-void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
+bool smpi_switch_data_segment(simgrid::s4u::ActorPtr actor, const void* addr)
 {
+  if (smpi_cfg_privatization() != SmpiPrivStrategies::MMAP || smpi_data_exe_size == 0)
+    return false; // no need to switch
+
+  if (addr != nullptr &&
+      not(static_cast<const char*>(addr) >= smpi_data_exe_start &&
+          static_cast<const char*>(addr) < smpi_data_exe_start + smpi_data_exe_size))
+    return false; // no need to switch, addr is not concerned
+
   static aid_t smpi_loaded_page = -1;
   if (smpi_loaded_page == actor->get_pid()) // no need to switch, we've already loaded the one we want
-    return;
-
-  if (smpi_data_exe_size == 0) // no need to switch
-    return;
+    return true;                            // return 'true' anyway
 
 #if HAVE_PRIVATIZATION
   // FIXME, cross-process support (mmap across process when necessary)
@@ -196,6 +205,8 @@ void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
              "Couldn't map the new region (errno %d): %s", errno, strerror(errno));
   smpi_loaded_page = actor->get_pid();
 #endif
+
+  return true;
 }
 
 /**

@@ -266,11 +266,8 @@ namespace smpi{
 
 void Op::apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype) const
 {
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    XBT_DEBUG("Applying operation, switch to the right data frame ");
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
-  }
+  // we need to switch as the called function may silently touch global variables
+  smpi_switch_data_segment(simgrid::s4u::Actor::self());
 
   if (not smpi_process()->replaying() && *len > 0) {
     XBT_DEBUG("Applying operation of length %d from %p and from/to %p", *len, invec, inoutvec);

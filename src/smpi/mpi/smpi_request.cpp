@@ -506,12 +506,9 @@ void Request::start()
       if (not(type_->flags() & DT_FLAG_DERIVED)) {
         oldbuf = buf_;
         if (not process->replaying() && oldbuf != nullptr && size_ != 0) {
-          if ((smpi_cfg_privatization() != SmpiPrivStrategies::NONE) &&
-              (static_cast<char*>(buf_) >= smpi_data_exe_start) &&
-              (static_cast<char*>(buf_) < smpi_data_exe_start + smpi_data_exe_size)) {
+          if (smpi_switch_data_segment(simgrid::s4u::Actor::by_pid(src_), buf_))
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
-            smpi_switch_data_segment(simgrid::s4u::Actor::by_pid(src_));
-          }
+
           //we need this temporary buffer even for bsend, as it will be released in the copy callback and we don't have a way to differentiate it
           //so actually ... don't use manually attached buffer space.
           buf = xbt_malloc(size_);
@@ -939,12 +936,8 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       // FIXME Handle the case of a partial shared malloc.
       if (((req->flags_ & MPI_REQ_ACCUMULATE) != 0) ||
           (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
-        if (not smpi_process()->replaying() && smpi_cfg_privatization() != SmpiPrivStrategies::NONE &&
-            static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
-            static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
+        if (not smpi_process()->replaying() && smpi_switch_data_segment(simgrid::s4u::Actor::self(), req->old_buf_))
           XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
-          smpi_switch_data_segment(simgrid::s4u::Actor::self());
-        }
 
         if(datatype->flags() & DT_FLAG_DERIVED){
           // This part handles the problem of non-contiguous memory the unserialization at the reception

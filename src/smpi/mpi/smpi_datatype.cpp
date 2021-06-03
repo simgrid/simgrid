@@ -341,9 +341,8 @@ int Datatype::copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
 {
   // FIXME Handle the case of a partial shared malloc.
 
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
-  }
+  smpi_switch_data_segment(simgrid::s4u::Actor::self());
+
   /* First check if we really have something to do */
   size_t offset = 0;
   std::vector<std::pair<size_t, size_t>> private_blocks;

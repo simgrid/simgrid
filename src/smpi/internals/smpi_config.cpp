@@ -187,7 +187,8 @@ double smpi_cfg_auto_shared_malloc_thresh(){
   return _smpi_cfg_auto_shared_malloc_thresh;
 }
 
-void smpi_init_options(){
+void smpi_init_options(bool called_by_smpimain)
+{
   // return if already called
   if(_smpi_options_initialized)
     return;
@@ -212,30 +213,29 @@ void smpi_init_options(){
   if (default_privatization == nullptr)
     default_privatization = "no";
 
+  simgrid::config::declare_flag<std::string>(
+      "smpi/privatization", "How we should privatize global variable at runtime (no, yes, mmap, dlopen).",
+      default_privatization, [called_by_smpimain](const std::string& smpi_privatize_option) {
+        if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
+          _smpi_cfg_privatization = SmpiPrivStrategies::NONE;
+        else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
+          _smpi_cfg_privatization = SmpiPrivStrategies::DEFAULT;
+        else if (smpi_privatize_option == "mmap")
+          _smpi_cfg_privatization = SmpiPrivStrategies::MMAP;
+        else if (smpi_privatize_option == "dlopen")
+          _smpi_cfg_privatization = SmpiPrivStrategies::DLOPEN;
+        else
+          xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option.c_str());
 
-  simgrid::config::declare_flag<std::string>( "smpi/privatization", 
-    "How we should privatize global variable at runtime (no, yes, mmap, dlopen).",
-    default_privatization, [](const std::string& smpi_privatize_option){
-      if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
-        _smpi_cfg_privatization = SmpiPrivStrategies::NONE;
-      else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
-        _smpi_cfg_privatization = SmpiPrivStrategies::DEFAULT;
-      else if (smpi_privatize_option == "mmap")
-        _smpi_cfg_privatization = SmpiPrivStrategies::MMAP;
-      else if (smpi_privatize_option == "dlopen")
-        _smpi_cfg_privatization = SmpiPrivStrategies::DLOPEN;
-      else
-        xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option.c_str());
-        
-      if (not SMPI_switch_data_segment) {
-        XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
-        _smpi_cfg_privatization = SmpiPrivStrategies::NONE;
-      }
-      if (not HAVE_WORKING_MMAP && _smpi_cfg_privatization == SmpiPrivStrategies::MMAP) {
-        XBT_INFO("mmap privatization is broken on this platform, switching to dlopen privatization instead.");
-        _smpi_cfg_privatization = SmpiPrivStrategies::DLOPEN;
-      }
-    });
+        if (not called_by_smpimain) {
+          XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
+          _smpi_cfg_privatization = SmpiPrivStrategies::NONE;
+        }
+        if (not HAVE_WORKING_MMAP && _smpi_cfg_privatization == SmpiPrivStrategies::MMAP) {
+          XBT_INFO("mmap privatization is broken on this platform, switching to dlopen privatization instead.");
+          _smpi_cfg_privatization = SmpiPrivStrategies::DLOPEN;
+        }
+      });
 
   simgrid::config::declare_flag<std::string>("smpi/privatize-libs", 
                                             "Add libraries (; separated) to privatize (libgfortran for example)."

@@ -71,10 +71,9 @@ void Comm::destroy(Comm* comm)
 }
 
 int Comm::dup(MPI_Comm* newcomm){
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(s4u::Actor::self());
-  }
+  // we need to switch as the called function may silently touch global variables
+  smpi_switch_data_segment(s4u::Actor::self());
+
   auto* cp     = new Group(this->group());
   (*newcomm)   = new  Comm(cp, this->topo());
 
@@ -411,10 +410,9 @@ void Comm::init_smp(){
     smpi_process()->set_replaying(false);
   }
 
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(s4u::Actor::self());
-  }
+  // we need to switch as the called function may silently touch global variables
+  smpi_switch_data_segment(s4u::Actor::self());
+
   // identify neighbors in comm
   MPI_Comm comm_intra = find_intra_comm(&leader);
 
@@ -424,11 +422,6 @@ void Comm::init_smp(){
   std::fill_n(leader_list, comm_size, -1);
 
   allgather__ring(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
-
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(s4u::Actor::self());
-  }
 
   if(leaders_map_==nullptr){
     leaders_map_= leaders_map;
@@ -499,10 +492,9 @@ void Comm::init_smp(){
   }
   bcast__scatter_LR_allgather(&is_uniform_, 1, MPI_INT, 0, comm_intra);
 
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(s4u::Actor::self());
-  }
+  // we need to switch as the called function may silently touch global variables
+  smpi_switch_data_segment(s4u::Actor::self());
+
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
   int prev      = this->group()->rank(comm_intra->group()->actor(0));

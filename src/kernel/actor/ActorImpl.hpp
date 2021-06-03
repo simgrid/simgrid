@@ -205,6 +205,4 @@ XBT_PUBLIC unsigned long* get_maxpid_addr(); // In MC mode, the application send
 } // namespace kernel
 } // namespace simgrid
 
-extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
-
 #endif

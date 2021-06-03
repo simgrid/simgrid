@@ -217,7 +217,7 @@ void ActorExt::init()
                                             "Aborting, please check compilation process and use smpirun.");
 
   simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
-  // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
+  // cheinrich: I'm not sure what the impact of the smpi_switch_data_segment on this call is. I moved
   // this up here so that I can set the privatized region before the switch.
   ActorExt* ext = smpi_process();
   // if we are in MPI_Init and argc handling has already been done.
@@ -228,7 +228,7 @@ void ActorExt::init()
     /* Now using the segment index of this process  */
     ext->set_privatized_region(smpi_init_global_memory_segment_process());
     /* Done at the process's creation */
-    SMPI_switch_data_segment(self);
+    smpi_switch_data_segment(self);
   }
 
   ext->instance_id_ = self->get_property("instance_id");

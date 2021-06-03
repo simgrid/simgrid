@@ -1141,7 +1141,6 @@ XBT_PUBLIC MPI_Comm smpi_process_comm_self();
 XBT_PUBLIC MPI_Info smpi_process_info_env();
 XBT_PUBLIC void* smpi_process_get_user_data();
 XBT_PUBLIC void smpi_process_set_user_data(void*);
-XBT_PUBLIC void smpi_init_options();
 
 XBT_PUBLIC void smpi_execute_flops(double flops);
 XBT_PUBLIC void smpi_execute_flops_benched(double flops);

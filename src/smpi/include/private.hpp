@@ -115,10 +115,12 @@ XBT_PRIVATE double smpi_cfg_auto_shared_malloc_thresh();
 XBT_PRIVATE bool smpi_cfg_display_alloc();
 
 // utilities
+XBT_PUBLIC void smpi_init_options(bool called_by_smpimain = false);
+
 extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
 extern XBT_PRIVATE size_t smpi_data_exe_size; // size of the data+bss segment of the executable
 
-XBT_PRIVATE void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor);
+XBT_PRIVATE bool smpi_switch_data_segment(simgrid::s4u::ActorPtr actor, const void* addr = nullptr);
 
 XBT_PRIVATE void smpi_prepare_global_memory_segment();
 XBT_PRIVATE void smpi_backup_global_memory_segment();

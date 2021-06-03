@@ -78,9 +78,7 @@ void smpi_execute_flops_benched(double flops) {
 
 void smpi_bench_begin()
 {
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
-  }
+  smpi_switch_data_segment(simgrid::s4u::Actor::self());
 
   if (MC_is_active() || MC_record_replay_is_active())
     return;

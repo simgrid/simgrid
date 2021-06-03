@@ -29,8 +29,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX 
 
 std::unique_ptr<simgrid::simix::Global> simix_global;
 
-void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
-
 namespace simgrid {
 namespace simix {
 config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
