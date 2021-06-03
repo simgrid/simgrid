@@ -571,33 +571,36 @@ int Win::unlock_all(){
 }
 
 int Win::flush(int rank){
-  MPI_Win target_win = connected_wins_[rank];
-  int finished       = finish_comms(rank);
-  XBT_DEBUG("Win_flush on local %d - Finished %d RMA calls", rank, finished);
-  finished = target_win->finish_comms(rank_);
-  XBT_DEBUG("Win_flush on remote %d - Finished %d RMA calls", rank, finished);
+  int finished = finish_comms(rank);
+  XBT_DEBUG("Win_flush on local %d for remote %d - Finished %d RMA calls", rank_, rank, finished);
+  if (rank != rank_) {
+    finished = connected_wins_[rank]->finish_comms(rank_);
+    XBT_DEBUG("Win_flush on remote %d for local %d - Finished %d RMA calls", rank, rank_, finished);
+  }
   return MPI_SUCCESS;
 }
 
 int Win::flush_local(int rank){
   int finished = finish_comms(rank);
-  XBT_DEBUG("Win_flush_local for rank %d - Finished %d RMA calls", rank, finished);
+  XBT_DEBUG("Win_flush_local on local %d for remote %d - Finished %d RMA calls", rank_, rank, finished);
   return MPI_SUCCESS;
 }
 
 int Win::flush_all(){
   int finished = finish_comms();
-  XBT_DEBUG("Win_flush_all on local - Finished %d RMA calls", finished);
+  XBT_DEBUG("Win_flush_all on local %d - Finished %d RMA calls", rank_, finished);
   for (int i = 0; i < comm_->size(); i++) {
-    finished = connected_wins_[i]->finish_comms(rank_);
-    XBT_DEBUG("Win_flush_all on %d - Finished %d RMA calls", i, finished);
+    if (i != rank_) {
+      finished = connected_wins_[i]->finish_comms(rank_);
+      XBT_DEBUG("Win_flush_all on remote %d for local %d - Finished %d RMA calls", i, rank_, finished);
+    }
   }
   return MPI_SUCCESS;
 }
 
 int Win::flush_local_all(){
   int finished = finish_comms();
-  XBT_DEBUG("Win_flush_local_all - Finished %d RMA calls", finished);
+  XBT_DEBUG("Win_flush_local_all on local %d - Finished %d RMA calls", rank_, finished);
   return MPI_SUCCESS;
 }
 
