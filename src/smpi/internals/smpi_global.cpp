@@ -506,8 +506,16 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable)
 
   // Execute the same entry point for each simulated process:
   simgrid::s4u::Engine::get_instance()->register_default([entry_point, executable](std::vector<std::string> args) {
-    return std::function<void()>(
-        [entry_point, executable, args] { smpi_run_entry_point(entry_point, executable, args); });
+    return std::function<void()>([entry_point, executable, args] {
+      if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
+        simgrid::smpi::ActorExt* ext = smpi_process();
+        /* Now using the segment index of this process  */
+        ext->set_privatized_region(smpi_init_global_memory_segment_process());
+        /* Done at the process's creation */
+        smpi_switch_data_segment(simgrid::s4u::Actor::self());
+      }
+      smpi_run_entry_point(entry_point, executable, args);
+    });
   });
 }
 
