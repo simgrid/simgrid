@@ -40,5 +40,5 @@ int main(int argc, char *argv[])
   }
   //Do not free dup and rb/sb
   MPI_Finalize();
-  return (EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }

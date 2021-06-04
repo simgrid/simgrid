@@ -93,7 +93,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
 
   if (fd >= 0) {
     if (fstat(fd, &sbuf) < 0)
-      return (NULL);
+      return NULL;
 
     else if (sbuf.st_size > 0) {
       /* We were given a valid file descriptor on an open file, so try to remap
@@ -159,7 +159,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
 
   /* NULL is not a valid baseaddr as we cannot map anything there. C'mon, user. Think! */
   if (baseaddr == NULL)
-    return (NULL);
+    return NULL;
 
   /* We start off with the malloc descriptor allocated on the stack, until we build it up enough to
    * call _mmalloc_mmap_morecore() to allocate the first page of the region and copy it there.  Ensure that it is

@@ -23,7 +23,7 @@ typedef const struct xbt_swag* const_xbt_swag_t;
 
 static inline void *xbt_swag_getFirst(const_xbt_swag_t swag)
 {
-  return (swag->head);
+  return swag->head;
 }
 
 /*
@@ -124,5 +124,5 @@ static inline void *xbt_swag_remove(void *obj, xbt_swag_t swag)
  */
 static inline int xbt_swag_size(const_xbt_swag_t swag)
 {
-  return (swag->count);
+  return swag->count;
 }

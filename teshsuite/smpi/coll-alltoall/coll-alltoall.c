@@ -73,5 +73,5 @@ int main(int argc, char *argv[])
   xbt_free(sb);
   xbt_free(rb);
   MPI_Finalize();
-  return (EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }

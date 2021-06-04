@@ -121,15 +121,15 @@ namespace smpi{
 
   int File::seek(MPI_Offset offset, int whence){
     switch(whence){
-      case(MPI_SEEK_SET):
+      case MPI_SEEK_SET:
         XBT_VERB("Seeking in MPI_File %s, setting offset %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_SET);
         break;
-      case(MPI_SEEK_CUR):
+      case MPI_SEEK_CUR:
         XBT_VERB("Seeking in MPI_File %s, current offset + %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_CUR);
         break;
-      case(MPI_SEEK_END):
+      case MPI_SEEK_END:
         XBT_VERB("Seeking in MPI_File %s, end offset + %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_END);
         break;
