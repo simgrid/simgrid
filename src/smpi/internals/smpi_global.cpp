@@ -540,7 +540,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
     return 0;
   }
 
-  smpi_init_options(true);
+  smpi_init_options_internal(true);
   simgrid::instr::init();
   SIMIX_global_init(&argc, argv);
 
@@ -586,7 +586,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
 
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
-  smpi_init_options();
+  smpi_init_options_internal(false);
   simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
     if (not actor.is_daemon())
       actor.extension_set<simgrid::smpi::ActorExt>(new simgrid::smpi::ActorExt(&actor));

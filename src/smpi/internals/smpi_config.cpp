@@ -187,7 +187,13 @@ double smpi_cfg_auto_shared_malloc_thresh(){
   return _smpi_cfg_auto_shared_malloc_thresh;
 }
 
-void smpi_init_options(bool called_by_smpimain)
+// public version declared in smpi.h (without parameter, and with C linkage)
+void smpi_init_options()
+{
+  smpi_init_options_internal(false);
+}
+
+void smpi_init_options_internal(bool called_by_smpimain)
 {
   // return if already called
   if(_smpi_options_initialized)

@@ -117,7 +117,7 @@ XBT_PRIVATE double smpi_cfg_auto_shared_malloc_thresh();
 XBT_PRIVATE bool smpi_cfg_display_alloc();
 
 // utilities
-XBT_PUBLIC void smpi_init_options(bool called_by_smpimain = false);
+XBT_PRIVATE void smpi_init_options_internal(bool called_by_smpimain);
 
 extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
 extern XBT_PRIVATE size_t smpi_data_exe_size; // size of the data+bss segment of the executable
