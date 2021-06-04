@@ -1,4 +1,4 @@
-! ignore Aborted \(core dumped\)
+! ignore .*Aborted.*
 ! expect return 134
 $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile_empty -quiet -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_config.thres:warning --log=no_loc
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to '1'
