@@ -65,8 +65,10 @@ void Comm::destroy(Comm* comm)
     Comm::destroy(smpi_process()->comm_world());
     return;
   }
-  if(comm != MPI_COMM_WORLD)
+  if (comm != MPI_COMM_WORLD && not comm->deleted()) {
+    comm->cleanup_attr<Comm>();
     comm->mark_as_deleted();
+  }
   Comm::unref(comm);
 }
 
