@@ -221,7 +221,7 @@ void ActorExt::init()
   if (ext->initialized())
     return;
 
-  simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
+  const simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
   ext->instance_id_ = self->get_property("instance_id");
   const int rank    = xbt_str_parse_int(self->get_property("rank"), "Cannot parse rank");
 
