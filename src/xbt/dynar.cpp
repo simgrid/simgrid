@@ -81,7 +81,7 @@ static inline void _xbt_dynar_get_elm(void* dst, const_xbt_dynar_t dynar, unsign
  */
 xbt_dynar_t xbt_dynar_new(const unsigned long elmsize, void_f_pvoid_t free_f)
 {
-  xbt_dynar_t dynar = xbt_new0(s_xbt_dynar_t, 1);
+  auto* dynar = xbt_new0(s_xbt_dynar_t, 1);
 
   dynar->size = 0;
   dynar->used = 0;

@@ -273,8 +273,8 @@ sg_link_t* sg_link_list()
 {
   std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
 
-  sg_link_t* res = xbt_new(sg_link_t, links.size());
-  memcpy(res, links.data(), sizeof(sg_link_t) * links.size());
+  auto* res = xbt_new(sg_link_t, links.size());
+  std::copy(begin(links), end(links), res);
 
   return res;
 }

@@ -397,7 +397,7 @@ sg_host_t* sg_host_list()
   xbt_assert(host_count > 0, "There is no host!");
   std::vector<simgrid::s4u::Host*> hosts = e->get_all_hosts();
 
-  sg_host_t* res = xbt_new(sg_host_t, hosts.size());
+  auto* res = xbt_new(sg_host_t, hosts.size());
   std::copy(begin(hosts), end(hosts), res);
 
   return res;

@@ -474,7 +474,7 @@ void Comm::init_smp(){
   int my_local_size=comm_intra->size();
   if(comm_intra->rank()==0) {
     int is_uniform       = 1;
-    int* non_uniform_map = xbt_new0(int,leader_group_size);
+    auto* non_uniform_map = xbt_new0(int, leader_group_size);
     allgather__ring(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);
     for(i=0; i < leader_group_size; i++) {

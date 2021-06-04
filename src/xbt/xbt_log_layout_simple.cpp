@@ -71,8 +71,8 @@ static bool xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_
 
 xbt_log_layout_t xbt_log_layout_simple_new(const char*)
 {
-  xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
-  res->do_layout       = &xbt_log_layout_simple_doit;
+  auto* res      = xbt_new0(s_xbt_log_layout_t, 1);
+  res->do_layout = &xbt_log_layout_simple_doit;
 
   return res;
 }

@@ -37,7 +37,7 @@ void Region::restore() const
   xbt_assert(simgrid::mc::mmu::chunk_count(size()) == get_chunks().page_count());
 
   for (size_t i = 0; i != get_chunks().page_count(); ++i) {
-    void* target_page       = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)start().address());
+    auto* target_page       = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)start().address());
     const void* source_page = get_chunks().page(i);
     mc_model_checker->get_remote_process().write_bytes(source_page, xbt_pagesize, remote(target_page));
   }
@@ -76,7 +76,7 @@ void* Region::read(void* target, const void* addr, std::size_t size) const
   // Read each page:
   while (simgrid::mc::mmu::split((std::uintptr_t)addr).first != page_end) {
     const void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, this);
-    void* next_page     = (void*)simgrid::mc::mmu::join(simgrid::mc::mmu::split((std::uintptr_t)addr).first + 1, 0);
+    auto* next_page     = (void*)simgrid::mc::mmu::join(simgrid::mc::mmu::split((std::uintptr_t)addr).first + 1, 0);
     size_t readable     = (char*)next_page - (const char*)addr;
     memcpy(dest, snapshot_addr, readable);
     addr = (const char*)addr + readable;

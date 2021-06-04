@@ -239,7 +239,7 @@ static bool mmalloc_heap_differ(const RemoteProcess& process, StateComparator& s
 
     xbt_assert(heapinfo1->type >= 0, "Unknown mmalloc block type: %d", heapinfo1->type);
 
-    void* addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
+    void* addr_block1 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) { /* Large block */
       if (is_stack(process, addr_block1)) {

@@ -175,7 +175,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   xbt_assert(mark_type, "mark_type is nullptr");
   xbt_assert(mark_value, "mark_value is nullptr");
 
-  simgrid::instr::EventType* type =
+  auto* type =
       static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
   if (not type) {
     throw simgrid::TracingError(XBT_THROW_POINT,
@@ -230,7 +230,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   xbt_assert(mark_value, "mark_value is nullptr");
 
   //check if mark_type is already declared
-  simgrid::instr::EventType* type =
+  auto* type =
       static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
   if (not type) {
     throw simgrid::TracingError(XBT_THROW_POINT,

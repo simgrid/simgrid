@@ -490,7 +490,7 @@ sg_actor_t* sg_actor_list()
   xbt_assert(actor_count > 0, "There is no actor!");
   std::vector<simgrid::s4u::ActorPtr> actors = e->get_all_actors();
 
-  sg_actor_t* res = xbt_new(sg_actor_t, actors.size());
+  auto* res = xbt_new(sg_actor_t, actors.size());
   for (size_t i = 0; i < actor_count; i++)
     res[i] = actors[i].get();
   return res;
