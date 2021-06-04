@@ -1,12 +1,6 @@
 ! ignore .*Aborted.*
 ! expect return 134
-$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile_empty -quiet -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_config.thres:warning --log=no_loc
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '4'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to '../hostfile_empty'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/tmpdir' to '/tmp'
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile_empty -quiet -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_config.thres:warning --log=xbt_cfg.thres=warning --log=no_loc
 > [0.000000] [root/CRITICAL] smpirun: the hostfile '../hostfile_empty' is empty
 > Execution failed with code 134.
 
