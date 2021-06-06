@@ -39,6 +39,7 @@ namespace smpi{
 Request::Request(const void* buf, int count, MPI_Datatype datatype, aid_t src, aid_t dst, int tag, MPI_Comm comm,
                  unsigned flags, MPI_Op op)
     : buf_(const_cast<void*>(buf))
+    , old_buf_(buf_)
     , type_(datatype)
     , size_(datatype->size() * count)
     , src_(src)
@@ -158,22 +159,20 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
 }
 
 void Request::init_buffer(int count){
-  void *old_buf = nullptr;
 // FIXME Handle the case of a partial shared malloc.
   // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
   if ((((flags_ & MPI_REQ_RECV) != 0) && ((flags_ & MPI_REQ_ACCUMULATE) != 0)) || (type_->flags() & DT_FLAG_DERIVED)) {
     // This part handles the problem of non-contiguous memory
-    old_buf = buf_;
+    old_buf_ = buf_;
     if (count==0){
       buf_ = nullptr;
     }else {
       buf_ = xbt_malloc(count*type_->size());
       if ((type_->flags() & DT_FLAG_DERIVED) && ((flags_ & MPI_REQ_SEND) != 0)) {
-        type_->serialize(old_buf, buf_, count);
+        type_->serialize(old_buf_, buf_, count);
       }
     }
   }
-  old_buf_  = old_buf;
 }
 
 bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
