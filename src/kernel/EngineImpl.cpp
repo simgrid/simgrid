@@ -238,6 +238,7 @@ void EngineImpl::run()
 {
   if (MC_record_replay_is_active()) {
     mc::replay(MC_record_path());
+    empty_trash();
     return;
   }
 
