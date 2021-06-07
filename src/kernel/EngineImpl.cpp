@@ -65,8 +65,10 @@ EngineImpl::~EngineImpl()
 #endif
   /* clear models before freeing handle, network models can use external callback defined in the handle */
   models_prio_.clear();
+#ifndef _WIN32
   if (platf_handle_)
     dlclose(platf_handle_);
+#endif
 }
 
 void EngineImpl::load_platform(const std::string& platf)
