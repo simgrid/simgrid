@@ -632,6 +632,8 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_OP(num, op, type)\
   {\
   CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, (op))\
+  CHECK_ARGS((op == MPI_REPLACE || op == MPI_NO_OP), MPI_ERR_OP,\
+             "%s: param %d op %s cannot be used in non RMA calls", __func__, (num), _XBT_STRINGIFY(op));\
   CHECK_DELETED((num), MPI_ERR_OP, op)\
   if (not op->is_predefined())\
     simgrid::smpi::utils::set_current_handle(op);\
