@@ -554,10 +554,6 @@ XBT_PRIVATE void private_execute_flops(double flops);
     CHECK_ARGS(init_flag, MPI_ERR_OTHER, "%s: MPI_Finalize was already called !", __func__)                            \
   }
 
-#define CHECK_MPI_NULL(num, val, err, ptr)\
-  CHECK_ARGS((ptr) == (val), (err),\
-             "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(ptr), _XBT_STRINGIFY(val))
-
 #define CHECK_VAL(num, val, err, value)\
   CHECK_ARGS((value) == (val), (err),\
              "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(value), _XBT_STRINGIFY(val))
@@ -565,6 +561,13 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_NULL(num,err,buf)\
   CHECK_ARGS((buf) == nullptr, (err),\
              "%s: param %d %s cannot be NULL", __func__, (num), _XBT_STRINGIFY(buf))
+
+#define CHECK_MPI_NULL(num, val, err, ptr)\
+  {\
+    CHECK_ARGS((ptr) == (val), (err),\
+               "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(ptr), _XBT_STRINGIFY(val))\
+    CHECK_NULL(num, err, ptr)\
+  }
 
 #define CHECK_NEGATIVE(num, err, val)\
   CHECK_ARGS((val) < 0, (err),\
@@ -622,8 +625,9 @@ XBT_PRIVATE void private_execute_flops(double flops);
 
 #define CHECK_TYPE(num, datatype)\
   {\
-    CHECK_ARGS(((datatype) == MPI_DATATYPE_NULL|| not (datatype)->is_valid()), MPI_ERR_TYPE,\
-             "%s: param %d %s cannot be MPI_DATATYPE_NULL or invalid", __func__, (num), _XBT_STRINGIFY(datatype));\
+    CHECK_MPI_NULL((num), MPI_DATATYPE_NULL, MPI_ERR_TYPE, (datatype))\
+    CHECK_ARGS((not (datatype)->is_valid()), MPI_ERR_TYPE,\
+             "%s: param %d %s is invalid", __func__, (num), _XBT_STRINGIFY(datatype));\
     CHECK_DELETED((num), MPI_ERR_TYPE, datatype)\
     if (not datatype->is_basic())\
       simgrid::smpi::utils::set_current_handle(datatype);\
