@@ -131,6 +131,7 @@ class HostEnergy {
   simgrid::s4u::Host* host_ = nullptr;
   /*< List of (idle_power, epsilon_power, max_power) tuple corresponding to each cpu pstate */
   std::vector<PowerRange> power_range_watts_list_;
+  bool has_pstate_power_values_ = false; /*< Whether power consumption values were provided for all pstates */
 
   /* We need to keep track of what pstate has been used, as we will sometimes be notified only *after* a pstate has been
    * used (but we need to update the energy consumption with the old pstate!)
@@ -155,6 +156,8 @@ public:
   explicit HostEnergy(simgrid::s4u::Host* ptr);
   ~HostEnergy();
 
+  bool has_pstate_power_values() const;
+
   double get_current_watts_value();
   double get_current_watts_value(double cpu_load) const;
   double get_consumed_energy();
@@ -167,6 +170,11 @@ public:
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID;
+
+/* Returns whether power consumption values were provided for all pstates. */
+bool HostEnergy::has_pstate_power_values() const {
+  return has_pstate_power_values_;
+}
 
 /* Computes the consumption so far. Called lazily on need. */
 void HostEnergy::update()
@@ -334,7 +342,7 @@ void HostEnergy::init_watts_range_list()
   const char* all_power_values_str = host_->get_property("wattage_per_state");
   if (all_power_values_str == nullptr) {
     /* If no power values are given, we assume it's 0 everywhere */
-    XBT_DEBUG("No energetic profiles given for host %s, using 0 W by default.", host_->get_cname());
+    XBT_WARN("No energetic profiles (wattage_per_state) given for host %s, using 0 W by default. Direct request of power/energy consumption of this host will fail.", host_->get_cname());
     for (int i = 0; i < host_->get_pstate_count(); ++i) {
         PowerRange range(0,0,0);
         power_range_watts_list_.push_back(range);
@@ -384,6 +392,8 @@ void HostEnergy::init_watts_range_list()
     power_range_watts_list_.push_back(range);
     ++i;
   }
+
+  has_pstate_power_values_ = true;
 }
 } // namespace plugin
 } // namespace simgrid
@@ -530,7 +540,10 @@ static void ensure_plugin_inited()
 double sg_host_get_consumed_energy(const_sg_host_t host)
 {
   ensure_plugin_inited();
-  return host->extension<HostEnergy>()->get_consumed_energy();
+  auto host_energy = host->extension<HostEnergy>();
+  xbt_assert(host_energy->has_pstate_power_values(), "No power range properties specified for host %s",
+             host->get_cname());
+  return host_energy->get_consumed_energy();
 }
 
 /** @ingroup plugin_host_energy
@@ -581,5 +594,8 @@ double sg_host_get_power_range_slope_at(const_sg_host_t host, int pstate)
 double sg_host_get_current_consumption(const_sg_host_t host)
 {
   ensure_plugin_inited();
-  return host->extension<HostEnergy>()->get_current_watts_value();
+  auto host_energy = host->extension<HostEnergy>();
+  xbt_assert(host_energy->has_pstate_power_values(), "No power range properties specified for host %s",
+             host->get_cname());
+  return host_energy->get_current_watts_value();
 }
