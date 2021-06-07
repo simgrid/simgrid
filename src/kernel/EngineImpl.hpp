@@ -67,7 +67,7 @@ class EngineImpl {
   std::vector<xbt::Task<void()>> tasksTemp;
 
   std::mutex mutex_;
-  void* platf_handle_ = nullptr; //!< handle for platform library
+  std::unique_ptr<void, std::function<int(void*)>> platf_handle_; //!< handle for platform library
   friend s4u::Engine;
 
 public:

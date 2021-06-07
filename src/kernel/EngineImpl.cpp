@@ -65,10 +65,6 @@ EngineImpl::~EngineImpl()
 #endif
   /* clear models before freeing handle, network models can use external callback defined in the handle */
   models_prio_.clear();
-#ifndef _WIN32
-  if (platf_handle_)
-    dlclose(platf_handle_);
-#endif
 }
 
 void EngineImpl::load_platform(const std::string& platf)
@@ -78,11 +74,11 @@ void EngineImpl::load_platform(const std::string& platf)
 #ifdef _WIN32
     xbt_die("loading platform through shared library isn't supported on windows");
 #else
-    platf_handle_ = dlopen(platf.c_str(), RTLD_LAZY);
-    xbt_assert(platf_handle_, "Impossible to open platform file: %s", platf.c_str());
+    void* handle = dlopen(platf.c_str(), RTLD_LAZY);
+    xbt_assert(handle, "Impossible to open platform file: %s", platf.c_str());
+    platf_handle_           = std::unique_ptr<void, std::function<int(void*)>>(handle, dlclose);
     using load_fct_t = void (*)(const simgrid::s4u::Engine&);
-    dlerror();
-    auto callable           = (load_fct_t)dlsym(platf_handle_, "load_platform");
+    auto callable           = (load_fct_t)dlsym(platf_handle_.get(), "load_platform");
     const char* dlsym_error = dlerror();
     xbt_assert(not dlsym_error, "Error: %s", dlsym_error);
     callable(*simgrid::s4u::Engine::get_instance());
