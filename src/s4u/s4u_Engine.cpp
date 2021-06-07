@@ -119,9 +119,9 @@ void Engine::load_platform(const std::string& platf) const
 #else
     void* handle = dlopen(platf.c_str(), RTLD_LAZY);
     xbt_assert(handle, "Impossible to open platform file: %s", platf.c_str());
-    typedef void (*load_fct_t)(const Engine&);
+    using load_fct_t = void (*)(const Engine&);
     dlerror();
-    load_fct_t callable     = (load_fct_t)dlsym(handle, "load_platform");
+    auto callable           = (load_fct_t)dlsym(handle, "load_platform");
     const char* dlsym_error = dlerror();
     xbt_assert(not dlsym_error, "Error: %s", dlsym_error);
     callable(*this);

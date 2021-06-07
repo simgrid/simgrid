@@ -16,8 +16,8 @@ namespace sg4 = simgrid::s4u;
  * @param host List of hostname inside the cluster
  * @param single_link_host Hostname of "special" node
  */
-static void create_cluster(sg4::NetZone* root, const std::string& cluster_suffix, const std::vector<std::string>& hosts,
-                           const std::string& single_link_host)
+static void create_cluster(const sg4::NetZone* root, const std::string& cluster_suffix,
+                           const std::vector<std::string>& hosts, const std::string& single_link_host)
 {
   auto* cluster = sg4::create_star_zone("cluster" + cluster_suffix);
   cluster->set_parent(root);
@@ -29,7 +29,7 @@ static void create_cluster(sg4::NetZone* root, const std::string& cluster_suffix
   /* create all hosts and connect them to outside world */
   for (const auto& hostname : hosts) {
     /* create host */
-    sg4::Host* host = cluster->create_host(hostname, std::vector<double>{1e9});
+    const sg4::Host* host = cluster->create_host(hostname, std::vector<double>{1e9});
     /* create UP link */
     sg4::Link* l_up = cluster->create_link(hostname + "_up", std::vector<double>{1.25e8})->set_latency(0.0001)->seal();
     /* create DOWN link, if needed */

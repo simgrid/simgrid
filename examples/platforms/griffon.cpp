@@ -19,10 +19,11 @@ namespace sg4 = simgrid::s4u;
  * @return netzone,router the created netzone and its router
  */
 static std::pair<sg4::NetZone*, simgrid::kernel::routing::NetPoint*>
-create_cabinet(sg4::NetZone* root, const std::string& name, const std::vector<int>& radicals)
+create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vector<int>& radicals)
 {
   auto* cluster      = sg4::create_star_zone(name);
-  std::string prefix = "griffon-", suffix = ".nancy.grid5000.fr";
+  std::string prefix = "griffon-";
+  std::string suffix = ".nancy.grid5000.fr";
   cluster->set_parent(root);
 
   /* create the backbone link */
@@ -32,7 +33,7 @@ create_cabinet(sg4::NetZone* root, const std::string& name, const std::vector<in
   for (const auto& id : radicals) {
     std::string hostname = prefix + std::to_string(id) + suffix;
     /* create host */
-    sg4::Host* host = cluster->create_host(hostname, "286.087kf");
+    const sg4::Host* host = cluster->create_host(hostname, "286.087kf");
     /* create UP/DOWN link */
     sg4::Link* l_up   = cluster->create_link(hostname + "_up", "125MBps")->set_latency("24us")->seal();
     sg4::Link* l_down = cluster->create_link(hostname + "_down", "125MBps")->set_latency("24us")->seal();
@@ -52,7 +53,7 @@ create_cabinet(sg4::NetZone* root, const std::string& name, const std::vector<in
 
 /** @brief Programmatic version of griffon.xml */
 extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine& e)
+void load_platform(const sg4::Engine& /*e*/)
 {
   /**
    * C++ version of griffon.xml
