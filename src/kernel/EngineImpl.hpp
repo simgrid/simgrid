@@ -67,6 +67,7 @@ class EngineImpl {
   std::vector<xbt::Task<void()>> tasksTemp;
 
   std::mutex mutex_;
+  void* platf_handle_ = nullptr; //!< handle for platform library
   friend s4u::Engine;
 
 public:
@@ -76,6 +77,7 @@ public:
   EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();
 
+  void load_platform(const std::string& platf);
   void load_deployment(const std::string& file) const;
   void register_function(const std::string& name, const actor::ActorCodeFactory& code);
   void register_default(const actor::ActorCodeFactory& code);

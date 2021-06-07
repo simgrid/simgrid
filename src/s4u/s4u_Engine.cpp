@@ -19,13 +19,9 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
-#include <boost/algorithm/string/predicate.hpp>
 #include <simgrid/Exception.hpp>
 
 #include <algorithm>
-#ifndef _WIN32
-#include <dlfcn.h>
-#endif /* _WIN32 */
 #include <string>
 
 XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
@@ -112,27 +108,7 @@ const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() c
  */
 void Engine::load_platform(const std::string& platf) const
 {
-  double start = xbt_os_time();
-  if (boost::algorithm::ends_with(platf, ".so") or boost::algorithm::ends_with(platf, ".dylib")) {
-#ifdef _WIN32
-    xbt_die("loading platform through shared library isn't supported on windows");
-#else
-    void* handle = dlopen(platf.c_str(), RTLD_LAZY);
-    xbt_assert(handle, "Impossible to open platform file: %s", platf.c_str());
-    using load_fct_t = void (*)(const Engine&);
-    dlerror();
-    auto callable           = (load_fct_t)dlsym(handle, "load_platform");
-    const char* dlsym_error = dlerror();
-    xbt_assert(not dlsym_error, "Error: %s", dlsym_error);
-    callable(*this);
-    dlclose(handle);
-#endif /* _WIN32 */
-  } else {
-    parse_platform_file(platf);
-  }
-
-  double end = xbt_os_time();
-  XBT_DEBUG("PARSE TIME: %g", (end - start));
+  pimpl->load_platform(platf);
 }
 
 void Engine::register_function(const std::string& name, int (*code)(int, char**)) // XBT_ATTRIB_DEPRECATED_v329

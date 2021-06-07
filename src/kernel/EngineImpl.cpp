@@ -20,6 +20,11 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 
+#include <boost/algorithm/string/predicate.hpp>
+#ifndef _WIN32
+#include <dlfcn.h>
+#endif /* _WIN32 */
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 
 namespace simgrid {
@@ -58,6 +63,34 @@ EngineImpl::~EngineImpl()
   xbt_dynar_free(&actors_vector_);
   xbt_dynar_free(&dead_actors_vector_);
 #endif
+  /* clear models before freeing handle, network models can use external callback defined in the handle */
+  models_prio_.clear();
+  if (platf_handle_)
+    dlclose(platf_handle_);
+}
+
+void EngineImpl::load_platform(const std::string& platf)
+{
+  double start = xbt_os_time();
+  if (boost::algorithm::ends_with(platf, ".so") or boost::algorithm::ends_with(platf, ".dylib")) {
+#ifdef _WIN32
+    xbt_die("loading platform through shared library isn't supported on windows");
+#else
+    platf_handle_ = dlopen(platf.c_str(), RTLD_LAZY);
+    xbt_assert(platf_handle_, "Impossible to open platform file: %s", platf.c_str());
+    using load_fct_t = void (*)(const simgrid::s4u::Engine&);
+    dlerror();
+    auto callable           = (load_fct_t)dlsym(platf_handle_, "load_platform");
+    const char* dlsym_error = dlerror();
+    xbt_assert(not dlsym_error, "Error: %s", dlsym_error);
+    callable(*simgrid::s4u::Engine::get_instance());
+#endif /* _WIN32 */
+  } else {
+    parse_platform_file(platf);
+  }
+
+  double end = xbt_os_time();
+  XBT_DEBUG("PARSE TIME: %g", (end - start));
 }
 
 void EngineImpl::load_deployment(const std::string& file) const
