@@ -267,6 +267,7 @@ int main(int argc, char **argv)
     /* Free all the elements in the list */
     for (; my_elems_count > 0; my_elems_count--)
         MPI_Free_mem(my_elems[my_elems_count - 1]);
+    free(my_elems);
 
     MPI_Finalize();
     return 0;
