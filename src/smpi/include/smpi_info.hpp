@@ -21,7 +21,7 @@ class Info : public F2C{
 
 public:
   explicit Info() {this->add_f();}
-  explicit Info(const Info* orig) : map_(orig->map_) {this->add_f();}
+  explicit Info(const Info* orig);
   void ref();
   static void unref(MPI_Info info);
   void set(const char* key, const char* value) { map_[key] = value; }

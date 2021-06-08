@@ -301,9 +301,6 @@ namespace smpi{
 
   MPI_Info File::info()
   {
-    if (info_ == MPI_INFO_NULL)
-      info_ = new Info();
-    info_->ref();
     return info_;
   }
 

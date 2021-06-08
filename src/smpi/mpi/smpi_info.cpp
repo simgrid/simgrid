@@ -10,6 +10,13 @@
 namespace simgrid {
 namespace smpi {
 
+Info::Info(const Info* orig)
+{
+  if (orig != nullptr)
+    map_ = orig->map_;
+  this->add_f();
+}
+
 void Info::ref()
 {
   refcount_++;

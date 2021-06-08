@@ -564,9 +564,6 @@ void Comm::finish_rma_calls() const
 
 MPI_Info Comm::info()
 {
-  if (info_ == MPI_INFO_NULL)
-    info_ = new Info();
-  info_->ref();
   return info_;
 }
 
